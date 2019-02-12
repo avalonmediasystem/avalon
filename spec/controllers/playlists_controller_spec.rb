@@ -70,7 +70,7 @@ RSpec.describe PlaylistsController, type: :controller do
         expect(put :update, params: { id: playlist.id }).to redirect_to(new_user_session_path)
         expect(put :update_multiple, params: { id: playlist.id }).to redirect_to(new_user_session_path)
         expect(delete :destroy, params: { id: playlist.id }).to redirect_to(new_user_session_path)
-        expect(get :refresh_info, params: { id: playlist.id, position: 1 }, xhr: true).to redirect_to(new_user_session_path)
+        expect(get :refresh_info, params: { id: playlist.id, position: 1 }, xhr: true).to redirect_to(/#{Regexp.quote(new_user_session_path)}\?url=.*/)
       end
       context 'with a public playlist' do
         let(:playlist) { FactoryBot.create(:playlist, visibility: Playlist::PUBLIC, items: [playlist_item]) }
@@ -82,8 +82,8 @@ RSpec.describe PlaylistsController, type: :controller do
       end
       context 'with a private playlist' do
         it "should NOT return the playlist view page" do
-          expect(get :show, params: { id: playlist.id }).to redirect_to(new_user_session_path)
-          expect(get :refresh_info, params: { id: playlist.id, position: 1 }, xhr: true).to redirect_to(new_user_session_path)
+          expect(get :show, params: { id: playlist.id }).to redirect_to(/#{Regexp.quote(new_user_session_path)}\?url=.*/)
+          expect(get :refresh_info, params: { id: playlist.id, position: 1 }, xhr: true).to redirect_to(/#{Regexp.quote(new_user_session_path)}\?url=.*/)
         end
       end
       context 'with a private playlist and token' do
