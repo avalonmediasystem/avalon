@@ -164,7 +164,11 @@ Rails.application.routes.draw do
   resources :playlist_items, only: [:update], :constraints => {:format => /(js|json)/}
 
   resources :timelines do
+    member do
+      patch 'regenerate_access_token'
+    end
     collection do
+      post 'duplicate'
       post 'paged_index'
       if Settings['variations'].present?
         post 'import_variations_timeline'
