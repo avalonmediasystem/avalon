@@ -2,7 +2,6 @@ require 'avalon/routing/can_constraint'
 
 Rails.application.routes.draw do
 
-  resources :timelines
   mount Blacklight::Engine => '/'
   root to: "catalog#index"
     concern :searchable, Blacklight::Routes::Searchable.new
@@ -163,6 +162,15 @@ Rails.application.routes.draw do
   resources :comments, only: [:index, :create]
 
   resources :playlist_items, only: [:update], :constraints => {:format => /(js|json)/}
+
+  resources :timelines do
+    collection do
+      post 'paged_index'
+      if Settings['variations'].present?
+        post 'import_variations_timeline'
+      end
+    end
+  end
 
   resources :dropbox, :only => [] do
     collection do
