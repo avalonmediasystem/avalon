@@ -1,12 +1,12 @@
 module TimelinesHelper
-  def human_friendly_visibility(visibility)
+  def timeline_human_friendly_visibility(visibility)
     content_tag(:span,
       safe_join([icon_only_visibility(visibility),t("timeline.#{visibility}Text")], ' '),
       class: "human_friendly_visibility_#{visibility}",
       title: visibility_description(visibility))
   end
 
-  def icon_only_visibility(visibility)
+  def timeline_icon_only_visibility(visibility)
     icon = case visibility
       when Timeline::PUBLIC
         "fa-globe"
@@ -18,7 +18,7 @@ module TimelinesHelper
     content_tag(:span, '', class:"fa #{icon} fa-lg", title: visibility_description(visibility))
   end
 
-  def visibility_description(visibility)
+  def timeline_visibility_description(visibility)
     t("timeline.#{visibility}AltText")
   end
 end
