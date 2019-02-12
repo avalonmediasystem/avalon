@@ -1,57 +1,48 @@
-<%= form_with(model: timeline, local: true) do |form| %>
-  <% if timeline.errors.any? %>
-    <div id="error_explanation">
-      <h2><%= pluralize(timeline.errors.count, "error") %> prohibited this timeline from being saved:</h2>
-
-      <ul>
-      <% timeline.errors.full_messages.each do |message| %>
-        <li><%= message %></li>
-      <% end %>
-      </ul>
+<div id="timeline_edit_div" class="container collapse <%= 'in' if !@timeline.persisted? || !@timeline.errors.empty? %>">
+  <%= form_for(@timeline, html: { id: 'timeline_form', class: 'form-horizontal timeline_actions' }) do |f| %>
+  <div class="row form-group <% if @timeline.errors[:title].any? %>has-error<% end %>">
+    <%= f.label "Name", class: 'col-sm-2 control-label' %>
+    <div class="col-sm-10"><%= f.text_field :title, class: 'form-control' %></div>
+  </div>
+  <div class="row form-group">
+    <%= f.label :description, 'Description', class: 'col-sm-2 control-label' %>
+    <div class="col-sm-10"><%= f.text_area :description, class: 'form-control', rows: '4' %></div>
+  </div>
+  <div class="row form-group">
+    <%= label_tag nil, t("timeline.visibility"), class: 'col-sm-2 control-label' %>
+    <div class="col-sm-10">
+      <label class="radio-inline">
+        <%= f.radio_button(:visibility, Timeline::PUBLIC) %>
+        <%= human_friendly_visibility Timeline::PUBLIC %>
+      </label>
+      <label class="radio-inline">
+        <%= f.radio_button(:visibility, Timeline::PRIVATE) %>
+        <%= human_friendly_visibility Timeline::PRIVATE %>
+      </label>
+      <label class="radio-inline">
+        <%= f.radio_button(:visibility, Timeline::PRIVATE_WITH_TOKEN, class: 'share-timeline') %>
+        <%= human_friendly_visibility Timeline::PRIVATE_WITH_TOKEN %>
+      </label>
+      <p class="text-info visibility-help-text" style="padding-top:5px;font-style:italic;">
+        <%= visibility_description @timeline.visibility %>
+      </p>
     </div>
-  <% end %>
-
-  <div class="field">
-    <%= form.label :title %>
-    <%= form.text_field :title, id: :timeline_title %>
   </div>
-
-  <div class="field">
-    <%= form.label :user_id %>
-    <%= form.text_field :user_id, id: :timeline_user_id %>
+  <div class="row form-group">
+    <%= label_tag nil, t("timeline.tags.label"), class: 'col-sm-2 control-label' %>
+    <div class="col-sm-10">
+      <%= render partial:'tag_form' %>
+    </div>
   </div>
-
-  <div class="field">
-    <%= form.label :visibility %>
-    <%= form.text_field :visibility, id: :timeline_visibility %>
+  <div class="row">
+    <div class="col-sm-offset-2 col-sm-10">
+<div>
+  <%= f.submit id: 'submit-timeline-form', class: 'btn btn-primary btn-xs', value: t("timeline.#{params[:action]}.action") %>
+        <% if params[:action] == "edit" || params[:action] == "update" %>
+          <a id="timeline_edit_cancel" class="btn btn-default btn-xs" data-toggle="collapse" data-target="#timeline_edit_div, #timeline_view_div">Cancel</a>
+        <% end %>
+</div>
+    </div>
   </div>
-
-  <div class="field">
-    <%= form.label :description %>
-    <%= form.text_area :description, id: :timeline_description %>
-  </div>
-
-  <div class="field">
-    <%= form.label :access_token %>
-    <%= form.text_field :access_token, id: :timeline_access_token %>
-  </div>
-
-  <div class="field">
-    <%= form.label :tags %>
-    <%= form.text_field :tags, id: :timeline_tags %>
-  </div>
-
-  <div class="field">
-    <%= form.label :source %>
-    <%= form.text_field :source, id: :timeline_source %>
-  </div>
-
-  <div class="field">
-    <%= form.label :manifest %>
-    <%= form.text_area :manifest, id: :timeline_manifest %>
-  </div>
-
-  <div class="actions">
-    <%= form.submit %>
-  </div>
-<% end %>
+  <% end # form_for timeline_form%>
+</div>
