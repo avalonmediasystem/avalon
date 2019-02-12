@@ -2,6 +2,7 @@ require 'avalon/routing/can_constraint'
 
 Rails.application.routes.draw do
 
+  resources :timelines
   mount Blacklight::Engine => '/'
   root to: "catalog#index"
     concern :searchable, Blacklight::Routes::Searchable.new

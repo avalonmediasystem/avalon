@@ -1,0 +1,41 @@
+<p id="notice"><%= notice %></p>
+
+<h1>Timelines</h1>
+
+<table>
+  <thead>
+    <tr>
+      <th>Title</th>
+      <th>User</th>
+      <th>Visibility</th>
+      <th>Description</th>
+      <th>Access token</th>
+      <th>Tags</th>
+      <th>Source</th>
+      <th>Manifest</th>
+      <th colspan="3"></th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% @timelines.each do |timeline| %>
+      <tr>
+        <td><%= timeline.title %></td>
+        <td><%= timeline.user %></td>
+        <td><%= timeline.visibility %></td>
+        <td><%= timeline.description %></td>
+        <td><%= timeline.access_token %></td>
+        <td><%= timeline.tags %></td>
+        <td><%= timeline.source %></td>
+        <td><%= timeline.manifest %></td>
+        <td><%= link_to 'Show', timeline %></td>
+        <td><%= link_to 'Edit', edit_timeline_path(timeline) %></td>
+        <td><%= link_to 'Destroy', timeline, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<br>
+
+<%= link_to 'New Timeline', new_timeline_path %>
