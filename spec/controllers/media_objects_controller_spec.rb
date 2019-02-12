@@ -64,7 +64,7 @@ describe MediaObjectsController, type: :controller do
           expect(get :new).to redirect_to(new_user_session_path)
         end
         it "all routes should redirect to sign in" do
-          expect(get :show, params: { id: media_object.id }).to redirect_to(new_user_session_path)
+          expect(get :show, params: { id: media_object.id }).to redirect_to(/#{Regexp.quote(new_user_session_path)}\?url=.*/)
           expect(get :edit, params: { id: media_object.id }).to redirect_to(new_user_session_path)
           expect(get :confirm_remove, params: { id: media_object.id }).to redirect_to(new_user_session_path)
           expect(put :update, params: { id: media_object.id }).to redirect_to(new_user_session_path)
@@ -842,7 +842,7 @@ describe MediaObjectsController, type: :controller do
         media_object.publish!(nil)
         expect(media_object).not_to be_published
         get 'show', params: { id: media_object.id }
-        expect(response).to redirect_to new_user_session_path
+        expect(response).to redirect_to /#{Regexp.quote(new_user_session_path)}\?url=.*/
       end
 
       it "should redirect to home page when logged in and item is unpublished" do
