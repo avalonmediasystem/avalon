@@ -130,7 +130,7 @@ class ApplicationController < ActionController::Base
       redirect_to root_path, flash: { notice: 'You are not authorized to perform this action.' }
     else
       session[:previous_url] = request.fullpath unless request.xhr?
-      redirect_to new_user_session_path, flash: { notice: 'You are not authorized to perform this action. Try logging in.' }
+      redirect_to new_user_session_path(url: request.url), flash: { notice: 'You are not authorized to perform this action. Try logging in.' }
     end
   end
 
