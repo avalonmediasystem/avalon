@@ -1,5 +1,13 @@
 class TimelinesController < ApplicationController
-  before_action :set_timeline, only: [:show, :edit, :update, :destroy]
+  before_action :authenticate_user!, except: [:show]
+  load_and_authorize_resource except: [:import_variations_timeline, :duplicate, :show, :index]
+  load_resource only: [:show]
+  authorize_resource only: [:index]
+  before_action :get_user_timelines, only: [:index, :paged_index]
+  before_action :get_all_other_timelines, only: [:edit]
+  before_action :load_timeline_token, only: [:show, :duplicate]
+
+  helper_method :access_token_url
 
   # GET /timelines
   def index
@@ -70,6 +78,7 @@ class TimelinesController < ApplicationController
   # GET /timelines/1
   # GET /timelines/1.json
   def show
+    authorize! :read, @timeline
   end
 
   # GET /timelines/new
@@ -84,14 +93,17 @@ class TimelinesController < ApplicationController
   # POST /timelines
   # POST /timelines.json
   def create
-    @timeline = Timeline.new(timeline_params)
+    @timeline = Timeline.new(timeline_params.merge(user: current_user))
 
     respond_to do |format|
       if @timeline.save
         format.html { redirect_to @timeline, notice: 'Timeline was successfully created.' }
-        format.json { render :show, status: :created, location: @timeline }
+        format.json { render json: @timeline, status: :created, location: @timeline }
       else
-        format.html { render :new }
+        format.html do
+          flash.now[:error] = @timeline.errors.full_messages.to_sentence
+          render :new
+        end
         format.json { render json: @timeline.errors, status: :unprocessable_entity }
       end
     end
@@ -103,7 +115,7 @@ class TimelinesController < ApplicationController
     respond_to do |format|
       if @timeline.update(timeline_params)
         format.html { redirect_to @timeline, notice: 'Timeline was successfully updated.' }
-        format.json { render :show, status: :ok, location: @timeline }
+        format.json { render json: @timeline, status: :created, location: @timeline }
       else
         format.html { render :edit }
         format.json { render json: @timeline.errors, status: :unprocessable_entity }
@@ -121,14 +133,52 @@ class TimelinesController < ApplicationController
     end
   end
 
+  # POST /timelines
+  def duplicate
+    old_timeline = Timeline.find(params['old_timeline_id'])
+    unless can? :duplicate, old_timeline
+      render json: { errors: 'You do not have sufficient privileges to copy this item' }, status: 401 and return
+    end
+    @timeline = Timeline.new(timeline_params.merge(user: current_user))
+
+    respond_to do |format|
+      if @timeline.save
+        format.json { render json: { timeline: @timeline, path: edit_timeline_path(@timeline) } }
+      else
+        format.json { render json: @timeline.errors, status: :unprocessable_entity }
+      end
+    end
+  end
+
+  # PATCH/PUT /timelines/1/regenerate_access_token
+  def regenerate_access_token
+    @timeline.access_token = nil
+    @timeline.save!
+    render json: { access_token_url: access_token_url(@timeline) }
+  end
+
+  def access_token_url(timeline)
+    timeline_url(timeline, token: timeline.access_token)
+  end
+
   private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_timeline
-      @timeline = Timeline.find(params[:id])
+    def get_user_timelines
+      @timelines = Timeline.by_user(current_user)
+    end
+
+    def get_all_other_timelines
+      @timelines = Timeline.by_user(current_user).where.not( id: @timeline )
+    end
+
+    def load_timeline_token
+      @timeline_token = params[:token]
+      current_ability.options[:timeline_token] = @timeline_token
     end
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def timeline_params
-      params.require(:timeline).permit(:title, :user_id, :visibility, :description, :access_token, :tags, :source, :manifest)
+      new_params = params.require(:timeline).permit(:title, :user_id, :visibility, :description, :access_token, :tags, :source, :manifest)
+      new_params[:tags] = JSON.parse(new_params[:tags]) if new_params[:tags].present?
+      new_params
     end
 end
