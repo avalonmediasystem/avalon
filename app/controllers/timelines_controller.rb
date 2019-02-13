@@ -32,17 +32,8 @@ class TimelinesController < ApplicationController
     sort_column = params['order']['0']['column'].to_i rescue 0
     sort_direction = params['order']['0']['dir'] rescue 'asc'
     session[:timeline_sort] = [sort_column, sort_direction]
-    if columns[sort_column] != 'size'
-      @timelines = @timelines.order({ columns[sort_column].downcase => sort_direction })
-      @timelines = @timelines.offset(params['start']).limit(params['length'])
-    else
-      # sort by size (item count): decorate list with timelineitem count then sort and undecorate
-      decorated = @timelines.collect{|p| [ p.items.size, p ]}
-      decorated.sort!
-      @timelines = decorated.collect{|p| p[1]}
-      @timelines.reverse! if sort_direction=='desc'
-      @timelines = @timelines.slice(params['start'].to_i, params['length'].to_i)
-    end
+    @timelines = @timelines.order({ columns[sort_column].downcase => sort_direction })
+    @timelines = @timelines.offset(params['start']).limit(params['length'])
     response = {
       "draw": params['draw'],
       "recordsTotal": recordsTotal,
@@ -59,7 +50,7 @@ class TimelinesController < ApplicationController
           "<i class='fa fa-times' aria-hidden='true'></i> Delete".html_safe
         end
         [
-          view_context.link_to(timeline.title, timeline_path(timeline), title: timeline.comment),
+          view_context.link_to(timeline.title, timeline_path(timeline), title: timeline.description),
           timeline.description,
           view_context.human_friendly_visibility(timeline.visibility),
           "<span title='#{timeline.updated_at.utc.iso8601}'>#{view_context.time_ago_in_words(timeline.updated_at)} ago</span>",
