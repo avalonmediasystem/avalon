@@ -50,7 +50,7 @@ class TimelinesController < ApplicationController
           "<i class='fa fa-times' aria-hidden='true'></i> Delete".html_safe
         end
         [
-          view_context.link_to(timeline.title, timeline_path(timeline), title: timeline.description),
+          view_context.link_to(timeline.title, timeline_path(timeline), title: timeline.description, target: "blank"),
           timeline.description,
           view_context.human_friendly_visibility(timeline.visibility),
           "<span title='#{timeline.updated_at.utc.iso8601}'>#{view_context.time_ago_in_words(timeline.updated_at)} ago</span>",
@@ -71,6 +71,7 @@ class TimelinesController < ApplicationController
   def show
     authorize! :read, @timeline
     # TODO: redirect to timeliner tool
+    redirect_to Settings.timeliner.timeliner_url #+ "?manifest=#{timeline_manifest_url(@timeline)}"
   end
 
   # GET /timelines/new
