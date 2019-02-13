@@ -1,4 +1,4 @@
-class Timeline < ApplicationRecord
+class Timeline < ActiveRecord::Base
   belongs_to :user
   scope :by_user, ->(user) { where(user_id: user.id) }
   scope :title_like, ->(title_filter) { where("title LIKE ?", "%#{title_filter}%")}
