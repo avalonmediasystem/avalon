@@ -1,52 +1,65 @@
+# frozen_string_literal: true
+
+# Copyright 2011-2018, The Trustees of Indiana University and Northwestern
+#   University.  Licensed under the Apache License, Version 2.0 (the "License");
+#   you may not use this file except in compliance with the License.
+#
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software distributed
+#   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+#   CONDITIONS OF ANY KIND, either express or implied. See the License for the
+#   specific language governing permissions and limitations under the License.
+# ---  END LICENSE_HEADER BLOCK  ---
+
 class TimelinesController < ApplicationController
   before_action :authenticate_user!, except: [:show]
   load_and_authorize_resource except: [:import_variations_timeline, :duplicate, :show, :index]
   load_resource only: [:show]
   authorize_resource only: [:index]
-  before_action :get_user_timelines, only: [:index, :paged_index]
-  before_action :get_all_other_timelines, only: [:edit]
+  before_action :user_timelines, only: [:index, :paged_index]
+  before_action :all_other_timelines, only: [:edit]
   before_action :load_timeline_token, only: [:show, :duplicate]
 
   helper_method :access_token_url
-
-  # GET /timelines
-  def index
-  end
 
   # POST /timelines/paged_index
   def paged_index
     # Timelines for index page are loaded dynamically by jquery datatables javascript which
     # requests the html for only a limited set of rows at a time.
-    recordsTotal = @timelines.count
-    columns = ['title','description','visibility','updated_at','tags','actions']
+    records_total = @timelines.count
+    columns = ['title', 'description', 'visibility', 'updated_at', 'tags', 'actions']
 
-    #Filter title
+    # Filter title
     title_filter = params['search']['value']
     @timelines = @timelines.title_like(title_filter) if title_filter.present?
 
     # Apply tag filter if requested
     tag_filter = params['columns']['4']['search']['value']
     @timelines = @timelines.with_tag(tag_filter) if tag_filter.present?
-    timelinesFilteredTotal = @timelines.count
+    timelines_filtered_total = @timelines.count
 
     sort_column = params['order']['0']['column'].to_i rescue 0
     sort_direction = params['order']['0']['dir'] rescue 'asc'
     session[:timeline_sort] = [sort_column, sort_direction]
-    @timelines = @timelines.order({ columns[sort_column].downcase => sort_direction })
+    @timelines = @timelines.order(columns[sort_column].downcase => sort_direction)
     @timelines = @timelines.offset(params['start']).limit(params['length'])
     response = {
       "draw": params['draw'],
-      "recordsTotal": recordsTotal,
-      "recordsFiltered": timelinesFilteredTotal,
+      "recordsTotal": records_total,
+      "recordsFiltered": timelines_filtered_total,
       "data": @timelines.collect do |timeline|
-        copy_button = view_context.button_tag( type: 'button', data: { timeline: timeline },
-          class: 'copy-timeline-button btn btn-default btn-xs') do
+        copy_button = view_context.button_tag(type: 'button',
+                                              data: { timeline: timeline },
+                                              class: 'copy-timeline-button btn btn-default btn-xs') do
           "<i class='fa fa-clone' aria-hidden='true'></i> Copy".html_safe
         end
         edit_button = view_context.link_to(edit_timeline_path(timeline), class: 'btn btn-default btn-xs') do
           "<i class='fa fa-edit' aria-hidden='true'></i> Edit Details".html_safe
         end
-        delete_button = view_context.link_to(timeline_path(timeline), method: :delete, class: 'btn btn-xs btn-danger btn-confirmation', data: {placement: 'bottom'}) do
+        delete_button = view_context.link_to(timeline_path(timeline), method: :delete, class: 'btn btn-xs btn-danger btn-confirmation', data: { placement: 'bottom' }) do
           "<i class='fa fa-times' aria-hidden='true'></i> Delete".html_safe
         end
         [
@@ -77,10 +90,6 @@ class TimelinesController < ApplicationController
   # GET /timelines/new
   def new
     @timeline = Timeline.new
-  end
-
-  # GET /timelines/1/edit
-  def edit
   end
 
   # POST /timelines
@@ -157,12 +166,13 @@ class TimelinesController < ApplicationController
   end
 
   private
-    def get_user_timelines
+
+    def user_timelines
       @timelines = Timeline.by_user(current_user)
     end
 
-    def get_all_other_timelines
-      @timelines = Timeline.by_user(current_user).where.not( id: @timeline )
+    def all_other_timelines
+      @timelines = Timeline.by_user(current_user).where.not(id: @timeline)
     end
 
     def load_timeline_token
