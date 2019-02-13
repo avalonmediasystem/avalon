@@ -17,7 +17,8 @@ class Ability
   include Hydra::Ability
   include Hydra::MultiplePolicyAwareAbility
 
-  self.ability_logic += [ :playlist_permissions, :playlist_item_permissions, :marker_permissions, :timeline_permissions ]
+  self.ability_logic += [ :playlist_permissions, :playlist_item_permissions, :marker_permissions ]
+  self.ability_logic += [ :timeline_permissions ] if Settings['timeliner'].present?
 
   def user_groups
     return @user_groups if @user_groups
