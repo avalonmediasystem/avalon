@@ -3,7 +3,7 @@ module TimelinesHelper
     content_tag(:span,
       safe_join([icon_only_visibility(visibility),t("timeline.#{visibility}Text")], ' '),
       class: "human_friendly_visibility_#{visibility}",
-      title: visibility_description(visibility))
+      title: timeline_visibility_description(visibility))
   end
 
   def timeline_icon_only_visibility(visibility)

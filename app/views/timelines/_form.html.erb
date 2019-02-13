@@ -1,4 +1,4 @@
-<div id="timeline_edit_div" class="container collapse <%= 'in' if !@timeline.persisted? || !@timeline.errors.empty? %>">
+<div id="timeline_edit_div" class="container">
   <%= form_for(@timeline, html: { id: 'timeline_form', class: 'form-horizontal timeline_actions' }) do |f| %>
   <div class="row form-group <% if @timeline.errors[:title].any? %>has-error<% end %>">
     <%= f.label "Name", class: 'col-sm-2 control-label' %>
@@ -26,6 +26,21 @@
       <p class="text-info visibility-help-text" style="padding-top:5px;font-style:italic;">
         <%= timeline_visibility_description @timeline.visibility %>
       </p>
+      <div id="timeline_token_row" class="row container collapse <%= 'in' if @timeline.visibility=='private-with-token' %>" style="margin-top:9px;">
+        <div class="col-xs-9">
+          <div class="input-group">
+            <input type="text" class="form-control" id="timeline-share-link" value="<%= access_token_url(@timeline) %>" placeholder="<%= access_token_url(@timeline) %>" onClick="this.select();" readonly="readonly">
+            <span class="input-group-btn" id="timeline-share-btn-result">
+              <%= button_tag "Copy", id: 'timeline-share-btn',
+                class: "btn btn-success" %>
+            </span>
+          </div>
+        </div>
+        <div class="col-xs-2">
+          <%= button_tag "Get new link", id: 'get-new-link', form: 'timeline-new-link-form',
+            class: 'btn btn-success', data: { 'timeline_id': @timeline.id } %>
+        </div>
+      </div>
     </div>
   </div>
   <div class="row form-group">

@@ -29,15 +29,15 @@
             <div class="col-sm-10">
               <label class="radio-inline">
                 <%= f.radio_button(:visibility, Timeline::PUBLIC) %>
-                <%= human_friendly_visibility Timeline::PUBLIC %>
+                <%= timeline_human_friendly_visibility Timeline::PUBLIC %>
               </label>
               <label class="radio-inline">
                 <%= f.radio_button(:visibility, Timeline::PRIVATE) %>
-                <%= human_friendly_visibility Timeline::PRIVATE %>
+                <%= timeline_human_friendly_visibility Timeline::PRIVATE %>
               </label>
               <label class="radio-inline">
                 <%= f.radio_button(:visibility, Timeline::PRIVATE_WITH_TOKEN) %>
-                <%= human_friendly_visibility Timeline::PRIVATE_WITH_TOKEN %>
+                <%= timeline_human_friendly_visibility Timeline::PRIVATE_WITH_TOKEN %>
               </label>
             </div>
           </div>
