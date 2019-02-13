@@ -79,6 +79,7 @@ class TimelinesController < ApplicationController
   # GET /timelines/1.json
   def show
     authorize! :read, @timeline
+    # TODO: redirect to timeliner tool
   end
 
   # GET /timelines/new
@@ -93,11 +94,12 @@ class TimelinesController < ApplicationController
   # POST /timelines
   # POST /timelines.json
   def create
+    # TODO: Accept raw IIIF manifest here from timeliner tool?
     @timeline = Timeline.new(timeline_params.merge(user: current_user))
 
     respond_to do |format|
       if @timeline.save
-        format.html { redirect_to @timeline, notice: 'Timeline was successfully created.' }
+        format.html { redirect_to @timeline }
         format.json { render json: @timeline, status: :created, location: @timeline }
       else
         format.html do
@@ -112,9 +114,10 @@ class TimelinesController < ApplicationController
   # PATCH/PUT /timelines/1
   # PATCH/PUT /timelines/1.json
   def update
+    # TODO: Accept raw IIIF manifest here from timeliner tool
     respond_to do |format|
       if @timeline.update(timeline_params)
-        format.html { redirect_to @timeline, notice: 'Timeline was successfully updated.' }
+        format.html { render :edit, notice: 'Timeline was successfully updated.' }
         format.json { render json: @timeline, status: :created, location: @timeline }
       else
         format.html { render :edit }
