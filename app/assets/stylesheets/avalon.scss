@@ -1029,6 +1029,29 @@ div.structure_edit {
   visibility: visible !important;
 }
 
+/* Timeline index page */
+.timelines_top {
+  text-align: right;
+}
+
+#Timelines_info {
+  float: left;
+}
+
+#Timelines_length {
+  display: inline-block;
+}
+
+#Timelines_paginate {
+  float: right;
+}
+
+.timeline_filter_container {
+  display: inline-block;
+  margin-left: 1em;
+}
+
+
 /* Playlist index page */
 .playlists_top {
   text-align: right;
