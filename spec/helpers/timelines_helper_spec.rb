@@ -18,26 +18,24 @@ RSpec.describe TimelinesHelper, type: :helper do
 
   describe '#timeline_human_friendly_visibility' do
 
-    describe 'public visibility' do
-      subject { timeline_human_friendly_visibility(visibility) }
-      context 'should return icon and string for public visibility' do
-        let(:visibility){ Timeline::PUBLIC }
-        it{ is_expected.to include('human_friendly_visibility_public') }
-        it{ is_expected.to include(t("timeline.publicText")) }
-        it{ is_expected.to include(t("timeline.publicAltText")) }
-      end
-      context 'should return icon and string for private visibility' do
-        let(:visibility){ Timeline::PRIVATE }
-        it{ is_expected.to include('human_friendly_visibility_private') }
-        it{ is_expected.to include(t("timeline.privateText")) }
-        it{ is_expected.to include(t("timeline.privateAltText")) }
-      end
-      context 'should return icon and string for private-with-token visibility' do
-        let(:visibility){ Timeline::PRIVATE_WITH_TOKEN }
-        it{ is_expected.to include('human_friendly_visibility_private-with-token') }
-        it{ is_expected.to include(t("timeline.private-with-tokenText")) }
-        it{ is_expected.to include(t("timeline.private-with-tokenAltText")) }
-      end
+    subject { timeline_human_friendly_visibility(visibility) }
+    context 'should return icon and string for public visibility' do
+      let(:visibility){ Timeline::PUBLIC }
+      it{ is_expected.to include('human_friendly_visibility_public') }
+      it{ is_expected.to include(t("timeline.publicText")) }
+      it{ is_expected.to include(t("timeline.publicAltText")) }
+    end
+    context 'should return icon and string for private visibility' do
+      let(:visibility){ Timeline::PRIVATE }
+      it{ is_expected.to include('human_friendly_visibility_private') }
+      it{ is_expected.to include(t("timeline.privateText")) }
+      it{ is_expected.to include(t("timeline.privateAltText")) }
+    end
+    context 'should return icon and string for private-with-token visibility' do
+      let(:visibility){ Timeline::PRIVATE_WITH_TOKEN }
+      it{ is_expected.to include('human_friendly_visibility_private-with-token') }
+      it{ is_expected.to include(t("timeline.private-with-tokenText")) }
+      it{ is_expected.to include(t("timeline.private-with-tokenAltText")) }
     end
   end
 end
