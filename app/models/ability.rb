@@ -208,11 +208,10 @@ class Ability
   def timeline_permissions
     if @user.id.present?
       can :manage, Timeline, user: @user
-      # Commented out duplicate ability for now
-      # can :duplicate, Timeline, visibility: Timeline::PUBLIC
-      # can :duplicate, Timeline do |timeline|
-      #   timeline.valid_token?(@options[:timeline_token])
-      # end
+      can :duplicate, Timeline, visibility: Timeline::PUBLIC
+      can :duplicate, Timeline do |timeline|
+       timeline.valid_token?(@options[:timeline_token])
+      end
     end
     can :read, Timeline, visibility: Timeline::PUBLIC
     can :read, Timeline do |timeline|
