@@ -78,4 +78,22 @@ describe User do
     end
   end
 
+  describe '#timeline_tags' do
+    let(:user) { FactoryBot.create(:public) }
+
+    it 'is empty when the user has no timeline tags' do
+      expect(user.timeline_tags).to be_empty
+    end
+
+    it 'is a list of timeline tags' do
+      timeline = FactoryBot.create(:timeline, user: user)
+      expect(user.timeline_tags).to match_array timeline.tags
+    end
+
+    it 'does not contain duplicates' do
+      FactoryBot.create(:timeline, user: user, tags: ['foo'])
+      FactoryBot.create(:timeline, user: user, tags: ['foo'])
+      expect(user.timeline_tags).to eq ['foo']
+    end
+  end
 end
