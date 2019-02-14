@@ -62,7 +62,7 @@ gem 'media_element_add_to_playlist', git: 'https://github.com/avalonmediasystem/
 gem 'rest-client'
 gem 'roo'
 gem 'rubyhorn', git: "https://github.com/avalonmediasystem/rubyhorn.git", tag: 'avalon-r6'
-gem 'audio_waveform-ruby', :require => 'audio_waveform', :git => 'https://github.com/bbc/audio_waveform-ruby.git'
+gem 'audio_waveform-ruby', require: 'audio_waveform', git: 'https://github.com/bbc/audio_waveform-ruby.git'
 gem 'wavefile'
 
 # Data Translation & Normalization
@@ -167,5 +167,5 @@ group :mysql, optional: true do
   gem 'mysql2'
 end
 
-extra_gems = File.expand_path("../Gemfile.local",__FILE__)
-eval File.read(extra_gems) if File.exists?(extra_gems)
+extra_gems = File.expand_path("../Gemfile.local", __FILE__)
+eval File.read(extra_gems) if File.exist?(extra_gems)
