@@ -118,7 +118,7 @@ class TimelinesController < ApplicationController
     # TODO: Accept raw IIIF manifest here from timeliner tool
     respond_to do |format|
       if @timeline.update(timeline_params)
-        format.html { render :edit, notice: 'Timeline was successfully updated.' }
+        format.html { redirect_to edit_timeline_path(@timeline), notice: 'Timeline was successfully updated.' }
         format.json { render json: @timeline, status: :created, location: @timeline }
       else
         format.html { render :edit }
@@ -143,7 +143,7 @@ class TimelinesController < ApplicationController
     unless can? :duplicate, old_timeline
       render json: { errors: 'You do not have sufficient privileges to copy this item' }, status: 401 and return
     end
-    @timeline = Timeline.new(timeline_params.merge(user: current_user))
+    @timeline = Timeline.new(timeline_params.merge(user: current_user, source: old_timeline.source, manifest: old_timeline.manifest, tags: old_timeline.tags))
 
     respond_to do |format|
       if @timeline.save
