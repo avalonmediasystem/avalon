@@ -136,7 +136,7 @@ class IiifCanvasPresenter
         "profile": "http://iiif.io/api/auth/1/login",
         "service": [
           {
-            "@id": Rails.application.routes.url_helpers.auth_token_master_file_url(master_file.id),
+            "@id": Rails.application.routes.url_helpers.iiif_auth_token_url(id: master_file.id),
             "@type": "AuthTokenService1",
             "profile": "http://iiif.io/api/auth/1/token"
           },

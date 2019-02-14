@@ -322,7 +322,7 @@ class MasterFilesController < ApplicationController
     @master_file.save
   end
 
-  def auth_token
+  def iiif_auth_token
     @master_file = MasterFile.find(params[:id])
     if cannot? :read, @master_file
       return head :unauthorized
@@ -331,7 +331,7 @@ class MasterFilesController < ApplicationController
       origin = params[:origin]
       access_token = StreamToken.find_or_create_session_token(session, @master_file.id)
       expires = (StreamToken.find_by(token: access_token).expires - Time.now.utc).to_i
-      render 'auth_token', layout: false, locals: { message_id: message_id, origin: origin, access_token: access_token, expires: expires }
+      render 'iiif_auth_token', layout: false, locals: { message_id: message_id, origin: origin, access_token: access_token, expires: expires }
     end
   end
 

@@ -497,17 +497,17 @@ describe MasterFilesController do
     end
   end
 
-  describe '#auth_token' do
+  describe '#iiif_auth_token' do
     render_views
     let(:media_object) { FactoryBot.create(:published_media_object, master_file: master_file) }
     let(:master_file) { FactoryBot.create(:master_file) }
 
     it 'returns unauthorized (401) if cannot read the master file' do
-      expect(get('auth_token', params: { id: master_file.id, messageId: 1, origin: "https://example.com" })).to have_http_status(:unauthorized)
+      expect(get(:iiif_auth_token, params: { id: master_file.id, messageId: 1, origin: "https://example.com" })).to have_http_status(:unauthorized)
     end
     it 'returns the postMessage with auth token' do
       login_as :administrator
-      get('auth_token', params: { id: master_file.id, messageId: 1, origin: "https://example.com" })
+      get(:iiif_auth_token, params: { id: master_file.id, messageId: 1, origin: "https://example.com" })
       expect(response).to have_http_status(:ok)
       expect(response.body.gsub(/\s+/,'')).to match /window.parent.postMessage\({"expiresIn":\d+,"accessToken":".+","messageId":"1"},"https:\/\/example.com"\);/
     end
