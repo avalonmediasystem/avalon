@@ -75,8 +75,8 @@ gem 'marc'
 
 # Jobs
 gem 'redis-rails'
-gem 'resque', '~> 1.27.0'
-gem 'resque-scheduler', '~> 4.3.0'
+gem 'resque', '~> 2.0'
+gem 'resque-scheduler', git: 'https://github.com/resque/resque-scheduler.git', ref: 'bbf4930'
 gem 'activejob-traffic_control'
 
 # Coding Patterns
