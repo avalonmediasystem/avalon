@@ -35,5 +35,22 @@ RSpec.describe TimelinesController, type: :routing do
       expect(:delete => "/timelines/1").to route_to("timelines#destroy", :id => "1")
     end
 
+    it "routes to #regenerate_access_token" do
+      expect(:patch => "/timelines/1/regenerate_access_token").to route_to("timelines#regenerate_access_token", :id => "1")
+    end
+
+    it "routes to #duplicate" do
+      expect(:post => "/timelines/duplicate").to route_to("timelines#duplicate")
+    end
+
+    it "routes to #paged_index" do
+      expect(:post => "/timelines/paged_index").to route_to("timelines#paged_index")
+    end
+
+    xit "routes to #import_variations_timeline" do
+      Settings.variations = 'enabled'
+      expect(:post => "/timelines/import_variations_timeline").to route_to("timelines#import_variations_timeline")
+    end
+
   end
 end
