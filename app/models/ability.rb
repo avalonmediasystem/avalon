@@ -210,7 +210,7 @@ class Ability
       can :manage, Timeline, user: @user
       can :duplicate, Timeline, visibility: Timeline::PUBLIC
       can :duplicate, Timeline do |timeline|
-       timeline.valid_token?(@options[:timeline_token])
+        timeline.valid_token?(@options[:timeline_token])
       end
     end
     can :read, Timeline, visibility: Timeline::PUBLIC

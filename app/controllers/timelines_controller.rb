@@ -141,7 +141,7 @@ class TimelinesController < ApplicationController
   def duplicate
     old_timeline = Timeline.find(params['old_timeline_id'])
     unless can? :duplicate, old_timeline
-      render json: { errors: 'You do not have sufficient privileges to copy this item' }, status: 401 and return
+      render json: { errors: 'You do not have sufficient privileges to copy this item' }, status: 401 && return
     end
     @timeline = Timeline.new(timeline_params.merge(user: current_user, source: old_timeline.source, manifest: old_timeline.manifest, tags: old_timeline.tags))
 
