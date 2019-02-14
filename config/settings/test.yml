@@ -15,3 +15,5 @@ auth:
     :params:
       :oauth_credentials:
         key: 'secret'
+timeliner:
+  timeliner_url: http://test.host/timeliner
