@@ -51,12 +51,9 @@
   </div>
   <div class="row">
     <div class="col-sm-offset-2 col-sm-10">
-<div>
-  <%= f.submit id: 'submit-timeline-form', class: 'btn btn-primary btn-xs', value: t("timeline.#{params[:action]}.action") %>
-        <% if params[:action] == "edit" || params[:action] == "update" %>
-          <a id="timeline_edit_cancel" class="btn btn-default btn-xs" data-toggle="collapse" data-target="#timeline_edit_div, #timeline_view_div">Cancel</a>
-        <% end %>
-</div>
+      <div>
+        <%= f.submit id: 'submit-timeline-form', class: 'btn btn-primary btn-xs', value: t("timeline.#{params[:action]}.action") %>
+      </div>
     </div>
   </div>
   <% end # form_for timeline_form%>
