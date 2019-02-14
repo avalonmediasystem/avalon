@@ -93,7 +93,7 @@ GIT
 
 GIT
   remote: https://github.com/samvera-labs/iiif_manifest
-  revision: 7895e79a32cf005fab54fc0f21568dfcf8ff4e1d
+  revision: 5dc29418727d2a68b35f8e11693f968d55821bfc
   branch: auth_service
   specs:
     iiif_manifest (0.5.0)
@@ -451,7 +451,7 @@ GEM
       hydra-access-controls (= 10.6.0)
       hydra-core (= 10.6.0)
       rails (>= 3.2.6)
-    i18n (1.5.2)
+    i18n (1.5.3)
       concurrent-ruby (~> 1.0)
     iconv (1.0.6)
     ims-lti (1.1.13)
