@@ -284,4 +284,35 @@ RSpec.describe TimelinesController, type: :controller do
       expect(new_timeline.tags).to eq timeline.tags
     end
   end
+
+  describe '#regenerate_access_token' do
+    before do
+      login_as :user
+    end
+
+    let(:timeline) { FactoryBot.create(:timeline, user: user, visibility: Timeline::PRIVATE_WITH_TOKEN) }
+
+    it 'regenerates the access token' do
+      old_token = timeline.access_token
+      put :regenerate_access_token, params: { id: timeline.to_param }, session: valid_session
+      timeline.reload
+      expect(timeline.access_token).not_to be_blank
+      expect(timeline.access_token).not_to eq old_token
+    end
+
+    it 'returns the access token' do
+      put :regenerate_access_token, params: { id: timeline.to_param }, session: valid_session
+      expect(response).to be_success
+      timeline.reload
+      expect(response.body).to include "\"access_token_url\":\"#{controller.access_token_url(timeline)}\""
+    end
+  end
+
+  describe '#access_token_url' do
+    let(:timeline) { FactoryBot.build(:timeline, id: 1, access_token: 'foo') }
+
+    it 'returns a url for the timeline with the access token' do
+      expect(controller.access_token_url(timeline)).to eq "#{root_url}timelines/1?token=foo"
+    end
+  end
 end
