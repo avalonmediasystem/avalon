@@ -41,8 +41,10 @@ gem 'api-pagination'
 gem 'avalon-about', git: 'https://github.com/avalonmediasystem/avalon-about.git', tag: 'avalon-r6.4'
 gem 'bootstrap-toggle-rails', git: 'https://github.com/rkallensee/bootstrap-toggle-rails.git', tag: 'v2.2.1.0'
 gem 'bootstrap_form'
-gem 'speedy-af', '~> 0.1.1'
+gem 'iiif_manifest', git: 'https://github.com/samvera-labs/iiif_manifest', branch: 'auth_service'
+gem 'rack-cors', require: 'rack/cors'
 gem 'recaptcha', require: 'recaptcha/rails'
+gem 'speedy-af', '~> 0.1.1'
 
 # Avalon Components
 gem 'avalon-workflow', git: "https://github.com/avalonmediasystem/avalon-workflow.git", tag: 'avalon-r6.2'

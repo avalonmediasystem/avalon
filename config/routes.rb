@@ -124,12 +124,14 @@ Rails.application.routes.draw do
       post 'attach_captions'
       get :captions
       get :waveform
-      get 'adaptive', to: 'master_files#hls_adaptive_manifest'
+      match ':quality.m3u8', to: 'master_files#hls_manifest', via: [:get], as: :hls_manifest
       get 'structure', to: 'master_files#structure', constraints: { format: 'json' }
       post 'structure', to: 'master_files#set_structure', constraints: { format: 'json' }
       delete 'structure', to: 'master_files#delete_structure', constraints: { format: 'json' }
     end
   end
+
+  match "iiif_auth_token/:id", to: 'master_files#iiif_auth_token', via: [:get], as: :iiif_auth_token
 
   resources :derivatives, only: [:create]
   match "/autocomplete", to: 'objects#autocomplete', via: [:get]
