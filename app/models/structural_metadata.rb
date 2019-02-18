@@ -24,6 +24,12 @@ class StructuralMetadata < ActiveFedora::File
     Nokogiri::XML::Schema(File.read('public/avalon_structure.xsd'))
   end
 
+  @sanitizer = Rails::Html::FullSanitizer.new
+
+  def self.sanitize(s)
+    @sanitizer.sanitize(s)
+  end
+
   delegate :xpath, to: :ng_xml
 
   def self.content_valid?(content)
@@ -46,7 +52,7 @@ class StructuralMetadata < ActiveFedora::File
   def self.from_json(js)
     document = Nokogiri::XML::Document.new
     root_node = Nokogiri::XML::Node.new('Item', document)
-    root_node.set_attribute('label', js[:label])
+    root_node.set_attribute('label', sanitize(js[:label]))
     js[:items].each { |item| node_json_to_xml(item, root_node, document) }
     document.add_child(root_node)
     document.root.to_s
@@ -55,12 +61,12 @@ class StructuralMetadata < ActiveFedora::File
   def self.node_json_to_xml(item, node, document)
     if item[:type].casecmp('div').zero?
       new_node = Nokogiri::XML::Node.new('Div', document)
-      new_node.set_attribute('label', item[:label])
+      new_node.set_attribute('label', sanitize(item[:label]))
       item[:items].each { |i| node_json_to_xml(i, new_node, document) } if item[:items].present?
       node.add_child(new_node)
     elsif item[:type].casecmp('span').zero?
       new_node = Nokogiri::XML::Node.new('Span', document)
-      new_node.set_attribute('label', item[:label])
+      new_node.set_attribute('label', sanitize(item[:label]))
       new_node.set_attribute('begin', item[:begin])
       new_node.set_attribute('end', item[:end])
       node.add_child(new_node)
