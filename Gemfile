@@ -44,7 +44,7 @@ gem 'bootstrap-toggle-rails', git: 'https://github.com/rkallensee/bootstrap-togg
 gem 'bootstrap_form'
 gem 'speedy-af', '~> 0.1.1'
 gem 'recaptcha', require: 'recaptcha/rails'
-gem 'iiif_manifest'
+gem 'iiif_manifest', git: 'https://github.com/samvera-labs/iiif_manifest', branch: 'auth_service'
 gem 'rack-cors', require: 'rack/cors'
 
 # Avalon Components
@@ -75,8 +75,8 @@ gem 'marc'
 
 # Jobs
 gem 'redis-rails'
-gem 'resque', '~> 1.27.0'
-gem 'resque-scheduler', '~> 4.3.0'
+gem 'resque', '~> 2.0'
+gem 'resque-scheduler', git: 'https://github.com/resque/resque-scheduler.git', ref: 'bbf4930'
 gem 'activejob-traffic_control'
 
 # Coding Patterns

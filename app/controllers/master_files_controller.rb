@@ -281,10 +281,24 @@ class MasterFilesController < ApplicationController
     end
   end
 
-  def hls_adaptive_manifest
+  def hls_manifest
     master_file = MasterFile.find(params[:id])
-    authorize! :read, master_file
-    @hls_streams = gather_hls_streams(master_file)
+    quality = params[:quality]
+    if request.head?
+      auth_token = request.headers['Authorization']&.sub('Bearer ', '')
+      if StreamToken.valid_token?(auth_token, master_file.id)
+        return head :ok
+      else
+        return head :unauthorized
+      end
+    else
+      return head :unauthorized if cannot?(:read, master_file)
+      @hls_streams = if quality == "auto"
+                       gather_hls_streams(master_file)
+                     else
+                       hls_stream(master_file, quality)
+                     end
+    end
   end
 
   def structure
@@ -308,6 +322,19 @@ class MasterFilesController < ApplicationController
     @master_file.save
   end
 
+  def iiif_auth_token
+    @master_file = MasterFile.find(params[:id])
+    if cannot? :read, @master_file
+      return head :unauthorized
+    else
+      message_id = params[:messageId]
+      origin = params[:origin]
+      access_token = StreamToken.find_or_create_session_token(session, @master_file.id)
+      expires = (StreamToken.find_by(token: access_token).expires - Time.now.utc).to_i
+      render 'iiif_auth_token', layout: false, locals: { message_id: message_id, origin: origin, access_token: access_token, expires: expires }
+    end
+  end
+
 protected
   def ensure_readable_filedata
     if params[:Filedata].present?
@@ -327,6 +354,13 @@ protected
     hls_streams = stream_info[:stream_hls].reject { |stream| stream[:quality] == 'auto' }
     hls_streams.each { |stream| unnest_wowza_stream(stream) } if Settings.streaming.server == "wowza"
     hls_streams
+  end
+
+  def hls_stream(master_file, quality)
+    stream_info = secure_streams(master_file.stream_details)
+    hls_stream = stream_info[:stream_hls].select { |stream| stream[:quality] == quality }
+    unnest_wowza_stream(hls_stream) if Settings.streaming.server == "wowza"
+    hls_stream
   end
 
   def unnest_wowza_stream(stream)
