@@ -393,7 +393,7 @@ describe MasterFilesController do
 
   describe "#set_structure" do
     let(:master_file) { FactoryBot.create(:master_file, :with_media_object) }
-    let(:structure_json) { JSON.parse(File.read('spec/fixtures/structure.json')) }
+    let(:structure_json) { JSON.parse(File.read('spec/fixtures/structure_with_html.json')) }
     let(:structure_xml) { File.read('spec/fixtures/structure.xml') }
 
     before do
@@ -405,6 +405,11 @@ describe MasterFilesController do
 
     it "populates structuralMetadata datastream with xml translated from JSON" do
       expect(Nokogiri::XML(master_file.structuralMetadata.content).root).to be_equivalent_to(Nokogiri::XML(structure_xml).root)
+    end
+
+    it "strips html tags from JSON labels" do
+      expect(master_file.structuralMetadata.content).not_to include('<b>')
+      expect(master_file.structuralMetadata.content).not_to include('<i>')
     end
   end
 
