@@ -47,7 +47,7 @@ module MasterFileBehavior
       hls << { quality: 'auto',
                mimetype: hls.first[:mimetype],
                format: hls.first[:format],
-               url: adaptive_master_file_url(id: id, format: :m3u8) }
+               url: hls_manifest_master_file_url(id: id, quality: 'auto') }
     end
 
     # Sorts the streams in order of quality, note: Hash order only works in Ruby 1.9 or later

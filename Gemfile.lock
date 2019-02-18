@@ -134,6 +134,14 @@ GIT
   specs:
     bootstrap-toggle-rails (2.2.1.0)
 
+GIT
+  remote: https://github.com/samvera-labs/iiif_manifest
+  revision: 5dc29418727d2a68b35f8e11693f968d55821bfc
+  branch: auth_service
+  specs:
+    iiif_manifest (0.5.0)
+      activesupport (>= 4)
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -588,6 +596,7 @@ GEM
       pry (>= 0.10.4)
     public_suffix (3.0.0)
     rack (1.6.11)
+    rack-cors (1.0.3)
     rack-protection (1.5.5)
       rack
     rack-proxy (0.6.5)
@@ -923,6 +932,7 @@ DEPENDENCIES
   hooks
   hydra-head (~> 10.6)
   iconv
+  iiif_manifest!
   ims-lti (~> 1.1.13)
   jbuilder (~> 2.0)
   jquery-datatables
@@ -948,6 +958,7 @@ DEPENDENCIES
   pg
   pry-byebug
   pry-rails
+  rack-cors
   rails (= 4.2.11.1)
   rails-controller-testing
   rb-readline
