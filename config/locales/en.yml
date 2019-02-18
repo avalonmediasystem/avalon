@@ -214,3 +214,13 @@ en:
       playlist:
         title: "Name"
         comment: "Description"
+
+  iiif:
+    auth:
+      confirmLabel: "Login"
+      description: "Avalon Application requires that you log in with your account to view this content."
+      failureDescription: "<a href=\"http://example.org/policy\">Access Policy</a>"
+      failureHeader: "Authentication Failed"
+      header: "Please Log In"
+      label: "Login Required"
+      logoutLabel: "Log out"

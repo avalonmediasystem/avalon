@@ -44,7 +44,7 @@ gem 'bootstrap-toggle-rails', git: 'https://github.com/rkallensee/bootstrap-togg
 gem 'bootstrap_form'
 gem 'speedy-af', '~> 0.1.1'
 gem 'recaptcha', require: 'recaptcha/rails'
-gem 'iiif_manifest'
+gem 'iiif_manifest', git: 'https://github.com/samvera-labs/iiif_manifest', branch: 'auth_service'
 gem 'rack-cors', require: 'rack/cors'
 
 # Avalon Components

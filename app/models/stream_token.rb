@@ -57,6 +57,12 @@ class StreamToken < ActiveRecord::Base
     end
   end
 
+  def self.valid_token?(value, master_file_id)
+    return false if value.nil?
+    token = find_by_token(value)
+    token.present? && token.expires > Time.now.utc && token.target == master_file_id
+  end
+
   def renew!
     update_attribute :expires, (Time.now.utc + Settings.streaming.stream_token_ttl.minutes)
   end

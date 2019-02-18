@@ -102,6 +102,14 @@ GIT
   specs:
     bootstrap-toggle-rails (2.2.1.0)
 
+GIT
+  remote: https://github.com/samvera-labs/iiif_manifest
+  revision: 5dc29418727d2a68b35f8e11693f968d55821bfc
+  branch: auth_service
+  specs:
+    iiif_manifest (0.5.0)
+      activesupport (>= 4)
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -454,11 +462,9 @@ GEM
       hydra-access-controls (= 10.6.0)
       hydra-core (= 10.6.0)
       rails (>= 3.2.6)
-    i18n (1.5.2)
+    i18n (1.5.3)
       concurrent-ruby (~> 1.0)
     iconv (1.0.6)
-    iiif_manifest (0.5.0)
-      activesupport (>= 4)
     ims-lti (1.1.13)
       builder
       oauth (>= 0.4.5, < 0.6)
@@ -932,7 +938,7 @@ DEPENDENCIES
   hooks
   hydra-head (~> 10.6)
   iconv (~> 1.0.6)
-  iiif_manifest
+  iiif_manifest!
   ims-lti (~> 1.1.13)
   jbuilder (~> 2.0)
   jquery-datatables
