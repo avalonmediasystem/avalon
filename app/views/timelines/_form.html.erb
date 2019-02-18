@@ -31,13 +31,12 @@
           <div class="input-group">
             <input type="text" class="form-control" id="timeline-share-link" value="<%= access_token_url(@timeline) %>" placeholder="<%= access_token_url(@timeline) %>" onClick="this.select();" readonly="readonly">
             <span class="input-group-btn" id="timeline-share-btn-result">
-              <%= button_tag "Copy", id: 'timeline-share-btn',
-                class: "btn btn-success" %>
+              <%= button_tag "Copy", id: 'timeline-share-btn', class: "btn btn-success", form: 'timeline_new_link_form' %>
             </span>
           </div>
         </div>
         <div class="col-xs-2">
-          <%= button_tag "Get new link", id: 'get-new-link', form: 'timeline-new-link-form',
+          <%= button_tag "Get new link", id: 'get-new-link', form: 'timeline_new_link_form',
             class: 'btn btn-success', data: { 'timeline_id': @timeline.id } %>
         </div>
       </div>
