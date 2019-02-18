@@ -131,7 +131,7 @@ Rails.application.routes.draw do
     end
   end
 
-  match "iiif_auth_token", to: 'master_files#iiif_auth_token', via: [:get], as: :iiif_auth_token
+  match "iiif_auth_token/:id", to: 'master_files#iiif_auth_token', via: [:get], as: :iiif_auth_token
 
   resources :derivatives, only: [:create]
   match "/autocomplete", to: 'objects#autocomplete', via: [:get]
