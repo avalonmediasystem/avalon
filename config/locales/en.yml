@@ -253,3 +253,5 @@ en:
       header: "Please Log In"
       label: "Login Required"
       logoutLabel: "Log out"
+    manifest:
+      homepageLabel: "View in Repository"
