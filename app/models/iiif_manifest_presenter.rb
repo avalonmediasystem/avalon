@@ -48,6 +48,15 @@ class IiifManifestPresenter
     ]
   end
 
+  def homepage
+    {
+      id: Rails.application.routes.url_helpers.media_object_url(media_object),
+      type: "Text",
+      label: { "@none" => [I18n.t('iiif.manifest.homepageLabel')] },
+      format: "text/html"
+    }
+  end
+
   private
 
     def iiif_metadata_fields
