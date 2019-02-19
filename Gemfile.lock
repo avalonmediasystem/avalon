@@ -136,8 +136,7 @@ GIT
 
 GIT
   remote: https://github.com/samvera-labs/iiif_manifest
-  revision: 5dc29418727d2a68b35f8e11693f968d55821bfc
-  branch: auth_service
+  revision: 4219eb57ae9fbcd178391f401928040ebe057529
   specs:
     iiif_manifest (0.5.0)
       activesupport (>= 4)
