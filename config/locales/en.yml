@@ -209,11 +209,40 @@ en:
     tags:
       label: "Tags"
 
+  timeline:
+    ago: "%{time} ago"
+
+    privateAltText: "This timeline can only be viewed by you."
+    publicAltText: "This timeline can be viewed by anyone on the web."
+    private-with-tokenAltText: "This timeline can only be viewed by users who have the unique link."
+
+    visibility: "Visibility"
+    privateText: "Private"
+    publicText: "Public"
+    private-with-tokenText: "Share by link"
+
+    details: "Timeline Details"
+    new:
+      action: "Create"
+    create:
+      action: "Create"
+    create_and_edit:
+      action: "Create and Edit"
+    edit:
+      action: "Save Changes"
+    update:
+      action: "Save Changes"
+    tags:
+      label: "Tags"
+
   activerecord:
     attributes:
       playlist:
         title: "Name"
         comment: "Description"
+      timeline:
+        title: "Title"
+        description: "Description"
 
   iiif:
     auth:

@@ -1,0 +1,44 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <strong>Title:</strong>
+  <%= @timeline.title %>
+</p>
+
+<p>
+  <strong>User:</strong>
+  <%= @timeline.user %>
+</p>
+
+<p>
+  <strong>Visibility:</strong>
+  <%= @timeline.visibility %>
+</p>
+
+<p>
+  <strong>Description:</strong>
+  <%= @timeline.description %>
+</p>
+
+<p>
+  <strong>Access token:</strong>
+  <%= @timeline.access_token %>
+</p>
+
+<p>
+  <strong>Tags:</strong>
+  <%= @timeline.tags %>
+</p>
+
+<p>
+  <strong>Source:</strong>
+  <%= @timeline.source %>
+</p>
+
+<p>
+  <strong>Manifest:</strong>
+  <%= @timeline.manifest %>
+</p>
+
+<%= link_to 'Edit', edit_timeline_path(@timeline) %> |
+<%= link_to 'Back', timelines_path %>
