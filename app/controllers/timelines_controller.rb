@@ -83,8 +83,8 @@ class TimelinesController < ApplicationController
   # GET /timelines/1.json
   def show
     authorize! :read, @timeline
-    # TODO: redirect to timeliner tool
-    redirect_to Settings.timeliner.timeliner_url #+ "?manifest=#{timeline_manifest_url(@timeline)}"
+    # TODO: redirect to timeliner tool root for now, eventually will redirect with manifest url
+    redirect_to Settings.timeliner.timeliner_url
   end
 
   # GET /timelines/new

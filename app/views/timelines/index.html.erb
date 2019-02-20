@@ -1,58 +1,58 @@
 <% if current_user.nil? %>
-<%= link_to 'Please login to view your timelines.', new_user_session_path %>
+  <%= link_to 'Please login to view your timelines.', new_user_session_path %>
 <% end %>
 <% unless current_user.nil? %>
   <% timelines = Timeline.where(user_id: current_user.id) %>
   <div class="container-fluid">
-  <div class="row">
-  <div class="container">
-  <div class="Timeline-index">
-  <div class="row">
-    <div>
-      <h1 class=>Timelines <small>(<%= timelines.size %> total)</small></h1>
-      <% unless timelines.empty? %>
-        <div class="tag_filter_container">
-          Filter: <select name="tag_filter" class="tag_filter form-control input-sm" style="width:auto">
-            <option value="" selected="selected"></option>
-            <% current_user.timeline_tags.each do |tag| %>
-              <option value="<%= tag %>"><%= tag %></option>
-            <% end %>
-          </select>
+    <div class="row">
+      <div class="container">
+        <div class="Timeline-index">
+          <div class="row">
+            <div>
+              <h1 class=>Timelines <small>(<%= timelines.size %> total)</small></h1>
+              <% unless timelines.empty? %>
+                <div class="tag_filter_container">
+                  Filter: <select name="tag_filter" class="tag_filter form-control input-sm" style="width:auto">
+                    <option value="" selected="selected"></option>
+                    <% current_user.timeline_tags.each do |tag| %>
+                      <option value="<%= tag %>"><%= tag %></option>
+                    <% end %>
+                  </select>
+                </div>
+                <table id="Timelines" class="table">
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Description</th>
+                      <th>Visibility</th>
+                      <th>Last Updated</th>
+                      <th>Tags</th>
+                      <th class="text-right" data-orderable="false">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                  </tbody>
+                </table>
+                <div> </div>
+              <% end %>
+              <div>
+                <%= link_to(new_timeline_path) do %>
+                  <span class="btn btn-primary outline_on">
+                    Create New Timeline
+                  </span>
+                <% end %>
+                <% if Settings['variations'].present? %>
+                  <%= form_tag(import_variations_timeline_timelines_path, method:"post", enctype:"multipart/form-data", style:"display:inline") do %>
+                    <input type="file" name="Filedata" class="filedata" style="visibility:hidden; display:inline; width:0;" />
+                    <input type="button" class="btn btn-primary outline_on" id="variations_import" onclick="$(this).closest('form').find('.filedata').click();" value="Import Variations Timeline" />
+                  <% end %>
+                <% end %>
+              </div>
+            </div>
+          </div>
         </div>
-        <table id="Timelines" class="table">
-            <thead>
-              <tr>
-                <th>Name</th>
-                <th>Description</th>
-                <th>Visibility</th>
-                <th>Last Updated</th>
-                <th>Tags</th>
-                <th class="text-right" data-orderable="false">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-          </tbody>
-        </table>
-        <div> </div>
-      <% end %>
-      <div>
-        <%= link_to(new_timeline_path) do %>
-          <span class="btn btn-primary outline_on">
-            Create New Timeline
-          </span>
-        <% end %>
-	      <% if Settings['variations'].present? %>
-          <%= form_tag(import_variations_timeline_timelines_path, method:"post", enctype:"multipart/form-data", style:"display:inline") do %>
-            <input type="file" name="Filedata" class="filedata" style="visibility:hidden; display:inline; width:0;" />
-            <input type="button" class="btn btn-primary outline_on" id="variations_import" onclick="$(this).closest('form').find('.filedata').click();" value="Import Variations Timeline" />
-          <% end %>
-        <% end %>
       </div>
     </div>
-  </div>
-  </div>
-  </div>
-  </div>
   </div>
   <% unless timelines.empty? %>
   <% end %>
@@ -61,41 +61,41 @@
 <%= render partial: 'copy_timeline_modal', locals: { with_refresh: true } %>
 
 <% content_for :page_scripts do %>
-<script>
-$(document).ready( function () {
-  $('#Timelines').DataTable({
-    processing: true,
-    serverSide: true,
-    ajax: {
-      url: '/timelines/paged_index',
-      type: 'POST'
-    },
-    order: [<%= "[#{session[:timeline_sort][0]}, '#{session[:timeline_sort][1]}']".html_safe if session[:timeline_sort] %>],
-    "sDom": '<"timelines_top"i<"timeline_filter_container"f>>tr<"timelines_bottom"lp>',
-    "columns": [
-      null,
-      null,
-      null,
-      null,
-      null,
-      { className: "text-right" }
-    ]
-  }).on( 'draw', function () {
-    window.apply_button_confirmation()
-    window.add_copy_button_event()
-    // move the tag filter into the datatables layout
-    $('.tag_filter_container').insertBefore('.timeline_filter_container');
-  });
-});
+  <script>
+    $(document).ready( function () {
+      $('#Timelines').DataTable({
+        processing: true,
+        serverSide: true,
+        ajax: {
+          url: '/timelines/paged_index',
+          type: 'POST'
+        },
+        order: [<%= "[#{session[:timeline_sort][0]}, '#{session[:timeline_sort][1]}']".html_safe if session[:timeline_sort] %>],
+        "sDom": '<"timelines_top"i<"timeline_filter_container"f>>tr<"timelines_bottom"lp>',
+        "columns": [
+          null,
+          null,
+          null,
+          null,
+          null,
+          { className: "text-right" }
+        ]
+      }).on( 'draw', function () {
+        window.apply_button_confirmation()
+        window.add_copy_button_event()
+        // move the tag filter into the datatables layout
+        $('.tag_filter_container').insertBefore('.timeline_filter_container');
+      });
+    });
 
-$('.tag_filter').change(function() {
-  $.fn.dataTable.tables( { api: true } ).columns(4).search( $(this).val() ).draw();
-})
+    $('.tag_filter').change(function() {
+      $.fn.dataTable.tables( { api: true } ).columns(4).search( $(this).val() ).draw();
+    })
 
-$( '.filedata' ).change(function() {
-  $(this).closest('form').submit();
-});
-</script>
+    $( '.filedata' ).change(function() {
+      $(this).closest('form').submit();
+    });
+  </script>
 <% end %>
 
 <%# link_to 'New Timeline', new_timeline_path %>
