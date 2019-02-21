@@ -453,6 +453,15 @@ class MEJSPlayer {
       defaultQuality: this.defaultQuality,
       toggleCaptionsButtonWhenOnlyOne: true
     };
+
+    if (this.currentStreamInfo.cookie_auth) {
+      defaults.hls = {
+        xhrSetup: (xhr, url) => {
+          xhr.withCredentials = true;
+        }
+      };
+    }
+
     let promises = [];
     const playlistIds = this.playlistItem
       ? [this.playlistItem.playlist_id, this.playlistItem.id]
