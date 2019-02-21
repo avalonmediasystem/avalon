@@ -16,7 +16,7 @@ require 'htmlentities'
 module MasterFileBehavior
   QUALITY_ORDER = { "auto" => 1, "high" => 2, "medium" => 3, "low" => 4 }.freeze
   EMBED_SIZE = { medium: 600 }.freeze
-  AUDIO_HEIGHT = 50
+  AUDIO_HEIGHT = 40
 
   def status?(value)
     status_code == value
