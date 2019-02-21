@@ -68,6 +68,7 @@ module MasterFileBehavior
       embed_code: embed_code(EMBED_SIZE[:medium], {urlappend: '/embed'}),
       stream_flash: flash,
       stream_hls: hls,
+      cookie_auth: cookie_auth?,
       captions_path: captions_path,
       captions_format: captions_format,
       duration: (duration.to_f / 1000),
@@ -102,6 +103,10 @@ module MasterFileBehavior
 
   def is_video?
     self.file_format != "Sound"
+  end
+
+  def cookie_auth?
+    Settings.streaming.server == "aws"
   end
 
   def sort_streams array
