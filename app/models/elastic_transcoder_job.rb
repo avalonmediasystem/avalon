@@ -146,19 +146,24 @@ class ElasticTranscoderJob < ActiveEncode::Base
 
     def find_preset(container, format, quality)
       container_description = container == 'ts' ? 'hls' : container
-      result = nil
-      next_token = nil
-      loop do
-        resp = etclient.list_presets page_token: next_token
-        result = resp.presets.find { |p| p.name == "avalon-#{format}-#{quality}-#{container_description}" }
-        next_token = resp.next_page_token
-        break if result.present? || next_token.nil?
+      key = "#{format}-#{quality}-#{container_description}"
+      Rails.cache.fetch("transcoder-preset-for-#{key}") do
+        result = nil
+        next_token = nil
+        loop do
+          resp = etclient.list_presets page_token: next_token
+          result = resp.presets.find { |p| p.name == "avalon-#{key}" }
+          next_token = resp.next_page_token
+          break if result.present? || next_token.nil?
+        end
+        result
       end
-      result
     end
 
     def read_preset(id)
-      etclient.read_preset(id: id).preset
+      Rails.cache.fetch("transcoder-preset-#{id}") do
+        etclient.read_preset(id: id).preset
+      end
     end
 
     def create_preset(container, format, quality)
