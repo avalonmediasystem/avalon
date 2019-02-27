@@ -83,8 +83,19 @@ class TimelinesController < ApplicationController
   # GET /timelines/1.json
   def show
     authorize! :read, @timeline
-    # TODO: redirect to timeliner tool root for now, eventually will redirect with manifest url
-    redirect_to Settings.timeliner.timeliner_url
+    respond_to do |format|
+      format.html do
+        url_fragment = "resource=#{URI.escape(timeline_url(@timeline, format: :json, token: @timeline.access_token), '://?=')}"
+        # # TODO: determine if need to clone timeline and provide saveback url specific to current_user
+        # if current_user == @timeline.user
+        #   url_fragment += "&save=#{URI.escape(timeline_url(@timeline, format: :json))}"
+        # end
+        redirect_to Settings.timeliner.timeliner_url + "##{url_fragment}"
+      end
+      format.json do
+        render json: @timeline.manifest
+      end
+    end
   end
 
   # GET /timelines/new
