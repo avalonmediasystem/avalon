@@ -170,13 +170,24 @@ class MEJSPlayer {
   }
 
   /**
-   * Event handler for MediaElement's 'volume' event
+   * Event handler for MediaElement's 'volumechange' event
    * Save new volume to localStorage for initializing new players with that vol
    * @function handleVolumeChange
    * @return {void}
    */
   handleVolumeChange() {
     this.localStorage.setItem('startVolume', this.mediaElement.volume)
+  }
+
+  /**
+   * Event handler for MediaElement's 'captionschange' event
+   * Save new volume to localStorage for initializing new players with that vol
+   * @function handleCaptionsChange
+   * @return {void}
+   */
+  handleCaptionsChange() {
+    let srclang = currentPlayer.selectedTrack === null ? '' : currentPlayer.selectedTrack.srclang;
+    this.localStorage.setItem('captions', srclang)
   }
 
   /**
@@ -317,6 +328,13 @@ class MEJSPlayer {
   handleSuccess(mediaElement, originalNode, instance) {
     this.mediaElement = mediaElement;
 
+    // Toggle captions on if toggleable and previously on
+    if (this.mediaType==="video" && this.player.options.toggleCaptionsButtonWhenOnlyOne) {
+      if (this.localStorage.getItem('captions') !== '' && this.player.tracks.length===1) {
+        this.player.setTrack(this.player.tracks[0].trackId, (typeof keyboard !== 'undefined'));
+      }
+    }
+
     // Make the player visible
     this.revealPlayer(instance);
 
@@ -337,6 +355,12 @@ class MEJSPlayer {
     this.mediaElement.addEventListener(
       'volumechange',
       this.handleVolumeChange.bind(this)
+    );
+
+    // Handle 'captionschange' events fired by player
+    this.mediaElement.addEventListener(
+      'captionschange',
+      this.handleCaptionsChange.bind(this)
     );
 
     // Handle 'ended' event fired by player
@@ -469,7 +493,8 @@ class MEJSPlayer {
       qualityText: 'Stream Quality',
       defaultQuality: this.defaultQuality,
       toggleCaptionsButtonWhenOnlyOne: true,
-      startVolume: this.localStorage.getItem('startVolume') || 0.8
+      startVolume: this.localStorage.getItem('startVolume') || 0.8,
+      startLanguage: this.localStorage.getItem('captions') || ''
     };
     let promises = [];
     const playlistIds = this.playlistItem
