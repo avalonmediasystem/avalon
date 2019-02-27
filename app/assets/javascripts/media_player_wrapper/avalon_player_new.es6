@@ -30,6 +30,7 @@ class MEJSPlayer {
     this.mejsTimeRailHelper = new MEJSTimeRailHelper();
     this.mejsMarkersHelper = new MEJSMarkersHelper();
     this.mejsQualityHelper = new MEJSQualityHelper();
+    this.localStorage = window.localStorage;
 
     // Unpack player configuration object for the new player.
     // This allows for variable params to be sent in.
@@ -166,6 +167,27 @@ class MEJSPlayer {
     if (this.switchPlayerHelper.active) {
       this.playRange();
     }
+  }
+
+  /**
+   * Event handler for MediaElement's 'volumechange' event
+   * Save new volume to localStorage for initializing new players with that vol
+   * @function handleVolumeChange
+   * @return {void}
+   */
+  handleVolumeChange() {
+    this.localStorage.setItem('startVolume', this.mediaElement.volume)
+  }
+
+  /**
+   * Event handler for MediaElement's 'captionschange' event
+   * Save new volume to localStorage for initializing new players with that vol
+   * @function handleCaptionsChange
+   * @return {void}
+   */
+  handleCaptionsChange() {
+    let srclang = currentPlayer.selectedTrack === null ? '' : currentPlayer.selectedTrack.srclang;
+    this.localStorage.setItem('captions', srclang)
   }
 
   /**
@@ -306,6 +328,13 @@ class MEJSPlayer {
   handleSuccess(mediaElement, originalNode, instance) {
     this.mediaElement = mediaElement;
 
+    // Toggle captions on if toggleable and previously on
+    if (this.mediaType==="video" && this.player.options.toggleCaptionsButtonWhenOnlyOne) {
+      if (this.localStorage.getItem('captions') !== '' && this.player.tracks.length===1) {
+        this.player.setTrack(this.player.tracks[0].trackId, (typeof keyboard !== 'undefined'));
+      }
+    }
+
     // Make the player visible
     this.revealPlayer(instance);
 
@@ -320,6 +349,18 @@ class MEJSPlayer {
     this.mediaElement.addEventListener(
       'canplay',
       this.handleCanPlay.bind(this)
+    );
+
+    // Handle 'volumechange' events fired by player
+    this.mediaElement.addEventListener(
+      'volumechange',
+      this.handleVolumeChange.bind(this)
+    );
+
+    // Handle 'captionschange' events fired by player
+    this.mediaElement.addEventListener(
+      'captionschange',
+      this.handleCaptionsChange.bind(this)
     );
 
     // Handle 'ended' event fired by player
@@ -451,7 +492,9 @@ class MEJSPlayer {
       link_back_url: currentStreamInfo.link_back_url,
       qualityText: 'Stream Quality',
       defaultQuality: this.defaultQuality,
-      toggleCaptionsButtonWhenOnlyOne: true
+      toggleCaptionsButtonWhenOnlyOne: true,
+      startVolume: this.localStorage.getItem('startVolume') || 0.8,
+      startLanguage: this.localStorage.getItem('captions') || ''
     };
 
     if (this.currentStreamInfo.cookie_auth) {
