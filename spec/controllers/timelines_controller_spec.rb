@@ -118,7 +118,27 @@ RSpec.describe TimelinesController, type: :controller do
     it "redirects to the timeliner tool" do
       timeline = Timeline.create! valid_attributes
       get :show, params: {id: timeline.to_param}, session: valid_session
-      expect(response).to redirect_to Settings.timeliner.timeliner_url
+      expect(response).to redirect_to Settings.timeliner.timeliner_url + "#resource=http%3A%2F%2Ftest.host%2Ftimelines%2F1.json"
+    end
+
+    context "with format json" do
+      let(:manifest) do
+        {
+          "@context": [
+            "http://www.w3.org/ns/anno.jsonld",
+            "http://iiif.io/api/presentation/3/context.json"
+          ],
+          "id": "https://example.com/timelines/1.json",
+          "type": "Manifest",
+          "label": { "en": [ "Timeline 1" ] }
+        }
+      end
+      it "returns the timeline manifest" do
+        timeline = Timeline.create! valid_attributes.merge(manifest: manifest.to_json)
+        get :show, params: {id: timeline.to_param, format: :json}, session: valid_session
+        expect(response).to be_success
+        expect(response.body).to eq timeline.manifest
+      end
     end
   end
 
