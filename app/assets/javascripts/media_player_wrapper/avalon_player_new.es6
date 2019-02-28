@@ -493,7 +493,7 @@ class MEJSPlayer {
       qualityText: 'Stream Quality',
       defaultQuality: this.defaultQuality,
       toggleCaptionsButtonWhenOnlyOne: true,
-      startVolume: this.localStorage.getItem('startVolume') || 0.8,
+      startVolume: this.localStorage.getItem('startVolume') || 1.0,
       startLanguage: this.localStorage.getItem('captions') || ''
     };
 
