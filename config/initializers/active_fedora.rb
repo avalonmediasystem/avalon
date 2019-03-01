@@ -6,3 +6,5 @@ ActiveFedora::Base.translate_id_to_uri = lambda do |id|
                                            "#{baseurl}/#{Noid::Rails.treeify(id)}"
                                          end
 ActiveFedora::Base.logger = Rails.logger
+
+require 'solrizer'
