@@ -1,4 +1,4 @@
-baseparts = 2 + [(Noid::Rails::Config.template.gsub(/\.[rsz]/, '').length.to_f / 2).ceil, 4].min
+baseparts = 2 + [(Noid::Rails.config.template.gsub(/\.[rsz]/, '').length.to_f / 2).ceil, 4].min
 ActiveFedora::Base.translate_uri_to_id = lambda do |uri|
                                            uri.to_s.sub(baseurl, '').split('/', baseparts).last
                                          end
