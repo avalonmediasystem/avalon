@@ -1,13 +1,15 @@
 {
   "dependencies": {
-    "@rails/webpacker": "3.5",
-    "babel-preset-react": "^6.24.1",
-    "prop-types": "^15.6.2",
-    "react": "^16.7.0",
-    "react-dom": "^16.7.0",
+    "@rails/webpacker": "^4.0.2",
+    "@babel/core": "^7.0.0",
+    "@babel/preset-react": "^7.0.0",
+    "prop-types": "^15.7.2",
+    "react": "^16.8.4",
+    "react-dom": "^16.8.4",
     "react_ujs": "^2.4.4"
   },
   "devDependencies": {
-    "webpack-dev-server": "2.11.2"
+    "webpack-cli": "^3.2.3",
+    "webpack-dev-server": "^3.2.1"
   }
 }

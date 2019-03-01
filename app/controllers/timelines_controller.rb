@@ -16,12 +16,13 @@
 
 class TimelinesController < ApplicationController
   before_action :authenticate_user!, except: [:show]
-  load_and_authorize_resource except: [:import_variations_timeline, :duplicate, :show, :index]
+  load_and_authorize_resource except: [:import_variations_timeline, :duplicate, :show, :index, :timeliner]
   load_resource only: [:show]
   authorize_resource only: [:index]
   before_action :user_timelines, only: [:index, :paged_index]
   before_action :all_other_timelines, only: [:edit]
   before_action :load_timeline_token, only: [:show, :duplicate]
+  skip_before_action :verify_authenticity_token, only: [:post, :manifest_update]
 
   helper_method :access_token_url
 
@@ -85,15 +86,15 @@ class TimelinesController < ApplicationController
     authorize! :read, @timeline
     respond_to do |format|
       format.html do
-        url_fragment = "resource=#{URI.escape(timeline_url(@timeline, format: :json, token: @timeline.access_token), '://?=')}"
-        # # TODO: determine if need to clone timeline and provide saveback url specific to current_user
-        # if current_user == @timeline.user
-        #   url_fragment += "&save=#{URI.escape(timeline_url(@timeline, format: :json))}"
-        # end
-        redirect_to Settings.timeliner.timeliner_url + "##{url_fragment}"
+        url_fragment = "resource=#{URI.escape(manifest_timeline_url(@timeline, format: :json, token: @timeline.access_token), '://?=')}"
+        # TODO: determine if need to clone timeline and provide saveback url specific to current_user
+        if current_user == @timeline.user
+          url_fragment += "&callback=#{URI.escape(manifest_timeline_url(@timeline, format: :json), '://?=')}"
+        end
+        @timeliner_iframe_url = Settings.timeliner.timeliner_url + "##{url_fragment}"
       end
       format.json do
-        render json: @timeline.manifest
+        render json: @timeline
       end
     end
   end
@@ -126,14 +127,22 @@ class TimelinesController < ApplicationController
   # PATCH/PUT /timelines/1
   # PATCH/PUT /timelines/1.json
   def update
-    # TODO: Accept raw IIIF manifest here from timeliner tool
     respond_to do |format|
-      if @timeline.update(timeline_params)
-        format.html { redirect_to edit_timeline_path(@timeline), notice: 'Timeline was successfully updated.' }
-        format.json { render json: @timeline, status: :created, location: @timeline }
-      else
-        format.html { render :edit }
-        format.json { render json: @timeline.errors, status: :unprocessable_entity }
+      format.json do
+        # Accept raw IIIF manifest here from timeliner tool
+        @timeline.manifest = request.body.read
+        if @timeline.save
+          render json: @timeline, status: :created, location: @timeline
+        else
+          render json: @timeline.errors, status: :unprocessable_entity
+        end
+      end
+      format.html do
+        if @timeline.update(timeline_params)
+          redirect_to edit_timeline_path(@timeline), notice: 'Timeline was successfully updated.'
+        else
+          render :edit
+        end
       end
     end
   end
@@ -145,6 +154,31 @@ class TimelinesController < ApplicationController
     respond_to do |format|
       format.html { redirect_to timelines_url, notice: 'Timeline was successfully destroyed.' }
       format.json { head :no_content }
+    end
+  end
+
+  # GET /timelines/1/manifest.json
+  def manifest
+    authorize! :read, @timeline
+    respond_to do |format|
+      format.json do
+        render json: @timeline.manifest
+      end
+    end
+  end
+
+  # POST /timelines/1/manifest.json
+  def manifest_update
+    respond_to do |format|
+      format.json do
+        # Accept raw IIIF manifest here from timeliner tool
+        @timeline.manifest = request.body.read
+        if @timeline.save
+          render json: @timeline.manifest, status: :created, location: @timeline
+        else
+          render json: @timeline.errors, status: :unprocessable_entity
+        end
+      end
     end
   end
 
@@ -174,6 +208,10 @@ class TimelinesController < ApplicationController
 
   def access_token_url(timeline)
     timeline_url(timeline, token: timeline.access_token)
+  end
+
+  def timeliner
+    render layout: false
   end
 
   private
