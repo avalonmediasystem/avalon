@@ -1,8 +1,8 @@
 source 'https://rubygems.org'
 
 # Core rails
-gem 'rails', '=5.1.6'
-gem 'sqlite3'
+gem 'rails', '=5.2.2'
+gem 'sqlite3', '~> 1.3.0'
 gem 'bootsnap', require: false
 gem 'sprockets', '~>3.7.2'
 gem 'listen'
@@ -22,9 +22,9 @@ gem 'react-rails'
 
 # Core Samvera
 gem 'hydra-head', '~> 10.6'
-gem 'active-fedora', '~> 11.2'
-gem 'active_fedora-datastreams'
-gem 'active_fedora-noid', '~> 2.0.2'
+gem 'active-fedora', '~> 12.1'
+gem 'active_fedora-datastreams', git: 'https://github.com/samvera-labs/active_fedora-datastreams.git', branch: 'rails52'
+gem 'noid-rails', '~> 3.0.1'
 gem 'fedora-migrate', git: 'https://github.com/avalonmediasystem/fedora-migrate.git', branch: 'optional_rake_tasks'
 gem 'rdf-rdfxml'
 
@@ -42,7 +42,7 @@ gem 'api-pagination'
 gem 'avalon-about', git: 'https://github.com/avalonmediasystem/avalon-about.git', tag: 'avalon-r6.4'
 gem 'bootstrap-toggle-rails', git: 'https://github.com/rkallensee/bootstrap-toggle-rails.git', tag: 'v2.2.1.0'
 gem 'bootstrap_form'
-gem 'speedy-af', '~> 0.1.1'
+gem 'speedy-af', '~> 0.1.1', git: 'https://github.com/samvera-labs/speedy_af.git', branch: 'cjcolvar-patch-1'
 gem 'recaptcha', require: 'recaptcha/rails'
 gem 'iiif_manifest', git: 'https://github.com/samvera-labs/iiif_manifest'
 gem 'rack-cors', require: 'rack/cors'
