@@ -1,17 +1,21 @@
 source 'https://rubygems.org'
 
 # Core rails
-gem 'rails', '4.2.11.1'
-gem 'sqlite3'
+gem 'rails', '=5.2.3'
+
 gem 'bootsnap', require: false
+gem 'listen'
 gem 'sprockets', '~>3.7.2'
+gem 'sqlite3'
 
 # Assets
-gem 'coffee-rails', '~> 4.1.0'
+gem 'coffee-rails', '~> 4.2.0'
 gem 'jquery-datatables'
 gem 'jquery-rails'
 gem 'jquery-ui-rails'
 gem 'sass-rails', '~> 5.0'
+# Pin to version of bootstrap-sass which still uses sass instead of sassc
+gem 'bootstrap-sass', '~> 3.3.7'
 # Use the last known good version of sass
 gem 'sass', '3.4.22'
 gem 'sprockets-es6'
@@ -21,10 +25,10 @@ gem 'react-rails'
 
 # Core Samvera
 gem 'hydra-head', '~> 10.6'
-gem 'active-fedora', '~> 11.2'
-gem 'active_fedora-datastreams'
-gem 'active_fedora-noid', '~> 2.0.2'
-gem 'fedora-migrate', '~> 0.5.0'
+gem 'active-fedora', '~> 12.1'
+gem 'active_fedora-datastreams', '~> 0.2.0'
+gem 'noid-rails', '~> 3.0.1'
+gem 'fedora-migrate', git: 'https://github.com/avalonmediasystem/fedora-migrate.git', branch: 'optional_rake_tasks'
 gem 'rdf-rdfxml'
 
 # Samvera version pins
@@ -44,10 +48,10 @@ gem 'bootstrap_form'
 gem 'iiif_manifest', git: 'https://github.com/samvera-labs/iiif_manifest'
 gem 'rack-cors', require: 'rack/cors'
 gem 'recaptcha', require: 'recaptcha/rails'
-gem 'speedy-af', '~> 0.1.1'
+gem 'speedy-af', '~> 0.1.3'
 
 # Avalon Components
-gem 'avalon-workflow', git: "https://github.com/avalonmediasystem/avalon-workflow.git", tag: 'avalon-r6.2'
+gem 'avalon-workflow', git: "https://github.com/avalonmediasystem/avalon-workflow.git", tag: 'rails5'
 
 # Authentication & Authorization
 gem 'devise', '~> 4.4'
@@ -69,7 +73,7 @@ gem 'wavefile'
 
 # Data Translation & Normalization
 gem 'edtf'
-gem 'iconv'
+gem 'iconv', '~> 1.0.6'
 gem 'marc'
 
 # MediaElement.js & Plugins
@@ -84,8 +88,8 @@ gem 'mediaelement-track-scrubber', git: 'https://github.com/avalonmediasystem/me
 
 # Jobs
 gem 'redis-rails'
-gem 'resque', '~> 1.27.0'
-gem 'resque-scheduler', '~> 4.3.0'
+gem 'resque', '~> 2.0'
+gem 'resque-scheduler', '~> 4.4'
 gem 'activejob-traffic_control'
 
 # Coding Patterns
