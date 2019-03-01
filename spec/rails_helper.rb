@@ -26,7 +26,7 @@ require 'capybara/rails'
 require 'database_cleaner'
 require 'active_fedora/cleaner'
 require 'webmock/rspec'
-require 'active_fedora/noid/rspec'
+require 'noid/rails/rspec'
 require "email_spec"
 require "email_spec/rspec"
 # require 'equivalent-xml/rspec_matchers'
