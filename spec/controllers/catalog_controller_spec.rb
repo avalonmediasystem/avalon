@@ -20,7 +20,7 @@ describe CatalogController do
       it "should show results for items that are public and published" do
         mo = FactoryBot.create(:published_media_object, visibility: 'public')
         get 'index', params: { :q => "" }
-        expect(response).to be_success
+        expect(response).to be_successful
         expect(response).to render_template('catalog/index')
         expect(assigns(:document_list).count).to eql(1)
         expect(assigns(:document_list).map(&:id)).to eq([mo.id])
@@ -28,14 +28,14 @@ describe CatalogController do
       it "should not show results for items that are not public" do
         mo = FactoryBot.create(:published_media_object, visibility: 'restricted')
         get 'index', params: { :q => "" }
-        expect(response).to be_success
+        expect(response).to be_successful
         expect(response).to render_template('catalog/index')
         expect(assigns(:document_list).count).to eql(0)
       end
       it "should not show results for items that are not published" do
         mo = FactoryBot.create(:media_object, visibility: 'public')
         get 'index', params: { :q => "" }
-        expect(response).to be_success
+        expect(response).to be_successful
         expect(response).to render_template('catalog/index')
         expect(assigns(:document_list).count).to eql(0)
       end
@@ -47,7 +47,7 @@ describe CatalogController do
       it "should show results for items that are published and available to registered users" do
         mo = FactoryBot.create(:published_media_object, visibility: 'restricted')
         get 'index', params: { :q => "" }
-        expect(response).to be_success
+        expect(response).to be_successful
         expect(response).to render_template('catalog/index')
         expect(assigns(:document_list).count).to eql(1)
         expect(assigns(:document_list).map(&:id)).to eq([mo.id])
@@ -55,14 +55,14 @@ describe CatalogController do
       it "should not show results for items that are not public or available to registered users" do
         mo = FactoryBot.create(:published_media_object, visibility: 'private')
         get 'index', params: { :q => "" }
-        expect(response).to be_success
+        expect(response).to be_successful
         expect(response).to render_template('catalog/index')
         expect(assigns(:document_list).count).to eql(0)
       end
       it "should not show results for items that are not published" do
         mo = FactoryBot.create(:media_object, visibility: 'public')
         get 'index', params: { :q => "" }
-        expect(response).to be_success
+        expect(response).to be_successful
         expect(response).to render_template('catalog/index')
         expect(assigns(:document_list).count).to eql(0)
       end
@@ -74,7 +74,7 @@ describe CatalogController do
       it "should show results for items that are unpublished, private, and belong to one of my collections" do
         mo = FactoryBot.create(:media_object, visibility: 'private', collection: collection)
         get 'index', params: { :q => "" }
-        expect(response).to be_success
+        expect(response).to be_successful
         expect(response).to render_template('catalog/index')
         expect(assigns(:document_list).count).to eql(1)
         expect(assigns(:document_list).map(&:id)).to eq([mo.id])
@@ -82,7 +82,7 @@ describe CatalogController do
       it "should show results for items that are hidden and belong to one of my collections" do
         mo = FactoryBot.create(:media_object, hidden: true, visibility: 'private', collection: collection)
         get 'index', params: { :q => "" }
-        expect(response).to be_success
+        expect(response).to be_successful
         expect(response).to render_template('catalog/index')
         expect(assigns(:document_list).count).to eql(1)
         expect(assigns(:document_list).map(&:id)).to eq([mo.id])
@@ -91,7 +91,7 @@ describe CatalogController do
         mo = FactoryBot.create(:media_object, hidden: true, visibility: 'private', collection: collection)
         mo2 = FactoryBot.create(:fully_searchable_media_object)
         get 'index', params: { :q => "" }
-        expect(response).to be_success
+        expect(response).to be_successful
         expect(response).to render_template('catalog/index')
         expect(assigns(:document_list).count).to eql(2)
         expect(assigns(:document_list).map(&:id)).to match_array([mo.id, mo2.id])
@@ -99,14 +99,14 @@ describe CatalogController do
       it "should not show results for items that do not belong to one of my collections" do
         mo = FactoryBot.create(:media_object, visibility: 'private')
         get 'index', params: { :q => "" }
-        expect(response).to be_success
+        expect(response).to be_successful
         expect(response).to render_template('catalog/index')
         expect(assigns(:document_list).count).to eql(0)
       end
       it "should not show results for hidden items that do not belong to one of my collections" do
         mo = FactoryBot.create(:media_object, hidden: true, visibility: 'private', read_users: [manager.user_key])
         get 'index', params: { :q => "" }
-        expect(response).to be_success
+        expect(response).to be_successful
         expect(response).to render_template('catalog/index')
         expect(assigns(:document_list).count).to eql(0)
       end
@@ -117,7 +117,7 @@ describe CatalogController do
       it "should show results for all items" do
         mo = FactoryBot.create(:media_object, visibility: 'private')
         get 'index', params: { :q => "" }
-        expect(response).to be_success
+        expect(response).to be_successful
         expect(response).to render_template('catalog/index')
         expect(assigns(:document_list).count).to eq 1
         expect(assigns(:document_list).map(&:id)).to eq([mo.id])
@@ -129,7 +129,7 @@ describe CatalogController do
       it "should show results for items visible to the lti virtual group" do
         mo = FactoryBot.create(:published_media_object, visibility: 'private', read_groups: [lti_group])
         get 'index', params: { :q => "read_access_virtual_group_ssim:#{lti_group}" }
-        expect(response).to be_success
+        expect(response).to be_successful
         expect(response).to render_template('catalog/index')
         expect(assigns(:document_list).count).to eql(1)
         expect(assigns(:document_list).map(&:id)).to eq([mo.id])
@@ -241,7 +241,7 @@ describe CatalogController do
         end
         it "gracefully handles bad ldap groups" do
           get :index, params: { q: "" }
-          expect(response).to be_success
+          expect(response).to be_successful
           expect(response).to render_template('catalog/index')
           expect(assigns(:document_list).count).to eq 1
           expect(assigns(:document_list).collect(&:id)). to eq [media_object.id]

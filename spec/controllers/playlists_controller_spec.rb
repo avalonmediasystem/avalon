@@ -76,8 +76,8 @@ RSpec.describe PlaylistsController, type: :controller do
         let(:playlist) { FactoryBot.create(:playlist, visibility: Playlist::PUBLIC, items: [playlist_item]) }
         it "should return the playlist view page" do
           expect(get :show, params: { id: playlist.id }).not_to redirect_to(new_user_session_path)
-          expect(get :show, params: { id: playlist.id }).to be_success
-          expect(get :refresh_info, params: { id: playlist.id, position: 1 }, xhr: true).to be_success
+          expect(get :show, params: { id: playlist.id }).to be_successful
+          expect(get :refresh_info, params: { id: playlist.id, position: 1 }, xhr: true).to be_successful
         end
       end
       context 'with a private playlist' do
@@ -90,8 +90,8 @@ RSpec.describe PlaylistsController, type: :controller do
         let(:playlist) { FactoryBot.create(:playlist, :with_access_token, items: [playlist_item]) }
         it "should return the playlist view page" do
           expect(get :show, params: { id: playlist.id, token: playlist.access_token }).not_to redirect_to(root_path)
-          expect(get :show, params: { id: playlist.id, token: playlist.access_token }).to be_success
-          expect(get :refresh_info, params: { id: playlist.id, position: 1, token: playlist.access_token }, xhr: true).to be_success
+          expect(get :show, params: { id: playlist.id, token: playlist.access_token }).to be_successful
+          expect(get :refresh_info, params: { id: playlist.id, position: 1, token: playlist.access_token }, xhr: true).to be_successful
         end
       end
     end
@@ -110,8 +110,8 @@ RSpec.describe PlaylistsController, type: :controller do
         let(:playlist) { FactoryBot.create(:playlist, visibility: Playlist::PUBLIC, items: [playlist_item]) }
         it "should return the playlist view page" do
           expect(get :show, params: { id: playlist.id }).not_to redirect_to(root_path)
-          expect(get :show, params: { id: playlist.id }).to be_success
-          expect(get :refresh_info, params: { id: playlist.id, position: 1 }, xhr: true).to be_success
+          expect(get :show, params: { id: playlist.id }).to be_successful
+          expect(get :refresh_info, params: { id: playlist.id, position: 1 }, xhr: true).to be_successful
         end
       end
       context 'with a private playlist' do
@@ -124,8 +124,8 @@ RSpec.describe PlaylistsController, type: :controller do
         let(:playlist) { FactoryBot.create(:playlist, :with_access_token, items: [playlist_item]) }
         it "should return the playlist view page" do
           expect(get :show, params: { id: playlist.id, token: playlist.access_token }).not_to redirect_to(root_path)
-          expect(get :show, params: { id: playlist.id, token: playlist.access_token }).to be_success
-          expect(get :refresh_info, params: { id: playlist.id, position: 1, token: playlist.access_token }, xhr: true).to be_success
+          expect(get :show, params: { id: playlist.id, token: playlist.access_token }).to be_successful
+          expect(get :refresh_info, params: { id: playlist.id, position: 1, token: playlist.access_token }, xhr: true).to be_successful
         end
       end
     end

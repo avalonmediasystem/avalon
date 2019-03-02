@@ -58,20 +58,20 @@ RSpec.describe PlaylistItemsController, type: :controller do
         let(:playlist) { FactoryBot.create(:playlist, visibility: Playlist::PUBLIC) }
 
         it "returns the playlist item info snippets" do
-          expect(get :show, params: { playlist_id: playlist.to_param, id: playlist_item.id }, xhr: true).to be_success
-          expect(get :source_details, params: { playlist_id: playlist.to_param, playlist_item_id: playlist_item.id }).to be_success
-          expect(get :markers, params: { playlist_id: playlist.to_param, playlist_item_id: playlist_item.id }).to be_success
-          expect(get :related_items, params: { playlist_id: playlist.to_param, playlist_item_id: playlist_item.id }).to be_success
+          expect(get :show, params: { playlist_id: playlist.to_param, id: playlist_item.id }, xhr: true).to be_successful
+          expect(get :source_details, params: { playlist_id: playlist.to_param, playlist_item_id: playlist_item.id }).to be_successful
+          expect(get :markers, params: { playlist_id: playlist.to_param, playlist_item_id: playlist_item.id }).to be_successful
+          expect(get :related_items, params: { playlist_id: playlist.to_param, playlist_item_id: playlist_item.id }).to be_successful
         end
       end
       context 'with a private playlist and token' do
         let(:playlist) { FactoryBot.create(:playlist, :with_access_token) }
 
         it "returns the playlist item info page snippets" do
-          expect(get :show, params: { playlist_id: playlist.to_param, id: playlist_item.id, token: playlist.access_token }, xhr: true).to be_success
-          expect(get :source_details, params: { playlist_id: playlist.to_param, playlist_item_id: playlist_item.id, token: playlist.access_token }).to be_success
-          expect(get :markers, params: { playlist_id: playlist.to_param, playlist_item_id: playlist_item.id, token: playlist.access_token }).to be_success
-          expect(get :related_items, params: { playlist_id: playlist.to_param, playlist_item_id: playlist_item.id, token: playlist.access_token }).to be_success
+          expect(get :show, params: { playlist_id: playlist.to_param, id: playlist_item.id, token: playlist.access_token }, xhr: true).to be_successful
+          expect(get :source_details, params: { playlist_id: playlist.to_param, playlist_item_id: playlist_item.id, token: playlist.access_token }).to be_successful
+          expect(get :markers, params: { playlist_id: playlist.to_param, playlist_item_id: playlist_item.id, token: playlist.access_token }).to be_successful
+          expect(get :related_items, params: { playlist_id: playlist.to_param, playlist_item_id: playlist_item.id, token: playlist.access_token }).to be_successful
         end
       end
     end
@@ -91,20 +91,20 @@ RSpec.describe PlaylistItemsController, type: :controller do
         let(:playlist) { FactoryBot.create(:playlist, visibility: Playlist::PUBLIC) }
 
         it "returns the playlist item info snippets" do
-          expect(get :show, params: { playlist_id: playlist.to_param, id: playlist_item.id }, xhr: true).to be_success
-          expect(get :source_details, params: { playlist_id: playlist.to_param, playlist_item_id: playlist_item.id }).to be_success
-          expect(get :markers, params: { playlist_id: playlist.to_param, playlist_item_id: playlist_item.id }).to be_success
-          expect(get :related_items, params: { playlist_id: playlist.to_param, playlist_item_id: playlist_item.id }).to be_success
+          expect(get :show, params: { playlist_id: playlist.to_param, id: playlist_item.id }, xhr: true).to be_successful
+          expect(get :source_details, params: { playlist_id: playlist.to_param, playlist_item_id: playlist_item.id }).to be_successful
+          expect(get :markers, params: { playlist_id: playlist.to_param, playlist_item_id: playlist_item.id }).to be_successful
+          expect(get :related_items, params: { playlist_id: playlist.to_param, playlist_item_id: playlist_item.id }).to be_successful
         end
       end
       context 'with a private playlist and token' do
         let(:playlist) { FactoryBot.create(:playlist, :with_access_token) }
 
         it "returns the playlist item info page snippets" do
-          expect(get :show, params: { playlist_id: playlist.to_param, id: playlist_item.id, token: playlist.access_token }, xhr: true).to be_success
-          expect(get :source_details, params: { playlist_id: playlist.to_param, playlist_item_id: playlist_item.id, token: playlist.access_token }).to be_success
-          expect(get :markers, params: { playlist_id: playlist.to_param, playlist_item_id: playlist_item.id, token: playlist.access_token }).to be_success
-          expect(get :related_items, params: { playlist_id: playlist.to_param, playlist_item_id: playlist_item.id, token: playlist.access_token }).to be_success
+          expect(get :show, params: { playlist_id: playlist.to_param, id: playlist_item.id, token: playlist.access_token }, xhr: true).to be_successful
+          expect(get :source_details, params: { playlist_id: playlist.to_param, playlist_item_id: playlist_item.id, token: playlist.access_token }).to be_successful
+          expect(get :markers, params: { playlist_id: playlist.to_param, playlist_item_id: playlist_item.id, token: playlist.access_token }).to be_successful
+          expect(get :related_items, params: { playlist_id: playlist.to_param, playlist_item_id: playlist_item.id, token: playlist.access_token }).to be_successful
         end
       end
     end
