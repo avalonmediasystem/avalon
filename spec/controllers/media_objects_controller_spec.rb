@@ -523,7 +523,7 @@ describe MediaObjectsController, type: :controller do
        login_user media_object.collection.managers.first
 
        get 'edit', params: { id: media_object.id }
-       expect(response).to be_success
+       expect(response).to be_successful
        expect(response).to render_template "_#{HYDRANT_STEPS.first.template}"
      end
 

@@ -136,7 +136,7 @@ RSpec.describe TimelinesController, type: :controller do
       it "returns the timeline manifest" do
         timeline = Timeline.create! valid_attributes.merge(manifest: manifest.to_json)
         get :show, params: {id: timeline.to_param, format: :json}, session: valid_session
-        expect(response).to be_success
+        expect(response).to be_successful
         expect(response.body).to eq timeline.manifest
       end
     end
@@ -149,7 +149,7 @@ RSpec.describe TimelinesController, type: :controller do
 
     it "returns a success response" do
       get :new, params: {}, session: valid_session
-      expect(response).to be_success
+      expect(response).to be_successful
       expect(assigns(:timeline)).to be_a_new(Timeline)
     end
   end
@@ -158,7 +158,7 @@ RSpec.describe TimelinesController, type: :controller do
     it "returns a success response" do
       timeline = Timeline.create! valid_attributes
       get :edit, params: {id: timeline.to_param}, session: valid_session
-      expect(response).to be_success
+      expect(response).to be_successful
       expect(assigns(:timeline)).to eq(timeline)
     end
 
@@ -201,7 +201,7 @@ RSpec.describe TimelinesController, type: :controller do
 
       it "returns a success response (i.e. to display the 'new' template)" do
         post :create, params: {timeline: invalid_attributes}, session: valid_session
-        expect(response).to be_success
+        expect(response).to be_successful
         expect(assigns(:timeline)).to be_a_new(Timeline)
       end
 
@@ -257,7 +257,7 @@ RSpec.describe TimelinesController, type: :controller do
       it "returns a success response (i.e. to display the 'edit' template)" do
         timeline = Timeline.create! valid_attributes
         put :update, params: {id: timeline.to_param, timeline: invalid_attributes}, session: valid_session
-        expect(response).to be_success
+        expect(response).to be_successful
         expect(response).to render_template('edit')
       end
     end
@@ -322,7 +322,7 @@ RSpec.describe TimelinesController, type: :controller do
 
     it 'returns the access token' do
       put :regenerate_access_token, params: { id: timeline.to_param }, session: valid_session
-      expect(response).to be_success
+      expect(response).to be_successful
       timeline.reload
       expect(response.body).to include "\"access_token_url\":\"#{controller.access_token_url(timeline)}\""
     end
