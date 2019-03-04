@@ -873,6 +873,8 @@ describe MediaObjectsController, type: :controller do
         expect(json['published_by']).to eq(media_object.avalon_publisher)
         expect(json['published']).to eq(media_object.published?)
         expect(json['summary']).to eq(media_object.abstract)
+        expect(json['fields'].symbolize_keys).to eq(media_object.to_ingest_api_hash(false)[:fields])
+        expect(json['files'].collect(&:symbolize_keys)).to eq(media_object.to_ingest_api_hash(false)[:files])
       end
 
       it "should return 404 if requested media_object not present" do
