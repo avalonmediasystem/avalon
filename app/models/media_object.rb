@@ -271,7 +271,7 @@ class MediaObject < ActiveFedora::Base
       published_by: avalon_publisher,
       published: published?,
       summary: abstract
-    }
+    }.merge(to_ingest_api_hash(false))
   end
 
   # Other validation to consider adding into future iterations is the ability to
