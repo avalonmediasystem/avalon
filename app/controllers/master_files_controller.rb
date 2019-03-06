@@ -286,7 +286,7 @@ class MasterFilesController < ApplicationController
     quality = params[:quality]
     if request.head?
       auth_token = request.headers['Authorization']&.sub('Bearer ', '')
-      if StreamToken.valid_token?(auth_token, master_file.id)
+      if StreamToken.valid_token?(auth_token, master_file.id) || can?(:read, master_file)
         return head :ok
       else
         return head :unauthorized

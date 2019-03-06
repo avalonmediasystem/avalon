@@ -523,6 +523,8 @@ describe MasterFilesController do
   describe '#hls_manifest' do
     let(:media_object) { FactoryBot.create(:published_media_object) }
     let(:master_file) { FactoryBot.create(:master_file, media_object: media_object) }
+    let(:public_media_object) { FactoryBot.create(:published_media_object, visibility: 'public') }
+    let(:public_master_file) { FactoryBot.create(:master_file, media_object: public_media_object) }
 
     context 'with head request' do
       it 'returns unauthorized (401) with invalid auth token' do
@@ -534,6 +536,10 @@ describe MasterFilesController do
         token = StreamToken.find_or_create_session_token(session, master_file.id)
         request.headers['Authorization'] = "Bearer #{token.to_s}"
         expect(head('hls_manifest', params: { id: master_file.id, quality: 'auto' })).to have_http_status(:ok)
+      end
+
+      it 'returns ok (200) if public' do
+        expect(head('hls_manifest', params: { id: public_master_file.id, quality: 'auto' })).to have_http_status(:ok)
       end
     end
 
@@ -551,6 +557,10 @@ describe MasterFilesController do
       login_as :administrator
       expect(get('hls_manifest', params: { id: master_file.id, quality: 'high' })).to have_http_status(:ok)
       expect(response.content_type).to eq 'application/x-mpegURL'
+    end
+
+    it 'returns a manifest if public' do
+      expect(get('hls_manifest', params: { id: public_master_file.id, quality: 'auto' })).to have_http_status(:ok)
     end
   end
 end
