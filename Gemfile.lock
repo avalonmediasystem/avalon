@@ -103,31 +103,11 @@ GIT
     bootstrap-toggle-rails (2.2.1.0)
 
 GIT
-  remote: https://github.com/samvera-labs/active_fedora-datastreams.git
-  revision: 823cba638defebb4d0b6ed58df6805ac1e0867ed
-  branch: rails52
-  specs:
-    active_fedora-datastreams (0.1.0)
-      active-fedora (>= 11.0.0.pre, < 13)
-      nom-xml (>= 0.5.1)
-      om (~> 3.1)
-      rdf-rdfxml (~> 2.0)
-
-GIT
   remote: https://github.com/samvera-labs/iiif_manifest
   revision: 8a02d10829d590f3f56e9cee4cfa89c36c8d4a5a
   specs:
     iiif_manifest (0.5.0)
       activesupport (>= 4)
-
-GIT
-  remote: https://github.com/samvera-labs/speedy_af.git
-  revision: 8fd784ac2a8cdf5a7416e208948b6c752d533cf9
-  branch: cjcolvar-patch-1
-  specs:
-    speedy-af (0.1.2)
-      active-fedora (>= 11.0.0)
-      activesupport (< 5.3)
 
 GEM
   remote: https://rubygems.org/
@@ -179,6 +159,11 @@ GEM
       rails (>= 4.2)
     active_encode (0.1.1)
       activesupport
+    active_fedora-datastreams (0.2.0)
+      active-fedora (>= 11.0.0.pre, < 13)
+      nom-xml (>= 0.5.1)
+      om (~> 3.1)
+      rdf-rdfxml (~> 2.0)
     activejob (5.2.2)
       activesupport (= 5.2.2)
       globalid (>= 0.3.6)
@@ -829,6 +814,9 @@ GEM
       nokogiri
       stomp
       xml-simple
+    speedy-af (0.1.3)
+      active-fedora (>= 11.0.0)
+      activesupport (< 5.3)
     sprockets (3.7.2)
       concurrent-ruby (~> 1.0)
       rack (> 1, < 3)
@@ -851,7 +839,7 @@ GEM
       redis
     sxp (1.0.1)
       rdf (>= 2.2, < 4.0)
-    temple (0.8.0)
+    temple (0.8.1)
     thor (0.20.3)
     thread_safe (0.3.6)
     tilt (2.0.9)
@@ -909,7 +897,7 @@ DEPENDENCIES
   active_annotations (~> 0.2.2)
   active_elastic_job (~> 2.0)
   active_encode (~> 0.1.1)
-  active_fedora-datastreams!
+  active_fedora-datastreams (~> 0.2.0)
   activejob-traffic_control
   activerecord-session_store
   acts_as_list
@@ -998,7 +986,7 @@ DEPENDENCIES
   shoulda-matchers
   simplecov
   solr_wrapper (>= 0.16)
-  speedy-af (~> 0.1.1)!
+  speedy-af (~> 0.1.3)
   sprockets (~> 3.7.2)
   sprockets-es6
   sqlite3 (~> 1.3.0)
