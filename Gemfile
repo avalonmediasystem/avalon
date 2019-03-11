@@ -2,30 +2,31 @@ source 'https://rubygems.org'
 
 # Core rails
 gem 'rails', '=5.2.2'
-gem 'sqlite3', '~> 1.3.0'
+
 gem 'bootsnap', require: false
-gem 'sprockets', '~>3.7.2'
 gem 'listen'
+gem 'sprockets', '~>3.7.2'
+gem 'sqlite3', '~> 1.3.0'
 
 # Assets
 gem 'coffee-rails', '~> 4.2.0'
 gem 'jquery-datatables'
 gem 'jquery-rails'
 gem 'jquery-ui-rails'
+gem 'react-rails'
 gem 'sass-rails', '~> 5.0'
 # Use the last known good version of sass
 gem 'sass', '3.4.22'
 gem 'sprockets-es6'
 gem 'uglifier', '>= 1.3.0'
 gem 'webpacker'
-gem 'react-rails'
 
 # Core Samvera
-gem 'hydra-head', '~> 10.6'
 gem 'active-fedora', '~> 12.1'
 gem 'active_fedora-datastreams', '~> 0.2.0'
-gem 'noid-rails', '~> 3.0.1'
 gem 'fedora-migrate', git: 'https://github.com/avalonmediasystem/fedora-migrate.git', branch: 'optional_rake_tasks'
+gem 'hydra-head', '~> 10.6'
+gem 'noid-rails', '~> 3.0.1'
 gem 'rdf-rdfxml'
 
 # Samvera version pins
@@ -42,10 +43,10 @@ gem 'api-pagination'
 gem 'avalon-about', git: 'https://github.com/avalonmediasystem/avalon-about.git', tag: 'avalon-r6.4'
 gem 'bootstrap-toggle-rails', git: 'https://github.com/rkallensee/bootstrap-toggle-rails.git', tag: 'v2.2.1.0'
 gem 'bootstrap_form'
-gem 'speedy-af', '~> 0.1.3'
-gem 'recaptcha', require: 'recaptcha/rails'
 gem 'iiif_manifest', git: 'https://github.com/samvera-labs/iiif_manifest'
 gem 'rack-cors', require: 'rack/cors'
+gem 'recaptcha', require: 'recaptcha/rails'
+gem 'speedy-af', '~> 0.1.3'
 
 # Avalon Components
 gem 'avalon-workflow', git: "https://github.com/avalonmediasystem/avalon-workflow.git", branch: 'rails5'
@@ -59,14 +60,14 @@ gem 'omniauth-lti', git: "https://github.com/avalonmediasystem/omniauth-lti.git"
 
 # Media Access & Transcoding
 gem 'active_encode', '~> 0.1.1'
+gem 'audio_waveform-ruby', require: 'audio_waveform', git: 'https://github.com/bbc/audio_waveform-ruby.git'
 gem 'browse-everything', '~> 0.13.0'
 gem 'mediainfo', git: "https://github.com/avalonmediasystem/mediainfo.git", branch: 'avalon_fixes'
+gem 'media_element_add_to_playlist', git: 'https://github.com/avalonmediasystem/media-element-add-to-playlist.git', branch: 'rails5'
 gem 'rest-client'
 gem 'roo'
 gem 'rubyhorn', git: "https://github.com/avalonmediasystem/rubyhorn.git", tag: 'avalon-r6'
-gem 'audio_waveform-ruby', require: 'audio_waveform', git: 'https://github.com/bbc/audio_waveform-ruby.git'
 gem 'wavefile'
-gem 'media_element_add_to_playlist', git: 'https://github.com/avalonmediasystem/media-element-add-to-playlist.git', branch: 'rails5'
 
 # Data Translation & Normalization
 gem 'edtf'
@@ -74,10 +75,10 @@ gem 'iconv', '~> 1.0.6'
 gem 'marc'
 
 # Jobs
+gem 'activejob-traffic_control'
 gem 'redis-rails'
 gem 'resque', '~> 2.0'
 gem 'resque-scheduler', git: 'https://github.com/resque/resque-scheduler.git', ref: 'bbf4930'
-gem 'activejob-traffic_control'
 
 # Coding Patterns
 gem 'config'
@@ -138,11 +139,11 @@ end
 
 # Install the bundle --with aws when running on Amazon Elastic Beanstalk
 group :aws, optional: true do
+  gem 'active_elastic_job', '~> 2.0'
   gem 'aws-sdk', '~> 2.0'
   gem 'aws-sdk-rails'
   gem 'cloudfront-signer'
   gem 'zk'
-  gem 'active_elastic_job', '~> 2.0'
 end
 
 # Install the bundle --with zoom to use the Z39.50 bib retriever
