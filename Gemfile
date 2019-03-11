@@ -13,20 +13,20 @@ gem 'coffee-rails', '~> 4.2.0'
 gem 'jquery-datatables'
 gem 'jquery-rails'
 gem 'jquery-ui-rails'
+gem 'react-rails'
 gem 'sass-rails', '~> 5.0'
 # Use the last known good version of sass
 gem 'sass', '3.4.22'
 gem 'sprockets-es6'
 gem 'uglifier', '>= 1.3.0'
 gem 'webpacker'
-gem 'react-rails'
 
 # Core Samvera
-gem 'hydra-head', '~> 10.6'
 gem 'active-fedora', '~> 12.1'
 gem 'active_fedora-datastreams', '~> 0.2.0'
-gem 'noid-rails', '~> 3.0.1'
 gem 'fedora-migrate', git: 'https://github.com/avalonmediasystem/fedora-migrate.git', branch: 'optional_rake_tasks'
+gem 'hydra-head', '~> 10.6'
+gem 'noid-rails', '~> 3.0.1'
 gem 'rdf-rdfxml'
 
 # Samvera version pins
@@ -60,13 +60,13 @@ gem 'omniauth-lti', git: "https://github.com/avalonmediasystem/omniauth-lti.git"
 
 # Media Access & Transcoding
 gem 'active_encode', '~> 0.1.1'
+gem 'audio_waveform-ruby', require: 'audio_waveform', git: 'https://github.com/bbc/audio_waveform-ruby.git'
 gem 'browse-everything', '~> 0.13.0'
 gem 'mediainfo', git: "https://github.com/avalonmediasystem/mediainfo.git", branch: 'avalon_fixes'
 gem 'media_element_add_to_playlist', git: 'https://github.com/avalonmediasystem/media-element-add-to-playlist.git', branch: 'rails5'
 gem 'rest-client'
 gem 'roo'
 gem 'rubyhorn', git: "https://github.com/avalonmediasystem/rubyhorn.git", tag: 'avalon-r6'
-gem 'audio_waveform-ruby', require: 'audio_waveform', git: 'https://github.com/bbc/audio_waveform-ruby.git'
 gem 'wavefile'
 
 # Data Translation & Normalization
@@ -85,10 +85,10 @@ gem 'mediaelement-title', git:'https://github.com/avalonmediasystem/mediaelement
 gem 'mediaelement-track-scrubber', git: 'https://github.com/avalonmediasystem/mediaelement-track-scrubber.git', tag: 'avalon-r6'
 
 # Jobs
+gem 'activejob-traffic_control'
 gem 'redis-rails'
 gem 'resque', '~> 2.0'
 gem 'resque-scheduler', '~> 4.4'
-gem 'activejob-traffic_control'
 
 # Coding Patterns
 gem 'config'
@@ -149,11 +149,11 @@ end
 
 # Install the bundle --with aws when running on Amazon Elastic Beanstalk
 group :aws, optional: true do
+  gem 'active_elastic_job', '~> 2.0'
   gem 'aws-sdk', '~> 2.0'
   gem 'aws-sdk-rails'
   gem 'cloudfront-signer'
   gem 'zk'
-  gem 'active_elastic_job', '~> 2.0'
 end
 
 # Install the bundle --with zoom to use the Z39.50 bib retriever
