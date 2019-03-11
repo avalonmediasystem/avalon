@@ -26,7 +26,7 @@ require 'capybara/rails'
 require 'database_cleaner'
 require 'active_fedora/cleaner'
 require 'webmock/rspec'
-require 'active_fedora/noid/rspec'
+require 'noid/rails/rspec'
 require "email_spec"
 require "email_spec/rspec"
 # require 'equivalent-xml/rspec_matchers'
@@ -68,7 +68,7 @@ Shoulda::Matchers.configure do |config|
 end
 
 RSpec.configure do |config|
-  include ActiveFedora::Noid::RSpec
+  include Noid::Rails::RSpec
 
   # Remove this line if you're not using ActiveRecord or ActiveRecord fixtures
   config.fixture_path = "#{::Rails.root}/spec/fixtures"
