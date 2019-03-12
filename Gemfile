@@ -15,6 +15,8 @@ gem 'jquery-rails'
 gem 'jquery-ui-rails'
 gem 'react-rails'
 gem 'sass-rails', '~> 5.0'
+# Pin to version of bootstrap-sass which still uses sass instead of sassc
+gem 'bootstrap-sass', '~> 3.3.7'
 # Use the last known good version of sass
 gem 'sass', '3.4.22'
 gem 'sprockets-es6'
