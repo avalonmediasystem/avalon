@@ -962,7 +962,6 @@ DEPENDENCIES
   bixby
   blacklight (< 7.0)
   bootsnap
-  bootstrap-sass (~> 3.3.7)
   bootstrap-toggle-rails!
   bootstrap_form
   browse-everything (~> 0.13.0)
