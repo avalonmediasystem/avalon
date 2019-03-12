@@ -26,7 +26,6 @@ $ ->
   $('.btn-confirmation').popover(
     trigger: 'manual'
     html: true
-    sanitize: false
     content: ->
       button = undefined
       if typeof $(this).attr('form') == "undefined"
