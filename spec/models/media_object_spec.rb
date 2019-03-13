@@ -17,6 +17,11 @@ require 'cancan/matchers'
 
 describe MediaObject do
   let(:media_object) { FactoryBot.create(:media_object) }
+  
+  it 'assigns a noid id' do
+    media_object = MediaObject.new
+    expect { media_object.assign_id! }.to change { media_object.id }.from(nil).to(String)
+  end
 
   describe 'validations' do
     # Force the validations to run by being on the resource-description workflow step
