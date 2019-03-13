@@ -1,0 +1,100 @@
+<%#
+Copyright 2011-2018, The Trustees of Indiana University and Northwestern
+  University.  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+
+You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+  under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+  CONDITIONS OF ANY KIND, either express or implied. See the License for the
+  specific language governing permissions and limitations under the License.
+---  END LICENSE_HEADER BLOCK  ---
+%>
+
+<div id="timeline-button" style="display: inline-block;">
+  <button type="button" class="btn btn-default" data-toggle="modal" data-target="#timelineModal" style="margin-top: 10px;">
+    Create Timeline
+  </button>
+</div>
+
+<div class="modal fade" id="timelineModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" style="display: none;">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="timelineModalLabel">Create Timeline</h5>
+      </div>
+      <div class="modal-body">
+        <div id="new-timeline-inputs">
+        </div>
+        <%= form_tag(timelines_path, id: 'new-timeline-form') do %>
+          <input type='hidden' name='timeline[title]' id='new-timeline-title'/>
+          <input type='hidden' name='timeline[source]' id='new-timeline-source'/>
+        <% end %>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary" id="timelineModalSave">Save changes</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<% content_for :page_scripts do %>
+
+<script>
+$(document).ready(function() {
+  $('#timelineModal').on('show.bs.modal', function (e) {
+    console.log('in modal builder')
+    let $modalBody = $('#timelineModal').find('div#new-timeline-inputs')[0]
+    let bodyText = "<p>Choose scope for new timeline:</p>";
+    scopes = currentPlayer.avalonWrapper.mejsUtility.timelineScopes(currentPlayer)
+    for (let index = 0; index < scopes.length; index++) {
+      scope = scopes[index];
+      label = scope.label
+      if (scope.tracks > 1) {
+        label += " ("+scope.tracks+" tracks)"
+      }
+      bodyText += "<div class=\"form-check\">"
+      bodyText += "<input class=\"form-check-input\" type=\"radio\" name=\"scope\" id=\"timelinescope"+index+"\">"
+      bodyText += "<label class=\"form-check-label\" for=\"timelinescope"+index+"\"> "+label+"</label>"
+      bodyText += "</div>"
+    }
+    bodyText += "<div class=\"form-check\">"
+    bodyText += "<input class=\"form-check-input\" type=\"radio\" name=\"scope\" id=\"timelinescope_custom\">"
+    bodyText += "<label class=\"form-check-label\" for=\"timelinescope_custom\"> Custom</label>"
+    bodyText += "<input type=\"number\" name=\"custombegin\" id=\"custombegin\" size=\"10\" value=\""+currentPlayer.currentTime.toFixed(2)+"\" \> to "
+    bodyText += "<input type=\"number\" name=\"customend\" id=\"customend\" size=\"10\" value=\""+currentPlayer.duration.toFixed(2)+"\" \>"
+    bodyText += "</div>"
+    $modalBody.innerHTML = bodyText;
+  })
+
+  $('#timelineModalSave').on('click', function (e) {
+    let label, t;
+    if ($('#timelinescope_custom')[0].checked) {
+      label = 'custom scope';
+      t = 't='+$('#custombegin')[0].value+','+$('#customend')[0].value
+    } else {
+      scopes = currentPlayer.avalonWrapper.mejsUtility.timelineScopes(currentPlayer)
+      let selectedIndex = -1;
+      for (let index = 0; index < scopes.length; index++) {
+        if ($('#timelinescope'+index)[0].checked) {
+          selectedIndex = index;
+          break;
+        }
+      }
+      if (selectedIndex === -1) return;
+      scope = scopes[selectedIndex];
+      label = scope.label;
+      t = scope.t
+    }
+    $('#new-timeline-title')[0].value = label;
+    $('#new-timeline-source')[0].value = currentPlayer.avalonWrapper.currentStreamInfo.link_back_url+'?'+t;
+    $('#new-timeline-form')[0].submit();
+  })
+})
+</script>
+
+<% end %>
