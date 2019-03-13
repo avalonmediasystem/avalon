@@ -29,8 +29,11 @@ RSpec.describe TimelinesController, type: :controller do
   # Timeline. As you add validations to Timeline, be sure to
   # adjust the attributes here as well.
   let(:valid_attributes) {
-    { title: Faker::Lorem.word, visibility: Timeline::PUBLIC, user: user }
+    { title: Faker::Lorem.word, visibility: Timeline::PUBLIC, user: user, source: source_url }
   }
+
+  let(:master_file) { FactoryBot.create(:master_file) }
+  let(:source_url) { master_file_url(master_file, params: { t: '30,60' }) }
 
   let(:invalid_attributes) {
     { visibility: 'unknown' }

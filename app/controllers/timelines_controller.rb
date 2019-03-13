@@ -108,18 +108,25 @@ class TimelinesController < ApplicationController
   # POST /timelines.json
   def create
     # TODO: Accept raw IIIF manifest here from timeliner tool?
-    @timeline = Timeline.new(timeline_params.merge(user: current_user))
-
     respond_to do |format|
-      if @timeline.save
-        format.html { redirect_to @timeline }
-        format.json { render json: @timeline, status: :created, location: @timeline }
-      else
-        format.html do
+      format.json do
+        # Accept raw IIIF manifest here from timeliner tool
+        # @timeline.manifest = request.body.read
+        @timeline = Timeline.new(timeline_params.merge(user: current_user))
+        if @timeline.save
+          render json: @timeline, status: :created, location: @timeline
+        else
+          render json: @timeline.errors, status: :unprocessable_entity
+        end
+      end
+      format.html do
+        @timeline = Timeline.new(timeline_params.merge(user: current_user))
+        if @timeline.save
+          redirect_to @timeline
+        else
           flash.now[:error] = @timeline.errors.full_messages.to_sentence
           render :new
         end
-        format.json { render json: @timeline.errors, status: :unprocessable_entity }
       end
     end
   end
