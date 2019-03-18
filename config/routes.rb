@@ -168,6 +168,8 @@ Rails.application.routes.draw do
   resources :timelines do
     member do
       patch 'regenerate_access_token'
+      post 'manifest', to: 'timelines#manifest_update', constraints: { format: 'json' }
+      get 'manifest', constraints: { format: 'json' }
     end
     collection do
       post 'duplicate'
@@ -177,6 +179,7 @@ Rails.application.routes.draw do
       end
     end
   end
+  get '/timeliner', to: 'timelines#timeliner', as: :timeliner
 
   resources :dropbox, :only => [] do
     collection do

@@ -29,8 +29,11 @@ RSpec.describe TimelinesController, type: :controller do
   # Timeline. As you add validations to Timeline, be sure to
   # adjust the attributes here as well.
   let(:valid_attributes) {
-    { title: Faker::Lorem.word, visibility: Timeline::PUBLIC, user: user }
+    { title: Faker::Lorem.word, visibility: Timeline::PUBLIC, user: user, source: source_url }
   }
+
+  let(:master_file) { FactoryBot.create(:master_file) }
+  let(:source_url) { master_file_url(master_file, params: { t: '30,60' }) }
 
   let(:invalid_attributes) {
     { visibility: 'unknown' }
@@ -115,10 +118,10 @@ RSpec.describe TimelinesController, type: :controller do
   end
 
   describe "GET #show" do
-    it "redirects to the timeliner tool" do
+    it "renders the timeliner tool" do
       timeline = Timeline.create! valid_attributes
       get :show, params: {id: timeline.to_param}, session: valid_session
-      expect(response).to redirect_to Settings.timeliner.timeliner_url + "#resource=http%3A%2F%2Ftest.host%2Ftimelines%2F1.json"
+      expect(response).to be_successful
     end
 
     context "with format json" do
@@ -133,11 +136,14 @@ RSpec.describe TimelinesController, type: :controller do
           "label": { "en": [ "Timeline 1" ] }
         }
       end
-      it "returns the timeline manifest" do
+      it "returns the timeline" do
         timeline = Timeline.create! valid_attributes.merge(manifest: manifest.to_json)
         get :show, params: {id: timeline.to_param, format: :json}, session: valid_session
         expect(response).to be_successful
-        expect(response.body).to eq timeline.manifest
+        response_json = JSON.parse(response.body)
+        expect(response_json["id"]).to eq timeline.id
+        expect(response_json["visibility"]).to eq timeline.visibility
+        expect(response_json["manifest"]).to eq timeline.manifest
       end
     end
   end
@@ -208,6 +214,48 @@ RSpec.describe TimelinesController, type: :controller do
       it "re-renders the 'new' template" do
         post :create, params: { timeline: invalid_attributes }, session: valid_session
         expect(response).to render_template('new')
+      end
+
+      context 'with json request' do
+        context "with valid params" do
+          it "creates a new Timeline" do
+            expect {
+              post :create, params: { timeline: valid_attributes, format: :json }, session: valid_session
+            }.to change(Timeline, :count).by(1)
+          end
+
+          it "returns the created timeline as json" do
+            post :create, params: { timeline: valid_attributes, format: :json }, session: valid_session
+            expect(response).to be_created
+            expect(response.content_type).to eq 'application/json'
+            expect(response.location).to eq "http://test.host/timelines/1"
+            response_json = JSON.parse(response.body)
+            new_timeline = Timeline.last
+            expect(response_json["manifest"]).to eq new_timeline.manifest
+            expect(response_json["title"]).to eq new_timeline.title
+          end
+
+          it 'generates a token if visibility is private-with-token' do
+            post :create, params: { timeline: valid_attributes.merge(visibility: Timeline::PRIVATE_WITH_TOKEN), format: :json }, session: valid_session
+            expect(response).to be_successful
+            expect(response.content_type).to eq 'application/json'
+            response_json = JSON.parse(response.body)
+            expect(response_json["access_token"]).not_to be_blank
+          end
+        end
+
+        context "with invalid params" do
+          before do
+            login_as :user
+          end
+
+          it "returns an unprocessable_entity response with the errors" do
+            post :create, params: { timeline: invalid_attributes, format: :json }, session: valid_session
+            expect(response).to be_unprocessable
+            expect(response.content_type).to eq 'application/json'
+            expect(JSON.parse(response.body)).not_to be_blank
+          end
+        end
       end
     end
   end
@@ -333,6 +381,48 @@ RSpec.describe TimelinesController, type: :controller do
 
     it 'returns a url for the timeline with the access token' do
       expect(controller.access_token_url(timeline)).to eq "#{root_url}timelines/1?token=foo"
+    end
+  end
+
+  describe '#manifest' do
+    let(:manifest) do
+      {
+        "@context": [
+          "http://www.w3.org/ns/anno.jsonld",
+          "http://iiif.io/api/presentation/3/context.json"
+        ],
+        "id": "https://example.com/timelines/1.json",
+        "type": "Manifest",
+        "label": { "en": [ "Timeline 1" ] }
+      }
+    end
+    it "returns the timeline manifest" do
+      timeline = Timeline.create! valid_attributes.merge(manifest: manifest.to_json)
+      get :manifest, params: {id: timeline.to_param, format: :json}, session: valid_session
+      expect(response).to be_successful
+      expect(response.body).to eq timeline.manifest
+    end
+  end
+
+  describe '#manifest_update' do
+    let(:manifest) do
+      {
+        "@context": [
+          "http://www.w3.org/ns/anno.jsonld",
+          "http://iiif.io/api/presentation/3/context.json"
+        ],
+        "id": "https://example.com/timelines/1.json",
+        "type": "Manifest",
+        "label": { "en": [ "Timeline 1" ] }
+      }
+    end
+    it "returns the timeline manifest" do
+      timeline = Timeline.create! valid_attributes.merge(manifest: {}.to_json)
+      post :manifest_update, body: manifest.to_json, params: { id: timeline.id, format: :json }, session: valid_session
+      timeline.reload
+      expect(response).to be_successful
+      expect(response.body).to eq timeline.manifest
+      expect(timeline.manifest).to eq manifest.to_json
     end
   end
 end

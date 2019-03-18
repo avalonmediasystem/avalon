@@ -30,7 +30,7 @@ class Timeline < ActiveRecord::Base
 
   after_initialize :default_values
   before_save :generate_access_token, if: proc { |p| p.visibility == Timeline::PRIVATE_WITH_TOKEN && access_token.blank? }
-
+  after_create :generate_manifest
   serialize :tags
 
   # visibility
@@ -44,6 +44,11 @@ class Timeline < ActiveRecord::Base
     self.tags ||= []
   end
 
+  def generate_manifest
+    self.manifest ||= manifest_builder.to_json
+    save!
+  end
+
   def generate_access_token
     # TODO: Use ActiveRecord's secure_token when we move to Rails 5
     self.access_token = loop do
@@ -55,4 +60,73 @@ class Timeline < ActiveRecord::Base
   def valid_token?(token)
     access_token == token && visibility == Timeline::PRIVATE_WITH_TOKEN
   end
+
+  private
+
+    def manifest_url
+      @manifest_url ||= Rails.application.routes.url_helpers.manifest_timeline_url(self)
+    end
+
+    def duration
+      begin_time, end_time = source.split("?t=")[1].split(",")
+      end_time ||= master_file.duration.to_f / 1000
+      end_time.to_f - begin_time.to_f
+    end
+
+    def master_file
+      master_file = ActiveFedora::Base.where(identifier_ssim: master_file_id.downcase).first
+      master_file ||= ActiveFedora::Base.find(master_file_id, cast: true) rescue nil
+    end
+
+    def master_file_id
+      source.split("?")[0].split('/').last
+    end
+
+    def source_stream
+      media_fragment = source.split("?t=")[1]
+      Rails.application.routes.url_helpers.hls_manifest_master_file_url(master_file_id, quality: 'auto', params: { t: media_fragment})
+    end
+
+    def manifest_builder
+      {
+        "@context": [
+          "http://digirati.com/ns/timeliner",
+          "http://www.w3.org/ns/anno.jsonld",
+          "http://iiif.io/api/presentation/3/context.json"
+        ],
+        "id": manifest_url,
+        "type": "Manifest",
+        "label": {
+          "en": [
+            title
+          ]
+        },
+        "items": [
+          {
+            "id": "#{manifest_url}/canvas",
+            "type": "Canvas",
+            "duration": duration,
+            "items": [
+              {
+                "id": "#{manifest_url}/annotations",
+                "type": "AnnotationPage",
+                "items": [
+                  {
+                    "id": "#{manifest_url}/annotations/1",
+                    "type": "Annotation",
+                    "motivation": "painting",
+                    "body": {
+                      "id": source_stream,
+                      "type": "Audio",
+                      "duration": duration
+                    },
+                    "target": "#{manifest_url}/canvas"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    end
 end
