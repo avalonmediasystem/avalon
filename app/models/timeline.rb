@@ -84,7 +84,7 @@ class Timeline < ActiveRecord::Base
 
     def source_stream
       media_fragment = source.split("?t=")[1]
-      Rails.application.routes.url_helpers.hls_manifest_master_file_url(master_file_id, quality: 'auto', params: { t: media_fragment})
+      Rails.application.routes.url_helpers.hls_manifest_master_file_url(master_file_id, quality: 'auto', anchor: "t=#{media_fragment}")
     end
 
     def manifest_builder
