@@ -15,9 +15,9 @@
 # ---  END LICENSE_HEADER BLOCK  ---
 
 class TimelinesController < ApplicationController
-  before_action :authenticate_user!, except: [:show]
-  load_and_authorize_resource except: [:import_variations_timeline, :duplicate, :show, :index, :timeliner]
-  load_resource only: [:show]
+  before_action :authenticate_user!, except: [:show, :manifest]
+  load_and_authorize_resource except: [:import_variations_timeline, :duplicate, :show, :index, :timeliner, :manifest]
+  load_resource only: [:show, :manifest]
   authorize_resource only: [:index]
   before_action :user_timelines, only: [:index, :paged_index]
   before_action :all_other_timelines, only: [:edit]
