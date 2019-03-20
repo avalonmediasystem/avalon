@@ -402,6 +402,16 @@ RSpec.describe TimelinesController, type: :controller do
       expect(response).to be_successful
       expect(response.body).to eq timeline.manifest
     end
+
+    context 'when timeline is public' do
+      it 'returns the manifest without logging in' do
+        timeline = Timeline.create! valid_attributes.merge(manifest: manifest.to_json)
+        sign_out user
+        get :manifest, params: {id: timeline.to_param, format: :json}, session: valid_session
+        expect(response).to be_successful
+        expect(response.body).to eq timeline.manifest
+      end
+    end
   end
 
   describe '#manifest_update' do
