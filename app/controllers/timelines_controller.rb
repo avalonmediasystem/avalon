@@ -86,7 +86,8 @@ class TimelinesController < ApplicationController
     authorize! :read, @timeline
     respond_to do |format|
       format.html do
-        url_fragment = "resource=#{URI.escape(manifest_timeline_url(@timeline, format: :json, token: @timeline.access_token), '://?=')}"
+        url_fragment = "noHeader=true&noFooter=true"
+        url_fragment += "&resource=#{URI.escape(manifest_timeline_url(@timeline, format: :json, token: @timeline.access_token), '://?=')}"
         # TODO: determine if need to clone timeline and provide saveback url specific to current_user
         if current_user == @timeline.user
           url_fragment += "&callback=#{URI.escape(manifest_timeline_url(@timeline, format: :json), '://?=')}"
