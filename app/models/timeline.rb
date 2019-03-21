@@ -105,7 +105,7 @@ class Timeline < ActiveRecord::Base
           "id": source,
           "type": "Text",
           "label": {
-            "@en": [
+            "en": [
               "View Source Item"
             ]
           },
