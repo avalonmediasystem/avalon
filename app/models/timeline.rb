@@ -128,13 +128,42 @@ class Timeline < ActiveRecord::Base
                     "body": {
                       "id": source_stream,
                       "type": "Audio",
-                      "duration": duration
+                      "duration": duration,
+                      "service": [auth_service]
                     },
                     "target": "#{manifest_url}/canvas"
                   }
                 ]
               }
             ]
+          }
+        ]
+      }
+    end
+
+    def auth_service
+      {
+        "context": "http://iiif.io/api/auth/1/context.json",
+        "@id": Rails.application.routes.url_helpers.new_user_session_url(login_popup: 1),
+        "@type": "AuthCookieService1",
+        "confirmLabel": I18n.t('iiif.auth.confirmLabel'),
+        "description": I18n.t('iiif.auth.description'),
+        "failureDescription": I18n.t('iiif.auth.failureDescription'),
+        "failureHeader": I18n.t('iiif.auth.failureHeader'),
+        "header": I18n.t('iiif.auth.header'),
+        "label": I18n.t('iiif.auth.label'),
+        "profile": "http://iiif.io/api/auth/1/login",
+        "service": [
+          {
+            "@id": Rails.application.routes.url_helpers.iiif_auth_token_url(id: master_file_id),
+            "@type": "AuthTokenService1",
+            "profile": "http://iiif.io/api/auth/1/token"
+          },
+          {
+            "@id": Rails.application.routes.url_helpers.destroy_user_session_url,
+            "@type": "AuthLogoutService1",
+            "label": I18n.t('iiif.auth.logoutLabel'),
+            "profile": "http://iiif.io/api/auth/1/logout"
           }
         ]
       }

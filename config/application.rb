@@ -44,7 +44,7 @@ module Avalon
         resource '/master_files/*/structure.json', headers: :any, methods: [:get, :post, :delete]
         resource '/master_files/*/waveform.json', headers: :any, methods: [:get]
         resource '/master_files/*/*.m3u8', headers: :any, methods: [:get, :head]
-        resource '/timelines/*.json', headers: :any, methods: [:get]
+        resource '/timelines/*/manifest.json', headers: :any, methods: [:get, :post]
       end
     end
   end
