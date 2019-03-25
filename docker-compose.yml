@@ -25,17 +25,17 @@ services:
     networks:
       internal:
   fedora:
-    image: avalonmediasystem/fedora:4.7.x
+    image: avalonmediasystem/fedora:4.7.5
     depends_on:
       - db
     volumes:
       - fedora:/data
     environment:
-     - JAVA_OPTIONS=-Dfcrepo.modeshape.configuration=classpath:/config/file-simple/repository.json 
+     - JAVA_OPTIONS=-Dfcrepo.modeshape.configuration=classpath:/config/file-simple/repository.json -Dfcrepo.home=/data
     networks:
       internal:
   solr:
-    image: solr:6.6.4-alpine 
+    image: solr:6.6.4-alpine
     volumes:
       - ./solr/config:/opt/solr/avalon_conf
       - solr:/opt/solr/server/solr/mycores
