@@ -1,0 +1,125 @@
+version: 2.1
+orbs:
+  samvera: samvera/circleci-orb@dev:codeclimate
+jobs:
+  build:
+    docker:
+    # Primary container image where all steps run.
+     - image: avalonmediasystem/avalon:6.x-dev
+       environment:
+        - DATABASE_URL=postgresql://postgres@localhost:5432/postgres
+        - FEDORA_URL=http://localhost:8080/fcrepo/rest
+        - RAILS_ENV=test
+    # Secondary container image on common network.
+     - image: postgres:10-alpine
+       environment:
+         - POSTGRES_USER=postgres
+         - POSTGRES_DB=avalon
+     - image: ualbertalib/docker-fcrepo4:4.7
+       environment:
+         CATALINA_OPTS: "-Djava.awt.headless=true -Dfile.encoding=UTF-8 -server -Xms512m -Xmx1024m -XX:NewSize=256m -XX:MaxNewSize=256m -XX:PermSize=256m -XX:MaxPermSize=256m -XX:+DisableExplicitGC"
+     - image: solr:7-alpine
+       command: bin/solr -cloud -noprompt -f -p <<parameters.solr_port>>
+     - image: redis:alpine
+
+    parameters:
+      ruby_ver:
+        description: "Ruby version"
+        default: "2.5.5"
+        type: "string"
+      solr_port:
+        type: string
+        default: '8985'
+      parallelism:
+        type: integer
+        default: 4
+
+    working_directory: /home/app/avalon
+
+    parallelism: << parameters.parallelism >>
+
+    steps:
+      - run:
+          name: Clean out existing code
+          command: rm -rf .[!.]* *
+
+      - samvera/cached_checkout
+
+      - run: cp config/controlled_vocabulary.yml.example config/controlled_vocabulary.yml
+
+      - restore_cache:
+          keys:
+            - gem-cache-v1-{{ checksum "Gemfile.lock" }}-<< parameters.ruby_ver >>
+
+      - run:
+          command: |
+            bundle install --with aws development test postgres --without production --path=vendor/bundle --jobs=4 --retry=3
+            bundle exec rake db:migrate
+
+      - save_cache:
+          key: gem-cache-v1-{{ checksum "Gemfile.lock" }}-<< parameters.ruby_ver >>
+          paths:
+            - vendor/bundle
+
+      - restore_cache:
+          keys:
+            - yarn-cache-v1-{{ arch }}-{{ checksum "yarn.lock" }}
+
+      - run: yarn
+
+      - save_cache:
+          key: yarn-cache-v1-{{ arch }}-{{ checksum "yarn.lock" }}
+          paths:
+            - .cache/yarn
+
+      - samvera/install_solr_core
+
+      - samvera/code_climate_before_build
+
+      - samvera/parallel_rspec
+
+      - run:
+          command: ./cc-test-reporter format-coverage -t simplecov -o "coverage/codeclimate.$CIRCLE_NODE_INDEX.json"
+
+      - persist_to_workspace:
+          root: coverage
+          paths:
+            - codeclimate.*.json
+
+  upload-coverage:
+    parameters:
+      parallelism:
+        type: integer
+        default: 4
+    docker:
+      # Primary container image where all steps run.
+      - image: avalonmediasystem/avalon:6.x-dev
+
+    working_directory: /home/app/avalon
+
+    steps:
+      - attach_workspace:
+          at: /home/app/avalon
+
+      - run:
+          name: Install Code Climate Test Reporter
+          command: |
+            curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
+            chmod +x ./cc-test-reporter
+
+      - deploy:
+          # CC_TEST_REPORTER_ID set within the circleci web interface
+          command: ./cc-test-reporter sum-coverage --output - --parts << parameters.parallelism >> codeclimate.*.json | ./cc-test-reporter upload-coverage --debug --input -
+
+workflows:
+  version: 2
+  build_test_report:
+    jobs:
+      - build:
+          ruby_ver: 2.5.5
+          name: "Ruby2-5-5"
+          parallelism: 4
+      - upload-coverage:
+          parallelism: 4
+          requires:
+             - Ruby2-5-5
