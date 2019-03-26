@@ -1,4 +1,4 @@
-if ENV['COVERAGE'] || ENV['TRAVIS']
+if ENV['COVERAGE'] || ENV['CI']
   require 'simplecov'
   require 'codeclimate-test-reporter'
 
@@ -56,9 +56,19 @@ ActiveRecord::Migration.maintain_test_schema!
 ActiveJob::Base.queue_adapter = :test
 
 Capybara.server = :webrick
+Capybara.register_driver :selenium_chrome_headless_docker_friendly do |app|
+  Capybara::Selenium::Driver.load_selenium
+  browser_options = ::Selenium::WebDriver::Chrome::Options.new
+  browser_options.args << '--headless'
+  browser_options.args << '--disable-gpu'
+  # Sandbox cannot be used inside unprivileged Docker container
+  browser_options.args << '--no-sandbox'
+  Capybara::Selenium::Driver.new(app, browser: :chrome, options: browser_options)
+end
+
 # eg `SHOW_BROWSER=true ./bin/rspec` will show you an actual chrome browser
 # being operated by capybara.
-Capybara.javascript_driver = ENV['SHOW_BROWSER'] ? :selenium_chrome : :selenium_chrome_headless
+Capybara.javascript_driver = ENV['SHOW_BROWSER'] ? :selenium_chrome : :selenium_chrome_headless_docker_friendly
 
 Shoulda::Matchers.configure do |config|
   config.integrate do |with|

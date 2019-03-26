@@ -124,7 +124,7 @@ describe 'Playlist' do
     expect(page).to have_content('Public')
   end
   it 'is able to edit playlist name and description', js: true, :retry => 3 do
-    optional "Sometimes fails" if ENV['TRAVIS']
+    optional "Sometimes fails" if ENV['CI']
     user = FactoryBot.create(:administrator)
     login_as user, scope: :user
     visit '/playlists'
@@ -149,7 +149,7 @@ describe 'Playlist' do
   end
 
   it 'is able to change public playlist to private', js: true, :retry => 3 do
-    optional "Sometimes fails" if ENV['TRAVIS']
+    optional "Sometimes fails" if ENV['CI']
     user = FactoryBot.create(:administrator)
     login_as user, scope: :user
     visit '/playlists'
@@ -171,7 +171,7 @@ describe 'Playlist' do
     expect(page).to have_content('Private')
   end
   it 'is able to change private playlist to public', js: true, :retry => 3 do
-    optional "Sometimes fails" if ENV['TRAVIS']
+    optional "Sometimes fails" if ENV['CI']
     user = FactoryBot.create(:administrator)
     login_as user, scope: :user
     visit '/playlists'
