@@ -1,0 +1,96 @@
+version: 2.1
+orbs:
+  samvera: samvera/circleci-orb@dev:codeclimate
+jobs:
+  build:
+    docker:
+    # Primary container image where all steps run.
+     - image: avalonmediasystem/avalon:6.x-dev
+       environment:
+        - DATABASE_URL=postgresql://postgres@localhost:5432/postgres
+        - FEDORA_URL=http://localhost:8080/fedora/rest
+        - SOLR_URL=http://localhost:8983/solr/avalon
+        - RAILS_ENV=test
+        - CC_TEST_REPORTER_ID=${CC_TEST_REPORTER_ID}
+    # Secondary container image on common network.
+     - image: postgres:10-alpine
+       environment:
+         - POSTGRES_USER=postgres
+         - POSTGRES_DB=avalon
+     - image: avalonmediasystem/fedora:4.7.5
+       environment:
+         - 'JAVA_OPTIONS= -Dfcrepo.modeshape.configuration=classpath:/config/file-simple/repository.json'
+     - image: avalonmediasystem/solr:avalon-7.0
+       entrypoint:
+         - docker-entrypoint.sh
+         - solr-precreate
+         - avalon
+         - /opt/solr/avalon_conf
+     - image: redis:alpine
+
+    parameters:
+      ruby_ver:
+        description: "Ruby version"
+        default: "2.5.5"
+        type: "string"
+
+    working_directory: /home/app/avalon
+
+    parallelism: 3
+
+    steps:
+      - run:
+          name: Clean out existing code
+          command: rm -rf .[!.]* *
+
+      - samvera/cached_checkout
+
+      - restore_cache:
+          keys:
+            - gem-cache-v1-{{ .Branch }}-{{ checksum "Gemfile.lock" }}-<< parameters.ruby_ver >>
+            - gem-cache-v1-{{ .Branch }}-<< parameters.ruby_ver >>
+            - gem-cache-v1-<< parameters.ruby_ver >>
+            - gem-cache-v1
+
+      - run:
+          command: |
+            bundle install --with aws development test postgres --without production --path=vendor/bundle --jobs=4 --retry=3
+            bundle exec rake db:migrate
+
+      - save_cache:
+          key: gem-cache-v1-{{ .Branch }}-{{ checksum "Gemfile.lock" }}-<< parameters.ruby_ver >>
+          paths:
+            - vendor/bundle
+
+      - restore_cache:
+          keys:
+            - yarn-cache-{{ arch }}-{{ .Branch }}-{{ checksum "yarn.lock" }}
+            - yarn-cache-{{ arch }}-{{ .Branch }}
+            - yarn-cache
+
+      - run: yarn
+
+      - save_cache:
+          key: yarn-cache-{{ arch }}-{{ .Branch }}-{{ checksum "yarn.lock" }}
+          paths:
+            - .cache/yarn
+
+      - run:
+          command: |
+            curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
+            chmod +x ./cc-test-reporter
+            ./cc-test-reporter before-build
+
+      - samvera/code_climate_before_build
+
+      - samvera/parallel_rspec
+
+      - samvera/code_climate_after_build
+
+workflows:
+  version: 2
+  build:
+    jobs:
+      - build:
+          ruby_ver: 2.5.5
+          name: "Ruby2-5-5"
