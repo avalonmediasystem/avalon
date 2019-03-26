@@ -44,9 +44,9 @@ RSpec.describe BatchRegistriesMailer, type: :mailer do
   end
 
   describe 'batch_registration_finished_mailer' do
-    let(:batch_registries) { FactoryBot.create(:batch_registries, user_id: manager.id) }
+    let(:batch_registries) { FactoryBot.create(:batch_registries, user_id: manager.id, collection: collection.id) }
     let(:manager) { FactoryBot.create(:manager, username: 'frances.dickens@reichel.com', email: 'frances.dickens@reichel.com') }
-    let!(:collection) { FactoryBot.create(:collection, id: 'k32jf0kw') }
+    let(:collection) { FactoryBot.create(:collection) }
     let!(:batch_entries) { FactoryBot.create(:batch_entries, batch_registries: batch_registries, media_object_pid: media_object.id, complete: true) }
     let(:media_object) { FactoryBot.create(:media_object, collection: collection, permalink: "http://localhost:3000/media_objects/kfd39dnw") }
 
@@ -85,9 +85,9 @@ RSpec.describe BatchRegistriesMailer, type: :mailer do
   end
 
   describe 'batch_encoding_finished' do
-    let(:batch_registries) { FactoryBot.create(:batch_registries, user_id: manager.id) }
+    let(:batch_registries) { FactoryBot.create(:batch_registries, user_id: manager.id, collection: collection.id) }
     let(:manager) { FactoryBot.create(:manager, username: 'frances.dickens@reichel.com', email: 'frances.dickens@reichel.com') }
-    let!(:collection) { FactoryBot.create(:collection, id: 'k32jf0kw') }
+    let(:collection) { FactoryBot.create(:collection) }
     let!(:batch_entries) { FactoryBot.create(:batch_entries, batch_registries: batch_registries, media_object_pid: media_object.id, complete: true) }
     let(:media_object) { FactoryBot.create(:media_object, collection: collection, permalink: "http://localhost:3000/media_objects/kfd39dnw") }
 
@@ -123,9 +123,9 @@ RSpec.describe BatchRegistriesMailer, type: :mailer do
   end
 
   describe 'batch_registration_stalled_mailer' do
-    let(:batch_registries) { FactoryBot.create(:batch_registries) }
+    let(:batch_registries) { FactoryBot.create(:batch_registries, collection: collection.id) }
     let(:notification_email_address) { Settings.email.notification }
-    let!(:collection) { FactoryBot.create(:collection, id: 'k32jf0kw') }
+    let(:collection) { FactoryBot.create(:collection) }
 
     it "sends an email when a batch has stalled" do
        email = BatchRegistriesMailer.batch_registration_stalled_mailer(batch_registries)
