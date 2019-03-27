@@ -44,6 +44,8 @@ jobs:
           command: rm -rf .[!.]* *
 
       - samvera/cached_checkout
+      
+      - run: cp config/controlled_vocabulary.yml.example config/controlled_vocabulary.yml
 
       - restore_cache:
           keys:
