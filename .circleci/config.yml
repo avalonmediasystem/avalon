@@ -36,7 +36,7 @@ jobs:
 
     working_directory: /home/app/avalon
 
-    parallelism: 3
+    parallelism: 1
 
     steps:
       - run:
@@ -85,7 +85,7 @@ jobs:
 
       - samvera/code_climate_before_build
 
-      - samvera/parallel_rspec
+#      - samvera/parallel_rspec
 
       - samvera/code_climate_after_build
 
