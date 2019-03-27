@@ -1,10 +1,10 @@
-FROM        ruby:2.4.4-jessie
+FROM        ruby:2.5.5-stretch
 MAINTAINER  Phuong Dinh <pdinh@indiana.edu>
 
-RUN         curl -sS http://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add - \
+RUN         curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add - \
          && echo "deb http://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list \
          && curl -sL http://deb.nodesource.com/setup_8.x | bash - \
-         && echo "deb http://ftp.uk.debian.org/debian jessie-backports main" >> /etc/apt/sources.list \
+         && echo "deb http://deb.debian.org/debian stretch-backports main" >> /etc/apt/sources.list \
          && wget https://mediaarea.net/repo/deb/repo-mediaarea_1.0-6_all.deb && dpkg -i repo-mediaarea_1.0-6_all.deb 
 
 RUN         apt-get update && apt-get upgrade -y build-essential nodejs \
@@ -16,15 +16,16 @@ RUN         apt-get update && apt-get upgrade -y build-essential nodejs \
             lsof \
             sendmail \
             yarn \
+         && curl https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb -o /chrome.deb \
+         && dpkg -i /chrome.deb || apt-get install -yf && rm /chrome.deb \
+         && curl https://chromedriver.storage.googleapis.com/2.46/chromedriver_linux64.zip -o /usr/local/bin/chromedriver \
+         && chmod +x /usr/local/bin/chromedriver \
          && rm -rf /var/lib/apt/lists/* \
          && apt-get clean
 
-RUN         mkdir -p /tmp/phantomjs \
-         && curl -L https://bitbucket.org/ariya/phantomjs/downloads/phantomjs-2.1.1-linux-x86_64.tar.bz2 | tar -xj --strip-components=1 -C /tmp/phantomjs \
-         && mv /tmp/phantomjs/bin/phantomjs /usr/local/bin \
-         && mkdir -p /tmp/ffmpeg && cd /tmp/ffmpeg \
-         && curl https://johnvansickle.com/ffmpeg/releases/ffmpeg-release-64bit-static.tar.xz | tar xJ \
-         && cp `find . -type f -executable` /usr/bin/ \
+RUN         mkdir -p /tmp/ffmpeg && cd /tmp/ffmpeg \
+         && curl https://johnvansickle.com/ffmpeg/releases/ffmpeg-release-amd64-static.tar.xz | tar xJ \
+         && cp `find . -type f -executable` /usr/bin/ \ 
          && ln -s /usr/bin/lsof /usr/sbin/
 
 RUN         mkdir -p /home/app/avalon
