@@ -17,9 +17,9 @@ jobs:
        environment:
          - POSTGRES_USER=postgres
          - POSTGRES_DB=avalon
-     - image: avalonmediasystem/fedora:4.7.5
+     - image: ualbertalib/docker-fcrepo4:4.7
        environment:
-         - 'JAVA_OPTIONS= -Dfcrepo.modeshape.configuration=classpath:/config/file-simple/repository.json'
+         CATALINA_OPTS: "-Djava.awt.headless=true -Dfile.encoding=UTF-8 -server -Xms512m -Xmx1024m -XX:NewSize=256m -XX:MaxNewSize=256m -XX:PermSize=256m -XX:MaxPermSize=256m -XX:+DisableExplicitGC"
      - image: avalonmediasystem/solr:avalon-7.0
        entrypoint:
          - docker-entrypoint.sh
@@ -85,7 +85,7 @@ jobs:
 
       - samvera/code_climate_before_build
 
-#      - samvera/parallel_rspec
+      - samvera/parallel_rspec
 
       - samvera/code_climate_after_build
 
