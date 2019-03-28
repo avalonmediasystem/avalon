@@ -30,6 +30,8 @@ class Timeline < ActiveRecord::Base
 
   after_initialize :default_values
   before_save :generate_access_token, if: proc { |p| p.visibility == Timeline::PRIVATE_WITH_TOKEN && access_token.blank? }
+  before_save :synchronize_title
+  before_save :synchronize_description
   after_create :generate_manifest
   serialize :tags
 
@@ -45,6 +47,7 @@ class Timeline < ActiveRecord::Base
   end
 
   def generate_manifest
+    return unless source.present?
     self.manifest ||= manifest_builder.to_json
     save!
   end
@@ -54,6 +57,38 @@ class Timeline < ActiveRecord::Base
     self.access_token = loop do
       random_token = SecureRandom.urlsafe_base64(nil, false)
       break random_token unless self.class.exists?(access_token: random_token)
+    end
+  end
+
+  def synchronize_title
+    return if manifest.blank?
+
+    manifest_json = JSON.parse(manifest)
+    manifest_json["label"] ||= {}
+    manifest_json["label"]["en"] ||= []
+
+    if title_changed?
+      manifest_json["label"]["en"] = [title]
+      self.manifest = manifest_json.to_json
+    end
+    if manifest_changed?
+      self.title = manifest_json["label"]["en"].first
+    end
+  end
+
+  def synchronize_description
+    return if manifest.blank?
+
+    manifest_json = JSON.parse(manifest)
+    manifest_json["summary"] ||= {}
+    manifest_json["summary"]["en"] ||= []
+
+    if description_changed?
+      manifest_json["summary"]["en"] = [description]
+      self.manifest = manifest_json.to_json
+    end
+    if manifest_changed?
+      self.description = manifest_json["summary"]["en"].first
     end
   end
 
@@ -99,6 +134,11 @@ class Timeline < ActiveRecord::Base
         "label": {
           "en": [
             title
+          ]
+        },
+        "summary": {
+          "en": [
+            description
           ]
         },
         "homepage": {
