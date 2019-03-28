@@ -189,4 +189,68 @@ RSpec.describe Timeline, type: :model do
     end
   end
 
+  describe 'synchronize_title' do
+    let(:master_file) { FactoryBot.create(:master_file) }
+    let(:source) { Rails.application.routes.url_helpers.master_file_url(master_file.id, params: { t: "0," }) }
+    let(:timeline) { FactoryBot.create(:timeline, title: "Old title", source: source, manifest: nil) }
+    let(:new_title) { "New Title" }
+
+    context 'when the manifest title changes' do
+      before do
+        manifest_json = JSON.parse(timeline.manifest)
+        manifest_json["label"]["en"] = [new_title]
+        timeline.manifest = manifest_json.to_json
+      end
+      it 'updates the title' do
+        expect(timeline.manifest_changed?).to eq true
+        timeline.synchronize_title
+        expect(timeline.title).to eq new_title
+      end
+    end
+    context 'when the title changes' do
+      before do
+        timeline.title = new_title
+      end
+
+      it 'updates the manifest title' do
+        expect(timeline.title_changed?).to eq true
+        timeline.synchronize_title
+        manifest_json = JSON.parse(timeline.manifest)
+        expect(manifest_json["label"]["en"].first).to eq new_title
+      end
+    end
+  end
+
+  describe 'synchronize_description' do
+    let(:master_file) { FactoryBot.create(:master_file) }
+    let(:source) { Rails.application.routes.url_helpers.master_file_url(master_file.id, params: { t: "0," }) }
+    let(:timeline) { FactoryBot.create(:timeline, description: "Old description", source: source, manifest: nil) }
+    let(:new_description) { "New description" }
+
+    context 'when the manifest description changes' do
+      before do
+        manifest_json = JSON.parse(timeline.manifest)
+        manifest_json["summary"] ||= {}
+        manifest_json["summary"]["en"] = [new_description]
+        timeline.manifest = manifest_json.to_json
+      end
+      it 'updates the description' do
+        expect(timeline.manifest_changed?).to eq true
+        timeline.synchronize_description
+        expect(timeline.description).to eq new_description
+      end
+    end
+    context 'when the description changes' do
+      before do
+        timeline.description = new_description
+      end
+
+      it 'updates the manifest description' do
+        expect(timeline.description_changed?).to eq true
+        timeline.synchronize_description
+        manifest_json = JSON.parse(timeline.manifest)
+        expect(manifest_json["summary"]["en"].first).to eq new_description
+      end
+    end
+  end
 end
