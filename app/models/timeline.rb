@@ -30,8 +30,8 @@ class Timeline < ActiveRecord::Base
 
   after_initialize :default_values
   before_save :generate_access_token, if: proc { |p| p.visibility == Timeline::PRIVATE_WITH_TOKEN && access_token.blank? }
-  before_save :synchronize_title
-  before_save :synchronize_description
+  before_validation :synchronize_title
+  before_validation :synchronize_description
   after_create :generate_manifest
   serialize :tags
 
