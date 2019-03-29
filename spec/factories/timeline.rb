@@ -18,7 +18,8 @@ FactoryBot.define do
     title { Faker::Lorem.word }
     description { Faker::Lorem.sentence }
     visibility { Playlist::PRIVATE }
-    manifest { {}.to_json }
+    manifest { }
+    source { }
     tags { [Faker::Lorem.word, Faker::Lorem.word] }
 
     trait :with_access_token do

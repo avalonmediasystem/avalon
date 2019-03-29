@@ -137,9 +137,7 @@ class TimelinesController < ApplicationController
   def update
     respond_to do |format|
       format.json do
-        # Accept raw IIIF manifest here from timeliner tool
-        @timeline.manifest = request.body.read
-        if @timeline.save
+        if @timeline.update(timeline_params)
           render json: @timeline, status: :created, location: @timeline
         else
           render json: @timeline.errors, status: :unprocessable_entity
