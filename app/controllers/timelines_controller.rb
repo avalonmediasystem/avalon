@@ -22,7 +22,7 @@ class TimelinesController < ApplicationController
   before_action :user_timelines, only: [:index, :paged_index]
   before_action :all_other_timelines, only: [:edit]
   before_action :load_timeline_token, only: [:show, :duplicate]
-  skip_before_action :verify_authenticity_token, only: [:post, :manifest_update]
+  skip_before_action :verify_authenticity_token, only: [:create, :manifest_update]
 
   helper_method :access_token_url
 
@@ -64,7 +64,7 @@ class TimelinesController < ApplicationController
           "<i class='fa fa-times' aria-hidden='true'></i> Delete".html_safe
         end
         [
-          view_context.link_to(timeline.title, timeline_path(timeline), title: timeline.description, target: "blank"),
+          view_context.link_to(timeline.title, timeline_path(timeline), title: timeline.description),
           timeline.description,
           view_context.timeline_human_friendly_visibility(timeline.visibility),
           "<span title='#{timeline.updated_at.utc.iso8601}'>#{view_context.time_ago_in_words(timeline.updated_at)} ago</span>",
@@ -91,6 +91,8 @@ class TimelinesController < ApplicationController
         # TODO: determine if need to clone timeline and provide saveback url specific to current_user
         if current_user == @timeline.user
           url_fragment += "&callback=#{URI.escape(manifest_timeline_url(@timeline, format: :json), '://?=')}"
+        else
+          url_fragment += "&callback=#{URI.escape(timelines_url, '://?=')}"
         end
         @timeliner_iframe_url = Settings.timeliner.timeliner_url + "##{url_fragment}"
       end
@@ -108,13 +110,19 @@ class TimelinesController < ApplicationController
   # POST /timelines
   # POST /timelines.json
   def create
-    # TODO: Accept raw IIIF manifest here from timeliner tool?
     respond_to do |format|
       format.json do
-        # Accept raw IIIF manifest here from timeliner tool
-        # @timeline.manifest = request.body.read
-        @timeline = Timeline.new(timeline_params.merge(user: current_user))
+        if timeline_params.blank?
+          # Accept raw IIIF manifest here from timeliner tool
+          manifest = request.body.read
+          source = JSON.parse(manifest)["homepage"]["id"]
+          @timeline = Timeline.new(user: current_user, manifest: manifest, source: source)
+        else
+          @timeline = Timeline.new(timeline_params.merge(user: current_user))
+        end
+
         if @timeline.save
+          # Timeliner should redirect when create is successful for cloned timelines ?!?
           render json: @timeline, status: :created, location: @timeline
         else
           render json: @timeline.errors, status: :unprocessable_entity
