@@ -15,7 +15,7 @@
 # ---  END LICENSE_HEADER BLOCK  ---
 
 class TimelinesController < ApplicationController
-  before_action :authenticate_user!, except: [:show, :manifest]
+  before_action :authenticate_user!, except: [:show, :manifest, :timeliner]
   load_and_authorize_resource except: [:import_variations_timeline, :duplicate, :show, :index, :timeliner, :manifest]
   load_resource only: [:show, :manifest]
   authorize_resource only: [:index]
@@ -91,7 +91,7 @@ class TimelinesController < ApplicationController
         # TODO: determine if need to clone timeline and provide saveback url specific to current_user
         if current_user == @timeline.user
           url_fragment += "&callback=#{URI.escape(manifest_timeline_url(@timeline, format: :json), '://?=')}"
-        else
+        elsif current_user
           url_fragment += "&callback=#{URI.escape(timelines_url, '://?=')}"
         end
         @timeliner_iframe_url = Settings.timeliner.timeliner_url + "##{url_fragment}"
