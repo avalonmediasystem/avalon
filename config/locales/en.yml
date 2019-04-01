@@ -222,6 +222,7 @@ en:
     private-with-tokenText: "Share by link"
 
     details: "Timeline Details"
+    source_link: "Source"
     new:
       action: "Create"
     create:
