@@ -245,7 +245,7 @@ class TimelinesController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def timeline_params
-      new_params = params.require(:timeline).permit(:title, :user_id, :visibility, :description, :access_token, :tags, :source, :manifest)
+      new_params = params.fetch(:timeline, {}).permit(:title, :visibility, :description, :access_token, :tags, :source, :manifest)
       new_params[:tags] = JSON.parse(new_params[:tags]) if new_params[:tags].present?
       new_params
     end
