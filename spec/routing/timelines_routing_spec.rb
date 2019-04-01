@@ -35,6 +35,18 @@ RSpec.describe TimelinesController, type: :routing do
       expect(:delete => "/timelines/1").to route_to("timelines#destroy", :id => "1")
     end
 
+    it "routes to #manifest" do
+      expect(:get => "/timelines/1/manifest.json").to route_to("timelines#manifest", :id => "1", format: "json")
+    end
+
+    it "routes to #manifest via POST" do
+      expect(:post => "/timelines/1/manifest.json").to route_to("timelines#manifest_update", :id => "1", format: "json")
+    end
+
+    it "routes to #timeliner" do
+      expect(:get => "/timeliner").to route_to("timelines#timeliner")
+    end
+
     it "routes to #regenerate_access_token" do
       expect(:patch => "/timelines/1/regenerate_access_token").to route_to("timelines#regenerate_access_token", :id => "1")
     end
