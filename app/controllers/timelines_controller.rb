@@ -15,14 +15,14 @@
 # ---  END LICENSE_HEADER BLOCK  ---
 
 class TimelinesController < ApplicationController
-  before_action :authenticate_user!, except: [:show, :manifest]
+  before_action :authenticate_user!, except: [:show, :manifest, :timeliner]
   load_and_authorize_resource except: [:import_variations_timeline, :duplicate, :show, :index, :timeliner, :manifest]
   load_resource only: [:show, :manifest]
   authorize_resource only: [:index]
   before_action :user_timelines, only: [:index, :paged_index]
   before_action :all_other_timelines, only: [:edit]
   before_action :load_timeline_token, only: [:show, :duplicate]
-  skip_before_action :verify_authenticity_token, only: [:post, :manifest_update]
+  skip_before_action :verify_authenticity_token, only: [:create, :manifest_update]
 
   helper_method :access_token_url
 
@@ -64,7 +64,7 @@ class TimelinesController < ApplicationController
           "<i class='fa fa-times' aria-hidden='true'></i> Delete".html_safe
         end
         [
-          view_context.link_to(timeline.title, timeline_path(timeline), title: timeline.description, target: "blank"),
+          view_context.link_to(timeline.title, timeline_path(timeline), title: timeline.description),
           timeline.description,
           view_context.timeline_human_friendly_visibility(timeline.visibility),
           "<span title='#{timeline.updated_at.utc.iso8601}'>#{view_context.time_ago_in_words(timeline.updated_at)} ago</span>",
@@ -86,11 +86,13 @@ class TimelinesController < ApplicationController
     authorize! :read, @timeline
     respond_to do |format|
       format.html do
-        url_fragment = "noHeader=true&noFooter=true"
+        url_fragment = "noHeader=true&noFooter=true&noSourceLink=true"
         url_fragment += "&resource=#{URI.escape(manifest_timeline_url(@timeline, format: :json, token: @timeline.access_token), '://?=')}"
         # TODO: determine if need to clone timeline and provide saveback url specific to current_user
         if current_user == @timeline.user
           url_fragment += "&callback=#{URI.escape(manifest_timeline_url(@timeline, format: :json), '://?=')}"
+        elsif current_user
+          url_fragment += "&callback=#{URI.escape(timelines_url, '://?=')}"
         end
         @timeliner_iframe_url = Settings.timeliner.timeliner_url + "##{url_fragment}"
       end
@@ -108,13 +110,19 @@ class TimelinesController < ApplicationController
   # POST /timelines
   # POST /timelines.json
   def create
-    # TODO: Accept raw IIIF manifest here from timeliner tool?
     respond_to do |format|
       format.json do
-        # Accept raw IIIF manifest here from timeliner tool
-        # @timeline.manifest = request.body.read
-        @timeline = Timeline.new(timeline_params.merge(user: current_user))
+        if timeline_params.blank?
+          # Accept raw IIIF manifest here from timeliner tool
+          manifest = request.body.read
+          source = JSON.parse(manifest)["homepage"]["id"]
+          @timeline = Timeline.new(user: current_user, manifest: manifest, source: source)
+        else
+          @timeline = Timeline.new(timeline_params.merge(user: current_user))
+        end
+
         if @timeline.save
+          # Timeliner should redirect when create is successful for cloned timelines ?!?
           render json: @timeline, status: :created, location: @timeline
         else
           render json: @timeline.errors, status: :unprocessable_entity
@@ -237,7 +245,7 @@ class TimelinesController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def timeline_params
-      new_params = params.require(:timeline).permit(:title, :user_id, :visibility, :description, :access_token, :tags, :source, :manifest)
+      new_params = params.fetch(:timeline, {}).permit(:title, :visibility, :description, :access_token, :tags, :source, :manifest)
       new_params[:tags] = JSON.parse(new_params[:tags]) if new_params[:tags].present?
       new_params
     end
