@@ -36,7 +36,7 @@ jobs:
 
     working_directory: /home/app/avalon
 
-    parallelism: 1
+    parallelism: 4
 
     steps:
       - run:
