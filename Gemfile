@@ -127,6 +127,7 @@ group :test do
   gem 'faker'
   gem 'hashdiff'
   gem 'rails-controller-testing'
+  gem 'rspec_junit_formatter'
   gem 'rspec-retry'
   gem 'selenium-webdriver'
   gem 'shoulda-matchers'
