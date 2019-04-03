@@ -30,10 +30,13 @@ jobs:
       solr_port:
         type: string
         default: '8985'
+      parallelism:
+        type: integer
+        default: 4
 
     working_directory: /home/app/avalon
 
-    parallelism: 4
+    parallelism: << parameters.parallelism >>
 
     steps:
       - run:
@@ -84,6 +87,10 @@ jobs:
             - codeclimate.*.json
 
   upload-coverage:
+    parameters:
+      parallelism:
+        type: integer
+        default: 4
     docker:
       # Primary container image where all steps run.
       - image: avalonmediasystem/avalon:6.x-dev
@@ -103,7 +110,7 @@ jobs:
             chmod +x ./cc-test-reporter
 
       - deploy:
-          command: ./cc-test-reporter sum-coverage --output - --parts $CIRCLE_NODE_TOTAL codeclimate.*.json | ./cc-test-reporter upload-coverage --debug --input -
+          command: ./cc-test-reporter sum-coverage --output - --parts << parameters.parallelism >> codeclimate.*.json | ./cc-test-reporter upload-coverage --debug --input -
 
 workflows:
   version: 2
@@ -112,6 +119,8 @@ workflows:
       - build:
           ruby_ver: 2.5.5
           name: "Ruby2-5-5"
+          parallelism: 4
       - upload-coverage:
+          parallelism: 4
           requires:
              - Ruby2-5-5
