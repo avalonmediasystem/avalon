@@ -85,7 +85,13 @@ jobs:
 
   upload-coverage:
     docker:
-      - image: circleci/ruby:2.5.5
+      # Primary container image where all steps run.
+      - image: avalonmediasystem/avalon:6.x-dev
+        environment:
+          - DATABASE_URL=postgresql://postgres@localhost:5432/postgres
+          - FEDORA_URL=http://localhost:8080/fcrepo/rest
+          - RAILS_ENV=test
+
     environment:
       CC_TEST_REPORTER_ID=${CC_TEST_REPORTER_ID}
     working_directory: /home/app/avalon
