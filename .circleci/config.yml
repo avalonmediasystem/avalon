@@ -80,7 +80,7 @@ jobs:
           paths:
             - codeclimate.*.json
   
-  upload_coverage:
+  upload-coverage:
     docker:
       - image: circleci/ruby:2.5.5
     environment:
