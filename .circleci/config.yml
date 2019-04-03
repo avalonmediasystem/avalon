@@ -106,6 +106,3 @@ workflows:
       - build:
           ruby_ver: 2.5.5
           name: "Ruby2-5-5"
-      - upload-coverage:
-          requires:
-             - build
