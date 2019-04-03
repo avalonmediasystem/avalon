@@ -101,7 +101,7 @@ jobs:
     
 workflows:
   version: 2
-  ci:
+  build_test_report:
     jobs:
       - build:
           ruby_ver: 2.5.5
