@@ -20,12 +20,8 @@ jobs:
      - image: ualbertalib/docker-fcrepo4:4.7
        environment:
          CATALINA_OPTS: "-Djava.awt.headless=true -Dfile.encoding=UTF-8 -server -Xms512m -Xmx1024m -XX:NewSize=256m -XX:MaxNewSize=256m -XX:PermSize=256m -XX:MaxPermSize=256m -XX:+DisableExplicitGC"
-     - image: avalonmediasystem/solr:avalon-7.0
-       entrypoint:
-         - docker-entrypoint.sh
-         - solr-precreate
-         - avalon
-         - /opt/solr/avalon_conf
+     - image: solr:7-alpine
+       command: bin/solr -cloud -noprompt -f -p <<parameters.solr_port>>
      - image: redis:alpine
 
     parameters:
@@ -33,6 +29,9 @@ jobs:
         description: "Ruby version"
         default: "2.5.5"
         type: "string"
+      solr_port:
+        type: string
+        default: '8985'
 
     working_directory: /home/app/avalon
 
@@ -44,15 +43,12 @@ jobs:
           command: rm -rf .[!.]* *
 
       - samvera/cached_checkout
-      
+
       - run: cp config/controlled_vocabulary.yml.example config/controlled_vocabulary.yml
 
       - restore_cache:
           keys:
-            - gem-cache-v1-{{ .Branch }}-{{ checksum "Gemfile.lock" }}-<< parameters.ruby_ver >>
-            - gem-cache-v1-{{ .Branch }}-<< parameters.ruby_ver >>
-            - gem-cache-v1-<< parameters.ruby_ver >>
-            - gem-cache-v1
+            - gem-cache-v1-{{ checksum "Gemfile.lock" }}-<< parameters.ruby_ver >>
 
       - run:
           command: |
@@ -60,22 +56,22 @@ jobs:
             bundle exec rake db:migrate
 
       - save_cache:
-          key: gem-cache-v1-{{ .Branch }}-{{ checksum "Gemfile.lock" }}-<< parameters.ruby_ver >>
+          key: gem-cache-v1-{{ checksum "Gemfile.lock" }}-<< parameters.ruby_ver >>
           paths:
             - vendor/bundle
 
       - restore_cache:
           keys:
-            - yarn-cache-{{ arch }}-{{ .Branch }}-{{ checksum "yarn.lock" }}
-            - yarn-cache-{{ arch }}-{{ .Branch }}
-            - yarn-cache
+            - yarn-cache-v1-{{ arch }}-{{ checksum "yarn.lock" }}
 
       - run: yarn
 
       - save_cache:
-          key: yarn-cache-{{ arch }}-{{ .Branch }}-{{ checksum "yarn.lock" }}
+          key: yarn-cache-v1-{{ arch }}-{{ checksum "yarn.lock" }}
           paths:
             - .cache/yarn
+
+      - samvera/install_solr_core
 
       - samvera/code_climate_before_build
 
