@@ -82,7 +82,7 @@ jobs:
           root: coverage
           paths:
             - codeclimate.*.json
-  
+
   upload-coverage:
     docker:
       - image: circleci/ruby:2.5.5
@@ -100,8 +100,9 @@ jobs:
             curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
             chmod +x ./cc-test-reporter
 
-      - samvera/code_climate_after_build
-    
+      - deploy:
+          command: ./cc-test-reporter sum-coverage --output - --parts $CIRCLE_NODE_TOTAL coverage/codeclimate.*.json | ./cc-test-reporter upload-coverage --debug --input -
+
 workflows:
   version: 2
   build_test_report:
@@ -109,3 +110,6 @@ workflows:
       - build:
           ruby_ver: 2.5.5
           name: "Ruby2-5-5"
+      - upload-coverage:
+          requires:
+             - Ruby2-5-5
