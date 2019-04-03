@@ -96,6 +96,7 @@ jobs:
       - image: avalonmediasystem/avalon:6.x-dev
 
     environment:
+      # Set within the circleci web interface
       CC_TEST_REPORTER_ID=${CC_TEST_REPORTER_ID}
     working_directory: /home/app/avalon
 
