@@ -1,4 +1,4 @@
-if ENV['COVERAGE'] || ENV['TRAVIS']
+if ENV['COVERAGE'] || ENV['CI']
   require 'simplecov'
   require 'codeclimate-test-reporter'
 
