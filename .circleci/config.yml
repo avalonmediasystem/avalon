@@ -42,6 +42,10 @@ jobs:
           name: Clean out existing code
           command: rm -rf .[!.]* *
 
+      - run:
+          name: Install dockerize
+          command: curl -L https://github.com/jwilder/dockerize/releases/download/v0.6.1/dockerize-linux-amd64-v0.6.1.tar.gz | tar xvz
+
       - samvera/cached_checkout
 
       - run: cp config/controlled_vocabulary.yml.example config/controlled_vocabulary.yml
