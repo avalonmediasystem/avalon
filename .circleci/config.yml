@@ -42,11 +42,11 @@ jobs:
           name: Clean out existing code
           command: rm -rf .[!.]* *
 
+      - samvera/cached_checkout
+
       - run:
           name: Install dockerize
           command: curl -L https://github.com/jwilder/dockerize/releases/download/v0.6.1/dockerize-linux-amd64-v0.6.1.tar.gz | tar xvz
-
-      - samvera/cached_checkout
 
       - run: cp config/controlled_vocabulary.yml.example config/controlled_vocabulary.yml
 
@@ -81,7 +81,8 @@ jobs:
 
       - samvera/parallel_rspec
 
-      - samvera/code_climate_after_build
+      - samvera/code_climate_after_build:
+          when: always
 
 workflows:
   version: 2
