@@ -191,7 +191,9 @@ class ElasticTranscoderJob < ActiveEncode::Base
     end
 
     def convert_output(job)
-      pipeline = etclient.read_pipeline(id: job.pipeline_id).pipeline
+      pipeline = Rails.cache.fetch("transcoder-pipeline-#{job.pipeline_id}") do
+        etclient.read_pipeline(id: job.pipeline_id).pipeline
+      end
       job.outputs.collect do |output|
         preset = read_preset(output.preset_id)
         extension = preset.container == 'ts' ? '.m3u8' : ''
