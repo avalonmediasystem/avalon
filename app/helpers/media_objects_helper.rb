@@ -108,24 +108,6 @@ module MediaObjectsHelper
         quality
       end
 
-      FLOAT_PATTERN = Regexp.new(/^\d+([.]\d*)?$/).freeze
-
-      def parse_hour_min_sec(s)
-        return nil if s.nil?
-        smh = s.split(':').reverse
-        (0..2).each do |i|
-          # Use Regexp.match? when we drop ruby 2.3 support
-          smh[i] = smh[i] =~ FLOAT_PATTERN ? Float(smh[i]) : 0
-        end
-        smh[0] + (60 * smh[1]) + (3600 * smh[2])
-      end
-
-      def parse_media_fragment fragment
-        return 0,nil if !fragment.present?
-        f_start,f_end = fragment.split(',')
-        return parse_hour_min_sec(f_start) , parse_hour_min_sec(f_end)
-      end
-
       def is_current_section? section
          @currentStream && ( section.id == @currentStream.id )
       end

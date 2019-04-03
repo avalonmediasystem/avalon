@@ -29,14 +29,17 @@ Unless required by applicable law or agreed to in writing, software distributed
       <div class="modal-body">
         <div id="new-timeline-inputs">
         </div>
-        <%= form_tag(timelines_path, id: 'new-timeline-form') do %>
-          <input type='hidden' name='timeline[title]' id='new-timeline-title'/>
-          <input type='hidden' name='timeline[source]' id='new-timeline-source'/>
-        <% end %>
+        <div style="border-top: 1px dotted #e5e5e5;margin-top: 11px; padding-top: 11px;">
+          <%= form_tag(timelines_path, id: 'new-timeline-form') do %>
+            <input type='hidden' name='timeline[title]' id='new-timeline-title'/>
+            <input type='hidden' name='timeline[source]' id='new-timeline-source'/>
+            <input type="checkbox" name='include_structure' checked='checked'/> Initialize new timeline with structure
+          <% end %>
+        </div>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary" id="timelineModalSave">Save changes</button>
+        <button type="button" class="btn btn-primary" id="timelineModalSave">Create Timeline</button>
       </div>
     </div>
   </div>
@@ -57,8 +60,9 @@ $(document).ready(function() {
       if (scope.tracks > 1) {
         label += " ("+scope.tracks+" tracks)"
       }
+      checked = (index == scopes.length-1) ? 'checked' : ''
       bodyText += "<div class=\"form-check\">"
-      bodyText += "<input class=\"form-check-input\" type=\"radio\" name=\"scope\" id=\"timelinescope"+index+"\">"
+      bodyText += "<input class=\"form-check-input\" type=\"radio\" name=\"scope\" id=\"timelinescope"+index+"\" "+checked+">"
       bodyText += "<label class=\"form-check-label\" for=\"timelinescope"+index+"\" style=\"margin-left: 5px;\"> "+label+"</label>"
       bodyText += "</div>"
     }
