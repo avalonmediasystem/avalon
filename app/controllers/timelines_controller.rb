@@ -122,7 +122,7 @@ class TimelinesController < ApplicationController
         end
 
         if @timeline.save
-          # Timeliner should redirect when create is successful for cloned timelines ?!?
+          # When create is successful for cloned timelines, a redirect to the new timeline will be handled by the browser
           render json: @timeline, status: :created, location: @timeline
         else
           render json: @timeline.errors, status: :unprocessable_entity
@@ -131,6 +131,8 @@ class TimelinesController < ApplicationController
       format.html do
         @timeline = Timeline.new(timeline_params.merge(user: current_user))
         if @timeline.save
+          # If requested, add initial structure to timeline manifest
+          initialize_structure! if params[:include_structure].present?
           redirect_to @timeline
         else
           flash.now[:error] = @timeline.errors.full_messages.to_sentence
@@ -230,6 +232,89 @@ class TimelinesController < ApplicationController
 
   private
 
+    def initialize_structure!
+      mf = MasterFile.find timeline_params[:source].split('?t=')[0].split('/').last
+      structure = mf.structuralMetadata.content
+      return unless structure.present?
+      structure = Nokogiri::XML.parse(structure)
+      duration = mf.duration.to_f / 1000
+      starttime, endtime = view_context.parse_media_fragment(timeline_params[:source].split('?t=')[1])
+      starttime ||= 0.0
+      endtime ||= duration
+      structures = []
+      topnode = structure.xpath('//Item')
+      topnode.children.reject(&:blank?).each do |n|
+        range = parse_timeline_node(n, starttime, endtime, duration)
+        structures << range if range.present?
+      end
+      # pad ends of timeline if structure doesn't align
+      structure_start = min_range(structures)
+      structure_end = max_range(structures)
+      structures = [timeline_canvas('', 0, structure_start)] + structures if structure_start > 0
+      structures = structures + [timeline_canvas('', structure_end, endtime - starttime)] if structure_end < endtime-starttime
+      manifest = JSON.parse(@timeline.manifest)
+      manifest['structures'] = structures
+      @timeline.manifest = manifest.to_json
+      @timeline.save
+    end
+
+    def min_range(structures)
+      first = structures.first
+      if canvas_range?(first)
+        view_context.parse_hour_min_sec(first[:items][0][:id].split('t=')[1].split(',')[0])
+      else
+        min_range(first[:items])
+      end
+    end
+
+    def max_range(structures)
+      last = structures.last
+      if canvas_range?(last)
+        view_context.parse_hour_min_sec(last[:items][0][:id].split('t=')[1].split(',')[1])
+      else
+        max_range(last[:items])
+      end
+    end
+
+    def parse_timeline_node(node, startlimit, endlimit, duration)
+      if node.name == 'Div'
+        range = timeline_range(node.attribute('label')&.value || '')
+        node.children.reject(&:blank?).each do |n|
+          newnode = parse_timeline_node(n, startlimit, endlimit, duration)
+          range[:items] << newnode if newnode.present?
+        end
+        # don't add parent ranges that only have one child, instead add child only
+        range[:items].length == 1 && canvas_range?(range[:items][0]) ? range[:items][0] : range if range[:items].present?
+      elsif node.name == 'Span'
+        spanbegin = view_context.parse_hour_min_sec(node.attribute('begin')&.value || '0')
+        spanend = view_context.parse_hour_min_sec(node.attribute('end')&.value || duration.to_s)
+        timeline_canvas(node.attribute('label')&.value || '', spanbegin - startlimit, spanend - startlimit) if spanbegin >= startlimit && spanend <= endlimit
+      end
+    end
+
+    def timeline_range(label)
+      {
+        'id': "id-#{SecureRandom.uuid}",
+        'type': 'Range',
+        'label': { 'en': [label] },
+        'items': []
+      }
+    end
+
+    def timeline_canvas(label, starttime, endtime)
+      range = timeline_range(label)
+      canvas = {
+        'type': 'Canvas',
+        'id': "#{timeline_url(@timeline)}/manifest/canvas#t=#{starttime},#{endtime}"
+      }
+      range[:items] = [canvas]
+      range
+    end
+
+    def canvas_range?(range)
+      range[:items].length == 1 && range[:items][0][:type] == 'Canvas'
+    end
+
     def user_timelines
       @timelines = Timeline.by_user(current_user)
     end
@@ -245,7 +330,7 @@ class TimelinesController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def timeline_params
-      new_params = params.fetch(:timeline, {}).permit(:title, :visibility, :description, :access_token, :tags, :source, :manifest)
+      new_params = params.fetch(:timeline, {}).permit(:title, :visibility, :description, :access_token, :tags, :source, :manifest, :include_structure)
       new_params[:tags] = JSON.parse(new_params[:tags]) if new_params[:tags].present?
       new_params
     end

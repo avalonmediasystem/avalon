@@ -146,13 +146,15 @@ module ApplicationHelper
     hours = total_seconds / (60 * 60)
     minutes = (total_seconds / 60) % 60
     seconds = total_seconds % 60
+    fractional_seconds = milliseconds.to_s[-3, 3]
+    fractional_seconds = (fractional_seconds=='000' ? '' : ".#{fractional_seconds}")
 
     output = ''
     if hours > 0
       output += "#{hours}:"
     end
 
-    output += "#{minutes.to_s.rjust(2,'0')}:#{seconds.to_s.rjust(2,'0')}"
+    output += "#{minutes.to_s.rjust(2,'0')}:#{seconds.to_s.rjust(2,'0')}#{fractional_seconds}"
     output
   end
 
@@ -162,6 +164,24 @@ module ApplicationHelper
   def pretty_time( milliseconds )
     duration = milliseconds/1000
     Time.at(duration).utc.strftime(duration<3600?'%M:%S':'%H:%M:%S')
+  end
+
+  FLOAT_PATTERN = Regexp.new(/^\d+([.]\d*)?$/).freeze
+
+  def parse_hour_min_sec(s)
+    return nil if s.nil?
+    smh = s.split(':').reverse
+    (0..2).each do |i|
+      # Use Regexp.match? when we drop ruby 2.3 support
+      smh[i] = smh[i] =~ FLOAT_PATTERN ? Float(smh[i]) : 0
+    end
+    smh[0] + (60 * smh[1]) + (3600 * smh[2])
+  end
+
+  def parse_media_fragment fragment
+    return 0,nil if !fragment.present?
+    f_start,f_end = fragment.split(',')
+    return parse_hour_min_sec(f_start) , parse_hour_min_sec(f_end)
   end
 
   def git_commit_info pattern="%s %s [%s]"

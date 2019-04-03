@@ -177,7 +177,8 @@ class Timeline < ActiveRecord::Base
               }
             ]
           }
-        ]
+        ],
+        "structures":[]
       }
     end
 

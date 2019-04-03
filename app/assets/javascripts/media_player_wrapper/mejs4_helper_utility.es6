@@ -220,7 +220,7 @@ class MEJSUtility {
         let tracks = parent.find('li a');
         trackCount = tracks.length;
         begin = parseFloat(tracks[0].dataset["fragmentbegin"]) || 0;
-        end = parseFloat(tracks[trackCount-1].dataset["fragmentend"]) || duration;
+        end = parseFloat(tracks[trackCount-1].dataset["fragmentend"]) || '';
         scopes.push({'label': parent.prev().text().trim(), 'tracks': trackCount, 't': 't='+begin+','+end})
         parent = parent
           .closest('ul')
