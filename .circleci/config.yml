@@ -9,7 +9,6 @@ jobs:
        environment:
         - DATABASE_URL=postgresql://postgres@localhost:5432/postgres
         - FEDORA_URL=http://localhost:8080/fcrepo/rest
-        - SOLR_URL=http://localhost:8983/solr/avalon
         - RAILS_ENV=test
         - CC_TEST_REPORTER_ID=${CC_TEST_REPORTER_ID}
     # Secondary container image on common network.
