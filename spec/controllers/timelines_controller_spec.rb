@@ -200,6 +200,18 @@ RSpec.describe TimelinesController, type: :controller do
       end
     end
 
+    context "with structure" do
+      let(:master_file) { FactoryBot.create(:master_file, :with_structure) }
+      it "creates a new Timeline with initialize manifest structure" do
+        post :create, params: { timeline: valid_attributes, include_structure: true }, session: valid_session
+        timeline = Timeline.last
+        structures = JSON.parse(timeline.manifest)['structures']
+        expect(structures.count).to eq(6)
+        expect(structures.first['label']['en'].first).to eq('Copland, Three Piano Excerpts from Our Town')
+        expect(structures.last['label']['en'].first).to eq('')
+      end
+    end
+
     context "with invalid params" do
       before do
         login_as :user
