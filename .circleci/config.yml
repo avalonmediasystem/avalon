@@ -1,16 +1,16 @@
 version: 2.1
 orbs:
-  samvera: samvera/circleci-orb@dev:codeclimate
+  samvera: samvera/circleci-orb@0
 jobs:
   build:
     docker:
-    # Primary container image where all steps run.
+     # Primary container image where all steps run.
      - image: avalonmediasystem/avalon:6.x-dev
        environment:
         - DATABASE_URL=postgresql://postgres@localhost:5432/postgres
         - FEDORA_URL=http://localhost:8080/fcrepo/rest
         - RAILS_ENV=test
-    # Secondary container image on common network.
+     # Secondary container image on common network.
      - image: postgres:10-alpine
        environment:
          - POSTGRES_USER=postgres
@@ -74,7 +74,14 @@ jobs:
 
       - samvera/install_solr_core
 
-      - samvera/code_climate_before_build
+      - run:
+          command: |
+            if [[ $(command -v cc-test-reporter) == "" ]]; then
+              curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
+              chmod +x ./cc-test-reporter
+            fi
+      - run:
+          command: ./cc-test-reporter before-build
 
       - samvera/parallel_rspec
 
