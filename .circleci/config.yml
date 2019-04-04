@@ -95,9 +95,6 @@ jobs:
       # Primary container image where all steps run.
       - image: avalonmediasystem/avalon:6.x-dev
 
-    environment:
-      # Set within the circleci web interface
-      CC_TEST_REPORTER_ID=${CC_TEST_REPORTER_ID}
     working_directory: /home/app/avalon
 
     steps:
@@ -111,6 +108,7 @@ jobs:
             chmod +x ./cc-test-reporter
 
       - deploy:
+          # CC_TEST_REPORTER_ID set within the circleci web interface
           command: ./cc-test-reporter sum-coverage --output - --parts << parameters.parallelism >> codeclimate.*.json | ./cc-test-reporter upload-coverage --debug --input -
 
 workflows:
