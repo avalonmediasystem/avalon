@@ -1,6 +1,6 @@
 version: 2.1
 orbs:
-  samvera: samvera/circleci-orb@dev:codeclimate
+  samvera: samvera/circleci-orb@0
 jobs:
   build:
     docker:
@@ -74,7 +74,14 @@ jobs:
 
       - samvera/install_solr_core
 
-      - samvera/code_climate_before_build
+      - run:
+          command: |
+            if [[ $(command -v cc-test-reporter) == "" ]]; then
+              curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
+              chmod +x ./cc-test-reporter
+            fi
+      - run:
+          command: ./cc-test-reporter before-build
 
       - samvera/parallel_rspec
 
