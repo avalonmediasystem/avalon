@@ -38,4 +38,4 @@ ARG         RAILS_ENV=development
 ARG         BASE_URL
 ARG         DATABASE_URL
 ARG         SECRET_KEY_BASE
-ADD         rails_init-dev.sh /
+ADD         rails_init-*.sh /
