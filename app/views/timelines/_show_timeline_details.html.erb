@@ -16,7 +16,7 @@ Unless required by applicable law or agreed to in writing, software distributed
 <div class="col-md-9">
   <div class="row">
     <div class="col-sm-12">
-      <%= link_to "View Timeline", @timeline, { class: 'btn btn-xs btn-primary', target: 'blank' } %>
+      <%= link_to "View Timeline", @timeline, { class: 'btn btn-xs btn-primary' } %>
       <% if can?(:destroy, @timeline) %>
         <%= link_to "Delete Timeline", @timeline, method: :delete, class: 'btn btn-xs btn-danger btn-confirmation', data: {placement: 'bottom'} %>
       <% end %>
@@ -31,8 +31,9 @@ Unless required by applicable law or agreed to in writing, software distributed
 <% content_for :page_scripts do %>
   <script>
 
+  var startingVisiblity = "<%= @timeline.visibility %>";
   $('input[type=radio][name="timeline[visibility]"]').change( function (event) {
-    if (event.target.value == 'private-with-token') {
+    if (event.target.value == 'private-with-token' && startingVisiblity == 'private-with-token') {
       $('#timeline_token_row').collapse('show')
     } else {
       $('#timeline_token_row').collapse('hide')
