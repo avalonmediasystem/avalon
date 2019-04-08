@@ -65,17 +65,20 @@ RSpec.describe TimelinesController, type: :controller do
         let(:timeline) { FactoryBot.create(:timeline, visibility: Timeline::PUBLIC) }
         it "should return the timeline view page" do
           expect(get :show, params: { id: timeline.id }).to be_successful
+          expect(get :manifest, params: { id: timeline.id, format: :json }).to be_successful
         end
       end
       context 'with a private timeline' do
         it "should NOT return the timeline view page" do
           expect(get :show, params: { id: timeline.id }).to redirect_to(/#{Regexp.quote(new_user_session_path)}\?url=.*/)
+          expect(get :manifest, params: { id: timeline.id, format: :json }).to be_unauthorized
         end
       end
       context 'with a private timeline and token' do
         let(:timeline) { FactoryBot.create(:timeline, :with_access_token) }
         it "should return the timeline view page" do
           expect(get :show, params: { id: timeline.id, token: timeline.access_token }).to be_successful
+          expect(get :manifest, params: { id: timeline.id, token: timeline.access_token, format: :json }).to be_successful
         end
       end
     end
@@ -91,18 +94,21 @@ RSpec.describe TimelinesController, type: :controller do
       context 'with a public timeline' do
         let(:timeline) { FactoryBot.create(:timeline, visibility: Timeline::PUBLIC) }
         it "should return the timeline view page" do
-          expect(get :show, params: { id: timeline.id }).not_to redirect_to(root_path)
+          expect(get :show, params: { id: timeline.id }).to be_successful
+          expect(get :manifest, params: { id: timeline.id, format: :json }).to be_successful
         end
       end
       context 'with a private timeline' do
         it "should NOT return the timeline view page" do
           expect(get :show, params: { id: timeline.id }).to redirect_to(root_path)
+          expect(get :manifest, params: { id: timeline.id, format: :json }).to be_unauthorized
         end
       end
       context 'with a private timeline and token' do
         let(:timeline) { FactoryBot.create(:timeline, :with_access_token) }
         it "should return the timeline view page" do
-          expect(get :show, params: { id: timeline.id, token: timeline.access_token }).not_to redirect_to(root_path)
+          expect(get :show, params: { id: timeline.id, token: timeline.access_token }).to be_successful
+          expect(get :manifest, params: { id: timeline.id, token: timeline.access_token, format: :json }).to be_successful
         end
       end
     end
