@@ -21,7 +21,7 @@ class TimelinesController < ApplicationController
   authorize_resource only: [:index]
   before_action :user_timelines, only: [:index, :paged_index]
   before_action :all_other_timelines, only: [:edit]
-  before_action :load_timeline_token, only: [:show, :duplicate]
+  before_action :load_timeline_token, only: [:show, :duplicate, :manifest]
   skip_before_action :verify_authenticity_token, only: [:create, :manifest_update]
 
   helper_method :access_token_url
