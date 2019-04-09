@@ -8,7 +8,7 @@
     "prop-types": "^15.7.2",
     "react": "^16.8.4",
     "react-dom": "^16.8.4",
-    "react-structural-metadata-editor": "https://github.com/avalonmediasystem/react-structural-metadata-editor.git#v1.1.0",
+    "react-structural-metadata-editor": "https://github.com/avalonmediasystem/react-structural-metadata-editor.git#v1.1.0-without-babel-runtime",
     "react_ujs": "^2.4.4"
   },
   "devDependencies": {
