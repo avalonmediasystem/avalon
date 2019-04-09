@@ -2,13 +2,12 @@
   "dependencies": {
     "@babel/core": "^7.0.0",
     "@babel/preset-react": "^7.0.0",
-    "@babel/runtime": "7.4.0",
     "@rails/webpacker": "^4.0.2",
     "babel-plugin-transform-react-remove-prop-types": "^0.4.24",
     "prop-types": "^15.7.2",
     "react": "^16.8.4",
     "react-dom": "^16.8.4",
-    "react-structural-metadata-editor": "https://github.com/avalonmediasystem/react-structural-metadata-editor.git#v1.1.0-without-babel-runtime",
+    "react-structural-metadata-editor": "https://github.com/avalonmediasystem/react-structural-metadata-editor.git#cjcolvar-patch-2",
     "react_ujs": "^2.4.4"
   },
   "devDependencies": {
