@@ -53,6 +53,7 @@ module ApplicationHelper
              when MediaObject then obj.id
              when MasterFile then obj.id
              when Playlist then obj.to_gid_param
+             when Timeline then obj.to_gid_param
              end
     user_omniauth_callback_lti_url(target_id: target)
   end

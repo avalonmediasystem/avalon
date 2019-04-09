@@ -79,6 +79,10 @@ $('input[name="timeline[visibility]"]').on('click', () ->
   new_val = $(this).val()
   new_text = $('.human_friendly_visibility_'+new_val).attr('title')
   $('.visibility-help-text').text(new_text)
+  if (new_val == 'private')
+    $('#timeline_lti_share').hide()
+  else
+    $('#timeline_lti_share').show()
 )
 
 # Hide instead of delete Bootstrap's dismissable alerts

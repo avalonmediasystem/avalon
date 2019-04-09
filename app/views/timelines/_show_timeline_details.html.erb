@@ -54,8 +54,10 @@ Unless required by applicable law or agreed to in writing, software distributed
     content: timeline_share_btn_result_content_default
   });
 
-  $('#timeline-share-btn').click( function (event) {
-    var copytarget = $('#timeline-share-link');
+  $('#timeline-share-btn, #timeline-lti-share-btn').click( function (event) {
+    var targetid = event.target.id
+    var copytarget = $('#'+targetid.replace('-btn','-link'));
+    var copyresult = $('#'+targetid+'-result')
     $(this).popover('hide');
 
     // select text
@@ -64,14 +66,14 @@ Unless required by applicable law or agreed to in writing, software distributed
       // copy text
       document.execCommand('copy');
       copytarget.blur();
-      $('#timeline-share-btn-result').attr('data-content', timeline_share_btn_result_content_default);
+      copyresult.attr('data-content', timeline_share_btn_result_content_default);
     }
     catch (err) {
-      $('#timeline-share-btn-result').attr('data-content', timeline_share_btn_result_content_error);
+      copyresult.attr('data-content', timeline_share_btn_result_content_error);
     }
-    $('#timeline-share-btn-result').popover('show');
+    copyresult.popover('show');
     setTimeout(function() {
-      $('#timeline-share-btn-result').popover('hide');
+      copyresult.popover('hide');
     }, 3000);
   });
 
