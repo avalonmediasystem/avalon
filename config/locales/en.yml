@@ -256,3 +256,5 @@ en:
       logoutLabel: "Log out"
     manifest:
       homepageLabel: "View in Repository"
+  share:
+    empty_lti_share_url: "LTI not configured."
