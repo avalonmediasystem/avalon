@@ -108,6 +108,8 @@ describe ApplicationHelper do
       expect(helper.milliseconds_to_formatted_time(1000)).to eq("00:01")
       expect(helper.milliseconds_to_formatted_time(60000)).to eq("01:00")
       expect(helper.milliseconds_to_formatted_time(3600000)).to eq("1:00:00")
+      expect(helper.milliseconds_to_formatted_time(1123)).to eq("00:01.123")
+      expect(helper.milliseconds_to_formatted_time(1123, false)).to eq("00:01")
     end
   end
 
