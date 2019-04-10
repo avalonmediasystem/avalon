@@ -139,7 +139,7 @@ EOF
           native_url: id_section_media_object_path(@media_object, section.id)
         }
         data[:lti_share_link] = user_omniauth_callback_lti_url(target_id: section) if Avalon::Authentication::Providers.any? {|p| p[:provider] == :lti }
-        duration = section.duration.blank? ? '' : " (#{milliseconds_to_formatted_time(section.duration.to_i)})"
+        duration = section.duration.blank? ? '' : " (#{milliseconds_to_formatted_time(section.duration.to_i, false)})"
 
         # If there is no structural metadata associated with this master_file return the stream info
         unless section.has_structuralMetadata?
@@ -229,11 +229,11 @@ EOF
 
       def get_duration node, section
         start,stop = get_xml_media_fragment node, section
-        milliseconds_to_formatted_time((stop.to_i-start.to_i)*1000)
+        milliseconds_to_formatted_time((stop.to_i - start.to_i) * 1000, false)
       end
 
       def get_duration_from_fragment(start, stop)
-        milliseconds_to_formatted_time((stop.to_i - start.to_i) * 1000)
+        milliseconds_to_formatted_time((stop.to_i - start.to_i) * 1000, false)
       end
 
       # This method mirrors the one in the MediaObject model but makes use of the master files passed in which can be SpeedyAF Objects
