@@ -118,7 +118,7 @@ module ApplicationHelper
     if item['duration_ssi'].present?
       duration = item['duration_ssi']
       if duration.respond_to?(:to_i) && duration.to_i > 0
-        label += " (#{milliseconds_to_formatted_time(duration.to_i)})"
+        label += " (#{milliseconds_to_formatted_time(duration.to_i, false)})"
       end
     end
 
@@ -142,13 +142,13 @@ module ApplicationHelper
 
   # the mediainfo gem returns duration as milliseconds
   # see attr_reader.rb line 48 in the mediainfo source
-  def milliseconds_to_formatted_time( milliseconds )
+  def milliseconds_to_formatted_time(milliseconds, include_fractions = true)
     total_seconds = milliseconds / 1000
     hours = total_seconds / (60 * 60)
     minutes = (total_seconds / 60) % 60
     seconds = total_seconds % 60
     fractional_seconds = milliseconds.to_s[-3, 3].to_i
-    fractional_seconds = (fractional_seconds.positive? ? ".#{fractional_seconds}" : '')
+    fractional_seconds = (include_fractions && fractional_seconds.positive? ? ".#{fractional_seconds}" : '')
 
     output = ''
     if hours > 0
