@@ -334,7 +334,9 @@ class MediaObjectsController < ApplicationController
         end
       end
       format.json do
-        render json: @media_object.to_json
+        response_json = @media_object.as_json
+        response_json.except!(:files, :visibility, :read_groups) unless current_ability.is_administrator?
+        render json: response_json.to_json
       end
     end
   end
