@@ -266,11 +266,14 @@ class MediaObject < ActiveFedora::Base
       id: id,
       title: title,
       collection: collection.name,
+      unit: collection.unit,
       main_contributors: creator,
       publication_date: date_created,
       published_by: avalon_publisher,
       published: published?,
-      summary: abstract
+      summary: abstract,
+      visibility: visibility,
+      read_groups: read_groups
     }.merge(to_ingest_api_hash(false))
   end
 
