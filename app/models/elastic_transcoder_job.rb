@@ -182,7 +182,7 @@ class ElasticTranscoderJob < ActiveEncode::Base
         preset = read_preset(output.preset_id)
         extension = preset.container == 'ts' ? '.m3u8' : ''
         convert_tech_metadata(output,preset).merge({
-          managed: false,
+          managed: Settings.streaming.server.to_sym != :aws,
           id: output.id,
           label: output.key.split("/", 2).first,
           url: "s3://#{pipeline.output_bucket}/#{job.output_key_prefix}#{output.key}#{extension}"
