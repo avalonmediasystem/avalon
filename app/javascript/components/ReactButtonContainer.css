@@ -1,0 +1,22 @@
+.react-button-container {
+  display: inline-block;
+}
+.sme-modal-wrapper.show {
+  opacity: 1;
+}
+.sme-modal-wrapper .modal-wrapper-body {
+  width: 90%;
+  top: 50px;
+}
+.sme-modal-wrapper .modal-title {
+  display: inline-block;
+}
+.modal-backdrop {
+  opacity: 0.1;
+}
+.alert {
+  padding-right: 30px;
+}
+.btn-edit {
+  margin-right: -4px;
+}
