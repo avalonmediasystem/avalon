@@ -69,7 +69,9 @@
         "sDom": '<"timelines_top"i<"timeline_filter_container"f>>tr<"timelines_bottom"lp>',
         "columns": [
           null,
-          null,
+          { render: function ( data, type, row ) {
+              return data != null && type === 'display' && data.length > 150 ? data.substr( 0, 150 ) +'…' : data;
+          }},
           null,
           null,
           null,

@@ -22,7 +22,7 @@ class Timeline < ActiveRecord::Base
 
   validates :user, presence: true
   validates :title, presence: true
-  validates :description, length: { maximum: 255 }
+  validates :description, length: { maximum: 512 }
   validates :visibility, presence: true
   validates :visibility, inclusion: { in: proc { [PUBLIC, PRIVATE, PRIVATE_WITH_TOKEN] } }
 
