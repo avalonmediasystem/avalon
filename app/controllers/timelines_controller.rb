@@ -14,6 +14,8 @@
 #   specific language governing permissions and limitations under the License.
 # ---  END LICENSE_HEADER BLOCK  ---
 
+require 'avalon/variations_timeline_importer'
+
 class TimelinesController < ApplicationController
   before_action :authenticate_user!, except: [:show, :manifest, :timeliner]
   load_and_authorize_resource except: [:import_variations_timeline, :duplicate, :show, :index, :timeliner, :manifest]
@@ -25,6 +27,19 @@ class TimelinesController < ApplicationController
   skip_before_action :verify_authenticity_token, only: [:create, :manifest_update]
 
   helper_method :access_token_url
+
+  # POST /timelines/import_variations_timeline
+  def import_variations_timeline
+    timeline_file = params[:Filedata]
+    timeline = Avalon::VariationsTimelineImporter.new.import_timeline(timeline_file, current_user)
+    if timeline.persisted?
+      redirect_to timeline, notice: 'Variations timeline was successfully imported.'
+    else
+      redirect_to timelines_url, flash: { error: "Import failed: #{timeline.error_messages}" }
+    end
+  rescue StandardError => e
+    redirect_to timelines_url, flash: { error: "Import failed: #{e.message} #{e.backtrace}" }
+  end
 
   # POST /timelines/paged_index
   def paged_index
