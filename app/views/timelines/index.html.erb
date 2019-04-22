@@ -36,11 +36,6 @@
                 <div> </div>
               <% end %>
               <div>
-                <%= link_to(new_timeline_path) do %>
-                  <span class="btn btn-primary outline_on">
-                    Create New Timeline
-                  </span>
-                <% end %>
                 <% if Settings['variations'].present? %>
                   <%= form_tag(import_variations_timeline_timelines_path, method:"post", enctype:"multipart/form-data", style:"display:inline") do %>
                     <input type="file" name="Filedata" class="filedata" style="visibility:hidden; display:inline; width:0;" />
