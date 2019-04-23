@@ -18,13 +18,35 @@ module Avalon
   # A tool for mapping from a variations id to an Avalon object
   class VariationsMappingService
     MEDIA_OBJECT_ID_MAP = YAML.load_file(Settings.variations.media_object_id_map_file).freeze rescue {}
+    TIMELINE_MAP = YAML.load_file(Settings.variations.timeliner_map_file).freeze rescue {}
 
     def find_master_file(variations_media_object_id)
-      raise ArgumentError, 'Not a valid Variations Media Object ID' unless variations_media_object_id =~ %r{/MediaObject/}
+      raise ArgumentError, 'Not a valid Variations Media Object ID' unless variations_media_object_id.match?(/MediaObject/)
       notis_id = MEDIA_OBJECT_ID_MAP[variations_media_object_id]
-      raise RuntimeError, "Unknown Variations Id: #{variations_media_object_id}" unless notis_id
+      raise "Unknown Variations Id: #{variations_media_object_id}" unless notis_id
       master_file = MasterFile.where(identifier_ssim: notis_id.downcase).first
-      raise RuntimeError, "MasterFile could not be found for Variations label #{notis_id}" unless master_file
+      raise "MasterFile could not be found for Variations label #{notis_id}" unless master_file
+      master_file
+    end
+
+    def find_offset_master_file(variations_container_id, media_offset)
+      raise ArgumentError, 'Not a valid Variations Container ID' unless variations_container_id.match?(/Container/)
+      container = TIMELINE_MAP[variations_container_id]
+      raise "Unknown Variations Container: #{variations_container_id}" unless container.present?
+      notis_id = nil
+
+      container.each do |master_file|
+        container_start = master_file[:offset].to_i
+        container_end = container_start + master_file[:duration].to_i
+        if container_start <= media_offset && media_offset < container_end
+          notis_id = master_file[:id]
+          break
+        end
+      end
+
+      raise "Invalid offset for container: #{variations_container_id} #{media_offset}" unless notis_id
+      master_file = MasterFile.where(identifier_ssim: notis_id.downcase).first
+      raise "MasterFile could not be found for Variations label #{notis_id}" unless master_file
       master_file
     end
   end
