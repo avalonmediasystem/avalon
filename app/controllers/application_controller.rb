@@ -26,7 +26,7 @@ class ApplicationController < ActionController::Base
 
   helper_method :render_bookmarks_control?
 
-  around_action :handle_api_request, if: proc{|c| request.format.json?}
+  around_action :handle_api_request, if: proc{|c| request.format.json? || request.format.atom? }
   before_action :rewrite_v4_ids, if: proc{|c| request.method_symbol == :get && [params[:id], params[:content]].compact.any? { |i| i =~ /^[a-z]+:[0-9]+$/}}
 
   def mejs

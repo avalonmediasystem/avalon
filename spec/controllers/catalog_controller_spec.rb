@@ -248,5 +248,35 @@ describe CatalogController do
         end
       end
     end
+
+    describe "atom feed" do
+      let!(:private_media_object) { FactoryBot.create(:media_object, visibility: 'private') }
+      let!(:public_media_object) { FactoryBot.create(:published_media_object, visibility: 'public') }
+
+      context "with an api key" do
+        before do
+          ApiToken.create token: 'secret_token', username: 'archivist1@example.com', email: 'archivist1@example.com'
+        end
+        it "should show results for all items" do
+          request.headers['Avalon-Api-Key'] = 'secret_token'
+          get 'index', params: { q: "", format: 'atom' }
+          expect(response).to be_successful
+          expect(response).to render_template('catalog/index')
+          expect(response.content_type).to eq "application/atom+xml"
+          expect(assigns(:document_list).count).to eq 2
+          expect(assigns(:document_list).map(&:id)).to match_array [private_media_object.id, public_media_object.id]
+        end
+      end
+      context "without api key" do
+        it "should not show results" do
+          get 'index', params: { q: "", format: 'atom' }
+          expect(response).to be_successful
+          expect(response.content_type).to eq "application/atom+xml"
+          expect(response).to render_template('catalog/index')
+          expect(assigns(:document_list).count).to eq 1
+          expect(assigns(:document_list).map(&:id)).to eq([public_media_object.id])
+        end
+      end
+    end
   end
 end
