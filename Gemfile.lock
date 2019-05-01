@@ -85,17 +85,6 @@ GIT
       chronic (>= 0.6.3)
 
 GIT
-  remote: https://github.com/resque/resque-scheduler.git
-  revision: bbf4930c28020a395b02fca49c57fba68ac6f544
-  ref: bbf4930
-  specs:
-    resque-scheduler (4.3.1)
-      mono_logger (~> 1.0)
-      redis (>= 3.3)
-      resque (>= 1.26)
-      rufus-scheduler (~> 3.2)
-
-GIT
   remote: https://github.com/rkallensee/bootstrap-toggle-rails.git
   revision: b85df8ea25ab71628fcec1504c7182dd5d7d3606
   tag: v2.2.1.0
@@ -382,7 +371,7 @@ GEM
     equivalent-xml (0.6.0)
       nokogiri (>= 1.4.3)
     erubi (1.8.0)
-    et-orbi (1.1.7)
+    et-orbi (1.2.1)
       tzinfo
     execjs (2.7.0)
     factory_bot (4.10.0)
@@ -402,8 +391,8 @@ GEM
     ffi (1.10.0)
     font-awesome-rails (4.7.0.4)
       railties (>= 3.2, < 6.0)
-    fugit (1.1.8)
-      et-orbi (~> 1.1, >= 1.1.7)
+    fugit (1.2.0)
+      et-orbi (~> 1.1, >= 1.1.8)
       raabro (~> 1.1)
     globalid (0.4.2)
       activesupport (>= 4.2.0)
@@ -601,7 +590,7 @@ GEM
       pry (>= 0.10.4)
     public_suffix (3.0.2)
     raabro (1.1.6)
-    rack (2.0.6)
+    rack (2.0.7)
     rack-cors (1.0.2)
     rack-protection (2.0.5)
       rack
@@ -711,6 +700,11 @@ GEM
       redis-namespace (~> 1.6)
       sinatra (>= 0.9.2)
       vegas (~> 0.1.2)
+    resque-scheduler (4.4.0)
+      mono_logger (~> 1.0)
+      redis (>= 3.3)
+      resque (>= 1.26)
+      rufus-scheduler (~> 3.2)
     rest-client (2.0.2)
       http-cookie (>= 1.0.2, < 2.0)
       mime-types (>= 1.16, < 4.0)
@@ -768,8 +762,8 @@ GEM
       nokogiri
       rest-client
     rubyzip (1.2.2)
-    rufus-scheduler (3.5.2)
-      fugit (~> 1.1, >= 1.1.5)
+    rufus-scheduler (3.6.0)
+      fugit (~> 1.1, >= 1.1.6)
     safe_yaml (1.0.4)
     sass (3.4.22)
     sass-rails (5.0.7)
@@ -975,7 +969,7 @@ DEPENDENCIES
   recaptcha
   redis-rails
   resque (~> 2.0)
-  resque-scheduler!
+  resque-scheduler (~> 4.4)
   rest-client
   roo
   rsolr (~> 1.0)
