@@ -29,6 +29,7 @@ require 'webmock/rspec'
 require 'noid/rails/rspec'
 require "email_spec"
 require "email_spec/rspec"
+require 'webdrivers'
 # require 'equivalent-xml/rspec_matchers'
 # require 'fakefs/safe'
 # require 'fileutils'
@@ -89,7 +90,7 @@ RSpec.configure do |config|
   config.use_transactional_fixtures = false
 
   config.before :suite do
-    WebMock.disable_net_connect!(allow: ['localhost', '127.0.0.1', 'fedora', 'solr', 'matterhorn'])
+    WebMock.disable_net_connect!(allow: ['localhost', '127.0.0.1', 'fedora', 'solr', 'matterhorn', 'https://chromedriver.storage.googleapis.com'])
     DatabaseCleaner.clean_with(:truncation)
     ActiveFedora::Cleaner.clean!
     disable_production_minter!

@@ -118,7 +118,6 @@ end
 
 group :test do
   gem 'capybara'
-  gem 'chromedriver-helper'
   gem 'codeclimate-test-reporter'
   gem 'database_cleaner'
   gem 'email_spec'
@@ -132,6 +131,7 @@ group :test do
   gem 'selenium-webdriver'
   gem 'shoulda-matchers'
   gem 'simplecov'
+  gem 'webdrivers', '~> 3.0'
   gem 'webmock', '~> 3.5.1'
 end
 
