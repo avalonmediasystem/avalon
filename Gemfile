@@ -80,7 +80,7 @@ gem 'marc'
 gem 'activejob-traffic_control'
 gem 'redis-rails'
 gem 'resque', '~> 2.0'
-gem 'resque-scheduler', git: 'https://github.com/resque/resque-scheduler.git', ref: 'bbf4930'
+gem 'resque-scheduler', '~> 4.4'
 
 # Coding Patterns
 gem 'config'
@@ -118,7 +118,6 @@ end
 
 group :test do
   gem 'capybara'
-  gem 'chromedriver-helper'
   gem 'codeclimate-test-reporter'
   gem 'database_cleaner'
   gem 'email_spec'
@@ -132,6 +131,7 @@ group :test do
   gem 'selenium-webdriver'
   gem 'shoulda-matchers'
   gem 'simplecov'
+  gem 'webdrivers', '~> 3.0'
   gem 'webmock', '~> 3.5.1'
 end
 
