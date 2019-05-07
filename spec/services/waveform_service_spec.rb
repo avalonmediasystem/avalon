@@ -36,7 +36,7 @@ describe WaveformService, type: :service do
 
     context "http file" do
       let(:uri) { "http://domain/to/video.mp4" }
-      let(:cmd) {"ffmpeg -headers $'Referer: http://test.host/\r\n' -i #{uri} -f wav - 2> /dev/null"}
+      let(:cmd) {"ffmpeg -headers $'Referer: http://test.host/\r\n' -i '#{uri}' -f wav - 2> /dev/null"}
 
       it "should call ffmpeg with headers" do
         service.send(:get_wave_io, uri)
@@ -45,12 +45,23 @@ describe WaveformService, type: :service do
     end
 
     context "local file" do
-      let(:uri) { "/path/to/video.mp4" }
-      let(:cmd) {"ffmpeg  -i #{uri} -f wav - 2> /dev/null"}
+      let(:uri) { "file:///path/to/video.mp4" }
+      let(:cmd) {"ffmpeg  -i '#{uri}' -f wav - 2> /dev/null"}
 
       it "should call ffmpeg without headers" do
         service.send(:get_wave_io, uri)
         expect(IO).to have_received(:popen).with(cmd)
+      end
+
+      context 'with spaces in filename' do
+        let(:uri) { 'file:///path/to/special%20video%20file.mp4' }
+        let(:unencoded_uri) { 'file:///path/to/special video file.mp4' }
+        let(:cmd) {"ffmpeg  -i '#{unencoded_uri}' -f wav - 2> /dev/null"}
+
+        it "should call ffmpeg without url encoding" do
+          service.send(:get_wave_io, uri)
+          expect(IO).to have_received(:popen).with(cmd)
+        end
       end
     end
   end
