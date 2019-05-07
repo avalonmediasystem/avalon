@@ -30,7 +30,8 @@ private
 
   def get_wave_io(uri)
     headers = "-headers $'Referer: #{Rails.application.routes.url_helpers.root_url}\r\n'" if uri.starts_with? "http"
-    cmd = "ffmpeg #{headers} -i #{uri} -f wav - 2> /dev/null"
+    normalized_uri = uri.starts_with?("file") ? URI.unescape(uri) : uri
+    cmd = "ffmpeg #{headers} -i '#{normalized_uri}' -f wav - 2> /dev/null"
     IO.popen(cmd)
   end
 
