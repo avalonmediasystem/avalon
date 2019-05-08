@@ -744,7 +744,7 @@ class MasterFile < ActiveFedora::Base
 
     # Generate the waveform after proessing is complete but before master file management
     begin
-      WaveformJob.perform_now(self.id)
+      WaveformJob.perform_now(id)
     rescue StandardError => e
       logger.warn("WaveformJob failed: #{e.message}")
       logger.warn(e.backtrace.to_s)

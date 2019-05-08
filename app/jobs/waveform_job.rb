@@ -17,8 +17,9 @@ class WaveformJob < ActiveJob::Base
   FINEST_ZOOM_IN_SEC = 5
   SAMPLES_PER_FRAME = (44_100 * FINEST_ZOOM_IN_SEC) / PLAYER_WIDTH_IN_PX
 
-  def perform(master_file_id)
+  def perform(master_file_id, regenerate = false)
     master_file = MasterFile.find(master_file_id)
+    return if master_file.waveform.content.present? && !regenerate
 
     service = WaveformService.new(8, SAMPLES_PER_FRAME)
     uri = file_uri(master_file) || playlist_url(master_file)
