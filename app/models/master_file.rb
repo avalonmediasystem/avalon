@@ -742,6 +742,14 @@ class MasterFile < ActiveFedora::Base
   def post_processing_file_management
     logger.debug "Finished processing"
 
+    # Generate the waveform after proessing is complete but before master file management
+    begin
+      WaveformJob.perform_now(self.id)
+    rescue StandardError => e
+      logger.warn("WaveformJob failed: #{e.message}")
+      logger.warn(e.backtrace.to_s)
+    end
+
     case Settings.master_file_management.strategy
     when 'delete'
       MasterFileManagementJobs::Delete.perform_now self.id
