@@ -59,5 +59,25 @@ describe WaveformJob do
         expect(service).to have_received(:get_waveform_json).with(secure_hls_url)
       end
     end
+
+    context 'when master file already has a waveform' do
+      before do
+        master_file.waveform.content = '{"sample_rate":44100,"bits":8,"samples_per_pixel":183,"length":45288,"data":[]}'
+        master_file.waveform.mime_type = 'application/json'
+        master_file.save
+      end
+
+      it 'does not call the service' do
+        expect { job.perform(master_file.id) }.not_to change { master_file.reload.waveform.content }
+        expect(service).not_to have_received(:get_waveform_json)
+      end
+
+      context 'and regenerate is true' do
+        it 'calls the waveform service' do
+          expect { job.perform(master_file.id, true) }.to change { master_file.reload.waveform.content }
+          expect(service).to have_received(:get_waveform_json)
+        end
+      end
+    end
   end
 end
