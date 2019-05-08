@@ -35,15 +35,6 @@ module ActiveEncodeJob
     queue_as :active_encode_create
     throttle threshold: Settings.encode_throttling.create_jobs_throttle_threshold, period: Settings.encode_throttling.create_jobs_spacing, drop: false
 
-    before_perform do |job|
-      begin
-        WaveformJob.perform_now(job.arguments.first)
-      rescue StandardError => e
-        logger.warn("WaveformJob failed: #{e.message}")
-        logger.warn(e.backtrace.to_s)
-      end
-    end
-
     def perform(master_file_id, input, options)
       mf = MasterFile.find(master_file_id)
       encode = mf.encoder_class.new(input, options.merge({output_key_prefix: "#{mf.id}/"}))
