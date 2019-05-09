@@ -47,21 +47,5 @@ describe ActiveEncodeJob do
         end
       end
     end
-
-    describe 'callbacks' do
-      context 'before_perform' do
-        it 'performs the WaveformJob' do
-          expect(WaveformJob).to receive(:perform_now).with(master_file.id)
-          expect(job).to receive(:perform).with(*job.arguments)
-          job.perform_now
-        end
-
-        it 'performs the job even when the WaveformJob fails' do
-          expect(WaveformJob).to receive(:perform_now).with(master_file.id).and_raise(RuntimeError)
-          expect(job).to receive(:perform).with(*job.arguments)
-          job.perform_now
-        end
-      end
-    end
   end
 end

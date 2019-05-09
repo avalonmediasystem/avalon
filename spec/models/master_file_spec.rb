@@ -508,6 +508,15 @@ describe MasterFile do
     end
   end
 
+  describe "waveform generation" do
+    subject(:master_file) { FactoryBot.create(:master_file) }
+
+    it 'runs the waveform job' do
+      expect(WaveformJob).to receive(:perform_now).with(master_file.id)
+      master_file.send(:post_processing_file_management)
+    end
+  end
+
   describe '#extract_frame' do
     subject(:video_master_file) { FactoryBot.create(:master_file, :with_media_object, :with_derivative, display_aspect_ratio: '1') }
     before do

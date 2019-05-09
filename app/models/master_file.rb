@@ -742,17 +742,11 @@ class MasterFile < ActiveFedora::Base
   def post_processing_file_management
     logger.debug "Finished processing"
 
-    case Settings.master_file_management.strategy
-    when 'delete'
-      MasterFileManagementJobs::Delete.perform_now self.id
-    when 'move'
-      move_path = Settings.master_file_management.path
-      raise '"path" configuration missing for master_file_management strategy "move"' if move_path.blank?
-      newpath = File.join(move_path, MasterFile.post_processing_move_filename(file_location, id: id))
-      MasterFileManagementJobs::Move.perform_later self.id, newpath
-    else
-      # Do nothing
-    end
+    # Generate the waveform after proessing is complete but before master file management
+    generate_waveform
+    # Run master file management strategy
+    manage_master_file
+    # Clean up working file if it exists
     CleanupWorkingFileJob.perform_later(self.id) unless Settings.matterhorn.media_path.blank?
   end
 
@@ -784,6 +778,29 @@ class MasterFile < ActiveFedora::Base
     media_object.set_duration!
     if !media_object.save
       logger.error "Failed when updating media object #{media_object.id} while destroying master file #{self.id}"
+    end
+  end
+
+  private
+
+  def generate_waveform
+    WaveformJob.perform_now(id)
+  rescue StandardError => e
+    logger.warn("WaveformJob failed: #{e.message}")
+    logger.warn(e.backtrace.to_s)
+  end
+
+  def manage_master_file
+    case Settings.master_file_management.strategy
+    when 'delete'
+      MasterFileManagementJobs::Delete.perform_now self.id
+    when 'move'
+      move_path = Settings.master_file_management.path
+      raise '"path" configuration missing for master_file_management strategy "move"' if move_path.blank?
+      newpath = File.join(move_path, MasterFile.post_processing_move_filename(file_location, id: id))
+      MasterFileManagementJobs::Move.perform_later self.id, newpath
+    else
+      # Do nothing
     end
   end
 end
