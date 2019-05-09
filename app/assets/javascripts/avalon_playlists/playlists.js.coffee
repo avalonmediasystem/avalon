@@ -14,7 +14,7 @@
 
 submit_edit = null
 
-@add_copy_button_event = () ->
+@add_copy_playlist_button_event = () ->
   $('.copy-playlist-button').on('click',
     () ->
       playlist = $(this).data('playlist')
