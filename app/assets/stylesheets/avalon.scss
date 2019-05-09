@@ -1204,6 +1204,14 @@ h5.panel-title {
   margin-left: 5px;
   margin-top: 1px;
 }
+.copy-playlist-button {
+  margin-top: 2px;
+  padding-top: 1px;
+  padding-bottom: 1px;
+  @media (max-width: $screen-xs-max) {
+    margin-top: 1px;
+  }
+}
 .playlist-title {
   margin: 0;
   padding: 0;
