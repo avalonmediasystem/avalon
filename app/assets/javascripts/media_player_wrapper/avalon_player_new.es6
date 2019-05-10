@@ -328,20 +328,20 @@ class MEJSPlayer {
   handleSuccess(mediaElement, originalNode, instance) {
     this.mediaElement = mediaElement;
 
+    // Grab instance of player
+    if (!this.player) {
+      this.player = this.mediaElement;
+    }
+
     // Toggle captions on if toggleable and previously on
     if (this.mediaType==="video" && this.player.options.toggleCaptionsButtonWhenOnlyOne) {
-      if (this.localStorage.getItem('captions') !== '' && this.player.tracks.length===1) {
+      if (this.localStorage.getItem('captions') !== '' && this.player.tracks && this.player.tracks.length===1) {
         this.player.setTrack(this.player.tracks[0].trackId, (typeof keyboard !== 'undefined'));
       }
     }
 
     // Make the player visible
     this.revealPlayer(instance);
-
-    // Grab instance of player
-    if (!this.player) {
-      this.player = this.mediaElement;
-    }
 
     this.emitSuccessEvent();
 
