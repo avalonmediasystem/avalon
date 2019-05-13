@@ -17,7 +17,7 @@ require 'rails_helper'
 describe ActiveEncodeJob do
   describe ActiveEncodeJob::Create do
     let(:job) { ActiveEncodeJob::Create.new(master_file.id, nil, {}) }
-    let(:master_file) { FactoryGirl.create(:master_file) }
+    let(:master_file) { FactoryBot.create(:master_file) }
 
     describe "perform" do
       context "with error" do
