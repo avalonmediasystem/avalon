@@ -164,7 +164,7 @@ class MasterFilesController < ApplicationController
         end
       end
       if captions.present?
-        @master_file.captions.content = captions
+        @master_file.captions.content = captions.encode(Encoding.find('UTF-8'), invalid: :replace, undef: :replace, replace: '')
         @master_file.captions.mime_type = content_type
         @master_file.captions.original_name = params[:master_file][:captions].original_filename
         flash[:success] = "Captions file succesfully added."
