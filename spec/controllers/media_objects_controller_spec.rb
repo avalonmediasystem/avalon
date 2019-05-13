@@ -1288,4 +1288,18 @@ describe MediaObjectsController, type: :controller do
     end
   end
 
+  describe 'deliver_content' do
+    before do
+      login_as :administrator
+    end
+
+    let(:media_object) { FactoryBot.create(:published_media_object) }
+
+    it 'returns descMetadata' do
+      get :deliver_content, params: { id: media_object.id, file: 'descMetadata' }
+      expect(response.status).to eq 200
+      expect(response.content_type).to eq 'text/xml'
+      expect(response.body).to eq media_object.descMetadata.content
+    end
+  end
 end
