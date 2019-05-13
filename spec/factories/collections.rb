@@ -22,7 +22,7 @@ FactoryBot.define do
     depositors {[FactoryBot.create(:user).user_key]}
     media_objects {[]}
 
-    transient { items 0 }
+    transient { items { 0 } }
     after(:create) do |c, env|
       1.upto(env.items) { FactoryBot.create(:media_object, collection: c) }
       c.reload

@@ -17,20 +17,20 @@ FactoryBot.define do
     file_location {'/path/to/video.mp4'}
     file_format {'Moving image'}
     percent_complete {"#{rand(100)}"}
-    workflow_name 'avalon'
+    workflow_name { 'avalon' }
     duration {'200000'}
-    identifier ['other identifier']
-    display_aspect_ratio '1.7777777777777777'
-    original_frame_size '1024X768'
-    width '1024'
-    height '768'
+    identifier { ['other identifier'] }
+    display_aspect_ratio { '1.7777777777777777' }
+    original_frame_size { '1024X768' }
+    width { '1024' }
+    height { '768' }
 
     trait :with_media_object do
       association :media_object #, factory: :media_object
     end
 
     trait :with_derivative do
-      status_code 'COMPLETED'
+      status_code { 'COMPLETED' }
       after(:create) do |mf|
         mf.derivatives += [FactoryBot.create(:derivative, quality: 'high')]
         mf.save
@@ -70,7 +70,7 @@ FactoryBot.define do
       end
     end
     trait :with_comments do
-      comment ['MF Comment 1', 'MF Comment 2']
+      comment { ['MF Comment 1', 'MF Comment 2'] }
     end
 
     factory :master_file_with_media_object_and_derivative, traits: [:with_media_object, :with_derivative]
