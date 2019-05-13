@@ -33,6 +33,9 @@ jobs:
       parallelism:
         type: integer
         default: 4
+      bundler_version:
+        type: string
+        default: "2.0.1"
 
     working_directory: /home/app/avalon
 
@@ -50,6 +53,12 @@ jobs:
       - restore_cache:
           keys:
             - gem-cache-v1-{{ checksum "Gemfile.lock" }}-<< parameters.ruby_ver >>
+
+      - run:
+          name: Update bundler
+          command: |
+            echo 'export BUNDLER_VERSION=<< parameters.bundler_version >>' >> $BASH_ENV
+            gem install bundler -v << parameters.bundler_version >>
 
       - run:
           command: |
