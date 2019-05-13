@@ -983,7 +983,7 @@ DEPENDENCIES
   edtf
   email_spec
   equivalent-xml
-  factory_bot_rails (< 5)
+  factory_bot_rails
   fakefs
   faker
   fcrepo_wrapper
