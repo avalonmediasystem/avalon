@@ -27,27 +27,29 @@ class IiifCanvasPresenter
 
     def video_content
       # @see https://github.com/samvera-labs/iiif_manifest
-      stream_urls.collect { |label, url| video_display_content(url, label) }
+      stream_urls.collect { |quality, _url| video_display_content(quality) }
     end
 
-    def video_display_content(url, label = '')
-      IIIFManifest::V3::DisplayContent.new(url,
-                                           label: label,
+    def video_display_content(quality)
+      IIIFManifest::V3::DisplayContent.new(Rails.application.routes.url_helpers.hls_manifest_master_file_url(master_file.id, quality: quality),
+                                           label: quality,
                                            width: master_file.width.to_i,
                                            height: master_file.height.to_i,
                                            duration: stream_info[:duration],
-                                           type: 'Video')
+                                           type: 'Video',
+                                           auth_service: auth_service)
     end
 
     def audio_content
-      stream_urls.collect { |label, url| audio_display_content(url, label) }
+      stream_urls.collect { |quality, _url| audio_display_content(quality) }
     end
 
-    def audio_display_content(url, label = '')
-      IIIFManifest::V3::DisplayContent.new(url,
-                                           label: label,
+    def audio_display_content(quality)
+      IIIFManifest::V3::DisplayContent.new(Rails.application.routes.url_helpers.hls_manifest_master_file_url(master_file.id, quality: quality),
+                                           label: quality,
                                            duration: stream_info[:duration],
-                                           type: 'Sound')
+                                           type: 'Sound',
+                                           auth_service: auth_service)
     end
 
     def stream_urls
@@ -118,5 +120,33 @@ class IiifCanvasPresenter
       # This can be done by defining some XML schema to require that at least one Div/Span child node exists
       # under root or each Div node, otherwise Nokogiri::XML parser will report error, and raise exception here.
       @structure_ng_xml ||= (s = master_file.structuralMetadata.content).nil? ? Nokogiri::XML(nil) : Nokogiri::XML(s)
+    end
+
+    def auth_service
+      {
+        "context": "http://iiif.io/api/auth/1/context.json",
+        "@id": Rails.application.routes.url_helpers.new_user_session_url(login_popup: 1),
+        "@type": "AuthCookieService1",
+        "confirmLabel": I18n.t('iiif.auth.confirmLabel'),
+        "description": I18n.t('iiif.auth.description'),
+        "failureDescription": I18n.t('iiif.auth.failureDescription'),
+        "failureHeader": I18n.t('iiif.auth.failureHeader'),
+        "header": I18n.t('iiif.auth.header'),
+        "label": I18n.t('iiif.auth.label'),
+        "profile": "http://iiif.io/api/auth/1/login",
+        "service": [
+          {
+            "@id": Rails.application.routes.url_helpers.iiif_auth_token_url(id: master_file.id),
+            "@type": "AuthTokenService1",
+            "profile": "http://iiif.io/api/auth/1/token"
+          },
+          {
+            "@id": Rails.application.routes.url_helpers.destroy_user_session_url,
+            "@type": "AuthLogoutService1",
+            "label": I18n.t('iiif.auth.logoutLabel'),
+            "profile": "http://iiif.io/api/auth/1/logout"
+          }
+        ]
+      }
     end
 end
