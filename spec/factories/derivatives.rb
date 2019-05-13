@@ -14,18 +14,18 @@
 
 FactoryBot.define do
   factory :derivative do
-    duration "21575"
-    location_url "rtmp://localhost/vod/mp4:6f69c008-06a4-4bad-bb60-26297f0b4c06/35bddaa0-fbb4-404f-ab76-58f22921529c/warning"
-    track_id "track-6"
-    hls_url "http://localhost:3000/6f69c008-06a4-4bad-bb60-26297f0b4c06/35bddaa0-fbb4-404f-ab76-58f22921529c/warning.mp4.m3u8"
-    hls_track_id "track-8"
-    width '1024'
-    height '768'
-    quality 'high'
-    video_codec 'AVC'
-    video_bitrate '4000000.0'
-    audio_codec 'AAC'
-    audio_bitrate '163842.0'
+    duration { "21575" }
+    location_url { "rtmp://localhost/vod/mp4:6f69c008-06a4-4bad-bb60-26297f0b4c06/35bddaa0-fbb4-404f-ab76-58f22921529c/warning" }
+    track_id { "track-6" }
+    hls_url { "http://localhost:3000/6f69c008-06a4-4bad-bb60-26297f0b4c06/35bddaa0-fbb4-404f-ab76-58f22921529c/warning.mp4.m3u8" }
+    hls_track_id { "track-8" }
+    width { '1024' }
+    height { '768' }
+    quality { 'high' }
+    video_codec { 'AVC' }
+    video_bitrate { '4000000.0' }
+    audio_codec { 'AAC' }
+    audio_bitrate { '163842.0' }
 
     trait :with_master_file do
       after(:create) do |d|
