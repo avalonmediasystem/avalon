@@ -116,6 +116,9 @@ RSpec.configure do |config|
 
   config.before :each do
     DatabaseCleaner.strategy = :truncation
+    # Clear out the job queue to ensure tests run with clean environment
+    ActiveJob::Base.queue_adapter.enqueued_jobs = []
+    ActiveJob::Base.queue_adapter.performed_jobs = []
   end
 
   config.after :each do
