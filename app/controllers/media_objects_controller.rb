@@ -225,7 +225,7 @@ class MediaObjectsController < ApplicationController
         # master_file.media_object = @media_object
         master_file.structuralMetadata.content = file_spec[:structure] if file_spec[:structure].present?
         if file_spec[:captions].present?
-          master_file.captions.content = file_spec[:captions]
+          master_file.captions.content = file_spec[:captions].encode(Encoding.find('UTF-8'), invalid: :replace, undef: :replace, replace: '')
           master_file.captions.mime_type = file_spec[:captions_type]
         end
         # TODO: This inconsistency should eventually be addressed by updating the API
