@@ -23,9 +23,9 @@ module Avalon
         if whitelist.include? params[:file]
           file = @obj.send(params[:file])
           if file.nil? or file.new_record?
-            render :text => 'Not Found', :status => :not_found
+            render plain: 'Not Found', status: :not_found
           else
-            render :text => file.content, :content_type => file.mime_type
+            render plain: file.content, content_type: file.mime_type
           end
         else
           head :method_not_allowed
