@@ -24,7 +24,7 @@ gem 'webpacker'
 # Core Samvera
 gem 'active-fedora', '~> 12.1'
 gem 'active_fedora-datastreams', '~> 0.2.0'
-gem 'fedora-migrate', git: 'https://github.com/avalonmediasystem/fedora-migrate.git', branch: 'optional_rake_tasks'
+gem 'fedora-migrate', git: 'https://github.com/avalonmediasystem/fedora-migrate.git', tag: 'avalon-r6.5'
 gem 'hydra-head', '~> 10.6'
 gem 'noid-rails', '~> 3.0.1'
 gem 'rdf-rdfxml'
@@ -35,7 +35,7 @@ gem 'rdf', '~> 2.2'
 gem 'rsolr', '~> 1.0'
 
 # Rails & Samvera Plugins
-gem 'about_page', git: 'https://github.com/avalonmediasystem/about_page.git', branch: 'master'
+gem 'about_page', git: 'https://github.com/avalonmediasystem/about_page.git', tag: 'avalon-r6.5'
 gem 'active_annotations', '~> 0.2.2'
 gem 'activerecord-session_store'
 gem 'acts_as_list'
@@ -43,13 +43,13 @@ gem 'api-pagination'
 gem 'avalon-about', git: 'https://github.com/avalonmediasystem/avalon-about.git', tag: 'avalon-r6.4'
 gem 'bootstrap-toggle-rails', git: 'https://github.com/rkallensee/bootstrap-toggle-rails.git', tag: 'v2.2.1.0'
 gem 'bootstrap_form'
-gem 'iiif_manifest', git: 'https://github.com/samvera-labs/iiif_manifest'
+gem 'iiif_manifest', '~> 0.6'
 gem 'rack-cors', require: 'rack/cors'
 gem 'recaptcha', require: 'recaptcha/rails'
 gem 'speedy-af', '~> 0.1.3'
 
 # Avalon Components
-gem 'avalon-workflow', git: "https://github.com/avalonmediasystem/avalon-workflow.git", tag: 'rails5'
+gem 'avalon-workflow', git: "https://github.com/avalonmediasystem/avalon-workflow.git", tag: 'avalon-r6.5'
 
 # Authentication & Authorization
 gem 'devise', '~> 4.4'
@@ -60,10 +60,10 @@ gem 'omniauth-lti', git: "https://github.com/avalonmediasystem/omniauth-lti.git"
 
 # Media Access & Transcoding
 gem 'active_encode', '~> 0.1.1'
-gem 'audio_waveform-ruby', require: 'audio_waveform', git: 'https://github.com/bbc/audio_waveform-ruby.git'
+gem 'audio_waveform-ruby', require: 'audio_waveform'
 gem 'browse-everything', '~> 0.13.0'
-gem 'mediainfo', git: "https://github.com/avalonmediasystem/mediainfo.git", branch: 'avalon_fixes'
-gem 'media_element_add_to_playlist', git: 'https://github.com/avalonmediasystem/media-element-add-to-playlist.git', branch: 'rails5'
+gem 'media_element_add_to_playlist', git: 'https://github.com/avalonmediasystem/media-element-add-to-playlist.git', tag: 'avalon-r6.5'
+gem 'mediainfo', git: "https://github.com/avalonmediasystem/mediainfo.git", tag: 'avalon-r6.5'
 gem 'rest-client'
 gem 'roo'
 gem 'rubyhorn', git: "https://github.com/avalonmediasystem/rubyhorn.git", tag: 'avalon-r6'
@@ -95,7 +95,7 @@ gem 'config'
 gem 'hooks'
 gem 'jbuilder', '~> 2.0'
 gem 'parallel'
-gem 'whenever', git: "https://github.com/javan/whenever.git", require: false
+gem 'whenever', '~> 0.11', require: false
 gem 'with_locking'
 
 group :development do
