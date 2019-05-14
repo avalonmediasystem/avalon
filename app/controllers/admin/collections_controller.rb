@@ -13,9 +13,11 @@
 # ---  END LICENSE_HEADER BLOCK  ---
 
 class Admin::CollectionsController < ApplicationController
-  before_filter :authenticate_user!
+  include Rails::Pagination
+
+  before_action :authenticate_user!
   load_and_authorize_resource except: [:index, :remove]
-  before_filter :load_and_authorize_collections, only: [:index]
+  before_action :load_and_authorize_collections, only: [:index]
   respond_to :html
 
   def load_and_authorize_collections
@@ -66,7 +68,7 @@ class Admin::CollectionsController < ApplicationController
   # GET /collections/1/items
   def items
     mos = paginate @collection.media_objects
-    render json: mos.collect{|mo| [mo.id, mo.to_json] }.to_h
+    render json: mos.to_a.collect{|mo| [mo.id, mo.to_json] }.to_h
   end
 
   # POST /collections

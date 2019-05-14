@@ -53,12 +53,9 @@ Unless required by applicable law or agreed to in writing, software distributed
         <div> </div>
       <% end %>
       <div>
-        <%= link_to(new_playlist_path) do %>
-          <span class="btn btn-primary outline_on">
-            Create New Playlist
-          </span>
-        <% end %>
-	      <% if Settings['variations'].present? %>
+	<%# pass body to link_to to avoid block form of link_to which creates an odd underline that overflows the button %>
+        <%= link_to('<span class="btn btn-primary outline_on">Create New Playlist</span>'.html_safe, new_playlist_path) %>
+        <% if Settings['variations'].present? %>
           <%= form_tag(import_variations_playlist_playlists_path, method:"post", enctype:"multipart/form-data", style:"display:inline") do %>
             <input type="file" name="Filedata" class="filedata" style="visibility:hidden; display:inline; width:0;" />
             <input type="button" class="btn btn-primary outline_on" id="variations_import" onclick="$(this).closest('form').find('.filedata').click();" value="Import Variations Playlist" />
@@ -100,7 +97,7 @@ $(document).ready( function () {
     ]
   }).on( 'draw', function () {
     window.apply_button_confirmation()
-    window.add_copy_button_event()
+    window.add_copy_playlist_button_event()
     // move the tag filter into the datatables layout
     $('.tag_filter_container').insertBefore('.playlist_filter_container');
   });

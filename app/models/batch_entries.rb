@@ -36,6 +36,18 @@ class BatchEntries < ActiveRecord::Base
     self.save
   end
 
+  def encoding_success?
+    encoding_status == :success
+  end
+
+  def encoding_error?
+    encoding_status == :error
+  end
+
+  def encoding_finished?
+    encoding_success? || encoding_error?
+  end
+
   private
 
   def minimal_viable_metadata?
@@ -44,5 +56,40 @@ class BatchEntries < ActiveRecord::Base
     return false if fields.blank?
     return false if (fields['date_issued'].blank? || fields['title'].blank?) && fields['bibliographic_id'].blank?
     true
+  end
+
+  def files
+    @files ||= JSON.parse(payload)['files']
+  end
+
+  # Returns :success, :error, or :in_progress
+  def encoding_status
+    return @encoding_status if @encoding_status.present?
+
+    # Issues with the MediaObject are treated as encoding errors
+    return (@encoding_status = :error) if media_object_pid.blank?
+    # Using where instead of find to avoid throwing a not found exception
+    media_object = MediaObject.where(id: media_object_pid).first
+    return (@encoding_status = :error) unless media_object
+
+    # TODO: match file_locations strings with those in MasterFiles?
+    if media_object.master_files.to_a.count != files.count
+      return (@encoding_status = :error)
+    end
+
+    # Only return success if all MasterFiles have status 'COMPLETED'
+    status = :success
+    media_object.master_files.each do |master_file|
+      next if master_file.status_code == 'COMPLETED'
+      # TODO: explore border cases
+      if master_file.status_code == 'FAILED' || master_file.status_code == 'CANCELLED'
+        status = :error
+      else
+        status = :in_progress
+        break
+      end
+    end
+    @encoding_status = status
+    @encoding_status
   end
 end

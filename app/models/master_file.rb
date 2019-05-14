@@ -49,6 +49,10 @@ class MasterFile < ActiveFedora::Base
   # Don't pass the block here since we save the original_name when the user uploads the captions file
   has_subresource 'captions', class_name: 'IndexedFile'
 
+  has_subresource 'waveform', class_name: 'IndexedFile' do |f|
+    f.original_name = 'waveform.json'
+  end
+
   property :title, predicate: ::RDF::Vocab::EBUCore.title, multiple: false do |index|
     index.as :stored_searchable
   end
@@ -153,7 +157,7 @@ class MasterFile < ActiveFedora::Base
   # be set up in a configuration file somewhere
   #
   # 250 MB is the file limit for now
-  MAXIMUM_UPLOAD_SIZE = (2**20) * 250
+  MAXIMUM_UPLOAD_SIZE = Settings.max_upload_size || 2.gigabytes
 
   WORKFLOWS = ['fullaudio', 'avalon', 'avalon-skip-transcoding', 'avalon-skip-transcoding-audio']
   AUDIO_TYPES = ["audio/vnd.wave", "audio/mpeg", "audio/mp3", "audio/mp4", "audio/wav", "audio/x-wav"]
@@ -269,6 +273,7 @@ class MasterFile < ActiveFedora::Base
       end
     end
 
+    # WaveformJob is performed in a before_perform callback on ActiveEncodeJob::Create
     ActiveEncodeJob::Create.perform_later(self.id, input, {preset: self.workflow_name})
   end
 
@@ -495,14 +500,23 @@ class MasterFile < ActiveFedora::Base
     has_captions? ? captions.mime_type : nil
   end
 
+  def has_waveform?
+    !waveform.empty?
+  end
+
+  def waveform_type
+    has_waveform? ? waveform.mime_type : nil
+  end
+
   def has_structuralMetadata?
-    !structuralMetadata.empty?
+    structuralMetadata.present? && Nokogiri::XML(structuralMetadata.content).xpath('//Item').present?
   end
 
   def to_solr *args
     super.tap do |solr_doc|
       solr_doc['file_size_ltsi'] = file_size
       solr_doc['has_captions?_bs'] = has_captions?
+      solr_doc['has_waveform?_bs'] = has_waveform?
       solr_doc['has_poster?_bs'] = has_poster?
       solr_doc['has_thumbnail?_bs'] = has_thumbnail?
       solr_doc['has_structuralMetadata?_bs'] = has_structuralMetadata?
@@ -728,17 +742,11 @@ class MasterFile < ActiveFedora::Base
   def post_processing_file_management
     logger.debug "Finished processing"
 
-    case Settings.master_file_management.strategy
-    when 'delete'
-      MasterFileManagementJobs::Delete.perform_now self.id
-    when 'move'
-      move_path = Settings.master_file_management.path
-      raise '"path" configuration missing for master_file_management strategy "move"' if move_path.blank?
-      newpath = File.join(move_path, MasterFile.post_processing_move_filename(file_location, id: id))
-      MasterFileManagementJobs::Move.perform_later self.id, newpath
-    else
-      # Do nothing
-    end
+    # Generate the waveform after proessing is complete but before master file management
+    generate_waveform
+    # Run master file management strategy
+    manage_master_file
+    # Clean up working file if it exists
     CleanupWorkingFileJob.perform_later(self.id) unless Settings.matterhorn.media_path.blank?
   end
 
@@ -768,6 +776,31 @@ class MasterFile < ActiveFedora::Base
     media_object.ordered_master_files.delete(self)
     media_object.set_media_types!
     media_object.set_duration!
-    media_object.save
+    if !media_object.save
+      logger.error "Failed when updating media object #{media_object.id} while destroying master file #{self.id}"
+    end
+  end
+
+  private
+
+  def generate_waveform
+    WaveformJob.perform_now(id)
+  rescue StandardError => e
+    logger.warn("WaveformJob failed: #{e.message}")
+    logger.warn(e.backtrace.to_s)
+  end
+
+  def manage_master_file
+    case Settings.master_file_management.strategy
+    when 'delete'
+      MasterFileManagementJobs::Delete.perform_now self.id
+    when 'move'
+      move_path = Settings.master_file_management.path
+      raise '"path" configuration missing for master_file_management strategy "move"' if move_path.blank?
+      newpath = File.join(move_path, MasterFile.post_processing_move_filename(file_location, id: id))
+      MasterFileManagementJobs::Move.perform_later self.id, newpath
+    else
+      # Do nothing
+    end
   end
 end

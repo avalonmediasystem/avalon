@@ -21,8 +21,8 @@ class CatalogController < ApplicationController
   include Hydra::MultiplePolicyAwareAccessControlsEnforcement
   include BlacklightHelperReloadFix
 
-  # These before_filters apply the hydra access controls
-  before_filter :enforce_show_permissions, only: :show
+  # These before_actions apply the hydra access controls
+  before_action :enforce_show_permissions, only: :show
 
   configure_blacklight do |config|
     ## Class for sending and receiving requests from a search index

@@ -15,7 +15,7 @@
 require 'rails_helper'
 
 describe FedoraMigrate::Derivative::ObjectMover do
-  let(:derivative) { FactoryGirl.create(:derivative) }
+  let(:derivative) { FactoryBot.create(:derivative) }
   describe 'empty?' do
     it 'returns true when the derivative has been wiped' do
       described_class.wipeout!(derivative)

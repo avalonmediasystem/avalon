@@ -21,7 +21,7 @@ describe MasterFileManagementJobs do
   context "fakefs" do
 
     let(:location) { "/path/to/old/file.mp4" }
-    let!(:master_file) { FactoryGirl.create(:master_file, file_location: location) }
+    let!(:master_file) { FactoryBot.create(:master_file, file_location: location) }
 
     before :each do
       FakeFS.activate!

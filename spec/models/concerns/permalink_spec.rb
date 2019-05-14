@@ -18,7 +18,7 @@ describe Permalink do
 
   describe '#permalink' do
 
-    let(:master_file){ FactoryGirl.build(:master_file) }
+    let(:master_file){ FactoryBot.build(:master_file) }
 
     context 'permalink does not exist' do
       it 'returns nil' do
@@ -50,11 +50,11 @@ describe Permalink do
 
     context 'creating permalink' do
       let(:media_object) do
-        mo = FactoryGirl.build(:media_object)
+        mo = FactoryBot.build(:media_object)
         mo.save
         mo.reload
       end
-      let(:master_file) { FactoryGirl.create(:master_file, media_object: media_object) }
+      let(:master_file) { FactoryBot.create(:master_file, media_object: media_object) }
 
       it 'should get the absolute path to the object' do
         expect(Permalink.url_for(media_object)).to eq("http://test.host/media_objects/#{CGI::escape(media_object.id)}")

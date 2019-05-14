@@ -1,11 +1,11 @@
 # Copyright 2011-2018, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
-# 
+#
 # You may obtain a copy of the License at
-# 
+#
 # http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software distributed
 #   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
 #   CONDITIONS OF ANY KIND, either express or implied. See the License for the
@@ -34,19 +34,19 @@ describe ApplicationHelper do
 
   describe "#stream_label_for" do
     it "should return the label first if it is available" do
-      master_file = FactoryGirl.build(:master_file, title: 'Label')
+      master_file = FactoryBot.build(:master_file, title: 'Label')
       expect(master_file.file_location).not_to be_nil
       expect(master_file.title).not_to be_nil
       expect(helper.stream_label_for(master_file)).to eq('Label')
     end
     it "should return the filename second if it is available" do
-      master_file = FactoryGirl.build(:master_file, title: nil)
+      master_file = FactoryBot.build(:master_file, title: nil)
       expect(master_file.file_location).not_to be_nil
       expect(master_file.title).to be_nil
       expect(helper.stream_label_for(master_file)).to eq(File.basename(master_file.file_location))
     end
     it "should handle empty file_locations and labels" do
-      master_file = FactoryGirl.build(:master_file, file_location: nil, title: nil)
+      master_file = FactoryBot.build(:master_file, file_location: nil, title: nil)
       expect(master_file.file_location).to be_nil
       expect(master_file.title).to be_nil
       expect(helper.stream_label_for(master_file)).to eq(master_file.id)
@@ -55,16 +55,20 @@ describe ApplicationHelper do
 
   describe '.lti_share_url_for' do
     it 'forms a proper lti share url for media objects' do
-      media_object = FactoryGirl.create(:media_object)
+      media_object = FactoryBot.create(:media_object)
       expect(helper.lti_share_url_for(media_object)).to eq "http://test.host/users/auth/lti/callback?target_id=#{media_object.id}"
     end
     it 'forms a proper lti share url for master files' do
-      master_file = FactoryGirl.create(:master_file)
+      master_file = FactoryBot.create(:master_file)
       expect(helper.lti_share_url_for(master_file)).to eq "http://test.host/users/auth/lti/callback?target_id=#{master_file.id}"
     end
     it 'forms a proper lti share url for playlists' do
-      playlist = FactoryGirl.create(:playlist)
+      playlist = FactoryBot.create(:playlist)
       expect(helper.lti_share_url_for(playlist)).to eq "http://test.host/users/auth/lti/callback?target_id=#{playlist.to_gid_param}"
+    end
+    it 'forms a proper lti share url for timelines' do
+      timeline = FactoryBot.create(:timeline)
+      expect(helper.lti_share_url_for(timeline)).to eq "http://test.host/users/auth/lti/callback?target_id=#{timeline.to_gid_param}"
     end
   end
 
@@ -104,6 +108,8 @@ describe ApplicationHelper do
       expect(helper.milliseconds_to_formatted_time(1000)).to eq("00:01")
       expect(helper.milliseconds_to_formatted_time(60000)).to eq("01:00")
       expect(helper.milliseconds_to_formatted_time(3600000)).to eq("1:00:00")
+      expect(helper.milliseconds_to_formatted_time(1123)).to eq("00:01.123")
+      expect(helper.milliseconds_to_formatted_time(1123, false)).to eq("00:01")
     end
   end
 

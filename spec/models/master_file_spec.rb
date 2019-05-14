@@ -17,13 +17,13 @@ require 'rails_helper'
 describe MasterFile do
 
   describe "validations" do
-    subject {MasterFile.new}
-    it {is_expected.to validate_presence_of(:workflow_name)}
-    it {is_expected.to validate_inclusion_of(:workflow_name).in_array(MasterFile::WORKFLOWS)}
-    xit {is_expected.to validate_presence_of(:file_format)}
-    xit {is_expected.to validate_exclusion_of(:file_format).in_array(['Unknown']).with_message("The file was not recognized as audio or video.")}
-    it {is_expected.to validate_inclusion_of(:date_digitized).in_array([nil, '2016-04-07T15:05:01-05:00', '2016-04-07'])}
-    it {is_expected.to validate_exclusion_of(:date_digitized).in_array(["","2016-14-99","Blergh"]).with_message(//)}
+    subject { MasterFile.new }
+    it { is_expected.to validate_presence_of(:workflow_name) }
+    it { is_expected.to validate_inclusion_of(:workflow_name).in_array(MasterFile::WORKFLOWS) }
+    xit { is_expected.to validate_presence_of(:file_format) }
+    xit { is_expected.to validate_exclusion_of(:file_format).in_array(['Unknown']).with_message("The file was not recognized as audio or video.") }
+    it { is_expected.to validate_inclusion_of(:date_digitized).in_array([nil, '2016-04-07T15:05:01-05:00', '2016-04-07']).with_message(//) }
+    it { is_expected.to validate_exclusion_of(:date_digitized).in_array(["","2016-14-99","Blergh"]).with_message(//) }
   end
 
   describe "locations" do
@@ -85,7 +85,7 @@ describe MasterFile do
 
   describe "master_files=" do
     let(:derivative) {Derivative.create}
-    let(:master_file) {FactoryGirl.create(:master_file)}
+    let(:master_file) {FactoryBot.create(:master_file)}
     it "should set hasDerivation relationships on self" do
       master_file.derivatives += [derivative]
       expect(derivative.association_cache).to have_key(:master_file)
@@ -112,34 +112,30 @@ describe MasterFile do
   end
 
   describe '#process' do
-    let!(:master_file) { FactoryGirl.create(:master_file) }
-    # let(:encode_job) { ActiveEncodeJob::Create.new(master_file.id, nil, {}) }
-    before do
-      # allow(ActiveEncodeJob::Create).to receive(:new).and_return(encode_job)
-      # allow(encode_job).to receive(:perform)
-    end
-    it 'starts an ActiveEncode workflow' do
+    let!(:master_file) { FactoryBot.create(:master_file) }
+ 
+    it 'enqueues an ActiveEncode job' do
       master_file.process
       expect(ActiveEncodeJob::Create).to have_been_enqueued.with(master_file.id, "file://" + URI.escape(master_file.file_location), {preset: master_file.workflow_name})
-      # expect(encode_job).to have_received(:perform)
     end
+
     describe 'already processing' do
       before do
         master_file.status_code = 'RUNNING'
       end
+
       it 'should not start an ActiveEncode workflow' do
         expect{master_file.process}.to raise_error(RuntimeError)
         expect(ActiveEncodeJob::Create).not_to have_been_enqueued
-        # expect(encode_job).not_to have_received(:perform)
       end
     end
   end
 
   describe "delete" do
-    subject(:master_file) { FactoryGirl.create(:master_file) }
+    subject(:master_file) { FactoryBot.create(:master_file) }
 
     it "should delete (VOV-1805)" do
-      mf = FactoryGirl.create(:master_file)
+      mf = FactoryBot.create(:master_file)
       expect { mf.delete }.to change { MasterFile.all.count }.by(-1)
     end
 
@@ -151,7 +147,7 @@ describe MasterFile do
   end
 
   describe "image_offset" do
-    subject(:master_file) {FactoryGirl.create(:master_file, duration: (rand(21600000)+60000).to_s )}
+    subject(:master_file) {FactoryBot.create(:master_file, duration: (rand(21600000)+60000).to_s )}
 
     describe "milliseconds" do
       it "should accept a value" do
@@ -268,7 +264,7 @@ describe MasterFile do
 
       describe "quality-high exists" do
         it "it should set the correct file location and size" do
-          master_file = FactoryGirl.create(:master_file)
+          master_file = FactoryBot.create(:master_file)
           master_file.setContent(derivative_hash)
           expect(master_file.file_location).to eq(filename_high)
           expect(master_file.file_size).to eq("199160")
@@ -276,7 +272,7 @@ describe MasterFile do
       end
       describe "quality-high does not exist" do
         it "should set the correct file location and size" do
-          master_file = FactoryGirl.create(:master_file)
+          master_file = FactoryBot.create(:master_file)
           master_file.setContent(derivative_hash.except("quality-high"))
           expect(master_file.file_location).to eq(filename_medium)
           expect(master_file.file_size).to eq("199160")
@@ -324,7 +320,7 @@ describe MasterFile do
   end
 
   describe "#encoder_class" do
-    subject { FactoryGirl.create(:master_file) }
+    subject { FactoryBot.create(:master_file) }
 
     before :all do
       class WorkflowEncoder < ActiveEncode::Base
@@ -378,7 +374,7 @@ describe MasterFile do
 
   describe "#embed_title" do
     context "with structure" do
-      subject { FactoryGirl.create( :master_file, :with_structure, { media_object: FactoryGirl.create( :media_object, { title: "test" })})}
+      subject { FactoryBot.create( :master_file, :with_structure, { media_object: FactoryBot.create( :media_object, { title: "test" })})}
 
       it "should favor the structure item label" do
         expect( subject.embed_title ).to eq( "test - CD 1" )
@@ -386,7 +382,7 @@ describe MasterFile do
     end
 
     context "without structure" do
-      subject { FactoryGirl.create( :master_file, { media_object: FactoryGirl.create( :media_object, { title: "test" })})}
+      subject { FactoryBot.create( :master_file, { media_object: FactoryBot.create( :media_object, { title: "test" })})}
 
       it "should have an appropriate title for the embed code with a label" do
         subject.title = "test"
@@ -411,9 +407,9 @@ describe MasterFile do
   end
 
   describe "#update_ingest_batch" do
-    let(:media_object) {FactoryGirl.create(:media_object)}
+    let(:media_object) {FactoryBot.create(:media_object)}
     let!(:ingest_batch) {IngestBatch.create(media_object_ids: [media_object.id], email: Faker::Internet.email)}
-    let(:master_file) {FactoryGirl.create( :master_file , {media_object: media_object, status_code: 'COMPLETED'} )}
+    let(:master_file) {FactoryBot.create( :master_file , {media_object: media_object, status_code: 'COMPLETED'} )}
     it 'should send email when ingest batch is finished processing' do
       master_file.send(:update_ingest_batch)
       expect(ingest_batch.reload.email_sent?).to be true
@@ -421,7 +417,7 @@ describe MasterFile do
   end
 
   describe '#update_progress_on_success!' do
-    subject(:master_file) { FactoryGirl.create(:master_file) }
+    subject(:master_file) { FactoryBot.create(:master_file) }
     let(:encode) { double("encode", :output => []) }
     before do
       allow(master_file).to receive(:update_ingest_batch).and_return(true)
@@ -436,15 +432,15 @@ describe MasterFile do
   end
 
   describe "#structural_metadata_labels" do
-    subject(:master_file) { FactoryGirl.create(:master_file, :with_structure) }
+    subject(:master_file) { FactoryBot.create(:master_file, :with_structure) }
     it 'should return correct list of labels' do
       expect(master_file.structural_metadata_labels.first).to eq 'CD 1'
     end
   end
 
   describe 'rdf formatted information' do
-    subject(:video_master_file) { FactoryGirl.create(:master_file) }
-    subject(:sound_master_file) { FactoryGirl.create(:master_file, file_format: 'Sound') }
+    subject(:video_master_file) { FactoryBot.create(:master_file) }
+    subject(:sound_master_file) { FactoryBot.create(:master_file, file_format: 'Sound') }
     describe 'type' do
       it 'returns dctypes:MovingImage when the file is a video' do
         expect(video_master_file.rdf_type).to match('dctypes:MovingImage')
@@ -482,7 +478,7 @@ describe MasterFile do
   end
 
   context 'with a working directory' do
-    subject(:master_file) { FactoryGirl.create(:master_file) }
+    subject(:master_file) { FactoryBot.create(:master_file) }
     let(:working_dir) { Dir.mktmpdir }
     before do
       Settings.matterhorn.media_path = working_dir
@@ -510,8 +506,17 @@ describe MasterFile do
     end
   end
 
+  describe "waveform generation" do
+    subject(:master_file) { FactoryBot.create(:master_file) }
+
+    it 'runs the waveform job' do
+      expect(WaveformJob).to receive(:perform_now).with(master_file.id)
+      master_file.send(:post_processing_file_management)
+    end
+  end
+
   describe '#extract_frame' do
-    subject(:video_master_file) { FactoryGirl.create(:master_file, :with_media_object, :with_derivative, display_aspect_ratio: '1') }
+    subject(:video_master_file) { FactoryBot.create(:master_file, :with_media_object, :with_derivative, display_aspect_ratio: '1') }
     before do
       allow(video_master_file).to receive(:find_frame_source).and_return({source: video_master_file.file_location, offset: 1, master: false})
     end
@@ -521,23 +526,38 @@ describe MasterFile do
   end
 
   describe 'poster' do
-    let(:master_file) { FactoryGirl.create(:master_file) }
+    let(:master_file) { FactoryBot.create(:master_file) }
     it 'sets original_name to default value' do
       expect(master_file.poster.original_name).to eq 'poster.jpg'
     end
   end
 
   describe 'thumbnail' do
-    let(:master_file) { FactoryGirl.create(:master_file) }
+    let(:master_file) { FactoryBot.create(:master_file) }
     it 'sets original_name to default value' do
       expect(master_file.thumbnail.original_name).to eq 'thumbnail.jpg'
     end
   end
 
   describe 'structuralMetadata' do
-    let(:master_file) { FactoryGirl.create(:master_file) }
+    let(:master_file) { FactoryBot.create(:master_file) }
     it 'sets original_name to default value' do
       expect(master_file.structuralMetadata.original_name).to eq 'structuralMetadata.xml'
+    end
+  end
+
+  describe 'captions' do
+    let(:master_file) { FactoryBot.create(:master_file) }
+    it 'has a caption' do
+      expect(master_file.captions).to be_kind_of IndexedFile
+    end
+  end
+
+  describe 'waveforms' do
+    let(:master_file) { FactoryBot.create(:master_file) }
+    it 'sets original_name to default value' do
+      expect(master_file.waveform).to be_kind_of IndexedFile
+      expect(master_file.waveform.original_name).to eq 'waveform.json'
     end
   end
 

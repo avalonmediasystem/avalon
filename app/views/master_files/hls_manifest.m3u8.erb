@@ -1,0 +1,5 @@
+#EXTM3U
+<% @hls_streams.each do |hls| %>
+#EXT-X-STREAM-INF:BANDWIDTH=<%= hls[:bitrate] %>
+<%= hls[:url] %>
+<% end %>

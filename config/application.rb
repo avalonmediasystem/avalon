@@ -1,4 +1,4 @@
-require File.expand_path('../boot', __FILE__)
+require_relative 'boot'
 
 require 'rails/all'
 require 'resolv-replace'
@@ -8,7 +8,7 @@ require 'resolv-replace'
 Bundler.require(*Rails.groups)
 
 module Avalon
-  VERSION = '6.4.5'
+  VERSION = '6.5.0'
 
   class Application < Rails::Application
     require 'avalon/configuration'
@@ -17,6 +17,8 @@ module Avalon
       g.test_framework :rspec, :spec => true
     end
 
+    # Initialize configuration defaults for originally generated Rails version.
+    config.load_defaults 5.1
 
     # Settings in config/environments/* take precedence over those specified here.
     # Application configuration should go into files in config/initializers
@@ -30,11 +32,20 @@ module Avalon
     # config.i18n.load_path += Dir[Rails.root.join('my', 'locales', '*.{rb,yml}').to_s]
     # config.i18n.default_locale = :de
 
-    # Do not swallow errors in after_commit/after_rollback callbacks.
-    config.active_record.raise_in_transactional_callbacks = true
-
     config.active_job.queue_adapter = :resque
 
     config.action_dispatch.default_headers = { 'X-Frame-Options' => 'ALLOWALL' }
+
+    config.middleware.insert_before 0, Rack::Cors do
+      allow do
+        origins '*'
+        resource '/media_objects/*/manifest.json', headers: :any, methods: [:get]
+        resource '/master_files/*/thumbnail', headers: :any, methods: [:get]
+        resource '/master_files/*/structure.json', headers: :any, methods: [:get, :post, :delete]
+        resource '/master_files/*/waveform.json', headers: :any, methods: [:get]
+        resource '/master_files/*/*.m3u8', headers: :any, methods: [:get, :head]
+        resource '/timelines/*/manifest.json', headers: :any, methods: [:get, :post]
+      end
+    end
   end
 end

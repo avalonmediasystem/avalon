@@ -1,0 +1,42 @@
+Batch encoding complete!
+
+<dl>
+  <dt>Manifest:</dt>
+  <dd><%= @batch_registry.file_name %></dd>
+  <dt>Email:</dt>
+  <dd><%= @email %></dd>
+  <dt>Status:</dt>
+  <dd><%= @status %></dd>
+  <dt>Collection:</dt>
+  <dd><%= @collection_text %></dd>
+</dl>
+
+<% if @batch_registry.encoding_error? %>
+  <div class="alert alert-danger">
+    The following rows of your spreadsheet had encoding errors:
+  </div>
+  <table>
+    <tr>
+      <th>Row</th>
+      <th>Media Object ID</th>
+    </tr>
+    <% @batch_registry.batch_entries_with_encoding_error.each do |batch_entry| %>
+      <%= render partial: 'batch_encoding_entry_row', locals: { batch_entry: batch_entry } %>
+    <% end %>
+  </table>
+<% end %>
+
+<% if @batch_registry.batch_entries_with_encoding_success.any? %>
+  <div class="alert">
+    The following rows of your spreadsheet successfully finished encoding:
+  </div>
+  <table>
+    <tr>
+      <th>Row</th>
+      <th>Media Object ID</th>
+    </tr>
+    <% @batch_registry.batch_entries_with_encoding_success.each do |batch_entry| %>
+      <%= render partial: 'batch_encoding_entry_row', locals: { batch_entry: batch_entry } %>
+    <% end %>
+  </table>
+<% end %>

@@ -19,10 +19,10 @@ module MediaObjectIntercom
       fields:
         {
           duration: duration,
-          avalon_resource_type: avalon_resource_type,
+          avalon_resource_type: avalon_resource_type.to_a,
           avalon_publisher: avalon_publisher,
           avalon_uploader: avalon_uploader,
-          identifier: identifier,
+          identifier: identifier.to_a,
           title: title,
           alternative_title: alternative_title,
           translated_title: translated_title,
@@ -46,7 +46,7 @@ module MediaObjectIntercom
           table_of_contents: table_of_contents,
           physical_description: physical_description,
           record_identifier: record_identifier,
-          comment: comment,
+          comment: comment.to_a,
           bibliographic_id: (bibliographic_id.present? ? bibliographic_id[:id] : nil),
           bibliographic_id_label: (bibliographic_id.present? ? bibliographic_id[:source] : nil),
           note: (note.present? ? note.collect { |n| n[:note] } : nil),

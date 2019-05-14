@@ -15,7 +15,7 @@
 # -*- encoding : utf-8 -*-
 require "avalon/role_controls"
 class Admin::GroupsController < ApplicationController
-  before_filter :auth
+  before_action :auth
 
   # Currently assumes that to do anything you have to be able to manage Group
   # TODO: finer controls
@@ -130,7 +130,7 @@ class Admin::GroupsController < ApplicationController
       Avalon::RoleControls.assign_users(users, group_name)
       Avalon::RoleControls.save_changes
     end
-    redirect_to :back
+    redirect_back(fallback_location: edit_admin_group_path(group_name))
   end
 
   # Only deletes multiple groups for now

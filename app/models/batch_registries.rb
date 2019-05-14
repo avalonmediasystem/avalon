@@ -17,15 +17,36 @@
 class BatchRegistries < ActiveRecord::Base
   before_save :check_user
   validates :file_name, :user_id, :collection, presence: true
-  has_many :batch_entries, -> { order(position: :asc) }, class_name: BatchEntries
+  has_many :batch_entries, -> { order(position: :asc) }, class_name: "BatchEntries"
 
-  # For FactoryGirl's taps, document more TODO
+  # For FactoryBot's taps, document more TODO
   def file_name=(fn)
     super
     ensure_replay_id
   end
 
+  def encoding_success?
+    encoding_status == :success
+  end
+
+  def encoding_error?
+    encoding_status == :error
+  end
+
+  def encoding_finished?
+    encoding_success? || encoding_error?
+  end
+
+  def batch_entries_with_encoding_error
+    @batch_entries_with_encoding_error ||= batch_entries.select(&:encoding_error?)
+  end
+
+  def batch_entries_with_encoding_success
+    @batch_entries_with_encoding_success ||= batch_entries.select(&:encoding_success?)
+  end
+
   private
+
   # Places a value in the replay_id column if there is not one currently
   def ensure_replay_id
     self.replay_name = "#{SecureRandom.uuid}_#{file_name}" if replay_name.nil?
@@ -36,5 +57,23 @@ class BatchRegistries < ActiveRecord::Base
       self.error = true
       self.error_message = "No user with id #{user_id} found in system"
     end
+  end
+
+  # Returns :success, :error, or :in_progress
+  # Only return success if all BatchEntries report encoding success
+  def encoding_status
+    return @encoding_status if @encoding_status.present?
+    status = :success
+    batch_entries.each do |batch_entry|
+      next if batch_entry.encoding_success?
+      if batch_entry.encoding_error?
+        status = :error
+      else
+        status = :in_progress
+        break
+      end
+    end
+    @encoding_status = status
+    @encoding_status
   end
 end

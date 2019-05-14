@@ -52,11 +52,11 @@ RSpec.describe PlaylistsController, type: :controller do
   let(:user) { login_as :user }
 
   describe 'security' do
-    let(:playlist) { FactoryGirl.create(:playlist, items: [playlist_item]) }
-    let(:playlist_item) { FactoryGirl.create(:playlist_item, clip: clip) }
-    let(:clip) { FactoryGirl.create(:avalon_clip, master_file: master_file) }
-    let(:master_file) { FactoryGirl.create(:master_file, media_object: media_object) }
-    let(:media_object) { FactoryGirl.create(:published_media_object, visibility: 'public') }
+    let(:playlist) { FactoryBot.create(:playlist, items: [playlist_item]) }
+    let(:playlist_item) { FactoryBot.create(:playlist_item, clip: clip) }
+    let(:clip) { FactoryBot.create(:avalon_clip, master_file: master_file) }
+    let(:master_file) { FactoryBot.create(:master_file, media_object: media_object) }
+    let(:media_object) { FactoryBot.create(:published_media_object, visibility: 'public') }
 
     context 'with unauthenticated user' do
       # New is isolated here due to issues caused by the controller instance not being regenerated
@@ -65,33 +65,33 @@ RSpec.describe PlaylistsController, type: :controller do
       end
       it "all routes should redirect to sign in" do
         expect(get :index).to redirect_to(new_user_session_path)
-        expect(get :edit, id: playlist.id).to redirect_to(new_user_session_path)
+        expect(get :edit, params: { id: playlist.id }).to redirect_to(new_user_session_path)
         expect(post :create).to redirect_to(new_user_session_path)
-        expect(put :update, id: playlist.id).to redirect_to(new_user_session_path)
-        expect(put :update_multiple, id: playlist.id).to redirect_to(new_user_session_path)
-        expect(delete :destroy, id: playlist.id).to redirect_to(new_user_session_path)
-        expect(xhr :get, :refresh_info, id: playlist.id, position: 1).to redirect_to(new_user_session_path)
+        expect(put :update, params: { id: playlist.id }).to redirect_to(new_user_session_path)
+        expect(put :update_multiple, params: { id: playlist.id }).to redirect_to(new_user_session_path)
+        expect(delete :destroy, params: { id: playlist.id }).to redirect_to(new_user_session_path)
+        expect(get :refresh_info, params: { id: playlist.id, position: 1 }, xhr: true).to redirect_to(/#{Regexp.quote(new_user_session_path)}\?url=.*/)
       end
       context 'with a public playlist' do
-        let(:playlist) { FactoryGirl.create(:playlist, visibility: Playlist::PUBLIC, items: [playlist_item]) }
+        let(:playlist) { FactoryBot.create(:playlist, visibility: Playlist::PUBLIC, items: [playlist_item]) }
         it "should return the playlist view page" do
-          expect(get :show, id: playlist.id).not_to redirect_to(new_user_session_path)
-          expect(get :show, id: playlist.id).to be_success
-          expect(xhr :get, :refresh_info, id: playlist.id, position: 1).to be_success
+          expect(get :show, params: { id: playlist.id }).not_to redirect_to(new_user_session_path)
+          expect(get :show, params: { id: playlist.id }).to be_successful
+          expect(get :refresh_info, params: { id: playlist.id, position: 1 }, xhr: true).to be_successful
         end
       end
       context 'with a private playlist' do
         it "should NOT return the playlist view page" do
-          expect(get :show, id: playlist.id).to redirect_to(new_user_session_path)
-          expect(xhr :get, :refresh_info, id: playlist.id, position: 1).to redirect_to(new_user_session_path)
+          expect(get :show, params: { id: playlist.id }).to redirect_to(/#{Regexp.quote(new_user_session_path)}\?url=.*/)
+          expect(get :refresh_info, params: { id: playlist.id, position: 1 }, xhr: true).to redirect_to(/#{Regexp.quote(new_user_session_path)}\?url=.*/)
         end
       end
       context 'with a private playlist and token' do
-        let(:playlist) { FactoryGirl.create(:playlist, :with_access_token, items: [playlist_item]) }
+        let(:playlist) { FactoryBot.create(:playlist, :with_access_token, items: [playlist_item]) }
         it "should return the playlist view page" do
-          expect(get :show, id: playlist.id, token: playlist.access_token).not_to redirect_to(root_path)
-          expect(get :show, id: playlist.id, token: playlist.access_token).to be_success
-          expect(xhr :get, :refresh_info, id: playlist.id, position: 1, token: playlist.access_token).to be_success
+          expect(get :show, params: { id: playlist.id, token: playlist.access_token }).not_to redirect_to(root_path)
+          expect(get :show, params: { id: playlist.id, token: playlist.access_token }).to be_successful
+          expect(get :refresh_info, params: { id: playlist.id, position: 1, token: playlist.access_token }, xhr: true).to be_successful
         end
       end
     end
@@ -100,32 +100,32 @@ RSpec.describe PlaylistsController, type: :controller do
         login_as :user
       end
       it "all routes should redirect to /" do
-        expect(get :edit, id: playlist.id).to redirect_to(root_path)
-        expect(put :update, id: playlist.id).to redirect_to(root_path)
-        expect(put :update_multiple, id: playlist.id).to redirect_to(root_path)
-        expect(delete :destroy, id: playlist.id).to redirect_to(root_path)
-        expect(xhr :get,  :refresh_info, id: playlist.id, position: 1).to redirect_to(root_path)
+        expect(get :edit, params: { id: playlist.id }).to redirect_to(root_path)
+        expect(put :update, params: { id: playlist.id }).to redirect_to(root_path)
+        expect(put :update_multiple, params: { id: playlist.id }).to redirect_to(root_path)
+        expect(delete :destroy, params: { id: playlist.id }).to redirect_to(root_path)
+        expect(get :refresh_info, params: { id: playlist.id, position: 1 }, xhr: true).to redirect_to(root_path)
       end
       context 'with a public playlist' do
-        let(:playlist) { FactoryGirl.create(:playlist, visibility: Playlist::PUBLIC, items: [playlist_item]) }
+        let(:playlist) { FactoryBot.create(:playlist, visibility: Playlist::PUBLIC, items: [playlist_item]) }
         it "should return the playlist view page" do
-          expect(get :show, id: playlist.id).not_to redirect_to(root_path)
-          expect(get :show, id: playlist.id).to be_success
-          expect(xhr :get, :refresh_info, id: playlist.id, position: 1).to be_success
+          expect(get :show, params: { id: playlist.id }).not_to redirect_to(root_path)
+          expect(get :show, params: { id: playlist.id }).to be_successful
+          expect(get :refresh_info, params: { id: playlist.id, position: 1 }, xhr: true).to be_successful
         end
       end
       context 'with a private playlist' do
         it "should NOT return the playlist view page" do
-          expect(get :show, id: playlist.id).to redirect_to(root_path)
-          expect(xhr :get, :refresh_info, id: playlist.id, position: 1).to redirect_to(root_path)
+          expect(get :show, params: { id: playlist.id }).to redirect_to(root_path)
+          expect(get :refresh_info, params: { id: playlist.id, position: 1 }, xhr: true).to redirect_to(root_path)
         end
       end
       context 'with a private playlist and token' do
-        let(:playlist) { FactoryGirl.create(:playlist, :with_access_token, items: [playlist_item]) }
+        let(:playlist) { FactoryBot.create(:playlist, :with_access_token, items: [playlist_item]) }
         it "should return the playlist view page" do
-          expect(get :show, id: playlist.id, token: playlist.access_token).not_to redirect_to(root_path)
-          expect(get :show, id: playlist.id, token: playlist.access_token).to be_success
-          expect(xhr :get, :refresh_info, id: playlist.id, position: 1, token: playlist.access_token).to be_success
+          expect(get :show, params: { id: playlist.id, token: playlist.access_token }).not_to redirect_to(root_path)
+          expect(get :show, params: { id: playlist.id, token: playlist.access_token }).to be_successful
+          expect(get :refresh_info, params: { id: playlist.id, position: 1, token: playlist.access_token }, xhr: true).to be_successful
         end
       end
     end
@@ -135,7 +135,7 @@ RSpec.describe PlaylistsController, type: :controller do
     it 'assigns accessible playlists as @playlists' do
       # TODO: test non-accessible playlists not appearing
       playlist = Playlist.create! valid_attributes
-      get :index, {}, valid_session
+      get :index, params: {}, session: valid_session
       expect(assigns(:playlists)).to eq([playlist])
     end
   end
@@ -143,7 +143,7 @@ RSpec.describe PlaylistsController, type: :controller do
   describe 'GET #show' do
     it 'assigns the requested playlist as @playlist' do
       playlist = Playlist.create! valid_attributes
-      get :show, { id: playlist.to_param }, valid_session
+      get :show, params: { id: playlist.to_param }, session: valid_session
       expect(assigns(:playlist)).to eq(playlist)
     end
     # TODO: write tests for public/private playists
@@ -154,7 +154,7 @@ RSpec.describe PlaylistsController, type: :controller do
       login_as :user
     end
     it 'assigns a new playlist as @playlist' do
-      get :new, {}, valid_session
+      get :new, params: {}, session: valid_session
       expect(assigns(:playlist)).to be_a_new(Playlist)
     end
   end
@@ -162,7 +162,7 @@ RSpec.describe PlaylistsController, type: :controller do
   describe 'GET #edit' do
     it 'assigns the requested playlist as @playlist' do
       playlist = Playlist.create! valid_attributes
-      get :edit, { id: playlist.to_param }, valid_session
+      get :edit, params: { id: playlist.to_param }, session: valid_session
       expect(assigns(:playlist)).to eq(playlist)
     end
   end
@@ -171,23 +171,23 @@ RSpec.describe PlaylistsController, type: :controller do
     context 'with valid params' do
       it 'creates a new Playlist' do
         expect do
-          post :create, { playlist: valid_attributes }, valid_session
+          post :create, params: { playlist: valid_attributes }, session: valid_session
         end.to change(Playlist, :count).by(1)
       end
 
       it 'assigns a newly created playlist as @playlist' do
-        post :create, { playlist: valid_attributes }, valid_session
+        post :create, params: { playlist: valid_attributes }, session: valid_session
         expect(assigns(:playlist)).to be_a(Playlist)
         expect(assigns(:playlist)).to be_persisted
       end
 
       it 'redirects to the created playlist' do
-        post :create, { playlist: valid_attributes }, valid_session
+        post :create, params: { playlist: valid_attributes }, session: valid_session
         expect(response).to redirect_to(Playlist.last)
       end
 
       it 'generates a token if visibility is private-with-token' do
-        post :create, { playlist: valid_attributes.merge(visibility: Playlist::PRIVATE_WITH_TOKEN) }, valid_session
+        post :create, params: { playlist: valid_attributes.merge(visibility: Playlist::PRIVATE_WITH_TOKEN) }, session: valid_session
         expect(assigns(:playlist).access_token).not_to be_blank
       end
     end
@@ -197,12 +197,12 @@ RSpec.describe PlaylistsController, type: :controller do
         login_as :user
       end
       it 'assigns a newly created but unsaved playlist as @playlist' do
-        post :create, { playlist: invalid_attributes }, valid_session
+        post :create, params: { playlist: invalid_attributes }, session: valid_session
         expect(assigns(:playlist)).to be_a_new(Playlist)
       end
 
       it "re-renders the 'new' template" do
-        post :create, { playlist: invalid_attributes }, valid_session
+        post :create, params: { playlist: invalid_attributes }, session: valid_session
         expect(response).to render_template('new')
       end
     end
@@ -215,12 +215,11 @@ RSpec.describe PlaylistsController, type: :controller do
     let(:new_attributes) do
       { title: Faker::Lorem.word, visibility: Playlist::PUBLIC, comment: Faker::Lorem.sentence, user: user }
     end
-    let(:playlist) { FactoryGirl.create(:playlist, new_attributes) }
+    let(:playlist) { FactoryBot.create(:playlist, new_attributes) }
 
     context 'blank playlist' do
       it 'duplicate a blank playlist' do
-        post :duplicate, format: 'json', old_playlist_id: playlist.id,
-        playlist: { 'title' => playlist.title, 'comment' => playlist.comment, 'visibility' => playlist.visibility }
+        post :duplicate, params: { format: 'json', old_playlist_id: playlist.id, playlist: { 'title' => playlist.title, 'comment' => playlist.comment, 'visibility' => playlist.visibility } }
         expect(response.body).not_to be_empty
         parsed_response = JSON.parse(response.body)
 
@@ -236,16 +235,15 @@ RSpec.describe PlaylistsController, type: :controller do
 
     context 'non-blank playlist' do
 
-      let(:media_object) { FactoryGirl.create(:media_object, visibility: 'public') }
-      let!(:video_master_file) { FactoryGirl.create(:master_file, media_object: media_object, duration: "200000") }
+      let(:media_object) { FactoryBot.create(:media_object, visibility: 'public') }
+      let!(:video_master_file) { FactoryBot.create(:master_file, media_object: media_object, duration: "200000") }
       let!(:clip) { AvalonClip.create(master_file: video_master_file, title: Faker::Lorem.word,
         comment: Faker::Lorem.sentence, start_time: 1000, end_time: 2000) }
       let!(:playlist_item) { PlaylistItem.create!(playlist: playlist, clip: clip) }
       let!(:bookmark) { AvalonMarker.create(playlist_item: playlist_item, master_file: video_master_file, start_time: "200000")}
 
         it 'duplicate playlist with items' do
-          post :duplicate, format: 'json', old_playlist_id: playlist.id,
-          playlist: { 'title' => playlist.title, 'comment' => playlist.comment, 'visibility' => playlist.visibility }
+          post :duplicate, params: { format: 'json', old_playlist_id: playlist.id, playlist: { 'title' => playlist.title, 'comment' => playlist.comment, 'visibility' => playlist.visibility } }
           expect(response.body).not_to be_empty
           parsed_response = JSON.parse(response.body)
 
@@ -268,7 +266,7 @@ RSpec.describe PlaylistsController, type: :controller do
 
         it 'updates the requested playlist' do
           playlist = Playlist.create! valid_attributes
-          put :update, { id: playlist.to_param, playlist: new_attributes }, valid_session
+          put :update, params: { id: playlist.to_param, playlist: new_attributes }, session: valid_session
           playlist.reload
           expect(playlist.title).to eq new_attributes[:title]
           expect(playlist.visibility).to eq new_attributes[:visibility]
@@ -277,19 +275,19 @@ RSpec.describe PlaylistsController, type: :controller do
 
         it 'assigns the requested playlist as @playlist' do
           playlist = Playlist.create! valid_attributes
-          put :update, { id: playlist.to_param, playlist: new_attributes }, valid_session
+          put :update, params: { id: playlist.to_param, playlist: new_attributes }, session: valid_session
           expect(assigns(:playlist)).to eq(playlist)
         end
 
         it 'redirects to edit playlist' do
           playlist = Playlist.create! valid_attributes
-          put :update, { id: playlist.to_param, playlist: new_attributes }, valid_session
+          put :update, params: { id: playlist.to_param, playlist: new_attributes }, session: valid_session
           expect(response).to redirect_to(edit_playlist_path(playlist))
         end
 
         it 'generates a token if visibility is private-with-token' do
           playlist = Playlist.create! valid_attributes
-          put :update, { id: playlist.to_param, playlist: { visibility: Playlist::PRIVATE_WITH_TOKEN }}, valid_session
+          put :update, params: { id: playlist.to_param, playlist: { visibility: Playlist::PRIVATE_WITH_TOKEN } }, session: valid_session
           playlist.reload
           expect(playlist.access_token).not_to be_blank
         end
@@ -298,13 +296,13 @@ RSpec.describe PlaylistsController, type: :controller do
       context 'with invalid params' do
         it 'assigns the playlist as @playlist' do
           playlist = Playlist.create! valid_attributes
-          put :update, { id: playlist.to_param, playlist: invalid_attributes }, valid_session
+          put :update, params: { id: playlist.to_param, playlist: invalid_attributes }, session: valid_session
           expect(assigns(:playlist)).to eq(playlist)
         end
 
         it "re-renders the 'edit' template" do
           playlist = Playlist.create! valid_attributes
-          put :update, { id: playlist.to_param, playlist: invalid_attributes }, valid_session
+          put :update, params: { id: playlist.to_param, playlist: invalid_attributes }, session: valid_session
           expect(response).to render_template('edit')
         end
       end
@@ -315,11 +313,11 @@ RSpec.describe PlaylistsController, type: :controller do
         login_as :user
       end
 
-      let!(:playlist) { FactoryGirl.create(:playlist, valid_attributes) }
-      let!(:new_playlist) { FactoryGirl.create(:playlist, valid_attributes) }
+      let!(:playlist) { FactoryBot.create(:playlist, valid_attributes) }
+      let!(:new_playlist) { FactoryBot.create(:playlist, valid_attributes) }
 
-      let(:media_object) { FactoryGirl.create(:media_object, visibility: 'public') }
-      let!(:video_master_file) { FactoryGirl.create(:master_file, media_object: media_object, duration: "200000") }
+      let(:media_object) { FactoryBot.create(:media_object, visibility: 'public') }
+      let!(:video_master_file) { FactoryBot.create(:master_file, media_object: media_object, duration: "200000") }
       let!(:clip) { AvalonClip.create(master_file: video_master_file, title: Faker::Lorem.word,
         comment: Faker::Lorem.sentence, start_time: 1000, end_time: 2000) }
       let!(:playlist_item) { PlaylistItem.create!(playlist: playlist, clip: clip) }
@@ -328,7 +326,7 @@ RSpec.describe PlaylistsController, type: :controller do
       context 'delete' do
 
         it 'redirects to edit playlist' do
-          put :update_multiple, { id: playlist.to_param, clip_ids: ["1"] }, valid_session
+          put :update_multiple, params: { id: playlist.to_param, clip_ids: ["1"] }, session: valid_session
           expect(response).to redirect_to(edit_playlist_path(playlist))
         end
 
@@ -337,7 +335,7 @@ RSpec.describe PlaylistsController, type: :controller do
           expect(playlist.items.count).to eq(1)
           expect do
             # maybe request headers, run delete to see what gets pushed through.
-            delete :update_multiple, { id: playlist.to_param, clip_ids:[ playlist_item.to_param ] }, valid_session
+            delete :update_multiple, params: { id: playlist.to_param, clip_ids:[ playlist_item.to_param ] }, session: valid_session
           end.to change(playlist.items, :count).by(-1)
         end
       end
@@ -347,8 +345,7 @@ RSpec.describe PlaylistsController, type: :controller do
           playlist.items << playlist_item
           expect(playlist.items.count).to eq(1)
           expect do
-            put :update_multiple, {id: playlist.id, clip_ids:[ playlist_item.to_param ],
-              new_playlist_id: new_playlist.id, action_type: 'copy_to_playlist' }, valid_session
+            put :update_multiple, params: { id: playlist.id, clip_ids:[ playlist_item.to_param ], new_playlist_id: new_playlist.id, action_type: 'copy_to_playlist' }, session: valid_session
           end.to change(new_playlist.items, :count).by(+1)
           expect(playlist.items.count).to eq(1)
         end
@@ -359,8 +356,7 @@ RSpec.describe PlaylistsController, type: :controller do
           playlist.items << playlist_item
           expect(playlist.items.count).to eq(1)
           expect do
-            put :update_multiple, {id: playlist.id, clip_ids:[ playlist_item.to_param ],
-              new_playlist_id: new_playlist.id, action_type: 'move_to_playlist' }, valid_session
+            put :update_multiple, params: { id: playlist.id, clip_ids:[ playlist_item.to_param ], new_playlist_id: new_playlist.id, action_type: 'move_to_playlist' }, session: valid_session
           end.to change(new_playlist.items, :count).by(+1)
           expect(playlist.items.count).to eq(0)
         end
@@ -371,13 +367,13 @@ RSpec.describe PlaylistsController, type: :controller do
       it 'destroys the requested playlist' do
         playlist = Playlist.create! valid_attributes
         expect do
-          delete :destroy, { id: playlist.to_param }, valid_session
+          delete :destroy, params: { id: playlist.to_param }, session: valid_session
         end.to change(Playlist, :count).by(-1)
       end
 
       it 'redirects to the playlists list' do
         playlist = Playlist.create! valid_attributes
-        delete :destroy, { id: playlist.to_param }, valid_session
+        delete :destroy, params: { id: playlist.to_param }, session: valid_session
         expect(response).to redirect_to(playlists_url)
       end
     end
@@ -385,30 +381,30 @@ RSpec.describe PlaylistsController, type: :controller do
     describe 'GET #edit' do
       it 'assigns the requested playlist as @playlist' do
         playlist = Playlist.create! valid_attributes
-        get :edit, { id: playlist.to_param }, valid_session
+        get :edit, params: { id: playlist.to_param }, session: valid_session
         expect(assigns(:playlist)).to eq(playlist)
       end
     end
 
     context "Conditional Share partials should be rendered" do
       render_views
-      let(:playlist) { FactoryGirl.create(:playlist, visibility: Playlist::PUBLIC) }
+      let(:playlist) { FactoryBot.create(:playlist, visibility: Playlist::PUBLIC) }
       context "Normal login" do
         it "administrators: should include lti and share" do
           login_as(:administrator)
-          get :show, id: playlist.id
+          get :show, params: { id: playlist.id }
           expect(response).to render_template(:_share_resource)
           expect(response).to render_template(:_lti_url)
         end
         it "Playlist owner: should include lti and share" do
           login_user playlist.user.user_key
-          get :show, id: playlist.id
+          get :show, params: { id: playlist.id }
           expect(response).to render_template(:_share_resource)
           expect(response).to render_template(:_lti_url)
         end
         it "others: should include share and NOT lti" do
           login_as(:user)
-          get :show, id: playlist.id
+          get :show, params: { id: playlist.id }
           expect(response).to render_template(:_share_resource)
           expect(response).to_not render_template(:_lti_url)
         end
@@ -417,14 +413,14 @@ RSpec.describe PlaylistsController, type: :controller do
         it "administrators/managers/editors: should include lti and share" do
           login_lti 'administrator'
           lti_group = @controller.user_session[:virtual_groups].first
-          get :show, id: playlist.id
+          get :show, params: { id: playlist.id }
           expect(response).to render_template(:_share_resource)
           expect(response).to render_template(:_lti_url)
         end
         it "others: should include only lti" do
           login_lti 'student'
           lti_group = @controller.user_session[:virtual_groups].first
-          get :show, id: playlist.id
+          get :show, params: { id: playlist.id }
           expect(response).to_not render_template(:_share_resource)
           expect(response).to render_template(:_lti_url)
         end
@@ -452,7 +448,7 @@ RSpec.describe PlaylistsController, type: :controller do
         end
         it "should not include lti" do
           login_as(:administrator)
-          get :show, id: playlist.id
+          get :show, params: { id: playlist.id }
           expect(response).to render_template(:_share_resource)
           expect(response).to_not render_template(:_lti_url)
         end

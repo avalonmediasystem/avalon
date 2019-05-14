@@ -48,7 +48,7 @@ describe Avalon::Batch::Ingest do
   end
 
   describe 'scanning and registering new packages' do
-    let(:collection) { FactoryGirl.create(:collection, name: 'Ut minus ut accusantium odio autem odit.', managers: ['frances.dickens@reichel.com']) }
+    let(:collection) { FactoryBot.create(:collection, name: 'Ut minus ut accusantium odio autem odit.', managers: ['frances.dickens@reichel.com']) }
     let(:batch_ingest) { Avalon::Batch::Ingest.new(collection) }
 
     before :each do
@@ -83,7 +83,7 @@ describe Avalon::Batch::Ingest do
   end
 
   describe 'valid manifest' do
-    let(:collection) { FactoryGirl.create(:collection, name: 'Ut minus ut accusantium odio autem odit.', managers: ['frances.dickens@reichel.com']) }
+    let(:collection) { FactoryBot.create(:collection, name: 'Ut minus ut accusantium odio autem odit.', managers: ['frances.dickens@reichel.com']) }
     let(:batch_ingest) { Avalon::Batch::Ingest.new(collection) }
     let(:bib_id) { '7763100' }
     let(:sru_url) { "http://zgate.example.edu:9000/db?version=1.1&operation=searchRetrieve&maximumRecords=1&recordSchema=marcxml&query=rec.id=#{bib_id}" }
@@ -294,7 +294,7 @@ describe Avalon::Batch::Ingest do
   end
 
   describe 'invalid manifest' do
-    let(:collection) { FactoryGirl.create(:collection, name: 'Ut minus ut accusantium odio autem odit.', managers: ['frances.dickens@reichel.com']) }
+    let(:collection) { FactoryBot.create(:collection, name: 'Ut minus ut accusantium odio autem odit.', managers: ['frances.dickens@reichel.com']) }
     let(:batch_ingest) { Avalon::Batch::Ingest.new(collection) }
     let(:dropbox) { collection.dropbox }
 
@@ -316,7 +316,7 @@ describe Avalon::Batch::Ingest do
     it 'should fail if the manifest specified a non-manager user' do
       batch = Avalon::Batch::Package.new('spec/fixtures/dropbox/example_batch_ingest/non_manager_manifest.xlsx', collection)
       allow_any_instance_of(Avalon::Dropbox).to receive(:find_new_packages).and_return [batch]
-      batch_ingest.should_receive(:send_invalid_package_email).once
+      expect(batch_ingest).to receive(:send_invalid_package_email).once
       expect { batch_ingest.scan_for_packages }.to_not change { BatchRegistries.count }
       # it should create an error file and not attempt to reregister the package until user action
       expect(batch.manifest.error?).to be true

@@ -43,7 +43,9 @@ Rails.application.routes.draw do
     match '/users/sign_in', :to => "users/sessions#new", :as => :new_user_session, via: [:get]
     match '/users/sign_out', :to => "users/sessions#destroy", :as => :destroy_user_session, via: [:get]
     match '/users/auth/:provider', to: 'users/omniauth_callbacks#passthru', as: :user_omniauth_authorize, via: [:get, :post]
-    match '/users/auth/:action/callback', controller: "users/omniauth_callbacks", as: :user_omniauth_callback, via: [:get, :post]
+    Avalon::Authentication::Providers.collect { |provider| provider[:provider] }.uniq.each do |provider_name|
+      match "/users/auth/#{provider_name}/callback", to: "users/omniauth_callbacks##{provider_name}", as: "user_omniauth_callback_#{provider_name}".to_sym, via: [:get, :post]
+    end
   end
 
   mount BrowseEverything::Engine => '/browse'
@@ -96,6 +98,7 @@ Rails.application.routes.draw do
       get :add_to_playlist_form
       post :add_to_playlist
       patch :intercom_push
+      get :manifest
     end
     collection do
       post :create, action: :create, constraints: { format: 'json' }
@@ -120,12 +123,17 @@ Rails.application.routes.draw do
       post 'attach_structure'
       post 'attach_captions'
       get :captions
-      get 'adaptive', to: 'master_files#hls_adaptive_manifest'
+      get :waveform
+      match ':quality.m3u8', to: 'master_files#hls_manifest', via: [:get], as: :hls_manifest
+      get 'structure', to: 'master_files#structure', constraints: { format: 'json' }
+      post 'structure', to: 'master_files#set_structure', constraints: { format: 'json' }
+      delete 'structure', to: 'master_files#delete_structure', constraints: { format: 'json' }
     end
   end
 
-  resources :derivatives, only: [:create]
+  match "iiif_auth_token/:id", to: 'master_files#iiif_auth_token', via: [:get], as: :iiif_auth_token
 
+  resources :derivatives, only: [:create]
   match "/autocomplete", to: 'objects#autocomplete', via: [:get]
   match "/objects/:id", to: 'objects#show', via: [:get], :as => :objects
   match "/object/:id", to: 'objects#show', via: [:get]
@@ -156,6 +164,22 @@ Rails.application.routes.draw do
   resources :comments, only: [:index, :create]
 
   resources :playlist_items, only: [:update], :constraints => {:format => /(js|json)/}
+
+  resources :timelines do
+    member do
+      patch 'regenerate_access_token'
+      post 'manifest', to: 'timelines#manifest_update', constraints: { format: 'json' }
+      get 'manifest', constraints: { format: 'json' }
+    end
+    collection do
+      post 'duplicate'
+      post 'paged_index'
+      if Settings['variations'].present?
+        post 'import_variations_timeline'
+      end
+    end
+  end
+  get '/timeliner', to: 'timelines#timeliner', as: :timeliner
 
   resources :dropbox, :only => [] do
     collection do

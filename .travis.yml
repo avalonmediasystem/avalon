@@ -2,6 +2,8 @@
 git:
   submodules: false
 bundler_args: --with postgres aws --without development debug
+addons:
+  chrome: stable
 services:
   - mysql2
   - redis-server
@@ -12,6 +14,7 @@ before_install:
   - sudo apt-get install mediainfo
   - sudo ln -s /usr/bin/lsof /usr/sbin/lsof
   - cp config/controlled_vocabulary.yml.example config/controlled_vocabulary.yml
+  - gem install bundler -v $BUNDLER_VERSION
   - bundle config without development:production
 before_script:
   - rm config/database.yml
@@ -21,6 +24,7 @@ before_script:
   - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
   - chmod +x ./cc-test-reporter
   - ./cc-test-reporter before-build
+  - yarn install
 script:
   - bundle exec rake
 after_script:
@@ -28,8 +32,11 @@ after_script:
 language: ruby
 jdk:
   - oraclejdk8
+global_env:
+  - BUNDLER_VERSION=1.17.3
 rvm:
-  - 2.3
   - 2.4
+  - 2.5
+  - 2.6
 dist: trusty
 sudo: required

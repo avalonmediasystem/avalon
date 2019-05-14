@@ -38,14 +38,10 @@ Unless required by applicable law or agreed to in writing, software distributed
 
 <% content_for :page_scripts do %>
 <% if @currentStream.present? and @currentStream.derivatives.present? %>
-  <% if is_mejs_2? %>
-    <%= render partial: "mejs2_player_js", locals: {section: @currentStream, section_info: @currentStreamInfo} %>
-  <% else %>
-    <%= render partial: "mejs4_player_js", locals: {
-      section: @currentStream,
-      section_info: @currentStreamInfo,
-      current_playlist_item: @current_playlist_item
-      } %>
-  <% end %>
+  <%= render partial: "mejs4_player_js", locals: {
+    section: @currentStream,
+    section_info: @currentStreamInfo,
+    current_playlist_item: @current_playlist_item
+    } %>
 <% end %>
 <% end %>

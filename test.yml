@@ -1,65 +1,50 @@
 version: '2'
 
 volumes:
-  database-test:
+  db-test:
   streaming-test:
   fedora-test:
-  work-test:
   solr-test:
+  npms:
+  gems:
 
 services:
   db:
-    image: avalonmediasystem/db:fedora4
+    image: postgres:10-alpine
     volumes:
-      - database-test:/data
+      - db-test:/data
     environment:
-      - AVALON_DB_PASSWORD=avalondb
-      - FEDORA_DB_PASSWORD=fedoradb
       - PGDATA=/data
       - POSTGRES_USER=postgres
-    ports:
-      - "5432:5432"
+      - POSTGRES_DB=avalon
   fedora:
-    image: avalonmediasystem/fedora:4.x
-    environment:
-      - FEDORA_DB_PASSWORD=fedoradb
-    volumes:
-      - fedora-test:/data
-    ports:
-      - "8984:8080"
+    image: avalonmediasystem/fedora:4.7.5
     depends_on:
       - db
-  solr:
-    image: avalonmediasystem/solr:latest
-    ports:
-      - "8983:8983"
     volumes:
+      - fedora-test:/data
+    environment:
+     - JAVA_OPTIONS=-Dfcrepo.modeshape.configuration=classpath:/config/file-simple/repository.json -Dfcrepo.home=/data
+  solr:
+    image: solr:6.6.4-alpine
+    volumes:
+      - ./solr/config:/opt/solr/avalon_conf
       - solr-test:/opt/solr/server/solr/mycores
     entrypoint:
       - docker-entrypoint.sh
       - solr-precreate
       - avalon
       - /opt/solr/avalon_conf
-  matterhorn:
-    image: avalonmediasystem/matterhorn
-    volumes:
-      - /masterfiles:/masterfiles
-      - streaming-test:/streamfiles
-      - work-test:/work
-    ports:
-      - "8080:8080"
-  redis:
-    image: redis:alpine
-    ports:
-      - "6379:6379"
+  # redis:
+  #   image: redis:alpine
   avalon:
     image: avalonmediasystem/avalon:6.x-dev
-    command: "/rails_init-dev.sh"
+    command: "/rails_init-test.sh"
     depends_on:
       - db
       - fedora
       - solr
-      - redis
+      # - redis
     environment:
       - APP_NAME=avalon
       - SETTINGS__DOMAIN=http://test.host/
@@ -67,13 +52,9 @@ services:
       - AVALON_DB_PASSWORD=avalondb
       - BASE_URL=http://test.host
       - CONTROLLED_VOCABULARY=config/controlled_vocabulary.yml
-      - DATABASE_URL=postgres://avalon:${AVALON_DB_PASSWORD}@db/avalon
+      - DATABASE_URL=postgres://postgres@db/avalon
       - SETTINGS__DROPBOX__PATH=/masterfiles/dropbox
       - SETTINGS__DROPBOX__UPLOAD_URI=./masterfiles/dropbox
-      - EMAIL_COMMENTS
-      - EMAIL_NOTIFICATION
-      - EMAIL_SUPPORT
-      - FEDORA_BASE_PATH
       - FEDORA_NAMESPACE=avalon
       - FEDORA_URL=http://fedoraAdmin:fedoraAdmin@fedora:8080/fedora/rest
       - FFMPEG_PATH=/usr/bin/ffmpeg
@@ -86,14 +67,6 @@ services:
       - SETTINGS__REDIS__HOST=redis
       - SETTINGS__REDIS__PORT=6379
       - SECRET_KEY_BASE=abcd
-      - SMTP_ADDRESS
-      - SMTP_AUTHENTICATION
-      - SMTP_DOMAIN
-      - SMTP_ENABLE_STARTTLS_AUTO
-      - SMTP_OPENSSL_VERIFY_MODE
-      - SMTP_PASSWORD
-      - SMTP_PORT
-      - SMTP_USER_NAME
       - SOLR_URL=http://solr:8983/solr/avalon
       - SETTINGS__STREAMING__CONTENT_PATH=/streamfiles
       - SETTINGS__STREAMING__STREAM_DEFAULT_QUALITY=medium
@@ -101,13 +74,11 @@ services:
       - SETTINGS__STREAMING__SERVER=nginx
       - SETTINGS__STREAMING__STREAM_TOKEN_TTL=20
       - SYSTEM_GROUPS=administrator,group_manager,manager
-      - Z3950_ATTRIBUTE
-      - Z3950_DATABASE
-      - Z3950_HOST
-      - Z3950_PORT
+      - DATABASE_CLEANER_ALLOW_REMOTE_DATABASE_URL=true
     volumes:
       - ./masterfiles:/masterfiles
-      - ./gems:/gems
+      - gems:/home/app/gems
+      - npms:/home/app/node_modules
       - .:/home/app/avalon
     ports:
       - "3000:80"

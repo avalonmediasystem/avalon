@@ -209,8 +209,52 @@ en:
     tags:
       label: "Tags"
 
+  timeline:
+    ago: "%{time} ago"
+
+    privateAltText: "This timeline can only be viewed by you."
+    publicAltText: "This timeline can be viewed by anyone on the web."
+    private-with-tokenAltText: "This timeline can only be viewed by users who have the unique link."
+
+    visibility: "Visibility"
+    privateText: "Private"
+    publicText: "Public"
+    private-with-tokenText: "Share by link"
+
+    details: "Timeline Details"
+    source_link: "Source"
+    new:
+      action: "Create"
+    create:
+      action: "Create"
+    create_and_edit:
+      action: "Create and Edit"
+    edit:
+      action: "Save Changes"
+    update:
+      action: "Save Changes"
+    tags:
+      label: "Tags"
+
   activerecord:
     attributes:
       playlist:
         title: "Name"
         comment: "Description"
+      timeline:
+        title: "Title"
+        description: "Description"
+
+  iiif:
+    auth:
+      confirmLabel: "Login"
+      description: "Avalon Application requires that you log in with your account to view this content."
+      failureDescription: "<a href=\"http://example.org/policy\">Access Policy</a>"
+      failureHeader: "Authentication Failed"
+      header: "Please Log In"
+      label: "Login Required"
+      logoutLabel: "Log out"
+    manifest:
+      homepageLabel: "View in Repository"
+  share:
+    empty_lti_share_url: "LTI not configured."

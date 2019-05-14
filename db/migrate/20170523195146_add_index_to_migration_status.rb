@@ -12,7 +12,7 @@
 #   specific language governing permissions and limitations under the License.
 # ---  END LICENSE_HEADER BLOCK  ---
 
-class AddIndexToMigrationStatus < ActiveRecord::Migration
+class AddIndexToMigrationStatus < ActiveRecord::Migration[5.1]
   def change
     add_index :migration_statuses, [:source_class, :f3_pid, :datastream], name: :index_migration_statuses
   end

@@ -1,4 +1,4 @@
-version: '2'
+version: '3.2'
 
 volumes:
   streaming:
@@ -6,60 +6,70 @@ volumes:
   fedora:
   work:
   solr:
+  gems:
+  npms:
+
+networks:
+  internal:
+  external:
 
 services:
   db:
-    image: avalonmediasystem/db:fedora4
+    image: postgres:10-alpine
     volumes:
       - database:/data
     environment:
-      - AVALON_DB_PASSWORD=avalondb
-      - FEDORA_DB_PASSWORD
       - PGDATA=/data
       - POSTGRES_USER=postgres
-    ports:
-      - "5432:5432"
+      - POSTGRES_DB=avalon
+    networks:
+      internal:
   fedora:
-    image: avalonmediasystem/fedora:4.7.x
+    image: avalonmediasystem/fedora:4.7.5
     depends_on:
       - db
     volumes:
       - fedora:/data
     environment:
-      - JAVA_OPTIONS=${JAVA_OPTIONS} -Dfcrepo.postgresql.password=${FEDORA_DB_PASSWORD} -Dfcrepo.postgresql.username=fedora -Dfcrepo.postgresql.host=db -Dfcrepo.modeshape.configuration=classpath:/config/jdbc-postgresql/repository.json
-    ports:
-      - "8984:8080"
+     - JAVA_OPTIONS=-Dfcrepo.modeshape.configuration=classpath:/config/file-simple/repository.json -Dfcrepo.home=/data
+    networks:
+      internal:
   solr:
-    image: avalonmediasystem/solr:latest
-    ports:
-      - "8983:8983"
+    image: solr:6.6.4-alpine
     volumes:
+      - ./solr/config:/opt/solr/avalon_conf
       - solr:/opt/solr/server/solr/mycores
     entrypoint:
       - docker-entrypoint.sh
       - solr-precreate
       - avalon
       - /opt/solr/avalon_conf
+    networks:
+      internal:
   matterhorn:
     image: avalonmediasystem/matterhorn
     volumes:
       - ./masterfiles:/masterfiles
       - streaming:/streamfiles
       - work:/work
-    ports:
-      - "8080:8080"
+    networks:
+      internal:
   hls:
     image: avalonmediasystem/nginx
     volumes:
       - streaming:/data
     ports:
-       - "8880:80"
+      - "8880:80"
+    networks:
+      external:
   redis:
     image: redis:alpine
-    ports:
-      - "6379:6379"
+    networks:
+      internal:
   avalon:
     image: avalonmediasystem/avalon:6.x-dev
+    build:
+      context: ./docker
     command: "/rails_init-dev.sh"
     depends_on:
       - db
@@ -70,10 +80,9 @@ services:
       - APP_NAME=avalon
       - ASSET_HOST=http://localhost:3000
       - AVALON_BRANCH=develop
-      - AVALON_DB_PASSWORD=avalondb
       - SETTINGS__DOMAIN=http://localhost:3000
       - CONTROLLED_VOCABULARY=config/controlled_vocabulary.yml
-      - DATABASE_URL=postgres://avalon:${AVALON_DB_PASSWORD}@db/avalon
+      - DATABASE_URL=postgres://postgres@db/avalon
       - SETTINGS__DROPBOX__PATH=/masterfiles
       - SETTINGS__DROPBOX__UPLOAD_URI=./masterfiles
       - EMAIL_COMMENTS
@@ -112,10 +121,14 @@ services:
       - Z3950_HOST
       - Z3950_PORT
     volumes:
-      - ./masterfiles:/masterfiles
-      - ./gems:/gems
       - .:/home/app/avalon
+      - ./masterfiles:/masterfiles
+      - gems:/home/app/gems
+      - npms:/home/app/node_modules
     ports:
       - "3000:80"
+    networks:
+      internal:
+      external:
     stdin_open: true
     tty: true

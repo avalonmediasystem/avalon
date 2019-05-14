@@ -19,8 +19,9 @@ include SecurityHelper
 class MasterFilesController < ApplicationController
   # include Avalon::Controller::ControllerBehavior
 
-  before_filter :authenticate_user!, :only => [:create]
-  before_filter :ensure_readable_filedata, :only => [:create]
+  before_action :authenticate_user!, :only => [:create]
+  before_action :ensure_readable_filedata, :only => [:create]
+  skip_before_action :verify_authenticity_token, only: [:set_structure, :delete_structure]
 
 
   # Renders the captions content for an object or alerts the user that no caption content is present with html present
@@ -29,8 +30,21 @@ class MasterFilesController < ApplicationController
     @master_file = MasterFile.find(params[:id])
     authorize! :read, @master_file
     ds = @master_file.captions
-    if ds.nil? or ds.empty?
-      render :text => 'Not Found', :status => :not_found
+    if ds.nil? || ds.empty?
+      render plain: 'Not Found', status: :not_found
+    else
+      send_data ds.content, type: ds.mime_type, filename: ds.original_name
+    end
+  end
+
+  # Renders the waveform data for an object or alerts the user that no waveform data is present with html present
+  # @return [String] The rendered template
+  def waveform
+    @master_file = MasterFile.find(params[:id])
+    authorize! :read, @master_file
+    ds = @master_file.waveform
+    if ds.nil? || ds.empty?
+      render plain: 'Not Found', status: :not_found
     else
       send_data ds.content, type: ds.mime_type, filename: ds.original_name
     end
@@ -41,6 +55,7 @@ class MasterFilesController < ApplicationController
   end
 
   def show
+    params.permit!
     master_file = MasterFile.find(params[:id])
     redirect_to id_section_media_object_path(master_file.media_object_id, master_file.id, params.except(:id, :action, :controller))
   end
@@ -149,7 +164,7 @@ class MasterFilesController < ApplicationController
         end
       end
       if captions.present?
-        @master_file.captions.content = captions
+        @master_file.captions.content = captions.encode(Encoding.find('UTF-8'), invalid: :replace, undef: :replace, replace: '')
         @master_file.captions.mime_type = content_type
         @master_file.captions.original_name = params[:master_file][:captions].original_filename
         flash[:success] = "Captions file succesfully added."
@@ -178,7 +193,7 @@ class MasterFilesController < ApplicationController
   def create
     if params[:container_id].blank? || (not MediaObject.exists?(params[:container_id]))
       flash[:notice] = "MediaObject #{params[:container_id]} does not exist"
-      redirect_to :back
+      redirect_back(fallback_location: root_path)
       return
     end
 
@@ -187,7 +202,7 @@ class MasterFilesController < ApplicationController
 
     unless media_object.valid?
       flash[:error] = "MediaObject is invalid.  Please add required fields."
-      redirect_to :back
+      redirect_back(fallback_location: edit_media_object_path(params[:container_id], step: 'file-upload'))
       return
     end
 
@@ -197,7 +212,8 @@ class MasterFilesController < ApplicationController
       [:notice, :error].each { |type| flash[type] = result[:flash][type] }
     rescue MasterFileBuilder::BuildError => err
       flash[:error] = err.message
-      return redirect_to :back
+      redirect_back(fallback_location: edit_media_object_path(params[:container_id], step: 'file-upload'))
+      return
     end
 
     respond_to do |format|
@@ -265,10 +281,58 @@ class MasterFilesController < ApplicationController
     end
   end
 
-  def hls_adaptive_manifest
+  def hls_manifest
     master_file = MasterFile.find(params[:id])
-    authorize! :read, master_file
-    @hls_streams = gather_hls_streams(master_file)
+    quality = params[:quality]
+    if request.head?
+      auth_token = request.headers['Authorization']&.sub('Bearer ', '')
+      if StreamToken.valid_token?(auth_token, master_file.id) || can?(:read, master_file)
+        return head :ok
+      else
+        return head :unauthorized
+      end
+    else
+      return head :unauthorized if cannot?(:read, master_file)
+      @hls_streams = if quality == "auto"
+                       gather_hls_streams(master_file)
+                     else
+                       hls_stream(master_file, quality)
+                     end
+    end
+  end
+
+  def structure
+    @master_file = MasterFile.find(params[:id])
+    authorize! :read, @master_file, message: "You do not have sufficient privileges"
+    render json: @master_file.structuralMetadata.as_json
+  end
+
+  def set_structure
+    @master_file = MasterFile.find(params[:id])
+    # Bypass authorization check for now
+    # authorize! :edit, @master_file, message: "You do not have sufficient privileges"
+    @master_file.structuralMetadata.content = StructuralMetadata.from_json(params[:json])
+    @master_file.save
+  end
+
+  def delete_structure
+    @master_file = MasterFile.find(params[:id])
+    authorize! :edit, @master_file, message: "You do not have sufficient privileges"
+    @master_file.structuralMetadata.content = ''
+    @master_file.save
+  end
+
+  def iiif_auth_token
+    @master_file = MasterFile.find(params[:id])
+    if cannot? :read, @master_file
+      return head :unauthorized
+    else
+      message_id = params[:messageId]
+      origin = params[:origin]
+      access_token = StreamToken.find_or_create_session_token(session, @master_file.id)
+      expires = (StreamToken.find_by(token: access_token).expires - Time.now.utc).to_i
+      render 'iiif_auth_token', layout: false, locals: { message_id: message_id, origin: origin, access_token: access_token, expires: expires }
+    end
   end
 
 protected
@@ -290,6 +354,13 @@ protected
     hls_streams = stream_info[:stream_hls].reject { |stream| stream[:quality] == 'auto' }
     hls_streams.each { |stream| unnest_wowza_stream(stream) } if Settings.streaming.server == "wowza"
     hls_streams
+  end
+
+  def hls_stream(master_file, quality)
+    stream_info = secure_streams(master_file.stream_details)
+    hls_stream = stream_info[:stream_hls].select { |stream| stream[:quality] == quality }
+    unnest_wowza_stream(hls_stream) if Settings.streaming.server == "wowza"
+    hls_stream
   end
 
   def unnest_wowza_stream(stream)

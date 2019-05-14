@@ -45,7 +45,7 @@ Unless required by applicable law or agreed to in writing, software distributed
             <ul class="dropdown-menu dropdown-menu-right">
               <% @playlists.each do |p| %>
               <li>
-                <a data-id="<%= p.id %>" style="text-decoration:underline"
+                <a data-id="<%= p.id %>" style="text-decoration:underline; cursor:pointer"
                   class="move_to_playlist" form="edit_playlist_<%= @playlist.id %>"><%= p.title %></a>
               </li>
               <% end # @playlist.each%>
@@ -60,7 +60,7 @@ Unless required by applicable law or agreed to in writing, software distributed
             <ul class="dropdown-menu dropdown-menu-right">
               <% @playlists.each do |p| %>
               <li>
-                <a data-id="<%= p.id %>" style="text-decoration:underline"
+                <a data-id="<%= p.id %>" style="text-decoration:underline; cursor:pointer"
                   class="copy_to_playlist" form="edit_playlist_<%= @playlist.id %>"><%= p.title %></a>
               </li>
               <% end # @playlist.each%>

@@ -16,15 +16,15 @@ require 'avalon/controller/controller_behavior'
 require 'avalon/intercom'
 
 class MediaObjectsController < ApplicationController
+  include Rails::Pagination
   include Avalon::Workflow::WorkflowControllerBehavior
   include Avalon::Controller::ControllerBehavior
   include ConditionalPartials
   include SecurityHelper
 
-  before_action :authenticate_user!, except: [:show, :set_session_quality, :show_stream_details]
-  before_action :authenticate_api!, only: [:show, :create, :json_update], if: proc { request.format.json? }
-  load_and_authorize_resource except: [:create, :json_update, :destroy, :update_status, :set_session_quality, :tree, :deliver_content, :confirm_remove, :show_stream_details, :add_to_playlist_form, :add_to_playlist, :intercom_collections]
-  # authorize_resource only: [:create, :update]
+  before_action :authenticate_user!, except: [:show, :set_session_quality, :show_stream_details, :manifest]
+  load_and_authorize_resource except: [:create, :destroy, :update_status, :set_session_quality, :tree, :deliver_content, :confirm_remove, :show_stream_details, :add_to_playlist_form, :add_to_playlist, :intercom_collections, :manifest]
+  authorize_resource only: [:create]
 
   before_action :inject_workflow_steps, only: [:edit, :update], unless: proc { request.format.json? }
   before_action :load_player_context, only: [:show]
@@ -37,7 +37,7 @@ class MediaObjectsController < ApplicationController
   end
 
   is_editor_or_not_lti = proc { |ctx| self.is_editor(ctx) || !self.is_lti_session(ctx) }
-  is_editor_or_lti = proc { |ctx| (Avalon::Authentication::Providers.any? {|p| p[:provider] == :lti } &&self.is_editor(ctx)) || self.is_lti_session(ctx) }
+  is_editor_or_lti = proc { |ctx| (Avalon::Authentication::Providers.any? {|p| p[:provider] == :lti } && self.is_editor(ctx)) || self.is_lti_session(ctx) }
 
   add_conditional_partial :share, :share, partial: 'share_resource', if: is_editor_or_not_lti
   add_conditional_partial :share, :embed, partial: 'embed_resource', if: is_editor_or_not_lti
@@ -45,10 +45,6 @@ class MediaObjectsController < ApplicationController
 
   def can_embed?
     params[:action] == 'show'
-  end
-
-  def authenticate_api!
-    return head :unauthorized if !signed_in?
   end
 
   def confirm_remove
@@ -168,7 +164,6 @@ class MediaObjectsController < ApplicationController
 
   # PUT /media_objects/avalon:1.json
   def json_update
-    @media_object = MediaObject.find(params[:id])
     # Preset the workflow to the last workflow step to ensure validators run
     @media_object.workflow.last_completed_step = HYDRANT_STEPS.last.step
     update_media_object
@@ -226,11 +221,11 @@ class MediaObjectsController < ApplicationController
     elsif master_files_params.respond_to?('each')
       old_ordered_master_files = @media_object.ordered_master_files.to_a.collect(&:id)
       master_files_params.each_with_index do |file_spec, index|
-        master_file = MasterFile.new(file_spec.except(:structure, :captions, :captions_type, :files, :other_identifier, :label))
+        master_file = MasterFile.new(file_spec.except(:structure, :captions, :captions_type, :files, :other_identifier, :label, :date_digitized))
         # master_file.media_object = @media_object
         master_file.structuralMetadata.content = file_spec[:structure] if file_spec[:structure].present?
         if file_spec[:captions].present?
-          master_file.captions.content = file_spec[:captions]
+          master_file.captions.content = file_spec[:captions].encode(Encoding.find('UTF-8'), invalid: :replace, undef: :replace, replace: '')
           master_file.captions.mime_type = file_spec[:captions_type]
         end
         # TODO: This inconsistency should eventually be addressed by updating the API
@@ -242,6 +237,7 @@ class MediaObjectsController < ApplicationController
         if file_spec[:files].present?
           if master_file.update_derivatives(file_spec[:files], false)
             master_file.update_stills_from_offset!
+            WaveformJob.perform_later(master_file.id)
             @media_object.ordered_master_files += [master_file]
           else
             file_location = file_spec.dig(:file_location) || '<unknown>'
@@ -338,7 +334,9 @@ class MediaObjectsController < ApplicationController
         end
       end
       format.json do
-        render json: @media_object.to_json
+        response_json = @media_object.as_json
+        response_json.except!(:files, :visibility, :read_groups) unless current_ability.is_administrator?
+        render json: response_json.to_json
       end
     end
   end
@@ -436,7 +434,7 @@ class MediaObjectsController < ApplicationController
     end
     message = "#{success_count} #{'media object'.pluralize(success_count)} successfully #{status}ed."
     message += "These objects were not #{status}ed:</br> #{ errors.join('<br/> ') }" if errors.count > 0
-    redirect_to :back, flash: {notice: message.html_safe}
+    redirect_back(fallback_location: root_path, flash: {notice: message.html_safe})
   end
 
   # Sets the published status for the object. If no argument is given then
@@ -459,6 +457,27 @@ class MediaObjectsController < ApplicationController
     end
   end
 
+  def manifest
+    @media_object = MediaObject.find(params[:id])
+    authorize! :read, @media_object
+
+    master_files = master_file_presenter
+    canvas_presenters = master_files.collect do |mf|
+      stream_info = secure_streams(mf.stream_details)
+      IiifCanvasPresenter.new(master_file: mf, stream_info: stream_info)
+    end
+    presenter = IiifManifestPresenter.new(media_object: @media_object, master_files: canvas_presenters)
+
+    manifest = IIIFManifest::V3::ManifestFactory.new(presenter).to_h
+    # TODO: implement thumbnail in iiif_manifest
+    manifest["thumbnail"] = [{ "id" => presenter.thumbnail, "type" => 'Image' }] if presenter.thumbnail
+
+    respond_to do |wants|
+      wants.json { render json: manifest.to_json }
+      wants.html { render json: manifest.to_json }
+    end
+  end
+
   def self.initialize_media_object( user_key )
     media_object = MediaObject.new( avalon_uploader: user_key )
 
@@ -471,7 +490,7 @@ class MediaObjectsController < ApplicationController
 
   def set_session_quality
     session[:quality] = params[:quality] if params[:quality].present?
-    render nothing: true
+    head :ok
   end
 
   protected
@@ -542,7 +561,11 @@ class MediaObjectsController < ApplicationController
     # TODO: Restrist permitted params!!!
     # params.require(:fields).permit!
     # params.permit!
-    mo_parameters = ActionController::Parameters.new(Hash(params[:fields]).merge(Hash(params[:media_object]))).permit!
+    params[:fields] ||= {}
+    params[:fields].permit!
+    params[:media_object] ||= {}
+    params[:media_object].permit!
+    mo_parameters = params[:fields].merge(params[:media_object])
     # NOTE: Deal with multi-part fields
     #Bib ids
     bib_id = mo_parameters.delete(:bibliographic_id)

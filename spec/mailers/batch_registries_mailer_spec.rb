@@ -2,8 +2,8 @@ require "rails_helper"
 
 RSpec.describe BatchRegistriesMailer, type: :mailer do
   describe 'batch_ingest_validation_error' do
-    let(:manager) { FactoryGirl.create(:manager, username: 'frances.dickens@reichel.com', email: 'frances.dickens@reichel.com') }
-    let(:collection) { FactoryGirl.create(:collection, managers: [manager.user_key]) }
+    let(:manager) { FactoryBot.create(:manager, username: 'frances.dickens@reichel.com', email: 'frances.dickens@reichel.com') }
+    let(:collection) { FactoryBot.create(:collection, managers: [manager.user_key]) }
     let(:manifest_file) { File.new('spec/fixtures/dropbox/example_batch_ingest/batch_manifest.xlsx') }
     let(:package) { Avalon::Batch::Package.new(manifest_file, collection) }
     let(:errors) {['Michigan','Indiana','Illinios']}
@@ -28,8 +28,8 @@ RSpec.describe BatchRegistriesMailer, type: :mailer do
   end
 
   describe 'batch_ingest_validation_success' do
-    let(:manager) { FactoryGirl.create(:manager, username: 'frances.dickens@reichel.com', email: 'frances.dickens@reichel.com') }
-    let(:collection) { FactoryGirl.build(:collection, managers: [manager.user_key]) }
+    let(:manager) { FactoryBot.create(:manager, username: 'frances.dickens@reichel.com', email: 'frances.dickens@reichel.com') }
+    let(:collection) { FactoryBot.build(:collection, managers: [manager.user_key]) }
     let(:manifest_file) { File.new('spec/fixtures/dropbox/example_batch_ingest/batch_manifest.xlsx') }
     let(:package) { Avalon::Batch::Package.new(manifest_file, collection) }
     let(:errors) {['Michigan','Indiana','Illinios']}
@@ -44,11 +44,11 @@ RSpec.describe BatchRegistriesMailer, type: :mailer do
   end
 
   describe 'batch_registration_finished_mailer' do
-    let(:batch_registries) { FactoryGirl.create(:batch_registries, user_id: manager.id) }
-    let(:manager) { FactoryGirl.create(:manager, username: 'frances.dickens@reichel.com', email: 'frances.dickens@reichel.com') }
-    let!(:collection) { FactoryGirl.create(:collection, id: 'k32jf0kw') }
-    let!(:batch_entries) { FactoryGirl.create(:batch_entries, batch_registries: batch_registries, media_object_pid: media_object.id, complete: true) }
-    let(:media_object) { FactoryGirl.create(:media_object, collection: collection, permalink: "http://localhost:3000/media_objects/kfd39dnw") }
+    let(:batch_registries) { FactoryBot.create(:batch_registries, user_id: manager.id, collection: collection.id) }
+    let(:manager) { FactoryBot.create(:manager, username: 'frances.dickens@reichel.com', email: 'frances.dickens@reichel.com') }
+    let(:collection) { FactoryBot.create(:collection) }
+    let!(:batch_entries) { FactoryBot.create(:batch_entries, batch_registries: batch_registries, media_object_pid: media_object.id, complete: true) }
+    let(:media_object) { FactoryBot.create(:media_object, collection: collection, permalink: "http://localhost:3000/media_objects/kfd39dnw") }
 
     it "sends an email when a batch finishes processing" do
        email = BatchRegistriesMailer.batch_registration_finished_mailer(batch_registries)
@@ -61,8 +61,8 @@ RSpec.describe BatchRegistriesMailer, type: :mailer do
     end
 
     it 'indicates when media objects have been deleted already' do
-      deleted_media_object = FactoryGirl.create(:media_object).destroy
-      FactoryGirl.create(:batch_entries, batch_registries: batch_registries, media_object_pid: deleted_media_object.id, complete: true)
+      deleted_media_object = FactoryBot.create(:media_object).destroy
+      FactoryBot.create(:batch_entries, batch_registries: batch_registries, media_object_pid: deleted_media_object.id, complete: true)
       email = BatchRegistriesMailer.batch_registration_finished_mailer(batch_registries)
       expect(email.to).to include(manager.email)
       expect(email.subject).to include batch_registries.file_name
@@ -84,10 +84,48 @@ RSpec.describe BatchRegistriesMailer, type: :mailer do
     end
   end
 
+  describe 'batch_encoding_finished' do
+    let(:batch_registries) { FactoryBot.create(:batch_registries, user_id: manager.id, collection: collection.id) }
+    let(:manager) { FactoryBot.create(:manager, username: 'frances.dickens@reichel.com', email: 'frances.dickens@reichel.com') }
+    let(:collection) { FactoryBot.create(:collection) }
+    let!(:batch_entries) { FactoryBot.create(:batch_entries, batch_registries: batch_registries, media_object_pid: media_object.id, complete: true) }
+    let(:media_object) { FactoryBot.create(:media_object, collection: collection, permalink: "http://localhost:3000/media_objects/kfd39dnw") }
+
+    it "correctly sets up the email indicating that encoding is successful" do
+      allow_any_instance_of(BatchEntries).to receive(:encoding_success?).and_return(true)
+      allow_any_instance_of(BatchEntries).to receive(:encoding_error?).and_return(false)
+      email = BatchRegistriesMailer.batch_encoding_finished(batch_registries)
+      expect(email.to).to include(manager.email)
+      expect(email.subject).to include batch_registries.file_name
+      expect(email.subject).to include collection.name
+
+      expect(email.subject).to include 'Success'
+
+      expect(email).to have_body_text(batch_registries.file_name)
+      expect(email).to have_body_text("<a href=\"#{media_object.permalink}\">")
+      expect(email).to have_body_text(media_object.id)
+    end
+
+    it "correctly sets up the email indicating that encoding has errors" do
+      allow_any_instance_of(BatchEntries).to receive(:encoding_success?).and_return(false)
+      allow_any_instance_of(BatchEntries).to receive(:encoding_error?).and_return(true)
+      email = BatchRegistriesMailer.batch_encoding_finished(batch_registries)
+      expect(email.to).to include(manager.email)
+      expect(email.subject).to include batch_registries.file_name
+      expect(email.subject).to include collection.name
+
+      expect(email.subject).to include 'Errors Present'
+
+      expect(email).to have_body_text(batch_registries.file_name)
+      expect(email).to have_body_text("<a href=\"#{media_object.permalink}\">")
+      expect(email).to have_body_text(media_object.id)
+    end
+  end
+
   describe 'batch_registration_stalled_mailer' do
-    let(:batch_registries) { FactoryGirl.create(:batch_registries) }
+    let(:batch_registries) { FactoryBot.create(:batch_registries, collection: collection.id) }
     let(:notification_email_address) { Settings.email.notification }
-    let!(:collection) { FactoryGirl.create(:collection, id: 'k32jf0kw') }
+    let(:collection) { FactoryBot.create(:collection) }
 
     it "sends an email when a batch has stalled" do
        email = BatchRegistriesMailer.batch_registration_stalled_mailer(batch_registries)

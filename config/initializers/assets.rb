@@ -1,21 +1,21 @@
 # Be sure to restart your server when you modify this file.
 
-Rails.application.config.assets.tap do |assets|
-  # Version of your assets, change this if you want to expire all your assets.
-  assets.version = '1.0'
+# Version of your assets, change this if you want to expire all your assets.
+Rails.application.config.assets.version = '1.0'
 
-  # Add additional assets to the asset load path
-  # assets.paths << Emoji.images_path
+# Add additional assets to the asset load path.
+# Rails.application.config.assets.paths << Emoji.images_path
+# Add Yarn node_modules folder to the asset load path.
+Rails.application.config.assets.paths << Rails.root.join('node_modules')
 
-  # Precompile additional assets.
-  # application.js, application.css, and all non-JS/CSS in app/assets folder are already added.
-  # assets.precompile += %w( search.js )
+# Precompile additional assets.
+# application.js, application.css, and all non-JS/CSS in the app/assets
+# folder are already added.
+# Rails.application.config.assets.precompile += %w( admin.js admin.css )
 
-  assets.precompile += %w( embed.css )
+Rails.application.config.assets.precompile += %w( embed.css )
 
-  # MediaElement 4 files
-  assets.precompile += %w( mejs4_player.js mejs4_player.scss )
-  assets.precompile += Dir[Rails.root + 'vendor/assets/stylesheets/mediaelement/mejs-controls.*']
-  # MediaElement 2 files
-  assets.precompile += %w( mejs2_player.js mejs2_player.scss )
-end
+# MediaElement 4 files
+Rails.application.config.assets.precompile += %w( mejs4_player.js mejs4_player.scss select2.min.js select2.min.css )
+Rails.application.config.assets.precompile += Dir[Rails.root + 'vendor/assets/stylesheets/mediaelement/mejs-controls.*']
+

@@ -45,15 +45,17 @@ module ApplicationHelper
     end
   end
 
-  def lti_share_url_for(obj, opts = {})
-    return I18n.t('share.empty_lti_share_url') if obj.nil?
+  def lti_share_url_for(obj, _opts = {})
+    if obj.nil? || Avalon::Authentication::Providers.none? { |p| p[:provider] == :lti }
+      return I18n.t('share.empty_lti_share_url')
+    end
     target = case obj
              when MediaObject then obj.id
              when MasterFile then obj.id
              when Playlist then obj.to_gid_param
+             when Timeline then obj.to_gid_param
              end
-    opts.merge!(action: 'lti', target_id: target)
-    user_omniauth_callback_url(opts)
+    user_omniauth_callback_lti_url(target_id: target)
   end
 
   # TODO: Fix me with latest changes from 5.1.4
@@ -116,7 +118,7 @@ module ApplicationHelper
     if item['duration_ssi'].present?
       duration = item['duration_ssi']
       if duration.respond_to?(:to_i) && duration.to_i > 0
-        label += " (#{milliseconds_to_formatted_time(duration.to_i)})"
+        label += " (#{milliseconds_to_formatted_time(duration.to_i, false)})"
       end
     end
 
@@ -140,18 +142,20 @@ module ApplicationHelper
 
   # the mediainfo gem returns duration as milliseconds
   # see attr_reader.rb line 48 in the mediainfo source
-  def milliseconds_to_formatted_time( milliseconds )
+  def milliseconds_to_formatted_time(milliseconds, include_fractions = true)
     total_seconds = milliseconds / 1000
     hours = total_seconds / (60 * 60)
     minutes = (total_seconds / 60) % 60
     seconds = total_seconds % 60
+    fractional_seconds = milliseconds.to_s[-3, 3].to_i
+    fractional_seconds = (include_fractions && fractional_seconds.positive? ? ".#{fractional_seconds}" : '')
 
     output = ''
     if hours > 0
       output += "#{hours}:"
     end
 
-    output += "#{minutes.to_s.rjust(2,'0')}:#{seconds.to_s.rjust(2,'0')}"
+    output += "#{minutes.to_s.rjust(2,'0')}:#{seconds.to_s.rjust(2,'0')}#{fractional_seconds}"
     output
   end
 
@@ -161,6 +165,23 @@ module ApplicationHelper
   def pretty_time( milliseconds )
     duration = milliseconds/1000
     Time.at(duration).utc.strftime(duration<3600?'%M:%S':'%H:%M:%S')
+  end
+
+  FLOAT_PATTERN = Regexp.new(/^\d+([.]\d*)?$/).freeze
+
+  def parse_hour_min_sec(s)
+    return nil if s.nil?
+    smh = s.split(':').reverse
+    (0..2).each do |i|
+      smh[i] = FLOAT_PATTERN.match?(smh[i]) ? Float(smh[i]) : 0
+    end
+    smh[0] + (60 * smh[1]) + (3600 * smh[2])
+  end
+
+  def parse_media_fragment(fragment)
+    return 0, nil unless fragment.present?
+    f_start, f_end = fragment.split(',')
+    [parse_hour_min_sec(f_start), parse_hour_min_sec(f_end)]
   end
 
   def git_commit_info pattern="%s %s [%s]"

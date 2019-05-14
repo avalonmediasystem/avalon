@@ -34,7 +34,7 @@ class Derivative < ActiveFedora::Base
   property :track_id, predicate: ::RDF::Vocab::EBUCore.identifier, multiple: false
   property :hls_track_id, predicate: Avalon::RDFVocab::Derivative.hlsTrackID, multiple: false
   property :managed, predicate: Avalon::RDFVocab::Derivative.isManaged, multiple: false do |index|
-    index.as Solrizer::Descriptor.new(:boolean, :stored, :indexed)
+    index.as ActiveFedora::Indexing::Descriptor.new(:boolean, :stored, :indexed)
   end
   property :derivativeFile, predicate: ::RDF::Vocab::EBUCore.filename, multiple: false do |index|
     index.as :stored_sortable
@@ -99,7 +99,7 @@ class Derivative < ActiveFedora::Base
     output = dists.first || hls_output
 
     derivative = Derivative.new
-    derivative.managed = output.key?(:managed) ? output[:managed] : managed
+    derivative.managed = output.key?(:managed) ? ActiveModel::Type::Boolean.new.cast(output[:managed]) : managed
     derivative.track_id = output[:id]
     derivative.duration = output[:duration]
     derivative.mime_type = output[:mime_type]

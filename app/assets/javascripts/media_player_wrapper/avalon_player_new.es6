@@ -30,6 +30,7 @@ class MEJSPlayer {
     this.mejsTimeRailHelper = new MEJSTimeRailHelper();
     this.mejsMarkersHelper = new MEJSMarkersHelper();
     this.mejsQualityHelper = new MEJSQualityHelper();
+    this.localStorage = window.localStorage;
 
     // Unpack player configuration object for the new player.
     // This allows for variable params to be sent in.
@@ -169,6 +170,27 @@ class MEJSPlayer {
   }
 
   /**
+   * Event handler for MediaElement's 'volumechange' event
+   * Save new volume to localStorage for initializing new players with that vol
+   * @function handleVolumeChange
+   * @return {void}
+   */
+  handleVolumeChange() {
+    this.localStorage.setItem('startVolume', this.mediaElement.volume)
+  }
+
+  /**
+   * Event handler for MediaElement's 'captionschange' event
+   * Save new volume to localStorage for initializing new players with that vol
+   * @function handleCaptionsChange
+   * @return {void}
+   */
+  handleCaptionsChange() {
+    let srclang = currentPlayer.selectedTrack === null ? '' : currentPlayer.selectedTrack.srclang;
+    this.localStorage.setItem('captions', srclang)
+  }
+
+  /**
    * Handle Mediaelement's 'ended' event
    * @function handleEnded
    * @return {void}
@@ -183,7 +205,7 @@ class MEJSPlayer {
 
     const $sections = $('#accordion').find('.panel-heading[data-section-id]');
     const sectionsIdArray = $sections.map((index, item) =>
-      $(item).data('sectionId')
+      $(item).data('sectionId').toString()
     );
     const currentIdIndex = [...sectionsIdArray].indexOf(t.currentStreamInfo.id);
 
@@ -306,13 +328,20 @@ class MEJSPlayer {
   handleSuccess(mediaElement, originalNode, instance) {
     this.mediaElement = mediaElement;
 
-    // Make the player visible
-    this.revealPlayer(instance);
-
     // Grab instance of player
     if (!this.player) {
       this.player = this.mediaElement;
     }
+
+    // Toggle captions on if toggleable and previously on
+    if (this.mediaType==="video" && this.player.options.toggleCaptionsButtonWhenOnlyOne) {
+      if (this.localStorage.getItem('captions') !== '' && this.player.tracks && this.player.tracks.length===1) {
+        this.player.setTrack(this.player.tracks[0].trackId, (typeof keyboard !== 'undefined'));
+      }
+    }
+
+    // Make the player visible
+    this.revealPlayer(instance);
 
     this.emitSuccessEvent();
 
@@ -320,6 +349,18 @@ class MEJSPlayer {
     this.mediaElement.addEventListener(
       'canplay',
       this.handleCanPlay.bind(this)
+    );
+
+    // Handle 'volumechange' events fired by player
+    this.mediaElement.addEventListener(
+      'volumechange',
+      this.handleVolumeChange.bind(this)
+    );
+
+    // Handle 'captionschange' events fired by player
+    this.mediaElement.addEventListener(
+      'captionschange',
+      this.handleCaptionsChange.bind(this)
     );
 
     // Handle 'ended' event fired by player
@@ -451,8 +492,19 @@ class MEJSPlayer {
       link_back_url: currentStreamInfo.link_back_url,
       qualityText: 'Stream Quality',
       defaultQuality: this.defaultQuality,
-      toggleCaptionsButtonWhenOnlyOne: true
+      toggleCaptionsButtonWhenOnlyOne: true,
+      startVolume: this.localStorage.getItem('startVolume') || 1.0,
+      startLanguage: this.localStorage.getItem('captions') || ''
     };
+
+    if (this.currentStreamInfo.cookie_auth) {
+      defaults.hls = {
+        xhrSetup: (xhr, url) => {
+          xhr.withCredentials = true;
+        }
+      };
+    }
+
     let promises = [];
     const playlistIds = this.playlistItem
       ? [this.playlistItem.playlist_id, this.playlistItem.id]

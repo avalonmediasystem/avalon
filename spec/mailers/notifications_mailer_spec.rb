@@ -22,11 +22,11 @@ describe 'NotificationsMailer' do
   include EmailSpec::Matchers
 
   describe '#update_collection' do
-    let(:collection){ FactoryGirl.create(:collection) }
+    let(:collection){ FactoryBot.create(:collection) }
     before(:each) do
-      @updater    = FactoryGirl.create(:user)
-      @admin_user = FactoryGirl.create(:user)
-      @collection = FactoryGirl.create(:collection)
+      @updater    = FactoryBot.create(:user)
+      @admin_user = FactoryBot.create(:user)
+      @collection = FactoryBot.create(:collection)
       @old_name = "Previous name"
 
       @email = NotificationsMailer.update_collection(
@@ -79,11 +79,11 @@ describe 'NotificationsMailer' do
     end
    end
    describe '#new_collection' do
-    let(:collection){ FactoryGirl.create(:collection) }
+    let(:collection){ FactoryBot.create(:collection) }
     before(:each) do
-      @creator    = FactoryGirl.create(:user)
-      @admin_user = FactoryGirl.create(:user)
-      @collection = FactoryGirl.create(:collection)
+      @creator    = FactoryBot.create(:user)
+      @admin_user = FactoryBot.create(:user)
+      @collection = FactoryBot.create(:collection)
 
       @email = NotificationsMailer.new_collection(
         creator_id: @creator.id,

@@ -13,7 +13,7 @@
 # ---  END LICENSE_HEADER BLOCK  ---
 
 class ApplicationController < ActionController::Base
-  before_filter :store_location, unless: :devise_controller?
+  before_action :store_location, unless: :devise_controller?
 
   # Adds a few additional behaviors into the application controller
   include Blacklight::Controller
@@ -26,7 +26,7 @@ class ApplicationController < ActionController::Base
 
   helper_method :render_bookmarks_control?
 
-  around_action :handle_api_request, if: proc{|c| request.format.json?}
+  around_action :handle_api_request, if: proc{|c| request.format.json? || request.format.atom? }
   before_action :rewrite_v4_ids, if: proc{|c| request.method_symbol == :get && [params[:id], params[:content]].compact.any? { |i| i =~ /^[a-z]+:[0-9]+$/}}
 
   def mejs
@@ -37,6 +37,8 @@ class ApplicationController < ActionController::Base
 
   def rewrite_v4_ids
     return if params[:controller] =~ /migration/
+
+    params.permit!
     new_id = ActiveFedora::SolrService.query(%{identifier_ssim:"#{params[:id]}"}, rows: 1, fl: 'id').first['id']
     new_content_id = params[:content] ? ActiveFedora::SolrService.query(%{identifier_ssim:"#{params[:content]}"}, rows: 1, fl: 'id').first['id'] : nil
     redirect_to(url_for(params.merge(id: new_id, content: new_content_id)))
@@ -122,11 +124,13 @@ class ApplicationController < ActionController::Base
   end
 
   rescue_from CanCan::AccessDenied do |exception|
-    if current_user
+    if request.format == :json
+      head :unauthorized
+    elsif current_user
       redirect_to root_path, flash: { notice: 'You are not authorized to perform this action.' }
     else
       session[:previous_url] = request.fullpath unless request.xhr?
-      redirect_to new_user_session_path, flash: { notice: 'You are not authorized to perform this action. Try logging in.' }
+      redirect_to new_user_session_path(url: request.url), flash: { notice: 'You are not authorized to perform this action. Try logging in.' }
     end
   end
 

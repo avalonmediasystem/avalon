@@ -43,7 +43,7 @@ describe Avalon::Intercom do
   }
   let!(:intercom) { Avalon::Intercom.new(username) }
   let!(:request) {
-    stub_request(:get, "https://target.avalon.com/admin/collections.json?user=test_username").to_return(
+    stub_request(:get, "https://target.avalon.com/admin/collections.json?user=test_username&per_page=1152921504606846976").to_return(
         status: 200,
         body: user_collections.to_json,
         headers: { content_type: 'application/json;' }
@@ -67,8 +67,8 @@ describe Avalon::Intercom do
     end
   end
   describe 'push_media_object' do
-    let(:media_object) { FactoryGirl.create(:media_object) }
-    let(:master_file_with_structure) { FactoryGirl.create(:master_file, :with_structure, media_object: media_object) }
+    let(:media_object) { FactoryBot.create(:media_object) }
+    let(:master_file_with_structure) { FactoryBot.create(:master_file, :with_structure, media_object: media_object) }
 
     it "should respond to unpermitted collection with error" do
       response = intercom.push_media_object(media_object, 'invalid_collection', false)

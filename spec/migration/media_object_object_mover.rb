@@ -15,7 +15,7 @@
 require 'rails_helper'
 
 describe FedoraMigrate::MediaObject::ObjectMover do
-  let(:media_object) { FactoryGirl.create(:media_object, :with_master_file, :with_completed_workflow) }
+  let(:media_object) { FactoryBot.create(:media_object, :with_master_file, :with_completed_workflow) }
   describe 'empty?' do
     it 'returns true when the media object has been wiped' do
       described_class.wipeout!(media_object)
