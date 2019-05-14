@@ -17,6 +17,7 @@ RUN         apt-get update && apt-get upgrade -y build-essential nodejs \
             sendmail \
             yarn \
             zip \
+         && gem install bundler \
          && curl https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb -o /chrome.deb \
          && dpkg -i /chrome.deb || apt-get install -yf && rm /chrome.deb \
          && curl https://chromedriver.storage.googleapis.com/2.46/chromedriver_linux64.zip -o /usr/local/bin/chromedriver \
