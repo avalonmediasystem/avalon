@@ -6643,6 +6643,32 @@ react-redux@^6.0.0:
 
 "react-structural-metadata-editor@https://github.com/avalonmediasystem/react-structural-metadata-editor":
   version "1.1.0"
+  resolved "https://github.com/avalonmediasystem/react-structural-metadata-editor#4a28f951712854fafe02ed33daa1f8a3f539ace6"
+  dependencies:
+    "@babel/runtime" "^7.4.4"
+    "@fortawesome/fontawesome-svg-core" "^1.2.4"
+    "@fortawesome/free-solid-svg-icons" "^5.3.1"
+    "@fortawesome/react-fontawesome" "^0.1.2"
+    axios "^0.18.0"
+    base-64 "^0.1.0"
+    hls.js "0.12.3-canary.4258"
+    lodash "^4.17.11"
+    moment "^2.22.2"
+    peaks.js "^0.9.13"
+    prop-types "^15.6.2"
+    react-bootstrap "^0.32.4"
+    react-dnd "^7.0.2"
+    react-dnd-html5-backend "^7.0.2"
+    react-redux "^6.0.0"
+    react-transition-group "2.5.3"
+    redux "^4.0.0"
+    redux-thunk "^2.3.0"
+    rxjs "^6.4.0"
+    uuid "^3.3.2"
+    waveform-data "^2.1.2"
+
+"react-structural-metadata-editor@https://github.com/avalonmediasystem/react-structural-metadata-editor#avalon-r6.5-beta-1":
+  version "1.1.0"
   resolved "https://github.com/avalonmediasystem/react-structural-metadata-editor#f5311cba66ce3012e09052395bb879951d1bdec8"
   dependencies:
     "@babel/runtime" "^7.4.4"
