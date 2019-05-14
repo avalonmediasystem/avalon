@@ -1,7 +1,7 @@
 GIT
   remote: https://github.com/avalonmediasystem/about_page.git
   revision: 1b920619cc54fdc99f1cb4da26c18818c1156070
-  branch: master
+  tag: avalon-r6.5
   specs:
     about_page (0.3.1)
       rails (>= 3.2)
@@ -17,15 +17,15 @@ GIT
 
 GIT
   remote: https://github.com/avalonmediasystem/avalon-workflow.git
-  revision: e1807bcae5a8cc538e15a64ee41e3139a8552364
-  tag: rails5
+  revision: 1c188a2be9255ebd8b0b959f04dbf5f888715fb9
+  tag: avalon-r6.5
   specs:
     avalon-workflow (0.0.3)
 
 GIT
   remote: https://github.com/avalonmediasystem/fedora-migrate.git
   revision: 170a6e8aacb4413d133c9bd5635742d64ec855bc
-  branch: optional_rake_tasks
+  tag: avalon-r6.5
   specs:
     fedora-migrate (0.5.0)
       rchardet
@@ -34,8 +34,8 @@ GIT
 
 GIT
   remote: https://github.com/avalonmediasystem/media-element-add-to-playlist.git
-  revision: 4c204ab5bfa36bdd658693ecd79577a8f90fb057
-  branch: rails5
+  revision: dfde0084f6c17ca16fa675086eb025440f99a02d
+  tag: avalon-r6.5
   specs:
     media_element_add_to_playlist (0.0.1)
       rails (> 4.0)
@@ -96,7 +96,7 @@ GIT
 GIT
   remote: https://github.com/avalonmediasystem/mediainfo.git
   revision: 788d7f268168e45961d2303e729d1ced71f93f58
-  branch: avalon_fixes
+  tag: avalon-r6.5
   specs:
     mediainfo (0.7.1)
 
@@ -124,32 +124,11 @@ GIT
       rest-client
 
 GIT
-  remote: https://github.com/bbc/audio_waveform-ruby.git
-  revision: 6d2699489f5ce29a40874a936fc581182c87ca69
-  specs:
-    audio_waveform-ruby (1.0.4)
-      json (~> 2.1.0)
-
-GIT
-  remote: https://github.com/javan/whenever.git
-  revision: e1a3ffe571f5b948a97d609a7d983b214dc41160
-  specs:
-    whenever (0.11.0)
-      chronic (>= 0.6.3)
-
-GIT
   remote: https://github.com/rkallensee/bootstrap-toggle-rails.git
   revision: b85df8ea25ab71628fcec1504c7182dd5d7d3606
   tag: v2.2.1.0
   specs:
     bootstrap-toggle-rails (2.2.1.0)
-
-GIT
-  remote: https://github.com/samvera-labs/iiif_manifest
-  revision: 4219eb57ae9fbcd178391f401928040ebe057529
-  specs:
-    iiif_manifest (0.5.0)
-      activesupport (>= 4)
 
 GEM
   remote: https://rubygems.org/
@@ -243,6 +222,8 @@ GEM
     api-pagination (4.8.2)
     arel (9.0.0)
     ast (2.4.0)
+    audio_waveform-ruby (1.0.4)
+      json (~> 2.1.0)
     autoprefixer-rails (9.5.1.1)
       execjs
     aws-eventstream (1.0.3)
@@ -507,6 +488,8 @@ GEM
     i18n (1.6.0)
       concurrent-ruby (~> 1.0)
     iconv (1.0.8)
+    iiif_manifest (0.6.0)
+      activesupport (>= 4)
     ims-lti (1.1.13)
       builder
       oauth (>= 0.4.5, < 0.6)
@@ -929,6 +912,8 @@ GEM
     websocket-driver (0.7.0)
       websocket-extensions (>= 0.1.0)
     websocket-extensions (0.1.3)
+    whenever (0.11.0)
+      chronic (>= 0.6.3)
     with_locking (1.0.2)
     xml-simple (1.1.5)
     xpath (3.2.0)
@@ -954,7 +939,7 @@ DEPENDENCIES
   activerecord-session_store
   acts_as_list
   api-pagination
-  audio_waveform-ruby!
+  audio_waveform-ruby
   avalon-about!
   avalon-workflow!
   aws-sdk (~> 2.0)
@@ -993,7 +978,7 @@ DEPENDENCIES
   hooks
   hydra-head (~> 10.6)
   iconv (~> 1.0.6)
-  iiif_manifest!
+  iiif_manifest (~> 0.6)
   ims-lti (~> 1.1.13)
   jbuilder (~> 2.0)
   jquery-datatables
@@ -1055,7 +1040,7 @@ DEPENDENCIES
   webdrivers (~> 3.0)
   webmock (~> 3.5.1)
   webpacker
-  whenever!
+  whenever (~> 0.11)
   with_locking
   xray-rails
   zk
