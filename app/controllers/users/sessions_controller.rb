@@ -14,7 +14,7 @@
 
 class Users::SessionsController < Devise::SessionsController
   def new
-    if Avalon::Authentication::VisibleProviders.length == 1
+    if Avalon::Authentication::VisibleProviders.length == 1 && params[:admin].blank?
       omniauth_params = params.reject { |k,v| ['controller','action'].include?(k) }
       omniauth_params.permit!
       login_path = user_omniauth_authorize_path(Avalon::Authentication::VisibleProviders.first[:provider], omniauth_params)

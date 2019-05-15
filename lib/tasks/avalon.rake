@@ -236,7 +236,7 @@ EOC
     end
   end
   namespace :user do
-    desc "Create user (assumes identity authentication)"
+    desc "Create user (assumes database authentication)"
     task :create => :environment do
       if ENV['avalon_username'].nil? or ENV['avalon_password'].nil?
         abort "You must specify a username and password.  Example: rake avalon:user:create avalon_username=user@example.edu avalon_password=password avalon_groups=group1,group2"
@@ -247,8 +247,7 @@ EOC
       password = ENV['avalon_password']
       groups = ENV['avalon_groups'].split(",")
 
-      Identity.create!(email: username, password: password, password_confirmation: password)
-      User.create!(username: username, email: username)
+      User.create!(username: username, email: username, password: password, password_confirmation: password)
       groups.each do |group|
         Avalon::RoleControls.add_role(group) unless Avalon::RoleControls.role_exists? group
         Avalon::RoleControls.add_user_role(username, group)
@@ -266,7 +265,6 @@ EOC
       username = ENV['avalon_username'].dup
       groups = Avalon::RoleControls.user_roles username
 
-      Identity.where(email: username).destroy_all
       User.where(Devise.authentication_keys.first => username).destroy_all
       groups.each do |group|
         Avalon::RoleControls.remove_user_role(username, group)
@@ -274,7 +272,7 @@ EOC
 
       puts "Deleted user #{username} and removed them from groups #{groups}"
     end
-    desc "Change password (assumes identity authentication)"
+    desc "Change password (assumes database authentication)"
     task :passwd => :environment do
       if ENV['avalon_username'].nil? or ENV['avalon_password'].nil?
         abort "You must specify a username and password.  Example: rake avalon:user:passwd avalon_username=user@example.edu avalon_password=password"
@@ -282,7 +280,7 @@ EOC
 
       username = ENV['avalon_username'].dup
       password = ENV['avalon_password']
-      Identity.where(email: username).each {|identity| identity.password = password; identity.save}
+      User.where(email: username).each {|user| user.password = password; user.save}
 
       puts "Updated password for user #{username}"
     end

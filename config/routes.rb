@@ -38,10 +38,8 @@ Rails.application.routes.draw do
     end
   end
 
-  devise_for :users, :controllers => { :omniauth_callbacks => "users/omniauth_callbacks" }, format: false
+  devise_for :users, controllers: { omniauth_callbacks: 'users/omniauth_callbacks', sessions: 'users/sessions' }, format: false
   devise_scope :user do
-    match '/users/sign_in', :to => "users/sessions#new", :as => :new_user_session, via: [:get]
-    match '/users/sign_out', :to => "users/sessions#destroy", :as => :destroy_user_session, via: [:get]
     match '/users/auth/:provider', to: 'users/omniauth_callbacks#passthru', as: :user_omniauth_authorize, via: [:get, :post]
     Avalon::Authentication::Providers.collect { |provider| provider[:provider] }.uniq.each do |provider_name|
       match "/users/auth/#{provider_name}/callback", to: "users/omniauth_callbacks##{provider_name}", as: "user_omniauth_callback_#{provider_name}".to_sym, via: [:get, :post]

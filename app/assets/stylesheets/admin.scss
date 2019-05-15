@@ -57,3 +57,11 @@
 .btn-group:last-of-type {
   margin-right: 4px;
 }
+
+#sign-in-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-around;
+  flex-direction: row;
+}

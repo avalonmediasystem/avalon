@@ -14,6 +14,7 @@
 
 class ApplicationController < ActionController::Base
   before_action :store_location, unless: :devise_controller?
+  before_action :configure_permitted_parameters, if: :devise_controller?
 
   # Adds a few additional behaviors into the application controller
   include Blacklight::Controller
@@ -147,6 +148,16 @@ class ApplicationController < ActionController::Base
       render json: {errors: ["#{params[:id]} has been deleted"]}, status: 410
     else
       render '/errors/deleted_pid', status: 410
+    end
+  end
+
+  def configure_permitted_parameters
+    devise_parameter_sanitizer.permit(:sign_up) do |user_params|
+      user_params.permit(:username, :email, :password, :password_confirmation)
+    end
+
+    devise_parameter_sanitizer.permit(:sign_in) do |user_params|
+      user_params.permit(:login, :password)
     end
   end
 end

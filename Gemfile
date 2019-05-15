@@ -53,6 +53,7 @@ gem 'avalon-workflow', git: "https://github.com/avalonmediasystem/avalon-workflo
 
 # Authentication & Authorization
 gem 'devise', '~> 4.4'
+gem 'devise_invitable', '~> 1.6'
 gem 'ims-lti', '~> 1.1.13'
 gem 'net-ldap'
 gem 'omniauth-identity'
