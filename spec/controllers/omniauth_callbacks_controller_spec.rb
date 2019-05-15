@@ -117,5 +117,24 @@ describe Users::OmniauthCallbacksController, type: :controller do
         expect(response).to redirect_to(search_catalog_path('f[read_access_virtual_group_ssim][]' => course_group))
       end
     end
+
+    context 'when lti with deleted user' do
+      let(:course_group) { 'M101-Fall2019' }
+      let(:lti_auth_double) { double() }
+      let(:lti_extra_info) { double() }
+
+      before do
+        allow(User).to receive(:find_for_lti).and_raise(Avalon::DeletedUserId)
+        @request.env["omniauth.auth"] = lti_auth_double
+        allow(lti_auth_double).to receive(:extra).and_return (lti_extra_info)
+        allow(lti_extra_info).to receive(:context_id).and_return (course_group)
+      end
+
+      it 'redirects to root path' do
+        post :lti, session: { lti_group: course_group }
+        expect(response).to redirect_to(root_path)
+      end
+    end
+
   end
 end

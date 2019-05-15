@@ -1,7 +1,7 @@
 require 'avalon/routing/can_constraint'
 
 Rails.application.routes.draw do
-
+  mount Samvera::Persona::Engine => '/'
   mount Blacklight::Engine => '/'
   root to: "catalog#index"
     concern :searchable, Blacklight::Routes::Searchable.new

@@ -37,6 +37,32 @@ describe User do
     end
   end
 
+  describe "finders" do
+    let(:deleted_user) {
+      u = FactoryBot.create(:user)
+      u.destroy
+      u
+    }
+
+    before do
+      user.save
+    end
+
+    it "should find undeleted users by usernames" do
+      found_user = User.find_or_create_by_username_or_email(user.username, nil)
+      expect(found_user).to eq(user)
+    end
+
+    it "should find undeleted users by email" do
+      found_user = User.find_or_create_by_username_or_email(user.username, nil)
+      expect(found_user).to eq(user)
+    end
+
+    it "should throw an exception if the user is deleted" do
+      expect {User.find_or_create_by_username_or_email(deleted_user.username, nil)}.to raise_error{Avalon::DeletedUserId}
+    end
+  end
+
   describe "#groups" do
     let(:groups) { ["foorole"] }
     let(:role_map) { { "foorole" => [user.user_key] } }
