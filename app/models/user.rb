@@ -60,9 +60,25 @@ class User < ActiveRecord::Base
     Timeline.where(user_id:id).collect(&:tags).flatten.reject(&:blank?).uniq.sort
   end
 
+  def self.find_and_verify_by_username(username)
+    user = User.with_deleted.find_by(username: username)
+    if user&.deleted_at
+      raise Avalon::DeletedUserId
+    end
+    user
+  end
+
+  def self.find_and_verify_by_email(email)
+    user = User.with_deleted.find_by(email: email)
+    if user&.deleted_at
+      raise Avalon::DeletedUserId
+    end
+    user
+  end
+
   def self.find_or_create_by_username_or_email(username, email)
-    find_by(username: username) ||
-      find_by(email: email) ||
+    find_and_verify_by_username(username) ||
+      find_and_verify_by_email(email) ||
       create(username: username, email: email, password: Devise.friendly_token[0, 20])
   end
 
@@ -134,3 +150,4 @@ class User < ActiveRecord::Base
 end
 
 class Avalon::MissingUserId < StandardError; end
+class Avalon::DeletedUserId < StandardError; end
