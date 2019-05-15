@@ -9,6 +9,7 @@ en:
     embedded_audio: This audio content is restricted
   release_label: "Release"
   errors:
+    deleted_auth_error: This account has been deleted and cannot be authenticated.
     lti_auth_error: |
       If you are an instructor, you cannot view these items in student mode.
       Please switch back to instructor mode to view. If you are a student and
@@ -244,7 +245,8 @@ en:
       timeline:
         title: "Title"
         description: "Description"
-
+      user:  
+        login: "Username or email"
   iiif:
     auth:
       confirmLabel: "Login"

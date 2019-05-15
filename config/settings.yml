@@ -68,6 +68,7 @@ encode_throttling:
   update_jobs_throttle_threshold: 3
   update_jobs_spacing: 10
 auth:
+  registerable: true
   configuration:
     - :name: Avalon Test Auth
       :provider: :identity

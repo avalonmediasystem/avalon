@@ -1,0 +1,38 @@
+<div class="omniauth-form container">
+  <h3 id='sign-in-select' align='center'>Select Sign In Method</h3>
+  <div id='sign-in-buttons'>
+    <%- if devise_mapping.omniauthable? %>
+      <%- resource_class.omniauth_providers.each do |provider| %>
+        <%= link_to OmniAuth::Utils.camelize(provider), omniauth_authorize_path(resource_name, provider), class: 'btn btn-primary' %>
+      <% end -%>
+    <% end -%>
+
+    <a href='javascript:;' data-trigger='show-email' class='btn btn-primary'>Email / Password</a>
+  </div>
+
+  <div class='hidden' id='email-box'>
+    <%= bootstrap_form_for resource, as: resource_name, url: session_path(resource_name, admin: true) do |f| %>
+
+      <div class="form-group">
+        <%= f.text_field :login, autofocus: true, autocomplete: "username" %>
+      </div>
+
+      <div class="form-group">
+        <%= f.password_field :password, autocomplete: "off" %>
+      </div>
+
+      <% if devise_mapping.rememberable? -%>
+        <div class="field">
+          <%= f.check_box :remember_me %>
+        </div>
+      <% end -%>
+
+      <div class="actions">
+        <%= f.submit "Connect", class: 'btn btn-primary' %>
+      </div>
+    <% end %>
+    <%= render "devise/shared/links" %>
+    <p align='center'><a href='javascript:;' data-trigger='show-email'>Cancel</a></p>
+
+  </div>
+</div>

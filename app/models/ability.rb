@@ -39,6 +39,7 @@ class Ability
         can :inspect, MediaObject
         can :manage, Admin::Group
         can :manage, Admin::Collection
+        can :manage, User
         can :manage, Resque
         can :read, :about_page
         can :read, MigrationStatus

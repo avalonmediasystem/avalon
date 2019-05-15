@@ -29,8 +29,8 @@ describe Avalon::Batch::Ingest do
     # we need to remove it so can re-run the tests
     Dir['spec/fixtures/**/*.xlsx.process*','spec/fixtures/**/*.xlsx.error'].each { |file| File.delete(file) }
 
-    User.create(:username => 'frances.dickens@reichel.com', :email => 'frances.dickens@reichel.com')
-    User.create(:username => 'jay@krajcik.org', :email => 'jay@krajcik.org')
+    FactoryBot.create(:user, username: 'frances.dickens@reichel.com', email: 'frances.dickens@reichel.com')
+    FactoryBot.create(:user, username: 'jay@krajcik.org', email: 'jay@krajcik.org')
     Avalon::RoleControls.add_user_role('frances.dickens@reichel.com','manager')
     Avalon::RoleControls.add_user_role('jay@krajcik.org','manager')
     allow(IngestBatchEntryJob).to receive(:perform_later).and_return(nil)
