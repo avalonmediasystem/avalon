@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20190212211753) do
+ActiveRecord::Schema.define(version: 2019_02_12_211753) do
 
   create_table "annotations", force: :cascade do |t|
     t.string "uuid"
