@@ -66,10 +66,10 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
     if params['login_popup'].present? || (request.env["omniauth.params"].present? && request.env["omniauth.params"]["login_popup"].present?)
       flash[:success] = nil
       render inline: '<html><head><script>window.close();</script></head><body></body><html>'.html_safe
-    elsif request['target_id']
+    elsif params['target_id']
       # Whitelist params that are allowed to be passed through via LTI
       params_whitelist = %w{t position token}
-      redirect_to objects_path(request['target_id'], params.slice(*params_whitelist))
+      redirect_to objects_path(params['target_id'], params.permit(*params_whitelist).to_h)
     elsif params[:url]
       # Limit redirects to current host only
       # Fixes bug https://bugs.dlib.indiana.edu/browse/VOV-5662
