@@ -42,7 +42,14 @@ Unless required by applicable law or agreed to in writing, software distributed
 <% end %>
 
 <div class="alert alert-danger hidden" id="cookieless">
-  <p>Could not set cookie, this may happen if you've never visited this website before. If you see this message and cannot log in or see content, please open <%= link_to root_url, root_url, target: :_blank %> in a new window, then come back and refresh this page.</p>
+  <button type="button" class="close" data-dismiss="alert">&times;</button>
+  <p>Could not complete log in. Possible causes and solutions are:</p>
+  <ul>
+    <li>Cookies are not set, which might happen if you've never visited this website before.<br/>
+        Please open <%= link_to root_url, root_url, target: :_blank %> in a new window, then come back and refresh this page.</li>
+    <li>An ad blocker is preventing successful login.<br/>
+        Please disable ad blockers for this site then refresh this page.</li>
+  </ul>
 </div>
 
 <% content_for :page_scripts do %>
