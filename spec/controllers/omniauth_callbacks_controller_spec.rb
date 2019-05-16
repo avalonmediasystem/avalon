@@ -20,17 +20,101 @@ describe Users::OmniauthCallbacksController, type: :controller do
   end
 
   describe '#find_user' do
-    context 'when url param is present' do
-      let(:user) { FactoryBot.create(:user) }
-      let(:params) {{ url: "http://other.host.com/a/sub/page" }}
+    let(:user) { FactoryBot.create(:user) }
 
-      before do
-        allow(User).to receive(:find_for_identity).and_return(user)
+    before do
+      allow(User).to receive(:find_for_identity).and_return(user)
+    end
+
+    it 'redirects to homepage' do
+      post :identity
+      expect(response).to redirect_to(root_path)
+    end
+
+    context 'when url param is present' do
+      let(:params) {{ url:  url }}
+      let(:url) { "http://test.host/a/sub/page?test_param=true" }
+
+      it 'redirects to url without params' do
+        post :identity, params: params
+        expect(response).to redirect_to(URI.parse(url).path)
       end
 
-      it 'redirects to homepage if url host does not match app host' do
+      context "and does not match app host" do
+        let(:url) { "http://other.host.com/a/sub/page" }
+
+        it 'redirects to homepage' do
+          post :identity, params: params
+          expect(response).to redirect_to(root_path)
+        end
+      end
+    end
+
+    context 'when login_popup param is present' do
+      let(:params) {{ login_popup: 1 }}
+      let(:self_closing_html) { '<html><head><script>window.close();</script></head><body></body><html>' }
+
+      it 'returns self-closing page' do
         post :identity, params: params
-        expect(response).to redirect_to(root_path)
+        expect(response.content_type).to eq 'text/html'
+        expect(response.body).to eq self_closing_html
+      end
+    end
+
+    context 'when target_id param is present' do
+      let(:params) {{ target_id: target_id }}
+      let(:target_id) { 'abc1234' }
+
+      it 'redirects to objects controller with id' do
+        post :identity, params: params
+        expect(response).to redirect_to(objects_path(target_id))
+      end
+
+      context 'with additional context parameters' do
+        let(:additional_params) {{ t: '1234', position: '2', token: 'ABCDE12345' }}
+        let(:params) { { target_id: target_id }.merge(additional_params) }
+
+        it 'redirects to objects controller with id and context parameters' do
+          post :identity, params: params
+          expect(response).to redirect_to(objects_path(target_id, additional_params))
+        end
+
+        context 'including non-whitelisted params' do
+          let(:unknown_param) {{ unknown_params: 'SCARY' }}
+          let(:params) { { target_id: target_id }.merge(additional_params).merge(unknown_param) }
+
+          it 'strips the unknown params' do
+            post :identity, params: params
+            expect(response).to redirect_to(objects_path(target_id, additional_params))
+          end
+        end
+      end
+    end
+
+    context 'when previous_url is in the session' do
+      let(:previous_url) { "http://test.host/a/sub/page?test_param=true" }
+
+      it 'redirects to url' do
+        post :identity, session: { previous_url: previous_url }
+        expect(response).to redirect_to(previous_url)
+      end
+    end
+
+    context 'when lti login with course group' do
+      let(:course_group) { 'M101-Fall2019' }
+      let(:lti_auth_double) { double() }
+      let(:lti_extra_info) { double() }
+
+      before do
+        allow(User).to receive(:find_for_lti).and_return(user)
+        @request.env["omniauth.auth"] = lti_auth_double
+        allow(lti_auth_double).to receive(:extra).and_return (lti_extra_info)
+        allow(lti_extra_info).to receive(:context_id).and_return (course_group)
+      end
+
+      it 'redirects to search with external group facet applied' do
+        post :lti, session: { lti_group: course_group }
+        expect(response).to redirect_to(search_catalog_path('f[read_access_virtual_group_ssim][]' => course_group))
       end
     end
   end
