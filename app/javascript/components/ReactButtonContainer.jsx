@@ -35,11 +35,14 @@ class ReactButtonContainer extends Component {
     const modalID = `edit_structure_${this.props.sectionIndex}`;
     return (
       <div className="ReactButtonContainer">
-        <button className="btn btn-primary btn-xs btn-edit" onClick={this.handleShow}>
+        <button
+          className="btn btn-primary btn-xs btn-edit"
+          onClick={this.handleShow}
+        >
           Edit Structure
         </button>
 
-        <Modal id={modalID} show={this.state.show} animation={false} onHide={this.handleClose} className="sme-modal-wrapper" dialogClassName="modal-wrapper-body">
+        <Modal id={modalID} show={this.state.show} animation={false} onHide={this.handleClose} backdrop="static" className="sme-modal-wrapper" dialogClassName="modal-wrapper-body">
           <Modal.Header closeButton>
             <Modal.Title>Edit Structure</Modal.Title>
           </Modal.Header>
@@ -47,9 +50,7 @@ class ReactButtonContainer extends Component {
             <ReactSME {...this.state.smeProps} />
           </Modal.Body>
           <Modal.Footer>
-            <Button variant="secondary" onClick={this.handleClose}>
-              Close
-            </Button>
+            <Button variant="secondary" onClick={this.handleClose}>Close</Button>
           </Modal.Footer>
         </Modal>
       </div>
