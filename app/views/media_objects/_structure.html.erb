@@ -78,10 +78,13 @@ Unless required by applicable law or agreed to in writing, software distributed
               <input type="submit" class="btn btn-danger btn-xs" value="Remove" />
           </div>
 	    <% end %>
-          </div>
+    </div>
 	  <div class="structure_view"></div>
-        </div>
-        <div id="captions_<%= index %>" class="hidden structure_tool" >
+    <div style="margin-top: 5px; font-style: italic;">
+      Note: Any edits made with the Edit Structure tool will not be reflected here or in the Advanced Edit tool until this page is refreshed.
+    </div>
+  </div>
+  <div id="captions_<%= index %>" class="hidden structure_tool" >
 	  <div class="tool_actions">
 	    <span class="tool_label">Captions</span>
 	    <%= form_for section, :url => attach_captions_master_file_path(section.id), html: {method: "post"} do |form| %>
@@ -197,7 +200,7 @@ $( '.filedata' ).change(function() {
 });
 
 function populate_structure_preview(index){
-  $xmltextarea = $('#edit_structure_'+index).find('textarea.original_textarea');
+  $xmltextarea = $('#advanced_edit_structure_'+index).find('textarea.original_textarea');
   $('#structure_'+index).find('.structure_view').html(parse_structure(htmlDecode($xmltextarea.html()),index));
 }
 
