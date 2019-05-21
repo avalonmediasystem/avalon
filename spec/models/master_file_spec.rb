@@ -113,7 +113,7 @@ describe MasterFile do
 
   describe '#process' do
     let!(:master_file) { FactoryBot.create(:master_file) }
- 
+
     it 'enqueues an ActiveEncode job' do
       master_file.process
       expect(ActiveEncodeJob::Create).to have_been_enqueued.with(master_file.id, "file://" + URI.escape(master_file.file_location), {preset: master_file.workflow_name})
@@ -573,6 +573,36 @@ describe MasterFile do
     end
     it 'does not error if the master file has no encode' do
       expect { MasterFile.new(workflow_id: '1', status_code: 'RUNNING').send(:stop_processing!) }.not_to raise_error
+    end
+  end
+
+  describe 'hls_streams' do
+    let(:master_file) { FactoryBot.create(:master_file) }
+    let(:streams) do
+      [{:format=>"video",
+        :mimetype=>nil,
+        :quality=>"auto",
+        :url=>"http://test.host/master_files/#{master_file.id}/auto.m3u8"},
+      {:bitrate=>4163842,
+        :format=>"video",
+        :mimetype=>nil,
+        :quality=>"high",
+        :url=>
+         "http://localhost:3000/6f69c008-06a4-4bad-bb60-26297f0b4c06/35bddaa0-fbb4-404f-ab76-58f22921529c/warning.mp4.m3u8"},
+      {:bitrate=>4163842,
+        :format=>"video",
+        :mimetype=>nil,
+        :quality=>"medium",
+        :url=>
+         "http://localhost:3000/6f69c008-06a4-4bad-bb60-26297f0b4c06/35bddaa0-fbb4-404f-ab76-58f22921529c/warning.mp4.m3u8"}]
+    end
+    before do
+      master_file.derivatives += [FactoryBot.create(:derivative, quality: 'high'), FactoryBot.create(:derivative, quality: 'medium')]
+      master_file.save
+    end
+
+    it 'returns a sorted hash of hls streams' do
+      expect(master_file.hls_streams).to eq streams
     end
   end
 end

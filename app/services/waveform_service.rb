@@ -8,6 +8,7 @@ class WaveformService
   end
 
   def get_waveform_json(uri)
+    return nil unless uri.present?
     waveform = AudioWaveform::WaveformDataFile.new(
       sample_rate: 44_100,
       samples_per_pixel: @samples_per_pixel,

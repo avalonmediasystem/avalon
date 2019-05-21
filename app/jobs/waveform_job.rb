@@ -40,7 +40,7 @@ class WaveformJob < ActiveJob::Base
     end
 
     def playlist_url(master_file)
-      streams = master_file.stream_details[:stream_hls]
+      streams = master_file.hls_streams
       hls_url = nil
 
       # Find the lowest quality stream
