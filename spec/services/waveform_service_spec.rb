@@ -27,6 +27,12 @@ describe WaveformService, type: :service do
 
       expect(json).to eq(target_json)
     end
+
+    context 'when uri parameter is blank' do
+      it 'returns nil' do
+        expect(service.get_waveform_json(nil)).to eq nil
+      end
+    end
   end
 
   describe "get_wave_io" do
