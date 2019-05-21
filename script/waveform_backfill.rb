@@ -1,5 +1,5 @@
 # frozen_string_literal: true
-wb_path = '/srv/avalon/scriptdata/waveform_backfill.txt'
+wb_path = File.join(Rails.root, 'scriptdata/waveform_backfill.txt')
 start_index = ARGV[0] || 1
 row_max = ARGV[1] || 1_000_000
 
