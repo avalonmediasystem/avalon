@@ -67,7 +67,7 @@ gem 'mediainfo', git: "https://github.com/avalonmediasystem/mediainfo.git", tag:
 gem 'rest-client'
 gem 'roo'
 gem 'rubyhorn', git: "https://github.com/avalonmediasystem/rubyhorn.git", tag: 'avalon-r6'
-gem 'wavefile'
+gem 'wavefile', '~> 1.0.1'
 
 # Data Translation & Normalization
 gem 'edtf'
