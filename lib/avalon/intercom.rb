@@ -1,4 +1,4 @@
-# Copyright 2011-2017, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2019, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 #
@@ -44,7 +44,7 @@ module Avalon
         )
         { link: URI.join(@avalon['url'], 'media_objects/', JSON.parse(resp.body)['id']).to_s }
       rescue StandardError => e
-        { message: e.message, status: e.respond_to?(:response) ? e.response.code : 500 }
+        { message: e.message, status: e.respond_to?(:response) && e.response.present? ? e.response.code : 500 }
       end
     end
 
