@@ -215,7 +215,7 @@ function attach_structure_response(r) {
     return msg;
   } else {
     current_xml_editor.find('textarea.original_textarea').html(r['structure']);
-    section_index = parseInt(current_xml_editor.attr('id').split('_')[2]);
+    section_index = parseInt(current_xml_editor.attr('id').split('_').pop());
     populate_structure_preview(section_index);
     current_xml_editor.modal('hide');
     current_xml_editor = null;
