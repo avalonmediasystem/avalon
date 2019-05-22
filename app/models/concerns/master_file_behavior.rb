@@ -77,6 +77,28 @@ module MasterFileBehavior
     })
   end
 
+  # Copied and extracted from stream_details for use in the waveformjob
+  # This isn't used in stream_details because it would be less efficient
+  def hls_streams
+    hls = []
+    derivatives.each do |d|
+      common = { quality: d.quality,
+                 bitrate: d.bitrate,
+                 mimetype: d.mime_type,
+                 format: d.format }
+      hls << common.merge(url: d.streaming_url(true))
+    end
+    if hls.length > 1
+      hls << { quality: 'auto',
+               mimetype: hls.first[:mimetype],
+               format: hls.first[:format],
+               url: hls_manifest_master_file_url(id: id, quality: 'auto') }
+    end
+
+    # Sorts the streams in order of quality
+    sort_streams hls
+  end
+
   def display_title
     mf_title = structuralMetadata.section_title unless structuralMetadata.blank?
     mf_title ||= title if title.present?

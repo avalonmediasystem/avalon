@@ -1,5 +1,5 @@
 # frozen_string_literal: true
-wb_path = '/srv/avalon/scriptdata/waveform_backfill.txt'
+wb_path = Rails.root.join('scriptdata', 'waveform_backfill.txt')
 start_index = ARGV[0] || 1
 row_max = ARGV[1] || 1_000_000
 
@@ -28,8 +28,8 @@ end
 
 if mf_ids.empty?
   Rails.logger.info "Reading ids of master files needing waveform back-fill from #{wb_path}"
-  File.readlines(wb_file).each do |id|
-    mf_ids << id
+  File.readlines(wb_path).each do |id|
+    mf_ids << id.strip
     Rails.logger.debug "to be back filled: master file #{id}"
   end
 end
