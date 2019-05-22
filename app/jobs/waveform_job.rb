@@ -28,6 +28,7 @@ class WaveformJob < ActiveJob::Base
 
     master_file.waveform.content = json
     master_file.waveform.mime_type = 'application/json'
+    master_file.waveform.content_will_change!
     master_file.save
   end
 
