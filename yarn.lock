@@ -6641,9 +6641,9 @@ react-redux@^6.0.0:
     prop-types "^15.7.2"
     react-is "^16.8.2"
 
-"react-structural-metadata-editor@https://github.com/avalonmediasystem/react-structural-metadata-editor#avalon-r6.5-beta-6":
+"react-structural-metadata-editor@https://github.com/avalonmediasystem/react-structural-metadata-editor#avalon-r6.5-beta-7":
   version "1.1.0"
-  resolved "https://github.com/avalonmediasystem/react-structural-metadata-editor#f27c253631150e66eb936c0fb015eb4a1decb595"
+  resolved "https://github.com/avalonmediasystem/react-structural-metadata-editor#42c91a6517733fec95e061096de24de4733c6b31"
   dependencies:
     "@babel/runtime" "^7.4.4"
     "@fortawesome/fontawesome-svg-core" "^1.2.4"

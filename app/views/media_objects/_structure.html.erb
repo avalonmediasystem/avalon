@@ -69,9 +69,9 @@ Unless required by applicable law or agreed to in writing, software distributed
               <input type="button" class="btn btn-primary btn-xs" onclick="$('#structure_<%= index %> .filedata').click();" value="Upload" />
               <div class="btn-group">
                 <% if section.structuralMetadata.valid? %>
-                  <%= react_component("ReactButtonContainer", {sectionIndex: index, masterFileID: section.id, baseURL: request.protocol+request.host_with_port, audioStreamURL: stream_url}) %>
+                  <%= react_component("ReactButtonContainer", {sectionIndex: index, masterFileID: section.id, baseURL: request.protocol+request.host_with_port, streamDuration: section.duration, audioStreamURL: stream_url}) %>
                 <% else %>
-                  <%= react_component("ReactButtonContainer", {sectionIndex: index, masterFileID: section.id, baseURL: request.protocol+request.host_with_port, audioStreamURL: stream_url, initStructure: "{ \"label\": \"#{item_label}\", \"type\": \"div\", \"items\": [] }"}, html_options={ class: 'react-button-container' }) %>
+                  <%= react_component("ReactButtonContainer", {sectionIndex: index, masterFileID: section.id, baseURL: request.protocol+request.host_with_port, streamDuration: section.duration, audioStreamURL: stream_url, initStructure: "{ \"label\": \"#{item_label}\", \"type\": \"div\", \"items\": [] }"}, html_options={ class: 'react-button-container' }) %>
                 <% end %>
               </div>
               <input type="button" class='btn btn-primary btn-xs' value="Advanced Edit" data-toggle="modal" data-target="#advanced_edit_structure_<%= index %>" />
