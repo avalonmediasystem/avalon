@@ -13,7 +13,8 @@ class ReactButtonContainer extends Component {
         masterFileID: this.props.masterFileID,
         baseURL: this.props.baseURL,
         initStructure: this.props.initStructure,
-        audioStreamURL: this.props.audioStreamURL
+        audioStreamURL: this.props.audioStreamURL,
+        streamDuration: this.props.streamDuration
       }
     };
   }
