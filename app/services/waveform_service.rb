@@ -1,3 +1,17 @@
+# Copyright 2011-2019, The Trustees of Indiana University and Northwestern
+#   University.  Licensed under the Apache License, Version 2.0 (the "License");
+#   you may not use this file except in compliance with the License.
+#
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software distributed
+#   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+#   CONDITIONS OF ANY KIND, either express or implied. See the License for the
+#   specific language governing permissions and limitations under the License.
+# ---  END LICENSE_HEADER BLOCK  ---
+
 require 'audio_waveform'
 require 'wavefile'
 
@@ -8,6 +22,7 @@ class WaveformService
   end
 
   def get_waveform_json(uri)
+    return nil unless uri.present?
     waveform = AudioWaveform::WaveformDataFile.new(
       sample_rate: 44_100,
       samples_per_pixel: @samples_per_pixel,
@@ -31,7 +46,7 @@ private
   def get_wave_io(uri)
     headers = "-headers $'Referer: #{Rails.application.routes.url_helpers.root_url}\r\n'" if uri.starts_with? "http"
     normalized_uri = uri.starts_with?("file") ? URI.unescape(uri) : uri
-    cmd = "ffmpeg #{headers} -i '#{normalized_uri}' -f wav - 2> /dev/null"
+    cmd = "#{Settings.ffmpeg.path} #{headers} -i '#{normalized_uri}' -f wav -ar 44100 - 2> /dev/null"
     IO.popen(cmd)
   end
 

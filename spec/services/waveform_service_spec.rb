@@ -1,4 +1,4 @@
-# Copyright 2011-2018, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2019, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 #
@@ -27,6 +27,12 @@ describe WaveformService, type: :service do
 
       expect(json).to eq(target_json)
     end
+
+    context 'when uri parameter is blank' do
+      it 'returns nil' do
+        expect(service.get_waveform_json(nil)).to eq nil
+      end
+    end
   end
 
   describe "get_wave_io" do
@@ -36,7 +42,7 @@ describe WaveformService, type: :service do
 
     context "http file" do
       let(:uri) { "http://domain/to/video.mp4" }
-      let(:cmd) {"ffmpeg -headers $'Referer: http://test.host/\r\n' -i '#{uri}' -f wav - 2> /dev/null"}
+      let(:cmd) {"#{Settings.ffmpeg.path} -headers $'Referer: http://test.host/\r\n' -i '#{uri}' -f wav -ar 44100 - 2> /dev/null"}
 
       it "should call ffmpeg with headers" do
         service.send(:get_wave_io, uri)
@@ -46,7 +52,7 @@ describe WaveformService, type: :service do
 
     context "local file" do
       let(:uri) { "file:///path/to/video.mp4" }
-      let(:cmd) {"ffmpeg  -i '#{uri}' -f wav - 2> /dev/null"}
+      let(:cmd) {"#{Settings.ffmpeg.path}  -i '#{uri}' -f wav -ar 44100 - 2> /dev/null"}
 
       it "should call ffmpeg without headers" do
         service.send(:get_wave_io, uri)
@@ -56,7 +62,7 @@ describe WaveformService, type: :service do
       context 'with spaces in filename' do
         let(:uri) { 'file:///path/to/special%20video%20file.mp4' }
         let(:unencoded_uri) { 'file:///path/to/special video file.mp4' }
-        let(:cmd) {"ffmpeg  -i '#{unencoded_uri}' -f wav - 2> /dev/null"}
+        let(:cmd) {"#{Settings.ffmpeg.path}  -i '#{unencoded_uri}' -f wav -ar 44100 - 2> /dev/null"}
 
         it "should call ffmpeg without url encoding" do
           service.send(:get_wave_io, uri)

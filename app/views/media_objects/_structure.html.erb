@@ -1,5 +1,5 @@
 <%#
-Copyright 2011-2018, The Trustees of Indiana University and Northwestern
+Copyright 2011-2019, The Trustees of Indiana University and Northwestern
   University.  Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
 
@@ -69,19 +69,22 @@ Unless required by applicable law or agreed to in writing, software distributed
               <input type="button" class="btn btn-primary btn-xs" onclick="$('#structure_<%= index %> .filedata').click();" value="Upload" />
               <div class="btn-group">
                 <% if section.structuralMetadata.valid? %>
-                  <%= react_component("ReactButtonContainer", {sectionIndex: index, masterFileID: section.id, baseURL: request.protocol+request.host_with_port, audioStreamURL: stream_url}) %>
+                  <%= react_component("ReactButtonContainer", {sectionIndex: index, masterFileID: section.id, baseURL: request.protocol+request.host_with_port, streamDuration: section.duration, audioStreamURL: stream_url}) %>
                 <% else %>
-                  <%= react_component("ReactButtonContainer", {sectionIndex: index, masterFileID: section.id, baseURL: request.protocol+request.host_with_port, audioStreamURL: stream_url, initStructure: "{ \"label\": \"#{item_label}\", \"type\": \"div\", \"items\": [] }"}, html_options={ class: 'react-button-container' }) %>
+                  <%= react_component("ReactButtonContainer", {sectionIndex: index, masterFileID: section.id, baseURL: request.protocol+request.host_with_port, streamDuration: section.duration, audioStreamURL: stream_url, initStructure: "{ \"label\": \"#{item_label}\", \"type\": \"div\", \"items\": [] }"}, html_options={ class: 'react-button-container' }) %>
                 <% end %>
               </div>
               <input type="button" class='btn btn-primary btn-xs' value="Advanced Edit" data-toggle="modal" data-target="#advanced_edit_structure_<%= index %>" />
               <input type="submit" class="btn btn-danger btn-xs" value="Remove" />
           </div>
 	    <% end %>
-          </div>
+    </div>
 	  <div class="structure_view"></div>
-        </div>
-        <div id="captions_<%= index %>" class="hidden structure_tool" >
+    <div style="margin-top: 5px; font-style: italic;">
+      Note: Any edits made with the Edit Structure tool will not be reflected here or in the Advanced Edit tool until this page is refreshed.
+    </div>
+  </div>
+  <div id="captions_<%= index %>" class="hidden structure_tool" >
 	  <div class="tool_actions">
 	    <span class="tool_label">Captions</span>
 	    <%= form_for section, :url => attach_captions_master_file_path(section.id), html: {method: "post"} do |form| %>
@@ -197,7 +200,7 @@ $( '.filedata' ).change(function() {
 });
 
 function populate_structure_preview(index){
-  $xmltextarea = $('#edit_structure_'+index).find('textarea.original_textarea');
+  $xmltextarea = $('#advanced_edit_structure_'+index).find('textarea.original_textarea');
   $('#structure_'+index).find('.structure_view').html(parse_structure(htmlDecode($xmltextarea.html()),index));
 }
 
@@ -212,7 +215,7 @@ function attach_structure_response(r) {
     return msg;
   } else {
     current_xml_editor.find('textarea.original_textarea').html(r['structure']);
-    section_index = parseInt(current_xml_editor.attr('id').split('_')[2]);
+    section_index = parseInt(current_xml_editor.attr('id').split('_').pop());
     populate_structure_preview(section_index);
     current_xml_editor.modal('hide');
     current_xml_editor = null;

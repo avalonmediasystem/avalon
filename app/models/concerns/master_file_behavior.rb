@@ -1,4 +1,4 @@
-# Copyright 2011-2018, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2019, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 #
@@ -11,6 +11,7 @@
 #   CONDITIONS OF ANY KIND, either express or implied. See the License for the
 #   specific language governing permissions and limitations under the License.
 # ---  END LICENSE_HEADER BLOCK  ---
+
 require 'htmlentities'
 
 module MasterFileBehavior
@@ -75,6 +76,28 @@ module MasterFileBehavior
       duration: (duration.to_f / 1000),
       embed_title: embed_title
     })
+  end
+
+  # Copied and extracted from stream_details for use in the waveformjob
+  # This isn't used in stream_details because it would be less efficient
+  def hls_streams
+    hls = []
+    derivatives.each do |d|
+      common = { quality: d.quality,
+                 bitrate: d.bitrate,
+                 mimetype: d.mime_type,
+                 format: d.format }
+      hls << common.merge(url: d.streaming_url(true))
+    end
+    if hls.length > 1
+      hls << { quality: 'auto',
+               mimetype: hls.first[:mimetype],
+               format: hls.first[:format],
+               url: hls_manifest_master_file_url(id: id, quality: 'auto') }
+    end
+
+    # Sorts the streams in order of quality
+    sort_streams hls
   end
 
   def display_title

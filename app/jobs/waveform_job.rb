@@ -1,4 +1,4 @@
-# Copyright 2011-2018, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2019, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 #
@@ -28,6 +28,7 @@ class WaveformJob < ActiveJob::Base
 
     master_file.waveform.content = json
     master_file.waveform.mime_type = 'application/json'
+    master_file.waveform.content_will_change!
     master_file.save
   end
 
@@ -40,7 +41,7 @@ class WaveformJob < ActiveJob::Base
     end
 
     def playlist_url(master_file)
-      streams = master_file.stream_details[:stream_hls]
+      streams = master_file.hls_streams
       hls_url = nil
 
       # Find the lowest quality stream

@@ -28,4 +28,3 @@
     Blacklight.doResizeFacetLabelsAndCounts();
   });
 }(jQuery));
-
