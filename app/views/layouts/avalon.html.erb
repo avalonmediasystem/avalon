@@ -24,6 +24,7 @@ Unless required by applicable law or agreed to in writing, software distributed
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <%= favicon_link_tag %>
     <%= stylesheet_link_tag "application", media: "all" %>
+    <%= stylesheet_pack_tag 'application' %>
     <%= javascript_pack_tag 'application' %>
     <%= yield :page_styles %>
     <%= yield :additional_head_content %>
