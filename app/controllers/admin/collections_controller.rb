@@ -73,7 +73,7 @@ class Admin::CollectionsController < ApplicationController
 
   # POST /collections
   def create
-    @collection = Admin::Collection.create(collection_params)
+    @collection = Admin::Collection.create(collection_params.merge(managers: [current_user.user_key]))
     if @collection.persisted?
       User.where(Devise.authentication_keys.first => [Avalon::RoleControls.users('administrator')].flatten).each do |admin_user|
         NotificationsMailer.new_collection(
