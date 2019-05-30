@@ -267,8 +267,14 @@ describe Admin::CollectionsController, type: :controller do
       expect(JSON.parse(response.body)['id'].class).to eq String
       expect(JSON.parse(response.body)).not_to include('errors')
     end
+    it "should create a new collection with default manager list containing current API user" do
+      post 'create', params: { format:'json', admin_collection: { name: collection.name, description: collection.description, unit: collection.unit } }
+      expect(JSON.parse(response.body)['id'].class).to eq String
+      collection = Admin::Collection.find(JSON.parse(response.body)['id'])
+      expect(collection.managers).to eq(['archivist1@example.com'])
+    end
     it "should return 422 if collection creation failed" do
-      post 'create', params: { format:'json', admin_collection: {name: collection.name, description: collection.description, unit: collection.unit} }
+      post 'create', params: { format:'json', admin_collection: { name: collection.name, description: collection.description } }
       expect(response.status).to eq(422)
       expect(JSON.parse(response.body)).to include('errors')
       expect(JSON.parse(response.body)["errors"].class).to eq Array
