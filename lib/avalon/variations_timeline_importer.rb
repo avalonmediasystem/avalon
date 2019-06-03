@@ -195,7 +195,7 @@ module Avalon
       def construct_timeline_title(timeline_xml)
         timeline_title = extract_timeline_title(timeline_xml)
         if timeline_title.blank?
-          timeline_title = Avalon::VariationstimelineImporter::DEFAULT_timeline_TITLE
+          timeline_title = Avalon::VariationsTimelineImporter::DEFAULT_TIMELINE_TITLE
         end
         timeline_title
       end
