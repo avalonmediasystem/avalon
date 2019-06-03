@@ -63,7 +63,7 @@ module Avalon
         timeline.generate_manifest
 
         manifest = JSON.parse(timeline.manifest)
-        bubbles = structures(timeline, timeline_xml.xpath('/Timeline/Bubble'), starttime, endtime, media_length / 1000.0)
+        bubbles = structures(timeline, timeline_xml.xpath('/Timeline/Bubble'))
         manifest['structures'] = bubbles.present? ? bubbles[:items] : []
         manifest['annotations'] = annotations(timeline, timeline_xml)
         manifest['tl:settings'] = { 'tl:backgroundColour': extract_background_color(timeline_xml) }
@@ -87,12 +87,12 @@ module Avalon
         timeline
       end
 
-      def structures(timeline, node, startlimit, endlimit, duration)
+      def structures(timeline, node)
         children = node.xpath('child::Bubble').reject(&:blank?)
         if children.count > 1
           range = timeline_range(node)
           children.each do |n|
-            newnode = structures(timeline, n, startlimit, endlimit, duration)
+            newnode = structures(timeline, n)
             range[:items] << newnode if newnode.present?
           end
           # don't add parent ranges that only have one child, instead add child only
@@ -100,9 +100,7 @@ module Avalon
             range[:items].length == 1 && canvas_range?(range[:items][0]) ? range[:items][0] : range
           end
         else
-          spanbegin = parse_hour_min_sec(node.attribute('begin')&.value || '0')
-          spanend = parse_hour_min_sec(node.attribute('end')&.value || duration.to_s)
-          timeline_canvas(timeline, node) if spanbegin >= startlimit && spanend <= endlimit
+          timeline_canvas(timeline, node)
         end
       end
 
