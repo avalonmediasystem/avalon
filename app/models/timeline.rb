@@ -103,7 +103,8 @@ class Timeline < ActiveRecord::Base
     def duration
       begin_time, end_time = source.split("?t=")[1].split(",")
       end_time ||= master_file.duration.to_f / 1000
-      end_time.to_f - begin_time.to_f
+      # must avoid floating point arithmatic errors
+      ((end_time.to_f * 1000).to_i - (begin_time.to_f * 1000).to_i) / 1000.0
     end
 
     def master_file
