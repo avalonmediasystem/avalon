@@ -13,6 +13,8 @@
 # ---  END LICENSE_HEADER BLOCK  ---
 
 class WaveformJob < ActiveJob::Base
+  queue_as :waveform
+
   PLAYER_WIDTH_IN_PX = 1200
   FINEST_ZOOM_IN_SEC = 5
   SAMPLES_PER_FRAME = (44_100 * FINEST_ZOOM_IN_SEC) / PLAYER_WIDTH_IN_PX
