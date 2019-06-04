@@ -53,10 +53,10 @@ module Avalon
         media_offset = timeline_xml.xpath('//Timeline/@mediaOffset').text.to_i
         media_length = timeline_xml.xpath('//Timeline/@mediaLength').text.to_i
 
-        mf = VariationsMappingService.new.find_offset_master_file(container, media_offset)
+        mf, container_start = VariationsMappingService.new.find_offset_master_file(container, media_offset)
 
-        starttime = media_offset / 1000.0
-        endtime = (media_offset + media_length) / 1000.0
+        starttime = (media_offset - container_start) / 1000.0
+        endtime = (media_offset + media_length - container_start) / 1000.0
         timeline.source = Rails.application.routes.url_helpers.master_file_url(mf) + "?t=#{starttime},#{endtime}"
 
         timeline.save
