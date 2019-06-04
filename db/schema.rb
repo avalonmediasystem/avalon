@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_02_12_211753) do
+ActiveRecord::Schema.define(version: 2019_06_04_174803) do
 
   create_table "annotations", force: :cascade do |t|
     t.string "uuid"
@@ -184,7 +184,7 @@ ActiveRecord::Schema.define(version: 2019_02_12_211753) do
     t.string "access_token"
     t.string "tags"
     t.string "source"
-    t.text "manifest"
+    t.text "manifest", limit: 16777215
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["user_id"], name: "index_timelines_on_user_id"
