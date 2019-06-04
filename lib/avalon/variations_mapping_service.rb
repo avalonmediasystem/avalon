@@ -34,6 +34,7 @@ module Avalon
       container = TIMELINE_MAP[variations_container_id]
       raise "Unknown Variations Container: #{variations_container_id}" unless container.present?
       notis_id = nil
+      container_start = 0
 
       container.each do |master_file|
         container_start = master_file[:offset].to_i
@@ -47,7 +48,7 @@ module Avalon
       raise "Invalid offset for container: #{variations_container_id} #{media_offset}" unless notis_id
       master_file = MasterFile.where(identifier_ssim: notis_id.downcase).first
       raise "MasterFile could not be found for Variations label #{notis_id}" unless master_file
-      master_file
+      [master_file, container_start]
     end
   end
 end
