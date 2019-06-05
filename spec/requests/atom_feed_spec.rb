@@ -22,7 +22,11 @@ describe 'atom feed', type: :request do
 
   describe 'entry' do
     let!(:media_object) { FactoryBot.create(:fully_searchable_media_object) }
-    let(:updated_date) { media_object.modified_date.to_time.utc.strftime('%Y-%m-%dT%H:%M:%SZ') }
+    let(:updated_date) do
+      query = ActiveFedora::SolrQueryBuilder.construct_query(ActiveFedora.id_field => media_object.id)
+      doc = ActiveFedora::SolrService.get(query)['response']['docs'].first
+      doc["timestamp"]
+    end
 
     it 'returns information about a media object' do
       get '/catalog.atom'
