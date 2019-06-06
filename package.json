@@ -5,6 +5,7 @@
     "@rails/webpacker": "^4.0.2",
     "babel-plugin-transform-react-remove-prop-types": "^0.4.24",
     "fstream": "1.0.12",
+    "js-yaml": "3.13.0",
     "prop-types": "^15.7.2",
     "react": "^16.8.4",
     "react-bootstrap": "^1.0.0-beta.8",
