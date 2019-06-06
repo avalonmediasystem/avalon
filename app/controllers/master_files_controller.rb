@@ -359,7 +359,7 @@ protected
   def hls_stream(master_file, quality)
     stream_info = secure_streams(master_file.stream_details)
     hls_stream = stream_info[:stream_hls].select { |stream| stream[:quality] == quality }
-    unnest_wowza_stream(hls_stream) if Settings.streaming.server == "wowza"
+    unnest_wowza_stream(hls_stream&.first) if Settings.streaming.server == "wowza"
     hls_stream
   end
 
