@@ -3575,13 +3575,10 @@ var config = exports.config = {
 	keyActions: [{
 		keys: [32, 179],
 		action: function action(player) {
-
-			if (!_constants.IS_FIREFOX) {
-				if (player.paused || player.ended) {
-					player.play();
-				} else {
-					player.pause();
-				}
+			if (player.paused || player.ended) {
+				player.play();
+			} else {
+				player.pause();
 			}
 		}
 	}]
@@ -4887,7 +4884,7 @@ var MediaElementPlayer = function () {
 	}, {
 		key: 'buildoverlays',
 		value: function buildoverlays(player, controls, layers, media) {
-
+			
 			if (!player.isVideo) {
 				return;
 			}
@@ -4928,11 +4925,24 @@ var MediaElementPlayer = function () {
 
 			bigPlay.addEventListener('keydown', function (e) {
 				var keyPressed = e.keyCode || e.which || 0;
+				
+				// Do the inverse because this action is reversed within config
+				// which allows subsequent toggle for play/pause
+				if (keyPressed === 13 || keyPressed === 32) {
+					if (t.options.clickToPlayPause) {
 
-				if (keyPressed === 13 || _constants.IS_FIREFOX && keyPressed === 32) {
-					var event = (0, _general.createEvent)('click', bigPlay);
-					bigPlay.dispatchEvent(event);
-					return false;
+						var button = t.container.querySelector('.' + t.options.classPrefix + 'overlay-button'),
+						pressed = button.getAttribute('aria-pressed');
+					
+						if(!t.paused) {
+							t.play();
+						} else {
+							t.pause();
+						}
+
+						button.setAttribute('aria-pressed', !!pressed);
+						t.container.focus();
+					}
 				}
 			});
 
@@ -7079,7 +7089,7 @@ var YouTubeIframeRenderer = {
 
 		var youTubeApi = null,
 		    paused = true,
-		    ended = false,
+			ended = false,
 		    youTubeIframe = null,
 		    volume = 1;
 
