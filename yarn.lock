@@ -6954,7 +6954,7 @@ react-redux@^6.0.0:
 
 "react-structural-metadata-editor@https://github.com/avalonmediasystem/react-structural-metadata-editor":
   version "1.1.0"
-  resolved "https://github.com/avalonmediasystem/react-structural-metadata-editor#245b5bd169810954c50cb78828bafb753e0a96fa"
+  resolved "https://github.com/avalonmediasystem/react-structural-metadata-editor#ee62ed0015bf6c7ef453291eac503903f317550e"
   dependencies:
     "@babel/runtime" "^7.4.4"
     "@fortawesome/fontawesome-svg-core" "^1.2.4"
