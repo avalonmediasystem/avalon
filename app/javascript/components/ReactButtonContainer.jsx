@@ -15,12 +15,19 @@ class ReactButtonContainer extends Component {
         initStructure: this.props.initStructure,
         audioStreamURL: this.props.audioStreamURL,
         streamDuration: this.props.streamDuration
-      }
+      },
+      structureSaved: true
     };
   }
 
   handleClose = () => {
-    if (confirm("Unsaved changes will be lost. Are you sure?")) {
+    if(!this.state.structureSaved) {
+      if (confirm("Unsaved changes will be lost. Are you sure?")) {
+        this.setState({
+          show: false
+        });
+      }
+    } else {
       this.setState({
         show: false
       });
@@ -33,6 +40,10 @@ class ReactButtonContainer extends Component {
       show: true
     });
   };
+
+  getStructureStatus = (value) => {
+    this.setState({ structureSaved: value });
+  }
 
   render() {
     const modalID = `edit_structure_${this.props.sectionIndex}`;
@@ -50,7 +61,7 @@ class ReactButtonContainer extends Component {
             <Modal.Title>Edit Structure</Modal.Title>
           </Modal.Header>
           <Modal.Body>
-            <ReactSME {...this.state.smeProps} />
+            <ReactSME {...this.state.smeProps} structureIsSaved={this.getStructureStatus} />
           </Modal.Body>
         </Modal>
       </div>
