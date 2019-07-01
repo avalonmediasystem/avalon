@@ -22,7 +22,7 @@ module MasterFileManagementJobs
       source_object = FileLocator::S3File.new(source.source).object
       dest_object = FileLocator::S3File.new(dest.source).object
       if dest_object.copy_from(source_object, multipart_copy: source_object.size > 15.megabytes)
-        source_object.delete
+        source_object.delete if FileLocator.new(dest.source).exists?
       end
     end
 
