@@ -20,8 +20,10 @@ module Avalon
     end
 
     def self.load_configs
-      configs = Settings.auth.configuration
-      if configs.is_a?(Array)
+      configs = Settings&.auth&.configuration
+      if configs.blank?
+        []
+      elsif configs.is_a?(Array)
         configs.collect(&:to_hash)
       else
         configs.to_hash.values

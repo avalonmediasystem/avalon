@@ -27,7 +27,7 @@ end
 
 def wipeout_db
   [MigrationStatus, ActiveAnnotations::Annotation, Bookmark, Search, ApiToken, Course,
-   IngestBatch, PlaylistItem, Playlist, RoleMap, StreamToken, User, Identity].each(&:delete_all)
+   IngestBatch, PlaylistItem, Playlist, RoleMap, StreamToken, User].each(&:delete_all)
 end
 
 namespace :avalon do

@@ -13,6 +13,7 @@
 # ---  END LICENSE_HEADER BLOCK  ---
 
 class User < ActiveRecord::Base
+  attr_writer :login
   # Connects this user object to Hydra behaviors.
   include Hydra::User
 
@@ -21,11 +22,16 @@ class User < ActiveRecord::Base
   # end
   # Connects this user object to Blacklights Bookmarks.
   include Blacklight::User
+
   # Include default devise modules. Others available are:
-  # :confirmable, :lockable, :timeoutable and :omniauthable
-  # devise :database_authenticatable, :registerable,
-  #        :recoverable, :rememberable, :trackable, :validatable
-  devise :omniauthable
+  # :confirmable, :lockable, :timeoutable
+  # Registration is controlled via settings.yml
+  devise_list = [ :database_authenticatable, :invitable, :omniauthable,
+                  :recoverable, :rememberable, :trackable, :validatable ]
+  devise_list << :registerable if Settings.auth.registerable
+  devise_list << { authentication_keys: [:login] }
+
+  devise(*devise_list)
 
   validates :username, presence: true, uniqueness: { case_sensitive: false }
   validates :email, presence: true, uniqueness: { case_sensitive: false }
@@ -35,6 +41,10 @@ class User < ActiveRecord::Base
   # the account.
   def to_s
     user_key
+  end
+
+  def login
+    username || email
   end
 
   def destroy
@@ -51,25 +61,31 @@ class User < ActiveRecord::Base
   end
 
   def self.find_or_create_by_username_or_email(username, email)
-    self.where(username: username).first ||
-    self.where(email: email).first ||
-    self.create(username: username, email: email)
+    find_by(username: username) ||
+      find_by(email: email) ||
+      create(username: username, email: email, password: Devise.friendly_token[0, 20])
   end
 
   def self.from_api_token(token)
-    self.find_or_create_by_username_or_email(token.username, token.email)
+    find_or_create_by_username_or_email(token.username, token.email)
+  end
+
+  def self.find_for_database_authentication(warden_conditions)
+    conditions = warden_conditions.dup
+    login = conditions.delete(:login)
+    where(conditions).find_by(["lower(username) = :value OR lower(email) = :value", { value: login.strip.downcase }])
   end
 
   def self.find_for_generic(access_token, signed_in_resource=nil)
     username = access_token.uid
     email = access_token.info.email
-    User.find_by(username: username) || User.find_by(email: email) || User.create(username: username, email: email)
+    find_or_create_by_username_or_email(username, email)
   end
 
   def self.find_for_identity(access_token, signed_in_resource=nil)
     username = access_token.info['email']
     # Use email for both username and email for the created user
-    User.find_by(username: username) || User.find_by(email: username) || User.create(username: username, email: username)
+    find_or_create_by_username_or_email(username, username)
   end
 
   def self.find_for_lti(auth_hash, signed_in_resource=nil)

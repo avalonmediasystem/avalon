@@ -16,6 +16,7 @@ FactoryBot.define do
   factory :user do
     email { Faker::Internet.email }
     username { [Faker::Name.last_name.gsub("'",""),Faker::Name.first_name.gsub("'","")].join('.').downcase }
+    password { 'testing123' }
 
     factory :administrator do
       after(:create) do |user|
@@ -48,11 +49,13 @@ FactoryBot.define do
   factory :cataloger, class: User  do
     sequence(:username) {|n| "archivist#{n}" }
     sequence(:email)    {|n| "archivist#{n}@example.com" }
+    password            { 'testing123' }
   end
 
   factory :content_provider, class: User  do
     sequence(:username) {|n| "archivist#{n}" }
-    sequence(:email) {|n| "archivist#{n}@example.com" }
+    sequence(:email)    {|n| "archivist#{n}@example.com" }
+    password            { 'testing123' }
     after(:create) do |user|
       begin
         Avalon::RoleControls.add_user_role(user.user_key, 'manager')
@@ -63,11 +66,13 @@ FactoryBot.define do
 
   factory :student, class: User  do
     sequence(:username) {|n| "ann.e.student#{n}" }
-    sequence(:email) {|n| "student#{n}@example.com" }
+    sequence(:email)    {|n| "student#{n}@example.com" }
+    password            { 'testing123' }
   end
 
   factory :public, class: User  do
     sequence(:username) {|n| "average.joe#{n}" }
-    sequence(:email) {|n| "average.joe#{n}@example.com" }
+    sequence(:email)    {|n| "average.joe#{n}@example.com" }
+    password            { 'testing123' }
   end
 end
