@@ -158,6 +158,10 @@ group :aws, optional: true do
   gem 'zk'
 end
 
+group :shoryuken, optional: true do
+  gem 'shoryuken'
+end
+
 # Install the bundle --with zoom to use the Z39.50 bib retriever
 group :zoom, optional: true do
   gem 'zoom'

@@ -26,7 +26,13 @@
 # for performance related issues that may arise depending on your AWS config
 
 class BatchIngestJob < ActiveJob::Base
+  if Gem.loaded_specs.has_key? 'shoryuken'
+    require 'shoryuken'
+    self.queue_adapter = :shoryuken
+  end
+
   queue_as :batch_ingest
+  
   # Registers a batch ingest manifest that has been uploaded to an S3 bucket
   # replaces `def scan_for_packages` since S3 can trigger a lambda to enqueue
   # this job, removing the need to scan ever X minutes
