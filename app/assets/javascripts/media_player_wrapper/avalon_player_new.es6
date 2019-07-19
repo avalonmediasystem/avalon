@@ -326,6 +326,9 @@ class MEJSPlayer {
    * @return {void}
    */
   handleSuccess(mediaElement, originalNode, instance) {
+    // Workaround for hlsError bufferFullError: Set max buffer length to 2 minutes
+    mediaElement.hlsPlayer.config.maxMaxBufferLength = 120;
+    
     this.mediaElement = mediaElement;
 
     // Grab instance of player
