@@ -1,10 +1,9 @@
 source 'https://rubygems.org'
 
 # Core rails
-gem 'rails', '=5.2.3'
-
 gem 'bootsnap', require: false
 gem 'listen'
+gem 'rails', '=5.2.3'
 gem 'sprockets', '~>3.7.2'
 gem 'sqlite3'
 
@@ -46,6 +45,7 @@ gem 'bootstrap_form'
 gem 'iiif_manifest', '~> 0.6'
 gem 'rack-cors', require: 'rack/cors'
 gem 'recaptcha', require: 'recaptcha/rails'
+gem 'samvera-persona', '~> 0.1.3'
 gem 'speedy-af', '~> 0.1.3'
 
 # Avalon Components
