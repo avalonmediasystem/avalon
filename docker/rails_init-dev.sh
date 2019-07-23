@@ -4,7 +4,6 @@ cd /home/app/avalon
 export HOME=/home/app
 
 # Workaround from https://github.com/yarnpkg/yarn/issues/2782
-yarn config set -- --modules-folder "/home/app/node_modules"
 yarn install
 
 bundle config build.nokogiri --use-system-libraries && \
