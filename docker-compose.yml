@@ -123,7 +123,7 @@ services:
     volumes:
       - .:/home/app/avalon
       - ./masterfiles:/masterfiles
-      - bundle:/usr/local/bundle
+      - bundle:/home/app/gems
       - npms:/home/app/avalon/node_modules
     ports:
       - "3000:80"
