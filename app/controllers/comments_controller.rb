@@ -38,7 +38,7 @@ class CommentsController < ApplicationController
         render action: "index"
       end
     else
-      flash[:error] = "Your comment was missing required information. Please complete all fields and resubmit."
+      flash.now[:error] = "Your comment was missing required information. Please complete all fields and resubmit."
       render action: "index"
     end
   end
