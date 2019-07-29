@@ -359,6 +359,7 @@ Object.assign(MediaElementPlayer.prototype, {
      */
     populateFormValues: function() {
       const t = this;
+      let startTime = '';
       let endTime = '';
       let player = t.addToPlayListObj.player;
       let formInputs = t.addToPlayListObj.formInputs;
@@ -367,10 +368,8 @@ Object.assign(MediaElementPlayer.prototype, {
         t
       );
       formInputs.description.value = '';
-      formInputs.start.value = mejs.Utils.secondsToTimeCode(
-        player.getCurrentTime(),
-        true
-      );
+      startTime = player.getCurrentTime();
+      formInputs.start.value = mejs.Utils.secondsToTimeCode(startTime, true, false, 25, 2);
 
       // Calculate end value
       if (
@@ -381,7 +380,7 @@ Object.assign(MediaElementPlayer.prototype, {
       } else {
         endTime = player.media.duration;
       }
-      formInputs.end.value = mejs.Utils.secondsToTimeCode(endTime, true);
+      formInputs.end.value = mejs.Utils.secondsToTimeCode(endTime, true, false, 25, 2);
     },
 
     /**
