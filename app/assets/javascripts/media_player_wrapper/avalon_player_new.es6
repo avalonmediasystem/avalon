@@ -333,7 +333,7 @@ class MEJSPlayer {
       this.player = this.mediaElement;
     }
 
-    if (this.player && this.player.media && this.player.media.hlsPlayer) {
+    if (this.player && this.player.media && this.player.media.hlsPlayer && this.player.media.hlsPlayer.config) {
       // Workaround for hlsError bufferFullError: Set max buffer length to 2 minutes
       this.player.media.hlsPlayer.config.maxMaxBufferLength = 120;
     }
