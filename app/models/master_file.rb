@@ -572,7 +572,10 @@ class MasterFile < ActiveFedora::Base
         secure_url = SecurityHandler.secure_url(playlist_url, target: self.id)
         playlist = Avalon::M3U8Reader.read(secure_url)
         details = playlist.at(options[:offset])
-        target = File.join(Dir.tmpdir,File.basename(details[:location]))
+
+        # Fixes https://github.com/avalonmediasystem/avalon/issues/3474
+        target_location = File.basename(details[:location]).split('?')[0]
+        target = File.join(Dir.tmpdir, target_location)
         File.open(target,'wb') { |f| open(details[:location]) { |io| f.write(io.read) } }
         response = { source: target, offset: details[:offset], master: false }
       end
@@ -640,7 +643,9 @@ class MasterFile < ActiveFedora::Base
         end
         data
       ensure
-        File.unlink(file_source) unless file_source =~ %r(https?://)
+        File.unlink file_source unless file_source.match? %r{https?://}
+        File.unlink frame_source[:source] unless frame_source[:master] or frame_source[:source].match? %r{https?://}
+        File.unlink jpeg
       end
     end
   end
