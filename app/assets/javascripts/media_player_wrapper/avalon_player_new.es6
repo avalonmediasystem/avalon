@@ -326,14 +326,16 @@ class MEJSPlayer {
    * @return {void}
    */
   handleSuccess(mediaElement, originalNode, instance) {
-    // Workaround for hlsError bufferFullError: Set max buffer length to 2 minutes
-    mediaElement.hlsPlayer.config.maxMaxBufferLength = 120;
-
     this.mediaElement = mediaElement;
 
     // Grab instance of player
     if (!this.player) {
       this.player = this.mediaElement;
+    }
+
+    if (this.player && this.player.media && this.player.media.hlsPlayer) {
+      // Workaround for hlsError bufferFullError: Set max buffer length to 2 minutes
+      this.player.media.hlsPlayer.config.maxMaxBufferLength = 120;
     }
 
     // Toggle captions on if toggleable and previously on
