@@ -8068,12 +8068,14 @@ function secondsToTimeCode(time) {
 			seconds = (f / timeBase % 60).toFixed(secondsDecimalLength);
 		}
 	} else {
-		hours = Math.floor(time / 3600) % 24;
-		minutes = Math.floor(time / 60) % 60;
+		var sec_num = time.toFixed(secondsDecimalLength);
+		hours   = Math.floor(sec_num / 3600) % 24;
+		minutes = Math.floor(sec_num / 60) % 60;
+
 		if (showFrameCount) {
-			seconds = Math.floor(time % 60);
+			seconds = Math.floor(sec_num % 60);
 		} else {
-			seconds = (time % 60).toFixed(secondsDecimalLength);
+			seconds = (sec_num % 60).toFixed(secondsDecimalLength);
 		}
 	}
 	hours = hours <= 0 ? 0 : hours;
