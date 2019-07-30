@@ -6,7 +6,7 @@ volumes:
   fedora:
   work:
   solr:
-  gems:
+  bundle:
   npms:
 
 networks:
@@ -123,8 +123,8 @@ services:
     volumes:
       - .:/home/app/avalon
       - ./masterfiles:/masterfiles
-      - gems:/home/app/gems
-      - npms:/home/app/node_modules
+      - bundle:/home/app/gems
+      - npms:/home/app/avalon/node_modules
     ports:
       - "3000:80"
     networks:
