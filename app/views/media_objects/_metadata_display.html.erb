@@ -47,9 +47,11 @@ Unless required by applicable law or agreed to in writing, software distributed
   <%= display_metadata('Related Item', display_related_item(@media_object)) %>
   <%= display_metadata('Notes', display_notes(@media_object)) %>
   <%= display_metadata('Other Identifier', display_other_identifiers(@media_object)) %>
-  <%= display_metadata('Comments', gather_all_comments(@media_object, @masterFiles)) %>
-
+  <% if can? :inspect, @media_object %>
+    <%= display_metadata('Comments', gather_all_comments(@media_object, @masterFiles)) %>
+  <% end %>
 </dl>
+
 <% if can? :inspect, @media_object %>
   <%= link_to 'View Raw Metadata', inspect_media_object_path(@media_object.id, 'descMetadata'), :target => 'blank', :class => "btn btn-default btn-small" %>
   <%= link_to 'View Fedora Objects', tree_media_object_path(@media_object.id), :id => 'show_object_tree', :target => 'blank', :class => "btn btn-default btn-small" %>
