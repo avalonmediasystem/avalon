@@ -43,6 +43,26 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
     find_user(sym.to_s)
   end
 
+  def find_redirect_url
+    previous_url = session.delete :previous_url
+    if params['target_id']
+      # Whitelist params that are allowed to be passed through via LTI
+      objects_path(request['target_id'], params.permit('t', 'position', 'token'))
+    elsif params[:url]
+      # Limit redirects to current host only (Fixes bug https://bugs.dlib.indiana.edu/browse/VOV-5662)
+      uri = URI.parse(params[:url])
+      request.host == uri.host ? uri.path : root_path
+    elsif previous_url
+      previous_url
+    else
+      root_path
+    end
+  end
+
+  def login_popup?
+    params['login_popup'].present? || (request.env["omniauth.params"].present? && request.env["omniauth.params"]["login_popup"].present?)
+  end
+
   def find_user(auth_type)
     auth_type.downcase!
     find_method = "find_for_#{auth_type}".to_sym
@@ -60,31 +80,17 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
         user_session[:virtual_groups] += [user_session[:lti_group]]
         user_session[:full_login] = false
       end
-
     end
 
-    if params['login_popup'].present? || (request.env["omniauth.params"].present? && request.env["omniauth.params"]["login_popup"].present?)
+    redirect_url = find_redirect_url
+    if auth_type == 'lti' && user_session[:virtual_groups].present?
+      redirect_url = search_catalog_path('f[read_access_virtual_group_ssim][]' => user_session[:lti_group])
+    end
+    if login_popup?
       flash[:success] = nil
       render inline: '<html><head><script>window.close();</script></head><body></body><html>'.html_safe
-    elsif params['target_id']
-      # Whitelist params that are allowed to be passed through via LTI
-      params_whitelist = %w{t position token}
-      redirect_to objects_path(params['target_id'], params.permit(*params_whitelist).to_h)
-    elsif params[:url]
-      # Limit redirects to current host only
-      # Fixes bug https://bugs.dlib.indiana.edu/browse/VOV-5662
-      uri = URI.parse(params[:url])
-      if request.host == uri.host
-        redirect_to uri.path
-      else
-        redirect_to root_path
-      end
-    elsif session[:previous_url]
-      redirect_to session.delete :previous_url
-    elsif auth_type == 'lti' && user_session[:virtual_groups].present?
-      redirect_to search_catalog_path('f[read_access_virtual_group_ssim][]' => user_session[:lti_group])
     else
-      redirect_to root_path
+      redirect_to redirect_url
     end
   end
 
