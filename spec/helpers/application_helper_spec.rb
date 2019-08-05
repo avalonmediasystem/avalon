@@ -165,25 +165,32 @@ describe ApplicationHelper do
 
   describe "#pretty_time" do
     it 'returns a formatted time' do
-      # expect(helper.pretty_time(-1000)).to eq '00:00:00.00'
-      expect(helper.pretty_time(0)).to eq '00:00:00.00'
-      expect(helper.pretty_time(1)).to eq '00:00:00.00'
-      expect(helper.pretty_time(5)).to eq '00:00:00.00'
-      expect(helper.pretty_time(6)).to eq '00:00:00.00'
-      expect(helper.pretty_time(9)).to eq '00:00:00.00'
-      expect(helper.pretty_time(10)).to eq '00:00:00.01'
-      expect(helper.pretty_time(101)).to eq '00:00:00.10'
-      expect(helper.pretty_time(1010)).to eq '00:00:01.01'
-      expect(helper.pretty_time(10101)).to eq '00:00:10.10'
-      expect(helper.pretty_time(101010)).to eq '00:01:41.01'
-      expect(helper.pretty_time(1010101)).to eq '00:16:50.10'
-      expect(helper.pretty_time(10101010)).to eq '02:48:21.01'
+      expect(helper.pretty_time(0)).to eq '00:00:00.000'
+      expect(helper.pretty_time(1)).to eq '00:00:00.001'
+      expect(helper.pretty_time(9)).to eq '00:00:00.009'
+      expect(helper.pretty_time(10)).to eq '00:00:00.010'
+      expect(helper.pretty_time(101)).to eq '00:00:00.101'
+      expect(helper.pretty_time(1010)).to eq '00:00:01.010'
+      expect(helper.pretty_time(10101)).to eq '00:00:10.101'
+      expect(helper.pretty_time(101010)).to eq '00:01:41.010'
+      expect(helper.pretty_time(1010101)).to eq '00:16:50.101'
+      expect(helper.pretty_time(10101010)).to eq '02:48:21.010'
+      expect(helper.pretty_time(0.0)).to eq '00:00:00.000'
+      expect(helper.pretty_time(0.1)).to eq '00:00:00.000'
+      expect(helper.pretty_time(1.1)).to eq '00:00:00.001'
+      expect(helper.pretty_time(-1000)).to eq '00:00:00.000'
+      expect(helper.pretty_time('0')).to eq '00:00:00.000'
+      expect(helper.pretty_time('1')).to eq '00:00:00.001'
+      expect(helper.pretty_time('10101010')).to eq '02:48:21.010'
+      expect(helper.pretty_time('-1000')).to eq '00:00:00.000'
+      expect(helper.pretty_time('0.0')).to eq '00:00:00.000'
+      expect(helper.pretty_time('0.1')).to eq '00:00:00.000'
+      expect(helper.pretty_time('1.1')).to eq '00:00:00.001'
     end
 
     it 'returns an exception when not a number' do
-      expect { helper.pretty_time(nil) }.to raise_error(ArgumentError)
+      expect { helper.pretty_time(nil) }.to raise_error(TypeError)
       expect { helper.pretty_time('foo') }.to raise_error(ArgumentError)
-      expect { helper.pretty_time(-10) }.to raise_error(ArgumentError)
     end
   end
 end
