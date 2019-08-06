@@ -76,10 +76,10 @@ class User < ActiveRecord::Base
     user
   end
 
-  def self.find_or_create_by_username_or_email(username, email)
+  def self.find_or_create_by_username_or_email(username, email, provider = 'local')
     find_and_verify_by_username(username) ||
       find_and_verify_by_email(email) ||
-      create(username: username, email: email, password: Devise.friendly_token[0, 20])
+      create(username: username, email: email, password: Devise.friendly_token[0, 20], provider: provider)
   end
 
   def self.from_api_token(token)
@@ -95,13 +95,13 @@ class User < ActiveRecord::Base
   def self.find_for_generic(access_token, signed_in_resource=nil)
     username = access_token.uid
     email = access_token.info.email
-    find_or_create_by_username_or_email(username, email)
+    find_or_create_by_username_or_email(username, email, 'generic')
   end
 
   def self.find_for_identity(access_token, signed_in_resource=nil)
     username = access_token.info['email']
     # Use email for both username and email for the created user
-    find_or_create_by_username_or_email(username, username)
+    find_or_create_by_username_or_email(username, username, 'identity')
   end
 
   def self.find_for_lti(auth_hash, signed_in_resource=nil)
@@ -115,7 +115,7 @@ class User < ActiveRecord::Base
       Course.create :context_id => class_id, :label => auth_hash.extra.consumer.context_label, :title => class_name unless class_name.nil?
     end
 
-    self.find_or_create_by_username_or_email(auth_hash.uid, auth_hash.info.email)
+    find_or_create_by_username_or_email(auth_hash.uid, auth_hash.info.email, 'lti')
   end
 
   def self.autocomplete(query)
