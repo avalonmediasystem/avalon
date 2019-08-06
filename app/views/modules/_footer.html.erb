@@ -19,7 +19,6 @@ Unless required by applicable law or agreed to in writing, software distributed
 	   	 <li><%= image_tag "AvalonMediaSystem_Logo_A.png", alt: "Avalon Media System - #{t(:release_label)} #{Avalon::VERSION}" %>
 	     <li><a href="http://www.avalonmediasystem.org">Avalon Media System Project Website</a> </li>
        <li><%= link_to "Contact Us", main_app.comments_path %></li>
-       <li><%= link_to "Admin", new_session_path('user', admin: true) %></li>
 	   </ul>
 	   <div class="release">
 	   	<%=release_text%>
