@@ -22,17 +22,19 @@
       </div>
 
       <% if devise_mapping.rememberable? -%>
-        <div class="field">
+        <div class="form-group">
           <%= f.check_box :remember_me %>
         </div>
       <% end -%>
 
-      <div class="actions">
+      <div class="actions form-group">
         <%= f.submit "Connect", class: 'btn btn-primary' %>
       </div>
     <% end %>
-    <%= render "devise/shared/links" %>
-    <p align='center'><a href='javascript:;' data-trigger='show-email'>Cancel</a></p>
+    <p align='center' class='devise-links'>
+      <%= render "devise/shared/links" %>
+      <span class='devise-link'><a href='javascript:;' data-trigger='show-email'>Cancel</a></span>
+    </p>
 
   </div>
 </div>
