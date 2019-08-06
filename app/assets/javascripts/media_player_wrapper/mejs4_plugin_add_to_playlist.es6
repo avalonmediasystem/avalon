@@ -369,7 +369,7 @@ Object.assign(MediaElementPlayer.prototype, {
       );
       formInputs.description.value = '';
       startTime = player.getCurrentTime();
-      formInputs.start.value = mejs.Utils.secondsToTimeCode(startTime, true, false, 25, 2);
+      formInputs.start.value = mejs.Utils.secondsToTimeCode(startTime, true, false, 25, 3);
 
       // Calculate end value
       if (
@@ -380,7 +380,7 @@ Object.assign(MediaElementPlayer.prototype, {
       } else {
         endTime = player.media.duration;
       }
-      formInputs.end.value = mejs.Utils.secondsToTimeCode(endTime, true, false, 25, 2);
+      formInputs.end.value = mejs.Utils.secondsToTimeCode(endTime, true, false, 25, 3);
     },
 
     /**
