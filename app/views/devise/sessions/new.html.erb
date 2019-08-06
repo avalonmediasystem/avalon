@@ -2,8 +2,8 @@
   <h3 id='sign-in-select' align='center'>Select Sign In Method</h3>
   <div id='sign-in-buttons'>
     <%- if devise_mapping.omniauthable? %>
-      <%- resource_class.omniauth_providers.each do |provider| %>
-        <%= link_to OmniAuth::Utils.camelize(provider), omniauth_authorize_path(resource_name, provider), class: 'btn btn-primary' %>
+      <%- Avalon::Authentication::VisibleProviders.each do |visible| %>
+        <%= link_to OmniAuth::Utils.camelize(visible[:provider]), omniauth_authorize_path(resource_name, visible[:provider]), class: 'btn btn-primary' %>
       <% end -%>
     <% end -%>
 
