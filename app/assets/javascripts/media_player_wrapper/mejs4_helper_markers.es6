@@ -350,7 +350,7 @@ class MEJSMarkersHelper {
         '%" ><span class="mejs__time-float-current-marker">' +
         title +
         ' [' +
-        mejs.Utils.secondsToTimeCode(offset) +
+        mejs.Utils.secondsToTimeCode(offset, false, false, 25, 3) +
         ']' +
         '</span><span class="mejs__time-float-corner-marker"></span></span>'
     );

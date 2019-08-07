@@ -159,12 +159,19 @@ module ApplicationHelper
     output
   end
 
-  # display millisecond times in HH:MM:SS format
+  # display millisecond times in HH:MM:SS.sss format
   # @param [Float] milliseconds the time to convert
-  # @return [String] time in HH:MM:SS
-  def pretty_time( milliseconds )
-    duration = milliseconds/1000
-    Time.at(duration).utc.strftime(duration<3600?'%M:%S':'%H:%M:%S')
+  # @return [String] time in HH:MM:SS.sss
+  def pretty_time(milliseconds)
+    milliseconds = Float(milliseconds).to_int # will raise TypeError or ArgumentError if unparsable as a Float
+    return "00:00:00.000" if milliseconds <= 0
+
+    total_seconds = milliseconds / 1000.0
+    hours = (total_seconds / (60 * 60)).to_i.to_s.rjust(2, "0")
+    minutes = ((total_seconds / 60) % 60).to_i.to_s.rjust(2, "0")
+    seconds = (total_seconds % 60).to_i.to_s.rjust(2, "0")
+    frac_seconds = (milliseconds % 1000).to_s.rjust(3, "0")[0..2]
+    hours + ":" + minutes + ":" + seconds + "." + frac_seconds
   end
 
   FLOAT_PATTERN = Regexp.new(/^\d+([.]\d*)?$/).freeze

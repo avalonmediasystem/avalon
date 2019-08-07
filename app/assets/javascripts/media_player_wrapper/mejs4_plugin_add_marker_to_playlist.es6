@@ -305,9 +305,7 @@ Object.assign(MediaElementPlayer.prototype, {
       let addMarkerObj = this.addMarkerObj;
 
       addMarkerObj.formInputs.offset.value = mejs.Utils.secondsToTimeCode(
-        addMarkerObj.player.getCurrentTime(),
-        true
-      );
+        addMarkerObj.player.getCurrentTime(), true, false, 25, 3);
     },
 
     /**
