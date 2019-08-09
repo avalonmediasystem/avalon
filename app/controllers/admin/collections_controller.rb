@@ -199,7 +199,7 @@ class Admin::CollectionsController < ApplicationController
   # GET /collections/1/remove
   def remove
     @collection = Admin::Collection.find(params['id'])
-    raise CanCan::AccessDenied unless current_ability.can? :destroy, @collection
+    authorize! :destroy, @collection
     @objects    = @collection.media_objects
     @candidates = get_user_collections.reject { |c| c == @collection }
   end
