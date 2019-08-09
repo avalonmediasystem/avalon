@@ -52,11 +52,13 @@ class MigrationStatusController < ApplicationController
   end
 
   def report
-    filename = "#{params[:id].sub(/:/,'_')}.json"
-    # Sanitize filename for security
-    bar_chars = ['/', '\\']
-    filename.gsub!(bar_chars,'_')
-    send_file File.join(Rails.root, 'migration_report', filename), type: 'application/json', disposition: 'inline'
+    requested_filename = "#{params[:id].sub(/:/, '_')}.json"
+    migration_report_directory = Rails.root.join("migration_report")
+    raise ActionController::RoutingError, 'Not Found' unless Dir.exist? migration_report_directory
+    found_filename = Dir.entries(migration_report_directory).find { |filename| filename == requested_filename }
+    file = Rails.root.join("migration_report", found_filename) if found_filename
+    raise ActionController::RoutingError, 'Not Found' unless file && File.exist?(file)
+    send_file file, type: 'application/json', disposition: 'inline'
   end
 
   def auth
