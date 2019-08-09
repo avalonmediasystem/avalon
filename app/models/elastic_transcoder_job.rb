@@ -36,15 +36,10 @@ class ElasticTranscoderJob < ActiveEncode::Base
     file_name = File.basename(Addressable::URI.parse(input).path,'.*').gsub(URI::UNSAFE,'_')
     outputs = {
       fullaudio: {
-        hls_medium: { key: "quality-medium/hls/#{file_name}", preset_id: find_or_create_preset('ts',:audio,:medium).id, segment_duration: '2' },
-        hls_high: { key: "quality-high/hls/#{file_name}", preset_id: find_or_create_preset('ts',:audio,:high).id, segment_duration: '2' },
         aac_medium: { key: "quality-medium/#{file_name}.mp4", preset_id: find_or_create_preset('mp4',:audio,:medium).id },
         aac_high: { key: "quality-high/#{file_name}.mp4", preset_id: find_or_create_preset('mp4',:audio,:high).id }
       },
       avalon: {
-        hls_low: { key: "quality-low/hls/#{file_name}", preset_id: find_or_create_preset('ts',:video,:low).id, segment_duration: '2' },
-        hls_medium: { key: "quality-medium/hls/#{file_name}", preset_id: find_or_create_preset('ts',:video,:medium).id, segment_duration: '2' },
-        hls_high: { key: "quality-high/hls/#{file_name}", preset_id: find_or_create_preset('ts',:video,:high).id, segment_duration: '2' },
         mp4_low: { key: "quality-low/#{file_name}.mp4", preset_id: find_or_create_preset('mp4',:video,:low).id },
         mp4_medium: { key: "quality-medium/#{file_name}.mp4", preset_id: find_or_create_preset('mp4',:video,:medium).id },
         mp4_high: { key: "quality-high/#{file_name}.mp4", preset_id: find_or_create_preset('mp4',:video,:high).id }
