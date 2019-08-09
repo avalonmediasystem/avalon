@@ -18,15 +18,10 @@ class Admin::GroupsController < ApplicationController
   before_action :auth
 
   # Currently assumes that to do anything you have to be able to manage Group
-  # TODO: finer controls
   def auth
-    if current_user.nil?
-      flash[:notice] = "You need to login to manage groups"
-      redirect_to new_user_session_path
-    elsif cannot? :manage, Admin::Group
-      flash[:notice] = "You do not have permission to manage groups"
-      redirect_to root_path
-    elsif params['id'].present?
+    authorize! :manage, Admin::Group
+    if params['id'].present?
+      # Replace this with authorize! ?
       g = Admin::Group.find(params['id'])
       if cannot? :manage, g
         flash[:error] = "You must be an administrator to manage the '#{g.name}' group"

@@ -62,13 +62,7 @@ class MigrationStatusController < ApplicationController
   end
 
   def auth
-    if current_user.nil?
-      flash[:notice] = "You need to login to view migration reports"
-      redirect_to new_user_session_path
-    elsif cannot? :read, MigrationStatus
-      flash[:notice] = "You do not have permission to view migration reports"
-      redirect_to root_path
-    end
+    authorize! :read, MigrationStatus
   end
 
   def without_layout_if_xhr

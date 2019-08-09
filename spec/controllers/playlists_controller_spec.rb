@@ -61,15 +61,15 @@ RSpec.describe PlaylistsController, type: :controller do
     context 'with unauthenticated user' do
       # New is isolated here due to issues caused by the controller instance not being regenerated
       it "should redirect to sign in" do
-        expect(get :new).to redirect_to(new_user_session_path)
+        expect(get :new).to redirect_to(/#{Regexp.quote(new_user_session_path)}\?url=.*/)
       end
       it "all routes should redirect to sign in" do
-        expect(get :index).to redirect_to(new_user_session_path)
-        expect(get :edit, params: { id: playlist.id }).to redirect_to(new_user_session_path)
-        expect(post :create).to redirect_to(new_user_session_path)
-        expect(put :update, params: { id: playlist.id }).to redirect_to(new_user_session_path)
-        expect(put :update_multiple, params: { id: playlist.id }).to redirect_to(new_user_session_path)
-        expect(delete :destroy, params: { id: playlist.id }).to redirect_to(new_user_session_path)
+        expect(get :index).to redirect_to(/#{Regexp.quote(new_user_session_path)}\?url=.*/)
+        expect(get :edit, params: { id: playlist.id }).to redirect_to(/#{Regexp.quote(new_user_session_path)}\?url=.*/)
+        expect(post :create).to redirect_to(/#{Regexp.quote(new_user_session_path)}\?url=.*/)
+        expect(put :update, params: { id: playlist.id }).to redirect_to(/#{Regexp.quote(new_user_session_path)}\?url=.*/)
+        expect(put :update_multiple, params: { id: playlist.id }).to redirect_to(/#{Regexp.quote(new_user_session_path)}\?url=.*/)
+        expect(delete :destroy, params: { id: playlist.id }).to redirect_to(/#{Regexp.quote(new_user_session_path)}\?url=.*/)
         expect(get :refresh_info, params: { id: playlist.id, position: 1 }, xhr: true).to redirect_to(/#{Regexp.quote(new_user_session_path)}\?url=.*/)
       end
       context 'with a public playlist' do
