@@ -70,10 +70,10 @@
   padding-left: 5px;
 }
 
-.devise-links span {
+.devise-links span.devise-link {
   border-left: 1px solid #ccc;
   padding: 0 5px;
 }
-.devise-links span:first-child {
+.devise-links span.devise-link:first-child {
   border-left: none;
 }
