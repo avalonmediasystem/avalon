@@ -55,7 +55,7 @@ class Timeline < ActiveRecord::Base
   def standardize_homepage
     return unless manifest.present? && source.present? && (source_changed? || manifest_changed?)
     media_fragment = source.split("?t=")[1]
-    base_url = master_file.permalink
+    base_url = master_file.permalink if master_file.permalink.present?
     base_url ||= Rails.application.routes.url_helpers.master_file_url(master_file)
 
     manifest_json = JSON.parse(manifest)
