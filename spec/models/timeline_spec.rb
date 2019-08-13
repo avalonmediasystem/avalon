@@ -253,4 +253,69 @@ RSpec.describe Timeline, type: :model do
       end
     end
   end
+
+  describe 'standardize_source' do
+    let(:permalink) { "http://permalink/12345" }
+    let(:media_fragment) { "0," }
+    let(:master_file) { FactoryBot.create(:master_file, permalink: "http://permalink/12345") }
+    let(:source) { Rails.application.routes.url_helpers.master_file_path(master_file.id) + "?t=#{media_fragment}" }
+    let(:timeline) { FactoryBot.build(:timeline, description: "Old description", source: source, manifest: nil) }
+    let(:standardized_source) { Rails.application.routes.url_helpers.master_file_url(master_file.id) + "?t=#{media_fragment}" }
+
+    context 'when creating a manifest' do
+      it 'updates the manifest homepage' do
+        expect(timeline.source_changed?).to eq true
+        expect { timeline.save }.to change { timeline.source }.from(source).to(standardized_source)
+      end
+    end
+
+    context 'when the source changes' do
+      let(:new_media_fragment) { "10,100" }
+      let(:new_source) { Rails.application.routes.url_helpers.master_file_path(master_file.id) + "?t=#{new_media_fragment}" }
+      let(:standardized_source) { Rails.application.routes.url_helpers.master_file_url(master_file.id) + "?t=#{new_media_fragment}" }
+      before do
+        timeline.save
+        timeline.source = new_source
+      end
+
+      it 'updates the manifest homepage' do
+        expect(timeline.source_changed?).to eq true
+        expect { timeline.standardize_source }.to change { timeline.source }.from(new_source).to(standardized_source)
+      end
+    end
+  end
+
+  describe 'standardize_homepage' do
+    let(:permalink) { "http://permalink/12345" }
+    let(:media_fragment) { "0," }
+    let(:master_file) { FactoryBot.create(:master_file, permalink: "http://permalink/12345") }
+    let(:source) { Rails.application.routes.url_helpers.master_file_url(master_file.id) + "?t=#{media_fragment}" }
+    let(:timeline) { FactoryBot.build(:timeline, description: "Old description", source: source, manifest: nil) }
+    let(:new_homepage) { "#{permalink}?t=#{media_fragment}" }
+
+    context 'when creating a manifest' do
+      it 'updates the manifest homepage' do
+        expect(timeline.source_changed?).to eq true
+        timeline.save
+        manifest_json = JSON.parse(timeline.manifest)
+        expect(manifest_json["homepage"]["id"]).to eq new_homepage
+      end
+    end
+
+    context 'when the source changes' do
+      let(:new_media_fragment) { "10,100" }
+      let(:new_homepage) { "#{permalink}?t=#{new_media_fragment}" }
+      before do
+        timeline.save
+        timeline.source = Rails.application.routes.url_helpers.master_file_path(master_file.id) + "?t=#{new_media_fragment}"
+      end
+
+      it 'updates the manifest homepage' do
+        expect(timeline.source_changed?).to eq true
+        timeline.standardize_homepage
+        manifest_json = JSON.parse(timeline.manifest)
+        expect(manifest_json["homepage"]["id"]).to eq new_homepage
+      end
+    end
+  end
 end
