@@ -47,7 +47,7 @@ RSpec.describe TimelinesController, type: :controller do
   }
 
   let(:master_file) { FactoryBot.create(:master_file) }
-  let(:source_url) { master_file_url(master_file, params: { t: '30,60' }) }
+  let(:source_url) { master_file_url(master_file) + "?t=30,60" }
 
   let(:invalid_attributes) {
     { visibility: 'unknown' }
@@ -151,7 +151,7 @@ RSpec.describe TimelinesController, type: :controller do
             "http://www.w3.org/ns/anno.jsonld",
             "http://iiif.io/api/presentation/3/context.json"
           ],
-          "id": "https://example.com/timelines/1.json",
+          "id": "http://test.host/timelines/1.json",
           "type": "Manifest",
           "label": { "en": [ "Timeline 1" ] }
         }
@@ -226,8 +226,8 @@ RSpec.describe TimelinesController, type: :controller do
         post :create, params: { timeline: valid_attributes, include_structure: true }, session: valid_session
         timeline = Timeline.last
         structures = JSON.parse(timeline.manifest)['structures']
-        expect(structures.count).to eq(6)
-        expect(structures.first['label']['en'].first).to eq('Copland, Three Piano Excerpts from Our Town')
+        expect(structures.count).to eq(2)
+        expect(structures.first['label']['en'].first).to eq('Copland, Four Episodes from Rodeo')
         expect(structures.last['label']['en'].first).to eq('')
       end
     end
@@ -291,7 +291,7 @@ RSpec.describe TimelinesController, type: :controller do
       end
 
       context 'with manifest body' do
-        let(:source) { "http://example.com/media_objects/abc123/section/dce456?t=0," }
+        let(:source) { "http://test.host/master_files/#{master_file.id}?t=0," }
         let(:title) { "Cloned manifest" }
         let(:description) { 'The manifest description' }
         let(:submitted_manifest) do
@@ -300,7 +300,7 @@ RSpec.describe TimelinesController, type: :controller do
               "http://www.w3.org/ns/anno.jsonld",
               "http://iiif.io/api/presentation/3/context.json"
             ],
-            "id": "https://example.com/timelines/1.json",
+            "id": "http://test.host/timelines/1.json",
             "type": "Manifest",
             "label": {
               "en": [title]
@@ -315,7 +315,33 @@ RSpec.describe TimelinesController, type: :controller do
                 "en": ["View Source Item"]
               },
               "format": "text/html"
-            }
+            },
+            "items": [
+              {
+                "id": "http://test.host/timelines/1/manifest/canvas",
+                "type": "Canvas",
+                "duration": 3437.426,
+                "items": [
+                  {
+                    "id": "http://test.host/timelines/1/manifest/annotations",
+                    "type": "AnnotationPage",
+                    "items": [
+                      {
+                        "id": "http://test.host/timelines/1/manifest/annotations/1",
+                        "type": "Annotation",
+                        "motivation": "painting",
+                        "body": {
+                          "id": "http://test.host/master_files/#{master_file.id}/auto.m3u8#t=0,",
+                          "type": "Audio",
+                          "duration": 3437.426,
+                        },
+                        "target": "http://test.host/timelines/1/manifest/canvas"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
           }
         end
 
@@ -481,7 +507,7 @@ RSpec.describe TimelinesController, type: :controller do
           "http://www.w3.org/ns/anno.jsonld",
           "http://iiif.io/api/presentation/3/context.json"
         ],
-        "id": "https://example.com/timelines/1.json",
+        "id": "http://test.host/timelines/1.json",
         "type": "Manifest",
         "label": { "en": [ "Timeline 1" ] }
       }
@@ -511,7 +537,7 @@ RSpec.describe TimelinesController, type: :controller do
           "http://www.w3.org/ns/anno.jsonld",
           "http://iiif.io/api/presentation/3/context.json"
         ],
-        "id": "https://example.com/timelines/1.json",
+        "id": "http://test.host/timelines/1.json",
         "type": "Manifest",
         "label": { "en": [ "Timeline 1" ] }
       }
@@ -522,7 +548,7 @@ RSpec.describe TimelinesController, type: :controller do
       timeline.reload
       expect(response).to be_successful
       expect(response.body).to eq timeline.manifest
-      expect(timeline.manifest).to eq manifest.to_json
+      expect(JSON.parse(timeline.manifest).except("homepage")).to eq JSON.parse(manifest.to_json)
     end
   end
 

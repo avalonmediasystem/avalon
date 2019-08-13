@@ -27,9 +27,11 @@ class Timeline < ActiveRecord::Base
   delegate :url_helpers, to: 'Rails.application.routes'
 
   after_initialize :default_values
-  before_save :generate_access_token, if: proc { |p| p.visibility == Timeline::PRIVATE_WITH_TOKEN && access_token.blank? }
   before_validation :synchronize_title
   before_validation :synchronize_description
+  before_validation :standardize_source
+  before_validation :standardize_homepage
+  before_save :generate_access_token, if: proc { |p| p.visibility == Timeline::PRIVATE_WITH_TOKEN && access_token.blank? }
   after_create :generate_manifest
   serialize :tags
 
@@ -42,6 +44,24 @@ class Timeline < ActiveRecord::Base
   def default_values
     self.visibility ||= Timeline::PRIVATE
     self.tags ||= []
+  end
+
+  def standardize_source
+    return unless source.present? && source_changed?
+    media_fragment = source.split("?t=")[1]
+    self.source = Rails.application.routes.url_helpers.master_file_url(master_file) + "?t=#{media_fragment}"
+  end
+
+  def standardize_homepage
+    return unless manifest.present? && source.present? && (source_changed? || manifest_changed?)
+    media_fragment = source.split("?t=")[1]
+    base_url = master_file.permalink
+    base_url ||= Rails.application.routes.url_helpers.master_file_url(master_file)
+
+    manifest_json = JSON.parse(manifest)
+    manifest_json["homepage"] ||= {}
+    manifest_json["homepage"]["id"] = "#{base_url}?t=#{media_fragment}"
+    self.manifest = manifest_json.to_json
   end
 
   def generate_manifest

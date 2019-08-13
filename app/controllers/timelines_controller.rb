@@ -128,7 +128,12 @@ class TimelinesController < ApplicationController
         if timeline_params.blank?
           # Accept raw IIIF manifest here from timeliner tool
           manifest = request.body.read
-          source = JSON.parse(manifest)["homepage"]["id"]
+          # Determine source from first content resource
+          manifest_json = JSON.parse(manifest)
+          stream_url = manifest_json["items"][0]["items"][0]["items"][0]["body"]["id"]
+          # Only handles urls like "https://spruce.dlib.indiana.edu/master_files/6108vd10d/auto.m3u8#t=0.0,3437.426"
+          _, master_file_id, media_fragment = stream_url.match(/master_files\/(.*)\/.*t=(.*)/).to_a
+          source = master_file_url(id: master_file_id) + "?t=#{media_fragment}"
           @timeline = Timeline.new(user: current_user, manifest: manifest, source: source)
         else
           @timeline = Timeline.new(timeline_params.merge(user: current_user))
