@@ -160,4 +160,14 @@ class ApplicationController < ActionController::Base
       user_params.permit(:login, :password)
     end
   end
+
+  def authenticate_user!
+    return if user_signed_in?
+    if request.format == :json
+      head :unauthorized
+    else
+      session[:previous_url] = request.fullpath unless request.xhr?
+      redirect_to new_user_session_path(url: request.url), flash: { notice: 'You need to login to perform this action.' }
+    end
+  end
 end

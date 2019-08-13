@@ -343,7 +343,7 @@ class MediaObjectsController < ApplicationController
 
   def show_stream_details
     load_current_stream
-    raise CanCan::AccessDenied unless current_ability.can? :read, @currentStream
+    authorize! :read, @currentStream
     render json: @currentStreamInfo
   end
 
