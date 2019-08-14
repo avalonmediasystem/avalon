@@ -46,7 +46,7 @@ class MasterFilesController < ApplicationController
     if ds.nil? || ds.empty?
       render plain: 'Not Found', status: :not_found
     else
-      if request.headers['Accept-Encoding'].include? 'deflate'
+      if request.headers['Accept-Encoding']&.include? 'deflate'
         response.headers['Content-Encoding'] = 'deflate'
         content = waveform_deflated ds
       else
