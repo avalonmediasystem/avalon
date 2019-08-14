@@ -36,6 +36,7 @@ class User < ActiveRecord::Base
   validates :username, presence: true, uniqueness: { case_sensitive: false }
   validates :email, presence: true, uniqueness: { case_sensitive: false }
 
+  before_destroy :remove_bookmarks
   # Method added by Blacklight; Blacklight uses #to_s on your
   # user class to get a user-displayable login/identifier for
   # the account.
@@ -47,9 +48,8 @@ class User < ActiveRecord::Base
     username || email
   end
 
-  def destroy
+  def remove_bookmarks
     Bookmark.where(user_id: self.id).destroy_all
-    super
   end
 
   def playlist_tags
