@@ -46,8 +46,26 @@ class MasterFilesController < ApplicationController
     if ds.nil? || ds.empty?
       render plain: 'Not Found', status: :not_found
     else
-      send_data ds.content, type: ds.mime_type, filename: ds.original_name
+      if request.headers['Accept-Encoding']&.include? 'deflate'
+        response.headers['Content-Encoding'] = 'deflate'
+        content = waveform_deflated ds
+        mime_type = 'application/zlib'
+      else
+        content = waveform_inflated ds
+        mime_type = 'application/json'
+      end
+      send_data content, type: mime_type, filename: ds.original_name
     end
+  end
+
+  # return deflated waveform content. deflate only if necessary
+  def waveform_deflated(waveform)
+    waveform.mime_type == 'application/zlib' ? waveform.content : Zlib::Deflate.deflate(waveform.content)
+  end
+
+  # return inflated waveform content. inflate only if necessary
+  def waveform_inflated(waveform)
+    waveform.mime_type == 'application/zlib' ? Zlib::Inflate.inflate(waveform.content) : waveform.content
   end
 
   def can_embed?

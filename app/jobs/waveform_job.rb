@@ -28,8 +28,8 @@ class WaveformJob < ActiveJob::Base
     json = service.get_waveform_json(uri)
     return unless json.present?
 
-    master_file.waveform.content = json
-    master_file.waveform.mime_type = 'application/json'
+    master_file.waveform.content = Zlib::Deflate.deflate(json)
+    master_file.waveform.mime_type = 'application/zlib'
     master_file.waveform.content_will_change!
     master_file.save
   end
