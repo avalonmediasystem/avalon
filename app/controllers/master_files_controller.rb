@@ -58,17 +58,12 @@ class MasterFilesController < ApplicationController
 
   # return deflated waveform content. deflate only if necessary
   def waveform_deflated(waveform)
-    Zlib::Inflate.inflate(waveform.content)
-    waveform.content
-  rescue Zlib::DataError
-    Zlib::Deflate.deflate(waveform.content)
+    waveform.mime_type == 'application/zlib' ? waveform.content : Zlib::Deflate.deflate(waveform.content)
   end
 
   # return inflated waveform content. inflate only if necessary
   def waveform_inflated(waveform)
-    Zlib::Inflate.inflate(waveform.content)
-  rescue Zlib::DataError
-    waveform.content
+    waveform.mime_type == 'application/zlib' ? Zlib::Inflate.inflate(waveform.content) : waveform.content
   end
 
   def can_embed?
