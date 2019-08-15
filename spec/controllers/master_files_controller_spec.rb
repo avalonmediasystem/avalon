@@ -500,7 +500,11 @@ describe MasterFilesController do
 
     it "returns contents of the waveform attached file" do
       login_as :administrator
-      expect(get('waveform', params: { id: master_file.id })).to have_http_status(:ok)
+      request.headers['Accept-Encoding'] = "deflate"
+      get('waveform', params: { id: master_file.id })
+      expect(response).to have_http_status(:ok)
+      expect(response.content_type).to eq('application/zlib')
+      expect(response.headers['Content-Encoding']).to eq('deflate')
     end
   end
 
