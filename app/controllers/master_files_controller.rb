@@ -49,10 +49,12 @@ class MasterFilesController < ApplicationController
       if request.headers['Accept-Encoding']&.include? 'deflate'
         response.headers['Content-Encoding'] = 'deflate'
         content = waveform_deflated ds
+        mime_type = 'application/zlib'
       else
         content = waveform_inflated ds
+        mime_type = 'application/json'
       end
-      send_data content, type: ds.mime_type, filename: ds.original_name
+      send_data content, type: mime_type, filename: ds.original_name
     end
   end
 
