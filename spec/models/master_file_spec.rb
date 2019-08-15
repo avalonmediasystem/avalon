@@ -490,7 +490,7 @@ describe MasterFile do
     describe 'post_processing_working_directory_file_management' do
       it 'enqueues the working directory cleanup job' do
         master_file.send(:post_processing_file_management)
-        expect(CleanupWorkingFileJob).to have_been_enqueued.with(master_file.id)
+        expect(CleanupWorkingFileJob).to have_been_enqueued.with(master_file.id, master_file.working_file_path)
       end
     end
     describe '#working_file_path' do
