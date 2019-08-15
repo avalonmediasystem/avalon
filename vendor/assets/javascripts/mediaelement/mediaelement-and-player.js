@@ -56,7 +56,7 @@ module.exports = win;
   var setTimeoutFunc = setTimeout;
 
   function noop() {}
-  
+
   // Polyfill for Function.prototype.bind
   function bind(fn, thisArg) {
     return function () {
@@ -274,7 +274,7 @@ module.exports = win;
   Promise._setUnhandledRejectionFn = function _setUnhandledRejectionFn(fn) {
     Promise._unhandledRejectionFn = fn;
   };
-  
+
   if (typeof module !== 'undefined' && module.exports) {
     module.exports = Promise;
   } else if (!root.Promise) {
@@ -4166,7 +4166,7 @@ var MediaElementPlayer = function () {
 								}
 							}, 20);
 						} catch (exp) {
-							
+
 						}
 					}
 
@@ -4884,7 +4884,7 @@ var MediaElementPlayer = function () {
 	}, {
 		key: 'buildoverlays',
 		value: function buildoverlays(player, controls, layers, media) {
-			
+
 			if (!player.isVideo) {
 				return;
 			}
@@ -4925,7 +4925,7 @@ var MediaElementPlayer = function () {
 
 			bigPlay.addEventListener('keydown', function (e) {
 				var keyPressed = e.keyCode || e.which || 0;
-				
+
 				// Do the inverse because this action is reversed within config
 				// which allows subsequent toggle for play/pause
 				if (keyPressed === 13 || keyPressed === 32) {
@@ -4933,7 +4933,7 @@ var MediaElementPlayer = function () {
 
 						var button = t.container.querySelector('.' + t.options.classPrefix + 'overlay-button'),
 						pressed = button.getAttribute('aria-pressed');
-					
+
 						if(!t.paused) {
 							t.play();
 						} else {
@@ -5868,7 +5868,7 @@ var PluginDetector = exports.PluginDetector = {
 					version = axDetect(ax);
 				}
 			} catch (e) {
-				
+
 			}
 		}
 		return version;
@@ -5939,7 +5939,7 @@ var FlashMediaElementRenderer = {
 					try {
 						flash.flashApi['set_' + propName](value);
 					} catch (e) {
-						
+
 					}
 				} else {
 					flash.flashApiStack.push({
@@ -5964,10 +5964,10 @@ var FlashMediaElementRenderer = {
 							try {
 								flash.flashApi['fire_' + methodName]();
 							} catch (e) {
-								
+
 							}
 						} else {
-							
+
 						}
 					} else {
 						flash.flashApiStack.push({
@@ -7184,7 +7184,7 @@ var YouTubeIframeRenderer = {
 							mediaElement.dispatchEvent(event);
 							break;
 						default:
-							
+
 							break;
 					}
 				} else {
@@ -8355,12 +8355,12 @@ function secondsToTimeCode(time) {
 		if (showFrameCount) {
 			seconds = Math.floor(time % 60);
 		} else {
-			seconds = Math.floor(time % 60).toFixed(secondsDecimalLength);
+			seconds = (time % 60).toFixed(secondsDecimalLength);
 		}
 	}
 	hours = hours <= 0 ? 0 : hours;
 	minutes = minutes <= 0 ? 0 : minutes;
-	seconds = seconds <= 0 ? 0 : seconds;
+	seconds = seconds <= 0 ? Number(0).toFixed(secondsDecimalLength) : seconds;
 
 	seconds = seconds === 60 ? 0 : seconds;
 	minutes = minutes === 60 ? 0 : minutes;
