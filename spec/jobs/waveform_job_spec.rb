@@ -29,7 +29,7 @@ describe WaveformJob do
     it 'calls the waveform service and stores the compressed result' do
       job.perform(master_file.id)
       master_file.reload
-      expect(master_file.waveform.mime_type).to eq 'application/json'
+      expect(master_file.waveform.mime_type).to eq 'application/zlib'
       expect(Zlib::Inflate.inflate(master_file.waveform.content)).to eq waveform_json
     end
 
