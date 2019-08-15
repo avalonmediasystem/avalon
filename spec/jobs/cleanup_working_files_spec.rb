@@ -28,7 +28,7 @@ describe CleanupWorkingFileJob do
     it 'calls file delete when there is file to cleanup' do
       expect(File).to receive(:delete).with(working_file).once
       expect(Dir).to receive(:delete).with(File.dirname(working_file)).once
-      CleanupWorkingFileJob.perform_now('abc123')
+      CleanupWorkingFileJob.perform_now('abc123', [working_file])
     end
   end
 end

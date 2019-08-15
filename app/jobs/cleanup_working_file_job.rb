@@ -13,13 +13,14 @@
 # ---  END LICENSE_HEADER BLOCK  ---
 
 class CleanupWorkingFileJob < ActiveJob::Base
-  def perform(masterfile_id)
-    masterfile = MasterFile.find(masterfile_id)
-    masterfile.working_file_path.map do |path|
+  def perform(masterfile_id, working_file_path)
+    working_file_path.map do |path|
       parent_directory = File.dirname(path)
       File.delete(path) if File.exist?(path)
       Dir.delete(parent_directory) if Dir.exist?(parent_directory)
     end
+
+    masterfile = MasterFile.find(masterfile_id)
     masterfile.working_file_path = nil
     masterfile.save!
   end
