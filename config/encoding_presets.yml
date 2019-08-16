@@ -10,11 +10,11 @@
     :video:
       :codec: H.264
       :codec_options:
-        ColorSpaceConversionMode: None
+        ColorSpaceConversionMode: Auto
         InterlacedMode: Progressive
-        Level: '3'
+        Level: '3.1'
         MaxReferenceFrames: '3'
-        Profile: baseline
+        Profile: main
       :keyframes_max_dist: '90'
       :fixed_gop: 'true'
       :frame_rate: auto
