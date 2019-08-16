@@ -17,14 +17,42 @@ Unless required by applicable law or agreed to in writing, software distributed
 
 <div class="container-fluid">
     <div class="well">
-    <h3><%= @collection.name %></h3>
-    <p> <strong>Description:</strong> <%= @collection.description %> </p>
-    <p> <strong>Unit:</strong> <%= @collection.unit %> </p>
-    <%= link_to('Create An Item', new_media_object_path(collection_id: @collection.id), class: 'btn btn-primary') if can? :create, MediaObject %>
-    <%= link_to('List All Items', search_catalog_path('f[collection_ssim][]' => @collection.name), class: 'btn btn-default') %>
-    <%= button_tag('Edit Collection Info', class: 'btn btn-default', data: {toggle:"modal", target:"#new_collection"}) if can? :update, @collection %>
-    <br/><br>
-    Or <a href='https://wiki.dlib.indiana.edu/display/VarVideo/Avalon+Collections+Guide#AvalonCollectionsGuide-UploadingviaBatch'><b>learn how to</b></a> create items using batch upload.
+      <h3><%= @collection.name %></h3>
+      <div class="row" style="margin-bottom:10px">
+        <div class="col-md-9">
+          <p><strong>Description:</strong></p>
+          <p><%= @collection.description %></p>
+          <p><strong>Unit:</strong></p>
+          <p><%= @collection.unit %></p>
+        </div>
+        <div class="col-md-3">
+          <p><strong>Poster:</strong></p>
+          <p><%= @collection.poster.original_name if @collection.poster.present? %></p>
+          <% if @collection.poster.present? %>
+            <div style="margin-bottom:10px">
+              <%= image_tag(poster_admin_collection_path(@collection), class: 'img-responsive') %>
+            </div>
+          <% end %>
+          <div>
+            <%= form_for @collection, url: attach_poster_admin_collection_path(@collection.id), html: {method: "post"} do |form| %>
+              <%= form.file_field :poster, class: "filedata", style: "height:0px;width:0px;" %>
+              <% if @collection.poster.present? %>
+                <input type="submit" class="btn btn-danger btn-xs" value="Remove Poster" />
+              <% else %>
+                <input type="button" class="btn btn-primary btn-xs" onclick="$('.filedata').click();" value="Upload Poster" />
+              <% end %>
+            <% end %>
+          </div>
+        </div>
+      </div>
+      <div style="margin-bottom:10px">
+        <%= link_to('Create An Item', new_media_object_path(collection_id: @collection.id), class: 'btn btn-primary') if can? :create, MediaObject %>
+        <%= link_to('List All Items', search_catalog_path('f[collection_ssim][]' => @collection.name), class: 'btn btn-default') %>
+        <%= button_tag('Edit Collection Info', class: 'btn btn-default', data: {toggle:"modal", target:"#new_collection"}) if can? :update, @collection %>
+      </div>
+      <div>
+        <p>Or <a href='https://wiki.dlib.indiana.edu/display/VarVideo/Avalon+Collections+Guide#AvalonCollectionsGuide-UploadingviaBatch'><b>learn how to</b></a> create items using batch upload.</p>
+      </div>
     </div>
 
       <fieldset>
@@ -74,3 +102,11 @@ Unless required by applicable law or agreed to in writing, software distributed
 </style>
 
 <%= render "form", modal_title: "Edit Collection Infomation" %>
+
+<% content_for :page_scripts do %>
+<script>
+  $( '.filedata' ).change(function() {
+    $(this).closest('form').submit();
+  });
+</script>
+<% end %>

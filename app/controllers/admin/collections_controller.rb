@@ -16,7 +16,7 @@ class Admin::CollectionsController < ApplicationController
   include Rails::Pagination
 
   before_action :authenticate_user!
-  load_and_authorize_resource except: [:index, :remove]
+  load_and_authorize_resource except: [:index, :remove, :attach_poster, :poster]
   before_action :load_and_authorize_collections, only: [:index]
   respond_to :html
 
@@ -225,6 +225,53 @@ class Admin::CollectionsController < ApplicationController
     else
       flash[:error] = "Something went wrong. #{@source_collection.name} is not empty."
       redirect_to admin_collection_path(@source_collection)
+    end
+  end
+
+  def attach_poster
+    @collection = Admin::Collection.find(params['id'])
+    authorize! :edit, @collection, message: "You do not have sufficient privileges to add a poster image."
+
+    if params.dig(:admin_collection, :poster).present?
+      poster_file = params[:admin_collection][:poster]
+      poster_ext = File.extname(poster_file.original_filename)
+      content_type = Mime::Type.lookup_by_extension(poster_ext.slice(1..-1)).to_s if poster_ext
+
+      if "image/jpeg" != content_type
+        flash[:error] = "Uploaded file is not a recognized poster image file"
+      elsif poster_file.present?
+        @collection.poster.content = poster_file.open.read
+        @collection.poster.mime_type = content_type
+        @collection.poster.original_name = params[:admin_collection][:poster].original_filename
+        flash[:success] = "Poster file succesfully added."
+      end
+    else
+      @collection.poster.content = ''
+      @collection.poster.original_name = ''
+      flash[:success] = "Poster file succesfully removed."
+    end
+
+    if flash[:error].blank?
+      unless @collection.save
+        flash[:success] = nil
+        flash[:error] = "There was a problem storing the poster image."
+      end
+    end
+
+    respond_to do |format|
+      format.html { redirect_to admin_collection_path(@collection) }
+    end
+  end
+
+  def poster
+    @collection = Admin::Collection.find(params['id'])
+    authorize! :show, @collection
+
+    file = @collection.poster
+    if file.nil? || file.new_record?
+      render plain: 'Not Found', status: :not_found
+    else
+      render plain: file.content, content_type: file.mime_type
     end
   end
 
