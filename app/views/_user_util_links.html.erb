@@ -16,6 +16,8 @@ Unless required by applicable law or agreed to in writing, software distributed
 <div class="navbar-left">
   <ul class="nav navbar-nav">
     <li><%= link_to 'Browse', main_app.search_catalog_path(search_field: 'all_fields', utf8: '✓', q: '') %></li>
+    <li><%= link_to 'Collections', main_app.collections_path %></li>
+
     <% if can? :read, Admin::Collection %>
     <li class=<%= active_for_controller('admin/collections') %>><%= link_to 'Manage Content', main_app.admin_collections_path %></li>
     <% end %>
@@ -46,7 +48,7 @@ Unless required by applicable law or agreed to in writing, software distributed
     <% end %>
     <% if current_ability.can? :create, Timeline %>
     <li class=<%= active_for_controller('timelines') %>>
-      <%= link_to 'Timelines', main_app.timelines_path, id:'timelines_nav' %> 
+      <%= link_to 'Timelines', main_app.timelines_path, id:'timelines_nav' %>
     </li>
     <% end %>
     <li class="divider desktop-hidden" />
