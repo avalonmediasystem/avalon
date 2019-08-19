@@ -7,6 +7,7 @@ RUN         curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add - \
          && echo "deb http://deb.debian.org/debian stretch-backports main" >> /etc/apt/sources.list \
          && wget https://mediaarea.net/repo/deb/repo-mediaarea_1.0-6_all.deb && dpkg -i repo-mediaarea_1.0-6_all.deb
 
+ENV         BUNDLER_VERSION 2.0.2
 RUN         apt-get update && apt-get upgrade -y build-essential nodejs \
          && apt-get install -y \
             mediainfo \
@@ -34,9 +35,16 @@ RUN         mkdir -p /tmp/ffmpeg && cd /tmp/ffmpeg \
 RUN         mkdir -p /home/app/avalon
 
 WORKDIR     /home/app/avalon
+
+COPY        Gemfile ./Gemfile
+COPY        Gemfile.lock ./Gemfile.lock
+RUN         bundle config build.nokogiri --use-system-libraries \
+         && bundle install --with aws development test postgres --without production
+
 ARG         AVALON_BRANCH=develop
 ARG         RAILS_ENV=development
 ARG         BASE_URL
 ARG         DATABASE_URL
 ARG         SECRET_KEY_BASE
-ADD         rails_init-*.sh /
+
+ADD         docker_init.sh /
