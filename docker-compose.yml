@@ -6,7 +6,6 @@ volumes:
   fedora:
   work:
   solr:
-  bundle:
   npms:
 
 networks:
@@ -14,7 +13,7 @@ networks:
   external:
 
 services:
-  db:
+  db: &db-avalon
     image: postgres:10-alpine
     volumes:
       - database:/data
@@ -24,7 +23,11 @@ services:
       - POSTGRES_DB=avalon
     networks:
       internal:
-  fedora:
+  db-test: 
+    <<: *db-avalon
+    volumes: []
+
+  fedora: &fedora
     image: avalonmediasystem/fedora:4.7.5
     depends_on:
       - db
@@ -34,7 +37,11 @@ services:
      - JAVA_OPTIONS=-Dfcrepo.modeshape.configuration=classpath:/config/file-simple/repository.json -Dfcrepo.home=/data
     networks:
       internal:
-  solr:
+  fedora-test:
+    <<: *fedora
+    volumes: []
+
+  solr: &solr
     image: solr:6.6.4-alpine
     volumes:
       - ./solr/config:/opt/solr/avalon_conf
@@ -46,6 +53,11 @@ services:
       - /opt/solr/avalon_conf
     networks:
       internal:
+  solr-test:
+    <<: *solr
+    volumes:
+    - ./solr/config:/opt/solr/avalon_conf     
+  
   matterhorn:
     image: avalonmediasystem/matterhorn
     volumes:
@@ -62,15 +74,18 @@ services:
       - "8880:80"
     networks:
       external:
-  redis:
+
+  redis: &redis
     image: redis:alpine
     networks:
       internal:
-  avalon:
+  redis-test:
+    <<: *redis
+  
+  avalon: &avalon
     image: avalonmediasystem/avalon:6.x-dev
-    build:
-      context: ./docker
-    command: "/rails_init-dev.sh"
+    build: .
+    command: bash -c "/docker_init.sh && rails server -b 0.0.0.0"
     depends_on:
       - db
       - fedora
@@ -78,8 +93,8 @@ services:
       - redis
     environment:
       - APP_NAME=avalon
-      - ASSET_HOST=http://localhost:3000
       - AVALON_BRANCH=develop
+      - BUNDLE_FLAGS=--with development postgres --without production test
       - SETTINGS__DOMAIN=http://localhost:3000
       - CONTROLLED_VOCABULARY=config/controlled_vocabulary.yml
       - DATABASE_URL=postgres://postgres@db/avalon
@@ -123,12 +138,30 @@ services:
     volumes:
       - .:/home/app/avalon
       - ./masterfiles:/masterfiles
-      - bundle:/home/app/gems
       - npms:/home/app/avalon/node_modules
     ports:
-      - "3000:80"
+      - "3000:3000"
     networks:
       internal:
       external:
     stdin_open: true
     tty: true
+
+  test:
+    <<: *avalon
+    command: >
+      bash -c "/docker_init.sh && tail -f /dev/null"
+    depends_on:
+      - db-test
+      - fedora-test
+      - solr-test
+      - redis-test
+    environment:
+      - DATABASE_URL=postgresql://postgres@db-test/avalon
+      - REDIS_HOST=redis-test
+      - FEDORA_URL=http://fedora-test:8080/fedora/rest
+      - SOLR_URL=http://solr-test:8983/solr/avalon
+      - RAILS_ENV=test
+      - BUNDLE_FLAGS=--with aws test postgres --without production
+      - DATABASE_CLEANER_ALLOW_REMOTE_DATABASE_URL=true
+    ports: []
