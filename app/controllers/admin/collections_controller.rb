@@ -21,8 +21,19 @@ class Admin::CollectionsController < ApplicationController
   respond_to :html
 
   def load_and_authorize_collections
-    @collections = get_user_collections(params[:user])
     authorize!(params[:action].to_sym, Admin::Collection)
+    repository = CatalogController.new.repository
+    builder = ::CollectionSearchBuilder.new([:add_access_controls_to_solr_params_if_not_admin, :only_wanted_models], self)
+    if params[:user].present? && can?(:manage, Admin::Collection)
+      user = User.find_by_username_or_email(params[:user])
+      unless user.present?
+        @collections = []
+        return
+      end
+      builder.user = user
+    end
+    response = repository.search(builder)
+    @collections = response.documents.collect { |doc| ::Admin::CollectionPresenter.new(doc) }
   end
 
   # GET /collections
