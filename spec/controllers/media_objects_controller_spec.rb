@@ -1302,4 +1302,50 @@ describe MediaObjectsController, type: :controller do
       expect(response.body).to eq media_object.descMetadata.content
     end
   end
+
+  describe 'move_preview' do
+    before do
+      login_as :administrator
+    end
+
+    let(:media_object) { FactoryBot.create(:published_media_object) }
+
+    it 'returns a json preview of the media object' do
+      get :move_preview, params: { id: media_object.id, format: 'json' }
+      expect(response.status).to eq 200
+      expect(response.content_type).to eq 'application/json'
+      json_preview = JSON.parse(response.body)
+      expect(json_preview.keys).to eq ['id', 'title', 'collection', 'main_contributors', 'publication_date', 'published_by', 'published']
+    end
+
+    context 'as manager' do
+      before do
+        login_user media_object.collection.managers.first
+      end
+
+      let(:media_object) { FactoryBot.create(:published_media_object) }
+
+      it 'returns a json preview of the media object' do
+        get :move_preview, params: { id: media_object.id, format: 'json' }
+        expect(response.status).to eq 200
+        expect(response.content_type).to eq 'application/json'
+        json_preview = JSON.parse(response.body)
+        expect(json_preview.keys).to eq ['id', 'title', 'collection', 'main_contributors', 'publication_date', 'published_by', 'published']
+      end
+    end
+
+    context 'as end user' do
+      before do
+        login_as :student
+      end
+
+      let(:media_object) { FactoryBot.create(:published_media_object) }
+
+      it 'returns a json preview of the media object' do
+        get :move_preview, params: { id: media_object.id, format: 'json' }
+        expect(response.status).to eq 401
+        expect(response.content_type).to eq 'application/json'
+      end
+    end
+  end
 end

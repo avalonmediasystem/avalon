@@ -97,6 +97,7 @@ Rails.application.routes.draw do
       post :add_to_playlist
       patch :intercom_push
       get :manifest
+      get :move_preview, defaults: { format: 'json' }, constraints: { format: 'json' }
     end
     collection do
       post :create, action: :create, constraints: { format: 'json' }
