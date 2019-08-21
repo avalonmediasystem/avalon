@@ -1031,7 +1031,7 @@ DEPENDENCIES
   redis-rails
   resque (~> 2.0)
   resque-scheduler (~> 4.4)
-  rest-client
+  rest-client (~> 2.0)
   roo
   rsolr (~> 1.0)
   rspec-rails
