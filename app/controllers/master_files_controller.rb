@@ -353,6 +353,19 @@ class MasterFilesController < ApplicationController
     end
   end
 
+  def move
+    master_file = MasterFile.find(params[:id])
+    current_media_object = master_file.media_object
+    authorize! :update, current_media_object
+    target_media_object = MediaObject.find(params[:target])
+    authorize! :update, target_media_object
+
+    master_file.media_object = target_media_object
+    master_file.save!
+    flash[:success] = "Successfully moved master file.  See it <a href='edit_media_object_path(target_media_object)'>here.</a>"
+    redirect_to edit_media_object_path(current_media_object)
+  end
+
 protected
   def ensure_readable_filedata
     if params[:Filedata].present?
