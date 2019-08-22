@@ -571,4 +571,54 @@ describe MasterFilesController do
       expect(get('hls_manifest', params: { id: public_master_file.id, quality: 'auto' })).to have_http_status(:ok)
     end
   end
+
+  describe 'move' do
+    let(:master_file) { FactoryBot.create(:master_file, :with_media_object) }
+    let(:target_media_object) { FactoryBot.create(:media_object) }
+    let(:current_media_object) { master_file.media_object }
+
+    context 'security' do
+      context 'as anonymous' do
+        it 'redirects to home page' do
+          post('move', params: { id: master_file.id, target: target_media_object.id })
+          expect(response).to redirect_to(/#{Regexp.quote(new_user_session_path)}\?url=.*/)
+        end
+      end
+      context 'as an end user' do
+        before do
+          login_as :student
+        end
+        it 'redirects to home page' do
+          post('move', params: { id: master_file.id, target: target_media_object.id })
+          expect(response).to redirect_to root_path
+        end
+      end
+      context 'when only have update permissions on one media object' do
+        it 'redirects to home page' do
+          login_user master_file.media_object.collection.managers.first
+          post('move', params: { id: master_file.id, target: target_media_object.id })
+          expect(response).to redirect_to root_path
+          login_user target_media_object.collection.managers.first
+          post('move', params: { id: master_file.id, target: target_media_object.id })
+          expect(response).to redirect_to root_path
+        end
+      end
+    end
+
+    context 'functionality' do
+      before do
+        login_as :administrator
+      end
+      it 'moves the master file' do
+        expect(current_media_object.master_file_ids).to include master_file.id
+        expect(target_media_object.master_file_ids).not_to include master_file.id
+        post('move', params: { id: master_file.id, target: target_media_object.id })
+        expect(response).to redirect_to(edit_media_object_path(current_media_object))
+        expect(flash[:success]).not_to be_blank
+        expect(master_file.reload.media_object_id).to eq target_media_object.id
+        expect(current_media_object.reload.master_file_ids).not_to include master_file.id
+        expect(target_media_object.reload.master_file_ids).to include master_file.id
+      end
+    end
+  end
 end
