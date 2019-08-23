@@ -17,97 +17,105 @@ Unless required by applicable law or agreed to in writing, software distributed
 <%= hidden_field_tag :donot_advance, true %>
 <%= hidden_field_tag :step, 'file-upload' %>
 <% unless @masterFiles.blank? %>
-<div id="associated_files">
-  <legend>Associated files</legend>
-  <p class="muted">For items with multiple files, enter a display label for each file. Users will click on these labels to switch between files.</p>
-  <div class="collapse form-tooltip" id="title-tooltip">
-    <button class="close">&times;</button> <p><%= t("file_upload_tip.title").html_safe %></p>
-  </div>
-  <div class="collapse form-tooltip" id="permalink-tooltip">
-    <button class="close">&times;</button> <p><%= t("file_upload_tip.permalink").html_safe %></p>
-  </div>
-  <div class="collapse form-tooltip" id="datedigitized-tooltip">
-    <button class="close">&times;</button> <p><%= t("file_upload_tip.datedigitized").html_safe %></p>
-  </div>
-  <div class="collapse form-tooltip" id="thumbnail-tooltip">
-    <button class="close">&times;</button>
-    <p><%= t("file_upload_tip.thumbnail").html_safe %></p>
-  </div>
+  <div id="associated_files">
+    <legend>Associated files</legend>
+    <p class="muted">For items with multiple files, enter a display label for each file. Users will click on these labels to switch between files.</p>
+    <div class="collapse form-tooltip" id="title-tooltip">
+      <button class="close">&times;</button> <p><%= t("file_upload_tip.title").html_safe %></p>
+    </div>
+    <div class="collapse form-tooltip" id="permalink-tooltip">
+      <button class="close">&times;</button> <p><%= t("file_upload_tip.permalink").html_safe %></p>
+    </div>
+    <div class="collapse form-tooltip" id="datedigitized-tooltip">
+      <button class="close">&times;</button> <p><%= t("file_upload_tip.datedigitized").html_safe %></p>
+    </div>
+    <div class="collapse form-tooltip" id="thumbnail-tooltip">
+      <button class="close">&times;</button>
+      <p><%= t("file_upload_tip.thumbnail").html_safe %></p>
+    </div>
 
-  <div class="associated-files-wrapper">
+    <div class="associated-files-wrapper">
 
-    <% @masterFiles.each do |part| %>
-      <%= hidden_field_tag "master_files[#{part.id}][id]", part.id  %>
+      <% @masterFiles.each do |part| %>
+        <%= hidden_field_tag "master_files[#{part.id}][id]", part.id  %>
 
-      <div class="associated-files-block">
-        <div class="associated-files-top-row">
-          <!-- Icon -->
-          <span>
-            <% case part.file_format
-            when 'Sound' %>
-            <i class="fa fa-volume-up"></i>
-            <% when 'Moving image' %>
-            <i class="fa fa-film"></i>
-            <% else %>
-            <i class="fa fa-question-sign"></i>
-            <% end %>
-          </span>
-          <span><%= truncate_center(File.basename(part.file_location.to_s), 50, 20) %></span>
-          <span><%= number_to_human_size(part.file_size) %></span>
-          <span class="delete">
-            <% if can? :edit, @media_object %>
-            <%= link_to 'Delete'.html_safe,
-            master_file_path(part.id),
-            title: 'Delete',
-            class: 'btn btn-xs btn-danger btn-confirmation',
-              data: { placement: 'left' },
-              method: :delete %>
-            <% end %>
-          </span>
-        </div>
-        <div class="row">
-          <div class="col-sm-12">
-            <div class="form-group">
-              <label>Section Label</label>
-              <%= text_field_tag "master_files[#{part.id}][title]", part.title, class: '' %>
+        <div class="associated-files-block">
+          <div class="associated-files-top-row">
+            <!-- Icon -->
+            <div class="col-12 col-sm-6">
+              <span>
+                <% case part.file_format
+                when 'Sound' %>
+                <i class="fa fa-volume-up"></i>
+                <% when 'Moving image' %>
+                <i class="fa fa-film"></i>
+                <% else %>
+                <i class="fa fa-question-sign"></i>
+                <% end %>
+              </span>
+              <span><%= truncate_center(File.basename(part.file_location.to_s), 50, 20) %></span>
+              <span><%= number_to_human_size(part.file_size) %></span>
+            </div>
+            <div class="col-12 col-sm-6 right">
+              <span>
+                <button id="show_move_modal" class="btn btn-xs btn-danger" data-id="<%= part.id %>" onclick="return false;" data-toggle="modal" data-target="#move_modal">
+                  Move
+                </button>
+              </span>
+              <span>
+                <% if can? :edit, @media_object %>
+                <%= link_to 'Delete'.html_safe,
+                master_file_path(part.id),
+                title: 'Delete',
+                class: 'btn btn-xs btn-danger btn-confirmation',
+                  data: { placement: 'left' },
+                  method: :delete %>
+                <% end %>
+              </span>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-sm-12">
+              <div class="form-group">
+                <label>Section Label</label>
+                <%= text_field_tag "master_files[#{part.id}][title]", part.title, class: '' %>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-sm-3">
+              <div class="form-group">
+                <label>Date Digitized</label>
+                <%= text_field_tag "master_files[#{part.id}][date_digitized]", part.date_digitized, class: 'date-input' %>
+              </div>
+            </div>
+            <div class="col-sm-3">
+              <div class="form-group">
+                <label>Thumbnail</label>
+                <% if part.is_video? %>
+                  <%= text_field_tag "master_files[#{part.id}][poster_offset]",
+                  part.poster_offset.to_i.to_hms, class: 'input-small' %>
+                <% else %>
+                  <span class="input-small">n/a</span>
+                <% end %>
+              </div>
+            </div>
+            <div class="col-sm-6">
+              <div class="form-group">
+                <label>Permalink</label>
+                <%= text_field_tag "master_files[#{part.id}][permalink]", part.permalink, class: '' %>
+              </div>
             </div>
           </div>
         </div>
-        <div class="row">
-          <div class="col-sm-3">
-            <div class="form-group">
-              <label>Date Digitized</label>
-              <%= text_field_tag "master_files[#{part.id}][date_digitized]", part.date_digitized, class: 'date-input' %>
-            </div>
-          </div>
-          <div class="col-sm-3">
-            <div class="form-group">
-              <label>Thumbnail</label>
-              <% if part.is_video? %>
-                <%= text_field_tag "master_files[#{part.id}][poster_offset]",
-                part.poster_offset.to_i.to_hms, class: 'input-small' %>
-              <% else %>
-                <span class="input-small">n/a</span>
-              <% end %>
-            </div>
-          </div>
-          <div class="col-sm-6">
-            <div class="form-group">
-              <label>Permalink</label>
-              <%= text_field_tag "master_files[#{part.id}][permalink]", part.permalink, class: '' %>
-            </div>
-          </div>
-        </div>
-      </div>
 
-    <% end %>
+      <% end %>
 
-  </div><!-- end associated-files-wrapper -->
-
+    </div><!-- end associated-files-wrapper -->
 
   </div>
-  <% end %>
-  <% end %>
+<% end %>
+<% end %>
 
   <div id="web_upload">
    <legend>Upload through the web</legend>
@@ -181,5 +189,30 @@ Unless required by applicable law or agreed to in writing, software distributed
     <% end %>
     <%= render partial: "dropbox_details" %>
   </div>
+
+  <div id="move_modal" class="modal fade" role="dialog" data-backdrop="false" data-submit_url="<%= 'create' %>" >
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+          <h3 class='modal-title'>Move Section</h3>
+        </div>
+        <div class="modal-body">
+          <form id="move_form" onsubmit="return false;">
+            <div class="form-group">
+              <label>Media Object ID: </label>
+              <input id="media_object_id" type="text" onkeyup="return searchMediaObject(this)" />
+            </div>
+            <div id="show_target_object"></div>
+            <div class="form-group">              
+              <input type="button" onclick="submitForm(part.id)" id="move_action_btn" class="btn btn-primary" data-dismiss="modal" value="Move" disabled=true/>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
 
   <%= render "workflow_buttons", form: 'master_files_form' %>
