@@ -1,30 +1,38 @@
+var errorMessage = '<p class="invalid-feedback">Please enter a valid ID</p>';
+
 $('#move_modal').on('shown.bs.modal', function() {
-  $('#media_object_id').focus();
+  $('#target').focus();
+  $('#target').addClass('is-invalid');
+  $('#show_target_object').html(errorMessage);
+  var masterFileID = $('#show_move_modal').data('id');
+  $('#masterfile_id').val(masterFileID);
+});
+
+$('#move_modal').on('hidden.bs.modal', function(e) {
+  $('#target').className = '';
+  $('#move_form')[0].reset();
 });
 
 function searchMediaObject(obj) {
   var container = $('#show_target_object');
   var moid = obj.value;
   if (moid.length < 8) {
-    obj.className = 'is-invalid';
-    var showError = '<p class="invalid-feedback">Please enter a valid ID</p>';
-    container.html(showError);
+    toggleCSS($('#target'), 'is-invalid', '');
+    container.html(errorMessage);
   } else {
     $.ajax({
       url: '/media_objects/' + moid + '/move_preview',
       type: 'GET',
       success: function(data) {
-        obj.className = 'is-valid';
+        toggleCSS($('#target'), 'is-valid', 'is-invalid');
         $('#move_action_btn').prop('disabled', false);
         var showObj = buildItemDetails(data);
         container.html(showObj);
       },
       error: function(err) {
-        obj.className = 'is-invalid';
+        toggleCSS($('#target'), 'is-invalid', 'is-valid');
         $('#move_action_btn').prop('disabled', true);
-        var showError =
-          '<p class="invalid-feedback">Please enter a valid ID</p>';
-        container.html(showError);
+        container.html(errorMessage);
       }
     });
   }
@@ -50,15 +58,9 @@ function buildItemDetails(json) {
   return html;
 }
 
-function submitForm() {
-  var masterFileID = $('#show_move_modal').data('id');
-  var targetID = $('#media_object_id').val();
-  $.ajax({
-    url: '/master_files/' + masterFileID + '/move?target=' + targetID,
-    type: 'POST',
-    success: function(response) {},
-    error: function() {}
-  });
-  $('#move_form')[0].reset();
-  $('#show_target_object').empty();
+function toggleCSS(el, addCls, removeCls) {
+  el.removeClass(removeCls);
+  if (!el.hasClass(addCls)) {
+    el.addClass(addCls);
+  }
 }
