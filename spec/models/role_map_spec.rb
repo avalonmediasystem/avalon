@@ -24,8 +24,10 @@ describe RoleMap do
       RoleMap.all.each &:destroy
     end
 
+    let(:expected_role_map) { {"administrator"=>["archivist1@example.com"], "group_manager"=>["archivist1@example.com"], "manager"=>["archivist1@example.com"]} }
+
     it "should properly initialize the map" do
-      expect(RoleMapper.map).to eq(YAML.load(File.read(File.join(Rails.root, "config/role_map.yml")))[Rails.env])
+      expect(RoleMapper.map).to eq expected_role_map
     end
 
     it "should properly persist a hash" do
@@ -33,6 +35,14 @@ describe RoleMap do
       RoleMap.replace_with!(new_hash)
       expect(RoleMapper.map).to eq(new_hash)
       expect(RoleMap.load).to eq(new_hash)
+    end
+  end
+
+  describe '#set_entries' do
+    let!(:role) { RoleMap.create!(entry: 'group')}
+
+    it 'should not create entries for nils' do
+      expect { role.set_entries([nil]) }.not_to change { RoleMap.count }
     end
   end
 end
