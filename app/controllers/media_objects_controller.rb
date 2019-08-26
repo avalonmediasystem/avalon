@@ -497,14 +497,14 @@ class MediaObjectsController < ApplicationController
     @media_object = MediaObject.find(params[:id])
     authorize! :update, @media_object
     preview = {
-                id: @media_object.id,
-                title: @media_object.title,
-                collection: @media_object.collection.name,
-                main_contributors: @media_object.creator,
-                publication_date: @media_object.date_created,
-                published_by: @media_object.avalon_publisher,
-                published: @media_object.published?,
-              }
+      id: @media_object.id,
+      title: @media_object.title,
+      collection: @media_object.collection.name,
+      main_contributors: @media_object.creator,
+      publication_date: @media_object.date_created,
+      published_by: @media_object.avalon_publisher,
+      published: @media_object.published?,
+    }
 
     respond_to do |wants|
       wants.json { render json: preview }
