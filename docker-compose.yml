@@ -91,6 +91,7 @@ services:
       - fedora
       - solr
       - redis
+      - matterhorn
     environment:
       - APP_NAME=avalon
       - AVALON_BRANCH=develop
