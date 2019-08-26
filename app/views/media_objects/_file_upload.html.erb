@@ -57,21 +57,21 @@ Unless required by applicable law or agreed to in writing, software distributed
               <span><%= number_to_human_size(part.file_size) %></span>
             </div>
             <div class="col-12 col-sm-6 right">
-              <span>
-                <button id="show_move_modal" class="btn btn-xs btn-danger" data-id="<%= part.id %>" onclick="return false;" data-toggle="modal" data-target="#move_modal">
-                  Move
-                </button>
-              </span>
-              <span>
-                <% if can? :edit, @media_object %>
-                <%= link_to 'Delete'.html_safe,
-                master_file_path(part.id),
-                title: 'Delete',
-                class: 'btn btn-xs btn-danger btn-confirmation',
-                  data: { placement: 'left' },
-                  method: :delete %>
-                <% end %>
-              </span>
+            <% if can? :edit, @media_object %>
+                <span>
+                  <button id="show_move_modal" class="btn btn-xs btn-danger" data-id="<%= part.id %>" onclick="return false;" data-toggle="modal" data-target="#move_modal">
+                    Move
+                  </button>
+                </span>
+                <span>
+                  <%= link_to 'Delete'.html_safe,
+                  master_file_path(part.id),
+                  title: 'Delete',
+                  class: 'btn btn-xs btn-danger btn-confirmation',
+                    data: { placement: 'left' },
+                    method: :delete %>
+                </span>
+              <% end %>
             </div>
           </div>
           <div class="row">
@@ -190,7 +190,7 @@ Unless required by applicable law or agreed to in writing, software distributed
     <%= render partial: "dropbox_details" %>
   </div>
 
-  <div id="move_modal" class="modal fade" role="dialog" data-backdrop="false" data-submit_url="<%= 'create' %>" >
+  <div id="move_modal" class="modal fade" role="dialog" data-backdrop="false">
     <div class="modal-dialog modal-lg">
       <div class="modal-content">
         <div class="modal-header">
@@ -198,21 +198,18 @@ Unless required by applicable law or agreed to in writing, software distributed
           <h3 class='modal-title'>Move Section</h3>
         </div>
         <div class="modal-body">
-          <form id="move_form" onsubmit="return false;">
-            <div class="form-group">
-              <label>Media Object ID: </label>
-              <input id="media_object_id" type="text" onkeyup="return searchMediaObject(this)" />
-            </div>
+          <%= form_tag move_master_file_path, id: 'move_form', method: 'POST' do %>
+            <input type="hidden" name="masterfile_id" id="masterfile_id" />
+            <label>Media Object ID: </label>
+            <input class="form-control" type="text" name="target" id="target" onkeyup="searchMediaObject(this)" />
             <div id="show_target_object"></div>
-            <div class="form-group">              
-              <input type="button" onclick="submitForm(part.id)" id="move_action_btn" class="btn btn-primary" data-dismiss="modal" value="Move" disabled=true/>
-            </div>
-          </form>
+            <input id="move_action_btn" disabled=true type="submit" value="Move" class="btn btn-large btn-primary" %>
+          <% end %>
         </div>
       </div>
     </div>
   </div>
 
-
+            
 
   <%= render "workflow_buttons", form: 'master_files_form' %>

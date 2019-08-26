@@ -354,7 +354,7 @@ class MasterFilesController < ApplicationController
   end
 
   def move
-    master_file = MasterFile.find(params[:id])
+    master_file = MasterFile.find(params[:masterfile_id])
     current_media_object = master_file.media_object
     authorize! :update, current_media_object
     target_media_object = MediaObject.find(params[:target])
