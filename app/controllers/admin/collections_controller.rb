@@ -269,7 +269,7 @@ class Admin::CollectionsController < ApplicationController
 
     file = @collection.poster
     if file.nil? || file.new_record?
-      render plain: 'Not Found', status: :not_found
+      render plain: 'Collection Poster Not Found', status: :not_found
     else
       render plain: file.content, content_type: file.mime_type
     end
