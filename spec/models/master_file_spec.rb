@@ -605,4 +605,18 @@ describe MasterFile do
       expect(master_file.hls_streams).to eq streams
     end
   end
+
+  describe 'media_object=' do
+    let!(:master_file) { FactoryBot.create(:master_file, :with_media_object) }
+    let!(:media_object1) { master_file.media_object }
+    let!(:media_object2) { FactoryBot.create(:media_object) }
+
+    it 'sets a new media object as its parent' do
+      master_file.media_object = media_object2
+      expect(media_object1.reload.master_file_ids).not_to include master_file.id
+      expect(media_object1.reload.ordered_master_file_ids).not_to include master_file.id
+      expect(media_object2.reload.master_file_ids).to include master_file.id
+      expect(media_object2.reload.ordered_master_file_ids).to include master_file.id
+    end
+  end
 end
