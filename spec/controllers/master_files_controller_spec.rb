@@ -611,13 +611,17 @@ describe MasterFilesController do
       end
       it 'moves the master file' do
         expect(current_media_object.master_file_ids).to include master_file.id
+        expect(current_media_object.ordered_master_file_ids).to include master_file.id
         expect(target_media_object.master_file_ids).not_to include master_file.id
+        expect(target_media_object.ordered_master_file_ids).not_to include master_file.id
         post('move', params: { id: master_file.id, target: target_media_object.id })
         expect(response).to redirect_to(edit_media_object_path(current_media_object))
         expect(flash[:success]).not_to be_blank
         expect(master_file.reload.media_object_id).to eq target_media_object.id
         expect(current_media_object.reload.master_file_ids).not_to include master_file.id
+        expect(current_media_object.ordered_master_file_ids).not_to include master_file.id
         expect(target_media_object.reload.master_file_ids).to include master_file.id
+        expect(target_media_object.ordered_master_file_ids).to include master_file.id
       end
     end
   end

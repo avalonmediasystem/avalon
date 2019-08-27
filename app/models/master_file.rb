@@ -218,6 +218,7 @@ class MasterFile < ActiveFedora::Base
     # Removes existing association
     if self.media_object.present?
       self.media_object.master_files = self.media_object.master_files.to_a.reject { |mf| mf.id == self.id }
+      self.media_object.ordered_master_files = self.media_object.ordered_master_files.to_a.reject { |mf| mf.id == self.id }
       self.media_object.save
     end
 
