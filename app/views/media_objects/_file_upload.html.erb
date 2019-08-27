@@ -59,7 +59,7 @@ Unless required by applicable law or agreed to in writing, software distributed
             <div class="col-12 col-sm-6 right">
             <% if can? :edit, @media_object %>
                 <span>
-                  <button id="show_move_modal" class="btn btn-xs btn-danger" data-id="<%= part.id %>" onclick="return false;" data-toggle="modal" data-target="#move_modal">
+                  <button id="show_move_modal" class="btn btn-xs btn-danger" data-id="<%= part.id %>" onclick="showMoveModal(this); return false;" data-toggle="modal" data-target="#move_modal">
                     Move
                   </button>
                 </span>
@@ -190,7 +190,7 @@ Unless required by applicable law or agreed to in writing, software distributed
     <%= render partial: "dropbox_details" %>
   </div>
 
-  <div id="move_modal" class="modal fade" role="dialog" data-backdrop="false">
+  <div id="move_modal" class="modal fade" role="dialog" data-backdrop="true">
     <div class="modal-dialog modal-lg">
       <div class="modal-content">
         <div class="modal-header">
@@ -199,11 +199,13 @@ Unless required by applicable law or agreed to in writing, software distributed
         </div>
         <div class="modal-body">
           <%= form_tag move_master_file_path, id: 'move_form', method: 'POST' do %>
-            <input type="hidden" name="masterfile_id" id="masterfile_id" />
-            <label>Media Object ID: </label>
-            <input class="form-control" type="text" name="target" id="target" onkeyup="searchMediaObject(this)" />
-            <div id="show_target_object"></div>
-            <input id="move_action_btn" disabled=true type="submit" value="Move" class="btn btn-large btn-primary" %>
+            <label for="target" class="col-sm-2">Target Item Identifier: </label>
+            <%= text_field_tag :target, nil, class: 'form-control', style: 'width: 25%;', type: 'text', onkeyup: 'previewTargetItem(this)' %>
+            <div id="show_target_object">
+              <p class="invalid-feedback">Please enter a valid ID</p>
+            </div>
+            <%= submit_tag "Move", class: "btn btn-large btn-primary", disabled: true, id: "move_action_btn" %>
+            <a href="#" data-dismiss="modal" aria-hidden="true" class="btn">Cancel</a>
           <% end %>
         </div>
       </div>
