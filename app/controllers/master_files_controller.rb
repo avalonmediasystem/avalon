@@ -354,7 +354,7 @@ class MasterFilesController < ApplicationController
   end
 
   def move
-    master_file = MasterFile.find(params[:masterfile_id])
+    master_file = MasterFile.find(params[:id])
     current_media_object = master_file.media_object
     authorize! :update, current_media_object
     target_media_object = MediaObject.find(params[:target])
@@ -362,7 +362,7 @@ class MasterFilesController < ApplicationController
 
     master_file.media_object = target_media_object
     master_file.save!
-    flash[:success] = "Successfully moved master file.  See it <a href='edit_media_object_path(target_media_object)'>here.</a>"
+    flash[:success] = "Successfully moved master file.  See it #{view_context.link_to 'here', edit_media_object_path(target_media_object)}.".html_safe
     redirect_to edit_media_object_path(current_media_object)
   end
 
