@@ -27,5 +27,13 @@ FactoryBot.define do
       1.upto(env.items) { FactoryBot.create(:media_object, collection: c) }
       c.reload
     end
+
+    trait :with_poster do
+      after(:create) do |collection|
+        collection.poster.mime_type = 'image/jpeg'
+        collection.poster.content = 'fake image content'
+        collection.save
+      end
+    end
   end
 end

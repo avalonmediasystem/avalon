@@ -57,6 +57,8 @@ describe Admin::CollectionsController, type: :controller do
           expect(put :update, params: { id: collection.id }).to redirect_to(root_path)
           expect(patch :update, params: { id: collection.id }).to redirect_to(root_path)
           expect(delete :destroy, params: { id: collection.id }).to redirect_to(root_path)
+          expect(post :attach_poster, params: { id: collection.id }).to redirect_to(root_path)
+          expect(get :poster, params: { id: collection.id }).to redirect_to(root_path)
         end
       end
     end
@@ -346,6 +348,53 @@ describe Admin::CollectionsController, type: :controller do
       login_user collection.managers.first
       expect(controller.current_ability.can? :destroy, collection).to be_truthy
       expect(get :remove, params: { id: collection.id }).to render_template(:remove)
+    end
+  end
+
+  describe '#attach_poster' do
+    context 'adding a poster' do
+      let(:collection) { FactoryBot.create(:collection) }
+
+      before do
+        login_user collection.managers.first
+      end
+
+      it 'adds the poster' do
+        file = fixture_file_upload('/collection_poster.jpg', 'image/jpeg')
+        expect { post :attach_poster, params: { id: collection.id, admin_collection: { poster: file } } }.to change { collection.poster.present? }.from(false).to(true)
+        expect(collection.poster.mime_type).to eq 'image/jpeg'
+        expect(collection.poster.original_name).to eq 'collection_poster.jpg'
+        expect(collection.poster.content).not_to be_blank
+        expect(response).to redirect_to(admin_collection_path(collection))
+      end
+    end
+
+    context 'removing a poster' do
+      let(:collection) { FactoryBot.create(:collection, :with_poster) }
+
+      before do
+        login_user collection.managers.first
+      end
+
+      it 'removes the poster' do
+        expect { post :attach_poster, params: { id: collection.id } }.to change { collection.poster.present? }.from(true).to(false)
+        expect(response).to redirect_to(admin_collection_path(collection))
+      end
+    end
+  end
+
+  describe '#poster' do
+    let(:collection) { FactoryBot.create(:collection, :with_poster) }
+
+    before do
+      login_user collection.managers.first
+    end
+
+    it 'returns the poster' do
+      get :poster, params: { id: collection.id }
+      expect(response).to have_http_status(:ok)
+      expect(response.content_type).to eq "image/jpeg"
+      expect(response.body).not_to be_blank
     end
   end
 end
