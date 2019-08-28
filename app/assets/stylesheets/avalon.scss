@@ -281,6 +281,11 @@ body {
   margin-top: 0;
   padding-top: 0;
   min-width: 295px;
+
+  .page-container {
+    position: relative;
+    min-height: 100vh;
+  }
 }
 
 input[type='text']#admin_group {
@@ -426,6 +431,13 @@ footer {
   li:first-child:before {
     content: none;
   }
+}
+
+#footer {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  min-height: 2.5rem;
 }
 
 footer a {
@@ -1409,8 +1421,8 @@ h5.panel-title {
 }
 
 .is-invalid:focus {
-  outline:0px !important;
-  -webkit-appearance:none;
+  outline: 0px !important;
+  -webkit-appearance: none;
   border-color: #b24b47;
   box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px #b24b47;
 }
