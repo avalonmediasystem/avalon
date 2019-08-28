@@ -32,18 +32,22 @@ Unless required by applicable law or agreed to in writing, software distributed
   </head>
 
   <body data-mountpoint="<%=main_app.root_path%>">
-    <a id="skip-to-content" class="sr-only sr-only-focusable" href="#content">Skip to main content</a>
-    <%= render partial: 'shared/ajax_modal' %>
-    <% if defined?(Samvera::Persona) %>
-      <%= render partial: 'modules/become_message' %>
-    <% end %>
-    <%= render 'modules/header' %>
-    <div class="container-fluid">
-      <%= render :partial => 'modules/global_navigation' %>
-      <%= render 'modules/flash_messages' %>
-      <%= yield %>
+    <div class="page-container">
+      <div class="content-wrapper">
+        <a id="skip-to-content" class="sr-only sr-only-focusable" href="#content">Skip to main content</a>
+        <%= render partial: 'shared/ajax_modal' %>
+        <% if defined?(Samvera::Persona) %>
+          <%= render partial: 'modules/become_message' %>
+        <% end %>
+        <%= render 'modules/header' %>
+        <div class="container-fluid">
+          <%= render :partial => 'modules/global_navigation' %>
+          <%= render 'modules/flash_messages' %>
+          <%= yield %>
+        </div>
+      </div>
+      <%= render 'modules/footer' %>
     </div>
-    <%= render 'modules/footer' %>
 
     <!-- With this many Javascript files performance will be much better
          if they are included here. That means the important content will
