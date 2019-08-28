@@ -66,6 +66,8 @@ Rails.application.routes.draw do
         get 'edit'
         get 'remove'
         get 'items'
+        get 'poster'
+        post 'attach_poster'
       end
     end
 
