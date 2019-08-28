@@ -147,6 +147,14 @@ tr.active-false td {
     }
   }
 }
+.navbar-inverse .navbar-nav {
+  li {
+    a:hover {
+      color: #355c65;
+      background-color: #e9e9e9;
+    }
+  }
+}
 .navbar-right {
   padding: 4px 0;
   margin-right: 0;
@@ -1412,6 +1420,8 @@ h5.panel-title {
 }
 
 .is-invalid:focus {
+  outline: 0px !important;
+  -webkit-appearance: none;
   border-color: #b24b47;
   box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px #b24b47;
 }
