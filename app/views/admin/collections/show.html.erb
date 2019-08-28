@@ -18,10 +18,10 @@ Unless required by applicable law or agreed to in writing, software distributed
 <div class="container-fluid">
     <div class="well">
       <h3><%= @collection.name %></h3>
-      <div class="row" style="margin-bottom:10px">
+      <div class="row well-vertical-spacer">
         <div class="col-md-9">
           <p><strong>Description:</strong></p>
-          <p style="white-space:pre-wrap"><%= @collection.description %></p>
+          <p class="collection-description"><%= @collection.description %></p>
           <p><strong>Unit:</strong></p>
           <p><%= @collection.unit %></p>
         </div>
@@ -29,7 +29,7 @@ Unless required by applicable law or agreed to in writing, software distributed
           <p><strong>Poster:</strong></p>
           <p><%= @collection.poster.original_name if @collection.poster.present? %></p>
           <% if @collection.poster.present? %>
-            <div style="margin-bottom:10px">
+            <div class="well-vertical-spacer">
               <%= image_tag(poster_admin_collection_path(@collection), class: 'img-responsive') %>
             </div>
           <% end %>
@@ -45,7 +45,7 @@ Unless required by applicable law or agreed to in writing, software distributed
           </div>
         </div>
       </div>
-      <div style="margin-bottom:10px">
+      <div class="well-vertical-spacer">
         <%= link_to('Create An Item', new_media_object_path(collection_id: @collection.id), class: 'btn btn-primary') if can? :create, MediaObject %>
         <%= link_to('List All Items', search_catalog_path('f[collection_ssim][]' => @collection.name), class: 'btn btn-default') %>
         <%= button_tag('Edit Collection Info', class: 'btn btn-default', data: {toggle:"modal", target:"#new_collection"}) if can? :update, @collection %>
