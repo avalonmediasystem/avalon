@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2011-2019, The Trustees of Indiana University and Northwestern
  *   University.  Licensed under the Apache License, Version 2.0 (the "License");
  *   you may not use this file except in compliance with the License.
@@ -1413,4 +1413,12 @@ h5.panel-title {
   -webkit-appearance:none;
   border-color: #b24b47;
   box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px #b24b47;
+}
+
+.well-vertical-spacer {
+  margin-bottom:10px;
+}
+
+.collection-description {
+  white-space:pre-wrap;
 }
