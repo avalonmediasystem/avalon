@@ -23,7 +23,7 @@ class MediaObjectsController < ApplicationController
   include SecurityHelper
 
   before_action :authenticate_user!, except: [:show, :set_session_quality, :show_stream_details, :manifest]
-  load_and_authorize_resource except: [:create, :destroy, :update_status, :set_session_quality, :tree, :deliver_content, :confirm_remove, :show_stream_details, :add_to_playlist_form, :add_to_playlist, :intercom_collections, :manifest]
+  load_and_authorize_resource except: [:create, :destroy, :update_status, :set_session_quality, :tree, :deliver_content, :confirm_remove, :show_stream_details, :add_to_playlist_form, :add_to_playlist, :intercom_collections, :manifest, :move_preview]
   authorize_resource only: [:create]
 
   before_action :inject_workflow_steps, only: [:edit, :update], unless: proc { request.format.json? }
@@ -491,6 +491,24 @@ class MediaObjectsController < ApplicationController
   def set_session_quality
     session[:quality] = params[:quality] if params[:quality].present?
     head :ok
+  end
+
+  def move_preview
+    @media_object = MediaObject.find(params[:id])
+    authorize! :update, @media_object
+    preview = {
+      id: @media_object.id,
+      title: @media_object.title,
+      collection: @media_object.collection.name,
+      main_contributors: @media_object.creator,
+      publication_date: @media_object.date_created,
+      published_by: @media_object.avalon_publisher,
+      published: @media_object.published?,
+    }
+
+    respond_to do |wants|
+      wants.json { render json: preview }
+    end
   end
 
   protected

@@ -1537,8 +1537,6 @@ h5.panel-title {
   }
 
   .associated-files-top-row {
-    display: flex;
-    justify-content: flex-start;
     font-size: 18px;
     padding-bottom: 10px;
 
@@ -1549,6 +1547,11 @@ h5.panel-title {
     .delete {
       margin-left: auto;
       padding: 0;
+    }
+
+    .right {
+      float: right;
+      width: auto;
     }
   }
 
@@ -1567,7 +1570,7 @@ h5.panel-title {
   z-index: 1;
 }
 
-// Invalid submission for comments
+// Input form validation styling
 .invalid-feedback {
   color: #b24b47;
 }
@@ -1581,6 +1584,15 @@ h5.panel-title {
   -webkit-appearance: none;
   border-color: #b24b47;
   box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px #b24b47;
+}
+
+.is-valid {
+  border-color: #206e32;
+}
+
+.is-valid:focus {
+  border-color: #206e32;
+  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px #206e32;
 }
 
 /**

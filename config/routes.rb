@@ -101,6 +101,7 @@ Rails.application.routes.draw do
       post :add_to_playlist
       patch :intercom_push
       get :manifest
+      get :move_preview, defaults: { format: 'json' }, constraints: { format: 'json' }
     end
     collection do
       post :create, action: :create, constraints: { format: 'json' }
@@ -130,6 +131,7 @@ Rails.application.routes.draw do
       get 'structure', to: 'master_files#structure', constraints: { format: 'json' }
       post 'structure', to: 'master_files#set_structure', constraints: { format: 'json' }
       delete 'structure', to: 'master_files#delete_structure', constraints: { format: 'json' }
+      post 'move'
     end
   end
 
