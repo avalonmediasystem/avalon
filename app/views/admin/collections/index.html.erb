@@ -18,8 +18,14 @@ Unless required by applicable law or agreed to in writing, software distributed
 <div class='container-fluid'>
   <div class="row col-md-9 col-lg-8">
   <% unless @collections.empty? %>
-    <h2>My Collections</h2>
-
+    <div class="row display-flex">
+      <div class="col-xs-6">
+        <h2>My Collections</h2>
+      </div>
+      <div class="col-xs-6 collection-btn">
+        <%= button_tag("Create Collection", class: 'btn btn-primary btn-large', data: {toggle:"modal", target:"#new_collection"}) unless cannot? :create, Admin::Collection %>
+      </div>
+    </div>
     <table class='table table-striped'>
       <tbody>
       <% @collections.to_a.each do |collection| %>
@@ -44,7 +50,6 @@ Unless required by applicable law or agreed to in writing, software distributed
       <% end %>
       </tbody>
     </table>
-    <%= button_tag("Create Collection", class: 'btn btn-primary btn-large', data: {toggle:"modal", target:"#new_collection"}) unless cannot? :create, Admin::Collection %>
   <% else %>
     <div class="hero-unit">
       <h2>You don't have any collections yet</h2>
