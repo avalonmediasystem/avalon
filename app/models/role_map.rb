@@ -44,6 +44,7 @@ class RoleMap < ActiveRecord::Base
   end
 
   def set_entries new_entries
+    new_entries.reject! &:nil?
     existing = entries.collect &:entry
     add = new_entries - existing
     delete = existing - new_entries

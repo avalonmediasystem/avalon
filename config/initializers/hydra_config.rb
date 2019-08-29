@@ -49,7 +49,7 @@ module Hydra::RoleMapperBehavior::ClassMethods
 
   def byname
     @byname = map.each_with_object(Hash.new{ |h,k| h[k] = [] }) do |(role, usernames), memo|
-      Array(usernames).each { |x| memo[x] << role}
+      Array(usernames).each { |x| memo[x] << role unless x.nil? }
     end
   end
 end
