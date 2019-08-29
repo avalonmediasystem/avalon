@@ -81,6 +81,8 @@ Rails.application.routes.draw do
 
   resources :vocabulary, except: [:create, :destroy, :new, :edit]
 
+  resources :collections, only: [:index, :show]
+
   resources :media_objects, except: [:create, :update] do
     member do
       put :update, action: :update, defaults: { format: 'html' }, constraints: { format: 'html' }
