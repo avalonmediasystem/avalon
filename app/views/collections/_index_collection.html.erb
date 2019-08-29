@@ -13,4 +13,20 @@ Unless required by applicable law or agreed to in writing, software distributed
   specific language governing permissions and limitations under the License.
 ---  END LICENSE_HEADER BLOCK  ---
 %>
-<%= render :partial => 'form', locals: { modal_title: 'Create Collection' } %>
+
+<li class="media">
+  <div class="media-left">
+    <div class="document-thumbnail"><%= image_tag doc_presenter.thumbnail, alt: "Collection thumbnail" %></div>
+  </div>
+  <div class="media-body">
+    <h4 class="media-heading"><%= link_to(doc_presenter.name, collection_path(doc_presenter.id)) %></h4>
+    <dl>
+      <dt>Unit</dt>
+      <dd><%= doc_presenter.unit %></dd>
+      <% if doc_presenter.description.present? %>
+      <dt>Description</dt>
+      <dd><%= doc_presenter.description.truncate(100, separator: ' ') %></dd>
+      <% end %>
+    </dl>
+  </div>
+</li>

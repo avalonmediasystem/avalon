@@ -66,6 +66,8 @@ Rails.application.routes.draw do
         get 'edit'
         get 'remove'
         get 'items'
+        get 'poster'
+        post 'attach_poster'
       end
     end
 
@@ -78,6 +80,8 @@ Rails.application.routes.draw do
   end
 
   resources :vocabulary, except: [:create, :destroy, :new, :edit]
+
+  resources :collections, only: [:index, :show]
 
   resources :media_objects, except: [:create, :update] do
     member do
