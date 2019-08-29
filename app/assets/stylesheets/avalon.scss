@@ -1453,3 +1453,20 @@ h5.panel-title {
 .collection-description {
   white-space:pre-wrap;
 }
+
+// Collection list page
+.row.display-flex {
+  display: flex;
+	flex-direction: row;
+	flex-wrap: wrap;
+	align-items: flex-end;
+}
+
+.row.display-flex {
+  .collection-btn {
+    display: flex;
+    justify-content: flex-end;
+    align-content: stretch;
+    margin-bottom: 10px;
+  }
+}
