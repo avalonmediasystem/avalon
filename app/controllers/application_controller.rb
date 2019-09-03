@@ -161,7 +161,7 @@ class ApplicationController < ActionController::Base
     end
   end
 
-  def authenticate_user!
+  def authenticate_user!(opts={})
     return if user_signed_in?
     if request.format == :json
       head :unauthorized
@@ -169,5 +169,9 @@ class ApplicationController < ActionController::Base
       session[:previous_url] = request.fullpath unless request.xhr?
       redirect_to new_user_session_path(url: request.url), flash: { notice: 'You need to login to perform this action.' }
     end
+  end
+
+  def after_invite_path_for(inviter, invitee = nil)
+    main_app.persona_users_path
   end
 end
