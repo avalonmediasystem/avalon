@@ -248,10 +248,11 @@ class Admin::CollectionsController < ApplicationController
       poster_ext = File.extname(poster_file.original_filename)
       content_type = Mime::Type.lookup_by_extension(poster_ext.slice(1..-1)).to_s if poster_ext
 
-      if "image/jpeg" != content_type
-        flash[:error] = "Uploaded file is not a recognized poster image file"
-      elsif poster_file.present?
-        @collection.poster.content = poster_file.open.read
+      if poster_file.present?
+        image = ::MiniMagick::Image.open(poster_file.path)
+        image.thumbnail '700x700>'
+        image.format 'png'
+        @collection.poster.content = image.tempfile.open.read
         @collection.poster.mime_type = content_type
         @collection.poster.original_name = params[:admin_collection][:poster].original_filename
         flash[:success] = "Poster file succesfully added."
@@ -262,13 +263,13 @@ class Admin::CollectionsController < ApplicationController
       flash[:success] = "Poster file succesfully removed."
     end
 
-    if flash[:error].blank?
-      unless @collection.save
-        flash[:success] = nil
-        flash[:error] = "There was a problem storing the poster image."
-      end
+    unless @collection.save
+      flash[:success] = nil
+      flash[:error] = "There was a problem storing the poster image."
     end
-
+  rescue MiniMagick::Invalid
+    flash[:error] = "Uploaded file is not a recognized poster image file"
+  ensure
     respond_to do |format|
       format.html { redirect_to admin_collection_path(@collection) }
     end
