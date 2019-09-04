@@ -30,7 +30,7 @@ FactoryBot.define do
 
     trait :with_poster do
       after(:create) do |collection|
-        collection.poster.mime_type = 'image/jpeg'
+        collection.poster.mime_type = 'image/png'
         collection.poster.content = 'fake image content'
         collection.save
       end

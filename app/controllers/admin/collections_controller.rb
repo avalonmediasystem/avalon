@@ -234,17 +234,14 @@ class Admin::CollectionsController < ApplicationController
 
     if params.dig(:admin_collection, :poster).present?
       poster_file = params[:admin_collection][:poster]
-      poster_ext = File.extname(poster_file.original_filename)
-      content_type = Mime::Type.lookup_by_extension(poster_ext.slice(1..-1)).to_s if poster_ext
-
-      if poster_file.present?
-        image = ::MiniMagick::Image.open(poster_file.path)
-        image.thumbnail '700x700>'
-        image.format 'png'
-        @collection.poster.content = image.tempfile.open.read
-        @collection.poster.mime_type = content_type
-        @collection.poster.original_name = params[:admin_collection][:poster].original_filename
+      resized_poster = resize_uploaded_poster(poster_file.path)
+      if resized_poster.present?
+        @collection.poster.content = resized_poster
+        @collection.poster.mime_type = 'image/png'
+        @collection.poster.original_name = poster_file.original_filename
         flash[:success] = "Poster file succesfully added."
+      else
+        flash[:error] = "Uploaded file is not a recognized poster image file"
       end
     else
       @collection.poster.content = ''
@@ -256,9 +253,7 @@ class Admin::CollectionsController < ApplicationController
       flash[:success] = nil
       flash[:error] = "There was a problem storing the poster image."
     end
-  rescue MiniMagick::Invalid
-    flash[:error] = "Uploaded file is not a recognized poster image file"
-  ensure
+
     respond_to do |format|
       format.html { redirect_to admin_collection_path(@collection) }
     end
@@ -280,5 +275,14 @@ class Admin::CollectionsController < ApplicationController
 
   def collection_params
     params.permit(:admin_collection => [:name, :description, :unit, :managers => []])[:admin_collection]
+  end
+
+  def resize_uploaded_poster(file)
+    image = ::MiniMagick::Image.open(file)
+    image.thumbnail '700x700>'
+    image.format 'png'
+    image.tempfile.open.read
+  rescue MiniMagick::Invalid
+    return nil
   end
 end

@@ -357,12 +357,13 @@ describe Admin::CollectionsController, type: :controller do
 
       before do
         login_user collection.managers.first
+        allow(controller).to receive(:resize_uploaded_poster).and_return("image data")
       end
 
       it 'adds the poster' do
         file = fixture_file_upload('/collection_poster.jpg', 'image/jpeg')
         expect { post :attach_poster, params: { id: collection.id, admin_collection: { poster: file } } }.to change { collection.poster.present? }.from(false).to(true)
-        expect(collection.poster.mime_type).to eq 'image/jpeg'
+        expect(collection.poster.mime_type).to eq 'image/png'
         expect(collection.poster.original_name).to eq 'collection_poster.jpg'
         expect(collection.poster.content).not_to be_blank
         expect(response).to redirect_to(admin_collection_path(collection))
@@ -393,7 +394,7 @@ describe Admin::CollectionsController, type: :controller do
     it 'returns the poster' do
       get :poster, params: { id: collection.id }
       expect(response).to have_http_status(:ok)
-      expect(response.content_type).to eq "image/jpeg"
+      expect(response.content_type).to eq "image/png"
       expect(response.body).not_to be_blank
     end
   end
