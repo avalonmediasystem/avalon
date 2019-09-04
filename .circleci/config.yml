@@ -5,7 +5,7 @@ jobs:
   build:
     docker:
      # Primary container image where all steps run.
-     - image: avalonmediasystem/avalon:6.x-dev
+     - image: avalonmediasystem/avalon:6.x-slim-dev
        environment:
         - DATABASE_URL=postgresql://postgres@localhost:5432/postgres
         - FEDORA_URL=http://localhost:8080/fcrepo/rest
