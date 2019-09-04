@@ -68,6 +68,8 @@ services:
       internal:
   hls:
     image: avalonmediasystem/nginx
+    environment: 
+      - AVALON_DOMAIN=http://avalon:3000
     volumes:
       - streaming:/data
     ports:
@@ -83,7 +85,7 @@ services:
     <<: *redis
   
   avalon: &avalon
-    image: avalonmediasystem/avalon:6.x-dev
+    image: avalonmediasystem/avalon:6.x-slim-dev
     build: .
     command: bash -c "/docker_init.sh && rails server -b 0.0.0.0"
     depends_on:
