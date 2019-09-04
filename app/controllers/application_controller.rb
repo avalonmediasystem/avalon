@@ -161,7 +161,7 @@ class ApplicationController < ActionController::Base
     end
   end
 
-  def authenticate_user!(opts={})
+  def authenticate_user!(_opts = {})
     return if user_signed_in?
     if request.format == :json
       head :unauthorized
@@ -171,7 +171,7 @@ class ApplicationController < ActionController::Base
     end
   end
 
-  def after_invite_path_for(inviter, invitee = nil)
+  def after_invite_path_for(_inviter, _invitee = nil)
     main_app.persona_users_path
   end
 end
