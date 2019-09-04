@@ -16,7 +16,7 @@ Unless required by applicable law or agreed to in writing, software distributed
 <div class="navbar-left">
   <ul class="nav navbar-nav">
     <li><%= link_to 'Browse', main_app.search_catalog_path(search_field: 'all_fields', utf8: '✓', q: '') %></li>
-    <li><%= link_to 'Collections', main_app.collections_path %></li>
+    <li class=<%= active_for_controller('collections') %>><%= link_to 'Collections', main_app.collections_path %></li>
 
     <% if can? :read, Admin::Collection %>
     <li class=<%= active_for_controller('admin/collections') %>><%= link_to 'Manage Content', main_app.admin_collections_path %></li>
@@ -27,7 +27,7 @@ Unless required by applicable law or agreed to in writing, software distributed
     <% end %>
     <% if defined?(Samvera::Persona) %>
       <% if can? :manage, User %>
-        <li class=<%= active_for_controller('hyrax/admin/users') %>><%= link_to 'Manage Users', main_app.persona_users_path, target: '_admin' %></li>
+        <li class=<%= active_for_controller('samvera/persona/users') %>><%= link_to 'Manage Users', main_app.persona_users_path, target: '_admin' %></li>
       <% end %>
     <% end %>
     <% if user_session && user_session[:lti_group] %>
