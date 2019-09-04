@@ -267,7 +267,8 @@ describe MediaObjectsController, type: :controller do
       :terms_of_use,
       :table_of_contents,
       :physical_description,
-      :other_identifier
+      :other_identifier,
+      :rights_statement
     ]}
 
     describe "#create" do
@@ -354,6 +355,7 @@ describe MediaObjectsController, type: :controller do
           fields[:note_type] = ['???']
           fields[:date_created] = '???'
           fields[:copyright_date] = '???'
+          fields[:rights_statement] = '???'
           post 'create', params: { format: 'json', fields: fields, files: [master_file], collection_id: collection.id }
           expect(response.status).to eq(200)
           new_media_object = MediaObject.find(JSON.parse(response.body)['id'])
@@ -363,6 +365,7 @@ describe MediaObjectsController, type: :controller do
           expect(new_media_object.note).to eq []
           expect(new_media_object.date_created).to eq nil
           expect(new_media_object.copyright_date).to eq nil
+          expect(new_media_object.rights_statement).to eq nil
         end
         it "should merge supplied other identifiers after bib import" do
           stub_request(:get, sru_url).to_return(body: sru_response)
@@ -404,6 +407,7 @@ describe MediaObjectsController, type: :controller do
           expect(new_media_object.bibliographic_id).to eq media_object.bibliographic_id
           expect(new_media_object.related_item_url).to eq media_object.related_item_url
           expect(new_media_object.other_identifier).to eq media_object.other_identifier
+          expect(new_media_object.rights_statement).to eq media_object.rights_statement
           expect(new_media_object.avalon_resource_type).to eq media_object.avalon_resource_type
           expect(new_media_object.master_files.first.date_digitized).to eq(media_object.master_files.first.date_digitized)
           expect(new_media_object.master_files.first.identifier).to eq(media_object.master_files.first.identifier)

@@ -32,7 +32,7 @@ Unless required by applicable law or agreed to in writing, software distributed
       <% value = values[i] %>
       <% if options[:dropdown_field] %>
         <div class="input-group typed-textarea <%=options[:extra_classes]%>" data-textarea='<%= "typed_textarea_#{field}_#{i}" %>'>
-          <%= render partial: "dropdown_field", locals: {selected_value: value.present? ? value[options[:secondary_hash_key]] : nil, options: options} %>
+          <%= render partial: "multipart_dropdown_field", locals: {selected_value: value.present? ? value[options[:secondary_hash_key]] : nil, options: options} %>
           <input type="text" class="form-control hidden"><%# to maintain spacing %>
           <% value = value.present? ? value[options[:primary_hash_key]] : "" %>
         </div>

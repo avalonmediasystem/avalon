@@ -830,4 +830,60 @@ describe MediaObject do
       expect(media_object.related_item_url.first[:url]).to eq url
     end
   end
+
+  describe '#rights_statement' do
+    let(:media_object) { FactoryBot.build(:media_object).tap {|mo| mo.workflow.last_completed_step = "resource-description"} }
+    let(:rights_statement_uri) { ModsDocument::RIGHTS_STATEMENTS.keys.first }
+
+    it 'has a rights_statement' do
+      expect(media_object).to respond_to(:rights_statement)
+      expect { media_object.rights_statement = rights_statement_uri }.to change { media_object.rights_statement }.from(nil).to(rights_statement_uri)
+    end
+
+    it 'is indexed' do
+      media_object.rights_statement = rights_statement_uri
+      expect(media_object.to_solr["rights_statement_ssi"]).to eq rights_statement_uri
+    end
+
+    it 'roundtrips' do
+      media_object.rights_statement = rights_statement_uri
+      media_object.save!
+      expect(media_object.reload.rights_statement).to eq rights_statement_uri
+    end
+
+    context 'validation' do
+      it 'returns true values in controlled vocabulary' do
+        media_object.rights_statement = rights_statement_uri
+        expect(media_object.valid?).to be_truthy
+        expect(media_object.errors[:rights_statement]).to be_empty
+      end
+
+      it 'returns false and sets errors for values not in controlled vocabulary' do
+        media_object.rights_statement = 'bad-value'
+        expect(media_object.valid?).to be_falsey
+        expect(media_object.errors[:rights_statement]).not_to be_empty
+      end
+    end
+  end
+
+  describe '#terms_of_use' do
+    let(:media_object) { FactoryBot.build(:media_object).tap {|mo| mo.workflow.last_completed_step = "resource-description"} }
+    let(:terms_of_use_value) { "Example terms of use" }
+
+    it 'has a terms_of_use' do
+      expect(media_object).to respond_to(:terms_of_use)
+      expect { media_object.terms_of_use = terms_of_use_value }.to change { media_object.terms_of_use }.from(nil).to(terms_of_use_value)
+    end
+
+    it 'is indexed' do
+      media_object.terms_of_use = terms_of_use_value
+      expect(media_object.to_solr["terms_of_use_si"]).to eq terms_of_use_value
+    end
+
+    it 'roundtrips' do
+      media_object.terms_of_use = terms_of_use_value
+      media_object.save!
+      expect(media_object.reload.terms_of_use).to eq terms_of_use_value
+    end
+  end
 end
