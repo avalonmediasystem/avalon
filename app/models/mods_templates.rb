@@ -146,6 +146,16 @@ module ModsTemplates
         add_child_node(ng_xml.root, :_terms_of_use, value)
       end
 
+      define_template :_rights_statement do |xml, text|
+        xml.accessCondition(:type => 'use and reproduction', :displayLabel => 'Rights Statement'){
+          xml.text(text)
+        }
+      end
+
+      def add_rights_statement(value, opts={})
+        add_child_node(ng_xml.root, :_rights_statement, value)
+      end
+
       def get_original_related_item
         node = find_by_terms(:original_related_item)
         if node.empty?

@@ -37,7 +37,7 @@ Unless required by applicable law or agreed to in writing, software distributed
 	  <%= render partial: "two_part_field", locals: {fieldname: fieldname, value: value, options: options} %>
 	<% else %>
           <% if options[:dropdown_field] %>
-	    <%= render partial: "dropdown_field", locals: {selected_value: value.present? ? value[options[:secondary_hash_key]] : nil, options: options} %>
+	    <%= render partial: "multipart_dropdown_field", locals: {selected_value: value.present? ? value[options[:secondary_hash_key]] : nil, options: options} %>
             <% value = value.present? ? value[options[:primary_hash_key]] : "" %>
 	  <% end %>
 	  <%= text_field_tag fieldname, value || '', class: 'form-control' %>

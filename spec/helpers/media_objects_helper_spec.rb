@@ -76,4 +76,30 @@ describe MediaObjectsHelper do
       end
     end
   end
+
+  describe '#display_rights_statement' do
+    let(:media_object) { instance_double("MediaObject", rights_statement: rights_statement_uri) }
+    let(:rights_statement_uri) { ModsDocument::RIGHTS_STATEMENTS.keys.first }
+    let(:rights_statement_label) { ModsDocument::RIGHTS_STATEMENTS.values.first }
+
+    subject { helper.display_rights_statement(media_object) }
+
+    it 'links to the rights statement page' do
+      expect(subject).to eq "<a href=\"#{rights_statement_uri}\">#{rights_statement_label}</a>"
+    end
+
+    context 'when rights statement is not set' do
+      let(:rights_statement_uri) { nil }
+      it 'returns nil' do
+        expect(subject).to be_nil
+      end
+    end
+
+    context 'when rights statement is not in controlled vocabulary' do
+      let(:rights_statement_uri) { 'bad-value' }
+      it 'returns nil' do
+        expect(subject).to be_nil
+      end
+    end
+  end
 end
