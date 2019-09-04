@@ -61,7 +61,7 @@ class User < ActiveRecord::Base
   end
 
   def self.find_and_verify_by_username(username)
-    user = User.with_deleted.find_by(username: username)
+    user = User.find_by(username: username)
     if user&.deleted_at
       raise Avalon::DeletedUserId
     end
@@ -69,7 +69,7 @@ class User < ActiveRecord::Base
   end
 
   def self.find_and_verify_by_email(email)
-    user = User.with_deleted.find_by(email: email)
+    user = User.find_by(email: email)
     if user&.deleted_at
       raise Avalon::DeletedUserId
     end
