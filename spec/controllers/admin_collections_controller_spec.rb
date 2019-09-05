@@ -354,19 +354,44 @@ describe Admin::CollectionsController, type: :controller do
   describe '#attach_poster' do
     context 'adding a poster' do
       let(:collection) { FactoryBot.create(:collection) }
+      let(:resized_poster_data) { "image data" }
 
       before do
         login_user collection.managers.first
-        allow(controller).to receive(:resize_uploaded_poster).and_return("image data")
+        allow(controller).to receive(:resize_uploaded_poster).and_return(resized_poster_data)
       end
 
       it 'adds the poster' do
         file = fixture_file_upload('/collection_poster.jpg', 'image/jpeg')
-        expect { post :attach_poster, params: { id: collection.id, admin_collection: { poster: file } } }.to change { collection.poster.present? }.from(false).to(true)
+        expect { post :attach_poster, params: { id: collection.id, admin_collection: { poster: file } } }.to change { collection.reload.poster.present? }.from(false).to(true)
         expect(collection.poster.mime_type).to eq 'image/png'
         expect(collection.poster.original_name).to eq 'collection_poster.jpg'
         expect(collection.poster.content).not_to be_blank
         expect(response).to redirect_to(admin_collection_path(collection))
+      end
+
+      context 'with an invalid file' do
+        let(:resized_poster_data) { nil }
+
+        it 'displays an error when the file is not an image' do
+          file = fixture_file_upload('/captions.vtt', 'text/vtt')
+          expect { post :attach_poster, params: { id: collection.id, admin_collection: { poster: file } } }.not_to change { collection.reload.poster.present? }
+          expect(flash[:error]).not_to be_empty
+          expect(response).to redirect_to(admin_collection_path(collection))
+        end
+      end
+
+      context 'when saving fails' do
+        before do
+          allow_any_instance_of(Admin::Collection).to receive(:save).and_return(false)
+        end
+  
+        it 'returns an error' do
+          file = fixture_file_upload('/collection_poster.jpg', 'image/jpeg')
+          expect { post :attach_poster, params: { id: collection.id, admin_collection: { poster: file } } }.not_to change { collection.reload.poster.present? }
+          expect(flash[:error]).not_to be_empty
+          expect(response).to redirect_to(admin_collection_path(collection))
+        end
       end
     end
 
@@ -378,7 +403,7 @@ describe Admin::CollectionsController, type: :controller do
       end
 
       it 'removes the poster' do
-        expect { post :attach_poster, params: { id: collection.id } }.to change { collection.poster.present? }.from(true).to(false)
+        expect { post :attach_poster, params: { id: collection.id } }.to change { collection.reload.poster.present? }.from(true).to(false)
         expect(response).to redirect_to(admin_collection_path(collection))
       end
     end
