@@ -13,26 +13,26 @@ Unless required by applicable law or agreed to in writing, software distributed
   specific language governing permissions and limitations under the License.
 ---  END LICENSE_HEADER BLOCK  ---
 %>
-  <div class="custom-header">
-    <div class="row">
-      <div class="row-fluid whitespace-half">
-      <header>
-        <div class="col-sm-2 logo">
-        <%= link_to main_app.root_path do %>
+<div class="custom-header">
+  <div class="container">
+    <header>
+      <div class="row">
+        <div class="col-sm-6 logo">
+          <%= link_to main_app.root_path do %>
           <%= image_tag "Home.png", alt: "Avalon Media System - #{t(:release_label)} #{Avalon::VERSION}" %>
-        <% end %>
+          <% end %>
         </div>
-        
+
         <!-- <div class="col-md-6">
           <h1>Avalon Media System</h1>
           <p class="lead"><%=release_text%></p>
         </div>    -->
 
         <%# By default shift log in / log out to the header %>
-        <div class="pull-right log-in-out">
+        <div class="col-sm-6 text-right log-in-out text-muted">
           <%= render 'modules/user_management' %>
         </div>
-      </header>
       </div>
-    </div>
+    </header>
   </div>
+</div>

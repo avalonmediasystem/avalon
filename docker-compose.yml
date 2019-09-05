@@ -23,7 +23,7 @@ services:
       - POSTGRES_DB=avalon
     networks:
       internal:
-  db-test: 
+  db-test:
     <<: *db-avalon
     volumes: []
 
@@ -34,7 +34,7 @@ services:
     volumes:
       - fedora:/data
     environment:
-     - JAVA_OPTIONS=-Dfcrepo.modeshape.configuration=classpath:/config/file-simple/repository.json -Dfcrepo.home=/data
+      - JAVA_OPTIONS=-Dfcrepo.modeshape.configuration=classpath:/config/file-simple/repository.json -Dfcrepo.home=/data
     networks:
       internal:
   fedora-test:
@@ -56,8 +56,8 @@ services:
   solr-test:
     <<: *solr
     volumes:
-    - ./solr/config:/opt/solr/avalon_conf     
-  
+      - ./solr/config:/opt/solr/avalon_conf
+
   matterhorn:
     image: avalonmediasystem/matterhorn
     volumes:
@@ -68,12 +68,12 @@ services:
       internal:
   hls:
     image: avalonmediasystem/nginx
-    environment: 
+    environment:
       - AVALON_DOMAIN=http://avalon:3000
     volumes:
       - streaming:/data
     ports:
-      - "8880:80"
+      - '8880:80'
     networks:
       external:
 
@@ -83,7 +83,7 @@ services:
       internal:
   redis-test:
     <<: *redis
-  
+
   avalon: &avalon
     image: avalonmediasystem/avalon:6.x-slim-dev
     build: .
@@ -143,8 +143,8 @@ services:
       - ./masterfiles:/masterfiles
       - npms:/home/app/avalon/node_modules
     ports:
-      - "3000:3000"
-      - "3001:3001"
+      - '3000:3000'
+      - '3001:3001'
     networks:
       internal:
       external:

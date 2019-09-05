@@ -12,10 +12,13 @@
 
 ActiveRecord::Schema.define(version: 2019_08_06_193607) do
 
+  # These are extensions that must be enabled in order to support this database
+  enable_extension "plpgsql"
+
   create_table "annotations", force: :cascade do |t|
     t.string "uuid"
     t.string "source_uri"
-    t.integer "playlist_item_id"
+    t.bigint "playlist_item_id"
     t.text "annotation"
     t.string "type"
     t.index ["playlist_item_id"], name: "index_annotations_on_playlist_item_id"
@@ -33,12 +36,12 @@ ActiveRecord::Schema.define(version: 2019_08_06_193607) do
   end
 
   create_table "batch_entries", force: :cascade do |t|
-    t.integer "batch_registries_id"
-    t.text "payload", limit: 1073741823
+    t.bigint "batch_registries_id"
+    t.text "payload"
     t.boolean "complete", default: false, null: false
     t.boolean "error", default: false, null: false
     t.string "current_status"
-    t.text "error_message", limit: 65535
+    t.text "error_message"
     t.string "media_object_pid"
     t.integer "position"
     t.datetime "created_at", null: false
@@ -118,7 +121,7 @@ ActiveRecord::Schema.define(version: 2019_08_06_193607) do
     t.string "namespace", default: "default", null: false
     t.string "template", null: false
     t.text "counters"
-    t.integer "seq", default: 0
+    t.bigint "seq", default: 0
     t.binary "rand"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -126,8 +129,8 @@ ActiveRecord::Schema.define(version: 2019_08_06_193607) do
   end
 
   create_table "playlist_items", force: :cascade do |t|
-    t.integer "playlist_id", null: false
-    t.integer "clip_id", null: false
+    t.bigint "playlist_id", null: false
+    t.bigint "clip_id", null: false
     t.integer "position"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -137,7 +140,7 @@ ActiveRecord::Schema.define(version: 2019_08_06_193607) do
 
   create_table "playlists", force: :cascade do |t|
     t.string "title"
-    t.integer "user_id", null: false
+    t.bigint "user_id", null: false
     t.string "comment"
     t.string "visibility"
     t.datetime "created_at", null: false
@@ -184,7 +187,7 @@ ActiveRecord::Schema.define(version: 2019_08_06_193607) do
     t.string "access_token"
     t.string "tags"
     t.string "source"
-    t.text "manifest", limit: 16777215
+    t.text "manifest"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["user_id"], name: "index_timelines_on_user_id"
@@ -222,4 +225,5 @@ ActiveRecord::Schema.define(version: 2019_08_06_193607) do
     t.index ["username"], name: "index_users_on_username", unique: true
   end
 
+  add_foreign_key "timelines", "users"
 end
