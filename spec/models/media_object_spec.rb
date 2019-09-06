@@ -686,8 +686,8 @@ describe MediaObject do
         media_object.resource_type = "moving image"
         media_object.format = "video/mpeg"
         instance = double("instance")
-        allow(Avalon::BibRetriever).to receive(:instance).and_return(instance)
-        allow(Avalon::BibRetriever.instance).to receive(:get_record).and_return(mods)
+        allow(Avalon::BibRetriever).to receive(:for).and_return(instance)
+        allow(instance).to receive(:get_record).and_return(mods)
       end
 
       it 'should not override format' do
@@ -706,7 +706,6 @@ describe MediaObject do
       let!(:request) { stub_request(:get, sru_url).to_return(body: sru_response) }
 
       it 'should strip whitespace off bib_id parameter' do
-        Settings.bib_retriever = { 'protocol' => 'sru', 'url' => 'http://zgate.example.edu:9000/db' }
         expect { media_object.descMetadata.populate_from_catalog!(" #{bib_id} ", 'local') }.to change { media_object.title }.to "245 A : B F G K N P S"
         expect(request).to have_been_requested
       end
@@ -716,12 +715,10 @@ describe MediaObject do
       let(:sru_response) { File.read(File.expand_path("../../fixtures/#{bib_id}-unknown.xml",__FILE__)) }
       let!(:request) { stub_request(:get, sru_url).to_return(body: sru_response) }
       it 'should not replace the previous value if there is one' do
-        Settings.bib_retriever = { 'protocol' => 'sru', 'url' => 'http://zgate.example.edu:9000/db' }
         expect { media_object.descMetadata.populate_from_catalog!(" #{bib_id} ", 'local') }.to_not change { media_object.date_issued }
         expect(request).to have_been_requested
       end
       it 'should replace missing value with unknown/unknown' do
-        Settings.bib_retriever = { 'protocol' => 'sru', 'url' => 'http://zgate.example.edu:9000/db' }
         media_object.date_issued = ''
         expect { media_object.descMetadata.populate_from_catalog!(" #{bib_id} ", 'local') }.to change { media_object.date_issued }.to 'unknown/unknown'
         expect(request).to have_been_requested

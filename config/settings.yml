@@ -57,9 +57,12 @@ master_file_management:
   strategy: 'none' #'delete', or 'move' (for move uncomment and configure next line)
   #path: '/path/to/move/to'
 bib_retriever:
-  protocol: sru
-  url: http://zgate.example.edu:9000/exampledb
-  query: rec.id='%s'
+  default:
+    protocol: sru
+    url: http://zgate.example.edu:9000/exampledb
+    query: rec.id='%s'
+    retriever_class: 'Avalon::BibRetriever::SRU'
+    retriever_class_require: 'avalon/bib_retriever/sru'
 controlled_vocabulary:
   path: config/controlled_vocabulary.yml
 encode_throttling:

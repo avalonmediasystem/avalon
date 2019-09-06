@@ -20,7 +20,7 @@ class ResourceDescriptionStep < Avalon::Workflow::BasicStep
   def execute context
     media_object = context[:media_object]
     populate_from_catalog = context[:media_object_params].delete(:import_bib_record)
-    if populate_from_catalog and Avalon::BibRetriever.configured? and context[:media_object_params][:bibliographic_id].present?
+    if populate_from_catalog && context[:media_object_params][:bibliographic_id].present? && Avalon::BibRetriever.configured?(context[:media_object_params][:bibliographic_id][:source])
       media_object.descMetadata.populate_from_catalog!(context[:media_object_params][:bibliographic_id][:id],context[:media_object_params][:bibliographic_id][:source])
     else
       media_object.permalink = context[:media_object_params].delete(:permalink)

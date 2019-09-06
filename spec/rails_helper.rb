@@ -133,6 +133,7 @@ RSpec.configure do |config|
     # Clear out the job queue to ensure tests run with clean environment
     ActiveJob::Base.queue_adapter.enqueued_jobs = []
     ActiveJob::Base.queue_adapter.performed_jobs = []
+    Settings.bib_retriever = { 'default' => { 'protocol' => 'sru', 'url' => 'http://zgate.example.edu:9000/db', 'retriever_class' => 'Avalon::BibRetriever::SRU', 'retriever_class_require' => 'avalon/bib_retriever/sru' } }
   end
 
   config.after :each do
