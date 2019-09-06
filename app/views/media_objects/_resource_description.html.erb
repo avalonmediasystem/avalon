@@ -14,8 +14,8 @@ Unless required by applicable law or agreed to in writing, software distributed
 ---  END LICENSE_HEADER BLOCK  ---
 %>
 <div id="resource_description_content">
-<p>Fields followed by an asterisk (*) are required.</p>
-<%= form_for @media_object, html: { class: 'form-vertical' } do |form| %>
+  <p class="text-muted">Fields followed by an asterisk (*) are required.</p>
+  <%= form_for @media_object, html: { class: 'form-vertical' } do |form| %>
   <%= hidden_field_tag :step, @active_step %>
 
   <%= render partial: 'text_field',
@@ -122,5 +122,5 @@ Unless required by applicable law or agreed to in writing, software distributed
                                 dropdown_options: ModsDocument::NOTE_TYPES }} %>
 
   <%= render 'workflow_buttons' %>
-<% end %>
+  <% end %>
 </div>

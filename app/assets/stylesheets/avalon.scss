@@ -402,10 +402,6 @@ header div {
 
 #sidebar,
 #facets {
-  @media (min-width: $screen-sm-min) {
-    max-width: 220px;
-  }
-
   padding-bottom: 10px;
 
   .panel {
@@ -1042,7 +1038,7 @@ div.status-detail {
     list-style: none;
     padding: 0;
     margin: 0;
-    min-width: 920px;
+    // min-width: 920px;
   }
 
   ul.header {
@@ -1075,7 +1071,7 @@ div.status-detail {
       }
 
       &:nth-of-type(3) {
-        width: 40%;
+        width: 30%;
       }
 
       &:nth-of-type(4) {
@@ -1616,7 +1612,7 @@ h5.panel-title {
 // Page title area (because looks like we're sneaking in
 // buttons, and other stuff horizontally positioned alongside title
 .page-title-wrapper {
-  margin-bottom: 1rem;
+  margin-bottom: 2rem;
 }
 
 // Generic content spacer

@@ -17,47 +17,63 @@ Unless required by applicable law or agreed to in writing, software distributed
 
 <% if can_update %>
 
-  <%= bootstrap_form_for object, html: { class: "form-horizontal", id: 'access_control_form'}  do |vid| %>
-  <%= hidden_field_tag :step, @active_step %>
-  <fieldset class='item-discovery'>
-    <legend>Item discovery</legend>
+<%= bootstrap_form_for object, html: { id: 'access_control_form'}  do |vid| %>
+<%= hidden_field_tag :step, @active_step %>
+
+<fieldset class='item-discovery'>
+  <legend>Item discovery</legend>
+  <div class="form-group">
+    <div class="checkbox">
       <%= label_tag :hidden do %>
-        <%= check_box_tag :hidden, '1', (hidden) %>
-        Hide this item from search results 
+      <%= check_box_tag :hidden, '1', (hidden) %>
+      Hide this item from search results
       <% end %>
-  </fieldset>
-  <fieldset class='item-access'>
-    <legend>Item access</legend>
+    </div>
+  </div>
+</fieldset>
+
+<fieldset class='item-access'>
+  <legend>Item access</legend>
+  <div class="form-group">
+    <div class="radio">
       <%= label_tag :visibility do %>
       <%= radio_button_tag :visibility, 'public', (@visibility == 'public') %>
-        Available to the general public
+      Available to the general public
       <% end %>
-
+    </div>
+    <div class="radio">
       <%= label_tag :visibility do %>
       <%= radio_button_tag :visibility, 'restricted', (@visibility == 'restricted') %>
-        Logged in users only
+      Logged in users only
       <% end %>
-
+    </div>
+    <div class="radio">
       <%= label_tag :visibility do %>
       <%= radio_button_tag :visibility, 'private', (@visibility == 'private') %>
-        Collection staff only
+      Collection staff only
       <% end %>
-  </fieldset> 
-  <% end #form_for %>		
+    </div>
+  </div>
+</fieldset>
+<% end #form_for %>
 
 <% else %>
 
-  <%= bootstrap_form_for object, html: { class: "form-horizontal", id: 'access_control_form'}  do |vid| %>
-  <%= hidden_field_tag :step, @active_step %>
-  <fieldset class='item-discovery'>
-    <legend>Item discovery</legend>
-    <%= hidden ? "Item is hidden from search results" : 
+<%= bootstrap_form_for object, html: { id: 'access_control_form'}  do |vid| %>
+<%= hidden_field_tag :step, @active_step %>
+<fieldset class='item-discovery'>
+  <legend>Item discovery</legend>
+  <div class="form-group">
+    <%= hidden ? "Item is hidden from search results" :
         "Item is not hidden from search results" %>
-  </fieldset>   
-  <fieldset class='item-access'>
-    <legend>Item access</legend>
-      Item is viewable by
-      <%= case @visibility
+  </div>
+</fieldset>
+
+<fieldset class='item-access'>
+  <legend>Item access</legend>
+  <div class="form-group">
+    Item is viewable by
+    <%= case @visibility
           when "public"
             "the general public"
           when "restricted"
@@ -65,29 +81,29 @@ Unless required by applicable law or agreed to in writing, software distributed
           when "private"
             "collection staff only"
           end %>
-  </fieldset> 
-  <% end #form_for %>
+  </div>
+</fieldset>
+<% end #form_for %>
 
-<% end %>		
+<% end %>
 
-  <fieldset class='special-access'>
-    <legend>Assign special access</legend>
-    <div class="row">
-        <%= render "modules/access_object", object: object,
+<fieldset class='special-access'>
+  <legend>Assign special access</legend>
+  <%= render "modules/access_object", object: object,
           access_object: "user", members: @users, leases: @user_leases,
           autocomplete_model: 'user',
           input_disabled: !can_update %>
-        <%= render "modules/access_object", object: object,
+  <%= render "modules/access_object", object: object,
           access_object: "group", members: @groups, leases: @group_leases,
           dropdown_values: [@addable_groups, 'name', 'name'],
           input_disabled: !can_update %>
-        <%= render "modules/access_object", object: object,
+  <%= render "modules/access_object", object: object,
           access_object: "class", members: @virtual_groups, leases: @virtual_leases,
           autocomplete_model: 'externalGroup',
           display_helper: :vgroup_display,
           input_disabled: !can_update %>
-        <%= render "modules/access_object", object: object,
+  <%= render "modules/access_object", object: object,
           access_object: "ipaddress", members: @ip_groups, leases: @ip_leases,
           input_disabled: !can_update %>
-    </div>
-  </fieldset>
+
+</fieldset>

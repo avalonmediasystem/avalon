@@ -14,14 +14,14 @@ Unless required by applicable law or agreed to in writing, software distributed
 ---  END LICENSE_HEADER BLOCK  ---
 %>
 <ul class="nav nav-wizard">
-  <% @workflow_steps.to_a.each do |step| %>    
-    <%= render "ingest_step", step: step, active: @media_object.workflow.active?(step.step) %>
+  <% @workflow_steps.to_a.each do |step| %>
+  <%= render "ingest_step", step: step, active: @media_object.workflow.active?(step.step) %>
   <% end %>
 
-  <li class="nav-success"> 
+  <li class="nav-success">
     <%= link_to media_object_path(@media_object) do %>
-      Preview
+    <strong>Preview</strong>
     <% end %>
-    <p>How end users see the item</p>
+    <p class="text-muted">How end users see the item</p>
   </li>
 </ul>

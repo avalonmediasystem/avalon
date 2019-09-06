@@ -15,17 +15,24 @@ Unless required by applicable law or agreed to in writing, software distributed
 %>
 <% @page_title = t('media_objects.edit.title', :media_object_title => (@media_object.title || @media_object.id), :step_title => HYDRANT_STEPS.get_step(@active_step).title, :application_name => application_name) %>
 
-<div class="container-fluid">
-  <div class="row">
-    <div class="col-md-3 col-sm-4" id="sidebar">
-      <%= render "ingest_steps" %>
-      <%= render "remove_item" %>
+
+<div class="row content-block">
+  <div class="col-sm-3" id="sidebar">
+    <%= render "ingest_steps" %>
+    <%= render "remove_item" %>
+  </div>
+
+  <div id="main_body" class="col-sm-9">
+    <div class="page-title-wrapper">
+      <h1>Edit Media Object</h1>
     </div>
-    
-    <div id="main_body" class="col-md-9 col-sm-8">
-      <h5><span class="muted"><%= @media_object.collection.name.present? ? @media_object.collection.name : 'Untitled collection' %> > <%= @media_object.title.present? ? @media_object.title : 'Untitled item' %></span></h5>
-      <h3><%= HYDRANT_STEPS.get_step(@active_step).title %></h3>  
-      <%= render current_step_for @active_step %>
-    </div>
+
+    <ol class="breadcrumb">
+      <li><%= @media_object.collection.name.present? ? @media_object.collection.name : 'Untitled collection' %></li>
+      <li><%= @media_object.title.present? ? @media_object.title : 'Untitled item' %></li>
+    </ol>
+
+    <h3><%= HYDRANT_STEPS.get_step(@active_step).title %></h3>
+    <%= render current_step_for @active_step %>
   </div>
 </div>
