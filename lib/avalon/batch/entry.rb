@@ -35,11 +35,10 @@ module Avalon
       end
 
       def media_object
-        @media_object ||= MediaObject.new(avalon_uploader: user_key,
-                                          collection: collection).tap do |mo|
+        @media_object ||= MediaObject.new(avalon_uploader: user_key, collection: collection).tap do |mo|
           mo.workflow.origin = 'batch'
           mo.workflow.last_completed_step = HYDRANT_STEPS.last.step
-          if Avalon::BibRetriever.configured? and fields[:bibliographic_id].present?
+          if Avalon::BibRetriever.configured?(fields[:bibliographic_id_label]) and fields[:bibliographic_id].present?
             begin
               mo.descMetadata.populate_from_catalog!(fields[:bibliographic_id].first, Array(fields[:bibliographic_id_label]).first)
             rescue Exception => e

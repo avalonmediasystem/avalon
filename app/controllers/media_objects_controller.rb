@@ -181,7 +181,7 @@ class MediaObjectsController < ApplicationController
     @media_object.avalon_uploader = 'REST API'
 
     populate_from_catalog = (!!api_params[:import_bib_record] && media_object_parameters[:bibliographic_id].present?)
-    if populate_from_catalog and Avalon::BibRetriever.configured?
+    if populate_from_catalog and Avalon::BibRetriever.configured?(media_object_parameters[:bibliographic_id][:source])
       begin
         # Set other identifiers
         # FIXME: The ordering in the slice is important

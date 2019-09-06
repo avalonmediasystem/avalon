@@ -209,7 +209,7 @@ class ModsDocument < ActiveFedora::OmDatastream
     bib_id.strip!
     if bib_id.present?
       bib_id_label ||= IDENTIFIER_TYPES.keys.first
-      new_record = Avalon::BibRetriever.instance.get_record(bib_id)
+      new_record = Avalon::BibRetriever.for(bib_id_label).get_record(bib_id)
       if new_record.present?
         old_resource_type = self.resource_type.dup
         old_media_type = self.media_type.dup

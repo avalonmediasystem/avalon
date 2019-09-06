@@ -20,33 +20,42 @@ module Avalon
     attr_reader :config
 
     class << self
-      def configured?
+      def configured?(bib_id_type = 'default')
         begin
-          instance.present?
+          self.for(bib_id_type)
         rescue ArgumentError
           false
         end
       end
 
-      def instance
-        config = Settings.bib_retriever
-        unless config.respond_to?(:[]) and config['protocol'].present?
-          raise ArgumentError, "Missing/invalid bib retriever configuration"
-        end
+      def instance(bib_id_type = 'default')
+        self.for(bib_id_type)
+      end
 
-        case config['protocol'].downcase
-        when 'sru', /^yaz/
-          require 'avalon/bib_retriever/sru'
-          Avalon::BibRetriever::SRU.new config
-        when /^z(oom|39)/
-          require 'avalon/bib_retriever/zoom'
-          Avalon::BibRetriever::Zoom.new config
-        else
-          raise ArgumentError, "Unknown bib retriever protocol: #{config['protocol']}"
-        end
+      def for(bib_id_type)
+        config = configuration_for(bib_id_type)
+        require config['retriever_class_require'] if config['retriever_class_require']
+        config['retriever_class'].constantize.new config
       end
 
       protected :new, :allocate
+
+      def configurations
+        raise ArgumentError, "Missing/invalid bib retriever configuration" unless Settings.bib_retriever.present?
+        Settings.bib_retriever
+      end
+
+      def configuration_for(bib_id_type)
+        config = configurations[bib_id_type]
+        config ||= configurations['default']
+        raise ArgumentError, "Missing bib retriever configuration" unless config
+        raise ArgumentError, "Invalid bib retriever configuration" unless valid_configuration?(config)
+        config
+      end
+
+      def valid_configuration?(config)
+        config.present? && config.respond_to?(:[]) && config['protocol'].present? && config['retriever_class'].present?
+      end
     end
 
     def initialize config
