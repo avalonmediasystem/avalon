@@ -20,8 +20,8 @@ Unless required by applicable law or agreed to in writing, software distributed
 </div>
 
 <div class="well">
-  <h3><%= @collection.name %></h3>
-  <div class="row well-vertical-spacer">
+  <h2><%= @collection.name %></h2>
+  <div class="row">
     <div class="col-md-9">
       <p><strong>Description:</strong></p>
       <p class="collection-description"><%= @collection.description %></p>
@@ -62,7 +62,7 @@ Unless required by applicable law or agreed to in writing, software distributed
 
 <div class="panel panel-default">
   <div class="panel-heading">
-    <h2 class="panel-title">Assign Staff Roles</h2>
+    <h3 class="panel-title">Assign Staff Roles</h3>
   </div>
   <div class="panel-body">
     <div class='staff-roles-section'>
@@ -88,17 +88,13 @@ Unless required by applicable law or agreed to in writing, software distributed
   </div>
 </div>
 
-<div class="panel panel-default">
-  <div class="panel-heading">
-    <h2 class="panel-title">Set Default Access Control for New Items</h2>
-  </div>
-  <div class="panel-body">
-    <%= render "modules/access_control", { object: @collection, visibility: @collection.default_visibility, hidden: @collection.default_hidden } %>
+<div class="content-block">
+  <h3 style="padding-top: 3rem;">Set Default Access Control for New Items</h3>
+  <%= render "modules/access_control", { object: @collection, visibility: @collection.default_visibility, hidden: @collection.default_hidden } %>
 
-    <% if can? :update_access_control, @collection %>
-    <%= submit_tag "Save Access Settings", name: "save_access", class: "btn btn-primary", form: 'access_control_form' %>
-    <% end %>
-  </div>
+  <% if can? :update_access_control, @collection %>
+  <%= submit_tag "Save Access Settings", name: "save_access", class: "btn btn-primary", form: 'access_control_form' %>
+  <% end %>
 </div>
 
 <%= render "form", modal_title: "Edit Collection Infomation" %>

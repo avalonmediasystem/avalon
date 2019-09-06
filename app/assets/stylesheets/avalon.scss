@@ -445,10 +445,6 @@ div[id*='facet-panel-'] {
 
 /* Footer */
 footer {
-  // margin-top: 10px;
-  // padding-top: 20px;
-  // border-top: 1px solid #eee;
-  // border-bottom: 1px solid #fff;
   height: 5rem;
   line-height: 5rem;
 
@@ -468,12 +464,8 @@ footer {
   bottom: 0;
   width: 100%;
   min-height: 2.5rem;
-  background: $orange;
-  color: $greenBG;
-}
-
-footer a {
-  color: $greenBG !important;
+  background: #efefef;
+  color: #999999;
 }
 
 footer ul {
@@ -494,10 +486,6 @@ footer .release {
 }
 
 /* Alerts */
-
-.alert {
-  padding: 8px;
-}
 
 .alert-success {
   text-shadow: rgba(0, 0, 0, 0.1) 0px 1px 0px;
@@ -1582,6 +1570,13 @@ h5.panel-title {
  * Collections
  */
 .collections-list-wrapper {
+  table {
+    td {
+      &:nth-child(1) {
+        width: 20%;
+      }
+    }
+  }
 }
 
 .well-vertical-spacer {

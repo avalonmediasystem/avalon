@@ -32,7 +32,7 @@ Unless required by applicable law or agreed to in writing, software distributed
       <li><%= @media_object.title.present? ? @media_object.title : 'Untitled item' %></li>
     </ol>
 
-    <h3><%= HYDRANT_STEPS.get_step(@active_step).title %></h3>
+    <h2><%= HYDRANT_STEPS.get_step(@active_step).title %></h2>
     <%= render current_step_for @active_step %>
   </div>
 </div>
