@@ -15,7 +15,7 @@
 require 'rails_helper'
 
 describe IiifCanvasPresenter do
-  let(:media_object) { FactoryBot.build(:media_object) }
+  let(:media_object) { FactoryBot.create(:media_object) }
   let(:derivative) { FactoryBot.build(:derivative) }
   let(:master_file) { FactoryBot.build(:master_file, media_object: media_object, derivatives: [derivative]) }
   let(:stream_info) { master_file.stream_details }

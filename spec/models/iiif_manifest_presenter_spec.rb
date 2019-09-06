@@ -15,7 +15,7 @@
 require 'rails_helper'
 
 describe IiifManifestPresenter do
-  let(:media_object) { FactoryBot.build(:media_object) }
+  let(:media_object) { FactoryBot.create(:media_object) }
   let(:master_file) { FactoryBot.build(:master_file, media_object: media_object) }
   let(:presenter) { described_class.new(media_object: media_object, master_files: [master_file]) }
 
