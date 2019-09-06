@@ -18,9 +18,9 @@ require 'active_model'
 module Avalon
   module Batch
     class Entry
-    	extend ActiveModel::Translation
+      extend ActiveModel::Translation
 
-    	attr_reader :fields, :files, :opts, :row, :errors, :manifest, :collection
+      attr_reader :fields, :files, :opts, :row, :errors, :manifest, :collection
 
       def initialize(fields, files, opts, row, manifest)
         @fields = fields || opts[:fields]
@@ -38,7 +38,7 @@ module Avalon
         @media_object ||= MediaObject.new(avalon_uploader: user_key, collection: collection).tap do |mo|
           mo.workflow.origin = 'batch'
           mo.workflow.last_completed_step = HYDRANT_STEPS.last.step
-          if Avalon::BibRetriever.configured?(fields[:bibliographic_id_label]) and fields[:bibliographic_id].present?
+          if Avalon::BibRetriever.configured?(fields[:bibliographic_id_label]) && fields[:bibliographic_id].present?
             begin
               mo.descMetadata.populate_from_catalog!(fields[:bibliographic_id].first, Array(fields[:bibliographic_id_label]).first)
             rescue Exception => e
