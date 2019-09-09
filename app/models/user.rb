@@ -76,6 +76,10 @@ class User < ActiveRecord::Base
     user
   end
 
+  def self.find_by_username_or_email(login)
+    find_and_verify_by_username(login) || find_and_verify_by_email(login)
+  end
+
   def self.find_or_create_by_username_or_email(username, email, provider = 'local')
     find_and_verify_by_username(username) ||
       find_and_verify_by_email(email) ||

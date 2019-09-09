@@ -21,13 +21,17 @@ class CollectionSearchBuilder < Blacklight::SearchBuilder
   # self.default_processor_chain += [:add_access_controls_to_solr_params_if_not_admin, :only_wanted_models, :gated_discovery_join]
   self.default_processor_chain += [:gated_discovery_join, :only_wanted_models]
 
+  attr_accessor :user
+
   def only_wanted_models(solr_parameters)
     solr_parameters[:fq] ||= []
     solr_parameters[:fq] << 'has_model_ssim:"Admin::Collection"'
   end
 
   def add_access_controls_to_solr_params_if_not_admin(solr_parameters)
-    add_access_controls_to_solr_params(solr_parameters) if current_ability.cannot? :discover_everything, Admin::Collection
+    ability = Ability.new(user) if user.present?
+    ability ||= current_ability
+    apply_gated_discovery(solr_parameters, discovery_permissions, ability) if ability.cannot? :discover_everything, Admin::Collection
   end
 
   def gated_discovery_join(solr_parameters)
@@ -38,4 +42,19 @@ class CollectionSearchBuilder < Blacklight::SearchBuilder
     solr_parameters[:q] = query
     solr_parameters[:defType] = "lucene"
   end
+
+  private
+
+    # Grant access based on user id & group
+    # @return [Array{Array{String}}]
+    def gated_discovery_filters(permission_types = discovery_permissions, ability = current_ability)
+      filters = super()
+      filters + solr_access_filters_logic.map { |method| send(method, permission_types, ability).reject(&:blank?) }.reject(&:empty?)
+    end
+
+    def apply_gated_discovery(solr_parameters, permission_types = discovery_permissions, ability = current_ability)
+      solr_parameters[:fq] ||= []
+      solr_parameters[:fq] << gated_discovery_filters(permission_types, ability).reject(&:blank?).join(' OR ')
+      Rails.logger.debug("Solr parameters: #{solr_parameters.inspect}")
+    end
 end
