@@ -23,7 +23,7 @@ class Admin::CollectionsController < ApplicationController
   def load_and_authorize_collections
     authorize!(params[:action].to_sym, Admin::Collection)
     repository = CatalogController.new.repository
-    builder = ::CollectionSearchBuilder.new([:add_access_controls_to_solr_params_if_not_admin, :only_wanted_models], self)
+    builder = ::CollectionSearchBuilder.new([:add_access_controls_to_solr_params_if_not_admin, :only_wanted_models, :add_paging_to_solr], self).rows(100_000)
     if params[:user].present? && can?(:manage, Admin::Collection)
       user = User.find_by_username_or_email(params[:user])
       unless user.present?
@@ -33,7 +33,7 @@ class Admin::CollectionsController < ApplicationController
       builder.user = user
     end
     response = repository.search(builder)
-    @collections = response.documents.collect { |doc| ::Admin::CollectionPresenter.new(doc) }
+    @collections = response.documents.collect { |doc| ::Admin::CollectionPresenter.new(doc) }.sort_by(&:name)
   end
 
   # GET /collections
