@@ -321,7 +321,6 @@ describe MediaObjectsController, type: :controller do
           expect(new_media_object.workflow.last_completed_step).to eq([HYDRANT_STEPS.last.step])
         end
         it "should create a new media_object with successful bib import" do
-          Settings.bib_retriever = { 'protocol' => 'sru', 'url' => 'http://zgate.example.edu:9000/db' }
           stub_request(:get, sru_url).to_return(body: sru_response)
           fields = { bibliographic_id: bib_id }
           post 'create', params: { format: 'json', import_bib_record: true, fields: fields, files: [master_file], collection_id: collection.id }
@@ -331,7 +330,6 @@ describe MediaObjectsController, type: :controller do
           expect(new_media_object.title).to eq('245 A : B F G K N P S')
         end
         it "should create a new media_object with supplied fields when bib import fails" do
-          Settings.bib_retriever = { 'protocol' => 'sru', 'url' => 'http://zgate.example.edu:9000/db' }
           stub_request(:get, sru_url).to_return(body: nil)
           ex_media_object = FactoryBot.create(:media_object)
           fields = {}
@@ -367,7 +365,6 @@ describe MediaObjectsController, type: :controller do
           expect(new_media_object.copyright_date).to eq nil
         end
         it "should merge supplied other identifiers after bib import" do
-          Settings.bib_retriever = { 'protocol' => 'sru', 'url' => 'http://zgate.example.edu:9000/db' }
           stub_request(:get, sru_url).to_return(body: sru_response)
           fields = { bibliographic_id: bib_id, other_identifier_type: ['other'], other_identifier: ['12345'] }
           post 'create', params: { format: 'json', import_bib_record: true, fields: fields, files: [master_file], collection_id: collection.id }
@@ -378,7 +375,6 @@ describe MediaObjectsController, type: :controller do
           expect(new_media_object.other_identifier.find {|id_pair| id_pair[:source] == 'other'}[:id]).to eq('12345')
         end
         it "should merge supplied DC identifiers after bib import" do
-          Settings.bib_retriever = { 'protocol' => 'sru', 'url' => 'http://zgate.example.edu:9000/db' }
           stub_request(:get, sru_url).to_return(body: sru_response)
           fields = { bibliographic_id: bib_id, identifier: ['ABC1234'] }
           post 'create', params: { format: 'json', import_bib_record: true, fields: fields, files: [master_file], collection_id: collection.id }
