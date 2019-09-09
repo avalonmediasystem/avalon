@@ -144,6 +144,7 @@ services:
       - npms:/home/app/avalon/node_modules
     ports:
       - "3000:3000"
+      - "3001:3001"
     networks:
       internal:
       external:
