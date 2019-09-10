@@ -43,7 +43,7 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
     find_user(sym.to_s)
   end
 
-  def find_redirect_url(auth_type)
+  def find_redirect_url(auth_type, lti_group: nil)
     previous_url = session.delete :previous_url
     if params['target_id']
       # Whitelist params that are allowed to be passed through via LTI
@@ -52,8 +52,8 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
       # Limit redirects to current host only (Fixes bug https://bugs.dlib.indiana.edu/browse/VOV-5662)
       uri = URI.parse(params[:url])
       request.host == uri.host ? uri.path : root_path
-    elsif auth_type == 'lti' && user_session.dig(:virtual_groups).present?
-      search_catalog_path('f[read_access_virtual_group_ssim][]' => user_session[:lti_group])
+    elsif auth_type == 'lti' && lti_group.present?
+      search_catalog_path('f[read_access_virtual_group_ssim][]' => lti_group)
     elsif previous_url
       previous_url
     else
@@ -88,7 +88,7 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
       flash[:success] = nil
       render inline: '<html><head><script>window.close();</script></head><body></body><html>'.html_safe
     else
-      redirect_to find_redirect_url(auth_type)
+      redirect_to find_redirect_url(auth_type, lti_group: user_session&.dig(:lti_group))
     end
   end
 
