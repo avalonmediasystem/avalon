@@ -35,14 +35,28 @@ function (_Component) {
 
     (0, _classCallCheck2["default"])(this, Facets);
     _this = (0, _possibleConstructorReturn2["default"])(this, (0, _getPrototypeOf2["default"])(Facets).call(this, props));
-    (0, _defineProperty2["default"])((0, _assertThisInitialized2["default"])(_this), "handleClick", function (facetName, item, event) {
+    (0, _defineProperty2["default"])((0, _assertThisInitialized2["default"])(_this), "handleClick", function (facetField, facetLabel, item, event) {
       event.preventDefault();
-      var newQuery = _this.props.search.state.query + "&f[" + facetName + "][]=" + item.value;
-      console.log(newQuery);
+
+      var newAppliedFacets = _this.props.search.state.appliedFacets.concat([{
+        facetField: facetField,
+        facetLabel: facetLabel,
+        facetValue: item.value
+      }]);
+
+      console.log(newAppliedFacets);
 
       _this.props.search.setState({
-        query: newQuery
+        appliedFacets: newAppliedFacets,
+        currentPage: 1
       });
+    });
+    (0, _defineProperty2["default"])((0, _assertThisInitialized2["default"])(_this), "isFacetApplied", function (facet, item) {
+      var index = _this.props.search.state.appliedFacets.findIndex(function (appliedFacet) {
+        return appliedFacet.facetField === facet.name && appliedFacet.facetValue === item.value;
+      });
+
+      return index != -1;
     });
     return _this;
   }
@@ -59,18 +73,20 @@ function (_Component) {
           }
 
           return _react["default"].createElement("div", {
-            className: "card"
-          }, _react["default"].createElement("h3", {
+            className: "card mb-3"
+          }, _react["default"].createElement("h5", {
             className: "card-header collapse-toggle"
           }, _react["default"].createElement("a", null, facet.label)), _react["default"].createElement("div", {
             className: "card-body"
           }, _react["default"].createElement("ul", {
             className: "facet-values list-unstyled"
           }, facet.items.map(function (item, index) {
-            return _react["default"].createElement("li", null, _react["default"].createElement("a", {
+            return _react["default"].createElement("li", null, _this2.isFacetApplied(facet, item) ? _react["default"].createElement("span", {
+              className: "facet-label"
+            }, item.label) : _react["default"].createElement("a", {
               href: "",
               onClick: function onClick(event) {
-                return _this2.handleClick(facet.name, item, event);
+                return _this2.handleClick(facet.name, facet.label, item, event);
               }
             }, _react["default"].createElement("span", {
               className: "facet-label"

@@ -33,27 +33,34 @@ var _Pagination = _interopRequireDefault(require("./Pagination"));
 
 var _Facets = _interopRequireDefault(require("./Facets"));
 
+var _FacetBadges = _interopRequireDefault(require("./FacetBadges"));
+
 var Search =
 /*#__PURE__*/
 function (_Component) {
   (0, _inherits2["default"])(Search, _Component);
 
-  function Search() {
+  function Search(props) {
     var _this;
 
     (0, _classCallCheck2["default"])(this, Search);
-    _this = (0, _possibleConstructorReturn2["default"])(this, (0, _getPrototypeOf2["default"])(Search).call(this));
+    _this = (0, _possibleConstructorReturn2["default"])(this, (0, _getPrototypeOf2["default"])(Search).call(this, props));
     (0, _defineProperty2["default"])((0, _assertThisInitialized2["default"])(_this), "handleQueryChange", function (event) {
       _this.setState({
-        query: event.target.value
+        query: event.target.value,
+        currentPage: 1
       });
     });
     _this.state = {
       query: "",
-      documents: [],
-      pages: {},
+      searchResult: {
+        pages: {},
+        docs: [],
+        facets: []
+      },
       currentPage: 1,
-      facets: []
+      appliedFacets: [],
+      perPage: 12
     };
     return _this;
   }
@@ -66,7 +73,7 @@ function (_Component) {
   }, {
     key: "componentDidUpdate",
     value: function componentDidUpdate(prevProps, prevState) {
-      if (prevState.query != this.state.query || prevState.currentPage != this.state.currentPage) {
+      if (prevState.query != this.state.query || prevState.currentPage != this.state.currentPage || prevState.appliedFacets != this.state.appliedFacets) {
         this.retrieveResults();
       }
     }
@@ -74,17 +81,74 @@ function (_Component) {
     key: "retrieveResults",
     value: function retrieveResults() {
       var component = this;
-      var url = "https://mallorn.dlib.indiana.edu/catalog.json?q=" + this.state.query + "&page=" + this.state.currentPage;
+      var facetFilters = "";
+      this.state.appliedFacets.forEach(function (facet) {
+        facetFilters = facetFilters + "&f[" + facet.facetField + "][]=" + facet.facetValue;
+      });
+
+      if (this.props.collection) {
+        facetFilters = facetFilters + "&f[collection_ssim][]=" + this.props.collection;
+      }
+
+      var url = this.props.baseUrl + "/catalog.json?per_page=" + this.state.perPage + "&q=" + this.state.query + "&page=" + this.state.currentPage + facetFilters;
+      console.log("Performing search: " + url);
       (0, _axios["default"])({
         url: url
       }).then(function (response) {
         console.log(response);
         component.setState({
-          documents: response.data.response.docs,
-          pages: response.data.response.pages,
-          facets: response.data.response.facets
+          searchResult: response.data.response
         });
       });
+    }
+  }, {
+    key: "availableFacets",
+    value: function availableFacets() {
+      var availableFacets = this.state.searchResult.facets.slice();
+      var facetIndex = availableFacets.findIndex(function (facet) {
+        return facet.label === "Published";
+      });
+
+      if (facetIndex > -1) {
+        availableFacets.splice(facetIndex, 1);
+      }
+
+      facetIndex = availableFacets.findIndex(function (facet) {
+        return facet.label === "Created by";
+      });
+
+      if (facetIndex > -1) {
+        availableFacets.splice(facetIndex, 1);
+      }
+
+      facetIndex = availableFacets.findIndex(function (facet) {
+        return facet.label === "Date Digitized";
+      });
+
+      if (facetIndex > -1) {
+        availableFacets.splice(facetIndex, 1);
+      }
+
+      facetIndex = availableFacets.findIndex(function (facet) {
+        return facet.label === "Date Ingested";
+      });
+
+      if (facetIndex > -1) {
+        availableFacets.splice(facetIndex, 1);
+      }
+
+      if (this.props.collection) {
+        facetIndex = availableFacets.findIndex(function (facet) {
+          return facet.label === "Collection";
+        });
+        availableFacets.splice(facetIndex, 1);
+        facetIndex = availableFacets.findIndex(function (facet) {
+          return facet.label === "Unit";
+        });
+        availableFacets.splice(facetIndex, 1);
+      }
+
+      return availableFacets;
     }
   }, {
     key: "render",
@@ -108,15 +172,19 @@ function (_Component) {
         className: "row"
       }, _react["default"].createElement("section", {
         className: "col-md-9"
-      }, _react["default"].createElement(_Pagination["default"], {
-        pages: this.state.pages,
+      }, _react["default"].createElement(_FacetBadges["default"], {
+        facets: this.state.appliedFacets,
+        search: this
+      }), _react["default"].createElement(_Pagination["default"], {
+        pages: this.state.searchResult.pages,
         search: this
       }), _react["default"].createElement(_SearchResults["default"], {
-        documents: this.state.documents
+        documents: this.state.searchResult.docs,
+        baseUrl: this.props.baseUrl
       })), _react["default"].createElement("section", {
         className: "col-md-3"
       }, _react["default"].createElement(_Facets["default"], {
-        facets: this.state.facets,
+        facets: this.availableFacets(),
         search: this
       }))));
     }

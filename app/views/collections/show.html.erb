@@ -28,6 +28,6 @@ Unless required by applicable law or agreed to in writing, software distributed
   <p><strong>Description:</strong></p>
   <p style="white-space:pre-wrap"><%= @doc_presenter.description %></p>
   <div>
-    <%= react_component("Search") %>
+    <%= react_component("Search", {baseUrl: "http://localhost:3000", collection: @doc_presenter.name}) %>
   </div>
 </div>

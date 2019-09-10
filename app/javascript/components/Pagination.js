@@ -42,6 +42,12 @@ function (_Component) {
         currentPage: page
       });
     });
+    (0, _defineProperty2["default"])((0, _assertThisInitialized2["default"])(_this), "pageStart", function (pages) {
+      return pages.offset_value + 1;
+    });
+    (0, _defineProperty2["default"])((0, _assertThisInitialized2["default"])(_this), "pageEnd", function (pages) {
+      return Math.min(pages.offset_value + pages.limit_value, pages.total_count);
+    });
     return _this;
   }
 
@@ -58,7 +64,7 @@ function (_Component) {
           onClick: function onClick(event) {
             return _this2.handleClick(_this2.props.pages.prev_page, event);
           }
-        }, "Previous") : _react["default"].createElement("span", null, "Previous"), _react["default"].createElement("span", null, " | ", this.props.pages.offset_value + 1, "-", this.props.pages.offset_value + this.props.pages.limit_value, " of ", this.props.pages.total_count, " | "), this.props.pages.next_page != null ? _react["default"].createElement("a", {
+        }, "Previous") : _react["default"].createElement("span", null, "Previous"), _react["default"].createElement("span", null, " | ", this.pageStart(this.props.pages), "-", this.pageEnd(this.props.pages), " of ", this.props.pages.total_count, " | "), this.props.pages.next_page != null ? _react["default"].createElement("a", {
           href: "#",
           onClick: function onClick(event) {
             return _this2.handleClick(_this2.props.pages.next_page, event);
