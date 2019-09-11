@@ -311,11 +311,20 @@ module MediaObjectMods
 
   # has_attributes :terms_of_use, datastream: :descMetadata, at: [:terms_of_use], multiple: false
   def terms_of_use
-    descMetadata.terms_of_use.first
+    (descMetadata.terms_of_use - descMetadata.rights_statement).first
   end
   def terms_of_use=(value)
-    delete_all_values(:terms_of_use)
+    # delete_all_values(:terms_of_use)
+    (descMetadata.find_by_terms(:terms_of_use) - descMetadata.find_by_terms(:rights_statement)).each &:remove
     descMetadata.add_terms_of_use(Array(value).first) if value.present?
+  end
+
+  def rights_statement
+    descMetadata.rights_statement.first
+  end
+  def rights_statement=(value)
+    delete_all_values(:rights_statement)
+    descMetadata.add_rights_statement(Array(value).first) if value.present?
   end
 
   # has_attributes :table_of_contents, datastream: :descMetadata, at: [:table_of_contents], multiple: true

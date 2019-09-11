@@ -98,6 +98,13 @@ module MediaObjectsHelper
         media_object.related_item_url.collect{ |r| link_to( r[:label], r[:url]) }
       end
 
+      def display_rights_statement media_object
+        return nil unless media_object.rights_statement.present?
+        label = ModsDocument::RIGHTS_STATEMENTS[media_object.rights_statement]
+        return nil unless label.present?
+        link_to label, media_object.rights_statement, target: '_blank'
+      end
+
       def current_quality stream_info
         available_qualities = Array(stream_info[:stream_flash]).collect {|s| s[:quality]}
         available_qualities += Array(stream_info[:stream_hls]).collect {|s| s[:quality]}

@@ -93,6 +93,10 @@ Unless required by applicable law or agreed to in writing, software distributed
   <%= render partial: 'text_field',
              locals: {form: form, field: :permalink,
                       options: {}} %>
+  <%= render partial: 'dropdown_field',
+             locals: {form: form, field: :rights_statement,
+                      options: {display_label: 'Rights Statement',
+                                dropdown_options: ModsDocument::RIGHTS_STATEMENTS}} %>
   <%= render partial: 'text_area',
              locals: {form: form, field: :terms_of_use,
                       options: {display_label: 'Terms of Use'}} %>
