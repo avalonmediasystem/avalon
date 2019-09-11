@@ -102,7 +102,7 @@ module MediaObjectsHelper
         return nil unless media_object.rights_statement.present?
         label = ModsDocument::RIGHTS_STATEMENTS[media_object.rights_statement]
         return nil unless label.present?
-        link_to label, media_object.rights_statement
+        link_to label, media_object.rights_statement, target: '_blank'
       end
 
       def current_quality stream_info
