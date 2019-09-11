@@ -34,18 +34,7 @@ class Ability
   def create_permissions(user=nil, session=nil)
     if full_login?
       if is_administrator?
-        can :manage, MediaObject
-        can :manage, MasterFile
-        can :inspect, MediaObject
-        can :manage, Admin::Group
-        can :manage, Admin::Collection
-        can :manage, User
-        can :manage, Resque
-        can :read, :about_page
-        can :read, MigrationStatus
-        can :manage, Playlist
-        can :manage, PlaylistItem
-        can :manage, AvalonMarker
+        can :manage, :all
       end
 
       if @user_groups.include? "group_manager"
