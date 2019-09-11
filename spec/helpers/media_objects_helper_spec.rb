@@ -85,7 +85,7 @@ describe MediaObjectsHelper do
     subject { helper.display_rights_statement(media_object) }
 
     it 'links to the rights statement page' do
-      expect(subject).to eq "<a href=\"#{rights_statement_uri}\">#{rights_statement_label}</a>"
+      expect(subject).to eq "<a target=\"_blank\" href=\"#{rights_statement_uri}\">#{rights_statement_label}</a>"
     end
 
     context 'when rights statement is not set' do
