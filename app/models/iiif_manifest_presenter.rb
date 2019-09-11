@@ -76,7 +76,7 @@ class IiifManifestPresenter
     def iiif_metadata_fields
       # TODO: refine and order this list of fields
       [:title, :creator, :date_created, :date_issued, :note, :contributor,
-       :publisher, :subject, :genre, :geographic_subject, :temporal_subject, :topical_subject]
+       :publisher, :subject, :genre, :geographic_subject, :temporal_subject, :topical_subject, :rights_statement]
     end
 
     def image_for(document)
