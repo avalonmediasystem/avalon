@@ -246,7 +246,7 @@ class Admin::CollectionsController < ApplicationController
     if params.dig(:admin_collection, :poster).present?
       poster_file = params[:admin_collection][:poster]
       resized_poster = resize_uploaded_poster(poster_file.path)
-      if resized_poster.present?
+      if resized_poster
         @collection.poster.content = resized_poster
         @collection.poster.mime_type = 'image/png'
         @collection.poster.original_name = poster_file.original_filename
