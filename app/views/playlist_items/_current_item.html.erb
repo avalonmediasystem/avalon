@@ -48,7 +48,7 @@ Unless required by applicable law or agreed to in writing, software distributed
   <%= display_metadata('Collection', @current_mediaobject.collection.name) %>
   <%= display_metadata('Unit', @current_mediaobject.collection.unit) %>
   <%= display_metadata('Language', display_language(@current_mediaobject)) %>
-  <%= display_metadata('Rights Statement', display_rights_statement(@current_mediaobject)) %>
+  <%= display_rights_statement(@current_mediaobject) %>
   <%= display_metadata('Terms of Use', @current_mediaobject.terms_of_use) %>
   <%= display_metadata('Physical Description', @current_mediaobject.physical_description) %>
   <%= display_metadata('Related Item', display_related_item(@current_mediaobject)) %>
