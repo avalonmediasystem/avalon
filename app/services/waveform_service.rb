@@ -39,7 +39,7 @@ private
     peaks = gather_peaks(wave_io)
     max_peak = peaks.flatten.map(&:abs).max
     res = 2**(@bit_res - 1)
-    factor = res / max_peak.to_f
+    factor = max_peak == 0 ? 1 : res / max_peak.to_f
     peaks.map { |peak| peak.collect { |num| (num * factor).to_i } }
   end
 
