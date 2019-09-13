@@ -81,7 +81,11 @@ Rails.application.routes.draw do
 
   resources :vocabulary, except: [:create, :destroy, :new, :edit]
 
-  resources :collections, only: [:index, :show]
+  resources :collections, only: [:index, :show] do
+    member do
+      get :poster
+    end
+  end
 
   resources :media_objects, except: [:create, :update] do
     member do
