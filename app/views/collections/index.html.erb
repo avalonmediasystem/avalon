@@ -17,10 +17,5 @@ Unless required by applicable law or agreed to in writing, software distributed
 
 <div class='container-fluid collections-list-wrapper'>
   <h2><%= @page_title %></h2>
-
-  <ul class="list-unstyled">
-    <% @doc_presenters.each do |doc_presenter| %>
-      <%= render 'index_collection', doc_presenter: doc_presenter %>
-    <% end %>
-  </ul>
+  <%= react_component("CollectionList") %>
 </div>
