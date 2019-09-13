@@ -22,7 +22,21 @@ RSpec.describe CollectionsController, type: :routing do
     end
 
     it "routes to #show" do
-      expect(:get => "/collections/1").to route_to("collections#show", :id => "1")
+      expect(:get => "/collections/1").to route_to("collections#show", id: "1")
+    end
+
+    it "routes to #poster" do
+      expect(:get => "/collections/1/poster").to route_to("collections#poster", id: "1")
+    end
+
+    context 'json requests' do
+      it "routes to #index" do
+        expect(:get => "/collections.json").to route_to("collections#index", format: 'json')
+      end
+
+      it "routes to #show" do
+        expect(:get => "/collections/1.json").to route_to("collections#show", id: "1", format: 'json')
+      end
     end
   end
 end

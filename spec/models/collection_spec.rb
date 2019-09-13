@@ -176,6 +176,7 @@ describe Admin::Collection do
      collection.name = "Herman B. Wells Collection"
      expect(collection.to_solr[ "name_ssi" ]).to eq("Herman B. Wells Collection")
      expect(collection.to_solr[ "name_uniq_si" ]).to eq("hermanb.wellscollection")
+     expect(collection.to_solr[ "has_poster_bsi" ]).to eq false
     end
   end
 

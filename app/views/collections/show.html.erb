@@ -17,12 +17,12 @@ Unless required by applicable law or agreed to in writing, software distributed
 <% @page_title = t('collections.show.title', :collection_name => @doc_presenter.name, :application_name => application_name) %>
 
 <div class='container-fluid'>
-  <h3 class="col-md-12">
-    <div class="document-thumbnail">
-      <%= image_tag @doc_presenter.thumbnail, class: 'img-responsive' %>
-    </div>
-    <%= link_to(@doc_presenter.name, collection_path(@doc_presenter.id)) %>
-  </h3>
+  <h3 class="col-md-12"><%= @doc_presenter.name %></h3>
+  <% if @doc_presenter.has_poster? %>
+  <div class="document-thumbnail">
+    <%= image_tag @doc_presenter.poster_url, class: 'img-responsive' %>
+  </div>
+  <% end %>
   <p><strong>Unit:</strong></p>
   <p><%= @doc_presenter.unit %></p>
   <p><strong>Description:</strong></p>

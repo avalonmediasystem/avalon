@@ -25,12 +25,14 @@ describe CollectionsController, type: :controller do
       end
       it "all routes should redirect to /" do
         expect(get :show, params: { id: collection.id }).to redirect_to(root_path)
+        expect(get :poster, params: { id: collection.id }).to redirect_to(root_path)
       end
     end
 
     context 'with unauthenticated user' do
       it "all routes should redirect to sign in" do
         expect(get :show, params: { id: collection.id }).to redirect_to(/#{Regexp.quote(new_user_session_path)}\?url=.*/)
+        expect(get :poster, params: { id: collection.id }).to redirect_to(/#{Regexp.quote(new_user_session_path)}\?url=.*/)
       end
     end
   end
@@ -63,6 +65,17 @@ describe CollectionsController, type: :controller do
       expect(assigns(:doc_presenters).count).to eql(1)
       expect(assigns(:doc_presenters).map(&:id)).to match_array([collection3.id])
     end
+
+    context 'format json' do
+      it 'returns json' do
+        login_as :administrator
+        get 'index', params: { format: :json }
+        expect(response).to be_ok
+        expect(response.content_type).to eq "application/json"
+        expect(assigns(:doc_presenters).count).to eql(3)
+        expect(assigns(:doc_presenters).map(&:id)).to match_array([collection.id, collection2.id, collection3.id])
+      end
+    end
   end
 
   describe "#show" do
@@ -72,6 +85,39 @@ describe CollectionsController, type: :controller do
       expect(response).to be_ok
       expect(response).to render_template(:show)
       expect(assigns(:doc_presenter).id).to eq collection.id
+    end
+
+    context 'format json' do
+      it 'returns json' do
+        login_as :administrator
+        get 'show', params: { id: collection.id, format: :json }
+        expect(response).to be_ok
+        expect(response.content_type).to eq "application/json"
+        expect(assigns(:doc_presenter).id).to eq collection.id
+        end
+    end
+  end
+
+  describe '#poster' do
+    let!(:collection) { FactoryBot.create(:collection, :with_poster, items: 1) }
+
+    before do
+      login_as :administrator
+    end
+
+    it 'returns the poster image' do
+      get 'poster', params: { id: collection.id }
+      expect(response).to be_ok
+      expect(response.content_type).to eq 'image/png'
+    end
+
+    context 'when the collection does not have a poster image' do
+      let!(:collection) { FactoryBot.create(:collection, items: 1) }
+
+      it 'returns 404' do
+        get 'poster', params: { id: collection.id }
+        expect(response).to be_not_found
+      end
     end
   end
 end

@@ -33,7 +33,27 @@ class CollectionPresenter
     document["description_tesim"]&.first
   end
 
-  def thumbnail
-    'hybrid_icon.png'
+  def has_poster?
+    document["has_poster_bsi"].present?
+  end
+
+  def poster_url
+    return nil unless has_poster?
+    Rails.application.routes.url_helpers.poster_collection_url(id)
+  end
+
+  def collection_url
+    Rails.application.routes.url_helpers.collection_url(id)
+  end
+
+  def as_json(_)
+    {
+      id: id,
+      name: name,
+      unit: unit,
+      description: description,
+      poster_url: poster_url,
+      url: collection_url
+    }
   end
 end
