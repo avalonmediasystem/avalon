@@ -1,0 +1,39 @@
+.card-img-caption {
+  position: relative;
+}
+
+.img-cover {
+  height: 150px;
+  object-fit: cover;
+}
+
+.timestamp {
+  position: absolute;
+  bottom: -7px;
+  right: 10px;
+}
+
+.field-name {
+  color: gray;
+}
+
+@media (min-width: 24em) {
+  .img-cover {
+    height: 30%;
+  }
+}
+
+@media (min-width: 32em) {
+  .img-cover {
+    height: 20%;
+  }
+}
+
+@media (min-width: 48em) {
+  .img-cover {
+    height: 150px;
+  }
+}
+
+@media (min-width: 62em) {
+}
