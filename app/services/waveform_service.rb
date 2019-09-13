@@ -52,8 +52,12 @@ private
 
   def gather_peaks(wav_file)
     peaks = []
-    WaveFile::Reader.new(wav_file).each_buffer(@samples_per_pixel) do |buffer|
-      peaks << [buffer.samples.flatten.min, buffer.samples.flatten.max]
+    begin
+      WaveFile::Reader.new(wav_file).each_buffer(@samples_per_pixel) do |buffer|
+        peaks << [buffer.samples.flatten.min, buffer.samples.flatten.max]
+      end
+    rescue WaveFile::InvalidFormatError
+      # ffmpeg generated no wavefile data
     end
     peaks
   end
