@@ -162,6 +162,7 @@ class Admin::Collection < ActiveFedora::Base
   def to_solr
     super.tap do |solr_doc|
       solr_doc["name_uniq_si"] = self.name.downcase.gsub(/\s+/,'') if self.name.present?
+      solr_doc["has_poster_bsi"] = self.poster.present?
     end
   end
 
