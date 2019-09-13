@@ -7,9 +7,7 @@ class CollectionList extends Component {
         super(props);
         this.state = {
             query: "",
-            searchResult: [],
-            sort: 'AZ'
-            // loaded: false
+            searchResult: []
         };
     }
 
@@ -44,8 +42,21 @@ class CollectionList extends Component {
                collection.push(item);
            }
       });
-      console.log(map);
-      return map;
+      return Array.from(map);
+    }
+
+    sortByAZ(list) {
+        let sortedArray = this.state.searchResult.slice();
+        sortedArray.sort((col1,col2) => {
+            if(col1.name < col2.name){
+                return -1;
+            }
+            if(col1.name > col2.name){
+                return 1;
+            }
+            return 0;
+        });
+        return sortedArray;
     }
 
     filterCollections = event => {
@@ -64,10 +75,10 @@ class CollectionList extends Component {
             </form>
             
             <div className="row">
-                { this.state.sort != 'AZ' ?
+                { this.props.sort == 'AZ' ?
                         (
                             <div>
-                                {this.state.searchResult.map((col,index) => {
+                                {this.sortByAZ(this.state.searchResult).map((col,index) => {
                                     return (
                                       <Collection key={index} attributes={col}></Collection>
                                     );
@@ -78,17 +89,18 @@ class CollectionList extends Component {
                     :
                         (
                             <div>
-                                {this.groupByUnit(this.state.searchResult).forEach((collections, unit, map) => {
+                                {this.groupByUnit(this.state.searchResult).map((unitArr, index) => {
+                                  let unit = unitArr[0];
+                                  let collections = unitArr[1];
                                   return (
                                     <div>
-                                        console.log(unit);
                                         <p>Unit: {unit}</p>
 
-                                        {/* {collections.map((col,index) => {
+                                        {collections.map((col,index) => {
                                             return (
                                                 <Collection key={index} attributes={col}></Collection>
                                             );
-                                        })} */}
+                                        })}
                                     </div>
                                   );
                                 })}
