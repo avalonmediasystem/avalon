@@ -1,12 +1,15 @@
 import React, { Component } from 'react';
 import Axios from 'axios';
+import Collection from './Collection';
 
 class CollectionList extends Component {
     constructor(props) {
         super(props);
         this.state = {
             query: "",
-            searchResult: []
+            searchResult: [],
+            sort: 'AZ'
+            // loaded: false
         };
     }
 
@@ -14,11 +17,11 @@ class CollectionList extends Component {
         this.retrieveResults();
     }
 
-    componentDidUpdate(prevProps, prevState) {
-        if (prevState.query != this.state.query) {
-            this.retrieveResults();
-        }
-    }
+    // componentDidUpdate(prevProps, prevState) {
+    //     if (prevState.loaded != this.state.loaded) {
+    //         this.retrieveResults();
+    //     }
+    // }
 
     retrieveResults() {
         let component = this;
@@ -27,8 +30,26 @@ class CollectionList extends Component {
         Axios({url: url})
             .then(function(response){
                 console.log(response);
-                component.setState({searchResult: response})
+                component.setState({searchResult: response.data})
             });
+    }
+
+    groupByUnit(list) {
+      const map = new Map();
+      list.forEach((item) => {
+           const collection = map.get(item.unit);
+           if (!collection) {
+               map.set(item.unit, [item]);
+           } else {
+               collection.push(item);
+           }
+      });
+      console.log(map);
+      return map;
+    }
+
+    filterCollections = event => {
+
     }
     
     render() {
@@ -38,11 +59,42 @@ class CollectionList extends Component {
             <form className="container">
                 <label htmlFor="q" className="sr-only">search for</label>
                 <div className="input-group">
-                    <input value={query} onChange={this.handleQueryChange} name="q" className="form-control" placeholder="Search..." autoFocus="autofocus"></input>
+                    <input value={query} onChange={this.filterCollections} name="q" className="form-control" placeholder="Filter..." autoFocus="autofocus"></input>
                 </div>
             </form>
+            
             <div className="row">
-                {/* { this.state.searchResult.length } */}
+                { this.state.sort != 'AZ' ?
+                        (
+                            <div>
+                                {this.state.searchResult.map((col,index) => {
+                                    return (
+                                      <Collection key={index} attributes={col}></Collection>
+                                    );
+                                })
+                                }
+                            </div>
+                        )
+                    :
+                        (
+                            <div>
+                                {this.groupByUnit(this.state.searchResult).forEach((collections, unit, map) => {
+                                  return (
+                                    <div>
+                                        console.log(unit);
+                                        <p>Unit: {unit}</p>
+
+                                        {/* {collections.map((col,index) => {
+                                            return (
+                                                <Collection key={index} attributes={col}></Collection>
+                                            );
+                                        })} */}
+                                    </div>
+                                  );
+                                })}
+                            </div>
+                        )
+                }
             </div>
         </div>
         );
