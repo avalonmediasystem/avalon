@@ -18,6 +18,11 @@ class CollectionsController < CatalogController
   def index
     response = repository.search(CollectionSearchBuilder.new(self))
     @doc_presenters = response.documents.collect { |doc| CollectionPresenter.new(doc) }
+
+    respond_to do |format|
+      format.html
+      format.json { render json: @doc_presenters }
+    end
   end
 
   def show
@@ -26,5 +31,26 @@ class CollectionsController < CatalogController
     # Only go on if params[:id] is in @document_list
     raise CanCan::AccessDenied unless document
     @doc_presenter = CollectionPresenter.new(document)
+
+    respond_to do |format|
+      format.html
+      format.json { render json: @doc_presenter }
+    end
+  end
+
+  def poster
+    response = repository.search(CollectionSearchBuilder.new(self))
+    document = response.documents.find { |doc| doc.id == params[:id] }
+    # Only go on if params[:id] is in @document_list
+    raise CanCan::AccessDenied unless document
+
+    @collection = Admin::Collection.find(params['id'])
+
+    file = @collection.poster
+    if file.nil? || file.new_record?
+      render plain: 'Collection Poster Not Found', status: :not_found
+    else
+      render plain: file.content, content_type: file.mime_type
+    end
   end
 end

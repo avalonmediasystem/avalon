@@ -16,10 +16,12 @@ Unless required by applicable law or agreed to in writing, software distributed
 
 <li class="media">
   <div class="media-left">
-    <div class="document-thumbnail"><%= image_tag doc_presenter.thumbnail, alt: "Collection thumbnail" %></div>
+    <% if doc_presenter.has_poster? %>
+    <div class="document-thumbnail"><%= image_tag doc_presenter.poster_url, alt: "Collection thumbnail" %></div>
+    <% end %>
   </div>
   <div class="media-body">
-    <h4 class="media-heading"><%= link_to(doc_presenter.name, collection_path(doc_presenter.id)) %></h4>
+    <h4 class="media-heading"><%= link_to(doc_presenter.name, doc_presenter.collection_url) %></h4>
     <dl>
       <dt>Unit</dt>
       <dd><%= doc_presenter.unit %></dd>
