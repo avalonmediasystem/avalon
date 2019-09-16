@@ -79,7 +79,7 @@
 
     .mejs-time {
       color: #fff;
-      width: auto;
+      width: 41.5px;
       overflow: hidden;
       padding: 0 5px;
       text-align: center;
@@ -91,7 +91,7 @@
         font-size: 11px;
         line-height: 12px;
         display: block;
-        margin: 1px 2px 0 2px;
+        margin: 1px 2px 0 0px;
         width: auto;
       }
     }
@@ -101,7 +101,6 @@
       width: 80%;
       span {
       	display: block;
-        position: absolute;
         height: 10px;
         -webkit-border-radius: 2px;
         -moz-border-radius: 2px;
@@ -127,7 +126,6 @@
       }
       .track-mejs-time-handle {
       	display: none;
-        position: absolute;
         margin: 0;
         width: 10px;
         background: #fff;
@@ -143,10 +141,9 @@
         position: absolute;
         display: none;
         background: #eee;
-        width: 36px;
         height: 17px;
         border: solid 1px #333;
-        top: -26px;
+        top: 26px;
         margin-left: -18px;
         text-align: center;
         color: #111;
@@ -154,7 +151,6 @@
       }
       .track-mejs-time-float-current {
         margin: 2px;
-        width: 30px;
         display: block;
         text-align: center;
         left: 0;

@@ -290,8 +290,8 @@ Object.assign(MediaElementPlayer.prototype, {
             x = width + offset.left;
           }
 
-          pos = x - offset.left;
-          percentage = pos / width || 0;
+          pos = x - 10;
+          percentage = (x - offset.left) / width || 0;
           newTime =
             percentage <= 0.02 ? 0 : percentage * t.trackdata.trackduration;
 
