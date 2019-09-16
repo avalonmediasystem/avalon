@@ -18,6 +18,15 @@
 @import 'bootstrap/variables';
 //@import "bootstrap-responsive";
 
+/* Headlines / page titles */
+.page-title {
+  font-size: 32px;
+}
+.headline {
+  color: $primaryDark;
+  font-size: 29.3px;
+}
+
 /**
  * Snippets to extend
  */
@@ -39,25 +48,25 @@
   }
 }
 
-a:not(.btn) {
-  color: $linkColor;
+// a:not(.btn) {
+//   color: $link-color;
 
-  &:hover {
-    color: $linkColor;
-  }
+//   &:hover {
+//     color: $link-color;
+//   }
 
-  &:active {
-    color: $linkColor;
-  }
+//   &:active {
+//     color: $link-color;
+//   }
 
-  &:visited {
-    color: $linkColor;
-  }
-}
+//   &:visited {
+//     color: $link-color;
+//   }
+// }
 
 @mixin hidden-disabled-link {
   text-decoration: none !important;
-  color: $black !important;
+  color: $dark !important;
   cursor: default !important;
   pointer-events: none !important;
 }
@@ -129,17 +138,29 @@ tr.active-false td {
  */
 #header-navbar .navbar-brand {
   @extend .desktop-hidden;
-  height: 35px;
+  background-size: contain;
+}
+
+.header-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
 .navbar {
-  background-image: linear-gradient(to bottom, #ffffff, #f2f2f2);
-  background-repeat: repeat-x;
-  border: 1px solid $navbar-inverse-border;
-  border-radius: 4px;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.067);
-  margin: 10px 0;
-  min-height: 0px;
+  font-family: $museoSlab;
+  font-size: 16px;
+}
+
+.navbar-default {
+  @media screen and (max-width: $screen-xs-max) {
+    background: $primaryDark;
+  }
+}
+
+.navbar-static-top {
+  // Bootstrap override
+  border-bottom: 0;
 }
 
 .navbar-header .row {
@@ -147,34 +168,8 @@ tr.active-false td {
   margin-right: 6px;
 }
 
-.navbar-nav {
-  li {
-    a {
-      padding: 7px 10px;
-    }
-  }
-}
-
-.navbar-inverse .navbar-nav {
-  li {
-    a:hover {
-      color: #355c65;
-      background-color: #e9e9e9;
-    }
-  }
-}
-
-.navbar-right {
-  padding: 4px 0;
-  margin-right: 0;
-}
-
 .container > .navbar-header {
   height: auto;
-}
-
-.navbar-inverse .navbar-toggle .icon-bar {
-  background-color: #888888;
 }
 
 .navbar-toggle {
@@ -331,11 +326,8 @@ input[type='text']#admin_group {
 
 /* Header */
 .custom-header {
-  background-color: #e9e9e9;
-  color: $black;
-  margin-bottom: 0em;
-  font-size: 0.8em;
   @extend .mobile-hidden;
+  padding: 1rem 0 2rem;
 }
 
 header div {
@@ -343,35 +335,19 @@ header div {
 }
 
 .log-in-out {
-  padding-top: 2rem;
   font-size: 14px;
-
-  a {
-    color: #2a5459;
-    background-color: #fbb040;
-    margin-left: 1rem;
-  }
 }
 
 .navbar-inner {
   padding-right: 12px;
 }
 
-.avalon-search-query-form .search-query {
-  border-radius: 15px;
-  font-family: Arial, Helvetica, sans-serif;
-  font-size: 13px;
-  font-weight: normal;
-  line-height: 1;
-  margin-bottom: 0;
-  padding: 4px 14px;
-  background-color: #fff;
-  border: 1px solid #ccc;
-  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.075) inset;
-  transition: border 0.2s linear 0s, box-shadow 0.2s linear 0s;
-  height: 25px;
-  width: 100%;
-  vertical-align: middle;
+.global-search-wrapper {
+  width: 400px;
+  .global-search-input {
+    background: $lightgray;
+    border: 0;
+  }
 }
 
 /* Sidebar */
@@ -491,10 +467,10 @@ footer .release {
   text-shadow: rgba(0, 0, 0, 0.1) 0px 1px 0px;
 
   a {
-    color: $successLink;
+    color: $success-link;
 
     &:hover {
-      color: scale-color($successLink, $lightness: -20%);
+      color: scale-color($success-link, $lightness: -20%);
     }
   }
 }
@@ -633,7 +609,7 @@ button.close {
 
 a[data-trigger='submit'] {
   text-decoration: none;
-  color: $black;
+  color: $dark;
 }
 
 .facet-values {
@@ -711,7 +687,7 @@ a[data-trigger='submit'] {
 }
 
 .form-control {
-  color: $black;
+  color: $dark;
 }
 
 .tab-content > .tab-pane {
@@ -756,13 +732,13 @@ a[data-trigger='submit'] {
 .appliedFilter {
   .btn {
     background-color: $greenBG;
-    border-color: $green;
+    border-color: $primary;
     font-size: $font-size-base;
   }
 
   .constraint-value:hover {
     background-color: $greenBG;
-    border-color: $green;
+    border-color: $primary;
   }
 }
 
@@ -901,7 +877,7 @@ $accordionPadding: 20px;
 
   i.now-playing {
     position: absolute;
-    color: $linkColor;
+    color: $link-color;
     left: accordion-indent(1);
   }
 
@@ -1172,7 +1148,7 @@ div.structure_edit {
 }
 
 .page_element_outline {
-  outline: solid 1px $linkColor !important;
+  outline: solid 1px $link-color !important;
   outline-offset: 1px !important;
 }
 
@@ -1613,4 +1589,11 @@ h5.panel-title {
 // Generic content spacer
 .content-block {
   padding-bottom: 3rem;
+}
+
+// Dotted line separator from branding guide
+.separator {
+  border-bottom: 2px dotted $primaryDark;
+  background: white;
+  height: 1px;
 }

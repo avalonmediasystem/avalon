@@ -15,23 +15,20 @@ Unless required by applicable law or agreed to in writing, software distributed
 %>
 <div class="custom-header">
   <div class="container">
-    <header>
-      <div class="row">
-        <div class="col-sm-6 logo">
-          <%= link_to main_app.root_path do %>
-          <%= image_tag "Home.png", alt: "Avalon Media System - #{t(:release_label)} #{Avalon::VERSION}" %>
-          <% end %>
-        </div>
+    <header class="header-wrapper">
+      <div class="logo">
+        <%= link_to main_app.root_path do %>
+        <%= image_tag "Home.png", alt: "Avalon Media System - #{t(:release_label)} #{Avalon::VERSION}" %>
+        <% end %>
+      </div>
 
-        <!-- <div class="col-md-6">
-          <h1>Avalon Media System</h1>
-          <p class="lead"><%=release_text%></p>
-        </div>    -->
+      <div>
+        <%= render :partial=>'modules/avalon_search_form' %>
+      </div>
 
-        <%# By default shift log in / log out to the header %>
-        <div class="col-sm-6 text-right log-in-out text-muted">
-          <%= render 'modules/user_management' %>
-        </div>
+      <%# By default shift log in / log out to the header %>
+      <div class="text-right log-in-out text-muted">
+        <%= render 'modules/user_management' %>
       </div>
     </header>
   </div>

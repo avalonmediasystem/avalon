@@ -18,7 +18,12 @@
  * Custom branding for Avalon to override Bootstrap, Hydra, and Blacklight
  * defaults. This should be included at the top of the application.scss file
  * so it is preferred over the defaults. */
+@font-face {
+  font-family: 'MuseoSlab';
+  src: url('fonts/Museo_Slab_500-webfont.woff') format('woff');
+}
 $sansFontFamily: Arial, Helvetica, sans-serif;
+$museoSlab: 'MuseoSlab';
 
 /**
  * If you want to override the default color scheme do so here
@@ -35,47 +40,75 @@ $sansFontFamily: Arial, Helvetica, sans-serif;
  * black
  * gray
  */
-$green: rgb(128, 165, 144);
-$greenBG: scale-color($green, $saturation: -40%, $lightness: 60%);
+
+// Primary colors
+$primary: #80a590;
+$primaryDark: #2a5459;
+$dark: #0a2326;
+
+// Secondary colors
+$yellow: #ffcf08;
+$orange: #fbb040;
 $white: rgb(255, 255, 255);
-$orange: rgb(42, 84, 69);
-$black: #333;
+
+// Generated palate colors from http://colormind.io/
+$info: #fbb040;
+$success: #429453;
+$warning: #bf841b;
+$danger: #f44336;
+
+// Colors not from the Styleguide
+$greenBG: scale-color($primary, $saturation: -40%, $lightness: 60%);
+//$orange: rgb(42, 84, 69);
 $gray: #cfd8d3;
-$lightgray: #f5f5f5;
+$lightgray: #f2f2f2;
 $red: #d9534f;
 $blue: #2a4d59;
 
-/* Links */
+$brand-primary: $primaryDark;
+$brand-success: $success;
+$brand-info: $info;
+$brand-warning: $warning;
+$brand-danger: $danger;
 
-$linkColor: rgb(42, 84, 89);
-$linkHoverColor: $lightgray;
+/* Fonts */
+$font-family-sans-serif: $sansFontFamily;
+$font-family-serif: $museoSlab;
+
+/* Components */
+$padding-base-vertical: 4px;
+//$padding-base-horizontal: 1.5rem;
+
+/* Headings */
+$headings-font-family: $museoSlab;
+
+/* Links */
+$link-color: $primaryDark;
+$link-hover-color: $primary;
 
 /* Alerts */
+$warning-text: $white;
+$warning-background: $warning;
 
-$warningText: $gray;
-$warningBackground: rgb(234, 234, 234);
+$success-text: $white;
+$success-link: $primaryDark;
+$success-background: $success;
+$state-success-bg: $success;
+$state-success-text: $white;
+$state-info-bg: $info;
+$state-info-text: $white;
 
-$successText: $black;
-$successLink: rgb(250, 250, 250);
-$successBackground: $gray;
-$state-success-bg: $gray;
-$state-success-text: $black;
-$state-info-bg: $gray;
-$state-info-text: $black;
-
-$infoText: $black;
-$infoBackground: $gray;
+$info-text: $white;
+$info-background: $info;
 
 /* Header */
-
-$headerBackgroundColor: rgb(234, 234, 234);
-$headerTextColor: $white;
-$loginTextColor: $gray;
-$loginLinkColor: rgb(42, 84, 89);
-$loginLinkBackgroundColor: rgb(251, 176, 64);
+$header-background-color: rgb(234, 234, 234);
+$header-text-color: $white;
+$login-text-color: $gray;
+$login-link-color: $primaryDark;
+$login-link-background-color: $orange;
 
 /* Sidenav */
-
 $sidenavHeaderBackgroundColor: $greenBG;
 
 /* Search Facets */
@@ -85,19 +118,18 @@ $constraint_border_color: scale-color($greenBG, $lightness: -20%);
 /* Change default breakpoint for the navigation bar */
 $navCollapseWidth: 650px;
 
-/* Bootstrap navbar styles */
-$navbar-inverse-color: #777;
-$navbar-inverse-bg: #f9f9f9;
-$navbar-inverse-link-active-bg: darken($navbar-inverse-bg, 10%);
-$navbar-inverse-border: #d4d4d4;
-$navbar-inverse-link-color: #777;
-$navbar-inverse-link-hover-color: $black;
-
-// Navbar toggle
-$navbar-default-toggle-hover-bg: $lightgray;
-$navbar-default-toggle-icon-bar-bg: $lightgray;
-$navbar-default-toggle-border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1)
-  rgba(0, 0, 0, 0.25);
+/* Navbar */
+$navbar-default-bg: $primaryDark;
+$avbar-default-color: $white;
+$navbar-default-toggle-hover-bg: $yellow;
+$navbar-default-link-color: $white;
+$navbar-default-link-hover-color: $primaryDark;
+$navbar-default-link-hover-bg: $yellow;
+$navbar-default-link-active-color: $primaryDark;
+$navbar-default-link-active-bg: $yellow;
+$navbar-border-radius: 0;
+$navbar-default-toggle-icon-bar-bg: $white;
+$navbar-default-toggle-border-color: $white;
 
 // Inverted navbar toggle
 $navbar-inverse-toggle-hover-bg: #e6e6e6;
@@ -107,26 +139,30 @@ $navbar-inverse-toggle-border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1)
 
 $grid-gutter-width: 16px;
 $wellBackground: $gray;
+$well-bg: $gray;
 $sideHeaderBackgroundColor: $gray;
 
-$btn-default-color: $black;
+/* Buttons */
+$btn-border-radius-base: 2px;
+
+$btn-default-color: $dark;
 $btn-default-bg: $white;
 $btn-default-border: $gray;
 $btn-primary-color: $white;
-$btn-primary-bg: $blue;
-$btn-primary-border: $blue;
-$btn-success-color: $black;
-$btn-success-bg: $lightgray;
-$btn-success-border: $gray;
-$btn-info-color: $black;
-$btn-info-bg: $lightgray;
-$btn-info-border: $gray;
+$btn-primary-bg: $primaryDark;
+$btn-primary-border: $primaryDark;
+$btn-success-color: $white;
+$btn-success-bg: $success;
+$btn-success-border: $success;
+$btn-info-color: $primaryDark;
+$btn-info-bg: $info;
+$btn-info-border: $info;
 $btn-danger-color: $white;
 
-$pagination-color: $linkColor;
+$pagination-color: $link-color;
 $pagination-bg: $white;
 $pagination-border: $gray;
-$pagination-hover-color: $linkHoverColor;
+$pagination-hover-color: $link-hover-color;
 $pagination-hover-bg: $lightgray;
 $pagination-hover-border: $gray;
 $pagination-active-color: $gray;
@@ -136,5 +172,5 @@ $pagination-disabled-color: $gray;
 $pagination-disabled-bg: $white;
 $pagination-disabled-border: $gray;
 
-$nav-tabs-active-link-hover-color: $black;
-$input-color: $black;
+$nav-tabs-active-link-hover-color: $dark;
+$input-color: $dark;

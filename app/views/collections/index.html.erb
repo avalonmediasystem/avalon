@@ -16,6 +16,6 @@ Unless required by applicable law or agreed to in writing, software distributed
 <% @page_title = t('collections.title', :application_name => application_name) %>
 
 <div class='collections-list-wrapper'>
-  <h2 class="page-title">Collections</h2>
+  <h2>Collections</h2>
   <%= react_component("CollectionList", { baseUrl: collections_url(format: :json), filter: params['filter'] }) %>
 </div>
