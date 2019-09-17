@@ -16,18 +16,18 @@ Unless required by applicable law or agreed to in writing, software distributed
 <div class="custom-header">
   <div class="container">
     <header class="header-wrapper">
-      <div class="logo">
+      <div class="header-logo">
         <%= link_to main_app.root_path do %>
-        <%= image_tag "Home.png", alt: "Avalon Media System - #{t(:release_label)} #{Avalon::VERSION}" %>
+        <%= image_tag "Home.png", class: "img-responvies", alt: "Avalon Media System - #{t(:release_label)} #{Avalon::VERSION}" %>
         <% end %>
       </div>
 
-      <div>
+      <div class="header-search">
         <%= render :partial=>'modules/avalon_search_form' %>
       </div>
 
       <%# By default shift log in / log out to the header %>
-      <div class="text-right log-in-out text-muted">
+      <div class="text-right log-in-out text-muted header-user">
         <%= render 'modules/user_management' %>
       </div>
     </header>

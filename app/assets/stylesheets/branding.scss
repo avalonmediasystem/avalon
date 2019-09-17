@@ -59,12 +59,12 @@ $danger: #f44336;
 
 // Colors not from the Styleguide
 $greenBG: scale-color($primary, $saturation: -40%, $lightness: 60%);
-//$orange: rgb(42, 84, 69);
-$gray: #cfd8d3;
+$gray: #999;
 $lightgray: #f2f2f2;
 $red: #d9534f;
 $blue: #2a4d59;
 
+/* Bootstrap branding colors */
 $brand-primary: $primaryDark;
 $brand-success: $success;
 $brand-info: $info;
@@ -87,33 +87,24 @@ $link-color: $primaryDark;
 $link-hover-color: $primary;
 
 /* Alerts */
-$warning-text: $white;
-$warning-background: $warning;
+$alert-success-bg: $success;
+$alert-success-text: $white;
+$alert-success-border: $success;
 
-$success-text: $white;
-$success-link: $primaryDark;
-$success-background: $success;
-$state-success-bg: $success;
-$state-success-text: $white;
-$state-info-bg: $info;
-$state-info-text: $white;
-
-$info-text: $white;
-$info-background: $info;
+/* General states (success, info, warning, danger) */
+$state-warning-bg: $warning;
+$state-warning-border: $warning;
+$state-warning-text: $white;
+$state-danger-bg: $danger;
+$state-danger-border: $danger;
+$state-danger-text: $white;
 
 /* Header */
-$header-background-color: rgb(234, 234, 234);
-$header-text-color: $white;
 $login-text-color: $gray;
 $login-link-color: $primaryDark;
 $login-link-background-color: $orange;
 
 /* Sidenav */
-$sidenavHeaderBackgroundColor: $greenBG;
-
-/* Search Facets */
-$constraint_bg_color: $greenBG;
-$constraint_border_color: scale-color($greenBG, $lightness: -20%);
 
 /* Change default breakpoint for the navigation bar */
 $navCollapseWidth: 650px;
@@ -131,6 +122,9 @@ $navbar-border-radius: 0;
 $navbar-default-toggle-icon-bar-bg: $white;
 $navbar-default-toggle-border-color: $white;
 
+// Panels
+$panel-primary-text: red;
+
 // Inverted navbar toggle
 $navbar-inverse-toggle-hover-bg: #e6e6e6;
 $navbar-inverse-toggle-icon-bar-bg: $lightgray;
@@ -138,9 +132,6 @@ $navbar-inverse-toggle-border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1)
   rgba(0, 0, 0, 0.25);
 
 $grid-gutter-width: 16px;
-$wellBackground: $gray;
-$well-bg: $gray;
-$sideHeaderBackgroundColor: $gray;
 
 /* Buttons */
 $btn-border-radius-base: 2px;

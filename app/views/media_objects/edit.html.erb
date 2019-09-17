@@ -23,16 +23,18 @@ Unless required by applicable law or agreed to in writing, software distributed
   </div>
 
   <div id="main_body" class="col-sm-9">
-    <div class="page-title-wrapper">
-      <h1>Edit Media Object</h1>
-    </div>
+    <h1 class="sr-only">Edit Media Object</h1>
 
     <ol class="breadcrumb">
       <li><%= @media_object.collection.name.present? ? @media_object.collection.name : 'Untitled collection' %></li>
       <li><%= @media_object.title.present? ? @media_object.title : 'Untitled item' %></li>
     </ol>
 
-    <h2><%= HYDRANT_STEPS.get_step(@active_step).title %></h2>
+    <div class="page-title-wrapper">
+      <h2 class="headline"><span class="sub-headline">Edit Media Object</span> >
+        <%= HYDRANT_STEPS.get_step(@active_step).title %></h2>
+    </div>
+
     <%= render current_step_for @active_step %>
   </div>
 </div>

@@ -26,6 +26,13 @@
   color: $primaryDark;
   font-size: 29.3px;
 }
+.sub-headline {
+  color: $primary;
+}
+
+main {
+  padding-bottom: 20px;
+}
 
 /**
  * Snippets to extend
@@ -47,22 +54,6 @@
     display: none !important;
   }
 }
-
-// a:not(.btn) {
-//   color: $link-color;
-
-//   &:hover {
-//     color: $link-color;
-//   }
-
-//   &:active {
-//     color: $link-color;
-//   }
-
-//   &:visited {
-//     color: $link-color;
-//   }
-// }
 
 @mixin hidden-disabled-link {
   text-decoration: none !important;
@@ -139,17 +130,65 @@ tr.active-false td {
 #header-navbar .navbar-brand {
   @extend .desktop-hidden;
   background-size: contain;
+  background-color: white;
+  background-position: 20%;
+}
+
+.logo {
+  @media screen and (max-width: $screen-sm-max) {
+    max-width: 120px;
+  }
 }
 
 .header-wrapper {
   display: flex;
   align-items: center;
   justify-content: space-between;
+
+  .header-logo {
+    flex-grow: 1;
+
+    @media screen and (max-width: $screen-sm-max) {
+      img {
+        max-width: 120px;
+        margin-right: 10px;
+      }
+    }
+  }
+  .header-search {
+    flex-grow: 2;
+    text-align: center;
+
+    .avalon-search-query-form {
+      display: inline-block;
+    }
+  }
+  .header-user {
+    flex-grow: 1;
+  }
 }
 
 .navbar {
   font-family: $museoSlab;
   font-size: 16px;
+  @media screen and (max-width: $screen-md-max) {
+    font-size: 13px;
+  }
+  @media screen and (max-width: $screen-sm-max) {
+    font-size: 10px;
+  }
+  @media screen and (max-width: $screen-xs-max) {
+    font-size: 14px;
+  }
+}
+
+.navbar-nav {
+  > li > a {
+    @media screen and (max-width: $screen-sm-max) {
+      padding-left: 10px;
+      padding-right: 10px;
+    }
+  }
 }
 
 .navbar-default {
@@ -356,7 +395,7 @@ header div {
   /* Browse By Header */
   h2 {
     margin: 0px;
-    background-color: $sidenavHeaderBackgroundColor;
+    //background-color: $sidenavHeaderBackgroundColor;
     @include border-top-radius(6px);
     padding: 10px 0 10px 10px;
     font-weight: bold;
@@ -420,21 +459,6 @@ div[id*='facet-panel-'] {
 }
 
 /* Footer */
-footer {
-  height: 5rem;
-  line-height: 5rem;
-
-  ul {
-    margin-left: 0;
-  }
-
-  li {
-    list-style-type: none;
-    display: inline;
-    margin: 0 1rem;
-  }
-}
-
 #footer {
   position: absolute;
   bottom: 0;
@@ -443,33 +467,39 @@ footer {
   color: #999999;
 }
 
-footer ul {
-  float: left;
-  margin-left: -40px;
+footer {
+  height: 5rem;
+  line-height: 5rem;
 
-  @media all and (max-width: 475px) {
-    float: none;
+  ul {
+    float: left;
+    margin-left: -40px;
   }
-}
 
-footer .release {
-  float: right;
-
-  @media all and (max-width: 475px) {
-    float: none;
+  li {
+    list-style-type: none;
+    display: inline;
+    margin: 0 1rem;
   }
-}
 
-/* Alerts */
+  .release {
+    float: right;
+  }
 
-.alert-success {
-  text-shadow: rgba(0, 0, 0, 0.1) 0px 1px 0px;
+  @media screen and (max-width: $screen-xs-max) {
+    font-size: 12px;
 
-  a {
-    color: $success-link;
-
-    &:hover {
-      color: scale-color($success-link, $lightness: -20%);
+    ul {
+      float: none;
+      text-align: center;
+    }
+    li {
+      margin: 0 0.5rem;
+    }
+    .release {
+      float: none;
+      line-height: 1rem;
+      text-align: center;
     }
   }
 }
@@ -655,10 +685,6 @@ a[data-trigger='submit'] {
   margin-top: 0px;
 }
 
-.facet_limit-active > .panel-heading {
-  background-color: $lightgray;
-}
-
 :not(.facet_limit-active).facet_limit > .panel-heading {
   background-color: $white;
 }
@@ -747,10 +773,6 @@ a[data-trigger='submit'] {
 
 #resource_description_content {
   max-width: 700px;
-}
-
-#special_button_color {
-  color: $white;
 }
 
 .edit_media_object .form-group {
@@ -1545,6 +1567,8 @@ h5.panel-title {
  * Collections
  */
 .collections-list-wrapper {
+  overflow-x: auto;
+
   table {
     td {
       &:nth-child(1) {
