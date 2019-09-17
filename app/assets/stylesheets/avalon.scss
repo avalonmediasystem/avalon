@@ -16,6 +16,11 @@
 
 @import 'branding';
 @import 'bootstrap/variables';
+@import 'avalon/header';
+@import 'avalon/nav';
+@import 'avalon/form';
+@import 'avalon/footer';
+@import 'avalon/facets';
 //@import "bootstrap-responsive";
 
 /* Headlines / page titles */
@@ -124,97 +129,6 @@ tr.active-false td {
   }
 }
 
-/**
- *  Overridding Blacklight's brand logo
- */
-#header-navbar .navbar-brand {
-  @extend .desktop-hidden;
-  background-size: contain;
-  background-color: white;
-  background-position: 20%;
-}
-
-.logo {
-  @media screen and (max-width: $screen-sm-max) {
-    max-width: 120px;
-  }
-}
-
-.header-wrapper {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-
-  .header-logo {
-    flex-grow: 1;
-
-    @media screen and (max-width: $screen-sm-max) {
-      img {
-        max-width: 120px;
-        margin-right: 10px;
-      }
-    }
-  }
-  .header-search {
-    flex-grow: 2;
-    text-align: center;
-
-    .avalon-search-query-form {
-      display: inline-block;
-    }
-  }
-  .header-user {
-    flex-grow: 1;
-  }
-}
-
-.navbar {
-  font-family: $museoSlab;
-  font-size: 16px;
-  @media screen and (max-width: $screen-md-max) {
-    font-size: 13px;
-  }
-  @media screen and (max-width: $screen-sm-max) {
-    font-size: 10px;
-  }
-  @media screen and (max-width: $screen-xs-max) {
-    font-size: 14px;
-  }
-}
-
-.navbar-nav {
-  > li > a {
-    @media screen and (max-width: $screen-sm-max) {
-      padding-left: 10px;
-      padding-right: 10px;
-    }
-  }
-}
-
-.navbar-default {
-  @media screen and (max-width: $screen-xs-max) {
-    background: $primaryDark;
-  }
-}
-
-.navbar-static-top {
-  // Bootstrap override
-  border-bottom: 0;
-}
-
-.navbar-header .row {
-  margin-left: 6px;
-  margin-right: 6px;
-}
-
-.container > .navbar-header {
-  height: auto;
-}
-
-.navbar-toggle {
-  margin: 4px;
-}
-
 #user-util-collapse {
   border-top: 0;
 }
@@ -249,76 +163,6 @@ tr.active-false td {
 
 .tooltip-block .close {
   font-size: 14px;
-}
-
-// Form-group input fields
-.form-group .input-group {
-  width: 100%;
-
-  .form-control {
-    border-radius: 0;
-
-    &:first-child {
-      border-top-left-radius: $border-radius-base;
-      border-bottom-left-radius: $border-radius-base;
-    }
-
-    &:last-child {
-      border-top-right-radius: $border-radius-base;
-      border-bottom-right-radius: $border-radius-base;
-    }
-  }
-
-  .input-group-btn {
-    vertical-align: top;
-  }
-
-  .add-dynamic-field {
-    cursor: pointer;
-  }
-}
-
-.form-group .input-group.typed-textarea {
-  .input-group-btn:first-of-type {
-    width: 100%;
-
-    button {
-      width: 100%;
-      text-align: left;
-      border-bottom-left-radius: 0;
-    }
-  }
-
-  .input-group-btn:last-of-type {
-    button {
-      border-bottom-right-radius: 0;
-    }
-  }
-}
-
-.form-group textarea.typed-textarea {
-  border-top: none;
-  border-top-right-radius: 0;
-  border-top-left-radius: 0;
-  margin-bottom: 2px;
-}
-
-/*
- * Fix that shouldn't be needed to make sure that the text behaves like a regular
- * link
- */
-label {
-  a[data-tooltip] {
-    text-decoration: none;
-  }
-}
-
-.item-access label {
-  display: block;
-}
-
-.form-horizontal label {
-  font-weight: normal;
 }
 
 .access-block {
@@ -363,147 +207,6 @@ input[type='text']#admin_group {
   margin-bottom: 0;
 }
 
-/* Header */
-.custom-header {
-  @extend .mobile-hidden;
-  padding: 1rem 0 2rem;
-}
-
-header div {
-  @extend .mobile-hidden;
-}
-
-.log-in-out {
-  font-size: 14px;
-}
-
-.navbar-inner {
-  padding-right: 12px;
-}
-
-.global-search-wrapper {
-  width: 400px;
-  .global-search-input {
-    background: $lightgray;
-    border: 0;
-  }
-}
-
-/* Sidebar */
-
-.sidenav {
-  /* Browse By Header */
-  h2 {
-    margin: 0px;
-    //background-color: $sidenavHeaderBackgroundColor;
-    @include border-top-radius(6px);
-    padding: 10px 0 10px 10px;
-    font-weight: bold;
-    font-size: 18px;
-  }
-
-  /* Facet Group Header */
-  h3 {
-    font-weight: bold;
-    font-size: 1em;
-  }
-}
-
-.sidenav .top-panel-heading {
-  background-color: #cfd8d3;
-  padding: 0;
-  margin-bottom: 0;
-}
-
-#sidebar,
-#facets {
-  padding-bottom: 10px;
-
-  .panel {
-    border-radius: 0px;
-  }
-
-  .panel-group {
-    margin-bottom: 0px;
-    padding-right: 0px;
-    padding-left: 0px;
-  }
-
-  ul {
-    margin-bottom: 0px;
-  }
-
-  .top-panel-heading {
-    margin-bottom: 0em;
-  }
-}
-
-div[id*='facet-panel-'] {
-  @extend .navbar-collapse;
-  padding-left: 0 !important;
-  padding-right: 0 !important;
-  border-top: none;
-  box-shadow: none;
-  max-height: none;
-}
-
-.facets-toggle {
-  margin-top: -6px;
-  background-color: $white;
-
-  .icon-bar {
-    background-color: #888888;
-  }
-
-  margin: 3px;
-}
-
-/* Footer */
-#footer {
-  position: absolute;
-  bottom: 0;
-  width: 100%;
-  min-height: 2.5rem;
-  color: #999999;
-}
-
-footer {
-  height: 5rem;
-  line-height: 5rem;
-
-  ul {
-    float: left;
-    margin-left: -40px;
-  }
-
-  li {
-    list-style-type: none;
-    display: inline;
-    margin: 0 1rem;
-  }
-
-  .release {
-    float: right;
-  }
-
-  @media screen and (max-width: $screen-xs-max) {
-    font-size: 12px;
-
-    ul {
-      float: none;
-      text-align: center;
-    }
-    li {
-      margin: 0 0.5rem;
-    }
-    .release {
-      float: none;
-      line-height: 1rem;
-      text-align: center;
-    }
-  }
-}
-
 #featured_content_header {
   margin-top: 0;
 }
@@ -517,8 +220,6 @@ footer {
     @extend .img-thumbnail;
   }
 }
-
-/* Search Filters & Facets */
 
 .constraints-container {
   padding: 0.4em;
@@ -639,54 +340,6 @@ button.close {
 a[data-trigger='submit'] {
   text-decoration: none;
   color: $dark;
-}
-
-.facet-values {
-  display: table;
-  table-layout: fixed;
-  //set hyphen definitions at this (display:block) level
-  -ms-word-break: keep-all;
-  word-break: keep-all;
-  -webkit-hyphens: auto;
-  -moz-hyphens: auto;
-  -ms-hyphens: auto;
-  -o-hyphens: auto;
-  hyphens: auto;
-  word-wrap: break-word;
-  white-space: pre-line;
-}
-
-.facet-values .facet-label {
-  display: table-cell;
-  position: relative;
-  //override any blacklight hyphen definitions made at this (display:inline) level
-  word-break: inherit;
-  -webkit-hyphens: inherit;
-  -moz-hyphens: inherit;
-  -ms-hyphens: inherit;
-  -o-hyphens: inherit;
-  hyphens: inherit;
-  padding-right: 20px;
-
-  .remove {
-    position: absolute;
-    top: 0;
-    right: 0.5em;
-    text-indent: 0;
-  }
-}
-
-.facet-count {
-  text-align: right;
-  width: 5em;
-}
-
-.facets .panel-group .panel {
-  margin-top: 0px;
-}
-
-:not(.facet_limit-active).facet_limit > .panel-heading {
-  background-color: $white;
 }
 
 .dl-horizontal {

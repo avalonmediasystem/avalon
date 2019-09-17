@@ -1,0 +1,45 @@
+/* Footer */
+#footer {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  min-height: 2.5rem;
+  color: #999999;
+}
+
+footer {
+  height: 5rem;
+  line-height: 5rem;
+
+  ul {
+    float: left;
+    margin-left: -40px;
+  }
+
+  li {
+    list-style-type: none;
+    display: inline;
+    margin: 0 1rem;
+  }
+
+  .release {
+    float: right;
+  }
+
+  @media screen and (max-width: $screen-xs-max) {
+    font-size: 12px;
+
+    ul {
+      float: none;
+      text-align: center;
+    }
+    li {
+      margin: 0 0.5rem;
+    }
+    .release {
+      float: none;
+      line-height: 1rem;
+      text-align: center;
+    }
+  }
+}
