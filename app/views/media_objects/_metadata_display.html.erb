@@ -16,7 +16,12 @@ Unless required by applicable law or agreed to in writing, software distributed
 <div id="metadata_header">
   <div class="panel panel-default">
     <div class="panel-heading">
-      <h3 class="panel-title">Metadata</h3>
+      <h3 class="panel-title" style="display: inline-block">Metadata</h3>
+      <% if can? :inspect, @media_object %>
+      <%= link_to(inspect_media_object_path(@media_object.id, 'descMetadata'), target: 'blank', class: 'pull-right') do %>
+      View Raw <span class="fa fa-external-link"></span>
+      <% end %>
+      <% end %>
     </div>
     <div class="panel-body">
       <p>
@@ -52,15 +57,17 @@ Unless required by applicable law or agreed to in writing, software distributed
         <% end %>
       </dl>
 
-      <div class="text-center">
-        <% if can? :inspect, @media_object %>
-        <%= link_to 'View Raw Metadata', inspect_media_object_path(@media_object.id, 'descMetadata'), :target => 'blank', :class => "btn btn-default btn-small" %>
-        <%= link_to 'View Fedora Objects', tree_media_object_path(@media_object.id), :id => 'show_object_tree', :target => 'blank', :class => "btn btn-default btn-small" %>
-        <div id="object_tree" data-src="<%=tree_media_object_path(@media_object.id)%>">
-        </div>
-      </div>
-
-
-      <% end %>
-
     </div>
+  </div>
+
+  <% if can? :inspect, @media_object %>
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      <%= link_to 'View Raw Metadata', inspect_media_object_path(@media_object.id, 'descMetadata'), :target => 'blank', :class => "btn btn-default btn-small" %>
+      <%= link_to 'View Fedora Objects', tree_media_object_path(@media_object.id), :id => 'show_object_tree', :target => 'blank', :class => "btn btn-default btn-small" %>
+    </div>
+    <div class="panel-body collapse" id="object_tree" data-src="<%=tree_media_object_path(@media_object.id)%>"></div>
+  </div>
+  <% end %>
+
+</div>
