@@ -3,7 +3,7 @@ en:
     application_name: 'Avalon Media System'
 
     header_links:
-      bookmarks: 'Manage Selected Items'
+      bookmarks: 'Selected Items'
 
     bookmarks:
       title: 'Selected Items'

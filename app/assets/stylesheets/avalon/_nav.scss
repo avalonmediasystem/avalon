@@ -11,14 +11,23 @@
 .navbar {
   font-family: $museoSlab;
   font-size: 16px;
-  @media screen and (max-width: $screen-md-max) {
-    font-size: 13px;
+  // @media screen and (max-width: $screen-md-max) {
+  //   font-size: 13px;
+  // }
+  // @media screen and (max-width: $screen-sm-max) {
+  //   font-size: 10px;
+  // }
+  // @media screen and (max-width: $screen-xs-max) {
+  //   font-size: 14px;
+  // }
+
+  ul {
+    padding: 0;
   }
-  @media screen and (max-width: $screen-sm-max) {
-    font-size: 10px;
-  }
-  @media screen and (max-width: $screen-xs-max) {
-    font-size: 14px;
+
+  li.open > ul {
+    display: inline-grid;
+    border: 0;
   }
 }
 

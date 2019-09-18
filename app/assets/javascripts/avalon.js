@@ -68,4 +68,9 @@ $(document).ready(function() {
   // Set CSS to push the page content above footer
   $('.content-wrapper').css('padding-bottom', $('#footer').css('height'));
 
+  $('#manageDropdown').hover(function() {
+    $('#manageDropdown').addClass('open');
+  }, function() {
+    $('#manageDropdown').removeClass('open');
+  });
 });
