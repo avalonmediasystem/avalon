@@ -124,7 +124,10 @@
                 t.options.classPrefix +
                 'qualities-selector ' +
                 t.options.classPrefix +
-                'offscreen">') +
+                'offscreen"' +
+                'aria-label="' + 
+                qualityTitle +
+                '">') +
               ('<ul class="' +
                 t.options.classPrefix +
                 'qualities-selector-list"></ul>') +
@@ -169,9 +172,9 @@
                   '</li>';
               }
             });
-            var inEvents = ['mouseenter', 'focusin'],
+            var inEvents = ['mouseenter', 'focusin', 'keydown'],
               /* Note this line is customized from original plugin - 2017-12-18 */
-              outEvents = ['mouseleave', 'blur'],
+              outEvents = ['mouseleave', 'blur', 'focusout'],
               radios = player.qualitiesButton.querySelectorAll(
                 'input[type="radio"]'
               ),

@@ -243,10 +243,11 @@ Reference: http://blog.rrwd.nl/2015/04/04/the-screen-reader-text-class-why-and-h
 }
 
 /* :focus for accessibility */
-.mejs__button > button:focus {
-    outline: dotted 1px #999;
+.mejs__button > button:focus, .mejs__overlay-button:focus, .mejs__time-total:focus, .mejs__volume-slider:focus, .mejs__qualities-selector:focus {
+    outline: solid 2px yellow;
 }
 
+// prevent outlining buttons/time rail on a mouse click
 .mejs__container-keyboard-inactive a,
 .mejs__container-keyboard-inactive a:focus,
 .mejs__container-keyboard-inactive button,
