@@ -243,14 +243,4 @@ EOF
       def get_duration_from_fragment(start, stop)
         milliseconds_to_formatted_time((stop.to_i - start.to_i) * 1000, false)
       end
-
-      # This method mirrors the one in the MediaObject model but makes use of the master files passed in which can be SpeedyAF Objects
-      # This would be good to refactor in the future but speeds things up considerably for now
-      def gather_all_comments(media_object, master_files)
-        media_object.comment.sort + master_files.collect do |mf|
-          mf.comment.reject(&:blank?).collect do |c|
-            mf.display_title.present? ? "[#{mf.display_title}] #{c}" : c
-          end.sort
-        end.flatten.uniq
-      end
 end
