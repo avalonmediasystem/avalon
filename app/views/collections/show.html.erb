@@ -17,14 +17,26 @@ Unless required by applicable law or agreed to in writing, software distributed
 <% @page_title = t('collections.show.title', :collection_name => @doc_presenter.name, :application_name => application_name) %>
 
 <div class='container-fluid'>
-  <h3 class="col-md-12"><%= @doc_presenter.name %></h3>
-  <% if @doc_presenter.has_poster? %>
-  <div class="document-thumbnail">
-    <%= image_tag @doc_presenter.poster_url, class: 'img-responsive' %>
+  <ol class="breadcrumb">
+    <li style="padding-bottom: 0px"><%= link_to 'All Collections', collections_path %></li>
+    <li style="padding-bottom: 0px"><%= link_to @doc_presenter.unit, collections_path(filter: @doc_presenter.unit) %></li>
+    <li class="active" style="padding-bottom: 0px"><%= @doc_presenter.name %></li>
+  </ol>
+  <div class="row">
+    <% if @doc_presenter.has_poster? %>
+    <div class="document-thumbnail col-sm-4 pull-right">
+      <%= image_tag @doc_presenter.poster_url, class: 'img-responsive' %>
+    </div>
+    <% end %>
+    <div class="row col-sm-8">
+      <h3 class="col-sm-12" style="margin-top:0px"><%= @doc_presenter.name %></h3>
+      <div class="col-sm-12">
+        <p><strong>Unit:</strong> <%= @doc_presenter.unit %></p>
+        <p style="white-space:pre-wrap"><%= @doc_presenter.description %></p>
+      </div>
+    </div>
   </div>
-  <% end %>
-  <p><strong>Unit:</strong></p>
-  <p><%= @doc_presenter.unit %></p>
-  <p><strong>Description:</strong></p>
-  <p style="white-space:pre-wrap"><%= @doc_presenter.description %></p>
+  <div class="row col-sm-12">
+    <%= react_component("Search", { baseUrl: root_url, collection: @doc_presenter.name }) %>
+  </div>
 </div>
