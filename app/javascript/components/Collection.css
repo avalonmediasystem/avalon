@@ -6,13 +6,13 @@
   /* min-width: 25rem; */
 }
 
-ul {
+ul.search-within-search-results {
   padding-inline-start: 1rem;
   list-style-type: none;
   padding-left: 0px;
 }
 
-li {
+li.search-within-search-result {
   padding-bottom: 2rem;
 }
 
