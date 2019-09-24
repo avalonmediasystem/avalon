@@ -30,7 +30,7 @@ describe 'checks navigation after logging in' do
     click_link('Manage Content')
     expect(page.current_url).to eq('http://www.example.com/admin/collections')
     expect(page).to have_content('Skip to main content')
-    expect(page).to have_link('Manage Selected Items (0)')
+    expect(page).to have_link('Selected Items (0)')
     expect(page).to have_button('Create Collection')
     expect(page).to have_content('Name')
     expect(page).to have_content('Description')
@@ -73,13 +73,13 @@ describe 'Search' do
   it 'is able to enter keyword and perform search' do
     visit '/'
     fill_in('Search', with: 'Video')
-    click_button 'Search'
+    click_button 'global-search-submit'
     expect(page.current_url).to eq('http://www.example.com/catalog?utf8=%E2%9C%93&search_field=all_fields&q=Video')
   end
   it 'gives appropriate error when keyword returns no results' do
     visit '/'
     fill_in('Search', with: 'Video')
-    click_button 'Search'
+    click_button 'global-search-submit'
     expect(page).to have_content('No results found for your search')
     expect(page).to have_content('No entries found')
     expect(page).to have_content('Use fewer keywords to start, then refine your search using the links on the left')

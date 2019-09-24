@@ -32,7 +32,7 @@ describe 'homepage' do
     visit '/'
     expect(page).to have_no_link('Manage Content')
     expect(page).to have_no_link('Manage Groups')
-    expect(page).to have_no_link('Manage Selected Items')
+    expect(page).to have_no_link('Selected Items')
     expect(page).to have_no_link('Playlists')
     expect(page).to have_no_link('Sign out>>')
   end
@@ -71,7 +71,7 @@ describe 'checks navigation to external links' do
     visit'/'
     expect(page).to have_link('Manage Content')
     expect(page).to have_link('Manage Groups')
-    expect(page).to have_link('Manage Selected Items')
+    expect(page).to have_link('Selected Items')
     expect(page).to have_link('Playlists')
     expect(page).to have_link('Sign out')
     expect(page).to have_content(user.user_key)
