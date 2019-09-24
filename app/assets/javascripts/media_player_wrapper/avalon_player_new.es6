@@ -330,7 +330,7 @@ class MEJSPlayer {
 
     // Grab instance of player
     if (!this.player) {
-      this.player = this.mediaElement;
+      this.player = instance;
     }
 
     if (this.player && this.player.media && this.player.media.hlsPlayer && this.player.media.hlsPlayer.config) {
