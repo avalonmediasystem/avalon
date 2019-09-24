@@ -43,10 +43,10 @@ class SearchResults extends Component {
 
     render() {
         return (
-        <ul>
+        <ul className="search-within-search-results">
             { this.props.documents.map((doc,index) => {
                 return (
-                    <li key={index} className="row">
+                    <li key={index} className="row search-within-search-result">
                         <div className="document-thumbnail col-sm-3">
                             <span className="timestamp badge badge-dark">{this.duration(doc['duration_ssi'])}</span>
                             <a href={this.props.baseUrl + "/media_objects/" + doc['id']}>
