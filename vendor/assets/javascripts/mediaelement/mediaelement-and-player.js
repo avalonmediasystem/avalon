@@ -4224,11 +4224,11 @@ var MediaElementPlayer = function () {
 					}
 				});
 
-				t.getElement(t.container).addEventListener('click', function (e) {
+				t.getElement(t.container).addEventListener('mousedown', function (e) {
 					dom.addClass(e.currentTarget, t.options.classPrefix + 'container-keyboard-inactive');
 				});
 
-				t.getElement(t.container).addEventListener('focusin', function (e) {
+				t.getElement(t.container).addEventListener('keydown', function (e) {
 					dom.removeClass(e.currentTarget, t.options.classPrefix + 'container-keyboard-inactive');
 					if (t.isVideo && !_constants.IS_ANDROID && !_constants.IS_IOS && t.controlsEnabled && !t.options.alwaysShowControls) {
 						t.killControlsTimer('enter');
