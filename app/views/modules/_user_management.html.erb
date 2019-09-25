@@ -14,8 +14,8 @@ Unless required by applicable law or agreed to in writing, software distributed
 ---  END LICENSE_HEADER BLOCK  ---
 %>
 <%# The containers for the links need to be defined by the calling partial %>
-    <% if user_signed_in? %>
-      <%= user_key %> <%= link_to t('auth.sign_out'), main_app.destroy_user_session_path %>
-    <% else %>
-      <%= link_to t('auth.sign_in'), main_app.new_user_session_path %>
-    <% end %>
+<% if user_signed_in? %>
+<%= user_key %> | <%= link_to t('auth.sign_out'), main_app.destroy_user_session_path %>
+<% else %>
+<%= link_to t('auth.sign_in'), main_app.new_user_session_path, :class => "btn btn-info" %>
+<% end %>

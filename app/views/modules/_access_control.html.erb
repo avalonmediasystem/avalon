@@ -17,45 +17,78 @@ Unless required by applicable law or agreed to in writing, software distributed
 
 <% if can_update %>
 
-  <%= bootstrap_form_for object, html: { class: "form-horizontal", id: 'access_control_form'}  do |vid| %>
-  <%= hidden_field_tag :step, @active_step %>
-  <fieldset class='item-discovery'>
-    <legend>Item discovery</legend>
-      <%= label_tag :hidden do %>
+<%= bootstrap_form_for object, html: { id: 'access_control_form'}  do |vid| %>
+<%= hidden_field_tag :step, @active_step %>
+
+<div class="panel panel-default item-discovery">
+  <div class="panel-heading">
+    <h3 class="panel-title">Item discovery</h3>
+  </div>
+  <div class="panel-body">
+    <div class="form-group">
+      <div class="checkbox">
+        <%= label_tag :hidden do %>
         <%= check_box_tag :hidden, '1', (hidden) %>
-        Hide this item from search results 
-      <% end %>
-  </fieldset>
-  <fieldset class='item-access'>
-    <legend>Item access</legend>
-      <%= label_tag :visibility do %>
-      <%= radio_button_tag :visibility, 'public', (@visibility == 'public') %>
+        Hide this item from search results
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="panel panel-default item-access">
+  <div class="panel-heading">
+    <h3 class="panel-title">Item access</h3>
+  </div>
+  <div class="panel-body">
+    <div class="form-group">
+      <div class="radio">
+        <%= label_tag :visibility do %>
+        <%= radio_button_tag :visibility, 'public', (@visibility == 'public') %>
         Available to the general public
-      <% end %>
-
-      <%= label_tag :visibility do %>
-      <%= radio_button_tag :visibility, 'restricted', (@visibility == 'restricted') %>
+        <% end %>
+      </div>
+      <div class="radio">
+        <%= label_tag :visibility do %>
+        <%= radio_button_tag :visibility, 'restricted', (@visibility == 'restricted') %>
         Logged in users only
-      <% end %>
-
-      <%= label_tag :visibility do %>
-      <%= radio_button_tag :visibility, 'private', (@visibility == 'private') %>
+        <% end %>
+      </div>
+      <div class="radio">
+        <%= label_tag :visibility do %>
+        <%= radio_button_tag :visibility, 'private', (@visibility == 'private') %>
         Collection staff only
-      <% end %>
-  </fieldset> 
-  <% end #form_for %>		
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>
+
+<% end #form_for %>
 
 <% else %>
 
-  <%= bootstrap_form_for object, html: { class: "form-horizontal", id: 'access_control_form'}  do |vid| %>
-  <%= hidden_field_tag :step, @active_step %>
-  <fieldset class='item-discovery'>
-    <legend>Item discovery</legend>
-    <%= hidden ? "Item is hidden from search results" : 
+<%= bootstrap_form_for object, html: { id: 'access_control_form'}  do |vid| %>
+<%= hidden_field_tag :step, @active_step %>
+
+<div class="panel panel-default item-discovery">
+  <div class="panel-heading">
+    <h3 class="panel-title">Item discovery</h3>
+  </div>
+  <div class="panel-body">
+    <div class="form-group">
+      <%= hidden ? "Item is hidden from search results" :
         "Item is not hidden from search results" %>
-  </fieldset>   
-  <fieldset class='item-access'>
-    <legend>Item access</legend>
+    </div>
+  </div>
+</div>
+
+<div class="panel panel-default item-access">
+  <div class="panel-heading">
+    <h3 class="panel-title">Item access</h3>
+  </div>
+  <div class="panel-body">
+    <div class="form-group">
       Item is viewable by
       <%= case @visibility
           when "public"
@@ -65,29 +98,34 @@ Unless required by applicable law or agreed to in writing, software distributed
           when "private"
             "collection staff only"
           end %>
-  </fieldset> 
-  <% end #form_for %>
+    </div>
+  </div>
+</div>
 
-<% end %>		
+<% end #form_for %>
 
-  <fieldset class='special-access'>
-    <legend>Assign special access</legend>
-    <div class="row">
-        <%= render "modules/access_object", object: object,
+<% end %>
+
+<div class="panel panel-default special-access">
+  <div class="panel-heading">
+    <h3 class="panel-title">Assign special access</h3>
+  </div>
+  <div class="panel-body">
+    <%= render "modules/access_object", object: object,
           access_object: "user", members: @users, leases: @user_leases,
           autocomplete_model: 'user',
           input_disabled: !can_update %>
-        <%= render "modules/access_object", object: object,
+    <%= render "modules/access_object", object: object,
           access_object: "group", members: @groups, leases: @group_leases,
           dropdown_values: [@addable_groups, 'name', 'name'],
           input_disabled: !can_update %>
-        <%= render "modules/access_object", object: object,
+    <%= render "modules/access_object", object: object,
           access_object: "class", members: @virtual_groups, leases: @virtual_leases,
           autocomplete_model: 'externalGroup',
           display_helper: :vgroup_display,
           input_disabled: !can_update %>
-        <%= render "modules/access_object", object: object,
+    <%= render "modules/access_object", object: object,
           access_object: "ipaddress", members: @ip_groups, leases: @ip_leases,
           input_disabled: !can_update %>
-    </div>
-  </fieldset>
+  </div>
+</div>

@@ -1,0 +1,70 @@
+/**
+ *  Overridding Blacklight's brand logo
+ */
+#header-navbar .navbar-brand {
+  @extend .desktop-hidden;
+  background-size: contain;
+  background-color: white;
+  background-position: 20%;
+}
+
+.navbar {
+  font-family: $museoSlab;
+  font-size: 16px;
+  // @media screen and (max-width: $screen-md-max) {
+  //   font-size: 13px;
+  // }
+  // @media screen and (max-width: $screen-sm-max) {
+  //   font-size: 10px;
+  // }
+  // @media screen and (max-width: $screen-xs-max) {
+  //   font-size: 14px;
+  // }
+
+  ul {
+    padding: 0;
+  }
+
+  li.open > ul {
+    display: inline-grid;
+    border: 0;
+  }
+}
+
+.navbar-nav {
+  > li > a {
+    @media screen and (max-width: $screen-sm-max) {
+      padding-left: 10px;
+      padding-right: 10px;
+    }
+  }
+}
+
+.navbar-default {
+  @media screen and (max-width: $screen-xs-max) {
+    background: $primaryDark;
+  }
+}
+
+.navbar-static-top {
+  // Bootstrap override
+  border-bottom: 0;
+  z-index: 1001;
+}
+
+.navbar-header .row {
+  margin-left: 6px;
+  margin-right: 6px;
+}
+
+.container > .navbar-header {
+  height: auto;
+}
+
+.navbar-toggle {
+  margin: 4px;
+}
+
+.navbar-inner {
+  padding-right: 12px;
+}

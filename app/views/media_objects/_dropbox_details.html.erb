@@ -13,9 +13,9 @@ Unless required by applicable law or agreed to in writing, software distributed
   specific language governing permissions and limitations under the License.
 ---  END LICENSE_HEADER BLOCK  ---
 %>
-<div class="well well-info muted">
-  Dropbox location: <em><%= dropbox_url(@media_object.collection) %></em>
-  <br/>
-  Contact your system administrator for more information.
-  <br/>
+<div class="alert alert-info" role="alert">
+  <span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
+  <span>Dropbox location: <em><%= dropbox_url(@media_object.collection) %></em>
+    <br />Contact your system administrator for more information.
+  </span>
 </div>

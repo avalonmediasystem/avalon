@@ -35,7 +35,7 @@ $(document).ready(function() {
   $('#show_object_tree').on('click', function() {
     var ot = $('#object_tree')
     ot.load(ot.data('src'));
-    return false;
+    // return false;
   })
 
   var iOS = !!/(iPad|iPhone|iPod)/g.test( navigator.userAgent );
@@ -68,4 +68,9 @@ $(document).ready(function() {
   // Set CSS to push the page content above footer
   $('.content-wrapper').css('padding-bottom', $('#footer').css('height'));
 
+  $('#manageDropdown').hover(function() {
+    $('#manageDropdown').addClass('open');
+  }, function() {
+    $('#manageDropdown').removeClass('open');
+  });
 });

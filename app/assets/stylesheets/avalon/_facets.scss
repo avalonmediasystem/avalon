@@ -1,0 +1,113 @@
+.sidenav {
+  /* Browse By Header */
+  h2 {
+    margin: 0px;
+    @include border-top-radius(6px);
+    padding: 10px 0 10px 10px;
+    font-weight: bold;
+    font-size: 18px;
+  }
+
+  /* Facet Group Header */
+  h3 {
+    font-weight: bold;
+    font-size: 1em;
+  }
+}
+
+.sidenav .top-panel-heading {
+  background-color: #cfd8d3;
+  padding: 0;
+  margin-bottom: 0;
+}
+
+#sidebar,
+#facets {
+  padding-bottom: 10px;
+
+  .panel {
+    border-radius: 0px;
+  }
+
+  .panel-group {
+    margin-bottom: 0px;
+    padding-right: 0px;
+    padding-left: 0px;
+  }
+
+  ul {
+    margin-bottom: 0px;
+  }
+
+  .top-panel-heading {
+    margin-bottom: 0em;
+  }
+}
+
+div[id*='facet-panel-'] {
+  @extend .navbar-collapse;
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+  border-top: none;
+  box-shadow: none;
+  max-height: none;
+}
+
+.facets-toggle {
+  margin-top: -6px;
+  background-color: $white;
+
+  .icon-bar {
+    background-color: #888888;
+  }
+
+  margin: 3px;
+}
+
+.facet-values {
+  display: table;
+  table-layout: fixed;
+  //set hyphen definitions at this (display:block) level
+  -ms-word-break: keep-all;
+  word-break: keep-all;
+  -webkit-hyphens: auto;
+  -moz-hyphens: auto;
+  -ms-hyphens: auto;
+  -o-hyphens: auto;
+  hyphens: auto;
+  word-wrap: break-word;
+  white-space: pre-line;
+}
+
+.facet-values .facet-label {
+  display: table-cell;
+  position: relative;
+  //override any blacklight hyphen definitions made at this (display:inline) level
+  word-break: inherit;
+  -webkit-hyphens: inherit;
+  -moz-hyphens: inherit;
+  -ms-hyphens: inherit;
+  -o-hyphens: inherit;
+  hyphens: inherit;
+  padding-right: 20px;
+
+  .remove {
+    position: absolute;
+    top: 0;
+    right: 0.5em;
+    text-indent: 0;
+  }
+}
+
+.facet-count {
+  text-align: right;
+  width: 5em;
+}
+
+.facets .panel-group .panel {
+  margin-top: 0px;
+}
+
+:not(.facet_limit-active).facet_limit > .panel-heading {
+  background-color: $white;
+}
