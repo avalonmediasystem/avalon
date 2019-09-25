@@ -275,14 +275,24 @@ Object.assign(MediaElementPlayer.prototype, {
     },
 
     /**
-     * Handle control button click to toggle Add Playlist display
+     * Handle control button click to toggle Add marker to playlist item display
      * @function handleControlClick
-     * @param  {MouseEvent} e Event generated when Add to Playlist control button clicked
+     * @param  {MouseEvent} e Event generated when Add Marker to Playlist control button clicked
      * @return {void}
      */
     handleControlClick: function(e) {
       const t = this;
       let addMarkerObj = t.addMarkerObj;
+      
+      // Exit full screen
+      if(addMarkerObj.player.isFullScreen) {
+        addMarkerObj.player.exitFullScreen();
+        // Reload the form with new values
+        if(addMarkerObj.active) {
+          $(t.addMarkerObj.formWrapperEl).slideToggle();
+          t.addMarkerObj.active = !t.addMarkerObj.active;
+        }
+      }
 
       if (!addMarkerObj.active) {
         // Close any open alert displays
