@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2011-2019, The Trustees of Indiana University and Northwestern
  *   University.  Licensed under the Apache License, Version 2.0 (the "License");
  *   you may not use this file except in compliance with the License.
@@ -13,7 +13,6 @@
  *   specific language governing permissions and limitations under the License.
  * ---  END LICENSE_HEADER BLOCK  ---
 */
-
 
 /*
  * This is the default theme. You can modify many of the settings
@@ -43,17 +42,18 @@
  *= require_self
 */
 
-@import "bootstrap-sprockets";
-@import "bootstrap";
-@import "bootstrap-toggle";
-@import "font-awesome";
-@import "browse_everything";
+@import 'bootstrap-sprockets';
+@import 'branding';
+@import 'bootstrap';
+@import 'bootstrap-toggle';
+@import 'font-awesome';
+@import 'browse_everything';
 
-@import "blacklight_themes/avalon";
+@import 'blacklight_themes/avalon';
 
-@import "about_page";
-@import "admin";
-@import "blacklight";
-@import "branding";
-@import "nestable";
-@import "avalon";
+@import 'about_page';
+@import 'admin';
+@import 'blacklight';
+
+@import 'nestable';
+@import 'avalon';

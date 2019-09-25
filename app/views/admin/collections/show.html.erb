@@ -15,97 +15,93 @@ Unless required by applicable law or agreed to in writing, software distributed
 %>
 <% @page_title = t('collections.show.title', :collection_name => @collection.name, :application_name => application_name) %>
 
-<div class="container-fluid">
-    <div class="well">
-      <h3><%= @collection.name %></h3>
-      <div class="row well-vertical-spacer">
-        <div class="col-md-9">
-          <p><strong>Description:</strong></p>
-          <p class="collection-description"><%= @collection.description %></p>
-          <p><strong>Unit:</strong></p>
-          <p><%= @collection.unit %></p>
-        </div>
-        <div class="col-md-3">
-          <p><strong>Poster:</strong></p>
-          <p><%= @collection.poster.original_name if @collection.poster.present? %></p>
-          <% if @collection.poster.present? %>
-            <div class="well-vertical-spacer">
-              <%= image_tag(poster_admin_collection_path(@collection), class: 'img-responsive') %>
-            </div>
-          <% end %>
-          <div>
-            <%= form_for @collection, url: attach_poster_admin_collection_path(@collection.id), html: {method: "post"} do |form| %>
-              <%= form.file_field :poster, class: "filedata", style: "height:0px;width:0px;" %>
-              <% if @collection.poster.present? %>
-                <input type="submit" class="btn btn-danger btn-xs" value="Remove Poster" />
-              <% else %>
-                <input type="button" class="btn btn-primary btn-xs" onclick="$('.filedata').click();" value="Upload Poster" />
-              <% end %>
-            <% end %>
-          </div>
-        </div>
-      </div>
+<div class="page-title-wrapper">
+  <h1>Manage Content</h1>
+</div>
+
+<div class="well">
+  <h2><%= @collection.name %></h2>
+  <div class="row">
+    <div class="col-md-9">
+      <p><strong>Description:</strong></p>
+      <p class="collection-description"><%= @collection.description %></p>
+      <p><strong>Unit:</strong></p>
+      <p><%= @collection.unit %></p>
+    </div>
+    <div class="col-md-3">
+      <p><strong>Poster:</strong></p>
+      <p><%= @collection.poster.original_name if @collection.poster.present? %></p>
+      <% if @collection.poster.present? %>
       <div class="well-vertical-spacer">
-        <%= link_to('Create An Item', new_media_object_path(collection_id: @collection.id), class: 'btn btn-primary') if can? :create, MediaObject %>
-        <%= link_to('List All Items', search_catalog_path('f[collection_ssim][]' => @collection.name), class: 'btn btn-default') %>
-        <%= button_tag('Edit Collection Info', class: 'btn btn-default', data: {toggle:"modal", target:"#new_collection"}) if can? :update, @collection %>
+        <%= image_tag(poster_admin_collection_path(@collection), class: 'img-responsive') %>
       </div>
+      <% end %>
       <div>
-        <p>Or <a href='https://wiki.dlib.indiana.edu/display/VarVideo/Avalon+Collections+Guide#AvalonCollectionsGuide-UploadingviaBatch'><b>learn how to</b></a> create items using batch upload.</p>
+        <%= form_for @collection, url: attach_poster_admin_collection_path(@collection.id), html: {method: "post"} do |form| %>
+        <%= form.file_field :poster, class: "filedata", style: "height:0px;width:0px;" %>
+        <% if @collection.poster.present? %>
+        <input type="submit" class="btn btn-danger btn-xs" value="Remove Poster" />
+        <% else %>
+        <input type="button" class="btn btn-primary btn-xs" onclick="$('.filedata').click();" value="Upload Poster" />
+        <% end %>
+        <% end %>
       </div>
     </div>
+  </div>
+  <div class="well-vertical-spacer">
+    <%= link_to('Create An Item', new_media_object_path(collection_id: @collection.id), class: 'btn btn-primary') if can? :create, MediaObject %>
+    <%= link_to('List All Items', search_catalog_path('f[collection_ssim][]' => @collection.name), class: 'btn btn-default') %>
+    <%= button_tag('Edit Collection Info', class: 'btn btn-default', data: {toggle:"modal", target:"#new_collection"}) if can? :update, @collection %>
+  </div>
+  <div>
+    <p>Or <a
+        href='https://wiki.dlib.indiana.edu/display/VarVideo/Avalon+Collections+Guide#AvalonCollectionsGuide-UploadingviaBatch'><b>learn
+          how to</b></a> create items using batch upload.</p>
+  </div>
+</div><!-- /well -->
 
-      <fieldset>
-        <legend>Assign Staff Roles</legend>
-
-        <div class='staff-roles-section'>
-          <%= render "modules/access_object",
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <h3 class="panel-title">Assign Staff Roles</h3>
+  </div>
+  <div class="panel-body">
+    <div class='staff-roles-section'>
+      <%= render "modules/access_object",
             access_object: "manager",
             members: @collection.managers,
             autocomplete_model: 'user',
             object: @collection,
             input_disabled: cannot?( :update_managers, @collection ) %>
-          <%= render "modules/access_object",
+      <%= render "modules/access_object",
             access_object: "editor",
             members: @collection.editors,
             autocomplete_model: 'user',
             object: @collection,
             input_disabled: cannot?( :update_editors, @collection ) %>
-          <%= render "modules/access_object",
+      <%= render "modules/access_object",
             access_object: "depositor",
             members: @collection.depositors,
             autocomplete_model: 'user',
             object: @collection,
             input_disabled: cannot?( :update_depositors, @collection ) %>
-        </div>
-      </fieldset>
-
-      <div class="whitespace"></div>
-
-      <fieldset>
-         <legend>Set Default Access Control for New Items</legend>
-          <%= render "modules/access_control", { object: @collection, visibility: @collection.default_visibility, hidden: @collection.default_hidden } %>
-
-	  <% if can? :update_access_control, @collection %>
-	    <%= submit_tag "Save Access Settings", name: "save_access", class: "btn btn-primary", form: 'access_control_form' %>
-	  <% end %>
-      </fieldset>
-
+    </div>
+  </div>
 </div>
 
-<style>
-  fieldset .staff-roles-section { margin-left: 20px; }
-  fieldset.item-access { margin-left: 20px;  }
-  fieldset.item-discovery { margin-left: 20px; }
-  fieldset.special-access { margin-left: 20px; }
-  [name='save_access'] { margin-left: 20px;  }
-</style>
+<div class="content-block">
+  <h3 style="padding-top: 3rem;">Set Default Access Control for New Items</h3>
+  <%= render "modules/access_control", { object: @collection, visibility: @collection.default_visibility, hidden: @collection.default_hidden } %>
+
+  <% if can? :update_access_control, @collection %>
+  <%= submit_tag "Save Access Settings", name: "save_access", class: "btn btn-primary", form: 'access_control_form' %>
+  <% end %>
+</div>
 
 <%= render "form", modal_title: "Edit Collection Infomation" %>
 
 <% content_for :page_scripts do %>
 <script>
-  $( '.filedata' ).change(function() {
+  $('.filedata').change(function () {
     $(this).closest('form').submit();
   });
 </script>

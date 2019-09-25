@@ -1,0 +1,54 @@
+.logo {
+  @media screen and (max-width: $screen-sm-max) {
+    max-width: 120px;
+  }
+}
+
+.header-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  .header-logo {
+    flex-grow: 1;
+
+    @media screen and (max-width: $screen-sm-max) {
+      img {
+        max-width: 120px;
+        margin-right: 10px;
+      }
+    }
+  }
+  .header-search {
+    flex-grow: 2;
+    text-align: center;
+
+    .avalon-search-query-form {
+      display: inline-block;
+    }
+  }
+  .header-user {
+    flex-grow: 1;
+  }
+}
+
+.custom-header {
+  @extend .mobile-hidden;
+  padding: 1rem 0 2rem;
+}
+
+header div {
+  @extend .mobile-hidden;
+}
+
+.log-in-out {
+  font-size: 14px;
+}
+
+.global-search-wrapper {
+  width: 400px;
+  .global-search-input {
+    background: $lightgray;
+    border: 0;
+  }
+}
