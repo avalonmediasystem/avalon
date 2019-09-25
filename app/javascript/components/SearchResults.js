@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import { exportDefaultDeclaration } from '@babel/types';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faChevronDown } from '@fortawesome/free-solid-svg-icons'
-import './react-blacklight.css';
 import './Collection.css';
 
 class SearchResults extends Component {

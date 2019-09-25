@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import "./react-blacklight.css";
+import './Collection.css';
 
 class Facets extends Component {
     constructor(props) {

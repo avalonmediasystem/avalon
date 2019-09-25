@@ -4,7 +4,6 @@ import SearchResults from './SearchResults';
 import Pagination from './Pagination';
 import Facets from './Facets';
 import FacetBadges from './FacetBadges';
-import "./react-blacklight.css";
 
 class Search extends Component {
     constructor(props) {
@@ -14,7 +13,7 @@ class Search extends Component {
             searchResult: {pages:{}, docs:[], facets:[]},
             currentPage: 1,
             appliedFacets: [],
-            perPage: 12
+            perPage: 10
         };
     }
 
@@ -81,12 +80,14 @@ class Search extends Component {
         const { query } = this.state;
         return (
         <div>
-            <form className="container">
-                <label htmlFor="q" className="sr-only">search for</label>
-                <div className="input-group search-bar">
-                    <input value={query} onChange={this.handleQueryChange} name="q" className="form-control" placeholder="Search..." autoFocus="autofocus"></input>
-                </div>
-            </form>
+            <div>
+                <form className="search-bar">
+                    <label htmlFor="q" className="sr-only">search for</label>
+                    <div className="input-group search-input">
+                        <input value={query} onChange={this.handleQueryChange} name="q" className="form-control" placeholder="Search..." autoFocus="autofocus"></input>
+                    </div>
+                </form>
+            </div>
             <div className="row mb-3">
                 <FacetBadges facets={this.state.appliedFacets} search={this}></FacetBadges>
                 <Facets facets={this.availableFacets()} search={this}></Facets>
