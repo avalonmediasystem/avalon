@@ -17,7 +17,7 @@ class SearchResults extends Component {
     millisecondsToFormattedTime = (ms) => {
         let sec_num = ms / 1000;
         let hours = Math.floor(sec_num / 3600);
-        let minutes = Math.floor(sec_num / 60);
+        let minutes = Math.floor((sec_num % 3600) / 60);
         let seconds = sec_num - minutes * 60 - hours * 3600;
     
         let hourStr = hours < 10 ? `0${hours}` : `${hours}`;
