@@ -293,7 +293,7 @@ class MasterFilesController < ApplicationController
       end
     end
     unless content
-      redirect_to ActionController::Base.helpers.asset_path('video_icon.png')
+      redirect_to ActionController::Base.helpers.asset_path('audio_icon.png')
     else
       send_data content, :filename => "#{params[:type]}-#{master_file.id.split(':')[1]}", :disposition => :inline, :type => mimeType
     end
