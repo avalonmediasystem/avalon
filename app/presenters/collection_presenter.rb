@@ -38,7 +38,7 @@ class CollectionPresenter
   end
 
   def poster_url
-    return nil unless has_poster?
+    return ActionController::Base.helpers.asset_url('collection_icon.png') unless has_poster?
     Rails.application.routes.url_helpers.poster_collection_url(id)
   end
 
