@@ -108,29 +108,29 @@ class CollectionList extends Component {
     const { query } = this.state;
     return (
       <div>
-        <div className="stickyUtils">
-          <form>
+        <div className="stickyUtils mb-3">
+          <form className="collection-filter-bar">
             <label htmlFor="q" className="sr-only">search for</label>
-            <div className="input-group">
+            <div className="input-group collection-filter">
               <input value={this.state.filter} onChange={this.handleFilterChange} name="q" className="form-control" placeholder="Filter..." autoFocus="autofocus"></input>
             </div>
           </form>
           <div className="pull-right">
             <span>View by </span>
             <div className="btn-group" data-toggle="buttons">
-              <label className={"btn btn-primary" + (this.state.sort === "unit" ? " active" : "")} onClick={this.handleSortChange}>
+              <label className={"btn btn-primary sort-btn" + (this.state.sort === "unit" ? " active" : "")} onClick={this.handleSortChange}>
                 <input type="radio" value="unit" /> Unit
                 </label>
-              <label className={"btn btn-primary" + (this.state.sort === "az" ? " active" : "")}  onClick={this.handleSortChange}>
+              <label className={"btn btn-primary sort-btn" + (this.state.sort === "az" ? " active" : "")}  onClick={this.handleSortChange}>
                 <input type="radio" value="az" /> A-Z
               </label>
             </div>
           </div>
         </div>
-        <div className="row collection-list">
+        <div className="collection-list">
           {this.state.sort == 'az' ?
             (
-              <ul>
+              <ul className="mt-3">
                 {this.sortByAZ(this.state.filteredResult).map((col, index) => {
                   return (
                     <Collection key={index} attributes={col} showUnit={true}></Collection>
@@ -146,7 +146,7 @@ class CollectionList extends Component {
                 let collections = this.sortByAZ(unitArr[1]);
                 return (
                   <div>
-                    <h3 className="page-header">Unit: {unit}</h3>
+                    <h3 className="page-header">{unit}</h3>
                       <ul className="">
                         {collections.slice(0, this.state.maxItems).map((col, index) => {
                           return (

@@ -24,19 +24,15 @@ Unless required by applicable law or agreed to in writing, software distributed
       </div>
       <%= bootstrap_form_for @collection, remote: true, html: { modal: true }, format: 'json' do |f| %>
       <div class="modal-body">
-
         <%= f.text_field :name %>
-        <%= f.text_area :description, rows: 3  %>
-
         <% if @collection.new_record? || can?(:update_unit, @collection)%>
         <%= f.select(:unit, Admin::Collection.units) %>
         <% end %>
-
+        <%= f.text_area :description, rows: 3  %>
       </div>
       <div class="modal-footer">
         <a href="#" data-dismiss="modal" aria-hidden="true" class="btn btn-default">Cancel</a>
         <%= f.submit class: 'btn btn-primary btn-stateful-loading', data: {loading_text: 'Saving...'} %>
-
       </div>
       <% end %>
     </div>

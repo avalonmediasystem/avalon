@@ -63,8 +63,9 @@ Unless required by applicable law or agreed to in writing, software distributed
   <% if can? :inspect, @media_object %>
   <div class="panel panel-default">
     <div class="panel-heading">
-      <%= link_to 'View Raw Metadata', inspect_media_object_path(@media_object.id, 'descMetadata'), :target => 'blank', :class => "btn btn-default btn-small" %>
-      <%= link_to 'View Fedora Objects', tree_media_object_path(@media_object.id), :id => 'show_object_tree', :target => 'blank', :class => "btn btn-default btn-small" %>
+      <h3 class="panel-title">
+        <%= link_to 'Fedora Objects', "#object_tree", :id => 'show_object_tree', role: "button", "data-toggle":"collapse", "aria-expanded": "false", "aria-controls": "object_tree" %>
+      </h3>
     </div>
     <div class="panel-body collapse" id="object_tree" data-src="<%=tree_media_object_path(@media_object.id)%>"></div>
   </div>
