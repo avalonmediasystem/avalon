@@ -8,7 +8,7 @@ class Collection extends Component {
 
   render() {
     return (
-      <li className="row">
+      <li className="row collection">
         <div className="document-thumbnail col-sm-3">
           {
             this.props.attributes.poster_url && (

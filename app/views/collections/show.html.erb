@@ -23,14 +23,12 @@ Unless required by applicable law or agreed to in writing, software distributed
     <li class="active" style="padding-bottom: 0px"><%= @doc_presenter.name %></li>
   </ol>
   <div class="row">
-    <% if @doc_presenter.has_poster? %>
-    <div class="document-thumbnail col-sm-4 pull-right">
+    <div class="document-thumbnail col-sm-4 col-sm-push-8">
       <%= image_tag @doc_presenter.poster_url, class: 'img-responsive' %>
     </div>
-    <% end %>
-    <div class="row col-sm-8">
-      <h3 class="col-sm-12" style="margin-top:0px"><%= @doc_presenter.name %></h3>
-      <div class="col-sm-12">
+    <div class="col-sm-8 col-sm-pull-4">
+      <h3 style="margin-top:0px"><%= @doc_presenter.name %></h3>
+      <div>
         <p><strong>Unit:</strong> <%= @doc_presenter.unit %></p>
         <p style="white-space:pre-wrap"><%= @doc_presenter.description %></p>
       </div>

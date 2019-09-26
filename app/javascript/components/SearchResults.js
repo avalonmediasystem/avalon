@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import { exportDefaultDeclaration } from '@babel/types';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faChevronDown } from '@fortawesome/free-solid-svg-icons'
-import './react-blacklight.css';
 import './Collection.css';
 
 class SearchResults extends Component {
@@ -18,7 +17,7 @@ class SearchResults extends Component {
     millisecondsToFormattedTime = (ms) => {
         let sec_num = ms / 1000;
         let hours = Math.floor(sec_num / 3600);
-        let minutes = Math.floor(sec_num / 60);
+        let minutes = Math.floor((sec_num % 3600) / 60);
         let seconds = sec_num - minutes * 60 - hours * 3600;
     
         let hourStr = hours < 10 ? `0${hours}` : `${hours}`;
@@ -50,7 +49,9 @@ class SearchResults extends Component {
                         <div className="document-thumbnail col-sm-3">
                             <span className="timestamp badge badge-dark">{this.duration(doc['duration_ssi'])}</span>
                             <a href={this.props.baseUrl + "/media_objects/" + doc['id']}>
-                                <img className="card-img-top img-cover" src={this.thumbnailSrc(doc)} alt="Card image cap"/>
+                                { this.thumbnailSrc(doc) && (
+                                    <img className="card-img-top img-cover" src={this.thumbnailSrc(doc)} alt="Card image cap"/>
+                                )}
                             </a>
                         </div>
                         <div className="col-sm-9 description">

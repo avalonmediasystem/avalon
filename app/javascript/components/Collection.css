@@ -64,7 +64,7 @@ form {
   }
 
   .document-thumbnail {
-    padding-right: 0px;
+    /* padding-right: 0px; */
   }
 }
 
@@ -129,6 +129,18 @@ form {
   .collection-list {
     margin-left: -16px;
   }
+
+  .collection-list ul {
+    padding: 0;
+  }
+
+  .collection-list li.row {
+    margin-right: 0;
+  }
+
+  .show-all {
+    margin-left: 16px;
+  }
 }
 
 @media (min-width: 32em) {
@@ -174,6 +186,10 @@ form {
   .collection-list {
     margin-left: 0px;
   }
+
+  .show-all {
+    margin-left: 0px;
+  }
 }
 
 @media (min-width: 62em) {
@@ -189,4 +205,29 @@ form {
 
 .upper {
   text-transform: uppercase;
+}
+
+.sort-btn.active, .sort-btn.active:hover, .sort-btn:hover {
+  color: #2a5459;
+  background-color: #ffcf08;
+}
+
+.collection-list ul {
+  list-style: none;
+}
+
+.collection-filter-bar {
+  width: 50%;
+}
+
+.collection-filter {
+  width: 100%;
+}
+
+.collection {
+  margin-bottom: 20px;
+}
+
+.search-input {
+  width: 100%;
 }

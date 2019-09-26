@@ -19,3 +19,7 @@
 @import 'bootstrap';
 
 @import 'blacklight/blacklight';
+
+.result-thumbnail img, img.result-thumbnail {
+  max-width: 160px;
+}
