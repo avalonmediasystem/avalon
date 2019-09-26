@@ -49,7 +49,9 @@ class SearchResults extends Component {
                         <div className="document-thumbnail col-sm-3">
                             <span className="timestamp badge badge-dark">{this.duration(doc['duration_ssi'])}</span>
                             <a href={this.props.baseUrl + "/media_objects/" + doc['id']}>
-                                <img className="card-img-top img-cover" src={this.thumbnailSrc(doc)} alt="Card image cap"/>
+                                { this.thumbnailSrc(doc) && (
+                                    <img className="card-img-top img-cover" src={this.thumbnailSrc(doc)} alt="Card image cap"/>
+                                )}
                             </a>
                         </div>
                         <div className="col-sm-9 description">
