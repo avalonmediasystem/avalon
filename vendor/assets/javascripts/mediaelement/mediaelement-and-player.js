@@ -8362,8 +8362,15 @@ function secondsToTimeCode(time) {
 	minutes = minutes <= 0 ? 0 : minutes;
 	seconds = seconds <= 0 ? Number(0).toFixed(secondsDecimalLength) : seconds;
 
-	seconds = seconds === 60 ? 0 : seconds;
-	minutes = minutes === 60 ? 0 : minutes;
+	if(Number(seconds) === 60) {
+		seconds = 0;
+		minutes++;
+	}
+
+	if(minutes === 60) {
+		minutes = 0;
+		hours++;
+	}
 
 	var timeFormatFrags = timeFormat.split(':');
 	var timeFormatSettings = {};
