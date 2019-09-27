@@ -172,9 +172,11 @@
                   '</li>';
               }
             });
-            var inEvents = ['mouseenter', 'focusin', 'keydown'],
+
+            var mobileInEvents = ['touchstart'],
+              inEvents = ['mouseenter', 'focusin', 'keydown'],
               /* Note this line is customized from original plugin - 2017-12-18 */
-              outEvents = ['mouseleave', 'blur', 'focusout'],
+              outEvents = ['mouseleave', 'blur'],
               radios = player.qualitiesButton.querySelectorAll(
                 'input[type="radio"]'
               ),
@@ -185,6 +187,13 @@
                 '.' + t.options.classPrefix + 'qualities-selector'
               ),
               $container = $('.' + t.options.classPrefix + 'container');
+
+            // Change events based on device type (mobile/desktop)
+            if(t.isMobile()) {
+              inEvents = mobileInEvents;
+            } else {
+              outEvents.push('focusout');
+            }
 
             for (var _i = 0, _total = inEvents.length; _i < _total; _i++) {
               player.qualitiesButton.addEventListener(inEvents[_i], function() {
@@ -290,6 +299,10 @@
                   })[0],
                   event = mejs.Utils.createEvent('click', radio);
                 radio.dispatchEvent(event);
+                mejs.Utils.addClass(
+                  selector,
+                  t.options.classPrefix + 'offscreen'
+                );
               });
             }
 
@@ -359,6 +372,10 @@
           },
           keyExist: function keyExist(map, searchKey) {
             return -1 < map.get('map_keys_1').indexOf(searchKey.toLowerCase());
+          },
+          isMobile() {
+            var { isAndroid, isiOS } = mejs.Features;
+            return isAndroid || isiOS;
           }
         });
       },
