@@ -47,9 +47,9 @@ describe CollectionPresenter do
     context 'without a poster' do
       let(:has_poster) { false }
 
-      it 'returns nil' do
+      it 'returns a default poster url' do
         expect(presenter.has_poster?).to eq false
-        expect(presenter.poster_url).to eq nil
+        expect(presenter.poster_url).to eq ActionController::Base.helpers.asset_url('collection_icon.png')
       end
     end
   end
