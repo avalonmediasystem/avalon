@@ -185,8 +185,7 @@
               ),
               selector = player.qualitiesButton.querySelector(
                 '.' + t.options.classPrefix + 'qualities-selector'
-              ),
-              $container = $('.' + t.options.classPrefix + 'container');
+              );
 
             // Change events based on device type (mobile/desktop)
             if(t.isMobile()) {
@@ -201,14 +200,10 @@
                   selector,
                   t.options.classPrefix + 'offscreen'
                 );
-                
-                selector.style.height = selector.querySelector('ul').offsetHeight + 'px';
-                
-                if($container.offset().top < selector.offsetHeight && !player.isVideo) {
-                  selector.style.top = $container[0].offsetHeight + 'px';
-                } else {
-                  selector.style.top = (-1 * parseFloat(selector.offsetHeight)) + 'px';
-                }
+                selector.style.height =
+                  selector.querySelector('ul').offsetHeight + 'px';
+                selector.style.top =
+                  -1 * parseFloat(selector.offsetHeight) + 'px';
               });
             }
 
