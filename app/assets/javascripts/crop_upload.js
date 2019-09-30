@@ -54,15 +54,14 @@ function add_cropper_handler(upload_path) {
       viewMode: 3,
     });
   }).on('hidden.bs.modal', function () {
+    $input.val("");
     cropper.destroy();
     cropper = null;
   });
-  $('#crop-cancel').on('click', function () {
-    $input.val("");
-  })
   $('#crop').on('click', function () {
     let initialPosterURL;
     let canvas;
+    let inputfile = $input.val().split('\\').pop();
     $modal.modal('hide');
     if (cropper) {
       canvas = cropper.getCroppedCanvas({
@@ -75,7 +74,6 @@ function add_cropper_handler(upload_path) {
       $alert.removeClass('alert-success alert-warning');
       canvas.toBlob(function (blob) {
         let formData = new FormData();
-        let inputfile = $input.val().split('\\').pop();
         $input.val("")
         $('#poster_original_name').text(inputfile)
         formData.append('admin_collection[poster]', blob, inputfile);
