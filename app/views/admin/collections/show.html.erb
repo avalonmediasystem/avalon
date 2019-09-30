@@ -124,12 +124,7 @@ Unless required by applicable law or agreed to in writing, software distributed
 
 <%= render "form", modal_title: "Edit Collection Infomation" %>
 
-<% content_for :page_styles do %>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.5/cropper.min.css" integrity="sha256-mS+0WtWHI0Mw4UuIK5xU+b+pB/vfWZiEHV4sJWx7az8=" crossorigin="anonymous" />
-<% end %>
-
 <% content_for :page_scripts do %>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.5/cropper.min.js" integrity="sha256-vshROrHusjRqmlrpFKS7oAAd4YV7Stzn6DlDmtIBG/4=" crossorigin="anonymous"></script>
 <script>
   window.addEventListener('DOMContentLoaded', function () {
     add_cropper_handler('<%= attach_poster_admin_collection_path(@collection.id) %>');
