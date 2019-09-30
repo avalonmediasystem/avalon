@@ -35,7 +35,7 @@
 //= require browse_everything
 //= require modernizr
 //= require bootstrap-toggle
-//= require cropperjs/dist/cropper
+//= require cropperjs/dist/cropper.min
 
 // include all of our vendored js
 //= require_tree ../../../vendor/assets/javascripts/.
