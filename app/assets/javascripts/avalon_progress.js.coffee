@@ -58,15 +58,16 @@ class AvalonProgress
 #            updateBar(bar, 'bar-warning', 100)
         bar.data('status',info)
 
-    info = @data['overall']
-    setActive($('#overall'), info.success + info.error < 100)
+    if info?
+      info = @data['overall']
+      setActive($('#overall'), info.success + info.error < 100)
 
-    updateBar($('#overall'), {success: info.success, danger: info.error})
-    $('#overall').data('status',info)
-    if info.success == 100
-      location.reload()
+      updateBar($('#overall'), {success: info.success, danger: info.error})
+      $('#overall').data('status',info)
+      if info.success == 100
+        location.reload()
 
-    return info.success + info.error < 100
+      return info.success + info.error < 100
 
   click_section: (section_id) ->
     data = @data[section_id]
