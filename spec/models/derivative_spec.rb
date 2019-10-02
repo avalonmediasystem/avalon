@@ -17,51 +17,37 @@ require 'rails_helper'
 describe Derivative do
 
   describe "#from_output" do
-    let!(:api_output){[{ label: 'quality-high',
-                    id: 'track-1',
-                    url: 'rtmp://www.test.com/test.mp4',
-                    hls_url: 'http://www.test.com/test.mp4.m3u8',
-                    duration: "6315",
-                    mime_type:  "video/mp4",
-                    audio_bitrate: "127716.0",
-                    audio_codec: "AAC",
-                    video_bitrate: "1000000.0",
-                    video_codec: "AVC",
-                    width: "640",
-                    height: "480" }]}
+    let(:api_output) do
+      { 
+        id: 'track-1',
+        label: 'quality-high',
+        url: 'http://www.test.com/test.mp4.m3u8',
+        duration: "6315",
+        mime_type:  "video/mp4",
+        audio_bitrate: "127716.0",
+        audio_codec: "AAC",
+        video_bitrate: "1000000.0",
+        video_codec: "AVC",
+        width: "640",
+        height: "480"
+      }
+    end
+    let(:derivative) { described_class.from_output(api_output, false) }
+                  
     it "Call from ingest API should populate :url and :hls_url" do
-      d = Derivative.from_output(api_output,false)
-      expect(d.location_url).to eq('rtmp://www.test.com/test.mp4')
-      expect(d.hls_url).to eq('http://www.test.com/test.mp4.m3u8')
+      expect(derivative.location_url).to eq('http://www.test.com/test.mp4.m3u8')
     end
   end
 
   describe "#destroy" do
-    let(:derivative) {FactoryBot.create(:derivative)}
+    let(:derivative) { FactoryBot.create(:derivative) }
     let(:master_file) { double }
     before do
       allow(derivative).to receive(:master_file).and_return(master_file)
-      allow(master_file).to receive(:encoder_class).and_return(ActiveEncode::Base)
-      allow(master_file).to receive(:workflow_id).and_return(Faker::Number.digit)
     end
 
-    it "should delete and retract files" do
-      encode = ActiveEncode::Base.new(nil)
-      expect(ActiveEncode::Base).to receive(:find).and_return(encode)
-      expect(encode).to receive(:remove_output!).twice.and_return({})
-      expect{derivative.destroy}.to change{Derivative.count}.by(-1)
-    end
-
-    it "should not throw error when encode doesn't exist anymore" do
-      expect(ActiveEncode::Base).to receive(:find).and_return nil
-      expect{derivative.destroy}.to change{Derivative.count}.by(-1)
-    end
-
-    it "should delete even if retraction fails" do
-      encode = ActiveEncode::Base.new(nil)
-      expect(ActiveEncode::Base).to receive(:find).and_return(encode)
-      expect(encode).to receive(:remove_output!).and_raise StandardError
-      expect{derivative.destroy}.to change{Derivative.count}.by(-1)
+    it "should delete" do
+      expect { derivative.destroy }.to change { Derivative.count }.by(-1)
     end
   end
 

@@ -282,32 +282,28 @@ class MasterFile < ActiveFedora::Base
     END_STATES.include?(status_code)
   end
 
+  # TODO: Write tests for this!
   def update_progress!
     update_progress_with_encode!(encoder_class.find(self.workflow_id))
   end
 
+  # TODO: Write tests for this!
   def update_progress_with_encode!(encode)
     self.operation = encode.current_operations.first if encode.current_operations.present?
     self.percent_complete = encode.percent_complete.to_s
     self.percent_succeeded = encode.percent_complete.to_s
     self.error = encode.errors.first if encode.errors.present?
     self.status_code = encode.state.to_s.upcase
-    if encode.tech_metadata
-      self.duration = encode.tech_metadata[:duration] if encode.tech_metadata[:duration]
-      self.file_checksum = encode.tech_metadata[:checksum] if encode.tech_metadata[:checksum]
-    end
+    self.duration = encode.input.duration.to_i if encode.input.duration
+    self.file_checksum = encode.input.checksum if encode.input.checksum
     self.workflow_id = encode.id
     #self.workflow_name = encode.options[:preset] #MH can switch to an error workflow
 
     case self.status_code
-    when"COMPLETED"
-      self.percent_complete = encode.percent_complete.to_s
-      self.percent_succeeded = encode.percent_complete.to_s
+    when "COMPLETED"
       self.percent_failed = 0.to_s
       self.update_progress_on_success!(encode)
     when "FAILED"
-      self.percent_complete = encode.percent_complete.to_s
-      self.percent_succeeded = encode.percent_complete.to_s
       self.percent_failed = (100 - encode.percent_complete).to_s
     end
     self
@@ -318,16 +314,31 @@ class MasterFile < ActiveFedora::Base
     #TODO pull this from the encode
     self.date_digitized ||= Time.now.utc.iso8601
 
-    update_derivatives(encode.output)
+    outputs = encode.output.collect do |output|
+      {
+        id: output.id,
+        label: output.label,
+        url: output.url,
+        duration: output.duration,
+        # TODO: add support for mime_type to ActiveEncode?
+        # mime_type: output.mime_type,
+        audio_bitrate: output.audio_bitrate,
+        audio_codec: output.audio_codec,
+        video_bitrate: output.video_bitrate,
+        video_codec: output.video_codec,
+        width: output.width,
+        height: output.height
+      }
+    end
+    update_derivatives(outputs)
     run_hook :after_processing
   end
 
-  def update_derivatives(output,managed=true)
-    outputs_by_quality = output.group_by {|o| o[:label]}
-
-    outputs_by_quality.each_pair do |quality, outputs|
-      existing = derivatives.to_a.find {|d| d.quality == quality}
-      d = Derivative.from_output(outputs,managed)
+  def update_derivatives(outputs, managed = true)
+    outputs.each do |output|
+      quality = output[:label]
+      existing = derivatives.to_a.find { |d| d.quality == quality }
+      d = Derivative.from_output(output, managed)
       d.master_file = self
       if d.save && existing
         existing.delete

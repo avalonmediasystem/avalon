@@ -58,14 +58,6 @@ services:
     volumes:
       - ./solr/config:/opt/solr/avalon_conf
 
-  matterhorn:
-    image: avalonmediasystem/matterhorn
-    volumes:
-      - ./masterfiles:/masterfiles
-      - streaming:/streamfiles
-      - work:/work
-    networks:
-      internal:
   hls:
     image: avalonmediasystem/nginx
     environment:
@@ -93,7 +85,7 @@ services:
       - fedora
       - solr
       - redis
-      - matterhorn
+      - hls
     environment:
       - APP_NAME=avalon
       - AVALON_BRANCH=develop
@@ -106,14 +98,13 @@ services:
       - EMAIL_COMMENTS
       - EMAIL_NOTIFICATION
       - EMAIL_SUPPORT
+      - ENCODE_WORK_DIR=/streamfiles
       - FEDORA_BASE_PATH
       - FEDORA_NAMESPACE=avalon
       - FEDORA_URL=http://fedoraAdmin:fedoraAdmin@fedora:8080/fedora/rest
       - SETTINGS__FFMPEG__PATH=/usr/bin/ffmpeg
       - MASTER_FILE_PATH
       - MASTER_FILE_STRATEGY=delete
-      - MATTERHORN_URL=http://matterhorn_system_account:CHANGE_ME@matterhorn:8080/
-      - SETTINGS__MATTERHORN__MEDIA_PATH=/masterfiles
       - MEDIAINFO_PATH=/usr/bin/mediainfo
       - RAILS_ENV=development
       - SETTINGS__REDIS__HOST=redis
@@ -141,6 +132,7 @@ services:
     volumes:
       - .:/home/app/avalon
       - ./masterfiles:/masterfiles
+      - streaming:/streamfiles
       - npms:/home/app/avalon/node_modules
     ports:
       - '3000:3000'

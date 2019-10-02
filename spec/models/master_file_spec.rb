@@ -521,7 +521,7 @@ describe MasterFile do
       allow(video_master_file).to receive(:find_frame_source).and_return({source: video_master_file.file_location, offset: 1, master: false})
     end
     it "raises an exception when ffmpeg doesn't extract anything" do
-      expect {video_master_file.send(:extract_frame, {size: '160x120', offset: 1})}.to raise_error(RuntimeError)
+      expect {video_master_file.send(:extract_frame, {size: '160x120', offset: 1})}.to raise_error
     end
   end
 
@@ -617,6 +617,73 @@ describe MasterFile do
       expect(media_object1.reload.ordered_master_file_ids).not_to include master_file.id
       expect(media_object2.reload.master_file_ids).to include master_file.id
       expect(media_object2.reload.ordered_master_file_ids).to include master_file.id
+    end
+  end
+
+  describe 'update_progress_with_encode!' do
+    let(:master_file) { FactoryBot.build(:master_file) }
+    let(:encode_in_progress) { FactoryBot.build(:encode, :in_progress) }
+
+    it 'updates the master file' do
+      expect { master_file.update_progress_with_encode!(encode_in_progress) }
+        .to change { master_file.status_code }
+        .and change { master_file.percent_complete }
+        .and change { master_file.operation }
+      expect(master_file.workflow_id).to be_present
+    end
+
+    context 'with a successful encode' do
+      let(:encode_succeeded) { FactoryBot.build(:encode, :succeeded) }
+
+      it 'sets percent failed and finishes processing' do
+        expect(master_file).to receive(:update_progress_on_success!).with(encode_succeeded)
+        expect { master_file.update_progress_with_encode!(encode_succeeded) }.to change { master_file.percent_failed }.to('0')
+      end
+    end
+
+    context 'with a failed encode' do
+      let(:encode_failed) { FactoryBot.build(:encode, :failed) }
+
+      it 'sets percent failed' do
+        expect { master_file.update_progress_with_encode!(encode_failed) }.to change { master_file.percent_failed }.to('49.5')
+      end
+    end
+  end
+
+  describe 'update_progress_on_success!' do
+    let(:master_file) { FactoryBot.build(:master_file) }
+    let(:encode_succeeded) { FactoryBot.build(:encode, :succeeded) }
+
+    it 'calls update_derivatives' do
+      expect(master_file).to receive(:update_derivatives).with(array_including(hash_including(label: 'quality-high')))
+      expect(master_file).to receive(:run_hook).with(:after_processing)
+      master_file.update_progress_on_success!(encode_succeeded)
+    end
+  end
+
+  describe 'update_derivatives' do
+    let(:master_file) { FactoryBot.create(:master_file) }
+    let(:new_derivative) { FactoryBot.build(:derivative) }
+    let(:outputs) { [{ label: 'high' }]}
+
+    before do
+      allow(Derivative).to receive(:from_output).and_return(new_derivative)
+    end
+
+    it 'creates a new derivative' do
+      expect { master_file.update_derivatives(outputs) }.to change { Derivative.count }.by(1)
+    end
+
+    context 'overwriting' do
+      let!(:master_file_with_derivative) { FactoryBot.create(:master_file, :with_derivative) }
+      let(:existing_derivative) { master_file_with_derivative.derivatives.first }
+
+      it 'overwrites existing derivatives' do
+        expect { master_file_with_derivative.update_derivatives(outputs) }.not_to change { Derivative.count }
+        expect(ActiveFedora::Base.exists?(existing_derivative)).to eq false
+        expect(master_file_with_derivative.reload.derivative_ids).not_to include(existing_derivative.id)
+        expect(master_file_with_derivative.reload.derivative_ids).not_to be_empty
+      end
     end
   end
 end

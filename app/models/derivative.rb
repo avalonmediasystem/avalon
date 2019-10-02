@@ -63,7 +63,7 @@ class Derivative < ActiveFedora::Base
     index.as :displayable
   end
 
-  before_destroy :retract_distributed_files!
+  # before_destroy :retract_distributed_files!
 
   def initialize(*args)
     super(*args)
@@ -93,16 +93,13 @@ class Derivative < ActiveFedora::Base
   end
 
   # TODO: move this into a service class along with master_file#update_progress_*
-  def self.from_output(dists, managed = true)
-    # output is an array of 1 or more distributions of the same derivative (e.g. file and HLS segmented file)
-    hls_output = dists.delete(dists.find { |o| (o[:url].ends_with? 'm3u8') || (o[:hls_url].present? && o[:hls_url].ends_with?('m3u8')) })
-    output = dists.first || hls_output
-
+  def self.from_output(output, managed = true)
     derivative = Derivative.new
-    derivative.managed = output.key?(:managed) ? ActiveModel::Type::Boolean.new.cast(output[:managed]) : managed
+    derivative.managed = managed
     derivative.track_id = output[:id]
-    derivative.duration = output[:duration]
-    derivative.mime_type = output[:mime_type]
+    derivative.duration = output[:duration].to_i
+    # FIXME: Implement this in ActiveEncode
+    # derivative.mime_type = output[:mime_type]
     derivative.quality = output[:label].sub(/quality-/, '')
 
     derivative.audio_bitrate = output[:audio_bitrate]
@@ -111,10 +108,7 @@ class Derivative < ActiveFedora::Base
     derivative.video_codec = output[:video_codec]
     derivative.resolution = "#{output[:width]}x#{output[:height]}" if output[:width] && output[:height]
 
-    if hls_output
-      derivative.hls_track_id = hls_output[:id]
-      derivative.hls_url = hls_output[:hls_url].present? ? hls_output[:hls_url] : hls_output[:url]
-    end
+    # FIXME: Transform to stream url here? How do we distribute to the streaming server?
     derivative.location_url = output[:url]
     derivative.absolute_location = output[:url]
 
@@ -129,10 +123,7 @@ class Derivative < ActiveFedora::Base
 
   # TODO: move this into a service class
   def retract_distributed_files!
-    encode = master_file.encoder_class.find(master_file.workflow_id)
-    encode.remove_output!(track_id) if track_id.present?
-    encode.remove_output!(hls_track_id) if hls_track_id.present? && track_id != hls_track_id
-  rescue StandardError => e
-    logger.warn "Error deleting derivative: #{e.message}"
+    # no-op in latest ActiveEncode
+    # TODO: Implement this in a different way outside of ActiveEncode
   end
 end

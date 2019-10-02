@@ -37,17 +37,37 @@ module ActiveEncodeJob
 
     def perform(master_file_id, input, options)
       mf = MasterFile.find(master_file_id)
-      encode = mf.encoder_class.new(input, options.merge({output_key_prefix: "#{mf.id}/"}))
-      unless encode.created?
-        Rails.logger.info "Creating! #{encode.inspect} for MasterFile #{master_file_id}"
-        encode_job = encode.create!
-        raise RuntimeError, 'Error creating encoding job' unless encode_job.id.present?
-        mf.update_progress_with_encode!(encode_job).save
-        ActiveEncodeJob::Update.set(wait: 10.seconds).perform_later(master_file_id)
-      end
+      encode_options = if Settings.encoding.engine_adapter.to_sym == :ffmpeg
+                         ffmpeg_options(options).merge(output_key_prefix: "#{mf.id}/")
+                       else
+                         options.merge(output_key_prefix: "#{mf.id}/")
+                       end
+      encode = mf.encoder_class.new(input, encode_options)
+      return if encode.created?
+      Rails.logger.info "Creating! #{encode.inspect} for MasterFile #{master_file_id}"
+      encode_job = encode.create!
+      raise 'Error creating encoding job' unless encode_job.id.present?
+      mf.update_progress_with_encode!(encode_job).save
+      ActiveEncodeJob::Update.set(wait: 10.seconds).perform_later(master_file_id)
     rescue StandardError => e
       error(mf, e)
     end
+
+    private
+
+      def ffmpeg_options(options)
+        preset = options[:preset]
+        if preset == 'fullaudio'
+          { outputs: [{ label: 'high', extension: 'mp4', ffmpeg_opt: "-ac 2 -ab 192k -ar 44100 -acodec aac" },
+                      { label: 'medium', extension: 'mp4', ffmpeg_opt: "-ac 2 -ab 128k -ar 44100 -acodec aac" }] }
+        elsif preset == 'avalon'
+          { outputs: [{ label: 'high', extension: 'mp4', ffmpeg_opt: "-s 1920x1080 -g 30 -b:v 800k -ac 2 -ab 192k -ar 44100 -vcodec libx264 -acodec aac" },
+                      { label: 'medium', extension: 'mp4', ffmpeg_opt: "-s 1280x720 -g 30 -b:v 500k -ac 2 -ab 128k -ar 44100 -vcodec libx264 -acodec aac" },
+                      { label: 'low', extension: 'mp4', ffmpeg_opt: "-s 720x360 -g 30 -b:v 300k -ac 2 -ab 96k -ar 44100 -vcodec libx264 -acodec aac" }] }
+        else
+          {}
+        end
+      end
   end
 
   class Update < ActiveJob::Base
