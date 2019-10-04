@@ -114,9 +114,9 @@ describe MasterFile do
   describe '#process' do
     let!(:master_file) { FactoryBot.create(:master_file) }
 
-    it 'enqueues an ActiveEncode job' do
+    it 'creates an encode' do
+      expect(master_file.encoder_class).to receive(:create).with("file://" + URI.escape(master_file.file_location), { master_file_id: master_file.id, preset: master_file.workflow_name })
       master_file.process
-      expect(ActiveEncodeJob::Create).to have_been_enqueued.with(master_file.id, "file://" + URI.escape(master_file.file_location), {preset: master_file.workflow_name})
     end
 
     describe 'already processing' do
@@ -125,8 +125,8 @@ describe MasterFile do
       end
 
       it 'should not start an ActiveEncode workflow' do
-        expect{master_file.process}.to raise_error(RuntimeError)
-        expect(ActiveEncodeJob::Create).not_to have_been_enqueued
+        expect(master_file.encoder_class).not_to receive(:create)
+        expect{ master_file.process }.to raise_error(RuntimeError)
       end
     end
   end
@@ -338,8 +338,8 @@ describe MasterFile do
       Object.send(:remove_const, :WorkflowEncoder)
     end
 
-    it "should default to ActiveEncode::Base" do
-      expect(subject.encoder_class).to eq(ActiveEncode::Base)
+    it "should default to WatchedEncode" do
+      expect(subject.encoder_class).to eq(WatchedEncode)
     end
 
     it "should infer the class from a workflow name" do
@@ -347,9 +347,9 @@ describe MasterFile do
       expect(subject.encoder_class).to eq(WorkflowEncoder)
     end
 
-    it "should fall back to ActiveEncode::Base when a workflow class can't be resolved" do
+    it "should fall back to Watched when a workflow class can't be resolved" do
       subject.workflow_name = 'nonexistent_workflow_encoder'
-      expect(subject.encoder_class).to eq(ActiveEncode::Base)
+      expect(subject.encoder_class).to eq(WatchedEncode)
     end
 
     it "should resolve an explicitly named encoder class" do
@@ -357,9 +357,9 @@ describe MasterFile do
       expect(subject.encoder_class).to eq(EncoderModule::MyEncoder)
     end
 
-    it "should fall back to ActiveEncode::Base when an encoder class can't be resolved" do
+    it "should fall back to WatchedEncode when an encoder class can't be resolved" do
       subject.encoder_classname = 'EncoderModule::NonexistentEncoder'
-      expect(subject.encoder_class).to eq(ActiveEncode::Base)
+      expect(subject.encoder_class).to eq(WatchedEncode)
     end
 
     it "should correctly set the encoder classname from the encoder" do

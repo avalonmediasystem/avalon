@@ -1,5 +1,7 @@
 ActiveEncode::Base.engine_adapter = Settings.encoding.engine_adapter.to_sym
 case Settings.encoding.engine_adapter.to_sym
+when :ffmpeg
+  MasterFile.default_encoder_class = FfmpegEncode
 when :matterhorn
   Rubyhorn.init
 when :elastic_transcoder

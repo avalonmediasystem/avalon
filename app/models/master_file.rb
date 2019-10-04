@@ -274,8 +274,7 @@ class MasterFile < ActiveFedora::Base
       end
     end
 
-    # WaveformJob is performed in a before_perform callback on ActiveEncodeJob::Create
-    ActiveEncodeJob::Create.perform_later(self.id, input, {preset: self.workflow_name})
+    encoder_class.create(input, master_file_id: id, preset: workflow_name)
   end
 
   def finished_processing?
@@ -442,7 +441,7 @@ class MasterFile < ActiveFedora::Base
   end
 
   def encoder_class
-    find_encoder_class(encoder_classname) || find_encoder_class(workflow_name.to_s.classify) || MasterFile.default_encoder_class || ActiveEncode::Base
+    find_encoder_class(encoder_classname) || find_encoder_class(workflow_name.to_s.classify) || MasterFile.default_encoder_class || WatchedEncode
   end
 
   def encoder_class=(value)

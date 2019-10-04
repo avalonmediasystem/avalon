@@ -17,3 +17,5 @@ auth:
           key: 'secret'
 timeliner:
   timeliner_url: http://test.host/timeliner
+encoding:
+  engine_adapter: test

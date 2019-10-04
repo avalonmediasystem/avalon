@@ -110,20 +110,6 @@ GIT
       omniauth
 
 GIT
-  remote: https://github.com/avalonmediasystem/rubyhorn.git
-  revision: fd1e0ee2cca53df515f58690603e9a6351066106
-  tag: avalon-r6
-  specs:
-    rubyhorn (0.0.6)
-      activesupport
-      json
-      mediashelf-loggable
-      mime-types
-      net-http-digest_auth
-      om
-      rest-client
-
-GIT
   remote: https://github.com/rkallensee/bootstrap-toggle-rails.git
   revision: b85df8ea25ab71628fcec1504c7182dd5d7d3606
   tag: v2.2.1.0
@@ -132,7 +118,7 @@ GIT
 
 GIT
   remote: https://github.com/samvera-labs/active_encode.git
-  revision: 7c5b8039ba9a85f3a2e445c83b61d3c45455cbf0
+  revision: 76dde250cdd671769e9a2b49a2075959278e44b5
   branch: master
   specs:
     active_encode (0.6.0)
@@ -564,7 +550,6 @@ GEM
       mimemagic (~> 0.3.2)
     media-element-logo-plugin (0.0.2)
       rails (>= 3.2.3)
-    mediashelf-loggable (0.4.10)
     memoist (0.16.0)
     method_source (0.9.2)
     mime-types (3.2.2)
@@ -582,7 +567,6 @@ GEM
     multipart-post (2.1.1)
     mustermann (1.0.3)
     mysql2 (0.5.2)
-    net-http-digest_auth (1.4.1)
     net-ldap (0.16.1)
     net-scp (2.0.0)
       net-ssh (>= 2.6.5, < 6.0.0)
@@ -1045,7 +1029,6 @@ DEPENDENCIES
   rspec-rails
   rspec-retry
   rspec_junit_formatter
-  rubyhorn!
   samvera-persona (~> 0.1.6)
   sass (= 3.4.22)
   sass-rails (~> 5.0)

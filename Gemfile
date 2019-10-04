@@ -60,6 +60,7 @@ gem 'omniauth-identity'
 gem 'omniauth-lti', git: "https://github.com/avalonmediasystem/omniauth-lti.git", tag: 'avalon-r4'
 
 # Media Access & Transcoding
+# gem 'active_encode', path: '../../samvera/active_encode'
 gem 'active_encode', git: "https://github.com/samvera-labs/active_encode.git", branch: "master"
 gem 'audio_waveform-ruby', require: 'audio_waveform'
 gem 'browse-everything', '~> 0.13.0'
@@ -68,7 +69,7 @@ gem 'mediainfo', git: "https://github.com/avalonmediasystem/mediainfo.git", tag:
 gem 'mini_magick', '~> 4.9'
 gem 'rest-client', '~> 2.0'
 gem 'roo'
-gem 'rubyhorn', git: "https://github.com/avalonmediasystem/rubyhorn.git", tag: 'avalon-r6'
+# gem 'rubyhorn', git: "https://github.com/avalonmediasystem/rubyhorn.git", tag: 'avalon-r6'
 gem 'wavefile', '~> 1.0.1'
 
 # Data Translation & Normalization
