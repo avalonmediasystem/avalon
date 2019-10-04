@@ -4,6 +4,7 @@ require 'singleton'
 module Avalon
   class ElasticTranscoder
     include Singleton
+    attr_reader :etclient
 
     def initialize
       @etclient = Aws::ElasticTranscoder::Client.new
@@ -18,6 +19,7 @@ module Avalon
     def find_preset_by_name(key)
       Rails.cache.fetch("transcoder-preset-for-#{key}") do
         next_token = nil
+        result = nil
         loop do
           resp = @etclient.list_presets page_token: next_token
           result = resp.presets.find { |p| p.name == key }
@@ -33,8 +35,7 @@ module Avalon
     end
 
     def read_templates(path)
-      templates = YAML.safe_load(File.read(path))
-      et_templates = []
+      templates = YAML.load(File.read(path))
       [:audio, :video].product([:low, :medium, :high], ['ts', 'mp4']).collect do |format, quality, container|
         next unless templates[:settings][format][quality].present?
 
@@ -46,7 +47,7 @@ module Avalon
           container: container
         )
 
-        et_templates << template
+        template
       end
     end
   end
