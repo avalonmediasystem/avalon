@@ -46,6 +46,18 @@ describe ActiveEncodeJob do
           expect(master_file.status_code).to eq('FAILED')
         end
       end
+
+      context "using ElasticTranscoder adapter" do
+        before do
+          Settings.encoding.adapter = :elastic_transcoder
+        end
+
+        it "sets the status of the master file to FAILED" do
+          job.perform(*job.arguments)
+          master_file.reload
+          expect(master_file.status_code).to eq('FAILED')
+        end
+      end
     end
   end
 end
