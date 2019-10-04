@@ -51,7 +51,7 @@ function add_cropper_handler(upload_path) {
   $modal.on('shown.bs.modal', function () {
     cropper = new Cropper($image[0], {
       aspectRatio: aspectRatio,
-      viewMode: 3,
+      viewMode: 2,
     });
   }).on('hidden.bs.modal', function () {
     $input.val("");
