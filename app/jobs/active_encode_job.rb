@@ -37,8 +37,11 @@ module ActiveEncodeJob
 
     def perform(master_file_id, input, options)
       mf = MasterFile.find(master_file_id)
-      encode_options = if Settings.encoding.engine_adapter.to_sym == :ffmpeg
+      encode_options = case Settings.encoding.engine_adapter.to_sym
+                       when :ffmpeg
                          ffmpeg_options(options).merge(output_key_prefix: "#{mf.id}/")
+                       when :elastic_transcoder
+                         elastic_transcoder_options(options, input)
                        else
                          options.merge(output_key_prefix: "#{mf.id}/")
                        end
@@ -67,6 +70,28 @@ module ActiveEncodeJob
         else
           {}
         end
+      end
+
+      def elastic_transcoder_options(options, input)
+        file_name = File.basename(Addressable::URI.parse(input).path, '.*').gsub(URI::UNSAFE, '_')
+        et = Avalon::ElasticTranscoder.instance
+
+        preset = options[:preset]
+        outputs = case preset
+                  when 'fullaudio'
+                    [{ key: "quality-medium/#{file_name}.mp4", preset_id: et.find_preset('mp4', :audio, :medium).id },
+                     { key: "quality-high/#{file_name}.mp4", preset_id: et.find_preset('mp4', :audio, :high).id }]
+                  when 'avalon'
+                    [{ key: "quality-low/#{file_name}.mp4", preset_id: et.find_preset('mp4', :video, :low).id },
+                     { key: "quality-medium/#{file_name}.mp4", preset_id: et.find_preset('mp4', :video, :medium).id },
+                     { key: "quality-high/#{file_name}.mp4", preset_id: et.find_preset('mp4', :video, :high).id }]
+                  else
+                    [{}]
+                  end
+
+        { pipeline_id: Settings.encoding.pipeline,
+          masterfile_bucket: Settings.encoding.masterfile_bucket,
+          outputs: outputs }
       end
   end
 
