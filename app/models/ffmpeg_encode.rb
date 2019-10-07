@@ -14,23 +14,23 @@
 # ---  END LICENSE_HEADER BLOCK  ---
 
 class FfmpegEncode < WatchedEncode
-  before_create do |encode|
-    encode.options = ffmpeg_options(encode.options)
+  before_create prepend: true do |encode|
+    encode.options.merge!(outputs: ffmpeg_outputs(encode.options))
   end
 
   private
 
-    def ffmpeg_options(options)
-      preset = options[:preset]
-      if preset == 'fullaudio'
-        { outputs: [{ label: 'high', extension: 'mp4', ffmpeg_opt: "-ac 2 -ab 192k -ar 44100 -acodec aac" },
-                    { label: 'medium', extension: 'mp4', ffmpeg_opt: "-ac 2 -ab 128k -ar 44100 -acodec aac" }] }
-      elsif preset == 'avalon'
-        { outputs: [{ label: 'high', extension: 'mp4', ffmpeg_opt: "-s 1920x1080 -g 30 -b:v 800k -ac 2 -ab 192k -ar 44100 -vcodec libx264 -acodec aac" },
-                    { label: 'medium', extension: 'mp4', ffmpeg_opt: "-s 1280x720 -g 30 -b:v 500k -ac 2 -ab 128k -ar 44100 -vcodec libx264 -acodec aac" },
-                    { label: 'low', extension: 'mp4', ffmpeg_opt: "-s 720x360 -g 30 -b:v 300k -ac 2 -ab 96k -ar 44100 -vcodec libx264 -acodec aac" }] }
+    def ffmpeg_outputs(options)
+      case options[:preset]
+      when 'fullaudio'
+        [{ label: 'high', extension: 'mp4', ffmpeg_opt: "-ac 2 -ab 192k -ar 44100 -acodec aac" },
+         { label: 'medium', extension: 'mp4', ffmpeg_opt: "-ac 2 -ab 128k -ar 44100 -acodec aac" }]
+      when 'avalon'
+        [{ label: 'high', extension: 'mp4', ffmpeg_opt: "-s 1920x1080 -g 30 -b:v 800k -ac 2 -ab 192k -ar 44100 -vcodec libx264 -acodec aac" },
+         { label: 'medium', extension: 'mp4', ffmpeg_opt: "-s 1280x720 -g 30 -b:v 500k -ac 2 -ab 128k -ar 44100 -vcodec libx264 -acodec aac" },
+         { label: 'low', extension: 'mp4', ffmpeg_opt: "-s 720x360 -g 30 -b:v 300k -ac 2 -ab 96k -ar 44100 -vcodec libx264 -acodec aac" }]
       else
-        {}
+        []
       end
     end
 end

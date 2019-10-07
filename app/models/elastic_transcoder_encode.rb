@@ -12,12 +12,13 @@
 #   CONDITIONS OF ANY KIND, either express or implied. See the License for the
 #   specific language governing permissions and limitations under the License.
 # ---  END LICENSE_HEADER BLOCK  ---
+require 'avalon/elastic_transcoder'
 
 class ElasticTranscoderEncode < WatchedEncode
-  before_create do |encode|
-    encode.options = { pipeline_id: Settings.encoding.pipeline,
-                       masterfile_bucket: Settings.encoding.masterfile_bucket,
-                       outputs: elastic_transcoder_outputs(encode.options, encode.input.url) }
+  before_create prepend: true do |encode|
+    encode.options.merge!(pipeline_id: Settings.encoding.pipeline,
+                          masterfile_bucket: Settings.encoding.masterfile_bucket,
+                          outputs: elastic_transcoder_outputs(encode.options, encode.input.url))
   end
 
   private
@@ -35,7 +36,7 @@ class ElasticTranscoderEncode < WatchedEncode
          { key: "quality-medium/#{file_name}.mp4", preset_id: et.find_preset('mp4', :video, :medium).id },
          { key: "quality-high/#{file_name}.mp4", preset_id: et.find_preset('mp4', :video, :high).id }]
       else
-        [{}]
+        []
       end
     end
 end

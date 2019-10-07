@@ -19,7 +19,7 @@ class WatchedEncode < ActiveEncode::Base
 
   around_create do |encode, block|
     master_file_id = encode.options[:master_file_id]
-    block.call
+    encode = block.call
     master_file = MasterFile.find(master_file_id)
     master_file.update_progress_with_encode!(encode).save
   end
