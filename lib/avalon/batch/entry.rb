@@ -221,7 +221,7 @@ module Avalon
             media_object.save
             master_file.process(files)
           else
-            logger.error "Problem saving MasterFile(#{master_file.id}): #{master_file.errors.full_messages.to_sentence}"
+            Rails.logger.error "Problem saving MasterFile(#{master_file.id}): #{master_file.errors.full_messages.to_sentence}"
           end
         end
         # context = { media_object: media_object, user: @manifest.package.user.user_key, hidden: opts[:hidden] ? '1' : nil }
@@ -234,7 +234,7 @@ module Avalon
         end
 
         unless media_object.save
-          logger.error "Problem saving MediaObject: #{media_object}"
+          Rails.logger.error "Problem saving MediaObject: #{media_object}"
         end
 
         media_object

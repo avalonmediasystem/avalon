@@ -32,7 +32,7 @@ module Avalon
       def scan_for_packages
         # Scan the dropbox
         new_packages = collection.dropbox.find_new_packages
-        logger.info "<< Found #{new_packages.count} new packages for collection #{@collection.name} >>" if new_packages.count > 0
+        Rails.logger.info "<< Found #{new_packages.count} new packages for collection #{@collection.name} >>" if new_packages.count > 0
         new_packages.each do |package|
           @previous_entries = nil # clear it out in case the last package set it
           @current_package = package
@@ -82,7 +82,7 @@ module Avalon
           # Send email about successful registration
           BatchRegistriesMailer.batch_ingest_validation_success(@current_package).deliver_now if @current_batch_registry.persisted?
         else
-          logger.error "Persisting BatchRegistry failed for package #{@current_package.title}"
+          Rails.logger.error "Persisting BatchRegistry failed for package #{@current_package.title}"
         end
       end
 
@@ -259,7 +259,7 @@ module Avalon
       end
 
       def send_invalid_package_email
-        logger.warn "Could not register package #{@current_package.title} for Collection #{@collection.id}, sending email."
+        Rails.logger.warn "Could not register package #{@current_package.title} for Collection #{@collection.id}, sending email."
         BatchRegistriesMailer.batch_ingest_validation_error(@current_package, @current_package_errors).deliver_now
       end
     end
