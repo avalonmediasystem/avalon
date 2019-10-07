@@ -15,30 +15,27 @@
 
 class ElasticTranscoderEncode < WatchedEncode
   before_create do |encode|
-    encode.options = elastic_transcoder_options(encode.options, encode.input.url)
+    encode.options = { pipeline_id: Settings.encoding.pipeline,
+                       masterfile_bucket: Settings.encoding.masterfile_bucket,
+                       outputs: elastic_transcoder_outputs(encode.options, encode.input.url) }
   end
 
   private
 
-    def elastic_transcoder_options(options, input)
+    def elastic_transcoder_outputs(options, input)
       file_name = File.basename(Addressable::URI.parse(input).path, '.*').gsub(URI::UNSAFE, '_')
       et = Avalon::ElasticTranscoder.instance
 
-      preset = options[:preset]
-      outputs = case preset
-                when 'fullaudio'
-                  [{ key: "quality-medium/#{file_name}.mp4", preset_id: et.find_preset('mp4', :audio, :medium).id },
-                  { key: "quality-high/#{file_name}.mp4", preset_id: et.find_preset('mp4', :audio, :high).id }]
-                when 'avalon'
-                  [{ key: "quality-low/#{file_name}.mp4", preset_id: et.find_preset('mp4', :video, :low).id },
-                  { key: "quality-medium/#{file_name}.mp4", preset_id: et.find_preset('mp4', :video, :medium).id },
-                  { key: "quality-high/#{file_name}.mp4", preset_id: et.find_preset('mp4', :video, :high).id }]
-                else
-                  [{}]
-                end
-
-      { pipeline_id: Settings.encoding.pipeline,
-        masterfile_bucket: Settings.encoding.masterfile_bucket,
-        outputs: outputs }
+      case options[:preset]
+      when 'fullaudio'
+        [{ key: "quality-medium/#{file_name}.mp4", preset_id: et.find_preset('mp4', :audio, :medium).id },
+         { key: "quality-high/#{file_name}.mp4", preset_id: et.find_preset('mp4', :audio, :high).id }]
+      when 'avalon'
+        [{ key: "quality-low/#{file_name}.mp4", preset_id: et.find_preset('mp4', :video, :low).id },
+         { key: "quality-medium/#{file_name}.mp4", preset_id: et.find_preset('mp4', :video, :medium).id },
+         { key: "quality-high/#{file_name}.mp4", preset_id: et.find_preset('mp4', :video, :high).id }]
+      else
+        [{}]
+      end
     end
 end
