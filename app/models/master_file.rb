@@ -313,7 +313,7 @@ class MasterFile < ActiveFedora::Base
     #TODO pull this from the encode
     self.date_digitized ||= Time.now.utc.iso8601
 
-    outputs = encode.output.collect do |output|
+    outputs = Array(encode.output).collect do |output|
       {
         id: output.id,
         label: output.label,
