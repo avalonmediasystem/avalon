@@ -99,29 +99,62 @@ class MasterFile < ActiveFedora::Base
   property :workflow_id, predicate: Avalon::RDFVocab::Transcoding.workflowId, multiple: false do |index|
     index.as :stored_sortable
   end
+  property :encoder_classname, predicate: Avalon::RDFVocab::Transcoding.encoderClassname, multiple: false do |index|
+    index.as :stored_sortable
+  end
   property :workflow_name, predicate: Avalon::RDFVocab::Transcoding.workflowName, multiple: false do |index|
     index.as :stored_sortable
   end
-  property :percent_complete, predicate: Avalon::RDFVocab::Transcoding.percentComplete, multiple: false do |index|
-    index.as :stored_sortable
+
+  # Delegated to EncodeRecord
+  # property :percent_complete, predicate: Avalon::RDFVocab::Transcoding.percentComplete, multiple: false do |index|
+  #   index.as :stored_sortable
+  # end
+  # property :percent_succeeded, predicate: Avalon::RDFVocab::Transcoding.percentSucceeded, multiple: false do |index|
+  #   index.as :stored_sortable
+  # end
+  # property :percent_failed, predicate: Avalon::RDFVocab::Transcoding.percentFailed, multiple: false do |index|
+  #   index.as :stored_sortable
+  # end
+  # property :status_code, predicate: Avalon::RDFVocab::Transcoding.statusCode, multiple: false do |index|
+  #   index.as :stored_sortable
+  # end
+  # property :operation, predicate: Avalon::RDFVocab::Transcoding.operation, multiple: false do |index|
+  #   index.as :stored_sortable
+  # end
+  # property :error, predicate: Avalon::RDFVocab::Transcoding.error, multiple: false do |index|
+  #   index.as :stored_sortable
+  # end
+
+  def encode_record
+    return nil unless workflow_id
+    gid = "gid://ActiveEncode/#{encoder_class}/#{workflow_id}"
+    @encode_record ||= ActiveEncode::EncodeRecord.find_by(global_id: gid)
   end
-  property :percent_succeeded, predicate: Avalon::RDFVocab::Transcoding.percentSucceeded, multiple: false do |index|
-    index.as :stored_sortable
+
+  def raw_encode_record
+    return nil unless encode_record
+    @raw_encode_record ||= JSON.parse(encode_record.raw_object)
   end
-  property :percent_failed, predicate: Avalon::RDFVocab::Transcoding.percentFailed, multiple: false do |index|
-    index.as :stored_sortable
+
+  def status_code
+    return nil unless encode_record
+    encode_record.state.to_s.upcase
   end
-  property :status_code, predicate: Avalon::RDFVocab::Transcoding.statusCode, multiple: false do |index|
-    index.as :stored_sortable
+
+  def percent_complete
+    return nil unless encode_record
+    encode_record.progress.to_s
   end
-  property :operation, predicate: Avalon::RDFVocab::Transcoding.operation, multiple: false do |index|
-    index.as :stored_sortable
+
+  def operation
+    return nil unless encode_record
+    raw_encode_record['current_operations'].first
   end
-  property :error, predicate: Avalon::RDFVocab::Transcoding.error, multiple: false do |index|
-    index.as :stored_sortable
-  end
-  property :encoder_classname, predicate: Avalon::RDFVocab::Transcoding.encoderClassname, multiple: false do |index|
-    index.as :stored_sortable
+
+  def error
+    return nil unless encode_record
+    raw_encode_record['errors'].first
   end
 
   # For working file copy when Settings.matterhorn.media_path is set
@@ -281,30 +314,31 @@ class MasterFile < ActiveFedora::Base
     END_STATES.include?(status_code)
   end
 
-  # TODO: Write tests for this!
   def update_progress!
     update_progress_with_encode!(encoder_class.find(self.workflow_id))
   end
 
-  # TODO: Write tests for this!
   def update_progress_with_encode!(encode)
-    self.operation = encode.current_operations.first if encode.current_operations.present?
-    self.percent_complete = encode.percent_complete.to_s
-    self.percent_succeeded = encode.percent_complete.to_s
-    self.error = encode.errors.first if encode.errors.present?
-    self.status_code = encode.state.to_s.upcase
+    self.workflow_id = encode.id
+    @encode_record = nil
     self.duration = encode.input.duration.to_i if encode.input.duration
     self.file_checksum = encode.input.checksum if encode.input.checksum
-    self.workflow_id = encode.id
+
+    # self.operation = encode.current_operations.first if encode.current_operations.present?
+    # self.percent_complete = encode.percent_complete.to_s
+    # self.percent_succeeded = encode.percent_complete.to_s
+    # self.error = encode.errors.first if encode.errors.present?
+    # self.status_code = encode.state.to_s.upcase
     #self.workflow_name = encode.options[:preset] #MH can switch to an error workflow
 
-    case self.status_code
-    when "COMPLETED"
-      self.percent_failed = 0.to_s
-      self.update_progress_on_success!(encode)
-    when "FAILED"
-      self.percent_failed = (100 - encode.percent_complete).to_s
-    end
+    # case self.status_code
+    # when "COMPLETED"
+    #   self.percent_failed = 0.to_s
+    #   self.update_progress_on_success!(encode)
+    # when "FAILED"
+    #   self.percent_failed = (100 - encode.percent_complete).to_s
+    # end
+    update_progress_on_success!(encode) if encode.completed?
     self
   end
 
@@ -533,6 +567,13 @@ class MasterFile < ActiveFedora::Base
       solr_doc['has_structuralMetadata?_bs'] = has_structuralMetadata?
       solr_doc['caption_type_ss'] = caption_type
       solr_doc['identifier_ssim'] = identifier.map(&:downcase)
+
+      solr_doc['percent_complete_ssi'] = percent_complete
+      # solr_doc['percent_succeeded_ssi'] =  percent_succeeded
+      # solr_doc['percent_failed_ssi'] = percent_failed
+      solr_doc['status_code_ssi'] = status_code
+      solr_doc['operation_ssi'] = operation
+      solr_doc['error_ssi'] = error
     end
   end
 

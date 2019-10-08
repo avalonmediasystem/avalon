@@ -185,7 +185,8 @@ describe MasterFilesController do
   end
 
   describe "#destroy" do
-    let!(:master_file) { FactoryBot.create(:master_file, :with_media_object) }
+    let!(:master_file) { FactoryBot.create(:master_file, :with_media_object, :cancelled_processing) }
+    let(:media_object) { master_file.media_object }
 
     it "deletes a master file as administrator" do
       login_as :administrator

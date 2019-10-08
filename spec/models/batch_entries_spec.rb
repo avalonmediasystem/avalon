@@ -115,8 +115,7 @@ describe BatchEntries do
     end
 
     it 'records an encoding success if the MediaObject has MasterFiles that are complete' do
-      master_file = FactoryBot.create(:master_file, :with_media_object,
-                                       status_code: 'COMPLETED')
+      master_file = FactoryBot.create(:master_file, :with_media_object, :completed_processing)
       media_object = master_file.media_object
       batch_entry = FactoryBot.build(:batch_entries, media_object_pid: media_object.id)
 
@@ -129,8 +128,7 @@ describe BatchEntries do
     end
 
     it 'records an encoding error if the MediaObject has MasterFiles that have errored' do
-      master_file = FactoryBot.create(:master_file, :with_media_object,
-                                       status_code: 'FAILED')
+      master_file = FactoryBot.create(:master_file, :with_media_object, :failed_processing)
       media_object = master_file.media_object
       batch_entry = FactoryBot.build(:batch_entries, media_object_pid: media_object.id)
 
@@ -143,8 +141,7 @@ describe BatchEntries do
     end
 
     it 'records an encoding error if the MediaObject has MasterFiles that are cancelled' do
-      master_file = FactoryBot.create(:master_file, :with_media_object,
-                                       status_code: 'CANCELLED')
+      master_file = FactoryBot.create(:master_file, :with_media_object, :cancelled_processing)
       media_object = master_file.media_object
       batch_entry = FactoryBot.build(:batch_entries, media_object_pid: media_object.id)
 
@@ -157,8 +154,7 @@ describe BatchEntries do
     end
 
     it 'records neither error nor success nor finished if MediaObject has MasterFiles that are not errored or successful' do
-      master_file = FactoryBot.create(:master_file, :with_media_object,
-                                       status_code: 'RUNNING')
+      master_file = FactoryBot.create(:master_file, :with_media_object)
       media_object = master_file.media_object
       batch_entry = FactoryBot.build(:batch_entries, media_object_pid: media_object.id)
 
@@ -171,13 +167,10 @@ describe BatchEntries do
     end
 
     it 'records neither error nor success nor finished if MediaObject has any MasterFiles that are not errored or successful' do
-      master_file1 = FactoryBot.create(:master_file, :with_media_object,
-                                       status_code: 'COMPLETED')
+      master_file1 = FactoryBot.create(:master_file, :with_media_object, :completed_processing)
       media_object = master_file1.media_object
-      master_file2 = FactoryBot.create(:master_file, media_object: media_object,
-                                       status_code: 'FAILED')
-      master_file3 = FactoryBot.create(:master_file, media_object: media_object,
-                                       status_code: 'RUNNING')
+      master_file2 = FactoryBot.create(:master_file, :failed_processing, media_object: media_object)
+      master_file3 = FactoryBot.create(:master_file, media_object: media_object)
 
       batch_entry = FactoryBot.build(:batch_entries, media_object_pid: media_object.id)
       files = double()
