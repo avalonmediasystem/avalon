@@ -17,8 +17,8 @@ module MasterFileIntercom
     {
       workflow_name: workflow_name,
       percent_complete: percent_complete,
-      percent_succeeded: percent_succeeded,
-      percent_failed: percent_failed,
+      # percent_succeeded: percent_succeeded,
+      # percent_failed: percent_failed,
       status_code: status_code,
       structure:  include_structure ? structuralMetadata.content : nil,
       label: title,

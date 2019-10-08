@@ -4,7 +4,7 @@ require 'rails_helper'
 describe WatchedEncode do
   include ActiveJob::TestHelper
 
-  let(:master_file) { FactoryBot.create(:master_file) }
+  let(:master_file) { FactoryBot.create(:master_file, :not_processing) }
   let(:encode) { described_class.new("sample.mp4", master_file_id: master_file.id) }
   let(:running_encode) do
     encode.clone.tap do |e|

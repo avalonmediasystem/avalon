@@ -231,10 +231,11 @@ describe MediaObjectsController, type: :controller do
         thumbnail_offset: "0:02",
         date_digitized: "2015-12-31",
         workflow_name: "avalon",
-        percent_complete: "100.0",
-        percent_succeeded: "100.0",
-        percent_failed: "0",
-        status_code: "COMPLETED",
+        workflow_id: '1',
+        # percent_complete: "100.0",
+        # percent_succeeded: "100.0",
+        # percent_failed: "0",
+        # status_code: "COMPLETED",
         other_identifier: '40000000045312',
         structure: structure,
         captions: captions,
@@ -466,6 +467,7 @@ describe MediaObjectsController, type: :controller do
           expect(WaveformJob).to have_been_enqueued.with(media_object.master_files.first.id)
         end
         it "should delete existing master_files and add a new master_file to a media_object" do
+          allow_any_instance_of(MasterFile).to receive(:stop_processing!)
           put 'json_update', params: { format: 'json', id: media_object.id, files: [master_file], collection_id: media_object.collection_id, replace_masterfiles: true }
           expect(JSON.parse(response.body)['id'].class).to eq String
           expect(JSON.parse(response.body)).not_to include('errors')
@@ -479,6 +481,7 @@ describe MediaObjectsController, type: :controller do
         end
         it "should return 422 if media object update failed" do
           allow_any_instance_of(MediaObject).to receive(:save).and_return false
+          allow_any_instance_of(MasterFile).to receive(:stop_processing!)
           put 'json_update', params: { format: 'json', id: media_object.id, fields: {}, collection_id: media_object.collection_id }
           expect(response.status).to eq(422)
           expect(JSON.parse(response.body)).to include('errors')
@@ -892,6 +895,7 @@ describe MediaObjectsController, type: :controller do
     let!(:collection) { FactoryBot.create(:collection) }
     before(:each) do
       login_user collection.managers.first
+      allow_any_instance_of(MasterFile).to receive(:stop_processing!)
     end
 
     around(:example) do |example|

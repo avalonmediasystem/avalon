@@ -355,8 +355,8 @@ class MediaObjectsController < ApplicationController
         mf_status = {
           :status => mf.status_code,
           :complete => mf.percent_complete.to_i,
-          :success => mf.percent_succeeded.to_i,
-          :error => mf.percent_failed.to_i,
+          :success => mf.percent_complete.to_i,
+          # :error => mf.percent_failed.to_i,
           :operation => mf.operation,
           :message => mf.error.try(:sub,/^.+:/,'')
         }
@@ -623,10 +623,11 @@ class MediaObjectsController < ApplicationController
                              :captions,
                              :captions_type,
                              :workflow_name,
-                             :percent_complete,
-                             :percent_succeeded,
-                             :percent_failed,
-                             :status_code,
+                             :workflow_id,
+                             # :percent_complete,
+                             # :percent_succeeded,
+                             # :percent_failed,
+                             # :status_code,
                              :other_identifier,
                              :structure,
                              :physical_description,

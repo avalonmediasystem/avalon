@@ -443,13 +443,13 @@ describe MediaObject do
 
   describe '#finished_processing?' do
     it 'returns true if the statuses indicate processing is finished' do
-      media_object.ordered_master_files += [FactoryBot.create(:master_file, status_code: 'CANCELLED')]
-      media_object.ordered_master_files += [FactoryBot.create(:master_file, status_code: 'COMPLETED')]
+      media_object.ordered_master_files += [FactoryBot.create(:master_file, :cancelled_processing)]
+      media_object.ordered_master_files += [FactoryBot.create(:master_file, :completed_processing)]
       expect(media_object.finished_processing?).to be true
     end
     it 'returns true if the statuses indicate processing is not finished' do
-      media_object.ordered_master_files += [FactoryBot.create(:master_file, status_code: 'CANCELLED')]
-      media_object.ordered_master_files += [FactoryBot.create(:master_file, status_code: 'RUNNING')]
+      media_object.ordered_master_files += [FactoryBot.create(:master_file, :cancelled_processing)]
+      media_object.ordered_master_files += [FactoryBot.create(:master_file)]
       expect(media_object.finished_processing?).to be false
     end
   end
@@ -478,6 +478,10 @@ describe MediaObject do
     let(:media_object) { FactoryBot.create(:media_object, :with_master_file) }
     let(:master_file) { media_object.master_files.first }
 
+    before do
+      allow(master_file).to receive(:stop_processing!)
+    end
+
     it 'destroys related master_files' do
       expect { media_object.destroy }.to change { MasterFile.exists?(master_file) }.from(true).to(false)
     end
@@ -486,6 +490,9 @@ describe MediaObject do
       FactoryBot.create(:master_file, media_object: media_object)
       media_object.reload
       expect(media_object.master_files.size).to eq 2
+      media_object.master_files.each do |mf|
+        allow(mf).to receive(:stop_processing!)
+      end
       expect { media_object.destroy }.to change { MasterFile.count }.from(2).to(0)
       expect(MediaObject.exists?(media_object.id)).to be_falsey
     end
