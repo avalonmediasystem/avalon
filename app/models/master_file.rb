@@ -107,34 +107,17 @@ class MasterFile < ActiveFedora::Base
   end
 
   # Delegated to EncodeRecord
-  # property :percent_complete, predicate: Avalon::RDFVocab::Transcoding.percentComplete, multiple: false do |index|
-  #   index.as :stored_sortable
-  # end
-  # property :percent_succeeded, predicate: Avalon::RDFVocab::Transcoding.percentSucceeded, multiple: false do |index|
-  #   index.as :stored_sortable
-  # end
-  # property :percent_failed, predicate: Avalon::RDFVocab::Transcoding.percentFailed, multiple: false do |index|
-  #   index.as :stored_sortable
-  # end
-  # property :status_code, predicate: Avalon::RDFVocab::Transcoding.statusCode, multiple: false do |index|
-  #   index.as :stored_sortable
-  # end
-  # property :operation, predicate: Avalon::RDFVocab::Transcoding.operation, multiple: false do |index|
-  #   index.as :stored_sortable
-  # end
-  # property :error, predicate: Avalon::RDFVocab::Transcoding.error, multiple: false do |index|
-  #   index.as :stored_sortable
-  # end
-
   def encode_record
     return nil unless workflow_id
     gid = "gid://ActiveEncode/#{encoder_class}/#{workflow_id}"
-    @encode_record ||= ActiveEncode::EncodeRecord.find_by(global_id: gid)
+    # @encode_record ||= ActiveEncode::EncodeRecord.find_by(global_id: gid)
+    ActiveEncode::EncodeRecord.find_by(global_id: gid)
   end
 
   def raw_encode_record
     return nil unless encode_record
-    @raw_encode_record ||= JSON.parse(encode_record.raw_object)
+    # @raw_encode_record ||= JSON.parse(encode_record.raw_object)
+    JSON.parse(encode_record.raw_object)
   end
 
   def status_code
@@ -149,7 +132,7 @@ class MasterFile < ActiveFedora::Base
 
   def operation
     return nil unless encode_record
-    raw_encode_record['current_operations'].first
+    raw_encode_record['current_operations']&.first
   end
 
   def error
@@ -312,34 +295,6 @@ class MasterFile < ActiveFedora::Base
 
   def finished_processing?
     END_STATES.include?(status_code)
-  end
-
-  def update_progress!
-    update_progress_with_encode!(encoder_class.find(self.workflow_id))
-  end
-
-  def update_progress_with_encode!(encode)
-    self.workflow_id = encode.id
-    @encode_record = nil
-    self.duration = encode.input.duration.to_i if encode.input.duration
-    self.file_checksum = encode.input.checksum if encode.input.checksum
-
-    # self.operation = encode.current_operations.first if encode.current_operations.present?
-    # self.percent_complete = encode.percent_complete.to_s
-    # self.percent_succeeded = encode.percent_complete.to_s
-    # self.error = encode.errors.first if encode.errors.present?
-    # self.status_code = encode.state.to_s.upcase
-    #self.workflow_name = encode.options[:preset] #MH can switch to an error workflow
-
-    # case self.status_code
-    # when "COMPLETED"
-    #   self.percent_failed = 0.to_s
-    #   self.update_progress_on_success!(encode)
-    # when "FAILED"
-    #   self.percent_failed = (100 - encode.percent_complete).to_s
-    # end
-    update_progress_on_success!(encode) if encode.completed?
-    self
   end
 
   def update_progress_on_success!(encode)
