@@ -588,7 +588,7 @@ class MasterFile < ActiveFedora::Base
   end
 
   def self.calculate_working_file_path(old_path)
-    config_path = Settings.matterhorn.media_path
+    config_path = Settings&.matterhorn&.media_path
     if config_path.present? && File.directory?(config_path)
       File.join(config_path, SecureRandom.uuid, File.basename(old_path))
     else
@@ -804,7 +804,7 @@ class MasterFile < ActiveFedora::Base
     # Run master file management strategy
     manage_master_file
     # Clean up working file if it exists
-    CleanupWorkingFileJob.perform_later(id, working_file_path.to_a) unless Settings.matterhorn.media_path.blank?
+    CleanupWorkingFileJob.perform_later(id, working_file_path.to_a) unless Settings&.matterhorn&.media_path.blank?
   end
 
   def update_ingest_batch
