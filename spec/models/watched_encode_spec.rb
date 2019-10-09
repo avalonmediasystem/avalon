@@ -30,9 +30,7 @@ describe WatchedEncode do
     end
 
     it 'stores the encode id on the master file' do
-      allow(master_file).to receive(:update_progress_with_encode!).and_call_original
       encode.create!
-      expect(master_file).to have_received(:update_progress_with_encode!).with(encode)
       expect(master_file.reload.workflow_id).to eq encode.id.to_s
     end
   end
@@ -50,9 +48,9 @@ describe WatchedEncode do
     end
 
     it 'stores the encode id on the master file' do
-      allow(master_file).to receive(:update_progress!)
+      allow(master_file).to receive(:update_progress_on_success!)
       encode.create!
-      expect(master_file).to have_received(:update_progress!)
+      expect(master_file).to have_received(:update_progress_on_success!)
     end
   end
 end

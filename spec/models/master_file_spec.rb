@@ -618,37 +618,6 @@ describe MasterFile do
     end
   end
 
-  describe 'update_progress_with_encode!' do
-    let(:master_file) { FactoryBot.build(:master_file, :not_processing) }
-    let(:encode_in_progress) { FactoryBot.build(:encode, :in_progress) }
-
-    it 'updates the master file' do
-      master_file.update_progress_with_encode!(encode_in_progress)
-      expect(master_file.workflow_id).to be_present
-    end
-
-    context 'with a successful encode' do
-      let(:master_file) { FactoryBot.build(:master_file) }
-      let(:encode_succeeded) { FactoryBot.build(:encode, :succeeded) }
-
-      it 'finishes processing' do
-        expect(master_file).to receive(:update_progress_on_success!).with(encode_succeeded)
-        # expect { master_file.update_progress_with_encode!(encode_succeeded) }.to change { master_file.percent_failed }.to('0')
-        master_file.update_progress_with_encode!(encode_succeeded)
-      end
-    end
-
-    context 'with a failed encode' do
-      let(:encode_failed) { FactoryBot.build(:encode, :failed) }
-
-      it 'does not continue' do
-        expect(master_file).not_to receive(:update_progress_on_success!)
-        # expect { master_file.update_progress_with_encode!(encode_failed) }.to change { master_file.percent_failed }.to('49.5')
-        master_file.update_progress_with_encode!(encode_failed)
-      end
-    end
-  end
-
   describe 'update_progress_on_success!' do
     let(:master_file) { FactoryBot.build(:master_file) }
     let(:encode_succeeded) { FactoryBot.build(:encode, :succeeded) }

@@ -17,8 +17,6 @@ describe FfmpegEncode do
     # Return a completed encode so the polling job doesn't run forever.
     allow(described_class.engine_adapter).to receive(:create).and_return(completed_encode)
     allow(MasterFile).to receive(:find).with(master_file.id).and_return(master_file)
-    allow(master_file).to receive(:update_progress_with_encode!).and_return(master_file)
-    allow(master_file).to receive(:save)
   end
 
   describe 'create' do

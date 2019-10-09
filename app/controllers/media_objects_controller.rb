@@ -356,14 +356,14 @@ class MediaObjectsController < ApplicationController
           :status => mf.status_code,
           :complete => mf.percent_complete.to_i,
           :success => mf.percent_complete.to_i,
-          # :error => mf.percent_failed.to_i,
           :operation => mf.operation,
           :message => mf.error.try(:sub,/^.+:/,'')
         }
         if mf.status_code == 'FAILED'
-          mf_status[:error] = 100-mf_status[:success]
+          mf_status[:error] = 100 - mf_status[:success]
           overall[:error] += 100
         else
+          mf_status[:error] = 0
           overall[:success] += mf_status[:complete]
         end
         [mf.id, mf_status]

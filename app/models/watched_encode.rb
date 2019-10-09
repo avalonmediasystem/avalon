@@ -21,13 +21,15 @@ class WatchedEncode < ActiveEncode::Base
     master_file_id = encode.options[:master_file_id]
     encode = block.call
     master_file = MasterFile.find(master_file_id)
-    master_file.update_progress_with_encode!(encode).save
+    master_file.workflow_id = encode.id
+    master_file.encoder_classname = self.class.name
+    master_file.save
   end
 
-  after_status_update do |encode|
+  after_completed do |encode|
     record = ActiveEncode::EncodeRecord.find_by(global_id: encode.to_global_id.to_s)
     master_file_id = JSON.parse(record.create_options)['master_file_id']
     master_file = MasterFile.find(master_file_id)
-    master_file.update_progress!
+    master_file.update_progress_on_success!(encode)
   end
 end
