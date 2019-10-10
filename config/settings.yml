@@ -7,11 +7,7 @@ dropbox:
   path: /srv/avalon/dropbox
   upload_uri: sftp://avalon.example.edu
 encoding:
-  engine_adapter: matterhorn
-matterhorn:
-  root: 'http://localhost:8080/'
-  baseApplication: 'avalon'
-  cleanup_log: 'log/cleanup_jobs.log'
+  engine_adapter: ffmpeg
 mediainfo:
   path: '/usr/bin/mediainfo'
 ffmpeg:

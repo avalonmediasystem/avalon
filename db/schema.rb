@@ -10,7 +10,19 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_08_06_193607) do
+ActiveRecord::Schema.define(version: 2019_10_04_181958) do
+
+  create_table "active_encode_encode_records", force: :cascade do |t|
+    t.string "global_id"
+    t.string "state"
+    t.string "adapter"
+    t.string "title"
+    t.text "raw_object"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.text "create_options"
+    t.float "progress"
+  end
 
   create_table "annotations", force: :cascade do |t|
     t.string "uuid"

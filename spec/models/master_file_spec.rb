@@ -97,36 +97,33 @@ describe MasterFile do
     describe 'classifying statuses' do
       let(:master_file){ MasterFile.new }
       it 'returns true for cancelled' do
-        master_file.status_code = 'CANCELLED'
+        allow(master_file).to receive(:status_code).and_return('CANCELLED')
         expect(master_file.finished_processing?).to be true
       end
       it 'returns true for succeeded' do
-        master_file.status_code = 'COMPLETED'
+        allow(master_file).to receive(:status_code).and_return('COMPLETED')
         expect(master_file.finished_processing?).to be true
       end
       it 'returns true for failed' do
-        master_file.status_code = 'FAILED'
+        allow(master_file).to receive(:status_code).and_return('FAILED')
         expect(master_file.finished_processing?).to be true
       end
     end
   end
 
   describe '#process' do
-    let!(:master_file) { FactoryBot.create(:master_file) }
+    let(:master_file) { FactoryBot.create(:master_file, :not_processing) }
 
-    it 'enqueues an ActiveEncode job' do
+    it 'creates an encode' do
+      expect(master_file.encoder_class).to receive(:create).with("file://" + URI.escape(master_file.file_location), { master_file_id: master_file.id, preset: master_file.workflow_name })
       master_file.process
-      expect(ActiveEncodeJob::Create).to have_been_enqueued.with(master_file.id, "file://" + URI.escape(master_file.file_location), {preset: master_file.workflow_name})
     end
 
     describe 'already processing' do
-      before do
-        master_file.status_code = 'RUNNING'
-      end
-
+      let(:master_file) { FactoryBot.create(:master_file) }
       it 'should not start an ActiveEncode workflow' do
-        expect{master_file.process}.to raise_error(RuntimeError)
-        expect(ActiveEncodeJob::Create).not_to have_been_enqueued
+        expect(master_file.encoder_class).not_to receive(:create)
+        expect{ master_file.process }.to raise_error(RuntimeError)
       end
     end
   end
@@ -338,8 +335,8 @@ describe MasterFile do
       Object.send(:remove_const, :WorkflowEncoder)
     end
 
-    it "should default to ActiveEncode::Base" do
-      expect(subject.encoder_class).to eq(ActiveEncode::Base)
+    it "should default to WatchedEncode" do
+      expect(subject.encoder_class).to eq(WatchedEncode)
     end
 
     it "should infer the class from a workflow name" do
@@ -347,9 +344,9 @@ describe MasterFile do
       expect(subject.encoder_class).to eq(WorkflowEncoder)
     end
 
-    it "should fall back to ActiveEncode::Base when a workflow class can't be resolved" do
+    it "should fall back to Watched when a workflow class can't be resolved" do
       subject.workflow_name = 'nonexistent_workflow_encoder'
-      expect(subject.encoder_class).to eq(ActiveEncode::Base)
+      expect(subject.encoder_class).to eq(WatchedEncode)
     end
 
     it "should resolve an explicitly named encoder class" do
@@ -357,9 +354,9 @@ describe MasterFile do
       expect(subject.encoder_class).to eq(EncoderModule::MyEncoder)
     end
 
-    it "should fall back to ActiveEncode::Base when an encoder class can't be resolved" do
+    it "should fall back to WatchedEncode when an encoder class can't be resolved" do
       subject.encoder_classname = 'EncoderModule::NonexistentEncoder'
-      expect(subject.encoder_class).to eq(ActiveEncode::Base)
+      expect(subject.encoder_class).to eq(WatchedEncode)
     end
 
     it "should correctly set the encoder classname from the encoder" do
@@ -409,7 +406,7 @@ describe MasterFile do
   describe "#update_ingest_batch" do
     let(:media_object) {FactoryBot.create(:media_object)}
     let!(:ingest_batch) {IngestBatch.create(media_object_ids: [media_object.id], email: Faker::Internet.email)}
-    let(:master_file) {FactoryBot.create( :master_file , {media_object: media_object, status_code: 'COMPLETED'} )}
+    let(:master_file) {FactoryBot.create( :master_file, :completed_processing, media_object: media_object)}
     it 'should send email when ingest batch is finished processing' do
       master_file.send(:update_ingest_batch)
       expect(ingest_batch.reload.email_sent?).to be true
@@ -568,11 +565,12 @@ describe MasterFile do
   end
 
   describe 'stop_processing!' do
+    let(:master_file) { FactoryBot.build(:master_file) }
     before do
       allow(ActiveEncode::Base).to receive(:find).and_return(nil)
     end
     it 'does not error if the master file has no encode' do
-      expect { MasterFile.new(workflow_id: '1', status_code: 'RUNNING').send(:stop_processing!) }.not_to raise_error
+      expect { master_file.send(:stop_processing!) }.not_to raise_error
     end
   end
 
@@ -617,36 +615,6 @@ describe MasterFile do
       expect(media_object1.reload.ordered_master_file_ids).not_to include master_file.id
       expect(media_object2.reload.master_file_ids).to include master_file.id
       expect(media_object2.reload.ordered_master_file_ids).to include master_file.id
-    end
-  end
-
-  describe 'update_progress_with_encode!' do
-    let(:master_file) { FactoryBot.build(:master_file) }
-    let(:encode_in_progress) { FactoryBot.build(:encode, :in_progress) }
-
-    it 'updates the master file' do
-      expect { master_file.update_progress_with_encode!(encode_in_progress) }
-        .to change { master_file.status_code }
-        .and change { master_file.percent_complete }
-        .and change { master_file.operation }
-      expect(master_file.workflow_id).to be_present
-    end
-
-    context 'with a successful encode' do
-      let(:encode_succeeded) { FactoryBot.build(:encode, :succeeded) }
-
-      it 'sets percent failed and finishes processing' do
-        expect(master_file).to receive(:update_progress_on_success!).with(encode_succeeded)
-        expect { master_file.update_progress_with_encode!(encode_succeeded) }.to change { master_file.percent_failed }.to('0')
-      end
-    end
-
-    context 'with a failed encode' do
-      let(:encode_failed) { FactoryBot.build(:encode, :failed) }
-
-      it 'sets percent failed' do
-        expect { master_file.update_progress_with_encode!(encode_failed) }.to change { master_file.percent_failed }.to('49.5')
-      end
     end
   end
 

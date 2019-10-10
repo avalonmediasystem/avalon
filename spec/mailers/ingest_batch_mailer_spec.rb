@@ -40,7 +40,7 @@ describe 'Batch Ingest Email' do
   end
 
   it 'has the status of the master file in a first row' do
-    master_file = FactoryBot.create(:master_file, :with_media_object, status_code: 'COMPLETED', percent_complete: '100')
+    master_file = FactoryBot.create(:master_file, :with_media_object)
     media_object = master_file.media_object.reload
 
     ingest_batch = IngestBatch.create( media_object_ids: [media_object.id])
