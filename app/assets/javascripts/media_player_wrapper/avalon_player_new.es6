@@ -502,6 +502,11 @@ class MEJSPlayer {
       startLanguage: this.localStorage.getItem('captions') || ''
     };
 
+    // Add duration as a root level config for Android devices
+    if(mejs.Features.isAndroid) {
+      defaults.duration = currentStreamInfo.duration
+    }
+
     if (this.currentStreamInfo.cookie_auth) {
       defaults.hls = {
         xhrSetup: (xhr, url) => {
