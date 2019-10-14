@@ -130,7 +130,7 @@ describe Admin::GroupsController do
         group_name = group.name
         group = Admin::Group.find(group_name)
         expect(group.users).to include(new_user)
-        expect(flash[:notice]).not_to be_nil
+        expect(flash[:success]).not_to be_nil
         expect(response).to redirect_to(edit_admin_group_path(Admin::Group.find(group.name)))
       end
 
@@ -143,7 +143,7 @@ describe Admin::GroupsController do
         new_group = Admin::Group.find(new_group_name)
         expect(new_group).not_to be_nil
         expect(new_group.users).to eq(group.users)
-        expect(flash[:notice]).not_to be_nil
+        expect(flash[:success]).not_to be_nil
         expect(response).to redirect_to(edit_admin_group_path(new_group))
       end
 
@@ -185,7 +185,7 @@ describe Admin::GroupsController do
           put 'update', params: { id: g, new_user: new_user }
           group = Admin::Group.find(g)
           expect(group.users).to include(new_user)
-          expect(flash[:notice]).not_to be_nil
+          expect(flash[:success]).not_to be_nil
           expect(response).to redirect_to(edit_admin_group_path(Admin::Group.find(group.name)))
         end
 

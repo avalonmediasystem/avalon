@@ -74,8 +74,8 @@ class Admin::GroupsController < ApplicationController
   def update
     #TODO: move RoleControls to Group model
 
-   new_user = params["new_user"]
-   new_group_name = params["group_name"]
+    new_user = params["new_user"]
+    new_group_name = params["group_name"]
 
     @group = Admin::Group.find(params["id"])
 
@@ -105,7 +105,7 @@ class Admin::GroupsController < ApplicationController
     @group.users += [new_user.strip] unless new_user.blank?
 
     if @group.save
-      flash[:notice] = "Successfully updated group \"#{@group.name}\""
+      flash[:success] = "Successfully updated group \"#{@group.name}\""
     end
     redirect_to edit_admin_group_path(@group)
   end
