@@ -279,10 +279,12 @@
                   'canplay',
                   function canPlayAfterSourceSwitchHandler() {
                     media.setCurrentTime(currentTime);
-                    media.removeEventListener(
-                      'canplay',
-                      canPlayAfterSourceSwitchHandler
-                    );
+                    if(media.currentTime === currentTime) {
+                      media.removeEventListener(
+                        'canplay',
+                        canPlayAfterSourceSwitchHandler
+                      );
+                    }
                   }
                 );
               });
