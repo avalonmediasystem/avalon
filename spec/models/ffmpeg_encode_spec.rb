@@ -5,7 +5,7 @@ describe FfmpegEncode do
   let(:master_file) { FactoryBot.create(:master_file) }
   let(:encode) { described_class.new("sample.mp4", master_file_id: master_file.id, preset: preset) }
   let(:completed_encode) do
-    e = described_class.new("sample.mp4")
+    e = described_class.new("sample.mp4", master_file_id: master_file.id)
     e.id = SecureRandom.uuid
     e.state = :completed
     e.created_at = Time.zone.now

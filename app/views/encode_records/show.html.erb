@@ -1,0 +1,54 @@
+<p id="notice"><%= notice %></p>
+
+<div class="row">
+  <div class="col-sm-12">
+    <% encode_presenter = Hyrax::ActiveEncode::EncodePresenter.new(@encode_record) %>
+    <h2>
+      <strong>Job ID:</strong>
+      <%= encode_presenter.id %>
+    </h2>
+
+    <section id="job-view">
+      <p>
+        <strong>Status:</strong>
+        <%= encode_presenter.status %>
+      </p>
+      <p>
+        <strong>Adapter:</strong>
+        <%= encode_presenter.adapter %>
+      </p>
+      <p>
+        <strong>Adapter Job ID:</strong>
+        <%= encode_presenter.global_id %>
+      </p>
+      <p>
+        <strong>Title:</strong>
+        <%= encode_presenter.title %>
+      </p>
+
+      <section>
+        <% if !encode_presenter.errors.empty? %>
+          <p>
+            <strong>Error Message:</strong>
+            <%= encode_presenter.errors[0] %>
+          </p>
+        <% end %>
+        <p>
+          <strong>Job Started:</strong>
+          <%= encode_presenter.started %>
+        </p>
+        <p>
+          <strong>Job Terminated:</strong>
+          <%= encode_presenter.ended %>
+        </p>
+      </section>
+
+      <p>
+        <strong>Raw Obejct:</strong>
+        <div class="box box-default">
+          <pre><%= encode_presenter.raw_object %></pre>
+        </div>
+      </p>
+    </section>
+  </div>
+</div>
