@@ -52,6 +52,10 @@ Unless required by applicable law or agreed to in writing, software distributed
       <li class=<%= active_for_controller('admin/collections') %>>
         <%= link_to 'Manage Content', main_app.admin_collections_path %></li>
       <% end %>
+      <% if can? :read, ::ActiveEncode::EncodeRecord %>
+      <li class=<%= active_for_controller('encode_records') %>>
+        <%= link_to 'Manage Encoding Jobs', main_app.encode_records_path %></li>
+      <% end %>
 
       <% if can? :manage, Admin::Group %>
       <li class=<%= active_for_controller('admin/groups') %>>
