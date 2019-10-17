@@ -52,8 +52,12 @@ class EncodePresenter
     @encode_record.title.split('/').last
   end
 
+  def display_title
+    @encode_record.display_title
+  end
+
   def master_file_id
-    @create_options['master_file_id']
+    @encode_record['master_file_id']
   end
 
   def master_file_url
@@ -61,11 +65,15 @@ class EncodePresenter
   end
 
   def media_object_id
-    @create_options['media_object_id']
+    @encode_record['media_object_id']
   end
 
   def media_object_url
     media_object_id.present? ? Rails.application.routes.url_helpers.media_object_path(media_object_id) : ''
+  end
+
+  def created_at
+    @encode_record.created_at
   end
 
   def started
