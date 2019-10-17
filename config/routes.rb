@@ -18,6 +18,12 @@ Rails.application.routes.draw do
     concerns :exportable
   end
 
+  resources :encode_records, only: [:show, :index] do
+    collection do
+      post :paged_index
+    end
+  end
+
   resources :bookmarks do
     concerns :exportable
 

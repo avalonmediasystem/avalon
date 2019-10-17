@@ -32,4 +32,14 @@ class WatchedEncode < ActiveEncode::Base
     master_file = MasterFile.find(master_file_id)
     master_file.update_progress_on_success!(encode)
   end
+
+  def persistence_model_attributes(encode)
+    display_title = encode.input.url.to_s.split('/').last
+    options_hash = { display_title: display_title }
+    if encode.options[:master_file_id].present?
+      master_file = MasterFile.find(encode.options[:master_file_id])
+      options_hash.merge(master_file_id: encode.options[:master_file_id], media_object_id: master_file.media_object_id)
+    end
+    super.merge(options_hash.select { |_, v| v.present? })
+  end
 end
