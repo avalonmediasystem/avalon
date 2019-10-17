@@ -2,7 +2,7 @@
 
 <div class="row">
   <div class="col-sm-12">
-    <% encode_presenter = Hyrax::ActiveEncode::EncodePresenter.new(@encode_record) %>
+    <% encode_presenter = EncodePresenter.new(@encode_record) %>
     <h2>
       <strong>Job ID:</strong>
       <%= encode_presenter.id %>
