@@ -21,12 +21,22 @@ class EncodeRecordsController < ApplicationController
   def index
     authorize! :read, :encode_dashboard
     @encode_records = ::ActiveEncode::EncodeRecord.all
+
+    respond_to do |format|
+      format.html
+      format.json { render json: @encode_records }
+    end
   end
 
   # GET /encode_records/1
   # GET /encode_records/1.json
   def show
     authorize! :read, :encode_dashboard
+    
+    respond_to do |format|
+      format.html
+      format.json { render json: @encode_record }
+    end
   end
 
   # POST /encode_records/paged_index
