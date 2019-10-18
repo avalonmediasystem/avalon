@@ -22,13 +22,15 @@
 class EncodePresenter
   include ActionView::Helpers::NumberHelper
 
-  delegate :id, :adapter, :display_title, :master_file_id, :media_object_id, :created_at, to: @encode_record
+  attr_reader :encode_record
 
   def initialize(encode_record)
     @encode_record = encode_record
     @raw_object = @encode_record.raw_object.present? ? JSON.parse(@encode_record.raw_object) : {}
     @create_options = @encode_record.create_options.present? ? JSON.parse(@encode_record.create_options) : {}
   end
+
+  delegate :id, :adapter, :display_title, :master_file_id, :media_object_id, :created_at, to: :encode_record
 
   def status
     @encode_record.state.capitalize
