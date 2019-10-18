@@ -41,6 +41,7 @@ class CollectionSearchBuilder < Blacklight::SearchBuilder
     query += " AND (#{temp_solr_parameters[:fq].first})" if temp_solr_parameters[:fq].present?
     solr_parameters[:q] = query
     solr_parameters[:defType] = "lucene"
+    solr_parameters[:rows] = 1_000_000
   end
 
   private
