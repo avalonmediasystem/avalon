@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import './Collection.css';
+import './Search.scss';
 
 class Facets extends Component {
     constructor(props) {
