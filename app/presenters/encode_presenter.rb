@@ -22,6 +22,8 @@
 class EncodePresenter
   include ActionView::Helpers::NumberHelper
 
+  delegate :id, :adapter, :display_title, :master_file_id, :media_object_id, :created_at, to: @encode_record
+
   def initialize(encode_record)
     @encode_record = encode_record
     @raw_object = @encode_record.raw_object.present? ? JSON.parse(@encode_record.raw_object) : {}
@@ -32,16 +34,8 @@ class EncodePresenter
     @encode_record.state.capitalize
   end
 
-  def id
-    @encode_record.id
-  end
-
   def global_id
     @encode_record.global_id.split('/').last
-  end
-
-  def adapter
-    @encode_record.adapter
   end
 
   def progress
@@ -52,28 +46,12 @@ class EncodePresenter
     @encode_record.title.split('/').last
   end
 
-  def display_title
-    @encode_record.display_title
-  end
-
-  def master_file_id
-    @encode_record['master_file_id']
-  end
-
   def master_file_url
     master_file_id.present? ? Rails.application.routes.url_helpers.master_file_path(master_file_id) : ''
   end
 
-  def media_object_id
-    @encode_record['media_object_id']
-  end
-
   def media_object_url
     media_object_id.present? ? Rails.application.routes.url_helpers.media_object_path(media_object_id) : ''
-  end
-
-  def created_at
-    @encode_record.created_at
   end
 
   def started

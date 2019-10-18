@@ -28,8 +28,7 @@ class WatchedEncode < ActiveEncode::Base
 
   after_completed do |encode|
     record = ActiveEncode::EncodeRecord.find_by(global_id: encode.to_global_id.to_s)
-    master_file_id = JSON.parse(record.create_options)['master_file_id']
-    master_file = MasterFile.find(master_file_id)
+    master_file = MasterFile.find(record.master_file_id)
     master_file.update_progress_on_success!(encode)
   end
 
