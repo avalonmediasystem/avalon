@@ -33,7 +33,7 @@ class EncodeRecordsController < ApplicationController
   def paged_index
     # Encode records for index page are loaded dynamically by jquery datatables javascript which
     # requests the html for only a limited set of rows at a time.
-    columns = %w[state id progress title master_file_id media_object_id created_at].freeze
+    columns = %w[state id progress display_title master_file_id media_object_id created_at].freeze
 
     records_total = ::ActiveEncode::EncodeRecord.count
 
@@ -44,7 +44,7 @@ class EncodeRecordsController < ApplicationController
                           state LIKE :search_value OR
                           CAST(id as varchar) LIKE :search_value OR
                           CAST(progress as varchar) LIKE :search_value OR
-                          title LIKE :search_value OR
+                          display_title LIKE :search_value OR
                           master_file_id LIKE :search_value OR
                           media_object_id LIKE :search_value OR
                           CAST(created_at as varchar) LIKE :search_value
@@ -73,10 +73,10 @@ class EncodeRecordsController < ApplicationController
           encode_presenter.status,
           view_context.link_to(encode_presenter.id, Rails.application.routes.url_helpers.encode_record_path(encode)),
           "<progress value=\"#{encode_presenter.progress}\" max=\"100\"></progress>",
-          encode_presenter.title,
+          encode_presenter.display_title,
           view_context.link_to(encode_presenter.master_file_id, encode_presenter.master_file_url),
           view_context.link_to(encode_presenter.media_object_id, encode_presenter.media_object_url),
-          encode.created_at
+          encode_presenter.created_at
         ]
       end
     }
