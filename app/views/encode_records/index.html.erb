@@ -3,37 +3,4 @@
 <div class="container">
   <h1>Transcoding Dashboard</h1>
   <%= react_component("EncodingDashboard", { url: encode_records_url, filter: params['filter'] }) %>
-
-  <%# <table id="encode_records" style="width: 100%;"  data-turbolinks="false">
-    <thead>
-      <tr>
-        <th>Status</th>
-        <th>ID</th>
-        <th>Progress</th>
-        <th>Filename</th>
-        <th>MasterFile</th>
-        <th>MediaObject</th>
-        <th>Job Started</th>
-      </tr>
-    </thead>
-
-    <tbody>
-    </tbody>
-  </table> %>
 </div>
-
-<% content_for :page_scripts do %>
-<script>
-$(document).ready( function () {
-  $('#encode_records').dataTable({
-    stateSave: true,
-    processing: true,
-    serverSide: true,
-    ajax: {
-      url: '/encode_records/paged_index',
-      type: 'POST'
-    }
-  })
-});
-</script>
-<% end %>
