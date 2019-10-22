@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import Axios from 'axios';
 import Collection from './Collection';
-import './Collection.css';
+import './CollectionList.scss';
 
 class CollectionList extends Component {
   constructor(props) {
@@ -107,7 +107,7 @@ class CollectionList extends Component {
   render() {
     const { query } = this.state;
     return (
-      <div>
+      <div className="collection-list-component">
         <div className="stickyUtils mb-3">
           <form className="collection-filter-bar">
             <label htmlFor="q" className="sr-only">search for</label>

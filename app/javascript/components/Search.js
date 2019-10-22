@@ -79,7 +79,7 @@ class Search extends Component {
     render() {
         const { query } = this.state;
         return (
-        <div>
+        <div className="search-component">
             <div>
                 <form className="search-bar">
                     <label htmlFor="q" className="sr-only">search for</label>

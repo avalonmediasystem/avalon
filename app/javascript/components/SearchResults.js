@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { exportDefaultDeclaration } from '@babel/types';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faChevronDown } from '@fortawesome/free-solid-svg-icons'
-import './Collection.css';
+import './Search.scss';
 
 class SearchResults extends Component {
     constructor(props) {
