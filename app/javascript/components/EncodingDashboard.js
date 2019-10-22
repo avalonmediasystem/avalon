@@ -1,120 +1,72 @@
 import React, { Component } from 'react';
-import { Table, ProgressBar } from 'react-bootstrap';
 import axios from 'axios';
+import { BrowserRouter as Router, Route } from 'react-router-dom';
+import EncodeJobView from './EncodeJobView';
+import EncodeJobTable from './EncodeJobTable';
+
 import './EncodingDashboard.scss';
 
-import { library, config } from '@fortawesome/fontawesome-svg-core';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faCheckCircle, faTimesCircle } from '@fortawesome/free-solid-svg-icons'
-library.add(faCheckCircle, faTimesCircle)
+import { library } from '@fortawesome/fontawesome-svg-core';
+import { faCheckCircle, faTimesCircle, faSpinner } from '@fortawesome/free-solid-svg-icons'
+library.add(faCheckCircle, faTimesCircle, faSpinner)
 
 class EncodingDashboard extends Component {
   constructor(props) {
     super(props);
     this.state = {
         encodeJobs: [],
-        sort: {
-            column: null,
-            direction: 'desc'
-        }
+        baseUrl: this.props.url.split('/').slice(0, -1).join('/')
     }
   }
 
   componentDidMount() {
       const self = this;
-      axios({
-          url: this.props.baseUrl
-      })
-      .then(function(response) {
-          self.setState({ encodeJobs: response.data });
-          console.log(response);
-      })
+      this.retrieveJobs();
+      this.timer = setInterval(function() {
+        if(self.timer === null) {
+          clearInterval(self.timer);
+        } else {
+          self.retrieveJobs();
+        }
+      }, 10000);
   }
 
-  renderTableRows() {
-      return this.state.encodeJobs.map((job) => {
-          const { state, id, progress, title, create_options, created_at } = job;
-          const createOptions = JSON.parse(create_options);
-          const jobState = state === 'failed' ? <FontAwesomeIcon icon="times-circle"/> : <FontAwesomeIcon icon="check-circle"/>;
-          return (
-              <tr key={id}>
-                  <td>{jobState}</td>
-                  <td>{id}</td>
-                  <td><ProgressBar now={progress} label={`${progress}%`} /></td>
-                  <td className="left-align">{title.split('/').reverse()[0]}</td>
-                  <td>{createOptions === null ? '' : createOptions.master_file_id}</td>
-                  <td>{''}</td>
-                  <td>{created_at}</td>
-              </tr>
-          )
-      })
+  componentWillUnmount() {
+      this.timer = null;
   }
 
-  setArrow = (column) => {
-    let className = 'sort-direction';
-    
-    if (this.state.sort.column === column) {
-      className += this.state.sort.direction === 'asc' ? ' asc' : ' desc';
+  componentDidUpdate(prevProps, prevState) {
+    const newProgress = this.state.encodeJobs.map(n => n.progress);
+    if(!newProgress.some(p => p < 100)) {
+        this.timer = null;
     }
-    return className;
-  };
+  }
 
-  sortColumn(e, column) {
-      const direction = this.state.sort.column ? (this.state.sort.direction === 'asc' ? 'desc' : 'asc') : 'desc';
-      const self = this;
-      const { encodeJobs } = this.state;
-      encodeJobs.sort(function(x, y){
-        if(x[column] < y[column]) { return -1; }
-        if(x[column] > y[column]) { return 1; }
-        return 0;
-      });
-      if(direction === 'desc') {
-          this.state.encodeJobs.reverse();
-      }
-      self.setState({ encodeJobs, sort: { column, direction} });
+  retrieveJobs() {
+    const self = this;
+    axios({
+        url: this.props.url + '.json'
+    })
+    .then(function(response) {
+        self.setState({ encodeJobs: response.data });
+    })
   }
 
   render() {
-      console.log(config);
-    return (
-      <Table striped bordered hover>
-        <thead>
-            <tr>
-                <th onClick={e => this.sortColumn(e, 'state')}>
-                    Status
-                    <span className={this.setArrow('state')}></span>
-                </th>
-                <th onClick={e => this.sortColumn(e, 'id')}>
-                    ID
-                    <span className={this.setArrow('id')}></span>
-                </th>
-                <th onClick={e => this.sortColumn(e, 'progress')}>
-                    Progress
-                    <span className={this.setArrow('progress')}></span>
-                </th>
-                <th onClick={e => this.sortColumn(e, 'title')}>
-                    Filename
-                    <span className={this.setArrow('title')}></span>
-                </th>
-                <th onClick={e => this.sortColumn(e, 'master_file_id')}>
-                    MasterFile
-                    <span className={this.setArrow('master_file_id')}></span>
-                </th>
-                <th onClick={e => this.sortColumn(e, 'state')}>
-                    MediaObject
-                    <span className={this.setArrow('state')}></span>
-                </th>
-                <th onClick={e => this.sortColumn(e, 'created_at')}>
-                    Job Started
-                    <span className={this.setArrow('created_at')}></span>
-                </th>
-            </tr>
-        </thead>
-        <tbody>
-            {this.renderTableRows()}
-        </tbody>
-      </Table>
-    );
+    const { encodeJobs, baseUrl } = this.state;
+
+    if(encodeJobs.length > 0) {
+      return (
+        <Router>
+          <Route exact={true} path="/encode_records" render={({ match }) => (<EncodeJobTable rows={encodeJobs} baseUrl={baseUrl} />)} />
+          <Route path="/encode_records/:id" render={({ match }) => (
+            <EncodeJobView job={encodeJobs.find(e => e.id == match.params.id)} /> 
+          )} />
+        </Router>
+      );
+      } else {
+          return <h2>You don't have any encoding jobs yet</h2>;
+      }
   }
 }
 
