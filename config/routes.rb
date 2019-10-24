@@ -18,11 +18,7 @@ Rails.application.routes.draw do
     concerns :exportable
   end
 
-  resources :encode_records, only: [:show, :index] do
-    collection do
-      post :paged_index
-    end
-  end
+  resources :encode_records, only: [:index]
 
   resources :bookmarks do
     concerns :exportable
@@ -215,6 +211,9 @@ Rails.application.routes.draw do
     mount Resque::Server, at: '/jobs'
   end
   get '/jobs', to: redirect('/')
+
+  # Catchall route matching any routes coming from React, EncodeDashboard.js
+  match '*path', to: 'encode_records#index', via: :all
 
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".

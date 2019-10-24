@@ -1,6 +1,5 @@
 <p id="notice"><%= notice %></p>
 
 <div class="container">
-  <h1>Transcoding Dashboard</h1>
-  <%= react_component("EncodingDashboard", { url: encode_records_url, filter: params['filter'] }) %>
+  <%= react_component("EncodeDashboard", { url: encode_records_url, filter: params['filter'] }) %>
 </div>
