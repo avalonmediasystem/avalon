@@ -4,13 +4,11 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 class EncodeJobView extends Component {
   constructor(props) {
     super(props);
-    this.state = {
-      open: false
-    };
     this.accordionItems = [];
   }
 
-  buildJSONTree = item => {
+  buildJSONTree = (item, accordionList) => {
+    this.accordionItems = accordionList;
     let counter = 0;
     for (var key in item) {
       const propName = this.toTitleCase(key);
@@ -19,21 +17,13 @@ class EncodeJobView extends Component {
         if (Array.isArray(value)) {
           if (value.length === 0) {
             this.accordionItems.push(
-              <Collapsible title={propName} key={`${key}_${counter}`}>
-                <div>
-                  <p>{'[ ]'}</p>
-                </div>
-              </Collapsible>
+              <Collapsible title={propName} key={`${key}_${counter}`}><div><p>{'[ ]'}</p></div></Collapsible>
             );
           } else {
             this.accordionItems.push(
               <Collapsible title={propName} key={`${key}_${counter}`}>
                 <div>
-                  {value.map((val, index) => (
-                    <Collapsible title={`${index}`} key={index}>
-                      {this.buildContent(val)}
-                    </Collapsible>
-                  ))}
+                  {value.map((val, index) => (<Collapsible title={`${index}`} key={index}>{this.buildContent(val)}</Collapsible>))}
                 </div>
               </Collapsible>
             );
@@ -44,9 +34,7 @@ class EncodeJobView extends Component {
           );
         } else if (typeof value === 'object') {
           this.accordionItems.push(
-            <Collapsible title={propName} key={`${key}_${counter}`}>
-              <div>{this.buildContent(value)}</div>
-            </Collapsible>
+            <Collapsible title={propName} key={`${key}_${counter}`}><div>{this.buildContent(value)}</div></Collapsible>
           );
         } else {
           this.accordionItems.push(
@@ -77,26 +65,17 @@ class EncodeJobView extends Component {
         const propName = this.toTitleCase(key);
         if (typeof value === 'number') {
           props.push(
-            <p>
-              <strong>{`${propName}: `}</strong>
-              {value}
-            </p>
+            <p><strong>{`${propName}: `}</strong>{value}</p>
           );
         } else if (value === null) {
           props.push(
-            <p>
-              <strong>{`${propName}: `}</strong>
-              null
-            </p>
+            <p><strong>{`${propName}: `}</strong>null</p>
           );
         } else if (typeof value === 'object') {
-          this.buildJSONTree(value);
+          this.buildJSONTree(value, this.accordionItems);
         } else {
           props.push(
-            <p>
-              <strong>{`${propName}: `}</strong>
-              {value}
-            </p>
+            <p><strong>{`${propName}: `}</strong>{value}</p>
           );
         }
       }
@@ -114,49 +93,23 @@ class EncodeJobView extends Component {
   render() {
     const { job } = this.props;
     const raw_object = JSON.parse(job.raw_object);
-    this.buildJSONTree(raw_object);
+    this.buildJSONTree(raw_object, []);
     return (
       <React.Fragment>
-        <h2>
-          <strong>Job ID: </strong>
-          {job.id}
-        </h2>
-        <p>
-          <strong>Status: </strong>
-          {job.state}
-        </p>
-        <p>
-          <strong>Adapter: </strong>
-          {job.adapter}
-        </p>
-        <p>
-          <strong>Adapter Job ID: </strong>
-          {job.global_id.split('/').reverse()[0]}
-        </p>
-        <p>
-          <strong>Title: </strong>
-          {job.display_title}
-        </p>
+        <h2><strong>Job ID: </strong>{job.id}</h2>
+        <p><strong>Status: </strong>{job.state}</p>
+        <p><strong>Adapter: </strong>{job.adapter}</p>
+        <p><strong>Adapter Job ID: </strong>{job.global_id.split('/').reverse()[0]}</p>
+        <p><strong>Title: </strong>{job.display_title}</p>
         {raw_object.errors.length > 0 ? (
-          <p>
-            <strong>Error Message: </strong>
-            {raw_object.errors[0]}
-          </p>
+          <p><strong>Error Message: </strong>{raw_object.errors[0]}</p>
         ) : (
           <React.Fragment>
-            <p>
-              <strong>Job Started: </strong>
-              {new Date(raw_object.created_at).toLocaleString()}
-            </p>
-            <p>
-              <strong>Job Terminated: </strong>
-              {new Date(raw_object.updated_at).toLocaleString()}
-            </p>
+            <p><strong>Job Started: </strong>{new Date(raw_object.created_at).toLocaleString()}</p>
+            <p><strong>Job Terminated: </strong>{new Date(raw_object.updated_at).toLocaleString()}</p>
           </React.Fragment>
         )}
-        <p>
-          <strong>Raw Object: </strong>
-        </p>
+        <p><strong>Raw Object: </strong></p>
         <div className="accordion">{this.accordionItems}</div>
       </React.Fragment>
     );
@@ -185,21 +138,13 @@ class Collapsible extends React.Component {
   render() {
     return (
       <div>
-        <div
-          onClick={this.togglePanel}
-          className={`collapsible header${this.state.className}`}
-        >
+        <div onClick={this.togglePanel} className={`collapsible header${this.state.className}`}>
           <p>
             <strong>{`${this.props.title}: `}</strong>
-            <FontAwesomeIcon
-              className={`chevron${this.state.className}`}
-              icon="chevron-down"
-            ></FontAwesomeIcon>
+            <FontAwesomeIcon className={`chevron${this.state.className}`} icon="chevron-down" />
           </p>
         </div>
-        {this.state.open ? (
-          <div className="content">{this.props.children}</div>
-        ) : null}
+        {this.state.open ? ( <div className="content">{this.props.children}</div> ) : null}
       </div>
     );
   }
@@ -212,10 +157,7 @@ class NonCollapsible extends React.Component {
 
   render() {
     return (
-      <p className="sub-heading">
-        <strong>{`${this.props.title}: `}</strong>
-        {this.props.value}
-      </p>
+      <p className="sub-heading"> <strong>{`${this.props.title}: `}</strong>{this.props.value}</p>
     );
   }
 }
