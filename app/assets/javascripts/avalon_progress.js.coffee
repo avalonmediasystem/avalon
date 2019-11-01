@@ -42,7 +42,6 @@ class AvalonProgress
       info_box = section_node.find('div.alert')
 
       info = @data[id]
-
       if info?
         setActive(bar, info.complete < 100 and (info.status == 'RUNNING' or info.status == 'WAITING'))
 
@@ -58,7 +57,7 @@ class AvalonProgress
 #            updateBar(bar, 'bar-warning', 100)
         bar.data('status',info)
 
-    if info?
+    if !info?
       info = @data['overall']
       setActive($('#overall'), info.success + info.error < 100)
 
