@@ -118,11 +118,12 @@ GIT
 
 GIT
   remote: https://github.com/samvera-labs/active_encode.git
-  revision: 76dde250cdd671769e9a2b49a2075959278e44b5
+  revision: 9f29f1ca54324b86902a1b4088c7f0e9cc3a13aa
   branch: master
   specs:
     active_encode (0.6.0)
       rails
+      sprockets (< 4)
 
 GEM
   remote: https://rubygems.org/
