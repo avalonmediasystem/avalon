@@ -56,7 +56,7 @@ describe Avalon::ElasticTranscoder do
 
   describe "#read_templates" do
     it 'returns an array' do
-      expect(et.read_templates(Rails.root.join('config', 'encoding_presets.yml')).length).to eq(12)
+      expect(et.read_templates(Rails.root.join('config', 'elastic_transcoder_presets.yml')).length).to eq(12)
     end
   end
 end

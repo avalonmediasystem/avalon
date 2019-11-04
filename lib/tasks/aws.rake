@@ -6,7 +6,7 @@ namespace :avalon do
       require 'aws-sdk'
 
       et = Avalon::ElasticTranscoder.instance
-      templates = et.read_templates(Rails.root.join('config', 'encoding_presets.yml'))
+      templates = et.read_templates(Rails.root.join(Settings.encoding.presets_path))
       templates.each do |template|
         unless et.find_preset_by_name(template[:name]).present?
           preset = et.create_preset(template)
