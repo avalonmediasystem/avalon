@@ -20,17 +20,11 @@ class FfmpegEncode < WatchedEncode
 
   private
 
+    def presets
+      @presets ||= YAML.load_file Rails.root.join(Settings.encoding.presets_path)
+    end
+
     def ffmpeg_outputs(options)
-      case options[:preset]
-      when 'fullaudio'
-        [{ label: 'high', extension: 'mp4', ffmpeg_opt: "-ac 2 -ab 192k -ar 44100 -acodec aac" },
-         { label: 'medium', extension: 'mp4', ffmpeg_opt: "-ac 2 -ab 128k -ar 44100 -acodec aac" }]
-      when 'avalon'
-        [{ label: 'high', extension: 'mp4', ffmpeg_opt: "-s 1920x1080 -g 30 -b:v 800k -ac 2 -ab 192k -ar 44100 -vcodec libx264 -acodec aac" },
-         { label: 'medium', extension: 'mp4', ffmpeg_opt: "-s 1280x720 -g 30 -b:v 500k -ac 2 -ab 128k -ar 44100 -vcodec libx264 -acodec aac" },
-         { label: 'low', extension: 'mp4', ffmpeg_opt: "-s 720x360 -g 30 -b:v 300k -ac 2 -ab 96k -ar 44100 -vcodec libx264 -acodec aac" }]
-      else
-        []
-      end
+      presets[options[:preset]] || []
     end
 end
