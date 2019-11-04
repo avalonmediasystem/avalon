@@ -244,7 +244,6 @@ class MediaObjectsController < ApplicationController
             message = "Problem saving MasterFile for #{file_location}:"
             error_messages += [message]
             error_messages += master_file.errors.full_messages
-            @media_object.destroy
             break
           end
         end
@@ -267,7 +266,6 @@ class MediaObjectsController < ApplicationController
         @media_object.workflow.last_completed_step = HYDRANT_STEPS.last.step
         if !@media_object.save
           error_messages += ['Failed to create media object:']+@media_object.errors.full_messages
-          @media_object.destroy
         else
           if !!api_params[:publish]
             @media_object.publish!('REST API')
@@ -283,7 +281,7 @@ class MediaObjectsController < ApplicationController
     else
       logger.warn "update_media_object failed for #{params[:fields][:title] rescue '<unknown>'}: #{error_messages}"
       render json: {errors: error_messages}, status: 422
-      @media_object.destroy
+      @media_object.destroy unless action_name == 'json_update'
     end
   end
 

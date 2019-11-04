@@ -419,6 +419,19 @@ describe MediaObjectsController, type: :controller do
           expect(new_media_object.master_files.first.derivatives.first.location_url).to eq(media_object.master_files.first.derivatives.first.location_url)
           expect(new_media_object.workflow.last_completed_step).to eq(media_object.workflow.last_completed_step)
         end
+        it "should return 422 if master_file update failed" do
+          media_object = FactoryBot.create(:published_media_object)
+          fields = {}
+          descMetadata_fields.each {|f| fields[f] = media_object.send(f) }
+          allow_any_instance_of(MasterFile).to receive(:save).and_return false
+          allow_any_instance_of(MasterFile).to receive(:stop_processing!)
+          expect_any_instance_of(MediaObject).to receive(:destroy).once
+          post 'create', params: { format: 'json', fields: fields, files: [master_file], collection_id: collection.id, publish: true }
+          expect(response.status).to eq(422)
+          expect(JSON.parse(response.body)).to include('errors')
+          expect(JSON.parse(response.body)["errors"].class).to eq Array
+          expect(JSON.parse(response.body)["errors"].first.class).to eq String
+        end
       end
     end
     describe "#update" do
