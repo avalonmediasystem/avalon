@@ -1,0 +1,28 @@
+#browse-btn {
+  margin: 0.5em 0;
+}
+
+.btn-options {
+  margin-bottom: 1em;
+}
+
+button.close {
+  display: block;
+}
+
+.btn-danger:visited {
+  color: $white;
+}
+
+#share-button {
+  text-align: right;
+  margin-top: 10px;
+  margin-bottom: 0;
+
+  a:link,
+  a:visited,
+  a:hover,
+  a:active {
+    text-decoration: none;
+  }
+}

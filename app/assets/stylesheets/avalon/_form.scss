@@ -63,3 +63,18 @@ label {
 .item-access label {
   display: block;
 }
+
+.form-control {
+  color: $dark;
+}
+
+.fileinput-submit {
+  background-color: $blue !important;
+  border-color: $blue !important;
+
+  &:hover {
+    background-color: darken($blue, 15%) !important;
+  }
+
+  color: $white !important;
+}

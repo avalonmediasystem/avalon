@@ -11,15 +11,6 @@
 .navbar {
   font-family: $museoSlab;
   font-size: 16px;
-  // @media screen and (max-width: $screen-md-max) {
-  //   font-size: 13px;
-  // }
-  // @media screen and (max-width: $screen-sm-max) {
-  //   font-size: 10px;
-  // }
-  // @media screen and (max-width: $screen-xs-max) {
-  //   font-size: 14px;
-  // }
 
   ul {
     padding: 0;
@@ -67,4 +58,71 @@
 
 .navbar-inner {
   padding-right: 12px;
+}
+
+/**
+ * Components for navigation wizard. Copied from the LESS source so
+ * might need some tweaking to work right
+ */
+.nav-wizard {
+  li {
+    padding-top: 0;
+    padding-right: $line-height-base;
+    padding-bottom: 1px;
+    padding-left: $line-height-base;
+    margin-bottom: $line-height-computed/4;
+    text-align: left;
+    border-radius: $border-radius-base;
+
+    background-color: $gray-lighter;
+    border: $gray;
+    color: $gray-darker;
+
+    a:hover {
+      background: transparent;
+    }
+
+    span {
+      display: block;
+      padding: 10px 15px;
+    }
+
+    p {
+      margin-left: 1em;
+      margin-right: 1em;
+    }
+  }
+
+  li.nav-success {
+    background-color: $state-success-bg;
+    border-color: $state-success-border;
+    color: $state-success-text;
+  }
+
+  li.nav-success a {
+    text-shadow: rgba(255, 255, 255, 0.2) 0px 1px 0px;
+  }
+
+  li.nav-info {
+    background-color: $state-info-bg;
+    border-color: $state-info-border;
+    color: $state-info-text;
+  }
+
+  .step {
+    font-size: 250%;
+    width: 1em;
+    float: left;
+    margin-right: 0.5em;
+    margin-bottom: $line-height-base/2;
+  }
+}
+
+.nav-pills > li > a {
+  padding: 4px 15px;
+
+  /* override bootstrap .nav overrides of button colors */
+  &.btn-danger {
+    @extend .btn-danger;
+  }
 }
