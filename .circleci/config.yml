@@ -2,6 +2,59 @@ version: 2.1
 orbs:
   samvera: samvera/circleci-orb@0
   cypress: cypress-io/cypress@1
+
+# executors:
+#   avalon-with-cypress:
+#     docker:
+#       # Primary container image where all steps run.
+#       - image: cypress/default
+#       # Secondary container image on common network.
+#       - image: avalonmediasystem/avalon:6.x-slim-dev
+#         environment:
+#           - DATABASE_URL=postgresql://postgres@localhost:5432/postgres
+#           - FEDORA_URL=http://localhost:8080/fcrepo/rest
+#           - RAILS_ENV=test
+#       - image: postgres:10-alpine
+#         environment:
+#           - POSTGRES_USER=postgres
+#           - POSTGRES_DB=avalon
+#       - image: ualbertalib/docker-fcrepo4:4.7
+#         environment:
+#           CATALINA_OPTS: "-Djava.awt.headless=true -Dfile.encoding=UTF-8 -server -Xms512m -Xmx1024m -XX:NewSize=256m -XX:MaxNewSize=256m -XX:PermSize=256m -XX:MaxPermSize=256m -XX:+DisableExplicitGC"
+#       - image: solr:7-alpine
+#         command: bin/solr -cloud -noprompt -f -p <<parameters.solr_port>>
+#       - image: redis:alpine
+
+# commands:
+#   startup-avalon:
+#     steps:
+#       - run:
+#           name: Clean out existing code
+#           command: rm -rf .[!.]* *
+
+#       - samvera/cached_checkout
+
+#       - run: cp config/controlled_vocabulary.yml.example config/controlled_vocabulary.yml
+
+#       - run:
+#           command: |
+#             unset BUNDLE_APP_CONFIG
+#             bundle install --with aws development test postgres --without production --jobs=4 --retry=3
+#             bundle exec rake db:migrate
+
+#       - restore_cache:
+#           keys:
+#             - yarn-cache-v1-{{ arch }}-{{ checksum "yarn.lock" }}
+
+#       - run: yarn
+
+#       - save_cache:
+#           key: yarn-cache-v1-{{ arch }}-{{ checksum "yarn.lock" }}
+#           paths:
+#             - .cache/yarn
+
+#       - samvera/install_solr_core
+
 jobs:
   build:
     docker:
@@ -86,7 +139,16 @@ jobs:
           paths:
             - codeclimate.*.json
 
-  upload-coverage:
+      - run:
+          command: yarn run cypress run --parallel --record
+      - store_artifacts:
+          path: cypress/screenshots/examples
+          destination: cypress-results-screenshots
+      - store_artifacts:
+          path: cypress/videos/examples
+          destination: cypress-results-videos
+
+   upload-coverage:
     parameters:
       parallelism:
         type: integer
@@ -124,6 +186,8 @@ workflows:
           requires:
              - Ruby2-5-5
 
-  integration_test:
-    jobs:
-      - cypress/run
+  # integration_test:
+  #   jobs:
+  #     - cypress/run:
+  #         yarn: true
+          # executor: avalon-with-cypress
