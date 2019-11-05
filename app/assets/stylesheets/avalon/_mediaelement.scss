@@ -1,0 +1,21 @@
+.mejs-overlay-loading {
+  border-radius: 50% !important;
+}
+
+.me-cannotplay {
+  @extend .alert;
+  @extend .alert-danger;
+  text-align: center;
+  visibility: visible !important;
+}
+
+.mejs-time-clip {
+  background: linear-gradient(#ddd, #ddd);
+  opacity: 0.3;
+  height: 14px !important;
+  top: -3px !important;
+}
+
+.mejs__container {
+  z-index: 1000;
+}

@@ -17,12 +17,84 @@
 @import 'branding';
 @import 'bootstrap/variables';
 @import 'avalon/mixins';
-@import 'avalon/header';
-@import 'avalon/nav';
-@import 'avalon/form';
-@import 'avalon/footer';
+
+@import 'avalon/accordions';
+@import 'avalon/buttons';
 @import 'avalon/facets';
+@import 'avalon/footer';
+@import 'avalon/form';
+@import 'avalon/header';
+@import 'avalon/mediaelement';
+@import 'avalon/modals';
+@import 'avalon/nav';
 @import 'avalon/playlists';
+@import 'avalon/timeliner';
+
+body {
+  .page-container {
+    position: relative;
+    min-height: 100vh;
+  }
+}
+
+main {
+  padding-bottom: 20px;
+}
+
+tr.active-false td {
+  color: $gray;
+}
+
+input[type='text']#admin_group {
+  margin-bottom: 0;
+}
+
+.block {
+  display: block;
+}
+
+.info-text-gray {
+  font-style: italic;
+  color: gray;
+}
+
+.nowrap {
+  white-space: nowrap;
+}
+
+.wrap {
+  word-break: break-word;
+}
+
+// TODO: We should find and replace these usages
+.danger-color {
+  color: $brand-danger;
+}
+.success-color {
+  color: $brand-success;
+}
+
+// Page title area (because looks like we're sneaking in
+// buttons, and other stuff horizontally positioned alongside title
+.page-title-wrapper {
+  margin-bottom: 2rem;
+
+  .headline-button {
+    margin-top: 20px;
+  }
+}
+
+// Generic content spacer
+.content-block {
+  padding-bottom: 3rem;
+}
+
+// Dotted line separator from branding guide
+.separator {
+  border-bottom: 2px dotted $primaryDark;
+  background: white;
+  height: 1px;
+}
 
 /* Headlines / page titles */
 .page-title {
@@ -36,13 +108,6 @@
   color: $primary;
 }
 
-main {
-  padding-bottom: 20px;
-}
-
-/**
- * Snippets to extend
- */
 .mobile-hidden {
   @media (max-width: $screen-xs-max) {
     display: none !important;
@@ -61,75 +126,6 @@ main {
   }
 }
 
-@mixin hidden-disabled-link {
-  text-decoration: none !important;
-  color: $dark !important;
-  cursor: default !important;
-  pointer-events: none !important;
-}
-
-tr.active-false td {
-  color: $gray;
-}
-
-/**
- * Components for navigation wizard. Copied from the LESS source so
- * might need some tweaking to work right
- */
-.nav-wizard {
-  li {
-    padding-top: 0;
-    padding-right: $line-height-base;
-    padding-bottom: 1px;
-    padding-left: $line-height-base;
-    margin-bottom: $line-height-computed/4;
-    text-align: left;
-    border-radius: $border-radius-base;
-
-    background-color: $gray-lighter;
-    border: $gray;
-    color: $gray-darker;
-
-    a:hover {
-      background: transparent;
-    }
-
-    span {
-      display: block;
-      padding: 10px 15px;
-    }
-
-    p {
-      margin-left: 1em;
-      margin-right: 1em;
-    }
-  }
-
-  li.nav-success {
-    background-color: $state-success-bg;
-    border-color: $state-success-border;
-    color: $state-success-text;
-  }
-
-  li.nav-success a {
-    text-shadow: rgba(255, 255, 255, 0.2) 0px 1px 0px;
-  }
-
-  li.nav-info {
-    background-color: $state-info-bg;
-    border-color: $state-info-border;
-    color: $state-info-text;
-  }
-
-  .step {
-    font-size: 250%;
-    width: 1em;
-    float: left;
-    margin-right: 0.5em;
-    margin-bottom: $line-height-base/2;
-  }
-}
-
 #user-util-collapse {
   border-top: 0;
 }
@@ -137,10 +133,6 @@ tr.active-false td {
 .big-modal {
   width: 80%;
   margin-left: -40%;
-}
-
-#browse-btn {
-  margin: 0.5em 0;
 }
 
 // Custom file preview field for Jasny bootstrap
@@ -189,25 +181,6 @@ tr.active-false td {
   }
 }
 
-/* UI Fixes */
-/* TODO at some future point
- * Some of these need to be pushed up (like the font family overrides) into a
- * Bootstrap theme so that we don't wind up fighting it. */
-body {
-  margin-top: 0;
-  padding-top: 0;
-  min-width: 295px;
-
-  .page-container {
-    position: relative;
-    min-height: 100vh;
-  }
-}
-
-input[type='text']#admin_group {
-  margin-bottom: 0;
-}
-
 #featured_content_header {
   margin-top: 0;
 }
@@ -250,10 +223,6 @@ span.constraints-label {
   }
 }
 
-.btn-options {
-  margin-bottom: 1em;
-}
-
 #permalink {
   margin-top: 2em;
 }
@@ -265,10 +234,6 @@ span.constraints-label {
   margin-right: 2pt;
   margin-bottom: 0;
   cursor: pointer;
-}
-
-button.close {
-  display: block;
 }
 
 .control-group .controls {
@@ -365,10 +330,6 @@ a[data-trigger='submit'] {
   font-weight: 700 !important;
 }
 
-.form-control {
-  color: $dark;
-}
-
 .tab-content > .tab-pane {
   padding: 10px;
   border-bottom: 1px solid $gray;
@@ -397,17 +358,6 @@ a[data-trigger='submit'] {
   background: $red;
 }
 
-.fileinput-submit {
-  background-color: $blue !important;
-  border-color: $blue !important;
-
-  &:hover {
-    background-color: darken($blue, 15%) !important;
-  }
-
-  color: $white !important;
-}
-
 .appliedFilter {
   .btn {
     background-color: $greenBG;
@@ -433,177 +383,8 @@ a[data-trigger='submit'] {
   margin-bottom: 0;
 }
 
-.btn-danger:visited {
-  color: $white;
-}
-
-.nav-pills > li > a {
-  padding: 4px 15px;
-
-  /* override bootstrap .nav overrides of button colors */
-  &.btn-danger {
-    @extend .btn-danger;
-  }
-}
-
-.modal-body {
-  fieldset {
-    legend {
-      margin: 10px 0 5px 0;
-    }
-
-    &:first-of-type {
-      legend {
-        margin-top: -10px;
-      }
-    }
-  }
-
-  .help-block {
-    z-index: 1045;
-  }
-
-  .control-label {
-    text-align: left;
-  }
-
-  .special-access label {
-    display: block;
-
-    input,
-    select {
-      display: inline;
-      width: auto;
-      min-width: 300px;
-    }
-
-    p {
-      margin: 10px 0 5px 0;
-    }
-
-    .twitter-typeahead {
-      width: auto;
-    }
-  }
-}
-
-.about_page {
-  @extend .container-fluid;
-}
-
-#share-button {
-  text-align: right;
-  margin-top: 10px;
-  margin-bottom: 0;
-
-  a:link,
-  a:visited,
-  a:hover,
-  a:active {
-    text-decoration: none;
-  }
-}
-
 #share-list .tab-content {
   margin-bottom: 20px;
-}
-
-$accordionPadding: 20px;
-
-@function accordion-indent($n) {
-  @return -1 * $n * $accordionPadding;
-}
-
-#accordion.panel-group {
-  margin-top: 10px;
-  position: relative;
-
-  a {
-    display: inline-block;
-    cursor: pointer;
-
-    &:link,
-    &:visited,
-    &:hover,
-    &:active {
-      text-decoration: none;
-    }
-  }
-
-  .panel-title {
-    .fa-plus-square,
-    .fa-minus-square {
-      font-size: 0.9em;
-      float: right;
-      cursor: pointer;
-      border: none;
-      background-color: $lightgray;
-    }
-  }
-
-  ul,
-  li {
-    list-style: none;
-  }
-
-  li.stream-li {
-    position: relative;
-  }
-
-  i.now-playing {
-    position: absolute;
-    color: $link-color;
-    left: accordion-indent(1);
-  }
-
-  .panel-heading {
-    border-bottom: 1px solid #dddddd;
-    padding: 7px 10px;
-
-    ul {
-      padding-left: $accordionPadding;
-      margin-bottom: 0;
-      display: inline-block;
-    }
-
-    #expand_button,
-    #collapse_button {
-      float: right;
-      margin-top: -2px;
-    }
-  }
-
-  .panel-body {
-    border-top: none;
-    position: relative;
-
-    ul {
-      padding-left: $accordionPadding;
-
-      i.now-playing {
-        top: 3px;
-        left: accordion-indent(1);
-      }
-
-      ul {
-        i.now-playing {
-          left: accordion-indent(2);
-        }
-
-        ul {
-          i.now-playing {
-            left: accordion-indent(3);
-          }
-
-          ul {
-            i.now-playing {
-              left: accordion-indent(4);
-            }
-          }
-        }
-      }
-    }
-  }
 }
 
 .ready-to-play {
@@ -628,19 +409,19 @@ $accordionPadding: 20px;
 .current-section,
 .current-stream {
   &:link {
-    @hidden-disabled-link;
+    @include hidden-disabled-link;
   }
 
   &:hover {
-    @hidden-disabled-link;
+    @include hidden-disabled-link;
   }
 
   &:active {
-    @hidden-disabled-link;
+    @include hidden-disabled-link;
   }
 
   &:visited {
-    @hidden-disabled-link;
+    @include hidden-disabled-link;
   }
 }
 
@@ -811,10 +592,6 @@ div.structure_edit {
   margin-bottom: 0;
 }
 
-.block {
-  display: block;
-}
-
 .page_element_outline {
   outline: solid 1px $link-color !important;
   outline-offset: 1px !important;
@@ -823,39 +600,6 @@ div.structure_edit {
 .player_element_outline {
   outline: solid 1px orange !important;
   outline-offset: 0;
-}
-
-.mejs-overlay-loading {
-  border-radius: 50% !important;
-}
-
-.me-cannotplay {
-  @extend .alert;
-  @extend .alert-danger;
-  text-align: center;
-  visibility: visible !important;
-}
-
-/* Timeline index page */
-.timelines_top {
-  text-align: right;
-}
-
-#Timelines_info {
-  float: left;
-}
-
-#Timelines_length {
-  display: inline-block;
-}
-
-#Timelines_paginate {
-  float: right;
-}
-
-.timeline_filter_container {
-  display: inline-block;
-  margin-left: 1em;
 }
 
 .tag_filter_container {
@@ -926,39 +670,6 @@ h5.panel-title {
   tr {
     height: 2em;
   }
-}
-
-.info-text-gray {
-  font-style: italic;
-  color: gray;
-}
-
-/* Mediaelement styles */
-.mejs-time-clip {
-  background: linear-gradient(#ddd, #ddd);
-  opacity: 0.3;
-  height: 14px !important;
-  top: -3px !important;
-}
-
-.mejs__container {
-  z-index: 1000;
-}
-
-.nowrap {
-  white-space: nowrap;
-}
-
-.wrap {
-  word-break: break-word;
-}
-
-.danger-color {
-  color: $brand-danger;
-}
-
-.success-color {
-  color: $brand-success;
 }
 
 .scrubber-marker {
@@ -1090,26 +801,4 @@ h5.panel-title {
     align-content: stretch;
     margin-bottom: 10px;
   }
-}
-
-// Page title area (because looks like we're sneaking in
-// buttons, and other stuff horizontally positioned alongside title
-.page-title-wrapper {
-  margin-bottom: 2rem;
-
-  .headline-button {
-    margin-top: 20px;
-  }
-}
-
-// Generic content spacer
-.content-block {
-  padding-bottom: 3rem;
-}
-
-// Dotted line separator from branding guide
-.separator {
-  border-bottom: 2px dotted $primaryDark;
-  background: white;
-  height: 1px;
 }
