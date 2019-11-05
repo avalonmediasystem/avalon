@@ -1,6 +1,7 @@
 version: 2.1
 orbs:
   samvera: samvera/circleci-orb@0
+  cypress: cypress-io/cypress@1
 jobs:
   build:
     docker:
@@ -122,3 +123,7 @@ workflows:
           parallelism: 4
           requires:
              - Ruby2-5-5
+
+  integration_test:
+    jobs:
+      - cypress/run
