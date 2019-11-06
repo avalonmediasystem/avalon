@@ -18,7 +18,7 @@ Unless required by applicable law or agreed to in writing, software distributed
 <% unless @collections.empty? %>
 <div class="row display-flex page-title-wrapper">
   <div class="col-xs-6">
-    <h1>My Collections</h1>
+    <h1 class="page-title">My Collections</h1>
   </div>
   <div class="col-xs-6 collection-btn">
     <%= button_tag("Create Collection", class: 'btn btn-primary btn-large', data: {toggle:"modal", target:"#new_collection"}) unless cannot? :create, Admin::Collection %>
