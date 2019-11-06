@@ -16,25 +16,26 @@ Unless required by applicable law or agreed to in writing, software distributed
 <% @page_title = t('collections.show.title', :collection_name => @collection.name, :application_name => application_name) %>
 
 <div class="page-title-wrapper">
-  <h1>Manage Content</h1>
+  <h1 class="page-title">Manage Content</h1>
 </div>
-<div class="modal fade" id="modal" data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
- <div class="modal-dialog" role="document">
-   <div class="modal-content">
-     <div class="modal-header">
-       <h1 class="modal-title" id="modalLabel">Crop the image</h1>
-     </div>
-     <div class="modal-body">
-       <div class="img-container">
-         <img id="image" src="" style="max-width: 100%;">
-       </div>
-     </div>
-     <div class="modal-footer">
-       <button type="button" class="btn btn-secondary" data-dismiss="modal" id="crop-cancel">Cancel</button>
-       <button type="button" class="btn btn-primary" id="crop">Upload</button>
-     </div>
-   </div>
- </div>
+<div class="modal fade" id="modal" data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="modalLabel"
+  aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title" id="modalLabel">Crop the image</h1>
+      </div>
+      <div class="modal-body">
+        <div class="img-container">
+          <img id="image" src="" style="max-width: 100%;">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal" id="crop-cancel">Cancel</button>
+        <button type="button" class="btn btn-primary" id="crop">Upload</button>
+      </div>
+    </div>
+  </div>
 </div>
 <div class="well">
   <h2><%= @collection.name %></h2>
@@ -50,9 +51,9 @@ Unless required by applicable law or agreed to in writing, software distributed
       <p id="poster_original_name"><%= @collection.poster.original_name if @collection.poster.present? %></p>
       <div class="well-vertical-spacer">
         <% if @collection.poster.present? %>
-          <%= image_tag(poster_admin_collection_path(@collection), class: 'img-responsive', id: 'poster-image') %>
+        <%= image_tag(poster_admin_collection_path(@collection), class: 'img-responsive', id: 'poster-image') %>
         <% else %>
-          <img src="" class="img-responsive" id="poster-image">
+        <img src="" class="img-responsive" id="poster-image">
         <% end %>
       </div>
       <div>
@@ -65,7 +66,8 @@ Unless required by applicable law or agreed to in writing, software distributed
       <div class="well-vertical-spacer">
         <div id='cropper-alert' class="alert" role="alert" style="display: none; padding: 5px; margin-top: 5px"></div>
         <div id="cropper-progress" class="progress" style="display: none; margin-top: 7px;">
-          <div id="cropper-progress-bar" class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">0%</div>
+          <div id="cropper-progress-bar" class="progress-bar progress-bar-striped progress-bar-animated"
+            role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">0%</div>
         </div>
       </div>
     </div>

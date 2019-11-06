@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import './CollectionList.scss';
+import './collections/Collection.scss';
 
 class Collection extends Component {
   constructor(props) {
@@ -10,27 +10,33 @@ class Collection extends Component {
     return (
       <li className="row collection">
         <div className="document-thumbnail col-sm-3">
-          {
-            this.props.attributes.poster_url && (
-              <a href={this.props.attributes.url}><img src={this.props.attributes.poster_url} alt="Collection thumbnail"></img></a>
-            )
-          }
+          {this.props.attributes.poster_url && (
+            <a href={this.props.attributes.url}>
+              <img
+                src={this.props.attributes.poster_url}
+                alt="Collection thumbnail"
+              ></img>
+            </a>
+          )}
         </div>
         <div className="col-sm-9 description">
-          <h4 className=""><a href={this.props.attributes.url}>{this.props.attributes.name}</a></h4>
+          <h4>
+            <a href={this.props.attributes.url}>{this.props.attributes.name}</a>
+          </h4>
           <dl>
-            {
-              this.props.showUnit
-              && (<dt>Unit</dt>)
-              && (<dd>{this.props.attributes.unit}</dd>)
-            }
-            {
-              this.props.attributes.description && (
-                <div>
-                  <dd>{this.props.attributes.description.substring(0,400)}{ this.props.attributes.description.length >= 400 && ( <span>...</span>)}</dd>
-                </div>
-              )
-            }
+            {this.props.showUnit && <dt>Unit</dt> && (
+              <dd>{this.props.attributes.unit}</dd>
+            )}
+            {this.props.attributes.description && (
+              <div>
+                <dd>
+                  {this.props.attributes.description.substring(0, 400)}
+                  {this.props.attributes.description.length >= 400 && (
+                    <span>...</span>
+                  )}
+                </dd>
+              </div>
+            )}
           </dl>
         </div>
       </li>
