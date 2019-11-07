@@ -26,7 +26,7 @@
       end
 
       def virtual_read_groups
-        self.read_groups - ["public", "registered"] - local_read_groups - ip_read_groups
+        self.read_groups - represented_visibility - local_read_groups - ip_read_groups
       end
     end
 #   end
