@@ -4,3 +4,10 @@
   left: $left;
   margin-left: $margin;
 }
+
+@mixin hidden-disabled-link {
+  text-decoration: none !important;
+  color: $dark !important;
+  cursor: default !important;
+  pointer-events: none !important;
+}
