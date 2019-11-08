@@ -520,8 +520,9 @@ class MEJSPlayer {
       ? [this.playlistItem.playlist_id, this.playlistItem.id]
       : [];
 
-    // Remove quality feature for IE
+    // Remove quality feature for IE and Android
     if (
+      mejs.Features.isAndroid ||
       !!navigator.userAgent.match(/MSIE /) ||
       !!navigator.userAgent.match(/Trident.*rv\:11\./)
     ) {
