@@ -292,24 +292,24 @@ describe MasterFile do
         }
 
         before(:each) do
-          @old_media_path = Settings.matterhorn.media_path
+          @old_media_path = Settings.encoding.working_file_path
           FileUtils.mkdir_p media_path
           FileUtils.cp fixture, tempfile
         end
 
         after(:each) do
-          Settings.matterhorn.media_path = @old_media_path
+          Settings.encoding.working_file_path = @old_media_path
           File.unlink subject.file_location
           FileUtils.rm_rf media_path
         end
 
         it "should rename an uploaded file in place" do
-          Settings.matterhorn.media_path = nil
+          Settings.encoding.working_file_path = nil
           expect(subject.file_location).to eq(File.realpath(File.join(File.dirname(tempfile),original)))
         end
 
         it "should copy an uploaded file to the media path" do
-          Settings.matterhorn.media_path = media_path
+          Settings.encoding.working_file_path = media_path
           expect(File.fnmatch("#{media_path}/*/#{original}", subject.working_file_path.first)).to be true
         end
       end
@@ -478,11 +478,11 @@ describe MasterFile do
     subject(:master_file) { FactoryBot.create(:master_file) }
     let(:working_dir) { Dir.mktmpdir }
     before do
-      Settings.matterhorn.media_path = working_dir
+      Settings.encoding.working_file_path = working_dir
     end
 
     after do
-      Settings.matterhorn.media_path = nil
+      Settings.encoding.working_file_path = nil
     end
     describe 'post_processing_working_directory_file_management' do
       it 'enqueues the working directory cleanup job' do
@@ -498,7 +498,7 @@ describe MasterFile do
       it 'returns a path when the working directory is valid' do
         file = File.new(Rails.root.join('spec', 'fixtures', 'videoshort.mp4'))
         master_file.setContent(file)
-        expect(master_file.working_file_path.first).to include(Settings.matterhorn.media_path)
+        expect(master_file.working_file_path.first).to include(Settings.encoding.working_file_path)
       end
     end
   end
