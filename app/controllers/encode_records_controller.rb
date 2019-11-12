@@ -15,6 +15,7 @@
 
 class EncodeRecordsController < ApplicationController
   before_action :set_encode_record, only: [:show]
+  skip_before_action :verify_authenticity_token, only: [:progress]
 
   # GET /encode_records
   # GET /encode_records.json
@@ -31,6 +32,8 @@ class EncodeRecordsController < ApplicationController
 
   # POST /encode_records/paged_index
   def paged_index
+    authorize! :read, :encode_dashboard
+
     # Encode records for index page are loaded dynamically by jquery datatables javascript which
     # requests the html for only a limited set of rows at a time.
     columns = %w[state id progress display_title master_file_id media_object_id created_at].freeze
@@ -83,6 +86,17 @@ class EncodeRecordsController < ApplicationController
     respond_to do |format|
       format.json do
         render json: response
+      end
+    end
+  end
+
+  def progress
+    authorize! :read, :encode_dashboard
+    progresses = ::ActiveEncode::EncodeRecord.where(id: params[:ids]).pluck(:id, :progress).map { |id, progress| { id: id, progress: progress } }
+
+    respond_to do |format|
+      format.json do
+        render json: progresses
       end
     end
   end
