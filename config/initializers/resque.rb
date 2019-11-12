@@ -6,3 +6,6 @@ Resque.redis = "#{Settings.redis.host}:#{Settings.redis.port}"
 # Enable schedule tab in Resque web ui
 require 'resque-scheduler'
 require 'resque/scheduler/server'
+
+Resque.logger = Logger.new(STDOUT)
+Resque.logger.level = Logger::INFO
