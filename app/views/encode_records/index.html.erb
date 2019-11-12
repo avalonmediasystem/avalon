@@ -28,6 +28,9 @@ $(document).ready( function () {
     stateSave: true,
     processing: true,
     serverSide: true,
+    order: [[ 6, 'desc' ]],
+    lengthMenu: [10, 20, 50, 100],
+    pageLength: 20,
     ajax: {
       url: '/encode_records/paged_index',
       type: 'POST'
