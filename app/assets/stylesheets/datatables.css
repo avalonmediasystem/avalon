@@ -14,12 +14,30 @@
 * require datatables/extensions/Select/select.bootstrap
 */
 
+table.dataTable {
+  border: 1px solid #ccc;
+  border-collapse: collapse !important;
+  border-spacing: 0;
+}
+
+table.dataTable th,
+table.dataTable td {
+  border: 1px solid #ccc;
+  padding: 6px;
+}
+
+table.dataTable a {
+  text-decoration: underline;
+}
+
 table.dataTable thead .sorting,
 table.dataTable thead .sorting_asc,
 table.dataTable thead .sorting_desc,
 table.dataTable thead .sorting_asc_disabled,
 table.dataTable thead .sorting_desc_disabled {
-  white-space: nowrap
+  white-space: nowrap;
+  cursor: pointer;
+  *cursor: hand;
 }
 
 table.dataTable thead .sorting:after,
@@ -28,7 +46,33 @@ table.dataTable thead .sorting_desc:after,
 table.dataTable thead .sorting_asc_disabled:after,
 table.dataTable thead .sorting_desc_disabled:after {
   position: relative;
-  bottom: -2px;
   left: 5px;
   display: inline-block;
+  content: '';
+  width: 1em;
+  height: 1em;
+  opacity: 1;
+  background-repeat: no-repeat;
+  background-position: center right;
+}
+
+table.dataTable thead .sorting:after {
+  background-image: url("datatables/sort_both.png");
+  bottom: -1px;
+}
+table.dataTable thead .sorting_asc:after {
+  background-image: url("datatables/sort_asc.png");
+  bottom: -4px;
+}
+table.dataTable thead .sorting_desc:after {
+  background-image: url("datatables/sort_desc.png");
+  bottom: 1px;
+}
+table.dataTable thead .sorting_asc_disabled:after {
+  background-image: url("datatables/sort_asc_disabled.png");
+  bottom: -4px;
+}
+table.dataTable thead .sorting_desc_disabled:after {
+  background-image: url("datatables/sort_desc_disabled.png");
+  bottom: 1px;
 }
