@@ -129,7 +129,7 @@ RSpec.describe EncodeRecordsController, type: :controller do
     it 'returns JSON with progress information' do
       post :progress, format: :json, params: { ids: [ encode_1.id, encode_2.id ] }, session: valid_session
       expect(response).to be_successful
-      expect(JSON.parse(response.body)).to include(hash_including("id" => encode_1.id, "progress" => encode_1.progress), hash_including("id" => encode_2.id, "progress" => encode_2.progress))
+      expect(JSON.parse(response.body)).to eq({ encode_1.id.to_s => encode_1.progress, encode_2.id.to_s => encode_2.progress })
     end
 
     context 'when not administrator' do
