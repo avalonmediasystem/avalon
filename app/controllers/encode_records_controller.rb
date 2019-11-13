@@ -75,7 +75,7 @@ class EncodeRecordsController < ApplicationController
         [
           encode_presenter.status,
           view_context.link_to(encode_presenter.id, Rails.application.routes.url_helpers.encode_record_path(encode)),
-          "<progress value=\"#{encode_presenter.progress}\" max=\"100\"></progress>",
+          "<progress value=\"#{encode_presenter.progress}\" max=\"100\" data-encode-id=\"#{encode.id}\" class=\"encode-progress\"></progress>",
           encode_presenter.display_title,
           view_context.link_to(encode_presenter.master_file_id, encode_presenter.master_file_url),
           view_context.link_to(encode_presenter.media_object_id, encode_presenter.media_object_url),
@@ -92,7 +92,7 @@ class EncodeRecordsController < ApplicationController
 
   def progress
     authorize! :read, :encode_dashboard
-    progresses = ::ActiveEncode::EncodeRecord.where(id: params[:ids]).pluck(:id, :progress).map { |id, progress| { id: id, progress: progress } }
+    progresses = ::ActiveEncode::EncodeRecord.where(id: params[:ids]).pluck(:id, :progress).to_h
 
     respond_to do |format|
       format.json do
