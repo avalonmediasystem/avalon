@@ -99,7 +99,6 @@ services:
       - FEDORA_NAMESPACE=avalon
       - FEDORA_URL=http://fedoraAdmin:fedoraAdmin@fedora:8080/fedora/rest
       - SETTINGS__FFMPEG__PATH=/usr/bin/ffmpeg
-      - MASTER_FILE_STRATEGY=none
       - MEDIAINFO_PATH=/usr/bin/mediainfo
       - RAILS_ENV=development
       - SETTINGS__REDIS__HOST=redis
