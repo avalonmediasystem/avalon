@@ -140,7 +140,7 @@ class MasterFile < ActiveFedora::Base
     raw_encode_record['errors'].first
   end
 
-  # For working file copy when Settings.matterhorn.media_path is set
+  # For working file copy when Settings.encoding.working_file_path is set
   property :working_file_path, predicate: Avalon::RDFVocab::MasterFile.workingFilePath, multiple: true
 
   validates :workflow_name, presence: true, inclusion: { in: proc { WORKFLOWS } }
@@ -543,7 +543,7 @@ class MasterFile < ActiveFedora::Base
   end
 
   def self.calculate_working_file_path(old_path)
-    config_path = Settings&.matterhorn&.media_path
+    config_path = Settings&.encoding&.working_file_path
     if config_path.present? && File.directory?(config_path)
       File.join(config_path, SecureRandom.uuid, File.basename(old_path))
     else
@@ -563,7 +563,7 @@ class MasterFile < ActiveFedora::Base
   def find_frame_source(options={})
     options[:offset] ||= 2000
 
-    source = FileLocator.new(file_location)
+    source = FileLocator.new(working_file_path&.first || file_location)
     options[:master] = true
     if source.source.nil? or (source.uri.scheme == 's3' and not source.exist?)
       source = FileLocator.new(self.derivatives.where(quality_ssi: 'high').first.absolute_location)
@@ -759,7 +759,7 @@ class MasterFile < ActiveFedora::Base
     # Run master file management strategy
     manage_master_file
     # Clean up working file if it exists
-    CleanupWorkingFileJob.perform_later(id, working_file_path.to_a) unless Settings&.matterhorn&.media_path.blank?
+    CleanupWorkingFileJob.perform_later(id, working_file_path.to_a) unless Settings&.encoding&.working_file_path.blank?
   end
 
   def update_ingest_batch
