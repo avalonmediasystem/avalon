@@ -30,7 +30,7 @@ class EncodePresenter
     @create_options = @encode_record.create_options.present? ? JSON.parse(@encode_record.create_options) : {}
   end
 
-  delegate :id, :adapter, :display_title, :master_file_id, :media_object_id, :created_at, to: :encode_record
+  delegate :id, :adapter, :display_title, :master_file_id, :media_object_id, :created_at, :progress, to: :encode_record
 
   def status
     @encode_record.state.capitalize
@@ -38,10 +38,6 @@ class EncodePresenter
 
   def global_id
     @encode_record.global_id.split('/').last
-  end
-
-  def progress
-    @raw_object["percent_complete"]
   end
 
   def title
