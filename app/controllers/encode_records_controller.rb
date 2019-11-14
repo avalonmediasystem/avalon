@@ -73,7 +73,7 @@ class EncodeRecordsController < ApplicationController
       "data": @encode_records.collect do |encode|
         encode_presenter = EncodePresenter.new(encode)
         [
-          encode_presenter.status,
+          "<span data-encode-id=\"#{encode.id}\" class=\"encode-status\">#{encode_presenter.status}</span>",
           view_context.link_to(encode_presenter.id, Rails.application.routes.url_helpers.encode_record_path(encode)),
           "<progress value=\"#{encode_presenter.progress}\" max=\"100\" data-encode-id=\"#{encode.id}\" class=\"encode-progress\"></progress>",
           encode_presenter.display_title,
@@ -92,11 +92,14 @@ class EncodeRecordsController < ApplicationController
 
   def progress
     authorize! :read, :encode_dashboard
-    progresses = ::ActiveEncode::EncodeRecord.where(id: params[:ids]).pluck(:id, :progress).to_h
-
+    progress_data = {}
+    ::ActiveEncode::EncodeRecord.where(id: params[:ids]).each do |encode|
+      presenter = EncodePresenter.new(encode)
+      progress_data[encode.id] = { progress: presenter.progress, status: presenter.status }
+    end
     respond_to do |format|
       format.json do
-        render json: progresses
+        render json: progress_data
       end
     end
   end

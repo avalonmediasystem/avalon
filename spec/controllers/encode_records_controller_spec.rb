@@ -125,11 +125,14 @@ RSpec.describe EncodeRecordsController, type: :controller do
   describe "POST #progress" do
     let(:encode_1) { FactoryBot.create(:encode_record) }
     let(:encode_2) { FactoryBot.create(:encode_record) }
+    let(:presenter_1) { EncodePresenter.new(encode_1) }
+    let(:presenter_2) { EncodePresenter.new(encode_2) }
 
     it 'returns JSON with progress information' do
       post :progress, format: :json, params: { ids: [ encode_1.id, encode_2.id ] }, session: valid_session
       expect(response).to be_successful
-      expect(JSON.parse(response.body)).to eq({ encode_1.id.to_s => encode_1.progress, encode_2.id.to_s => encode_2.progress })
+      expect(JSON.parse(response.body)).to eq({ encode_1.id.to_s => { "progress" => presenter_1.progress, "status" => presenter_1.status },
+                                                encode_2.id.to_s => { "progress" => presenter_2.progress, "status" => presenter_2.status } })
     end
 
     context 'when not administrator' do
