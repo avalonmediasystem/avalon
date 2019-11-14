@@ -3,7 +3,10 @@
 <div class="container">
   <h1>Transcoding Dashboard</h1>
 
-  <table id="encode_records" style="width: 100%;"  data-turbolinks="false">
+  <table id="encode-records"
+         style="width: 100%;"
+         data-turbolinks="false"
+         data-progress-url="<%= progress_encode_records_path(format: :json) %>">
     <thead>
       <tr>
         <th>Status</th>
@@ -23,8 +26,30 @@
 
 <% content_for :page_scripts do %>
 <script>
+
+var encodeProgressTimeout;
+
+update_encode_progress = function() {
+  let ids = $('.encode-progress').map(function(d){ return $(this).data('encode-id') }).get()
+  $.post($('#encode-records').data('progress-url'),
+    {ids},
+    function(progress_data) {
+      let stop = true;
+      $('.encode-progress').each(function(i, bar) {
+        let encode_data = progress_data[$(bar).data('encode-id')]
+        $(bar).closest('tr').find('.encode-status').text(encode_data['status'])
+        $(bar).val(encode_data['progress']);
+        stop = stop && (encode_data['progress'] == 100)
+      });
+      if (!stop) {
+        encodeProgressTimeout = setTimeout(update_encode_progress, 10000);
+      }
+    }
+  );
+}
+
 $(document).ready( function () {
-  $('#encode_records').dataTable({
+  $('#encode-records').dataTable({
     stateSave: true,
     processing: true,
     serverSide: true,
@@ -35,6 +60,9 @@ $(document).ready( function () {
       url: '/encode_records/paged_index',
       type: 'POST'
     }
+  }).on( 'draw.dt', function () {
+    clearTimeout(encodeProgressTimeout);
+    update_encode_progress();
   })
 });
 </script>

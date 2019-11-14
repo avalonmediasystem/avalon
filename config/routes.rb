@@ -21,6 +21,7 @@ Rails.application.routes.draw do
   resources :encode_records, only: [:show, :index] do
     collection do
       post :paged_index
+      post :progress
     end
   end
 

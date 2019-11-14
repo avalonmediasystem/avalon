@@ -15,6 +15,7 @@
 
 class EncodeRecordsController < ApplicationController
   before_action :set_encode_record, only: [:show]
+  skip_before_action :verify_authenticity_token, only: [:progress]
 
   # GET /encode_records
   # GET /encode_records.json
@@ -31,6 +32,8 @@ class EncodeRecordsController < ApplicationController
 
   # POST /encode_records/paged_index
   def paged_index
+    authorize! :read, :encode_dashboard
+
     # Encode records for index page are loaded dynamically by jquery datatables javascript which
     # requests the html for only a limited set of rows at a time.
     columns = %w[state id progress display_title master_file_id media_object_id created_at].freeze
@@ -70,9 +73,9 @@ class EncodeRecordsController < ApplicationController
       "data": @encode_records.collect do |encode|
         encode_presenter = EncodePresenter.new(encode)
         [
-          encode_presenter.status,
+          "<span data-encode-id=\"#{encode.id}\" class=\"encode-status\">#{encode_presenter.status}</span>",
           view_context.link_to(encode_presenter.id, Rails.application.routes.url_helpers.encode_record_path(encode)),
-          "<progress value=\"#{encode_presenter.progress}\" max=\"100\"></progress>",
+          "<progress value=\"#{encode_presenter.progress}\" max=\"100\" data-encode-id=\"#{encode.id}\" class=\"encode-progress\"></progress>",
           encode_presenter.display_title,
           view_context.link_to(encode_presenter.master_file_id, encode_presenter.master_file_url),
           view_context.link_to(encode_presenter.media_object_id, encode_presenter.media_object_url),
@@ -83,6 +86,20 @@ class EncodeRecordsController < ApplicationController
     respond_to do |format|
       format.json do
         render json: response
+      end
+    end
+  end
+
+  def progress
+    authorize! :read, :encode_dashboard
+    progress_data = {}
+    ::ActiveEncode::EncodeRecord.where(id: params[:ids]).each do |encode|
+      presenter = EncodePresenter.new(encode)
+      progress_data[encode.id] = { progress: presenter.progress, status: presenter.status }
+    end
+    respond_to do |format|
+      format.json do
+        render json: progress_data
       end
     end
   end

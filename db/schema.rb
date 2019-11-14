@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_10_04_181958) do
+ActiveRecord::Schema.define(version: 2019_10_16_195828) do
 
   create_table "active_encode_encode_records", force: :cascade do |t|
     t.string "global_id"
@@ -22,6 +22,12 @@ ActiveRecord::Schema.define(version: 2019_10_04_181958) do
     t.datetime "updated_at", null: false
     t.text "create_options"
     t.float "progress"
+    t.string "display_title"
+    t.string "master_file_id"
+    t.string "media_object_id"
+    t.index ["display_title"], name: "index_active_encode_encode_records_on_display_title"
+    t.index ["master_file_id"], name: "index_active_encode_encode_records_on_master_file_id"
+    t.index ["media_object_id"], name: "index_active_encode_encode_records_on_media_object_id"
   end
 
   create_table "annotations", force: :cascade do |t|
