@@ -36,9 +36,10 @@ update_encode_progress = function() {
     function(progress_data) {
       let stop = true;
       $('.encode-progress').each(function(i, bar) {
-        let progress = progress_data[$(bar).data('encode-id')]
-        stop = stop && (progress == 100)
-        $(bar).val(progress);
+        let encode_data = progress_data[$(bar).data('encode-id')]
+        $(bar).closest('tr').find('.encode-status').text(encode_data['status'])
+        $(bar).val(encode_data['progress']);
+        stop = stop && (encode_data['progress'] == 100)
       });
       if (!stop) {
         encodeProgressTimeout = setTimeout(update_encode_progress, 10000);
