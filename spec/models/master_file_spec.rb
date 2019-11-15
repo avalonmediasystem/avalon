@@ -15,6 +15,7 @@
 require 'rails_helper'
 
 describe MasterFile do
+  include ActiveJob::TestHelper
 
   describe "validations" do
     subject { MasterFile.new }
@@ -113,6 +114,10 @@ describe MasterFile do
 
   describe '#process' do
     let(:master_file) { FactoryBot.create(:master_file, :not_processing) }
+
+    around(:example) do |example|
+      perform_enqueued_jobs { example.run }
+    end
 
     it 'creates an encode' do
       expect(master_file.encoder_class).to receive(:create).with("file://" + URI.escape(master_file.file_location), { master_file_id: master_file.id, preset: master_file.workflow_name })
