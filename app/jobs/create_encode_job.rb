@@ -12,6 +12,8 @@
 #   CONDITIONS OF ANY KIND, either express or implied. See the License for the
 #   specific language governing permissions and limitations under the License.
 # ---  END LICENSE_HEADER BLOCK  ---
+require 'ffmpeg_encode'
+require 'elastic_transcoder_encode'
 
 class CreateEncodeJob < ActiveJob::Base
   queue_as :create_encode
