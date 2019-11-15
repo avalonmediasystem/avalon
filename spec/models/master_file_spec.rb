@@ -372,6 +372,22 @@ describe MasterFile do
     it "should reject an invalid encoder class" do
       expect { subject.encoder_class = Object }.to raise_error(ArgumentError)
     end
+
+    context 'with an encoder class named after the engine adapter' do
+      before :all do
+        class TestEncode < ActiveEncode::Base
+        end
+      end
+  
+      after :all do
+        Object.send(:remove_const, :TestEncode)
+      end
+  
+      it "should find the encoder class" do
+        expect(Settings.encoding.engine_adapter).to eq "test"
+        expect(subject.encoder_class).to eq(TestEncode)
+      end
+    end
   end
 
   describe "#embed_title" do
