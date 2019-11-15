@@ -22,15 +22,15 @@ Unless required by applicable law or agreed to in writing, software distributed
     <li style="padding-bottom: 0px"><%= link_to @doc_presenter.unit, collections_path(filter: @doc_presenter.unit) %></li>
     <li class="active" style="padding-bottom: 0px"><%= @doc_presenter.name %></li>
   </ol>
-  <div class="row">
+  <div class="row document-details">
     <div class="document-thumbnail col-sm-4 col-sm-push-8">
-      <%= image_tag @doc_presenter.poster_url, class: 'img-responsive' %>
+      <%= image_tag @doc_presenter.poster_url %>
     </div>
     <div class="col-sm-8 col-sm-pull-4">
-      <h3 style="margin-top:0px"><%= @doc_presenter.name %></h3>
+      <h3 class="page-title" style="margin-top:0px"><%= @doc_presenter.name %></h3>
       <div>
-        <p><strong>Unit:</strong> <%= @doc_presenter.unit %></p>
-        <p style="white-space:pre-wrap"><%= @doc_presenter.description %></p>
+        <h3><strong>Unit:</strong> <%= @doc_presenter.unit %></h3>
+        <p style="white-space:pre-wrap" class="lead document-description"></p>
       </div>
     </div>
   </div>
@@ -38,3 +38,38 @@ Unless required by applicable law or agreed to in writing, software distributed
     <%= react_component("Search", { baseUrl: root_url, collection: @doc_presenter.name }) %>
   </div>
 </div>
+
+<% content_for :page_scripts do %>
+<script>
+  $(document).ready(function() {
+    let content = '<%= j @doc_presenter.description %>';
+    if(content) {
+      let show = content.substr(0, 400);
+      let hide = content.substr(400, content.length - 400);
+      $('.document-description').html('<span>' + show + '</span><span class="more-content">' 
+      + hide + '</span>&nbsp;&nbsp;<a href="" target="1" class="read-more btn btn-default">Read more</a>');
+
+      // $(".read-more").click(function(e){
+      //   e.preventDefault();
+      //   if($(this).hasClass("less")) {
+      //       $(this).removeClass("less");
+      //       $(this).html('Read more');
+      //   } else {
+      //       $(this).addClass("less");
+      //       $(this).html('Read less');
+      //   }
+      //   $(this).parent().prev().toggle();
+      //   $(this).prev().toggle();
+      //   return false;
+      // });
+      $('.more-content').hide();
+      $('.read-more').click(function () {
+          $('.more-content').slideToggle('slow', function() {
+            $('.read-more').html($(this).is(':visible')? 'Read less' : 'Read more')
+          });
+          return false;
+      });
+    }
+  });
+</script>
+<% end %>

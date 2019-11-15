@@ -2,8 +2,14 @@
   width: 100%;
 }
 
-.document-thumbnail {
-  /* min-width: 25rem; */
+.document-details {
+  border-bottom: 1px solid #999;
+  margin-bottom: 1em;
+  padding-bottom: 1em;
+}
+
+.document-description {
+  text-align: justify;
 }
 
 /* Collection List */
@@ -44,6 +50,10 @@
 }
 .collection-card-description {
   padding: 2rem 0;
+}
+
+.search-within-facets {
+  margin-left: 16px;
 }
 
 ul.search-within-search-results {
@@ -97,25 +107,14 @@ li.search-within-search-result {
   color: gray;
 }
 
-.search-within-facets-btn {
-  margin-left: 15px;
-}
-
-.search-within-facets .search-within-facet {
-  margin-right: 30px;
-}
-
-.search-within-facets .panel-body li {
-  padding-bottom: 0px;
-}
-
 .sort-pagination {
   margin-left: 10px;
   margin-top: 7px;
 }
 
 .mb-3 {
-  margin-bottom: 3px;
+  margin-bottom: 8px;
+  margin-top: 8px;
 }
 
 .mr-2 {
@@ -126,43 +125,15 @@ li.search-within-search-result {
   margin-left: 16px;
 }
 
-@media (min-width: 24em) {
+@media (max-width: 24em) {
   .search-bar {
     width: 100%;
   }
-
-  .search-within-facets.in {
-    display: unset;
-  }
-
-  .search-within-facets {
-    padding-left: 15px;
-  }
 }
 
-@media (min-width: 32em) {
+@media (max-width: 32em) {
   .search-bar {
     width: 100%;
-  }
-
-  .search-within-facets.in {
-    display: unset;
-  }
-
-  .search-within-facet {
-    padding-left: 15px;
-  }
-}
-
-@media (max-width: 48em) {
-  .search-within-facet > h5 {
-    padding-left: 0px;
-    margin-top: 20px;
-    margin-bottom: 10px;
-  }
-
-  .search-within-facet li {
-    padding-bottom: 1rem;
   }
 }
 
@@ -170,21 +141,11 @@ li.search-within-search-result {
   .search-bar {
     width: 50%;
   }
-
-  .search-within-facets.in {
-    display: flex;
-  }
-
-  .search-within-facet {
-    max-width: 250px;
-  }
-}
-
-@media (min-width: 62em) {
 }
 
 .inline {
   display: inline;
+  margin-left: 16px;
 }
 
 .panel-heading {
@@ -204,4 +165,15 @@ li.search-within-search-result {
 
 .search-input {
   width: 100%;
+}
+
+.more-content span {
+  display: none;
+  transition: top 0.45s cubic-bezier(0.44, 0.99, 0.48, 1);
+}
+
+.read-more {
+  display: block;
+  width: fit-content;
+  margin-top: 10px;
 }

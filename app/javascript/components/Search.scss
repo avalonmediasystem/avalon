@@ -31,14 +31,14 @@ div.search-component {
   }
 
   .description h4 {
-    margin-top: 0  ;
+    margin-top: 0;
   }
 
-  @media(max-width:767px) {
+  @media (max-width: 767px) {
     .page-header {
       padding-left: 15px;
     }
-    
+
     .description {
       padding: 1.5rem 3rem;
     }
@@ -56,18 +56,6 @@ div.search-component {
 
   .field-name {
     color: gray;
-  }
-
-  .search-within-facets-btn {
-    margin-left: 15px;
-  }
-
-  .search-within-facets .search-within-facet {
-    margin-right: 30px;
-  }
-
-  .search-within-facets .panel-body li {
-    padding-bottom: 0px;
   }
 
   .sort-pagination {
@@ -92,14 +80,6 @@ div.search-component {
       width: 100%;
     }
 
-    .search-within-facets.in {
-      display: unset;
-    }
-
-    .search-within-facets {
-      padding-left: 15px;
-    }
-
     .collection-list {
       margin-left: -16px;
     }
@@ -121,39 +101,11 @@ div.search-component {
     .search-bar {
       width: 100%;
     }
-
-    .search-within-facets.in {
-      display: unset;
-    }
-
-    .search-within-facet {
-      padding-left: 15px;
-    }
-  }
-
-  @media (max-width: 48em) {
-    .search-within-facet > h5 {
-      padding-left: 0px;
-      margin-top: 20px;
-      margin-bottom: 10px;
-    }
-
-    .search-within-facet li {
-      padding-bottom: 1rem;
-    }
   }
 
   @media (min-width: 48em) {
     .search-bar {
       width: 50%;
-    }
-
-    .search-within-facets.in {
-      display: flex;
-    }
-
-    .search-within-facet {
-      max-width: 250px;
     }
 
     .collection-list {
@@ -180,7 +132,9 @@ div.search-component {
     text-transform: uppercase;
   }
 
-  .sort-btn.active, .sort-btn.active:hover, .sort-btn:hover {
+  .sort-btn.active,
+  .sort-btn.active:hover,
+  .sort-btn:hover {
     color: #2a5459;
     background-color: #ffcf08;
   }
