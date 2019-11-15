@@ -34,6 +34,8 @@ require 'rails_helper'
 # spec/lib/avalon/batch/entry_spec.rb:80
 #
 describe "MasterFile#working_file_path" do
+  include ActiveJob::TestHelper
+
   let(:master_file) { FactoryBot.build(:master_file) }
   let(:media_object) { FactoryBot.create(:media_object) }
   let(:workflow) { 'avalon' }
@@ -41,6 +43,10 @@ describe "MasterFile#working_file_path" do
 
   before do
     allow(encoder_class).to receive(:create)
+  end
+
+  around(:example) do |example|
+    perform_enqueued_jobs(only: CreateEncodeJob) { example.run }
   end
 
   context "with Settings.encoding.working_file_path set" do

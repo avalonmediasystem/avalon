@@ -290,7 +290,7 @@ class MasterFile < ActiveFedora::Base
       end
     end
 
-    encoder_class.create(input, master_file_id: id, preset: workflow_name)
+    CreateEncodeJob.perform_later(input, id)
   end
 
   def finished_processing?
