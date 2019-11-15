@@ -60,7 +60,7 @@ gem 'omniauth-identity'
 gem 'omniauth-lti', git: "https://github.com/avalonmediasystem/omniauth-lti.git", tag: 'avalon-r4'
 
 # Media Access & Transcoding
-gem 'active_encode', git: "https://github.com/samvera-labs/active_encode.git", branch: "master"
+gem 'active_encode', git: "https://github.com/samvera-labs/active_encode.git", branch: "ffmpeg-s3"
 gem 'audio_waveform-ruby', require: 'audio_waveform'
 gem 'browse-everything', '~> 0.13.0'
 gem 'media_element_add_to_playlist', git: 'https://github.com/avalonmediasystem/media-element-add-to-playlist.git', tag: 'avalon-r6.5'
