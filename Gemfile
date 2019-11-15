@@ -44,7 +44,7 @@ gem 'avalon-about', git: 'https://github.com/avalonmediasystem/avalon-about.git'
 gem 'bootstrap-toggle-rails', git: 'https://github.com/rkallensee/bootstrap-toggle-rails.git', tag: 'v2.2.1.0'
 gem 'bootstrap_form'
 gem 'iiif_manifest', '~> 0.6'
-gem 'rack-cors', require: 'rack/cors'
+gem 'rack-cors', '1.0.5'
 gem 'recaptcha', require: 'recaptcha/rails'
 gem 'speedy-af', '~> 0.1.3'
 
