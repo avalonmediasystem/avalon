@@ -22,7 +22,7 @@ Unless required by applicable law or agreed to in writing, software distributed
     <li style="padding-bottom: 0px"><%= link_to @doc_presenter.unit, collections_path(filter: @doc_presenter.unit) %></li>
     <li class="active" style="padding-bottom: 0px"><%= @doc_presenter.name %></li>
   </ol>
-  <div class="row document-details">
+  <div class="row">
     <div class="document-thumbnail col-sm-4 col-sm-push-8">
       <%= image_tag @doc_presenter.poster_url %>
     </div>
@@ -43,32 +43,27 @@ Unless required by applicable law or agreed to in writing, software distributed
 <script>
   $(document).ready(function() {
     let content = '<%= j @doc_presenter.description %>';
-    if(content) {
+    if(content.length > 400) {
       let show = content.substr(0, 400);
       let hide = content.substr(400, content.length - 400);
-      $('.document-description').html('<span>' + show + '</span><span class="more-content">' 
-      + hide + '</span>&nbsp;&nbsp;<a href="" target="1" class="read-more btn btn-default">Read more</a>');
+      $('.document-description').html(show + '<span>...</span><span class="more-content"><span>' 
+      + hide + '</span>&nbsp;&nbsp;<a href="" target="1" class="read-more btn btn-default">Read more</a></span>');
 
-      // $(".read-more").click(function(e){
-      //   e.preventDefault();
-      //   if($(this).hasClass("less")) {
-      //       $(this).removeClass("less");
-      //       $(this).html('Read more');
-      //   } else {
-      //       $(this).addClass("less");
-      //       $(this).html('Read less');
-      //   }
-      //   $(this).parent().prev().toggle();
-      //   $(this).prev().toggle();
-      //   return false;
-      // });
-      $('.more-content').hide();
-      $('.read-more').click(function () {
-          $('.more-content').slideToggle('slow', function() {
-            $('.read-more').html($(this).is(':visible')? 'Read less' : 'Read more')
-          });
-          return false;
+      $(".read-more").click(function(e){
+        e.preventDefault();
+        if($(this).hasClass("less")) {
+            $(this).removeClass("less");
+            $(this).html('Read more');
+        } else {
+            $(this).addClass("less");
+            $(this).html('Read less');
+        }
+        $(this).parent().prev().toggle();
+        $(this).prev().toggle();
+        return false;
       });
+    } else {
+      $('.document-description').html(content);
     }
   });
 </script>

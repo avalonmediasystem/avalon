@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
 import Axios from 'axios';
 import './collections/Collection.scss';
-import CollectionListStickyUtils from './collections/CollectionListStickyUtils';
-import CollectionsSortedByUnit from './collections/CollectionsSortedByUnit';
-import CollectionsSortedByAZ from './collections/CollectionsSortedByAZ';
+import CollectionListStickyUtils from './collections/list/CollectionListStickyUtils';
+import CollectionsSortedByUnit from './collections/list/CollectionsSortedByUnit';
+import CollectionsSortedByAZ from './collections/list/CollectionsSortedByAZ';
 import PropTypes from 'prop-types';
 
 class CollectionList extends Component {

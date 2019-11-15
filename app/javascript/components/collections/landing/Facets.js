@@ -2,52 +2,36 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/core/styles';
 
-import './collections/Collection.scss';
+import '../Collection.scss';
 
 function Facets(props) {
   const handleClick = (facetField, facetLabel, item, event) => {
     event.preventDefault();
-    let newAppliedFacets = props.search.state.appliedFacets.concat([
+    let newAppliedFacets = props.appliedFacets.concat([
       { facetField: facetField, facetLabel: facetLabel, facetValue: item.value }
     ]);
-
-    props.search.setState({
-      appliedFacets: newAppliedFacets,
-      currentPage: 1
-    });
+    props.changeFacets(newAppliedFacets, 1);
   };
 
   const isFacetApplied = (facet, item) => {
-    let index = props.search.state.appliedFacets.findIndex(appliedFacet => {
+    let index = props.appliedFacets.findIndex(appliedFacet => {
       return (
-        appliedFacet.facetField === facet.name &&
-        appliedFacet.facetValue === item.value
+        appliedFacet.facetField === facet.name && appliedFacet.facetValue === item.value
       );
     });
     return index != -1;
   };
 
-  return props.facets != {} ? (
+  return props.docsLength > 0 ? (
     <div className="inline">
-      <button
-        href="#search-within-facets"
-        data-toggle="collapse"
-        role="button"
-        aria-expanded="false"
-        aria-controls="object_tree"
-        className="btn btn-primary mb-3 search-within-facets-btn">
+      <button href="#search-within-facets" data-toggle="collapse" role="button" aria-expanded="false" aria-controls="object_tree" className="btn btn-primary search-within-facets-btn">
         Toggle Filters
       </button>
       <div id="search-within-facets" className="search-within-facets collapse">
-        <FiltersPanel
-          facets={props.facets}
-          isFacetApplied={isFacetApplied}
-          handleClick={handleClick}></FiltersPanel>
+        <FiltersPanel facets={props.facets} isFacetApplied={isFacetApplied} handleClick={handleClick}></FiltersPanel>
       </div>
     </div>
-  ) : (
-    <div></div>
-  );
+  ) : ( <div></div> );
 }
 
 export default Facets;
@@ -86,37 +70,22 @@ function FiltersPanel(props) {
   return (
     <div className={classes.panelFlex}>
       {facets.map((facet, index) => {
-        if (facet.items.length === 0) {
-          return <div></div>;
-        }
+        if (facet.items.length === 0) { return <div key={facet.name}></div> }
         return (
-          <div className={classes.facetItem} key={index}>
+          <div className={classes.facetItem} key={facet.name}>
             <h5 className="page-header upper">{facet.label}</h5>
             <div className="">
               <ul className="facet-values list-unstyled">
                 {facet.items.map((item, index) => {
                   return (
-                    <li key={index}>
-                      {isFacetApplied(facet, item) ? (
-                        <span className="facet-label">{item.label}</span>
-                      ) : (
-                        <a
-                          href=""
-                          onClick={event =>
-                            handleClick(facet.name, facet.label, item, event)
-                          }
-                          className={classes.facetValue}>
-                          <span className="facet-label">{item.label}</span>
-                        </a>
-                      )}
-                      <span className="facet-count"> ({item.hits})</span>
-                    </li>
-                  );
-                })}
-              </ul>
+                    <li key={item.label}>{isFacetApplied(facet, item) 
+                      ? ( <span className="facet-label">{item.label}</span> )
+                      : ( <a href="" onClick={event => handleClick(facet.name, facet.label, item, event) } className={classes.facetValue}>
+                            <span className="facet-label">{item.label}</span> </a> )}
+                      <span className="facet-count"> ({item.hits})</span></li> );
+                })}</ul>
             </div>
-          </div>
-        );
+          </div> ); 
       })}
     </div>
   );

@@ -24,19 +24,9 @@ class FacetBadges extends Component {
               return <div></div>;
             }
             return (
-              <div
-                className="btn-group mr-2"
-                role="group"
-                aria-label="Facet badge"
-                key={index}>
-                <button className="btn btn-default disabled">
-                  {facet.facetLabel}: {facet.facetValue}
-                </button>
-                <button
-                  className="btn btn-default"
-                  onClick={event => this.handleClick(index, event)}>
-                  &times;
-                </button>
+              <div className="btn-group mr-2" role="group" aria-label="Facet badge" key={index}>
+                <button className="btn btn-default disabled">{facet.facetLabel}: {facet.facetValue}</button>
+                <button className="btn btn-default" onClick={event => this.handleClick(index, event)}>&times;</button>
               </div>
             );
           })}
