@@ -1,5 +1,5 @@
 import React from 'react';
-import './Collection.scss';
+import '../Collection.scss';
 import PropTypes from 'prop-types';
 
 const CollectionCard = ({ attributes, showUnit }) => {

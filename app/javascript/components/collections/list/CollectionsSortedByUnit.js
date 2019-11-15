@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import CollectionCard from './CollectionCard';
-import './Collection.scss';
+import '../Collection.scss';
 import ButtonCollectionListShowAll from './ButtonCollectionListShowAll';
 import PropTypes from 'prop-types';
 

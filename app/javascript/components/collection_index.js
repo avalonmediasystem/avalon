@@ -3,7 +3,7 @@ import { render } from 'react-dom';
 import CollectionList from './CollectionList';
 
 const props = {
-  baseUrl: "https://spruce.dlib.indiana.edu/collections.json"
+  baseUrl: 'https://spruce.dlib.indiana.edu/collections.json'
   // filter: 'Good Morning Dave'
 };
 
