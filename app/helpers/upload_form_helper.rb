@@ -14,7 +14,7 @@
 
 module UploadFormHelper
   def direct_upload?
-    Settings.encoding.engine_adapter.to_sym == :elastic_transcoder
+    Settings.encoding.engine_adapter.to_sym == :elastic_transcoder || Settings.minio.present?
   end
 
   def upload_form_classes
@@ -29,7 +29,7 @@ module UploadFormHelper
       direct_post = bucket.presigned_post(key: "uploads/#{SecureRandom.uuid}/${filename}", success_action_status: '201')
       {
         'form-data' => (direct_post.fields),
-        'url' => direct_post.url,
+        'url' => direct_post.url.sub(Settings.minio.endpoint, Settings.minio.public_host),
         'host' => URI.parse(direct_post.url).host
       }
     else
