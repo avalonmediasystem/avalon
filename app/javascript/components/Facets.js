@@ -1,100 +1,130 @@
-import React, { Component } from 'react';
+import React from 'react';
+import PropTypes from 'prop-types';
+import { makeStyles } from '@material-ui/core/styles';
+
 import './collections/Collection.scss';
 
-class Facets extends Component {
-  constructor(props) {
-    super(props);
-  }
-
-  handleClick = (facetField, facetLabel, item, event) => {
+function Facets(props) {
+  const handleClick = (facetField, facetLabel, item, event) => {
     event.preventDefault();
-    let newAppliedFacets = this.props.search.state.appliedFacets.concat([
+    let newAppliedFacets = props.search.state.appliedFacets.concat([
       { facetField: facetField, facetLabel: facetLabel, facetValue: item.value }
     ]);
 
-    this.props.search.setState({
+    props.search.setState({
       appliedFacets: newAppliedFacets,
       currentPage: 1
     });
   };
 
-  isFacetApplied = (facet, item) => {
-    let index = this.props.search.state.appliedFacets.findIndex(
-      appliedFacet => {
-        return (
-          appliedFacet.facetField === facet.name &&
-          appliedFacet.facetValue === item.value
-        );
-      }
-    );
+  const isFacetApplied = (facet, item) => {
+    let index = props.search.state.appliedFacets.findIndex(appliedFacet => {
+      return (
+        appliedFacet.facetField === facet.name &&
+        appliedFacet.facetValue === item.value
+      );
+    });
     return index != -1;
   };
 
-  render() {
-    if (this.props.facets != {}) {
-      return (
-        <div className="inline">
-          <button
-            href="#search-within-facets"
-            data-toggle="collapse"
-            role="button"
-            aria-expanded="false"
-            aria-controls="object_tree"
-            className="btn btn-default mb-3 search-within-facets-btn"
-          >
-            Filters
-          </button>
-          <div
-            id="search-within-facets"
-            className="search-within-facets collapse"
-          >
-            {this.props.facets.map((facet, index) => {
-              if (facet.items.length === 0) {
-                return <div></div>;
-              }
-              return (
-                <div className="search-within-facet">
-                  <h5 className="page-header upper">{facet.label}</h5>
-                  <div className="">
-                    <ul className="facet-values list-unstyled">
-                      {facet.items.map((item, index) => {
-                        return (
-                          <li>
-                            {this.isFacetApplied(facet, item) ? (
-                              <span className="facet-label">{item.label}</span>
-                            ) : (
-                              <a
-                                href=""
-                                onClick={event =>
-                                  this.handleClick(
-                                    facet.name,
-                                    facet.label,
-                                    item,
-                                    event
-                                  )
-                                }
-                              >
-                                <span className="facet-label">
-                                  {item.label}
-                                </span>
-                              </a>
-                            )}
-                            <span className="facet-count"> ({item.hits})</span>
-                          </li>
-                        );
-                      })}
-                    </ul>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      );
-    } else {
-      return <div></div>;
-    }
-  }
+  return props.facets != {} ? (
+    <div className="inline">
+      <button
+        href="#search-within-facets"
+        data-toggle="collapse"
+        role="button"
+        aria-expanded="false"
+        aria-controls="object_tree"
+        className="btn btn-primary mb-3 search-within-facets-btn">
+        Toggle Filters
+      </button>
+      <div id="search-within-facets" className="search-within-facets collapse">
+        <FiltersPanel
+          facets={props.facets}
+          isFacetApplied={isFacetApplied}
+          handleClick={handleClick}></FiltersPanel>
+      </div>
+    </div>
+  ) : (
+    <div></div>
+  );
 }
 
 export default Facets;
+
+const useStyles = makeStyles(theme => ({
+  root: {
+    width: '100%'
+  },
+  panelFlex: {
+    [theme.breakpoints.down('sm')]: {
+      display: 'block'
+    },
+    [theme.breakpoints.up('md')]: {
+      display: 'flex',
+      flexWrap: 'wrap'
+    },
+    [theme.breakpoints.up('lg')]: {
+      display: 'flex'
+    }
+  },
+  facetItem: {
+    marginRight: '30px',
+    flex: '0 1 30%'
+  },
+  facetValue: {
+    [theme.breakpoints.down('sm')]: {
+      paddingLeft: '15px'
+    }
+  }
+}));
+
+function FiltersPanel(props) {
+  const classes = useStyles();
+  const { facets, isFacetApplied, handleClick } = props;
+
+  return (
+    <div className={classes.panelFlex}>
+      {facets.map((facet, index) => {
+        if (facet.items.length === 0) {
+          return <div></div>;
+        }
+        return (
+          <div className={classes.facetItem} key={index}>
+            <h5 className="page-header upper">{facet.label}</h5>
+            <div className="">
+              <ul className="facet-values list-unstyled">
+                {facet.items.map((item, index) => {
+                  return (
+                    <li key={index}>
+                      {isFacetApplied(facet, item) ? (
+                        <span className="facet-label">{item.label}</span>
+                      ) : (
+                        <a
+                          href=""
+                          onClick={event =>
+                            handleClick(facet.name, facet.label, item, event)
+                          }
+                          className={classes.facetValue}>
+                          <span className="facet-label">{item.label}</span>
+                        </a>
+                      )}
+                      <span className="facet-count"> ({item.hits})</span>
+                    </li>
+                  );
+                })}
+              </ul>
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+FiltersPanel.propTypes = {
+  classes: PropTypes.object,
+  facets: PropTypes.array.isRequired,
+  isFacetApplied: PropTypes.func.isRequired,
+  handleClick: PropTypes.func.isRequired
+};

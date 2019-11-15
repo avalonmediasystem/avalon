@@ -75,11 +75,11 @@ class SearchResults extends Component {
                     {doc['title_tesi'] || doc['id']}
                   </a>
                 </h4>
-                <p id={'card-body-' + index} className="card-text">
+                <div id={'card-body-' + index} className="card-text">
                   {this.displayField(doc, 'Date', 'date_ssi')}
                   {this.displayField(doc, 'Main Contributors', 'creator_ssim')}
                   {this.displayField(doc, 'Summary', 'summary_ssi')}
-                </p>
+                </div>
               </div>
             </li>
           );
