@@ -73,4 +73,29 @@ $(document).ready(function() {
   }, function() {
     $('#manageDropdown').removeClass('open');
   });
+
+  /* Toggle CSS classes for global search form */
+  const $searchWrapper = $('.global-search-wrapper');
+  const $searchSubmit = $('.global-search-submit');
+
+  // Remove CSS classes at initial page load for mobile screens
+  if($(window).width() < 768) {
+    $searchWrapper.removeClass('input-group-lg');
+    $searchSubmit.removeClass('btn-primary');
+  }
+
+  // Toggle CSS classes when window resizes
+  $(window).resize(function() {
+    if($(window).width() < 768) {
+      if($searchWrapper.hasClass('input-group-lg')) {
+        $searchWrapper.removeClass('input-group-lg');
+      }
+      if($searchSubmit.hasClass('btn-primary')) {
+        $searchSubmit.removeClass('btn-primary');
+      }
+    } else {
+      $searchWrapper.addClass('input-group-lg');
+      $searchSubmit.addClass('btn-primary');
+    }
+  })
 });
