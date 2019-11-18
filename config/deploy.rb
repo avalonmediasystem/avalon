@@ -15,7 +15,3 @@ set :keep_assets, 2
 set :migration_role, :app
 set :migration_servers, -> { primary(fetch(:migration_role)) }
 set :passenger_restart_with_touch, true
-set :resque_environment_task, true
-
-after "deploy:restart", "resque:restart"
-after "deploy:restart", "resque:scheduler:restart"

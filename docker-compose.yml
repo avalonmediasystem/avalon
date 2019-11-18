@@ -123,6 +123,7 @@ services:
     volumes:
       - .:/home/app/avalon
       - npms:/home/app/avalon/node_modules
+      - ../active_encode/lib/active_encode/engine_adapters/ffmpeg_adapter.rb:/ffmpeg_adapter.rb
     ports:
       - '3000:3000'
     networks:
@@ -152,14 +153,7 @@ services:
 
   worker:
     <<: *avalon
-    command: bash -c "QUEUE=* bundle exec rails resque:work"
-    ports: []
-    tty: true
-    stdin_open: true
-
-  scheduler:
-    <<: *avalon
-    command: bundle exec rake resque:scheduler
+    command: bash -c "bundle install && bundle exec sidekiq"
     ports: []
 
   minio:
