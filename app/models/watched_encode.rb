@@ -27,19 +27,17 @@ class WatchedEncode < ActiveEncode::Base
   end
 
   after_completed do |encode|
-    # byebug
     # Upload to minio if using it with ffmpeg
     if Settings.minio && Settings.encoding.engine_adapter.to_sym == :ffmpeg
       bucket = Aws::S3::Bucket.new(name: Settings.encoding.derivative_bucket)
       encode.output.collect! do |output|
         file = FileLocator.new output.url
-        key = file.location.sub /\/(.*?)\//, ""
+        key = file.location.sub(/\/(.*?)\//, "")
         obj = bucket.object key
 
         obj.upload_file file.location
         File.delete file.location
 
-        # output.url = "s3://#{Settings.encoding.derivative_bucket}/#{key}"
         output.url = obj.public_url
         output
       end
