@@ -212,5 +212,5 @@ Rails.application.routes.draw do
   get '/about/health(.:format)', to: redirect('/')
 
   require 'sidekiq/web'
-  mount Sidekiq::Web => '/sidekiq'
+  mount Sidekiq::Web, at: '/jobs'
 end

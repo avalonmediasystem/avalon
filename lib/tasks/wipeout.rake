@@ -21,8 +21,8 @@ def wipeout_solr(solr)
   solr.commit
 end
 
-def wipeout_redis(redis)
-  redis { |conn| conn.flushdb }
+def wipeout_redis
+  Sidekiq.redis(&:flushdb)
 end
 
 def wipeout_db
@@ -44,7 +44,7 @@ namespace :avalon do
 
     desc "Reset redis to empty state"
     task redis: :environment do
-      wipeout_redis(Sidekiq.redis)
+      wipeout_redis
     end
 
     desc "Reset db to empty state"

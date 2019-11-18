@@ -100,10 +100,10 @@ gem 'with_locking'
 
 group :development do
   gem 'capistrano', '~>3.6'
-  gem 'capistrano-rails', require: false
-  gem 'capistrano-sidekiq', require: false
-  gem 'capistrano-rvm', require: false
   gem 'capistrano-passenger', require: false
+  gem 'capistrano-rails', require: false
+  gem 'capistrano-rvm', require: false
+  gem 'capistrano-sidekiq', require: false
   gem 'capistrano-yarn', require: false
 
   # Use Bixby instead of rubocop directly

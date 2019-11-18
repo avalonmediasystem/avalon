@@ -15,7 +15,12 @@ describe WatchedEncode do
     end
   end
   let(:completed_encode) do
-    running_encode.clone.tap { |e| e.state = :completed }
+    running_encode.clone.tap do |e| 
+      e.state = :completed
+      output = double(url: 'file://' + Rails.root.join('spec', 'fixtures', 'videoshort.mp4').to_s)
+      allow(output).to receive(:url=)
+      e.output = [output]
+    end
   end
 
   before do
@@ -45,12 +50,28 @@ describe WatchedEncode do
       # Return a completed encode so the polling job doesn't run forever.
       allow(described_class.engine_adapter).to receive(:create).and_return(running_encode)
       allow(described_class.engine_adapter).to receive(:find).and_return(completed_encode)
+      # allow(master_file).to receive(:update_progress_on_success!)
     end
 
     it 'stores the encode id on the master file' do
-      allow(master_file).to receive(:update_progress_on_success!)
       encode.create!
       expect(master_file).to have_received(:update_progress_on_success!)
+    end
+
+    context 'using Minio and ffmpeg adapter' do
+      before do
+        Settings.minio = double("minio", endpoint: "http://minio:9000", public_host: "http://domain:9000")
+        allow(Settings).to receive(:encoding).and_return(double(engine_adapter: "ffmpeg", derivative_bucket: "derivs"))
+        allow(File).to receive(:delete)
+      end
+
+      it 'uploads to Minio' do
+        encode.create!
+      end
+
+      after do
+        Settings.minio = nil
+      end
     end
   end
 end
