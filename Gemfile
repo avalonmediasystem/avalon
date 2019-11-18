@@ -88,8 +88,7 @@ gem 'mediaelement-track-scrubber', git: 'https://github.com/avalonmediasystem/me
 # Jobs
 gem 'activejob-traffic_control'
 gem 'redis-rails'
-gem 'resque', '~> 2.0'
-gem 'resque-scheduler', '~> 4.4'
+gem 'sidekiq'
 
 # Coding Patterns
 gem 'config'
@@ -102,7 +101,7 @@ gem 'with_locking'
 group :development do
   gem 'capistrano', '~>3.6'
   gem 'capistrano-rails', require: false
-  gem 'capistrano-resque', require: false
+  gem 'capistrano-sidekiq', require: false
   gem 'capistrano-rvm', require: false
   gem 'capistrano-passenger', require: false
   gem 'capistrano-yarn', require: false
