@@ -36,7 +36,7 @@ class Ability
   end
 
   def create_permissions(user=nil, session=nil)
-    if full_login?
+    if full_login? || is_api_request?
       if is_administrator?
         can :manage, :all
       end
@@ -59,7 +59,7 @@ class Ability
 
   def custom_permissions(user=nil, session=nil)
 
-    unless full_login? and is_administrator?
+    unless (full_login? || is_api_request?) and is_administrator?
       cannot :read, MediaObject do |media_object|
         !(test_read(media_object.id) && media_object.published?) && !test_edit(media_object.id)
       end
@@ -72,9 +72,9 @@ class Ability
         can? :read, derivative.masterfile.media_object
       end
 
-      cannot :read, Admin::Collection unless full_login?
+      cannot :read, Admin::Collection unless (full_login? || is_api_request?)
 
-      if full_login?
+      if full_login? || is_api_request?
         can :read, Admin::Collection do |collection|
           is_member_of?(collection)
         end
@@ -132,25 +132,25 @@ class Ability
         can :share, MediaObject
       end
 
-      if is_api_request?
-        can :manage, MediaObject
-        can :manage, Admin::Collection
-        can :manage, Avalon::ControlledVocabulary
-      end
+      # if is_api_request?
+      #   can :manage, MediaObject
+      #   can :manage, Admin::Collection
+      #   can :manage, Avalon::ControlledVocabulary
+      # end
 
       cannot :update, MediaObject do |media_object|
-        (not full_login?) || (!is_member_of?(media_object.collection)) ||
+        (not (full_login? || is_api_request?)) || (!is_member_of?(media_object.collection)) ||
           ( media_object.published? && !@user.in?(media_object.collection.managers) )
       end
 
       cannot :destroy, MediaObject do |media_object|
         # non-managers can only destroy media_object if it's unpublished
-        (not full_login?) || (!is_member_of?(media_object.collection)) ||
+        (not (full_login? || is_api_request?)) || (!is_member_of?(media_object.collection)) ||
           ( media_object.published? && !@user.in?(media_object.collection.managers) )
       end
 
       cannot :destroy, Admin::Collection do |collection, other_user_collections=[]|
-        (not full_login?) || !@user.in?(collection.managers)
+        (not (full_login? || is_api_request?)) || !@user.in?(collection.managers)
       end
 
       can :intercom_push, MediaObject do |media_object|

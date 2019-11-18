@@ -19,9 +19,7 @@ describe Admin::CollectionsController, type: :controller do
 
   describe 'security' do
     let(:collection) { FactoryBot.create(:collection) }
-    before do
-      ApiToken.create token: 'secret_token', username: 'archivist1@example.com', email: 'archivist1@example.com'
-    end
+
     describe 'ingest api' do
       it "all routes should return 401 when no token is present" do
         expect(get :index, params: { format: 'json' }).to have_http_status(401)
@@ -146,8 +144,11 @@ describe Admin::CollectionsController, type: :controller do
   describe "#index" do
     let!(:collection) { FactoryBot.create(:collection) }
     subject(:json) { JSON.parse(response.body) }
-    before do
-      ApiToken.create token: 'secret_token', username: 'archivist1@example.com', email: 'archivist1@example.com'
+
+    let(:administrator) { FactoryBot.create(:administrator) }
+
+    before(:each) do
+      ApiToken.create token: 'secret_token', username: administrator.username, email: administrator.email
       request.headers['Avalon-Api-Key'] = 'secret_token'
     end
     it "should return list of collections" do
@@ -176,8 +177,10 @@ describe Admin::CollectionsController, type: :controller do
 
   describe 'pagination' do
     subject(:json) { JSON.parse(response.body) }
-    before do
-      ApiToken.create token: 'secret_token', username: 'archivist1@example.com', email: 'archivist1@example.com'
+    let(:administrator) { FactoryBot.create(:administrator) }
+
+    before(:each) do
+      ApiToken.create token: 'secret_token', username: administrator.username, email: administrator.email
       request.headers['Avalon-Api-Key'] = 'secret_token'
     end
     it 'should paginate index' do
@@ -237,10 +240,13 @@ describe Admin::CollectionsController, type: :controller do
 
   describe "#items" do
     let!(:collection) { FactoryBot.create(:collection, items: 2) }
+    let(:administrator) { FactoryBot.create(:administrator) }
 
-    it "should return json for specific collection's media objects" do
-      ApiToken.create token: 'secret_token', username: 'archivist1@example.com', email: 'archivist1@example.com'
+    before(:each) do
+      ApiToken.create token: 'secret_token', username: administrator.username, email: administrator.email
       request.headers['Avalon-Api-Key'] = 'secret_token'
+    end
+    it "should return json for specific collection's media objects" do
       get 'items', params: { id: collection.id, format: 'json' }
       expect(JSON.parse(response.body)).to include(collection.media_objects[0].id,collection.media_objects[1].id)
       #TODO add check that mediaobject is serialized to json properly
@@ -250,8 +256,10 @@ describe Admin::CollectionsController, type: :controller do
 
   describe "#create" do
     let!(:collection) { FactoryBot.build(:collection) }
-    before do
-      ApiToken.create token: 'secret_token', username: 'archivist1@example.com', email: 'archivist1@example.com'
+    let(:administrator) { FactoryBot.create(:administrator) }
+
+    before(:each) do
+      ApiToken.create token: 'secret_token', username: administrator.username, email: administrator.email
       request.headers['Avalon-Api-Key'] = 'secret_token'
     end
 
@@ -273,7 +281,7 @@ describe Admin::CollectionsController, type: :controller do
       post 'create', params: { format:'json', admin_collection: { name: collection.name, description: collection.description, unit: collection.unit } }
       expect(JSON.parse(response.body)['id'].class).to eq String
       collection = Admin::Collection.find(JSON.parse(response.body)['id'])
-      expect(collection.managers).to eq(['archivist1@example.com'])
+      expect(collection.managers).to eq([administrator.username])
     end
     it "should return 422 if collection creation failed" do
       post 'create', params: { format:'json', admin_collection: { name: collection.name, description: collection.description } }
