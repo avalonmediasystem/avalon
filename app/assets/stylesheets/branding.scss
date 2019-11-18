@@ -18,28 +18,16 @@
  * Custom branding for Avalon to override Bootstrap, Hydra, and Blacklight
  * defaults. This should be included at the top of the application.scss file
  * so it is preferred over the defaults. */
+
+/**
+  Custom variables (Non-bootstrap)
+*/
 @font-face {
   font-family: 'MuseoSlab';
   src: url('fonts/Museo_Slab_500-webfont.woff') format('woff');
 }
 $sansFontFamily: Arial, Helvetica, sans-serif;
 $museoSlab: 'MuseoSlab';
-
-/**
- * If you want to override the default color scheme do so here
- *
- * Bootstrap provides settings for
- * blue
- * red
- * green
- * yellow
- * orange
- * pink
- * purple
- * white
- * black
- * gray
- */
 
 // Primary colors
 $primary: #80a590;
@@ -51,7 +39,8 @@ $yellow: #ffcf08;
 $orange: #fbb040;
 $white: rgb(255, 255, 255);
 
-// Generated palate colors from http://colormind.io/
+// Generated palate colors from http://colormind.io/ for Avalon style guide
+// Add new HEX values below to match your organization's flavor of info/success/warning/danger
 $info: #fbb040;
 $success: #429453;
 $warning: #bf841b;
@@ -64,7 +53,13 @@ $lightgray: #f2f2f2;
 $red: #d9534f;
 $blue: #2a4d59;
 
-/* Bootstrap branding colors */
+/**
+  * Bootstrap variable overrides
+  *
+  * A full list of supported overrides can be found at:
+  * https://github.com/twbs/bootstrap-sass/blob/master/assets/stylesheets/bootstrap/_variables.scss */
+
+/* Branding colors */
 $brand-primary: $primaryDark;
 $brand-success: $success;
 $brand-info: $info;
@@ -77,10 +72,9 @@ $font-family-serif: $museoSlab;
 
 /* Components */
 $padding-base-vertical: 4px;
-//$padding-base-horizontal: 1.5rem;
 
 /* Headings */
-$headings-font-family: $museoSlab;
+// $headings-font-family: $museoSlab;
 
 /* Links */
 $link-color: $primaryDark;
@@ -135,7 +129,6 @@ $grid-gutter-width: 16px;
 
 /* Buttons */
 $btn-border-radius-base: 2px;
-
 $btn-default-color: $dark;
 $btn-default-bg: $white;
 $btn-default-border: $gray;
@@ -150,6 +143,7 @@ $btn-info-bg: $info;
 $btn-info-border: $info;
 $btn-danger-color: $white;
 
+/* Pagination */
 $pagination-color: $link-color;
 $pagination-bg: $white;
 $pagination-border: $gray;
