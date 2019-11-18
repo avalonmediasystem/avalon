@@ -252,10 +252,11 @@ describe CatalogController do
     describe "atom feed" do
       let!(:private_media_object) { FactoryBot.create(:media_object, visibility: 'private') }
       let!(:public_media_object) { FactoryBot.create(:published_media_object, visibility: 'public') }
+      let(:administrator) { FactoryBot.create(:administrator) }
 
       context "with an api key" do
         before do
-          ApiToken.create token: 'secret_token', username: 'archivist1@example.com', email: 'archivist1@example.com'
+          ApiToken.create token: 'secret_token', username: administrator.username, email: administrator.email
         end
         it "should show results for all items" do
           request.headers['Avalon-Api-Key'] = 'secret_token'
