@@ -15,9 +15,7 @@
 */
 
 @import 'branding';
-@import 'bootstrap/variables';
 @import 'avalon/mixins';
-
 @import 'avalon/accordions';
 @import 'avalon/buttons';
 @import 'avalon/facets';
@@ -39,6 +37,11 @@ body {
 
 main {
   padding-bottom: 20px;
+}
+
+h1,
+h2 {
+  font-family: $museoSlab;
 }
 
 tr.active-false td {
@@ -99,13 +102,16 @@ input[type='text']#admin_group {
 /* Headlines / page titles */
 .page-title {
   font-size: 32px;
+  font-family: $museoSlab;
 }
 .headline {
   color: $primaryDark;
   font-size: 29.3px;
+  font-family: $museoSlab;
 }
 .sub-headline {
   color: $primary;
+  font-family: $museoSlab;
 }
 
 .mobile-hidden {
