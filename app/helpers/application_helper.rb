@@ -98,10 +98,10 @@ module ApplicationHelper
     return if sanitized_values.empty? and default.nil?
     sanitized_values = Array(default) if sanitized_values.empty?
     label = label.pluralize(sanitized_values.size)
-    result = content_tag(:dt, label) +
-    content_tag(:dd) {
-      safe_join(sanitized_values,'; ')
-    }
+    contents = content_tag(:dd) do
+      content_tag(:pre) { safe_join(sanitized_values, '; ') }
+    end
+    content_tag(:dt, label) + contents
   end
 
   def search_result_label item

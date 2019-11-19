@@ -80,7 +80,7 @@ module MediaObjectsHelper
           notes = note_type == 'table of contents'? media_object.table_of_contents : gather_notes_of_type(media_object, note_type)
           notes.each_with_index do |note, i|
             note_string += "<p class='item_note_header'>#{note_types[note_type]}</p>" if i==0 and note_type!='general'
-            note_string += simple_format(note, class:'item_note')
+            note_string += "<pre>#{note}</pre>"
           end
         end
         note_string
