@@ -16,6 +16,8 @@ require 'ffmpeg_encode'
 require 'elastic_transcoder_encode'
 
 class CreateEncodeJob < ActiveJob::Base
+  queue_as :create_encode
+
   def perform(input, master_file_id)
     return unless MasterFile.exists? master_file_id
     master_file = MasterFile.find(master_file_id)
