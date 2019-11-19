@@ -1,41 +1,25 @@
-import React, { Component } from 'react';
+import React from 'react';
 
-class FacetBadges extends Component {
-  constructor(props) {
-    super(props);
-  }
-
-  handleClick = (index, event) => {
+function FacetBadges(props) {
+  const handleClick = (index, event) => {
     event.preventDefault();
-    console.log(index);
-    let newAppliedFacets = this.props.facets.slice();
-    console.log(newAppliedFacets);
+    let newAppliedFacets = props.facets.slice();
     newAppliedFacets.splice(index, 1);
-    console.log(newAppliedFacets);
-    this.props.search.setState({ appliedFacets: newAppliedFacets });
+    props.changeFacets(newAppliedFacets);
   };
 
-  render() {
-    if (this.props.facets != []) {
-      return (
-        <div className="mb-3 facet-badges">
-          {this.props.facets.map((facet, index) => {
-            if (facet.length === 0) {
-              return <div></div>;
-            }
-            return (
-              <div className="btn-group mr-2" role="group" aria-label="Facet badge" key={index}>
-                <button className="btn btn-default disabled">{facet.facetLabel}: {facet.facetValue}</button>
-                <button className="btn btn-default" onClick={event => this.handleClick(index, event)}>&times;</button>
-              </div>
-            );
-          })}
-        </div>
-      );
-    } else {
-      return <div></div>;
-    }
-  }
+  return (
+    <div className="mb-3 facet-badges">
+      { props.facets.map((facet, index) => {
+        return (
+          <div className="btn-group mr-2" role="group" aria-label="Facet badge" key={facet.facetLabel}>
+            <button className="btn btn-default disabled">{facet.facetLabel}: {facet.facetValue}</button>
+            <button className="btn btn-default" onClick={event => handleClick(index, event)}>&times;</button>
+          </div>
+        );
+      }) }
+    </div>
+  );
 }
 
 export default FacetBadges;

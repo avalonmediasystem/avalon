@@ -12,7 +12,7 @@ class Search extends Component {
       currentPage: 1,
       appliedFacets: [],
       perPage: 10,
-      filterURL: props.baseUrl + '?f[collection_ssim][]=' + props.collection
+      filterURL: `${props.baseUrl}?f[collection_ssim][]=${props.collection}`
     };
   }
 
@@ -34,29 +34,18 @@ class Search extends Component {
     }
   }
 
-  retrieveResults() {
+  retrieveResults = () => {
     let component = this;
+    let { perPage, query, currentPage, appliedFacets } = this.state;
     let facetFilters = '';
-    this.state.appliedFacets.forEach(facet => {
-      facetFilters =
-        facetFilters + '&f[' + facet.facetField + '][]=' + facet.facetValue;
+    appliedFacets.forEach(facet => {
+      facetFilters = `${facetFilters}&f[${facet.facetField}][]=${facet.facetValue}`;
     });
     if (this.props.collection) {
-      facetFilters =
-        facetFilters + '&f[collection_ssim][]=' + this.props.collection;
+      facetFilters = `${facetFilters}&f[collection_ssim][]=${this.props.collection}`;
     }
-    let url =
-      this.props.baseUrl +
-      '/catalog.json?per_page=' +
-      this.state.perPage +
-      '&q=' +
-      this.state.query +
-      '&page=' +
-      this.state.currentPage +
-      facetFilters;
-    console.log('Performing search: ' + url);
+    let url = `${this.props.baseUrl}/catalog.json?per_page=${perPage}&q=${query}&page=${currentPage}${facetFilters}`;
     Axios({ url: url }).then(function(response) {
-      console.log(response);
       component.setState({ searchResult: response.data.response });
     });
   }
@@ -81,12 +70,16 @@ class Search extends Component {
     return availableFacets;
   }
 
-  changeFacets = (newFacets, currentPage) => {
+  changeFacets = (newFacets, currentPage = 1) => {
     this.setState({ appliedFacets: newFacets, currentPage });
   };
 
+  changePage = (currentPage) => {
+    this.setState({ currentPage })
+  }
+
   render() {
-    const { query, searchResult, filterURL } = this.state;
+    const { query, searchResult, filterURL, appliedFacets } = this.state;
     return (
       <div className="search-wrapper">
         <div className="row">
@@ -94,17 +87,15 @@ class Search extends Component {
             <label htmlFor="q" className="sr-only">search for</label>
             <input value={query} onChange={this.handleQueryChange} name="q" className="form-control input-lg" placeholder="Search within collection..." autoFocus="autofocus"></input>
           </form>
-          <div className="col-sm-6 text-right">
-            <a href={filterURL} className="btn btn-primary pull-right">Filter this collection</a>
+          <div className="col-sm-6 text-right filter-btn">
+            <a href={filterURL} className="btn btn-primary">Filter this collection</a>
           </div>
         </div>
         <div className="row mb-3">
-          <Pagination pages={searchResult.pages} search={this}></Pagination>
+          <Pagination pages={searchResult.pages} changePage={this.changePage}></Pagination>
         </div>
         <div className="row">
-          {/* <section className="col-md-9"> */}
           <SearchResults documents={searchResult.docs} baseUrl={this.props.baseUrl}></SearchResults>
-          {/* </section> */}
         </div>
       </div>
     );
