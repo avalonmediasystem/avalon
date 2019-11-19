@@ -274,10 +274,12 @@ describe MediaObjectsController, type: :controller do
 
     describe "#create" do
       context 'using api' do
-        before do
-           ApiToken.create token: 'secret_token', username: 'archivist1@example.com', email: 'archivist1@example.com'
-           request.headers['Avalon-Api-Key'] = 'secret_token'
-           allow_any_instance_of(MasterFile).to receive(:get_ffmpeg_frame_data).and_return('some data')
+        let(:administrator) { FactoryBot.create(:administrator) }
+
+        before(:each) do
+          ApiToken.create token: 'secret_token', username: administrator.username, email: administrator.email
+          request.headers['Avalon-Api-Key'] = 'secret_token'
+          allow_any_instance_of(MasterFile).to receive(:get_ffmpeg_frame_data).and_return('some data')
         end
         it "should respond with 422 if collection not found" do
           post 'create', params: { format: 'json', collection_id: "doesnt_exist" }
@@ -436,8 +438,10 @@ describe MediaObjectsController, type: :controller do
     end
     describe "#update" do
       context 'using api' do
-        before do
-          ApiToken.create token: 'secret_token', username: 'archivist1@example.com', email: 'archivist1@example.com'
+        let(:administrator) { FactoryBot.create(:administrator) }
+
+        before(:each) do
+          ApiToken.create token: 'secret_token', username: administrator.username, email: administrator.email
           request.headers['Avalon-Api-Key'] = 'secret_token'
           allow_any_instance_of(MasterFile).to receive(:get_ffmpeg_frame_data).and_return('some data')
         end
@@ -623,12 +627,14 @@ describe MediaObjectsController, type: :controller do
   describe "#index" do
     let!(:media_object) { FactoryBot.create(:published_media_object, visibility: 'public') }
     subject(:json) { JSON.parse(response.body) }
-    before do
-      ApiToken.create token: 'secret_token', username: 'archivist1@example.com', email: 'archivist1@example.com'
+    let(:administrator) { FactoryBot.create(:administrator) }
+
+    before(:each) do
+      ApiToken.create token: 'secret_token', username: administrator.username, email: administrator.email
+      request.headers['Avalon-Api-Key'] = 'secret_token'
     end
 
     it "should return list of media_objects" do
-      request.headers['Avalon-Api-Key'] = 'secret_token'
       get 'index', format:'json'
       expect(json.count).to eq(1)
       expect(json.first['id']).to eq(media_object.id)
@@ -644,10 +650,11 @@ describe MediaObjectsController, type: :controller do
 
   describe 'pagination' do
       let(:collection) { FactoryBot.create(:collection) }
+      let(:administrator) { FactoryBot.create(:administrator) }
       subject(:json) { JSON.parse(response.body) }
       before do
         5.times { FactoryBot.create(:published_media_object, visibility: 'public', collection: collection) }
-        ApiToken.create token: 'secret_token', username: 'archivist1@example.com', email: 'archivist1@example.com'
+        ApiToken.create token: 'secret_token', username: administrator.username, email: administrator.email
         request.headers['Avalon-Api-Key'] = 'secret_token'
         get 'index', params: { format:'json', per_page: '2' }
       end
@@ -873,9 +880,10 @@ describe MediaObjectsController, type: :controller do
     context "with json format" do
       subject(:json) { JSON.parse(response.body) }
       let!(:media_object) { FactoryBot.create(:media_object) }
+      let(:administrator) { FactoryBot.create(:administrator) }
 
       before do
-        ApiToken.create token: 'secret_token', username: 'archivist1@example.com', email: 'archivist1@example.com'
+        ApiToken.create token: 'secret_token', username: administrator.username, email: administrator.email
         request.headers['Avalon-Api-Key'] = 'secret_token'
       end
 
