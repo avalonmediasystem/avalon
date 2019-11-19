@@ -7,7 +7,7 @@ const SearchResults = props => {
     <ul className="search-within-search-results">
       {props.documents.map((doc, index) => (
         <SearchResultsCard
-          key={index}
+          key={doc['id']}
           doc={doc}
           index={index}
           baseUrl={props.baseUrl}

@@ -2,16 +2,22 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 const CardMetaData = ({ doc, fieldLabel, fieldName }) => {
+  let metaData = null;
+  if(Array.isArray(doc[fieldName]) && doc[fieldName].length > 1) {
+    metaData = doc[fieldName].join(', ')
+  } else if (typeof (doc[fieldName]) == 'string') {
+    const summary = doc[fieldName].substring(0, 30);
+    metaData = doc[fieldName].length >= 30 ? `${summary}...` : doc[fieldName];
+  } else {
+    metaData = doc[fieldName];
+  }
+  
   if (doc[fieldName]) {
     return (
-      <>
+      <React.Fragment>
         <dt>{fieldLabel}</dt>
-        {Array.isArray(doc[fieldName]) && doc[fieldName].length > 1 ? (
-          <dd>{doc[fieldName].join(', ')}</dd>
-        ) : (
-          <dd>{doc[fieldName]}</dd>
-        )}
-      </>
+        <dd>{metaData}</dd>
+      </React.Fragment>
     );
   }
   return null;
@@ -23,22 +29,16 @@ CardMetaData.propTypes = {
   fieldName: PropTypes.string
 };
 
-const millisecondsToFormattedTime = ms => {
-  let sec_num = ms / 1000;
+const millisecondsToFormattedTime = sec_num => {
+  let tostring = (num) => { return (`0${num}`).slice(-2) };
   let hours = Math.floor(sec_num / 3600);
   let minutes = Math.floor((sec_num % 3600) / 60);
   let seconds = sec_num - minutes * 60 - hours * 3600;
-
-  let hourStr = hours < 10 ? `0${hours}` : `${hours}`;
-  let minStr = minutes < 10 ? `0${minutes}` : `${minutes}`;
-  let secStr = seconds.toFixed(0);
-  secStr = seconds < 10 ? `0${secStr}` : `${secStr}`;
-
-  return `${hourStr}:${minStr}:${secStr}`;
+  return `${tostring(hours)}:${tostring(minutes)}:${tostring(seconds.toFixed(0))}`;
 };
 
 const duration = ms => {
-  if (Number(ms) > 0) { return millisecondsToFormattedTime(ms) }
+  if (Number(ms) > 0) { return millisecondsToFormattedTime(ms / 1000) }
 };
 
 const thumbnailSrc = (doc, props) => {

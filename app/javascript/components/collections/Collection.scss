@@ -71,6 +71,17 @@ ul.search-within-search-results {
   }
 }
 
+@media (min-width: 767px) {
+  .search-within-search-result {
+    height: 350px;
+    margin-bottom: 16px;
+    
+    .panel-default {
+      height: inherit;
+    }
+  }
+}
+
 .mt-3 {
   margin-top: 3rem;
 }
@@ -95,6 +106,11 @@ ul.search-within-search-results {
 
   .document-thumbnail {
     padding-right: 0px;
+  }
+
+  .filter-btn {
+    float: left;
+    margin-top: 10px;
   }
 }
 
