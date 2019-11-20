@@ -52,3 +52,10 @@ header div {
     border: 0;
   }
 }
+
+@media screen and (max-width: $screen-sm-max) {
+  .global-search-wrapper {
+    width: inherit;
+    margin: 7px 7px 0 7px;
+  }
+}
