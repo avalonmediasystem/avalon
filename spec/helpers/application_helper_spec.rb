@@ -155,11 +155,11 @@ describe ApplicationHelper do
     end
 
     it "should return a pluralized label and semicolon-separated string for multiple values" do
-      expect(helper.display_metadata("Label", ["Value1", "Value2"])).to eq("<dt>Labels</dt><dd>Value1; Value2</dd>")
+      expect(helper.display_metadata("Label", ["Value1", "Value2"])).to eq("<dt>Labels</dt><dd><pre>Value1; Value2</pre></dd>")
     end
 
     it "should return a default value if provided" do
-      expect(helper.display_metadata("Label", [""], "Default value")).to eq("<dt>Label</dt><dd>Default value</dd>")
+      expect(helper.display_metadata("Label", [""], "Default value")).to eq("<dt>Label</dt><dd><pre>Default value</pre></dd>")
     end
   end
 
