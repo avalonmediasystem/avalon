@@ -1,0 +1,69 @@
+main.homepage-main {
+  padding-bottom: 0;
+}
+
+.homepage-splash-wrapper {
+  margin-top: -20px;
+}
+
+.homepage-splash-top-section {
+  background-image: url('homepage-splash-avalon.jpg');
+  background-size: cover;
+  min-height: 500px;
+  position: relative;
+
+  @media screen and (max-width: $screen-xs-max) {
+    min-height: 350px;
+  }
+}
+
+.homepage-splash-lead-copy {
+  position: absolute;
+  bottom: 0;
+  color: white;
+  width: 100%;
+  background: rgba(42, 84, 89, 0.8);
+  padding: 2.5rem 0;
+  font-family: $museoSlab;
+
+  .lead {
+    margin-bottom: 0;
+  }
+}
+
+.homepage-splash-featured-collection {
+  @media screen and (max-width: $screen-xs-max) {
+    padding-bottom: 2rem;
+  }
+}
+
+.homepage-splash-featured-collection-content {
+  padding: 1rem 2rem;
+}
+
+.homepage-splash-collections {
+  background: $primary;
+  padding: 2rem 0 3rem;
+  color: white;
+}
+
+.homepage-splash-collections-title {
+  margin-bottom: 2rem;
+}
+
+#footer.homepage-footer {
+  color: white;
+  background: $blueGreen;
+
+  a {
+    color: white;
+  }
+
+  .separator {
+    display: none;
+  }
+
+  .footer-logo {
+    display: none;
+  }
+}

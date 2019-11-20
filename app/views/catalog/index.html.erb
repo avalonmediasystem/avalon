@@ -1,0 +1,37 @@
+<div class="homepage-splash-wrapper">
+  <section class="homepage-splash-top-section">
+    <div class="homepage-splash-lead-copy">
+      <div class="container">
+        <p class="lead">The Avalon Media System is an open source system for managing and providing access to large
+          collections of
+          digital audio and video.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="homepage-splash-featured-collection">
+    <div class="row">
+      <div class="col-sm-5">
+        <%= image_tag  "placeholder-featured.jpeg", class: "img-responsive" %>
+      </div>
+      <div class="col-sm-7 homepage-splash-featured-collection-content">
+        <h3>featured collection</h3>
+        <h2>World War II Propaganda</h2>
+        <p>Lorem ipsum dolor sit amet, sit ex soleat tacimates expetenda, nam in blandit comprehensam. Sumo utroque
+          eleifend per te, habemus maluisset sit ei, affert theophrastus ius at. Et mei elaboraret assueverit, in nam
+          tation cetero regione, vis et aperiri sanctus. Eam ne esse eius persequeris, usu et omnes commodo definiebas.
+        </p>
+        <a href="#" class="btn btn-default">View Collection</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="homepage-splash-collections">
+    <div class="container">
+      <h3 class="homepage-splash-collections-title">view all collections</h3>
+    </div>
+    <div class="container-fluid">
+      <%= react_component("CollectionCarousel", { baseUrl: collections_url(format: :json) }) %>
+    </div>
+  </section>
+</div>
