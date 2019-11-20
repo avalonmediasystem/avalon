@@ -767,7 +767,7 @@ class MasterFile < ActiveFedora::Base
   private
 
   def generate_waveform
-    WaveformJob.perform_now(id)
+    WaveformJob.perform_later(id)
   rescue StandardError => e
     logger.warn("WaveformJob failed: #{e.message}")
     logger.warn(e.backtrace.to_s)
