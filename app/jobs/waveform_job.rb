@@ -32,6 +32,8 @@ class WaveformJob < ActiveJob::Base
     master_file.waveform.mime_type = 'application/zlib'
     master_file.waveform.content_will_change!
     master_file.save
+  ensure
+    master_file.run_hook :after_processing if master_file.present?
   end
 
   private
