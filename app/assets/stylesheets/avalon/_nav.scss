@@ -137,3 +137,19 @@
     @extend .btn-danger;
   }
 }
+
+.manage-btn {
+  height: 50px;
+  font-size: 16px;
+}
+
+.manage-btn:hover {
+  background-color: $yellow!important;
+}
+.manage-btn:focus {
+  background-color: $yellow;
+}
+
+.manage-dropwdown-menu {
+  border-radius: inherit;
+}
