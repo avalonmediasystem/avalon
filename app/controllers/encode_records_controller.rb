@@ -75,11 +75,11 @@ class EncodeRecordsController < ApplicationController
         [
           "<span data-encode-id=\"#{encode.id}\" class=\"encode-status\">#{encode_presenter.status}</span>",
           view_context.link_to(encode_presenter.id, Rails.application.routes.url_helpers.encode_record_path(encode)),
-          "<progress value=\"#{encode_presenter.progress}\" max=\"100\" data-encode-id=\"#{encode.id}\" class=\"encode-progress\"></progress>",
+          "<progress value=\"#{format_progress(encode_presenter)}\" max=\"100\" data-encode-id=\"#{encode.id}\" class=\"encode-progress #{encode_presenter.status.downcase}\"></progress>",
           encode_presenter.display_title,
           view_context.link_to(encode_presenter.master_file_id, encode_presenter.master_file_url),
           view_context.link_to(encode_presenter.media_object_id, encode_presenter.media_object_url),
-          encode_presenter.created_at
+          encode_presenter.created_at.strftime('%Y-%m-%d %H:%M:%S')
         ]
       end
     }
@@ -95,7 +95,7 @@ class EncodeRecordsController < ApplicationController
     progress_data = {}
     ::ActiveEncode::EncodeRecord.where(id: params[:ids]).each do |encode|
       presenter = EncodePresenter.new(encode)
-      progress_data[encode.id] = { progress: presenter.progress, status: presenter.status }
+      progress_data[encode.id] = { progress: format_progress(presenter), status: presenter.status }
     end
     respond_to do |format|
       format.json do
@@ -109,5 +109,14 @@ class EncodeRecordsController < ApplicationController
     # Use callbacks to share common setup or constraints between actions.
     def set_encode_record
       @encode_record = ::ActiveEncode::EncodeRecord.find(params[:id])
+    end
+
+    def format_progress(presenter)
+      # Set progress = 100.0 when job failed
+      if presenter.status.casecmp("failed") == 0
+        100.0
+      else
+        presenter.progress
+      end
     end
 end
