@@ -123,7 +123,6 @@ services:
     volumes:
       - .:/home/app/avalon
       - npms:/home/app/avalon/node_modules
-      - ../active_encode/lib/active_encode/engine_adapters/ffmpeg_adapter.rb:/ffmpeg_adapter.rb
     ports:
       - '3000:3000'
     networks:
