@@ -107,31 +107,19 @@ $(document).ready(function() {
 
   /* Handle dropdown list for `Manage` in nav-bar */
   // Manage user access with mouse-point
-  $('#manageDropdown').hover(
+  $('#manage-dropdown').hover(
     function() {
-      $('#manageDropdown').addClass('open');
+      $(this).addClass('open');
       $(this).attr('aria-expanded', 'true');
     },
     function() {
-      $('#manageDropdown').removeClass('open');
+      $(this).removeClass('open');
       $(this).attr('aria-expanded', 'false');
     }
   );
 
-  // Manage user access with keyboard navigation
-  $('#manageDropdown').focus(function() {
-    if ($(this).hasClass('has-submenu') && !$(this).hasClass('open')) {
-      $(this).addClass('open');
-      $(this).attr('aria-expanded', 'true');
-    } else {
-      $(this).removeClass('open');
-      $(this).attr('aria-expanded', 'false');
-    }
-    event.preventDefault();
-  });
-
   // Close dropdown when Tab key is used with Shift key
-  $('#manageDropdown').keydown(function(e) {
+  $('#manage-dropdown').keydown(function(e) {
     if (e.which == 9 && e.shiftKey) {
       $(this).removeClass('open');
       $(this).attr('aria-expanded', 'false');
@@ -139,10 +127,10 @@ $(document).ready(function() {
   });
 
   // Close dropdown if Tab key is pressed when focused on last element
-  $('#manageDropdown ul > li:last-child').keydown(function(e) {
+  $('#manage-dropdown ul > li:last-child').keydown(function(e) {
     if (e.which == 9) {
-      $('#manageDropdown').removeClass('open');
-      $('#manageDropdown').attr('aria-expanded', 'false');
+      $('#manage-dropdown').removeClass('open');
+      $('#manage-dropdown').attr('aria-expanded', 'false');
     }
   });
 });
