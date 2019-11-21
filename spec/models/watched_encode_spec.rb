@@ -50,7 +50,6 @@ describe WatchedEncode do
       # Return a completed encode so the polling job doesn't run forever.
       allow(described_class.engine_adapter).to receive(:create).and_return(running_encode)
       allow(described_class.engine_adapter).to receive(:find).and_return(completed_encode)
-      # allow(master_file).to receive(:update_progress_on_success!)
     end
 
     it 'stores the encode id on the master file' do
@@ -67,6 +66,7 @@ describe WatchedEncode do
 
       it 'uploads to Minio' do
         encode.create!
+        expect(master_file).to have_received(:update_progress_on_success!)
       end
 
       after do
