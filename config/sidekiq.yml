@@ -3,6 +3,7 @@
   - default
   - batch_ingest
   - bulk_access_control
+  - create_encode
   - delete_course
   - extract_still
   - ingest
@@ -15,3 +16,4 @@
   - solr_backup
   - update_dependent_permalinks
   - waveform
+  

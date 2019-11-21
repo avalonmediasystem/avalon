@@ -88,7 +88,7 @@ gem 'mediaelement-track-scrubber', git: 'https://github.com/avalonmediasystem/me
 # Jobs
 gem 'activejob-traffic_control'
 gem 'redis-rails'
-gem 'sidekiq'
+gem 'sidekiq', '~> 5.2.7'
 
 # Coding Patterns
 gem 'config'
