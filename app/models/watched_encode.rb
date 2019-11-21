@@ -27,6 +27,22 @@ class WatchedEncode < ActiveEncode::Base
   end
 
   after_completed do |encode|
+    # Upload to minio if using it with ffmpeg
+    if Settings.minio && Settings.encoding.engine_adapter.to_sym == :ffmpeg
+      bucket = Aws::S3::Bucket.new(name: Settings.encoding.derivative_bucket)
+      encode.output.collect! do |output|
+        file = FileLocator.new output.url
+        key = file.location.sub(/\/(.*?)\//, "")
+        obj = bucket.object key
+
+        obj.upload_file file.location
+        File.delete file.location
+
+        output.url = obj.public_url
+        output
+      end
+    end
+
     record = ActiveEncode::EncodeRecord.find_by(global_id: encode.to_global_id.to_s)
     master_file = MasterFile.find(record.master_file_id)
     master_file.update_progress_on_success!(encode)

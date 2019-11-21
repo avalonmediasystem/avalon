@@ -32,14 +32,20 @@ class WaveformJob < ActiveJob::Base
     master_file.waveform.mime_type = 'application/zlib'
     master_file.waveform.content_will_change!
     master_file.save
+  ensure
+    master_file.run_hook :after_processing if master_file.present?
   end
 
   private
 
     def file_uri(master_file)
       path = master_file.file_location
-      path_usable = path.present? && File.exist?(path)
-      path_usable ? path : nil
+      locator = FileLocator.new(path)
+      if path.present? && locator.exist?
+        locator.location
+      else
+        nil
+      end
     end
 
     def playlist_url(master_file)

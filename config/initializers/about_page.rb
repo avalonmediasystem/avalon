@@ -12,8 +12,6 @@ AboutPage.configure do |config|
   config.matterhorn       = Avalon::About::Matterhorn.new(Rubyhorn) if defined? Rubyhorn
   config.mediainfo        = Avalon::About::MediaInfo.new(:version => '>=0.7.59')
   config.streaming_server = Avalon::About::HLSServer.new(Settings.streaming.http_base)
-  config.resque           = Avalon::About::Resque.new(::Resque)
-  config.resque_scheduler = Avalon::About::ResqueScheduler.new(::Resque::Scheduler)
   config.git_log          = AboutPage::GitLog.new(limit: 15) if Rails.env.development?
   config.dependencies     = AboutPage::Dependencies.new
 end

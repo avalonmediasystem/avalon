@@ -33,6 +33,12 @@ describe WaveformJob do
       expect(Zlib::Inflate.inflate(master_file.waveform.content)).to eq waveform_json
     end
 
+    it 'calls after_processing' do
+      allow(MasterFile).to receive(:find).with(master_file.id).and_return(master_file)
+      expect(master_file).to receive(:run_hook).with(:after_processing)
+      job.perform(master_file.id)
+    end
+
     context 'when on disk' do
       before do
         allow(File).to receive(:exist?).and_call_original

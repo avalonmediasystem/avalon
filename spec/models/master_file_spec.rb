@@ -528,8 +528,8 @@ describe MasterFile do
     subject(:master_file) { FactoryBot.create(:master_file) }
 
     it 'runs the waveform job' do
-      expect(WaveformJob).to receive(:perform_now).with(master_file.id)
-      master_file.send(:post_processing_file_management)
+      expect(WaveformJob).to receive(:perform_later).with(master_file.id)
+      master_file.send(:generate_waveform)
     end
   end
 
@@ -645,7 +645,7 @@ describe MasterFile do
 
     it 'calls update_derivatives' do
       expect(master_file).to receive(:update_derivatives).with(array_including(hash_including(label: 'quality-high')))
-      expect(master_file).to receive(:run_hook).with(:after_processing)
+      expect(master_file).to receive(:run_hook).with(:after_transcoding)
       master_file.update_progress_on_success!(encode_succeeded)
     end
   end

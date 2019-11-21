@@ -163,10 +163,13 @@ class MasterFile < ActiveFedora::Base
   after_save :update_stills_from_offset!, if: Proc.new { |mf| mf.previous_changes.include?("poster_offset") || mf.previous_changes.include?("thumbnail_offset") }
   before_destroy :stop_processing!
   before_destroy :update_parent!
-  define_hooks :after_processing
+  define_hooks :after_transcoding, :after_processing
+
+  # Generate the waveform after proessing is complete but before master file management
+  after_transcoding :generate_waveform
+  after_transcoding :update_ingest_batch
 
   after_processing :post_processing_file_management
-  after_processing :update_ingest_batch
 
   # First and simplest test - make sure that the uploaded file does not exceed the
   # limits of the system. For now this is hard coded but should probably eventually
@@ -319,7 +322,7 @@ class MasterFile < ActiveFedora::Base
       }
     end
     update_derivatives(outputs)
-    run_hook :after_processing
+    run_hook :after_transcoding
   end
 
   def update_derivatives(outputs, managed = true)
@@ -657,35 +660,6 @@ class MasterFile < ActiveFedora::Base
     end
   end
 
-  def calculate_percent_complete matterhorn_response
-    totals = {
-      :transcode => 70,
-      :distribution => 20,
-      :cleaning => 0,
-      :other => 10
-    }
-
-    operations = matterhorn_response.find_by_terms(:operations, :operation).collect { |op|
-      type = case op['description']
-             when /mp4/ then :transcode
-             when /^Distributing/ then :distribution
-             else :other
-             end
-      { :description => op['description'], :state => op['state'], :type => type }
-    }
-
-    result = Hash.new { |h,k| h[k] = 0 }
-    operations.each { |op|
-      op[:pct] = (totals[op[:type]].to_f / operations.select { |o| o[:type] == op[:type] }.count.to_f)
-      state = op[:state].downcase.to_sym
-      result[state] += op[:pct]
-      result[:complete] += op[:pct] if END_STATES.include?(op[:state])
-    }
-    result[:succeeded] += result.delete(:skipped) unless result[:skipped].nil?
-    result.each {|k,v| result[k] = result[k].round }
-    result
-  end
-
   def saveOriginal(file, original_name=nil)
     realpath = File.realpath(file.path)
 
@@ -754,8 +728,6 @@ class MasterFile < ActiveFedora::Base
   def post_processing_file_management
     logger.debug "Finished processing"
 
-    # Generate the waveform after proessing is complete but before master file management
-    generate_waveform
     # Run master file management strategy
     manage_master_file
     # Clean up working file if it exists
@@ -796,7 +768,7 @@ class MasterFile < ActiveFedora::Base
   private
 
   def generate_waveform
-    WaveformJob.perform_now(id)
+    WaveformJob.perform_later(id)
   rescue StandardError => e
     logger.warn("WaveformJob failed: #{e.message}")
     logger.warn(e.backtrace.to_s)
@@ -805,7 +777,7 @@ class MasterFile < ActiveFedora::Base
   def manage_master_file
     case Settings.master_file_management.strategy
     when 'delete'
-      MasterFileManagementJobs::Delete.perform_now self.id
+      MasterFileManagementJobs::Delete.perform_later self.id
     when 'move'
       move_path = Settings.master_file_management.path
       raise '"path" configuration missing for master_file_management strategy "move"' if move_path.blank?

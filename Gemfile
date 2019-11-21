@@ -60,7 +60,7 @@ gem 'omniauth-identity'
 gem 'omniauth-lti', git: "https://github.com/avalonmediasystem/omniauth-lti.git", tag: 'avalon-r4'
 
 # Media Access & Transcoding
-gem 'active_encode', git: "https://github.com/samvera-labs/active_encode.git", branch: "master"
+gem 'active_encode', git: "https://github.com/samvera-labs/active_encode.git", branch: "ffmpeg-s3"
 gem 'audio_waveform-ruby', require: 'audio_waveform'
 gem 'browse-everything', '~> 0.13.0'
 gem 'media_element_add_to_playlist', git: 'https://github.com/avalonmediasystem/media-element-add-to-playlist.git', tag: 'avalon-r6.5'
@@ -88,8 +88,7 @@ gem 'mediaelement-track-scrubber', git: 'https://github.com/avalonmediasystem/me
 # Jobs
 gem 'activejob-traffic_control'
 gem 'redis-rails'
-gem 'resque', '~> 2.0'
-gem 'resque-scheduler', '~> 4.4'
+gem 'sidekiq'
 
 # Coding Patterns
 gem 'config'
@@ -101,10 +100,10 @@ gem 'with_locking'
 
 group :development do
   gem 'capistrano', '~>3.6'
-  gem 'capistrano-rails', require: false
-  gem 'capistrano-resque', require: false
-  gem 'capistrano-rvm', require: false
   gem 'capistrano-passenger', require: false
+  gem 'capistrano-rails', require: false
+  gem 'capistrano-rvm', require: false
+  gem 'capistrano-sidekiq', require: false
   gem 'capistrano-yarn', require: false
 
   # Use Bixby instead of rubocop directly
