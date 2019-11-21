@@ -3,6 +3,7 @@ import axios from 'axios';
 import SearchResults from './collections/landing/SearchResults';
 import Pagination from './collections/landing/Pagination';
 import { debounce } from '../services';
+import LoadingSpinner from '../components/ui/LoadingSpinner';
 
 class Search extends Component {
   constructor(props) {
@@ -13,10 +14,12 @@ class Search extends Component {
       currentPage: 1,
       appliedFacets: [],
       perPage: 12,
-      filterURL: `${props.baseUrl}?f[collection_ssim][]=${props.collection}`
+      isLoading: false
     };
     // Put a 1000ms delay on search network requests
     this.retrieveResults = debounce(this.retrieveResults, 1000);
+
+    this.filterURL = `${props.baseUrl}?f[collection_ssim][]=${props.collection}`;
   }
 
   handleQueryChange = event => {
@@ -42,16 +45,18 @@ class Search extends Component {
    * Note that "filtering" and "faceting" are not currently built into the Avalon 7.0 release, but may be added in the future...
    */
   async retrieveResults() {
-    const { perPage, query, currentPage, appliedFacets } = this.state;
-    let url = `${this.props.baseUrl}/catalog.json?per_page=${perPage}&q=${query}&page=${currentPage}`;
-
-    if (appliedFacets.length > 0) {
-      url = `${url}${this.prepFacetFilters(appliedFacets)}`;
-    }
+    this.setState({ isLoading: true });
+    let { perPage, query, currentPage, appliedFacets } = this.state;
+    let url = `${
+      this.props.baseUrl
+    }/catalog.json?per_page=${perPage}&q=${query}&page=${currentPage}${this.prepFacetFilters(
+      appliedFacets
+    )}`;
 
     try {
       let response = await axios.get(url);
       this.setState({
+        isLoading: false,
         searchResult: response.data.response
       });
     } catch (e) {
@@ -80,11 +85,15 @@ class Search extends Component {
     if (this.props.collection) {
       facetFilters = `${facetFilters}&f[collection_ssim][]=${this.props.collection}`;
     }
+    console.log(
+      'TCL: Search -> prepFacetFilters -> facetFilters',
+      facetFilters
+    );
     return facetFilters;
   }
 
   render() {
-    const { query, searchResult, filterURL } = this.state;
+    const { isLoading, query, searchResult } = this.state;
 
     return (
       <div className="search-wrapper">
@@ -103,7 +112,7 @@ class Search extends Component {
             ></input>
           </form>
           <div className="col-sm-6 text-right filter-btn">
-            <a href={filterURL} className="btn btn-primary">
+            <a href={this.filterURL} className="btn btn-primary">
               Filter this collection
             </a>
           </div>
@@ -111,11 +120,14 @@ class Search extends Component {
         <div className="row mb-3">
           <Pagination pages={searchResult.pages} changePage={this.changePage} />
         </div>
-        <div className="row">
-          <SearchResults
-            documents={searchResult.docs}
-            baseUrl={this.props.baseUrl}
-          />
+        <div className="collection-search-results-wrapper">
+          <LoadingSpinner isLoading={isLoading} />
+          <div className="row">
+            <SearchResults
+              documents={searchResult.docs}
+              baseUrl={this.props.baseUrl}
+            />
+          </div>
         </div>
       </div>
     );

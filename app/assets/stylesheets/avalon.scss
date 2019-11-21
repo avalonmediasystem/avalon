@@ -18,6 +18,7 @@
 @import 'avalon/mixins';
 @import 'avalon/accordions';
 @import 'avalon/buttons';
+@import 'avalon/collections';
 @import 'avalon/facets';
 @import 'avalon/footer';
 @import 'avalon/form';
@@ -27,6 +28,7 @@
 @import 'avalon/nav';
 @import 'avalon/playlists';
 @import 'avalon/timeliner';
+@import 'avalon/loading-spinner';
 
 body {
   .page-container {

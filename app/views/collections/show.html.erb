@@ -16,24 +16,27 @@ Unless required by applicable law or agreed to in writing, software distributed
 
 <% @page_title = t('collections.show.title', :collection_name => @doc_presenter.name, :application_name => application_name) %>
 
-<div class='container-fluid'>
+<div class="collections-landing-wrapper">
   <ol class="breadcrumb">
     <li style="padding-bottom: 0px"><%= link_to 'All Collections', collections_path %></li>
-    <li style="padding-bottom: 0px"><%= link_to @doc_presenter.unit, collections_path(filter: @doc_presenter.unit) %></li>
+    <li style="padding-bottom: 0px"><%= link_to @doc_presenter.unit, collections_path(filter: @doc_presenter.unit) %>
+    </li>
     <li class="active" style="padding-bottom: 0px"><%= @doc_presenter.name %></li>
   </ol>
+
   <div class="row">
     <div class="document-thumbnail col-sm-4 col-sm-push-8">
       <%= image_tag @doc_presenter.poster_url %>
     </div>
     <div class="col-sm-8 col-sm-pull-4">
-      <h3 class="page-title" style="margin-top:0px"><%= @doc_presenter.name %></h3>
+      <h3 class="page-title"><%= @doc_presenter.name %></h3>
       <div>
-        <h3><strong>Unit:</strong> <%= @doc_presenter.unit %></h3>
-        <p style="white-space:pre-wrap" class="lead document-description"></p>
+        <h3 class="sub-headline"><strong>Unit:</strong> <%= @doc_presenter.unit %></h3>
+        <p class="lead document-description"></p>
       </div>
     </div>
   </div>
+
   <div class="row col-sm-12">
     <%= react_component("Search", { baseUrl: root_url, collection: @doc_presenter.name }) %>
   </div>
@@ -41,22 +44,22 @@ Unless required by applicable law or agreed to in writing, software distributed
 
 <% content_for :page_scripts do %>
 <script>
-  $(document).ready(function() {
+  $(document).ready(function () {
     let content = '<%= j @doc_presenter.description %>';
-    if(content.length > 400) {
+    if (content.length > 400) {
       let show = content.substr(0, 400);
       let hide = content.substr(400, content.length - 400);
-      $('.document-description').html(show + '<span>...</span><span class="more-content"><span>' 
-      + hide + '</span>&nbsp;&nbsp;<a href="" target="1" class="read-more btn btn-default">Read more</a></span>');
+      $('.document-description').html(show + '<span>...</span><span class="more-content"><span>' +
+        hide + '</span>&nbsp;&nbsp;<a href="" target="1" class="read-more btn btn-default">Read more</a></span>');
 
-      $(".read-more").click(function(e){
+      $(".read-more").click(function (e) {
         e.preventDefault();
-        if($(this).hasClass("less")) {
-            $(this).removeClass("less");
-            $(this).html('Read more');
+        if ($(this).hasClass("less")) {
+          $(this).removeClass("less");
+          $(this).html('Read more');
         } else {
-            $(this).addClass("less");
-            $(this).html('Read less');
+          $(this).addClass("less");
+          $(this).html('Read less');
         }
         $(this).parent().prev().toggle();
         $(this).prev().toggle();
