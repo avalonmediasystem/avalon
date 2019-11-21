@@ -187,3 +187,14 @@ services:
       "
     networks:
       internal:
+
+  cypress:
+    network_mode: host
+    image: cypress/included:3.8.2
+    depends_on:
+      - avalon
+    entrypoint: cypress run -C spec/cypress/cypress.json
+    working_dir: /e2e
+    volumes:
+      - ./:/e2e
+      - npms:/e2e/node_modules
