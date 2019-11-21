@@ -616,7 +616,7 @@ GEM
     public_suffix (3.0.3)
     rack (2.0.7)
     rack-cors (1.0.3)
-    rack-protection (2.0.5)
+    rack-protection (2.0.7)
       rack
     rack-proxy (0.6.5)
       rack
@@ -794,11 +794,11 @@ GEM
       rubyzip (~> 1.2, >= 1.2.2)
     shoulda-matchers (4.0.1)
       activesupport (>= 4.2.0)
-    sidekiq (6.0.3)
-      connection_pool (>= 2.2.2)
-      rack (>= 2.0.0)
-      rack-protection (>= 2.0.0)
-      redis (>= 4.1.0)
+    sidekiq (5.2.7)
+      connection_pool (~> 2.2, >= 2.2.2)
+      rack (>= 1.5.0)
+      rack-protection (>= 1.5.0)
+      redis (>= 3.3.5, < 5)
     signet (0.11.0)
       addressable (~> 2.3)
       faraday (~> 0.9)
@@ -1007,7 +1007,7 @@ DEPENDENCIES
   sass-rails (~> 5.0)
   selenium-webdriver
   shoulda-matchers
-  sidekiq
+  sidekiq (~> 5.2.7)
   simplecov
   solr_wrapper (>= 0.16)
   speedy-af (~> 0.1.3)
