@@ -4,6 +4,8 @@
 
 .document-description {
   text-align: justify;
+  color: #666;
+  white-space: pre-wrap;
 }
 
 /* Collection List */
@@ -55,6 +57,10 @@
   margin-top: 3rem;
   padding-top: 3rem;
   border-top: 1px solid lightgray;
+}
+
+.collection-search-results-wrapper {
+  position: relative;
 }
 
 /* Search Results card */
@@ -172,7 +178,8 @@ ul.search-within-search-results {
 
 .no-search-results {
   margin-left: 8px;
-  font-size: 20px;
+  margin-top: 2rem;
+  font-size: 16px;
 }
 
 .panel-heading {

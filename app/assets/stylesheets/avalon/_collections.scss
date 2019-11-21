@@ -1,0 +1,8 @@
+.collections-landing-wrapper {
+  .page-title {
+    margin-top: 0px;
+    @media screen and (max-width: 780px) {
+      margin-top: 2rem;
+    }
+  }
+}
