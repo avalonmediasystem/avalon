@@ -75,7 +75,8 @@ ul.search-within-search-results {
   .search-within-search-result {
     height: 350px;
     margin-bottom: 16px;
-    
+    overflow: hidden;
+
     .panel-default {
       height: inherit;
     }
