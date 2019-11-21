@@ -1,0 +1,17 @@
+---
+:queues:
+  - default
+  - batch_ingest
+  - bulk_access_control
+  - delete_course
+  - extract_still
+  - ingest
+  - ingest_finished_job
+  - ingest_status_job
+  - master_file_management_move
+  - master_file_management_delete
+  - reindex
+  - s3_split
+  - solr_backup
+  - update_dependent_permalinks
+  - waveform

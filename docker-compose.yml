@@ -153,7 +153,7 @@ services:
 
   worker:
     <<: *avalon
-    command: dumb-init -- bash -c "bundle install && bundle exec sidekiq"
+    command: dumb-init -- bash -c "bundle install && bundle exec sidekiq -C config/sidekiq.yml"
     ports: []
 
   minio:

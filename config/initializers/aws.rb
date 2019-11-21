@@ -8,5 +8,4 @@ if Settings.minio
       force_path_style: true,
       region: ENV["AWS_REGION"]
     )
-  Settings.minio.public_host ||= Settings.minio.endpoint
 end
