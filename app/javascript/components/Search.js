@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
-import Axios from 'axios';
+import axios from 'axios';
 import SearchResults from './collections/landing/SearchResults';
 import Pagination from './collections/landing/Pagination';
+import { debounce } from '../services';
 
 class Search extends Component {
   constructor(props) {
@@ -11,9 +12,11 @@ class Search extends Component {
       searchResult: { pages: {}, docs: [], facets: [] },
       currentPage: 1,
       appliedFacets: [],
-      perPage: 10,
+      perPage: 12,
       filterURL: `${props.baseUrl}?f[collection_ssim][]=${props.collection}`
     };
+    // Put a 1000ms delay on search network requests
+    this.retrieveResults = debounce(this.retrieveResults, 1000);
   }
 
   handleQueryChange = event => {
@@ -34,68 +37,85 @@ class Search extends Component {
     }
   }
 
-  retrieveResults = () => {
-    let component = this;
-    let { perPage, query, currentPage, appliedFacets } = this.state;
-    let facetFilters = '';
-    appliedFacets.forEach(facet => {
-      facetFilters = `${facetFilters}&f[${facet.facetField}][]=${facet.facetValue}`;
-    });
-    if (this.props.collection) {
-      facetFilters = `${facetFilters}&f[collection_ssim][]=${this.props.collection}`;
-    }
-    let url = `${this.props.baseUrl}/catalog.json?per_page=${perPage}&q=${query}&page=${currentPage}${facetFilters}`;
-    Axios({ url: url }).then(function(response) {
-      component.setState({ searchResult: response.data.response });
-    });
-  }
+  /**
+   * Handle making an updated search request.
+   * Note that "filtering" and "faceting" are not currently built into the Avalon 7.0 release, but may be added in the future...
+   */
+  async retrieveResults() {
+    const { perPage, query, currentPage, appliedFacets } = this.state;
+    let url = `${this.props.baseUrl}/catalog.json?per_page=${perPage}&q=${query}&page=${currentPage}`;
 
-  availableFacets() {
-    let availableFacets = this.state.searchResult.facets.slice();
-    let facetIndex = availableFacets.findIndex(facet => { return facet.label === 'Published' });
-    if (facetIndex > -1) { availableFacets.splice(facetIndex, 1) }
-    facetIndex = availableFacets.findIndex(facet => { return facet.label === 'Created by' });
-    if (facetIndex > -1) { availableFacets.splice(facetIndex, 1) }
-    facetIndex = availableFacets.findIndex(facet => { return facet.label === 'Date Digitized' });
-    if (facetIndex > -1) { availableFacets.splice(facetIndex, 1); }
-    facetIndex = availableFacets.findIndex(facet => { return facet.label === 'Date Ingested' });
-    if (facetIndex > -1) { availableFacets.splice(facetIndex, 1); }
-
-    if (this.props.collection) {
-      facetIndex = availableFacets.findIndex(facet => { return facet.label === 'Collection' });
-      availableFacets.splice(facetIndex, 1);
-      facetIndex = availableFacets.findIndex(facet => { return facet.label === 'Unit' });
-      availableFacets.splice(facetIndex, 1);
+    if (appliedFacets.length > 0) {
+      url = `${url}${this.prepFacetFilters(appliedFacets)}`;
     }
-    return availableFacets;
+
+    try {
+      let response = await axios.get(url);
+      this.setState({
+        searchResult: response.data.response
+      });
+    } catch (e) {
+      console.log('Error retrieving results', e);
+    }
   }
 
   changeFacets = (newFacets, currentPage = 1) => {
     this.setState({ appliedFacets: newFacets, currentPage });
   };
 
-  changePage = (currentPage) => {
-    this.setState({ currentPage })
+  changePage = currentPage => {
+    this.setState({ currentPage });
+  };
+
+  /**
+   * When facets are applied (not currently implemented), prepare facets for usage in a url for network request
+   * @param {Array} appliedFacets
+   */
+  prepFacetFilters(appliedFacets = []) {
+    let facetFilters = '';
+
+    appliedFacets.forEach(facet => {
+      facetFilters = `${facetFilters}&f[${facet.facetField}][]=${facet.facetValue}`;
+    });
+    if (this.props.collection) {
+      facetFilters = `${facetFilters}&f[collection_ssim][]=${this.props.collection}`;
+    }
+    return facetFilters;
   }
 
   render() {
-    const { query, searchResult, filterURL, appliedFacets } = this.state;
+    const { query, searchResult, filterURL } = this.state;
+
     return (
       <div className="search-wrapper">
         <div className="row">
           <form className="search-bar col-sm-6">
-            <label htmlFor="q" className="sr-only">search for</label>
-            <input value={query} onChange={this.handleQueryChange} name="q" className="form-control input-lg" placeholder="Search within collection..." autoFocus="autofocus"></input>
+            <label htmlFor="q" className="sr-only">
+              search for
+            </label>
+            <input
+              value={query}
+              onChange={this.handleQueryChange}
+              name="q"
+              className="form-control input-lg"
+              placeholder="Search within collection..."
+              autoFocus="autofocus"
+            ></input>
           </form>
           <div className="col-sm-6 text-right filter-btn">
-            <a href={filterURL} className="btn btn-primary">Filter this collection</a>
+            <a href={filterURL} className="btn btn-primary">
+              Filter this collection
+            </a>
           </div>
         </div>
         <div className="row mb-3">
-          <Pagination pages={searchResult.pages} changePage={this.changePage}></Pagination>
+          <Pagination pages={searchResult.pages} changePage={this.changePage} />
         </div>
         <div className="row">
-          <SearchResults documents={searchResult.docs} baseUrl={this.props.baseUrl}></SearchResults>
+          <SearchResults
+            documents={searchResult.docs}
+            baseUrl={this.props.baseUrl}
+          />
         </div>
       </div>
     );
