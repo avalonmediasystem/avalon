@@ -9,11 +9,31 @@ main.homepage-main {
 .homepage-splash-top-section {
   background-image: url('homepage-splash-avalon.jpg');
   background-size: cover;
-  min-height: 500px;
+  height: 500px;
   position: relative;
 
   @media screen and (max-width: $screen-xs-max) {
-    min-height: 350px;
+    height: 350px;
+  }
+}
+
+.homepage-splash-search {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+
+  .avalon-search-query-form {
+    margin-bottom: 60px;
+  }
+
+  .global-search-wrapper {
+    width: 400px;
+
+    @media screen and (max-width: $screen-xs-max) {
+      width: 300px;
+      margin-bottom: 100px;
+    }
   }
 }
 
@@ -38,7 +58,7 @@ main.homepage-main {
 }
 
 .homepage-splash-featured-collection-content {
-  padding: 1rem 2rem;
+  padding: 1rem 2rem 2rem;
 }
 
 .homepage-splash-collections {

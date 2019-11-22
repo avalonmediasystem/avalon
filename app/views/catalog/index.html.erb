@@ -1,5 +1,9 @@
 <div class="homepage-splash-wrapper">
   <section class="homepage-splash-top-section">
+    <div class="homepage-splash-search">
+      <%= render :partial=>'modules/avalon_search_form' %>
+    </div>
+
     <div class="homepage-splash-lead-copy">
       <div class="container">
         <p class="lead">The Avalon Media System is an open source system for managing and providing access to large
@@ -15,7 +19,7 @@
         <%= image_tag  "placeholder-featured.jpeg", class: "img-responsive" %>
       </div>
       <div class="col-sm-7 homepage-splash-featured-collection-content">
-        <h3>featured collection</h3>
+        <h3 class="serif-font">featured collection</h3>
         <h2>World War II Propaganda</h2>
         <p>Lorem ipsum dolor sit amet, sit ex soleat tacimates expetenda, nam in blandit comprehensam. Sumo utroque
           eleifend per te, habemus maluisset sit ei, affert theophrastus ius at. Et mei elaboraret assueverit, in nam
@@ -28,7 +32,7 @@
 
   <section class="homepage-splash-collections">
     <div class="container">
-      <h3 class="homepage-splash-collections-title">view all collections</h3>
+      <h3 class="homepage-splash-collections-title serif-font">view all collections</h3>
     </div>
     <div class="container-fluid">
       <%= react_component("CollectionCarousel", { baseUrl: collections_url(format: :json) }) %>

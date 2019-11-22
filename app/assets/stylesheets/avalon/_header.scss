@@ -47,14 +47,13 @@ header div {
 
 .global-search-wrapper {
   width: 400px;
+
   .global-search-input {
     background: $lightgray;
     border: 0;
   }
-}
 
-@media screen and (max-width: $screen-sm-max) {
-  .global-search-wrapper {
+  @media screen and (max-width: $screen-sm-max) {
     width: inherit;
     margin: 7px 7px 0 7px;
   }
