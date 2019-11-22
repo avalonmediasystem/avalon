@@ -224,7 +224,7 @@ EOF
           url = "#{share_link_for( section )}?t=#{start},#{stop}"
           segment_id = "#{section.id}-#{tracknumber}"
           data = {segment: section.id, is_video: section.file_format != 'Sound', native_url: native_url, fragmentbegin: start, fragmentend: stop}
-          link = link_to label, url, id: segment_id, data: data, class: 'playable structure wrap'
+          link = link_to label.html_safe, url, id: segment_id, data: data, class: 'playable structure wrap'
           return "<li class='stream-li'>#{link}</li>", tracknumber
         end
       end
