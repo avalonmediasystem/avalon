@@ -59,6 +59,10 @@ input[type='text']#admin_group {
   display: block;
 }
 
+.serif-font {
+  font-family: $museoSlab;
+}
+
 .info-text-gray {
   font-style: italic;
   color: gray;
@@ -70,6 +74,16 @@ input[type='text']#admin_group {
 
 .wrap {
   word-break: break-word;
+}
+
+// Force Bootstrap grid columns to be 100% height of their row
+.row.display-flex {
+  display: flex;
+  flex-wrap: wrap;
+
+  > [class*='col-'] {
+    flex-grow: 1;
+  }
 }
 
 // TODO: We should find and replace these usages

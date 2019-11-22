@@ -22,9 +22,11 @@ Unless required by applicable law or agreed to in writing, software distributed
         <% end %>
       </div>
 
+      <% unless current_page?(root_path) %>
       <div class="header-search">
         <%= render :partial=>'modules/avalon_search_form' %>
       </div>
+      <% end %>
 
       <%# By default shift log in / log out to the header %>
       <div class="text-right log-in-out text-muted header-user">
