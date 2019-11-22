@@ -77,7 +77,7 @@ ul.search-within-search-results {
   }
 }
 
-@media (min-width: 767px) {
+@media screen and (min-width: 767px) {
   .search-within-search-result {
     height: 350px;
     margin-bottom: 16px;
