@@ -24,7 +24,7 @@ function add_cropper_handler(upload_path) {
   let $modal = $('#modal');
   let cropper;
   let width = 700;
-  let aspectRatio = 16 / 9;
+  let aspectRatio = 5 / 4;
   $input.on('change', function (e) {
     let files = e.target.files;
     let done = function (url) {
