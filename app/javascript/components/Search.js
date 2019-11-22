@@ -17,7 +17,7 @@ class Search extends Component {
       isLoading: false
     };
     // Put a 1000ms delay on search network requests
-    this.retrieveResults = debounce(this.retrieveResults, 1000);
+    this.delayedRetrieveResults = debounce(this.delayedRetrieveResults, 1000);
 
     this.filterURL = `${props.baseUrl}?f[collection_ssim][]=${props.collection}`;
   }
@@ -33,11 +33,18 @@ class Search extends Component {
   componentDidUpdate(prevProps, prevState) {
     if (
       prevState.query != this.state.query ||
-      prevState.currentPage != this.state.currentPage ||
       prevState.appliedFacets != this.state.appliedFacets
     ) {
+      // Handle updates to either search box or facets (facets not currently supported)
+      this.delayedRetrieveResults();
+    } else if (prevState.currentPage != this.state.currentPage) {
+      // Handle pagination update
       this.retrieveResults();
     }
+  }
+
+  delayedRetrieveResults() {
+    this.retrieveResults();
   }
 
   /**
@@ -85,10 +92,6 @@ class Search extends Component {
     if (this.props.collection) {
       facetFilters = `${facetFilters}&f[collection_ssim][]=${this.props.collection}`;
     }
-    console.log(
-      'TCL: Search -> prepFacetFilters -> facetFilters',
-      facetFilters
-    );
     return facetFilters;
   }
 
@@ -122,12 +125,10 @@ class Search extends Component {
         </div>
         <div className="collection-search-results-wrapper">
           <LoadingSpinner isLoading={isLoading} />
-          <div className="row">
-            <SearchResults
-              documents={searchResult.docs}
-              baseUrl={this.props.baseUrl}
-            />
-          </div>
+          <SearchResults
+            documents={searchResult.docs}
+            baseUrl={this.props.baseUrl}
+          />
         </div>
       </div>
     );

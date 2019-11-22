@@ -1,5 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import CollectionCardShell from '../CollectionCardShell';
+import CollectionCardThumbnail from '../CollectionCardThumbnail';
+import CollectionCardBody from '../CollectionCardBody';
 
 const CardMetaData = ({ doc, fieldLabel, fieldName }) => {
   let metaData = null;
@@ -56,23 +59,23 @@ const thumbnailSrc = (doc, props) => {
 const SearchResultsCard = props => {
   const { baseUrl, index, doc } = props;
   return (
-    <li key={index} className="search-within-search-result col-sm-4">
-      <div className="panel panel-default">
-        <div className="document-thumbnail">
-          <span className="timestamp badge badge-dark">
-            {duration(doc['duration_ssi'])}
-          </span>
-          <a href={baseUrl + 'media_objects/' + doc['id']}>
-            {thumbnailSrc(doc, props) && (
-              <img
-                className="card-img-top img-cover"
-                src={thumbnailSrc(doc, props)}
-                alt="Card image cap"
-              />
-            )}
-          </a>
-        </div>
-        <div className="panel-body description">
+    <CollectionCardShell>
+      <CollectionCardThumbnail>
+        <span className="timestamp badge badge-dark">
+          {duration(doc['duration_ssi'])}
+        </span>
+        <a href={baseUrl + 'media_objects/' + doc['id']}>
+          {thumbnailSrc(doc, props) && (
+            <img
+              className="card-img-top img-cover"
+              src={thumbnailSrc(doc, props)}
+              alt="Card image cap"
+            />
+          )}
+        </a>
+      </CollectionCardThumbnail>
+      <CollectionCardBody>
+        <>
           <h4>
             <a href={baseUrl + 'media_objects/' + doc['id']}>
               {doc['title_tesi'] || doc['id']}
@@ -91,9 +94,9 @@ const SearchResultsCard = props => {
               fieldName="summary_ssi"
             />
           </dl>
-        </div>
-      </div>
-    </li>
+        </>
+      </CollectionCardBody>
+    </CollectionCardShell>
   );
 };
 
