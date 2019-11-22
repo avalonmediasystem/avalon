@@ -125,12 +125,10 @@ class Search extends Component {
         </div>
         <div className="collection-search-results-wrapper">
           <LoadingSpinner isLoading={isLoading} />
-          <div className="row">
-            <SearchResults
-              documents={searchResult.docs}
-              baseUrl={this.props.baseUrl}
-            />
-          </div>
+          <SearchResults
+            documents={searchResult.docs}
+            baseUrl={this.props.baseUrl}
+          />
         </div>
       </div>
     );

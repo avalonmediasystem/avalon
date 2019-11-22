@@ -64,28 +64,12 @@
 }
 
 /* Search Results card */
-ul.search-within-search-results {
+.search-within-search-results {
   margin-top: 3rem;
   padding-left: 0;
-}
-
-.search-within-search-result {
-  list-style-type: none;
 
   .document-thumbnail {
     position: relative;
-  }
-}
-
-@media screen and (min-width: 767px) {
-  .search-within-search-result {
-    height: 350px;
-    margin-bottom: 16px;
-    overflow: hidden;
-
-    .panel-default {
-      height: inherit;
-    }
   }
 }
 
