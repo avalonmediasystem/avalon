@@ -4,14 +4,11 @@ import SearchResultsCard from './SearchResultsCard';
 
 const SearchResults = props => {
   return (
-    <ul className="search-within-search-results">
+    <ul className="row list-unstyled search-within-search-results">
       {props.documents.map((doc, index) => (
-        <SearchResultsCard
-          key={doc['id']}
-          doc={doc}
-          index={index}
-          baseUrl={props.baseUrl}
-        />
+        <li key={doc.id} className="col-sm-4">
+          <SearchResultsCard doc={doc} index={index} baseUrl={props.baseUrl} />
+        </li>
       ))}
     </ul>
   );

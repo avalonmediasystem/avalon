@@ -118,7 +118,7 @@ class CollectionList extends Component {
 
 CollectionList.propTypes = {
   baseUrl: PropTypes.string,
-  filter: PropTypes.bool
+  filter: PropTypes.string
 };
 
 export default CollectionList;
