@@ -35,7 +35,7 @@
       <h3 class="homepage-splash-collections-title serif-font"><a href="<%= collections_url %>">view all collections</a></h3>
     </div>
     <div class="container-fluid">
-      <%= react_component("CollectionCarousel", { baseUrl: collections_url(format: :json) }) %>
+      <%= react_component("CollectionCarousel", { baseUrl: collections_url(format: :json, only: :carousel, limit: 10) }) %>
     </div>
   </section>
   <% end %>
