@@ -657,7 +657,7 @@ describe MediaObject do
 
       it 'logs an error when the permalink service returns an exception' do
         Permalink.on_generate{ 1 / 0 }
-        expect(Rails.logger).to receive(:error)
+        expect(Rails.logger).to receive(:error).at_least(:once)
         media_object.ensure_permalink!
       end
 
