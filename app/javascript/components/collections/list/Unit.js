@@ -27,8 +27,8 @@ const CollectionsListUnit = ({ unitArr, index, sortByAZ, maxItems }) => {
         })}
       </div>
 
-      <div className="collapse" id={'collapse' + index}>
-        <div className="row">
+      {showAll && (
+        <div className="row" id="collections-list-remaining-collections">
           {collections.slice(maxItems, collections.length).map(col => {
             return (
               <div className="col-sm-4" key={col.id}>
@@ -37,13 +37,12 @@ const CollectionsListUnit = ({ unitArr, index, sortByAZ, maxItems }) => {
             );
           })}
         </div>
-      </div>
+      )}
 
       <ButtonCollectionListShowAll
         collectionsLength={collections.length}
         maxItems={maxItems}
         handleShowAll={handleShowAll}
-        index={index}
         showAll={showAll}
       />
     </section>
