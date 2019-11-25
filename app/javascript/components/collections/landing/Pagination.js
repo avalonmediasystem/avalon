@@ -15,7 +15,7 @@ function Pagination(props) {
   };
 
   const paginationBlock = (
-    <div className="sort-pagination mb-3 pull-right">
+    <>
       {props.pages.prev_page != null ? (
         <a
           href="#"
@@ -41,7 +41,7 @@ function Pagination(props) {
       ) : (
         <span>Next</span>
       )}
-    </div>
+    </>
   );
   if (props.pages.total_count) {
     return paginationBlock;
