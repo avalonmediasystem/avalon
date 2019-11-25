@@ -1,3 +1,4 @@
+<% if request.path == root_path %>
 <div class="homepage-splash-wrapper">
   <section class="homepage-splash-top-section">
     <div class="homepage-splash-search">
@@ -40,3 +41,12 @@
   </section>
   <% end %>
 </div>
+<% else %>  
+<div id="sidebar" class="<%= sidebar_classes %>">
+  <%= render 'search_sidebar' %>
+</div>
+
+<div id="content" class="<%= main_content_classes %>">
+  <%= render 'search_results' %>
+</div>
+<% end %>
