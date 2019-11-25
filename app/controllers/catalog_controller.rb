@@ -23,7 +23,7 @@ class CatalogController < ApplicationController
 
   # These before_actions apply the hydra access controls
   before_action :enforce_show_permissions, only: :show
-  before_action :load_home_page_collections, only: :index
+  before_action :load_home_page_collections, only: :index, if: proc { helpers.current_page? root_path }
 
   configure_blacklight do |config|
     ## Class for sending and receiving requests from a search index
@@ -186,8 +186,6 @@ class CatalogController < ApplicationController
   private
 
     def load_home_page_collections
-      return unless request.path == root_path
-
       featured_collections = Settings.home_page&.featured_collections
       if featured_collections.present?
         builder = ::CollectionSearchBuilder.new(self).rows(100_000)
