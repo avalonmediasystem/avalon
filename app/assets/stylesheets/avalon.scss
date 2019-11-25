@@ -965,6 +965,7 @@ progress[value]::-moz-progress-bar {
     flex: 0 0 auto;
     margin-right: 3rem;
     opacity: 0.8;
+    transition: 0.5s;
 
     &:hover {
       opacity: 1;

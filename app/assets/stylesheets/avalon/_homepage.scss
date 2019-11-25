@@ -1,5 +1,9 @@
 main.homepage-main {
   padding-bottom: 0;
+
+  .alert {
+    margin-bottom: 40px;
+  }
 }
 
 .homepage-splash-wrapper {
@@ -69,6 +73,9 @@ main.homepage-main {
 
 .homepage-splash-collections-title {
   margin-bottom: 2rem;
+  a {
+    color: white;
+  }
 }
 
 #footer.homepage-footer {
