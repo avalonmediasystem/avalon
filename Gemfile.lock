@@ -118,7 +118,7 @@ GIT
 
 GIT
   remote: https://github.com/samvera-labs/active_encode.git
-  revision: b2a6a64b1e2aa2ac6b6ad8e939c8bb15426da419
+  revision: 7a302f614f9bec2a6a6680fe5894af6cf2cba5ec
   branch: ffmpeg-s3
   specs:
     active_encode (0.6.0)
