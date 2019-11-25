@@ -1,11 +1,19 @@
 /**
  *  Overridding Blacklight's brand logo
  */
-#header-navbar .navbar-brand {
-  @extend .desktop-hidden;
-  background-size: contain;
-  background-color: white;
-  background-position: 20%;
+#header-navbar {
+  .navbar-brand {
+    @extend .desktop-hidden;
+    background-size: contain;
+    background-color: white;
+    background-position: 20%;
+  }
+
+  .navbar-toggle {
+    @media screen and (max-width: $screen-xs-max) {
+      background: $primaryDark;
+    }
+  }
 }
 
 .navbar {
@@ -43,17 +51,20 @@
   z-index: 1001;
 }
 
-.navbar-header .row {
-  margin-left: 6px;
-  margin-right: 6px;
+.navbar-header {
+  .row {
+    margin-left: 6px;
+    margin-right: 6px;
+  }
+
+  @media screen and (max-width: $screen-xs-max) {
+    background: white;
+    box-shadow: 0 0 5px;
+  }
 }
 
 .container > .navbar-header {
   height: auto;
-}
-
-.navbar-toggle {
-  margin: 4px;
 }
 
 .navbar-inner {

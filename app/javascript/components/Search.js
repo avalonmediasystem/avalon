@@ -4,6 +4,7 @@ import SearchResults from './collections/landing/SearchResults';
 import Pagination from './collections/landing/Pagination';
 import { debounce } from '../services';
 import LoadingSpinner from '../components/ui/LoadingSpinner';
+import PropTypes from 'prop-types';
 
 class Search extends Component {
   constructor(props) {
@@ -21,6 +22,11 @@ class Search extends Component {
 
     this.filterURL = `${props.baseUrl}?f[collection_ssim][]=${props.collection}`;
   }
+
+  static propTypes = {
+    baseUrl: PropTypes.string,
+    collection: PropTypes.string
+  };
 
   handleQueryChange = event => {
     this.setState({ query: event.target.value, currentPage: 1 });
@@ -101,7 +107,7 @@ class Search extends Component {
     return (
       <div className="search-wrapper">
         <div className="row">
-          <form className="search-bar col-sm-6">
+          <form className="search-bar col-sm-6 col-sm-offset-3">
             <label htmlFor="q" className="sr-only">
               search for
             </label>
@@ -114,13 +120,8 @@ class Search extends Component {
               autoFocus="autofocus"
             ></input>
           </form>
-          <div className="col-sm-6 text-right filter-btn">
-            <a href={this.filterURL} className="btn btn-primary">
-              Filter this collection
-            </a>
-          </div>
         </div>
-        <div className="row mb-3">
+        <div className="collection-landing-pagination-wrapper">
           <Pagination pages={searchResult.pages} changePage={this.changePage} />
         </div>
         <div className="collection-search-results-wrapper">
