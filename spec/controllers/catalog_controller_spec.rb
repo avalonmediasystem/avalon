@@ -172,7 +172,6 @@ describe CatalogController do
 
     describe "search fields" do
       let(:media_object) { FactoryBot.create(:fully_searchable_media_object) }
-#      ["title_tesi", "creator_ssim", "contributor_sim", "unit_ssim", "collection_ssim", "summary_ssi", "publisher_sim", "subject_topic_sim", "subject_geographic_sim", "subject_temporal_sim", "genre_sim", "physical_description_sim", "language_sim", "date_sim", "notes_sim", "table_of_contents_sim", "other_identifier_sim", "date_ingested_sim" ].each do |field|
       ["title_tesi", "creator_ssim", "contributor_sim", "unit_ssim", "collection_ssim", "summary_ssi", "publisher_sim", "subject_topic_sim", "subject_geographic_sim", "subject_temporal_sim", "genre_sim", "physical_description_sim", "language_sim", "date_sim", "notes_sim", "table_of_contents_sim", "other_identifier_sim" ].each do |field|
         it "should find results based upon #{field}" do
           query = Array(media_object.to_solr[field]).first
@@ -276,6 +275,66 @@ describe CatalogController do
           expect(response).to render_template('catalog/index')
           expect(assigns(:document_list).count).to eq 1
           expect(assigns(:document_list).map(&:id)).to eq([public_media_object.id])
+        end
+      end
+    end
+
+    describe "home page" do
+      let!(:collection) { FactoryBot.create(:collection, items: 1) }
+      let(:home_page_config) { { home_page: { featured_collections: [collection.id] } } }
+
+      around(:example) do |example|
+        Settings.add_source!(home_page_config)
+        Settings.reload!
+        example.run
+        Settings.instance_variable_get(:@config_sources).pop
+        Settings.reload!
+      end
+
+      before do
+        login_as :administrator
+      end
+
+      it 'loads featured collection' do
+        expect(controller).to receive(:load_home_page_collections).and_call_original
+        get 'index'
+        expect(assigns(:featured_collection)).to be_present
+        expect(assigns(:featured_collection)).to be_a Admin::CollectionPresenter
+        expect(assigns(:featured_collection).id).to eq collection.id
+      end
+
+      context 'when there are multiple featured collections' do
+        let!(:collections) { [FactoryBot.create(:collection, items: 1), FactoryBot.create(:collection, items: 1)] }
+        let(:home_page_config) { { home_page: { featured_collections: collections.map(&:id) } } }
+
+        it 'loads featured collection' do
+          expect(controller).to receive(:load_home_page_collections).and_call_original
+          get 'index'
+          expect(assigns(:featured_collection)).to be_present
+          expect(assigns(:featured_collection)).to be_a Admin::CollectionPresenter
+          expect(Settings.home_page.featured_collections).to include assigns(:featured_collection).id
+        end
+      end
+
+      context 'when featured collections is not configured' do
+        let(:home_page_config) { { home_page: nil } }
+
+        it 'loads featured collection' do
+          expect(controller).to receive(:load_home_page_collections).and_call_original
+          get 'index'
+          expect(assigns(:featured_collection)).not_to be_present
+        end
+      end
+
+      context 'when not home page' do
+        before do
+          allow(controller.helpers).to receive(:current_page?).with(root_path).and_return(false)
+        end
+
+        it 'does not load featured collection' do
+          expect(controller).not_to receive(:load_home_page_collections)
+          get 'index', params: { :q => "" }
+          expect(assigns(:featured_collection)).not_to be_present
         end
       end
     end
