@@ -27,9 +27,16 @@ Unless required by applicable law or agreed to in writing, software distributed
   <div class="row">
     <div class="document-thumbnail col-sm-4 col-sm-push-8">
       <%= image_tag @doc_presenter.poster_url %>
+      <div class="filter-collection-button-wrapper">
+        <a href="<%= search_catalog_path('f[collection_ssim][]' => @doc_presenter.name) %>"
+          class="btn btn-default btn-block">
+          <span class="glyphicon glyphicon-filter" aria-hidden="true"></span>
+          Filter this collection
+        </a>
+      </div>
     </div>
     <div class="col-sm-8 col-sm-pull-4">
-      <h3 class="page-title"><%= @doc_presenter.name %></h3>
+      <h1 class="page-title"><%= @doc_presenter.name %></h1>
       <div>
         <h3 class="sub-headline"><strong>Unit:</strong> <%= @doc_presenter.unit %></h3>
         <p class="lead document-description"></p>
@@ -37,9 +44,7 @@ Unless required by applicable law or agreed to in writing, software distributed
     </div>
   </div>
 
-  <div class="row col-sm-12">
-    <%= react_component("Search", { baseUrl: root_url, collection: @doc_presenter.name }) %>
-  </div>
+  <%= react_component("Search", { baseUrl: root_url, collection: @doc_presenter.name }) %>
 </div>
 
 <% content_for :page_scripts do %>
