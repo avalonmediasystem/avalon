@@ -76,6 +76,36 @@ describe CollectionsController, type: :controller do
         expect(assigns(:doc_presenters).map(&:id)).to match_array([collection.id, collection2.id, collection3.id])
       end
     end
+
+    context 'only carousel' do
+      let(:home_page_config) { { home_page: { carousel_collections: [collection2.id, collection3.id] } } }
+
+      around(:example) do |example|
+        Settings.add_source!(home_page_config)
+        Settings.reload!
+        example.run
+        Settings.instance_variable_get(:@config_sources).pop
+        Settings.reload!
+      end
+
+      it 'filters results by id' do
+        login_as :administrator
+        get 'index', params: { only: "carousel" }
+        expect(response).to be_ok
+        expect(assigns(:doc_presenters).count).to eql(2)
+        expect(assigns(:doc_presenters).map(&:id)).to match_array([collection2.id, collection3.id])
+      end
+    end
+
+    context 'with limit' do
+      it 'limits the number of results returned' do
+        login_as :administrator
+        get 'index', params: { limit: 2 }
+        expect(response).to be_ok
+        expect(assigns(:doc_presenters).count).to eql(2)
+        expect([collection.id, collection2.id, collection3.id]).to include(*assigns(:doc_presenters).map(&:id))
+      end
+    end
   end
 
   describe "#show" do

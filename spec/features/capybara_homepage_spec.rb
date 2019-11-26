@@ -16,7 +16,7 @@ require 'rails_helper'
 
 describe 'homepage' do
   after { Warden.test_reset! }
-  it 'validates presence of header and footer on homepage' do
+  xit 'validates presence of header and footer on homepage' do
     visit 'http://0.0.0.0:3000'
     expect(page).to have_content('Sample Content')
     expect(page).to have_link('Browse')

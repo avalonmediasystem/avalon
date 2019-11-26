@@ -17,7 +17,14 @@ class CollectionsController < CatalogController
 
   def index
     response = repository.search(CollectionSearchBuilder.new(self))
-    @doc_presenters = response.documents.collect { |doc| CollectionPresenter.new(doc) }
+    collections = response.documents
+    if (params[:only] == 'carousel')
+      collections = collections.select { |doc| Settings.home_page&.carousel_collections&.include? doc.id }
+    end
+    if params[:limit].present?
+      collections = collections.sample(params[:limit].to_i)
+    end
+    @doc_presenters = collections.collect { |doc| CollectionPresenter.new(doc) }
 
     respond_to do |format|
       format.html

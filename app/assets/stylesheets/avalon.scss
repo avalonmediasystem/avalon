@@ -23,6 +23,7 @@
 @import 'avalon/footer';
 @import 'avalon/form';
 @import 'avalon/header';
+@import 'avalon/homepage';
 @import 'avalon/mediaelement';
 @import 'avalon/modals';
 @import 'avalon/nav';
@@ -58,6 +59,10 @@ input[type='text']#admin_group {
   display: block;
 }
 
+.serif-font {
+  font-family: $museoSlab;
+}
+
 .info-text-gray {
   font-style: italic;
   color: gray;
@@ -69,6 +74,16 @@ input[type='text']#admin_group {
 
 .wrap {
   word-break: break-word;
+}
+
+// Force Bootstrap grid columns to be 100% height of their row
+.row.display-flex {
+  display: flex;
+  flex-wrap: wrap;
+
+  > [class*='col-'] {
+    flex-grow: 1;
+  }
 }
 
 // TODO: We should find and replace these usages
@@ -815,11 +830,15 @@ h5.panel-title {
 /* Reference: https://css-tricks.com/html5-progress-element/ */
 
 @-webkit-keyframes animate-stripes {
-  100% { background-position: -100px 0px; }
+  100% {
+    background-position: -100px 0px;
+  }
 }
 
 @keyframes animate-stripes {
-  100% { background-position: -100px 0px; }
+  100% {
+    background-position: -100px 0px;
+  }
 }
 
 progress[value] {
@@ -840,43 +859,47 @@ progress[value]::-webkit-progress-value {
   background-size: 35px 20px, 100% 100%, 100% 100%;
 }
 .completed::-webkit-progress-value {
-  background-image:
-    -webkit-linear-gradient(-45deg,
-                            transparent 33%, rgba(0, 0, 0, .1) 33%,
-                            rgba(0,0, 0, .1) 66%, transparent 66%),
-    -webkit-linear-gradient(top,
-                            rgba(255, 255, 255, .25),
-                            rgba(0, 0, 0, .25)),
+  background-image: -webkit-linear-gradient(
+      -45deg,
+      transparent 33%,
+      rgba(0, 0, 0, 0.1) 33%,
+      rgba(0, 0, 0, 0.1) 66%,
+      transparent 66%
+    ),
+    -webkit-linear-gradient(top, rgba(255, 255, 255, 0.25), rgba(0, 0, 0, 0.25)),
     -webkit-linear-gradient(left, $success, $success);
 }
 .cancelled::-webkit-progress-value {
-  background-image:
-    -webkit-linear-gradient(-45deg,
-                            transparent 33%, rgba(0, 0, 0, .1) 33%,
-                            rgba(0,0, 0, .1) 66%, transparent 66%),
-    -webkit-linear-gradient(top,
-                            rgba(255, 255, 255, .25),
-                            rgba(0, 0, 0, .25)),
+  background-image: -webkit-linear-gradient(
+      -45deg,
+      transparent 33%,
+      rgba(0, 0, 0, 0.1) 33%,
+      rgba(0, 0, 0, 0.1) 66%,
+      transparent 66%
+    ),
+    -webkit-linear-gradient(top, rgba(255, 255, 255, 0.25), rgba(0, 0, 0, 0.25)),
     -webkit-linear-gradient(left, $gray, $gray);
 }
 .running::-webkit-progress-value {
-  background-image:
-    -webkit-linear-gradient(-45deg,
-                            transparent 33%, rgba(0, 0, 0, .1) 33%,
-                            rgba(0,0, 0, .1) 66%, transparent 66%),
-    -webkit-linear-gradient(top,
-                            rgba(255, 255, 255, .25),
-                            rgba(0, 0, 0, .25)),
+  background-image: -webkit-linear-gradient(
+      -45deg,
+      transparent 33%,
+      rgba(0, 0, 0, 0.1) 33%,
+      rgba(0, 0, 0, 0.1) 66%,
+      transparent 66%
+    ),
+    -webkit-linear-gradient(top, rgba(255, 255, 255, 0.25), rgba(0, 0, 0, 0.25)),
     -webkit-linear-gradient(left, $blue, $blue);
 }
 .failed::-webkit-progress-bar {
-  background-image:
-    -webkit-linear-gradient(-45deg,
-                            transparent 33%, rgba(0, 0, 0, .1) 33%,
-                            rgba(0,0, 0, .1) 66%, transparent 66%),
-    -webkit-linear-gradient(top,
-                            rgba(255, 255, 255, .25),
-                            rgba(0, 0, 0, .25)),
+  background-image: -webkit-linear-gradient(
+      -45deg,
+      transparent 33%,
+      rgba(0, 0, 0, 0.1) 33%,
+      rgba(0, 0, 0, 0.1) 66%,
+      transparent 66%
+    ),
+    -webkit-linear-gradient(top, rgba(255, 255, 255, 0.25), rgba(0, 0, 0, 0.25)),
     -webkit-linear-gradient(left, $danger, $danger);
 }
 
@@ -887,42 +910,73 @@ progress[value]::-moz-progress-bar {
   background-size: 35px 20px, 100% 100%, 100% 100%;
 }
 .completed::-moz-progress-bar {
-  background-image:
-    -webkit-linear-gradient(-45deg,
-                            transparent 33%, rgba(0, 0, 0, .1) 33%,
-                            rgba(0,0, 0, .1) 66%, transparent 66%),
-    -webkit-linear-gradient(top,
-                            rgba(255, 255, 255, .25),
-                            rgba(0, 0, 0, .25)),
+  background-image: -webkit-linear-gradient(
+      -45deg,
+      transparent 33%,
+      rgba(0, 0, 0, 0.1) 33%,
+      rgba(0, 0, 0, 0.1) 66%,
+      transparent 66%
+    ),
+    -webkit-linear-gradient(top, rgba(255, 255, 255, 0.25), rgba(0, 0, 0, 0.25)),
     -webkit-linear-gradient(left, $success, $success);
 }
 .cancelled::-moz-progress-bar {
-  background-image:
-    -webkit-linear-gradient(-45deg,
-                            transparent 33%, rgba(0, 0, 0, .1) 33%,
-                            rgba(0,0, 0, .1) 66%, transparent 66%),
-    -webkit-linear-gradient(top,
-                            rgba(255, 255, 255, .25),
-                            rgba(0, 0, 0, .25)),
+  background-image: -webkit-linear-gradient(
+      -45deg,
+      transparent 33%,
+      rgba(0, 0, 0, 0.1) 33%,
+      rgba(0, 0, 0, 0.1) 66%,
+      transparent 66%
+    ),
+    -webkit-linear-gradient(top, rgba(255, 255, 255, 0.25), rgba(0, 0, 0, 0.25)),
     -webkit-linear-gradient(left, $gray, $gray);
 }
 .running::-moz-progress-bar {
-  background-image:
-    -webkit-linear-gradient(-45deg,
-                            transparent 33%, rgba(0, 0, 0, .1) 33%,
-                            rgba(0,0, 0, .1) 66%, transparent 66%),
-    -webkit-linear-gradient(top,
-                            rgba(255, 255, 255, .25),
-                            rgba(0, 0, 0, .25)),
+  background-image: -webkit-linear-gradient(
+      -45deg,
+      transparent 33%,
+      rgba(0, 0, 0, 0.1) 33%,
+      rgba(0, 0, 0, 0.1) 66%,
+      transparent 66%
+    ),
+    -webkit-linear-gradient(top, rgba(255, 255, 255, 0.25), rgba(0, 0, 0, 0.25)),
     -webkit-linear-gradient(left, $blue, $blue);
 }
 .failed::-moz-progress-bar {
-  background-image:
-    -webkit-linear-gradient(-45deg,
-                            transparent 33%, rgba(0, 0, 0, .1) 33%,
-                            rgba(0,0, 0, .1) 66%, transparent 66%),
-    -webkit-linear-gradient(top,
-                            rgba(255, 255, 255, .25),
-                            rgba(0, 0, 0, .25)),
+  background-image: -webkit-linear-gradient(
+      -45deg,
+      transparent 33%,
+      rgba(0, 0, 0, 0.1) 33%,
+      rgba(0, 0, 0, 0.1) 66%,
+      transparent 66%
+    ),
+    -webkit-linear-gradient(top, rgba(255, 255, 255, 0.25), rgba(0, 0, 0, 0.25)),
     -webkit-linear-gradient(left, $danger, $danger);
+}
+// TODO: Move these to the collections sass file
+.collection-carousel {
+  list-style: none;
+  display: flex;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+
+  li {
+    width: 240px;
+    flex: 0 0 auto;
+    margin-right: 3rem;
+    opacity: 0.8;
+    transition: 0.5s;
+
+    &:hover {
+      opacity: 1;
+    }
+  }
+
+  a {
+    color: white;
+  }
+
+  .collection-carousel-item-title {
+    margin: 1rem 0;
+  }
 }

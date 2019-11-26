@@ -13,12 +13,12 @@ Unless required by applicable law or agreed to in writing, software distributed
   specific language governing permissions and limitations under the License.
 ---  END LICENSE_HEADER BLOCK  ---
 %>
-<div id="footer">
+<div id="footer" class="<%= "homepage-footer" if current_page?(root_path) %>">
 
   <footer class="container">
     <div class="separator"></div>
     <ul>
-      <li>
+      <li class="footer-logo">
         <%= image_tag "AvalonMediaSystem_Logo_A.png", alt: "Avalon Media System - #{t(:release_label)} #{Avalon::VERSION}" %>
       <li><a href="http://www.avalonmediasystem.org">Avalon Media System Project Website</a> </li>
       <li><%= link_to "Contact Us", main_app.comments_path %></li>
