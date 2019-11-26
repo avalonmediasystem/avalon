@@ -20,7 +20,7 @@ const CollectionListStickyUtils = ({
               onChange={handleFilterChange}
               name="q"
               className="form-control input-lg"
-              placeholder="Filter..."
+              placeholder="Search collections..."
               autoFocus="autofocus"
             />
           </div>
