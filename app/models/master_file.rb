@@ -727,7 +727,7 @@ class MasterFile < ActiveFedora::Base
 
   def stop_processing!
     # Stops all processing
-    ActiveEncodeJobs::CancelEncodeJob.perform_later(workflow_id, id) if workflow_id.present?
+    ActiveEncodeJobs::CancelEncodeJob.perform_later(workflow_id, id) if workflow_id.present? && finished_processing?
   end
 
   def update_parent!

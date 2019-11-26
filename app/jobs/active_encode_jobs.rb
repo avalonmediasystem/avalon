@@ -36,4 +36,4 @@ module ActiveEncodeJobs
       master_file.encoder_class.find(workflow_id).try(:cancel!)
     end
   end
-end  
+end

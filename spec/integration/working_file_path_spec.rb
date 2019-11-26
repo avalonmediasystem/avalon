@@ -46,7 +46,7 @@ describe "MasterFile#working_file_path" do
   end
 
   around(:example) do |example|
-    perform_enqueued_jobs(only: CreateEncodeJob) { example.run }
+    perform_enqueued_jobs(only: ActiveEncodeJobs::CreateEncodeJob) { example.run }
   end
 
   context "with Settings.encoding.working_file_path set" do
