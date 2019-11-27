@@ -248,28 +248,6 @@ class MasterFile < ActiveFedora::Base
     end
   end
 
-  # def destroy
-    # mo = self.media_object
-    # self.media_object = nil
-
-    # # Stops all processing
-    # if workflow_id.present? && !finished_processing?
-    #   encoder_class.find(workflow_id).cancel!
-    # end
-    # self.derivatives.map(&:destroy)
-
-    # clear_association_cache
-
-    # super
-
-    #Only save the media object if the master file was successfully deleted
-    # if mo.nil?
-    #   logger.warn "MasterFile has no owning MediaObject to update upon deletion"
-    # else
-    #   mo.save
-    # end
-  # end
-
   def process file=nil
     raise "MasterFile is already being processed" if status_code.present? && !finished_processing?
 
@@ -293,7 +271,7 @@ class MasterFile < ActiveFedora::Base
       end
     end
 
-    CreateEncodeJob.perform_later(input, id)
+    ActiveEncodeJobs::CreateEncodeJob.perform_later(input, id)
   end
 
   def finished_processing?
@@ -749,9 +727,7 @@ class MasterFile < ActiveFedora::Base
 
   def stop_processing!
     # Stops all processing
-    if workflow_id.present? && !finished_processing?
-      encoder_class.find(workflow_id).try(:cancel!)
-    end
+    ActiveEncodeJobs::CancelEncodeJob.perform_later(workflow_id, id) if workflow_id.present? && finished_processing?
   end
 
   def update_parent!
