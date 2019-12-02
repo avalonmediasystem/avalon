@@ -516,7 +516,7 @@ class MediaObjectsController < ApplicationController
   def master_file_presenters
     SpeedyAF::Proxy::MasterFile.where("isPartOf_ssim:#{@media_object.id}",
                          order: -> { @media_object.indexed_master_file_ids },
-                         defaults: { permalink: nil, title: nil, encoder_classname: nil, workflow_id: nil })
+                         defaults: { permalink: nil, title: nil, encoder_classname: nil, workflow_id: nil, comment: [] })
   end
 
   def load_master_files(mode = :rw)
