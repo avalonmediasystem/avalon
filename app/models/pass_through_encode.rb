@@ -13,20 +13,15 @@
 #   specific language governing permissions and limitations under the License.
 # ---  END LICENSE_HEADER BLOCK  ---
 
-class FfmpegEncode < WatchedEncode
-  self.engine_adapter = :ffmpeg
+class PassThroughEncode < WatchedEncode
+  self.engine_adapter = :pass_through
 
   before_create prepend: true do |encode|
-    encode.options.merge!(outputs: ffmpeg_outputs(encode.options))
+    if Settings.minio
+      encode.input.url = localize_s3_file encode.input.url
+      encode.options[:outputs].each do |output|
+        output[:url] = localize_s3_file output[:url]
+      end
+    end
   end
-
-  private
-
-    def presets
-      @presets ||= YAML.load_file Rails.root.join(Settings.encoding.presets_path)
-    end
-
-    def ffmpeg_outputs(options)
-      presets[options[:preset]] || []
-    end
 end
