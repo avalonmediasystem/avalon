@@ -16,15 +16,16 @@
 module ActiveEncodeJobs
   require 'ffmpeg_encode'
   require 'elastic_transcoder_encode'
+  require 'pass_through_encode'
 
   class CreateEncodeJob < ActiveJob::Base
     queue_as :create_encode
 
-    def perform(input, master_file_id)
+    def perform(input, master_file_id, options = {})
       return unless MasterFile.exists? master_file_id
       master_file = MasterFile.find(master_file_id)
       return if master_file.workflow_id.present?
-      master_file.encoder_class.create(input, master_file_id: master_file_id, preset: master_file.workflow_name)
+      master_file.encoder_class.create(input, options.merge!(master_file_id: master_file_id, preset: master_file.workflow_name))
     end
   end
 

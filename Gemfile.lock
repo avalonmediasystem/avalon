@@ -118,8 +118,8 @@ GIT
 
 GIT
   remote: https://github.com/samvera-labs/active_encode.git
-  revision: b8380634e04fc3d3ec92641630eb6918578eac89
-  branch: ffmpeg-s3
+  revision: dc61d8c4e2cd830a4606658c0ae811487bc3b362
+  branch: master
   specs:
     active_encode (0.6.0)
       rails

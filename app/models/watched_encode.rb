@@ -57,4 +57,16 @@ class WatchedEncode < ActiveEncode::Base
     end
     super.merge(options_hash.select { |_, v| v.present? })
   end
+
+  protected
+
+    def localize_s3_file(url)
+      obj = FileLocator::S3File.new(url).object
+      new_dir = "/tmp/#{SecureRandom.uuid}"
+      new_path = "#{new_dir}/#{File.basename url}"
+      FileUtils.mkdir_p new_dir
+      obj.download_file new_path
+
+      new_path
+    end
 end
