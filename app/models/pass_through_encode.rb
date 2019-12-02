@@ -17,11 +17,17 @@ class PassThroughEncode < WatchedEncode
   self.engine_adapter = :pass_through
 
   before_create prepend: true do |encode|
-    if Settings.minio
-      encode.input.url = localize_s3_file encode.input.url
-      encode.options[:outputs].each do |output|
-        output[:url] = localize_s3_file output[:url]
+    localize_input encode
+  end
+
+  private
+
+    def localize_input encode
+      if Settings.minio
+        encode.input.url = localize_s3_file encode.input.url
+        encode.options[:outputs].each do |output|
+          output[:url] = localize_s3_file output[:url]
+        end
       end
     end
-  end
 end

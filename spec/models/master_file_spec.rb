@@ -217,7 +217,7 @@ describe MasterFile do
         it "should use the skipped transcoding workflow for video" do
           master_file.file_format = 'Moving image'
           master_file.set_workflow('skip_transcoding')
-          expect(master_file.workflow_name).to eq('avalon-skip-transcoding')
+          expect(master_file.workflow_name).to eq('pass_through')
         end
       end
 
@@ -230,7 +230,7 @@ describe MasterFile do
         it "should use the skipped transcoding workflow for video" do
           master_file.file_format = 'Sound'
           master_file.set_workflow('skip_transcoding')
-          expect(master_file.workflow_name).to eq('avalon-skip-transcoding-audio')
+          expect(master_file.workflow_name).to eq('pass_through')
         end
       end
     end
@@ -325,7 +325,7 @@ describe MasterFile do
     subject { FactoryBot.create(:master_file) }
 
     before :all do
-      class WorkflowEncoder < ActiveEncode::Base
+      class WorkflowEncode < ActiveEncode::Base
       end
 
       module EncoderModule
@@ -337,7 +337,7 @@ describe MasterFile do
     after :all do
       EncoderModule.send(:remove_const, :MyEncoder)
       Object.send(:remove_const, :EncoderModule)
-      Object.send(:remove_const, :WorkflowEncoder)
+      Object.send(:remove_const, :WorkflowEncode)
     end
 
     it "should default to WatchedEncode" do
@@ -345,8 +345,8 @@ describe MasterFile do
     end
 
     it "should infer the class from a workflow name" do
-      subject.workflow_name = 'workflow_encoder'
-      expect(subject.encoder_class).to eq(WorkflowEncoder)
+      subject.workflow_name = 'workflow'
+      expect(subject.encoder_class).to eq(WorkflowEncode)
     end
 
     it "should fall back to Watched when a workflow class can't be resolved" do

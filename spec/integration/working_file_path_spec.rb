@@ -106,8 +106,8 @@ describe "MasterFile#working_file_path" do
           MasterFileBuilder.build(media_object, params)
           master_file = media_object.reload.master_files.first
           expect(File.exists? master_file.working_file_path.first).to be true
-          input = { "quality-high" => FileLocator.new(master_file.working_file_path.first).uri.to_s }
-          expect(encoder_class).to have_received(:create).with(input, { master_file_id: master_file.id, preset: 'avalon-skip-transcoding' })
+          input_path = FileLocator.new(master_file.working_file_path.first).uri.to_s
+          expect(encoder_class).to have_received(:create).with(input_path, master_file_id: master_file.id, outputs: [{ label: "high", url: input_path }], preset: "pass_through")
         end
       end
     end
@@ -132,8 +132,8 @@ describe "MasterFile#working_file_path" do
           MasterFileBuilder.build(media_object, params)
           master_file = media_object.reload.master_files.first
           expect(File.exists? master_file.working_file_path.first).to be true
-          input = { "quality-high" => FileLocator.new(master_file.working_file_path.first).uri.to_s }
-          expect(encoder_class).to have_received(:create).with(input, { master_file_id: master_file.id, preset: 'avalon-skip-transcoding' })
+          input_path = FileLocator.new(master_file.working_file_path.first).uri.to_s
+          expect(encoder_class).to have_received(:create).with(input_path, master_file_id: master_file.id, outputs: [{ label: "high", url: input_path }], preset: "pass_through")
         end
       end
     end
@@ -165,8 +165,8 @@ describe "MasterFile#working_file_path" do
           entry.process!
           master_file = media_object.reload.master_files.first
           expect(File.exists? master_file.working_file_path.first).to be true
-          input = { "quality-high" => FileLocator.new(master_file.working_file_path.first).uri.to_s }
-          expect(encoder_class).to have_received(:create).with(input, { master_file_id: master_file.id, preset: 'avalon-skip-transcoding' })
+          input_path = FileLocator.new(master_file.working_file_path.first).uri.to_s
+          expect(encoder_class).to have_received(:create).with(input_path, master_file_id: master_file.id, outputs: [{ label: "high", url: input_path }], preset: "pass_through" )
         end
       end
 
@@ -199,10 +199,15 @@ describe "MasterFile#working_file_path" do
           [working_file_path_high, working_file_path_medium, working_file_path_low].each do |file|
             expect(File.exists? file).to be true
           end
-          input = { "quality-high" => FileLocator.new(working_file_path_high).uri.to_s,
-                    "quality-medium" => FileLocator.new(working_file_path_medium).uri.to_s,
-                    "quality-low" => FileLocator.new(working_file_path_low).uri.to_s }
-                    expect(encoder_class).to have_received(:create).with(input, { master_file_id: master_file.id, preset: 'avalon-skip-transcoding' })
+
+          input_path = FileLocator.new(working_file_path_high).uri.to_s
+          expect(encoder_class).to have_received(:create).with(
+            input_path.remove("file://"), 
+            master_file_id: master_file.id, 
+            outputs: [{ label: "low", url: FileLocator.new(working_file_path_low).uri.to_s }, 
+                      { label: "medium", url: FileLocator.new(working_file_path_medium).uri.to_s },
+                      { label: "high", url: input_path}],
+            preset: "pass_through")
         end
       end
     end
@@ -230,8 +235,8 @@ describe "MasterFile#working_file_path" do
         it 'sends the file_location to active_encode' do
           MasterFileBuilder.build(media_object, params)
           master_file = media_object.reload.master_files.first
-          input = { "quality-high" => FileLocator.new(master_file.file_location).uri.to_s }
-          expect(encoder_class).to have_received(:create).with(input, { master_file_id: master_file.id, preset: 'avalon-skip-transcoding' })
+          input_path = FileLocator.new(master_file.file_location).uri.to_s
+          expect(encoder_class).to have_received(:create).with(input_path, master_file_id: master_file.id, outputs: [{ label: "high", url: input_path }], preset: "pass_through")
         end
       end
     end
@@ -254,8 +259,8 @@ describe "MasterFile#working_file_path" do
         it 'sends the file_location to active_encode' do
           MasterFileBuilder.build(media_object, params)
           master_file = media_object.reload.master_files.first
-          input = { "quality-high" => FileLocator.new(master_file.file_location).uri.to_s }
-          expect(encoder_class).to have_received(:create).with(input, { master_file_id: master_file.id, preset: 'avalon-skip-transcoding' })
+          input_path = FileLocator.new(master_file.file_location).uri.to_s
+          expect(encoder_class).to have_received(:create).with(input_path, master_file_id: master_file.id, outputs: [{ label: "high", url: input_path }], preset: "pass_through")
         end
       end
     end
@@ -285,8 +290,8 @@ describe "MasterFile#working_file_path" do
         it 'sends the file_location to active_encode' do
           entry.process!
           master_file = media_object.reload.master_files.first
-          input = { "quality-high" => FileLocator.new(master_file.file_location).uri.to_s }
-          expect(encoder_class).to have_received(:create).with(input, { master_file_id: master_file.id, preset: 'avalon-skip-transcoding' })
+          input_path = FileLocator.new(master_file.file_location).uri.to_s
+          expect(encoder_class).to have_received(:create).with(input_path, master_file_id: master_file.id, outputs: [{ label: "high", url: input_path }], preset: "pass_through")
         end
       end
 
@@ -310,11 +315,15 @@ describe "MasterFile#working_file_path" do
         it 'sends the derivative locations to active_encode' do
           entry.process!
           master_file = media_object.reload.master_files.first
-          input = {'quality-low' => Addressable::URI.convert_path(File.absolute_path(filename_low)).to_s,
-                   'quality-medium' => Addressable::URI.convert_path(File.absolute_path(filename_medium)).to_s,
-                   'quality-high' => Addressable::URI.convert_path(File.absolute_path(filename_high)).to_s
-                  }
-          expect(encoder_class).to have_received(:create).with(input, { master_file_id: master_file.id, preset: 'avalon-skip-transcoding' })
+
+          input_path = Addressable::URI.convert_path(File.absolute_path(filename_high)).to_s
+          expect(encoder_class).to have_received(:create).with(
+            File.absolute_path(filename_high),
+            master_file_id: master_file.id,
+            outputs: [{ label: "low", url: Addressable::URI.convert_path(File.absolute_path(filename_low)).to_s },
+                      { label: "medium", url: Addressable::URI.convert_path(File.absolute_path(filename_medium)).to_s },
+                      { label: "high", url: input_path }],
+            preset: "pass_through")
         end
       end
     end

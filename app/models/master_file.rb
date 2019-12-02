@@ -253,11 +253,10 @@ class MasterFile < ActiveFedora::Base
   def process_pass_through(file)
     options = {}
     input = nil
-
+    # Options hash: { outputs: [{ label: 'low',  url: 'file:///derivatives/low.mp4' }, { label: 'high', url: 'file:///derivatives/high.mp4' }]}
     if file.is_a? Hash
-      # { outputs: [{ label: 'low',  url: 'file:///derivatives/low.mp4' }, { label: 'high', url: 'file:///derivatives/high.mp4' }]}
-      input = file.sort_by { |f| QUALITY_ORDER[f[:quality]] }.first
-      options[:outputs] = file.collect { |quality, f| { label: quality, url: FileLocator.new(f.to_path).uri.to_s } }
+      input = file.sort_by { |f| QUALITY_ORDER[f[0]] }.last[1].path
+      options[:outputs] = file.collect { |quality, f| { label: quality.remove("quality-"), url: FileLocator.new(f.to_path).uri.to_s } }
     else
       #Build hash for single file skip transcoding
       input = input_path
