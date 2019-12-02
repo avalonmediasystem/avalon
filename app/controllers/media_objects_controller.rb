@@ -353,11 +353,11 @@ class MediaObjectsController < ApplicationController
         raw_encode = JSON.parse(encode.raw_object)
         status = encode.state.to_s.upcase
         mf_status = {
-          :status => status,
-          :complete => encode.progress.to_i,
-          :success => encode.progress.to_i,
-          :operation => raw_encode['current_operations']&.first,
-          :message => raw_encode['errors'].first.try(:sub,/^.+:/,'')
+          status: status,
+          complete: encode.progress.to_i,
+          success: encode.progress.to_i,
+          operation: raw_encode['current_operations']&.first,
+          message: raw_encode['errors'].first.try(:sub, /^.+:/, '')
         }
         if status == 'FAILED'
           mf_status[:error] = 100 - mf_status[:success]
@@ -515,8 +515,14 @@ class MediaObjectsController < ApplicationController
 
   def master_file_presenters
     SpeedyAF::Proxy::MasterFile.where("isPartOf_ssim:#{@media_object.id}",
-                         order: -> { @media_object.indexed_master_file_ids },
-                         defaults: { permalink: nil, title: nil, encoder_classname: nil, workflow_id: nil, comment: [] })
+                                      order: -> { @media_object.indexed_master_file_ids },
+                                      defaults: {
+                                        permalink: nil,
+                                        title: nil,
+                                        encoder_classname: nil,
+                                        workflow_id: nil,
+                                        comment: []
+                                      })
   end
 
   def load_master_files(mode = :rw)
