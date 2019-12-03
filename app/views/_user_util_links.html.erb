@@ -42,33 +42,32 @@ Unless required by applicable law or agreed to in writing, software distributed
   <% end %>
 
   <% if can?(:read, Admin::Collection) || can?(:manage, Admin::Group) || (defined?(Samvera::Persona) && can?(:manage, User)) %>
-  <li id="manageDropdown" class="dropdown">
-    <a class="dropdown-toggle" id="manageDropdownMenu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-      Manage
-      <span class="caret"></span>
-    </a>
-    <ul class="dropdown-menu nav navbar-default navbar-nav" aria-labelledby="manageDropdownMenu">
-      <% if can? :read, Admin::Collection %>
-      <li class=<%= active_for_controller('admin/collections') %>>
-        <%= link_to 'Manage Content', main_app.admin_collections_path %></li>
-      <% end %>
-      <% if can? :read, :encode_dashboard %>
-      <li class=<%= active_for_controller('encode_records') %>>
-        <%= link_to 'Manage Encoding Jobs', main_app.encode_records_path %></li>
-      <% end %>
+    <div class="btn-group" id="manage-dropdown">
+        <button id="manageDropdown" class="dropdown-toggle btn btn-primary manage-btn" data-toggle="dropdown">
+          Manage
+        </button>
+        <ul class="dropdown-menu nav navbar-default navbar-nav manage-dropwdown-menu">
+          <% if can? :read, Admin::Collection %>
+          <li class=<%= active_for_controller('admin/collections') %>>
+            <%= link_to 'Manage Content', main_app.admin_collections_path %></li>
+          <% end %>
+          <% if can? :read, :encode_dashboard %>
+          <li class=<%= active_for_controller('encode_records') %>>
+            <%= link_to 'Manage Encoding Jobs', main_app.encode_records_path %></li>
+          <% end %>
 
-      <% if can? :manage, Admin::Group %>
-      <li class=<%= active_for_controller('admin/groups') %>>
-        <%= link_to 'Manage Groups', main_app.admin_groups_path %></li>
-      <% end %>
-      <% if defined?(Samvera::Persona) %>
-      <% if can? :manage, User %>
-      <li class=<%= active_for_controller('samvera/persona/users') %>>
-        <%= link_to 'Manage Users', main_app.persona_users_path %></li>
-      <% end %>
-      <% end %>
-    </ul>
-  </li>
+          <% if can? :manage, Admin::Group %>
+          <li class=<%= active_for_controller('admin/groups') %>>
+            <%= link_to 'Manage Groups', main_app.admin_groups_path %></li>
+          <% end %>
+          <% if defined?(Samvera::Persona) %>
+          <% if can? :manage, User %>
+          <li class=<%= active_for_controller('samvera/persona/users') %>>
+            <%= link_to 'Manage Users', main_app.persona_users_path %></li>
+          <% end %>
+          <% end %>
+        </ul>
+    </div>
   <% end %>
 
   <li class="divider desktop-hidden" />

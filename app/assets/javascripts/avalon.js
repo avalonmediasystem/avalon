@@ -80,15 +80,6 @@ $(document).ready(function() {
   // Set CSS to push the page content above footer
   $('.content-wrapper').css('padding-bottom', $('#footer').css('height'));
 
-  $('#manageDropdown').hover(
-    function() {
-      $('#manageDropdown').addClass('open');
-    },
-    function() {
-      $('#manageDropdown').removeClass('open');
-    }
-  );
-
   /* Toggle CSS classes for global search form */
   const $searchWrapper = $('.global-search-wrapper');
   const $searchSubmit = $('.global-search-submit');
@@ -111,6 +102,35 @@ $(document).ready(function() {
     } else {
       $searchWrapper.addClass('input-group-lg');
       $searchSubmit.addClass('btn-primary');
+    }
+  });
+
+  /* Handle dropdown list for `Manage` in nav-bar */
+  // Manage user access with mouse-point
+  $('#manage-dropdown').hover(
+    function() {
+      $(this).addClass('open');
+      $(this).attr('aria-expanded', 'true');
+    },
+    function() {
+      $(this).removeClass('open');
+      $(this).attr('aria-expanded', 'false');
+    }
+  );
+
+  // Close dropdown when Tab key is used with Shift key
+  $('#manage-dropdown').keydown(function(e) {
+    if (e.which == 9 && e.shiftKey) {
+      $(this).removeClass('open');
+      $(this).attr('aria-expanded', 'false');
+    }
+  });
+
+  // Close dropdown if Tab key is pressed when focused on last element
+  $('#manage-dropdown ul > li:last-child').keydown(function(e) {
+    if (e.which == 9) {
+      $('#manage-dropdown').removeClass('open');
+      $('#manage-dropdown').attr('aria-expanded', 'false');
     }
   });
 });
