@@ -35,44 +35,15 @@ Unless required by applicable law or agreed to in writing, software distributed
         </a>
       </div>
     </div>
-    <div class="col-sm-8 col-sm-pull-4">
+    <div class="col-sm-7 col-sm-pull-4">
       <h1 class="page-title"><%= @doc_presenter.name %></h1>
       <div>
         <h3 class="sub-headline"><strong>Unit:</strong> <%= @doc_presenter.unit %></h3>
         <p class="lead document-description"></p>
+        <%= react_component("CollectionDescription", { content: @doc_presenter.description }) %>
       </div>
     </div>
   </div>
 
   <%= react_component("Search", { baseUrl: root_url, collection: @doc_presenter.name }) %>
 </div>
-
-<% content_for :page_scripts do %>
-<script>
-  $(document).ready(function () {
-    let content = '<%= j @doc_presenter.description %>';
-    if (content.length > 400) {
-      let show = content.substr(0, 400);
-      let hide = content.substr(400, content.length - 400);
-      $('.document-description').html(show + '<span>...</span><span class="more-content"><span>' +
-        hide + '</span>&nbsp;&nbsp;<a href="" target="1" class="read-more btn btn-default">Read more</a></span>');
-
-      $(".read-more").click(function (e) {
-        e.preventDefault();
-        if ($(this).hasClass("less")) {
-          $(this).removeClass("less");
-          $(this).html('Read more');
-        } else {
-          $(this).addClass("less");
-          $(this).html('Read less');
-        }
-        $(this).parent().prev().toggle();
-        $(this).prev().toggle();
-        return false;
-      });
-    } else {
-      $('.document-description').html(content);
-    }
-  });
-</script>
-<% end %>

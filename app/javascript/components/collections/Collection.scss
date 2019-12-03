@@ -1,13 +1,3 @@
-.document-thumbnail img {
-  width: 100%;
-}
-
-.document-description {
-  text-align: justify;
-  color: #666;
-  white-space: pre-wrap;
-}
-
 /* Collection List */
 .collection-list {
   margin-bottom: 3rem;
@@ -42,6 +32,12 @@
 
   @media screen and (max-width: 780px) {
     height: auto;
+  }
+
+  .document-thumbnail {
+    img {
+      width: 100%;
+    }
   }
 }
 .collection-card-description {
