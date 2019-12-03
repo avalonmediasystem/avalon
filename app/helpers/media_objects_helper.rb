@@ -125,6 +125,11 @@ module MediaObjectsHelper
         ActiveEncode::EncodeRecord.where(global_id: encode_gids).any? { |encode| encode.state.to_s.upcase != 'COMPLETED' }
       end
 
+      def any_failed?(sections)
+        encode_gids = sections.collect { |mf| "gid://ActiveEncode/#{mf.encoder_class}/#{mf.workflow_id}" }
+        ActiveEncode::EncodeRecord.where(global_id: encode_gids).any? { |encode| encode.state.to_s.upcase == 'FAILED' }
+      end
+
       def hide_sections? sections
         sections.blank? or (sections.length == 1 and !sections.first.has_structuralMetadata?)
       end
