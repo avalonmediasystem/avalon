@@ -347,25 +347,27 @@ class MediaObjectsController < ApplicationController
 
   def show_progress
     overall = { :success => 0, :error => 0 }
-
+    encode_gids = master_file_presenters.collect { |mf| "gid://ActiveEncode/#{mf.encoder_class}/#{mf.workflow_id}" }
     result = Hash[
-      master_file_presenter.collect { |mf|
+      ActiveEncode::EncodeRecord.where(global_id: encode_gids).collect do |encode|
+        raw_encode = JSON.parse(encode.raw_object)
+        status = encode.state.to_s.upcase
         mf_status = {
-          :status => mf.status_code,
-          :complete => mf.percent_complete.to_i,
-          :success => mf.percent_complete.to_i,
-          :operation => mf.operation,
-          :message => mf.error.try(:sub,/^.+:/,'')
+          status: status,
+          complete: encode.progress.to_i,
+          success: encode.progress.to_i,
+          operation: raw_encode['current_operations']&.first,
+          message: raw_encode['errors'].first.try(:sub, /^.+:/, '')
         }
-        if mf.status_code == 'FAILED'
+        if status == 'FAILED'
           mf_status[:error] = 100 - mf_status[:success]
           overall[:error] += 100
         else
           mf_status[:error] = 0
           overall[:success] += mf_status[:complete]
         end
-        [mf.id, mf_status]
-      }
+        [encode.master_file_id, mf_status]
+      end
     ]
     master_files_count = @media_object.master_files.size
     if master_files_count > 0
@@ -459,7 +461,7 @@ class MediaObjectsController < ApplicationController
     @media_object = MediaObject.find(params[:id])
     authorize! :read, @media_object
 
-    master_files = master_file_presenter
+    master_files = master_file_presenters
     canvas_presenters = master_files.collect do |mf|
       stream_info = secure_streams(mf.stream_details)
       IiifCanvasPresenter.new(master_file: mf, stream_info: stream_info)
@@ -511,14 +513,20 @@ class MediaObjectsController < ApplicationController
 
   protected
 
-  def master_file_presenter
-    SpeedyAF::Base.where("isPartOf_ssim:#{@media_object.id}",
-                         order: -> { @media_object.indexed_master_file_ids },
-                         defaults: { permalink: nil, title: nil })
+  def master_file_presenters
+    SpeedyAF::Proxy::MasterFile.where("isPartOf_ssim:#{@media_object.id}",
+                                      order: -> { @media_object.indexed_master_file_ids },
+                                      defaults: {
+                                        permalink: nil,
+                                        title: nil,
+                                        encoder_classname: nil,
+                                        workflow_id: nil,
+                                        comment: []
+                                      })
   end
 
   def load_master_files(mode = :rw)
-    @masterFiles ||= mode == :rw ? @media_object.indexed_master_files.to_a : master_file_presenter
+    @masterFiles ||= mode == :rw ? @media_object.indexed_master_files.to_a : master_file_presenters
   end
 
   def set_player_token

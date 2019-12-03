@@ -13,7 +13,7 @@ Unless required by applicable law or agreed to in writing, software distributed
   specific language governing permissions and limitations under the License.
 ---  END LICENSE_HEADER BLOCK  ---
 %>
-<% show_progress = sections.any? { |s| s.status_code != 'COMPLETED' } %>
+<% show_progress = show_progress?(sections) %>
 <% unless hide_sections?(sections) and not show_progress %>
 
 <div class="panel-group media-show-page" id="accordion" role="tablist" aria-multiselectable="true">
