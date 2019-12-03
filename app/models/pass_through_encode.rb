@@ -22,12 +22,11 @@ class PassThroughEncode < WatchedEncode
 
   private
 
-    def localize_input encode
-      if Settings.minio
-        encode.input.url = localize_s3_file encode.input.url
-        encode.options[:outputs].each do |output|
-          output[:url] = localize_s3_file output[:url]
-        end
+    def localize_input(encode)
+      return unless Settings.minio
+      encode.input.url = localize_s3_file encode.input.url
+      encode.options[:outputs].each do |output|
+        output[:url] = localize_s3_file output[:url]
       end
     end
 end
