@@ -20,7 +20,7 @@ class SpeedyAF::Proxy::MasterFile < SpeedyAF::Base
   def find_encoder_class(klass_name)
     ActiveEncode::Base.descendants.find { |c| c.name == klass_name }
   end
-  
+
   def display_title
     mf_title = structuralMetadata.section_title if has_structuralMetadata?
     mf_title ||= title if title.present?
