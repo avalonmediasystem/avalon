@@ -15,6 +15,8 @@
 require 'avalon/elastic_transcoder'
 
 class ElasticTranscoderEncode < WatchedEncode
+  self.engine_adapter = :elastic_transcoder
+
   before_create prepend: true do |encode|
     encode.options.merge!(pipeline_id: Settings.encoding.pipeline,
                           masterfile_bucket: Settings.encoding.masterfile_bucket,

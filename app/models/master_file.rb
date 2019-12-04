@@ -178,11 +178,12 @@ class MasterFile < ActiveFedora::Base
   # 250 MB is the file limit for now
   MAXIMUM_UPLOAD_SIZE = Settings.max_upload_size || 2.gigabytes
 
-  WORKFLOWS = ['fullaudio', 'avalon', 'avalon-skip-transcoding', 'avalon-skip-transcoding-audio']
+  WORKFLOWS = ['fullaudio', 'avalon', 'pass_through'].freeze
   AUDIO_TYPES = ["audio/vnd.wave", "audio/mpeg", "audio/mp3", "audio/mp4", "audio/wav", "audio/x-wav"]
   VIDEO_TYPES = ["application/mp4", "video/mpeg", "video/mpeg2", "video/mp4", "video/quicktime", "video/avi"]
   UNKNOWN_TYPES = ["application/octet-stream", "application/x-upload-data"]
   END_STATES = ['CANCELLED', 'COMPLETED', 'FAILED']
+  QUALITY_ORDER = { 'quality-high' => 3, 'quality-medium' => 2, 'quality-low' => 1 }.freeze
 
   def save_parent
     unless media_object.nil?
@@ -212,14 +213,7 @@ class MasterFile < ActiveFedora::Base
 
   def set_workflow( workflow  = nil )
     if workflow == 'skip_transcoding'
-      workflow = case self.file_format
-                 when 'Moving image'
-                  'avalon-skip-transcoding'
-                 when 'Sound'
-                  'avalon-skip-transcoding-audio'
-                 else
-                  nil
-                 end
+      workflow = 'pass_through'
     elsif self.file_format == 'Sound'
       workflow = 'fullaudio'
     elsif self.file_format == 'Moving image'
@@ -251,27 +245,33 @@ class MasterFile < ActiveFedora::Base
   def process file=nil
     raise "MasterFile is already being processed" if status_code.present? && !finished_processing?
 
-    #Build hash for single file skip transcoding
-    if !file.is_a?(Hash) && (self.workflow_name == 'avalon-skip-transcoding' || self.workflow_name == 'avalon-skip-transcoding-audio')
-      if working_file_path.present?
-        file = {'quality-high' => FileLocator.new(working_file_path.first).attachment}
-      else
-        file = {'quality-high' => FileLocator.new(file_location).attachment}
-      end
-    end
+    return process_pass_through(file) if self.workflow_name == 'pass_through'
 
-    input = if file.is_a? Hash
-      file_dup = file.dup
-      file_dup.each_pair {|quality, f| file_dup[quality] = FileLocator.new(f.to_path).uri.to_s }
+    ActiveEncodeJobs::CreateEncodeJob.perform_later(input_path, id)
+  end
+
+  def process_pass_through(file)
+    options = {}
+    input = nil
+    # Options hash: { outputs: [{ label: 'low',  url: 'file:///derivatives/low.mp4' }, { label: 'high', url: 'file:///derivatives/high.mp4' }]}
+    if file.is_a? Hash
+      input = file.sort_by { |f| QUALITY_ORDER[f[0]] }.last[1].path
+      options[:outputs] = file.collect { |quality, f| { label: quality.remove("quality-"), url: FileLocator.new(f.to_path).uri.to_s } }
     else
-      if working_file_path.present?
-        FileLocator.new(working_file_path.first).uri.to_s
-      else
-        FileLocator.new(file_location).uri.to_s
-      end
+      #Build hash for single file skip transcoding
+      input = input_path
+      options[:outputs] = [{ label: 'high', url: input }]
     end
 
-    ActiveEncodeJobs::CreateEncodeJob.perform_later(input, id)
+    ActiveEncodeJobs::CreateEncodeJob.perform_later(input, id, options)
+  end
+
+  def input_path
+    if working_file_path.present?
+      FileLocator.new(working_file_path.first).uri.to_s
+    else
+      FileLocator.new(file_location).uri.to_s
+    end
   end
 
   def finished_processing?
@@ -411,7 +411,11 @@ class MasterFile < ActiveFedora::Base
   end
 
   def encoder_class
-    find_encoder_class(encoder_classname) || find_encoder_class(workflow_name.to_s.classify) || find_encoder_class((Settings.encoding.engine_adapter + "_encode").classify) || MasterFile.default_encoder_class || WatchedEncode
+    find_encoder_class(encoder_classname) ||
+      find_encoder_class("#{workflow_name}_encode".classify) ||
+      find_encoder_class((Settings.encoding.engine_adapter + "_encode").classify) ||
+      MasterFile.default_encoder_class ||
+      WatchedEncode
   end
 
   def encoder_class=(value)
