@@ -2,15 +2,14 @@ require 'avalon/routing/can_constraint'
 
 Rails.application.routes.draw do
   mount Samvera::Persona::Engine => '/'
-  mount Blacklight::Engine => '/'
+  mount Blacklight::Engine => '/catalog'
+  concern :searchable, Blacklight::Routes::Searchable.new
+  concern :exportable, Blacklight::Routes::Exportable.new
   root to: "catalog#index"
-    concern :searchable, Blacklight::Routes::Searchable.new
 
   resource :catalog, only: [:index], as: 'catalog', path: '/catalog', controller: 'catalog' do
     concerns :searchable
   end
-
-  concern :exportable, Blacklight::Routes::Exportable.new
 
   get '/mejs/:version', to: 'application#mejs'
 
