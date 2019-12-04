@@ -5,11 +5,13 @@ Rails.application.routes.draw do
   mount Blacklight::Engine => '/catalog'
   concern :searchable, Blacklight::Routes::Searchable.new
   concern :exportable, Blacklight::Routes::Exportable.new
-  root to: "catalog#index"
 
   resource :catalog, only: [:index], as: 'catalog', path: '/catalog', controller: 'catalog' do
     concerns :searchable
   end
+
+  # For some reason this needs to be after `resource :catalog` otherwise Blacklight will generate links to / instead of /catalog
+  root to: "catalog#index"
 
   get '/mejs/:version', to: 'application#mejs'
 

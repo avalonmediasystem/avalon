@@ -293,6 +293,7 @@ describe CatalogController do
 
       before do
         login_as :administrator
+        allow(controller.helpers).to receive(:current_page?).with(root_path).and_return(true)
       end
 
       it 'loads featured collection' do
