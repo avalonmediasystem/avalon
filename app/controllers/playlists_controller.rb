@@ -271,11 +271,11 @@ class PlaylistsController < ApplicationController
   private
 
   def get_user_playlists
-    @playlists = Playlist.by_user(current_user)
+    @playlists = Playlist.by_user(current_user).order(:title)
   end
 
   def get_all_other_playlists
-    @playlists = Playlist.by_user(current_user).where.not( id: @playlist )
+    @playlists = Playlist.by_user(current_user).where.not( id: @playlist ).order(:title)
   end
 
   def load_playlist_token
