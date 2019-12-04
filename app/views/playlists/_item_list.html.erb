@@ -34,14 +34,14 @@ Unless required by applicable law or agreed to in writing, software distributed
 </div>
 
 <div class="row">
-  <div class="col-xs-6">
+  <div style="margin-left: 1em">
     <div class="playlist-autoplay-wrapper">
       <span class="playlist-autoplay-label">Autoplay</span>
       <input type="checkbox" <%= 'checked' if params['autoadvance'].nil? or params['autoadvance']=='true' %>
         data-toggle="toggle" data-size="mini" name="autoadvance" />
     </div>
   </div>
-  <div class="col-xs-6 text-right">
+  <div class="text-right">
     <%= render 'share' if will_partial_list_render? :share %>
   </div>
 </div>
