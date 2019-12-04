@@ -14,10 +14,10 @@ Unless required by applicable law or agreed to in writing, software distributed
 ---  END LICENSE_HEADER BLOCK  ---
 %>
 <!-- <%= field.to_s.humanize %> field -->
-  <div class="form-group <% if options[:multivalued] %>multivalued<% end %> <% if @media_object.errors[field].any? %>has-error<% end %>">
-    <%= render partial: "modules/tooltip", locals: { form: form, field: field, tooltip: t("metadata_tip.#{field.to_s}"), options: options } %>
+  <div class="form-group <% if options[:multivalued] %>multivalued<% end %> <% if @media_object.errors[field].any? %>invalid-feedback<% end %>">
+    <%= render partial: "modules/tooltip", locals: { form: form, field: field, tooltip: t("metadata_tip.#{field.to_s}"), error: @media_object.errors[field].any?, options: options } %>
     <% if @media_object.errors[field].any? %>
-      <%= content_tag :span, @media_object.errors[field].join(", "), class: 'help-block' %>
+      <%= content_tag :span, @media_object.errors[field].join(", "), class: (@media_object.errors[field].any? ? 'help-block invalid-feedback' : 'help-block') %>
     <% end %>
     <% values = @media_object.send(field) || "" %>
     <% fieldarray = "" %>
@@ -31,16 +31,16 @@ Unless required by applicable law or agreed to in writing, software distributed
     <% count.times do |i| %>
       <% value = values[i] %>
       <div class="input-group <%=options[:extra_classes]%>">
-	<% if options[:autocomplete_model] and options[:autocomplete_model].present? %>
-	  <%= render partial: "typeahead_field", locals: {fieldname: fieldname, value: value, options: options} %>
-	<% elsif options[:secondary_field] and options[:secondary_field].present? %>
-	  <%= render partial: "two_part_field", locals: {fieldname: fieldname, value: value, options: options} %>
-	<% else %>
+        <% if options[:autocomplete_model] and options[:autocomplete_model].present? %>
+          <%= render partial: "typeahead_field", locals: {fieldname: fieldname, value: value, options: options} %>
+        <% elsif options[:secondary_field] and options[:secondary_field].present? %>
+          <%= render partial: "two_part_field", locals: {fieldname: fieldname, value: value, options: options} %>
+        <% else %>
           <% if options[:dropdown_field] %>
-	    <%= render partial: "multipart_dropdown_field", locals: {selected_value: value.present? ? value[options[:secondary_hash_key]] : nil, options: options} %>
-            <% value = value.present? ? value[options[:primary_hash_key]] : "" %>
-	  <% end %>
-	  <%= text_field_tag fieldname, value || '', class: 'form-control' %>
+            <%= render partial: "multipart_dropdown_field", locals: {selected_value: value.present? ? value[options[:secondary_hash_key]] : nil, options: options} %>
+              <% value = value.present? ? value[options[:primary_hash_key]] : "" %>
+          <% end %>
+          <%= text_field_tag fieldname, value || '', class: (@media_object.errors[field].any? ? 'form-control is-invalid' : 'form-control') %>
         <% end %>
       </div>
     <% end %>

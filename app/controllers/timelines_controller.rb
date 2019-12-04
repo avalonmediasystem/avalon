@@ -175,6 +175,7 @@ class TimelinesController < ApplicationController
         if @timeline.update(timeline_params)
           redirect_to edit_timeline_path(@timeline), notice: 'Timeline was successfully updated.'
         else
+          flash.now[:error] = "There are errors with your submission.  #{@timeline.errors.full_messages.join(', ')}"
           render :edit
         end
       end
