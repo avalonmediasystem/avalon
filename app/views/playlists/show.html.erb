@@ -23,9 +23,13 @@ Unless required by applicable law or agreed to in writing, software distributed
 
 <div class="playlist-view-wrapper row">
   <div class="col-sm-8" id="left_column">
+    <div class="page-title-wrapper playlist-title">
+      <%= icon_only_visibility @playlist.visibility %>
+      <h1 class="page-title"><%= @playlist.title %></h1>
+    </div>
+
     <% if first_playable_item.nil? %>
     <%= image_tag "media-placeholder.png", :class => "img-responsive" %>
-    <%= render 'playlist_title' %>
     <% else %>
     <% position = first_playable_item.position %>
     <% @current_playlist_item = first_playable_item %>
