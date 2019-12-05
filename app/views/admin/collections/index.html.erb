@@ -52,15 +52,7 @@ Unless required by applicable law or agreed to in writing, software distributed
         <td class="text-right">
           <% if can?(:destroy, collection) %>
           <div class="btn-group">
-            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true"
-              aria-expanded="false">
-              Action <span class="caret"></span>
-            </button>
-            <ul class="dropdown-menu dropdown-menu-right">
-              <li><a href="#">View</a></li>
-              <li><a href="#">Edit</a></li>
-              <li><%= link_to('Delete', remove_admin_collection_path(collection.id)) %></li>
-            </ul>
+            <%= link_to('Delete', remove_admin_collection_path(collection.id), class: 'btn btn-danger btn-sm')%>
           </div>
           <% else %>
           &nbsp;
