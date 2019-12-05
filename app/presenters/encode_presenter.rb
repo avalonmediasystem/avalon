@@ -64,6 +64,10 @@ class EncodePresenter
     JSON.pretty_generate(@raw_object)
   end
 
+  def create_options
+    JSON.pretty_generate(@create_options)
+  end
+
   def errors
     @raw_object["errors"]
   end
