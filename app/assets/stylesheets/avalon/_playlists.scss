@@ -1,6 +1,6 @@
 .playlist-view-wrapper {
   #share-button {
-    margin-top: 0;
+    margin: -1.6em 1em 1em 0em;
   }
 }
 
@@ -48,6 +48,7 @@
 .playlist-autoplay-wrapper {
   display: flex;
   align-items: center;
+  margin-left: 1em;
 
   .playlist-autoplay-label {
     font-weight: bold;

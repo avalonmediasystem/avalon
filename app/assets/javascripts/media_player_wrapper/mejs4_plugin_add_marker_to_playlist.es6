@@ -214,7 +214,7 @@ Object.assign(MediaElementPlayer.prototype, {
      */
     handleAddError: function(error) {
       const t = this;
-      let alertEl = t.addMarkerObj.alertEl;
+      let alertEl = t.alertEl;
 
       alertEl.classList.add('alert-danger');
       alertEl.classList.add('add_to_playlist_alert_error');
