@@ -4,6 +4,7 @@ import './collections/Collection.scss';
 import CollectionListStickyUtils from './collections/list/CollectionListStickyUtils';
 import CollectionsSortedByUnit from './collections/list/CollectionsSortedByUnit';
 import CollectionsSortedByAZ from './collections/list/CollectionsSortedByAZ';
+import CollectionsFilterNoResults from './collections/CollectionsFilterNoResults';
 import PropTypes from 'prop-types';
 
 class CollectionList extends Component {
@@ -88,7 +89,8 @@ class CollectionList extends Component {
   };
 
   render() {
-    const { filter, sort, filteredResult, maxItems } = this.state;
+    const { filter, sort, filteredResult = [], maxItems } = this.state;
+
     return (
       <div>
         <CollectionListStickyUtils
@@ -97,6 +99,9 @@ class CollectionList extends Component {
           sort={sort}
           handleSortChange={this.handleSortChange}
         />
+
+        {filteredResult.length === 0 && <CollectionsFilterNoResults />}
+
         <div className="collection-list">
           {sort === 'az' ? (
             <CollectionsSortedByAZ
