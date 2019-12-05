@@ -33,7 +33,7 @@ class Admin::CollectionsController < ApplicationController
       builder.user = user
     end
     response = repository.search(builder)
-    @collections = response.documents.collect { |doc| ::Admin::CollectionPresenter.new(doc) }.sort_by(&:name)
+    @collections = response.documents.collect { |doc| ::Admin::CollectionPresenter.new(doc) }.sort_by { |c| c.name.downcase }
   end
 
   # GET /collections
