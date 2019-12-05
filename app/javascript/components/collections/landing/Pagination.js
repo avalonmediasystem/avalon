@@ -45,8 +45,6 @@ function Pagination(props) {
   );
   if (props.pages.total_count) {
     return paginationBlock;
-  } else if (props.pages.total_count === 0) {
-    return <p className="no-search-results">No results matched your search.</p>;
   } else {
     return null;
   }
