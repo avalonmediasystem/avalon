@@ -98,7 +98,7 @@ function add_cropper_handler(upload_path) {
             return xhr;
           },
           success: function () {
-            $alert.show().addClass('alert-success').text('Upload success');
+            //$alert.show().addClass('alert-success').text('Upload success');
           },
           error: function () {
             $poster.prop("src", initialPosterURL);
