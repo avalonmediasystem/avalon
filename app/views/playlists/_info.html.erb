@@ -18,11 +18,6 @@ Unless required by applicable law or agreed to in writing, software distributed
 <%# @current_masterfile ||= MasterFile.find(@current_playlist_item.clip.source.split('/').last) %>
 <%# @current_mediaobject ||= MediaObject.find(@current_masterfile.media_object_id) %>
 
-<div class="page-title-wrapper playlist-title">
-  <%= icon_only_visibility @playlist.visibility %>
-  <h1 class="page-title"><%= @playlist.title %></h1>
-</div>
-
 <% if can? :read, @current_masterfile %>
 
 <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
@@ -50,7 +45,7 @@ Unless required by applicable law or agreed to in writing, software distributed
         <% if is_mejs_2? %>
         <%= render 'markers' %>
         <% else %>
-        <div id="markers" class="container"></div>
+        <div id="markers"></div>
         <% end %>
       </div>
     </div>
