@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 
-const CollectionDescription = ({ content }) => {
+const CollectionDescription = ({ content = '' }) => {
+  if (!content) return null;
+
   const wordCount = 40;
   const words = content.split(' ');
   const [expanded, setExpanded] = useState(false);
