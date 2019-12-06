@@ -75,7 +75,7 @@ Unless required by applicable law or agreed to in writing, software distributed
   <%# Fallback if the test above fails %>
   <%= link_to 'Sign in', main_app.new_user_session_path %>
   <% end %>
-  <% unless current_page?(root_path) %>
+  <% unless current_page?(main_app.root_path) %>
   <li class="desktop-hidden"><%= render :partial=>'modules/avalon_search_form' %></li>
   <% end %>
 </ul>
