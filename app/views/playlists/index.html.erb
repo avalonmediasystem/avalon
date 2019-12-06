@@ -18,60 +18,59 @@ Unless required by applicable law or agreed to in writing, software distributed
 <%= link_to 'Please login to view your playlists.', new_user_session_path %>
 <% end %>
 <% unless current_user.nil? %>
-<% playlists = Playlist.where(user_id: current_user.id) %>
-<div class="Playlist-index">
-  <div class="page-title-wrapper">
-    <div class="row">
-      <div class="col-sm-6">
-        <h1 class="page-title">Playlists <small>(<%= playlists.size %> total)</small></h1>
-      </div>
-      <div class="col-sm-6 text-right">
-        <%= link_to('<span class="btn btn-primary headline-button">Create New Playlist</span>'.html_safe, new_playlist_path) %>
+  <% playlists = Playlist.where(user_id: current_user.id) %>
+  <div class="Playlist-index">
+    <div class="page-title-wrapper">
+      <div class="row">
+        <div class="col-sm-6">
+          <h1 class="page-title">Playlists <small>(<%= playlists.size %> total)</small></h1>
+        </div>
+        <div class="col-sm-6 text-right">
+          <%= link_to('<span class="btn btn-primary headline-button">Create New Playlist</span>'.html_safe, new_playlist_path) %>
+        </div>
       </div>
     </div>
 
-  </div>
+    <% unless playlists.empty? %>
+      <div class="tag_filter_container">
+        Filter: <select name="tag_filter" class="tag_filter form-control input-sm" style="width:auto">
+          <option value="" selected="selected"></option>
+          <% current_user.playlist_tags.each do |tag| %>
+          <option value="<%= tag %>"><%= tag %></option>
+          <% end %>
+        </select>
+      </div>
+      <table id="Playlists" class="table">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Size</th>
+            <th>Visibility</th>
+            <th>Created</th>
+            <th>Updated</th>
+            <th>Tags</th>
+            <th class="text-right" data-orderable="false">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+        </tbody>
+      </table>
+      <div> </div>
+    <% end %>
+    <div>
+      <%# pass body to link_to to avoid block form of link_to which creates an odd underline that overflows the button %>
 
-  <% unless playlists.empty? %>
-  <div class="tag_filter_container">
-    Filter: <select name="tag_filter" class="tag_filter form-control input-sm" style="width:auto">
-      <option value="" selected="selected"></option>
-      <% current_user.playlist_tags.each do |tag| %>
-      <option value="<%= tag %>"><%= tag %></option>
+      <% if Settings['variations'].present? %>
+      <%= form_tag(import_variations_playlist_playlists_path, method:"post", enctype:"multipart/form-data", style:"display:inline") do %>
+      <input type="file" name="Filedata" class="filedata" style="visibility:hidden; display:inline; width:0;" />
+      <input type="button" class="btn btn-primary outline_on" id="variations_import"
+        onclick="$(this).closest('form').find('.filedata').click();" value="Import Variations Playlist" />
       <% end %>
-    </select>
+      <% end %>
+    </div>
   </div>
-  <table id="Playlists" class="table">
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Size</th>
-        <th>Visibility</th>
-        <th>Created</th>
-        <th>Updated</th>
-        <th>Tags</th>
-        <th class="text-right" data-orderable="false">Actions</th>
-      </tr>
-    </thead>
-    <tbody>
-    </tbody>
-  </table>
-  <div> </div>
+  <% unless !playlists.empty? %>
   <% end %>
-  <div>
-    <%# pass body to link_to to avoid block form of link_to which creates an odd underline that overflows the button %>
-
-    <% if Settings['variations'].present? %>
-    <%= form_tag(import_variations_playlist_playlists_path, method:"post", enctype:"multipart/form-data", style:"display:inline") do %>
-    <input type="file" name="Filedata" class="filedata" style="visibility:hidden; display:inline; width:0;" />
-    <input type="button" class="btn btn-primary outline_on" id="variations_import"
-      onclick="$(this).closest('form').find('.filedata').click();" value="Import Variations Playlist" />
-    <% end %>
-    <% end %>
-  </div>
-</div>
-<% unless playlists.empty? %>
-<% end %>
 <% end %>
 
 <%= render partial: 'copy_playlist_modal', locals: { with_refresh: true } %>
