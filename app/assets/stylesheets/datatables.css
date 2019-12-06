@@ -30,6 +30,10 @@ table.dataTable a {
   text-decoration: underline;
 }
 
+table.dataTable a.btn {
+  text-decoration: none;
+}
+
 table.dataTable thead .sorting,
 table.dataTable thead .sorting_asc,
 table.dataTable thead .sorting_desc,
