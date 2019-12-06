@@ -22,7 +22,7 @@ Unless required by applicable law or agreed to in writing, software distributed
         <% end %>
       </div>
 
-      <% unless current_page?(root_path) %>
+      <% unless current_page?(main_app.root_path) %>
       <div class="header-search">
         <%= render :partial=>'modules/avalon_search_form' %>
       </div>

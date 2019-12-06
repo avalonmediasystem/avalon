@@ -42,16 +42,16 @@ Unless required by applicable law or agreed to in writing, software distributed
       <% end %>
       <%= render 'modules/header' %>
       <%= render :partial => 'modules/global_navigation' %>
-      <main role="main" class="<%= "homepage-main" if current_page?(root_path) %>">
+      <main role="main" class="<%= "homepage-main" if current_page?(main_app.root_path) %>">
 
         <!-- Homepage -->
-        <% if current_page?(root_path) %>
+        <% if current_page?(main_app.root_path) %>
         <%= render 'modules/flash_messages' %>
         <%= yield %>
         <% end %>
 
         <!-- All other pages -->
-        <% unless current_page?(root_path) %>
+        <% unless current_page?(main_app.root_path) %>
         <div class="container">
           <%= render 'modules/flash_messages' %>
           <%= yield %>
