@@ -192,15 +192,11 @@ input[type='text']#admin_group {
   }
 
   td.access_list_label {
-    width: 55%;
-  }
-
-  td.access_list_dates {
-    width: 35%;
+    min-width: 20rem;
   }
 
   td.access_list_remove {
-    width: 10%;
+    min-width: 3rem;
   }
 }
 
