@@ -38,6 +38,7 @@ update_encode_progress = function() {
       $('.encode-progress').each(function(i, bar) {
         let encode_data = progress_data[$(bar).data('encode-id')]
         $(bar).closest('tr').find('.encode-status').text(encode_data['status'])
+        toggleCSS($(bar).closest('tr').find('.encode-progress'), encode_data['status'].toLowerCase())
         $(bar).val(encode_data['progress']);
         stop = stop && (encode_data['progress'] == 100)
       });
@@ -46,6 +47,14 @@ update_encode_progress = function() {
       }
     }
   );
+}
+
+toggleCSS = function(el, newClass) {
+  if(!el.hasClass(newClass)) {
+    el.removeClass();
+    el.addClass('encode-progress');
+    el.addClass(newClass);
+  }
 }
 
 $(document).ready( function () {
