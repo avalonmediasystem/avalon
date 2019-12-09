@@ -56,7 +56,7 @@ gem 'devise', '~> 4.4'
 gem 'devise_invitable', '~> 1.6'
 gem 'ims-lti', '~> 1.1.13'
 gem 'net-ldap'
-gem 'omniauth-identity'
+# gem 'omniauth-identity' # Uncomment to use legacy local database authentication
 gem 'omniauth-lti', git: "https://github.com/avalonmediasystem/omniauth-lti.git", tag: 'avalon-r4'
 
 # Media Access & Transcoding
@@ -133,6 +133,7 @@ group :test do
   gem 'fakefs', require: 'fakefs/safe'
   gem 'faker'
   gem 'hashdiff'
+  gem 'omniauth-identity'
   gem 'rails-controller-testing'
   gem 'rspec-retry'
   gem 'rspec_junit_formatter'
