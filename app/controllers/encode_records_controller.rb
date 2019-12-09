@@ -72,10 +72,15 @@ class EncodeRecordsController < ApplicationController
       "recordsFiltered": filtered_records_total,
       "data": @encode_records.collect do |encode|
         encode_presenter = EncodePresenter.new(encode)
+        encode_status = encode_presenter.status.downcase
+        unless encode_status == 'completed'
+          progress_class = 'progress-bar-striped'
+        end
+        encode_progress = format_progress(encode_presenter)
         [
           "<span data-encode-id=\"#{encode.id}\" class=\"encode-status\">#{encode_presenter.status}</span>",
           view_context.link_to(encode_presenter.id, Rails.application.routes.url_helpers.encode_record_path(encode)),
-          "<progress value=\"#{format_progress(encode_presenter)}\" max=\"100\" data-encode-id=\"#{encode.id}\" class=\"encode-progress #{encode_presenter.status.downcase}\"></progress>",
+          "<div class=\"progress\"><div class=\"progress-bar #{encode_status} #{progress_class}\" data-encode-id=\"#{encode.id}\" aria-valuenow=\"#{encode_progress}\" aria-valuemin=\"0\" aria-valuemax=\"100\" style=\"width: #{encode_progress}%\"></div></div>",
           encode_presenter.display_title,
           view_context.link_to(encode_presenter.master_file_id, encode_presenter.master_file_url),
           view_context.link_to(encode_presenter.media_object_id, encode_presenter.media_object_url),
