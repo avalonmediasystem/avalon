@@ -30,7 +30,6 @@
 @import 'avalon/playlists';
 @import 'avalon/timeliner';
 @import 'avalon/loading-spinner';
-@import 'avalon/encode-dashboard';
 
 body {
   .page-container {
@@ -848,5 +847,33 @@ h5.panel-title {
 
   .collection-carousel-item-title {
     margin: 1rem 0;
+  }
+}
+
+/*Encode dashboard progress bar */
+#encode-records {
+  .progress {
+    background-color: #BCBEBF;
+    text-align: left;
+    position: relative;
+    height: 13px;
+    margin: 8px 8px 8px 8px;
+    .completed {
+      background-color: $success;
+    }
+    .failed {
+      background-color: $danger;
+    }
+    .cancelled {
+      background-color: $gray;
+    }
+    .running {
+      background-color: $lightblue;
+    }
+    .progress-bar {
+      text-align: left;
+      line-height: 13px;
+      padding: 1px 10px 2px;
+    }
   }
 }
