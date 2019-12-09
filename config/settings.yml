@@ -70,17 +70,12 @@ encode_throttling:
 auth:
   registerable: true
   configuration:
-    - :name: Avalon Test Auth
-      :provider: :identity
-      :params:
-        :fields:
-        - :email
-          <% if ENV['LTI_AUTH_KEY'] %>
+    <% if ENV['LTI_AUTH_KEY'] %>
     - :name: Avalon Lti OAuth
       :provider: :lti
       :hidden: true
       :params:
         :oauth_credentials:
           <%= ENV['LTI_AUTH_KEY'] %>: <%= ENV['LTI_AUTH_SECRET'] %>
-            <% end %>
+    <% end %>
 # google_analytics_tracking_id: "someid"

@@ -45,7 +45,7 @@ gem 'bootstrap_form'
 gem 'iiif_manifest', '~> 0.6'
 gem 'rack-cors', require: 'rack/cors'
 gem 'recaptcha', require: 'recaptcha/rails'
-gem 'samvera-persona', '~> 0.1.6'
+gem 'samvera-persona', '~> 0.1.7'
 gem 'speedy-af', '~> 0.1.3'
 
 # Avalon Components
@@ -56,7 +56,7 @@ gem 'devise', '~> 4.4'
 gem 'devise_invitable', '~> 1.6'
 gem 'ims-lti', '~> 1.1.13'
 gem 'net-ldap'
-gem 'omniauth-identity'
+# gem 'omniauth-identity' # Uncomment to use legacy local database authentication
 gem 'omniauth-lti', git: "https://github.com/avalonmediasystem/omniauth-lti.git", tag: 'avalon-r4'
 
 # Media Access & Transcoding
@@ -133,6 +133,7 @@ group :test do
   gem 'fakefs', require: 'fakefs/safe'
   gem 'faker'
   gem 'hashdiff'
+  gem 'omniauth-identity'
   gem 'rails-controller-testing'
   gem 'rspec-retry'
   gem 'rspec_junit_formatter'
