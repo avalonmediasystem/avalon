@@ -19,6 +19,8 @@ class ApplicationController < ActionController::Base
   # Adds a few additional behaviors into the application controller
   include Blacklight::Controller
   include Hydra::Controller::ControllerBehavior
+  # To deal with a load order issue breaking persona impersonate
+  include Samvera::Persona::BecomesBehavior
   layout 'avalon'
 
   # Prevent CSRF attacks by raising an exception.
