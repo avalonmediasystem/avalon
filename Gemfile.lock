@@ -775,7 +775,7 @@ GEM
       rest-client
     rubyzip (1.2.2)
     safe_yaml (1.0.5)
-    samvera-persona (0.1.6)
+    samvera-persona (0.1.7)
       devise (~> 4.6)
       devise_invitable (~> 1.7)
       paranoia (~> 2.2)
@@ -1002,7 +1002,7 @@ DEPENDENCIES
   rspec-rails
   rspec-retry
   rspec_junit_formatter
-  samvera-persona (~> 0.1.6)
+  samvera-persona (~> 0.1.7)
   sass (= 3.4.22)
   sass-rails (~> 5.0)
   selenium-webdriver

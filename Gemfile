@@ -45,7 +45,7 @@ gem 'bootstrap_form'
 gem 'iiif_manifest', '~> 0.6'
 gem 'rack-cors', require: 'rack/cors'
 gem 'recaptcha', require: 'recaptcha/rails'
-gem 'samvera-persona', '~> 0.1.6'
+gem 'samvera-persona', '~> 0.1.7'
 gem 'speedy-af', '~> 0.1.3'
 
 # Avalon Components
