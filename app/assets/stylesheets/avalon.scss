@@ -55,6 +55,11 @@ input[type='text']#admin_group {
   margin-bottom: 0;
 }
 
+div.alert-danger {
+  color: white !important;
+  background-color: $danger !important;
+}
+
 .block {
   display: block;
 }
