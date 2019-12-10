@@ -1641,11 +1641,11 @@ Object.assign(_player2.default.prototype, {
 		t.newTime = 0;
 		t.forcedHandlePause = false;
 		t.setTransformStyle = function (element, value) {
-			element.style.transform = value;
 			element.style.webkitTransform = value;
 			element.style.MozTransform = value;
 			element.style.msTransform = value;
 			element.style.OTransform = value;
+			element.style.transform = value;
 		};
 
 		t.buffer.style.display = 'none';
