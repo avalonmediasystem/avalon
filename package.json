@@ -23,7 +23,8 @@
     "js-yaml": "^3.13.1",
     "lodash": "^4.17.15",
     "lodash.template": "^4.5.0",
-    "lodash.mergewith": "^4.6.2"
+    "lodash.mergewith": "^4.6.2",
+    "serialize-javascript": "^2.1.1"
   },
   "scripts": {
     "start-collection-index": "webpack-dev-server --mode development --config config/webpack/collection_index.js --host 0.0.0.0",
