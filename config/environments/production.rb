@@ -61,7 +61,6 @@ config.webpacker.check_yarn_integrity = false
   # config.force_ssl = true
 
   # Enable logging to both stdout and file, in more compact format
-  config.logger = Logger.new("| tee -a log/production.log")
   config.lograge.enabled = true
   config.lograge.custom_options = lambda do |event|
     {:time => event.time}
