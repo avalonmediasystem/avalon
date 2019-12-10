@@ -29,6 +29,13 @@ class ApplicationController < ActionController::Base
 
   around_action :handle_api_request, if: proc{|c| request.format.json? || request.format.atom? }
   before_action :rewrite_v4_ids, if: proc{|c| request.method_symbol == :get && [params[:id], params[:content]].compact.any? { |i| i =~ /^[a-z]+:[0-9]+$/}}
+  before_action :set_no_cache_headers, if: proc{|c| request.xhr? }
+
+  def set_no_cache_headers
+    response.headers["Cache-Control"] = "no-cache, no-store"
+    response.headers["Pragma"] = "no-cache"
+    response.headers["Expires"] = "Fri, 01 Jan 1990 00:00:00 GMT"
+  end
 
   def mejs
     session['mejs_version'] = params[:version] === '4' ? 4 : 2
