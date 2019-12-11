@@ -1752,6 +1752,7 @@ Object.assign(_player2.default.prototype, {
 				leftPos = t.timefloat.offsetWidth + width >= t.getElement(t.container).offsetWidth ? t.timefloat.offsetWidth / 2 : 0;
 				t.timefloat.style.left = leftPos + 'px';
 				t.timefloat.style.left = leftPos + 'px';
+				t.timefloat.style.bottom = '5px';
 				t.timefloat.style.display = 'block';
 			}
 		},
