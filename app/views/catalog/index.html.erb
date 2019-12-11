@@ -16,16 +16,14 @@
 
   <% if @featured_collection.present? %>
   <section class="homepage-splash-featured-collection">
-    <div class="row">
-      <div class="col-sm-5">
-        <%= image_tag poster_collection_url(@featured_collection.id), class: "img-responsive" %>
-      </div>
-      <div class="col-sm-7 homepage-splash-featured-collection-content">
-        <h3 class="serif-font">featured collection</h3>
-        <h2><%= @featured_collection.name %></h2>
-        <p><%= @featured_collection.description %></p>
-        <a href="<%= collection_url(@featured_collection.id) %>" class="btn btn-default">View Collection</a>
-      </div>
+    <div>
+      <%= image_tag poster_collection_url(@featured_collection.id), class: "homepage-featured-collection-image" %>
+    </div>
+    <div class="homepage-splash-featured-collection-content">
+      <h3 class="serif-font">featured collection</h3>
+      <h2><%= @featured_collection.name %></h2>
+      <p><%= @featured_collection.description %></p>
+      <a href="<%= collection_url(@featured_collection.id) %>" class="btn btn-default">View Collection</a>
     </div>
   </section>
   <% end %>
@@ -33,7 +31,8 @@
   <% if Settings.home_page&.carousel_collections&.present? %>
   <section class="homepage-splash-collections">
     <div class="container">
-      <h3 class="homepage-splash-collections-title serif-font"><a href="<%= collections_url %>">view all collections</a></h3>
+      <h3 class="homepage-splash-collections-title serif-font"><a href="<%= collections_url %>">view all collections</a>
+      </h3>
     </div>
     <div class="container-fluid">
       <%= react_component("CollectionCarousel", { baseUrl: collections_url(format: :json, only: :carousel, limit: 10) }) %>
@@ -41,7 +40,7 @@
   </section>
   <% end %>
 </div>
-<% else %>  
+<% else %>
 <div id="sidebar" class="<%= sidebar_classes %>">
   <%= render 'search_sidebar' %>
 </div>
