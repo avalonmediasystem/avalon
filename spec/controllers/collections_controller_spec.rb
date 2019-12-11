@@ -38,32 +38,38 @@ describe CollectionsController, type: :controller do
   end
 
   describe "#index" do
-    let!(:collection2) { FactoryBot.create(:collection, items: 1) }
-    let!(:collection3) { FactoryBot.create(:collection) }
-    let!(:public_media_object) { FactoryBot.create(:fully_searchable_media_object, collection: collection3) }
+    context 'gated discovery' do
+      let!(:collection2) { FactoryBot.create(:collection, items: 1) }
+      let!(:collection3) { FactoryBot.create(:collection) }
+      let!(:collection4) { FactoryBot.create(:collection) }
+      let!(:collection5) { FactoryBot.create(:collection) }
+      let!(:public_media_object) { FactoryBot.create(:fully_searchable_media_object, collection: collection3) }
+      let!(:unpublished_public_media_object) { FactoryBot.create(:fully_searchable_media_object, avalon_publisher: nil, collection: collection4) }
+      let!(:hidden_public_media_object) { FactoryBot.create(:fully_searchable_media_object, hidden: true, collection: collection5) }
 
-    it "admin should see all collections" do
-      login_as :administrator
-      get 'index'
-      expect(response).to be_ok
-      expect(assigns(:doc_presenters).count).to eql(3)
-      expect(assigns(:doc_presenters).map(&:id)).to match_array([collection.id, collection2.id, collection3.id])
-    end
+      it "admin should see all collections" do
+        login_as :administrator
+        get 'index'
+        expect(response).to be_ok
+        expect(assigns(:doc_presenters).count).to eql(5)
+        expect(assigns(:doc_presenters).map(&:id)).to match_array([collection.id, collection2.id, collection3.id, collection4.id, collection5.id])
+      end
 
-    it "managers should see their collections and collections with public items" do
-      login_user(collection.managers.first)
-      get 'index'
-      expect(response).to be_ok
-      expect(assigns(:doc_presenters).count).to eql(2)
-      expect(assigns(:doc_presenters).map(&:id)).to match_array([collection.id, collection3.id])
-    end
+      it "managers should see their collections and collections with public items" do
+        login_user(collection.managers.first)
+        get 'index'
+        expect(response).to be_ok
+        expect(assigns(:doc_presenters).count).to eql(3)
+        expect(assigns(:doc_presenters).map(&:id)).to match_array([collection.id, collection3.id, collection4.id])
+      end
 
-    it "end users should see collections with public items" do
-      login_as :user
-      get 'index'
-      expect(response).to be_ok
-      expect(assigns(:doc_presenters).count).to eql(1)
-      expect(assigns(:doc_presenters).map(&:id)).to match_array([collection3.id])
+      it "end users should see collections with published, non-hidden, public items" do
+        login_as :user
+        get 'index'
+        expect(response).to be_ok
+        expect(assigns(:doc_presenters).count).to eql(1)
+        expect(assigns(:doc_presenters).map(&:id)).to match_array([collection3.id])
+      end
     end
 
     context 'format json' do
@@ -72,13 +78,14 @@ describe CollectionsController, type: :controller do
         get 'index', params: { format: :json }
         expect(response).to be_ok
         expect(response.content_type).to eq "application/json"
-        expect(assigns(:doc_presenters).count).to eql(3)
-        expect(assigns(:doc_presenters).map(&:id)).to match_array([collection.id, collection2.id, collection3.id])
+        expect(assigns(:doc_presenters).count).to eql(1)
+        expect(assigns(:doc_presenters).map(&:id)).to match_array([collection.id])
       end
     end
 
     context 'only carousel' do
-      let(:home_page_config) { { home_page: { carousel_collections: [collection2.id, collection3.id] } } }
+      let!(:collection2) { FactoryBot.create(:collection, items: 1) }
+      let(:home_page_config) { { home_page: { carousel_collections: [collection2.id] } } }
 
       around(:example) do |example|
         Settings.add_source!(home_page_config)
@@ -92,18 +99,20 @@ describe CollectionsController, type: :controller do
         login_as :administrator
         get 'index', params: { only: "carousel" }
         expect(response).to be_ok
-        expect(assigns(:doc_presenters).count).to eql(2)
-        expect(assigns(:doc_presenters).map(&:id)).to match_array([collection2.id, collection3.id])
+        expect(assigns(:doc_presenters).count).to eql(1)
+        expect(assigns(:doc_presenters).map(&:id)).to match_array([collection2.id])
       end
     end
 
     context 'with limit' do
+      let!(:collection2) { FactoryBot.create(:collection, items: 1) }
+
       it 'limits the number of results returned' do
         login_as :administrator
-        get 'index', params: { limit: 2 }
+        get 'index', params: { limit: 1 }
         expect(response).to be_ok
-        expect(assigns(:doc_presenters).count).to eql(2)
-        expect([collection.id, collection2.id, collection3.id]).to include(*assigns(:doc_presenters).map(&:id))
+        expect(assigns(:doc_presenters).count).to eql(1)
+        expect([collection.id, collection2.id]).to include(*assigns(:doc_presenters).map(&:id))
       end
     end
   end
