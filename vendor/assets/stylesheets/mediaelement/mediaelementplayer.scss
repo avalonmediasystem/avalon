@@ -440,7 +440,7 @@ Reference: http://blog.rrwd.nl/2015/04/04/the-screen-reader-text-class-why-and-h
     bottom: 100%;
     color: #111;
     display: none;
-    height: 17px;
+    height: 14px;
     margin-bottom: 9px;
     position: absolute;
     text-align: center;
@@ -453,13 +453,14 @@ Reference: http://blog.rrwd.nl/2015/04/04/the-screen-reader-text-class-why-and-h
 .mejs__time-float-current {
     display: block;
     left: 0;
-    margin: 2px;
+    margin-top: 2px;
+    margin-left: 2px;
     text-align: center;
     width: 30px;
 }
 
 .mejs__time-float-corner {
-    border: solid 5px #eee;
+    border: solid 3px #eee;
     border-color: #eee transparent transparent;
     border-radius: 0;
     display: block;
