@@ -31,17 +31,21 @@ class CollectionSearchBuilder < Blacklight::SearchBuilder
   def add_access_controls_to_solr_params_if_not_admin(solr_parameters)
     ability = Ability.new(user) if user.present?
     ability ||= current_ability
+    only_published_items(solr_parameters, ability)
+    limit_to_non_hidden_items(solr_parameters, ability)
     apply_gated_discovery(solr_parameters, discovery_permissions, ability) if ability.cannot? :discover_everything, Admin::Collection
   end
 
   def gated_discovery_join(solr_parameters)
     temp_solr_parameters = {}
     add_access_controls_to_solr_params_if_not_admin(temp_solr_parameters)
-    query =  "{!join from=isMemberOfCollection_ssim to=id}*:*"
-    query += " AND (#{temp_solr_parameters[:fq].first})" if temp_solr_parameters[:fq].present?
-    solr_parameters[:q] = query
+
+    query =  "{!join from=isMemberOfCollection_ssim to=id}"
+    subquery = temp_solr_parameters[:fq].present? ? "(#{temp_solr_parameters[:fq].join(') AND (')})" : "*:*"
+    solr_parameters[:q] = query + subquery
     solr_parameters[:defType] = "lucene"
     solr_parameters[:rows] = 1_000_000
+    Rails.logger.debug("Solr parameters: #{solr_parameters.inspect}")
   end
 
   private
@@ -56,6 +60,21 @@ class CollectionSearchBuilder < Blacklight::SearchBuilder
     def apply_gated_discovery(solr_parameters, permission_types = discovery_permissions, ability = current_ability)
       solr_parameters[:fq] ||= []
       solr_parameters[:fq] << gated_discovery_filters(permission_types, ability).reject(&:blank?).join(' OR ')
-      Rails.logger.debug("Solr parameters: #{solr_parameters.inspect}")
+    end
+
+    # Copied from SearchBuilder
+    def only_published_items(solr_parameters, ability = current_ability)
+      if ability.cannot? :create, MediaObject
+        solr_parameters[:fq] ||= []
+        solr_parameters[:fq] << 'workflow_published_sim:"Published"'
+      end
+    end
+
+    # Copied from SearchBuilder
+    def limit_to_non_hidden_items(solr_parameters, ability = current_ability)
+      if ability.cannot? :discover_everything, MediaObject
+        solr_parameters[:fq] ||= []
+        solr_parameters[:fq] << [policy_clauses, "(*:* NOT hidden_bsi:true)"].compact.join(" OR ")
+      end
     end
 end
