@@ -14,6 +14,8 @@
 
 module Avalon
   class Intercom
+    attr_accessor :avalon
+
     def initialize(user, avalon = 'default')
       @user = user
       @avalon = Settings.intercom[avalon]
