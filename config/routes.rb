@@ -212,7 +212,6 @@ Rails.application.routes.draw do
   get '/about/health.yaml', to: 'about_page/about#health', defaults: { :format => 'yaml' }
   get '/about/health(.:format)', to: redirect('/')
 
-  require 'sidekiq/web'
   constraints(Avalon::Routing::CanConstraint.new(:manage, :jobs)) do
     mount Sidekiq::Web, at: '/jobs', as: 'jobs'
   end
