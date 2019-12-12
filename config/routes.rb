@@ -213,5 +213,8 @@ Rails.application.routes.draw do
   get '/about/health(.:format)', to: redirect('/')
 
   require 'sidekiq/web'
-  mount Sidekiq::Web, at: '/jobs'
+  constraints(Avalon::Routing::CanConstraint.new(:manage, :jobs)) do
+    mount Sidekiq::Web, at: '/jobs', as: 'jobs'
+  end
+  get '/jobs(.:format)', to: redirect('/')
 end
