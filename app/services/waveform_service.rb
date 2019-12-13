@@ -29,6 +29,7 @@ class WaveformService
       bits: @bit_res
     )
     get_normalized_peaks(uri).each { |peak| waveform.append(peak[0], peak[1]) }
+    return nil if waveform.size.zero?
     waveform.to_json
   end
 
@@ -37,6 +38,7 @@ private
   def get_normalized_peaks(uri)
     wave_io = get_wave_io(uri)
     peaks = gather_peaks(wave_io)
+    return [] if peaks.blank?
     max_peak = peaks.flatten.map(&:abs).max
     res = 2**(@bit_res - 1)
     factor = max_peak.zero? ? 1 : res / max_peak.to_f
