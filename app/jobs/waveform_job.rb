@@ -26,7 +26,10 @@ class WaveformJob < ActiveJob::Base
     service = WaveformService.new(8, SAMPLES_PER_FRAME)
     uri = file_uri(master_file) || playlist_url(master_file)
     json = service.get_waveform_json(uri)
-    return unless json.present?
+    if json.blank?
+      Rails.logger.error "No waveform generated for #{master_file.id}"
+      return
+    end
 
     master_file.waveform.content = Zlib::Deflate.deflate(json)
     master_file.waveform.mime_type = 'application/zlib'
