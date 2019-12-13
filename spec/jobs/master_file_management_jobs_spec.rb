@@ -45,6 +45,14 @@ describe MasterFileManagementJobs do
         expect(File.exists? newpath).to be true
         expect(newpath).to eq MasterFile.find(master_file.id).file_location
       end
+
+      it 'does nothing if masterfile already moved' do
+        newpath = master_file.file_location
+        MasterFileManagementJobs::Move.perform_now(master_file.id, newpath)
+        expect(File.exists? location).to be true
+        expect(File.exists? newpath).to be true
+        expect(newpath).to eq MasterFile.find(master_file.id).file_location
+      end
     end
 
     describe "move_masterfile with space in filename" do
