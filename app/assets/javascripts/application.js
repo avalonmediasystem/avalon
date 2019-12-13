@@ -36,6 +36,7 @@
 //= require modernizr
 //= require bootstrap-toggle
 //= require cropperjs/dist/cropper.min
+//= require url-search-params-polyfill/index.js
 
 // include all of our vendored js
 //= require_tree ../../../vendor/assets/javascripts/.

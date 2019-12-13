@@ -30,13 +30,14 @@
 var encodeProgressTimeout;
 
 update_encode_progress = function() {
-  let ids = $('.progress-bar').map(function(d){ return $(this).data('encode-id') }).get()
-  $.post($('#encode-records').data('progress-url'),
-    {ids},
-    function(progress_data) {
-      let stop = true;
+  var ids = $('.progress-bar').map(function(d){ return $(this).data('encode-id') }).get();
+  $.post({
+    url: $('#encode-records').data('progress-url'),
+    data: {ids: ids},
+    success: function(progress_data) {
+      var stop = true;
       $('.progress-bar').each(function(i, bar) {
-        let encode_data = progress_data[$(bar).data('encode-id')]
+        var encode_data = progress_data[$(bar).data('encode-id')]
         $(bar).closest('tr').find('.encode-status').text(encode_data['status'])
         toggleCSS($(bar), encode_data['status'].toLowerCase())
         $(bar).attr('aria-valuenow', encode_data['progress'])
@@ -47,6 +48,7 @@ update_encode_progress = function() {
         encodeProgressTimeout = setTimeout(update_encode_progress, 10000);
       }
     }
+  }
   );
 }
 
