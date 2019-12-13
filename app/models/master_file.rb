@@ -178,7 +178,7 @@ class MasterFile < ActiveFedora::Base
   # 250 MB is the file limit for now
   MAXIMUM_UPLOAD_SIZE = Settings.max_upload_size || 2.gigabytes
 
-  WORKFLOWS = ['fullaudio', 'avalon', 'pass_through'].freeze
+  WORKFLOWS = ['fullaudio', 'avalon', 'pass_through', 'avalon-skip-transcoding', 'avalon-skip-transcoding-audio'].freeze
   AUDIO_TYPES = ["audio/vnd.wave", "audio/mpeg", "audio/mp3", "audio/mp4", "audio/wav", "audio/x-wav"]
   VIDEO_TYPES = ["application/mp4", "video/mpeg", "video/mpeg2", "video/mp4", "video/quicktime", "video/avi"]
   UNKNOWN_TYPES = ["application/octet-stream", "application/x-upload-data"]
