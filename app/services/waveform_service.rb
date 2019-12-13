@@ -43,6 +43,8 @@ private
     res = 2**(@bit_res - 1)
     factor = max_peak.zero? ? 1 : res / max_peak.to_f
     peaks.map { |peak| peak.collect { |num| (num * factor).to_i } }
+  ensure
+    Process.wait(wave_io.pid) if wave_io&.pid
   end
 
   def get_wave_io(uri)
