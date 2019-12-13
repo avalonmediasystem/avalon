@@ -50,7 +50,7 @@ class EncodeRecordsController < ApplicationController
                           display_title LIKE :search_value OR
                           master_file_id LIKE :search_value OR
                           media_object_id LIKE :search_value OR
-                          CAST(created_at as char) LIKE :search_value
+                          CAST(created_at as char(19)) LIKE :search_value
                         ), search_value: "%#{search_value}%"
                       else
                         ::ActiveEncode::EncodeRecord.all
