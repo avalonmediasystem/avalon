@@ -45,12 +45,12 @@ class EncodeRecordsController < ApplicationController
     @encode_records = if search_value.present?
                         ::ActiveEncode::EncodeRecord.where %(
                           state LIKE :search_value OR
-                          CAST(id as varchar) LIKE :search_value OR
-                          CAST(progress as varchar) LIKE :search_value OR
+                          CAST(id as char) LIKE :search_value OR
+                          CAST(progress as char) LIKE :search_value OR
                           display_title LIKE :search_value OR
                           master_file_id LIKE :search_value OR
                           media_object_id LIKE :search_value OR
-                          CAST(created_at as varchar) LIKE :search_value
+                          CAST(created_at as char(19)) LIKE :search_value
                         ), search_value: "%#{search_value}%"
                       else
                         ::ActiveEncode::EncodeRecord.all
