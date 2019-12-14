@@ -882,3 +882,15 @@ h5.panel-title {
     }
   }
 }
+
+/* File upload step */
+.file-upload-buttons {
+  flex: 1 1 25%;
+  display: block;
+  padding-top: 7px;
+}
+
+#file-upload {
+  display: flex;
+}
+

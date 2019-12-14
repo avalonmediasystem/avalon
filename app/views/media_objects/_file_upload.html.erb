@@ -148,21 +148,21 @@ Unless required by applicable law or agreed to in writing, software distributed
 
         <%- field_tag_options = defined?(uploader_options) ? uploader_options : {multiple: true} %>
 
-        <div class="fileinput fileinput-new input-group" data-provides="fileinput">
+        <div class="fileinput fileinput-new input-group" id="file-upload" data-provides="fileinput">
           <div class="form-control upload-file-wrapper" data-trigger="fileinput">
             <i class="glyphicon glyphicon-file fileinput-exists"></i>
             <span class="fileinput-filename"></span>
           </div>
-          <a href="#" class="fileinput-submit fileinput-exists input-group-addon btn btn-default btn-file"
+          <a href="#" class="fileinput-submit fileinput-exists input-group-addon btn btn-default btn-file file-upload-buttons"
             data-trigger="submit" data-toggle="modal" data-target="#uploading">Upload</a>
 
-          <span class="input-group-addon btn btn-default btn-file">
+          <span class="input-group-addon btn btn-default btn-file file-upload-buttons">
             <span class="fileinput-new">Select file</span>
             <span class="fileinput-exists">Change</span>
             <input type="file" name="Filedata[]">
           </span>
 
-          <a href="#" class="input-group-addon btn btn-default fileinput-exists" data-dismiss="fileinput">Remove</a>
+          <a href="#" class="input-group-addon btn btn-default fileinput-exists file-upload-buttons" data-dismiss="fileinput">Remove</a>
           <span class="input-group-addon fileinput-exists"
             style="background-color: white; padding-top: 8px; padding-bottom: 2px; border: none;">
             <%= check_box_tag(:workflow, 'skip_transcoding', false, id: 'skip_transcoding')%>
