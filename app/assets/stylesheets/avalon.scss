@@ -466,9 +466,23 @@ div.status-detail {
 }
 
 #mediaobject_structure {
+  overflow-x: auto;
+
   a.structure_toggle,
   a.captions_toggle {
     cursor: pointer;
+  }
+
+  @media (max-width: 1199px) and (min-width: 768px) {
+    ul {
+      width: 750px;
+    }
+  }
+
+  @media (max-width: 767px) {
+    ul {
+      width: 730px;
+    }
   }
 
   ul {
