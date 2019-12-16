@@ -110,13 +110,6 @@ GIT
       omniauth
 
 GIT
-  remote: https://github.com/rkallensee/bootstrap-toggle-rails.git
-  revision: b85df8ea25ab71628fcec1504c7182dd5d7d3606
-  tag: v2.2.1.0
-  specs:
-    bootstrap-toggle-rails (2.2.1.0)
-
-GIT
   remote: https://github.com/samvera-labs/active_encode.git
   revision: 09cb5a345d498762650d1104e2ffeebe0f3b3e01
   branch: master
@@ -262,6 +255,7 @@ GEM
     bootstrap-sass (3.3.7)
       autoprefixer-rails (>= 5.2.1)
       sass (>= 3.3.4)
+    bootstrap-toggle-rails (2.2.1.0)
     bootstrap_form (4.2.0)
       actionpack (>= 5.0)
       activemodel (>= 5.0)
@@ -926,7 +920,7 @@ DEPENDENCIES
   bixby
   blacklight (< 7.0)
   bootsnap
-  bootstrap-toggle-rails!
+  bootstrap-toggle-rails
   bootstrap_form
   browse-everything (~> 0.13.0)
   byebug
