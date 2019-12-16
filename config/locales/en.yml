@@ -54,13 +54,13 @@ en:
       Creation date should only be used if Date is a re-issue date. Then Creation date
       would contain the original publication date. Enter date information in a format
       consistent with the options shown in <a
-      href="http://www.loc.gov/standards/datetime/pre-submission.html"
+      href="http://www.loc.gov/standards/datetime/"
       target="_blank">Extended Date/Time Format (EDTF) 1.0</a>.
     date_issued: |
       <strong>Required field.</strong> Date should be the main publication date
       associated with the item to be used for sorting browse and search results.
       Enter date information in a format consistent with the options shown in <a
-      href="http://www.loc.gov/standards/datetime/pre-submission.html"
+      href="http://www.loc.gov/standards/datetime/"
       target="_blank">Extended Date/Time Format (EDTF) 1.0</a>.
     genre: |
       Genre can be used to categorize an item by form, style, or subject matter. For
@@ -77,8 +77,7 @@ en:
     temporal_subject: |
       Time period should be used for the temporal subject of the content (for example,
       years or year ranges). Enter date information in a format consistent with the
-      options shown in <a href="http://www.loc.gov/standards/datetime/pre-
-      submission.html" target="_blank">Extended Date/Time Format (EDTF) 1.0</a>.
+      options shown in <a href="http://www.loc.gov/standards/datetime/" target="_blank">Extended Date/Time Format (EDTF) 1.0</a>.
     title: |
       <strong>Required field.</strong> Title is used for display in search results and
       single item views. Recommended use is to reflect the content captured in
