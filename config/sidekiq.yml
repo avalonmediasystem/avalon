@@ -9,6 +9,7 @@
   - ingest
   - ingest_finished_job
   - ingest_status_job
+  - mailers
   - master_file_management_move
   - master_file_management_delete
   - reindex
