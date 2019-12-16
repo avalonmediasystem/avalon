@@ -42,11 +42,11 @@ Unless required by applicable law or agreed to in writing, software distributed
   <% end %>
   <% if can?(:read, Admin::Collection) || can?(:manage, Admin::Group) || (defined?(Samvera::Persona) && can?(:manage, User)) %>
     <li>
-      <div class="btn-group" id="manage-dropdown">
-        <button id="manageDropdown" class="dropdown-toggle btn btn-primary manage-btn" data-toggle="dropdown">
+      <div class="btn-group manage-dropdown" id="manage-dropdown">
+        <button id="manageDropdown" class="btn btn-primary manage-btn" data-toggle="dropdown">
           Manage
         </button>
-        <ul class="dropdown-menu nav navbar-default navbar-nav manage-dropwdown-menu">
+        <ul class="dropdown-menu nav navbar-default navbar-nav manage-dropdown-menu">
           <% if can? :read, Admin::Collection %>
           <li class=<%= active_for_controller('admin/collections') %>>
             <%= link_to 'Manage Content', main_app.admin_collections_path %></li>
