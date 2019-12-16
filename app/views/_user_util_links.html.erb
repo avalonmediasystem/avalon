@@ -40,9 +40,9 @@ Unless required by applicable law or agreed to in writing, software distributed
     <% end %>
   </li>
   <% end %>
-
   <% if can?(:read, Admin::Collection) || can?(:manage, Admin::Group) || (defined?(Samvera::Persona) && can?(:manage, User)) %>
-    <div class="btn-group" id="manage-dropdown">
+    <li>
+      <div class="btn-group" id="manage-dropdown">
         <button id="manageDropdown" class="dropdown-toggle btn btn-primary manage-btn" data-toggle="dropdown">
           Manage
         </button>
@@ -67,7 +67,8 @@ Unless required by applicable law or agreed to in writing, software distributed
           <% end %>
           <% end %>
         </ul>
-    </div>
+      </div>
+    </li>
   <% end %>
 
   <li class="divider desktop-hidden" />
