@@ -138,23 +138,39 @@
   }
 }
 
+/* Manage menu in the nav-bar */
 .manage-btn {
   height: 50px;
-  font-size: 16px;
+  font-size: inherit;
   border: none;
   border-radius: 0px;
+  width: 100%;
+  text-align: left;
 }
 
 .manage-btn:hover {
   background-color: $yellow!important;
-}
-.manage-btn:focus {
-  background-color: $yellow;
+  color: $primaryDark;
 }
 
-.manage-dropwdown-menu {
-  border-radius: inherit;
+.manage-btn:focus {
+  background-color: $yellow;
+  color: $primaryDark;
+}
+
+.manage-dropdown-menu {
+  border: none;
   li {
     width: 100%;
+  }
+}
+
+.manage-dropdown {
+  width: 100%;
+}
+
+@media (max-width: $screen-xs-max) {
+  .manage-btn {
+    height: 40px;
   }
 }
