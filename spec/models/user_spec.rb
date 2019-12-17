@@ -15,15 +15,47 @@
 require 'rails_helper'
 
 describe User do
-  subject {user}
-  let!(:user) {FactoryBot.build(:user)}
-  let!(:list) {0.upto(rand(5)).collect { Faker::Internet.email }}
+  subject { user }
+  let!(:user) { FactoryBot.build(:user) }
+  let!(:list) { 0.upto(rand(5)).collect { Faker::Internet.email } }
 
   describe "validations" do
     it {is_expected.to validate_presence_of(:username)}
     it {is_expected.to validate_uniqueness_of(:username).case_insensitive}
     it {is_expected.to validate_presence_of(:email)}
     it {is_expected.to validate_uniqueness_of(:email).case_insensitive}
+
+    context 'username and email uniqueness' do
+      let(:username) { Faker::Internet.username }
+      let(:email) { Faker::Internet.email }
+
+      context "using an already used email for a username" do
+        let!(:user) { FactoryBot.create(:user, username: username, email: email) }
+        let(:user2) { FactoryBot.build(:user, username: email) }
+        it "is invalid" do
+          expect(user2).not_to be_valid
+          expect(user2.errors[:username]).to include "is taken."
+        end
+      end
+
+      context "using an already used username for an email" do
+        let(:username) { Faker::Internet.email }
+        let!(:user) { FactoryBot.create(:user, username: username, email: email) }
+        let(:user2) { FactoryBot.build(:user, email: username) }
+        it "is invalid" do
+          expect(user2).not_to be_valid
+          expect(user2.errors[:email]).to include "is taken."
+        end
+      end
+
+      context "using email for username" do
+        let!(:user) { FactoryBot.create(:user, username: email, email: email) }
+        it "is valid" do
+          expect(user).to be_valid
+          expect(user.errors).to be_empty
+        end
+      end
+    end
   end
 
   describe "Membership" do

@@ -35,8 +35,20 @@ class User < ActiveRecord::Base
 
   validates :username, presence: true, uniqueness: { case_sensitive: false }
   validates :email, presence: true, uniqueness: { case_sensitive: false }
+  validate :username_email_uniqueness
 
   before_destroy :remove_bookmarks
+
+  def username_email_uniqueness
+    if persisted?
+      errors.add(:email, :taken) if User.find_by_username(email) != self
+      errors.add(:username, :taken) if User.find_by_email(username) != self
+    else
+      errors.add(:email, :taken) if User.find_by_username(email)
+      errors.add(:username, :taken) if User.find_by_email(username)
+    end
+  end
+
   # Method added by Blacklight; Blacklight uses #to_s on your
   # user class to get a user-displayable login/identifier for
   # the account.
