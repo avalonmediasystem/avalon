@@ -6,6 +6,7 @@ import CollectionsSortedByUnit from './collections/list/CollectionsSortedByUnit'
 import CollectionsSortedByAZ from './collections/list/CollectionsSortedByAZ';
 import CollectionsFilterNoResults from './collections/CollectionsFilterNoResults';
 import PropTypes from 'prop-types';
+import LoadingSpinner from './ui/LoadingSpinner';
 
 class CollectionList extends Component {
   constructor(props) {
@@ -15,7 +16,8 @@ class CollectionList extends Component {
       searchResult: [],
       filteredResult: [],
       maxItems: 3,
-      sort: 'unit'
+      sort: 'unit',
+      isLoading: false
     };
   }
 
@@ -35,13 +37,15 @@ class CollectionList extends Component {
   }
 
   async retrieveResults() {
+    this.setState({ isLoading: true });
     let url = this.props.baseUrl;
 
     try {
       const response = await Axios({ url });
       this.setState({
         searchResult: response.data,
-        filteredResult: this.filterCollections(this.state.filter, response.data)
+        filteredResult: this.filterCollections(this.state.filter, response.data),
+        isLoading: false
       });
     } catch (error) {
       console.log('Error in retrieveResults(): ', error);
@@ -89,7 +93,7 @@ class CollectionList extends Component {
   };
 
   render() {
-    const { filter, sort, filteredResult = [], maxItems } = this.state;
+    const { filter, sort, filteredResult = [], maxItems, isLoading } = this.state;
 
     return (
       <div>
@@ -99,8 +103,8 @@ class CollectionList extends Component {
           sort={sort}
           handleSortChange={this.handleSortChange}
         />
-
-        {filteredResult.length === 0 && <CollectionsFilterNoResults />}
+        {isLoading && <LoadingSpinner isLoading={isLoading} />}
+        {(filteredResult.length === 0 && !isLoading) && <CollectionsFilterNoResults />}
 
         <div className="collection-list">
           {sort === 'az' ? (
