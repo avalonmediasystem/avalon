@@ -126,10 +126,7 @@ class Search extends Component {
         </div>
         <div className="collection-search-results-wrapper">
           <LoadingSpinner isLoading={isLoading} />
-          <SearchResults
-            documents={searchResult.docs}
-            baseUrl={this.props.baseUrl}
-          />
+          {!isLoading && <SearchResults documents={searchResult.docs} baseUrl={this.props.baseUrl} />}
         </div>
       </div>
     );
