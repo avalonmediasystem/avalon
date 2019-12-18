@@ -56,16 +56,35 @@ class ApplicationController < ActionController::Base
 
   def store_location
     store_location_for(:user, request.url)
-      if request.env["omniauth.params"].present? && request.env["omniauth.params"]["login_popup"].present?
-        session[:previous_url] = root_path + "self_closing.html"
-      end
+    if request.env["omniauth.params"].present? && request.env["omniauth.params"]["login_popup"].present?
+      session[:previous_url] = root_path + "self_closing.html"
+    end
   end
 
-  def after_sign_in_path_for(resource)
+  def after_sign_in_path_for(_resource)
     if request.env['QUERY_STRING']['login_popup'].present?
       root_path + "self_closing.html"
     else
-      request.env['omniauth.origin'] || stored_location_for(resource) || session[:previous_url] || root_path
+      request.env['omniauth.origin'] || find_redirect_url(nil)
+    end
+  end
+
+  # Used here and in omniauth_callbacks_controller
+  def find_redirect_url(auth_type, lti_group: nil)
+    previous_url = session.delete :previous_url
+    if params['target_id']
+      # Whitelist params that are allowed to be passed through via LTI
+      objects_path(params['target_id'], params.permit('t', 'position', 'token'))
+    elsif params[:url]
+      # Limit redirects to current host only (Fixes bug https://bugs.dlib.indiana.edu/browse/VOV-5662)
+      uri = URI.parse(params[:url])
+      request.host == uri.host ? uri.path : root_path
+    elsif auth_type == 'lti' && lti_group.present?
+      search_catalog_path('f[read_access_virtual_group_ssim][]' => lti_group)
+    elsif previous_url
+      previous_url
+    else
+      root_path
     end
   end
 
