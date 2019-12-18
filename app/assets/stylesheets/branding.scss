@@ -93,7 +93,7 @@ $state-warning-border: $warning;
 $state-warning-text: $white;
 $state-danger-bg: $danger;
 $state-danger-border: $danger;
-$state-danger-text: $white;
+$state-danger-text: $danger;
 
 /* Header */
 $login-text-color: $gray;
@@ -107,7 +107,7 @@ $navCollapseWidth: 650px;
 
 /* Navbar */
 $navbar-default-bg: $primaryDark;
-$avbar-default-color: $white;
+$navbar-default-color: $white;
 $navbar-default-toggle-hover-bg: $yellow;
 $navbar-default-link-color: $white;
 $navbar-default-link-hover-color: $primaryDark;
