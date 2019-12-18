@@ -43,24 +43,6 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
     find_user(sym.to_s)
   end
 
-  def find_redirect_url(auth_type, lti_group: nil)
-    previous_url = session.delete :previous_url
-    if params['target_id']
-      # Whitelist params that are allowed to be passed through via LTI
-      objects_path(params['target_id'], params.permit('t', 'position', 'token'))
-    elsif params[:url]
-      # Limit redirects to current host only (Fixes bug https://bugs.dlib.indiana.edu/browse/VOV-5662)
-      uri = URI.parse(params[:url])
-      request.host == uri.host ? uri.path : root_path
-    elsif auth_type == 'lti' && lti_group.present?
-      search_catalog_path('f[read_access_virtual_group_ssim][]' => lti_group)
-    elsif previous_url
-      previous_url
-    else
-      root_path
-    end
-  end
-
   def login_popup?
     params['login_popup'].present? || (request.env["omniauth.params"].present? && request.env["omniauth.params"]["login_popup"].present?)
   end
