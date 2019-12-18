@@ -40,13 +40,8 @@ class User < ActiveRecord::Base
   before_destroy :remove_bookmarks
 
   def username_email_uniqueness
-    if persisted?
-      errors.add(:email, :taken) if User.find_by_username(email) != self
-      errors.add(:username, :taken) if User.find_by_email(username) != self
-    else
-      errors.add(:email, :taken) if User.find_by_username(email)
-      errors.add(:username, :taken) if User.find_by_email(username)
-    end
+    errors.add(:email, :taken, value: email) if User.find_by_username(email) && User.find_by_username(email).id != id
+    errors.add(:username, :taken, valud: username) if User.find_by_email(username) && User.find_by_email(username).id != id
   end
 
   # Method added by Blacklight; Blacklight uses #to_s on your

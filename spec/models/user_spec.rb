@@ -55,6 +55,18 @@ describe User do
           expect(user.errors).to be_empty
         end
       end
+
+      context "updating" do
+        let!(:user) { FactoryBot.create(:user, username: username, email: email) }
+        it "is valid" do
+          user.username = "new.username"
+          expect(user).to be_valid
+          expect(user.errors).to be_empty
+          user.email = "new.email@example.com"
+          expect(user).to be_valid
+          expect(user.errors).to be_empty
+        end
+      end
     end
   end
 
