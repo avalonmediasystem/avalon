@@ -109,15 +109,6 @@ GIT
       ims-lti
       omniauth
 
-GIT
-  remote: https://github.com/samvera-labs/active_encode.git
-  revision: 09cb5a345d498762650d1104e2ffeebe0f3b3e01
-  branch: master
-  specs:
-    active_encode (0.6.0)
-      rails
-      sprockets (< 4)
-
 GEM
   remote: https://rubygems.org/
   specs:
@@ -166,6 +157,9 @@ GEM
     active_elastic_job (2.0.1)
       aws-sdk (~> 2)
       rails (>= 4.2)
+    active_encode (0.7.0)
+      rails
+      sprockets (< 4)
     active_fedora-datastreams (0.2.0)
       active-fedora (>= 11.0.0.pre, < 13)
       nom-xml (>= 0.5.1)
@@ -907,7 +901,7 @@ DEPENDENCIES
   active-fedora (~> 12.1)
   active_annotations (~> 0.2.2)
   active_elastic_job (~> 2.0)
-  active_encode!
+  active_encode (~> 0.7.0)
   active_fedora-datastreams (~> 0.2.0)
   activejob-traffic_control
   activerecord-session_store
