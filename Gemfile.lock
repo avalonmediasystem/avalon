@@ -624,7 +624,7 @@ GEM
       pry (>= 0.10.4)
     public_suffix (3.0.3)
     raabro (1.1.6)
-    rack (2.0.7)
+    rack (2.0.8)
     rack-cors (1.0.3)
     rack-protection (2.0.5)
       rack
