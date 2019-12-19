@@ -642,6 +642,8 @@ div.structure_edit {
 
 .tag_filter_container {
   display: inline-block;
+  float: right;
+  margin-left: 5px;
 }
 
 .tag_filter {
@@ -908,3 +910,22 @@ h5.panel-title {
   display: flex;
 }
 
+
+/* DataTables in Playlists, Timelines, Encode Dashboard */
+.dataTableToolsTop {
+  text-align: right;
+}
+
+@media (min-width: $screen-xs-max) {
+  .dataTables_length {
+    float: left;
+  }
+}
+
+/* Make table body scrollable in mobile devices */
+@media (max-width: $screen-xs-max) {
+  .dataTableBody {
+    width: 100%;
+    overflow-x: scroll;
+  }
+}

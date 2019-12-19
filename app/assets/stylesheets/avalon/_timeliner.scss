@@ -1,10 +1,8 @@
 /* Timeline index page */
-.timelines_top {
-  text-align: right;
-}
-
-#Timelines_info {
-  float: left;
+@media (min-width: 768px) {
+  #Timelines_info {
+    float: left;
+  }
 }
 
 #Timelines_length {
@@ -13,9 +11,4 @@
 
 #Timelines_paginate {
   float: right;
-}
-
-.timeline_filter_container {
-  display: inline-block;
-  margin-left: 1em;
 }
