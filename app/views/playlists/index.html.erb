@@ -81,13 +81,14 @@ Unless required by applicable law or agreed to in writing, software distributed
     $('#Playlists').DataTable({
       processing: true,
       serverSide: true,
+        dom:'<"dataTableToolsTop"if><"dataTableBody"t><"dataTableToolsBottom"rlp>',
+      autoWidth:true,
       ajax: {
         url: '/playlists/paged_index',
         type: 'POST'
       },
       order: [ <%= "[#{session[:playlist_sort][0]}, '#{session[:playlist_sort][1]}']".html_safe if session[:playlist_sort] %>
       ],
-      "sDom": '<"playlists_top"i<"playlist_filter_container"f>>tr<"playlists_bottom"lp>',
       "columns": [
         null,
         null,
@@ -103,7 +104,7 @@ Unless required by applicable law or agreed to in writing, software distributed
       window.apply_button_confirmation()
       window.add_copy_playlist_button_event()
       // move the tag filter into the datatables layout
-      $('.tag_filter_container').insertBefore('.playlist_filter_container');
+      $('.tag_filter_container').insertBefore('.dataTables_filter');
     });
   });
 

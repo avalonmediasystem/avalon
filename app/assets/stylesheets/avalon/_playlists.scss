@@ -159,12 +159,10 @@
 }
 
 /* Playlist index page */
-.playlists_top {
-  text-align: right;
-}
-
-#Playlists_info {
-  float: left;
+@media (min-width: 768px) {
+  #Playlists_info {
+    float: left;
+  }
 }
 
 #Playlists_length {
@@ -173,9 +171,4 @@
 
 #Playlists_paginate {
   float: right;
-}
-
-.playlist_filter_container {
-  display: inline-block;
-  margin-left: 1em;
 }
