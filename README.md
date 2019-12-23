@@ -20,18 +20,19 @@ Using Docker is the recommended method of setting up an Avalon Media System Deve
 * ```cd avalon```
 * ```cp config/controlled_vocabulary.yml.example config/controlled_vocabulary.yml```
 * ```docker-compose pull```
-* ```docker-compose up avalon```
+* `docker-compose run createbuckets`
+* ```docker-compose up avalon worker```
 * Try loading Avalon in your browser: ```localhost:3000```
 
 Avalon is served by Webrick in development mode so any changes will be picked up automatically.
 
-Rails debugging with Pry can be accessed by attaching to the docker container: ```docker attach avalon_container_name```. Now, when you reach a binding.pry breakpoint in rails, you can step through the breakpoint in that newly attached session.
+Rails debugging with Pry can be accessed by attaching to the docker container: ```docker attach avalon_container_name```, make sure your container is running in background (detached mode). Now, when you reach a binding.pry breakpoint in rails, you can step through the breakpoint in that newly attached session.
 
 To get live compilation and hot-reload when developing with Javascript, run ```WEBPACKER_DEV_SERVER_HOST=0.0.0.0 $NODE_PATH/.bin/webpack-dev-server --config /home/app/avalon/config/webpack/development.js``` inside the avalon container.
 
 To run tests, first bring up the test stack then run Rspec as usual:
-* ```docker-compose up test```.
-* ```docker-compose exec test bash -c "bundle exec rspec"```.
+* ```docker-compose up test```
+* ```docker-compose exec test bash -c "bundle exec rspec"```
 
 ## (Not Recommended) Manually Setting Up an Avalon Media System Development Environment
 > **Warning**: The docker instructions above are the currently maintained development environment.  If you're unable to use docker you can try the instructions below but they may be out of date.
