@@ -395,8 +395,12 @@ a[data-trigger='submit'] {
   }
 }
 
-#content {
-  max-width: 870px;
+@media (max-width: $screen-xs-max) {
+  #content {
+    .btn {
+      margin-top: 2px;
+    }
+  }
 }
 
 #resource_description_content {
