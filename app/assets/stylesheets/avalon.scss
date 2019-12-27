@@ -911,7 +911,7 @@ h5.panel-title {
 }
 
 
-/* DataTables in Playlists, Timelines, Encode Dashboard */
+/* DataTables in Playlists, Timelines, Persona Users, and Encode Dashboard */
 .dataTableToolsTop {
   text-align: right;
 }
@@ -922,10 +922,21 @@ h5.panel-title {
   }
 }
 
-/* Make table body scrollable in mobile devices */
+// Make table body scrollable in mobile devices
 @media (max-width: $screen-xs-max) {
   .dataTableBody {
     width: 100%;
     overflow-x: scroll;
   }
+}
+
+// Action column of each table
+#Playlists, #Timelines, #users-table {
+  td:last-child {
+    white-space: nowrap;
+  }
+}
+
+#users-table th, td{
+  padding-right: 6px !important;
 }
