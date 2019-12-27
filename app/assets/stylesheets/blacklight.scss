@@ -23,3 +23,15 @@
 .result-thumbnail img, img.result-thumbnail {
   max-width: 160px;
 }
+
+.nav-pills > li + li {
+  margin-left: 0px;
+}
+
+.nav-pills > li {
+  margin-right: 2px;
+}
+
+.clear-bookmarks {
+  margin-left: 0px;
+}
