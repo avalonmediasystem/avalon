@@ -46,8 +46,10 @@ Unless required by applicable law or agreed to in writing, software distributed
 
         <!-- Homepage -->
         <% if current_page?(main_app.root_path) %>
-        <%= render 'modules/flash_messages' %>
-        <%= yield %>
+          <div class="<%= "container" unless Settings.home_page.present? %>">
+            <%= render 'modules/flash_messages' %>
+            <%= yield %>
+          </div>
         <% end %>
 
         <!-- All other pages -->
