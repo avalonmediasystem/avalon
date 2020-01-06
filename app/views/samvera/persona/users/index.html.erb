@@ -39,63 +39,57 @@ Unless required by applicable law or agreed to in writing, software distributed
 </div>
 
 
-<div class="panel panel-default users-listing">
-  <div class="panel-heading">
-      <%= t('.describe_users_html', count: @presenter.user_count) %>
-  </div>
-
-  <div class="panel-body">
-    <table id="users-table" class="table table-striped datatable">
-      <thead>
-        <tr>
-          <th><%= t('.id_label') %></th>
-          <th><%= t('.email_label') %></th>
-          <th><%= t('.role_label') %></th>
-          <th><%= t('.access_label') %></th>
-          <th><%= t('.status_label') %></th>
-          <% if User.column_names.include? 'provider' %>
-            <th><%= t('.auth_label') %></th>
-          <% end %>
-          <th class="text-right" data-orderable="false"><%= t('.action_label') %></th>
-        </tr>
-      </thead>
-      <tbody>
-        <% @presenter.users.each do |user| %>
-          <tr>
-            <td><%= link_to user.username, main_app.edit_persona_user_path(user) %></td>
-            <td><%= link_to user.email, main_app.edit_persona_user_path(user) %></td>
-            <td><% roles = @presenter.user_roles(user) %>
-                <ul><% roles.each do |role| %>
-                  <li><%= role %></li>
-                  <% end %>
-                </ul>
-            </td>
-            <td>
-              <%# in the case that a user is created who never signs in, this is necessary %>
-              <relative-time datetime="<%= @presenter.last_accessed(user).getutc.iso8601 %>" title="<%= @presenter.last_accessed(user).to_formatted_s(:standard) %>">
-                <%= @presenter.last_accessed(user).to_formatted_s(:long_ordinal) %>
-              </relative-time>
-            </td>
-            <td><%= user.accepted_or_not_invited? ? t('.status.active') : t('.status.pending') %></td>
-            <% if user.has_attribute?(:provider) %>
-              <td>
-                <%= user.provider %>
-              </td>
-            <% end %>
-            <td>
-              <% if user.has_attribute?(:provider) && !user.provider.nil? %>
-                <span class="text-muted" data-toggle="tooltip" title="Edit user is unavailable because this user is single sign on"><%= t('.edit') %>&nbsp;|&nbsp;</span>
-              <% else %>
-                <%= link_to t('.edit'), main_app.edit_persona_user_path(user) %>&nbsp;|&nbsp;
-              <% end %>
-              <%= link_to t('.become'), main_app.impersonate_persona_user_path(user.id), method: :post %>&nbsp;|&nbsp; 
-              <%= link_to t('.delete'), main_app.persona_user_path(user), class: 'btn btn-danger btn-xs action-delete', method: :delete, data: { confirm: t('.destroy.confirmation', user: user.email) } %>
-            </td>
-          </tr>
+<div class="users-listing">
+  <table id="users-table" class="table table-striped datatable">
+    <thead>
+      <tr>
+        <th><%= t('.id_label') %></th>
+        <th><%= t('.email_label') %></th>
+        <th><%= t('.role_label') %></th>
+        <th><%= t('.access_label') %></th>
+        <th><%= t('.status_label') %></th>
+        <% if User.column_names.include? 'provider' %>
+          <th><%= t('.auth_label') %></th>
         <% end %>
-      </tbody>
-    </table>
-  </div>
+        <th data-orderable="false"><%= t('.action_label') %></th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @presenter.users.each do |user| %>
+        <tr>
+          <td><%= link_to user.username, main_app.edit_persona_user_path(user) %></td>
+          <td><%= link_to user.email, main_app.edit_persona_user_path(user) %></td>
+          <td><% roles = @presenter.user_roles(user) %>
+              <ul><% roles.each do |role| %>
+                <li><%= role %></li>
+                <% end %>
+              </ul>
+          </td>
+          <td>
+            <%# in the case that a user is created who never signs in, this is necessary %>
+            <relative-time datetime="<%= @presenter.last_accessed(user).getutc.iso8601 %>" title="<%= @presenter.last_accessed(user).to_formatted_s(:standard) %>">
+              <%= @presenter.last_accessed(user).to_formatted_s(:long_ordinal) %>
+            </relative-time>
+          </td>
+          <td><%= user.accepted_or_not_invited? ? t('.status.active') : t('.status.pending') %></td>
+          <% if user.has_attribute?(:provider) %>
+            <td>
+              <%= user.provider %>
+            </td>
+          <% end %>
+          <td>
+            <% if user.has_attribute?(:provider) && !user.provider.nil? %>
+              <span class="text-muted" data-toggle="tooltip" title="Edit user is unavailable because this user is single sign on"><%= t('.edit') %>&nbsp;|&nbsp;</span>
+            <% else %>
+              <%= link_to t('.edit'), main_app.edit_persona_user_path(user) %>&nbsp;|&nbsp;
+            <% end %>
+            <%= link_to t('.become'), main_app.impersonate_persona_user_path(user.id), method: :post %>&nbsp;|&nbsp; 
+            <%= link_to t('.delete'), main_app.persona_user_path(user), class: 'btn btn-danger btn-xs action-delete', method: :delete, data: { confirm: t('.destroy.confirmation', user: user.email) } %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
 </div>
 
 <% content_for :page_scripts do %>
