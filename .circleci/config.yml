@@ -25,7 +25,7 @@ jobs:
     parameters:
       ruby_ver:
         description: "Ruby version"
-        default: "2.5.5"
+        default: "2.7.0"
         type: "string"
       solr_port:
         type: string
@@ -121,4 +121,4 @@ workflows:
       - upload-coverage:
           parallelism: 4
           requires:
-             - Ruby2-5-5
+             - Ruby2-7-0
