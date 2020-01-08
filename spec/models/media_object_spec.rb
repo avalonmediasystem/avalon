@@ -1,4 +1,4 @@
-# Copyright 2011-2019, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2020, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 #
@@ -443,13 +443,13 @@ describe MediaObject do
 
   describe '#finished_processing?' do
     it 'returns true if the statuses indicate processing is finished' do
-      media_object.ordered_master_files += [FactoryBot.create(:master_file, status_code: 'CANCELLED')]
-      media_object.ordered_master_files += [FactoryBot.create(:master_file, status_code: 'COMPLETED')]
+      media_object.ordered_master_files += [FactoryBot.create(:master_file, :cancelled_processing)]
+      media_object.ordered_master_files += [FactoryBot.create(:master_file, :completed_processing)]
       expect(media_object.finished_processing?).to be true
     end
     it 'returns true if the statuses indicate processing is not finished' do
-      media_object.ordered_master_files += [FactoryBot.create(:master_file, status_code: 'CANCELLED')]
-      media_object.ordered_master_files += [FactoryBot.create(:master_file, status_code: 'RUNNING')]
+      media_object.ordered_master_files += [FactoryBot.create(:master_file, :cancelled_processing)]
+      media_object.ordered_master_files += [FactoryBot.create(:master_file)]
       expect(media_object.finished_processing?).to be false
     end
   end
@@ -478,6 +478,10 @@ describe MediaObject do
     let(:media_object) { FactoryBot.create(:media_object, :with_master_file) }
     let(:master_file) { media_object.master_files.first }
 
+    before do
+      allow(master_file).to receive(:stop_processing!)
+    end
+
     it 'destroys related master_files' do
       expect { media_object.destroy }.to change { MasterFile.exists?(master_file) }.from(true).to(false)
     end
@@ -486,6 +490,9 @@ describe MediaObject do
       FactoryBot.create(:master_file, media_object: media_object)
       media_object.reload
       expect(media_object.master_files.size).to eq 2
+      media_object.master_files.each do |mf|
+        allow(mf).to receive(:stop_processing!)
+      end
       expect { media_object.destroy }.to change { MasterFile.count }.from(2).to(0)
       expect(MediaObject.exists?(media_object.id)).to be_falsey
     end
@@ -650,7 +657,7 @@ describe MediaObject do
 
       it 'logs an error when the permalink service returns an exception' do
         Permalink.on_generate{ 1 / 0 }
-        expect(Rails.logger).to receive(:error)
+        expect(Rails.logger).to receive(:error).at_least(:once)
         media_object.ensure_permalink!
       end
 
@@ -686,8 +693,8 @@ describe MediaObject do
         media_object.resource_type = "moving image"
         media_object.format = "video/mpeg"
         instance = double("instance")
-        allow(Avalon::BibRetriever).to receive(:instance).and_return(instance)
-        allow(Avalon::BibRetriever.instance).to receive(:get_record).and_return(mods)
+        allow(Avalon::BibRetriever).to receive(:for).and_return(instance)
+        allow(instance).to receive(:get_record).and_return(mods)
       end
 
       it 'should not override format' do
@@ -706,7 +713,6 @@ describe MediaObject do
       let!(:request) { stub_request(:get, sru_url).to_return(body: sru_response) }
 
       it 'should strip whitespace off bib_id parameter' do
-        Settings.bib_retriever = { 'protocol' => 'sru', 'url' => 'http://zgate.example.edu:9000/db' }
         expect { media_object.descMetadata.populate_from_catalog!(" #{bib_id} ", 'local') }.to change { media_object.title }.to "245 A : B F G K N P S"
         expect(request).to have_been_requested
       end
@@ -716,12 +722,10 @@ describe MediaObject do
       let(:sru_response) { File.read(File.expand_path("../../fixtures/#{bib_id}-unknown.xml",__FILE__)) }
       let!(:request) { stub_request(:get, sru_url).to_return(body: sru_response) }
       it 'should not replace the previous value if there is one' do
-        Settings.bib_retriever = { 'protocol' => 'sru', 'url' => 'http://zgate.example.edu:9000/db' }
         expect { media_object.descMetadata.populate_from_catalog!(" #{bib_id} ", 'local') }.to_not change { media_object.date_issued }
         expect(request).to have_been_requested
       end
       it 'should replace missing value with unknown/unknown' do
-        Settings.bib_retriever = { 'protocol' => 'sru', 'url' => 'http://zgate.example.edu:9000/db' }
         media_object.date_issued = ''
         expect { media_object.descMetadata.populate_from_catalog!(" #{bib_id} ", 'local') }.to change { media_object.date_issued }.to 'unknown/unknown'
         expect(request).to have_been_requested
@@ -831,6 +835,62 @@ describe MediaObject do
 
     it 'strips trailing new line characters' do
       expect(media_object.related_item_url.first[:url]).to eq url
+    end
+  end
+
+  describe '#rights_statement' do
+    let(:media_object) { FactoryBot.build(:media_object).tap {|mo| mo.workflow.last_completed_step = "resource-description"} }
+    let(:rights_statement_uri) { ModsDocument::RIGHTS_STATEMENTS.keys.first }
+
+    it 'has a rights_statement' do
+      expect(media_object).to respond_to(:rights_statement)
+      expect { media_object.rights_statement = rights_statement_uri }.to change { media_object.rights_statement }.from(nil).to(rights_statement_uri)
+    end
+
+    it 'is indexed' do
+      media_object.rights_statement = rights_statement_uri
+      expect(media_object.to_solr["rights_statement_ssi"]).to eq rights_statement_uri
+    end
+
+    it 'roundtrips' do
+      media_object.rights_statement = rights_statement_uri
+      media_object.save!
+      expect(media_object.reload.rights_statement).to eq rights_statement_uri
+    end
+
+    context 'validation' do
+      it 'returns true values in controlled vocabulary' do
+        media_object.rights_statement = rights_statement_uri
+        expect(media_object.valid?).to be_truthy
+        expect(media_object.errors[:rights_statement]).to be_empty
+      end
+
+      it 'returns false and sets errors for values not in controlled vocabulary' do
+        media_object.rights_statement = 'bad-value'
+        expect(media_object.valid?).to be_falsey
+        expect(media_object.errors[:rights_statement]).not_to be_empty
+      end
+    end
+  end
+
+  describe '#terms_of_use' do
+    let(:media_object) { FactoryBot.build(:media_object).tap {|mo| mo.workflow.last_completed_step = "resource-description"} }
+    let(:terms_of_use_value) { "Example terms of use" }
+
+    it 'has a terms_of_use' do
+      expect(media_object).to respond_to(:terms_of_use)
+      expect { media_object.terms_of_use = terms_of_use_value }.to change { media_object.terms_of_use }.from(nil).to(terms_of_use_value)
+    end
+
+    it 'is indexed' do
+      media_object.terms_of_use = terms_of_use_value
+      expect(media_object.to_solr["terms_of_use_si"]).to eq terms_of_use_value
+    end
+
+    it 'roundtrips' do
+      media_object.terms_of_use = terms_of_use_value
+      media_object.save!
+      expect(media_object.reload.terms_of_use).to eq terms_of_use_value
     end
   end
 end

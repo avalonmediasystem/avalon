@@ -1,4 +1,4 @@
-# Copyright 2011-2019, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2020, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 #
@@ -14,7 +14,7 @@
 
 class Users::SessionsController < Devise::SessionsController
   def new
-    if Avalon::Authentication::VisibleProviders.length == 1
+    if Avalon::Authentication::VisibleProviders.length == 1 && params[:admin].blank?
       omniauth_params = params.reject { |k,v| ['controller','action'].include?(k) }
       omniauth_params.permit!
       login_path = user_omniauth_authorize_path(Avalon::Authentication::VisibleProviders.first[:provider], omniauth_params)

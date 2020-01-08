@@ -1,4 +1,4 @@
-# Copyright 2011-2019, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2020, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 #
@@ -88,12 +88,8 @@ module ApplicationHelper
 
   def avalon_image_tag(document, image_options)
     image_url = image_for(document)
-    if image_url.present?
-      link_to(media_object_path(document[:id]), {class: 'result-thumbnail'}) do
-        image_tag(image_url)
-      end
-    else
-      image_tag 'no_icon.png', class: 'result-thumbnail'
+    link_to(media_object_path(document[:id]), {class: 'result-thumbnail'}) do
+      image_url.present? ? image_tag(image_url) : image_tag('no_icon.png')
     end
   end
 
@@ -102,10 +98,10 @@ module ApplicationHelper
     return if sanitized_values.empty? and default.nil?
     sanitized_values = Array(default) if sanitized_values.empty?
     label = label.pluralize(sanitized_values.size)
-    result = content_tag(:dt, label) +
-    content_tag(:dd) {
-      safe_join(sanitized_values,'; ')
-    }
+    contents = content_tag(:dd) do
+      content_tag(:pre) { safe_join(sanitized_values, '; ') }
+    end
+    content_tag(:dt, label) + contents
   end
 
   def search_result_label item
@@ -159,12 +155,19 @@ module ApplicationHelper
     output
   end
 
-  # display millisecond times in HH:MM:SS format
+  # display millisecond times in HH:MM:SS.sss format
   # @param [Float] milliseconds the time to convert
-  # @return [String] time in HH:MM:SS
-  def pretty_time( milliseconds )
-    duration = milliseconds/1000
-    Time.at(duration).utc.strftime(duration<3600?'%M:%S':'%H:%M:%S')
+  # @return [String] time in HH:MM:SS.sss
+  def pretty_time(milliseconds)
+    milliseconds = Float(milliseconds).to_int # will raise TypeError or ArgumentError if unparsable as a Float
+    return "00:00:00.000" if milliseconds <= 0
+
+    total_seconds = milliseconds / 1000.0
+    hours = (total_seconds / (60 * 60)).to_i.to_s.rjust(2, "0")
+    minutes = ((total_seconds / 60) % 60).to_i.to_s.rjust(2, "0")
+    seconds = (total_seconds % 60).to_i.to_s.rjust(2, "0")
+    frac_seconds = (milliseconds % 1000).to_s.rjust(3, "0")[0..2]
+    hours + ":" + minutes + ":" + seconds + "." + frac_seconds
   end
 
   FLOAT_PATTERN = Regexp.new(/^\d+([.]\d*)?$/).freeze

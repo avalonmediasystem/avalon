@@ -1,4 +1,4 @@
-# Copyright 2011-2019, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2020, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 #
@@ -80,7 +80,7 @@ module MediaObjectsHelper
           notes = note_type == 'table of contents'? media_object.table_of_contents : gather_notes_of_type(media_object, note_type)
           notes.each_with_index do |note, i|
             note_string += "<p class='item_note_header'>#{note_types[note_type]}</p>" if i==0 and note_type!='general'
-            note_string += simple_format(note, class:'item_note')
+            note_string += "<pre>#{note}</pre>"
           end
         end
         note_string
@@ -98,6 +98,14 @@ module MediaObjectsHelper
         media_object.related_item_url.collect{ |r| link_to( r[:label], r[:url]) }
       end
 
+      def display_rights_statement media_object
+        return nil unless media_object.rights_statement.present?
+        label = ModsDocument::RIGHTS_STATEMENTS[media_object.rights_statement]
+        return nil unless label.present?
+        link = link_to label, media_object.rights_statement, target: '_blank'
+        content_tag(:dt, 'Rights Statement') + content_tag(:dd) { link }
+      end
+
       def current_quality stream_info
         available_qualities = Array(stream_info[:stream_flash]).collect {|s| s[:quality]}
         available_qualities += Array(stream_info[:stream_hls]).collect {|s| s[:quality]}
@@ -110,6 +118,16 @@ module MediaObjectsHelper
 
       def is_current_section? section
          @currentStream && ( section.id == @currentStream.id )
+      end
+
+      def show_progress?(sections)
+        encode_gids = sections.collect { |mf| "gid://ActiveEncode/#{mf.encoder_class}/#{mf.workflow_id}" }
+        ActiveEncode::EncodeRecord.where(global_id: encode_gids).any? { |encode| encode.state.to_s.upcase != 'COMPLETED' }
+      end
+
+      def any_failed?(sections)
+        encode_gids = sections.collect { |mf| "gid://ActiveEncode/#{mf.encoder_class}/#{mf.workflow_id}" }
+        ActiveEncode::EncodeRecord.where(global_id: encode_gids).any? { |encode| encode.state.to_s.upcase == 'FAILED' }
       end
 
       def hide_sections? sections
@@ -216,7 +234,7 @@ EOF
           url = "#{share_link_for( section )}?t=#{start},#{stop}"
           segment_id = "#{section.id}-#{tracknumber}"
           data = {segment: section.id, is_video: section.file_format != 'Sound', native_url: native_url, fragmentbegin: start, fragmentend: stop}
-          link = link_to label, url, id: segment_id, data: data, class: 'playable structure wrap'
+          link = link_to label.html_safe, url, id: segment_id, data: data, class: 'playable structure wrap'
           return "<li class='stream-li'>#{link}</li>", tracknumber
         end
       end

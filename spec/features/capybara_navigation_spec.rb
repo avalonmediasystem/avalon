@@ -1,4 +1,4 @@
-# Copyright 2011-2019, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2020, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 #
@@ -30,7 +30,7 @@ describe 'checks navigation after logging in' do
     click_link('Manage Content')
     expect(page.current_url).to eq('http://www.example.com/admin/collections')
     expect(page).to have_content('Skip to main content')
-    expect(page).to have_link('Manage Selected Items (0)')
+    expect(page).to have_link('Selected Items (0)')
     expect(page).to have_button('Create Collection')
     expect(page).to have_content('Name')
     expect(page).to have_content('Description')
@@ -72,14 +72,14 @@ end
 describe 'Search' do
   it 'is able to enter keyword and perform search' do
     visit '/'
-    fill_in('Search', with: 'Video')
-    click_button 'Search'
+    fill_in('Search', with: 'Video', match: :first)
+    click_button('global-search-submit', match: :first)
     expect(page.current_url).to eq('http://www.example.com/catalog?utf8=%E2%9C%93&search_field=all_fields&q=Video')
   end
   it 'gives appropriate error when keyword returns no results' do
     visit '/'
-    fill_in('Search', with: 'Video')
-    click_button 'Search'
+    fill_in('Search', with: 'Video', match: :first)
+    click_button('global-search-submit', match: :first)
     expect(page).to have_content('No results found for your search')
     expect(page).to have_content('No entries found')
     expect(page).to have_content('Use fewer keywords to start, then refine your search using the links on the left')

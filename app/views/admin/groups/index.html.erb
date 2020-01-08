@@ -1,5 +1,5 @@
 <%#
-Copyright 2011-2019, The Trustees of Indiana University and Northwestern
+Copyright 2011-2020, The Trustees of Indiana University and Northwestern
   University.  Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
 
@@ -15,93 +15,114 @@ Unless required by applicable law or agreed to in writing, software distributed
 %>
 <% @page_title = t('groups.title', :application_name => application_name) %>
 
-<div class="row col-md-9 col-lg-8">
-  <div class="container-fluid">
-    <h3>System Groups</h3>
-      <table class="table table-striped ">
-        <thead>
-          <tr>
-            <th>Group Name</th>
-            <th>Members#</th>
-          </tr>
-        </thead>
-        <tbody>
-          <% @default_groups.each do |group|%>
+<div class="page-title-wrapper">
+  <h1>Manage Groups</h1>
+</div>
+
+<div class="row">
+  <div class="col-md-6">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h2 class="panel-title">System Groups</h2>
+      </div>
+      <div class="panel-body">
+        <table class="table table-striped ">
+          <thead>
+            <tr>
+              <th>Group Name</th>
+              <th>Members#</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% @default_groups.each do |group|%>
             <tr>
               <td><%= link_to_if can?(:manage, group), group.name, edit_admin_group_path(group) %></td>
               <td><%= group.users.count %></td>
             </tr>
-          <% end %>
-        </tbody>
-      </table>
-  </div>
-  <div class="container-fluid">
-    <h3> Additional Groups</h3>
-
-    <%= form_tag(admin_groups_path) do -%>
-      <div class="col-xs-9 col-sm-10">
-        <%= text_field_tag 'admin_group', nil, :placeholder => 'Enter group name here...', class: 'form-control' %>
+            <% end %>
+          </tbody>
+        </table>
       </div>
-      <%= button_tag 'Create Group', type: 'submit', class: 'btn btn-default col-xs-3 col-sm-2' %>
-    <% end -%>
-
+    </div>
   </div>
-  <div class="container-fluid">
-    <%= form_tag update_multiple_admin_groups_path, method: :put do %>
 
-      <table class="table table-striped">
-        <thead>
-          <tr>
-            <th><input type="checkbox" class="select-groups"></th>
-            <th>Group Name</th>
-            <th>Members#</th>
-          </tr>
-        </thead>
-        <tbody>
-          <% @groups.each do |group|%>
+  <div class="col-md-6">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h2 class="panel-title"> Additional Groups</h2>
+      </div>
+      <div class="panel-body">
+        <%= form_tag(admin_groups_path) do -%>
+        <div class="form-group">
+          <div class="input-group">
+            <%= text_field_tag 'admin_group', nil, :placeholder => 'Enter group name here...', class: 'form-control' %>
+            <span class="input-group-btn">
+              <%= button_tag 'Create Group', type: 'submit', class: 'btn btn-primary' %>
+            </span>
+
+          </div>
+        </div>
+        <% end -%>
+
+        <%= form_tag update_multiple_admin_groups_path, method: :put do %>
+
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th><input type="checkbox" class="select-groups"></th>
+              <th>Group Name</th>
+              <th>Members#</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% @groups.each do |group|%>
             <tr>
               <td><%= check_box_tag "group_ids[]", group.name %></td>
               <td><%= link_to group.name, edit_admin_group_path(group) %></td>
               <td><%= group.users.count %></td>
             </tr>
-          <% end %>
-        </tbody>
-      </table>
+            <% end %>
+          </tbody>
+        </table>
 
-      <%= submit_tag "Delete Groups", method: :delete,
+        <%= submit_tag "Delete Groups", method: :delete,
         confirm: "Deleted groups cannot be recovered. Are you sure?",
         class: "btn btn-danger delete", disabled: true %>
-    <% end %>
+        <% end %>
+      </div>
+    </div>
   </div>
 </div>
 
+
 <% content_for :page_scripts do %>
-  <script>
-    $('.close').click(function(){
-      $(this).parent().remove();
-    })
+<script>
+  $('.close').click(function () {
+    $(this).parent().remove();
+  })
 
-    $('.select-groups').change(function(){
-      $('input[id^=group_ids_]').prop('checked', $(this).is(':checked')).trigger('change');
-    })
+  $('.select-groups').change(function () {
+    $('input[id^=group_ids_]').prop('checked', $(this).is(':checked')).trigger('change');
+  })
 
-    $('input[id^=group_ids_]').change(function(){
-      if ($(this).is(':checked')) {
-        enableButtons();
-      } else if ($(':checked').length == 0) {
-        disableButtons();
-      }
-    })
-
-    function enableButtons() {
-      $('#add-ability').removeClass('disabled');
-      $('#remove-ability').removeClass('disabled');
-      $('.delete').removeAttr('disabled');
+  $('input[id^=group_ids_]').change(function () {
+    if ($(this).is(':checked')) {
+      enableButtons();
+    } else if ($(':checked').length == 0) {
+      disableButtons();
     }
-    function disableButtons() {
-      $('#add-ability').addClass('disabled');
-      $('#remove-ability').addClass('disabled');
-      $('.delete').attr('disabled', 'disabled');
-    }
-  </script>
+  })
+
+  function enableButtons() {
+    $('#add-ability').removeClass('disabled');
+    $('#remove-ability').removeClass('disabled');
+    $('.delete').removeAttr('disabled');
+  }
+
+  function disableButtons() {
+    $('#add-ability').addClass('disabled');
+    $('#remove-ability').addClass('disabled');
+    $('.delete').attr('disabled', 'disabled');
+  }
+</script>
 <% end %>

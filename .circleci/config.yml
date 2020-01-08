@@ -5,7 +5,7 @@ jobs:
   build:
     docker:
      # Primary container image where all steps run.
-     - image: avalonmediasystem/avalon:6.x-dev
+     - image: avalonmediasystem/avalon:7.0-slim-dev-20200106
        environment:
         - DATABASE_URL=postgresql://postgres@localhost:5432/postgres
         - FEDORA_URL=http://localhost:8080/fcrepo/rest
@@ -33,9 +33,6 @@ jobs:
       parallelism:
         type: integer
         default: 4
-      bundler_version:
-        type: string
-        default: "2.0.1"
 
     working_directory: /home/app/avalon
 
@@ -50,25 +47,11 @@ jobs:
 
       - run: cp config/controlled_vocabulary.yml.example config/controlled_vocabulary.yml
 
-      - restore_cache:
-          keys:
-            - gem-cache-v1-{{ checksum "Gemfile.lock" }}-<< parameters.ruby_ver >>
-
-      - run:
-          name: Update bundler
-          command: |
-            echo 'export BUNDLER_VERSION=<< parameters.bundler_version >>' >> $BASH_ENV
-            gem install bundler -v << parameters.bundler_version >>
-
       - run:
           command: |
-            bundle install --with aws development test postgres --without production --path=vendor/bundle --jobs=4 --retry=3
+            unset BUNDLE_APP_CONFIG
+            bundle install --with aws development test postgres --without production --jobs=4 --retry=3
             bundle exec rake db:migrate
-
-      - save_cache:
-          key: gem-cache-v1-{{ checksum "Gemfile.lock" }}-<< parameters.ruby_ver >>
-          paths:
-            - vendor/bundle
 
       - restore_cache:
           keys:

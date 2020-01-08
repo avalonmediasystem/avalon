@@ -1,4 +1,4 @@
-# Copyright 2011-2019, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2020, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 #
@@ -37,7 +37,7 @@ class PlaylistItemsController < ApplicationController
       render json: { message: ["Item was not created: #{clip.errors.full_messages}"] }, status: 500 and return
     end
     if PlaylistItem.create(playlist: @playlist, clip: clip)
-      render json: { message: "Add to playlist was successful. See it: #{view_context.link_to("here", playlist_url(@playlist))}" }, status: 201 and return
+      render json: { message: "Add to playlist was successful. #{view_context.link_to('See it here', playlist_url(@playlist), class: 'btn btn-default btn-xs')}" }, status: 201 and return
     end
   rescue StandardError => error
     logger.warn("Error creating playlist item: #{error.message}")

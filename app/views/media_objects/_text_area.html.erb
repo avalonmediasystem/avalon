@@ -1,5 +1,5 @@
 <%#
-Copyright 2011-2019, The Trustees of Indiana University and Northwestern
+Copyright 2011-2020, The Trustees of Indiana University and Northwestern
   University.  Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
 
@@ -14,10 +14,10 @@ Unless required by applicable law or agreed to in writing, software distributed
 ---  END LICENSE_HEADER BLOCK  ---
 %>
 
-  <div class="form-group <% if options[:multivalued] %>multivalued<% end %> <% if @media_object.errors[field].any? %>has-error<% end %>">
+  <div class="form-group <% if options[:multivalued] %>multivalued<% end %> <% if @media_object.errors[field].any? %>invalid-feedback<% end %>">
     <%= render partial: "modules/tooltip", locals: { form: form, field: field, tooltip: t("metadata_tip.#{field.to_s}"), options: options } %>
     <% if @media_object.errors[field].any? %>
-      <%= content_tag :span, @media_object.errors[field].join(", "), class: 'help-block' %>
+      <%= content_tag :span, @media_object.errors[field].join(", "), class: (@media_object.errors[field].any? ? 'help-block invalid-feedback' : 'help-block') %>
     <% end %>
     <% values = @media_object.send(field) || "" %>
     <% fieldarray = "" %>
@@ -32,14 +32,14 @@ Unless required by applicable law or agreed to in writing, software distributed
       <% value = values[i] %>
       <% if options[:dropdown_field] %>
         <div class="input-group typed-textarea <%=options[:extra_classes]%>" data-textarea='<%= "typed_textarea_#{field}_#{i}" %>'>
-          <%= render partial: "dropdown_field", locals: {selected_value: value.present? ? value[options[:secondary_hash_key]] : nil, options: options} %>
+          <%= render partial: "multipart_dropdown_field", locals: {selected_value: value.present? ? value[options[:secondary_hash_key]] : nil, options: options} %>
           <input type="text" class="form-control hidden"><%# to maintain spacing %>
           <% value = value.present? ? value[options[:primary_hash_key]] : "" %>
         </div>
         <%= text_area_tag fieldname, value || '', rows: 10, class: 'form-control typed-textarea', id: "typed_textarea_#{field}_#{i}" %>
       <% else %>
         <div class="input-group <%=options[:extra_classes]%>">
-          <%= text_area_tag fieldname, value || '', rows: 10, class: 'form-control', id: "#{field}_#{i}" %>
+          <%= text_area_tag fieldname, value || '', rows: 10, class: (@media_object.errors[field].any? ? 'form-control is-invalid' : 'form-control'), id: "#{field}_#{i}" %>
         </div>
       <% end %>
     <% end %>

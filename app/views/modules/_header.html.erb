@@ -1,5 +1,5 @@
 <%#
-Copyright 2011-2019, The Trustees of Indiana University and Northwestern
+Copyright 2011-2020, The Trustees of Indiana University and Northwestern
   University.  Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
 
@@ -13,26 +13,25 @@ Unless required by applicable law or agreed to in writing, software distributed
   specific language governing permissions and limitations under the License.
 ---  END LICENSE_HEADER BLOCK  ---
 %>
-  <div class="custom-header">
-    <div class="row">
-      <div class="row-fluid whitespace-half">
-      <header>
-        <div class="col-sm-2 logo">
-        <%= link_to root_path do %>
-          <%= image_tag "Home.png", alt: "Avalon Media System - #{t(:release_label)} #{Avalon::VERSION}" %>
+<div class="custom-header">
+  <div class="container">
+    <header class="header-wrapper">
+      <div class="header-logo">
+        <%= link_to main_app.root_path do %>
+        <%= image_tag "Home.png", class: "img-responvies", alt: "Avalon Media System - #{t(:release_label)} #{Avalon::VERSION}" %>
         <% end %>
-        </div>
-        
-        <!-- <div class="col-md-6">
-          <h1>Avalon Media System</h1>
-          <p class="lead"><%=release_text%></p>
-        </div>    -->
-
-        <%# By default shift log in / log out to the header %>
-        <div class="pull-right log-in-out">
-          <%= render 'modules/user_management' %>
-        </div>
-      </header>
       </div>
-    </div>
+
+      <% unless current_page?(main_app.root_path) %>
+      <div class="header-search">
+        <%= render :partial=>'modules/avalon_search_form' %>
+      </div>
+      <% end %>
+
+      <%# By default shift log in / log out to the header %>
+      <div class="text-right log-in-out text-muted header-user">
+        <%= render 'modules/user_management' %>
+      </div>
+    </header>
   </div>
+</div>

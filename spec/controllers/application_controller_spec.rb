@@ -1,4 +1,4 @@
-# Copyright 2011-2019, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2020, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 #
@@ -105,6 +105,10 @@ describe ApplicationController do
     it 'renders google analytics partial' do
       get :show, params: { id: 'abc1234' }
       expect(response).to render_template("modules/_google_analytics")
+    end
+
+    it 'defines an after invite hook' do
+      expect(controller.after_invite_path_for(nil)).to eq('/persona/users')
     end
   end
 end

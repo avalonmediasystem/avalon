@@ -1,4 +1,4 @@
-# Copyright 2011-2019, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2020, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 #
@@ -16,7 +16,7 @@ require 'rails_helper'
 
 describe 'homepage' do
   after { Warden.test_reset! }
-  it 'validates presence of header and footer on homepage' do
+  xit 'validates presence of header and footer on homepage' do
     visit 'http://0.0.0.0:3000'
     expect(page).to have_content('Sample Content')
     expect(page).to have_link('Browse')
@@ -32,7 +32,7 @@ describe 'homepage' do
     visit '/'
     expect(page).to have_no_link('Manage Content')
     expect(page).to have_no_link('Manage Groups')
-    expect(page).to have_no_link('Manage Selected Items')
+    expect(page).to have_no_link('Selected Items')
     expect(page).to have_no_link('Playlists')
     expect(page).to have_no_link('Sign out>>')
   end
@@ -71,7 +71,7 @@ describe 'checks navigation to external links' do
     visit'/'
     expect(page).to have_link('Manage Content')
     expect(page).to have_link('Manage Groups')
-    expect(page).to have_link('Manage Selected Items')
+    expect(page).to have_link('Selected Items')
     expect(page).to have_link('Playlists')
     expect(page).to have_link('Sign out')
     expect(page).to have_content(user.user_key)

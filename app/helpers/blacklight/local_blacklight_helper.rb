@@ -1,4 +1,4 @@
-# Copyright 2011-2019, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2020, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 #
@@ -26,7 +26,14 @@ module Blacklight::LocalBlacklightHelper
   end
 
   def url_for_document doc, options = {}
-    media_object_path(doc[:id])
+    case doc["has_model_ssim"].first
+    when "MediaObject"
+      media_object_path(doc[:id])
+    when "Admin::Collection"
+      collection_path(doc[:id])
+    else
+      object_path(doc[:id])
+    end
   end
 
   def contributor_index_display args

@@ -1,5 +1,5 @@
 <%#
-Copyright 2011-2019, The Trustees of Indiana University and Northwestern
+Copyright 2011-2020, The Trustees of Indiana University and Northwestern
   University.  Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
 
@@ -15,62 +15,118 @@ Unless required by applicable law or agreed to in writing, software distributed
 %>
 <% @page_title = t('collections.show.title', :collection_name => @collection.name, :application_name => application_name) %>
 
-<div class="container-fluid">
-    <div class="well">
-    <h3><%= @collection.name %></h3>
-    <p> <strong>Description:</strong> <%= @collection.description %> </p>
-    <p> <strong>Unit:</strong> <%= @collection.unit %> </p>
+<div class="page-title-wrapper">
+  <h1 class="page-title">Manage Content</h1>
+</div>
+<div class="modal fade" id="modal" data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="modalLabel"
+  aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title" id="modalLabel">Crop the image</h1>
+      </div>
+      <div class="modal-body">
+        <div class="img-container">
+          <img id="image" src="" style="max-width: 100%;">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal" id="crop-cancel">Cancel</button>
+        <button type="button" class="btn btn-primary" id="crop">Upload</button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="well">
+  <h2><%= @collection.name %></h2>
+  <div class="row">
+    <div class="col-md-9">
+      <p><strong>Unit:</strong></p>
+      <p><%= @collection.unit %></p>
+      <p><strong>Description:</strong></p>
+      <p class="collection-description"><%= @collection.description %></p>
+    </div>
+    <div class="col-md-3">
+      <p><strong>Poster:</strong></p>
+      <p id="poster_original_name"><%= @collection.poster.original_name if @collection.poster.present? %></p>
+      <div class="well-vertical-spacer">
+        <% if @collection.poster.present? %>
+        <%= image_tag(poster_admin_collection_path(@collection), class: 'img-responsive', id: 'poster-image') %>
+        <% else %>
+        <img src="" class="img-responsive" id="poster-image">
+        <% end %>
+      </div>
+      <div>
+        <%= form_for @collection, url: attach_poster_admin_collection_path(@collection.id), html: {method: "post", class: 'collection_poster'} do |form| %>
+        <%= form.file_field :poster, id: 'poster_input', class: "filedata", style: "height:0px;width:0px;" %>
+        <input type="button" class="btn btn-primary btn-xs" onclick="$('.filedata').click();" value="Upload Poster" />
+        <input type="submit" class="btn btn-danger btn-xs" value="Remove Poster" />
+        <% end %>
+      </div>
+      <div class="well-vertical-spacer">
+        <div id='cropper-alert' class="alert" role="alert" style="display: none; padding: 5px; margin-top: 5px"></div>
+        <div id="cropper-progress" class="progress" style="display: none; margin-top: 7px;">
+          <div id="cropper-progress-bar" class="progress-bar progress-bar-striped progress-bar-animated"
+            role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">0%</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="well-vertical-spacer">
     <%= link_to('Create An Item', new_media_object_path(collection_id: @collection.id), class: 'btn btn-primary') if can? :create, MediaObject %>
     <%= link_to('List All Items', search_catalog_path('f[collection_ssim][]' => @collection.name), class: 'btn btn-default') %>
     <%= button_tag('Edit Collection Info', class: 'btn btn-default', data: {toggle:"modal", target:"#new_collection"}) if can? :update, @collection %>
-    <br/><br>
-    Or <a href='https://wiki.dlib.indiana.edu/display/VarVideo/Avalon+Collections+Guide#AvalonCollectionsGuide-UploadingviaBatch'><b>learn how to</b></a> create items using batch upload.
-    </div>
+  </div>
+  <div>
+    <p>Or <a
+        href='https://wiki.dlib.indiana.edu/display/VarVideo/Avalon+Collections+Guide#AvalonCollectionsGuide-UploadingviaBatch'><b>learn
+          how to</b></a> create items using batch upload.</p>
+  </div>
+</div><!-- /well -->
 
-      <fieldset>
-        <legend>Assign Staff Roles</legend>
-
-        <div class='staff-roles-section'>
-          <%= render "modules/access_object",
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <h3 class="panel-title">Assign Staff Roles</h3>
+  </div>
+  <div class="panel-body">
+    <div class='staff-roles-section'>
+      <%= render "modules/access_object",
             access_object: "manager",
             members: @collection.managers,
             autocomplete_model: 'user',
             object: @collection,
             input_disabled: cannot?( :update_managers, @collection ) %>
-          <%= render "modules/access_object",
+      <%= render "modules/access_object",
             access_object: "editor",
             members: @collection.editors,
             autocomplete_model: 'user',
             object: @collection,
             input_disabled: cannot?( :update_editors, @collection ) %>
-          <%= render "modules/access_object",
+      <%= render "modules/access_object",
             access_object: "depositor",
             members: @collection.depositors,
             autocomplete_model: 'user',
             object: @collection,
             input_disabled: cannot?( :update_depositors, @collection ) %>
-        </div>
-      </fieldset>
-
-      <div class="whitespace"></div>
-
-      <fieldset>
-         <legend>Set Default Access Control for New Items</legend>
-          <%= render "modules/access_control", { object: @collection, visibility: @collection.default_visibility, hidden: @collection.default_hidden } %>
-
-	  <% if can? :update_access_control, @collection %>
-	    <%= submit_tag "Save Access Settings", name: "save_access", class: "btn btn-primary", form: 'access_control_form' %>
-	  <% end %>
-      </fieldset>
-
+    </div>
+  </div>
 </div>
 
-<style>
-  fieldset .staff-roles-section { margin-left: 20px; }
-  fieldset.item-access { margin-left: 20px;  }
-  fieldset.item-discovery { margin-left: 20px; }
-  fieldset.special-access { margin-left: 20px; }
-  [name='save_access'] { margin-left: 20px;  }
-</style>
+<div class="content-block">
+  <h3 style="padding-top: 3rem;">Set Default Access Control for New Items</h3>
+  <%= render "modules/access_control", { object: @collection, visibility: @collection.default_visibility, hidden: @collection.default_hidden } %>
 
-<%= render "form" %>
+  <% if can? :update_access_control, @collection %>
+  <%= submit_tag "Save Access Settings", name: "save_access", class: "btn btn-primary", form: 'access_control_form' %>
+  <% end %>
+</div>
+
+<%= render "form", modal_title: "Edit Collection Infomation" %>
+
+<% content_for :page_scripts do %>
+<script>
+  window.addEventListener('DOMContentLoaded', function () {
+    add_cropper_handler('<%= attach_poster_admin_collection_path(@collection.id) %>');
+  });
+</script>
+<% end %>

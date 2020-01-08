@@ -1,4 +1,4 @@
-# Copyright 2011-2019, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2020, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 #
@@ -23,7 +23,7 @@ class MediaObjectsController < ApplicationController
   include SecurityHelper
 
   before_action :authenticate_user!, except: [:show, :set_session_quality, :show_stream_details, :manifest]
-  load_and_authorize_resource except: [:create, :destroy, :update_status, :set_session_quality, :tree, :deliver_content, :confirm_remove, :show_stream_details, :add_to_playlist_form, :add_to_playlist, :intercom_collections, :manifest]
+  load_and_authorize_resource except: [:create, :destroy, :update_status, :set_session_quality, :tree, :deliver_content, :confirm_remove, :show_stream_details, :add_to_playlist_form, :add_to_playlist, :intercom_collections, :manifest, :move_preview]
   authorize_resource only: [:create]
 
   before_action :inject_workflow_steps, only: [:edit, :update], unless: proc { request.format.json? }
@@ -181,7 +181,7 @@ class MediaObjectsController < ApplicationController
     @media_object.avalon_uploader = 'REST API'
 
     populate_from_catalog = (!!api_params[:import_bib_record] && media_object_parameters[:bibliographic_id].present?)
-    if populate_from_catalog and Avalon::BibRetriever.configured?
+    if populate_from_catalog && Avalon::BibRetriever.configured?(media_object_parameters[:bibliographic_id][:source])
       begin
         # Set other identifiers
         # FIXME: The ordering in the slice is important
@@ -244,7 +244,6 @@ class MediaObjectsController < ApplicationController
             message = "Problem saving MasterFile for #{file_location}:"
             error_messages += [message]
             error_messages += master_file.errors.full_messages
-            @media_object.destroy
             break
           end
         end
@@ -267,7 +266,6 @@ class MediaObjectsController < ApplicationController
         @media_object.workflow.last_completed_step = HYDRANT_STEPS.last.step
         if !@media_object.save
           error_messages += ['Failed to create media object:']+@media_object.errors.full_messages
-          @media_object.destroy
         else
           if !!api_params[:publish]
             @media_object.publish!('REST API')
@@ -283,7 +281,7 @@ class MediaObjectsController < ApplicationController
     else
       logger.warn "update_media_object failed for #{params[:fields][:title] rescue '<unknown>'}: #{error_messages}"
       render json: {errors: error_messages}, status: 422
-      @media_object.destroy
+      @media_object.destroy unless action_name == 'json_update'
     end
   end
 
@@ -343,31 +341,33 @@ class MediaObjectsController < ApplicationController
 
   def show_stream_details
     load_current_stream
-    raise CanCan::AccessDenied unless current_ability.can? :read, @currentStream
+    authorize! :read, @currentStream
     render json: @currentStreamInfo
   end
 
   def show_progress
     overall = { :success => 0, :error => 0 }
-
+    encode_gids = master_file_presenters.collect { |mf| "gid://ActiveEncode/#{mf.encoder_class}/#{mf.workflow_id}" }
     result = Hash[
-      master_file_presenter.collect { |mf|
+      ActiveEncode::EncodeRecord.where(global_id: encode_gids).collect do |encode|
+        raw_encode = JSON.parse(encode.raw_object)
+        status = encode.state.to_s.upcase
         mf_status = {
-          :status => mf.status_code,
-          :complete => mf.percent_complete.to_i,
-          :success => mf.percent_succeeded.to_i,
-          :error => mf.percent_failed.to_i,
-          :operation => mf.operation,
-          :message => mf.error.try(:sub,/^.+:/,'')
+          status: status,
+          complete: encode.progress.to_i,
+          success: encode.progress.to_i,
+          operation: raw_encode['current_operations']&.first,
+          message: raw_encode['errors'].first.try(:sub, /^.+:/, '')
         }
-        if mf.status_code == 'FAILED'
-          mf_status[:error] = 100-mf_status[:success]
+        if status == 'FAILED'
+          mf_status[:error] = 100 - mf_status[:success]
           overall[:error] += 100
         else
+          mf_status[:error] = 0
           overall[:success] += mf_status[:complete]
         end
-        [mf.id, mf_status]
-      }
+        [encode.master_file_id, mf_status]
+      end
     ]
     master_files_count = @media_object.master_files.size
     if master_files_count > 0
@@ -399,7 +399,7 @@ class MediaObjectsController < ApplicationController
         errors += [ "#{media_object.title} (#{params[:id]}) permission denied" ]
       end
     end
-    message = "#{success_count} #{'media object'.pluralize(success_count)} are being deleted."
+    message = "#{success_count} #{'media object'.pluralize(success_count)} deleted."
     message += "These objects were not deleted:</br> #{ errors.join('<br/> ') }" if errors.count > 0
     BulkActionJobs::Delete.perform_later success_ids, nil
     redirect_to params[:previous_view]=='/bookmarks'? '/bookmarks' : root_path, flash: { notice: message }
@@ -461,7 +461,7 @@ class MediaObjectsController < ApplicationController
     @media_object = MediaObject.find(params[:id])
     authorize! :read, @media_object
 
-    master_files = master_file_presenter
+    master_files = master_file_presenters
     canvas_presenters = master_files.collect do |mf|
       stream_info = secure_streams(mf.stream_details)
       IiifCanvasPresenter.new(master_file: mf, stream_info: stream_info)
@@ -493,16 +493,40 @@ class MediaObjectsController < ApplicationController
     head :ok
   end
 
+  def move_preview
+    @media_object = MediaObject.find(params[:id])
+    authorize! :update, @media_object
+    preview = {
+      id: @media_object.id,
+      title: @media_object.title,
+      collection: @media_object.collection.name,
+      main_contributors: @media_object.creator,
+      publication_date: @media_object.date_created,
+      published_by: @media_object.avalon_publisher,
+      published: @media_object.published?,
+    }
+
+    respond_to do |wants|
+      wants.json { render json: preview }
+    end
+  end
+
   protected
 
-  def master_file_presenter
-    SpeedyAF::Base.where("isPartOf_ssim:#{@media_object.id}",
-                         order: -> { @media_object.indexed_master_file_ids },
-                         defaults: { permalink: nil, title: nil })
+  def master_file_presenters
+    SpeedyAF::Proxy::MasterFile.where("isPartOf_ssim:#{@media_object.id}",
+                                      order: -> { @media_object.indexed_master_file_ids },
+                                      defaults: {
+                                        permalink: nil,
+                                        title: nil,
+                                        encoder_classname: nil,
+                                        workflow_id: nil,
+                                        comment: []
+                                      })
   end
 
   def load_master_files(mode = :rw)
-    @masterFiles ||= mode == :rw ? @media_object.indexed_master_files.to_a : master_file_presenter
+    @masterFiles ||= mode == :rw ? @media_object.indexed_master_files.to_a : master_file_presenters
   end
 
   def set_player_token
@@ -605,10 +629,11 @@ class MediaObjectsController < ApplicationController
                              :captions,
                              :captions_type,
                              :workflow_name,
-                             :percent_complete,
-                             :percent_succeeded,
-                             :percent_failed,
-                             :status_code,
+                             :workflow_id,
+                             # :percent_complete,
+                             # :percent_succeeded,
+                             # :percent_failed,
+                             # :status_code,
                              :other_identifier,
                              :structure,
                              :physical_description,

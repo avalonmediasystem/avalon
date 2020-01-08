@@ -1,5 +1,5 @@
 <%#
-Copyright 2011-2019, The Trustees of Indiana University and Northwestern
+Copyright 2011-2020, The Trustees of Indiana University and Northwestern
   University.  Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
 
@@ -15,38 +15,60 @@ Unless required by applicable law or agreed to in writing, software distributed
 %>
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <title><%= render_page_title %></title>
 
-   <%= csrf_meta_tags %>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <%= favicon_link_tag %>
-    <%= stylesheet_link_tag "application", media: "all" %>
-    <%= stylesheet_pack_tag 'application' %>
-    <%= javascript_pack_tag 'application' %>
-    <%= yield :page_styles %>
-    <%= yield :additional_head_content %>
-    <%= render "modules/google_analytics" %>
-  </head>
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title><%= render_page_title %></title>
 
-  <body data-mountpoint="<%=root_path%>">
-    <a id="skip-to-content" class="sr-only sr-only-focusable" href="#content">Skip to main content</a>
-    <%= render partial: 'shared/ajax_modal' %>
-    <%= render 'modules/header' %>
-    <div class="container-fluid">
+  <%= csrf_meta_tags %>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <%= favicon_link_tag %>
+  <%= stylesheet_link_tag "application", media: "all" %>
+  <%= stylesheet_pack_tag 'application' %>
+  <%= javascript_pack_tag 'application' %>
+  <%= yield :page_styles %>
+  <%= yield :additional_head_content %>
+  <%= render "modules/google_analytics" %>
+</head>
+
+<body data-mountpoint="<%=main_app.root_path%>">
+  <div class="page-container">
+    <div class="content-wrapper">
+      <a id="skip-to-content" class="sr-only sr-only-focusable" href="#content">Skip to main content</a>
+      <%= render partial: 'shared/ajax_modal' %>
+      <% if defined?(Samvera::Persona) %>
+      <%= render partial: 'modules/become_message' %>
+      <% end %>
+      <%= render 'modules/header' %>
       <%= render :partial => 'modules/global_navigation' %>
-      <%= render 'modules/flash_messages' %>
-      <%= yield %>
+      <main role="main" class="<%= "homepage-main" if current_page?(main_app.root_path) %>">
+
+        <!-- Homepage -->
+        <% if current_page?(main_app.root_path) %>
+        <%= render 'modules/flash_messages' %>
+        <%= yield %>
+        <% end %>
+
+        <!-- All other pages -->
+        <% unless current_page?(main_app.root_path) %>
+        <div class="container">
+          <%= render 'modules/flash_messages' %>
+          <%= yield %>
+        </div>
+        <% end %>
+
+      </main>
     </div>
     <%= render 'modules/footer' %>
+  </div>
 
-    <!-- With this many Javascript files performance will be much better
+  <!-- With this many Javascript files performance will be much better
          if they are included here. That means the important content will
          load first; the page will not gag on trying to pull down files
          from a CDN -->
-    <%= javascript_include_tag "application" %>
-    <%= yield :page_scripts %>
-  </body>
+  <%= javascript_include_tag "application" %>
+  <%= yield :page_scripts %>
+</body>
+
 </html>

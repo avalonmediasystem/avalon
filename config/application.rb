@@ -8,7 +8,7 @@ require 'resolv-replace'
 Bundler.require(*Rails.groups)
 
 module Avalon
-  VERSION = '6.5.0'
+  VERSION = '7.0.0'
 
   class Application < Rails::Application
     require 'avalon/configuration'
@@ -32,14 +32,14 @@ module Avalon
     # config.i18n.load_path += Dir[Rails.root.join('my', 'locales', '*.{rb,yml}').to_s]
     # config.i18n.default_locale = :de
 
-    config.active_job.queue_adapter = :resque
+    config.active_job.queue_adapter = :sidekiq
 
     config.action_dispatch.default_headers = { 'X-Frame-Options' => 'ALLOWALL' }
 
     config.middleware.insert_before 0, Rack::Cors do
       allow do
         origins '*'
-        resource '/media_objects/*/manifest.json', headers: :any, methods: [:get]
+        resource '/media_objects/*/manifest*', headers: :any, methods: [:get]
         resource '/master_files/*/thumbnail', headers: :any, methods: [:get]
         resource '/master_files/*/structure.json', headers: :any, methods: [:get, :post, :delete]
         resource '/master_files/*/waveform.json', headers: :any, methods: [:get]

@@ -1,5 +1,5 @@
 <%#
-Copyright 2011-2019, The Trustees of Indiana University and Northwestern
+Copyright 2011-2020, The Trustees of Indiana University and Northwestern
   University.  Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
 
@@ -13,16 +13,19 @@ Unless required by applicable law or agreed to in writing, software distributed
   specific language governing permissions and limitations under the License.
 ---  END LICENSE_HEADER BLOCK  ---
 %>
-   <div class="container-fluid">
-	  <footer>
-	   <ul>
-	   	 <li><%= image_tag "AvalonMediaSystem_Logo_A.png", alt: "Avalon Media System - #{t(:release_label)} #{Avalon::VERSION}" %>
-	     <li><a href="http://www.avalonmediasystem.org">Avalon Media System Project Website</a> </li>
-       <li><%= link_to "Contact Us", comments_path %></li>
-	   </ul>
-	   <div class="release">
-	   	<%=release_text%>
-	   	<%= git_commit_info(" (%s %s [%s])") if Rails.env == 'development' %>
-	   </div>
-       </footer>
+<div id="footer" class="<%= "homepage-footer" if current_page?(main_app.root_path) %>">
+
+  <footer class="container">
+    <div class="separator"></div>
+    <ul>
+      <li class="footer-logo">
+        <%= image_tag "AvalonMediaSystem_Logo_A.png", alt: "Avalon Media System - #{t(:release_label)} #{Avalon::VERSION}" %>
+      <li><a href="http://www.avalonmediasystem.org">Avalon Media System Project Website</a> </li>
+      <li><%= link_to "Contact Us", main_app.comments_path %></li>
+    </ul>
+    <div class="release">
+      <%=release_text%>
+      <%= git_commit_info(" (%s %s [%s])") if Rails.env == 'development' %>
     </div>
+  </footer>
+</div>

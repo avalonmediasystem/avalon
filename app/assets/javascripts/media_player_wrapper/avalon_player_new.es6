@@ -330,7 +330,12 @@ class MEJSPlayer {
 
     // Grab instance of player
     if (!this.player) {
-      this.player = this.mediaElement;
+      this.player = instance;
+    }
+
+    if (this.player && this.player.media && this.player.media.hlsPlayer && this.player.media.hlsPlayer.config) {
+      // Workaround for hlsError bufferFullError: Set max buffer length to 2 minutes
+      this.player.media.hlsPlayer.config.maxMaxBufferLength = 120;
     }
 
     // Toggle captions on if toggleable and previously on
@@ -497,6 +502,11 @@ class MEJSPlayer {
       startLanguage: this.localStorage.getItem('captions') || ''
     };
 
+    // Add duration as a root level config for Android devices
+    if(mejs.Features.isAndroid) {
+      defaults.duration = currentStreamInfo.duration
+    }
+
     if (this.currentStreamInfo.cookie_auth) {
       defaults.hls = {
         xhrSetup: (xhr, url) => {
@@ -510,8 +520,9 @@ class MEJSPlayer {
       ? [this.playlistItem.playlist_id, this.playlistItem.id]
       : [];
 
-    // Remove quality feature for IE
+    // Remove quality feature for IE and Android
     if (
+      mejs.Features.isAndroid ||
       !!navigator.userAgent.match(/MSIE /) ||
       !!navigator.userAgent.match(/Trident.*rv\:11\./)
     ) {

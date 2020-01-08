@@ -1,5 +1,5 @@
 <%#
-Copyright 2011-2019, The Trustees of Indiana University and Northwestern
+Copyright 2011-2020, The Trustees of Indiana University and Northwestern
   University.  Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
 
@@ -13,19 +13,21 @@ Unless required by applicable law or agreed to in writing, software distributed
   specific language governing permissions and limitations under the License.
 ---  END LICENSE_HEADER BLOCK  ---
 %>
-<div class="navbar-right">
-  <form accept-charset="UTF-8" action="/catalog" class="avalon-search-query-form avalon-form-search" method="get">
-    <div style="margin:0;padding:0;display:inline">
-      <input name="utf8" type="hidden" value="✓">
+<form accept-charset="UTF-8" action="/catalog" class="avalon-search-query-form avalon-form-search" method="get">
+  <div style="margin:0;padding:0;display:inline">
+    <input name="utf8" type="hidden" value="✓">
+  </div>
+  <input id="search_field" name="search_field" type="hidden" value="all_fields">
+  <div>
+    <label class="sr-only" for="searchField">Search</label>
+    <div class="input-group input-group-lg global-search-wrapper">
+      <input class="search-query q form-control global-search-input" id="searchField" name="q"
+        placeholder="Search this site" type="text" value="">
+      <span class="input-group-btn">
+        <button id="global-search-submit" type="submit" class="btn btn-primary global-search-submit">
+          <i class="fa fa-search icon-white"></i>
+        </button>
+      </span>
     </div>
-    <input id="search_field" name="search_field" type="hidden" value="all_fields">
-    <div>
-      <label class="sr-only" for="searchField">Search</label>
-      <input class="search-query q" id="searchField" name="q" placeholder="Search" type="text" value="">
-      <button type="submit" class="btn btn-primary hidden">
-        <span class="submit-search-text">Search</span>
-        <i class="fa fa-search icon-white"></i>
-      </button>
-    </div>
-  </form>
-</div>
+  </div>
+</form>

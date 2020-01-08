@@ -1,4 +1,4 @@
-# Copyright 2011-2019, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2020, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 #
@@ -25,6 +25,21 @@ describe UploadFormHelper, type: :helper do
       let(:transcoder) { :elastic_transcoder }
       it 'returns true if using Elastic Transcoder' do
         expect(helper.direct_upload?).to be true
+      end
+    end
+
+    context 'with Minio' do
+      let(:transcoder) { :any }
+      before do
+        Settings.minio = double("minio", endpoint: "http://minio:9000", public_host: "http://domain:9000")
+      end
+
+      it 'returns true if using Minio' do
+        expect(helper.direct_upload?).to be true
+      end
+
+      after do
+        Settings.minio = nil
       end
     end
 

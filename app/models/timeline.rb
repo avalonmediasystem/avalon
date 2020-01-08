@@ -1,4 +1,4 @@
-# Copyright 2011-2019, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2020, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 #
@@ -27,9 +27,11 @@ class Timeline < ActiveRecord::Base
   delegate :url_helpers, to: 'Rails.application.routes'
 
   after_initialize :default_values
-  before_save :generate_access_token, if: proc { |p| p.visibility == Timeline::PRIVATE_WITH_TOKEN && access_token.blank? }
   before_validation :synchronize_title
   before_validation :synchronize_description
+  before_validation :standardize_source
+  before_validation :standardize_homepage
+  before_save :generate_access_token, if: proc { |p| p.visibility == Timeline::PRIVATE_WITH_TOKEN && access_token.blank? }
   after_create :generate_manifest
   serialize :tags
 
@@ -42,6 +44,24 @@ class Timeline < ActiveRecord::Base
   def default_values
     self.visibility ||= Timeline::PRIVATE
     self.tags ||= []
+  end
+
+  def standardize_source
+    return unless source.present? && source_changed?
+    media_fragment = source.split("?t=")[1]
+    self.source = Rails.application.routes.url_helpers.master_file_url(master_file) + "?t=#{media_fragment}"
+  end
+
+  def standardize_homepage
+    return unless manifest.present? && source.present? && (source_changed? || manifest_changed?)
+    media_fragment = source.split("?t=")[1]
+    base_url = master_file.permalink if master_file.permalink.present?
+    base_url ||= Rails.application.routes.url_helpers.master_file_url(master_file)
+
+    manifest_json = JSON.parse(manifest)
+    manifest_json["homepage"] ||= {}
+    manifest_json["homepage"]["id"] = "#{base_url}?t=#{media_fragment}"
+    self.manifest = manifest_json.to_json
   end
 
   def generate_manifest
@@ -103,7 +123,8 @@ class Timeline < ActiveRecord::Base
     def duration
       begin_time, end_time = source.split("?t=")[1].split(",")
       end_time ||= master_file.duration.to_f / 1000
-      end_time.to_f - begin_time.to_f
+      # must avoid floating point arithmatic errors
+      ((end_time.to_f * 1000).to_i - (begin_time.to_f * 1000).to_i) / 1000.0
     end
 
     def master_file

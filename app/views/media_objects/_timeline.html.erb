@@ -1,5 +1,5 @@
 <%#
-Copyright 2011-2019, The Trustees of Indiana University and Northwestern
+Copyright 2011-2020, The Trustees of Indiana University and Northwestern
   University.  Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
 
@@ -104,7 +104,7 @@ $(document).ready(function() {
       t = scope.t
     }
     $('#new-timeline-title')[0].value = label;
-    $('#new-timeline-source')[0].value = currentPlayer.avalonWrapper.currentStreamInfo.link_back_url+'?'+t;
+    $('#new-timeline-source')[0].value = '/master_files/'+currentPlayer.avalonWrapper.currentStreamInfo.id+'?'+t;
     $('#new-timeline-form')[0].submit();
   })
 })

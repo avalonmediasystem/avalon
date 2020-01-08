@@ -1,5 +1,5 @@
-/* 
- * Copyright 2011-2019, The Trustees of Indiana University and Northwestern
+/*
+ * Copyright 2011-2020, The Trustees of Indiana University and Northwestern
  *   University.  Licensed under the Apache License, Version 2.0 (the "License");
  *   you may not use this file except in compliance with the License.
  *
@@ -35,6 +35,8 @@
 //= require browse_everything
 //= require modernizr
 //= require bootstrap-toggle
+//= require cropperjs/dist/cropper.min
+//= require url-search-params-polyfill/index.js
 
 // include all of our vendored js
 //= require_tree ../../../vendor/assets/javascripts/.

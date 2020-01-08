@@ -109,27 +109,6 @@ GIT
       ims-lti
       omniauth
 
-GIT
-  remote: https://github.com/avalonmediasystem/rubyhorn.git
-  revision: fd1e0ee2cca53df515f58690603e9a6351066106
-  tag: avalon-r6
-  specs:
-    rubyhorn (0.0.6)
-      activesupport
-      json
-      mediashelf-loggable
-      mime-types
-      net-http-digest_auth
-      om
-      rest-client
-
-GIT
-  remote: https://github.com/rkallensee/bootstrap-toggle-rails.git
-  revision: b85df8ea25ab71628fcec1504c7182dd5d7d3606
-  tag: v2.2.1.0
-  specs:
-    bootstrap-toggle-rails (2.2.1.0)
-
 GEM
   remote: https://rubygems.org/
   specs:
@@ -178,8 +157,9 @@ GEM
     active_elastic_job (2.0.1)
       aws-sdk (~> 2)
       rails (>= 4.2)
-    active_encode (0.1.1)
-      activesupport
+    active_encode (0.7.0)
+      rails
+      sprockets (< 4)
     active_fedora-datastreams (0.2.0)
       active-fedora (>= 11.0.0.pre, < 13)
       nom-xml (>= 0.5.1)
@@ -269,6 +249,7 @@ GEM
     bootstrap-sass (3.3.7)
       autoprefixer-rails (>= 5.2.1)
       sass (>= 3.3.4)
+    bootstrap-toggle-rails (2.2.1.0)
     bootstrap_form (4.2.0)
       actionpack (>= 5.0)
       activemodel (>= 5.0)
@@ -301,13 +282,12 @@ GEM
     capistrano-rails (1.4.0)
       capistrano (~> 3.1)
       capistrano-bundler (~> 1.1)
-    capistrano-resque (0.2.3)
-      capistrano
-      resque
-      resque-scheduler
     capistrano-rvm (0.1.2)
       capistrano (~> 3.0)
       sshkit (~> 1.2)
+    capistrano-sidekiq (1.0.2)
+      capistrano (>= 3.9.0)
+      sidekiq (>= 3.4)
     capistrano-yarn (2.0.2)
       capistrano (~> 3.0)
     capybara (3.19.1)
@@ -340,7 +320,7 @@ GEM
     connection_pool (2.2.2)
     crack (0.4.3)
       safe_yaml (~> 1.0.0)
-    crass (1.0.4)
+    crass (1.0.5)
     daemons (1.3.1)
     dalli (2.7.10)
     database_cleaner (1.7.0)
@@ -349,12 +329,15 @@ GEM
     deep_merge (1.2.1)
     deprecation (1.0.0)
       activesupport
-    devise (4.6.2)
+    devise (4.7.1)
       bcrypt (~> 3.0)
       orm_adapter (~> 0.1)
-      railties (>= 4.1.0, < 6.0)
+      railties (>= 4.1.0)
       responders
       warden (~> 1.2.3)
+    devise_invitable (1.7.5)
+      actionmailer (>= 4.1.0)
+      devise (>= 4.0.0)
     diff-lcs (1.3)
     docile (1.3.1)
     domain_name (0.5.20180417)
@@ -405,8 +388,6 @@ GEM
     equivalent-xml (0.6.0)
       nokogiri (>= 1.4.3)
     erubi (1.8.0)
-    et-orbi (1.2.1)
-      tzinfo
     execjs (2.7.0)
     factory_bot (4.11.1)
       activesupport (>= 3.0.0)
@@ -425,9 +406,6 @@ GEM
     ffi (1.10.0)
     font-awesome-rails (4.7.0.5)
       railties (>= 3.2, < 6.1)
-    fugit (1.2.1)
-      et-orbi (~> 1.1, >= 1.1.8)
-      raabro (~> 1.1)
     globalid (0.4.2)
       activesupport (>= 4.2.0)
     google-analytics-rails (1.1.0)
@@ -498,7 +476,7 @@ GEM
       multi_json (>= 1.2)
     jmespath (1.4.0)
     jquery-datatables (1.10.19.1)
-    jquery-rails (4.3.3)
+    jquery-rails (4.3.5)
       rails-dom-testing (>= 1, < 3)
       railties (>= 4.2.0)
       thor (>= 0.14, < 2.0)
@@ -543,7 +521,7 @@ GEM
       activesupport (>= 4)
       railties (>= 4)
       request_store (~> 1.0)
-    loofah (2.2.3)
+    loofah (2.4.0)
       crass (~> 1.0.2)
       nokogiri (>= 1.5.9)
     mail (2.7.1)
@@ -555,24 +533,21 @@ GEM
       mimemagic (~> 0.3.2)
     media-element-logo-plugin (0.0.2)
       rails (>= 3.2.3)
-    mediashelf-loggable (0.4.10)
     memoist (0.16.0)
     method_source (0.9.2)
     mime-types (3.2.2)
       mime-types-data (~> 3.2015)
     mime-types-data (3.2019.0331)
     mimemagic (0.3.3)
+    mini_magick (4.9.5)
     mini_mime (1.0.1)
     mini_portile2 (2.4.0)
     minitest (5.11.3)
-    mono_logger (1.1.0)
     msgpack (1.2.10)
     multi_json (1.13.1)
     multi_xml (0.6.0)
     multipart-post (2.1.1)
-    mustermann (1.0.3)
     mysql2 (0.5.2)
-    net-http-digest_auth (1.4.1)
     net-ldap (0.16.1)
     net-scp (2.0.0)
       net-ssh (>= 2.6.5, < 6.0.0)
@@ -583,7 +558,7 @@ GEM
     noid-rails (3.0.1)
       actionpack (>= 5.0.0, < 6)
       noid (~> 0.9)
-    nokogiri (1.10.3)
+    nokogiri (1.10.5)
       mini_portile2 (~> 2.4.0)
     nom-xml (1.1.0)
       activesupport (>= 3.2.18)
@@ -610,10 +585,14 @@ GEM
     orm_adapter (0.5.0)
     os (1.0.1)
     parallel (1.17.0)
+    paranoia (2.4.2)
+      activerecord (>= 4.0, < 6.1)
     parser (2.6.3.0)
       ast (~> 2.4.0)
     pg (1.1.4)
     powerpack (0.1.2)
+    pretender (0.3.4)
+      actionpack (>= 4.2)
     pry (0.12.2)
       coderay (~> 1.1.0)
       method_source (~> 0.9.0)
@@ -623,10 +602,10 @@ GEM
     pry-rails (0.3.9)
       pry (>= 0.10.4)
     public_suffix (3.0.3)
-    raabro (1.1.6)
-    rack (2.0.7)
-    rack-cors (1.0.3)
-    rack-protection (2.0.5)
+    rack (2.0.8)
+    rack-cors (1.1.0)
+      rack (>= 2.0.0)
+    rack-protection (2.0.7)
       rack
     rack-proxy (0.6.5)
       rack
@@ -700,7 +679,7 @@ GEM
       tilt
     recaptcha (4.14.0)
       json
-    redis (4.1.1)
+    redis (4.1.3)
     redis-actionpack (5.0.2)
       actionpack (>= 4.0, < 6)
       redis-rack (>= 1, < 3)
@@ -708,8 +687,6 @@ GEM
     redis-activesupport (5.0.7)
       activesupport (>= 3, < 6)
       redis-store (>= 1.3, < 2)
-    redis-namespace (1.6.0)
-      redis (>= 3.0.4)
     redis-rack (2.0.5)
       rack (>= 1.5, < 3)
       redis-store (>= 1.2, < 2)
@@ -726,20 +703,9 @@ GEM
       uber (< 0.2.0)
     request_store (1.4.1)
       rack (>= 1.4)
-    responders (2.4.1)
-      actionpack (>= 4.2.0, < 6.0)
-      railties (>= 4.2.0, < 6.0)
-    resque (2.0.0)
-      mono_logger (~> 1.0)
-      multi_json (~> 1.0)
-      redis-namespace (~> 1.6)
-      sinatra (>= 0.9.2)
-      vegas (~> 0.1.2)
-    resque-scheduler (4.4.0)
-      mono_logger (~> 1.0)
-      redis (>= 3.3)
-      resque (>= 1.26)
-      rufus-scheduler (~> 3.2)
+    responders (3.0.0)
+      actionpack (>= 5.0)
+      railties (>= 5.0)
     rest-client (2.0.2)
       http-cookie (>= 1.0.2, < 2.0)
       mime-types (>= 1.16, < 4.0)
@@ -796,10 +762,14 @@ GEM
       mime-types
       nokogiri
       rest-client
-    rubyzip (1.2.2)
-    rufus-scheduler (3.6.0)
-      fugit (~> 1.1, >= 1.1.6)
+    rubyzip (1.3.0)
     safe_yaml (1.0.5)
+    samvera-persona (0.1.7)
+      devise (~> 4.6)
+      devise_invitable (~> 1.7)
+      paranoia (~> 2.2)
+      pretender
+      rails (>= 5.1.1)
     sass (3.4.22)
     sass-rails (5.0.7)
       railties (>= 4.0.0, < 6)
@@ -813,6 +783,11 @@ GEM
       rubyzip (~> 1.2, >= 1.2.2)
     shoulda-matchers (4.0.1)
       activesupport (>= 4.2.0)
+    sidekiq (5.2.7)
+      connection_pool (~> 2.2, >= 2.2.2)
+      rack (>= 1.5.0)
+      rack-protection (>= 1.5.0)
+      redis (>= 3.3.5, < 5)
     signet (0.11.0)
       addressable (~> 2.3)
       faraday (~> 0.9)
@@ -823,11 +798,6 @@ GEM
       json (>= 1.8, < 3)
       simplecov-html (~> 0.10.0)
     simplecov-html (0.10.2)
-    sinatra (2.0.5)
-      mustermann (~> 1.0)
-      rack (~> 2.0)
-      rack-protection (= 2.0.5)
-      tilt (~> 2.0)
     skydrive (1.2.0)
       activesupport
       httmultiparty
@@ -887,8 +857,6 @@ GEM
       unf_ext
     unf_ext (0.0.7.6)
     unicode-display_width (1.6.0)
-    vegas (0.1.11)
-      rack (>= 1.0.0)
     warden (1.2.8)
       rack (>= 2.0.6)
     wavefile (1.0.1)
@@ -933,7 +901,7 @@ DEPENDENCIES
   active-fedora (~> 12.1)
   active_annotations (~> 0.2.2)
   active_elastic_job (~> 2.0)
-  active_encode (~> 0.1.1)
+  active_encode (~> 0.7.0)
   active_fedora-datastreams (~> 0.2.0)
   activejob-traffic_control
   activerecord-session_store
@@ -947,15 +915,15 @@ DEPENDENCIES
   bixby
   blacklight (< 7.0)
   bootsnap
-  bootstrap-toggle-rails!
+  bootstrap-toggle-rails
   bootstrap_form
   browse-everything (~> 0.13.0)
   byebug
   capistrano (~> 3.6)
   capistrano-passenger
   capistrano-rails
-  capistrano-resque
   capistrano-rvm
+  capistrano-sidekiq
   capistrano-yarn
   capybara
   cloudfront-signer
@@ -964,6 +932,7 @@ DEPENDENCIES
   config
   database_cleaner
   devise (~> 4.4)
+  devise_invitable (~> 1.6)
   dotenv-rails
   edtf
   email_spec
@@ -997,6 +966,7 @@ DEPENDENCIES
   mediaelement-track-scrubber!
   mediaelement_rails!
   mediainfo!
+  mini_magick (~> 4.9)
   mysql2
   net-ldap
   noid-rails (~> 3.0.1)
@@ -1015,19 +985,18 @@ DEPENDENCIES
   react-rails
   recaptcha
   redis-rails
-  resque (~> 2.0)
-  resque-scheduler (~> 4.4)
-  rest-client
+  rest-client (~> 2.0)
   roo
   rsolr (~> 1.0)
   rspec-rails
   rspec-retry
   rspec_junit_formatter
-  rubyhorn!
+  samvera-persona (~> 0.1.7)
   sass (= 3.4.22)
   sass-rails (~> 5.0)
   selenium-webdriver
   shoulda-matchers
+  sidekiq (~> 5.2.7)
   simplecov
   solr_wrapper (>= 0.16)
   speedy-af (~> 0.1.3)
@@ -1047,4 +1016,4 @@ DEPENDENCIES
   zoom
 
 BUNDLED WITH
-   2.0.1
+   2.0.2

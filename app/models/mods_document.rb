@@ -1,4 +1,4 @@
-# Copyright 2011-2019, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2020, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 #
@@ -21,6 +21,7 @@ class ModsDocument < ActiveFedora::OmDatastream
 
   IDENTIFIER_TYPES = Avalon::ControlledVocabulary.find_by_name(:identifier_types) || {"other" => "Local"}
   NOTE_TYPES = Avalon::ControlledVocabulary.find_by_name(:note_types) || {"local" => "Local Note"}
+  RIGHTS_STATEMENTS = Avalon::ControlledVocabulary.find_by_name(:rights_statements)
 
   set_terminology do |t|
     t.root(:path=>'mods',
@@ -153,7 +154,8 @@ class ModsDocument < ActiveFedora::OmDatastream
     t.permalink(:ref => [:location, :url_with_context])
 
     t.usage(:path => 'accessCondition')
-    t.terms_of_use(:path => 'accessCondition', :attributes => { :type => 'use and reproduction' })
+    t.terms_of_use(:path => 'accessCondition', :attributes => { :type => 'use and reproduction'})
+    t.rights_statement(:path => 'accessCondition', :attributes => { :type => 'use and reproduction', :displayLabel => 'Rights Statement' })
     t.table_of_contents(:path => 'tableOfContents')
     t.access_restrictions(:path => 'accessCondition', :attributes => { :type => 'restrictions on access' })
 
@@ -209,7 +211,7 @@ class ModsDocument < ActiveFedora::OmDatastream
     bib_id.strip!
     if bib_id.present?
       bib_id_label ||= IDENTIFIER_TYPES.keys.first
-      new_record = Avalon::BibRetriever.instance.get_record(bib_id)
+      new_record = Avalon::BibRetriever.for(bib_id_label).get_record(bib_id)
       if new_record.present?
         old_resource_type = self.resource_type.dup
         old_media_type = self.media_type.dup

@@ -1,4 +1,4 @@
-# Copyright 2011-2019, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2020, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 #
@@ -20,16 +20,12 @@ describe Avalon::BibRetriever do
   let(:mods) { File.read(File.expand_path("../../../fixtures/#{bib_id}.mods",__FILE__)) }
 
   describe 'configured?' do
-    before :each do
-      Settings.bib_retriever = { 'protocol' => 'sru', 'url' => 'http://zgate.example.edu:9000/db' }
-    end
-
     it 'valid' do
       expect(Avalon::BibRetriever).to be_configured
     end
 
     it 'invalid' do
-      Settings.bib_retriever = { 'protocol' => 'unknown', 'url' => 'http://zgate.example.edu:9000/db' }
+      Settings.bib_retriever = { 'default' => { 'protocol' => 'unknown', 'url' => 'http://zgate.example.edu:9000/db' } }
       expect(Avalon::BibRetriever).not_to be_configured
     end
 
@@ -46,10 +42,6 @@ describe Avalon::BibRetriever do
       let(:sru_response) { File.read(File.expand_path("../../../fixtures/#{bib_id}.xml",__FILE__)) }
       let!(:request) { stub_request(:get, sru_url).to_return(body: sru_response) }
 
-      before :each do
-        Settings.bib_retriever = { 'protocol' => 'sru', 'url' => 'http://zgate.example.edu:9000/db' }
-      end
-
       it 'retrieves proper MODS' do
         response = Avalon::BibRetriever.instance.get_record("^%#{bib_id}")
         expect(request).to have_been_requested
@@ -61,11 +53,8 @@ describe Avalon::BibRetriever do
       let(:sru_response) { File.read(File.expand_path("../../../fixtures/#{bib_id}-ns.xml",__FILE__)) }
       let!(:request) { stub_request(:get, sru_url).to_return(body: sru_response) }
 
-      before :each do
-        Settings.bib_retriever = { 'protocol' => 'sru', 'url' => 'http://zgate.example.edu:9000/db', 'namespace' => 'http://example.edu/fake/sru/namespace/' }
-      end
-
       it 'retrieves proper MODS' do
+        Settings.bib_retriever = { 'default' => { 'protocol' => 'sru', 'url' => 'http://zgate.example.edu:9000/db', 'namespace' => 'http://example.edu/fake/sru/namespace/', 'retriever_class' => 'Avalon::BibRetriever::SRU', 'retriever_class_require' => 'avalon/bib_retriever/sru' } }
         response = Avalon::BibRetriever.instance.get_record("^%#{bib_id}")
         expect(request).to have_been_requested
         expect(Nokogiri::XML(response)).to be_equivalent_to(mods)
@@ -79,11 +68,8 @@ describe Avalon::BibRetriever do
       let!(:request) { stub_request(:get, sru_url).to_return(body: '') }
       let!(:request_2) { stub_request(:get, sru_url_2).to_return(body: sru_response) }
 
-      before :each do
-        Settings.bib_retriever = { 'protocol' => 'sru', 'url' => 'http://zgate.example.edu:9000/db', 'query' => ["rec.id='not_a_real_id'","cql.serverChoice='^C%{bib_id}'"] }
-      end
-
       it 'retrieves proper MODS' do
+        Settings.bib_retriever = { 'default' => { 'protocol' => 'sru', 'url' => 'http://zgate.example.edu:9000/db', 'query' => ["rec.id='not_a_real_id'","cql.serverChoice='^C%{bib_id}'"], 'retriever_class' => 'Avalon::BibRetriever::SRU', 'retriever_class_require' => 'avalon/bib_retriever/sru' } }
         response = Avalon::BibRetriever.instance.get_record("^%#{bib_id}")
         expect(Nokogiri::XML(response)).to be_equivalent_to(mods)
         expect(request).to have_been_requested

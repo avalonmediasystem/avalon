@@ -1,4 +1,4 @@
-# Copyright 2011-2019, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2020, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 #
@@ -165,9 +165,9 @@ describe Admin::Collection do
 
   describe "Admin::Collection.units" do
     it "should return an array of units" do
-      allow(Admin::Collection).to receive(:units).and_return ["University Archives", "Black Film Center/Archive"]
+      allow(Avalon::ControlledVocabulary).to receive(:find_by_name).with(:units, sort: true).and_return ["Black Film Center/Archive", "University Archives"]
       expect(Admin::Collection.units).to be_an_instance_of Array
-      expect(Admin::Collection.units).to eq(["University Archives", "Black Film Center/Archive"])
+      expect(Admin::Collection.units).to eq(["Black Film Center/Archive", "University Archives"])
     end
   end
 
@@ -176,6 +176,7 @@ describe Admin::Collection do
      collection.name = "Herman B. Wells Collection"
      expect(collection.to_solr[ "name_ssi" ]).to eq("Herman B. Wells Collection")
      expect(collection.to_solr[ "name_uniq_si" ]).to eq("hermanb.wellscollection")
+     expect(collection.to_solr[ "has_poster_bsi" ]).to eq false
     end
   end
 

@@ -1,4 +1,4 @@
-# Copyright 2011-2019, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2020, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 #
@@ -15,15 +15,59 @@
 require 'rails_helper'
 
 describe User do
-  subject {user}
-  let!(:user) {FactoryBot.build(:user)}
-  let!(:list) {0.upto(rand(5)).collect { Faker::Internet.email }}
+  subject { user }
+  let!(:user) { FactoryBot.build(:user) }
+  let!(:list) { 0.upto(rand(5)).collect { Faker::Internet.email } }
 
   describe "validations" do
     it {is_expected.to validate_presence_of(:username)}
     it {is_expected.to validate_uniqueness_of(:username).case_insensitive}
     it {is_expected.to validate_presence_of(:email)}
     it {is_expected.to validate_uniqueness_of(:email).case_insensitive}
+
+    context 'username and email uniqueness' do
+      let(:username) { Faker::Internet.username }
+      let(:email) { Faker::Internet.email }
+
+      context "using an already used email for a username" do
+        let!(:user) { FactoryBot.create(:user, username: username, email: email) }
+        let(:user2) { FactoryBot.build(:user, username: email) }
+        it "is invalid" do
+          expect(user2).not_to be_valid
+          expect(user2.errors[:username]).to include "is taken."
+        end
+      end
+
+      context "using an already used username for an email" do
+        let(:username) { Faker::Internet.email }
+        let!(:user) { FactoryBot.create(:user, username: username, email: email) }
+        let(:user2) { FactoryBot.build(:user, email: username) }
+        it "is invalid" do
+          expect(user2).not_to be_valid
+          expect(user2.errors[:email]).to include "is taken."
+        end
+      end
+
+      context "using email for username" do
+        let!(:user) { FactoryBot.create(:user, username: email, email: email) }
+        it "is valid" do
+          expect(user).to be_valid
+          expect(user.errors).to be_empty
+        end
+      end
+
+      context "updating" do
+        let!(:user) { FactoryBot.create(:user, username: username, email: email) }
+        it "is valid" do
+          user.username = "new.username"
+          expect(user).to be_valid
+          expect(user.errors).to be_empty
+          user.email = "new.email@example.com"
+          expect(user).to be_valid
+          expect(user.errors).to be_empty
+        end
+      end
+    end
   end
 
   describe "Membership" do
@@ -34,6 +78,22 @@ describe User do
 
     it "should not be a member if its key is not in the list" do
       expect(user).not_to be_in(list)
+    end
+  end
+
+  describe "finders" do
+    before do
+      user.save
+    end
+
+    it "should find undeleted users by usernames" do
+      found_user = User.find_or_create_by_username_or_email(user.username, nil)
+      expect(found_user).to eq(user)
+    end
+
+    it "should find undeleted users by email" do
+      found_user = User.find_or_create_by_username_or_email(user.username, nil)
+      expect(found_user).to eq(user)
     end
   end
 

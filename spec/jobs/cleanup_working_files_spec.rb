@@ -1,4 +1,4 @@
-# Copyright 2011-2019, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2020, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 #
@@ -28,7 +28,7 @@ describe CleanupWorkingFileJob do
     it 'calls file delete when there is file to cleanup' do
       expect(File).to receive(:delete).with(working_file).once
       expect(Dir).to receive(:delete).with(File.dirname(working_file)).once
-      CleanupWorkingFileJob.perform_now('abc123')
+      CleanupWorkingFileJob.perform_now('abc123', [working_file])
     end
   end
 end

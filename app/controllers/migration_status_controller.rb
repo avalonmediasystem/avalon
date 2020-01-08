@@ -1,4 +1,4 @@
-# Copyright 2011-2019, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2020, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 #
@@ -52,21 +52,17 @@ class MigrationStatusController < ApplicationController
   end
 
   def report
-    filename = "#{params[:id].sub(/:/,'_')}.json"
-    # Sanitize filename for security
-    bar_chars = ['/', '\\']
-    filename.gsub!(bar_chars,'_')
-    send_file File.join(Rails.root, 'migration_report', filename), type: 'application/json', disposition: 'inline'
+    requested_filename = "#{params[:id].sub(/:/, '_')}.json"
+    migration_report_directory = Rails.root.join("migration_report")
+    raise ActionController::RoutingError, 'Not Found' unless Dir.exist? migration_report_directory
+    found_filename = Dir.entries(migration_report_directory).find { |filename| filename == requested_filename }
+    file = Rails.root.join("migration_report", found_filename) if found_filename
+    raise ActionController::RoutingError, 'Not Found' unless file && File.exist?(file)
+    send_file file, type: 'application/json', disposition: 'inline'
   end
 
   def auth
-    if current_user.nil?
-      flash[:notice] = "You need to login to view migration reports"
-      redirect_to new_user_session_path
-    elsif cannot? :read, MigrationStatus
-      flash[:notice] = "You do not have permission to view migration reports"
-      redirect_to root_path
-    end
+    authorize! :read, MigrationStatus
   end
 
   def without_layout_if_xhr

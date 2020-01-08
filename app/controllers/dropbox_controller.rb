@@ -1,4 +1,4 @@
-# Copyright 2011-2019, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2020, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 #
@@ -17,9 +17,7 @@ class DropboxController < ApplicationController
 
   def bulk_delete
     @collection = Admin::Collection.find(params[:collection_id])
-    unless can? :destroy, @collection
-      raise CanCan::AccessDenied
-    end
+    authorize! :destroy, @collection
 
     # failsafe for spaces that might be attached to string
     filenames = params[:filenames].map(&:strip)
@@ -30,7 +28,7 @@ class DropboxController < ApplicationController
 
     filenames.each do |filename|
       if dropbox_filenames.include?( filename )
-        if dropbox.delete( filename ) 
+        if dropbox.delete( filename )
           deleted_filenames << filename
           logger.info "The user #{current_user.username} deleted #{filename} from the dropbox."
         end
@@ -38,8 +36,7 @@ class DropboxController < ApplicationController
         logger.warn "The user #{current_user.username} attempted to delete #{filename} from the dropbox. File does not exist."
       end
     end
-    
+
     render :json => { deleted_filenames: deleted_filenames }
   end
-  
 end

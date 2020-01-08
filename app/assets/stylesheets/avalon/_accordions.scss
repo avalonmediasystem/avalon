@@ -1,0 +1,113 @@
+/*
+ * Copyright 2011-2020, The Trustees of Indiana University and Northwestern
+ *   University.  Licensed under the Apache License, Version 2.0 (the "License");
+ *   you may not use this file except in compliance with the License.
+ *
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software distributed
+ *   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+ *   CONDITIONS OF ANY KIND, either express or implied. See the License for the
+ *   specific language governing permissions and limitations under the License.
+ * ---  END LICENSE_HEADER BLOCK  ---
+*/
+
+$accordionPadding: 20px;
+
+@function accordion-indent($n) {
+  @return -1 * $n * $accordionPadding;
+}
+
+#accordion.panel-group {
+  margin-top: 10px;
+  position: relative;
+
+  a {
+    display: inline-block;
+    cursor: pointer;
+
+    &:link,
+    &:visited,
+    &:hover,
+    &:active {
+      text-decoration: none;
+    }
+  }
+
+  .panel-title {
+    .fa-plus-square,
+    .fa-minus-square {
+      font-size: 0.9em;
+      float: right;
+      cursor: pointer;
+      border: none;
+      background-color: $lightgray;
+    }
+  }
+
+  ul,
+  li {
+    list-style: none;
+  }
+
+  li.stream-li {
+    position: relative;
+  }
+
+  i.now-playing {
+    position: absolute;
+    color: $link-color;
+    left: accordion-indent(1);
+  }
+
+  .panel-heading {
+    border-bottom: 1px solid #dddddd;
+    padding: 7px 10px;
+
+    ul {
+      padding-left: $accordionPadding;
+      margin-bottom: 0;
+      display: inline-block;
+    }
+
+    #expand_button,
+    #collapse_button {
+      float: right;
+      margin-top: -2px;
+    }
+  }
+
+  .panel-body {
+    border-top: none;
+    position: relative;
+
+    ul {
+      padding-left: $accordionPadding;
+
+      i.now-playing {
+        top: 3px;
+        left: accordion-indent(1);
+      }
+
+      ul {
+        i.now-playing {
+          left: accordion-indent(2);
+        }
+
+        ul {
+          i.now-playing {
+            left: accordion-indent(3);
+          }
+
+          ul {
+            i.now-playing {
+              left: accordion-indent(4);
+            }
+          }
+        }
+      }
+    }
+  }
+}

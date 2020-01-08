@@ -1,5 +1,5 @@
 <%#
-Copyright 2011-2019, The Trustees of Indiana University and Northwestern
+Copyright 2011-2020, The Trustees of Indiana University and Northwestern
   University.  Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
 
@@ -15,9 +15,9 @@ Unless required by applicable law or agreed to in writing, software distributed
 %>
 <div id="timeline_edit_div" class="container">
   <%= form_for(@timeline, html: { id: 'timeline_form', class: 'form-horizontal timeline_actions' }) do |f| %>
-  <div class="row form-group <% if @timeline.errors[:title].any? %>has-error<% end %>">
+  <div class="row form-group <% if @timeline.errors[:title].any? %>invalid-feedback<% end %>">
     <%= f.label "Name", class: 'col-sm-2 control-label' %>
-    <div class="col-sm-10"><%= f.text_field :title, class: 'form-control' %></div>
+    <div class="col-sm-10"><%= f.text_field :title, class: (@timeline.errors[:title].any? ? 'is-invalid form-control' : 'form-control') %></div>
   </div>
   <div class="row form-group">
     <%= f.label :description, 'Description', class: 'col-sm-2 control-label' %>

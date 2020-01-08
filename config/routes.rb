@@ -1,21 +1,29 @@
 require 'avalon/routing/can_constraint'
 
 Rails.application.routes.draw do
-
-  mount Blacklight::Engine => '/'
-  root to: "catalog#index"
-    concern :searchable, Blacklight::Routes::Searchable.new
+  mount Samvera::Persona::Engine => '/'
+  mount Blacklight::Engine => '/catalog'
+  concern :searchable, Blacklight::Routes::Searchable.new
+  concern :exportable, Blacklight::Routes::Exportable.new
 
   resource :catalog, only: [:index], as: 'catalog', path: '/catalog', controller: 'catalog' do
     concerns :searchable
   end
 
-  concern :exportable, Blacklight::Routes::Exportable.new
+  # For some reason this needs to be after `resource :catalog` otherwise Blacklight will generate links to / instead of /catalog
+  root to: "catalog#index"
 
   get '/mejs/:version', to: 'application#mejs'
 
   resources :solr_documents, only: [:show], path: '/catalog', controller: 'catalog' do
     concerns :exportable
+  end
+
+  resources :encode_records, only: [:show, :index] do
+    collection do
+      post :paged_index
+      post :progress
+    end
   end
 
   resources :bookmarks do
@@ -38,10 +46,8 @@ Rails.application.routes.draw do
     end
   end
 
-  devise_for :users, :controllers => { :omniauth_callbacks => "users/omniauth_callbacks" }, format: false
+  devise_for :users, controllers: { omniauth_callbacks: 'users/omniauth_callbacks', sessions: 'users/sessions' }, format: false
   devise_scope :user do
-    match '/users/sign_in', :to => "users/sessions#new", :as => :new_user_session, via: [:get]
-    match '/users/sign_out', :to => "users/sessions#destroy", :as => :destroy_user_session, via: [:get]
     match '/users/auth/:provider', to: 'users/omniauth_callbacks#passthru', as: :user_omniauth_authorize, via: [:get, :post]
     Avalon::Authentication::Providers.collect { |provider| provider[:provider] }.uniq.each do |provider_name|
       match "/users/auth/#{provider_name}/callback", to: "users/omniauth_callbacks##{provider_name}", as: "user_omniauth_callback_#{provider_name}".to_sym, via: [:get, :post]
@@ -68,6 +74,8 @@ Rails.application.routes.draw do
         get 'edit'
         get 'remove'
         get 'items'
+        get 'poster'
+        post 'attach_poster'
       end
     end
 
@@ -80,6 +88,12 @@ Rails.application.routes.draw do
   end
 
   resources :vocabulary, except: [:create, :destroy, :new, :edit]
+
+  resources :collections, only: [:index, :show] do
+    member do
+      get :poster
+    end
+  end
 
   resources :media_objects, except: [:create, :update] do
     member do
@@ -99,6 +113,7 @@ Rails.application.routes.draw do
       post :add_to_playlist
       patch :intercom_push
       get :manifest
+      get :move_preview, defaults: { format: 'json' }, constraints: { format: 'json' }
     end
     collection do
       post :create, action: :create, constraints: { format: 'json' }
@@ -128,6 +143,7 @@ Rails.application.routes.draw do
       get 'structure', to: 'master_files#structure', constraints: { format: 'json' }
       post 'structure', to: 'master_files#set_structure', constraints: { format: 'json' }
       delete 'structure', to: 'master_files#delete_structure', constraints: { format: 'json' }
+      post 'move'
     end
   end
 
@@ -196,64 +212,8 @@ Rails.application.routes.draw do
   get '/about/health.yaml', to: 'about_page/about#health', defaults: { :format => 'yaml' }
   get '/about/health(.:format)', to: redirect('/')
 
-  constraints(Avalon::Routing::CanConstraint.new(:manage, Resque)) do
-    require 'resque/server'
-    mount Resque::Server, at: '/jobs'
+  constraints(Avalon::Routing::CanConstraint.new(:manage, :jobs)) do
+    mount Sidekiq::Web, at: '/jobs', as: 'jobs'
   end
-  get '/jobs', to: redirect('/')
-
-  # The priority is based upon order of creation: first created -> highest priority.
-  # See how all your routes lay out with "rake routes".
-
-  # You can have the root of your site routed with "root"
-  # root 'welcome#index'
-
-  # Example of regular route:
-  #   get 'products/:id' => 'catalog#view'
-
-  # Example of named route that can be invoked with purchase_url(id: product.id)
-  #   get 'products/:id/purchase' => 'catalog#purchase', as: :purchase
-
-  # Example resource route (maps HTTP verbs to controller actions automatically):
-  #   resources :products
-
-  # Example resource route with options:
-  #   resources :products do
-  #     member do
-  #       get 'short'
-  #       post 'toggle'
-  #     end
-  #
-  #     collection do
-  #       get 'sold'
-  #     end
-  #   end
-
-  # Example resource route with sub-resources:
-  #   resources :products do
-  #     resources :comments, :sales
-  #     resource :seller
-  #   end
-
-  # Example resource route with more complex sub-resources:
-  #   resources :products do
-  #     resources :comments
-  #     resources :sales do
-  #       get 'recent', on: :collection
-  #     end
-  #   end
-
-  # Example resource route with concerns:
-  #   concern :toggleable do
-  #     post 'toggle'
-  #   end
-  #   resources :posts, concerns: :toggleable
-  #   resources :photos, concerns: :toggleable
-
-  # Example resource route within a namespace:
-  #   namespace :admin do
-  #     # Directs /admin/products/* to Admin::ProductsController
-  #     # (app/controllers/admin/products_controller.rb)
-  #     resources :products
-  #   end
+  get '/jobs(.:format)', to: redirect('/')
 end

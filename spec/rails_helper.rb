@@ -1,4 +1,4 @@
-# Copyright 2011-2019, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2020, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 #
@@ -104,7 +104,7 @@ RSpec.configure do |config|
   config.use_transactional_fixtures = false
 
   config.before :suite do
-    WebMock.disable_net_connect!(allow: ['localhost', '127.0.0.1', 'fedora', 'solr', 'matterhorn', 'https://chromedriver.storage.googleapis.com'])
+    WebMock.disable_net_connect!(allow: ['localhost', '127.0.0.1', 'fedora', 'fedora-test', 'solr', 'solr-test', 'matterhorn', 'https://chromedriver.storage.googleapis.com'])
     DatabaseCleaner.clean_with(:truncation)
     ActiveFedora::Cleaner.clean!
     disable_production_minter!
@@ -119,7 +119,7 @@ RSpec.configure do |config|
   end
 
   config.after :suite do
-    if Settings.spec['fake_dropbox']
+    if Settings.spec && Settings.spec['fake_dropbox']
       FileUtils.remove_dir Settings.spec['fake_dropbox'], true
       Settings.dropbox.path = Settings.spec['real_dropbox']
       Settings.spec = nil
@@ -133,6 +133,7 @@ RSpec.configure do |config|
     # Clear out the job queue to ensure tests run with clean environment
     ActiveJob::Base.queue_adapter.enqueued_jobs = []
     ActiveJob::Base.queue_adapter.performed_jobs = []
+    Settings.bib_retriever = { 'default' => { 'protocol' => 'sru', 'url' => 'http://zgate.example.edu:9000/db', 'retriever_class' => 'Avalon::BibRetriever::SRU', 'retriever_class_require' => 'avalon/bib_retriever/sru' } }
   end
 
   config.after :each do

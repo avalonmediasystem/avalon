@@ -1,4 +1,4 @@
-# Copyright 2011-2019, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2020, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 #
@@ -42,6 +42,14 @@ describe MasterFileManagementJobs do
         newpath = "/path/to/new/file.mp4"
         MasterFileManagementJobs::Move.perform_now(master_file.id, newpath)
         expect(File.exists? location).to be false
+        expect(File.exists? newpath).to be true
+        expect(newpath).to eq MasterFile.find(master_file.id).file_location
+      end
+
+      it 'does nothing if masterfile already moved' do
+        newpath = master_file.file_location
+        MasterFileManagementJobs::Move.perform_now(master_file.id, newpath)
+        expect(File.exists? location).to be true
         expect(File.exists? newpath).to be true
         expect(newpath).to eq MasterFile.find(master_file.id).file_location
       end

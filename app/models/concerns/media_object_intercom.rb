@@ -1,4 +1,4 @@
-# Copyright 2011-2019, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2020, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 #
@@ -55,7 +55,8 @@ module MediaObjectIntercom
           related_item_url: (related_item_url.present? ? related_item_url.collect { |n| n[:url] } : nil),
           related_item_label: (related_item_url.present? ? related_item_url.collect { |n| n[:label] } : nil),
           other_identifier: (other_identifier.present? ? other_identifier.collect { |n| n[:id] } : nil),
-          other_identifier_type: (other_identifier.present? ? other_identifier.collect { |n| n[:source] } : nil)
+          other_identifier_type: (other_identifier.present? ? other_identifier.collect { |n| n[:source] } : nil),
+          rights_statement: rights_statement
         }
     }
   end

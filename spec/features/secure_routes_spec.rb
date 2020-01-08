@@ -1,4 +1,4 @@
-# Copyright 2011-2019, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2020, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 #
@@ -26,13 +26,13 @@ describe "Secure Routes" do
       expect(page).to have_content('Environment')
     end
 
-    it "should not provide access to regular users" do
+    xit "should not provide access to regular users" do
       login_as user, scope: :user
       visit '/about'
       expect(page).to have_content('Sample Content')
     end
 
-    it "should not provide access to anonymous users" do
+    xit "should not provide access to anonymous users" do
       login_as user, scope: :user
       visit '/about'
       expect(page).to have_content('Sample Content')
@@ -46,13 +46,13 @@ describe "Secure Routes" do
       expect(page).to have_content('Service Health')
     end
 
-    it "should not provide access to regular users" do
+    xit "should not provide access to regular users" do
       login_as user, scope: :user
       visit '/about/health'
       expect(page).to have_content('Sample Content')
     end
 
-    it "should not provide access to anonymous users" do
+    xit "should not provide access to anonymous users" do
       login_as user, scope: :user
       visit '/about/health'
       expect(page).to have_content('Sample Content')

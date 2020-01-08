@@ -1,4 +1,4 @@
-# Copyright 2011-2019, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2020, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 #
@@ -43,6 +43,10 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
     find_user(sym.to_s)
   end
 
+  def login_popup?
+    params['login_popup'].present? || (request.env["omniauth.params"].present? && request.env["omniauth.params"]["login_popup"].present?)
+  end
+
   def find_user(auth_type)
     auth_type.downcase!
     find_method = "find_for_#{auth_type}".to_sym
@@ -60,31 +64,13 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
         user_session[:virtual_groups] += [user_session[:lti_group]]
         user_session[:full_login] = false
       end
-
     end
 
-    if params['login_popup'].present? || (request.env["omniauth.params"].present? && request.env["omniauth.params"]["login_popup"].present?)
+    if login_popup?
       flash[:success] = nil
       render inline: '<html><head><script>window.close();</script></head><body></body><html>'.html_safe
-    elsif params['target_id']
-      # Whitelist params that are allowed to be passed through via LTI
-      params_whitelist = %w{t position token}
-      redirect_to objects_path(params['target_id'], params.permit(*params_whitelist).to_h)
-    elsif params[:url]
-      # Limit redirects to current host only
-      # Fixes bug https://bugs.dlib.indiana.edu/browse/VOV-5662
-      uri = URI.parse(params[:url])
-      if request.host == uri.host
-        redirect_to uri.path
-      else
-        redirect_to root_path
-      end
-    elsif session[:previous_url]
-      redirect_to session.delete :previous_url
-    elsif auth_type == 'lti' && user_session[:virtual_groups].present?
-      redirect_to search_catalog_path('f[read_access_virtual_group_ssim][]' => user_session[:lti_group])
     else
-      redirect_to root_path
+      redirect_to find_redirect_url(auth_type, lti_group: user_session&.dig(:lti_group))
     end
   end
 
@@ -93,6 +79,12 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
   rescue_from Avalon::MissingUserId do |exception|
     support_email = Settings.email.support
     notice_text = I18n.t('errors.lti_auth_error') % [support_email, support_email]
+    redirect_to root_path, flash: { error: notice_text.html_safe }
+  end
+
+  rescue_from Avalon::DeletedUserId do |exception|
+    support_email = Settings.email.support
+    notice_text = I18n.t('errors.deleted_auth_error') % [support_email, support_email]
     redirect_to root_path, flash: { error: notice_text.html_safe }
   end
 end

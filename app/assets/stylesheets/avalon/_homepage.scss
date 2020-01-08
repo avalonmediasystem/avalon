@@ -1,0 +1,127 @@
+/*
+ * Copyright 2011-2020, The Trustees of Indiana University and Northwestern
+ *   University.  Licensed under the Apache License, Version 2.0 (the "License");
+ *   you may not use this file except in compliance with the License.
+ *
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software distributed
+ *   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+ *   CONDITIONS OF ANY KIND, either express or implied. See the License for the
+ *   specific language governing permissions and limitations under the License.
+ * ---  END LICENSE_HEADER BLOCK  ---
+*/
+
+main.homepage-main {
+  padding-bottom: 0;
+
+  .alert {
+    margin-bottom: 40px;
+  }
+}
+
+.homepage-splash-wrapper {
+  margin-top: -20px;
+}
+
+.homepage-splash-top-section {
+  background-image: url('homepage-splash-avalon.jpg');
+  background-size: cover;
+  height: 500px;
+  position: relative;
+
+  @media screen and (max-width: $screen-xs-max) {
+    height: 350px;
+  }
+}
+
+.homepage-splash-search {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+
+  .avalon-search-query-form {
+    margin-bottom: 60px;
+  }
+
+  .global-search-wrapper {
+    width: 400px;
+
+    @media screen and (max-width: $screen-xs-max) {
+      width: 300px;
+      margin-bottom: 100px;
+    }
+  }
+}
+
+.homepage-splash-lead-copy {
+  position: absolute;
+  bottom: 0;
+  color: white;
+  width: 100%;
+  background: rgba(42, 84, 89, 0.8);
+  padding: 2.5rem 0;
+  font-family: $museoSlab;
+
+  .lead {
+    margin-bottom: 0;
+  }
+}
+
+.homepage-splash-featured-collection {
+  display: flex;
+  @media screen and (max-width: $screen-xs-max) {
+    padding-bottom: 2rem;
+    flex-direction: column;
+  }
+
+  .homepage-featured-collection-image {
+    width: 100%;
+    @media screen and (min-width: $screen-sm-min) {
+      width: 400px;
+    }
+    @media screen and (min-width: $screen-md-min) {
+      width: 500px;
+    }
+    @media screen and (min-width: $screen-lg-min) {
+      width: 600px;
+    }
+  }
+}
+
+.homepage-splash-featured-collection-content {
+  padding: 1rem 2rem 2rem;
+}
+
+.homepage-splash-collections {
+  background: $primary;
+  padding: 2rem 0 3rem;
+  color: white;
+}
+
+.homepage-splash-collections-title {
+  margin-bottom: 2rem;
+  a {
+    color: white;
+  }
+}
+
+#footer.homepage-footer {
+  color: white;
+  background: $blueGreen;
+
+  a {
+    color: white;
+  }
+
+  .separator {
+    display: none;
+  }
+
+  .footer-logo {
+    display: none;
+  }
+}

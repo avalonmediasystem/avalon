@@ -1,5 +1,5 @@
 <%#
-Copyright 2011-2019, The Trustees of Indiana University and Northwestern
+Copyright 2011-2020, The Trustees of Indiana University and Northwestern
   University.  Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
 
@@ -13,13 +13,13 @@ Unless required by applicable law or agreed to in writing, software distributed
   specific language governing permissions and limitations under the License.
 ---  END LICENSE_HEADER BLOCK  ---
 %>
-<li class="<%= class_for_step(@media_object, step.step) %>"> 
-    <% if active %>
-      <%= link_to edit_media_object_path(@media_object, step: step.step) do %>
-        <%= step.title %>
-      <% end %>
-    <% else %>
-      <span><%= step.title %></span>
-    <% end %>
-    <p><%= step.summary %></p>
+<li class="<%= class_for_step(@media_object, step.step) %>">
+  <% if active %>
+  <%= link_to edit_media_object_path(@media_object, step: step.step) do %>
+  <strong><%= step.title %></strong>
+  <% end %>
+  <% else %>
+  <span><strong><%= step.title %></strong></span>
+  <% end %>
+  <p class="text-muted"><%= step.summary %></p>
 </li>

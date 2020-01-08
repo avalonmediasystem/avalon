@@ -1,4 +1,4 @@
-# Copyright 2011-2019, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2020, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 #
@@ -101,7 +101,7 @@ module MasterFileBehavior
   end
 
   def display_title
-    mf_title = structuralMetadata.section_title unless structuralMetadata.blank?
+    mf_title = structuralMetadata.section_title if has_structuralMetadata?
     mf_title ||= title if title.present?
     mf_title ||= file_location.split("/").last if file_location.present? && (media_object.master_file_ids.size > 1)
     mf_title.blank? ? nil : mf_title

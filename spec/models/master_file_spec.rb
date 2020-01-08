@@ -1,4 +1,4 @@
-# Copyright 2011-2019, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2020, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 #
@@ -15,6 +15,7 @@
 require 'rails_helper'
 
 describe MasterFile do
+  include ActiveJob::TestHelper
 
   describe "validations" do
     subject { MasterFile.new }
@@ -97,36 +98,37 @@ describe MasterFile do
     describe 'classifying statuses' do
       let(:master_file){ MasterFile.new }
       it 'returns true for cancelled' do
-        master_file.status_code = 'CANCELLED'
+        allow(master_file).to receive(:status_code).and_return('CANCELLED')
         expect(master_file.finished_processing?).to be true
       end
       it 'returns true for succeeded' do
-        master_file.status_code = 'COMPLETED'
+        allow(master_file).to receive(:status_code).and_return('COMPLETED')
         expect(master_file.finished_processing?).to be true
       end
       it 'returns true for failed' do
-        master_file.status_code = 'FAILED'
+        allow(master_file).to receive(:status_code).and_return('FAILED')
         expect(master_file.finished_processing?).to be true
       end
     end
   end
 
   describe '#process' do
-    let!(:master_file) { FactoryBot.create(:master_file) }
+    let(:master_file) { FactoryBot.create(:master_file, :not_processing) }
 
-    it 'enqueues an ActiveEncode job' do
+    around(:example) do |example|
+      perform_enqueued_jobs { example.run }
+    end
+
+    it 'creates an encode' do
+      expect(master_file.encoder_class).to receive(:create).with("file://" + URI.escape(master_file.file_location), { master_file_id: master_file.id, preset: master_file.workflow_name })
       master_file.process
-      expect(ActiveEncodeJob::Create).to have_been_enqueued.with(master_file.id, "file://" + URI.escape(master_file.file_location), {preset: master_file.workflow_name})
     end
 
     describe 'already processing' do
-      before do
-        master_file.status_code = 'RUNNING'
-      end
-
+      let(:master_file) { FactoryBot.create(:master_file) }
       it 'should not start an ActiveEncode workflow' do
-        expect{master_file.process}.to raise_error(RuntimeError)
-        expect(ActiveEncodeJob::Create).not_to have_been_enqueued
+        expect(master_file.encoder_class).not_to receive(:create)
+        expect{ master_file.process }.to raise_error(RuntimeError)
       end
     end
   end
@@ -215,7 +217,7 @@ describe MasterFile do
         it "should use the skipped transcoding workflow for video" do
           master_file.file_format = 'Moving image'
           master_file.set_workflow('skip_transcoding')
-          expect(master_file.workflow_name).to eq('avalon-skip-transcoding')
+          expect(master_file.workflow_name).to eq('pass_through')
         end
       end
 
@@ -228,7 +230,7 @@ describe MasterFile do
         it "should use the skipped transcoding workflow for video" do
           master_file.file_format = 'Sound'
           master_file.set_workflow('skip_transcoding')
-          expect(master_file.workflow_name).to eq('avalon-skip-transcoding-audio')
+          expect(master_file.workflow_name).to eq('pass_through')
         end
       end
     end
@@ -295,24 +297,24 @@ describe MasterFile do
         }
 
         before(:each) do
-          @old_media_path = Settings.matterhorn.media_path
+          @old_media_path = Settings.encoding.working_file_path
           FileUtils.mkdir_p media_path
           FileUtils.cp fixture, tempfile
         end
 
         after(:each) do
-          Settings.matterhorn.media_path = @old_media_path
+          Settings.encoding.working_file_path = @old_media_path
           File.unlink subject.file_location
           FileUtils.rm_rf media_path
         end
 
         it "should rename an uploaded file in place" do
-          Settings.matterhorn.media_path = nil
+          Settings.encoding.working_file_path = nil
           expect(subject.file_location).to eq(File.realpath(File.join(File.dirname(tempfile),original)))
         end
 
         it "should copy an uploaded file to the media path" do
-          Settings.matterhorn.media_path = media_path
+          Settings.encoding.working_file_path = media_path
           expect(File.fnmatch("#{media_path}/*/#{original}", subject.working_file_path.first)).to be true
         end
       end
@@ -323,7 +325,7 @@ describe MasterFile do
     subject { FactoryBot.create(:master_file) }
 
     before :all do
-      class WorkflowEncoder < ActiveEncode::Base
+      class WorkflowEncode < ActiveEncode::Base
       end
 
       module EncoderModule
@@ -335,21 +337,21 @@ describe MasterFile do
     after :all do
       EncoderModule.send(:remove_const, :MyEncoder)
       Object.send(:remove_const, :EncoderModule)
-      Object.send(:remove_const, :WorkflowEncoder)
+      Object.send(:remove_const, :WorkflowEncode)
     end
 
-    it "should default to ActiveEncode::Base" do
-      expect(subject.encoder_class).to eq(ActiveEncode::Base)
+    it "should default to WatchedEncode" do
+      expect(subject.encoder_class).to eq(WatchedEncode)
     end
 
     it "should infer the class from a workflow name" do
-      subject.workflow_name = 'workflow_encoder'
-      expect(subject.encoder_class).to eq(WorkflowEncoder)
+      subject.workflow_name = 'workflow'
+      expect(subject.encoder_class).to eq(WorkflowEncode)
     end
 
-    it "should fall back to ActiveEncode::Base when a workflow class can't be resolved" do
+    it "should fall back to Watched when a workflow class can't be resolved" do
       subject.workflow_name = 'nonexistent_workflow_encoder'
-      expect(subject.encoder_class).to eq(ActiveEncode::Base)
+      expect(subject.encoder_class).to eq(WatchedEncode)
     end
 
     it "should resolve an explicitly named encoder class" do
@@ -357,9 +359,9 @@ describe MasterFile do
       expect(subject.encoder_class).to eq(EncoderModule::MyEncoder)
     end
 
-    it "should fall back to ActiveEncode::Base when an encoder class can't be resolved" do
+    it "should fall back to WatchedEncode when an encoder class can't be resolved" do
       subject.encoder_classname = 'EncoderModule::NonexistentEncoder'
-      expect(subject.encoder_class).to eq(ActiveEncode::Base)
+      expect(subject.encoder_class).to eq(WatchedEncode)
     end
 
     it "should correctly set the encoder classname from the encoder" do
@@ -369,6 +371,22 @@ describe MasterFile do
 
     it "should reject an invalid encoder class" do
       expect { subject.encoder_class = Object }.to raise_error(ArgumentError)
+    end
+
+    context 'with an encoder class named after the engine adapter' do
+      before :all do
+        class TestEncode < ActiveEncode::Base
+        end
+      end
+  
+      after :all do
+        Object.send(:remove_const, :TestEncode)
+      end
+  
+      it "should find the encoder class" do
+        expect(Settings.encoding.engine_adapter).to eq "test"
+        expect(subject.encoder_class).to eq(TestEncode)
+      end
     end
   end
 
@@ -409,7 +427,7 @@ describe MasterFile do
   describe "#update_ingest_batch" do
     let(:media_object) {FactoryBot.create(:media_object)}
     let!(:ingest_batch) {IngestBatch.create(media_object_ids: [media_object.id], email: Faker::Internet.email)}
-    let(:master_file) {FactoryBot.create( :master_file , {media_object: media_object, status_code: 'COMPLETED'} )}
+    let(:master_file) {FactoryBot.create( :master_file, :completed_processing, media_object: media_object)}
     it 'should send email when ingest batch is finished processing' do
       master_file.send(:update_ingest_batch)
       expect(ingest_batch.reload.email_sent?).to be true
@@ -481,16 +499,16 @@ describe MasterFile do
     subject(:master_file) { FactoryBot.create(:master_file) }
     let(:working_dir) { Dir.mktmpdir }
     before do
-      Settings.matterhorn.media_path = working_dir
+      Settings.encoding.working_file_path = working_dir
     end
 
     after do
-      Settings.matterhorn.media_path = nil
+      Settings.encoding.working_file_path = nil
     end
     describe 'post_processing_working_directory_file_management' do
       it 'enqueues the working directory cleanup job' do
         master_file.send(:post_processing_file_management)
-        expect(CleanupWorkingFileJob).to have_been_enqueued.with(master_file.id)
+        expect(CleanupWorkingFileJob).to have_been_enqueued.with(master_file.id, master_file.working_file_path)
       end
     end
     describe '#working_file_path' do
@@ -501,7 +519,7 @@ describe MasterFile do
       it 'returns a path when the working directory is valid' do
         file = File.new(Rails.root.join('spec', 'fixtures', 'videoshort.mp4'))
         master_file.setContent(file)
-        expect(master_file.working_file_path.first).to include(Settings.matterhorn.media_path)
+        expect(master_file.working_file_path.first).to include(Settings.encoding.working_file_path)
       end
     end
   end
@@ -510,8 +528,8 @@ describe MasterFile do
     subject(:master_file) { FactoryBot.create(:master_file) }
 
     it 'runs the waveform job' do
-      expect(WaveformJob).to receive(:perform_now).with(master_file.id)
-      master_file.send(:post_processing_file_management)
+      expect(WaveformJob).to receive(:perform_later).with(master_file.id)
+      master_file.send(:generate_waveform)
     end
   end
 
@@ -521,7 +539,7 @@ describe MasterFile do
       allow(video_master_file).to receive(:find_frame_source).and_return({source: video_master_file.file_location, offset: 1, master: false})
     end
     it "raises an exception when ffmpeg doesn't extract anything" do
-      expect {video_master_file.send(:extract_frame, {size: '160x120', offset: 1})}.to raise_error(RuntimeError)
+      expect {video_master_file.send(:extract_frame, {size: '160x120', offset: 1})}.to raise_error
     end
   end
 
@@ -568,11 +586,12 @@ describe MasterFile do
   end
 
   describe 'stop_processing!' do
+    let(:master_file) { FactoryBot.build(:master_file) }
     before do
       allow(ActiveEncode::Base).to receive(:find).and_return(nil)
     end
     it 'does not error if the master file has no encode' do
-      expect { MasterFile.new(workflow_id: '1', status_code: 'RUNNING').send(:stop_processing!) }.not_to raise_error
+      expect { master_file.send(:stop_processing!) }.not_to raise_error
     end
   end
 
@@ -603,6 +622,57 @@ describe MasterFile do
 
     it 'returns a sorted hash of hls streams' do
       expect(master_file.hls_streams).to eq streams
+    end
+  end
+
+  describe 'media_object=' do
+    let!(:master_file) { FactoryBot.create(:master_file, :with_media_object) }
+    let!(:media_object1) { master_file.media_object }
+    let!(:media_object2) { FactoryBot.create(:media_object) }
+
+    it 'sets a new media object as its parent' do
+      master_file.media_object = media_object2
+      expect(media_object1.reload.master_file_ids).not_to include master_file.id
+      expect(media_object1.reload.ordered_master_file_ids).not_to include master_file.id
+      expect(media_object2.reload.master_file_ids).to include master_file.id
+      expect(media_object2.reload.ordered_master_file_ids).to include master_file.id
+    end
+  end
+
+  describe 'update_progress_on_success!' do
+    let(:master_file) { FactoryBot.build(:master_file) }
+    let(:encode_succeeded) { FactoryBot.build(:encode, :succeeded) }
+
+    it 'calls update_derivatives' do
+      expect(master_file).to receive(:update_derivatives).with(array_including(hash_including(label: 'quality-high')))
+      expect(master_file).to receive(:run_hook).with(:after_transcoding)
+      master_file.update_progress_on_success!(encode_succeeded)
+    end
+  end
+
+  describe 'update_derivatives' do
+    let(:master_file) { FactoryBot.create(:master_file) }
+    let(:new_derivative) { FactoryBot.build(:derivative) }
+    let(:outputs) { [{ label: 'high' }]}
+
+    before do
+      allow(Derivative).to receive(:from_output).and_return(new_derivative)
+    end
+
+    it 'creates a new derivative' do
+      expect { master_file.update_derivatives(outputs) }.to change { Derivative.count }.by(1)
+    end
+
+    context 'overwriting' do
+      let!(:master_file_with_derivative) { FactoryBot.create(:master_file, :with_derivative) }
+      let(:existing_derivative) { master_file_with_derivative.derivatives.first }
+
+      it 'overwrites existing derivatives' do
+        expect { master_file_with_derivative.update_derivatives(outputs) }.not_to change { Derivative.count }
+        expect(ActiveFedora::Base.exists?(existing_derivative)).to eq false
+        expect(master_file_with_derivative.reload.derivative_ids).not_to include(existing_derivative.id)
+        expect(master_file_with_derivative.reload.derivative_ids).not_to be_empty
+      end
     end
   end
 end

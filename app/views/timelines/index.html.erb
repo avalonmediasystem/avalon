@@ -1,5 +1,5 @@
 <%#
-Copyright 2011-2019, The Trustees of Indiana University and Northwestern
+Copyright 2011-2020, The Trustees of Indiana University and Northwestern
   University.  Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
 
@@ -76,12 +76,13 @@ Unless required by applicable law or agreed to in writing, software distributed
       $('#Timelines').DataTable({
         processing: true,
         serverSide: true,
+        dom:'<"dataTableToolsTop"if><"dataTableBody"t><"dataTableToolsBottom"rlp>',
+        autoWidth:true,
         ajax: {
           url: '/timelines/paged_index',
           type: 'POST'
         },
         order: [<%= "[#{session[:timeline_sort][0]}, '#{session[:timeline_sort][1]}']".html_safe if session[:timeline_sort] %>],
-        "sDom": '<"timelines_top"i<"timeline_filter_container"f>>tr<"timelines_bottom"lp>',
         "columns": [
           null,
           { render: function ( data, type, row ) {
@@ -96,7 +97,7 @@ Unless required by applicable law or agreed to in writing, software distributed
         window.apply_button_confirmation()
         window.add_copy_button_event()
         // move the tag filter into the datatables layout
-        $('.tag_filter_container').insertBefore('.timeline_filter_container');
+        $('.tag_filter_container').insertBefore('.dataTables_filter');
       });
     });
 

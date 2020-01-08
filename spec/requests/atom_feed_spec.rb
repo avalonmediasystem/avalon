@@ -1,4 +1,4 @@
-# Copyright 2011-2019, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2020, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 #
@@ -22,7 +22,11 @@ describe 'atom feed', type: :request do
 
   describe 'entry' do
     let!(:media_object) { FactoryBot.create(:fully_searchable_media_object) }
-    let(:updated_date) { media_object.modified_date.to_time.utc.strftime('%Y-%m-%dT%H:%M:%SZ') }
+    let(:updated_date) do
+      query = ActiveFedora::SolrQueryBuilder.construct_query(ActiveFedora.id_field => media_object.id)
+      doc = ActiveFedora::SolrService.get(query)['response']['docs'].first
+      doc["timestamp"]
+    end
 
     it 'returns information about a media object' do
       get '/catalog.atom'

@@ -1,4 +1,4 @@
-# Copyright 2011-2019, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2020, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 #
@@ -14,10 +14,13 @@
 
 class ApplicationController < ActionController::Base
   before_action :store_location, unless: :devise_controller?
+  before_action :configure_permitted_parameters, if: :devise_controller?
 
   # Adds a few additional behaviors into the application controller
   include Blacklight::Controller
   include Hydra::Controller::ControllerBehavior
+  # To deal with a load order issue breaking persona impersonate
+  include Samvera::Persona::BecomesBehavior
   layout 'avalon'
 
   # Prevent CSRF attacks by raising an exception.
@@ -28,6 +31,13 @@ class ApplicationController < ActionController::Base
 
   around_action :handle_api_request, if: proc{|c| request.format.json? || request.format.atom? }
   before_action :rewrite_v4_ids, if: proc{|c| request.method_symbol == :get && [params[:id], params[:content]].compact.any? { |i| i =~ /^[a-z]+:[0-9]+$/}}
+  before_action :set_no_cache_headers, if: proc{|c| request.xhr? }
+
+  def set_no_cache_headers
+    response.headers["Cache-Control"] = "no-cache, no-store"
+    response.headers["Pragma"] = "no-cache"
+    response.headers["Expires"] = "Fri, 01 Jan 1990 00:00:00 GMT"
+  end
 
   def mejs
     session['mejs_version'] = params[:version] === '4' ? 4 : 2
@@ -46,16 +56,35 @@ class ApplicationController < ActionController::Base
 
   def store_location
     store_location_for(:user, request.url)
-      if request.env["omniauth.params"].present? && request.env["omniauth.params"]["login_popup"].present?
-        session[:previous_url] = root_path + "self_closing.html"
-      end
+    if request.env["omniauth.params"].present? && request.env["omniauth.params"]["login_popup"].present?
+      session[:previous_url] = root_path + "self_closing.html"
+    end
   end
 
-  def after_sign_in_path_for(resource)
+  def after_sign_in_path_for(_resource)
     if request.env['QUERY_STRING']['login_popup'].present?
       root_path + "self_closing.html"
     else
-      request.env['omniauth.origin'] || stored_location_for(resource) || session[:previous_url] || root_path
+      request.env['omniauth.origin'] || find_redirect_url(nil)
+    end
+  end
+
+  # Used here and in omniauth_callbacks_controller
+  def find_redirect_url(auth_type, lti_group: nil)
+    previous_url = session.delete :previous_url
+    if params['target_id']
+      # Whitelist params that are allowed to be passed through via LTI
+      objects_path(params['target_id'], params.permit('t', 'position', 'token'))
+    elsif params[:url]
+      # Limit redirects to current host only (Fixes bug https://bugs.dlib.indiana.edu/browse/VOV-5662)
+      uri = URI.parse(params[:url])
+      request.host == uri.host ? uri.path : root_path
+    elsif auth_type == 'lti' && lti_group.present?
+      search_catalog_path('f[read_access_virtual_group_ssim][]' => lti_group)
+    elsif previous_url
+      previous_url
+    else
+      root_path
     end
   end
 
@@ -148,5 +177,29 @@ class ApplicationController < ActionController::Base
     else
       render '/errors/deleted_pid', status: 410
     end
+  end
+
+  def configure_permitted_parameters
+    devise_parameter_sanitizer.permit(:sign_up) do |user_params|
+      user_params.permit(:username, :email, :password, :password_confirmation)
+    end
+
+    devise_parameter_sanitizer.permit(:sign_in) do |user_params|
+      user_params.permit(:login, :password)
+    end
+  end
+
+  def authenticate_user!(_opts = {})
+    return if user_signed_in?
+    if request.format == :json
+      head :unauthorized
+    else
+      session[:previous_url] = request.fullpath unless request.xhr?
+      redirect_to new_user_session_path(url: request.url), flash: { notice: 'You need to login to perform this action.' }
+    end
+  end
+
+  def after_invite_path_for(_inviter, _invitee = nil)
+    main_app.persona_users_path
   end
 end

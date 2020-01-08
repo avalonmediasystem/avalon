@@ -1,0 +1,67 @@
+---
+:templates:
+  :video:
+    :audio:
+      :codec: AAC
+      :sample_rate: '44100'
+      :channels: '2'
+      :codec_options:
+        :profile: AAC-LC
+    :video:
+      :codec: H.264
+      :codec_options:
+        ColorSpaceConversionMode: Auto
+        InterlacedMode: Progressive
+        Level: '3.1'
+        MaxReferenceFrames: '3'
+        Profile: main
+      :keyframes_max_dist: '90'
+      :fixed_gop: 'true'
+      :frame_rate: auto
+      :display_aspect_ratio: auto
+      :sizing_policy: ShrinkToFit
+      :padding_policy: NoPad
+    :thumbnails:
+      :format: png
+      :interval: '300'
+      :max_width: '192'
+      :max_height: '108'
+      :sizing_policy: ShrinkToFit
+      :padding_policy: NoPad
+  :audio:
+    :audio:
+      :codec: AAC
+      :sample_rate: '44100'
+      :channels: '2'
+      :codec_options:
+        :profile: AAC-LC
+:settings:
+  :video:
+    :low:
+      :audio:
+        :bit_rate: '128'
+      :video:
+        :bit_rate: '500'
+        :max_width: '720'
+        :max_height: '480'
+    :medium:
+      :audio:
+        :bit_rate: '128'
+      :video:
+        :bit_rate: '1024'
+        :max_width: '1280'
+        :max_height: '720'
+    :high:
+      :audio:
+        :bit_rate: '192'
+      :video:
+        :bit_rate: '2048'
+        :max_width: '1920'
+        :max_height: '1080'
+  :audio:
+    :medium:
+      :audio:
+        :bit_rate: '128'
+    :high:
+      :audio:
+        :bit_rate: '320'

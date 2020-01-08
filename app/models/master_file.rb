@@ -1,4 +1,4 @@
-# Copyright 2011-2019, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2020, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 #
@@ -99,32 +99,48 @@ class MasterFile < ActiveFedora::Base
   property :workflow_id, predicate: Avalon::RDFVocab::Transcoding.workflowId, multiple: false do |index|
     index.as :stored_sortable
   end
-  property :workflow_name, predicate: Avalon::RDFVocab::Transcoding.workflowName, multiple: false do |index|
-    index.as :stored_sortable
-  end
-  property :percent_complete, predicate: Avalon::RDFVocab::Transcoding.percentComplete, multiple: false do |index|
-    index.as :stored_sortable
-  end
-  property :percent_succeeded, predicate: Avalon::RDFVocab::Transcoding.percentSucceeded, multiple: false do |index|
-    index.as :stored_sortable
-  end
-  property :percent_failed, predicate: Avalon::RDFVocab::Transcoding.percentFailed, multiple: false do |index|
-    index.as :stored_sortable
-  end
-  property :status_code, predicate: Avalon::RDFVocab::Transcoding.statusCode, multiple: false do |index|
-    index.as :stored_sortable
-  end
-  property :operation, predicate: Avalon::RDFVocab::Transcoding.operation, multiple: false do |index|
-    index.as :stored_sortable
-  end
-  property :error, predicate: Avalon::RDFVocab::Transcoding.error, multiple: false do |index|
-    index.as :stored_sortable
-  end
   property :encoder_classname, predicate: Avalon::RDFVocab::Transcoding.encoderClassname, multiple: false do |index|
     index.as :stored_sortable
   end
+  property :workflow_name, predicate: Avalon::RDFVocab::Transcoding.workflowName, multiple: false do |index|
+    index.as :stored_sortable
+  end
 
-  # For working file copy when Settings.matterhorn.media_path is set
+  # Delegated to EncodeRecord
+  def encode_record
+    return nil unless workflow_id
+    gid = "gid://ActiveEncode/#{encoder_class}/#{workflow_id}"
+    # @encode_record ||= ActiveEncode::EncodeRecord.find_by(global_id: gid)
+    ActiveEncode::EncodeRecord.find_by(global_id: gid)
+  end
+
+  def raw_encode_record
+    return nil unless encode_record
+    # @raw_encode_record ||= JSON.parse(encode_record.raw_object)
+    JSON.parse(encode_record.raw_object)
+  end
+
+  def status_code
+    return nil unless encode_record
+    encode_record.state.to_s.upcase
+  end
+
+  def percent_complete
+    return nil unless encode_record
+    encode_record.progress.to_s
+  end
+
+  def operation
+    return nil unless encode_record
+    raw_encode_record['current_operations']&.first
+  end
+
+  def error
+    return nil unless encode_record
+    raw_encode_record['errors'].first
+  end
+
+  # For working file copy when Settings.encoding.working_file_path is set
   property :working_file_path, predicate: Avalon::RDFVocab::MasterFile.workingFilePath, multiple: true
 
   validates :workflow_name, presence: true, inclusion: { in: proc { WORKFLOWS } }
@@ -147,10 +163,13 @@ class MasterFile < ActiveFedora::Base
   after_save :update_stills_from_offset!, if: Proc.new { |mf| mf.previous_changes.include?("poster_offset") || mf.previous_changes.include?("thumbnail_offset") }
   before_destroy :stop_processing!
   before_destroy :update_parent!
-  define_hooks :after_processing
+  define_hooks :after_transcoding, :after_processing
+
+  # Generate the waveform after proessing is complete but before master file management
+  after_transcoding :generate_waveform
+  after_transcoding :update_ingest_batch
 
   after_processing :post_processing_file_management
-  after_processing :update_ingest_batch
 
   # First and simplest test - make sure that the uploaded file does not exceed the
   # limits of the system. For now this is hard coded but should probably eventually
@@ -159,11 +178,12 @@ class MasterFile < ActiveFedora::Base
   # 250 MB is the file limit for now
   MAXIMUM_UPLOAD_SIZE = Settings.max_upload_size || 2.gigabytes
 
-  WORKFLOWS = ['fullaudio', 'avalon', 'avalon-skip-transcoding', 'avalon-skip-transcoding-audio']
+  WORKFLOWS = ['fullaudio', 'avalon', 'pass_through', 'avalon-skip-transcoding', 'avalon-skip-transcoding-audio'].freeze
   AUDIO_TYPES = ["audio/vnd.wave", "audio/mpeg", "audio/mp3", "audio/mp4", "audio/wav", "audio/x-wav"]
   VIDEO_TYPES = ["application/mp4", "video/mpeg", "video/mpeg2", "video/mp4", "video/quicktime", "video/avi"]
   UNKNOWN_TYPES = ["application/octet-stream", "application/x-upload-data"]
   END_STATES = ['CANCELLED', 'COMPLETED', 'FAILED']
+  QUALITY_ORDER = { 'quality-high' => 3, 'quality-medium' => 2, 'quality-low' => 1 }.freeze
 
   def save_parent
     unless media_object.nil?
@@ -193,14 +213,7 @@ class MasterFile < ActiveFedora::Base
 
   def set_workflow( workflow  = nil )
     if workflow == 'skip_transcoding'
-      workflow = case self.file_format
-                 when 'Moving image'
-                  'avalon-skip-transcoding'
-                 when 'Sound'
-                  'avalon-skip-transcoding-audio'
-                 else
-                  nil
-                 end
+      workflow = 'pass_through'
     elsif self.file_format == 'Sound'
       workflow = 'fullaudio'
     elsif self.file_format == 'Moving image'
@@ -217,7 +230,8 @@ class MasterFile < ActiveFedora::Base
   def media_object=(mo)
     # Removes existing association
     if self.media_object.present?
-      self.media_object.master_files -= [self]
+      self.media_object.master_files = self.media_object.master_files.to_a.reject { |mf| mf.id == self.id }
+      self.media_object.ordered_master_files = self.media_object.ordered_master_files.to_a.reject { |mf| mf.id == self.id }
       self.media_object.save
     end
 
@@ -228,88 +242,40 @@ class MasterFile < ActiveFedora::Base
     end
   end
 
-  # def destroy
-    # mo = self.media_object
-    # self.media_object = nil
-
-    # # Stops all processing
-    # if workflow_id.present? && !finished_processing?
-    #   encoder_class.find(workflow_id).cancel!
-    # end
-    # self.derivatives.map(&:destroy)
-
-    # clear_association_cache
-
-    # super
-
-    #Only save the media object if the master file was successfully deleted
-    # if mo.nil?
-    #   logger.warn "MasterFile has no owning MediaObject to update upon deletion"
-    # else
-    #   mo.save
-    # end
-  # end
-
   def process file=nil
     raise "MasterFile is already being processed" if status_code.present? && !finished_processing?
 
-    #Build hash for single file skip transcoding
-    if !file.is_a?(Hash) && (self.workflow_name == 'avalon-skip-transcoding' || self.workflow_name == 'avalon-skip-transcoding-audio')
-      if working_file_path.present?
-        file = {'quality-high' => FileLocator.new(working_file_path.first).attachment}
-      else
-        file = {'quality-high' => FileLocator.new(file_location).attachment}
-      end
-    end
+    return process_pass_through(file) if self.workflow_name == 'pass_through'
 
-    input = if file.is_a? Hash
-      file_dup = file.dup
-      file_dup.each_pair {|quality, f| file_dup[quality] = FileLocator.new(f.to_path).uri.to_s }
+    ActiveEncodeJobs::CreateEncodeJob.perform_later(input_path, id)
+  end
+
+  def process_pass_through(file)
+    options = {}
+    input = nil
+    # Options hash: { outputs: [{ label: 'low',  url: 'file:///derivatives/low.mp4' }, { label: 'high', url: 'file:///derivatives/high.mp4' }]}
+    if file.is_a? Hash
+      input = file.sort_by { |f| QUALITY_ORDER[f[0]] }.last[1].path
+      options[:outputs] = file.collect { |quality, f| { label: quality.remove("quality-"), url: FileLocator.new(f.to_path).uri.to_s } }
     else
-      if working_file_path.present?
-        FileLocator.new(working_file_path.first).uri.to_s
-      else
-        FileLocator.new(file_location).uri.to_s
-      end
+      #Build hash for single file skip transcoding
+      input = input_path
+      options[:outputs] = [{ label: 'high', url: input }]
     end
 
-    # WaveformJob is performed in a before_perform callback on ActiveEncodeJob::Create
-    ActiveEncodeJob::Create.perform_later(self.id, input, {preset: self.workflow_name})
+    ActiveEncodeJobs::CreateEncodeJob.perform_later(input, id, options)
+  end
+
+  def input_path
+    if working_file_path.present?
+      FileLocator.new(working_file_path.first).uri.to_s
+    else
+      FileLocator.new(file_location).uri.to_s
+    end
   end
 
   def finished_processing?
     END_STATES.include?(status_code)
-  end
-
-  def update_progress!
-    update_progress_with_encode!(encoder_class.find(self.workflow_id))
-  end
-
-  def update_progress_with_encode!(encode)
-    self.operation = encode.current_operations.first if encode.current_operations.present?
-    self.percent_complete = encode.percent_complete.to_s
-    self.percent_succeeded = encode.percent_complete.to_s
-    self.error = encode.errors.first if encode.errors.present?
-    self.status_code = encode.state.to_s.upcase
-    if encode.tech_metadata
-      self.duration = encode.tech_metadata[:duration] if encode.tech_metadata[:duration]
-      self.file_checksum = encode.tech_metadata[:checksum] if encode.tech_metadata[:checksum]
-    end
-    self.workflow_id = encode.id
-    #self.workflow_name = encode.options[:preset] #MH can switch to an error workflow
-
-    case self.status_code
-    when"COMPLETED"
-      self.percent_complete = encode.percent_complete.to_s
-      self.percent_succeeded = encode.percent_complete.to_s
-      self.percent_failed = 0.to_s
-      self.update_progress_on_success!(encode)
-    when "FAILED"
-      self.percent_complete = encode.percent_complete.to_s
-      self.percent_succeeded = encode.percent_complete.to_s
-      self.percent_failed = (100 - encode.percent_complete).to_s
-    end
-    self
   end
 
   def update_progress_on_success!(encode)
@@ -317,16 +283,31 @@ class MasterFile < ActiveFedora::Base
     #TODO pull this from the encode
     self.date_digitized ||= Time.now.utc.iso8601
 
-    update_derivatives(encode.output)
-    run_hook :after_processing
+    outputs = Array(encode.output).collect do |output|
+      {
+        id: output.id,
+        label: output.label,
+        url: output.url,
+        duration: output.duration,
+        # TODO: add support for mime_type to ActiveEncode?
+        # mime_type: output.mime_type,
+        audio_bitrate: output.audio_bitrate,
+        audio_codec: output.audio_codec,
+        video_bitrate: output.video_bitrate,
+        video_codec: output.video_codec,
+        width: output.width,
+        height: output.height
+      }
+    end
+    update_derivatives(outputs)
+    run_hook :after_transcoding
   end
 
-  def update_derivatives(output,managed=true)
-    outputs_by_quality = output.group_by {|o| o[:label]}
-
-    outputs_by_quality.each_pair do |quality, outputs|
-      existing = derivatives.to_a.find {|d| d.quality == quality}
-      d = Derivative.from_output(outputs,managed)
+  def update_derivatives(outputs, managed = true)
+    outputs.each do |output|
+      quality = output[:label]
+      existing = derivatives.to_a.find { |d| d.quality == quality }
+      d = Derivative.from_output(output, managed)
       d.master_file = self
       if d.save && existing
         existing.delete
@@ -430,7 +411,11 @@ class MasterFile < ActiveFedora::Base
   end
 
   def encoder_class
-    find_encoder_class(encoder_classname) || find_encoder_class(workflow_name.to_s.classify) || MasterFile.default_encoder_class || ActiveEncode::Base
+    find_encoder_class(encoder_classname) ||
+      find_encoder_class("#{workflow_name}_encode".classify) ||
+      find_encoder_class((Settings.encoding.engine_adapter + "_encode").classify) ||
+      MasterFile.default_encoder_class ||
+      WatchedEncode
   end
 
   def encoder_class=(value)
@@ -522,6 +507,13 @@ class MasterFile < ActiveFedora::Base
       solr_doc['has_structuralMetadata?_bs'] = has_structuralMetadata?
       solr_doc['caption_type_ss'] = caption_type
       solr_doc['identifier_ssim'] = identifier.map(&:downcase)
+
+      solr_doc['percent_complete_ssi'] = percent_complete
+      # solr_doc['percent_succeeded_ssi'] =  percent_succeeded
+      # solr_doc['percent_failed_ssi'] = percent_failed
+      solr_doc['status_code_ssi'] = status_code
+      solr_doc['operation_ssi'] = operation
+      solr_doc['error_ssi'] = error
     end
   end
 
@@ -536,7 +528,7 @@ class MasterFile < ActiveFedora::Base
   end
 
   def self.calculate_working_file_path(old_path)
-    config_path = Settings.matterhorn.media_path
+    config_path = Settings&.encoding&.working_file_path
     if config_path.present? && File.directory?(config_path)
       File.join(config_path, SecureRandom.uuid, File.basename(old_path))
     else
@@ -556,7 +548,7 @@ class MasterFile < ActiveFedora::Base
   def find_frame_source(options={})
     options[:offset] ||= 2000
 
-    source = FileLocator.new(file_location)
+    source = FileLocator.new(working_file_path&.first || file_location)
     options[:master] = true
     if source.source.nil? or (source.uri.scheme == 's3' and not source.exist?)
       source = FileLocator.new(self.derivatives.where(quality_ssi: 'high').first.absolute_location)
@@ -572,7 +564,10 @@ class MasterFile < ActiveFedora::Base
         secure_url = SecurityHandler.secure_url(playlist_url, target: self.id)
         playlist = Avalon::M3U8Reader.read(secure_url)
         details = playlist.at(options[:offset])
-        target = File.join(Dir.tmpdir,File.basename(details[:location]))
+
+        # Fixes https://github.com/avalonmediasystem/avalon/issues/3474
+        target_location = File.basename(details[:location]).split('?')[0]
+        target = File.join(Dir.tmpdir, target_location)
         File.open(target,'wb') { |f| open(details[:location]) { |io| f.write(io.read) } }
         response = { source: target, offset: details[:offset], master: false }
       end
@@ -640,38 +635,11 @@ class MasterFile < ActiveFedora::Base
         end
         data
       ensure
-        File.unlink(file_source) unless file_source =~ %r(https?://)
+        File.unlink file_source unless file_source.match? %r{https?://}
+        File.unlink frame_source[:source] unless frame_source[:master] or frame_source[:source].match? %r{https?://}
+        File.unlink jpeg
       end
     end
-  end
-
-  def calculate_percent_complete matterhorn_response
-    totals = {
-      :transcode => 70,
-      :distribution => 20,
-      :cleaning => 0,
-      :other => 10
-    }
-
-    operations = matterhorn_response.find_by_terms(:operations, :operation).collect { |op|
-      type = case op['description']
-             when /mp4/ then :transcode
-             when /^Distributing/ then :distribution
-             else :other
-             end
-      { :description => op['description'], :state => op['state'], :type => type }
-    }
-
-    result = Hash.new { |h,k| h[k] = 0 }
-    operations.each { |op|
-      op[:pct] = (totals[op[:type]].to_f / operations.select { |o| o[:type] == op[:type] }.count.to_f)
-      state = op[:state].downcase.to_sym
-      result[state] += op[:pct]
-      result[:complete] += op[:pct] if END_STATES.include?(op[:state])
-    }
-    result[:succeeded] += result.delete(:skipped) unless result[:skipped].nil?
-    result.each {|k,v| result[k] = result[k].round }
-    result
   end
 
   def saveOriginal(file, original_name=nil)
@@ -742,12 +710,10 @@ class MasterFile < ActiveFedora::Base
   def post_processing_file_management
     logger.debug "Finished processing"
 
-    # Generate the waveform after proessing is complete but before master file management
-    generate_waveform
     # Run master file management strategy
     manage_master_file
     # Clean up working file if it exists
-    CleanupWorkingFileJob.perform_later(self.id) unless Settings.matterhorn.media_path.blank?
+    CleanupWorkingFileJob.perform_later(id, working_file_path.to_a) unless Settings&.encoding&.working_file_path.blank?
   end
 
   def update_ingest_batch
@@ -765,9 +731,7 @@ class MasterFile < ActiveFedora::Base
 
   def stop_processing!
     # Stops all processing
-    if workflow_id.present? && !finished_processing?
-      encoder_class.find(workflow_id).try(:cancel!)
-    end
+    ActiveEncodeJobs::CancelEncodeJob.perform_later(workflow_id, id) if workflow_id.present? && finished_processing?
   end
 
   def update_parent!
@@ -784,7 +748,7 @@ class MasterFile < ActiveFedora::Base
   private
 
   def generate_waveform
-    WaveformJob.perform_now(id)
+    WaveformJob.perform_later(id)
   rescue StandardError => e
     logger.warn("WaveformJob failed: #{e.message}")
     logger.warn(e.backtrace.to_s)
@@ -793,7 +757,7 @@ class MasterFile < ActiveFedora::Base
   def manage_master_file
     case Settings.master_file_management.strategy
     when 'delete'
-      MasterFileManagementJobs::Delete.perform_now self.id
+      MasterFileManagementJobs::Delete.perform_later self.id
     when 'move'
       move_path = Settings.master_file_management.path
       raise '"path" configuration missing for master_file_management strategy "move"' if move_path.blank?

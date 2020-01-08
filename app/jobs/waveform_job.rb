@@ -1,4 +1,4 @@
-# Copyright 2011-2019, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2020, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 #
@@ -13,6 +13,8 @@
 # ---  END LICENSE_HEADER BLOCK  ---
 
 class WaveformJob < ActiveJob::Base
+  queue_as :waveform
+
   PLAYER_WIDTH_IN_PX = 1200
   FINEST_ZOOM_IN_SEC = 5
   SAMPLES_PER_FRAME = (44_100 * FINEST_ZOOM_IN_SEC) / PLAYER_WIDTH_IN_PX
@@ -24,20 +26,29 @@ class WaveformJob < ActiveJob::Base
     service = WaveformService.new(8, SAMPLES_PER_FRAME)
     uri = file_uri(master_file) || playlist_url(master_file)
     json = service.get_waveform_json(uri)
-    return unless json.present?
+    if json.blank?
+      Rails.logger.error "No waveform generated for #{master_file.id}"
+      return
+    end
 
-    master_file.waveform.content = json
-    master_file.waveform.mime_type = 'application/json'
+    master_file.waveform.content = Zlib::Deflate.deflate(json)
+    master_file.waveform.mime_type = 'application/zlib'
     master_file.waveform.content_will_change!
     master_file.save
+  ensure
+    master_file.run_hook :after_processing if master_file.present?
   end
 
   private
 
     def file_uri(master_file)
       path = master_file.file_location
-      path_usable = path.present? && File.exist?(path)
-      path_usable ? path : nil
+      locator = FileLocator.new(path)
+      if path.present? && locator.exist?
+        locator.location
+      else
+        nil
+      end
     end
 
     def playlist_url(master_file)

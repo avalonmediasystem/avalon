@@ -1,5 +1,5 @@
 <%#
-Copyright 2011-2019, The Trustees of Indiana University and Northwestern
+Copyright 2011-2020, The Trustees of Indiana University and Northwestern
   University.  Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
 
@@ -21,27 +21,28 @@ Unless required by applicable law or agreed to in writing, software distributed
 <% @currentStreamInfo['t'] = [f_start,f_end] %>
 
 <% if can? :read, @current_masterfile %>
-  <%= render partial: 'modules/player/section', locals: {section: @currentStream, section_info: @currentStreamInfo, f_start: @f_start, f_end: @f_end} %>
+<%= render partial: 'modules/player/section', locals: {section: @currentStream, section_info: @currentStreamInfo, f_start: @f_start, f_end: @f_end} %>
 <% end %>
 
 <% unless can? :read, @current_masterfile %>
-  <span class="show_playlist_player_denied_title">
-    <h2>Restricted Access</h2>
-  </span>
-  <span class="playlist_item_denied">
-    You do not have permission to playback item <%= @current_masterfile.media_object_id %>.
-    <% if !user_signed_in? %>
-      <br>Have you tried <%= link_to 'logging in', new_user_session_path %>?
-    <% end %>
-  </span>
+<span class="show_playlist_player_denied_title">
+  <h2>Restricted Access</h2>
+</span>
+<span class="playlist_item_denied">
+  You do not have permission to playback item <%= @current_masterfile.media_object_id %>.
+  <% if !user_signed_in? %>
+  <br>Have you tried <%= link_to 'logging in', new_user_session_path %>?
+  <% end %>
+</span>
 <% end %>
 
 <% content_for :page_scripts do %>
 <% if @currentStream.present? and @currentStream.derivatives.present? %>
-  <%= render partial: "mejs4_player_js", locals: {
+<%= render partial: "mejs4_player_js", locals: {
     section: @currentStream,
     section_info: @currentStreamInfo,
     current_playlist_item: @current_playlist_item
     } %>
+
 <% end %>
 <% end %>

@@ -1,4 +1,4 @@
-# Copyright 2011-2019, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2020, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 #
@@ -26,11 +26,17 @@ describe WaveformJob do
       allow(WaveformService).to receive(:new).and_return(service)
     end
 
-    it 'calls the waveform service and stores the result' do
+    it 'calls the waveform service and stores the compressed result' do
       job.perform(master_file.id)
       master_file.reload
-      expect(master_file.waveform.mime_type).to eq 'application/json'
-      expect(master_file.waveform.content).to eq waveform_json
+      expect(master_file.waveform.mime_type).to eq 'application/zlib'
+      expect(Zlib::Inflate.inflate(master_file.waveform.content)).to eq waveform_json
+    end
+
+    it 'calls after_processing' do
+      allow(MasterFile).to receive(:find).with(master_file.id).and_return(master_file)
+      expect(master_file).to receive(:run_hook).with(:after_processing)
+      job.perform(master_file.id)
     end
 
     context 'when on disk' do
@@ -77,6 +83,16 @@ describe WaveformJob do
           expect { job.perform(master_file.id, true) }.to change { master_file.reload.waveform.content }
           expect(service).to have_received(:get_waveform_json)
         end
+      end
+    end
+
+    context 'when processing fails to generate waveform data' do
+      let(:waveform_json) { nil }
+
+      it 'logs and does not set the waveform' do
+        expect(Rails.logger).to receive(:error)
+        expect { job.perform(master_file.id, true) }.not_to change { master_file.reload.waveform.content }
+        expect(service).to have_received(:get_waveform_json)
       end
     end
   end

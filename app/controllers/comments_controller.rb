@@ -1,4 +1,4 @@
-# Copyright 2011-2019, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2020, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 #
@@ -38,7 +38,7 @@ class CommentsController < ApplicationController
         render action: "index"
       end
     else
-      flash[:error] = "Your comment was missing required information. Please complete all fields and resubmit."
+      flash.now[:error] = "Your comment was missing required information. Please complete all fields and resubmit."
       render action: "index"
     end
   end

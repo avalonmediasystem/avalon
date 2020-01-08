@@ -18,9 +18,9 @@ require 'active_model'
 module Avalon
   module Batch
     class Entry
-    	extend ActiveModel::Translation
+      extend ActiveModel::Translation
 
-    	attr_reader :fields, :files, :opts, :row, :errors, :manifest, :collection
+      attr_reader :fields, :files, :opts, :row, :errors, :manifest, :collection
 
       def initialize(fields, files, opts, row, manifest)
         @fields = fields || opts[:fields]
@@ -35,11 +35,10 @@ module Avalon
       end
 
       def media_object
-        @media_object ||= MediaObject.new(avalon_uploader: user_key,
-                                          collection: collection).tap do |mo|
+        @media_object ||= MediaObject.new(avalon_uploader: user_key, collection: collection).tap do |mo|
           mo.workflow.origin = 'batch'
           mo.workflow.last_completed_step = HYDRANT_STEPS.last.step
-          if Avalon::BibRetriever.configured? and fields[:bibliographic_id].present?
+          if Avalon::BibRetriever.configured?(fields[:bibliographic_id_label]) && fields[:bibliographic_id].present?
             begin
               mo.descMetadata.populate_from_catalog!(fields[:bibliographic_id].first, Array(fields[:bibliographic_id_label]).first)
             rescue Exception => e
@@ -222,7 +221,7 @@ module Avalon
             media_object.save
             master_file.process(files)
           else
-            logger.error "Problem saving MasterFile(#{master_file.id}): #{master_file.errors.full_messages.to_sentence}"
+            Rails.logger.error "Problem saving MasterFile(#{master_file.id}): #{master_file.errors.full_messages.to_sentence}"
           end
         end
         # context = { media_object: media_object, user: @manifest.package.user.user_key, hidden: opts[:hidden] ? '1' : nil }
@@ -235,7 +234,7 @@ module Avalon
         end
 
         unless media_object.save
-          logger.error "Problem saving MediaObject: #{media_object}"
+          Rails.logger.error "Problem saving MediaObject: #{media_object}"
         end
 
         media_object

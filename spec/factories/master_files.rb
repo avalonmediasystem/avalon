@@ -1,4 +1,4 @@
-# Copyright 2011-2019, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2020, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 #
@@ -16,7 +16,7 @@ FactoryBot.define do
   factory :master_file do
     file_location {'/path/to/video.mp4'}
     file_format {'Moving image'}
-    percent_complete {"#{rand(100)}"}
+    # percent_complete {"#{rand(100)}"}
     workflow_name { 'avalon' }
     duration {'200000'}
     identifier { ['other identifier'] }
@@ -25,12 +25,23 @@ FactoryBot.define do
     width { '1024' }
     height { '768' }
 
+    sequence(:workflow_id)
+
+    transient do
+      status_code { :running }
+    end
+
+    after(:build) do |mf, evaluator|
+      if evaluator.status_code
+        FactoryBot.create(:encode_record, global_id: "gid://ActiveEncode/#{mf.encoder_class}/#{mf.workflow_id}", state: evaluator.status_code)
+      end
+    end
+
     trait :with_media_object do
       association :media_object #, factory: :media_object
     end
 
     trait :with_derivative do
-      status_code { 'COMPLETED' }
       after(:create) do |mf|
         mf.derivatives += [FactoryBot.create(:derivative, quality: 'high')]
         mf.save
@@ -74,5 +85,30 @@ FactoryBot.define do
     end
 
     factory :master_file_with_media_object_and_derivative, traits: [:with_media_object, :with_derivative]
+
+    trait :completed_processing do
+      transient do
+        status_code { :completed }
+      end
+    end
+
+    trait :cancelled_processing do
+      transient do
+        status_code { :cancelled }
+      end
+    end
+
+    trait :failed_processing do
+      transient do
+        status_code { :failed }
+      end
+    end
+
+    trait :not_processing do
+      workflow_id { nil }
+      transient do
+        status_code { nil }
+      end
+    end
   end
 end

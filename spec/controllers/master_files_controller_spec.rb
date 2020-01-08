@@ -1,4 +1,4 @@
-# Copyright 2011-2019, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2020, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 #
@@ -185,7 +185,8 @@ describe MasterFilesController do
   end
 
   describe "#destroy" do
-    let!(:master_file) { FactoryBot.create(:master_file, :with_media_object) }
+    let!(:master_file) { FactoryBot.create(:master_file, :with_media_object, :cancelled_processing) }
+    let(:media_object) { master_file.media_object }
 
     it "deletes a master file as administrator" do
       login_as :administrator
@@ -502,6 +503,14 @@ describe MasterFilesController do
       login_as :administrator
       expect(get('waveform', params: { id: master_file.id })).to have_http_status(:ok)
     end
+    it "returns compressed contents of the waveform attached file" do
+      login_as :administrator
+      request.headers['Accept-Encoding'] = "deflate"
+      get('waveform', params: { id: master_file.id })
+      expect(response).to have_http_status(:ok)
+      expect(response.content_type).to eq('application/zlib')
+      expect(response.headers['Content-Encoding']).to eq('deflate')
+    end
   end
 
   describe '#iiif_auth_token' do
@@ -561,6 +570,60 @@ describe MasterFilesController do
 
     it 'returns a manifest if public' do
       expect(get('hls_manifest', params: { id: public_master_file.id, quality: 'auto' })).to have_http_status(:ok)
+    end
+  end
+
+  describe 'move' do
+    let(:master_file) { FactoryBot.create(:master_file, :with_media_object) }
+    let(:target_media_object) { FactoryBot.create(:media_object) }
+    let(:current_media_object) { master_file.media_object }
+
+    context 'security' do
+      context 'as anonymous' do
+        it 'redirects to home page' do
+          post('move', params: { id: master_file.id, target: target_media_object.id })
+          expect(response).to redirect_to(/#{Regexp.quote(new_user_session_path)}\?url=.*/)
+        end
+      end
+      context 'as an end user' do
+        before do
+          login_as :student
+        end
+        it 'redirects to home page' do
+          post('move', params: { id: master_file.id, target: target_media_object.id })
+          expect(response).to redirect_to root_path
+        end
+      end
+      context 'when only have update permissions on one media object' do
+        it 'redirects to home page' do
+          login_user master_file.media_object.collection.managers.first
+          post('move', params: { id: master_file.id, target: target_media_object.id })
+          expect(response).to redirect_to root_path
+          login_user target_media_object.collection.managers.first
+          post('move', params: { id: master_file.id, target: target_media_object.id })
+          expect(response).to redirect_to root_path
+        end
+      end
+    end
+
+    context 'functionality' do
+      before do
+        login_as :administrator
+      end
+      it 'moves the master file' do
+        expect(current_media_object.master_file_ids).to include master_file.id
+        expect(current_media_object.ordered_master_file_ids).to include master_file.id
+        expect(target_media_object.master_file_ids).not_to include master_file.id
+        expect(target_media_object.ordered_master_file_ids).not_to include master_file.id
+        post('move', params: { id: master_file.id, target: target_media_object.id })
+        expect(response).to redirect_to(edit_media_object_path(current_media_object))
+        expect(flash[:success]).not_to be_blank
+        expect(master_file.reload.media_object_id).to eq target_media_object.id
+        expect(current_media_object.reload.master_file_ids).not_to include master_file.id
+        expect(current_media_object.ordered_master_file_ids).not_to include master_file.id
+        expect(target_media_object.reload.master_file_ids).to include master_file.id
+        expect(target_media_object.ordered_master_file_ids).to include master_file.id
+      end
     end
   end
 end

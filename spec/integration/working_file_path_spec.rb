@@ -1,4 +1,4 @@
-# Copyright 2011-2019, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2020, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 #
@@ -34,21 +34,32 @@ require 'rails_helper'
 # spec/lib/avalon/batch/entry_spec.rb:80
 #
 describe "MasterFile#working_file_path" do
+  include ActiveJob::TestHelper
+
   let(:master_file) { FactoryBot.build(:master_file) }
   let(:media_object) { FactoryBot.create(:media_object) }
   let(:workflow) { 'avalon' }
+  let(:encoder_class) { MasterFile.new.encoder_class }
 
-  context "with Settings.matterhorn.media_path set" do
+  before do
+    allow(encoder_class).to receive(:create)
+  end
+
+  around(:example) do |example|
+    perform_enqueued_jobs(only: ActiveEncodeJobs::CreateEncodeJob) { example.run }
+  end
+
+  context "with Settings.encoding.working_file_path set" do
     let(:media_path) { Dir.mktmpdir }
 
     around(:example) do |example|
       begin
-        old_media_path = Settings.matterhorn.media_path
-        Settings.matterhorn.media_path = media_path
+        old_media_path = Settings.encoding.working_file_path
+        Settings.encoding.working_file_path = media_path
 
         example.run
 
-        Settings.matterhorn.media_path = old_media_path
+        Settings.encoding.working_file_path = old_media_path
       ensure
         FileUtils.remove_entry media_path
       end
@@ -80,23 +91,23 @@ describe "MasterFile#working_file_path" do
       let(:file) { fixture_file_upload('spec/fixtures/videoshort.mp4', 'video/mp4') }
       let(:params) { { Filedata: [file], original: nil, workflow: workflow } }
 
-      it 'sends the working_file_path to matterhorn' do
+      it 'sends the working_file_path to active_encode' do
         MasterFileBuilder.build(media_object, params)
         master_file = media_object.reload.master_files.first
         expect(File.exists? master_file.working_file_path.first).to be true
         input = FileLocator.new(master_file.working_file_path.first).uri.to_s
-        expect(ActiveEncodeJob::Create).to have_been_enqueued.with(master_file.id, input, {preset: workflow})
+        expect(encoder_class).to have_received(:create).with(input, { master_file_id: master_file.id, preset: workflow })
       end
 
       context "with skip transcoding" do
         let(:workflow) { 'skip_transcoding' }
 
-        it 'sends the working_file_path to matterhorn' do
+        it 'sends the working_file_path to active_encode' do
           MasterFileBuilder.build(media_object, params)
           master_file = media_object.reload.master_files.first
           expect(File.exists? master_file.working_file_path.first).to be true
-          input = { "quality-high" => FileLocator.new(master_file.working_file_path.first).uri.to_s }
-          expect(ActiveEncodeJob::Create).to have_been_enqueued.with(master_file.id, input, {preset: 'avalon-skip-transcoding'})
+          input_path = FileLocator.new(master_file.working_file_path.first).uri.to_s
+          expect(encoder_class).to have_received(:create).with(input_path, master_file_id: master_file.id, outputs: [{ label: "high", url: input_path }], preset: "pass_through")
         end
       end
     end
@@ -106,23 +117,23 @@ describe "MasterFile#working_file_path" do
       let(:url) { Addressable::URI.convert_path(File.absolute_path(file.to_path)) }
       let(:params) { { selected_files: { "0" => { url: url, file_name: 'videoshort.mp4' } }, workflow: workflow } }
 
-      it 'sends the working_file_path to matterhorn' do
+      it 'sends the working_file_path to active_encode' do
         MasterFileBuilder.build(media_object, params)
         master_file = media_object.reload.master_files.first
         expect(File.exists? master_file.working_file_path.first).to be true
         input = FileLocator.new(master_file.working_file_path.first).uri.to_s
-        expect(ActiveEncodeJob::Create).to have_been_enqueued.with(master_file.id, input, {preset: workflow})
+        expect(encoder_class).to have_received(:create).with(input, { master_file_id: master_file.id, preset: workflow })
       end
 
       context "with skip transcoding" do
         let(:workflow) { 'skip_transcoding' }
 
-        it 'sends the working_file_path to matterhorn' do
+        it 'sends the working_file_path to active_encode' do
           MasterFileBuilder.build(media_object, params)
           master_file = media_object.reload.master_files.first
           expect(File.exists? master_file.working_file_path.first).to be true
-          input = { "quality-high" => FileLocator.new(master_file.working_file_path.first).uri.to_s }
-          expect(ActiveEncodeJob::Create).to have_been_enqueued.with(master_file.id, input, {preset: 'avalon-skip-transcoding'})
+          input_path = FileLocator.new(master_file.working_file_path.first).uri.to_s
+          expect(encoder_class).to have_received(:create).with(input_path, master_file_id: master_file.id, outputs: [{ label: "high", url: input_path }], preset: "pass_through")
         end
       end
     end
@@ -139,23 +150,23 @@ describe "MasterFile#working_file_path" do
         allow(entry).to receive(:media_object).and_return(media_object)
       end
 
-      it 'sends the working_file_path to matterhorn' do
+      it 'sends the working_file_path to active_encode' do
         entry.process!
         master_file = media_object.reload.master_files.first
         expect(File.exists? master_file.working_file_path.first).to be true
         input = FileLocator.new(master_file.working_file_path.first).uri.to_s
-        expect(ActiveEncodeJob::Create).to have_been_enqueued.with(master_file.id, input, {preset: workflow})
+        expect(encoder_class).to have_received(:create).with(input, { master_file_id: master_file.id, preset: workflow })
       end
 
       context 'with skip transcoding' do
         let(:entry_files) { [{ file: File.absolute_path(file), skip_transcoding: true }] }
 
-        it 'sends the working_file_path to matterhorn' do
+        it 'sends the working_file_path to active_encode' do
           entry.process!
           master_file = media_object.reload.master_files.first
           expect(File.exists? master_file.working_file_path.first).to be true
-          input = { "quality-high" => FileLocator.new(master_file.working_file_path.first).uri.to_s }
-          expect(ActiveEncodeJob::Create).to have_been_enqueued.with(master_file.id, input, {preset: 'avalon-skip-transcoding'})
+          input_path = FileLocator.new(master_file.working_file_path.first).uri.to_s
+          expect(encoder_class).to have_received(:create).with(input_path, master_file_id: master_file.id, outputs: [{ label: "high", url: input_path }], preset: "pass_through" )
         end
       end
 
@@ -178,7 +189,7 @@ describe "MasterFile#working_file_path" do
 
         # All derivatives are copied to a working path
         # TODO: Ensure all working file copies are cleaned up by the background job
-        it 'sends the working_file_path to matterhorn' do
+        it 'sends the working_file_path to active_encode' do
           entry.process!
           master_file = media_object.reload.master_files.first
           working_file_path_high = master_file.working_file_path.find { |file| file.include? "high" }
@@ -188,16 +199,21 @@ describe "MasterFile#working_file_path" do
           [working_file_path_high, working_file_path_medium, working_file_path_low].each do |file|
             expect(File.exists? file).to be true
           end
-          input = { "quality-high" => FileLocator.new(working_file_path_high).uri.to_s,
-                    "quality-medium" => FileLocator.new(working_file_path_medium).uri.to_s,
-                    "quality-low" => FileLocator.new(working_file_path_low).uri.to_s }
-          expect(ActiveEncodeJob::Create).to have_been_enqueued.with(master_file.id, input, {preset: 'avalon-skip-transcoding'})
+
+          input_path = FileLocator.new(working_file_path_high).uri.to_s
+          expect(encoder_class).to have_received(:create).with(
+            input_path.remove("file://"), 
+            master_file_id: master_file.id, 
+            outputs: [{ label: "low", url: FileLocator.new(working_file_path_low).uri.to_s }, 
+                      { label: "medium", url: FileLocator.new(working_file_path_medium).uri.to_s },
+                      { label: "high", url: input_path}],
+            preset: "pass_through")
         end
       end
     end
   end
 
-  context "without Settings.matterhorn.media_path set" do
+  context "without Settings.encoding.working_file_path set" do
     it 'returns blank' do
       expect(master_file.working_file_path).to be_blank
     end
@@ -206,21 +222,21 @@ describe "MasterFile#working_file_path" do
       let(:file) { fixture_file_upload('spec/fixtures/videoshort.mp4', 'video/mp4') }
       let(:params) { { Filedata: [file], original: nil, workflow: workflow } }
 
-      it 'sends the file_location to matterhorn' do
+      it 'sends the file_location to active_encode' do
         MasterFileBuilder.build(media_object, params)
         master_file = media_object.reload.master_files.first
         input = FileLocator.new(master_file.file_location).uri.to_s
-        expect(ActiveEncodeJob::Create).to have_been_enqueued.with(master_file.id, input, {preset: workflow})
+        expect(encoder_class).to have_received(:create).with(input, { master_file_id: master_file.id, preset: workflow })
       end
 
       context "with skip transcoding" do
         let(:workflow) { 'skip_transcoding' }
 
-        it 'sends the file_location to matterhorn' do
+        it 'sends the file_location to active_encode' do
           MasterFileBuilder.build(media_object, params)
           master_file = media_object.reload.master_files.first
-          input = { "quality-high" => FileLocator.new(master_file.file_location).uri.to_s }
-          expect(ActiveEncodeJob::Create).to have_been_enqueued.with(master_file.id, input, {preset: 'avalon-skip-transcoding'})
+          input_path = FileLocator.new(master_file.file_location).uri.to_s
+          expect(encoder_class).to have_received(:create).with(input_path, master_file_id: master_file.id, outputs: [{ label: "high", url: input_path }], preset: "pass_through")
         end
       end
     end
@@ -230,21 +246,21 @@ describe "MasterFile#working_file_path" do
       let(:url) { Addressable::URI.convert_path(File.absolute_path(file.to_path)) }
       let(:params) { { selected_files: { "0" => { url: url, file_name: 'videoshort.mp4' } }, workflow: workflow } }
 
-      it 'sends the file_location to matterhorn' do
+      it 'sends the file_location to active_encode' do
         MasterFileBuilder.build(media_object, params)
         master_file = media_object.reload.master_files.first
         input = FileLocator.new(master_file.file_location).uri.to_s
-        expect(ActiveEncodeJob::Create).to have_been_enqueued.with(master_file.id, input, {preset: workflow})
+        expect(encoder_class).to have_received(:create).with(input, { master_file_id: master_file.id, preset: workflow })
       end
 
       context "with skip transcoding" do
         let(:workflow) { 'skip_transcoding' }
 
-        it 'sends the file_location to matterhorn' do
+        it 'sends the file_location to active_encode' do
           MasterFileBuilder.build(media_object, params)
           master_file = media_object.reload.master_files.first
-          input = { "quality-high" => FileLocator.new(master_file.file_location).uri.to_s }
-          expect(ActiveEncodeJob::Create).to have_been_enqueued.with(master_file.id, input, {preset: 'avalon-skip-transcoding'})
+          input_path = FileLocator.new(master_file.file_location).uri.to_s
+          expect(encoder_class).to have_received(:create).with(input_path, master_file_id: master_file.id, outputs: [{ label: "high", url: input_path }], preset: "pass_through")
         end
       end
     end
@@ -261,21 +277,21 @@ describe "MasterFile#working_file_path" do
         allow(entry).to receive(:media_object).and_return(media_object)
       end
 
-      it 'sends the file_location to matterhorn' do
+      it 'sends the file_location to active_encode' do
         entry.process!
         master_file = media_object.reload.master_files.first
         input = FileLocator.new(master_file.file_location).uri.to_s
-        expect(ActiveEncodeJob::Create).to have_been_enqueued.with(master_file.id, input, {preset: workflow})
+        expect(encoder_class).to have_received(:create).with(input, { master_file_id: master_file.id, preset: workflow })
       end
 
       context 'with skip transcoding' do
         let(:entry_files) { [{ file: File.absolute_path(file), skip_transcoding: true }] }
 
-        it 'sends the file_location to matterhorn' do
+        it 'sends the file_location to active_encode' do
           entry.process!
           master_file = media_object.reload.master_files.first
-          input = { "quality-high" => FileLocator.new(master_file.file_location).uri.to_s }
-          expect(ActiveEncodeJob::Create).to have_been_enqueued.with(master_file.id, input, {preset: 'avalon-skip-transcoding'})
+          input_path = FileLocator.new(master_file.file_location).uri.to_s
+          expect(encoder_class).to have_received(:create).with(input_path, master_file_id: master_file.id, outputs: [{ label: "high", url: input_path }], preset: "pass_through")
         end
       end
 
@@ -296,14 +312,18 @@ describe "MasterFile#working_file_path" do
           allow(original_file_locator).to receive(:exist?).and_return(false)
         end
 
-        it 'sends the derivative locations to matterhorn' do
+        it 'sends the derivative locations to active_encode' do
           entry.process!
           master_file = media_object.reload.master_files.first
-          input = {'quality-low' => Addressable::URI.convert_path(File.absolute_path(filename_low)).to_s,
-                   'quality-medium' => Addressable::URI.convert_path(File.absolute_path(filename_medium)).to_s,
-                   'quality-high' => Addressable::URI.convert_path(File.absolute_path(filename_high)).to_s
-                  }
-          expect(ActiveEncodeJob::Create).to have_been_enqueued.with(master_file.id, input, {preset: 'avalon-skip-transcoding'})
+
+          input_path = Addressable::URI.convert_path(File.absolute_path(filename_high)).to_s
+          expect(encoder_class).to have_received(:create).with(
+            File.absolute_path(filename_high),
+            master_file_id: master_file.id,
+            outputs: [{ label: "low", url: Addressable::URI.convert_path(File.absolute_path(filename_low)).to_s },
+                      { label: "medium", url: Addressable::URI.convert_path(File.absolute_path(filename_medium)).to_s },
+                      { label: "high", url: input_path }],
+            preset: "pass_through")
         end
       end
     end

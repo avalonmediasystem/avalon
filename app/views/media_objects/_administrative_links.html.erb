@@ -1,5 +1,5 @@
 <%#
-Copyright 2011-2019, The Trustees of Indiana University and Northwestern
+Copyright 2011-2020, The Trustees of Indiana University and Northwestern
   University.  Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
 
@@ -14,48 +14,48 @@ Unless required by applicable law or agreed to in writing, software distributed
 ---  END LICENSE_HEADER BLOCK  ---
 %>
 <% if can? :update, @media_object %>
-  <div class="row-fluid">
-      <p>
-        <ul class="unstyled hidden">
-          <li>
-            <% if @media_object.published? %>
-              <span class="label label-success">Published</span> Authorized users can view the item</li>
-            <% else %>
-              <span class="label label-important">Unpublished</span> Users cannot view the item</li>
-            <% end %>
-          <li>
-            <% unless @media_object.discover_groups.include? "nobody" %>
-              <span class="label label-success">Visible</span> Users can search for the item</li>
-            <% else %>
-              <span class="label label-important">Hidden</span> Users cannot search for the item</li>
-            <% end %>
-        </ul>
-      </p>
-
-      <div id="administrative_options" style="margin-bottom:1em;">
-
-      <% if @media_object.published? %>
-        <% if can?(:unpublish, @media_object) %>
-          <%= link_to 'Unpublish', update_status_media_object_path(@media_object, status:'unpublish'), method: :put, class: 'btn btn-default' %>
-        <% end %>
+<div class="row-fluid">
+  <p>
+    <ul class="unstyled hidden">
+      <li>
+        <% if @media_object.published? %>
+        <span class="label label-success">Published</span> Authorized users can view the item</li>
       <% else %>
-        <%= link_to 'Publish', update_status_media_object_path(@media_object, status:'publish'), method: :put, class: 'btn btn-default' %>
+      <span class="label label-important">Unpublished</span> Users cannot view the item</li>
       <% end %>
+      <li>
+        <% unless @media_object.discover_groups.include? "nobody" %>
+        <span class="label label-success">Visible</span> Users can search for the item</li>
+      <% else %>
+      <span class="label label-important">Hidden</span> Users cannot search for the item</li>
+      <% end %>
+    </ul>
+  </p>
 
+  <div id="administrative_options" style="margin-bottom:1em;">
 
-        <%= link_to 'Edit', edit_media_object_path(@media_object), class: 'btn btn-default' %>
-        <%# This might not be the best approach because it makes accidental
+    <%= link_to 'Edit', edit_media_object_path(@media_object), class: 'btn btn-primary' %>
+
+    <% if @media_object.published? %>
+    <% if can?(:unpublish, @media_object) %>
+    <%= link_to 'Unpublish', update_status_media_object_path(@media_object, status:'unpublish'), method: :put, class: 'btn btn-default' %>
+    <% end %>
+    <% else %>
+    <%= link_to 'Publish', update_status_media_object_path(@media_object, status:'publish'), method: :put, class: 'btn btn-default' %>
+    <% end %>
+
+    <%# This might not be the best approach because it makes accidental
             deletion possible just by following a link. Need to revisit when
             extra cycles are available %>
 
-        <% if can? :destroy, @media_object %>
-          <%= link_to 'Delete', confirm_remove_media_object_path(@media_object), class: 'btn btn-danger' %>
-        <% end %>
+    <% if can? :destroy, @media_object %>
+    <%= link_to 'Delete', confirm_remove_media_object_path(@media_object), class: 'btn btn-link' %>
+    <% end %>
 
-        <% if Settings.intercom.present? and can? :intercom_push, @media_object %>
-          <%= button_tag(Settings.intercom['default']['push_label'], class: 'btn btn-default', data: {toggle:"modal", target:"#intercom_push"}) %>
-          <%= render "intercom_push_modal" %>
-        <% end %>
-      </div>
+    <% if Settings.intercom.present? and can? :intercom_push, @media_object %>
+    <%= button_tag(Settings.intercom['default']['push_label'], class: 'btn btn-default', data: {toggle:"modal", target:"#intercom_push"}) %>
+    <%= render "intercom_push_modal" %>
+    <% end %>
   </div>
+</div>
 <% end %>

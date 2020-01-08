@@ -124,7 +124,10 @@
                 t.options.classPrefix +
                 'qualities-selector ' +
                 t.options.classPrefix +
-                'offscreen">') +
+                'offscreen"' +
+                'aria-label="' + 
+                qualityTitle +
+                '">') +
               ('<ul class="' +
                 t.options.classPrefix +
                 'qualities-selector-list"></ul>') +
@@ -169,7 +172,9 @@
                   '</li>';
               }
             });
-            var inEvents = ['mouseenter', 'focusin'],
+
+            var mobileInEvents = ['touchstart'],
+              inEvents = ['mouseenter', 'focusin', 'keydown'],
               /* Note this line is customized from original plugin - 2017-12-18 */
               outEvents = ['mouseleave', 'blur'],
               radios = player.qualitiesButton.querySelectorAll(
@@ -181,6 +186,13 @@
               selector = player.qualitiesButton.querySelector(
                 '.' + t.options.classPrefix + 'qualities-selector'
               );
+
+            // Change events based on device type (mobile/desktop)
+            if(t.isMobile()) {
+              inEvents = mobileInEvents;
+            } else {
+              outEvents.push('focusout');
+            }
 
             for (var _i = 0, _total = inEvents.length; _i < _total; _i++) {
               player.qualitiesButton.addEventListener(inEvents[_i], function() {
@@ -267,10 +279,12 @@
                   'canplay',
                   function canPlayAfterSourceSwitchHandler() {
                     media.setCurrentTime(currentTime);
-                    media.removeEventListener(
-                      'canplay',
-                      canPlayAfterSourceSwitchHandler
-                    );
+                    if(media.currentTime === currentTime) {
+                      media.removeEventListener(
+                        'canplay',
+                        canPlayAfterSourceSwitchHandler
+                      );
+                    }
                   }
                 );
               });
@@ -282,6 +296,10 @@
                   })[0],
                   event = mejs.Utils.createEvent('click', radio);
                 radio.dispatchEvent(event);
+                mejs.Utils.addClass(
+                  selector,
+                  t.options.classPrefix + 'offscreen'
+                );
               });
             }
 
@@ -351,6 +369,10 @@
           },
           keyExist: function keyExist(map, searchKey) {
             return -1 < map.get('map_keys_1').indexOf(searchKey.toLowerCase());
+          },
+          isMobile() {
+            var { isAndroid, isiOS } = mejs.Features;
+            return isAndroid || isiOS;
           }
         });
       },

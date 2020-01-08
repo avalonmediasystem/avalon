@@ -39,8 +39,9 @@ module Avalon
       end
     end
 
-    def self.find_by_name( name )
-      vocabulary[name.to_sym]
+    def self.find_by_name( name, sort: false )
+      vocab = vocabulary[name.to_sym]
+      sort ? vocab.sort : vocab
     end
 
   end

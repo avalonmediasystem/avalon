@@ -1,4 +1,4 @@
-# Copyright 2011-2019, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2020, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 #
@@ -99,12 +99,12 @@ class TimelinesController < ApplicationController
     authorize! :read, @timeline
     respond_to do |format|
       format.html do
-        url_fragment = "noHeader=true&noFooter=true&noSourceLink=true"
-        url_fragment += "&resource=#{URI.escape(manifest_timeline_url(@timeline, format: :json, token: @timeline.access_token), '://?=')}"
-        # TODO: determine if need to clone timeline and provide saveback url specific to current_user
+        url_fragment = "noHeader=true&noFooter=true&noSourceLink=false"
         if current_user == @timeline.user
+          url_fragment += "&resource=#{URI.escape(manifest_timeline_url(@timeline, format: :json), '://?=')}"
           url_fragment += "&callback=#{URI.escape(manifest_timeline_url(@timeline, format: :json), '://?=')}"
         elsif current_user
+          url_fragment += "&resource=#{URI.escape(manifest_timeline_url(@timeline, format: :json, token: @timeline.access_token), '://?=')}"
           url_fragment += "&callback=#{URI.escape(timelines_url, '://?=')}"
         end
         @timeliner_iframe_url = Settings.timeliner.timeliner_url + "##{url_fragment}"
@@ -128,7 +128,12 @@ class TimelinesController < ApplicationController
         if timeline_params.blank?
           # Accept raw IIIF manifest here from timeliner tool
           manifest = request.body.read
-          source = JSON.parse(manifest)["homepage"]["id"]
+          # Determine source from first content resource
+          manifest_json = JSON.parse(manifest)
+          stream_url = manifest_json["items"][0]["items"][0]["items"][0]["body"]["id"]
+          # Only handles urls like "https://spruce.dlib.indiana.edu/master_files/6108vd10d/auto.m3u8#t=0.0,3437.426"
+          _, master_file_id, media_fragment = stream_url.match(/master_files\/(.*)\/.*t=(.*)/).to_a
+          source = master_file_url(id: master_file_id) + "?t=#{media_fragment}"
           @timeline = Timeline.new(user: current_user, manifest: manifest, source: source)
         else
           @timeline = Timeline.new(timeline_params.merge(user: current_user))
@@ -170,6 +175,7 @@ class TimelinesController < ApplicationController
         if @timeline.update(timeline_params)
           redirect_to edit_timeline_path(@timeline), notice: 'Timeline was successfully updated.'
         else
+          flash.now[:error] = "There are errors with your submission.  #{@timeline.errors.full_messages.join(', ')}"
           render :edit
         end
       end

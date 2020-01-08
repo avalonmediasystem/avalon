@@ -1,0 +1,20 @@
+---
+:queues:
+  - default
+  - batch_ingest
+  - bulk_access_control
+  - create_encode
+  - delete_course
+  - extract_still
+  - ingest
+  - ingest_finished_job
+  - ingest_status_job
+  - mailers
+  - master_file_management_move
+  - master_file_management_delete
+  - reindex
+  - s3_split
+  - solr_backup
+  - update_dependent_permalinks
+  - waveform
+:max_retries: 14

@@ -1,4 +1,4 @@
-# Copyright 2011-2019, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2020, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 #
@@ -16,13 +16,24 @@ class Admin::CollectionsController < ApplicationController
   include Rails::Pagination
 
   before_action :authenticate_user!
-  load_and_authorize_resource except: [:index, :remove]
+  load_and_authorize_resource except: [:index, :remove, :attach_poster, :poster]
   before_action :load_and_authorize_collections, only: [:index]
   respond_to :html
 
   def load_and_authorize_collections
-    @collections = get_user_collections(params[:user])
     authorize!(params[:action].to_sym, Admin::Collection)
+    repository = CatalogController.new.repository
+    builder = ::CollectionSearchBuilder.new([:add_access_controls_to_solr_params_if_not_admin, :only_wanted_models, :add_paging_to_solr], self).rows(100_000)
+    if params[:user].present? && can?(:manage, Admin::Collection)
+      user = User.find_by_username_or_email(params[:user])
+      unless user.present?
+        @collections = []
+        return
+      end
+      builder.user = user
+    end
+    response = repository.search(builder)
+    @collections = response.documents.collect { |doc| ::Admin::CollectionPresenter.new(doc) }.sort_by { |c| c.name.downcase }
   end
 
   # GET /collections
@@ -199,7 +210,7 @@ class Admin::CollectionsController < ApplicationController
   # GET /collections/1/remove
   def remove
     @collection = Admin::Collection.find(params['id'])
-    raise CanCan::AccessDenied unless current_ability.can? :destroy, @collection
+    authorize! :destroy, @collection
     @objects    = @collection.media_objects
     @candidates = get_user_collections.reject { |c| c == @collection }
   end
@@ -228,9 +239,61 @@ class Admin::CollectionsController < ApplicationController
     end
   end
 
+  def attach_poster
+    @collection = Admin::Collection.find(params['id'])
+    authorize! :edit, @collection, message: "You do not have sufficient privileges to add a poster image."
+
+    if params.dig(:admin_collection, :poster).present?
+      poster_file = params[:admin_collection][:poster]
+      resized_poster = resize_uploaded_poster(poster_file.path)
+      if resized_poster
+        @collection.poster.content = resized_poster
+        @collection.poster.mime_type = 'image/png'
+        @collection.poster.original_name = poster_file.original_filename
+        flash[:success] = "Poster file succesfully added."
+      else
+        flash[:error] = "Uploaded file is not a recognized poster image file"
+      end
+    else
+      @collection.poster.content = ''
+      @collection.poster.original_name = ''
+      flash[:success] = "Poster file succesfully removed."
+    end
+
+    unless @collection.save
+      flash[:success] = nil
+      flash[:error] = "There was a problem storing the poster image."
+    end
+
+    respond_to do |format|
+      format.html { redirect_to admin_collection_path(@collection) }
+    end
+  end
+
+  def poster
+    @collection = Admin::Collection.find(params['id'])
+    authorize! :show, @collection
+
+    file = @collection.poster
+    if file.nil? || file.new_record?
+      render plain: 'Collection Poster Not Found', status: :not_found
+    else
+      render plain: file.content, content_type: file.mime_type
+    end
+  end
+
   private
 
   def collection_params
     params.permit(:admin_collection => [:name, :description, :unit, :managers => []])[:admin_collection]
+  end
+
+  def resize_uploaded_poster(file)
+    image = ::MiniMagick::Image.open(file)
+    image.thumbnail '700x700>'
+    image.format 'png'
+    image.tempfile.open.read
+  rescue MiniMagick::Invalid
+    return nil
   end
 end

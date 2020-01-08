@@ -1,4 +1,4 @@
-# Copyright 2011-2019, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2020, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 #
@@ -61,19 +61,19 @@ describe MediaObjectsController, type: :controller do
       context 'with unauthenticated user' do
         #New is isolated here due to issues caused by the controller instance not being regenerated
         it "should redirect to sign in" do
-          expect(get :new).to redirect_to(new_user_session_path)
+          expect(get :new).to redirect_to(/#{Regexp.quote(new_user_session_path)}\?url=.*/)
         end
         it "all routes should redirect to sign in" do
           expect(get :show, params: { id: media_object.id }).to redirect_to(/#{Regexp.quote(new_user_session_path)}\?url=.*/)
-          expect(get :edit, params: { id: media_object.id }).to redirect_to(new_user_session_path)
-          expect(get :confirm_remove, params: { id: media_object.id }).to redirect_to(new_user_session_path)
-          expect(put :update, params: { id: media_object.id }).to redirect_to(new_user_session_path)
-          expect(put :update_status, params: { id: media_object.id }).to redirect_to(new_user_session_path)
-          expect(get :tree, params: { id: media_object.id }).to redirect_to(new_user_session_path)
-          expect(get :deliver_content, params: { id: media_object.id, file: 'descMetadata' }).to redirect_to(new_user_session_path)
-          expect(delete :destroy, params: { id: media_object.id }).to redirect_to(new_user_session_path)
-          expect(get :add_to_playlist_form, params: { id: media_object.id }).to redirect_to(new_user_session_path)
-          expect(post :add_to_playlist, params: { id: media_object.id }).to redirect_to(new_user_session_path)
+          expect(get :edit, params: { id: media_object.id }).to redirect_to(/#{Regexp.quote(new_user_session_path)}\?url=.*/)
+          expect(get :confirm_remove, params: { id: media_object.id }).to redirect_to(/#{Regexp.quote(new_user_session_path)}\?url=.*/)
+          expect(put :update, params: { id: media_object.id }).to redirect_to(/#{Regexp.quote(new_user_session_path)}\?url=.*/)
+          expect(put :update_status, params: { id: media_object.id }).to redirect_to(/#{Regexp.quote(new_user_session_path)}\?url=.*/)
+          expect(get :tree, params: { id: media_object.id }).to redirect_to(/#{Regexp.quote(new_user_session_path)}\?url=.*/)
+          expect(get :deliver_content, params: { id: media_object.id, file: 'descMetadata' }).to redirect_to(/#{Regexp.quote(new_user_session_path)}\?url=.*/)
+          expect(delete :destroy, params: { id: media_object.id }).to redirect_to(/#{Regexp.quote(new_user_session_path)}\?url=.*/)
+          expect(get :add_to_playlist_form, params: { id: media_object.id }).to redirect_to(/#{Regexp.quote(new_user_session_path)}\?url=.*/)
+          expect(post :add_to_playlist, params: { id: media_object.id }).to redirect_to(/#{Regexp.quote(new_user_session_path)}\?url=.*/)
         end
         it "json routes should return 401" do
           expect(post :create, format: 'json').to have_http_status(401)
@@ -231,10 +231,11 @@ describe MediaObjectsController, type: :controller do
         thumbnail_offset: "0:02",
         date_digitized: "2015-12-31",
         workflow_name: "avalon",
-        percent_complete: "100.0",
-        percent_succeeded: "100.0",
-        percent_failed: "0",
-        status_code: "COMPLETED",
+        workflow_id: '1',
+        # percent_complete: "100.0",
+        # percent_succeeded: "100.0",
+        # percent_failed: "0",
+        # status_code: "COMPLETED",
         other_identifier: '40000000045312',
         structure: structure,
         captions: captions,
@@ -267,15 +268,18 @@ describe MediaObjectsController, type: :controller do
       :terms_of_use,
       :table_of_contents,
       :physical_description,
-      :other_identifier
+      :other_identifier,
+      :rights_statement
     ]}
 
     describe "#create" do
       context 'using api' do
-        before do
-           ApiToken.create token: 'secret_token', username: 'archivist1@example.com', email: 'archivist1@example.com'
-           request.headers['Avalon-Api-Key'] = 'secret_token'
-           allow_any_instance_of(MasterFile).to receive(:get_ffmpeg_frame_data).and_return('some data')
+        let(:administrator) { FactoryBot.create(:administrator) }
+
+        before(:each) do
+          ApiToken.create token: 'secret_token', username: administrator.username, email: administrator.email
+          request.headers['Avalon-Api-Key'] = 'secret_token'
+          allow_any_instance_of(MasterFile).to receive(:get_ffmpeg_frame_data).and_return('some data')
         end
         it "should respond with 422 if collection not found" do
           post 'create', params: { format: 'json', collection_id: "doesnt_exist" }
@@ -321,7 +325,6 @@ describe MediaObjectsController, type: :controller do
           expect(new_media_object.workflow.last_completed_step).to eq([HYDRANT_STEPS.last.step])
         end
         it "should create a new media_object with successful bib import" do
-          Settings.bib_retriever = { 'protocol' => 'sru', 'url' => 'http://zgate.example.edu:9000/db' }
           stub_request(:get, sru_url).to_return(body: sru_response)
           fields = { bibliographic_id: bib_id }
           post 'create', params: { format: 'json', import_bib_record: true, fields: fields, files: [master_file], collection_id: collection.id }
@@ -331,7 +334,6 @@ describe MediaObjectsController, type: :controller do
           expect(new_media_object.title).to eq('245 A : B F G K N P S')
         end
         it "should create a new media_object with supplied fields when bib import fails" do
-          Settings.bib_retriever = { 'protocol' => 'sru', 'url' => 'http://zgate.example.edu:9000/db' }
           stub_request(:get, sru_url).to_return(body: nil)
           ex_media_object = FactoryBot.create(:media_object)
           fields = {}
@@ -356,6 +358,7 @@ describe MediaObjectsController, type: :controller do
           fields[:note_type] = ['???']
           fields[:date_created] = '???'
           fields[:copyright_date] = '???'
+          fields[:rights_statement] = '???'
           post 'create', params: { format: 'json', fields: fields, files: [master_file], collection_id: collection.id }
           expect(response.status).to eq(200)
           new_media_object = MediaObject.find(JSON.parse(response.body)['id'])
@@ -365,9 +368,9 @@ describe MediaObjectsController, type: :controller do
           expect(new_media_object.note).to eq []
           expect(new_media_object.date_created).to eq nil
           expect(new_media_object.copyright_date).to eq nil
+          expect(new_media_object.rights_statement).to eq nil
         end
         it "should merge supplied other identifiers after bib import" do
-          Settings.bib_retriever = { 'protocol' => 'sru', 'url' => 'http://zgate.example.edu:9000/db' }
           stub_request(:get, sru_url).to_return(body: sru_response)
           fields = { bibliographic_id: bib_id, other_identifier_type: ['other'], other_identifier: ['12345'] }
           post 'create', params: { format: 'json', import_bib_record: true, fields: fields, files: [master_file], collection_id: collection.id }
@@ -378,7 +381,6 @@ describe MediaObjectsController, type: :controller do
           expect(new_media_object.other_identifier.find {|id_pair| id_pair[:source] == 'other'}[:id]).to eq('12345')
         end
         it "should merge supplied DC identifiers after bib import" do
-          Settings.bib_retriever = { 'protocol' => 'sru', 'url' => 'http://zgate.example.edu:9000/db' }
           stub_request(:get, sru_url).to_return(body: sru_response)
           fields = { bibliographic_id: bib_id, identifier: ['ABC1234'] }
           post 'create', params: { format: 'json', import_bib_record: true, fields: fields, files: [master_file], collection_id: collection.id }
@@ -408,6 +410,7 @@ describe MediaObjectsController, type: :controller do
           expect(new_media_object.bibliographic_id).to eq media_object.bibliographic_id
           expect(new_media_object.related_item_url).to eq media_object.related_item_url
           expect(new_media_object.other_identifier).to eq media_object.other_identifier
+          expect(new_media_object.rights_statement).to eq media_object.rights_statement
           expect(new_media_object.avalon_resource_type).to eq media_object.avalon_resource_type
           expect(new_media_object.master_files.first.date_digitized).to eq(media_object.master_files.first.date_digitized)
           expect(new_media_object.master_files.first.identifier).to eq(media_object.master_files.first.identifier)
@@ -418,12 +421,27 @@ describe MediaObjectsController, type: :controller do
           expect(new_media_object.master_files.first.derivatives.first.location_url).to eq(media_object.master_files.first.derivatives.first.location_url)
           expect(new_media_object.workflow.last_completed_step).to eq(media_object.workflow.last_completed_step)
         end
+        it "should return 422 if master_file update failed" do
+          media_object = FactoryBot.create(:published_media_object)
+          fields = {}
+          descMetadata_fields.each {|f| fields[f] = media_object.send(f) }
+          allow_any_instance_of(MasterFile).to receive(:save).and_return false
+          allow_any_instance_of(MasterFile).to receive(:stop_processing!)
+          expect_any_instance_of(MediaObject).to receive(:destroy).once
+          post 'create', params: { format: 'json', fields: fields, files: [master_file], collection_id: collection.id, publish: true }
+          expect(response.status).to eq(422)
+          expect(JSON.parse(response.body)).to include('errors')
+          expect(JSON.parse(response.body)["errors"].class).to eq Array
+          expect(JSON.parse(response.body)["errors"].first.class).to eq String
+        end
       end
     end
     describe "#update" do
       context 'using api' do
-        before do
-          ApiToken.create token: 'secret_token', username: 'archivist1@example.com', email: 'archivist1@example.com'
+        let(:administrator) { FactoryBot.create(:administrator) }
+
+        before(:each) do
+          ApiToken.create token: 'secret_token', username: administrator.username, email: administrator.email
           request.headers['Avalon-Api-Key'] = 'secret_token'
           allow_any_instance_of(MasterFile).to receive(:get_ffmpeg_frame_data).and_return('some data')
         end
@@ -466,6 +484,7 @@ describe MediaObjectsController, type: :controller do
           expect(WaveformJob).to have_been_enqueued.with(media_object.master_files.first.id)
         end
         it "should delete existing master_files and add a new master_file to a media_object" do
+          allow_any_instance_of(MasterFile).to receive(:stop_processing!)
           put 'json_update', params: { format: 'json', id: media_object.id, files: [master_file], collection_id: media_object.collection_id, replace_masterfiles: true }
           expect(JSON.parse(response.body)['id'].class).to eq String
           expect(JSON.parse(response.body)).not_to include('errors')
@@ -479,6 +498,7 @@ describe MediaObjectsController, type: :controller do
         end
         it "should return 422 if media object update failed" do
           allow_any_instance_of(MediaObject).to receive(:save).and_return false
+          allow_any_instance_of(MasterFile).to receive(:stop_processing!)
           put 'json_update', params: { format: 'json', id: media_object.id, fields: {}, collection_id: media_object.collection_id }
           expect(response.status).to eq(422)
           expect(JSON.parse(response.body)).to include('errors')
@@ -607,12 +627,14 @@ describe MediaObjectsController, type: :controller do
   describe "#index" do
     let!(:media_object) { FactoryBot.create(:published_media_object, visibility: 'public') }
     subject(:json) { JSON.parse(response.body) }
-    before do
-      ApiToken.create token: 'secret_token', username: 'archivist1@example.com', email: 'archivist1@example.com'
+    let(:administrator) { FactoryBot.create(:administrator) }
+
+    before(:each) do
+      ApiToken.create token: 'secret_token', username: administrator.username, email: administrator.email
+      request.headers['Avalon-Api-Key'] = 'secret_token'
     end
 
     it "should return list of media_objects" do
-      request.headers['Avalon-Api-Key'] = 'secret_token'
       get 'index', format:'json'
       expect(json.count).to eq(1)
       expect(json.first['id']).to eq(media_object.id)
@@ -628,10 +650,11 @@ describe MediaObjectsController, type: :controller do
 
   describe 'pagination' do
       let(:collection) { FactoryBot.create(:collection) }
+      let(:administrator) { FactoryBot.create(:administrator) }
       subject(:json) { JSON.parse(response.body) }
       before do
         5.times { FactoryBot.create(:published_media_object, visibility: 'public', collection: collection) }
-        ApiToken.create token: 'secret_token', username: 'archivist1@example.com', email: 'archivist1@example.com'
+        ApiToken.create token: 'secret_token', username: administrator.username, email: administrator.email
         request.headers['Avalon-Api-Key'] = 'secret_token'
         get 'index', params: { format:'json', per_page: '2' }
       end
@@ -857,9 +880,10 @@ describe MediaObjectsController, type: :controller do
     context "with json format" do
       subject(:json) { JSON.parse(response.body) }
       let!(:media_object) { FactoryBot.create(:media_object) }
+      let(:administrator) { FactoryBot.create(:administrator) }
 
       before do
-        ApiToken.create token: 'secret_token', username: 'archivist1@example.com', email: 'archivist1@example.com'
+        ApiToken.create token: 'secret_token', username: administrator.username, email: administrator.email
         request.headers['Avalon-Api-Key'] = 'secret_token'
       end
 
@@ -892,6 +916,7 @@ describe MediaObjectsController, type: :controller do
     let!(:collection) { FactoryBot.create(:collection) }
     before(:each) do
       login_user collection.managers.first
+      allow_any_instance_of(MasterFile).to receive(:stop_processing!)
     end
 
     around(:example) do |example|
@@ -902,7 +927,7 @@ describe MediaObjectsController, type: :controller do
     it "should remove a MediaObject with a single MasterFiles" do
       media_object = FactoryBot.create(:media_object, :with_master_file, collection: collection)
       delete :destroy, params: { id: media_object.id }
-      expect(flash[:notice]).to include("being deleted")
+      expect(flash[:notice]).to include("media object deleted")
       expect(MediaObject.exists?(media_object.id)).to be_falsey
       expect(MasterFile.exists?(media_object.master_files.first.id)).to be_falsey
     end
@@ -913,7 +938,7 @@ describe MediaObjectsController, type: :controller do
       master_file_ids = media_object.master_files.map(&:id)
       media_object.reload
       delete :destroy, params: { id: media_object.id }
-      expect(flash[:notice]).to include("being deleted")
+      expect(flash[:notice]).to include("media object deleted")
       expect(MediaObject.exists?(media_object.id)).to be_falsey
       master_file_ids.each { |mf_id| expect(MasterFile.exists?(mf_id)).to be_falsey }
     end
@@ -1300,6 +1325,52 @@ describe MediaObjectsController, type: :controller do
       expect(response.status).to eq 200
       expect(response.content_type).to eq 'text/xml'
       expect(response.body).to eq media_object.descMetadata.content
+    end
+  end
+
+  describe 'move_preview' do
+    before do
+      login_as :administrator
+    end
+
+    let(:media_object) { FactoryBot.create(:published_media_object) }
+
+    it 'returns a json preview of the media object' do
+      get :move_preview, params: { id: media_object.id, format: 'json' }
+      expect(response.status).to eq 200
+      expect(response.content_type).to eq 'application/json'
+      json_preview = JSON.parse(response.body)
+      expect(json_preview.keys).to eq ['id', 'title', 'collection', 'main_contributors', 'publication_date', 'published_by', 'published']
+    end
+
+    context 'as manager' do
+      before do
+        login_user media_object.collection.managers.first
+      end
+
+      let(:media_object) { FactoryBot.create(:published_media_object) }
+
+      it 'returns a json preview of the media object' do
+        get :move_preview, params: { id: media_object.id, format: 'json' }
+        expect(response.status).to eq 200
+        expect(response.content_type).to eq 'application/json'
+        json_preview = JSON.parse(response.body)
+        expect(json_preview.keys).to eq ['id', 'title', 'collection', 'main_contributors', 'publication_date', 'published_by', 'published']
+      end
+    end
+
+    context 'as end user' do
+      before do
+        login_as :student
+      end
+
+      let(:media_object) { FactoryBot.create(:published_media_object) }
+
+      it 'returns a json preview of the media object' do
+        get :move_preview, params: { id: media_object.id, format: 'json' }
+        expect(response.status).to eq 401
+        expect(response.content_type).to eq 'application/json'
+      end
     end
   end
 end

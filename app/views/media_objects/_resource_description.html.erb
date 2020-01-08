@@ -1,5 +1,5 @@
 <%#
-Copyright 2011-2019, The Trustees of Indiana University and Northwestern
+Copyright 2011-2020, The Trustees of Indiana University and Northwestern
   University.  Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
 
@@ -14,8 +14,8 @@ Unless required by applicable law or agreed to in writing, software distributed
 ---  END LICENSE_HEADER BLOCK  ---
 %>
 <div id="resource_description_content">
-<p>Fields followed by an asterisk (*) are required.</p>
-<%= form_for @media_object, html: { class: 'form-vertical' } do |form| %>
+  <p class="text-muted">Fields followed by an asterisk (*) are required.</p>
+  <%= form_for @media_object, html: { class: 'form-vertical' } do |form| %>
   <%= hidden_field_tag :step, @active_step %>
 
   <%= render partial: 'text_field',
@@ -93,6 +93,10 @@ Unless required by applicable law or agreed to in writing, software distributed
   <%= render partial: 'text_field',
              locals: {form: form, field: :permalink,
                       options: {}} %>
+  <%= render partial: 'dropdown_field',
+             locals: {form: form, field: :rights_statement,
+                      options: {display_label: 'Rights Statement',
+                                dropdown_options: ModsDocument::RIGHTS_STATEMENTS}} %>
   <%= render partial: 'text_area',
              locals: {form: form, field: :terms_of_use,
                       options: {display_label: 'Terms of Use'}} %>
@@ -118,5 +122,5 @@ Unless required by applicable law or agreed to in writing, software distributed
                                 dropdown_options: ModsDocument::NOTE_TYPES }} %>
 
   <%= render 'workflow_buttons' %>
-<% end %>
+  <% end %>
 </div>

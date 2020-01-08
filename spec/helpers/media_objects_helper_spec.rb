@@ -1,4 +1,4 @@
-# Copyright 2011-2019, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2020, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 #
@@ -73,6 +73,32 @@ describe MediaObjectsHelper do
 
       it 'returns a list of unique comment strings' do
         expect(helper.gather_all_comments(media_object, master_files)).to eq ["MO Comment", "[MF1] MF Comment"]
+      end
+    end
+  end
+
+  describe '#display_rights_statement' do
+    let(:media_object) { instance_double("MediaObject", rights_statement: rights_statement_uri) }
+    let(:rights_statement_uri) { ModsDocument::RIGHTS_STATEMENTS.keys.first }
+    let(:rights_statement_label) { ModsDocument::RIGHTS_STATEMENTS.values.first }
+
+    subject { helper.display_rights_statement(media_object) }
+
+    it 'links to the rights statement page' do
+      expect(subject).to eq "<dt>Rights Statement</dt><dd><a target=\"_blank\" href=\"#{rights_statement_uri}\">#{rights_statement_label}</a></dd>"
+    end
+
+    context 'when rights statement is not set' do
+      let(:rights_statement_uri) { nil }
+      it 'returns nil' do
+        expect(subject).to be_nil
+      end
+    end
+
+    context 'when rights statement is not in controlled vocabulary' do
+      let(:rights_statement_uri) { 'bad-value' }
+      it 'returns nil' do
+        expect(subject).to be_nil
       end
     end
   end

@@ -1,4 +1,4 @@
-# Copyright 2011-2019, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2020, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 #
@@ -55,9 +55,14 @@ class MediaObject < ActiveFedora::Base
   validate  :validate_dates, if: :resource_description_active?
   validate  :validate_note_type, if: :resource_description_active?
   validate  :report_missing_attributes, if: :resource_description_active?
+  validate  :validate_rights_statement, if: :resource_description_active?
 
   def resource_description_active?
     workflow.completed?("file-upload")
+  end
+
+  def validate_rights_statement
+    errors.add(:rights_statement, "Rights statement (#{rights_statement}) not in controlled vocabulary") unless rights_statement.nil? || ModsDocument::RIGHTS_STATEMENTS.keys.include?(rights_statement)
   end
 
   def validate_note_type
@@ -227,7 +232,7 @@ class MediaObject < ActiveFedora::Base
       solr_doc["title_ssort"] = self.title
       solr_doc["creator_ssort"] = Array(self.creator).join(', ')
       solr_doc["date_digitized_sim"] = master_files.collect {|mf| mf.date_digitized }.compact.map {|t| Time.parse(t).strftime "%F" }
-      solr_doc["date_ingested_sim"] = self.create_date.strftime "%F"
+      solr_doc["date_ingested_sim"] = self.create_date.strftime "%F" if self.create_date.present?
       #include identifiers for parts
       solr_doc["other_identifier_sim"] +=  master_files.collect {|mf| mf.identifier.to_a }.flatten
       #include labels for parts and their structural metadata

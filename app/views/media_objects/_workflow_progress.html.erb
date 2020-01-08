@@ -1,5 +1,5 @@
 <%#
-Copyright 2011-2019, The Trustees of Indiana University and Northwestern
+Copyright 2011-2020, The Trustees of Indiana University and Northwestern
   University.  Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
 
@@ -20,8 +20,8 @@ Unless required by applicable law or agreed to in writing, software distributed
           <div class="alert">
             <p>No media is associated with this item</p>
           </div>
-        <% elsif @masterFiles.any? { |mf| mf.status_code != 'COMPLETED' } %>
-          <div class="alert <%= @masterFiles.any? { |mf| mf.failed? } ? 'alert-danger' : 'alert-info' %>">
+        <% elsif show_progress?(@masterFiles) %>
+          <div class="alert <%= any_failed?(@masterFiles) ? 'alert-danger' : 'alert-info' %>">
             <h4>Conversion Process</h4>
             <br/>
             <div id="overall" class="progress progress-striped active hidden-phone">

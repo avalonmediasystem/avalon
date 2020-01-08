@@ -1,4 +1,4 @@
-# Copyright 2011-2019, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2020, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 #
@@ -17,8 +17,8 @@ module MasterFileIntercom
     {
       workflow_name: workflow_name,
       percent_complete: percent_complete,
-      percent_succeeded: percent_succeeded,
-      percent_failed: percent_failed,
+      # percent_succeeded: percent_succeeded,
+      # percent_failed: percent_failed,
       status_code: status_code,
       structure:  include_structure ? structuralMetadata.content : nil,
       label: title,

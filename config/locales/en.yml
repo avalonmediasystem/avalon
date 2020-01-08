@@ -9,6 +9,7 @@ en:
     embedded_audio: This audio content is restricted
   release_label: "Release"
   errors:
+    deleted_auth_error: This account has been deleted and cannot be authenticated.
     lti_auth_error: |
       If you are an instructor, you cannot view these items in student mode.
       Please switch back to instructor mode to view. If you are a student and
@@ -53,14 +54,14 @@ en:
       Creation date should only be used if Date is a re-issue date. Then Creation date
       would contain the original publication date. Enter date information in a format
       consistent with the options shown in <a
-      href="http://www.loc.gov/standards/datetime/pre-submission.html"
-      target="_blank">Extended Date/Time Format (EDTF) 1.0</a>.
+      href="http://www.loc.gov/standards/datetime/"
+      target="_blank">Extended Date/Time Format (EDTF) Level 1</a>.
     date_issued: |
       <strong>Required field.</strong> Date should be the main publication date
       associated with the item to be used for sorting browse and search results.
       Enter date information in a format consistent with the options shown in <a
-      href="http://www.loc.gov/standards/datetime/pre-submission.html"
-      target="_blank">Extended Date/Time Format (EDTF) 1.0</a>.
+      href="http://www.loc.gov/standards/datetime/"
+      target="_blank">Extended Date/Time Format (EDTF) Level 1</a>.
     genre: |
       Genre can be used to categorize an item by form, style, or subject matter. For
       consistency and to allow for sorting and aggregating, use terms from the <a
@@ -76,8 +77,7 @@ en:
     temporal_subject: |
       Time period should be used for the temporal subject of the content (for example,
       years or year ranges). Enter date information in a format consistent with the
-      options shown in <a href="http://www.loc.gov/standards/datetime/pre-
-      submission.html" target="_blank">Extended Date/Time Format (EDTF) 1.0</a>.
+      options shown in <a href="http://www.loc.gov/standards/datetime/" target="_blank">Extended Date/Time Format (EDTF) Level 1</a>.
     title: |
       <strong>Required field.</strong> Title is used for display in search results and
       single item views. Recommended use is to reflect the content captured in
@@ -105,6 +105,8 @@ en:
       Terms of Use describes the conditions under which content may be used. This is an optional field.
     physical_description: |
       Physical Description is an optional field that will display information about the original resource being described.
+    rights_statement: |
+      Rights Statement is used to communicate the copyright and re-use status of digital objects using a set of standardized rights statements provided by <a href="https://rightsstatements.org" target="_blank">RightsStatements.org</a>
     related_item_url: |
       The label is the text that will be displayed in the item record and will link to the URL entered. Related Item is an optional field.
     note: |
@@ -244,7 +246,8 @@ en:
       timeline:
         title: "Title"
         description: "Description"
-
+      user:  
+        login: "Username or email"
   iiif:
     auth:
       confirmLabel: "Login"
@@ -258,3 +261,9 @@ en:
       homepageLabel: "View in Repository"
   share:
     empty_lti_share_url: "LTI not configured."
+
+  samvera:
+    persona:
+      users:
+        index:
+          email_label: Email

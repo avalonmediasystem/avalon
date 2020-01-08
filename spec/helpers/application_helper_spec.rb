@@ -1,4 +1,4 @@
-# Copyright 2011-2019, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2020, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 #
@@ -155,11 +155,42 @@ describe ApplicationHelper do
     end
 
     it "should return a pluralized label and semicolon-separated string for multiple values" do
-      expect(helper.display_metadata("Label", ["Value1", "Value2"])).to eq("<dt>Labels</dt><dd>Value1; Value2</dd>")
+      expect(helper.display_metadata("Label", ["Value1", "Value2"])).to eq("<dt>Labels</dt><dd><pre>Value1; Value2</pre></dd>")
     end
 
     it "should return a default value if provided" do
-      expect(helper.display_metadata("Label", [""], "Default value")).to eq("<dt>Label</dt><dd>Default value</dd>")
+      expect(helper.display_metadata("Label", [""], "Default value")).to eq("<dt>Label</dt><dd><pre>Default value</pre></dd>")
+    end
+  end
+
+  describe "#pretty_time" do
+    it 'returns a formatted time' do
+      expect(helper.pretty_time(0)).to eq '00:00:00.000'
+      expect(helper.pretty_time(1)).to eq '00:00:00.001'
+      expect(helper.pretty_time(9)).to eq '00:00:00.009'
+      expect(helper.pretty_time(10)).to eq '00:00:00.010'
+      expect(helper.pretty_time(101)).to eq '00:00:00.101'
+      expect(helper.pretty_time(1010)).to eq '00:00:01.010'
+      expect(helper.pretty_time(10101)).to eq '00:00:10.101'
+      expect(helper.pretty_time(101010)).to eq '00:01:41.010'
+      expect(helper.pretty_time(1010101)).to eq '00:16:50.101'
+      expect(helper.pretty_time(10101010)).to eq '02:48:21.010'
+      expect(helper.pretty_time(0.0)).to eq '00:00:00.000'
+      expect(helper.pretty_time(0.1)).to eq '00:00:00.000'
+      expect(helper.pretty_time(1.1)).to eq '00:00:00.001'
+      expect(helper.pretty_time(-1000)).to eq '00:00:00.000'
+      expect(helper.pretty_time('0')).to eq '00:00:00.000'
+      expect(helper.pretty_time('1')).to eq '00:00:00.001'
+      expect(helper.pretty_time('10101010')).to eq '02:48:21.010'
+      expect(helper.pretty_time('-1000')).to eq '00:00:00.000'
+      expect(helper.pretty_time('0.0')).to eq '00:00:00.000'
+      expect(helper.pretty_time('0.1')).to eq '00:00:00.000'
+      expect(helper.pretty_time('1.1')).to eq '00:00:00.001'
+    end
+
+    it 'returns an exception when not a number' do
+      expect { helper.pretty_time(nil) }.to raise_error(TypeError)
+      expect { helper.pretty_time('foo') }.to raise_error(ArgumentError)
     end
   end
 end

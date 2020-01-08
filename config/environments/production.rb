@@ -33,7 +33,7 @@ config.webpacker.check_yarn_integrity = false
   config.public_file_server.enabled = ENV['RAILS_SERVE_STATIC_FILES'].present?
 
   # Compress JavaScripts and CSS.
-  config.assets.js_compressor = :uglifier
+  config.assets.js_compressor = Uglifier.new(:harmony => true)
   # config.assets.css_compressor = :sass
 
   # Do not fallback to assets pipeline if a precompiled asset is missed.
@@ -61,7 +61,6 @@ config.webpacker.check_yarn_integrity = false
   # config.force_ssl = true
 
   # Enable logging to both stdout and file, in more compact format
-  config.logger = Logger.new("| tee -a log/production.log")
   config.lograge.enabled = true
   config.lograge.custom_options = lambda do |event|
     {:time => event.time}
@@ -102,7 +101,7 @@ config.webpacker.check_yarn_integrity = false
   # Do not dump schema after migrations.
   config.active_record.dump_schema_after_migration = false
 
-  config.active_job.queue_adapter     = Settings&.active_job&.queue_adapter || :resque
+  config.active_job.queue_adapter     = Settings&.active_job&.queue_adapter || :sidekiq
   require 'active_job/queue_adapters/better_active_elastic_job_adapter' if config.active_job.queue_adapter == :active_elastic_job
 
   # Additional production specific initializers

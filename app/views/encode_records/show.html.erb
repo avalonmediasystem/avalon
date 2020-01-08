@@ -1,0 +1,76 @@
+<%#
+Copyright 2011-2020, The Trustees of Indiana University and Northwestern
+  University.  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+
+You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+  under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+  CONDITIONS OF ANY KIND, either express or implied. See the License for the
+  specific language governing permissions and limitations under the License.
+---  END LICENSE_HEADER BLOCK  ---
+%>
+<p id="notice"><%= notice %></p>
+
+<div class="row">
+  <div class="col-sm-12">
+    <% encode_presenter = EncodePresenter.new(@encode_record) %>
+    <h2>
+      <strong>Job ID:</strong>
+      <%= encode_presenter.id %>
+    </h2>
+
+    <section id="job-view">
+      <p>
+        <strong>Status:</strong>
+        <%= encode_presenter.status %>
+      </p>
+      <p>
+        <strong>Adapter:</strong>
+        <%= encode_presenter.adapter %>
+      </p>
+      <p>
+        <strong>Adapter Job ID:</strong>
+        <%= encode_presenter.global_id %>
+      </p>
+      <p>
+        <strong>Title:</strong>
+        <%= encode_presenter.title %>
+      </p>
+
+      <section>
+        <% if !encode_presenter.errors.empty? %>
+          <p>
+            <strong>Error Message:</strong>
+            <%= encode_presenter.errors[0] %>
+          </p>
+        <% end %>
+        <p>
+          <strong>Job Started:</strong>
+          <%= encode_presenter.started %>
+        </p>
+        <p>
+          <strong>Job Last Updated:</strong>
+          <%= encode_presenter.ended %>
+        </p>
+      </section>
+
+      <p>
+        <strong>Create Options:</strong>
+        <div class="box box-default">
+          <pre><%= encode_presenter.create_options %></pre>
+        </div>
+      </p>
+
+      <p>
+        <strong>Raw Obejct:</strong>
+        <div class="box box-default">
+          <pre><%= encode_presenter.raw_object %></pre>
+        </div>
+      </p>
+    </section>
+  </div>
+</div>

@@ -1,0 +1,49 @@
+<%#
+Copyright 2011-2020, The Trustees of Indiana University and Northwestern
+  University.  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+
+You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+  under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+  CONDITIONS OF ANY KIND, either express or implied. See the License for the
+  specific language governing permissions and limitations under the License.
+---  END LICENSE_HEADER BLOCK  ---
+%>
+
+<% @page_title = t('collections.show.title', :collection_name => @doc_presenter.name, :application_name => application_name) %>
+
+<div class="collections-landing-wrapper">
+  <ol class="breadcrumb">
+    <li style="padding-bottom: 0px"><%= link_to 'All Collections', collections_path %></li>
+    <li style="padding-bottom: 0px"><%= link_to @doc_presenter.unit, collections_path(filter: @doc_presenter.unit) %>
+    </li>
+    <li class="active" style="padding-bottom: 0px"><%= @doc_presenter.name %></li>
+  </ol>
+
+  <div class="row">
+    <div class="document-thumbnail col-sm-4 col-sm-push-8">
+      <%= image_tag @doc_presenter.poster_url %>
+      <div class="filter-collection-button-wrapper">
+        <a href="<%= search_catalog_path('f[collection_ssim][]' => @doc_presenter.name) %>"
+          class="btn btn-default btn-block">
+          <span class="glyphicon glyphicon-filter" aria-hidden="true"></span>
+          Filter this collection
+        </a>
+      </div>
+    </div>
+    <div class="col-sm-7 col-sm-pull-4">
+      <h1 class="page-title"><%= @doc_presenter.name %></h1>
+      <div>
+        <h3 class="sub-headline"><strong>Unit:</strong> <%= @doc_presenter.unit %></h3>
+        <p class="lead document-description"></p>
+        <%= react_component("CollectionDescription", { content: @doc_presenter.description }) %>
+      </div>
+    </div>
+  </div>
+
+  <%= react_component("Search", { baseUrl: root_url, collection: @doc_presenter.name }) %>
+</div>

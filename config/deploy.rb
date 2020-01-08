@@ -15,7 +15,8 @@ set :keep_assets, 2
 set :migration_role, :app
 set :migration_servers, -> { primary(fetch(:migration_role)) }
 set :passenger_restart_with_touch, true
-set :resque_environment_task, true
 
-after "deploy:restart", "resque:restart"
-after "deploy:restart", "resque:scheduler:restart"
+# There is a known bug that prevents sidekiq from starting when pty is true on Capistrano 3.
+set :pty,  false
+set :sidekiq_config, -> { File.join(shared_path, 'config', 'sidekiq.yml') }
+SSHKit.config.command_map[:sidekiq] = "bundle exec sidekiq"

@@ -1,4 +1,4 @@
-# Copyright 2011-2019, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2020, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 #
@@ -54,11 +54,13 @@ class Admin::Collection < ActiveFedora::Base
     index.as :symbol
   end
 
+  has_subresource 'poster', class_name: 'IndexedFile'
+
   around_save :reindex_members, if: Proc.new{ |c| c.name_changed? or c.unit_changed? }
   before_create :create_dropbox_directory!
 
   def self.units
-    Avalon::ControlledVocabulary.find_by_name(:units) || []
+    Avalon::ControlledVocabulary.find_by_name(:units, sort: true) || []
   end
 
   def created_at
@@ -160,6 +162,7 @@ class Admin::Collection < ActiveFedora::Base
   def to_solr
     super.tap do |solr_doc|
       solr_doc["name_uniq_si"] = self.name.downcase.gsub(/\s+/,'') if self.name.present?
+      solr_doc["has_poster_bsi"] = !(poster.content.nil? || poster.content == '')
     end
   end
 
@@ -207,7 +210,7 @@ class Admin::Collection < ActiveFedora::Base
   end
 
   def default_virtual_read_groups
-    self.default_read_groups.to_a - ["public", "registered"] - default_local_read_groups - default_ip_read_groups
+    self.default_read_groups.to_a - represented_default_visibility - default_local_read_groups - default_ip_read_groups
   end
 
   def default_visibility=(value)

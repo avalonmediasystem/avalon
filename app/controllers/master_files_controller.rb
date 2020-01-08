@@ -1,4 +1,4 @@
-# Copyright 2011-2019, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2020, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 #
@@ -46,8 +46,26 @@ class MasterFilesController < ApplicationController
     if ds.nil? || ds.empty?
       render plain: 'Not Found', status: :not_found
     else
-      send_data ds.content, type: ds.mime_type, filename: ds.original_name
+      if request.headers['Accept-Encoding']&.include? 'deflate'
+        response.headers['Content-Encoding'] = 'deflate'
+        content = waveform_deflated ds
+        mime_type = 'application/zlib'
+      else
+        content = waveform_inflated ds
+        mime_type = 'application/json'
+      end
+      send_data content, type: mime_type, filename: ds.original_name
     end
+  end
+
+  # return deflated waveform content. deflate only if necessary
+  def waveform_deflated(waveform)
+    waveform.mime_type == 'application/zlib' ? waveform.content : Zlib::Deflate.deflate(waveform.content)
+  end
+
+  # return inflated waveform content. inflate only if necessary
+  def waveform_inflated(waveform)
+    waveform.mime_type == 'application/zlib' ? Zlib::Inflate.inflate(waveform.content) : waveform.content
   end
 
   def can_embed?
@@ -275,7 +293,7 @@ class MasterFilesController < ApplicationController
       end
     end
     unless content
-      redirect_to ActionController::Base.helpers.asset_path('video_icon.png')
+      redirect_to ActionController::Base.helpers.asset_path('audio_icon.png')
     else
       send_data content, :filename => "#{params[:type]}-#{master_file.id.split(':')[1]}", :disposition => :inline, :type => mimeType
     end
@@ -335,6 +353,19 @@ class MasterFilesController < ApplicationController
     end
   end
 
+  def move
+    master_file = MasterFile.find(params[:id])
+    current_media_object = master_file.media_object
+    authorize! :update, current_media_object
+    target_media_object = MediaObject.find(params[:target])
+    authorize! :update, target_media_object
+
+    master_file.media_object = target_media_object
+    master_file.save!
+    flash[:success] = "Successfully moved master file.  See it #{view_context.link_to 'here', edit_media_object_path(target_media_object)}.".html_safe
+    redirect_to edit_media_object_path(current_media_object)
+  end
+
 protected
   def ensure_readable_filedata
     if params[:Filedata].present?
@@ -359,7 +390,7 @@ protected
   def hls_stream(master_file, quality)
     stream_info = secure_streams(master_file.stream_details)
     hls_stream = stream_info[:stream_hls].select { |stream| stream[:quality] == quality }
-    unnest_wowza_stream(hls_stream) if Settings.streaming.server == "wowza"
+    unnest_wowza_stream(hls_stream&.first) if Settings.streaming.server == "wowza"
     hls_stream
   end
 

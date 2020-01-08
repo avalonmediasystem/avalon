@@ -1,10 +1,9 @@
 source 'https://rubygems.org'
 
 # Core rails
-gem 'rails', '=5.2.3'
-
 gem 'bootsnap', require: false
 gem 'listen'
+gem 'rails', '=5.2.3'
 gem 'sprockets', '~>3.7.2'
 gem 'sqlite3'
 
@@ -41,11 +40,12 @@ gem 'activerecord-session_store'
 gem 'acts_as_list'
 gem 'api-pagination'
 gem 'avalon-about', git: 'https://github.com/avalonmediasystem/avalon-about.git', tag: 'avalon-r6.4'
-gem 'bootstrap-toggle-rails', git: 'https://github.com/rkallensee/bootstrap-toggle-rails.git', tag: 'v2.2.1.0'
+gem 'bootstrap-toggle-rails'
 gem 'bootstrap_form'
 gem 'iiif_manifest', '~> 0.6'
 gem 'rack-cors', require: 'rack/cors'
 gem 'recaptcha', require: 'recaptcha/rails'
+gem 'samvera-persona', '~> 0.1.7'
 gem 'speedy-af', '~> 0.1.3'
 
 # Avalon Components
@@ -53,20 +53,21 @@ gem 'avalon-workflow', git: "https://github.com/avalonmediasystem/avalon-workflo
 
 # Authentication & Authorization
 gem 'devise', '~> 4.4'
+gem 'devise_invitable', '~> 1.6'
 gem 'ims-lti', '~> 1.1.13'
 gem 'net-ldap'
 gem 'omniauth-identity'
 gem 'omniauth-lti', git: "https://github.com/avalonmediasystem/omniauth-lti.git", tag: 'avalon-r4'
 
 # Media Access & Transcoding
-gem 'active_encode', '~> 0.1.1'
+gem 'active_encode', '~> 0.7.0'
 gem 'audio_waveform-ruby', require: 'audio_waveform'
 gem 'browse-everything', '~> 0.13.0'
 gem 'media_element_add_to_playlist', git: 'https://github.com/avalonmediasystem/media-element-add-to-playlist.git', tag: 'avalon-r6.5'
 gem 'mediainfo', git: "https://github.com/avalonmediasystem/mediainfo.git", tag: 'avalon-r6.5'
-gem 'rest-client'
+gem 'mini_magick', '~> 4.9'
+gem 'rest-client', '~> 2.0'
 gem 'roo'
-gem 'rubyhorn', git: "https://github.com/avalonmediasystem/rubyhorn.git", tag: 'avalon-r6'
 gem 'wavefile', '~> 1.0.1'
 
 # Data Translation & Normalization
@@ -87,8 +88,7 @@ gem 'mediaelement-track-scrubber', git: 'https://github.com/avalonmediasystem/me
 # Jobs
 gem 'activejob-traffic_control'
 gem 'redis-rails'
-gem 'resque', '~> 2.0'
-gem 'resque-scheduler', '~> 4.4'
+gem 'sidekiq', '~> 5.2.7'
 
 # Coding Patterns
 gem 'config'
@@ -100,10 +100,10 @@ gem 'with_locking'
 
 group :development do
   gem 'capistrano', '~>3.6'
-  gem 'capistrano-rails', require: false
-  gem 'capistrano-resque', require: false
-  gem 'capistrano-rvm', require: false
   gem 'capistrano-passenger', require: false
+  gem 'capistrano-rails', require: false
+  gem 'capistrano-rvm', require: false
+  gem 'capistrano-sidekiq', require: false
   gem 'capistrano-yarn', require: false
 
   # Use Bixby instead of rubocop directly

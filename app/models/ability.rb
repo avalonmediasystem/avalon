@@ -1,4 +1,4 @@
-# Copyright 2011-2019, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2020, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 #
@@ -17,8 +17,12 @@ class Ability
   include Hydra::Ability
   include Hydra::MultiplePolicyAwareAbility
 
-  self.ability_logic += [ :playlist_permissions, :playlist_item_permissions, :marker_permissions ]
+  self.ability_logic += [ :playlist_permissions, :playlist_item_permissions, :marker_permissions, :encode_dashboard_permissions ]
   self.ability_logic += [ :timeline_permissions ] if Settings['timeliner'].present?
+
+  def encode_dashboard_permissions
+    can :read, :encode_dashboard if is_administrator?
+  end
 
   def user_groups
     return @user_groups if @user_groups
@@ -32,19 +36,9 @@ class Ability
   end
 
   def create_permissions(user=nil, session=nil)
-    if full_login?
+    if full_login? || is_api_request?
       if is_administrator?
-        can :manage, MediaObject
-        can :manage, MasterFile
-        can :inspect, MediaObject
-        can :manage, Admin::Group
-        can :manage, Admin::Collection
-        can :manage, Resque
-        can :read, :about_page
-        can :read, MigrationStatus
-        can :manage, Playlist
-        can :manage, PlaylistItem
-        can :manage, AvalonMarker
+        can :manage, :all
       end
 
       if @user_groups.include? "group_manager"
@@ -65,7 +59,7 @@ class Ability
 
   def custom_permissions(user=nil, session=nil)
 
-    unless full_login? and is_administrator?
+    unless (full_login? || is_api_request?) and is_administrator?
       cannot :read, MediaObject do |media_object|
         !(test_read(media_object.id) && media_object.published?) && !test_edit(media_object.id)
       end
@@ -78,9 +72,9 @@ class Ability
         can? :read, derivative.masterfile.media_object
       end
 
-      cannot :read, Admin::Collection unless full_login?
+      cannot :read, Admin::Collection unless (full_login? || is_api_request?)
 
-      if full_login?
+      if full_login? || is_api_request?
         can :read, Admin::Collection do |collection|
           is_member_of?(collection)
         end
@@ -138,25 +132,25 @@ class Ability
         can :share, MediaObject
       end
 
-      if is_api_request?
-        can :manage, MediaObject
-        can :manage, Admin::Collection
-        can :manage, Avalon::ControlledVocabulary
-      end
+      # if is_api_request?
+      #   can :manage, MediaObject
+      #   can :manage, Admin::Collection
+      #   can :manage, Avalon::ControlledVocabulary
+      # end
 
       cannot :update, MediaObject do |media_object|
-        (not full_login?) || (!is_member_of?(media_object.collection)) ||
+        (not (full_login? || is_api_request?)) || (!is_member_of?(media_object.collection)) ||
           ( media_object.published? && !@user.in?(media_object.collection.managers) )
       end
 
       cannot :destroy, MediaObject do |media_object|
         # non-managers can only destroy media_object if it's unpublished
-        (not full_login?) || (!is_member_of?(media_object.collection)) ||
+        (not (full_login? || is_api_request?)) || (!is_member_of?(media_object.collection)) ||
           ( media_object.published? && !@user.in?(media_object.collection.managers) )
       end
 
       cannot :destroy, Admin::Collection do |collection, other_user_collections=[]|
-        (not full_login?) || !@user.in?(collection.managers)
+        (not (full_login? || is_api_request?)) || !@user.in?(collection.managers)
       end
 
       can :intercom_push, MediaObject do |media_object|

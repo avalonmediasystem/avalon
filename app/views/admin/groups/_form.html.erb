@@ -1,5 +1,5 @@
 <%#
-Copyright 2011-2019, The Trustees of Indiana University and Northwestern
+Copyright 2011-2020, The Trustees of Indiana University and Northwestern
   University.  Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
 
@@ -14,86 +14,110 @@ Unless required by applicable law or agreed to in writing, software distributed
 ---  END LICENSE_HEADER BLOCK  ---
 %>
 
-<div class="col-md-9 col-lg-8">
-  <div class="container-fluid">
-  <%= bootstrap_form_for @group  do |f| %>
-    <h3>Group</h3>
-    <% if @group.class.name_is_static? @group.name %>
-      <p><%= @group.name %></p>
-    <% else %>
-      <div class="col-xs-6 col-sm-8">
-        <%= text_field_tag :group_name, "Group name", value: @group.name, class: 'form-control' %>
+<div class="row">
+  <div class="col-md-6">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Group</h3>
       </div>
-      <div class="col-xs-3 col-sm-2">
-	<%= button_tag "Save", type: "submit", class: "btn btn-default col-xs-12" %>
-      </div>
-      <div class="col-xs-3 col-sm-2">
-      <%= link_to "Delete Group", admin_group_path(@group.name),
+      <div class="panel-body">
+        <%= bootstrap_form_for @group  do |f| %>
+
+        <% if @group.class.name_is_static? @group.name %>
+        <p><%= @group.name %></p>
+        <% else %>
+        <div class="form-group">
+          <div class="input-group">
+            <%= text_field_tag :group_name, "Group name", value: @group.name, class: 'form-control' %>
+            <span class="input-group-btn">
+              <%= button_tag "Save", type: "submit", class: "btn btn-primary" %>
+              <%= link_to "Delete Group", admin_group_path(@group.name),
           method: :delete, confirm: "Deleted group cannot be recovered. Are you sure?",
-          class: "btn btn-danger col-xs-12" %>
+          class: "btn btn-danger" %>
+            </span>
+          </div>
+        </div>
+        <% end %>
+        <% end %>
       </div>
-    <% end %>
-  <% end %>
+    </div>
+
+
   </div>
-  <div class="container-fluid">
-    <%= bootstrap_form_for @group  do |f| %>
-    <h3>Group Members</h3>
-    <div class="col-xs-9 col-sm-10">
-      <%= text_field_tag :new_user, nil, class: 'typeahead from-model form-control',
+
+  <div class="col-md-6">
+
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Group Members</h3>
+      </div>
+
+      <div class="panel-body">
+        <%= bootstrap_form_for @group  do |f| %>
+        <div class="form-group">
+          <div class="input-group">
+            <%= text_field_tag :new_user, nil, class: 'typeahead from-model form-control',
           data: { model: 'user' }, placeholder: 'Enter a username' %>
+            <span class="input-group-btn">
+              <%= button_tag "Add user", type: "submit", class: "btn btn-primary" %>
+            </span>
+          </div>
+        </div>
+        <% end %>
+
+        <%= form_tag update_users_admin_group_path, method: :put do %>
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th class="col-md-1"><input type="checkbox" class="select-groups"></th>
+              <th class="col-md-10">Username</th>
+              <th class="col-md-1"></th>
+            </tr>
+          </thead>
+          <tbody>
+            <% @group.users.each do |user| %>
+            <tr>
+              <td><%= check_box_tag "user_ids[]", user %></td>
+              <td><%= user %></td>
+              <td></td>
+            </tr>
+            <% end %>
+          </tbody>
+        </table>
+
+        <%= hidden_field_tag 'id', @group.name %>
+        <%= submit_tag "Remove members", :method => :delete, class: "btn btn-danger delete", disabled: true  %>
+
+        <% end %>
+      </div>
     </div>
-    <div class="col-xs-3 col-sm-2">
-      <%= button_tag "Add user", type: "submit", class: "btn btn-default col-xs-12" %>
-    </div>
-  <% end %>
-  </div>
-  <div class="container-fluid">
-  <%= form_tag update_users_admin_group_path, method: :put do %>
-    <table class="table table-striped">
-      <thead>
-        <tr>
-          <th class="col-md-1"><input type="checkbox" class="select-groups"></th>
-          <th class="col-md-10">Username</th>
-          <th class="col-md-1"></th>
-        </tr>
-      </thead>
-      <tbody>
-        <% @group.users.each do |user| %>
-          <tr>
-            <td><%= check_box_tag "user_ids[]", user %></td>
-            <td><%= user %></td>
-            <td></td>
-          </tr>
-         <% end %>
-       </tbody>
-    </table>
-  </div>
-  <div class="container-fluid">
-    <%= hidden_field_tag 'id', @group.name %>
-    <%= submit_tag "Remove members", :method => :delete, class: "btn btn-danger delete", disabled: true  %>
-  </div>
-  <% end %>
+
+
   </div>
 </div>
+
+
+
 <% content_for :page_scripts do %>
-  <script>
-    $('.select-groups').change(function(){
-      $('input[id^=user_ids_]').prop('checked', $(this).is(':checked')).trigger('change');
-    })
+<script>
+  $('.select-groups').change(function () {
+    $('input[id^=user_ids_]').prop('checked', $(this).is(':checked')).trigger('change');
+  })
 
-    $('input[id^=user_ids_]').change(function(){
-      if ($(this).is(':checked')) {
-        enableButtons();
-      } else if ($(':checked').length == 0) {
-        disableButtons();
-      }
-    })
+  $('input[id^=user_ids_]').change(function () {
+    if ($(this).is(':checked')) {
+      enableButtons();
+    } else if ($(':checked').length == 0) {
+      disableButtons();
+    }
+  })
 
-    function enableButtons() {
-      $('.delete').removeAttr('disabled');
-    }
-    function disableButtons() {
-      $('.delete').attr('disabled', 'disabled');
-    }
-  </script>
+  function enableButtons() {
+    $('.delete').removeAttr('disabled');
+  }
+
+  function disableButtons() {
+    $('.delete').attr('disabled', 'disabled');
+  }
+</script>
 <% end %>

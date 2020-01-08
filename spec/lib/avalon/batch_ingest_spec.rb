@@ -1,4 +1,4 @@
-# Copyright 2011-2019, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2020, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 #
@@ -29,8 +29,8 @@ describe Avalon::Batch::Ingest do
     # we need to remove it so can re-run the tests
     Dir['spec/fixtures/**/*.xlsx.process*','spec/fixtures/**/*.xlsx.error'].each { |file| File.delete(file) }
 
-    User.create(:username => 'frances.dickens@reichel.com', :email => 'frances.dickens@reichel.com')
-    User.create(:username => 'jay@krajcik.org', :email => 'jay@krajcik.org')
+    FactoryBot.create(:user, username: 'frances.dickens@reichel.com', email: 'frances.dickens@reichel.com')
+    FactoryBot.create(:user, username: 'jay@krajcik.org', email: 'jay@krajcik.org')
     Avalon::RoleControls.add_user_role('frances.dickens@reichel.com','manager')
     Avalon::RoleControls.add_user_role('jay@krajcik.org','manager')
     allow(IngestBatchEntryJob).to receive(:perform_later).and_return(nil)
@@ -54,7 +54,6 @@ describe Avalon::Batch::Ingest do
     before :each do
       @dropbox_dir = collection.dropbox.base_directory
       FileUtils.cp_r 'spec/fixtures/dropbox/example_batch_ingest', @dropbox_dir
-      Settings.bib_retriever = { 'protocol' => 'sru', 'url' => 'http://zgate.example.edu:9000/db' }
       #stub_request(:get, sru_url).to_return(body: sru_response)
       @manifest_file = File.join(@dropbox_dir,'example_batch_ingest','batch_manifest.xlsx')
       @batch = Avalon::Batch::Package.new(@manifest_file, collection)
@@ -92,7 +91,6 @@ describe Avalon::Batch::Ingest do
     before :each do
       @dropbox_dir = collection.dropbox.base_directory
       FileUtils.cp_r 'spec/fixtures/dropbox/example_batch_ingest', @dropbox_dir
-      Settings.bib_retriever = { 'protocol' => 'sru', 'url' => 'http://zgate.example.edu:9000/db' }
       stub_request(:get, sru_url).to_return(body: sru_response)
       manifest_file = File.join(@dropbox_dir,'example_batch_ingest','batch_manifest.xlsx')
       batch = Avalon::Batch::Package.new(manifest_file, collection)

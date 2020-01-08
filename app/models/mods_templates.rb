@@ -1,4 +1,4 @@
-# Copyright 2011-2019, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2020, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 #
@@ -144,6 +144,16 @@ module ModsTemplates
 
       def add_terms_of_use(value, opts={})
         add_child_node(ng_xml.root, :_terms_of_use, value)
+      end
+
+      define_template :_rights_statement do |xml, text|
+        xml.accessCondition(:type => 'use and reproduction', :displayLabel => 'Rights Statement'){
+          xml.text(text)
+        }
+      end
+
+      def add_rights_statement(value, opts={})
+        add_child_node(ng_xml.root, :_rights_statement, value)
       end
 
       def get_original_related_item

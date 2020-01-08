@@ -7,11 +7,8 @@ dropbox:
   path: /srv/avalon/dropbox
   upload_uri: sftp://avalon.example.edu
 encoding:
-  engine_adapter: matterhorn
-matterhorn:
-  root: 'http://localhost:8080/'
-  baseApplication: 'avalon'
-  cleanup_log: 'log/cleanup_jobs.log'
+  engine_adapter: ffmpeg
+  presets_path: config/ffmpeg_presets.yml
 mediainfo:
   path: '/usr/bin/mediainfo'
 ffmpeg:
@@ -57,9 +54,12 @@ master_file_management:
   strategy: 'none' #'delete', or 'move' (for move uncomment and configure next line)
   #path: '/path/to/move/to'
 bib_retriever:
-  protocol: sru
-  url: http://zgate.example.edu:9000/exampledb
-  query: rec.id='%s'
+  default:
+    protocol: sru
+    url: http://zgate.example.edu:9000/exampledb
+    query: rec.id='%s'
+    retriever_class: 'Avalon::BibRetriever::SRU'
+    retriever_class_require: 'avalon/bib_retriever/sru'
 controlled_vocabulary:
   path: config/controlled_vocabulary.yml
 encode_throttling:
@@ -68,18 +68,14 @@ encode_throttling:
   update_jobs_throttle_threshold: 3
   update_jobs_spacing: 10
 auth:
+  registerable: true
   configuration:
-    - :name: Avalon Test Auth
-      :provider: :identity
-      :params:
-        :fields:
-        - :email
-          <% if ENV['LTI_AUTH_KEY'] %>
+    <% if ENV['LTI_AUTH_KEY'] %>
     - :name: Avalon Lti OAuth
       :provider: :lti
       :hidden: true
       :params:
         :oauth_credentials:
           <%= ENV['LTI_AUTH_KEY'] %>: <%= ENV['LTI_AUTH_SECRET'] %>
-            <% end %>
+    <% end %>
 # google_analytics_tracking_id: "someid"

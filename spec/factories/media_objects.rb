@@ -1,4 +1,4 @@
-# Copyright 2011-2019, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2020, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 #
@@ -46,6 +46,7 @@ FactoryBot.define do
         related_item_url { [{ url: Faker::Internet.url, label: Faker::Lorem.sentence }]}
         bibliographic_id { { id: Faker::Lorem.word, source: 'local' } }
         comment { ['MO comment'] }
+        rights_statement { ['http://rightsstatements.org/vocab/InC-EDU/1.0/'] }
         # after(:create) do |mo|
         #   mo.update_datastream(:descMetadata, {
         #     note: {note[Faker::Lorem.paragraph],

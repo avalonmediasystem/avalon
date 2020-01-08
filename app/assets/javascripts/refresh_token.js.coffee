@@ -1,4 +1,4 @@
-# Copyright 2011-2019, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2020, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 #
@@ -14,11 +14,12 @@
 
 $ ->
   refreshToken = ->
-    token = currentPlayer.media.src.split('?')[1]
-    if token && token.match(/^token=/)
-      mount_point = $('body').data('mountpoint')
-      $.get("#{mount_point}authorize.txt?#{token}")
-        .done -> console.log("Token refreshed")
-        .fail -> console.error("Token refresh failed")
+    if currentPlayer != undefined
+      token = currentPlayer.media.src.split('?')[1]
+      if token && token.match(/^token=/)
+        mount_point = $('body').data('mountpoint')
+        $.get("#{mount_point}authorize.txt?#{token}")
+          .done -> console.log("Token refreshed")
+          .fail -> console.error("Token refresh failed")
 
   setInterval(refreshToken, 5*60*1000)

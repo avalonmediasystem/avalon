@@ -1,5 +1,5 @@
 <%#
-Copyright 2011-2019, The Trustees of Indiana University and Northwestern
+Copyright 2011-2020, The Trustees of Indiana University and Northwestern
   University.  Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
 
@@ -19,13 +19,14 @@ Unless required by applicable law or agreed to in writing, software distributed
 <%# @current_mediaobject ||= MediaObject.find(@current_masterfile.media_object_id) %>
 
 <% if can? :read, @current_masterfile %>
+
 <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
   <div class="panel panel-default">
     <div class="panel-heading" role="tab" id="heading0" style="border-bottom: 1px solid #ddd;">
       <h4 class="panel-title">
         <span><%= @current_clip.title %></span>
         <span>[<%= @current_clip.duration %>]</span>
-        <br class="clear"/>
+        <br class="clear" />
       </h4>
       <div>
         <%= @current_clip.comment %>
@@ -42,9 +43,9 @@ Unless required by applicable law or agreed to in writing, software distributed
     <div id="markers_section" class="panel-collapse collapse" role="tabpanel">
       <div class="panel-body">
         <% if is_mejs_2? %>
-          <%= render 'markers' %>
+        <%= render 'markers' %>
         <% else %>
-          <div id="markers" class="container"></div>
+        <div id="markers"></div>
         <% end %>
       </div>
     </div>
@@ -58,9 +59,9 @@ Unless required by applicable law or agreed to in writing, software distributed
     <div id="source_details_section" class="panel-collapse collapse collapsed" role="tabpanel">
       <div class="panel-body">
         <% if is_mejs_2? %>
-          <%= render 'current_item' %>
+        <%= render 'current_item' %>
         <% else %>
-          <section id="source_details"></section>
+        <section id="source_details"></section>
         <% end %>
       </div>
     </div>
@@ -75,9 +76,9 @@ Unless required by applicable law or agreed to in writing, software distributed
     <div id="related_items_section" class="panel-collapse collapse" role="tabpanel">
       <div class="panel-body">
         <% if is_mejs_2? %>
-          <%= render 'playlist_items/related_items' %>
+        <%= render 'playlist_items/related_items' %>
         <% else %>
-          <div id="related_items"></div>
+        <div id="related_items"></div>
         <% end %>
       </div>
     </div>

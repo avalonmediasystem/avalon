@@ -1,4 +1,4 @@
-# Copyright 2011-2019, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2020, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 #
@@ -29,6 +29,7 @@ class WaveformService
       bits: @bit_res
     )
     get_normalized_peaks(uri).each { |peak| waveform.append(peak[0], peak[1]) }
+    return nil if waveform.size.zero?
     waveform.to_json
   end
 
@@ -37,10 +38,13 @@ private
   def get_normalized_peaks(uri)
     wave_io = get_wave_io(uri)
     peaks = gather_peaks(wave_io)
+    return [] if peaks.blank?
     max_peak = peaks.flatten.map(&:abs).max
     res = 2**(@bit_res - 1)
-    factor = res / max_peak.to_f
+    factor = max_peak.zero? ? 1 : res / max_peak.to_f
     peaks.map { |peak| peak.collect { |num| (num * factor).to_i } }
+  ensure
+    Process.wait(wave_io.pid) if wave_io&.pid
   end
 
   def get_wave_io(uri)
@@ -52,8 +56,12 @@ private
 
   def gather_peaks(wav_file)
     peaks = []
-    WaveFile::Reader.new(wav_file).each_buffer(@samples_per_pixel) do |buffer|
-      peaks << [buffer.samples.flatten.min, buffer.samples.flatten.max]
+    begin
+      WaveFile::Reader.new(wav_file).each_buffer(@samples_per_pixel) do |buffer|
+        peaks << [buffer.samples.flatten.min, buffer.samples.flatten.max]
+      end
+    rescue WaveFile::InvalidFormatError
+      # ffmpeg generated no wavefile data
     end
     peaks
   end

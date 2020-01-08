@@ -1,0 +1,193 @@
+/*
+ * Copyright 2011-2020, The Trustees of Indiana University and Northwestern
+ *   University.  Licensed under the Apache License, Version 2.0 (the "License");
+ *   you may not use this file except in compliance with the License.
+ *
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software distributed
+ *   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+ *   CONDITIONS OF ANY KIND, either express or implied. See the License for the
+ *   specific language governing permissions and limitations under the License.
+ * ---  END LICENSE_HEADER BLOCK  ---
+*/
+
+/**
+ *  Overridding Blacklight's brand logo
+ */
+#header-navbar {
+  .navbar-brand {
+    @extend .desktop-hidden;
+    background-size: contain;
+    background-color: white;
+    background-position: 20%;
+  }
+
+  .navbar-toggle {
+    @media screen and (max-width: $screen-xs-max) {
+      background: $primaryDark;
+    }
+  }
+}
+
+.navbar {
+  font-family: $museoSlab;
+  font-size: 16px;
+
+  ul {
+    padding: 0;
+  }
+
+  li.open > ul {
+    display: inline-grid;
+    border: 0;
+  }
+}
+
+.navbar-nav {
+  > li > a {
+    @media screen and (max-width: $screen-sm-max) {
+      padding-left: 10px;
+      padding-right: 10px;
+    }
+  }
+}
+
+.navbar-default {
+  @media screen and (max-width: $screen-xs-max) {
+    background: $primaryDark;
+  }
+}
+
+.navbar-static-top {
+  // Bootstrap override
+  border-bottom: 0;
+  z-index: 1001;
+}
+
+.navbar-header {
+  .row {
+    margin-left: 6px;
+    margin-right: 6px;
+  }
+
+  @media screen and (max-width: $screen-xs-max) {
+    background: white;
+    box-shadow: 0 0 5px;
+  }
+}
+
+.container > .navbar-header {
+  height: auto;
+}
+
+.navbar-inner {
+  padding-right: 12px;
+}
+
+/**
+ * Components for navigation wizard. Copied from the LESS source so
+ * might need some tweaking to work right
+ */
+.nav-wizard {
+  li {
+    padding-top: 0;
+    padding-right: $line-height-base;
+    padding-bottom: 1px;
+    padding-left: $line-height-base;
+    margin-bottom: $line-height-computed/4;
+    text-align: left;
+    border-radius: $border-radius-base;
+
+    background-color: $gray-lighter;
+    border: $gray;
+    color: $gray-darker;
+
+    a:hover {
+      background: transparent;
+    }
+
+    span {
+      display: block;
+      padding: 10px 15px;
+    }
+
+    p {
+      margin-left: 1em;
+      margin-right: 1em;
+    }
+  }
+
+  li.nav-success {
+    background-color: $state-success-bg;
+    border-color: $state-success-border;
+    color: $state-success-text;
+  }
+
+  li.nav-success a {
+    text-shadow: rgba(255, 255, 255, 0.2) 0px 1px 0px;
+  }
+
+  li.nav-info {
+    background-color: $state-info-bg;
+    border-color: $state-info-border;
+    color: $state-info-text;
+  }
+
+  .step {
+    font-size: 250%;
+    width: 1em;
+    float: left;
+    margin-right: 0.5em;
+    margin-bottom: $line-height-base/2;
+  }
+}
+
+.nav-pills > li > a {
+  padding: 4px 15px;
+
+  /* override bootstrap .nav overrides of button colors */
+  &.btn-danger {
+    @extend .btn-danger;
+  }
+}
+
+/* Manage menu in the nav-bar */
+.manage-btn {
+  height: 50px;
+  font-size: inherit;
+  border: none;
+  border-radius: 0px;
+  width: 100%;
+  text-align: left;
+}
+
+.manage-btn:hover {
+  background-color: $yellow!important;
+  color: $primaryDark;
+}
+
+.manage-btn:focus {
+  background-color: $yellow;
+  color: $primaryDark;
+}
+
+.manage-dropdown-menu {
+  border: none;
+  border-radius: inherit;
+  li {
+    width: 100%;
+  }
+}
+
+.manage-dropdown {
+  width: 100%;
+}
+
+@media (max-width: $screen-xs-max) {
+  .manage-btn {
+    height: 40px;
+  }
+}

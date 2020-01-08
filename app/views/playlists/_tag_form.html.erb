@@ -1,5 +1,5 @@
 <%#
-Copyright 2011-2019, The Trustees of Indiana University and Northwestern
+Copyright 2011-2020, The Trustees of Indiana University and Northwestern
   University.  Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
 
@@ -14,13 +14,14 @@ Unless required by applicable law or agreed to in writing, software distributed
 ---  END LICENSE_HEADER BLOCK  ---
 %>
 <% user_tags = current_user.playlist_tags %>
-<select name="tagcollection[]" id="tag-select" class="form-control form-model" multiple="multiple" style="width: 100%;" >
+<select name="tagcollection[]" id="tag-select" class="form-control form-model" multiple="multiple" style="width: 100%;" aria-describedby="helpTags" >
   <% user_tags.each do |tag| %>
     <% selected = @playlist.tags.include?(tag) ? ' selected="selected"' : '' %>
     <option value="<%= tag %>" <%= selected %>><%= tag %></option>
   <% end %>
 </select>
-<p class="text-info" style="padding-top:5px;font-style:italic;">Separate multiple tags with commas.</p>
+<span id="helpTags"
+  class="help-block">Separate multiple tags with commas.</span>
 <input id="taglist" name="playlist[tags]" type="hidden" />
 
 <% content_for :page_scripts do %>

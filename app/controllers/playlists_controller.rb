@@ -1,4 +1,4 @@
-# Copyright 2011-2019, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2020, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 #
@@ -271,11 +271,11 @@ class PlaylistsController < ApplicationController
   private
 
   def get_user_playlists
-    @playlists = Playlist.by_user(current_user)
+    @playlists = Playlist.by_user(current_user).order(:title)
   end
 
   def get_all_other_playlists
-    @playlists = Playlist.by_user(current_user).where.not( id: @playlist )
+    @playlists = Playlist.by_user(current_user).where.not( id: @playlist ).order(:title)
   end
 
   def load_playlist_token

@@ -1,5 +1,5 @@
 <%#
-Copyright 2011-2019, The Trustees of Indiana University and Northwestern
+Copyright 2011-2020, The Trustees of Indiana University and Northwestern
   University.  Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
 
@@ -15,6 +15,7 @@ Unless required by applicable law or agreed to in writing, software distributed
 %>
 <% @page_title = t('groups.show.title', :group_name => @group.name, :application_name => application_name) %>
 
-<div class="container-fluid">
-  <%= render "form"%>
+<div class="page-title-wrapper">
+  <h1>Edit Groups</h1>
 </div>
+<%= render "form"%>

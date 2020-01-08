@@ -214,7 +214,7 @@ Object.assign(MediaElementPlayer.prototype, {
      */
     handleAddError: function(error) {
       const t = this;
-      let alertEl = t.addMarkerObj.alertEl;
+      let alertEl = t.alertEl;
 
       alertEl.classList.add('alert-danger');
       alertEl.classList.add('add_to_playlist_alert_error');
@@ -275,14 +275,24 @@ Object.assign(MediaElementPlayer.prototype, {
     },
 
     /**
-     * Handle control button click to toggle Add Playlist display
+     * Handle control button click to toggle Add marker to playlist item display
      * @function handleControlClick
-     * @param  {MouseEvent} e Event generated when Add to Playlist control button clicked
+     * @param  {MouseEvent} e Event generated when Add Marker to Playlist control button clicked
      * @return {void}
      */
     handleControlClick: function(e) {
       const t = this;
       let addMarkerObj = t.addMarkerObj;
+      
+      // Exit full screen
+      if(addMarkerObj.player.isFullScreen) {
+        addMarkerObj.player.exitFullScreen();
+        // Reload the form with new values
+        if(addMarkerObj.active) {
+          $(t.addMarkerObj.formWrapperEl).slideToggle();
+          t.addMarkerObj.active = !t.addMarkerObj.active;
+        }
+      }
 
       if (!addMarkerObj.active) {
         // Close any open alert displays
@@ -305,9 +315,7 @@ Object.assign(MediaElementPlayer.prototype, {
       let addMarkerObj = this.addMarkerObj;
 
       addMarkerObj.formInputs.offset.value = mejs.Utils.secondsToTimeCode(
-        addMarkerObj.player.getCurrentTime(),
-        true
-      );
+        addMarkerObj.player.getCurrentTime(), true, false, 25, 3);
     },
 
     /**

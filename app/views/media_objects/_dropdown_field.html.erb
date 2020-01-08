@@ -1,5 +1,5 @@
 <%#
-Copyright 2011-2019, The Trustees of Indiana University and Northwestern
+Copyright 2011-2020, The Trustees of Indiana University and Northwestern
   University.  Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
 
@@ -13,17 +13,36 @@ Unless required by applicable law or agreed to in writing, software distributed
   specific language governing permissions and limitations under the License.
 ---  END LICENSE_HEADER BLOCK  ---
 %>
+<!-- <%= field.to_s.humanize %> field -->
 <% selected_value ||= options[:dropdown_options].keys.first %>
-<% fieldarray = options[:multivalued]? "[]" : "" %>
 
-<div class="input-group-btn">
-  <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-    <span><%= options[:dropdown_options][selected_value] %></span> <span class="caret"></span>
-  </button>
-  <%= hidden_field_tag "media_object[#{options[:dropdown_field]}]#{fieldarray}", selected_value %>
-  <ul class="dropdown-menu" role="menu">
-    <% options[:dropdown_options].each_pair do |value, display| %>
-    <li><a class="dropdown-field"><%= display %></a><span class="hidden"><%= value %></li>
+  <div class="form-group <% if options[:multivalued] %>multivalued<% end %> <% if @media_object.errors[field].any? %>invalid-feedback<% end %>">
+    <%= render partial: "modules/tooltip", locals: { form: form, field: field, tooltip: t("metadata_tip.#{field.to_s}"), options: options } %>
+    <% if @media_object.errors[field].any? %>
+      <%= content_tag :span, @media_object.errors[field].join(", "), class: (@media_object.errors[field].any? ? 'help-block invalid-feedback' : 'help-block') %>
     <% end %>
-  </ul>
-</div>
+    <% values = @media_object.send(field) || "" %>
+    <% fieldarray = "" %>
+    <% if options[:multivalued] %>
+      <% fieldarray = "[]" %>
+    <% else %>
+      <% values = [values] %>
+    <% end %>
+    <% fieldname = "media_object[#{field.to_s}]#{fieldarray}" %>
+    <% count = [1, values.length].max %>
+    <% count.times do |i| %>
+      <% value = values[i] %>
+      <div class="input-group-btn <%=options[:extra_classes]%>">
+        <button type="button" class="dropdown-toggle form-control" data-toggle="dropdown" style="border-radius: 4px">
+          <div style="float:left"><span><%= options[:dropdown_options][value] %></span></div>
+          <div style="float:right"><span class="caret"></span></div>
+        </button>
+        <%= hidden_field_tag "#{fieldname}", value %>
+        <ul class="dropdown-menu" role="menu" style="width: 100%">
+        <% options[:dropdown_options].each_pair do |value, display| %>
+          <li><a class="dropdown-field"><%= display %></a><span class="hidden"><%= value %></li>
+        <% end %>
+        </ul>
+      </div>
+    <% end %>
+  </div>

@@ -1,4 +1,4 @@
-# Copyright 2011-2019, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2020, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 #
@@ -27,8 +27,10 @@ describe VocabularyController, type: :controller do
     Avalon::ControlledVocabulary.class_variable_set :@@path, Rails.root.join(Settings.controlled_vocabulary.path)
   }
 
+  let(:administrator) { FactoryBot.create(:administrator) }
+
   before(:each) do
-    ApiToken.create token: 'secret_token', username: 'archivist1@example.com', email: 'archivist1@example.com'
+    ApiToken.create token: 'secret_token', username: administrator.username, email: administrator.email
     request.headers['Avalon-Api-Key'] = 'secret_token'
   end
 

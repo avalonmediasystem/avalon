@@ -1,4 +1,4 @@
-# Copyright 2011-2019, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2020, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 #
@@ -26,6 +26,14 @@ FactoryBot.define do
     after(:create) do |c, env|
       1.upto(env.items) { FactoryBot.create(:media_object, collection: c) }
       c.reload
+    end
+
+    trait :with_poster do
+      after(:create) do |collection|
+        collection.poster.mime_type = 'image/png'
+        collection.poster.content = 'fake image content'
+        collection.save
+      end
     end
   end
 end

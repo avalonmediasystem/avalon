@@ -4,15 +4,35 @@
     "@babel/preset-react": "^7.0.0",
     "@rails/webpacker": "^4.0.2",
     "babel-plugin-transform-react-remove-prop-types": "^0.4.24",
+    "cropperjs": "^1.5.5",
     "prop-types": "^15.7.2",
     "react": "^16.8.4",
     "react-bootstrap": "^1.0.0-beta.8",
     "react-dom": "^16.8.4",
-    "react-structural-metadata-editor": "https://github.com/avalonmediasystem/react-structural-metadata-editor#avalon-r6.5",
-    "react_ujs": "^2.4.4"
+    "react-structural-metadata-editor": "https://github.com/avalonmediasystem/react-structural-metadata-editor",
+    "react_ujs": "^2.4.4",
+    "url-search-params-polyfill": "^7.0.1"
   },
   "devDependencies": {
+    "html-webpack-plugin": "^3.2.0",
+    "prop-types": "^15.7.2",
     "webpack-cli": "^3.2.3",
     "webpack-dev-server": "^3.2.1"
+  },
+  "resolutions": {
+    "elliptic": "^6.5.2",
+    "fstream": "^1.0.12",
+    "js-yaml": "^3.13.1",
+    "lodash": "^4.17.15",
+    "lodash.template": "^4.5.0",
+    "lodash.mergewith": "^4.6.2",
+    "mixin-deep": "^1.3.2",
+    "serialize-javascript": "^2.1.1",
+    "set-value": "^2.0.1",
+    "tar": "^4.4.13"
+  },
+  "scripts": {
+    "start-collection-index": "webpack-dev-server --mode development --config config/webpack/collection_index.js --host 0.0.0.0",
+    "start-collection-view": "webpack-dev-server --mode development --config config/webpack/collection_view.js --host 0.0.0.0"
   }
 }
