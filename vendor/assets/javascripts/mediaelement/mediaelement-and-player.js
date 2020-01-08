@@ -1744,13 +1744,13 @@ Object.assign(_player2.default.prototype, {
 						}
 
 						t.timefloat.style.left = leftPos + 'px';
+						t.timefloat.style.bottom = '3px';
 						t.timefloatcurrent.innerHTML = (0, _time.secondsToTimeCode)(t.newTime, player.options.alwaysShowHours, player.options.showTimecodeFrameCount, player.options.framesPerSecond, player.options.secondsDecimalLength, player.options.timeFormat);
 						t.timefloat.style.display = 'block';
 					}
 				}
 			} else if (!_constants.IS_IOS && !_constants.IS_ANDROID && t.timefloat) {
 				leftPos = t.timefloat.offsetWidth + width >= t.getElement(t.container).offsetWidth ? t.timefloat.offsetWidth / 2 : 0;
-				t.timefloat.style.left = leftPos + 'px';
 				t.timefloat.style.left = leftPos + 'px';
 				t.timefloat.style.bottom = '3px';
 				t.timefloat.style.display = 'block';
