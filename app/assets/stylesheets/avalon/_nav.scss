@@ -33,8 +33,7 @@
 }
 
 .navbar {
-  font-family: $museoSlab;
-  font-size: 16px;
+  font-size: 15px;
 
   ul {
     padding: 0;
@@ -85,6 +84,10 @@
 
 .navbar-inner {
   padding-right: 12px;
+  
+  .container {
+    width: 100%;
+  }
 }
 
 /**
@@ -156,25 +159,28 @@
 
 /* Manage menu in the nav-bar */
 .manage-btn {
-  height: 50px;
+  height: 28px;
   font-size: inherit;
   border: none;
   border-radius: 0px;
   width: 100%;
   text-align: left;
+  background-color: inherit;
+  color: $white;
 }
 
 .manage-btn:hover {
-  background-color: $yellow!important;
-  color: $primaryDark;
+  color: $black;
+  background-color: $white;
 }
 
 .manage-btn:focus {
-  background-color: $yellow;
-  color: $primaryDark;
+  color: $black;
+  background-color: $white;
 }
 
 .manage-dropdown-menu {
+  background-color: #44697D;
   border: none;
   border-radius: inherit;
   li {
