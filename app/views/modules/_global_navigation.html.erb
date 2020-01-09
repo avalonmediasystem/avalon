@@ -20,7 +20,7 @@ Unless required by applicable law or agreed to in writing, software distributed
 	<p><%= Settings.name %></p>
 	<% end %>
 	<div class="iu-search">
-	  <%= link_to 'Browse', search_catalog_path(search_field: 'all_fields', utf8: '✓', q: ''), class:'navbar-browse' %>
+	  <%= link_to 'Browse', main_app.search_catalog_path(search_field: 'all_fields', utf8: '✓', q: ''), class:'navbar-browse' %>
 	  <%= render :partial=>'modules/avalon_search_form' %>
 	</div>
       </div>

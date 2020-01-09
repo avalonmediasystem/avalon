@@ -23,11 +23,11 @@
   Custom variables (Non-bootstrap)
 */
 @font-face {
-  font-family: 'MuseoSlab';
-  src: url('fonts/Museo_Slab_500-webfont.woff') format('woff');
+  font-family: 'BentonSans';
+  src: url('./fonts/benton-sans-condensed/regular.woff') format('woff');
 }
 $sansFontFamily: Arial, Helvetica, sans-serif;
-$museoSlab: 'MuseoSlab';
+$museoSlab: 'BentonSans';
 
 // Primary colors
 $primary: #80a590;
