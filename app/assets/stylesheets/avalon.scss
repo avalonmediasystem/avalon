@@ -44,7 +44,7 @@ main {
 
 h1,
 h2 {
-  font-family: $museoSlab;
+  font-family: $bentonSans;
 }
 
 tr.active-false td {
@@ -65,7 +65,7 @@ div.alert-danger {
 }
 
 .serif-font {
-  font-family: $museoSlab;
+  font-family: $bentonSans;
 }
 
 .info-text-gray {
@@ -135,16 +135,16 @@ div.alert-danger {
 /* Headlines / page titles */
 .page-title {
   font-size: 32px;
-  font-family: $museoSlab;
+  font-family: $bentonSans;
 }
 .headline {
   color: $primaryDark;
   font-size: 29.3px;
-  font-family: $museoSlab;
+  font-family: $bentonSans;
 }
 .sub-headline {
   color: $primary;
-  font-family: $museoSlab;
+  font-family: $bentonSans;
 }
 
 .mobile-hidden {

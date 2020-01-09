@@ -298,6 +298,11 @@ footer {
       top: 4px;
       margin-right: 0;
     }
+    .search-query {
+      border-radius: 15px;
+      padding: 4px 14px;
+      line-height: 1;
+    }
   }
 }
 .navbar-browse {
@@ -313,7 +318,6 @@ footer {
     min-height: 27px;
   }
   div ul.nav {
-    padding-left: 67px;
     @media all and (max-width: 768px) {
       padding-left: 0px;
     }

@@ -42,7 +42,7 @@ Unless required by applicable law or agreed to in writing, software distributed
   <% if can?(:read, Admin::Collection) || can?(:manage, Admin::Group) || (defined?(Samvera::Persona) && can?(:manage, User)) %>
     <li>
       <div class="btn-group manage-dropdown" id="manage-dropdown">
-        <button id="manageDropdown" class="btn btn-primary manage-btn" data-toggle="dropdown">
+        <button id="manageDropdown" class="btn manage-btn" data-toggle="dropdown">
           Manage
         </button>
         <ul class="dropdown-menu nav navbar-default navbar-nav manage-dropdown-menu">

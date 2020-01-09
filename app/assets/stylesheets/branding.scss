@@ -27,7 +27,7 @@
   src: url('./fonts/benton-sans-condensed/regular.woff') format('woff');
 }
 $sansFontFamily: Arial, Helvetica, sans-serif;
-$museoSlab: 'BentonSans';
+$bentonSans: 'BentonSans';
 
 // Primary colors
 $primary: #80a590;
@@ -71,13 +71,13 @@ $brand-danger: $danger;
 
 /* Fonts */
 $font-family-sans-serif: $sansFontFamily;
-$font-family-serif: $museoSlab;
+$font-family-serif: $bentonSans;
 
 /* Components */
 $padding-base-vertical: 4px;
 
 /* Headings */
-// $headings-font-family: $museoSlab;
+// $headings-font-family: $bentonSans;
 
 /* Links */
 $link-color: $primaryDark;
