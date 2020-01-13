@@ -365,6 +365,9 @@ footer {
     &:hover {
       color: $black;
     }
+    &:focus {
+      color: $black;
+    }
   }
   .brand {
     display: inline-block;
@@ -490,6 +493,16 @@ footer {
   }
 }
 
+.dropdown-menu .active a {
+  background-color: inherit;
+  &:hover {
+    background-color: $white;
+  }
+  &:focus {
+    background-color: $white;
+  }
+}
+
 #home-visit-box {
   -webkit-box-shadow: 5px 5px 5px 0 #616161;
   box-shadow: 5px 5px 5px 0 #616161;
@@ -525,7 +538,6 @@ footer {
 
 #metadata_container {
   a:not(.btn) {
-    color: $midnight;
-    font-weight: bold;
+    color: $black;
   }
 }

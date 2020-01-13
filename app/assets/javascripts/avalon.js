@@ -78,7 +78,7 @@ $(document).ready(function() {
   });
 
   // Set CSS to push the page content above footer
-  $('.content-wrapper').css('padding-bottom', $('#footer').css('height'));
+  $('.content-wrapper').css('padding-bottom', $('#footer-container').css('height'));
 
   /* Toggle CSS classes for global search form */
   const $searchWrapper = $('.global-search-wrapper');
