@@ -42,7 +42,8 @@ module Avalon
           url: URI.join(@avalon['url'], 'media_objects.json').to_s,
           payload: build_payload(media_object, collection_id, include_structure),
           headers: { content_type: :json, accept: :json, :'Avalon-Api-Key' => @avalon['api_token'] },
-          verify_ssl: false
+          verify_ssl: false,
+          timeout: 3600
         )
         { link: URI.join(@avalon['url'], 'media_objects/', JSON.parse(resp.body)['id']).to_s }
       rescue StandardError => e
