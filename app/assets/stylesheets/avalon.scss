@@ -38,6 +38,12 @@ body {
   }
 }
 
+@media (max-width: 768px) {
+  .page-container {
+    width: 100%;
+  }
+}
+
 main {
   padding-bottom: 20px;
 }
@@ -938,7 +944,7 @@ h5.panel-title {
 }
 
 // Make table body scrollable in mobile devices
-@media (max-width: $screen-xs-max) {
+@media (max-width: 768px) {
   .dataTableBody {
     width: 100%;
     overflow-x: scroll;

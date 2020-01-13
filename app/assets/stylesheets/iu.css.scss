@@ -369,6 +369,11 @@ footer {
       color: $black;
     }
   }
+  @media all and (max-width: 767px) {
+    .nav > li > a {
+      padding: 10px 15px;
+    }
+  }
   .brand {
     display: inline-block;
     margin-top: 15px;
@@ -487,7 +492,7 @@ footer {
   }
 }
 .nav-collapse.collapse {
-  @media all and (min-width: 769px) {
+  @media all and (min-width: 768px) {
     display: inline;
     visibility: visible;
   }

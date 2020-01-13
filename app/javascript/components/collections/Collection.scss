@@ -177,11 +177,16 @@
   text-transform: uppercase;
 }
 
+.sort-btn {
+  background-color: white;
+  color: #2a5459;
+}
+
 .sort-btn.active,
 .sort-btn.active:hover,
 .sort-btn:hover {
-  color: #2a5459;
-  background-color: #ffcf08;
+  color: white;
+  background-color: #2a5459;
 }
 
 .search-input {
