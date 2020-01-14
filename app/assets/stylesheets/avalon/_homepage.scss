@@ -37,26 +37,6 @@ main.homepage-main {
   }
 }
 
-.homepage-splash-search {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 100%;
-
-  .avalon-search-query-form {
-    margin-bottom: 60px;
-  }
-
-  .global-search-wrapper {
-    width: 400px;
-
-    @media screen and (max-width: $screen-xs-max) {
-      width: 300px;
-      margin-bottom: 100px;
-    }
-  }
-}
-
 .homepage-splash-lead-copy {
   position: absolute;
   bottom: 0;
