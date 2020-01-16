@@ -23,6 +23,8 @@ class Admin::CollectionsController < ApplicationController
   def load_and_authorize_collections
     authorize!(params[:action].to_sym, Admin::Collection)
     repository = CatalogController.new.repository
+    # Allow the number of collections to be greater than 100
+    blacklight_config.max_per_page = 100_000
     builder = ::CollectionSearchBuilder.new([:add_access_controls_to_solr_params_if_not_admin, :only_wanted_models, :add_paging_to_solr], self).rows(100_000)
     if params[:user].present? && can?(:manage, Admin::Collection)
       user = User.find_by_username_or_email(params[:user])
