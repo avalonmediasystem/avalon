@@ -14,8 +14,6 @@ Unless required by applicable law or agreed to in writing, software distributed
 ---  END LICENSE_HEADER BLOCK  ---
 %>
 <ul class="nav navbar-nav">
-  <li class=<%= active_for_controller('collections') %>><%= link_to 'Collections', main_app.collections_path %></li>
-
   <% if user_session && user_session[:lti_group] %>
   <li>
     <%= link_to(vgroup_display(user_session[:lti_group]), main_app.search_catalog_path('f[read_access_virtual_group_ssim][]' => user_session[:lti_group])) %>

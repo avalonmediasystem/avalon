@@ -440,8 +440,7 @@ footer {
        margin-top: 0;
     }
     @media all and (max-width: 653px) {
-      float: left;
-      margin-left: 8px;
+      margin-left: 16px;
     }
    .navbar-right {
       position: absolute;
@@ -456,12 +455,42 @@ footer {
     }
   }
 }
+
 .navbar-browse {
   color: white;
   padding-right: 1em;
   float: left;
   margin-top: 10px;
 }
+.navbar-collections {
+  left: -85px !important;
+}
+@media (min-width: 320px) and (max-width: 375px) {
+  .navbar-collections {
+    left: -40px !important;
+  }
+  .navbar-browse {
+    left: 50px !important;
+  }
+  .search-query {
+    width: 75%;
+    float: right;
+  }
+}
+// Mobile devices on landscape view
+@media (min-width: 653px) and (max-width: 768px){
+  .navbar-collections {
+    left: 0px !important;
+  }
+  .navbar-browse {
+    left: 85px !important;
+  }
+  .search-query {
+    width: 70%;
+    float: right;
+  }
+}
+
 .nav2 {
   background-color: #44697D;
   padding-right: 0;
