@@ -55,19 +55,3 @@ header div {
 .log-in-out {
   font-size: 14px;
 }
-
-.global-search-wrapper {
-  width: 400px;
-  font-family: $sansFontFamily;
-
-  .global-search-input {
-    background: $lightgray;
-    border: 0;
-  }
-
-  @media screen and (max-width: $screen-sm-max) {
-    width: inherit;
-    margin: 7px 7px 0 7px;
-    margin-bottom: 1rem;
-  }
-}

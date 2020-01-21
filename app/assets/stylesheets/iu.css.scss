@@ -450,8 +450,16 @@ footer {
     }
     .search-query {
       border-radius: 15px;
-      padding: 4px 14px;
+      padding: 4px 35px 4px 14px;
       line-height: 1;
+    }
+    .global-search-submit {
+      position: absolute;
+      top: 0px;
+      left: 215px;
+      border-radius: 0 15px 15px 0;
+      height: 30px;
+      width: 15%;
     }
   }
 }
@@ -461,9 +469,10 @@ footer {
   padding-right: 1em;
   float: left;
   margin-top: 10px;
+  left: -10px !important;
 }
 .navbar-collections {
-  left: -85px !important;
+  left: -95px !important;
 }
 @media (min-width: 320px) and (max-width: 375px) {
   .navbar-collections {
@@ -480,10 +489,10 @@ footer {
 // Mobile devices on landscape view
 @media (min-width: 653px) and (max-width: 768px){
   .navbar-collections {
-    left: 0px !important;
+    left: -15px !important;
   }
   .navbar-browse {
-    left: 85px !important;
+    left: 70px !important;
   }
   .search-query {
     width: 70%;
