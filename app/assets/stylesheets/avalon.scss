@@ -108,8 +108,9 @@ div.alert-danger {
 // Page title area (because looks like we're sneaking in
 // buttons, and other stuff horizontally positioned alongside title
 .page-title-wrapper {
-  margin-bottom: 2rem;
-
+  h3 {
+    margin-top: 0;
+  }
   .headline-button {
     margin-top: 20px;
   }
