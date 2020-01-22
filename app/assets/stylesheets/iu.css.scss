@@ -424,17 +424,13 @@ footer {
     margin-top: 5px;
     a, a:hover, a:focus, a:visited {
       position: absolute;
-      left: 0;
+      left: 20px;
       top: 10px;
       margin-top: 0;
       color: white;
       &:hover, &:focus {
         text-decoration: underline;
       }
-    }
-    input[type=text] {
-      color: black;
-      font-size: 15px;
     }
     @media all and (max-width: 768px) {
        margin-top: 0;
@@ -448,11 +444,6 @@ footer {
       top: 4px;
       margin-right: 0;
     }
-    .search-query {
-      border-radius: 15px;
-      padding: 4px 35px 4px 14px;
-      line-height: 1;
-    }
     .global-search-submit {
       position: absolute;
       top: 0px;
@@ -462,6 +453,42 @@ footer {
       width: 15%;
     }
   }
+  .global-search-wrapper {
+    .search-query {
+      width: auto;
+      height: 30px;
+      border-bottom-left-radius: 15px;
+      border-top-left-radius: 15px;
+      border-top-right-radius: 0;
+      border-bottom-right-radius: 0;
+      padding-left: 20px;
+      border: 0 solid;
+    }
+    .global-search-button {
+      display: inline-block;
+      height: 30px;
+      padding-right: 10px;
+      -webkit-border-radius: 0 15px 15px 0;
+      -moz-border-radius: 0 15px 15px 0;
+      border-radius: 0 15px 15px 0;
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+      border: none;
+      cursor: pointer;
+      position: relative;
+      right: 10px;
+      margin-left: 0;
+      background-color: $white;
+    }
+    input,
+    button {
+      vertical-align: middle;
+    }
+    button:hover {
+      background-color: $avalongray;
+    }
+  }
 }
 
 .navbar-browse {
@@ -469,34 +496,19 @@ footer {
   padding-right: 1em;
   float: left;
   margin-top: 10px;
-  left: -10px !important;
 }
 .navbar-collections {
-  left: -95px !important;
+  left: -70px !important;
 }
 @media (min-width: 320px) and (max-width: 375px) {
   .navbar-collections {
-    left: -40px !important;
+    left: -45px !important;
   }
   .navbar-browse {
-    left: 50px !important;
+    left: 36px !important;
   }
-  .search-query {
-    width: 75%;
-    float: right;
-  }
-}
-// Mobile devices on landscape view
-@media (min-width: 653px) and (max-width: 768px){
-  .navbar-collections {
-    left: -15px !important;
-  }
-  .navbar-browse {
-    left: 70px !important;
-  }
-  .search-query {
-    width: 70%;
-    float: right;
+  .navbar-right {
+    right: -10px !important;
   }
 }
 
