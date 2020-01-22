@@ -1,53 +1,3 @@
-$red: rgb(124, 18, 12);
-$gray: rgb(51,51,51);
-$midnight: #006298;
-$avalongray: #abbbc4;
-$wellBackground: $avalongray;
-$sidenavHeaderBackgroundColor: $avalongray;
-
-/****************************************
- * Branding Bar
- ****************************************/
-@font-face {
-  font-family: 'BentonSansCondensedRegular';
-  src:font-url('benton-sans-condensed/regular.eot');
-  src:font-url('benton-sans-condensed/regular.eot?#iefix') format('embedded-opentype'),
-    font-url('benton-sans-condensed/regular.svg#regular') format('svg'),
-    font-url('benton-sans-condensed/regular.woff') format('woff'),
-    font-url('benton-sans-condensed/regular.ttf') format('truetype');
-  font-weight: normal;
-  font-style: normal;
-}
-
-@font-face {
-		font-family: 'BentonSansRegular';
-		src: url("https://fonts.iu.edu/fonts/benton-sans-regular.eot");
-		src: url("https://fonts.iu.edu/fonts/benton-sans-regular.eot?#iefix") format("embedded-opentype"), url("https://fonts.iu.edu/fonts/benton-sans-regular.woff") format("woff"), url("https://fonts.iu.edu/fonts/benton-sans-regular.ttf") format("truetype"), url("https://fonts.iu.edu/fonts/benton-sans-regular.svg#BentonSansRegular") format("svg");
-		font-style: normal;
-		font-weight: normal;
-}
-@font-face {
-		font-family: 'BentonSansCondRegular';
-		src: url("https://fonts.iu.edu/fonts/benton-sans-cond-regular.eot");
-		src: url("https://fonts.iu.edu/fonts/benton-sans-cond-regular.eot?#iefix") format("embedded-opentype"), url("https://fonts.iu.edu/fonts/benton-sans-cond-regular.woff") format("woff"), url("https://fonts.iu.edu/fonts/benton-sans-cond-regular.ttf") format("truetype"), url("https://fonts.iu.edu/fonts/benton-sans-cond-regular.svg#BentonSansCondRegular") format("svg");
-		font-style: normal;
-		font-weight: normal;
-}
-@font-face {
-		font-family: 'BentonSansCondBold';
-		src: url("https://fonts.iu.edu/fonts/benton-sans-cond-bold.eot");
-		src: url("https://fonts.iu.edu/fonts/benton-sans-cond-bold.eot?#iefix") format("embedded-opentype"), url("https://fonts.iu.edu/fonts/benton-sans-cond-bold.woff") format("woff"), url("https://fonts.iu.edu/fonts/benton-sans-cond-bold.ttf") format("truetype"), url("https://fonts.iu.edu/fonts/benton-sans-cond-bold.svg#BentonSansCondBold") format("svg");
-		font-style: normal;
-		font-weight: normal;
-}
-@font-face {
-		font-family: 'GeorgiaProBoldItalic';
-		src: url("https://fonts.iu.edu/fonts/georgia-pro-bold-italic.eot");
-		src: url("https://fonts.iu.edu/fonts/georgia-pro-bold-italic.eot?#iefix") format("embedded-opentype"), url("https://fonts.iu.edu/fonts/georgia-pro-bold-italic.woff") format("woff"), url("https://fonts.iu.edu/fonts/georgia-pro-bold-italic.ttf") format("truetype"), url("https://fonts.iu.edu/fonts/georgia-pro-bold-italic.svg#GeorgiaProBoldItalic") format("svg");
-		font-style: normal;
-		font-weight: normal;
-}
-
 #branding-bar {
   background: #212121 url(iu/bg-bar.gif) repeat 0 100%;
   color: #fff;
@@ -81,7 +31,7 @@ $sidenavHeaderBackgroundColor: $avalongray;
     border-top: 6px solid #990000;
   }
   .campus {
-    font-family: "BentonSansCondensedRegular", "Arial Narrow", Arial, Helvetica, sans-serif;
+    font-family: $bentonSansCondensed, "Arial Narrow", Arial, Helvetica, sans-serif;
     font-size: 1.125em; /* 16px (16/16) */
     left: auto;
     letter-spacing: 0.025em;
@@ -210,7 +160,7 @@ footer {
   padding: 24px 0;
   text-align: center;
   position: relative;
-  font-family: BentonSansRegular, Arial, serif;
+  font-family: $bentonSans, Arial, serif;
   font-weight: normal;
 }
 
@@ -251,7 +201,7 @@ footer {
 }
 
 #footer .tagline {
-  font-family: BentonSansCondBold, Arial, serif;
+  font-family: $bentonSansCondBold, Arial, serif;
   font-weight: normal;
   -webkit-font-smoothing: antialiased;
   background: #7A1705;

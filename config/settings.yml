@@ -78,4 +78,7 @@ auth:
         :oauth_credentials:
           <%= ENV['LTI_AUTH_KEY'] %>: <%= ENV['LTI_AUTH_SECRET'] %>
     <% end %>
+home_page:
+  featured_collections: ['pv63g024f']
+  carousel_collections: ['pv63g024f']
 # google_analytics_tracking_id: "someid"
