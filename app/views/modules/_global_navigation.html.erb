@@ -28,13 +28,15 @@ Unless required by applicable law or agreed to in writing, software distributed
       </div>
     <div class="nav2">
       <div class="container">
-        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
-          <span class="icon-bar"></span>
-          <span class="icon-bar"></span>
-        </button>
-        <div class="nav-collapse collapse">
-          <%= render :partial=>'/user_util_links' %>
-        </div>
+        <% if user_signed_in? %>
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <div class="nav-collapse collapse">
+            <%= render :partial=>'/user_util_links' %>
+          </div>
+        <% end %>
       </div>
     </div>
   </div>
