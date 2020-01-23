@@ -15,20 +15,23 @@ Unless required by applicable law or agreed to in writing, software distributed
 %>
    <div class="container-fluid footer-container" id="footer-container">
      <div class="row bottom-nav thick-footer">
-       <div id="bottom-nav" class="container">
-         <ul>
-           <li><strong><%= Settings.name %></strong> is a service of <a href="http://libraries.indiana.edu" class="outline_on">Indiana University Libraries</a>
-             <br>
-             <%= link_to "Contact Us", main_app.comments_path %> |
-					   <a href="https://mailform.kb.iu.edu/email.php?cid=1443" class="outline_on" target="_blank">Copyright Complaints</a>
-					 </li>
-           <li class="small">
-             <a href="http://avalonmediasystem.org"><img src="/assets/Home.png" alt="Avalon Media System" class="logo-avalon" /></a>
-           </li>
-         </ul>
+       <div class="container">
+        <div id="bottom-nav">
+          <ul>
+            <li><strong><%= Settings.name %></strong> is a service of <a href="http://libraries.iub.edu" class="outline_on">Indiana University Libraries</a>
+              <br>
+              <%= link_to "Contact Us", main_app.comments_path %> |
+              <a href="https://mailform.kb.iu.edu/email.php?cid=1443" class="outline_on" target="_blank">Copyright Complaints</a>
+            </li>
+            <li class="small">
+              <a href="http://avalonmediasystem.org"><img src="/assets/Home.png" alt="Avalon Media System" class="logo-avalon" /></a>
+            </li>
+          </ul>
+        </div>
        </div>
      </div>
      <footer id="footer" itemscope="itemscope" itemtype="http://schema.org/CollegeOrUniversity">
+       <div class="container">
          <p class="tagline">
            <a href="https://200.iu.edu" class="external">
              <svg width="223" height="25" viewBox="0 0 223 25" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -63,5 +66,6 @@ Unless required by applicable law or agreed to in writing, software distributed
            <span class="hide-on-mobile"> | </span>
            <a href="https://www.iu.edu/copyright/index.html" class="external">Copyright</a> © 2020 <span class="line-break-small">The Trustees of <a href="https://www.iu.edu/" itemprop="url" class="external"><span itemprop="name">Indiana University</span></a></span>
          </p>
+       </div>
      </footer>
    </div>

@@ -300,6 +300,9 @@ footer {
 
 
 .navbar {
+  background-color: #4A3C31;
+  background-image: none;
+
   .btn-navbar {
     position: absolute;
     right: 5px;
@@ -352,8 +355,6 @@ footer {
   }
 }
 .navbar-inner {
-  background-color: #4A3C31;
-  background-image: none;
   border: none;
   box-shadow: none;
   border-radius:0;
