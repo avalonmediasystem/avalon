@@ -365,7 +365,7 @@ footer {
   @media all and (max-width: 768px) {
     height: 40px;
   }
-  @media all and (max-width: 653px) {
+  @media all and (max-width: 660px) {
     height: 82px;
   }
   .iu-search {
@@ -375,7 +375,6 @@ footer {
     margin-top: 5px;
     a, a:hover, a:focus, a:visited {
       position: absolute;
-      left: 20px;
       top: 10px;
       margin-top: 0;
       color: white;
@@ -386,14 +385,13 @@ footer {
     @media all and (max-width: 768px) {
        margin-top: 0;
     }
-    @media all and (max-width: 653px) {
+    @media all and (max-width: 669px) {
       margin-left: 16px;
     }
    .navbar-right {
       position: absolute;
-      right: 0;
       top: 4px;
-      margin-right: 0;
+      margin-right: 5px;
     }
     .global-search-submit {
       position: absolute;
@@ -442,25 +440,81 @@ footer {
   }
 }
 
+// Arrange Collections, Browse, and Search for different screen sizes
+@media (min-width: 320px) and (max-width: 359px) {
+  .navbar-collections {
+    left: -10px;
+  }
+  .navbar-browse {
+    left: 80px;
+  }
+  .navbar-right {
+    left: 140px;
+  }
+  .search-query {
+    width: 78% !important;
+  }
+  .brand {
+    font-size: 1.75em !important;
+  }
+}
+@media (min-width: 360px) and (max-width: 375px) {
+  .navbar-collections {
+    left: -45px;
+  }
+  .navbar-browse {
+    left: 36px;
+  }
+  .navbar-right {
+    right: -10px;
+  }
+}
+@media (min-width: 376px) and (max-width: 768px) {
+  .navbar-collections {
+    left: -15px;
+  }
+  .navbar-browse {
+    left: 70px;
+  }
+  .navbar-right {
+    right: -50px;
+  }
+  .avalon-search-query-form {
+    width: 216px;
+  }
+  .search-query {
+    width: 142px !important;
+  }
+}
+@media (min-width: 769px) and (max-width: 991px) {
+  .navbar-collections {
+    left: -10px;
+  }
+  .navbar-browse {
+    left: 75px;
+  }
+  .navbar-right {
+    right: -55px;
+  }
+  .search-query {
+    width: 70% !important;
+  }
+}
+@media (min-width: 992px) {
+  .navbar-collections {
+    left: -60px;
+  }
+  .navbar-browse {
+    left: 25px;
+  }
+  .navbar-right {
+    right: -5px;
+  }
+}
 .navbar-browse {
-  color: white;
   padding-right: 1em;
   float: left;
   margin-top: 10px;
-}
-.navbar-collections {
-  left: -70px !important;
-}
-@media (min-width: 320px) and (max-width: 375px) {
-  .navbar-collections {
-    left: -45px !important;
-  }
-  .navbar-browse {
-    left: 36px !important;
-  }
-  .navbar-right {
-    right: -10px !important;
-  }
 }
 
 .nav2 {
