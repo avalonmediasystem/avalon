@@ -31,7 +31,7 @@ const SearchResults = ({ documents = [], baseUrl }) => {
   return (
     <ul className="row list-unstyled search-within-search-results">
       {documents.map((doc, index) => (
-        <li key={doc.id} className="col-sm-4">
+        <li key={doc.id} className="col-sm-3">
           <SearchResultsCard doc={doc} index={index} baseUrl={baseUrl} />
         </li>
       ))}

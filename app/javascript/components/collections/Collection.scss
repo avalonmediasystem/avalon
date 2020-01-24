@@ -43,10 +43,11 @@
 
 /* Collection cards */
 .collection-card {
-  height: 475px;
+  height: 420px;
   overflow: hidden;
 
-  @media screen and (max-width: 780px) {
+  // For smaller screens
+  @media screen and (max-width: 767px) {
     height: auto;
   }
 
@@ -64,6 +65,10 @@
 
 .collection-card-description {
   padding: 2rem 0;
+
+  .italic {
+    font-style: italic;
+  }
 }
 
 .search-within-facets {
