@@ -144,6 +144,11 @@ class Search extends Component {
           <LoadingSpinner isLoading={isLoading} />
           {!isLoading && <SearchResults documents={searchResult.docs} baseUrl={this.props.baseUrl} />}
         </div>
+        <div className="collection-landing-pagination-wrapper">
+          { searchResult.pages.total_count > searchResult.pages.limit_value && 
+              <Pagination pages={searchResult.pages} changePage={this.changePage} />
+          }
+        </div>
       </div>
     );
   }

@@ -94,8 +94,8 @@ const SearchResultsCard = props => {
         <>
           <h4>
             <a href={baseUrl + 'media_objects/' + doc['id']}>
-              { doc['title_tesi'].substring(0, 50) || doc['id'] }
-              { doc['title_tesi'].length >= 50 && <span>...</span> }
+              { doc['title_tesi'] && doc['title_tesi'].substring(0, 50) || doc['id'] }
+              { doc['title_tesi'] && doc['title_tesi'].length >= 50 && <span>...</span> }
             </a>
           </h4>
           <dl id={'card-body-' + index} className="card-text dl-horizontal">
