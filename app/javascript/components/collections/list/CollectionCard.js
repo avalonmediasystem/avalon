@@ -35,7 +35,10 @@ const CollectionCard = ({ attributes, showUnit }) => {
       </CollectionCardThumbnail>
       <CollectionCardBody>
         <h4>
-          <a href={attributes.url}>{attributes.name}</a>
+          <a href={attributes.url}>
+            {attributes.name.substring(0, 50)}
+            {attributes.name.length >= 50 && <span>...</span>}
+          </a>
         </h4>
         <dl>
           { showUnit && <dt>Unit</dt> && 
@@ -47,8 +50,8 @@ const CollectionCard = ({ attributes, showUnit }) => {
           {attributes.description && (
             <div>
               <dd>
-                {attributes.description.substring(0, 200)}
-                {attributes.description.length >= 200 && <span>...</span>}
+                {attributes.description.substring(0, 100)}
+                {attributes.description.length >= 100 && <span>...</span>}
               </dd>
             </div>
           )}

@@ -31,7 +31,7 @@ class CollectionList extends Component {
       filter: props.filter ? props.filter : '',
       searchResult: [],
       filteredResult: [],
-      maxItems: 3,
+      maxItems: 4,
       sort: 'unit',
       isLoading: false
     };
