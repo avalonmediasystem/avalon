@@ -31,15 +31,13 @@
 */
 
 table.dataTable {
-  border: 1px solid #ccc;
   border-collapse: collapse !important;
   border-spacing: 0;
 }
 
-table.dataTable th,
-table.dataTable td {
-  border: 1px solid #ccc;
-  padding: 6px;
+table.dataTable thead tr th,
+table.dataTable tbody tr td {
+  padding: 10px;
 }
 
 table.dataTable a {
