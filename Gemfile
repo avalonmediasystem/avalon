@@ -106,6 +106,9 @@ gem 'with_locking'
 gem 'sequel'
 gem 'httpx'
 
+# Monitoring
+gem "skylight"
+
 group :development do
   gem 'capistrano', '~>3.6'
   gem 'capistrano-passenger', require: false
