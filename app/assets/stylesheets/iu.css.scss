@@ -1,74 +1,38 @@
 #branding-bar {
-  background: #212121 url(iu/bg-bar.gif) repeat 0 100%;
-  color: #fff;
-  font-family: Arial, Helvetica, sans-serif;
-  font-size: 14px; /* Normalize font size */
-  line-height: 18px; /* Normalize line height */
-  min-height: 40px;
-  min-width: 300px;
-  overflow: visible;
-  text-align: right;
+  font-size: 14px;
+  position: relative;
+  margin-bottom: 0;
   @media all and (max-width: 768px) {
     min-height: 46px;
   }
-  h1,p,ul,form,fieldset,input,dl,dt,dd,img,abbr {
-    border: none;
-    display: block;
-    font-weight: normal;
-    margin: 0;
-    padding: 0;
-  }
-  a {
-    color: #fff;
-  }
-  ul {
-    list-style: none;
+  .bar {
+    border-top: 1px solid #990000;
   }
   .wrapper {
     position: relative;
   }
-  .bar {
-    border-top: 6px solid #990000;
-  }
-  .campus {
-    font-family: $bentonSansCondensed, "Arial Narrow", Arial, Helvetica, sans-serif;
-    font-size: 1.125em; /* 16px (16/16) */
-    left: auto;
+  #iu-campus {
+    font-size: 1.125em;
     letter-spacing: 0.025em;
-    line-height: 1em; /* 16px (16/16) */
-    text-align: left;
-    text-transform: uppercase;
-    top: 6px;
-    z-index: 400;
+    line-height: 39px;
+    padding-left: 55px;
+    @media all and (max-width: 768px) {
+      padding-left: 22px;
+    }
     a {
-      display: table-cell;
-      height: 40px;
-      padding: 0 0 0 75px;
-      text-decoration: none;
-      vertical-align: middle;
-      @media all and (max-width: 768px) {
-        height: 24px;
-        padding: 12px 0 0 47px;
-      }
-      &:hover {
-        text-decoration: none;
-      }
+      padding: 0 0 0 25px;
     }
     img {
       height: auto;
-      position: absolute;
-      top: -6px;
       width: 64px;
       left: 7px;
-      z-index: 1;
+      top: -6px;
+      position: absolute;
       @media all and (max-width: 768px) {
         width: 34px;
         top: 0;
         left: 7px;
       }
-    }
-    .expanded {
-      display: none;
     }
   }
 }
@@ -98,206 +62,6 @@
     padding: .5em;
   }
 }
-
-footer {
-  font-size: .8em;
-  border-top: 3px solid #990000;
-  margin-top: 10px;
-  padding: 5px 0;
-  position: relative;
-  ul {
-    float: none;
-  }
-  li:before {
-    content: " | ";
-  }
-  a:visited {
-    color: #990000;
-    text-decoration: none;
-    font-weight: normal;
-  }
-  a:link {
-    color: #990000;
-    text-decoration: none;
-    font-weight: normal;
-  }
-}
-#footer-text {
-  margin-left: 0;
-  margin-right: 100px;
-  text-align: center;
-  img {
-    width: auto;
-    height: 45px;
-    float: left;
-    margin-right: 5px;
-  }
-  ul {
-    margin-bottom: 0;
-  }
-  @media all and (max-width: 660px) {
-    margin-right: 0;
-    a:first-of-type {
-      display: inline-block;
-    }
-  }
-}
-#footer-avalonlogo {
-  position: absolute;
-  top: 0;
-  right: 0;
-  @media all and (max-width: 660px) {
-    position: relative;
-    text-align: center;
-  }
-  img {
-    width: auto;
-    height: 50px;
-  }
-}
-#footer {
-  margin-top: 0;
-  padding: 24px 0;
-  text-align: center;
-  position: relative;
-  font-family: $bentonSans, Arial, serif;
-  font-weight: normal;
-}
-
-#footer a {
-  color: #990000;
-}
-
-#footer a:focus {
-  outline: .125rem solid #990000;
-  outline-offset: .125rem;
-}
-
-#footer .signature {
-  text-align: center;
-}
-
-#footer .signature-link {
-  background: url("iu-sig-formal.svg") no-repeat left top;
-  background-size: contain;
-  display: inline-block;
-  height: 0;
-  padding-top: 36px;
-  overflow: hidden;
-  width: 240px;
-}
-
-#footer .signature-link.signature-img {
-  background-image: none;
-  height: 36px;
-  padding-top: 0;
-}
-
-#footer p {
-  font-size: 12px;
-  line-height: 24px;
-  margin: 0;
-  clear: left;
-}
-
-#footer .tagline {
-  font-family: $bentonSansCondBold, Arial, serif;
-  font-weight: normal;
-  -webkit-font-smoothing: antialiased;
-  background: #7A1705;
-  color: #fff;
-  font-size: 1.375rem;
-  line-height: 2.5rem;
-  margin: -24px 0 24px 0;
-  text-transform: uppercase;
-  letter-spacing: 0.2em;
-}
-
-#footer .tagline span {
-  text-transform: lowercase;
-  font-family: GeorgiaProBoldItalic, Georgia, serif;
-  font-size: 1rem;
-  vertical-align: 2px;
-  letter-spacing: 0;
-  margin-left: -4px;
-}
-
-#footer .tagline a:focus {
-  outline-color: #fff;
-}
-
-#footer .tagline.bicentennial {
-  font-family: inherit;
-  letter-spacing: .1em;
-}
-
-#footer .tagline.bicentennial.celebration {
-  font-size: inherit;
-  padding-bottom: 2px;
-}
-
-#footer .tagline.celebration a {
-  text-decoration: none;
-}
-
-#footer .tagline.celebration svg {
-  vertical-align: middle;
-}
-
-@media screen and (max-width: 350px) {
-  #footer .line-break-small {
-    display: block;
-  }
-}
-
-@media screen and (max-width: 420px) {
-  #footer .line-break {
-    display: block;
-  }
-  #footer .hide-on-mobile {
-    display: none;
-  }
-}
-
-@media only screen and (min-width: 40em) {
-  #footer {
-    text-align: left;
-    border-top: 6px solid #7A1705;
-    padding: 32px 0 24px;
-  }
-  #footer p {
-    line-height: 2.25rem;
-  }
-  #footer .signature {
-    float: left;
-    text-align: left;
-    height: 36px;
-    margin: -8px 10px 24px;
-  }
-  #footer .copyright {
-    float: right;
-    clear: right;
-    text-align: right;
-    margin-right: 10px;
-  }
-  #footer .tagline {
-    font-size: 1.5rem;
-    position: absolute;
-    left: 50%;
-    margin: 0 -200px 0 0;
-    top: -24px;
-    padding: 8px 20px 2px;
-    -webkit-transform: translateX(-50%);
-    -moz-transform: translateX(-50%);
-    -ms-transform: translateX(-50%);
-    -o-transform: translateX(-50%);
-    transform: translateX(-50%);
-  }
-  #footer .tagline.bicentennial {
-    padding: 0 16px;
-  }
-}
-
 
 .navbar {
   background-color: #4A3C31;
@@ -449,10 +213,10 @@ footer {
     left: 80px;
   }
   .navbar-right {
-    left: 140px;
+    left: 135px;
   }
   .search-query {
-    width: 78% !important;
+    width: 73% !important;
   }
   .brand {
     font-size: 1.75em !important;
@@ -471,13 +235,13 @@ footer {
 }
 @media (min-width: 376px) and (max-width: 768px) {
   .navbar-collections {
-    left: -15px;
+    left: -25px;
   }
   .navbar-browse {
-    left: 70px;
+    left: 60px;
   }
   .navbar-right {
-    right: -50px;
+    right: -40px;
   }
   .avalon-search-query-form {
     width: 216px;
@@ -599,5 +363,22 @@ footer {
 #metadata_container {
   a:not(.btn) {
     color: $black;
+  }
+}
+
+#footer {
+  p {
+    font-size: 12px;
+  }
+  .signature {
+    margin: -8px 10px 24px;
+  }
+  .signature-link.signature-img {
+      height: 36px;
+      width: 240px !important;
+  }
+  .tagline {
+    top: -24px;
+    padding: 8px 20px 2px;
   }
 }

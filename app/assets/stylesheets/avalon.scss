@@ -945,7 +945,7 @@ h5.panel-title {
 }
 
 // Make table body scrollable in mobile devices
-@media (max-width: 768px) {
+@media (max-width: 1024px) {
   .dataTableBody {
     width: 100%;
     overflow-x: scroll;

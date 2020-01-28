@@ -78,7 +78,11 @@ $(document).ready(function() {
   });
 
   // Set CSS to push the page content above footer
-  $('.content-wrapper').css('padding-bottom', $('#footer-container').css('height'));
+  let footerHeight = $('#footer-container').css('height');
+  if(iOS) {
+    footerHeight = parseInt(footerHeight.replace(/\D/g, "")) + 30;
+  }
+  $('.content-wrapper').css('padding-bottom', footerHeight);
 
   /* Handle dropdown list for `Manage` in nav-bar */
   // Manage user access with mouse-point

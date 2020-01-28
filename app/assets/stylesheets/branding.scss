@@ -24,24 +24,6 @@
 */
 
 // Fonts
-@font-face {
-  font-family: 'BentonSansCondensed';
-  src: font-url('benton-sans-condensed/regular.woff') format('woff');
-}
-@font-face {
-  font-family: 'BentonSansRegular';
-  src: url("https://fonts.iu.edu/fonts/benton-sans-regular.eot");
-  src: url("https://fonts.iu.edu/fonts/benton-sans-regular.eot?#iefix") format("embedded-opentype"), url("https://fonts.iu.edu/fonts/benton-sans-regular.woff") format("woff"), url("https://fonts.iu.edu/fonts/benton-sans-regular.ttf") format("truetype"), url("https://fonts.iu.edu/fonts/benton-sans-regular.svg#BentonSansRegular") format("svg");
-  font-style: normal;
-  font-weight: normal;
-}
-@font-face {
-  font-family: 'BentonSansCondBold';
-  src: url("https://fonts.iu.edu/fonts/benton-sans-cond-bold.eot");
-  src: url("https://fonts.iu.edu/fonts/benton-sans-cond-bold.eot?#iefix") format("embedded-opentype"), url("https://fonts.iu.edu/fonts/benton-sans-cond-bold.woff") format("woff"), url("https://fonts.iu.edu/fonts/benton-sans-cond-bold.ttf") format("truetype"), url("https://fonts.iu.edu/fonts/benton-sans-cond-bold.svg#BentonSansCondBold") format("svg");
-  font-style: normal;
-  font-weight: normal;
-}
 $sansFontFamily: Arial, Helvetica, sans-serif;
 $bentonSansCondensed: 'BentonSansCondensed';
 $bentonSans: 'BentonSansRegular';
