@@ -23,7 +23,8 @@ User.instance_eval do
         filter = Net::LDAP::Filter.eq("cn", "#{username}")
         email = Avalon::GROUP_LDAP.search(:base => tree, :filter => filter, :attributes=> ["mail"]).first.mail.first
       end
-      user = User.create(username: username, email: email)
+      user = User.find_or_create_by_username_or_email(username, email)
+      raise "Creating user (#{ user }) failed: #{ user.errors.full_messages }" unless user.persisted?
     end
     user
   end
