@@ -100,6 +100,9 @@ gem 'jbuilder', '~> 2.0'
 gem 'parallel'
 gem 'with_locking'
 
+# Monitoring
+gem "skylight"
+
 group :development do
   gem 'capistrano', '~>3.6'
   gem 'capistrano-passenger', require: false
