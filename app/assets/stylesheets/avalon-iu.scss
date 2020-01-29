@@ -22,7 +22,7 @@
 }
 
 .navbar-left {
-  background-color: #44697d;
+  background-color: $midnight;
   a{
     color: #fff !important;
     &:active { color: #000 !important; }

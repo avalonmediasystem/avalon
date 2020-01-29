@@ -188,3 +188,13 @@
 #Playlists_paginate {
   float: right;
 }
+
+.btn-tag {
+  color: $white;
+  background-color: $midnight
+}
+
+.btn-tag:hover {
+  color: $white;
+  background-color: $gray;
+}
