@@ -22,6 +22,8 @@ import CollectionCardThumbnail from '../CollectionCardThumbnail';
 import CollectionCardBody from '../CollectionCardBody';
 
 const CollectionCard = ({ attributes, showUnit }) => {
+  const unitName = attributes.description ? attributes.unit.substring(0, 30) : attributes.unit;
+  const ellipsis = attributes.description ? <span>...</span> : null;
   return (
     <CollectionCardShell>
       <CollectionCardThumbnail>
@@ -36,7 +38,12 @@ const CollectionCard = ({ attributes, showUnit }) => {
           <a href={attributes.url}>{attributes.name}</a>
         </h4>
         <dl>
-          {showUnit && <dt>Unit</dt> && <dd>{attributes.unit}</dd>}
+          { showUnit && <dt>Unit</dt> && 
+            <dd className="italic">
+              {unitName}
+              {attributes.unit.length >= 30 && ellipsis}
+            </dd>
+          }
           {attributes.description && (
             <div>
               <dd>
