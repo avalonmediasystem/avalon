@@ -22,6 +22,8 @@ import CollectionCardThumbnail from '../CollectionCardThumbnail';
 import CollectionCardBody from '../CollectionCardBody';
 
 const CollectionCard = ({ attributes, showUnit }) => {
+  const unitName = attributes.description ? attributes.unit.substring(0, 30) : attributes.unit;
+  const ellipsis = attributes.description ? <span>...</span> : null;
   return (
     <CollectionCardShell>
       <CollectionCardThumbnail>
@@ -41,8 +43,8 @@ const CollectionCard = ({ attributes, showUnit }) => {
         <dl>
           { showUnit && <dt>Unit</dt> && 
             <dd className="italic">
-              {attributes.unit.substring(0, 30)}
-              {attributes.unit.length >= 30 && <span>...</span>}
+              {unitName}
+              {attributes.unit.length >= 30 && ellipsis}
             </dd>
           }
           {attributes.description && (
