@@ -111,9 +111,6 @@ div.alert-danger {
   h3 {
     margin-top: 0;
   }
-  .headline-button {
-    margin-top: 20px;
-  }
 }
 
 // Generic content spacer
@@ -961,4 +958,9 @@ h5.panel-title {
 
 #users-table th, td{
   padding-right: 6px !important;
+}
+
+.create-buttons {
+  margin: 20px 0 0 5px;
+  clear: both;
 }
