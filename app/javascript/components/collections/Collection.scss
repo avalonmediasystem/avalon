@@ -43,7 +43,7 @@
 
 /* Collection cards */
 .collection-card {
-  height: 420px;
+  height: 375px;
   overflow: hidden;
 
   // For smaller screens
@@ -64,7 +64,7 @@
 }
 
 .collection-card-description {
-  padding: 2rem 0;
+  padding: 0;
 
   .italic {
     font-style: italic;
