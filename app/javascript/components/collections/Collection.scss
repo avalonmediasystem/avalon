@@ -43,7 +43,7 @@
 
 /* Collection cards */
 .collection-card {
-  height: 475px;
+  height: 375px;
   overflow: hidden;
 
   @media screen and (max-width: 780px) {
@@ -63,7 +63,11 @@
 }
 
 .collection-card-description {
-  padding: 2rem 0;
+  padding: 0;
+
+  .italic {
+    font-style: italic;
+  }
 }
 
 .search-within-facets {
