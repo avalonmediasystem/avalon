@@ -48,6 +48,10 @@ class Search extends Component {
     this.setState({ query: event.target.value, currentPage: 1 });
   };
 
+  handleSubmit = event => {
+    event.preventDefault();
+  }
+
   componentDidMount() {
     this.retrieveResults();
   }
@@ -123,7 +127,7 @@ class Search extends Component {
     return (
       <div className="search-wrapper">
         <div className="row">
-          <form className="search-bar col-sm-6 col-sm-offset-3">
+          <form onSubmit={this.handleSubmit} className="search-bar col-sm-6 col-sm-offset-3">
             <label htmlFor="q" className="sr-only">
               search for
             </label>
