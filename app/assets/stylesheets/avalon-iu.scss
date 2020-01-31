@@ -35,6 +35,11 @@ a.navbar-browse {
   color: #fff !important;
 }
 
+/* Fixes VOV-6089: unnecessary scrollbar in smaller window */
+.navbar-inner > .row {
+  margin-right: 0px;
+}
+
 /* MCO title */
 a.brand{
 	padding-top: 10px;
@@ -81,6 +86,11 @@ a.brand{
 .footer-container {
   padding-left: 0;
   padding-right: 0;
+}
+
+/* Fixes VOV-6089: unnecessary scrollbar in smaller window */
+#footer .tagline {
+  margin-right: -0.8rem;
 }
 
 .thick-footer {
