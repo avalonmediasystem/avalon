@@ -16,9 +16,9 @@ Unless required by applicable law or agreed to in writing, software distributed
 <div class="col-md-9">
   <div class="row">
     <div class="col-sm-12">
-      <%= link_to "View Timeline", @timeline, { class: 'btn btn-xs btn-primary' } %>
+      <%= link_to "View Timeline", @timeline, { class: 'btn btn-primary' } %>
       <% if can?(:destroy, @timeline) %>
-        <%= link_to "Delete Timeline", @timeline, method: :delete, class: 'btn btn-xs btn-danger btn-confirmation', data: {placement: 'bottom'} %>
+        <%= link_to "Delete Timeline", @timeline, method: :delete, class: 'btn btn-link btn-confirmation', data: {placement: 'bottom'} %>
       <% end %>
     </div>
   </div>
