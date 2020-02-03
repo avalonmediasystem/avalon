@@ -95,7 +95,8 @@ Unless required by applicable law or agreed to in writing, software distributed
   <div class="row">
     <div class="col-sm-offset-2 col-sm-10">
       <div>
-        <%= f.submit id: 'submit-timeline-form', class: 'btn btn-primary btn-xs', value: t("timeline.#{params[:action]}.action") %>
+        <%= f.submit id: 'submit-timeline-form', class: 'btn btn-primary', value: t("timeline.#{params[:action]}.action") %>
+        <a id="timeline-edit-cancel" class="btn btn-default" href="/timelines">Cancel</a>
       </div>
     </div>
   </div>
