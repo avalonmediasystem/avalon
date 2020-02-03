@@ -776,6 +776,10 @@ h5.panel-title {
   }
 }
 
+.mediaobject-filename {
+  word-break: break-all;
+}
+
 // Fixes the input displaying over the dropdown datepicker calendar
 .fileinput {
   position: relative;
