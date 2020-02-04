@@ -216,4 +216,7 @@ Rails.application.routes.draw do
     mount Sidekiq::Web, at: '/jobs', as: 'jobs'
   end
   get '/jobs(.:format)', to: redirect('/')
+
+  get '/iu_api/media_object_structure', to: 'iu_api#media_object_structure', defaults: { :format => 'csv' }, as: 'iu_api_media_object_structure'
+  put '/iu_api/media_object_structure', to: 'iu_api#media_object_structure_update', defaults: { :format => 'csv' }, as: 'iu_api_media_object_structure_update'
 end

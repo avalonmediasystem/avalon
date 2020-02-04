@@ -29,7 +29,7 @@ class ApplicationController < ActionController::Base
 
   helper_method :render_bookmarks_control?
 
-  around_action :handle_api_request, if: proc{|c| request.format.json? || request.format.atom? }
+  around_action :handle_api_request, if: proc{|c| request.format.json? || request.format.atom? || request.format.csv? }
   before_action :rewrite_v4_ids, if: proc{|c| request.method_symbol == :get && [params[:id], params[:content]].compact.any? { |i| i =~ /^[a-z]+:[0-9]+$/}}
   before_action :set_no_cache_headers, if: proc{|c| request.xhr? }
 
@@ -153,7 +153,7 @@ class ApplicationController < ActionController::Base
   end
 
   rescue_from CanCan::AccessDenied do |exception|
-    if request.format == :json
+    if request.format.json? || request.headers['Avalon-Api-Key'].present?
       head :unauthorized
     elsif current_user
       redirect_to root_path, flash: { notice: 'You are not authorized to perform this action.' }
