@@ -16,7 +16,7 @@ module DerivativeIntercom
   def to_ingest_api_hash
     {
       label: "quality-#{quality}", # quality-low, quality-medium, quality-high
-      id: track_id,
+      id: id,
       url: location_url,
       hls_url: hls_url,
       duration: duration,
