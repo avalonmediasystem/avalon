@@ -2,18 +2,15 @@ domain:
   host: test.host
 dropbox:
   upload_uri: smb://test.host/dropbox
-auth:
-  configuration:
-    - :name: Avalon Test Auth
-      :provider: :identity
-      :params:
-        :fields:
-          - :email
-    - :name: Avalon Lti OAuth
-      :provider: :lti
-      :hidden: true
-      :params:
-        :oauth_credentials:
-          key: 'secret'
 timeliner:
   timeliner_url: http://test.host/timeliner
+auth:
+  configuration:
+  - :name: Yale CAS
+    :provider: :cas
+    :params:
+      :host: secure.its.yale.edu
+      :login_url: /cas/login
+      :logout_url: /cas/logout
+      :service_validate_url: /cas/serviceValidate
+      :disable_ssl_verification: true

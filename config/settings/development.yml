@@ -1,2 +1,10 @@
-domain:
-  port: 3000
+auth:
+  configuration:
+  - :name: Yale CAS
+    :provider: :cas
+    :params:
+      :host: secure.its.yale.edu
+      :login_url: /cas/login
+      :logout_url: /cas/logout
+      :service_validate_url: /cas/serviceValidate
+      :disable_ssl_verification: true

@@ -55,6 +55,7 @@ gem 'avalon-workflow', git: "https://github.com/avalonmediasystem/avalon-workflo
 gem 'devise', '~> 4.4'
 gem 'ims-lti', '~> 1.1.13'
 gem 'net-ldap'
+gem 'omniauth-cas'
 gem 'omniauth-identity'
 gem 'omniauth-lti', git: "https://github.com/avalonmediasystem/omniauth-lti.git", tag: 'avalon-r4'
 

@@ -70,7 +70,8 @@ services:
     image: avalonmediasystem/avalon:6.x-dev
     build:
       context: ./docker
-    command: "/rails_init-dev.sh"
+    command: "docker/rails_init-dev.sh"
+    #command: bash -c "/docker_init.sh && rails server -b 0.0.0.0"
     depends_on:
       - db
       - fedora

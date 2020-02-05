@@ -604,6 +604,10 @@ GEM
     omniauth (1.9.0)
       hashie (>= 3.4.6, < 3.7.0)
       rack (>= 1.6.2, < 3)
+    omniauth-cas (1.1.1)
+      addressable (~> 2.3)
+      nokogiri (~> 1.5)
+      omniauth (~> 1.2)
     omniauth-identity (1.1.1)
       bcrypt-ruby (~> 3.0)
       omniauth (~> 1.0)
@@ -1000,6 +1004,7 @@ DEPENDENCIES
   mysql2
   net-ldap
   noid-rails (~> 3.0.1)
+  omniauth-cas
   omniauth-identity
   omniauth-lti!
   parallel
@@ -1047,4 +1052,4 @@ DEPENDENCIES
   zoom
 
 BUNDLED WITH
-   2.0.1
+   2.0.2
