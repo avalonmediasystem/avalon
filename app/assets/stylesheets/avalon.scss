@@ -123,6 +123,9 @@ tr.active-false td {
 #header-navbar .navbar-brand {
   @extend .desktop-hidden;
   height: 35px;
+  background: transparent url(/assets/yul_logo.png) no-repeat top left;
+  background-size: 80% !important;
+  margin: .5em 0 0 .5em;
 }
 
 .navbar {
@@ -167,6 +170,13 @@ tr.active-false td {
 #browse-btn {
   margin: 0.5em 0;
 }
+
+.navbar-header {background-color: #01346b;}
+button.navbar-toggle.collapsed.outline_on {background-color: #e8e8e8;}
+.navbar-inverse .navbar-toggle, .navbar-inverse .facets-toggle {background-color: #e8e8e8;}
+.navbar-inverse .navbar-nav > li > a {color: #9b2621;}
+
+a.navbar-brand.desktop-hidden.outline_on {width: 75%}
 
 // Custom file preview field for Jasny bootstrap
 .uneditable-input-exists {
@@ -294,22 +304,58 @@ input[type='text']#admin_group {
   }
 }
 
+
+@font-face {
+  font-family: 'TheSans-SemiBold';
+  src: url("fonts/TheSans_B2_600_.eot");
+  src: url("fonts/TheSans_B2_600_.eot?#iefix") format("embedded-opentype"), url("/assets/TheSans_B2_600_.woff") format("woff"), url("/assets/TheSans_B2_600_.svg") format("svg");
+}
+
+@font-face {
+  font-family: 'TheSans-SemiLight';
+  src: url("fonts/TheSans_B2_400_.eot");
+  src: url("fonts/TheSans_B2_400_.eot?#iefix") format("embedded-opentype"), url("/assets/TheSans_B2_400_.woff") format("woff"), url("/assets/TheSans_B2_400_.svg") format("svg");
+}
+
 header div {
   padding: 1em;
   @extend .mobile-hidden;
 }
 
 .log-in-out a {
-  color: #2a5459;
-  background-color: #fbb040;
-  padding: 0.8em;
-  &:after {
-    content: '\003e \003e';
+  color: #fff !important;
+  background-color: transparent;
+  padding: .2em;
+  font-family: "TheSans-SemiLight", Arial, Helvetica Neue, sans-serif;
+  font-size: 1.3em;
+  &:visited {
+    color: #fff !important;
   }
 }
 
+.fa {font-size: 1.2em}
+
 .navbar-inner {
   padding-right: 12px;
+}
+
+.navbar-right {margin-right: .5em;}
+
+div#subnav.row-fluid {
+  background-color: #e8e8e8;
+  height: auto;
+  border-bottom: 3px solid #9b2621;
+  margin-bottom: .5em;
+}
+
+span.collections {
+  font-family: "TheSans-SemiLight", Helvetica Neue, Arial, sans-serif;
+  font-size: 2em;
+  padding-left: 1.5em;
+}
+
+.collections a:not(.btn) {
+  color: #9b2621;
 }
 
 .container {
@@ -401,9 +447,9 @@ div[id*='facet-panel-'] {
 /* Footer */
 footer {
   margin-top: 10px;
-  padding-top: 20px;
-  border-top: 1px solid #eee;
-  border-bottom: 1px solid #fff;
+  padding-top: 10px;
+  border-top: 1px solid #EEE;
+  /* border-bottom: 1px solid #fff; */
 
   ul {
     margin-left: 0;
@@ -415,13 +461,16 @@ footer {
   }
 
   li:before {
-    content: ' - ';
+    content: " | ";
+    color: $black
   }
 
   li:first-child:before {
     content: none;
   }
 }
+
+.yalemark {width: 65px; margin-right: 1em;}
 
 footer a {
   color: $black;
@@ -435,8 +484,11 @@ footer ul {
   }
 }
 
+footer .links {margin-top: .5em;}
+
 footer .release {
   float: right;
+  margin-top: .5em;
   @media all and (max-width: 475px) {
     float: none;
   }

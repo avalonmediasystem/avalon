@@ -19,7 +19,7 @@ Unless required by applicable law or agreed to in writing, software distributed
       <header>
         <div class="col-sm-2 logo">
         <%= link_to root_path do %>
-          <%= image_tag "Home.png", alt: "Avalon Media System - #{t(:release_label)} #{Avalon::VERSION}" %>
+          <%= image_tag "yul_logo.png", alt: "Yale University Library", class: "yale-logo" %>
         <% end %>
         </div>
         
@@ -30,9 +30,21 @@ Unless required by applicable law or agreed to in writing, software distributed
 
         <%# By default shift log in / log out to the header %>
         <div class="pull-right log-in-out">
+          <i class="fa fa-question-circle" aria-hidden="true"></i> 
+          <a href="http://ask.library.yale.edu/?_ga=1.118462281.179099205.1461605960" target="_blank">Ask Yale Library</a>
+        </div>
+        <div class="pull-right log-in-out">
+          <i class="fa fa-unlock-alt" aria-hidden="true"></i>
           <%= render 'modules/user_management' %>
         </div>
       </header>
+      </div>
+    </div>
+  </div>
+  <div class="hidden-xs">
+    <div class="row">
+      <div class="row-fluid" id="subnav">
+        <span class="collections"><a href="#">Media Collections</a></span>
       </div>
     </div>
   </div>

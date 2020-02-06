@@ -1,19 +1,3 @@
-/* 
- * Copyright 2011-2019, The Trustees of Indiana University and Northwestern
- *   University.  Licensed under the Apache License, Version 2.0 (the "License");
- *   you may not use this file except in compliance with the License.
- *
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software distributed
- *   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
- *   CONDITIONS OF ANY KIND, either express or implied. See the License for the
- *   specific language governing permissions and limitations under the License.
- * ---  END LICENSE_HEADER BLOCK  ---
-*/
-
 // This is a manifest file that'll be compiled into application.js, which will include all the files
 // listed below.
 //
@@ -38,6 +22,10 @@
 
 // include all of our vendored js
 //= require_tree ../../../vendor/assets/javascripts/.
+
+// Exclude MediaElement2 era default loaded files that are interferring
+//= stub marker.js.coffee
+//= stub me-track-scrubber
 
 // Exclude MediaElement 4 JS files in /vendor, as ME4 collides with the ME2 gem
 //= stub mediaelement/mediaelement-and-player
