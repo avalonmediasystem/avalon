@@ -14,7 +14,7 @@ Unless required by applicable law or agreed to in writing, software distributed
 ---  END LICENSE_HEADER BLOCK  ---
 %>
 <div class="omniauth-form container">
-  <h3 id='sign-in-select' align='center'>Select Sign In Method</h3>
+  <h3 id='sign-in-select' align='center'>Sign In</h3>
   <div id='sign-in-buttons'>
     <%- if devise_mapping.omniauthable? %>
       <%- Avalon::Authentication::VisibleProviders.each do |visible| %>
@@ -22,34 +22,34 @@ Unless required by applicable law or agreed to in writing, software distributed
       <% end -%>
     <% end -%>
 
-    <a href='javascript:;' data-trigger='show-email' class='btn btn-primary'>Email / Password</a>
-  </div>
+    <div id='email-box'>
+      <%= bootstrap_form_for resource, as: resource_name, url: session_path(resource_name, admin: true, email: true) do |f| %>
 
-  <div class='hidden' id='email-box'>
-    <%= bootstrap_form_for resource, as: resource_name, url: session_path(resource_name, admin: true, email: true) do |f| %>
-
-      <div class="form-group">
-        <%= f.text_field :login, autofocus: true, autocomplete: "username" %>
-      </div>
-
-      <div class="form-group">
-        <%= f.password_field :password, autocomplete: "off" %>
-      </div>
-
-      <% if devise_mapping.rememberable? -%>
         <div class="form-group">
-          <%= f.check_box :remember_me %>
+          <%= f.text_field :login, autofocus: true, autocomplete: "username" %>
         </div>
-      <% end -%>
 
-      <div class="actions form-group">
-        <%= f.submit "Connect", class: 'btn btn-primary' %>
-      </div>
-    <% end %>
-    <p align='center' class='devise-links'>
-      <%= render "devise/shared/links" %>
-      <span class='devise-link'><a href='javascript:;' data-trigger='show-email'>Cancel</a></span>
-    </p>
+        <div class="form-group">
+          <%= f.password_field :password, autocomplete: "off" %>
+        </div>
 
+        <% if devise_mapping.rememberable? -%>
+          <div class="form-group">
+            <%= f.check_box :remember_me %>
+          </div>
+        <% end -%>
+
+        <div class="actions form-group">
+          <%= f.submit "Connect", class: 'btn btn-primary' %>
+        </div>
+      <% end %>
+      <p align='center' class='devise-links'>
+        <%= render "devise/shared/links" %>
+        <span class='devise-link'><a href='/'>Cancel</a></span>
+      </p>
+
+    </div>
   </div>
+
+  
 </div>
