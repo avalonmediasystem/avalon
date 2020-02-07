@@ -294,8 +294,8 @@ input[type='text']#admin_group {
 
 /* Header */
 .custom-header {
-  background-color: #e9e9e9;
-  color: $black;
+  background-color: #01346b;
+  color: $gray-lighter;
   margin-bottom: 0em;
   font-size: 0.8em;
   @extend .mobile-hidden;
@@ -304,6 +304,11 @@ input[type='text']#admin_group {
   }
 }
 
+img.yale-logo {
+  max-width: 100%;
+  height: auto !important;
+  margin-left: 1em;
+}
 
 @font-face {
   font-family: 'TheSans-SemiBold';

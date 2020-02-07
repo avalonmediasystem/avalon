@@ -1,5 +1,6 @@
 development:
   administrator:
+    - lakeisha.robinson@yale.edu
     - archivist1@example.com
   manager:
     - archivist1@example.com
@@ -8,6 +9,7 @@ development:
 
 test:
   administrator:
+    - lakeisha.robinson@yale.edu
     - archivist1@example.com
   manager:
     - archivist1@example.com
