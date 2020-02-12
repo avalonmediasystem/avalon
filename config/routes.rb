@@ -161,7 +161,7 @@ Rails.application.routes.draw do
 
   resources :avalon_marker, only: [:create, :show, :update, :destroy]
 
-  resources :comments, only: [:index, :create]
+  #resources :comments, only: [:index, :create]
 
   resources :playlist_items, only: [:update], :constraints => {:format => /(js|json)/}
 
