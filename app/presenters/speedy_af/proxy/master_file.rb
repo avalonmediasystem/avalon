@@ -22,9 +22,14 @@ class SpeedyAF::Proxy::MasterFile < SpeedyAF::Base
   end
 
   def display_title
-    mf_title = structuralMetadata.section_title if has_structuralMetadata?
-    mf_title ||= title if title.present?
-    mf_title ||= file_location.split("/").last if file_location.present? && (media_object.master_file_ids.size > 1)
+    mf_title = if has_structuralMetadata?
+                 structuralMetadata.section_title
+               elsif title.present?
+                 title
+               # FIXME: The test for media_object.master_file_ids.size is expensive and takes ~0.25 seconds
+               elsif file_location.present? && (media_object.master_file_ids.size > 1)
+                 file_location.split("/").last
+               end
     mf_title.blank? ? nil : mf_title
   end
 end
