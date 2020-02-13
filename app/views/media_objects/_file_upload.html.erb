@@ -64,7 +64,7 @@ Unless required by applicable law or agreed to in writing, software distributed
                 <i class="fa fa-question-sign"></i>
                 <% end %>
               </span>
-              <span><%= truncate_center(File.basename(part.file_location.to_s), 50, 20) %></span>
+              <span class="mediaobject-filename"><%= truncate_center(File.basename(part.file_location.to_s), 50, 20) %></span>
               <span><%= number_to_human_size(part.file_size) %></span>
             </div>
             <div class="col-sm-6 right">

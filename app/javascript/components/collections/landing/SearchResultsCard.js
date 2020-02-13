@@ -25,8 +25,8 @@ const CardMetaData = ({ doc, fieldLabel, fieldName }) => {
   if (Array.isArray(doc[fieldName]) && doc[fieldName].length > 1) {
     metaData = doc[fieldName].join(', ');
   } else if (typeof doc[fieldName] == 'string') {
-    const summary = doc[fieldName].substring(0, 30);
-    metaData = doc[fieldName].length >= 30 ? `${summary}...` : doc[fieldName];
+    const summary = doc[fieldName].substring(0, 50);
+    metaData = doc[fieldName].length >= 50 ? `${summary}...` : doc[fieldName];
   } else {
     metaData = doc[fieldName];
   }
@@ -94,7 +94,8 @@ const SearchResultsCard = props => {
         <>
           <h4>
             <a href={baseUrl + 'media_objects/' + doc['id']}>
-              {doc['title_tesi'] || doc['id']}
+              { doc['title_tesi'] && doc['title_tesi'].substring(0, 50) || doc['id'] }
+              { doc['title_tesi'] && doc['title_tesi'].length >= 50 && <span>...</span> }
             </a>
           </h4>
           <dl id={'card-body-' + index} className="card-text dl-horizontal">
