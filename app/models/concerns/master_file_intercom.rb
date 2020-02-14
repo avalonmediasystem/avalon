@@ -15,6 +15,7 @@
 module MasterFileIntercom
   def to_ingest_api_hash(include_structure = true)
     {
+      id: id,
       workflow_name: workflow_name,
       percent_complete: percent_complete,
       # percent_succeeded: percent_succeeded,
