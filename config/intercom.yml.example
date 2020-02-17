@@ -4,3 +4,4 @@ intercom:
     api_token: a_valid_token
     import_bib_record: true
     publish: false
+    push_label: Push to Other Avalon
