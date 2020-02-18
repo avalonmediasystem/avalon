@@ -17,7 +17,7 @@ Unless required by applicable law or agreed to in writing, software distributed
 <div id="intercom_push" class="modal fade" role="dialog" data-backdrop="true" data-submit_url="<%= 'create' %>" >
   <div class="modal-dialog modal-lg">
     <div class="modal-content">
-      <%= form_for @media_object, url: {action: "intercom_push"}, html: { id: 'intercom_push_form' } {}%>
+      <%= form_for(@media_object, url: {action: "intercom_push"}, html: { id: 'intercom_push_form' }) {}%>
       <%= render 'intercom_push_form' %>
     </div>
   </div>
