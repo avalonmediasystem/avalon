@@ -33,7 +33,7 @@ Unless required by applicable law or agreed to in writing, software distributed
       <dd><%= @playlist.title %></dd>
       <dt><%= t("activerecord.attributes.playlist.comment") %></dt>
       <dd>
-        <% if @playlist.comment.empty? %>
+        <% if @playlist.comment.blank? %>
         <span class="info-text-gray">No description</span>
         <% else %>
         <%= @playlist.comment %>
