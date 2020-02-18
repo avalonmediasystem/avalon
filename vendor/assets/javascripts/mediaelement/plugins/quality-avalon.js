@@ -370,9 +370,8 @@
           keyExist: function keyExist(map, searchKey) {
             return -1 < map.get('map_keys_1').indexOf(searchKey.toLowerCase());
           },
-          isMobile() {
-            var { isAndroid, isiOS } = mejs.Features;
-            return isAndroid || isiOS;
+          isMobile: function isMobile() {
+            return mejs.Features.isAndroid || mejs.Features.isiOS;
           }
         });
       },
