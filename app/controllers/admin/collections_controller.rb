@@ -81,7 +81,7 @@ class Admin::CollectionsController < ApplicationController
   # GET /collections/1/items
   def items
     mos = paginate @collection.media_objects
-    render json: mos.to_a.collect{|mo| [mo.id, mo.to_json] }.to_h
+    render json: mos.to_a.collect{|mo| [mo.id, mo.as_json] }.to_h
   end
 
   # POST /collections
