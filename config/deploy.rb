@@ -2,12 +2,12 @@
 lock '>=3.6.1'
 
 set :application, 'avalon'
-set :repo_url, 'git://github.com/avalonmediasystem/avalon.git'
+set :repo_url, 'git://github.com/yalelibrary/avalon.git'
 
 # If SCM_BRANCH is set, use it. Otherwise, ask for a branch, defaulting to the currently checked out branch.
 set :branch, -> { ENV['SCM_BRANCH'] || ask(:branch, `git rev-parse --abbrev-ref HEAD`.chomp) }
 
-append :linked_files, "Gemfile.local", "config/*.yml", "config/*/*.yml", "config/initializers/*.rb", "public/robots.txt"
+append :linked_files, "Gemfile", "config/*.yml", "config/*/*.yml", "config/initializers/*.rb", "public/robots.txt"
 append :linked_dirs, 'log', 'tmp'
 
 set :conditionally_migrate, true
