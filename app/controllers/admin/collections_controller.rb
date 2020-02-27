@@ -252,23 +252,36 @@ class Admin::CollectionsController < ApplicationController
         @collection.poster.content = resized_poster
         @collection.poster.mime_type = 'image/png'
         @collection.poster.original_name = poster_file.original_filename
-        flash[:success] = "Poster file succesfully added."
+        # render json: { status: 'success', message: "Poster file successfully added." }
+        flash[:success] = "Poster file successfully added."
+        # respond_to do |format|
+        #   format.js { flash[:success] = "Poster file successfully added." }
+        # end
       else
+        # render json: { status: 'error', message: "Uploaded file is not a recognized poster image file" }
         flash[:error] = "Uploaded file is not a recognized poster image file"
       end
     else
-      @collection.poster.content = ''
-      @collection.poster.original_name = ''
-      flash[:success] = "Poster file succesfully removed."
+      if @collection.poster.present?
+        @collection.poster.content = ''
+        @collection.poster.original_name = ''
+        flash[:success] = "Poster file successfully removed."
+      else
+        flash[:notice] = "No poster file present for the collection."
+      end
     end
 
     unless @collection.save
       flash[:success] = nil
       flash[:error] = "There was a problem storing the poster image."
+      # respond_to do |format|
+      #   format.html { redirect_to admin_collection_path(@collection) }
+      # end
     end
 
     respond_to do |format|
       format.html { redirect_to admin_collection_path(@collection) }
+      format.js
     end
   end
 

@@ -69,9 +69,16 @@ function add_cropper_handler(upload_path) {
         height: width / aspectRatio,
       });
       initialPosterURL = $poster.prop("src");
-      $poster.prop("src", canvas.toDataURL());
+      $alert.removeClass('alert-success alert-warning alert-danger');
+      try {
+        $poster.prop("src", canvas.toDataURL());
+      } catch(err) {
+        console.log(err);
+        // $alert.css('cssText', 'display: block !important;');
+        // $alert.show().addClass('alert-danger');
+        // $alert.find('p').text('Uploaded file is not a recognized poster image file');
+      }      
       $progress.show();
-      $alert.removeClass('alert-success alert-warning');
       canvas.toBlob(function (blob) {
         let formData = new FormData();
         $input.val("")
@@ -97,12 +104,16 @@ function add_cropper_handler(upload_path) {
             };
             return xhr;
           },
-          success: function () {
-            //$alert.show().addClass('alert-success').text('Upload success');
+          success: function (response) {
+            console.log(response);
+            // $alert.css('cssText', 'display: block !important;');
+            // $alert.show().addClass('alert-success');
+            // $alert.find('p').text(response.message);
           },
-          error: function () {
+          error: function (error) {
             $poster.prop("src", initialPosterURL);
-            $alert.show().addClass('alert-warning').text('Upload error');
+            // $alert.css('cssText', 'display: block !important;');
+            // $alert.show().addClass('alert-warning').text(error.message);
           },
           complete: function () {
             $progress.hide();

@@ -30,9 +30,9 @@ Unless required by applicable law or agreed to in writing, software distributed
       end
     -%>
     <% if flash[type] %>
-      <div class="alert <%=alert_class %>">
+      <div class="alert <%=alert_class %>" id="flash_messages">
         <button type="button" class="close" data-dismiss="alert">&times;</button>
-	<% Array(flash[type]).each do |msg| %>
+        <% Array(flash[type]).each do |msg| %>
           <p><%= msg %></p>
         <% end %>
       </div>
