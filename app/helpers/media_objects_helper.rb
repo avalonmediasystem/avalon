@@ -90,6 +90,14 @@ module MediaObjectsHelper
         media_object.note.present? ? media_object.note.select{|n| n[:type]==type}.collect{|n|n[:note]} : []
       end
 
+      def display_collection(media_object)
+        link_to(media_object.collection.name, collection_path(media_object.collection.id))
+      end
+
+      def display_unit(media_object)
+        link_to(media_object.collection.unit, collections_path(filter: media_object.collection.unit))
+      end
+
       def display_language media_object
         media_object.language.collect{|l|l[:text]}.uniq
       end
