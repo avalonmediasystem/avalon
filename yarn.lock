@@ -3450,6 +3450,13 @@ hls.js@0.12.3-canary.4258:
     eventemitter3 "3.1.0"
     url-toolkit "^2.1.6"
 
+"hls.js@https://github.com/avalonmediasystem/hls.js#stricter_ts_probing":
+  version "0.13.1"
+  resolved "https://github.com/avalonmediasystem/hls.js#d2c208207c0f99c2fb911f6f8c2a9bf1937ebab4"
+  dependencies:
+    eventemitter3 "3.1.0"
+    url-toolkit "^2.1.6"
+
 hmac-drbg@^1.0.0:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/hmac-drbg/-/hmac-drbg-1.0.1.tgz#d2745701025a6c775a6c545793ed502fc0c649a1"
