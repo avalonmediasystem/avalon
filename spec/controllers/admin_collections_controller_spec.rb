@@ -375,7 +375,7 @@ describe Admin::CollectionsController, type: :controller do
         expect(collection.poster.mime_type).to eq 'image/png'
         expect(collection.poster.original_name).to eq 'collection_poster.jpg'
         expect(collection.poster.content).not_to be_blank
-        expect(response).to redirect_to(admin_collection_path(collection))
+        expect(flash[:success]).not_to be_empty
       end
 
       context 'with an invalid file' do
@@ -385,7 +385,6 @@ describe Admin::CollectionsController, type: :controller do
           file = fixture_file_upload('/captions.vtt', 'text/vtt')
           expect { post :attach_poster, params: { id: collection.id, admin_collection: { poster: file } } }.not_to change { collection.reload.poster.present? }
           expect(flash[:error]).not_to be_empty
-          expect(response).to redirect_to(admin_collection_path(collection))
         end
       end
 
