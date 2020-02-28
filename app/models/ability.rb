@@ -116,6 +116,10 @@ class Ability
           is_editor_of?(collection)
         end
 
+        can :destroy, ::Admin::CollectionPresenter do |collection|
+          @user.in?(collection.managers)
+        end
+
         can :inspect, MediaObject do |media_object|
           is_member_of?(media_object.collection)
         end
