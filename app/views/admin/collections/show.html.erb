@@ -61,7 +61,7 @@ Unless required by applicable law or agreed to in writing, software distributed
         <%= form_for @collection, url: attach_poster_admin_collection_path(@collection.id), html: {method: "post"} do |form| %>
           <%= form.file_field :poster, id: 'poster_input', class: "filedata", style: "height:0px;width:0px;" %>
           <input type="button" class="btn btn-primary btn-xs" onclick="$('.filedata').click();" value="<% if @collection.poster.present? %>Change Poster<%else%>Upload Poster<%end%>"
-            <% if is_depositor %>disabled<%end%> />
+            <% if cannot?(:edit, @collection) %>disabled<%end%> />
         <% end %>
         <%= form_for @collection, url: remove_poster_admin_collection_path(@collection.id), html: {method: "delete"} do |form| %>
           <input type="submit" class="btn btn-danger btn-xs" value="Remove Poster" <% if is_depositor || @collection.poster.blank? %>disabled<%end%> />
