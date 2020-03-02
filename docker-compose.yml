@@ -20,6 +20,7 @@ services:
       - PGDATA=/data
       - POSTGRES_USER=postgres
       - POSTGRES_DB=avalon
+      - POSTGRES_PASSWORD=password
     networks:
       internal:
   db-test:
@@ -93,7 +94,7 @@ services:
       - BUNDLE_FLAGS=--with development postgres --without production test
       - ENCODE_WORK_DIR=/tmp
       - CONTROLLED_VOCABULARY=config/controlled_vocabulary.yml
-      - DATABASE_URL=postgres://postgres@db/avalon
+      - DATABASE_URL=postgres://postgres:password@db/avalon
       - FEDORA_NAMESPACE=avalon
       - FEDORA_URL=http://fedoraAdmin:fedoraAdmin@fedora:8080/fedora/rest
       - MEDIAINFO_PATH=/usr/bin/mediainfo
@@ -141,7 +142,7 @@ services:
       - solr-test
       - redis-test
     environment:
-      - DATABASE_URL=postgresql://postgres@db-test/avalon
+      - DATABASE_URL=postgresql://postgres:password@db-test/avalon
       - REDIS_HOST=redis-test
       - FEDORA_URL=http://fedora-test:8080/fedora/rest
       - SOLR_URL=http://solr-test:8983/solr/avalon
