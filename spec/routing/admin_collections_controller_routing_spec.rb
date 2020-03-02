@@ -17,7 +17,10 @@ require "rails_helper"
 RSpec.describe Admin::CollectionsController, type: :routing do
   describe "routing" do
     it 'routes to #attach_poster' do
-      expect(:post => "/admin/collections/1/attach_poster").to route_to("admin/collections#attach_poster", :id => "1")
+      expect(:post => "/admin/collections/1/poster").to route_to("admin/collections#attach_poster", :id => "1")
+    end
+    it 'routes to #remove_poster' do
+      expect(:delete => "/admin/collections/1/poster").to route_to("admin/collections#remove_poster", :id => "1")
     end
     it 'routes to #poster' do
       expect(:get => "/admin/collections/1/poster").to route_to("admin/collections#poster", :id => "1")

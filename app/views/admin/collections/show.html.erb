@@ -56,11 +56,13 @@ Unless required by applicable law or agreed to in writing, software distributed
         <img src="" class="img-responsive" id="poster-image">
         <% end %>
       </div>
-      <div>
-        <%= form_for @collection, url: attach_poster_admin_collection_path(@collection.id), html: {method: "post", class: 'collection_poster'} do |form| %>
-        <%= form.file_field :poster, id: 'poster_input', class: "filedata", style: "height:0px;width:0px;" %>
-        <input type="button" class="btn btn-primary btn-xs" onclick="$('.filedata').click();" value="Upload Poster" />
-        <input type="submit" class="btn btn-danger btn-xs" value="Remove Poster" />
+      <div class="collection_poster">
+        <%= form_for @collection, url: attach_poster_admin_collection_path(@collection.id), html: {method: "post"} do |form| %>
+          <%= form.file_field :poster, id: 'poster_input', class: "filedata", style: "height:0px;width:0px;" %>
+          <input type="button" class="btn btn-primary btn-xs" onclick="$('.filedata').click();" value="Upload Poster" />
+        <% end %>
+        <%= form_for @collection, url: remove_poster_admin_collection_path(@collection.id), html: {method: "delete"} do |form| %>
+          <input type="submit" class="btn btn-danger btn-xs" value="Remove Poster" />
         <% end %>
       </div>
       <div class="well-vertical-spacer">

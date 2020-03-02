@@ -15,12 +15,8 @@
 */
 
 function add_cropper_handler(upload_path) {
-  let $poster = $('#poster-image');
   let $image = $('#image');
   let $input = $('#poster_input');
-  let $progress = $('#cropper-progress');
-  let $progressBar = $('#cropper-progress-bar');
-  let $alert = $('#cropper-alert');
   let $modal = $('#modal');
   let cropper;
   let width = 700;
@@ -29,12 +25,10 @@ function add_cropper_handler(upload_path) {
     let files = e.target.files;
     let done = function (url) {
       $image.prop("src", url);
-      $alert.hide();
       $modal.modal('show');
     };
     let reader;
     let file;
-    let url;
     if (files && files.length > 0) {
       file = files[0];
       if (URL) {
@@ -59,7 +53,6 @@ function add_cropper_handler(upload_path) {
     cropper = null;
   });
   $('#crop').on('click', function () {
-    let initialPosterURL;
     let canvas;
     let inputfile = $input.val().split('\\').pop();
     $modal.modal('hide');
@@ -68,45 +61,18 @@ function add_cropper_handler(upload_path) {
         width: width,
         height: width / aspectRatio,
       });
-      initialPosterURL = $poster.prop("src");
-      $poster.prop("src", canvas.toDataURL());
-      $progress.show();
-      $alert.removeClass('alert-success alert-warning');
       canvas.toBlob(function (blob) {
         let formData = new FormData();
         $input.val("")
-        $('#poster_original_name').text(inputfile)
         formData.append('admin_collection[poster]', blob, inputfile);
-        formData.append('authenticity_token', $('input[name=authenticity_token]').val())
+        formData.append('authenticity_token', $('input[name=authenticity_token]').val());
 
-        $.ajax(upload_path, {
-          method: 'POST',
-          data: formData,
-          processData: false,
-          contentType: false,
-          xhr: function () {
-            let xhr = new XMLHttpRequest();
-            xhr.upload.onprogress = function (e) {
-              let percent = '0';
-              let percentage = '0%';
-              if (e.lengthComputable) {
-                percent = Math.round((e.loaded / e.total) * 100);
-                percentage = percent + '%';
-                $progressBar.width(percentage).attr('aria-valuenow', percent).text(percentage);
-              }
-            };
-            return xhr;
-          },
-          success: function () {
-            //$alert.show().addClass('alert-success').text('Upload success');
-          },
-          error: function () {
-            $poster.prop("src", initialPosterURL);
-            $alert.show().addClass('alert-warning').text('Upload error');
-          },
-          complete: function () {
-            $progress.hide();
-          },
+        fetch(upload_path, {
+          method: "POST",
+          body: formData
+        }).then(() => {
+          // Page reload to show the flash message
+          location.reload();
         });
       });
     }

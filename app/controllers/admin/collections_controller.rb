@@ -16,7 +16,7 @@ class Admin::CollectionsController < ApplicationController
   include Rails::Pagination
 
   before_action :authenticate_user!
-  load_and_authorize_resource except: [:index, :remove, :attach_poster, :poster]
+  load_and_authorize_resource except: [:index, :remove, :attach_poster, :remove_poster, :poster]
   before_action :load_and_authorize_collections, only: [:index]
   respond_to :html
 
@@ -245,31 +245,39 @@ class Admin::CollectionsController < ApplicationController
     @collection = Admin::Collection.find(params['id'])
     authorize! :edit, @collection, message: "You do not have sufficient privileges to add a poster image."
 
-    if params.dig(:admin_collection, :poster).present?
-      poster_file = params[:admin_collection][:poster]
-      resized_poster = resize_uploaded_poster(poster_file.path)
-      if resized_poster
-        @collection.poster.content = resized_poster
-        @collection.poster.mime_type = 'image/png'
-        @collection.poster.original_name = poster_file.original_filename
-        flash[:success] = "Poster file succesfully added."
+    poster_file = params[:admin_collection][:poster]
+    resized_poster = resize_uploaded_poster(poster_file&.path)
+    if resized_poster
+      @collection.poster.content = resized_poster
+      @collection.poster.mime_type = 'image/png'
+      @collection.poster.original_name = poster_file.original_filename
+
+      if @collection.save
+        flash[:success] = "Poster file successfully added."
       else
-        flash[:error] = "Uploaded file is not a recognized poster image file"
+        flash[:error] = "There was a problem storing the poster image."
       end
     else
-      @collection.poster.content = ''
-      @collection.poster.original_name = ''
-      flash[:success] = "Poster file succesfully removed."
+      flash[:error] = "Uploaded file is not a recognized poster image file"
     end
 
-    unless @collection.save
-      flash[:success] = nil
-      flash[:error] = "There was a problem storing the poster image."
+    redirect_to admin_collection_path(@collection)
+  end
+
+  def remove_poster
+    @collection = Admin::Collection.find(params['id'])
+    authorize! :edit, @collection, message: "You do not have sufficient privileges to remove a poster image."
+
+    @collection.poster.content = ''
+    @collection.poster.original_name = ''
+
+    if @collection.save
+      flash[:success] = "Poster file successfully removed."
+    else
+      flash[:error] = "There was a problem removing the poster image."
     end
 
-    respond_to do |format|
-      format.html { redirect_to admin_collection_path(@collection) }
-    end
+    redirect_to admin_collection_path(@collection)
   end
 
   def poster
