@@ -64,7 +64,7 @@ Unless required by applicable law or agreed to in writing, software distributed
             <% if cannot?(:edit, @collection) %>disabled<%end%> />
         <% end %>
         <%= form_for @collection, url: remove_poster_admin_collection_path(@collection.id), html: {method: "delete"} do |form| %>
-          <input type="submit" class="btn btn-danger btn-xs" value="Remove Poster" <% if is_depositor || @collection.poster.blank? %>disabled<%end%> />
+          <input type="submit" class="btn btn-danger btn-xs" value="Remove Poster" <% if @collection.poster.blank? || cannot?(:edit, @collection) %>disabled<%end%> />
         <% end %>
       </div>
       <div class="well-vertical-spacer">
