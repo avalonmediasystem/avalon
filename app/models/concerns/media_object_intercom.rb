@@ -13,7 +13,7 @@
 # ---  END LICENSE_HEADER BLOCK  ---
 
 module MediaObjectIntercom
-  def to_ingest_api_hash(include_structure = true)
+  def to_ingest_api_hash(include_structure = true, remove_identifiers: false)
     {
       files: ordered_master_files.to_a.collect { |mf| mf.to_ingest_api_hash include_structure },
       fields:
@@ -22,7 +22,7 @@ module MediaObjectIntercom
           avalon_resource_type: avalon_resource_type.to_a,
           avalon_publisher: avalon_publisher,
           avalon_uploader: avalon_uploader,
-          identifier: identifier.to_a,
+          identifier: (remove_identifiers ? [] : identifier.to_a),
           title: title,
           alternative_title: alternative_title,
           translated_title: translated_title,

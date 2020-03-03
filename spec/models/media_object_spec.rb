@@ -893,4 +893,21 @@ describe MediaObject do
       expect(media_object.reload.terms_of_use).to eq terms_of_use_value
     end
   end
+
+  describe '#to_ingest_api_hash' do
+    let(:media_object) { FactoryBot.build(:fully_searchable_media_object, identifier: ['ABCDE12345']) }
+
+    context 'remove_identifiers parameter' do
+      it 'removes identifiers if parameter is true' do
+        expect(media_object.identifier).not_to be_empty
+        expect(media_object.to_ingest_api_hash(false, remove_identifiers: true)[:fields][:identifier]).to be_empty
+      end
+
+      it 'does not remove identifiers if parameter is not present' do
+        expect(media_object.identifier).not_to be_empty
+        expect(media_object.to_ingest_api_hash(false, remove_identifiers: false)[:fields][:identifier]).not_to be_empty
+        expect(media_object.to_ingest_api_hash(false)[:fields][:identifier]).not_to be_empty
+      end
+    end
+  end
 end

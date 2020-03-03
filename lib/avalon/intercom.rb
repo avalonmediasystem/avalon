@@ -54,7 +54,7 @@ module Avalon
     private
 
       def build_payload(media_object, collection_id, include_structure)
-        payload = media_object.to_ingest_api_hash(include_structure)
+        payload = media_object.to_ingest_api_hash(include_structure, remove_identifiers: @avalon['remove_identifiers'])
         payload[:collection_id] = collection_id
         payload[:import_bib_record] = @avalon['import_bib_record']
         payload[:publish] = @avalon['publish']
