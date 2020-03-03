@@ -248,7 +248,7 @@ class Admin::CollectionsController < ApplicationController
     poster_file = params[:admin_collection][:poster]
     is_image = check_image_compliance(poster_file&.path)
     if is_image
-      @collection.poster.content = poster_file.tempfile.open.read
+      @collection.poster.content = poster_file.read
       @collection.poster.mime_type = 'image/png'
       @collection.poster.original_name = poster_file.original_filename
 
