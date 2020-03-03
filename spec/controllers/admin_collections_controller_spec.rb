@@ -362,11 +362,11 @@ describe Admin::CollectionsController, type: :controller do
 
   describe '#attach_poster' do
     let(:collection) { FactoryBot.create(:collection) }
-    let(:resized_poster_data) { "image data" }
+    let(:is_image) { true }
 
     before do
       login_user collection.managers.first
-      allow(controller).to receive(:resize_uploaded_poster).and_return(resized_poster_data)
+      allow(controller).to receive(:check_image_compliance).and_return(is_image)
     end
 
     it 'adds the poster' do
@@ -380,7 +380,7 @@ describe Admin::CollectionsController, type: :controller do
     end
 
     context 'with an invalid file' do
-      let(:resized_poster_data) { nil }
+      let(:is_image) { false }
 
       it 'displays an error when the file is not an image' do
         file = fixture_file_upload('/captions.vtt', 'text/vtt')

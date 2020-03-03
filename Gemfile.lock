@@ -401,6 +401,7 @@ GEM
       multipart-post (>= 1.2, < 3)
     faraday-encoding (0.0.4)
       faraday
+    fastimage (2.1.7)
     fcrepo_wrapper (0.9.0)
       ruby-progressbar
     ffi (1.10.0)
@@ -539,7 +540,6 @@ GEM
       mime-types-data (~> 3.2015)
     mime-types-data (3.2019.0331)
     mimemagic (0.3.3)
-    mini_magick (4.9.5)
     mini_mime (1.0.1)
     mini_portile2 (2.4.0)
     minitest (5.11.3)
@@ -940,6 +940,7 @@ DEPENDENCIES
   factory_bot_rails
   fakefs
   faker
+  fastimage
   fcrepo_wrapper
   fedora-migrate!
   google-analytics-rails (= 1.1.0)
@@ -966,7 +967,6 @@ DEPENDENCIES
   mediaelement-track-scrubber!
   mediaelement_rails!
   mediainfo!
-  mini_magick (~> 4.9)
   mysql2
   net-ldap
   noid-rails (~> 3.0.1)
