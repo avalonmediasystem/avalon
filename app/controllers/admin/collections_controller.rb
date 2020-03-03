@@ -299,9 +299,8 @@ class Admin::CollectionsController < ApplicationController
   end
 
   def check_image_compliance(poster_path)
-    type = FastImage.type(poster_path) == :png
+    fastimage = FastImage.new(poster_path)
     # Size derived from width and aspect ratio from JS code, assets/javascript/crop_upload.js:60-63
-    size = FastImage.size(poster_path) == [700, 560] # [width, height]
-    type && size
+    fastimage.type == :png && fastimage.size == [700, 560] # [width, height]
   end
 end
