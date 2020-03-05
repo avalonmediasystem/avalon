@@ -246,9 +246,9 @@ class Admin::CollectionsController < ApplicationController
     authorize! :edit, @collection, message: "You do not have sufficient privileges to add a poster image."
 
     poster_file = params[:admin_collection][:poster]
-    resized_poster = resize_uploaded_poster(poster_file&.path)
-    if resized_poster
-      @collection.poster.content = resized_poster
+    is_image = check_image_compliance(poster_file&.path)
+    if is_image
+      @collection.poster.content = poster_file.read
       @collection.poster.mime_type = 'image/png'
       @collection.poster.original_name = poster_file.original_filename
 
@@ -298,12 +298,9 @@ class Admin::CollectionsController < ApplicationController
     params.permit(:admin_collection => [:name, :description, :unit, :managers => []])[:admin_collection]
   end
 
-  def resize_uploaded_poster(file)
-    image = ::MiniMagick::Image.open(file)
-    image.thumbnail '700x700>'
-    image.format 'png'
-    image.tempfile.open.read
-  rescue MiniMagick::Invalid
-    return nil
+  def check_image_compliance(poster_path)
+    fastimage = FastImage.new(poster_path)
+    # Size derived from width and aspect ratio from JS code, assets/javascript/crop_upload.js:60-63
+    fastimage.type == :png && fastimage.size == [700, 560] # [width, height]
   end
 end

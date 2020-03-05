@@ -90,7 +90,7 @@ describe WaveformJob do
       let(:waveform_json) { nil }
 
       it 'logs and does not set the waveform' do
-        expect(Rails.logger).to receive(:error)
+        expect(Rails.logger).to receive(:error).at_least(:once)
         expect { job.perform(master_file.id, true) }.not_to change { master_file.reload.waveform.content }
         expect(service).to have_received(:get_waveform_json)
       end
