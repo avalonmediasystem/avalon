@@ -362,25 +362,22 @@ describe Admin::CollectionsController, type: :controller do
 
   describe '#attach_poster' do
     let(:collection) { FactoryBot.create(:collection) }
-    let(:is_image) { true }
 
     before do
       login_user collection.managers.first
-      allow(controller).to receive(:check_image_compliance).and_return(is_image)
     end
 
     it 'adds the poster' do
-      file = fixture_file_upload('/collection_poster.jpg', 'image/jpeg')
+      file = fixture_file_upload('/collection_poster.png', 'image/png')
       expect { post :attach_poster, params: { id: collection.id, admin_collection: { poster: file } } }.to change { collection.reload.poster.present? }.from(false).to(true)
       expect(collection.poster.mime_type).to eq 'image/png'
-      expect(collection.poster.original_name).to eq 'collection_poster.jpg'
+      expect(collection.poster.original_name).to eq 'collection_poster.png'
       expect(collection.poster.content).not_to be_blank
       expect(response).to redirect_to(admin_collection_path(collection))
       expect(flash[:success]).not_to be_empty
     end
 
     context 'with an invalid file' do
-      let(:is_image) { false }
 
       it 'displays an error when the file is not an image' do
         file = fixture_file_upload('/captions.vtt', 'text/vtt')
@@ -396,7 +393,7 @@ describe Admin::CollectionsController, type: :controller do
       end
 
       it 'returns an error' do
-        file = fixture_file_upload('/collection_poster.jpg', 'image/jpeg')
+        file = fixture_file_upload('/collection_poster.png', 'image/png')
         expect { post :attach_poster, params: { id: collection.id, admin_collection: { poster: file } } }.not_to change { collection.reload.poster.present? }
         expect(flash[:error]).not_to be_empty
         expect(response).to redirect_to(admin_collection_path(collection))
