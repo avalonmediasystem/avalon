@@ -8,7 +8,7 @@ jobs:
      - image: avalonmediasystem/avalon:7.0-slim-dev-20200225
        environment:
         - DATABASE_URL: postgresql://postgres@localhost:5432/postgres
-        - FEDORA_URL: http://fedoraAdmin:fedoraAdmin@localhost:8080/fcrepo/rest
+        - FEDORA_URL: http://fedoraAdmin:fedoraAdmin@localhost:8080/rest
         - FEDORA_BASE_PATH: /test
         - RAILS_ENV: test
         - SPEC_OPTS: --profile 10 --format RspecJunitFormatter --out /tmp/test-results/rspec.xml --format progress
