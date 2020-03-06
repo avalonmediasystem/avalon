@@ -19,7 +19,5 @@ timeliner:
   timeliner_url: http://test.host/timeliner
 encoding:
   engine_adapter: test
-matterhorn:
-  root: 'http://localhost:8080/'
-  baseApplication: 'avalon'
-  cleanup_log: 'log/cleanup_jobs.log'
+email: 
+  mailer:
