@@ -7,21 +7,22 @@ jobs:
      # Primary container image where all steps run.
      - image: avalonmediasystem/avalon:7.0-slim-dev-20200225
        environment:
-        - DATABASE_URL=postgresql://postgres@localhost:5432/postgres
-        - FEDORA_URL=http://localhost:8080/fcrepo/rest
-        - RAILS_ENV=test
+        - DATABASE_URL: postgresql://postgres@localhost:5432/postgres
+        - FEDORA_URL: http://localhost:8080/fcrepo/rest
+        - RAILS_ENV: test
+        - SPEC_OPTS: --profile 10 --format RspecJunitFormatter --out /tmp/test-results/rspec.xml --format progress
      # Secondary container image on common network.
      - image: postgres:10-alpine
        environment:
-         - POSTGRES_USER=postgres
-         - POSTGRES_DB=avalon
-         - POSTGRES_PASSWORD=password
-     - image: ualbertalib/docker-fcrepo4:4.7
+         - POSTGRES_USER: postgres
+         - POSTGRES_DB: avalon
+         - POSTGRES_PASSWORD: password
+     - image: samvera/fcrepo4:<< parameters.fcrepo_version>>
        environment:
          CATALINA_OPTS: "-Djava.awt.headless=true -Dfile.encoding=UTF-8 -server -Xms512m -Xmx1024m -XX:NewSize=256m -XX:MaxNewSize=256m -XX:PermSize=256m -XX:MaxPermSize=256m -XX:+DisableExplicitGC"
      - image: solr:7-alpine
        command: bin/solr -cloud -noprompt -f -p <<parameters.solr_port>>
-     - image: redis:alpine
+     - image: circleci/redis:<<parameters.redis_version>>
 
     parameters:
       ruby_ver:
@@ -34,6 +35,12 @@ jobs:
       parallelism:
         type: integer
         default: 4
+      redis_version:
+        type: string
+        default: '4'
+      fcrepo_version:
+        type: string
+        default: '4.7.5'
 
     working_directory: /home/app/avalon
 
@@ -86,6 +93,9 @@ jobs:
           paths:
             - codeclimate.*.json
 
+      - store_test_results:
+          path: /tmp/test-results
+
   upload-coverage:
     parameters:
       parallelism:
@@ -93,7 +103,7 @@ jobs:
         default: 4
     docker:
       # Primary container image where all steps run.
-      - image: avalonmediasystem/avalon:6.x-dev
+      - image: cimg/base:2020.01
 
     working_directory: /home/app/avalon
 
