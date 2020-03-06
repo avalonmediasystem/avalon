@@ -9,10 +9,10 @@ fullaudio:
 avalon:
   - :label: 'high'
     :extension: 'mp4'
-    :ffmpeg_opt: '-vf "yadif=0:-1:1,scale=trunc(oh*dar/2)*2:min(ih\\,1080)" -vcodec libx264 -preset fast -profile main -level 3.1 -b 3M -maxrate 3M -bufsize 4M -threads 0 -r 30 -force_key_frames "expr:gte(t,n_forced*2)" -pix_fmt yuv420p -acodec aac -ab 192k -ar 44100 -movflags faststart -strict -2'
+    :ffmpeg_opt: '-vf "yadif=0:-1:1,scale=trunc(oh*dar/2)*2:min(ih\\,1080)" -vcodec libx264 -preset fast -profile main -level 3.1 -b 3M -maxrate 3M -bufsize 4M -threads 0 -force_key_frames "expr:gte(t,n_forced*2)" -pix_fmt yuv420p -acodec aac -ab 192k -ar 44100 -movflags faststart -strict -2'
   - :label: 'medium'
     :extension: 'mp4'
-    :ffmpeg_opt: '-vf "yadif=0:-1:1,scale=trunc(oh*dar/2)*2:min(ih\\,720)" -vcodec libx264 -preset fast -profile main -level 3.1 -b 1.5M -maxrate 1.5M -bufsize 2M -threads 0 -r 30 -force_key_frames "expr:gte(t,n_forced*2)" -pix_fmt yuv420p -acodec aac -ab 128k -ar 44100 -movflags faststart -strict -2'
+    :ffmpeg_opt: '-vf "yadif=0:-1:1,scale=trunc(oh*dar/2)*2:min(ih\\,720)" -vcodec libx264 -preset fast -profile main -level 3.1 -b 1.5M -maxrate 1.5M -bufsize 2M -threads 0 -force_key_frames "expr:gte(t,n_forced*2)" -pix_fmt yuv420p -acodec aac -ab 128k -ar 44100 -movflags faststart -strict -2'
   - :label: 'low'
     :extension: 'mp4'
-    :ffmpeg_opt: '-vf "yadif=0:-1:1,scale=trunc(oh*dar/2)*2:min(ih\\,480)" -vcodec libx264 -preset fast -profile:v baseline -level 3.0 -b:v 500k -maxrate 500k -bufsize 1M -bf 0 -threads 0 -r 30 -force_key_frames "expr:gte(t,n_forced*2)" -pix_fmt yuv420p -acodec aac -ab 128k -ar 44100 -movflags faststart -strict -2'
+    :ffmpeg_opt: '-vf "yadif=0:-1:1,scale=trunc(oh*dar/2)*2:min(ih\\,480)" -vcodec libx264 -preset fast -profile:v baseline -level 3.0 -b:v 500k -maxrate 500k -bufsize 1M -bf 0 -threads 0 -force_key_frames "expr:gte(t,n_forced*2)" -pix_fmt yuv420p -acodec aac -ab 128k -ar 44100 -movflags faststart -strict -2'
