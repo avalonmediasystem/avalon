@@ -79,15 +79,18 @@ describe Avalon::Intercom do
       response = Avalon::Intercom.new(username).push_media_object(media_object, 'cupcake_collection', false)
       expect(response[:message]).to eq('Avalon intercom target is not configured.')
     end
-    it "should respond to a failed api call with error" do
+    it "should respond to a failed api call with error, while the media object push status shall be false" do
       allow(RestClient::Request).to receive(:execute).and_call_original
       allow(RestClient::Request).to receive(:execute).with(hash_including(method: :post)).and_raise(StandardError)
       response = intercom.push_media_object(media_object, 'cupcake_collection', false)
       expect(response).to eq({ message: 'StandardError', status: 500 })
+      expect(media_object.intercom_pushed?).eql?(false)
     end
-    it "should respond with a link to the pushed object on target" do
+    it "should respond with a link to the pushed object on target, while the pushed content shall not include any intercom notes, and the media object push status shall be true" do
       media_object.ordered_master_files=[master_file_with_structure]
       media_object_hash = media_object.to_ingest_api_hash(false)
+      expect(media_object_hash[:fields][:note]).eql?(nil)
+      expect(media_object_hash[:fields][:notetype]).eql?(nil)
       media_object_hash.merge!(
         { 'collection_id' => 'cupcake_collection', 'import_bib_record' => true, 'publish' => false }
       )
@@ -96,6 +99,7 @@ describe Avalon::Intercom do
         with(body: media_object_json).to_return(status: 200, body: { 'id' => 'def456' }.to_json, headers: {})
       response = intercom.push_media_object(media_object, 'cupcake_collection', false)
       expect(response).to eq({ link: 'https://target.avalon.com/media_objects/def456'})
+      expect(media_object.intercom_pushed?).eql?(true)
     end
   end
 end
