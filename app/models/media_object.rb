@@ -219,6 +219,11 @@ class MediaObject < ActiveFedora::Base
     end
     all_pds.uniq
   end
+  
+  # Returns true if the media object has been pushed from one avalon to another, i.e. it has some notes with type "intercom"
+  def intercom_pushed?
+    note.present? && note.any? {|n| n[:type] == 'intercom'}
+  end
 
   def to_solr
     super.tap do |solr_doc|
@@ -242,6 +247,7 @@ class MediaObject < ActiveFedora::Base
       solr_doc['avalon_resource_type_ssim'] = self.avalon_resource_type.map(&:titleize)
       solr_doc['identifier_ssim'] = self.identifier.map(&:downcase)
       solr_doc['all_comments_sim'] = all_comments
+      solr_doc['intercom_pushed_bsi'] = intercom_pushed?
       #Add all searchable fields to the all_text_timv field
       all_text_values = []
       all_text_values << solr_doc["title_tesi"]
