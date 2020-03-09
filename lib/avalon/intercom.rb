@@ -47,7 +47,7 @@ module Avalon
         )
         result = { link: URI.join(@avalon['url'], 'media_objects/', JSON.parse(resp.body)['id']).to_s }
         # add a note to indicate the item has been successfully pushed
-        pushnote = [{note: "Pushed by #{@user} at #{Time.now.strftime('%m/%d/%Y %H:%M%p')}", type: 'intercom'}]
+        pushnote = [{ note: "Pushed by #{@user} at #{Time.now.utc.strftime('%m/%d/%Y %H:%M%p %Z')}", type: 'intercom' }]
         media_object.note = media_object.note.present? ? media_object.note + pushnote : pushnote
         result[:message] = "The media object has been pushed to #{avalon}, but the note for this push failed to be saved." unless media_object.save
         return result

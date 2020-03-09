@@ -219,10 +219,10 @@ class MediaObject < ActiveFedora::Base
     end
     all_pds.uniq
   end
-  
+
   # Returns true if the media object has been pushed from one avalon to another, i.e. it has some notes with type "intercom"
   def intercom_pushed?
-    note.present? && note.any? {|n| n[:type] == 'intercom'}
+    note.present? && note.any? { |n| n[:type] == 'intercom' }
   end
 
   def to_solr
