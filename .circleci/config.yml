@@ -10,6 +10,7 @@ jobs:
         - DATABASE_URL: postgresql://postgres@localhost:5432/postgres
         - FEDORA_URL: http://fedoraAdmin:fedoraAdmin@localhost:8080/rest
         - FEDORA_BASE_PATH: /test
+        - FEDORA_TIMEOUT: 300
         - RAILS_ENV: test
         - SPEC_OPTS: --profile 10 --format RspecJunitFormatter --out /tmp/test-results/rspec.xml --format progress
      # Secondary container image on common network.
