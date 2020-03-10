@@ -9,6 +9,7 @@ jobs:
        environment:
         - DATABASE_URL=postgresql://postgres@localhost:5432/postgres
         - FEDORA_URL=http://localhost:8080/fcrepo/rest
+        - FEDORA_TIMEOUT=300
         - RAILS_ENV=test
      # Secondary container image on common network.
      - image: postgres:10-alpine

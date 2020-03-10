@@ -14,7 +14,7 @@ class EnvironmentConfigurator < ActiveFedora::FileConfigurator
       @fedora_config = { user: fedora_url.user, password: fedora_url.password, base_path: ENV['FEDORA_BASE_PATH'] || "" }
       fedora_url.userinfo = ''
       @fedora_config[:url] = fedora_url.to_s
-      @fedora_config[:request] = { timeout: Integer(fedora_timeout), open_timeout: Integer(fedora_timeout) } unless fedora_timeout.blank?
+      @fedora_config[:request] = { timeout: Float(fedora_timeout), open_timeout: Float(fedora_timeout) } unless fedora_timeout.blank?
       ENV['FEDORA_URL'] ||= fedora_setting
     else
       super
