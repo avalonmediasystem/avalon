@@ -17,7 +17,7 @@ jobs:
        environment:
          - POSTGRES_USER: postgres
          - POSTGRES_DB: avalon
-         - POSTGRES_PASSWORD: password
+         - POSTGRES_HOST_AUTH_METHOD: trust
      - image: samvera/fcrepo4:<< parameters.fcrepo_version>>
        environment:
          CATALINA_OPTS: "-Djava.awt.headless=true -Dfile.encoding=UTF-8 -server -Xms512m -Xmx1024m -XX:NewSize=256m -XX:MaxNewSize=256m -XX:PermSize=256m -XX:MaxPermSize=256m -XX:+DisableExplicitGC"
