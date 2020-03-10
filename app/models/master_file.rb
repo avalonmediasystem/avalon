@@ -369,7 +369,7 @@ class MasterFile < ActiveFedora::Base
 
   def extract_still(options={})
     default_frame_sizes = {
-      'poster'    => '1024x768',
+      'poster'    => '1280x720',
       'thumbnail' => '640x480'
     }
 
