@@ -613,7 +613,7 @@ class MasterFile < ActiveFedora::Base
           '-s',       "#{new_width.to_i}x#{new_height.to_i}",
           '-vframes', '1',
           '-aspect',  aspect.to_s,
-          '-q:v',       '1',
+          '-q:v',       '4',
           '-y',       jpeg.path
         ]
         if frame_source[:master]
