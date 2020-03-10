@@ -36,7 +36,7 @@ const CollectionsListUnit = ({ unitArr, index, sortByAZ, maxItems }) => {
       <div className="row">
         {collections.slice(0, maxItems).map(col => {
           return (
-            <div className="col-sm-4" key={col.id}>
+            <div className="col-sm-3" key={col.id}>
               <CollectionCard attributes={col} showUnit={false} />
             </div>
           );
@@ -47,7 +47,7 @@ const CollectionsListUnit = ({ unitArr, index, sortByAZ, maxItems }) => {
         <div className="row" id="collections-list-remaining-collections">
           {collections.slice(maxItems, collections.length).map(col => {
             return (
-              <div className="col-sm-4" key={col.id}>
+              <div className="col-sm-3" key={col.id}>
                 <CollectionCard attributes={col} showUnit={false} />
               </div>
             );

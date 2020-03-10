@@ -176,6 +176,12 @@ EOC
     $stderr.puts
   end
 
+  desc 'clean out user sessions that have not been updated for 7 days'
+  task session_cleanup: :environment do
+    sql = 'DELETE FROM sessions WHERE updated_at < DATE_SUB(NOW(), INTERVAL 7 DAY);'
+    ActiveRecord::Base.connection.execute(sql)
+  end
+
   namespace :services do
     services = ["jetty", "felix", "delayed_job"]
     desc "Start Avalon's dependent services"
@@ -245,7 +251,7 @@ EOC
       require 'avalon/role_controls'
       username = ENV['avalon_username'].dup
       password = ENV['avalon_password']
-      groups = ENV['avalon_groups'].split(",")
+      groups = ENV['avalon_groups'].nil? ? [] : ENV['avalon_groups'].split(",")
 
       User.create!(username: username, email: username, password: password, password_confirmation: password)
       groups.each do |group|
@@ -289,14 +295,25 @@ EOC
   namespace :test do
     desc "Create a test media object"
     task :media_object => :environment do
-      require 'factory_girl'
+      if ENV['collection'].blank?
+        abort "You must specify a collection.  Example: rake avalon:test:media_object collection=abcd1234"
+      end
+
+      require 'factory_bot'
       require 'faker'
       Dir[Rails.root.join("spec/factories/**/*.rb")].each {|f| require f}
 
       mf_count = [ENV['master_files'].to_i,1].max
-      mo = FactoryGirl.create(:media_object)
+      id = ENV['id']
+      begin
+        collection = Admin::Collection.find(ENV['collection'])
+      rescue ActiveFedora::ObjectNotFoundError
+        abort "Collection #{ENV['collection']} not found."
+      end
+      params = { id: id, collection: collection }.reject { |_k, v| v.blank? }
+      mo = FactoryBot.create(:media_object, params)
       mf_count.times do |i|
-        FactoryGirl.create(:master_file_with_derivative, mediaobject: mo)
+        FactoryBot.create(:master_file, :with_derivative, media_object: mo)
       end
       puts mo.id
     end

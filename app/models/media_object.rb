@@ -279,7 +279,7 @@ class MediaObject < ActiveFedora::Base
       summary: abstract,
       visibility: visibility,
       read_groups: read_groups
-    }.merge(to_ingest_api_hash(false))
+    }.merge(to_ingest_api_hash(options.fetch(:include_structure, false)))
   end
 
   # Other validation to consider adding into future iterations is the ability to

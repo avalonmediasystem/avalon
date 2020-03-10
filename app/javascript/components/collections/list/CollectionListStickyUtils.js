@@ -21,12 +21,13 @@ const CollectionListStickyUtils = ({
   filter,
   handleFilterChange,
   handleSortChange,
+  handleSubmit,
   sort
 }) => {
   return (
     <section className="row stickyUtils collection-list-sticky-utils">
       <div className="col-sm-6">
-        <form>
+        <form onSubmit={handleSubmit}>
           <div className="form-group">
             <label htmlFor="q" className="sr-only">
               search for
@@ -73,6 +74,7 @@ CollectionListStickyUtils.propTypes = {
   filter: PropTypes.string,
   handleFilterChange: PropTypes.func,
   handleSortChange: PropTypes.func,
+  handleSubmit: PropTypes.func,
   sort: PropTypes.string
 };
 

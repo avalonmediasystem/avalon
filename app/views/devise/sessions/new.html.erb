@@ -13,19 +13,22 @@ Unless required by applicable law or agreed to in writing, software distributed
   specific language governing permissions and limitations under the License.
 ---  END LICENSE_HEADER BLOCK  ---
 %>
+<% visible_providers = devise_mapping.omniauthable? && Avalon::Authentication::VisibleProviders.present? %>
 <div class="omniauth-form container">
-  <h3 id='sign-in-select' align='center'>Select Sign In Method</h3>
-  <div id='sign-in-buttons'>
-    <%- if devise_mapping.omniauthable? %>
+  <% if visible_providers %>
+    <h3 id='sign-in-select' align='center'>Select Sign In Method</h3>
+    <div id='sign-in-buttons'>
       <%- Avalon::Authentication::VisibleProviders.each do |visible| %>
         <%= link_to OmniAuth::Utils.camelize(visible[:provider]), omniauth_authorize_path(resource_name, visible[:provider]), class: 'btn btn-primary' %>
       <% end -%>
-    <% end -%>
 
-    <a href='javascript:;' data-trigger='show-email' class='btn btn-primary'>Email / Password</a>
-  </div>
+      <a href='javascript:;' data-trigger='show-email' class='btn btn-primary'>Email / Password</a>
+    </div>
+  <% else %>
+    <h3 id='sign-in-select' align='center'>Sign In</h3>
+  <% end %>
 
-  <div class='hidden' id='email-box'>
+  <div <%= visible_providers ? "class=hidden" : "" %> id='email-box'>
     <%= bootstrap_form_for resource, as: resource_name, url: session_path(resource_name, admin: true, email: true) do |f| %>
 
       <div class="form-group">
@@ -48,7 +51,7 @@ Unless required by applicable law or agreed to in writing, software distributed
     <% end %>
     <p align='center' class='devise-links'>
       <%= render "devise/shared/links" %>
-      <span class='devise-link'><a href='javascript:;' data-trigger='show-email'>Cancel</a></span>
+      <span class='devise-link'><a <%= visible_providers ? "href=javascript:; data-trigger=show-email" : "href=/" %>>Cancel</a></span>
     </p>
 
   </div>

@@ -18,7 +18,7 @@ Unless required by applicable law or agreed to in writing, software distributed
 <div class="page-title-wrapper">
   <h1>
     <% unless @media_object.title.blank? %>
-    <%= @media_object.title %>
+    <%= @media_object.title %><%= " / #{@media_object.statement_of_responsibility}" if @media_object.statement_of_responsibility.present? %>
     <% else %>
     <%= @media_object.id %>
     <% end %>

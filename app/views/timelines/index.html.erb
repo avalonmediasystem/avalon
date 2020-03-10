@@ -20,37 +20,14 @@ Unless required by applicable law or agreed to in writing, software distributed
   <% timelines = Timeline.where(user_id: current_user.id) %>
   <div class="container-fluid">
     <div class="row">
-      <div class="container">
-        <div class="Timeline-index">
+      <div class="Timeline-index">
+        <div class="page-title-wrapper">
           <div class="row">
-            <div>
-              <h1 class=>Timelines <small>(<%= timelines.size %> total)</small></h1>
-              <% unless timelines.empty? %>
-                <div class="tag_filter_container">
-                  Filter: <select name="tag_filter" class="tag_filter form-control input-sm" style="width:auto">
-                    <option value="" selected="selected"></option>
-                    <% current_user.timeline_tags.each do |tag| %>
-                      <option value="<%= tag %>"><%= tag %></option>
-                    <% end %>
-                  </select>
-                </div>
-                <table id="Timelines" class="table">
-                  <thead>
-                    <tr>
-                      <th>Name</th>
-                      <th>Description</th>
-                      <th>Visibility</th>
-                      <th>Last Updated</th>
-                      <th>Tags</th>
-                      <th class="text-right" data-orderable="false">Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                  </tbody>
-                </table>
-                <div> </div>
-              <% end %>
-              <div>
+            <div class="col-sm-6">
+              <h1 class="page-title">Timelines <small>(<%= timelines.size %> total)</small></h1>
+            </div>
+            <div class="<% if !timelines.empty? %>col-sm-6 text-right<% end %>">
+              <div class="create-buttons">
                 <% if Settings['variations'].present? %>
                   <%= form_tag(import_variations_timeline_timelines_path, method:"post", enctype:"multipart/form-data", style:"display:inline") do %>
                     <input type="file" name="Filedata" class="filedata" style="visibility:hidden; display:inline; width:0;" />
@@ -60,6 +37,33 @@ Unless required by applicable law or agreed to in writing, software distributed
               </div>
             </div>
           </div>
+        </div>
+        <div>
+          <% unless timelines.empty? %>
+            <div class="tag_filter_container">
+              Filter: <select name="tag_filter" class="tag_filter form-control input-sm" style="width:auto">
+                <option value="" selected="selected"></option>
+                <% current_user.timeline_tags.each do |tag| %>
+                  <option value="<%= tag %>"><%= tag %></option>
+                <% end %>
+              </select>
+            </div>
+            <table id="Timelines" class="table table-striped">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Description</th>
+                  <th>Visibility</th>
+                  <th>Last Updated</th>
+                  <th>Tags</th>
+                  <th class="text-right" data-orderable="false">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+              </tbody>
+            </table>
+            <div> </div>
+          <% end %>
         </div>
       </div>
     </div>

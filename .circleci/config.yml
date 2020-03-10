@@ -5,16 +5,18 @@ jobs:
   build:
     docker:
      # Primary container image where all steps run.
-     - image: avalonmediasystem/avalon:7.0-slim-dev-20200106
+     - image: avalonmediasystem/avalon:7.0-slim-dev-20200225
        environment:
         - DATABASE_URL=postgresql://postgres@localhost:5432/postgres
         - FEDORA_URL=http://localhost:8080/fcrepo/rest
+        - FEDORA_TIMEOUT=300
         - RAILS_ENV=test
      # Secondary container image on common network.
      - image: postgres:10-alpine
        environment:
          - POSTGRES_USER=postgres
          - POSTGRES_DB=avalon
+         - POSTGRES_PASSWORD=password
      - image: ualbertalib/docker-fcrepo4:4.7
        environment:
          CATALINA_OPTS: "-Djava.awt.headless=true -Dfile.encoding=UTF-8 -server -Xms512m -Xmx1024m -XX:NewSize=256m -XX:MaxNewSize=256m -XX:PermSize=256m -XX:MaxPermSize=256m -XX:+DisableExplicitGC"
