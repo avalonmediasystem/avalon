@@ -2,10 +2,10 @@
 fullaudio:
   - :label: 'high'
     :extension: 'mp4'
-    :ffmpeg_opt: "-ac 2 -ar 44100 -ab 320k -vn -acodec aac -strict -2"
+    :ffmpeg_opt: "-map_chapters -1 -ac 2 -ar 44100 -ab 320k -vn -acodec aac -strict -2"
   - :label: 'medium'
     :extension: 'mp4'
-    :ffmpeg_opt: "-ac 2 -ar 44100 -ab 128k -vn -acodec aac -strict -2"
+    :ffmpeg_opt: "-map_chapters -1 -ac 2 -ar 44100 -ab 128k -vn -acodec aac -strict -2"
 avalon:
   - :label: 'high'
     :extension: 'mp4'
