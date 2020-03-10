@@ -176,6 +176,12 @@ EOC
     $stderr.puts
   end
 
+  desc 'clean out user sessions that have not been updated for 7 days'
+  task session_cleanup: :environment do
+    sql = 'DELETE FROM sessions WHERE updated_at < DATE_SUB(NOW(), INTERVAL 7 DAY);'
+    ActiveRecord::Base.connection.execute(sql)
+  end
+
   namespace :services do
     services = ["jetty", "felix", "delayed_job"]
     desc "Start Avalon's dependent services"

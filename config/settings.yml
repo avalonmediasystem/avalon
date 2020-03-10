@@ -15,6 +15,10 @@ ffmpeg:
   path: '/usr/local/bin/ffmpeg'
 email:
   mailer: :smtp
+  config:
+    address: mail-relay.university.edu
+    port: 25
+    enable_starttls_auto: false
   comments: 'avalon-comments@example.edu'
   notification: 'avalon-notifications@example.edu'
   support: 'avalon-support@example.edu'

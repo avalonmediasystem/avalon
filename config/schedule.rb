@@ -13,3 +13,7 @@ end
 every 1.day do
   locking_rake "avalon:batch:ingest_stalled_check", :lock_name => "batch_ingest", :environment => ENV['RAILS_ENV'] || 'production'
 end
+
+every 6.hours do
+  rake 'avalon:session_cleanup'
+end

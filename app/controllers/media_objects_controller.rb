@@ -79,6 +79,7 @@ class MediaObjectsController < ApplicationController
         session[:intercom_default_collection] = params[:collection_id]
         target_link = view_context.link_to('See it here.', result[:link], target: '_blank')
         flash[:success] = view_context.safe_join(["The item was pushed successfully. ", target_link])
+        flash[:alert] = result[:message] if result[:message].present?
       elsif result[:status].present?
         flash[:alert] = "There was an error pushing the item. (#{result[:status]}: #{result[:message]})"
       else
