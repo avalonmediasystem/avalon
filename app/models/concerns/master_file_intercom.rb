@@ -13,7 +13,7 @@
 # ---  END LICENSE_HEADER BLOCK  ---
 
 module MasterFileIntercom
-  def to_ingest_api_hash(include_structure = true)
+  def to_ingest_api_hash(include_structure = true, remove_identifiers: false)
     {
       id: id,
       workflow_name: workflow_name,
@@ -32,7 +32,7 @@ module MasterFileIntercom
       date_digitized: date_digitized,
       file_checksum: file_checksum,
       file_format: file_format,
-      other_identifier: identifier.to_a,
+      other_identifier: (remove_identifiers ? [] : identifier.to_a),
       captions: captions.content,
       captions_type: caption_type,
       comment: comment.to_a,
