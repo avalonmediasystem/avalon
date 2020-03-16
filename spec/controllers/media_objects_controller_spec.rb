@@ -936,6 +936,11 @@ describe MediaObjectsController, type: :controller do
           get 'show', params: { id: media_object.id, format:'json', include_structure: true }
           expect(json['files'].first['structure']).to eq master_file.structuralMetadata.content
         end
+
+        it "should not return structure inline if requested not to" do
+          get 'show', params: { id: media_object.id, format:'json', include_structure: false }
+          expect(json['files'].first['structure']).not_to eq master_file.structuralMetadata.content
+        end
       end
     end
   end

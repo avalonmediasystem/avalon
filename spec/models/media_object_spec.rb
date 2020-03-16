@@ -895,9 +895,9 @@ describe MediaObject do
   end
 
   describe '#to_ingest_api_hash' do
-    let(:media_object) { FactoryBot.build(:fully_searchable_media_object, identifier: ['ABCDE12345']) }
-
     context 'remove_identifiers parameter' do
+      let(:media_object) { FactoryBot.build(:fully_searchable_media_object, identifier: ['ABCDE12345']) }
+
       it 'removes identifiers if parameter is true' do
         expect(media_object.identifier).not_to be_empty
         expect(media_object.to_ingest_api_hash(false, remove_identifiers: true)[:fields][:identifier]).to be_empty
@@ -907,6 +907,22 @@ describe MediaObject do
         expect(media_object.identifier).not_to be_empty
         expect(media_object.to_ingest_api_hash(false, remove_identifiers: false)[:fields][:identifier]).not_to be_empty
         expect(media_object.to_ingest_api_hash(false)[:fields][:identifier]).not_to be_empty
+      end
+    end
+
+    context 'publish parameter' do
+      let(:publisher) { 'admin@example.com' }
+      let(:media_object) { FactoryBot.build(:fully_searchable_media_object, avalon_publisher: publisher) }
+
+      it 'removes avalon_publisher when parameter is false' do
+        expect(media_object).to be_published
+        expect(media_object.to_ingest_api_hash(false, publish: false)[:fields][:avalon_publisher]).to be_blank
+        expect(media_object.to_ingest_api_hash(false)[:fields][:avalon_publisher]).to be_blank
+      end
+
+      it 'does not remove avalon_publisher when parameter is true' do
+        expect(media_object).to be_published
+        expect(media_object.to_ingest_api_hash(false, publish: true)[:fields][:avalon_publisher]).to eq publisher
       end
     end
   end
