@@ -333,7 +333,7 @@ class MediaObjectsController < ApplicationController
         end
       end
       format.json do
-        response_json = @media_object.as_json(include_structure: params[:include_structure])
+        response_json = @media_object.as_json(include_structure: params[:include_structure] == "true")
         response_json.except!(:files, :visibility, :read_groups) unless current_ability.can? :edit, @media_object
         render json: response_json.to_json
       end
