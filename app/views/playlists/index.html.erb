@@ -25,9 +25,18 @@ Unless required by applicable law or agreed to in writing, software distributed
         <div class="col-sm-6">
           <h1 class="page-title">Playlists <small>(<%= playlists.size %> total)</small></h1>
         </div>
-        <div class="col-sm-6 text-right">
-          <%= link_to('<span class="btn btn-primary headline-button">Create New Playlist</span>'.html_safe, new_playlist_path) %>
-        </div>
+          <div class="<% if !playlists.empty? %>col-sm-6 text-right<% end %>">
+            <div class="create-buttons">
+              <%= link_to('<span class="btn btn-primary headline-button">Create New Playlist</span>'.html_safe, new_playlist_path) %>
+              <% if Settings['variations'].present? %>
+                <%= form_tag(import_variations_playlist_playlists_path, method:"post", enctype:"multipart/form-data", style:"display:inline") do %>
+                  <input type="file" name="Filedata" class="filedata" style="visibility:hidden; display:inline; width:0;" />
+                  <input type="button" class="btn btn-primary outline_on" id="variations_import"
+                    onclick="$(this).closest('form').find('.filedata').click();" value="Import Variations Playlist" />
+                <% end %>
+              <% end %>
+            </div>
+          </div>
       </div>
     </div>
 
@@ -40,7 +49,7 @@ Unless required by applicable law or agreed to in writing, software distributed
           <% end %>
         </select>
       </div>
-      <table id="Playlists" class="table">
+      <table id="Playlists" class="table table-striped dataTable">
         <thead>
           <tr>
             <th>Name</th>
@@ -55,19 +64,7 @@ Unless required by applicable law or agreed to in writing, software distributed
         <tbody>
         </tbody>
       </table>
-      <div> </div>
     <% end %>
-    <div>
-      <%# pass body to link_to to avoid block form of link_to which creates an odd underline that overflows the button %>
-
-      <% if Settings['variations'].present? %>
-      <%= form_tag(import_variations_playlist_playlists_path, method:"post", enctype:"multipart/form-data", style:"display:inline") do %>
-      <input type="file" name="Filedata" class="filedata" style="visibility:hidden; display:inline; width:0;" />
-      <input type="button" class="btn btn-primary outline_on" id="variations_import"
-        onclick="$(this).closest('form').find('.filedata').click();" value="Import Variations Playlist" />
-      <% end %>
-      <% end %>
-    </div>
   </div>
   <% unless !playlists.empty? %>
   <% end %>

@@ -2269,10 +2269,14 @@ Object.assign(_player2.default.prototype, {
 		    chaptersTitle = (0, _general.isString)(t.options.chaptersText) ? t.options.chaptersText : _i18n2.default.t('mejs.captions-chapters'),
 		    total = player.trackFiles === null ? player.tracks.length : player.trackFiles.length;
 
-		if (t.domNode.textTracks) {
-			for (var i = t.domNode.textTracks.length - 1; i >= 0; i--) {
-				t.domNode.textTracks[i].mode = 'hidden';
+		try {
+			if (t.domNode.textTracks) {	
+				for (var i = t.domNode.textTracks.length - 1; i >= 0; i--) {	
+					t.domNode.textTracks[i].mode = 'hidden';	
+				}	
 			}
+		} catch (error) {
+			console.log('Error: ', error);
 		}
 
 		t.cleartracks(player);

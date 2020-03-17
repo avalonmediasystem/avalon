@@ -27,7 +27,6 @@
   }
 
   .document-description {
-    text-align: justify;
     color: #666;
     white-space: pre-wrap;
   }
@@ -42,8 +41,20 @@
   }
 }
 
-form.collection_poster {
+.collection_poster {
+  display: flex;
+  justify-content: space-evenly;
+
+  form {
+    flex: auto;
+    margin-right: 5px;
+  }
+
+  form:last-child {
+    margin-right: 0px;
+  }
+
   input.btn {
-    width: 49%;
+    width: 100%;
   }
 }

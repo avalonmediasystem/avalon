@@ -198,8 +198,9 @@ describe MediaObjectsController, type: :controller do
     let!(:master_file) {{
         file_location: absolute_location,
         title: "Part 1",
-        files: [{label: 'quality-high',
-                  id: 'track-1',
+        files: [{
+                  label: 'quality-high',
+                  track_id: 'track-1',
                   url: absolute_location,
                   duration: "6315",
                   mime_type:  "video/mp4",
@@ -208,9 +209,11 @@ describe MediaObjectsController, type: :controller do
                   video_bitrate: "1000000.0",
                   video_codec: "AVC",
                   width: "640",
-                  height: "480" },
-                {label: 'quality-medium',
-                  id: 'track-2',
+                  height: "480"
+                },
+                {
+                  label: 'quality-medium',
+                  track_id: 'track-2',
                   url: absolute_location,
                   duration: "6315",
                   mime_type: "video/mp4",
@@ -219,8 +222,8 @@ describe MediaObjectsController, type: :controller do
                   video_bitrate: "1000000.0",
                   video_codec: "AVC",
                   width: "640",
-                  height: "480" }
-               ],
+                  height: "480"
+                }],
         file_checksum: "7ae24368ccb7a6c6422a14ff73f33c9a",
         file_size: "199160",
         duration: "6315",
@@ -879,8 +882,9 @@ describe MediaObjectsController, type: :controller do
 
     context "with json format" do
       subject(:json) { JSON.parse(response.body) }
-      let!(:media_object) { FactoryBot.create(:media_object) }
       let(:administrator) { FactoryBot.create(:administrator) }
+      let!(:media_object) { FactoryBot.create(:media_object) }
+      let!(:master_file) { FactoryBot.create(:master_file, :with_derivative, media_object: media_object) }
 
       before do
         ApiToken.create token: 'secret_token', username: administrator.username, email: administrator.email
@@ -898,7 +902,14 @@ describe MediaObjectsController, type: :controller do
         expect(json['published']).to eq(media_object.published?)
         expect(json['summary']).to eq(media_object.abstract)
         expect(json['fields'].symbolize_keys).to eq(media_object.to_ingest_api_hash(false)[:fields])
-        expect(json['files'].collect(&:symbolize_keys)).to eq(media_object.to_ingest_api_hash(false)[:files])
+        # Symbolize keys for master files and derivatives
+        json['files'].each do |mf|
+          mf.symbolize_keys!
+          mf[:files].each { |d| d.symbolize_keys! }
+        end
+        expect(json['files']).to eq(media_object.to_ingest_api_hash(false)[:files])
+        expect(json['files'].first[:id]).to eq(media_object.master_files.first.id)
+        expect(json['files'].first[:files].first[:id]).to eq(media_object.master_files.first.derivatives.first.id)
       end
 
       it "should return 404 if requested media_object not present" do
@@ -908,8 +919,30 @@ describe MediaObjectsController, type: :controller do
         expect(JSON.parse(response.body)["errors"].class).to eq Array
         expect(JSON.parse(response.body)["errors"].first.class).to eq String
       end
-    end
 
+      context "with structure" do
+        let!(:master_file) { FactoryBot.create(:master_file, :with_structure, media_object: media_object) }
+
+        before do
+          login_as(:administrator)
+        end
+
+        it "should not return structure by default" do
+          get 'show', params: { id: media_object.id, format:'json' }
+          expect(json['files'].first['structure']).to be_blank
+        end
+
+        it "should return structure inline if requested" do
+          get 'show', params: { id: media_object.id, format:'json', include_structure: true }
+          expect(json['files'].first['structure']).to eq master_file.structuralMetadata.content
+        end
+
+        it "should not return structure inline if requested not to" do
+          get 'show', params: { id: media_object.id, format:'json', include_structure: false }
+          expect(json['files'].first['structure']).not_to eq master_file.structuralMetadata.content
+        end
+      end
+    end
   end
 
   describe "#destroy" do

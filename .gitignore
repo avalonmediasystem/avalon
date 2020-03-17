@@ -73,3 +73,6 @@ yarn-debug.log*
 /yarn-error.log
 yarn-debug.log*
 .yarn-integrity
+
+# Cypress test output
+/cypress

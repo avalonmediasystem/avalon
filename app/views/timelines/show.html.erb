@@ -13,6 +13,15 @@ Unless required by applicable law or agreed to in writing, software distributed
   specific language governing permissions and limitations under the License.
 ---  END LICENSE_HEADER BLOCK  ---
 %>
-<div class="embed-responsive embed-responsive-16by9" id="content" style="max-width: 100%;">
+<div class="embed-responsive embed-responsive-16by9 timeliner-contianer" id="content" style="max-width: 100%;">
     <iframe class="embed-responsive-item" src="<%= @timeliner_iframe_url %>"></iframe>
 </div>
+
+<% content_for :page_scripts do %>
+  <script>
+    $(document).ready(function () {
+      // Push footer to the bottom of the page content
+      $('#footer').css('top', $(this).height() + 5);
+    });
+  </script>
+<% end %>

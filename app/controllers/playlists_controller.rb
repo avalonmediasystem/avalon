@@ -271,7 +271,7 @@ class PlaylistsController < ApplicationController
   private
 
   def get_user_playlists
-    @playlists = Playlist.by_user(current_user).order(:title)
+    @playlists = Playlist.by_user(current_user)
   end
 
   def get_all_other_playlists

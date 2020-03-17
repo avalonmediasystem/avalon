@@ -31,7 +31,7 @@ class CollectionList extends Component {
       filter: props.filter ? props.filter : '',
       searchResult: [],
       filteredResult: [],
-      maxItems: 3,
+      maxItems: 4,
       sort: 'unit',
       isLoading: false
     };
@@ -108,6 +108,10 @@ class CollectionList extends Component {
     this.setState({ sort: val });
   };
 
+  handleSubmit = event => {
+    event.preventDefault();
+  }
+
   render() {
     const { filter, sort, filteredResult = [], maxItems, isLoading } = this.state;
 
@@ -118,6 +122,7 @@ class CollectionList extends Component {
           handleFilterChange={this.handleFilterChange}
           sort={sort}
           handleSortChange={this.handleSortChange}
+	  handleSubmit={this.handleSubmit}
         />
         {isLoading && <LoadingSpinner isLoading={isLoading} />}
         {(filteredResult.length === 0 && !isLoading) && <CollectionsFilterNoResults />}

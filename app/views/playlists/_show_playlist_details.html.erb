@@ -13,7 +13,7 @@ Unless required by applicable law or agreed to in writing, software distributed
   specific language governing permissions and limitations under the License.
 ---  END LICENSE_HEADER BLOCK  ---
 %>
-<div class="col-md-9">
+<div class="col-md-12">
   <div>
     <%= link_to "View Playlist", @playlist, { class: 'btn btn-primary'} %>
     <% if can?(:destroy, @playlist) %>
@@ -32,7 +32,13 @@ Unless required by applicable law or agreed to in writing, software distributed
       <dt><%=t("activerecord.attributes.playlist.title")%></dt>
       <dd><%= @playlist.title %></dd>
       <dt><%= t("activerecord.attributes.playlist.comment") %></dt>
-      <dd><%= @playlist.comment %></dd>
+      <dd>
+        <% if @playlist.comment.blank? %>
+        <span class="info-text-gray">No description</span>
+        <% else %>
+        <%= @playlist.comment %>
+        <% end %>
+      </dd>
       <dt><%= t("playlist.visibility") %></dt>
       <dd>
         <%= human_friendly_visibility @playlist.visibility %> -
@@ -61,7 +67,7 @@ Unless required by applicable law or agreed to in writing, software distributed
       <dt><%= t("playlist.tags.label") %></dt>
       <dd>
         <% if @playlist.tags.empty? %>
-        <p class="info-text-gray">No tags</p>
+        <span class="info-text-gray">No tags</span>
         <% end %>
         <% @playlist.tags.each do |tag| %>
         <span class="btn btn-xs btn-info"><%=tag%></span>

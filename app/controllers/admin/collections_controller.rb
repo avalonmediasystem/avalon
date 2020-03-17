@@ -16,13 +16,15 @@ class Admin::CollectionsController < ApplicationController
   include Rails::Pagination
 
   before_action :authenticate_user!
-  load_and_authorize_resource except: [:index, :remove, :attach_poster, :poster]
+  load_and_authorize_resource except: [:index, :remove, :attach_poster, :remove_poster, :poster]
   before_action :load_and_authorize_collections, only: [:index]
   respond_to :html
 
   def load_and_authorize_collections
     authorize!(params[:action].to_sym, Admin::Collection)
     repository = CatalogController.new.repository
+    # Allow the number of collections to be greater than 100
+    blacklight_config.max_per_page = 100_000
     builder = ::CollectionSearchBuilder.new([:add_access_controls_to_solr_params_if_not_admin, :only_wanted_models, :add_paging_to_solr], self).rows(100_000)
     if params[:user].present? && can?(:manage, Admin::Collection)
       user = User.find_by_username_or_email(params[:user])
@@ -79,7 +81,7 @@ class Admin::CollectionsController < ApplicationController
   # GET /collections/1/items
   def items
     mos = paginate @collection.media_objects
-    render json: mos.to_a.collect{|mo| [mo.id, mo.to_json] }.to_h
+    render json: mos.to_a.collect{|mo| [mo.id, mo.as_json] }.to_h
   end
 
   # POST /collections
@@ -243,31 +245,39 @@ class Admin::CollectionsController < ApplicationController
     @collection = Admin::Collection.find(params['id'])
     authorize! :edit, @collection, message: "You do not have sufficient privileges to add a poster image."
 
-    if params.dig(:admin_collection, :poster).present?
-      poster_file = params[:admin_collection][:poster]
-      resized_poster = resize_uploaded_poster(poster_file.path)
-      if resized_poster
-        @collection.poster.content = resized_poster
-        @collection.poster.mime_type = 'image/png'
-        @collection.poster.original_name = poster_file.original_filename
-        flash[:success] = "Poster file succesfully added."
+    poster_file = params[:admin_collection][:poster]
+    is_image = check_image_compliance(poster_file&.path)
+    if is_image
+      @collection.poster.content = poster_file.read
+      @collection.poster.mime_type = 'image/png'
+      @collection.poster.original_name = poster_file.original_filename
+
+      if @collection.save
+        flash[:success] = "Poster file successfully added."
       else
-        flash[:error] = "Uploaded file is not a recognized poster image file"
+        flash[:error] = "There was a problem storing the poster image."
       end
     else
-      @collection.poster.content = ''
-      @collection.poster.original_name = ''
-      flash[:success] = "Poster file succesfully removed."
+      flash[:error] = "Uploaded file is not a recognized poster image file"
     end
 
-    unless @collection.save
-      flash[:success] = nil
-      flash[:error] = "There was a problem storing the poster image."
+    redirect_to admin_collection_path(@collection)
+  end
+
+  def remove_poster
+    @collection = Admin::Collection.find(params['id'])
+    authorize! :edit, @collection, message: "You do not have sufficient privileges to remove a poster image."
+
+    @collection.poster.content = ''
+    @collection.poster.original_name = ''
+
+    if @collection.save
+      flash[:success] = "Poster file successfully removed."
+    else
+      flash[:error] = "There was a problem removing the poster image."
     end
 
-    respond_to do |format|
-      format.html { redirect_to admin_collection_path(@collection) }
-    end
+    redirect_to admin_collection_path(@collection)
   end
 
   def poster
@@ -288,12 +298,9 @@ class Admin::CollectionsController < ApplicationController
     params.permit(:admin_collection => [:name, :description, :unit, :managers => []])[:admin_collection]
   end
 
-  def resize_uploaded_poster(file)
-    image = ::MiniMagick::Image.open(file)
-    image.thumbnail '700x700>'
-    image.format 'png'
-    image.tempfile.open.read
-  rescue MiniMagick::Invalid
-    return nil
+  def check_image_compliance(poster_path)
+    fastimage = FastImage.new(poster_path)
+    # Size derived from width and aspect ratio from JS code, assets/javascript/crop_upload.js:60-63
+    fastimage.type == :png && fastimage.size == [700, 560] # [width, height]
   end
 end

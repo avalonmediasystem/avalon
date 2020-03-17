@@ -102,10 +102,8 @@ div.alert-danger {
 // Page title area (because looks like we're sneaking in
 // buttons, and other stuff horizontally positioned alongside title
 .page-title-wrapper {
-  margin-bottom: 2rem;
-
-  .headline-button {
-    margin-top: 20px;
+  h3 {
+    margin-top: 0;
   }
 }
 
@@ -356,9 +354,9 @@ a[data-trigger='submit'] {
 
 .tab-content > .tab-pane {
   padding: 10px;
-  border-bottom: 1px solid $gray;
-  border-left: 1px solid $gray;
-  border-right: 1px solid $gray;
+  border-bottom: 1px solid #ddd;
+  border-left: 1px solid #ddd;
+  border-right: 1px solid #ddd;
   overflow: hidden;
 }
 
@@ -368,6 +366,7 @@ a[data-trigger='submit'] {
 #share-link-section,
 #embed-part {
   cursor: pointer;
+  width: 100%;
 }
 
 #documents .document {
@@ -776,6 +775,10 @@ h5.panel-title {
   }
 }
 
+.mediaobject-filename {
+  word-break: break-all;
+}
+
 // Fixes the input displaying over the dropdown datepicker calendar
 .fileinput {
   position: relative;
@@ -882,7 +885,7 @@ h5.panel-title {
     text-align: left;
     position: relative;
     height: 13px;
-    margin: 8px 8px 8px 8px;
+    margin: 4px 0px;
     .completed {
       background-color: $success;
     }
@@ -943,4 +946,13 @@ h5.panel-title {
 
 #users-table th, td{
   padding-right: 6px !important;
+}
+
+.create-buttons {
+  margin: 20px 0 0 5px;
+  clear: both;
+}
+
+.btn-light {
+  background-color: $btn-light-bg;
 }

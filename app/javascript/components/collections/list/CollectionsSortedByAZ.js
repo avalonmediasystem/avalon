@@ -23,7 +23,7 @@ const CollectionsSortedByAZ = ({ sortByAZ, filteredResult }) => {
     <ul className="row list-unstyled">
       {sortByAZ(filteredResult).map(col => {
         return (
-          <li className="col-sm-4" key={col.id}>
+          <li className="col-sm-3" key={col.id}>
             <CollectionCard attributes={col} showUnit={true} />
           </li>
         );

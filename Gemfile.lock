@@ -320,7 +320,7 @@ GEM
     connection_pool (2.2.2)
     crack (0.4.3)
       safe_yaml (~> 1.0.0)
-    crass (1.0.5)
+    crass (1.0.6)
     daemons (1.3.1)
     dalli (2.7.10)
     database_cleaner (1.7.0)
@@ -401,6 +401,7 @@ GEM
       multipart-post (>= 1.2, < 3)
     faraday-encoding (0.0.4)
       faraday
+    fastimage (2.1.7)
     fcrepo_wrapper (0.9.0)
       ruby-progressbar
     ffi (1.10.0)
@@ -539,7 +540,6 @@ GEM
       mime-types-data (~> 3.2015)
     mime-types-data (3.2019.0331)
     mimemagic (0.3.3)
-    mini_magick (4.9.5)
     mini_mime (1.0.1)
     mini_portile2 (2.4.0)
     minitest (5.11.3)
@@ -558,7 +558,7 @@ GEM
     noid-rails (3.0.1)
       actionpack (>= 5.0.0, < 6)
       noid (~> 0.9)
-    nokogiri (1.10.5)
+    nokogiri (1.10.8)
       mini_portile2 (~> 2.4.0)
     nom-xml (1.1.0)
       activesupport (>= 3.2.18)
@@ -631,8 +631,8 @@ GEM
     rails-dom-testing (2.0.3)
       activesupport (>= 4.2.0)
       nokogiri (>= 1.6)
-    rails-html-sanitizer (1.0.4)
-      loofah (~> 2.2, >= 2.2.2)
+    rails-html-sanitizer (1.3.0)
+      loofah (~> 2.3)
     railties (5.2.3)
       actionpack (= 5.2.3)
       activesupport (= 5.2.3)
@@ -640,7 +640,7 @@ GEM
       rake (>= 0.8.7)
       thor (>= 0.19.0, < 2.0)
     rainbow (3.0.0)
-    rake (12.3.2)
+    rake (12.3.3)
     rb-fsevent (0.10.3)
     rb-inotify (0.10.0)
       ffi (~> 1.0)
@@ -940,6 +940,7 @@ DEPENDENCIES
   factory_bot_rails
   fakefs
   faker
+  fastimage
   fcrepo_wrapper
   fedora-migrate!
   google-analytics-rails (= 1.1.0)
@@ -966,7 +967,6 @@ DEPENDENCIES
   mediaelement-track-scrubber!
   mediaelement_rails!
   mediainfo!
-  mini_magick (~> 4.9)
   mysql2
   net-ldap
   noid-rails (~> 3.0.1)

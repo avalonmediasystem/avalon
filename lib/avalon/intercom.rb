@@ -42,7 +42,8 @@ module Avalon
           url: URI.join(@avalon['url'], 'media_objects.json').to_s,
           payload: build_payload(media_object, collection_id, include_structure),
           headers: { content_type: :json, accept: :json, :'Avalon-Api-Key' => @avalon['api_token'] },
-          verify_ssl: false
+          verify_ssl: false,
+          timeout: 3600
         )
         { link: URI.join(@avalon['url'], 'media_objects/', JSON.parse(resp.body)['id']).to_s }
       rescue StandardError => e
@@ -53,7 +54,7 @@ module Avalon
     private
 
       def build_payload(media_object, collection_id, include_structure)
-        payload = media_object.to_ingest_api_hash(include_structure)
+        payload = media_object.to_ingest_api_hash(include_structure, remove_identifiers: @avalon['remove_identifiers'], publish: @avalon['publish'])
         payload[:collection_id] = collection_id
         payload[:import_bib_record] = @avalon['import_bib_record']
         payload[:publish] = @avalon['publish']

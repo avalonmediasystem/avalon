@@ -75,7 +75,8 @@ Rails.application.routes.draw do
         get 'remove'
         get 'items'
         get 'poster'
-        post 'attach_poster'
+        post 'poster', action: :attach_poster, as: 'attach_poster'
+        delete 'poster', action: :remove_poster, as: 'remove_poster'
       end
     end
 

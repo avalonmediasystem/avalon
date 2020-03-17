@@ -37,6 +37,9 @@
 //= require bootstrap-toggle
 //= require cropperjs/dist/cropper.min
 //= require url-search-params-polyfill/index.js
+//= require @babel/polyfill/dist/polyfill.min.js
+
+//= require hls.js/dist/hls.min.js
 
 // include all of our vendored js
 //= require_tree ../../../vendor/assets/javascripts/.

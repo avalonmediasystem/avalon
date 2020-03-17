@@ -20,11 +20,6 @@
   }
 }
 
-// Data table applied class
-#Playlists_wrapper {
-  margin-bottom: 2rem;
-}
-
 .playlist-details-headline-wrapper {
   margin: 3rem 0 1rem;
   display: flex;
@@ -162,6 +157,14 @@
   .pull-right {
     text-align: right;
     margin-right: 21px;
+  }
+}
+
+#playlist_view_div {
+  .dl-horizontal {
+    dd {
+      margin-bottom: 5px;
+    }
   }
 }
 

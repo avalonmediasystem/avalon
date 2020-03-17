@@ -675,4 +675,21 @@ describe MasterFile do
       end
     end
   end
+
+  describe '#to_ingest_api_hash' do
+    let(:master_file) { FactoryBot.build(:master_file, identifier: ['ABCDE12345']) }
+
+    context 'remove_identifiers parameter' do
+      it 'removes identifiers if parameter is true' do
+        expect(master_file.identifier).not_to be_empty
+        expect(master_file.to_ingest_api_hash(false, remove_identifiers: true)[:other_identifier]).to be_empty
+      end
+
+      it 'does not remove identifiers if parameter is not present' do
+        expect(master_file.identifier).not_to be_empty
+        expect(master_file.to_ingest_api_hash(false, remove_identifiers: false)[:other_identifier]).not_to be_empty
+        expect(master_file.to_ingest_api_hash(false)[:other_identifier]).not_to be_empty
+      end
+    end
+  end
 end
