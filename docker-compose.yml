@@ -1,4 +1,4 @@
-version: '3.2'
+version: '3.4'
 
 volumes:
   database:
@@ -77,8 +77,10 @@ services:
     <<: *redis
 
   avalon: &avalon
-    image: avalonmediasystem/avalon:7.0-slim-dev-20200225
-    build: .
+    image: avalonmediasystem/avalon:7.1-slim-dev-20200318
+    build:
+      context: .
+      target: dev
     command: bash -c "/docker_init.sh && rails server -b 0.0.0.0"
     depends_on:
       - db
@@ -89,7 +91,6 @@ services:
       - minio
     environment:
       - APP_NAME=avalon
-      - AVALON_BRANCH=develop
       - SETTINGS__DOMAIN=http://localhost:3000
       - BUNDLE_FLAGS=--with development postgres --without production test
       - ENCODE_WORK_DIR=/tmp
