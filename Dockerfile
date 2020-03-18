@@ -35,7 +35,6 @@ RUN         mkdir -p /tmp/ffmpeg && cd /tmp/ffmpeg \
 
 # Base stage for building final images
 FROM        ruby:2.5.5-slim-stretch as base
-ENV         BUNDLER_VERSION 2.0.2
 RUN         apt-get update && apt-get install -y --no-install-recommends curl gnupg2 \
          && curl -sL http://deb.nodesource.com/setup_8.x | bash - \
          && curl -O https://mediaarea.net/repo/deb/repo-mediaarea_1.0-6_all.deb && dpkg -i repo-mediaarea_1.0-6_all.deb \
@@ -90,13 +89,12 @@ RUN         apt-get update && apt-get install -y --no-install-recommends git
 COPY        package.json .
 COPY        yarn.lock .
 RUN         yarn install
-RUN         pwd && ls -alh 
 
 
 # Build production assets
 FROM        base as assets
-COPY        --chown=app:app . .
 COPY        --from=bundle-prod --chown=app:app /usr/local/bundle /usr/local/bundle
+COPY        --chown=app:app . .
 COPY        --from=node-modules --chown=app:app /node_modules ./node_modules
 
 USER        app
