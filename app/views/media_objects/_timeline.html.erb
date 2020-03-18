@@ -15,7 +15,7 @@ Unless required by applicable law or agreed to in writing, software distributed
 %>
 
 <div id="timeline-button" style="display: inline-block;">
-  <button type="button" class="btn btn-default" data-toggle="modal" data-target="#timelineModal" style="margin-top: 10px;">
+  <button type="button" class="btn btn-default" id="timeline-btn" data-toggle="modal" data-target="#timelineModal" style="margin-top: 10px;" disabled >
     Create Timeline
   </button>
 </div>
@@ -49,6 +49,17 @@ Unless required by applicable law or agreed to in writing, software distributed
 
 <script>
 $(document).ready(function() {
+  let timelineBtn = $('#timeline-btn');
+  // Enable create timeline button after derivative is loaded
+  timeCheck = setInterval(enableTimelineBtn, 500);
+
+  function enableTimelineBtn() {
+    let currentVal = currentPlayer.duration;
+    if(currentVal > 0) {
+      timelineBtn[0].disabled = false;
+      clearInterval(timeCheck);
+    }
+  }
   $('#timelineModal').on('show.bs.modal', function (e) {
     console.log('in modal builder')
     let $modalBody = $('#timelineModal').find('div#new-timeline-inputs')[0]
