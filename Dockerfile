@@ -22,20 +22,6 @@ FROM        bundle as bundle-dev
 RUN         bundle install --with aws development test postgres --without production 
 
 
-# Build production gems
-FROM        bundle as bundle-prod
-RUN         bundle install --without development test --with aws production postgres
-
-
-# Install node modules
-FROM        node:8.17.0-stretch-slim as node-modules
-RUN         apt-get update && apt-get install -y --no-install-recommends git
-COPY        package.json .
-COPY        yarn.lock .
-RUN         yarn install
-RUN         pwd && ls -alh 
-
-
 # Download binaries in parallel
 FROM        ruby:2.5.5-stretch as download
 RUN         curl -L https://github.com/jwilder/dockerize/releases/download/v0.6.1/dockerize-linux-amd64-v0.6.1.tar.gz | tar xvz -C /usr/bin/
@@ -79,28 +65,51 @@ WORKDIR     /home/app/avalon
 
 COPY        --from=download /usr/bin/ff* /usr/bin/
 
-ADD         docker_init.sh /
 
 
-# Dev stage for building dev image
+# Build devevelopment image
 FROM        base as dev
 COPY        --from=bundle-dev /usr/local/bundle /usr/local/bundle
 COPY        --from=download /chrome.deb /
 COPY        --from=download /usr/local/bin/chromedriver /usr/local/bin/chromedriver
 COPY        --from=download /usr/bin/dockerize /usr/bin/
+ADD         docker_init.sh /
 
 ARG         RAILS_ENV=development
 RUN         dpkg -i /chrome.deb || apt-get install -yf
 
 
-# Prod stage for building prod image
-FROM        base as prod
+# Build production gems
+FROM        bundle as bundle-prod
+RUN         bundle install --without development test --with aws production postgres
+
+
+# Install node modules
+FROM        node:8.17.0-stretch-slim as node-modules
+RUN         apt-get update && apt-get install -y --no-install-recommends git
+COPY        package.json .
+COPY        yarn.lock .
+RUN         yarn install
+RUN         pwd && ls -alh 
+
+
+# Build production assets
+FROM        base as assets
 COPY        --chown=app:app . .
 COPY        --from=bundle-prod --chown=app:app /usr/local/bundle /usr/local/bundle
 COPY        --from=node-modules --chown=app:app /node_modules ./node_modules
 
 USER        app
+ENV         RAILS_ENV=production
 
-ARG         RAILS_ENV=production
 RUN         bundle exec rake assets:precompile SECRET_KEY_BASE=$(ruby -r 'securerandom' -e 'puts SecureRandom.hex(64)') \
          && cp config/controlled_vocabulary.yml.example config/controlled_vocabulary.yml
+
+
+# Build production image
+FROM        base as prod
+COPY        --from=assets --chown=app:app /home/app/avalon /home/app/avalon
+COPY        --from=bundle-prod --chown=app:app /usr/local/bundle /usr/local/bundle
+
+USER        app
+ENV         RAILS_ENV=production
