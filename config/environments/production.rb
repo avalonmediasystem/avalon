@@ -60,16 +60,28 @@ config.webpacker.check_yarn_integrity = false
   # Force all access to the app over SSL, use Strict-Transport-Security, and use secure cookies.
   # config.force_ssl = true
 
+  # Use default logging formatter so that PID and timestamp are not suppressed.
+  config.log_formatter = ::Logger::Formatter.new
+
   # Enable logging to both stdout and file, in more compact format
-  config.lograge.enabled = true
-  config.lograge.custom_options = lambda do |event|
-    {:time => event.time}
+  if ENV["RAILS_LOG_TO_STDOUT"].present?
+    logger           = ActiveSupport::Logger.new(STDOUT)
+    logger.formatter = config.log_formatter
+    config.logger    = ActiveSupport::TaggedLogging.new(logger)
+  else
+    config.lograge.enabled = true
+    config.lograge.custom_options = lambda do |event|
+      {:time => event.time}
+    end
   end
 
   # Use the lowest log level to ensure availability of diagnostic information
   # when problems arise.
   config.log_level = :info
 
+  # Suppress logger output for asset requests.
+  config.assets.quiet = true
+  
   # Prepend all log lines with the following tags.
   # config.log_tags = [ :subdomain, :uuid ]
 
@@ -94,9 +106,6 @@ config.webpacker.check_yarn_integrity = false
 
   # Send deprecation notices to registered listeners.
   config.active_support.deprecation = :notify
-
-  # Use default logging formatter so that PID and timestamp are not suppressed.
-  config.log_formatter = ::Logger::Formatter.new
 
   # Do not dump schema after migrations.
   config.active_record.dump_schema_after_migration = false
