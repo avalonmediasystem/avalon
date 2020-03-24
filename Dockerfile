@@ -68,6 +68,10 @@ COPY        --from=download /usr/bin/ff* /usr/bin/
 
 # Build devevelopment image
 FROM        base as dev
+RUN         apt-get install -y --no-install-recommends --allow-unauthenticated \
+            build-essential \
+            cmake
+
 COPY        --from=bundle-dev /usr/local/bundle /usr/local/bundle
 COPY        --from=download /chrome.deb /
 COPY        --from=download /usr/local/bin/chromedriver /usr/local/bin/chromedriver
