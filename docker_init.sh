@@ -1,9 +1,5 @@
 #!/bin/bash
 
-cd /home/app/avalon
-export HOME=/home/app
-
-# Workaround from https://github.com/yarnpkg/yarn/issues/2782
 yarn install
 
 bundle install && \

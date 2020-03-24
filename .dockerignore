@@ -1,7 +1,10 @@
+.bundle
 .git
 .DS_Store
 .gitignore
 .env
-tmp
 Dockerfile
 docker-compose.yml
+node_modules
+public/packs
+tmp

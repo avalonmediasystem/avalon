@@ -146,6 +146,7 @@ end
 group :production do
   gem 'google-analytics-rails', '1.1.0'
   gem 'lograge'
+  gem 'puma'
 end
 
 # Install the bundle --with aws when running on Amazon Elastic Beanstalk
