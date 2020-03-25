@@ -49,6 +49,11 @@ describe Derivative do
     it "should delete" do
       expect { derivative.destroy }.to change { Derivative.count }.by(-1)
     end
+
+    it "should queue DeleteDerivativeJob" do
+      expect(DeleteDerivativeJob).to receive(:perform_later).once.with(derivative.absolute_location)
+      derivative.destroy
+    end
   end
 
   describe "streaming" do
