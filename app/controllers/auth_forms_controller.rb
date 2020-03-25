@@ -38,7 +38,7 @@ class AuthFormsController < ApplicationController
       opts = Devise.omniauth_configs[strategy_name].options
       strategy_class = Devise.omniauth_configs[strategy_name].strategy_class
       strategy = strategy_class.new(opts)
-      html = strategy.send(phase).last.body.first.strip
+      html = strategy.send(phase).last.first.strip
       doc = Nokogiri::HTML(html)
       form = doc.at_xpath('//form')
       form.xpath('label|input').to_a.in_groups_of(2).each do |label, input|
