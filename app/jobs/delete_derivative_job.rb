@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 # Copyright 2011-2020, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -20,7 +21,6 @@ class DeleteDerivativeJob < ActiveJob::Base
   def perform(path)
     Rails.logger.debug "Attempting to delete derivative #{path}"
 
-    path = derivative.absolute_location
     locator = FileLocator.new(path)
     if locator.exists?
       case locator.uri.scheme
@@ -29,7 +29,7 @@ class DeleteDerivativeJob < ActiveJob::Base
       end
       Rails.logger.info "#{path} has been deleted"
     else
-      Rails.logger.warn "MasterFile #{path} does not exist"
+      Rails.logger.warn "Derivative #{path} does not exist"
     end
   end
 end
