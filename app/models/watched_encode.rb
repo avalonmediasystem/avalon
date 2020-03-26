@@ -37,7 +37,7 @@ class WatchedEncode < ActiveEncode::Base
         obj.upload_file file.location
         File.delete file.location
 
-        output.url = obj.public_url
+        output.url = "s3://#{obj.bucket.name}/#{obj.key}"
         output
       end
     end
