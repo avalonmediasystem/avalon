@@ -16,7 +16,7 @@
 require 'fileutils'
 
 class DeleteDerivativeJob < ActiveJob::Base
-  queue_as :delete_derivative
+  queue_as :default
 
   def perform(path)
     Rails.logger.debug "Attempting to delete derivative #{path}"

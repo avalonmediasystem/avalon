@@ -63,7 +63,7 @@ class Derivative < ActiveFedora::Base
     index.as :displayable
   end
 
-  after_destroy :delete_file!
+  around_destroy :delete_file!
 
   def initialize(*args)
     super(*args)
@@ -125,6 +125,9 @@ class Derivative < ActiveFedora::Base
   private
 
     def delete_file!
-      DeleteDerivativeJob.perform_later(absolute_location) if managed
+      loc = absolute_location
+      man = managed
+      yield
+      DeleteDerivativeJob.perform_later(loc) if man
     end
 end
