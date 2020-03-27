@@ -16,6 +16,7 @@ shift
 
 if ( set -o noclobber; echo "$$" > "$LOCKFILE") 2> /dev/null; 
 then
-  trap 'rm -f "$LOCKFILE"; exit 255' INT TERM EXIT
+  trap 'rm -f "$LOCKFILE"; exit 255' INT TERM
   "$@" || true #run the command
+  rm -f "$LOCKFILE"
 fi
