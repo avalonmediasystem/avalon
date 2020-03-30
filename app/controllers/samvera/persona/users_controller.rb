@@ -41,6 +41,26 @@ module Samvera
       @presenter = Samvera::Persona::UsersPresenter.new
     end
 
+    # POST /persona/users/paged_index
+    def paged_index
+      # Timelines for index page are loaded dynamically by jquery datatables javascript which
+      # requests the html for only a limited set of rows at a time.
+      @presenter = Samvera::Persona::UsersPresenter.new
+      records_total = @presenter.user_count
+      columns = ['username', 'email', 'groups', 'last_sign_in_at', 'accepted_or_not_invited', 'provider', 'actions']
+
+      # TODO: Filter username, email, groups, status, provider
+      # TODO: Sort
+      # TODO: Count
+      # TODO: Build json response with actions and other values
+      
+      respond_to do |format|
+        format.json do
+          render json: response
+        end
+      end
+    end
+
     # GET /persona/users/1/edit
     def edit
       # Hyrax derivitives have breadcrumbs, Avalon does not
