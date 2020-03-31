@@ -34,6 +34,7 @@ module Avalon
 
     class MasterFile < RDF::StrictVocabulary("http://avalonmediasystem.org/rdf/vocab/master_file#")
       property :posterOffset,        "rdfs:isDefinedBy" => %(avr-master_file:).freeze, type: "rdfs:Class".freeze
+      property :supplementalFiles,   "rdfs:isDefinedBy" => %(avr-master_file:).freeze, type: "rdfs:Class".freeze
       property :thumbnailOffset,     "rdfs:isDefinedBy" => %(avr-master_file:).freeze, type: "rdfs:Class".freeze
       property :workingFilePath,     "rdfs:isDefinedBy" => %(avr-master_file:).freeze, type: "rdfs:Class".freeze
     end
