@@ -29,7 +29,7 @@ describe DeleteDerivativeJob do
   describe "perform" do
     context 'local file' do
       it 'gets deleted' do
-        expect(File).to receive(:delete).with(local_file).once
+        expect(File).to receive(:delete).with("/temp/media_file.mp4").once
         DeleteDerivativeJob.perform_now(local_file)
       end
     end
