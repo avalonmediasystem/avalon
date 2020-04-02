@@ -24,7 +24,7 @@ class DeleteDerivativeJob < ActiveJob::Base
     locator = FileLocator.new(path)
     if locator.exists?
       case locator.uri.scheme
-      when 'file' then File.delete(path)
+      when 'file' then File.delete(locator.uri.path)
       when 's3'   then FileLocator::S3File.new(locator.source).object.delete
       end
       Rails.logger.info "#{path} has been deleted"
