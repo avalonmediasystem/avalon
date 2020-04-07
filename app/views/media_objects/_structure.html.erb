@@ -27,6 +27,7 @@ Unless required by applicable law or agreed to in writing, software distributed
     <li>Size</li>
     <li>Structure</li>
     <li>Captions</li>
+    <li>Files</li>
   </ul>
   <ul class="sortable">
     <% @masterFiles.each_with_index do |section, index| %>
@@ -63,6 +64,12 @@ Unless required by applicable law or agreed to in writing, software distributed
         </li>
         <li>
           <a class="captions_toggle" data-target="captions_<%= index %>">
+            <i class="fa fa-plus-square"></i>
+            <i class="fa fa-minus-square hidden"></i>
+          </a>
+        </li>
+        <li>
+          <a class="files_toggle" data-target="files_<%= index %>">
             <i class="fa fa-plus-square"></i>
             <i class="fa fa-minus-square hidden"></i>
           </a>
@@ -109,6 +116,21 @@ Unless required by applicable law or agreed to in writing, software distributed
         </div>
         <% if section.captions.present? %>
         <div class="structure_view">Uploaded file: <%= section.captions.original_name %></div>
+        <% end %>
+      </div>
+      <div id="files_<%= index %>" class="hidden structure_tool">
+        <div class="tool_actions">
+          <span class="tool_label">Files</span>
+          <%= form_for section, :url => attach_captions_master_file_path(section.id), html: {method: "post"} do |form| %>
+          <%= form.file_field :captions, class: "filedata", style: "height:0px;width:0px;" %>
+          <input type="button" class="btn btn-primary btn-xs" onclick="$('#files_<%= index %> .filedata').click();"
+            value="Upload" />
+          <input type="submit" class="btn btn-danger btn-xs" value="Remove" />
+          <% end %>
+        </div>
+        <% if section.captions.present? %>
+        <div class="structure_view">Uploaded file: <%= section.captions.original_name %>
+          <input type="submit" class="btn btn-danger btn-xs" value="Remove" /></div>
         <% end %>
       </div>
     </li>
@@ -205,6 +227,13 @@ Unless required by applicable law or agreed to in writing, software distributed
   });
 
   $('.captions_toggle').on('click', function (e) {
+    e.preventDefault();
+    $(this).find('i.fa').toggleClass('hidden');
+    target = $(this).data('target')
+    $('#' + target).toggleClass('hidden');
+  });
+
+    $('.files_toggle').on('click', function (e) {
     e.preventDefault();
     $(this).find('i.fa').toggleClass('hidden');
     target = $(this).data('target')
