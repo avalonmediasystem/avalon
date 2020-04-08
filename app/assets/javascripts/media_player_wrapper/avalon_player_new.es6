@@ -195,7 +195,7 @@ class MEJSPlayer {
    * @function handleEnded
    * @return {void}
    */
-  handleEnded() {
+  handleEnded(mediaElement, originalNode, instance) {
     const t = this;
 
     // No sections content on this page, go no further
@@ -223,11 +223,70 @@ class MEJSPlayer {
         paused: false
       };
 
-      // Go to next section
-      this.getNewStreamAjax(
-        sectionId,
-        `/media_objects/${mediaObjectId}/section/${sectionId}`
-      );
+      // Get the new stream info
+      $('.media-show-page').removeClass('ready-to-play');
+        $.ajax({
+          url: `/media_objects/${mediaObjectId}/section/${sectionId}/stream`,
+          dataType: 'json',
+          data: {
+            content: sectionId
+          }
+        })
+          .done(response => {
+            this.setContextVars(response);
+            // Switch media in the current player instance
+            this.switchMedia(mediaElement, originalNode, instance, response);
+            this.updateShareLinks();
+          })
+          .fail(error => {
+            console.log('error', error);
+          });
+    }
+  }
+
+  /**
+   * Swap the media source and track in the current player instance with values from
+   * the new stream info
+   * @param media {Object} - MediaElement wrapper
+   * @param node {Object} - HTML node
+   * @param instance {Object} - player instance
+   */
+  switchMedia(media, node, instance) {
+    let markup = '';
+
+    node.innerHTML = '';
+    this.currentStreamInfo.stream_hls.map(source => {
+      markup += `<source src="${
+        source.url
+      }" type="application/x-mpegURL" data-quality="${source.quality}"/>`;
+    });
+
+    // Add captions
+    if (this.currentStreamInfo.captions_path) {
+      markup += `<track srclang="en" kind="subtitles" type="${
+        this.currentStreamInfo.captions_format
+      }" src="${this.currentStreamInfo.captions_path}"></track>`;
+    }
+
+    node.innerHTML = markup;
+
+    node.player.buildquality(instance, null, null, media);
+    node.player.buildtracks(instance, null, instance.layers, media);
+
+    this.toggleCaptions();
+
+    instance.load();
+    instance.play();
+  }
+
+  /**
+   * Toggle captions on if toggleable and previously on
+   */
+  toggleCaptions() {
+    if (this.mediaType==="video" && this.player.options.toggleCaptionsButtonWhenOnlyOne) {
+      if (this.localStorage.getItem('captions') !== '' && this.player.tracks && this.player.tracks.length===1) {
+        this.player.setTrack(this.player.tracks[0].trackId, (typeof keyboard !== 'undefined'));
+      }
     }
   }
 
@@ -338,12 +397,8 @@ class MEJSPlayer {
       this.player.media.hlsPlayer.config.maxMaxBufferLength = 120;
     }
 
-    // Toggle captions on if toggleable and previously on
-    if (this.mediaType==="video" && this.player.options.toggleCaptionsButtonWhenOnlyOne) {
-      if (this.localStorage.getItem('captions') !== '' && this.player.tracks && this.player.tracks.length===1) {
-        this.player.setTrack(this.player.tracks[0].trackId, (typeof keyboard !== 'undefined'));
-      }
-    }
+    // Toggle captions
+    this.toggleCaptions();
 
     // Make the player visible
     this.revealPlayer(instance);
@@ -369,7 +424,9 @@ class MEJSPlayer {
     );
 
     // Handle 'ended' event fired by player
-    this.mediaElement.addEventListener('ended', this.handleEnded.bind(this));
+    this.mediaElement.addEventListener('ended',
+      this.handleEnded.bind(this, mediaElement, originalNode, instance)
+    );
 
     // Show highlighted time in time rail
     if (this.highlightRail) {
