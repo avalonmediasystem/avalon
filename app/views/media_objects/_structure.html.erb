@@ -121,17 +121,24 @@ Unless required by applicable law or agreed to in writing, software distributed
       <div id="files_<%= index %>" class="hidden structure_tool">
         <div class="tool_actions">
           <span class="tool_label">Files</span>
-          <%= form_for section, :url => attach_captions_master_file_path(section.id), html: {method: "post"} do |form| %>
-          <%= form.file_field :captions, class: "filedata", style: "height:0px;width:0px;" %>
+          <%= form_for :supplemental_file, :url => master_file_supplemental_files_path(section.id), html: {method: "post"} do |form| %>
+          <%= form.file_field :file, class: "filedata", style: "height:0px;width:0px;" %>
           <input type="button" class="btn btn-primary btn-xs" onclick="$('#files_<%= index %> .filedata').click();"
             value="Upload" />
-          <input type="submit" class="btn btn-danger btn-xs" value="Remove" />
           <% end %>
         </div>
-        <% if section.captions.present? %>
-        <div class="structure_view">Uploaded file: <%= section.captions.original_name %>
-          <input type="submit" class="btn btn-danger btn-xs" value="Remove" /></div>
-        <% end %>
+        <div class="structure_view">
+          <% section.supplemental_files.each do |file| %>
+            <div class="row">
+              <div class="col-sm-6">
+                <%= "#{file.id} - #{file.label}" %>
+              </div>
+              <div class="col-sm-6">
+                <%= link_to("Remove", master_file_supplemental_file_path(:master_file_id => section.id, :id => file.id), method: :delete, class: "btn btn-danger btn-xs") %>
+              </div>
+            </div>
+          <% end %>
+        </div>
       </div>
     </li>
     <% end %>
