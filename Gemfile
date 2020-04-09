@@ -31,7 +31,6 @@ gem 'rdf-rdfxml'
 # Samvera version pins
 gem 'blacklight', '< 7.0'
 gem 'rdf', '~> 2.2'
-gem 'rsolr', '~> 1.0'
 
 # Rails & Samvera Plugins
 gem 'about_page', git: 'https://github.com/avalonmediasystem/about_page.git', tag: 'avalon-r6.5'
