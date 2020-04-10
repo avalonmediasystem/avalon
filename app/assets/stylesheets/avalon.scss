@@ -557,10 +557,27 @@ div.status-detail {
           width: 100%;
         }
       }
+
+      div.row {
+        &.is-editing {
+          .display-item {
+            display: none;
+          }
+          .edit-item {
+            display: block;
+          }
+          button.edit-item {
+            display: inline-block;
+          }
+        }
+      }
+      .edit-item {
+        display: none;
+      }
     }
 
     div.row {
-      margin-bottom: 5px;
+      margin-top: 5px;
     }
 
     div.tool_actions {
