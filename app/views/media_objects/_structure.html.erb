@@ -129,11 +129,25 @@ Unless required by applicable law or agreed to in writing, software distributed
         </div>
         <div class="structure_view">
           <% section.supplemental_files.each do |file| %>
-            <div class="row">
+            <div class="row" data-file-id=<%= file.id %> data-masterfile-id=<%= section.id %>>
               <div class="col-sm-6">
-                <%= "#{file.id} - #{file.label}" %>
+                <span class="transcript_file_label display-item"><%= file.label %></span>
+                <input name="offset_<%= file.id %>" type="text" class="form-control edit-item outline_on" value="<%= file.label %>">
               </div>
-              <div class="col-sm-6">
+              <div class="col-sm-3">
+                <%= button_tag name: 'edit_label', class:'btn btn-default btn-xs edit_label display-item outline_on', type: 'button' do %>
+                  <i class="fa fa-edit" title="Update"></i> <span class="sm-hidden">Update</span>
+                <% end %>
+                <%# Save button %>
+                <%= button_tag name: 'save_label', class:'btn btn-default btn-xs edit-item outline_on', type: 'button' do%>
+                  <i class="fa fa-check" title="Save"></i> <span class="sm-hidden">Save</span>
+                <% end %>
+                <%# Cancel button %>
+                <%= button_tag name: 'label_edit_cancel', class:'btn btn-danger btn-xs edit-item outline_on', type: 'button' do%>
+                  <i class="fa fa-times" title="Cancel"></i> <span class="sm-hidden">Cancel</span>
+                <% end %>
+              </div>
+              <div class="col-sm-3">
                 <%= link_to("Remove", master_file_supplemental_file_path(:master_file_id => section.id, :id => file.id), method: :delete, class: "btn btn-danger btn-xs") %>
               </div>
             </div>
