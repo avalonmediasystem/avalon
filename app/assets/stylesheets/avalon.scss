@@ -472,7 +472,8 @@ div.status-detail {
   overflow-x: auto;
 
   a.structure_toggle,
-  a.captions_toggle {
+  a.captions_toggle,
+  a.files_toggle {
     cursor: pointer;
   }
 
@@ -569,10 +570,18 @@ div.status-detail {
           button.edit-item {
             display: inline-block;
           }
+          .file-remove {
+            display: none;
+          }
         }
       }
+
       .edit-item {
         display: none;
+      }
+
+      .form-control {
+        height: 25px;
       }
     }
 
