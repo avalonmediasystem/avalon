@@ -7,7 +7,7 @@ $('button[name="edit_label"]').on('click', e => {
   inputField.focus();
 });
 
-$('button[name="label_edit_cancel"]').on('click', e => {
+$('button[name="cancel_edit_label"]').on('click', e => {
   const { $row, fileId, masterFileId } = getHTMLInfo(e);
   $row.find('input[name="label_' + masterFileId + '_' + fileId + '"]');
   $row.removeClass('is-editing');

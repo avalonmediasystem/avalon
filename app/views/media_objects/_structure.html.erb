@@ -146,7 +146,7 @@ Unless required by applicable law or agreed to in writing, software distributed
               </div>
               <div class="col-sm-3">
                 <%# Cancel button %>
-                <%= button_tag name: 'label_edit_cancel', class:'btn btn-danger btn-xs edit-item outline_on', type: 'button' do%>
+                <%= button_tag name: 'cancel_edit_label', class:'btn btn-danger btn-xs edit-item outline_on', type: 'button' do%>
                   <i class="fa fa-times" title="Cancel"></i> <span class="sm-hidden">Cancel</span>
                 <% end %>
                 <%= link_to("Remove", master_file_supplemental_file_path(:master_file_id => section.id, :id => file.id), title: 'Remove', method: :delete, class: "btn btn-danger btn-xs file-remove") %>
@@ -255,7 +255,7 @@ Unless required by applicable law or agreed to in writing, software distributed
     $('#' + target).toggleClass('hidden');
   });
 
-    $('.files_toggle').on('click', function (e) {
+  $('.files_toggle').on('click', function (e) {
     e.preventDefault();
     $(this).find('i.fa').toggleClass('hidden');
     target = $(this).data('target')
