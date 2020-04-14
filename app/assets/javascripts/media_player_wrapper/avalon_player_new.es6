@@ -47,6 +47,8 @@ class MEJSPlayer {
     this.mediaElement = null;
     // Actual MediaElement instance
     this.player = null;
+
+    this.node = null;
     // Add click listeners
     this.addSectionsClickListener();
     // audio or video file?
@@ -134,19 +136,20 @@ class MEJSPlayer {
    * @param {Array} playlistItemT Array which contains playlist item clip start and end times.  This is sent in from playlist items plugin, when creating a new instance of the player.
    * @return {void}
    */
-  getNewStreamAjax(id, url, playlistItemsT) {
+  getNewStreamAjax(url, isEnded, playlistItemsT) {
     $('.media-show-page').removeClass('ready-to-play');
     $.ajax({
       url: url + '/stream',
-      dataType: 'json',
-      data: {
-        content: id
-      }
+      dataType: 'json'
     })
       .done(response => {
-        this.removePlayer();
         this.setContextVars(response, playlistItemsT);
-        this.createNewPlayer();
+        if(isEnded) {
+          this.switchPlayer(isEnded, playlistItemsT);
+        } else {
+          this.removePlayer();
+          this.createNewPlayer();
+        }
         this.updateShareLinks();
       })
       .fail(error => {
@@ -195,7 +198,7 @@ class MEJSPlayer {
    * @function handleEnded
    * @return {void}
    */
-  handleEnded(mediaElement, originalNode, instance) {
+  handleEnded() {
     const t = this;
 
     // No sections content on this page, go no further
@@ -217,70 +220,92 @@ class MEJSPlayer {
         .data('mediaObjectId');
 
       // Update helper object noting we want the new media clip to auto start
-      this.switchPlayerHelper = {
+      t.switchPlayerHelper = {
         active: true,
         data: {},
         paused: false
       };
 
-      // Get the new stream info
-      $('.media-show-page').removeClass('ready-to-play');
-        $.ajax({
-          url: `/media_objects/${mediaObjectId}/section/${sectionId}/stream`,
-          dataType: 'json',
-          data: {
-            content: sectionId
-          }
-        })
-          .done(response => {
-            this.setContextVars(response);
-            // Switch media in the current player instance
-            this.switchMedia(mediaElement, originalNode, instance, response);
-            this.updateShareLinks();
-          })
-          .fail(error => {
-            console.log('error', error);
-          });
+       // Go to next section
+       t.getNewStreamAjax(
+        `/media_objects/${mediaObjectId}/section/${sectionId}`,
+        true
+      );
     }
   }
 
   /**
    * Swap the media source and track in the current player instance with values from
    * the new stream info
-   * @param media {Object} - MediaElement wrapper
-   * @param node {Object} - HTML node
-   * @param instance {Object} - player instance
+   * @function switchPlayer
+   * @param {Boolean} isEnded
+   * @param {Object} playlistItemsT
+   * @returns {void}
    */
-  switchMedia(media, node, instance) {
+  switchPlayer(isEnded, playlistItemsT) {
     let markup = '';
 
-    node.innerHTML = '';
+    this.node.innerHTML = '';
     this.currentStreamInfo.stream_hls.map(source => {
       markup += `<source src="${
         source.url
       }" type="application/x-mpegURL" data-quality="${source.quality}"/>`;
     });
 
-    // Add captions
     if (this.currentStreamInfo.captions_path) {
       markup += `<track srclang="en" kind="subtitles" type="${
         this.currentStreamInfo.captions_format
       }" src="${this.currentStreamInfo.captions_path}"></track>`;
     }
 
-    node.innerHTML = markup;
+    this.node.innerHTML = markup;
 
-    node.player.buildquality(instance, null, null, media);
-    node.player.buildtracks(instance, null, instance.layers, media);
+    // Handle 'canplay' events fired by player
+    this.mediaElement.addEventListener(
+      'canplay',
+      this.handleCanPlay.bind(this)
+    );
 
+    this.player.buildquality(this.player, null, null, this.mediaElement);
+    this.player.buildtracks(this.player, null, this.player.layers, this.mediaElement);
+
+    // Build playlists button from the new stream when not in playlists
+    if(!playlistItemsT) {
+      this.player.options.playlistItemDefaultTitle = this.currentStreamInfo.embed_title;
+      this.player.buildaddToPlaylist(this.player, null, null, null);
+    }
+
+    // Turn on captions
     this.toggleCaptions();
 
-    instance.load();
-    instance.play();
+    this.player.load();
+    if(isEnded) {
+      this.player.play();
+    }
+
+    // Update markers in playlists
+    if(playlistItemsT) {
+      let promises = [];
+      const playlistIds = this.playlistItem
+      ? [this.playlistItem.playlist_id, this.playlistItem.id]
+      : [];
+      promises.push(this.mejsMarkersHelper.getMarkers(...playlistIds));
+      Promise.all(promises)
+        .then(() => {
+          this.mejsMarkersHelper.updateVisualMarkers();
+        })
+        .catch(error => {
+          console.log('Promise rejection error');
+        });
+      this.player.buildmarkers(this.player, this.player.controls, null, this.mediaElement);
+    }
+
   }
 
   /**
    * Toggle captions on if toggleable and previously on
+   * @function toggleCaptions
+   * @returns {void}
    */
   toggleCaptions() {
     if (this.mediaType==="video" && this.player.options.toggleCaptionsButtonWhenOnlyOne) {
@@ -308,7 +333,6 @@ class MEJSPlayer {
 
     // Clicked on a different section
     if (dataset.segment !== this.currentStreamInfo.id) {
-      let id = target.dataset.segment;
       let url = target.dataset.nativeUrl.split('?')[0];
 
       // Capture clicked segment or section element id
@@ -317,7 +341,7 @@ class MEJSPlayer {
         data: dataset,
         paused: this.mediaElement.paused
       };
-      this.getNewStreamAjax(id, url);
+      this.getNewStreamAjax(url, false);
     } else {
       // Clicked within the same section...
       const parentPanel = $(target).closest('div[class*=panel]');
@@ -392,6 +416,8 @@ class MEJSPlayer {
       this.player = instance;
     }
 
+    this.node = originalNode;
+
     if (this.player && this.player.media && this.player.media.hlsPlayer && this.player.media.hlsPlayer.config) {
       // Workaround for hlsError bufferFullError: Set max buffer length to 2 minutes
       this.player.media.hlsPlayer.config.maxMaxBufferLength = 120;
@@ -425,7 +451,7 @@ class MEJSPlayer {
 
     // Handle 'ended' event fired by player
     this.mediaElement.addEventListener('ended',
-      this.handleEnded.bind(this, mediaElement, originalNode, instance)
+      this.handleEnded.bind(this)
     );
 
     // Show highlighted time in time rail

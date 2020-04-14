@@ -51,6 +51,8 @@ Object.assign(MediaElementPlayer.prototype, {
 
     addToPlayListObj.isVideo = player.isVideo;
 
+    player.cleanaddToPlaylist(player);
+
     // Create plugin control button for player
     player.addPlaylistButton = document.createElement('div');
     player.addPlaylistButton.className =
@@ -135,6 +137,11 @@ Object.assign(MediaElementPlayer.prototype, {
         'click',
         addToPlayListObj.bindHandleCancel
       );
+    }
+    if (player) {
+      if (player.addPlaylistButton) {
+        player.addPlaylistButton.remove();
+      }
     }
   },
 

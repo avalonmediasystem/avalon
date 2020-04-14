@@ -49,7 +49,6 @@ Object.assign(MediaElementPlayer.prototype, {
     playlistItemsObj.mejsTimeRailHelper = new MEJSTimeRailHelper();
 
     playlistItemsObj.player = player;
-    playlistItemsObj.currentStreamInfo = mejs4AvalonPlayer.currentStreamInfo;
     // Track the number of MEJS 'timeupdate' events which fire after the end time of a playlist item
     playlistItemsObj.endTimeCount = 0;
 
@@ -188,9 +187,10 @@ Object.assign(MediaElementPlayer.prototype, {
      * Analyze the new playlist item and determine how to proceed...
      * @function analyzeNewItemSource
      * @param  {HTMLElement} el <a> anchor element of the new playlist item being processed
+     * @param {Boolean} isEnded
      * @return {void}
      */
-    analyzeNewItemSource(el) {
+    analyzeNewItemSource(el, isEnded) {
       const playlistId = +el.dataset.playlistId;
       const playlistItemId = el.dataset.playlistItemId;
       const playlistItemT = [
@@ -198,7 +198,7 @@ Object.assign(MediaElementPlayer.prototype, {
         el.dataset.clipEndTime / 1000
       ];
       const isSameMediaFile =
-        this.currentStreamInfo.id === el.dataset.masterFileId;
+      this.$nowPlayingLi.find('a').data('masterFileId') === el.dataset.masterFileId;
 
       // Update right column playlist items list
       this.updatePlaylistItemsList(el);
@@ -214,8 +214,6 @@ Object.assign(MediaElementPlayer.prototype, {
         // Set the endTimeCount back to 0
         this.endTimeCount = 0;
         this.setupNextItem();
-        // Rebuild playlist info panels
-        this.rebuildPlaylistInfoPanels(playlistId, playlistItemId);
       } else {
         // Need a new Mediaelement player and media file
         const id = el.dataset.masterFileId;
@@ -228,16 +226,17 @@ Object.assign(MediaElementPlayer.prototype, {
           { id: playlistItemId, playlist_id: playlistId, position: null }
         );
 
-        // Get new data and create new player instance
-        mejs4AvalonPlayer.getNewStreamAjax(id, url, playlistItemT);
-      }
-    },
+        // Set now playing item in playlist items
+        this.setCurrentItemInternally();
 
-    /**
-     * Local reference to currentStreamInfo, set in parent wrapper js file
-     * @type {Object}
-     */
-    currentStreamInfo: null,
+        // Get new data and create new player instance
+        mejs4AvalonPlayer.getNewStreamAjax(url, isEnded, playlistItemT);
+        this.mejsMarkersHelper.updateVisualMarkers();
+      }
+
+      // Rebuild playlist info panels
+      this.rebuildPlaylistInfoPanels(playlistId, playlistItemId);
+    },
 
     /**
      * Helper variable to track the number of times the playlist item's end time handler function has been called
@@ -322,7 +321,7 @@ Object.assign(MediaElementPlayer.prototype, {
         return;
       }
 
-      this.analyzeNewItemSource(el);
+      this.analyzeNewItemSource(el, false);
     },
 
     /**
@@ -347,7 +346,7 @@ Object.assign(MediaElementPlayer.prototype, {
       // Autoplay is 'On'
       if (t.isAutoplay()) {
         const el = $nextItem.find('a')[0];
-        t.analyzeNewItemSource(el);
+        t.analyzeNewItemSource(el, true);
       }
     },
 
