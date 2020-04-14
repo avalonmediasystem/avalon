@@ -36,7 +36,7 @@ RSpec.describe SupplementalFilesController, type: :controller do
 
   let(:uploaded_file) { fixture_file_upload('/collection_poster.png', 'image/png') }
   let(:master_file) { FactoryBot.create(:master_file) }
-  let(:supplemental_file) { MasterFile::SupplementalFile.new(id: '1', absolute_path: '/path/to/file.pdf') }
+  let(:supplemental_file) { FactoryBot.create(:supplemental_file) }
 
   # This should return the minimal set of values that should be in the session
   # in order to pass any filters (e.g. authentication) defined in
@@ -66,19 +66,13 @@ RSpec.describe SupplementalFilesController, type: :controller do
   end
 
   describe "GET #show" do
-    let(:master_file) { FactoryBot.create(:master_file, media_object: public_media_object) }
+    let(:master_file) { FactoryBot.create(:master_file, media_object: public_media_object, supplemental_files: [supplemental_file]) }
     let(:public_media_object) { FactoryBot.create(:fully_searchable_media_object) }
-    let(:supplemental_file) { MasterFile::SupplementalFile.new(id: '1', absolute_path: uploaded_file.path) }
-
-    before do
-      master_file.supplemental_files = [supplemental_file]
-      master_file.save!
-    end
+    let(:supplemental_file) { FactoryBot.create(:supplemental_file, :with_attached_file) }
 
     it "returns the supplemental file content" do
       get :show, params: { master_file_id: master_file.id, id: supplemental_file.id }, session: valid_session
-      expect(response).to be_successful
-      expect(response.body).to eq uploaded_file.read
+      expect(response).to redirect_to Rails.application.routes.url_helpers.rails_blob_path(supplemental_file.file, disposition: "attachment")
     end
   end
 
@@ -96,9 +90,9 @@ RSpec.describe SupplementalFilesController, type: :controller do
           expect(response).to have_http_status(:created)
           expect(response.location).to eq master_file_supplemental_file_path(id: assigns(:supplemental_file).id, master_file_id: master_file.id)
 
-          expect(master_file.supplemental_files.first.id).to eq '1'
+          expect(master_file.supplemental_files.first.id).to eq 1
           expect(master_file.supplemental_files.first.label).to eq 'label'
-          expect(master_file.supplemental_files.first&.absolute_path).to be_present
+          expect(master_file.supplemental_files.first.file).to be_attached
         end
       end
 
@@ -122,9 +116,9 @@ RSpec.describe SupplementalFilesController, type: :controller do
           expect(response).to redirect_to(edit_media_object_path(media_object.id, step: 'structure'))
           expect(flash[:success]).to be_present
 
-          expect(master_file.supplemental_files.first.id).to eq '1'
+          expect(master_file.supplemental_files.first.id).to eq 1
           expect(master_file.supplemental_files.first.label).to eq 'label'
-          expect(master_file.supplemental_files.first&.absolute_path).to be_present
+          expect(master_file.supplemental_files.first.file).to be_attached
         end
       end
 
@@ -140,7 +134,7 @@ RSpec.describe SupplementalFilesController, type: :controller do
 
   describe "PUT #update" do
     let(:master_file) { FactoryBot.create(:master_file, supplemental_files: [supplemental_file]) }
-    let(:supplemental_file) { MasterFile::SupplementalFile.new(id: '1', label: 'label', absolute_path: uploaded_file.path) }
+    let(:supplemental_file) { FactoryBot.create(:supplemental_file, :with_attached_file, label: 'label') }
 
     before do
       login_as :administrator
@@ -152,8 +146,6 @@ RSpec.describe SupplementalFilesController, type: :controller do
           expect {
             put :update, params: { master_file_id: master_file.id, id: supplemental_file.id, supplemental_file: valid_update_attributes, format: :json }, session: valid_session
           }.to change { master_file.reload.supplemental_files.first.label }.from('label').to('new label')
-          .and not_change { master_file.supplemental_files.first.absolute_path }
-          .and not_change { master_file.supplemental_files.first.id }
 
           expect(response).to have_http_status(:ok)
           expect(response.location).to eq master_file_supplemental_file_path(id: assigns(:supplemental_file).id, master_file_id: master_file.id)
@@ -184,8 +176,6 @@ RSpec.describe SupplementalFilesController, type: :controller do
           expect {
             put :update, params: { master_file_id: master_file.id, id: supplemental_file.id, supplemental_file: valid_update_attributes, format: :html }, session: valid_session
           }.to change { master_file.reload.supplemental_files.first.label }.from('label').to('new label')
-          .and not_change { master_file.supplemental_files.first.absolute_path }
-          .and not_change { master_file.supplemental_files.first.id }
 
           expect(response).to redirect_to(edit_media_object_path(media_object.id, step: 'structure'))
           expect(flash[:success]).to be_present
@@ -212,7 +202,7 @@ RSpec.describe SupplementalFilesController, type: :controller do
 
   describe "DELETE #destroy" do
     let(:master_file) { FactoryBot.create(:master_file, supplemental_files: [supplemental_file]) }
-    let(:supplemental_file) { MasterFile::SupplementalFile.new(id: '1', label: 'label', absolute_path: uploaded_file.path) }
+    let(:supplemental_file) { FactoryBot.create(:supplemental_file, :with_attached_file) }
 
     before do
       login_as :administrator

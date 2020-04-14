@@ -112,22 +112,17 @@ class MasterFile < ActiveFedora::Base
 
   # FIXME: Switch absolute_path to stored_file_id and use valkyrie or other file store to allow for abstracting file path and content from fedora (think stream urls)
   # See https://github.com/samvera/valkyrie/blob/master/lib/valkyrie/storage/disk.rb
-  SupplementalFile = Struct.new(:id, :label, :absolute_path, keyword_init: true)
+  # SupplementalFile = Struct.new(:id, :label, :absolute_path, keyword_init: true)
 
+  # @return [SupplementalFile]
   def supplemental_files
     return [] if supplemental_files_json.blank?
-    JSON.parse(supplemental_files_json).collect { |file_json| SupplementalFile.new(file_json) }
+    JSON.parse(supplemental_files_json).collect { |file_gid| GlobalID::Locator.locate(file_gid) }
   end
 
   # @param files [SupplementalFile]
   def supplemental_files=(files)
-    self.supplemental_files_json = files.to_json
-  end
-
-  def next_supplemental_file_id
-    last_id = supplemental_files.collect { |f| f.id.to_i }.max
-    new_id = last_id.present? ? last_id + 1 : 1
-    new_id.to_s
+    self.supplemental_files_json = files.collect { |file| file.to_global_id.to_s }.to_s
   end
 
   # Delegated to EncodeRecord

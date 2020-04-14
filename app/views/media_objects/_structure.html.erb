@@ -131,8 +131,8 @@ Unless required by applicable law or agreed to in writing, software distributed
           <% section.supplemental_files.each do |file| %>
             <div class="row" data-file-id="<%= file.id %>" data-masterfile-id="<%= section.id %>" data-file-label="<%= file.label %>">
               <div class="col-sm-6">
-                <span name="label_<%= section.id + "_" + file.id %>" class="display-item"><%= file.label %></span>
-                <input name="label_<%= section.id + "_" + file.id %>" type="text" class="form-control edit-item outline_on" value="<%= file.label %>">
+                <span name="label_<%= section.id + "_" + file.id.to_s %>" class="display-item"><%= file.label %></span>
+                <input name="label_<%= section.id + "_" + file.id.to_s %>" type="text" class="form-control edit-item outline_on" value="<%= file.label %>">
               </div>
               <div class="col-sm-3">
                 <%# Update button %>
