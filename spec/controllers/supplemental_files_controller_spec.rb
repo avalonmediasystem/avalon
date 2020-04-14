@@ -130,38 +130,6 @@ RSpec.describe SupplementalFilesController, type: :controller do
         end
       end
     end
-
-    context 'does not attach' do
-      let(:supplemental_file) { FactoryBot.build(:supplemental_file) }
-      before do
-        allow(SupplementalFile).to receive(:new).and_return(supplemental_file)
-        allow(supplemental_file).to receive(:attach_file).and_return(nil)
-      end
-
-      it 'does not create a SupplementalFile record' do
-        expect {
-          post :create, params: { master_file_id: master_file.id, supplemental_file: valid_create_attributes, format: :json }, session: valid_session
-        }.not_to change { SupplementalFile.count }#.and_not_to change { master_file.reload.supplemental_files.size }
-        expect(response).to have_http_status(500)
-        expect(JSON.parse(response.body)["errors"]).to be_present
-      end
-    end
-
-    context 'throws error while attaching' do
-      let(:supplemental_file) { FactoryBot.build(:supplemental_file) }
-      before do
-        allow(SupplementalFile).to receive(:new).and_return(supplemental_file)
-        allow(supplemental_file).to receive(:attach_file).and_raise(LoadError, "ERROR!!!!")
-      end
-
-      it 'does not create a SupplementalFile record' do
-        expect {
-          post :create, params: { master_file_id: master_file.id, supplemental_file: valid_create_attributes, format: :json }, session: valid_session
-        }.not_to change { SupplementalFile.count }#.and_not_to change { master_file.reload.supplemental_files.size }
-        expect(response).to have_http_status(500)
-        expect(JSON.parse(response.body)["errors"]).to be_present
-      end
-    end
   end
 
   describe "PUT #update" do
