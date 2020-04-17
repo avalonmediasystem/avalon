@@ -284,32 +284,24 @@ class MEJSPlayer {
     // Build quality
     this.player.buildquality(this.player, null, null, this.mediaElement);
 
-    this.reInitializeCaptions(playlistItemsT);
+    this.reInitializeCaptions();
 
-    this.player.load();
+    // this.player.load();
     this.player.play();
   }
 
   /** Based on the availability of captions in currentStreamInfo build tracks
    * in playlists and item page
    * @function reInitializeCaptions
-   * @param playlistItemsT 
    */
-  reInitializeCaptions(playlistItemsT) {
+  reInitializeCaptions() {
     if (this.currentStreamInfo.captions_path) {
-      // Re-arrange player features when tracks are available
-      // in both playlists and item page
-      this.player.featurePosition.tracks = 6;
-      this.player.featurePosition.fullscreen = 9;
+      // Place tracks button after volume button when tracks are available
+      this.player.featurePosition.tracks = this.player.featurePosition.volume + 1;
       this.player.buildtracks(this.player, null, this.player.layers, this.mediaElement);
       // Turn on captions
       this.toggleCaptions();
     } else {
-      // Re-arrange player features in item page
-      if(!playlistItemsT) {
-        this.player.featurePosition.addToPlaylist = 8;
-        this.player.featurePosition.fullscreen = 9;
-      }
       // Clear captions object
       delete this.player.tracks;
       this.player.cleartracks(this.player);
