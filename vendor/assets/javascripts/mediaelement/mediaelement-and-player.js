@@ -2426,19 +2426,22 @@ Object.assign(_player2.default.prototype, {
 	cleartracks: function cleartracks(player) {
 		if (player) {
 			if (player.captions) {
-				player.captions.remove();
+				delete player.captions;
 			}
 			if (player.chapters) {
-				player.chapters.remove();
+				delete player.chapters;
 			}
 			if (player.captionsText) {
-				player.captionsText.remove();
+				delete player.captionsText;
 			}
 			if (player.captionsButton) {
 				player.captionsButton.remove();
 			}
 			if (player.chaptersButton) {
-				player.chaptersButton.remove();
+				delete player.chaptersButton;
+			}
+			if(player.trackToLoad) {
+				delete player.trackToLoad;
 			}
 		}
 	},

@@ -138,10 +138,8 @@ Object.assign(MediaElementPlayer.prototype, {
         addToPlayListObj.bindHandleCancel
       );
     }
-    if (player) {
-      if (player.addPlaylistButton) {
-        player.addPlaylistButton.remove();
-      }
+    if (player && player.addPlaylistButton) {
+      player.addPlaylistButton.remove();
     }
   },
 
