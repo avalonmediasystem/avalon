@@ -183,8 +183,9 @@ services:
     entrypoint: >
       /bin/sh -c "
       /usr/bin/mc config host add myminio http://minio:9000 minio minio123;
-      /usr/bin/mc mb -p myminio/fcrepo myminio/masterfiles myminio/derivatives;
+      /usr/bin/mc mb -p myminio/fcrepo myminio/masterfiles myminio/derivatives myminio/supplementalfiles;
       /usr/bin/mc policy set download myminio/derivatives;
+      /usr/bin/mc policy set download myminio/supplementalfiles;
       exit 0;
       "
     networks:

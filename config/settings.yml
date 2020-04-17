@@ -83,3 +83,5 @@ auth:
           <%= ENV['LTI_AUTH_KEY'] %>: <%= ENV['LTI_AUTH_SECRET'] %>
     <% end %>
 # google_analytics_tracking_id: "someid"
+supplemental_files:
+  proxy: false
