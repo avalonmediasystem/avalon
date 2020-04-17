@@ -129,25 +129,30 @@ class MEJSPlayer {
   }
 
   /**
-   * Make AJAX request for clicked item's stream data
+   * Make AJAX request for clicked/next available items's stream data
    * @function getNewStreamAjax
-   * @param  {string} id - id of master file id
    * @param {string} url Url to get stream data ie. /media_objects/xg94hp52v/section/bc386j20b
+   * @param {boolean} startPlaying once advancing to next item, continue playing after the player is re-initialized
    * @param {Array} playlistItemT Array which contains playlist item clip start and end times.  This is sent in from playlist items plugin, when creating a new instance of the player.
    * @return {void}
    */
-  getNewStreamAjax(url, isEnded, playlistItemsT) {
+  getNewStreamAjax(url, startPlaying, playlistItemsT) {
     $('.media-show-page').removeClass('ready-to-play');
     $.ajax({
       url: url + '/stream',
       dataType: 'json'
     })
       .done(response => {
-        this.setContextVars(response, playlistItemsT);
-        if(isEnded) {
-          this.switchPlayer(isEnded, playlistItemsT);
+        // Use the existing player iff existing player and new stream are both of type video and
+        // previous item has come to its end
+        if(startPlaying && response.is_video && this.player.isVideo) {
+          // Set currentStreamInfo before switching the player: switchPlayer uses new stream info
+          this.setContextVars(response, playlistItemsT);
+          this.switchPlayer(playlistItemsT);
         } else {
+          // Set currentStreamInfo after removing the player: removePlayer uses existing stream info
           this.removePlayer();
+          this.setContextVars(response, playlistItemsT);
           this.createNewPlayer();
         }
         this.updateShareLinks();
@@ -238,11 +243,10 @@ class MEJSPlayer {
    * Swap the media source and track in the current player instance with values from
    * the new stream info
    * @function switchPlayer
-   * @param {Boolean} isEnded
    * @param {Object} playlistItemsT
    * @returns {void}
    */
-  switchPlayer(isEnded, playlistItemsT) {
+  switchPlayer(playlistItemsT) {
     let markup = '';
 
     this.node.innerHTML = '';
@@ -260,14 +264,11 @@ class MEJSPlayer {
 
     this.node.innerHTML = markup;
 
-    // Handle 'canplay' events fired by player
+    // Bind to canplay event to switch off loading when media is ready
     this.mediaElement.addEventListener(
       'canplay',
       this.handleCanPlay.bind(this)
     );
-
-    this.player.buildquality(this.player, null, null, this.mediaElement);
-    this.player.buildtracks(this.player, null, this.player.layers, this.mediaElement);
 
     // Build playlists button from the new stream when not in playlists
     if(!playlistItemsT) {
@@ -275,31 +276,44 @@ class MEJSPlayer {
       this.player.buildaddToPlaylist(this.player, null, null, null);
     }
 
-    // Turn on captions
-    this.toggleCaptions();
+    // Initialize playlist items for the new stream
+    if(playlistItemsT) {
+      this.player.buildplaylistItems(this.player, null, null, this.mediaElement);
+    }
+
+    // Build quality
+    this.player.buildquality(this.player, null, null, this.mediaElement);
+
+    this.reInitializeCaptions(playlistItemsT);
 
     this.player.load();
-    if(isEnded) {
-      this.player.play();
-    }
+    this.player.play();
+  }
 
-    // Update markers in playlists
-    if(playlistItemsT) {
-      let promises = [];
-      const playlistIds = this.playlistItem
-      ? [this.playlistItem.playlist_id, this.playlistItem.id]
-      : [];
-      promises.push(this.mejsMarkersHelper.getMarkers(...playlistIds));
-      Promise.all(promises)
-        .then(() => {
-          this.mejsMarkersHelper.updateVisualMarkers();
-        })
-        .catch(error => {
-          console.log('Promise rejection error');
-        });
-      this.player.buildmarkers(this.player, this.player.controls, null, this.mediaElement);
+  /** Based on the availability of captions in currentStreamInfo build tracks
+   * in playlists and item page
+   * @function reInitializeCaptions
+   * @param playlistItemsT 
+   */
+  reInitializeCaptions(playlistItemsT) {
+    if (this.currentStreamInfo.captions_path) {
+      // Re-arrange player features when tracks are available
+      // in both playlists and item page
+      this.player.featurePosition.tracks = 6;
+      this.player.featurePosition.fullscreen = 9;
+      this.player.buildtracks(this.player, null, this.player.layers, this.mediaElement);
+      // Turn on captions
+      this.toggleCaptions();
+    } else {
+      // Re-arrange player features in item page
+      if(!playlistItemsT) {
+        this.player.featurePosition.addToPlaylist = 8;
+        this.player.featurePosition.fullscreen = 9;
+      }
+      // Clear captions object
+      delete this.player.tracks;
+      this.player.cleartracks(this.player);
     }
-
   }
 
   /**

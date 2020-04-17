@@ -49,6 +49,7 @@ Object.assign(MediaElementPlayer.prototype, {
     playlistItemsObj.mejsTimeRailHelper = new MEJSTimeRailHelper();
 
     playlistItemsObj.player = player;
+    playlistItemsObj.mediaElement = media;
     // Track the number of MEJS 'timeupdate' events which fire after the end time of a playlist item
     playlistItemsObj.endTimeCount = 0;
 
@@ -231,11 +232,46 @@ Object.assign(MediaElementPlayer.prototype, {
 
         // Get new data and create new player instance
         mejs4AvalonPlayer.getNewStreamAjax(url, isEnded, playlistItemT);
-        this.mejsMarkersHelper.updateVisualMarkers();
+
+        // Use switchItemHelper only when previous item is ended 
+        // and both current and prev items are video
+        const prevItemIsVideo = this.$nowPlayingLi.prev('li').data('isVideo');
+        const currentItemIsVideo = this.$nowPlayingLi.data('isVideo');
+        if(isEnded && prevItemIsVideo && currentItemIsVideo) {
+          this.switchItemHelper();
+        }
       }
 
       // Rebuild playlist info panels
       this.rebuildPlaylistInfoPanels(playlistId, playlistItemId);
+    },
+
+    /**
+     * Helper function when re-initializing the player instance when advancing from a
+     * playlist item to next when the playlist item ends
+     * @function switchItemHelper
+     * @returns {void}
+     */
+    switchItemHelper() {
+      this.mejsMarkersHelper.updateVisualMarkers();
+
+      // Build markers and timerail highlight
+      let promises = [];
+      const playlistItem = mejs4AvalonPlayer.playlistItem;
+      const playlistIds = playlistItem
+      ? [playlistItem.playlist_id, playlistItem.id]
+      : [];
+      promises.push(this.mejsMarkersHelper.getMarkers(...playlistIds));
+      Promise.all(promises)
+        .then(() => {
+          this.mejsMarkersHelper.updateVisualMarkers();
+          mejs4AvalonPlayer.highlightTimeRail([this.startEndTimes.start, this.startEndTimes.end]);
+        })
+        .catch(error => {
+          console.log('Promise rejection error');
+        });
+
+      this.player.buildmarkers(this.player, this.player.controls, null, this.mediaElement);
     },
 
     /**
@@ -357,7 +393,7 @@ Object.assign(MediaElementPlayer.prototype, {
      */
     handleTimeUpdate() {
       const t = this;
-      const plo = t.playlistItemsObj;
+      const plo = t.playlistItemsObj || t;
       const currentTime = plo.player.getCurrentTime();
       const isEnded = plo.isItemEnded(currentTime);
 
