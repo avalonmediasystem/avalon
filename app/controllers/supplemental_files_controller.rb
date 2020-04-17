@@ -57,9 +57,13 @@ class SupplementalFilesController < ApplicationController
 
     @supplemental_file = SupplementalFile.find(params[:id])
     raise Avalon::NotFound, "Supplemental file: #{@supplemental_file.id} not found" unless @master_file.supplemental_files.any? { |f| f.id == @supplemental_file.id }
-    # FIXME: redirect or proxy the content instead of rails directly sending the file
-    # send_file matching_file.absolute_path
-    redirect_to rails_blob_path(@supplemental_file.file, disposition: "attachment")
+
+    # Redirect or proxy the content
+    if Settings.supplemental_files.proxy
+      send_data @supplemental_file.file.download, filename: @supplemental_file.file.filename.to_s, type: @supplemental_file.file.content_type, disposition: 'attachment'
+    else
+      redirect_to rails_blob_path(@supplemental_file.file, disposition: "attachment")
+    end
   end
 
   # Update the label of the supplemental file

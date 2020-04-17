@@ -67,5 +67,5 @@ config.webpacker.check_yarn_integrity = false
   # routes, locales, etc. This feature depends on the listen gem.
   config.file_watcher = ActiveSupport::EventedFileUpdateChecker
 
-  config.active_storage.service = :local
+  config.active_storage.service = :minio
 end
