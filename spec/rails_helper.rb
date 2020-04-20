@@ -168,3 +168,7 @@ RSpec.configure do |config|
   config.include FixtureMacros, type: :controller
   config.include OptionalExample
 end
+
+FactoryBot::SyntaxRunner.class_eval do
+  include ActionDispatch::TestProcess
+end

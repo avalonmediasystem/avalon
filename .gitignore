@@ -76,3 +76,7 @@ yarn-debug.log*
 
 # Cypress test output
 /cypress
+
+# ActiveStorage
+/storage
+/tmp/storage

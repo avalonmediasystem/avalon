@@ -695,32 +695,21 @@ describe MasterFile do
 
   describe 'Supplemental Files' do
     let(:master_file) { FactoryBot.build(:master_file) }
-    let(:supplemental_file) { MasterFile::SupplementalFile.new(id: '1', label: 'Transcript', absolute_path: '/path/to/file/transcript.doc') }
+    let(:supplemental_file) { FactoryBot.create(:supplemental_file) }
     let(:supplemental_files) { [supplemental_file] }
+    let(:supplemental_files_json) { [supplemental_file.to_global_id.to_s].to_json }
 
     context 'supplemental_files=' do
       it 'stores the supplemental files as a json string in a property' do
-        expect { master_file.supplemental_files = supplemental_files }.to change { master_file.supplemental_files_json }.from(nil).to(supplemental_files.to_json)
+        expect { master_file.supplemental_files = supplemental_files }.to change { master_file.supplemental_files_json }.from(nil).to(supplemental_files_json)
       end
     end
 
     context 'supplemental_files' do
-      let(:master_file) { FactoryBot.build(:master_file, supplemental_files_json: supplemental_files.to_json) }
+      let(:master_file) { FactoryBot.build(:master_file, supplemental_files_json: supplemental_files_json) }
 
       it 'reifies the supplemental files from the stored json string' do
         expect(master_file.supplemental_files).to eq supplemental_files
-      end
-    end
-
-    context 'next_supplemental_file_id' do
-      it 'calclates the next id to use' do
-        master_file.supplemental_files = supplemental_files
-        expect(master_file.next_supplemental_file_id).to eq '2'
-      end
-
-      it 'calculates the first id to use' do
-        master_file.supplemental_files = []
-        expect(master_file.next_supplemental_file_id).to eq '1'
       end
     end
   end

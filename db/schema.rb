@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_10_16_195828) do
+ActiveRecord::Schema.define(version: 2020_04_14_154529) do
 
   create_table "active_encode_encode_records", force: :cascade do |t|
     t.string "global_id"
@@ -28,6 +28,27 @@ ActiveRecord::Schema.define(version: 2019_10_16_195828) do
     t.index ["display_title"], name: "index_active_encode_encode_records_on_display_title"
     t.index ["master_file_id"], name: "index_active_encode_encode_records_on_master_file_id"
     t.index ["media_object_id"], name: "index_active_encode_encode_records_on_media_object_id"
+  end
+
+  create_table "active_storage_attachments", force: :cascade do |t|
+    t.string "name", null: false
+    t.string "record_type", null: false
+    t.integer "record_id", null: false
+    t.integer "blob_id", null: false
+    t.datetime "created_at", null: false
+    t.index ["blob_id"], name: "index_active_storage_attachments_on_blob_id"
+    t.index ["record_type", "record_id", "name", "blob_id"], name: "index_active_storage_attachments_uniqueness", unique: true
+  end
+
+  create_table "active_storage_blobs", force: :cascade do |t|
+    t.string "key", null: false
+    t.string "filename", null: false
+    t.string "content_type"
+    t.text "metadata"
+    t.bigint "byte_size", null: false
+    t.string "checksum", null: false
+    t.datetime "created_at", null: false
+    t.index ["key"], name: "index_active_storage_blobs_on_key", unique: true
   end
 
   create_table "annotations", force: :cascade do |t|
@@ -192,6 +213,12 @@ ActiveRecord::Schema.define(version: 2019_10_16_195828) do
     t.string "token"
     t.string "target"
     t.datetime "expires"
+  end
+
+  create_table "supplemental_files", force: :cascade do |t|
+    t.string "label"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "timelines", force: :cascade do |t|

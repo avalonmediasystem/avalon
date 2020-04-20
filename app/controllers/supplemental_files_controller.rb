@@ -14,7 +14,7 @@
 
 class SupplementalFilesController < ApplicationController
   before_action :set_master_file
-  before_action :build_supplemental_file, only: [:create, :update]
+  # before_action :build_supplemental_file, only: [:create, :update]
 
   rescue_from Avalon::SaveError do |exception|
     message = "An error occurred when saving the supplemental file: #{exception.full_message}"
@@ -34,10 +34,11 @@ class SupplementalFilesController < ApplicationController
     # FIXME: move filedata to permanent location
     raise Avalon::BadRequest, "Missing required parameters" unless supplemental_file_params[:file]
 
-    absolute_path = supplemental_file_params[:file].path
-    @supplemental_file.absolute_path = absolute_path
-    @supplemental_file.label ||= supplemental_file_params[:file].original_filename
-    @supplemental_file.id = @master_file.next_supplemental_file_id
+    @supplemental_file = SupplementalFile.new(label: supplemental_file_params[:label])
+    @supplemental_file.attach_file(supplemental_file_params[:file])
+    # TODO: Add rollback handling in case masterfile fails to save
+    raise Avalon::SaveError, @supplemental_files.errors.full_messages unless @supplemental_file.save
+
     @master_file.supplemental_files += [@supplemental_file]
     raise Avalon::SaveError, @master_file.errors[:supplemental_files_json].full_messages unless @master_file.save
 
@@ -50,25 +51,31 @@ class SupplementalFilesController < ApplicationController
 
   def show
     # TODO: Use a master file presenter which reads from solr instead of loading the masterfile from fedora
+    # FIXME: authorize supplemental file directly (needs supplemental file to have reference to masterfile)
     authorize! :read, @master_file, message: "You do not have sufficient privileges"
-    matching_file = @master_file.supplemental_files.find { |file| file.id == params[:id] }
-    # FIXME: redirect or proxy the content instead of rails directly sending the file
-    send_file matching_file.absolute_path
+    raise Avalon::NotFound, "Supplemental file: #{params[:id]} not found" unless SupplementalFile.exists? params[:id].to_s
+
+    @supplemental_file = SupplementalFile.find(params[:id])
+    raise Avalon::NotFound, "Supplemental file: #{@supplemental_file.id} not found" unless @master_file.supplemental_files.any? { |f| f.id == @supplemental_file.id }
+
+    # Redirect or proxy the content
+    if Settings.supplemental_files.proxy
+      send_data @supplemental_file.file.download, filename: @supplemental_file.file.filename.to_s, type: @supplemental_file.file.content_type, disposition: 'attachment'
+    else
+      redirect_to rails_blob_path(@supplemental_file.file, disposition: "attachment")
+    end
   end
 
   # Update the label of the supplemental file
   def update
     authorize! :edit, @master_file
-    file_index = @master_file.supplemental_files.find_index { |file| file.id == @supplemental_file.id }
-    raise Avalon::NotFound, "Cannot update the supplemental file: #{@supplemental_file.id} not found" unless file_index.present?
+    raise Avalon::NotFound, "Cannot update the supplemental file: #{params[:id]} not found" unless SupplementalFile.exists? params[:id].to_s
+    @supplemental_file = SupplementalFile.find(params[:id])
+    raise Avalon::NotFound, "Cannot update the supplemental file: #{@supplemental_file.id} not found" unless @master_file.supplemental_files.any? { |f| f.id == @supplemental_file.id }
     raise Avalon::BadRequest, "Updating file contents not allowed" if supplemental_file_params[:file].present?
 
-    # Use the stored absolute path and not update from the user params
-    @supplemental_file.absolute_path = @master_file.supplemental_files[file_index].absolute_path
-    supplemental_files = @master_file.supplemental_files
-    supplemental_files[file_index] = @supplemental_file
-    @master_file.supplemental_files = supplemental_files
-    raise Avalon::SaveError, @master_file.errors[:supplemental_files_json].full_messages unless @master_file.save
+    @supplemental_file.label = supplemental_file_params[:label]
+    raise Avalon::SaveError, @supplemental_file.errors.full_messages unless @supplemental_file.save
 
     flash[:success] = "Supplemental file successfully updated."
     respond_to do |format|
@@ -79,11 +86,14 @@ class SupplementalFilesController < ApplicationController
 
   def destroy
     authorize! :edit, @master_file
-    file = @master_file.supplemental_files.find { |f| f.id == params[:id] }
-    raise Avalon::NotFound, "Cannot update the supplemental file: #{params[:id]} not found" unless file.present?
-    @master_file.supplemental_files -= [file]
+    raise Avalon::NotFound, "Cannot delete the supplemental file: #{params[:id]} not found" unless SupplementalFile.exists? params[:id].to_s
+    @supplemental_file = SupplementalFile.find(params[:id])
+    raise Avalon::NotFound, "Cannot delete the supplemental file: #{@supplemental_file.id} not found" unless @master_file.supplemental_files.any? { |f| f.id == @supplemental_file.id }
 
+    @master_file.supplemental_files -= [@supplemental_file]
     raise Avalon::SaveError, "An error occurred when deleting the supplemental file: #{@master_file.errors[:supplemental_files_json].full_messages}" unless @master_file.save
+    # FIXME: also wrap this in a transaction
+    raise Avalon::SaveError, "An error occurred when deleting the supplemental file: #{@supplemental_file.errors.full_messages}" unless @supplemental_file.destroy
 
     flash[:success] = "Supplemental file successfully deleted."
     respond_to do |format|
@@ -98,10 +108,10 @@ class SupplementalFilesController < ApplicationController
       @master_file = MasterFile.find(params[:master_file_id])
     end
 
-    def build_supplemental_file
-      # Note that built supplemental file does not have an absolute_path
-      @supplemental_file = MasterFile::SupplementalFile.new(id: params[:id], label: supplemental_file_params[:label])
-    end
+    # def build_supplemental_file
+    #   # Note that built supplemental file does not have an absolute_path
+    #   @supplemental_file = MasterFile::SupplementalFile.new(id: params[:id], label: supplemental_file_params[:label])
+    # end
 
     def supplemental_file_params
       # TODO: Add parameters for minio and s3
