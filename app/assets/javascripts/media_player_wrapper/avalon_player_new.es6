@@ -286,7 +286,7 @@ class MEJSPlayer {
 
     this.reInitializeCaptions();
 
-    // this.player.load();
+    this.player.load();
     this.player.play();
   }
 
