@@ -9,7 +9,7 @@ module Faraday
       def call(env)
         srv = env[:url].hostname
         Resolv::DNS.new.getresources(srv, Resolv::DNS::Resource::IN::ANY).collect do |resource|
-          env[:url].hostname = resource.target
+          env[:url].hostname = resource.target.to_s
           env[:url].port = resource.port
 
           env[:request_headers] ||= {}
