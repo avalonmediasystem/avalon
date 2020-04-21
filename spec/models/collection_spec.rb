@@ -118,10 +118,17 @@ describe Admin::Collection do
 
   describe 'validations' do
     subject {wells_collection}
-    let(:wells_collection) {FactoryBot.create(:collection, name: 'Herman B. Wells Collection', unit: "Default Unit", description: "Collection about our 11th university president, 1938-1962", managers: [manager.user_key], editors: [editor.user_key], depositors: [depositor.user_key])}
+    let(:wells_collection) do
+      FactoryBot.create(:collection, name: 'Herman B. Wells Collection', unit: "Default Unit",
+                        description: "Collection about our 11th university president, 1938-1962",
+                        managers: [manager.user_key], editors: [editor.user_key], depositors: [depositor.user_key],
+                        contact_email: contact_email, website: website)
+    end
     let(:manager) {FactoryBot.create(:manager)}
     let(:editor) {FactoryBot.create(:user)}
     let(:depositor) {FactoryBot.create(:user)}
+    let(:contact_email) { Faker::Internet.email }
+    let(:website) { Faker::Internet.url }
 
     it {is_expected.to validate_presence_of(:name)}
     context 'validate uniqueness of name' do
@@ -147,6 +154,10 @@ describe Admin::Collection do
     end
     it {is_expected.to validate_presence_of(:unit)}
     it {is_expected.to validate_inclusion_of(:unit).in_array(Admin::Collection.units)}
+    it { is_expected.to allow_value('collection@example.com').for(:contact_email) }
+    it { is_expected.not_to allow_value('collection@').for(:contact_email) }
+    it { is_expected.to allow_value('https://collection.example.com').for(:website) }
+    it { is_expected.not_to allow_value('collection.example.com').for(:website) }
     it "should ensure length of :managers is_at_least(1)"
 
     it "should have attributes" do
@@ -157,6 +168,8 @@ describe Admin::Collection do
       expect(subject.managers).to eq([manager.user_key])
       expect(subject.editors).to eq([editor.user_key])
       expect(subject.depositors).to eq([depositor.user_key])
+      expect(subject.contact_email).to eq(contact_email)
+      expect(subject.website).to eq(website)
       # expect(subject.rightsMetadata).to be_kind_of Hydra::Datastream::RightsMetadata
       # expect(subject.inheritedRights).to be_kind_of Hydra::Datastream::InheritableRightsMetadata
       # expect(subject.defaultRights).to be_kind_of Hydra::Datastream::NonIndexedRightsMetadata

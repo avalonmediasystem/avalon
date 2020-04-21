@@ -274,9 +274,12 @@ describe Admin::CollectionsController, type: :controller do
       # post 'create', format:'json', admin_collection: {name: collection.name, description: collection.description, unit: collection.unit, managers: collection.managers}
     end
     it "should create a new collection" do
-      post 'create', params: { format:'json', admin_collection: {name: collection.name, description: collection.description, unit: collection.unit, managers: collection.managers} }
+      post 'create', params: { format:'json', admin_collection: {name: collection.name, description: collection.description, unit: collection.unit, contact_email: collection.contact_email, website: collection.website, managers: collection.managers} }
       expect(JSON.parse(response.body)['id'].class).to eq String
       expect(JSON.parse(response.body)).not_to include('errors')
+      new_collection = Admin::Collection.find(JSON.parse(response.body)['id'])
+      expect(new_collection.contact_email).to eq collection.contact_email
+      expect(new_collection.website).to eq collection.website
     end
     it "should create a new collection with default manager list containing current API user" do
       post 'create', params: { format:'json', admin_collection: { name: collection.name, description: collection.description, unit: collection.unit } }
@@ -307,6 +310,9 @@ describe Admin::CollectionsController, type: :controller do
 
     context "update REST API" do
       let!(:collection) { FactoryBot.create(:collection)}
+      let(:contact_email) { Faker::Internet.email }
+      let(:website) { Faker::Internet.url }
+
       before do
         ApiToken.create token: 'secret_token', username: 'archivist1@example.com', email: 'archivist1@example.com'
         request.headers['Avalon-Api-Key'] = 'secret_token'
@@ -314,11 +320,13 @@ describe Admin::CollectionsController, type: :controller do
 
       it "should update a collection via API" do
         old_description = collection.description
-        put 'update', params: { format: 'json', id: collection.id, admin_collection: {description: collection.description+'new'} }
+        put 'update', params: { format: 'json', id: collection.id, admin_collection: { description: collection.description+'new', contact_email: contact_email, website: website }}
         expect(JSON.parse(response.body)['id'].class).to eq String
         expect(JSON.parse(response.body)).not_to include('errors')
         collection.reload
         expect(collection.description).to eq old_description+'new'
+        expect(collection.contact_email).to eq contact_email
+        expect(collection.website).to eq website
       end
       it "should return 422 if collection update via API failed" do
         allow_any_instance_of(Admin::Collection).to receive(:save).and_return false

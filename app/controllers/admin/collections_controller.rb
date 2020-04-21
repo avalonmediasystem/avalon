@@ -295,7 +295,7 @@ class Admin::CollectionsController < ApplicationController
   private
 
   def collection_params
-    params.permit(:admin_collection => [:name, :description, :unit, :managers => []])[:admin_collection]
+    params.permit(:admin_collection => [:name, :description, :unit, :contact_email, :website, :managers => []])[:admin_collection]
   end
 
   def check_image_compliance(poster_path)
