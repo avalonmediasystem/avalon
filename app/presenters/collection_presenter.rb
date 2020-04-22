@@ -46,6 +46,14 @@ class CollectionPresenter
     Rails.application.routes.url_helpers.collection_url(id)
   end
 
+  def contact_email
+    document["contact_email_ssi"]
+  end
+
+  def website
+    document["website_ssi"]
+  end
+
   def as_json(_)
     {
       id: id,
