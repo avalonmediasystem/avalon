@@ -58,16 +58,18 @@ const CollectionDetails = ({ content = '', email = '', website = '' }) => {
         </p>
       )}
       <dl className="dl-horizontal">
-        <dt style={descriptionStyle}>Contact email:</dt>
-        <dd>
-          { email ?  <a href={`mailto:${email}`}>{email}</a>
-            : <span className="info-text-gray">No email</span> }
-        </dd>
-        <dt style={descriptionStyle}>Website:</dt>
-        <dd>
-          { website ? <a href={website}>{website}</a>
-            : <span className="info-text-gray">No website</span> }
-        </dd>
+        { email &&
+          <>
+            <dt style={descriptionStyle}>Contact email:</dt>
+            <dd><a href={`mailto:${email}`}>{email}</a></dd>
+          </>
+        }
+        { website &&
+          <>
+            <dt style={descriptionStyle}>Website:</dt>
+            <dd><a href={website}>{website}</a></dd>
+          </>
+        }
       </dl>
     </div>
   );
