@@ -67,7 +67,7 @@ const CollectionDetails = ({ content = '', email = '', website = '' }) => {
         { website &&
           <>
             <dt style={descriptionStyle}>Website:</dt>
-            <dd><a href={website}>{website}</a></dd>
+            <dd dangerouslySetInnerHTML={{ __html: website }}></dd>
           </>
         }
       </dl>

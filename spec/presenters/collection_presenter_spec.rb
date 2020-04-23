@@ -20,22 +20,36 @@ describe CollectionPresenter do
   let(:unit) { "Default Unit" }
   let(:description) { "The long form description of this collection." }
   let(:has_poster) { true }
+  let(:website_label) { Faker::Lorem.words.join(' ') }
+  let(:website_url) { Faker::Internet.url }
+  let(:contact_email) { Faker::Internet.email }
+  let(:website_link) { "<a href='#{website_label}'>#{website_url}</a>" }
   let(:solr_doc) do
     SolrDocument.new(
       id: id,
       "name_ssi": name,
       "unit_ssi": unit,
       "description_tesim": [description],
-      "has_poster_bsi": has_poster
+      "has_poster_bsi": has_poster,
+      "website_label_ssi": website_label,
+      "website_url_ssi": website_url,
+      "contact_email_ssi": contact_email
     )
   end
-  subject(:presenter) { described_class.new(solr_doc) }
+  let(:view_context) { double('View Context', website_link: website_link) }
+  subject(:presenter) { described_class.new(solr_doc, view_context) }
+
+  before do
+    allow(view_context).to receive(:link_to).with(website_label, website_url).and_return(website_link)
+  end
 
   it 'provides getters for descriptive fields' do
     expect(presenter.id).to eq id
     expect(presenter.name).to eq name
     expect(presenter.unit).to eq unit
     expect(presenter.description).to eq description
+    expect(presenter.contact_email).to eq contact_email
+    expect(presenter.website_link).to eq website_link
   end
 
   describe '#poster_url' do
