@@ -19,6 +19,7 @@ describe WaveformJob do
   let(:master_file) { FactoryBot.create(:master_file_with_media_object_and_derivative) }
   let(:waveform_json) { File.read('spec/fixtures/waveform.json') }
   let(:service) { instance_double("WaveformService") }
+  let(:derivative_path) { URI.parse(master_file.derivatives.first.absolute_location).path }
 
   describe "perform" do
     before do
@@ -51,12 +52,25 @@ describe WaveformJob do
       end
     end
 
+    context 'when Derivative file is retrievable' do
+      before do
+        allow(File).to receive(:exist?).and_call_original
+        allow(File).to receive(:exist?).with(derivative_path).and_return(true)
+      end
+
+      it 'calls the waveform service with the file location' do
+        job.perform(master_file.id)
+        expect(service).to have_received(:get_waveform_json).with(derivative_path)
+      end
+    end
+
     context 'when not on disk' do
       let(:secure_hls_url) { "https://path/to/mp4:video.mp4/playlist.m3u8?token=abc" }
 
       before do
         allow(File).to receive(:exist?).and_call_original
         allow(File).to receive(:exist?).with(master_file.file_location).and_return(false)
+        allow(File).to receive(:exist?).with(derivative_path).and_return(false)
         allow(SecurityHandler).to receive(:secure_url).and_return(secure_hls_url)
       end
 
@@ -89,9 +103,8 @@ describe WaveformJob do
     context 'when processing fails to generate waveform data' do
       let(:waveform_json) { nil }
 
-      it 'logs and does not set the waveform' do
-        expect(Rails.logger).to receive(:error).at_least(:once)
-        expect { job.perform(master_file.id, true) }.not_to change { master_file.reload.waveform.content }
+      it 'raises error and does not set the waveform' do
+        expect { job.perform(master_file.id, true) }.to raise_error.and not_change { master_file.reload.waveform.content }
         expect(service).to have_received(:get_waveform_json)
       end
     end
