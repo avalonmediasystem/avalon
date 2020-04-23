@@ -122,13 +122,14 @@ describe Admin::Collection do
       FactoryBot.create(:collection, name: 'Herman B. Wells Collection', unit: "Default Unit",
                         description: "Collection about our 11th university president, 1938-1962",
                         managers: [manager.user_key], editors: [editor.user_key], depositors: [depositor.user_key],
-                        contact_email: contact_email, website: website)
+                        contact_email: contact_email, website_url: website_url, website_label: website_label)
     end
     let(:manager) {FactoryBot.create(:manager)}
     let(:editor) {FactoryBot.create(:user)}
     let(:depositor) {FactoryBot.create(:user)}
     let(:contact_email) { Faker::Internet.email }
-    let(:website) { Faker::Internet.url }
+    let(:website_label) { Faker::Lorem.words.join(' ') }
+    let(:website_url) { Faker::Internet.url }
 
     it {is_expected.to validate_presence_of(:name)}
     context 'validate uniqueness of name' do
@@ -156,8 +157,8 @@ describe Admin::Collection do
     it {is_expected.to validate_inclusion_of(:unit).in_array(Admin::Collection.units)}
     it { is_expected.to allow_value('collection@example.com').for(:contact_email) }
     it { is_expected.not_to allow_value('collection@').for(:contact_email) }
-    it { is_expected.to allow_value('https://collection.example.com').for(:website) }
-    it { is_expected.not_to allow_value('collection.example.com').for(:website) }
+    it { is_expected.to allow_value('https://collection.example.com').for(:website_url) }
+    it { is_expected.not_to allow_value('collection.example.com').for(:website_url) }
     it "should ensure length of :managers is_at_least(1)"
 
     it "should have attributes" do
@@ -169,7 +170,8 @@ describe Admin::Collection do
       expect(subject.editors).to eq([editor.user_key])
       expect(subject.depositors).to eq([depositor.user_key])
       expect(subject.contact_email).to eq(contact_email)
-      expect(subject.website).to eq(website)
+      expect(subject.website_label).to eq(website_label)
+      expect(subject.website_url).to eq(website_url)
       # expect(subject.rightsMetadata).to be_kind_of Hydra::Datastream::RightsMetadata
       # expect(subject.inheritedRights).to be_kind_of Hydra::Datastream::InheritableRightsMetadata
       # expect(subject.defaultRights).to be_kind_of Hydra::Datastream::NonIndexedRightsMetadata

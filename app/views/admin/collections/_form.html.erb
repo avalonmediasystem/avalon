@@ -30,7 +30,8 @@ Unless required by applicable law or agreed to in writing, software distributed
         <% end %>
         <%= f.text_area :description, rows: 3  %>
         <%= f.email_field :contact_email %>
-        <%= f.url_field :website %>
+        <%= f.text_field :website_label %>
+        <%= f.url_field :website_url %>
       </div>
       <div class="modal-footer">
         <a href="#" data-dismiss="modal" aria-hidden="true" class="btn btn-default">Cancel</a>
