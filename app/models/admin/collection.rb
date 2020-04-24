@@ -28,8 +28,8 @@ class Admin::Collection < ActiveFedora::Base
   validates :name, :uniqueness => { :solr_name => 'name_uniq_si'}, presence: true
   validates :unit, presence: true, inclusion: { in: Proc.new{ Admin::Collection.units } }
   validates :managers, length: {minimum: 1, message: "list can't be empty."}
-  validates :contact_email, format: { with: URI::MailTo::EMAIL_REGEXP }
-  validates :website_url, format: { with: URI.regexp }
+  validates :contact_email, format: { with: URI::MailTo::EMAIL_REGEXP }, allow_blank: true
+  validates :website_url, format: { with: URI.regexp }, allow_blank: true
 
   property :name, predicate: ::RDF::Vocab::DC.title, multiple: false do |index|
     index.as :stored_sortable
