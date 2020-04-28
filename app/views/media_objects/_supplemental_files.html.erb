@@ -1,6 +1,6 @@
 <dl>
   <% @masterFiles.each do |section| %>
-    <dt><%= section.title %></dt>
+    <dt><%= section.display_title %></dt>
     <% next if section.supplemental_files.blank? %>
         <% section.supplemental_files.each do |file| %>
           <%#= render 'supplemental_file', local: { file: file } %>
