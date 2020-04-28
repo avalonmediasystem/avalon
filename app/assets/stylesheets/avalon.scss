@@ -341,9 +341,13 @@ a[data-trigger='submit'] {
   }
 }
 
-#creation_metadata dd {
-  margin-left: 10px;
-  margin-bottom: 10px;
+#metadata_container {
+  dd {
+    margin-left: 10px;
+  }
+  dt {
+    margin-top: 10px;
+  }
 }
 
 .index_title {
