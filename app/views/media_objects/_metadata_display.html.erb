@@ -51,9 +51,11 @@ Unless required by applicable law or agreed to in writing, software distributed
       </dl>
     </div>
 
+    <% if @masterFiles.any? { |section| section.supplemental_files.present? } %>
     <div class="tab-pane" id="files-tab">
       <%= render 'supplemental_files' %>
     </div>
+    <% end %>
   </div>
 
   <% if can? :inspect, @media_object %>
