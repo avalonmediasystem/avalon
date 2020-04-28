@@ -32,4 +32,10 @@ class SpeedyAF::Proxy::MasterFile < SpeedyAF::Base
                end
     mf_title.blank? ? nil : mf_title
   end
+
+  # @return [SupplementalFile]
+  def supplemental_files
+    return [] if supplemental_files_json.blank?
+    JSON.parse(supplemental_files_json).collect { |file_gid| GlobalID::Locator.locate(file_gid) }
+  end
 end
