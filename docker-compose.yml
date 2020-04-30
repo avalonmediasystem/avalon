@@ -1,4 +1,4 @@
-version: '3.2'
+version: '3.4'
 
 volumes:
   database:
@@ -77,8 +77,10 @@ services:
     <<: *redis
 
   avalon: &avalon
-    image: avalonmediasystem/avalon:7.0-slim-dev-20200225
-    build: .
+    image: avalonmediasystem/avalon:7.1-slim-dev-20200324
+    build:
+      context: .
+      target: dev
     command: bash -c "/docker_init.sh && rails server -b 0.0.0.0"
     depends_on:
       - db
@@ -89,7 +91,6 @@ services:
       - minio
     environment:
       - APP_NAME=avalon
-      - AVALON_BRANCH=develop
       - SETTINGS__DOMAIN=http://localhost:3000
       - BUNDLE_FLAGS=--with development postgres --without production test
       - ENCODE_WORK_DIR=/tmp
@@ -115,7 +116,7 @@ services:
       - SETTINGS__DROPBOX__UPLOAD_URI=s3://masterfiles/dropbox/
       - SETTINGS__MASTER_FILE_MANAGEMENT__PATH=s3://preserves/
       - SETTINGS__MASTER_FILE_MANAGEMENT__STRATEGY=MOVE
-      - SETTINGS__STREAMING__CONTENT_PATH=/derivatives/
+      - SETTINGS__STREAMING__CONTENT_PATH=/
       - SETTINGS__STREAMING__STREAM_DEFAULT_QUALITY=medium
       - SETTINGS__STREAMING__HTTP_BASE=http://localhost:8880/avalon
       - SETTINGS__STREAMING__SERVER=nginx
@@ -182,8 +183,9 @@ services:
     entrypoint: >
       /bin/sh -c "
       /usr/bin/mc config host add myminio http://minio:9000 minio minio123;
-      /usr/bin/mc mb -p myminio/fcrepo myminio/masterfiles myminio/derivatives;
+      /usr/bin/mc mb -p myminio/fcrepo myminio/masterfiles myminio/derivatives myminio/supplementalfiles;
       /usr/bin/mc policy set download myminio/derivatives;
+      /usr/bin/mc policy set download myminio/supplementalfiles;
       exit 0;
       "
     networks:

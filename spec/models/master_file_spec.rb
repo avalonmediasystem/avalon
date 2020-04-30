@@ -607,13 +607,13 @@ describe MasterFile do
         :mimetype=>nil,
         :quality=>"high",
         :url=>
-         "http://localhost:3000/6f69c008-06a4-4bad-bb60-26297f0b4c06/35bddaa0-fbb4-404f-ab76-58f22921529c/warning.mp4.m3u8"},
+         "http://localhost:3000/streams/6f69c008-06a4-4bad-bb60-26297f0b4c06/35bddaa0-fbb4-404f-ab76-58f22921529c/warning.mp4.m3u8"},
       {:bitrate=>4163842,
         :format=>"video",
         :mimetype=>nil,
         :quality=>"medium",
         :url=>
-         "http://localhost:3000/6f69c008-06a4-4bad-bb60-26297f0b4c06/35bddaa0-fbb4-404f-ab76-58f22921529c/warning.mp4.m3u8"}]
+         "http://localhost:3000/streams/6f69c008-06a4-4bad-bb60-26297f0b4c06/35bddaa0-fbb4-404f-ab76-58f22921529c/warning.mp4.m3u8"}]
     end
     before do
       master_file.derivatives += [FactoryBot.create(:derivative, quality: 'high'), FactoryBot.create(:derivative, quality: 'medium')]
@@ -689,6 +689,27 @@ describe MasterFile do
         expect(master_file.identifier).not_to be_empty
         expect(master_file.to_ingest_api_hash(false, remove_identifiers: false)[:other_identifier]).not_to be_empty
         expect(master_file.to_ingest_api_hash(false)[:other_identifier]).not_to be_empty
+      end
+    end
+  end
+
+  describe 'Supplemental Files' do
+    let(:master_file) { FactoryBot.build(:master_file) }
+    let(:supplemental_file) { FactoryBot.create(:supplemental_file) }
+    let(:supplemental_files) { [supplemental_file] }
+    let(:supplemental_files_json) { [supplemental_file.to_global_id.to_s].to_json }
+
+    context 'supplemental_files=' do
+      it 'stores the supplemental files as a json string in a property' do
+        expect { master_file.supplemental_files = supplemental_files }.to change { master_file.supplemental_files_json }.from(nil).to(supplemental_files_json)
+      end
+    end
+
+    context 'supplemental_files' do
+      let(:master_file) { FactoryBot.build(:master_file, supplemental_files_json: supplemental_files_json) }
+
+      it 'reifies the supplemental files from the stored json string' do
+        expect(master_file.supplemental_files).to eq supplemental_files
       end
     end
   end

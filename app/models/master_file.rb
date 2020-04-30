@@ -106,6 +106,25 @@ class MasterFile < ActiveFedora::Base
     index.as :stored_sortable
   end
 
+  property :supplemental_files_json, predicate: Avalon::RDFVocab::MasterFile.supplementalFiles, multiple: false do |index|
+    index.as :stored_sortable
+  end
+
+  # FIXME: Switch absolute_path to stored_file_id and use valkyrie or other file store to allow for abstracting file path and content from fedora (think stream urls)
+  # See https://github.com/samvera/valkyrie/blob/master/lib/valkyrie/storage/disk.rb
+  # SupplementalFile = Struct.new(:id, :label, :absolute_path, keyword_init: true)
+
+  # @return [SupplementalFile]
+  def supplemental_files
+    return [] if supplemental_files_json.blank?
+    JSON.parse(supplemental_files_json).collect { |file_gid| GlobalID::Locator.locate(file_gid) }
+  end
+
+  # @param files [SupplementalFile]
+  def supplemental_files=(files)
+    self.supplemental_files_json = files.collect { |file| file.to_global_id.to_s }.to_s
+  end
+
   # Delegated to EncodeRecord
   def encode_record
     return nil unless workflow_id

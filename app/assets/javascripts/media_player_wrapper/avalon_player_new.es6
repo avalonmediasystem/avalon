@@ -47,6 +47,8 @@ class MEJSPlayer {
     this.mediaElement = null;
     // Actual MediaElement instance
     this.player = null;
+
+    this.node = null;
     // Add click listeners
     this.addSectionsClickListener();
     // audio or video file?
@@ -127,26 +129,32 @@ class MEJSPlayer {
   }
 
   /**
-   * Make AJAX request for clicked item's stream data
+   * Make AJAX request for clicked/next available items's stream data
    * @function getNewStreamAjax
-   * @param  {string} id - id of master file id
    * @param {string} url Url to get stream data ie. /media_objects/xg94hp52v/section/bc386j20b
+   * @param {boolean} startPlaying once advancing to next item, continue playing after the player is re-initialized
    * @param {Array} playlistItemT Array which contains playlist item clip start and end times.  This is sent in from playlist items plugin, when creating a new instance of the player.
    * @return {void}
    */
-  getNewStreamAjax(id, url, playlistItemsT) {
+  getNewStreamAjax(url, startPlaying, playlistItemsT) {
     $('.media-show-page').removeClass('ready-to-play');
     $.ajax({
       url: url + '/stream',
-      dataType: 'json',
-      data: {
-        content: id
-      }
+      dataType: 'json'
     })
       .done(response => {
-        this.removePlayer();
-        this.setContextVars(response, playlistItemsT);
-        this.createNewPlayer();
+        // Use the existing player iff existing player and new stream are both of type video and
+        // previous item has come to its end
+        if(startPlaying && response.is_video && this.player.isVideo) {
+          // Set currentStreamInfo before switching the player: switchPlayer uses new stream info
+          this.setContextVars(response, playlistItemsT);
+          this.switchPlayer(playlistItemsT);
+        } else {
+          // Set currentStreamInfo after removing the player: removePlayer uses existing stream info
+          this.removePlayer();
+          this.setContextVars(response, playlistItemsT);
+          this.createNewPlayer();
+        }
         this.updateShareLinks();
       })
       .fail(error => {
@@ -217,17 +225,99 @@ class MEJSPlayer {
         .data('mediaObjectId');
 
       // Update helper object noting we want the new media clip to auto start
-      this.switchPlayerHelper = {
+      t.switchPlayerHelper = {
         active: true,
         data: {},
         paused: false
       };
 
-      // Go to next section
-      this.getNewStreamAjax(
-        sectionId,
-        `/media_objects/${mediaObjectId}/section/${sectionId}`
+       // Go to next section
+       t.getNewStreamAjax(
+        `/media_objects/${mediaObjectId}/section/${sectionId}`,
+        true
       );
+    }
+  }
+
+  /**
+   * Swap the media source and track in the current player instance with values from
+   * the new stream info
+   * @function switchPlayer
+   * @param {Object} playlistItemsT
+   * @returns {void}
+   */
+  switchPlayer(playlistItemsT) {
+    let markup = '';
+
+    this.node.innerHTML = '';
+    this.currentStreamInfo.stream_hls.map(source => {
+      markup += `<source src="${
+        source.url
+      }" type="application/x-mpegURL" data-quality="${source.quality}"/>`;
+    });
+
+    if (this.currentStreamInfo.captions_path) {
+      markup += `<track srclang="en" kind="subtitles" type="${
+        this.currentStreamInfo.captions_format
+      }" src="${this.currentStreamInfo.captions_path}"></track>`;
+    }
+
+    this.node.innerHTML = markup;
+
+    // Bind to canplay event to switch off loading when media is ready
+    this.mediaElement.addEventListener(
+      'canplay',
+      this.handleCanPlay.bind(this)
+    );
+
+    // Build playlists button from the new stream when not in playlists
+    if(!playlistItemsT) {
+      this.player.options.playlistItemDefaultTitle = this.currentStreamInfo.embed_title;
+      this.player.buildaddToPlaylist(this.player, null, null, null);
+    }
+
+    // Initialize playlist items for the new stream
+    if(playlistItemsT) {
+      this.player.buildplaylistItems(this.player, null, null, this.mediaElement);
+    }
+
+    // Build quality
+    this.player.buildquality(this.player, null, null, this.mediaElement);
+
+    this.reInitializeCaptions();
+
+    this.player.load();
+    this.player.play();
+  }
+
+  /** Based on the availability of captions in currentStreamInfo build tracks
+   * in playlists and item page
+   * @function reInitializeCaptions
+   */
+  reInitializeCaptions() {
+    if (this.currentStreamInfo.captions_path) {
+      // Place tracks button after volume button when tracks are available
+      this.player.featurePosition.tracks = this.player.featurePosition.volume + 1;
+      this.player.buildtracks(this.player, null, this.player.layers, this.mediaElement);
+      // Turn on captions
+      this.toggleCaptions();
+    } else {
+      // Clear captions object
+      delete this.player.tracks;
+      this.player.cleartracks(this.player);
+    }
+  }
+
+  /**
+   * Toggle captions on if toggleable and previously on
+   * @function toggleCaptions
+   * @returns {void}
+   */
+  toggleCaptions() {
+    if (this.mediaType==="video" && this.player.options.toggleCaptionsButtonWhenOnlyOne) {
+      if (this.localStorage.getItem('captions') !== '' && this.player.tracks && this.player.tracks.length===1) {
+        this.player.setTrack(this.player.tracks[0].trackId, (typeof keyboard !== 'undefined'));
+      }
     }
   }
 
@@ -249,7 +339,6 @@ class MEJSPlayer {
 
     // Clicked on a different section
     if (dataset.segment !== this.currentStreamInfo.id) {
-      let id = target.dataset.segment;
       let url = target.dataset.nativeUrl.split('?')[0];
 
       // Capture clicked segment or section element id
@@ -258,7 +347,7 @@ class MEJSPlayer {
         data: dataset,
         paused: this.mediaElement.paused
       };
-      this.getNewStreamAjax(id, url);
+      this.getNewStreamAjax(url, false);
     } else {
       // Clicked within the same section...
       const parentPanel = $(target).closest('div[class*=panel]');
@@ -333,17 +422,15 @@ class MEJSPlayer {
       this.player = instance;
     }
 
+    this.node = originalNode;
+
     if (this.player && this.player.media && this.player.media.hlsPlayer && this.player.media.hlsPlayer.config) {
       // Workaround for hlsError bufferFullError: Set max buffer length to 2 minutes
       this.player.media.hlsPlayer.config.maxMaxBufferLength = 120;
     }
 
-    // Toggle captions on if toggleable and previously on
-    if (this.mediaType==="video" && this.player.options.toggleCaptionsButtonWhenOnlyOne) {
-      if (this.localStorage.getItem('captions') !== '' && this.player.tracks && this.player.tracks.length===1) {
-        this.player.setTrack(this.player.tracks[0].trackId, (typeof keyboard !== 'undefined'));
-      }
-    }
+    // Toggle captions
+    this.toggleCaptions();
 
     // Make the player visible
     this.revealPlayer(instance);
@@ -369,7 +456,9 @@ class MEJSPlayer {
     );
 
     // Handle 'ended' event fired by player
-    this.mediaElement.addEventListener('ended', this.handleEnded.bind(this));
+    this.mediaElement.addEventListener('ended',
+      this.handleEnded.bind(this)
+    );
 
     // Show highlighted time in time rail
     if (this.highlightRail) {

@@ -3,7 +3,7 @@ source 'https://rubygems.org'
 # Core rails
 gem 'bootsnap', require: false
 gem 'listen'
-gem 'rails', '=5.2.3'
+gem 'rails', '=5.2.4.2'
 gem 'sprockets', '~>3.7.2'
 gem 'sqlite3'
 
@@ -44,6 +44,7 @@ gem 'bootstrap-toggle-rails'
 gem 'bootstrap_form'
 gem 'iiif_manifest', '~> 0.6'
 gem 'rack-cors', require: 'rack/cors'
+gem 'rails_same_site_cookie'
 gem 'recaptcha', require: 'recaptcha/rails'
 gem 'samvera-persona', '~> 0.1.7'
 gem 'speedy-af', '~> 0.1.3'
@@ -61,7 +62,7 @@ gem 'omniauth-lti', git: "https://github.com/avalonmediasystem/omniauth-lti.git"
 
 # Media Access & Transcoding
 gem 'active_encode', '~> 0.7.0'
-gem 'audio_waveform-ruby', require: 'audio_waveform'
+gem 'audio_waveform-ruby', '~> 1.0.7', require: 'audio_waveform'
 gem 'browse-everything', '~> 0.13.0'
 gem 'fastimage'
 gem 'media_element_add_to_playlist', git: 'https://github.com/avalonmediasystem/media-element-add-to-playlist.git', tag: 'avalon-r6.5'
@@ -146,12 +147,13 @@ end
 group :production do
   gem 'google-analytics-rails', '1.1.0'
   gem 'lograge'
+  gem 'puma'
 end
 
 # Install the bundle --with aws when running on Amazon Elastic Beanstalk
 group :aws, optional: true do
-  gem 'active_elastic_job', '~> 2.0'
-  gem 'aws-sdk', '~> 2.0'
+  gem 'active_elastic_job', github: 'tawan/active-elastic-job'
+  gem 'aws-sdk', '~> 3.0'
   gem 'aws-sdk-rails'
   gem 'cloudfront-signer'
   gem 'zk'

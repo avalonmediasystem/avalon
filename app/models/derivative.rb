@@ -63,7 +63,7 @@ class Derivative < ActiveFedora::Base
     index.as :displayable
   end
 
-  # before_destroy :retract_distributed_files!
+  around_destroy :delete_file!
 
   def initialize(*args)
     super(*args)
@@ -124,9 +124,10 @@ class Derivative < ActiveFedora::Base
 
   private
 
-  # TODO: move this into a service class
-  def retract_distributed_files!
-    # no-op in latest ActiveEncode
-    # TODO: Implement this in a different way outside of ActiveEncode
-  end
+    def delete_file!
+      loc = absolute_location
+      man = managed
+      yield
+      DeleteDerivativeJob.perform_later(loc) if man
+    end
 end
