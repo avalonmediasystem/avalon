@@ -207,8 +207,8 @@ GEM
     api-pagination (4.8.2)
     arel (9.0.0)
     ast (2.4.0)
-    audio_waveform-ruby (1.0.4)
-      json (~> 2.1.0)
+    audio_waveform-ruby (1.0.7)
+      json (~> 2.3)
     autoprefixer-rails (9.5.1.1)
       execjs
     aws-eventstream (1.1.0)
@@ -1372,7 +1372,7 @@ GEM
       thor (>= 0.14, < 2.0)
     jquery-ui-rails (6.0.1)
       railties (>= 3.2.16)
-    json (2.1.0)
+    json (2.3.0)
     json-ld (3.0.2)
       multi_json (~> 1.12)
       rdf (>= 2.2.8, < 4.0)
@@ -1802,7 +1802,7 @@ DEPENDENCIES
   activerecord-session_store
   acts_as_list
   api-pagination
-  audio_waveform-ruby
+  audio_waveform-ruby (~> 1.0.7)
   avalon-about!
   avalon-workflow!
   aws-sdk (~> 3.0)
