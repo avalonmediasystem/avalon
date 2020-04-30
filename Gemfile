@@ -44,7 +44,7 @@ gem 'bootstrap-toggle-rails'
 gem 'bootstrap_form'
 gem 'iiif_manifest', '~> 0.6'
 gem 'rack-cors', require: 'rack/cors'
-gem 'recaptcha', require: 'recaptcha/rails'
+gem 'recaptcha', '4.14.0'
 gem 'samvera-persona', '~> 0.1.7'
 gem 'speedy-af', '~> 0.1.3'
 
@@ -61,8 +61,8 @@ gem 'omniauth-lti', git: "https://github.com/avalonmediasystem/omniauth-lti.git"
 
 # Media Access & Transcoding
 gem 'active_encode', '~> 0.7.0'
-gem 'audio_waveform-ruby', require: 'audio_waveform'
-gem 'browse-everything', '~> 0.13.0'
+gem 'audio_waveform-ruby', '1.0.7'
+gem 'browse-everything', '~> 0.13.1'
 gem 'fastimage'
 gem 'media_element_add_to_playlist', git: 'https://github.com/avalonmediasystem/media-element-add-to-playlist.git', tag: 'avalon-r6.5'
 gem 'mediainfo', git: "https://github.com/avalonmediasystem/mediainfo.git", tag: 'avalon-r6.5'
@@ -126,7 +126,7 @@ end
 
 group :test do
   gem 'capybara'
-  gem 'codeclimate-test-reporter'
+  gem 'codeclimate-test-reporter', '>= 1.0.7'
   gem 'database_cleaner'
   gem 'email_spec'
   gem 'factory_bot_rails'
@@ -138,7 +138,7 @@ group :test do
   gem 'rspec_junit_formatter'
   gem 'selenium-webdriver'
   gem 'shoulda-matchers'
-  gem 'simplecov'
+  gem 'simplecov', '>= 0.16.1'
   gem 'webdrivers', '~> 3.0'
   gem 'webmock', '~> 3.5.1'
 end
