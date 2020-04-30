@@ -99,6 +99,8 @@ gem 'parallel'
 gem 'whenever', '~> 0.11', require: false
 gem 'with_locking'
 
+gem 'passenger'
+
 group :development do
   gem 'capistrano', '~>3.6'
   gem 'capistrano-rails', require: false

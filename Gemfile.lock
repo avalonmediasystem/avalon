@@ -616,6 +616,9 @@ GEM
     parallel (1.17.0)
     parser (2.6.3.0)
       ast (~> 2.4.0)
+    passenger (6.0.4)
+      rack
+      rake (>= 0.8.1)
     pg (1.1.4)
     powerpack (0.1.2)
     pry (0.12.2)
@@ -1008,6 +1011,7 @@ DEPENDENCIES
   omniauth-identity
   omniauth-lti!
   parallel
+  passenger
   pg
   pry-byebug
   pry-rails
@@ -1052,4 +1056,4 @@ DEPENDENCIES
   zoom
 
 BUNDLED WITH
-   2.0.2
+   2.1.4
