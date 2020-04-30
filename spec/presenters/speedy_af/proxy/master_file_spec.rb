@@ -79,4 +79,15 @@ describe SpeedyAF::Proxy::MasterFile do
         end
       end
   end
+
+  context 'supplemental_files' do
+    let(:supplemental_file) { FactoryBot.create(:supplemental_file) }
+    let(:supplemental_files) { [supplemental_file] }
+    let(:supplemental_files_json) { [supplemental_file.to_global_id.to_s].to_json }
+    let(:master_file) { FactoryBot.create(:master_file, supplemental_files_json: supplemental_files_json) }
+
+    it 'reifies the supplemental files from the stored json string' do
+      expect(presenter.supplemental_files).to eq supplemental_files
+    end
+  end
 end
