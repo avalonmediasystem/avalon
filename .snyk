@@ -1,0 +1,34 @@
+# Snyk (https://snyk.io) policy file, patches or ignores known vulnerabilities.
+version: v1.14.1
+ignore: {}
+# patches apply the minimum changes required to fix a vulnerability
+patch:
+  SNYK-JS-LODASH-567746:
+    - '@babel/core > lodash':
+        patched: '2020-05-01T08:52:32.605Z'
+    - react-structural-metadata-editor > lodash:
+        patched: '2020-05-01T08:52:32.605Z'
+    - '@rails/webpacker > @babel/core > lodash':
+        patched: '2020-05-01T08:52:32.605Z'
+    - '@rails/webpacker > css-loader > lodash':
+        patched: '2020-05-01T08:52:32.605Z'
+    - '@rails/webpacker > @babel/preset-env > @babel/plugin-transform-block-scoping > lodash':
+        patched: '2020-05-01T08:52:32.605Z'
+    - '@rails/webpacker > node-sass > sass-graph > lodash':
+        patched: '2020-05-01T08:52:32.605Z'
+    - '@rails/webpacker > optimize-css-assets-webpack-plugin > last-call-webpack-plugin > lodash':
+        patched: '2020-05-01T08:52:32.605Z'
+    - '@rails/webpacker > @babel/preset-env > @babel/plugin-transform-modules-umd > @babel/helper-module-transforms > lodash':
+        patched: '2020-05-01T08:52:32.605Z'
+    - '@rails/webpacker > node-sass > gaze > globule > lodash':
+        patched: '2020-05-01T08:52:32.605Z'
+    - '@rails/webpacker > @babel/preset-env > @babel/plugin-transform-parameters > @babel/helper-call-delegate > @babel/traverse > lodash':
+        patched: '2020-05-01T08:52:32.605Z'
+    - '@rails/webpacker > @babel/preset-env > @babel/plugin-transform-exponentiation-operator > @babel/helper-builder-binary-assignment-operator-visitor > @babel/helper-explode-assignable-expression > @babel/traverse > lodash':
+        patched: '2020-05-01T08:52:32.605Z'
+    - '@rails/webpacker > @babel/preset-env > @babel/plugin-transform-exponentiation-operator > @babel/helper-builder-binary-assignment-operator-visitor > @babel/helper-explode-assignable-expression > @babel/traverse > @babel/generator > lodash':
+        patched: '2020-05-01T08:52:32.605Z'
+    - '@rails/webpacker > @babel/preset-env > @babel/plugin-transform-exponentiation-operator > @babel/helper-builder-binary-assignment-operator-visitor > @babel/helper-explode-assignable-expression > @babel/traverse > @babel/helper-split-export-declaration > @babel/types > lodash':
+        patched: '2020-05-01T08:52:32.605Z'
+    - '@rails/webpacker > @babel/preset-env > @babel/plugin-transform-exponentiation-operator > @babel/helper-builder-binary-assignment-operator-visitor > @babel/helper-explode-assignable-expression > @babel/traverse > @babel/helper-function-name > @babel/helper-get-function-arity > @babel/types > lodash':
+        patched: '2020-05-01T08:52:32.605Z'
