@@ -15,12 +15,26 @@
 require 'rails_helper'
 
 describe IngestBatchEntryJob do
-  let(:batch_entry) { FactoryBot.create(:batch_entries) }
-  let!(:collection) { FactoryBot.create(:collection, id: 'zc77sq08x') }
+  let(:collection) { FactoryBot.create(:collection) }
+  let(:batch_registry) { FactoryBot.create(:batch_registries, collection: collection.id) }
+  let(:batch_entry) { FactoryBot.create(:batch_entries, batch_registries: batch_registry) }
 
   describe "perform" do
     it 'runs' do
       expect { described_class.perform_now(batch_entry) }.to change { MediaObject.count }.by(1)
+    end
+
+    context 'when media object exists and is published' do
+      let(:published_media_object) { FactoryBot.build(:published_media_object) }
+
+      before do
+        allow(MediaObject).to receive(:exists?).with(batch_entry.media_object_pid).and_return(true)
+        allow(MediaObject).to receive(:find).with(batch_entry.media_object_pid).and_return(published_media_object)
+      end
+
+      it 'sets an error state' do
+        expect { described_class.perform_now(batch_entry) }.to change { batch_entry.error }.from(false).to(true)
+      end
     end
   end
 end
