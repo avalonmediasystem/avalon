@@ -12,7 +12,8 @@
     "react-dom": "^16.8.4",
     "react-structural-metadata-editor": "https://github.com/avalonmediasystem/react-structural-metadata-editor",
     "react_ujs": "^2.4.4",
-    "url-search-params-polyfill": "^7.0.1"
+    "url-search-params-polyfill": "^7.0.1",
+    "snyk": "^1.316.1"
   },
   "devDependencies": {
     "html-webpack-plugin": "^3.2.0",
@@ -34,6 +35,9 @@
   },
   "scripts": {
     "start-collection-index": "webpack-dev-server --mode development --config config/webpack/collection_index.js --host 0.0.0.0",
-    "start-collection-view": "webpack-dev-server --mode development --config config/webpack/collection_view.js --host 0.0.0.0"
-  }
+    "start-collection-view": "webpack-dev-server --mode development --config config/webpack/collection_view.js --host 0.0.0.0",
+    "snyk-protect": "snyk protect",
+    "prepublish": "npm run snyk-protect"
+  },
+  "snyk": true
 }
