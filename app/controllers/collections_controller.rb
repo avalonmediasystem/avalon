@@ -24,7 +24,7 @@ class CollectionsController < CatalogController
     if params[:limit].present?
       collections = collections.sample(params[:limit].to_i)
     end
-    @doc_presenters = collections.collect { |doc| CollectionPresenter.new(doc) }
+    @doc_presenters = collections.collect { |doc| CollectionPresenter.new(doc, view_context) }
 
     respond_to do |format|
       format.html
@@ -37,7 +37,7 @@ class CollectionsController < CatalogController
     document = response.documents.find { |doc| doc.id == params[:id] }
     # Only go on if params[:id] is in @document_list
     raise CanCan::AccessDenied unless document
-    @doc_presenter = CollectionPresenter.new(document)
+    @doc_presenter = CollectionPresenter.new(document, view_context)
 
     respond_to do |format|
       format.html

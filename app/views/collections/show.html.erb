@@ -40,7 +40,11 @@ Unless required by applicable law or agreed to in writing, software distributed
       <div>
         <h3 class="sub-headline"><strong>Unit:</strong> <%= @doc_presenter.unit %></h3>
         <p class="lead document-description"></p>
-        <%= react_component("CollectionDescription", { content: @doc_presenter.description }) %>
+        <%= react_component("CollectionDetails", 
+          { content: @doc_presenter.description,
+            email: @doc_presenter.contact_email,
+            website: @doc_presenter.website_link
+          }) %>
       </div>
     </div>
   </div>
