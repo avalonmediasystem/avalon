@@ -13,6 +13,8 @@
 # ---  END LICENSE_HEADER BLOCK  ---
 
 class AccessControlStep < Avalon::Workflow::BasicStep
+  #require 'string_additions'
+
   def initialize(step = 'access-control',
                  title = "Access Control",
                  summary = "Who can access the item",
@@ -39,7 +41,7 @@ class AccessControlStep < Avalon::Workflow::BasicStep
         end_time = context["add_#{title}_end"].blank? ? nil : context["add_#{title}_end"]
         create_lease = begin_time.present? || end_time.present?
         if context["add_#{title}"].present?
-          val = context["add_#{title}"].strip
+          val = context["add_#{title}"].strip.remove_zero_width_chars
           if title=='user'
             if create_lease
               begin
