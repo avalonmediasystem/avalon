@@ -112,7 +112,7 @@ module Avalon
 
         # Case 2, if there is a published media object we cannot replay
         unless previous_entry.media_object_pid.nil?
-          mo = MediaObject.find(previous_entry.media_object_pid) if MediaObject.exists?(previous_entry.media_object_pid)
+          mo = MediaObject.find(previous_entry.media_object_pid)
           unless mo.nil? # meaning the media_object has been deleted since last time this ran
             if mo.published?
               published_error(previous_entry)
