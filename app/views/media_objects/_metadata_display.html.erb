@@ -16,8 +16,9 @@ Unless required by applicable law or agreed to in writing, software distributed
 <div id="metadata_header">
   <ul class="nav nav-tabs">
     <li class="active"><a href="#details-tab" data-toggle="tab">Details</a></li>
-    <li><a href="#files-tab" data-toggle="tab">Files</a></li>
-    <li><a href="#">Raw Metadata</a></li>
+    <% if @masterFiles.any? { |section| section.supplemental_files.present? } %>
+      <li><a href="#files-tab" data-toggle="tab">Files</a></li>
+    <% end %>
   </ul>
   <div class="tab-content">
     <div class="tab-pane active" id="details-tab">
@@ -46,15 +47,21 @@ Unless required by applicable law or agreed to in writing, software distributed
         <%= display_metadata('Notes', display_notes(@media_object)) %>
         <%= display_metadata('Other Identifier', display_other_identifiers(@media_object)) %>
         <% if can? :inspect, @media_object %>
-        <%= display_metadata('Comments', gather_all_comments(@media_object, @masterFiles)) %>
+          <%= display_metadata('Comments', gather_all_comments(@media_object, @masterFiles)) %>
+          <dt>Raw Metadata</dt>
+          <dd>
+            <%= link_to(inspect_media_object_path(@media_object.id, 'descMetadata'), target: 'blank') do %>
+              View MODS XML <span class="fa fa-external-link"></span>
+            <% end %>
+          </dd>
         <% end %>
       </dl>
     </div>
 
     <% if @masterFiles.any? { |section| section.supplemental_files.present? } %>
-    <div class="tab-pane" id="files-tab">
-      <%= render 'supplemental_files' %>
-    </div>
+      <div class="tab-pane" id="files-tab">
+        <%= render 'supplemental_files' %>
+      </div>
     <% end %>
   </div>
 
