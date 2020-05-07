@@ -40,13 +40,13 @@ class Admin::Collection < ActiveFedora::Base
   property :description, predicate: ::RDF::Vocab::DC.description, multiple: false do |index|
     index.as :stored_searchable
   end
-  property :contact_email, predicate: Avalon::RDFVocab::Collection.contact_email, multiple: false do |index|
+  property :contact_email, predicate: ::RDF::Vocab::SCHEMA.email, multiple: false do |index|
     index.as :stored_sortable
   end
   property :website_label, predicate: Avalon::RDFVocab::Collection.website_label, multiple: false do |index|
     index.as :stored_sortable
   end
-  property :website_url, predicate: Avalon::RDFVocab::Collection.website_url, multiple: false do |index|
+  property :website_url, predicate: ::RDF::Vocab::SCHEMA.url, multiple: false do |index|
     index.as :stored_sortable
   end
   property :dropbox_directory_name, predicate: Avalon::RDFVocab::Collection.dropbox_directory_name, multiple: false do |index|
