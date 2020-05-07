@@ -51,8 +51,7 @@ Unless required by applicable law or agreed to in writing, software distributed
       <% end %>
       <% if @collection.website_url.present? %>
         <p><strong>Website:</strong></p>
-        <% website_label = @collection.website_label.present? ? @collection.website_label : @collection.website_url %>
-        <p><%= link_to(website_label, @collection.website_url)%></p>
+        <p><%= link_to(@collection.website_label.presence || @collection.website_url, @collection.website_url)%></p>
       <% end %>
     </div>
     <div class="col-md-3">
