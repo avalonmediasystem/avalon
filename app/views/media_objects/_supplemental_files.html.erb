@@ -1,0 +1,9 @@
+<dl>
+  <% @masterFiles.each do |section| %>
+    <dt><%= section.display_title %></dt>
+    <% next if section.supplemental_files.blank? %>
+        <% section.supplemental_files.each do |file| %>
+          <dd><%= link_to file.label, master_file_supplemental_file_path(master_file_id: section.id, id: file.id) %></dd>
+        <% end %>
+    <% end %>
+</dl>

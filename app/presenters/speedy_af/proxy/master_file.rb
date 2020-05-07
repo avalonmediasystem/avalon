@@ -14,7 +14,11 @@
 
 class SpeedyAF::Proxy::MasterFile < SpeedyAF::Base
   def encoder_class
-    find_encoder_class(encoder_classname) || find_encoder_class(workflow_name.to_s.classify) || find_encoder_class((Settings.encoding.engine_adapter + "_encode").classify) || MasterFile.default_encoder_class || WatchedEncode
+    find_encoder_class(encoder_classname) ||
+      find_encoder_class("#{workflow_name}_encode".classify) ||
+      find_encoder_class((Settings.encoding.engine_adapter + "_encode").classify) ||
+      MasterFile.default_encoder_class ||
+      WatchedEncode
   end
 
   def find_encoder_class(klass_name)
@@ -31,5 +35,11 @@ class SpeedyAF::Proxy::MasterFile < SpeedyAF::Base
                  file_location.split("/").last
                end
     mf_title.blank? ? nil : mf_title
+  end
+
+  # @return [SupplementalFile]
+  def supplemental_files
+    return [] if supplemental_files_json.blank?
+    JSON.parse(supplemental_files_json).collect { |file_gid| GlobalID::Locator.locate(file_gid) }
   end
 end
