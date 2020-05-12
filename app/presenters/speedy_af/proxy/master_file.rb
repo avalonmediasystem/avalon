@@ -22,7 +22,9 @@ class SpeedyAF::Proxy::MasterFile < SpeedyAF::Base
   end
 
   def find_encoder_class(klass_name)
-    ActiveEncode::Base.descendants.find { |c| c.name == klass_name }
+    return nil if klass_name.blank? || !Object.const_defined?(klass_name)
+    klass = Object.const_get(klass_name)
+    return klass if klass.ancestors.include?(ActiveEncode::Base)
   end
 
   def display_title
