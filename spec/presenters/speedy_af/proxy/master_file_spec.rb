@@ -19,33 +19,16 @@ describe SpeedyAF::Proxy::MasterFile do
   subject(:presenter) { described_class.find(master_file.id) }
 
   describe "#encoder_class" do
-      before :all do
-        class WorkflowEncode < ActiveEncode::Base
-        end
-
-        module EncoderModule
-          class MyEncoder < ActiveEncode::Base
-          end
-        end
-      end
-
-      after :all do
-        EncoderModule.send(:remove_const, :MyEncoder)
-        Object.send(:remove_const, :EncoderModule)
-        Object.send(:remove_const, :WorkflowEncode)
-      end
-
-      before do
-        stub_const("MasterFile::WORKFLOWS", ['fullaudio', 'avalon', 'pass_through', 'avalon-skip-transcoding', 'avalon-skip-transcoding-audio', 'workflow', 'nonexistent_workflow_encoder'])
-      end
-
       it "should default to WatchedEncode" do
         expect(subject.encoder_class).to eq(WatchedEncode)
       end
 
       context 'with workflow name' do
         let(:master_file) { FactoryBot.create(:master_file, workflow_name: 'workflow') }
+
         it "should infer the class from a workflow name" do
+          stub_const("MasterFile::WORKFLOWS", ['workflow'])
+          stub_const("WorkflowEncode", Class.new(ActiveEncode::Base))
           expect(subject.encoder_class).to eq(WorkflowEncode)
         end
       end
@@ -53,6 +36,7 @@ describe SpeedyAF::Proxy::MasterFile do
       context 'with bad workflow name' do
         let(:master_file) { FactoryBot.create(:master_file, workflow_name: 'nonexistent_workflow_encoder') }
         it "should fall back to Watched when a workflow class can't be resolved" do
+          stub_const("MasterFile::WORKFLOWS", ['nonexistent_workflow_encoder'])
           expect(subject.encoder_class).to eq(WatchedEncode)
         end
       end
@@ -61,9 +45,13 @@ describe SpeedyAF::Proxy::MasterFile do
         let(:master_file) { FactoryBot.create(:master_file, encoder_classname: 'EncoderModule::MyEncoder') }
         it "should resolve an explicitly named encoder class" do
 <<<<<<< HEAD
+<<<<<<< HEAD
           stub_const("EncoderModule::MyEncoder", Class.new(ActiveEncode::Base))
 =======
 >>>>>>> 15ecb3a6c... Add tests for SpeedyAF MasterFile Proxy; fix #encoder_class
+=======
+          stub_const("EncoderModule::MyEncoder", Class.new(ActiveEncode::Base))
+>>>>>>> 255ecf66d... Use Object#const_get instead of ActiveEncode::Base.descendants to get
           expect(subject.encoder_class).to eq(EncoderModule::MyEncoder)
         end
       end
@@ -78,21 +66,14 @@ describe SpeedyAF::Proxy::MasterFile do
       context 'with bad encoder class name' do
         let(:master_file) { FactoryBot.create(:master_file, encoder_class: EncoderModule::MyEncoder) }
         it "should correctly set the encoder classname from the encoder" do
+          stub_const("EncoderModule::MyEncoder", Class.new(ActiveEncode::Base))
           expect(subject.encoder_classname).to eq('EncoderModule::MyEncoder')
         end
       end
 
       context 'with an encoder class named after the engine adapter' do
-        before :all do
-          class TestEncode < ActiveEncode::Base
-          end
-        end
-    
-        after :all do
-          Object.send(:remove_const, :TestEncode)
-        end
-    
         it "should find the encoder class" do
+          stub_const("TestEncode", Class.new(ActiveEncode::Base))
           expect(Settings.encoding.engine_adapter).to eq "test"
           expect(subject.encoder_class).to eq(TestEncode)
         end
