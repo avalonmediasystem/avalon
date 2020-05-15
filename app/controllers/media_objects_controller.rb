@@ -515,6 +515,10 @@ class MediaObjectsController < ApplicationController
   protected
 
   def master_file_presenters
+    # NOTE: Defaults are set on returned SpeedyAF::Base objects if field isn't present in the solr doc.
+    # This is important otherwise speedy_af will reify from fedora when trying to access this field.
+    # When adding a new property to the master file model that will be used in the interface,
+    # add it to the default below to avoid reifying for master files lacking a value for the property.
     SpeedyAF::Proxy::MasterFile.where("isPartOf_ssim:#{@media_object.id}",
                                       order: -> { @media_object.indexed_master_file_ids },
                                       defaults: {
@@ -522,7 +526,8 @@ class MediaObjectsController < ApplicationController
                                         title: nil,
                                         encoder_classname: nil,
                                         workflow_id: nil,
-                                        comment: []
+                                        comment: [],
+                                        supplemental_files_json: nil
                                       })
   end
 

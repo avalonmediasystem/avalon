@@ -35,8 +35,15 @@ class SupplementalFilesController < ApplicationController
     raise Avalon::BadRequest, "Missing required parameters" unless supplemental_file_params[:file]
 
     @supplemental_file = SupplementalFile.new(label: supplemental_file_params[:label])
-    @supplemental_file.attach_file(supplemental_file_params[:file])
-    # TODO: Add rollback handling in case masterfile fails to save
+    begin
+      @supplemental_file.attach_file(supplemental_file_params[:file])
+    rescue StandardError => e
+      raise Avalon::SaveError, "File could not be attached: #{e.full_message}"
+    end
+
+    # Raise errror if file wasn't attached
+    raise Avalon::SaveError, "File could not be attached." unless @supplemental_file.file.attached?
+
     raise Avalon::SaveError, @supplemental_files.errors.full_messages unless @supplemental_file.save
 
     @master_file.supplemental_files += [@supplemental_file]
@@ -107,11 +114,6 @@ class SupplementalFilesController < ApplicationController
     def set_master_file
       @master_file = MasterFile.find(params[:master_file_id])
     end
-
-    # def build_supplemental_file
-    #   # Note that built supplemental file does not have an absolute_path
-    #   @supplemental_file = MasterFile::SupplementalFile.new(id: params[:id], label: supplemental_file_params[:label])
-    # end
 
     def supplemental_file_params
       # TODO: Add parameters for minio and s3
