@@ -750,9 +750,8 @@ class MasterFile < ActiveFedora::Base
   end
 
   def find_encoder_class(klass_name)
-    return nil if klass_name.blank? || !Object.const_defined?(klass_name)
-    klass = Object.const_get(klass_name)
-    return klass if klass.ancestors.include?(ActiveEncode::Base)
+    klass = klass_name&.safe_constantize
+    klass if klass&.ancestors&.include?(ActiveEncode::Base)
   end
 
   def stop_processing!
