@@ -790,13 +790,13 @@
     "@babel/runtime" "^7.2.0"
 
 "@material-ui/styles@^4.2.0":
-  version "4.9.13"
-  resolved "https://registry.yarnpkg.com/@material-ui/styles/-/styles-4.9.13.tgz#08b3976bdd21c38bc076693d95834f97539f3b15"
-  integrity sha512-lWlXJanBdHQ18jW/yphedRokHcvZD1GdGzUF/wQxKDsHwDDfO45ZkAxuSBI202dG+r1Ph483Z3pFykO2obeSRA==
+  version "4.9.14"
+  resolved "https://registry.yarnpkg.com/@material-ui/styles/-/styles-4.9.14.tgz#0a9e93a2bf24e8daa0811411a6f3dabdafbe9a07"
+  integrity sha512-zecwWKgRU2VzdmutNovPB4s5LKI0TWyZKc/AHfPu9iY8tg4UoLjpa4Rn9roYrRfuTbBZHI6b0BXcQ8zkis0nzQ==
   dependencies:
     "@babel/runtime" "^7.4.4"
     "@emotion/hash" "^0.8.0"
-    "@material-ui/types" "^5.0.1"
+    "@material-ui/types" "^5.1.0"
     "@material-ui/utils" "^4.9.6"
     clsx "^1.0.4"
     csstype "^2.5.2"
@@ -812,12 +812,13 @@
     prop-types "^15.7.2"
 
 "@material-ui/system@^4.3.0":
-  version "4.9.13"
-  resolved "https://registry.yarnpkg.com/@material-ui/system/-/system-4.9.13.tgz#adefb3b6a5ddf0b00fe4e82ac63bb48276e9749d"
-  integrity sha512-6AlpvdW6KJJ5bF1Xo2OD13sCN8k+nlL36412/bWnWZOKIfIMo/Lb8c8d1DOIaT/RKWxTEUaWnKZjabVnA3eZjA==
+  version "4.9.14"
+  resolved "https://registry.yarnpkg.com/@material-ui/system/-/system-4.9.14.tgz#4b00c48b569340cefb2036d0596b93ac6c587a5f"
+  integrity sha512-oQbaqfSnNlEkXEziDcJDDIy8pbvwUmZXWNqlmIwDqr/ZdCK8FuV3f4nxikUh7hvClKV2gnQ9djh5CZFTHkZj3w==
   dependencies:
     "@babel/runtime" "^7.4.4"
     "@material-ui/utils" "^4.9.6"
+    csstype "^2.5.2"
     prop-types "^15.7.2"
 
 "@material-ui/types@^4.1.1":
@@ -827,10 +828,10 @@
   dependencies:
     "@types/react" "*"
 
-"@material-ui/types@^5.0.1":
-  version "5.0.1"
-  resolved "https://registry.yarnpkg.com/@material-ui/types/-/types-5.0.1.tgz#c4954063cdc196eb327ee62c041368b1aebb6d61"
-  integrity sha512-wURPSY7/3+MAtng3i26g+WKwwNE3HEeqa/trDBR5+zWKmcjO+u9t7Npu/J1r+3dmIa/OeziN9D/18IrBKvKffw==
+"@material-ui/types@^5.1.0":
+  version "5.1.0"
+  resolved "https://registry.yarnpkg.com/@material-ui/types/-/types-5.1.0.tgz#efa1c7a0b0eaa4c7c87ac0390445f0f88b0d88f2"
+  integrity sha512-7cqRjrY50b8QzRSYyhSpx4WRw2YuO0KKIGQEVk5J8uoz2BanawykgZGoWEqKm7pVIbzFDN0SpPcVV4IhOFkl8A==
 
 "@material-ui/utils@^4.1.0", "@material-ui/utils@^4.9.6":
   version "4.9.12"
@@ -932,9 +933,9 @@
     "@types/react" "*"
 
 "@types/react@*", "@types/react@^16.9.11":
-  version "16.9.34"
-  resolved "https://registry.yarnpkg.com/@types/react/-/react-16.9.34.tgz#f7d5e331c468f53affed17a8a4d488cd44ea9349"
-  integrity sha512-8AJlYMOfPe1KGLKyHpflCg5z46n0b5DbRfqDksxBLBTUpB75ypDBAO9eCUcjNwE6LCUslwTz00yyG/X9gaVtow==
+  version "16.9.35"
+  resolved "https://registry.yarnpkg.com/@types/react/-/react-16.9.35.tgz#a0830d172e8aadd9bd41709ba2281a3124bbd368"
+  integrity sha512-q0n0SsWcGc8nDqH2GJfWQWUOmZSJhXV64CjVN5SvcNti3TdEaA3AH0D8DwNmMdzjMAC/78tB8nAZIlV8yTz+zQ==
   dependencies:
     "@types/prop-types" "*"
     csstype "^2.2.0"
@@ -2840,10 +2841,10 @@ eventemitter3@3.1.0, eventemitter3@^3.0.0:
   resolved "https://registry.yarnpkg.com/eventemitter3/-/eventemitter3-3.1.0.tgz#090b4d6cdbd645ed10bf750d4b5407942d7ba163"
   integrity sha512-ivIvhpq/Y0uSjcHDcOIccjmYjGLcP09MFGE7ysAwkAvkXfpZlC985pH2/ui64DKazbTW/4kN3yqozUxlXzI6cA==
 
-eventemitter3@4.0.0:
-  version "4.0.0"
-  resolved "https://registry.yarnpkg.com/eventemitter3/-/eventemitter3-4.0.0.tgz#d65176163887ee59f386d64c82610b696a4a74eb"
-  integrity sha512-qerSRB0p+UDEssxTtm6EDKcE7W4OaoisfIMl4CngyEhjpYglocpNg6UEqCvemdGhosAsg4sO2dXJOdyBifPGCg==
+eventemitter3@^4.0.3:
+  version "4.0.4"
+  resolved "https://registry.yarnpkg.com/eventemitter3/-/eventemitter3-4.0.4.tgz#b5463ace635a083d018bdc7c917b4c5f10a85384"
+  integrity sha512-rlaVLnVxtxvoyLsQQFBx53YmXHDxRIzzTLbdfxqi4yocpSjAxXwkU0cScM5JgSKMqEhrZpnvQ2D9gjylR0AimQ==
 
 events@^3.0.0:
   version "3.0.0"
@@ -3448,11 +3449,11 @@ hex-color-regex@^1.1.0:
   integrity sha512-l9sfDFsuqtOqKDsQdqrMRk0U85RZc0RtOR9yPI7mRVOa4FsR/BVnZ0shmQRM96Ji99kYZP/7hn1cedc1+ApsTQ==
 
 hls.js@^0.13.3-canary.5556:
-  version "0.13.3-canary.5556"
-  resolved "https://registry.yarnpkg.com/hls.js/-/hls.js-0.13.3-canary.5556.tgz#061dc478ff9472c68c1c9c421c9b7cfa696169d6"
-  integrity sha512-7lzGB3Q0PSySlahRjF2imhoO9F0NvCCaTwpeEeSam8hFTVmC+STKwcqj+K5+C79hPJJXVwPICLHAtDdpG4IYDw==
+  version "0.13.3-canary.5602"
+  resolved "https://registry.yarnpkg.com/hls.js/-/hls.js-0.13.3-canary.5602.tgz#f1f502ef5b535313522ace3d87003adb4a72a522"
+  integrity sha512-MTMaYyHUYy3+YvCChFdW3dFd0oAIu++Bp35NGOIe15twfD4eyRgYwYGdFVlwQipN/mCW7L0vPEqrwvFSOednNA==
   dependencies:
-    eventemitter3 "4.0.0"
+    eventemitter3 "^4.0.3"
     url-toolkit "^2.1.6"
 
 "hls.js@https://github.com/avalonmediasystem/hls.js#stricter_ts_probing":
@@ -6382,7 +6383,7 @@ react-redux@^6.0.0:
 
 "react-structural-metadata-editor@https://github.com/avalonmediasystem/react-structural-metadata-editor":
   version "1.1.0"
-  resolved "https://github.com/avalonmediasystem/react-structural-metadata-editor#59fbd62fa2d3c14e231124871a537025dde18639"
+  resolved "https://github.com/avalonmediasystem/react-structural-metadata-editor#11405154ef5c498fccf1b03f840899fb6e3ce357"
   dependencies:
     "@babel/runtime" "^7.4.4"
     "@fortawesome/fontawesome-svg-core" "^1.2.4"
@@ -7809,9 +7810,9 @@ waveform-data@^2.1.2:
     inline-worker "~1.1.0"
 
 waveform-data@~3.3.1:
-  version "3.3.1"
-  resolved "https://registry.yarnpkg.com/waveform-data/-/waveform-data-3.3.1.tgz#19657a05e966d3efcc3206668f60a233d26975d2"
-  integrity sha512-GxwvVJDnTro2WCFvb4tp9GscC+/OCfoELM8z9b0yvjQzi0Lyr0DE/yhyWBDg0H9xjHiZl+cnI5ZQKDxnD/wE/Q==
+  version "3.3.2"
+  resolved "https://registry.yarnpkg.com/waveform-data/-/waveform-data-3.3.2.tgz#4801c7535e3116579fb501fb9f5cac0722ab63fa"
+  integrity sha512-F50MPz9tglSekTkaSKsqpNOYGI8Xl5yJkz6ivjUANNv2hkNaK7jPrQhdhfiWFBQVsCSRu8CFMkMMDKEVbJaXTg==
   dependencies:
     inline-worker "~1.1.0"
 
