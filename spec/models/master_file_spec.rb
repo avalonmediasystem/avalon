@@ -339,6 +339,11 @@ describe MasterFile do
       expect(subject.encoder_class).to eq(WatchedEncode)
     end
 
+    it "should fall back to Watched when a workflow class can't be resolved" do
+      subject.encoder_classname = 'my-awesomeEncode'
+      expect(subject.encoder_class).to eq(WatchedEncode)
+    end
+
     it "should resolve an explicitly named encoder class" do
       stub_const("EncoderModule::MyEncoder", Class.new(ActiveEncode::Base))
       subject.encoder_classname = 'EncoderModule::MyEncoder'
