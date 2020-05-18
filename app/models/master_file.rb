@@ -110,10 +110,6 @@ class MasterFile < ActiveFedora::Base
     index.as :stored_sortable
   end
 
-  # FIXME: Switch absolute_path to stored_file_id and use valkyrie or other file store to allow for abstracting file path and content from fedora (think stream urls)
-  # See https://github.com/samvera/valkyrie/blob/master/lib/valkyrie/storage/disk.rb
-  # SupplementalFile = Struct.new(:id, :label, :absolute_path, keyword_init: true)
-
   # @return [SupplementalFile]
   def supplemental_files
     return [] if supplemental_files_json.blank?
@@ -127,10 +123,12 @@ class MasterFile < ActiveFedora::Base
 
   # Delegated to EncodeRecord
   def encode_record
-    return nil unless workflow_id
-    gid = "gid://ActiveEncode/#{encoder_class}/#{workflow_id}"
-    # @encode_record ||= ActiveEncode::EncodeRecord.find_by(global_id: gid)
-    ActiveEncode::EncodeRecord.find_by(global_id: gid)
+    ActiveEncode::EncodeRecord.find_by(global_id: encode_record_gid) if encode_record_gid.present?
+  end
+
+  def encode_record_gid
+    return nil unless workflow_id.present?
+    "gid://ActiveEncode/#{encoder_class}/#{workflow_id}"
   end
 
   def raw_encode_record
@@ -533,6 +531,9 @@ class MasterFile < ActiveFedora::Base
       solr_doc['status_code_ssi'] = status_code
       solr_doc['operation_ssi'] = operation
       solr_doc['error_ssi'] = error
+
+      # Calculated encode record gid to avoid having to recompute it based on encoder_class
+      solr_doc['encode_record_gid_ssi'] = encode_record_gid
     end
   end
 

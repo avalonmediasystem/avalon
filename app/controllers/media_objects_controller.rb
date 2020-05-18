@@ -348,7 +348,7 @@ class MediaObjectsController < ApplicationController
 
   def show_progress
     overall = { :success => 0, :error => 0 }
-    encode_gids = master_file_presenters.collect { |mf| "gid://ActiveEncode/#{mf.encoder_class}/#{mf.workflow_id}" }
+    encode_gids = master_file_presenters.collect(&:encode_record_gid)
     result = Hash[
       ActiveEncode::EncodeRecord.where(global_id: encode_gids).collect do |encode|
         raw_encode = JSON.parse(encode.raw_object)

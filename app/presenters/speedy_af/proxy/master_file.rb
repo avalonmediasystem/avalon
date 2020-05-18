@@ -13,20 +13,6 @@
 # ---  END LICENSE_HEADER BLOCK  ---
 
 class SpeedyAF::Proxy::MasterFile < SpeedyAF::Base
-  def encoder_class
-    find_encoder_class(encoder_classname) ||
-      find_encoder_class("#{workflow_name}_encode".classify) ||
-      find_encoder_class((Settings.encoding.engine_adapter + "_encode").classify) ||
-      MasterFile.default_encoder_class ||
-      WatchedEncode
-  end
-
-  def find_encoder_class(klass_name)
-    return nil if klass_name.blank? || !Object.const_defined?(klass_name)
-    klass = Object.const_get(klass_name)
-    return klass if klass.ancestors.include?(ActiveEncode::Base)
-  end
-
   def display_title
     mf_title = if has_structuralMetadata?
                  structuralMetadata.section_title

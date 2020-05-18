@@ -129,12 +129,12 @@ module MediaObjectsHelper
       end
 
       def show_progress?(sections)
-        encode_gids = sections.collect { |mf| "gid://ActiveEncode/#{mf.encoder_class}/#{mf.workflow_id}" }
+        encode_gids = sections.collect(&:encode_record_gid)
         ActiveEncode::EncodeRecord.where(global_id: encode_gids).any? { |encode| encode.state.to_s.upcase != 'COMPLETED' }
       end
 
       def any_failed?(sections)
-        encode_gids = sections.collect { |mf| "gid://ActiveEncode/#{mf.encoder_class}/#{mf.workflow_id}" }
+        encode_gids = sections.collect(&:encode_record_gid)
         ActiveEncode::EncodeRecord.where(global_id: encode_gids).any? { |encode| encode.state.to_s.upcase == 'FAILED' }
       end
 

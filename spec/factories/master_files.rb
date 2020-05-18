@@ -33,7 +33,7 @@ FactoryBot.define do
 
     after(:build) do |mf, evaluator|
       if evaluator.status_code
-        FactoryBot.create(:encode_record, global_id: "gid://ActiveEncode/#{mf.encoder_class}/#{mf.workflow_id}", state: evaluator.status_code)
+        FactoryBot.create(:encode_record, global_id: mf.encode_record_gid, state: evaluator.status_code)
       end
     end
 
