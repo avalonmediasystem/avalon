@@ -51,7 +51,7 @@ class IiifCanvasPresenter
                                            height: master_file.height.to_i,
                                            duration: stream_info[:duration],
                                            type: 'Video',
-                                           auth_service: auth_service)
+                                           auth_service: auth_service(quality))
     end
 
     def audio_content
@@ -63,7 +63,7 @@ class IiifCanvasPresenter
                                            label: quality,
                                            duration: stream_info[:duration],
                                            type: 'Sound',
-                                           auth_service: auth_service)
+                                           auth_service: auth_service(quality))
     end
 
     def stream_urls
@@ -136,7 +136,7 @@ class IiifCanvasPresenter
       @structure_ng_xml ||= (s = master_file.structuralMetadata.content).nil? ? Nokogiri::XML(nil) : Nokogiri::XML(s)
     end
 
-    def auth_service
+    def auth_service(quality)
       {
         "context": "http://iiif.io/api/auth/1/context.json",
         "@id": Rails.application.routes.url_helpers.new_user_session_url(login_popup: 1),
@@ -150,7 +150,7 @@ class IiifCanvasPresenter
         "profile": "http://iiif.io/api/auth/1/login",
         "service": [
           {
-            "@id": Rails.application.routes.url_helpers.hls_manifest_master_file_url(master_file.id, quality: 'auto'),
+            "@id": Rails.application.routes.url_helpers.hls_manifest_master_file_url(master_file.id, quality: quality),
             "@type": "AuthProbeService1",
             "profile": "http://iiif.io/api/auth/1/probe"
           },
