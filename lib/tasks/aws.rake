@@ -17,7 +17,7 @@
 namespace :avalon do
   namespace :aws do
     task create_presets: :environment do
-      require 'aws-sdk'
+      require 'aws-sdk-elastictranscoder'
 
       et = Avalon::ElasticTranscoder.instance
       templates = et.read_templates(Rails.root.join(Settings.encoding.presets_path))

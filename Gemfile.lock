@@ -1805,8 +1805,14 @@ DEPENDENCIES
   audio_waveform-ruby (~> 1.0.7)
   avalon-about!
   avalon-workflow!
-  aws-sdk (~> 3.0)
+  aws-partitions
+  aws-sdk-cloudfront
+  aws-sdk-elastictranscoder
   aws-sdk-rails
+  aws-sdk-s3
+  aws-sdk-ses
+  aws-sdk-sqs
+  aws-sigv4
   bixby
   blacklight (< 7.0)
   bootsnap
