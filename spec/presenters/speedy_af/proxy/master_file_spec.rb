@@ -41,6 +41,13 @@ describe SpeedyAF::Proxy::MasterFile do
         end
       end
 
+      context 'with invalid class name' do
+        let(:master_file) { FactoryBot.create(:master_file, encoder_classname: 'my-awesomeEncode') }
+        it "should fall back to Watched when a workflow class can't be resolved" do
+          expect(subject.encoder_class).to eq(WatchedEncode)
+        end
+      end
+
       context 'with encoder class name' do
         let(:master_file) { FactoryBot.create(:master_file, encoder_classname: 'EncoderModule::MyEncoder') }
         it "should resolve an explicitly named encoder class" do
