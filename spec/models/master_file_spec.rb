@@ -677,4 +677,55 @@ describe MasterFile do
     end
   end
 
+  describe 'Supplemental Files' do
+    let(:master_file) { FactoryBot.build(:master_file) }
+    let(:supplemental_file) { FactoryBot.create(:supplemental_file) }
+    let(:supplemental_files) { [supplemental_file] }
+    let(:supplemental_files_json) { [supplemental_file.to_global_id.to_s].to_json }
+
+    context 'supplemental_files=' do
+      it 'stores the supplemental files as a json string in a property' do
+        expect { master_file.supplemental_files = supplemental_files }.to change { master_file.supplemental_files_json }.from(nil).to(supplemental_files_json)
+      end
+    end
+
+    context 'supplemental_files' do
+      let(:master_file) { FactoryBot.build(:master_file, supplemental_files_json: supplemental_files_json) }
+
+      it 'reifies the supplemental files from the stored json string' do
+        expect(master_file.supplemental_files).to eq supplemental_files
+      end
+    end
+  end
+
+  describe 'has_audio?' do
+
+    context 'without derivative' do
+      let(:master_file) { FactoryBot.build(:master_file) }
+    
+      it 'returns false' do
+        expect(master_file.has_audio?).to eq false
+      end
+    end
+
+    context 'with derivative' do
+      let(:master_file) { FactoryBot.build(:master_file, derivatives: [derivative]) }
+
+      context 'with audio track' do
+        let(:derivative) { FactoryBot.build(:derivative, audio_codec: 'aac') }
+        
+        it 'returns true' do
+          expect(master_file.has_audio?).to eq true
+        end
+      end
+
+      context 'without audio track' do
+        let(:derivative) { FactoryBot.build(:derivative, audio_codec: nil) }
+        
+        it 'returns false' do
+          expect(master_file.has_audio?).to eq false
+        end
+      end
+    end
+  end
 end
