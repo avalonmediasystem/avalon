@@ -21,7 +21,7 @@ class WaveformJob < ActiveJob::Base
 
   def perform(master_file_id, regenerate = false)
     master_file = MasterFile.find(master_file_id)
-    return if master_file.waveform.content.present? && !regenerate
+    return if master_file.waveform.content.present? && !regenerate || !master_file.has_audio?
 
     service = WaveformService.new(8, SAMPLES_PER_FRAME)
     uri = file_uri(master_file) || derivative_file_uri(master_file) || playlist_url(master_file)

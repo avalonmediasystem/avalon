@@ -676,4 +676,5 @@ describe MasterFile do
       end
     end
   end
+
 end
