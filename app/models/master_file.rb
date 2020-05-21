@@ -488,6 +488,12 @@ class MasterFile < ActiveFedora::Base
     end
   end
 
+  def has_audio?
+    # The MasterFile doesn't have an audio track unless the first derivative does
+    # This is useful to skip unnecessary waveform generation
+    derivatives.any?(&:audio_codec)
+  end
+
   def has_poster?
     !poster.empty?
   end
