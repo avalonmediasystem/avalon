@@ -3449,9 +3449,9 @@ hex-color-regex@^1.1.0:
   integrity sha512-l9sfDFsuqtOqKDsQdqrMRk0U85RZc0RtOR9yPI7mRVOa4FsR/BVnZ0shmQRM96Ji99kYZP/7hn1cedc1+ApsTQ==
 
 hls.js@^0.13.3-canary.5556:
-  version "0.13.3-canary.5602"
-  resolved "https://registry.yarnpkg.com/hls.js/-/hls.js-0.13.3-canary.5602.tgz#f1f502ef5b535313522ace3d87003adb4a72a522"
-  integrity sha512-MTMaYyHUYy3+YvCChFdW3dFd0oAIu++Bp35NGOIe15twfD4eyRgYwYGdFVlwQipN/mCW7L0vPEqrwvFSOednNA==
+  version "0.13.3-canary.5621"
+  resolved "https://registry.yarnpkg.com/hls.js/-/hls.js-0.13.3-canary.5621.tgz#082c2479898f8df2dda490d42d34f4fa811ac44e"
+  integrity sha512-BNmS7UQHRmw5Ut8+O9TDPqyXal+PiQLp0FmpyRvV9h77TX7BY3VxEvsymmh3WIxyavwsVNMVjs/wh7/bGjHK9g==
   dependencies:
     eventemitter3 "^4.0.3"
     url-toolkit "^2.1.6"
@@ -6383,7 +6383,7 @@ react-redux@^6.0.0:
 
 "react-structural-metadata-editor@https://github.com/avalonmediasystem/react-structural-metadata-editor":
   version "1.1.0"
-  resolved "https://github.com/avalonmediasystem/react-structural-metadata-editor#11405154ef5c498fccf1b03f840899fb6e3ce357"
+  resolved "https://github.com/avalonmediasystem/react-structural-metadata-editor#2ced29f6d1369ee05c3c6ecc214b93de20e95907"
   dependencies:
     "@babel/runtime" "^7.4.4"
     "@fortawesome/fontawesome-svg-core" "^1.2.4"
