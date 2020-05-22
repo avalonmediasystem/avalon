@@ -108,5 +108,17 @@ describe WaveformJob do
         expect(service).to have_received(:get_waveform_json)
       end
     end
+
+    context 'when there is no audio track' do
+      before do
+        allow(master_file).to receive(:has_audio?).and_return false
+        allow(MasterFile).to receive(:find).with(master_file.id).and_return(master_file)
+      end
+
+      it 'does not call waveform service' do
+        expect { job.perform(master_file.id) }.not_to change { master_file.reload.waveform.content }
+        expect(service).not_to have_received(:get_waveform_json)
+      end
+    end
   end
 end
