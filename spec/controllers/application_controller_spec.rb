@@ -111,4 +111,8 @@ describe ApplicationController do
       expect(controller.after_invite_path_for(nil)).to eq('/persona/users')
     end
   end
+
+  describe 'remove_zero_width_chars' do
+    # TODO: write tests!
+  end
 end

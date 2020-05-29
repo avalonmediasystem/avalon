@@ -32,6 +32,25 @@ class ApplicationController < ActionController::Base
   around_action :handle_api_request, if: proc{|c| request.format.json? || request.format.atom? }
   before_action :rewrite_v4_ids, if: proc{|c| request.method_symbol == :get && [params[:id], params[:content]].compact.any? { |i| i =~ /^[a-z]+:[0-9]+$/}}
   before_action :set_no_cache_headers, if: proc{|c| request.xhr? }
+  prepend_before_action :remove_zero_width_chars
+
+  def remove_zero_width_chars
+    # params is a ActionController::Parameters
+    params.each { |k,v| params[k] = strip_zero_width_chars!(v) }
+  end
+
+  def strip_zero_width_chars!(obj)
+    case obj
+    when String
+      obj.remove_zero_width_chars
+    when Array
+      obj.map! { |child| strip_zero_width_chars(child) }
+    when Hash
+      obj.transform_values! { |value| strip_zero_width_chars(value) }
+    else
+      obj
+    end
+  end
 
   def set_no_cache_headers
     response.headers["Cache-Control"] = "no-cache, no-store"
