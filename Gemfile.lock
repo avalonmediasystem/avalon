@@ -135,7 +135,7 @@ GEM
       erubi (~> 1.4)
       rails-dom-testing (~> 2.0)
       rails-html-sanitizer (~> 1.0, >= 1.0.3)
-    active-fedora (12.1.1)
+    active-fedora (12.2.1)
       active-triples (>= 0.11.0, < 2.0.0)
       activemodel (>= 4.2.10, < 5.3)
       activesupport (>= 4.2.4, < 5.3)
@@ -145,7 +145,6 @@ GEM
       ldp (>= 0.7.0, < 2)
       rsolr (>= 1.1.2, < 3)
       ruby-progressbar (~> 1.0)
-      solrizer (>= 3.4, < 5)
     active-triples (1.1.0)
       activemodel (>= 3.0.0)
       activesupport (>= 3.0.0)
@@ -204,7 +203,7 @@ GEM
     ast (2.4.0)
     audio_waveform-ruby (1.0.4)
       json (~> 2.1.0)
-    autoprefixer-rails (9.5.1.1)
+    autoprefixer-rails (9.7.6)
       execjs
     aws-eventstream (1.0.3)
     aws-sdk (2.11.272)
@@ -230,7 +229,7 @@ GEM
     bixby (1.0.0)
       rubocop (~> 0.50, <= 0.52.1)
       rubocop-rspec (~> 1.22, <= 1.22.2)
-    blacklight (6.20.0)
+    blacklight (6.23.0)
       bootstrap-sass (~> 3.2)
       deprecation
       globalid
@@ -246,9 +245,9 @@ GEM
       deprecation (~> 1.0)
     bootsnap (1.4.4)
       msgpack (~> 1.0)
-    bootstrap-sass (3.3.7)
+    bootstrap-sass (3.4.1)
       autoprefixer-rails (>= 5.2.1)
-      sass (>= 3.3.4)
+      sassc (>= 2.0.0)
     bootstrap-toggle-rails (2.2.1.0)
     bootstrap_form (4.2.0)
       actionpack (>= 5.0)
@@ -267,7 +266,7 @@ GEM
       sass-rails
       signet
       skydrive
-    builder (3.2.3)
+    builder (3.2.4)
     byebug (11.0.1)
     cancancan (1.17.0)
     capistrano (3.11.0)
@@ -312,7 +311,7 @@ GEM
       coffee-script-source
       execjs
     coffee-script-source (1.12.2)
-    concurrent-ruby (1.1.5)
+    concurrent-ruby (1.1.6)
     config (1.7.1)
       activesupport (>= 3.0)
       deep_merge (~> 1.2.1)
@@ -387,7 +386,7 @@ GEM
       mail (~> 2.7)
     equivalent-xml (0.6.0)
       nokogiri (>= 1.4.3)
-    erubi (1.8.0)
+    erubi (1.9.0)
     execjs (2.7.0)
     factory_bot (4.11.1)
       activesupport (>= 3.0.0)
@@ -445,26 +444,26 @@ GEM
       multipart-post
     http-cookie (1.0.3)
       domain_name (~> 0.5)
-    http_logger (0.5.1)
+    http_logger (0.6.0)
     httparty (0.17.0)
       mime-types (~> 3.0)
       multi_xml (>= 0.5.2)
     httpclient (2.8.3)
-    hydra-access-controls (10.6.2)
-      active-fedora (>= 10.0.0, < 13)
+    hydra-access-controls (10.7.0)
+      active-fedora (>= 10.0.0)
       activesupport (>= 4, < 6)
       blacklight (>= 5.16)
       blacklight-access_controls (~> 0.6.0)
       cancancan (~> 1.8)
       deprecation (~> 1.0)
-    hydra-core (10.6.2)
-      hydra-access-controls (= 10.6.2)
+    hydra-core (10.7.0)
+      hydra-access-controls (= 10.7.0)
       railties (>= 4.0.0, < 6)
-    hydra-head (10.6.2)
-      hydra-access-controls (= 10.6.2)
-      hydra-core (= 10.6.2)
+    hydra-head (10.7.0)
+      hydra-access-controls (= 10.7.0)
+      hydra-core (= 10.7.0)
       rails (>= 3.2.6)
-    i18n (1.6.0)
+    i18n (1.8.2)
       concurrent-ruby (~> 1.0)
     iconv (1.0.8)
     iiif_manifest (0.6.0)
@@ -472,12 +471,11 @@ GEM
     ims-lti (1.1.13)
       builder
       oauth (>= 0.4.5, < 0.6)
-    jbuilder (2.8.0)
-      activesupport (>= 4.2.0)
-      multi_json (>= 1.2)
+    jbuilder (2.10.0)
+      activesupport (>= 5.0.0)
     jmespath (1.4.0)
     jquery-datatables (1.10.19.1)
-    jquery-rails (4.3.5)
+    jquery-rails (4.4.0)
       rails-dom-testing (>= 1, < 3)
       railties (>= 4.2.0)
       thor (>= 0.14, < 2.0)
@@ -488,18 +486,18 @@ GEM
       multi_json (~> 1.12)
       rdf (>= 2.2.8, < 4.0)
     jwt (2.1.0)
-    kaminari (1.1.1)
+    kaminari (1.2.1)
       activesupport (>= 4.1.0)
-      kaminari-actionview (= 1.1.1)
-      kaminari-activerecord (= 1.1.1)
-      kaminari-core (= 1.1.1)
-    kaminari-actionview (1.1.1)
+      kaminari-actionview (= 1.2.1)
+      kaminari-activerecord (= 1.2.1)
+      kaminari-core (= 1.2.1)
+    kaminari-actionview (1.2.1)
       actionview
-      kaminari-core (= 1.1.1)
-    kaminari-activerecord (1.1.1)
+      kaminari-core (= 1.2.1)
+    kaminari-activerecord (1.2.1)
       activerecord
-      kaminari-core (= 1.1.1)
-    kaminari-core (1.1.1)
+      kaminari-core (= 1.2.1)
+    kaminari-core (1.2.1)
     launchy (2.4.3)
       addressable (~> 2.3)
     ldp (1.0.0)
@@ -522,7 +520,7 @@ GEM
       activesupport (>= 4)
       railties (>= 4)
       request_store (~> 1.0)
-    loofah (2.4.0)
+    loofah (2.5.0)
       crass (~> 1.0.2)
       nokogiri (>= 1.5.9)
     mail (2.7.1)
@@ -539,12 +537,12 @@ GEM
     mime-types (3.2.2)
       mime-types-data (~> 3.2015)
     mime-types-data (3.2019.0331)
-    mimemagic (0.3.3)
-    mini_mime (1.0.1)
+    mimemagic (0.3.5)
+    mini_mime (1.0.2)
     mini_portile2 (2.4.0)
-    minitest (5.11.3)
+    minitest (5.14.1)
     msgpack (1.2.10)
-    multi_json (1.13.1)
+    multi_json (1.14.1)
     multi_xml (0.6.0)
     multipart-post (2.1.1)
     mysql2 (0.5.2)
@@ -553,12 +551,12 @@ GEM
       net-ssh (>= 2.6.5, < 6.0.0)
     net-ssh (5.2.0)
     netrc (0.11.0)
-    nio4r (2.3.1)
+    nio4r (2.5.2)
     noid (0.9.0)
     noid-rails (3.0.1)
       actionpack (>= 5.0.0, < 6)
       noid (~> 0.9)
-    nokogiri (1.10.8)
+    nokogiri (1.10.9)
       mini_portile2 (~> 2.4.0)
     nom-xml (1.1.0)
       activesupport (>= 3.2.18)
@@ -602,7 +600,7 @@ GEM
     pry-rails (0.3.9)
       pry (>= 0.10.4)
     public_suffix (3.0.3)
-    rack (2.0.8)
+    rack (2.2.2)
     rack-cors (1.1.0)
       rack (>= 2.0.0)
     rack-protection (2.0.7)
@@ -751,7 +749,7 @@ GEM
       json
       multipart-post
       oauth2
-    ruby-progressbar (1.10.0)
+    ruby-progressbar (1.10.1)
     ruby_dep (1.5.0)
     rubydora (1.9.1)
       activemodel
@@ -777,6 +775,8 @@ GEM
       sprockets (>= 2.8, < 4.0)
       sprockets-rails (>= 2.0, < 4.0)
       tilt (>= 1.1, < 3)
+    sassc (2.3.0)
+      ffi (~> 1.9)
     scrub_rb (1.0.1)
     selenium-webdriver (3.142.2)
       childprocess (>= 0.5, < 2.0)
@@ -803,7 +803,7 @@ GEM
       httmultiparty
       httparty (>= 0.11.0)
       oauth2 (>= 0.9.2)
-    slop (4.6.2)
+    slop (4.8.1)
     solr_wrapper (2.1.0)
       faraday
       retriable
@@ -833,7 +833,7 @@ GEM
     sshkit (1.18.2)
       net-scp (>= 1.1.2)
       net-ssh (>= 2.8.0)
-    stomp (1.4.8)
+    stomp (1.4.9)
     suo (0.3.3)
       dalli
       msgpack
@@ -841,14 +841,14 @@ GEM
     sxp (1.0.1)
       rdf (>= 2.2, < 4.0)
     temple (0.8.1)
-    thor (0.20.3)
+    thor (1.0.1)
     thread_safe (0.3.6)
     tilt (2.0.9)
     twitter-typeahead-rails (0.11.1.pre.corejavascript)
       actionpack (>= 3.1)
       jquery-rails
       railties (>= 3.1)
-    tzinfo (1.2.5)
+    tzinfo (1.2.7)
       thread_safe (~> 0.1)
     uber (0.0.15)
     uglifier (4.1.20)
@@ -877,9 +877,9 @@ GEM
       activesupport (>= 4.2)
       rack-proxy (>= 0.6.1)
       railties (>= 4.2)
-    websocket-driver (0.7.0)
+    websocket-driver (0.7.2)
       websocket-extensions (>= 0.1.0)
-    websocket-extensions (0.1.3)
+    websocket-extensions (0.1.4)
     whenever (0.11.0)
       chronic (>= 0.6.3)
     with_locking (1.0.2)
@@ -913,7 +913,7 @@ DEPENDENCIES
   aws-sdk (~> 2.0)
   aws-sdk-rails
   bixby
-  blacklight (< 7.0)
+  blacklight (>= 6.20.0, < 7.0)
   bootsnap
   bootstrap-toggle-rails
   bootstrap_form
@@ -946,7 +946,7 @@ DEPENDENCIES
   google-analytics-rails (= 1.1.0)
   hashdiff
   hooks
-  hydra-head (~> 10.6)
+  hydra-head (~> 10.6, >= 10.6.2)
   iconv (~> 1.0.6)
   iiif_manifest (~> 0.6)
   ims-lti (~> 1.1.13)
@@ -1016,4 +1016,4 @@ DEPENDENCIES
   zoom
 
 BUNDLED WITH
-   2.0.2
+   1.17.3

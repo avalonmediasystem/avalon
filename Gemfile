@@ -24,12 +24,12 @@ gem 'webpacker'
 gem 'active-fedora', '~> 12.1'
 gem 'active_fedora-datastreams', '~> 0.2.0'
 gem 'fedora-migrate', git: 'https://github.com/avalonmediasystem/fedora-migrate.git', tag: 'avalon-r6.5'
-gem 'hydra-head', '~> 10.6'
+gem 'hydra-head', '~> 10.6', '>= 10.6.2'
 gem 'noid-rails', '~> 3.0.1'
 gem 'rdf-rdfxml'
 
 # Samvera version pins
-gem 'blacklight', '< 7.0'
+gem 'blacklight', '>= 6.20.0', '< 7.0'
 gem 'rdf', '~> 2.2'
 gem 'rsolr', '~> 1.0'
 
