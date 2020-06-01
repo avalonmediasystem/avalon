@@ -3360,7 +3360,7 @@ var EN = exports.EN = {
 
 	'mejs.install-flash': 'You are using a browser that does not have Flash player enabled or installed. Please turn on your Flash player plugin or download the latest version from https://get.adobe.com/flashplayer/',
 
-	'mejs.fullscreen': 'Fullscreen',
+	'mejs.fullscreen': 'Fullscreen (f)',
 
 	'mejs.play': 'Play',
 	'mejs.pause': 'Pause',
@@ -3370,8 +3370,8 @@ var EN = exports.EN = {
 	'mejs.live-broadcast': 'Live Broadcast',
 
 	'mejs.volume-help-text': 'Use Up/Down Arrow keys to increase or decrease volume.',
-	'mejs.unmute': 'Unmute',
-	'mejs.mute': 'Mute',
+	'mejs.unmute': 'Unmute (m)',
+	'mejs.mute': 'Mute (m)',
 	'mejs.volume-slider': 'Volume Slider',
 
 	'mejs.video-player': 'Video Player',
@@ -5064,7 +5064,7 @@ var MediaElementPlayer = function () {
 		key: 'onkeydown',
 		value: function onkeydown(player, media, e) {
 
-			if (player.hasFocus && player.options.enableKeyboard) {
+			if (player.options.enableKeyboard) {
 				for (var i = 0, total = player.options.keyActions.length; i < total; i++) {
 					var keyAction = player.options.keyActions[i];
 

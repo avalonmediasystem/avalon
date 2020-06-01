@@ -20,7 +20,7 @@ Unless required by applicable law or agreed to in writing, software distributed
 <%= javascript_include_tag "mejs4_player" %>
 <% end %>
 <script>
-var mejs4ConfigFeatures = ['playpause', 'current', 'progress', 'duration', 'trackScrubber', 'volume', 'tracks', 'quality', 'createThumbnail', 'addToPlaylist', 'fullscreen'];
+var mejs4ConfigFeatures = ['playpause', 'skipback', 'jumpforward', 'current', 'progress', 'duration', 'trackScrubber', 'volume', 'tracks', 'quality', 'createThumbnail', 'addToPlaylist', 'fullscreen'];
 
 // do not show createThumbnail button if current user can't edit mediaObject
 if (<%= cannot? :edit, @media_object %>) {
