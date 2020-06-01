@@ -47,5 +47,7 @@ module Avalon
         resource '/timelines/*/manifest.json', headers: :any, methods: [:get, :post]
       end
     end
+
+    config.active_storage.service = (Settings&.active_storage&.service.presence || "local").to_sym
   end
 end
