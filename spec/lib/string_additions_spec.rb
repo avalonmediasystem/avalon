@@ -20,11 +20,18 @@ describe 'StringAdditions' do
       expect("test\u200B".remove_zero_width_chars).to eq 'test'
       expect("\u200Btest".remove_zero_width_chars).to eq 'test'
       # TODO: Add more test cases for other zero-width characters
+      expect("\u200Btest\u200Btest\u200B".remove_zero_width_chars).to eq "test\u200Btest"
+      expect("test\u200D".remove_zero_width_chars).to eq 'test'
+      expect("\u200Dtest".remove_zero_width_chars).to eq 'test'
+      expect("\u200Dtest\u200Dtest\u200D".remove_zero_width_chars).to eq "test\u200Dtest"
     end
 
     it 'does not remove zero-width characters from the middle of strings' do
       expect("test\u200Btest".remove_zero_width_chars).to eq "test\u200Btest"
       # TODO: Add more test cases for other zero-width characters
+      expect("\u200Btest\u200Btest\u200B".remove_zero_width_chars).to eq "test\u200Btest"
+      expect("test\u200Dtest".remove_zero_width_chars).to eq "test\u200Dtest"
+      expect("\u200Dtest\u200Dtest\u200D".remove_zero_width_chars).to eq "test\u200Dtest"
     end
 
     it 'does not remove non-zero-width characters' do
