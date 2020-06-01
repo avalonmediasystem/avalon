@@ -583,6 +583,8 @@ class MEJSPlayer {
     let currentStreamInfo = this.currentStreamInfo;
     // Set default quality value in localStorage  
     this.localStorage.setItem('quality', this.defaultQuality);
+    // Interval in seconds to jump forward and backward in media
+    let jumpInterval = 5;
 
     // Mediaelement default root level configuration
     let defaults = {
@@ -597,7 +599,13 @@ class MEJSPlayer {
       defaultQuality: this.defaultQuality,
       toggleCaptionsButtonWhenOnlyOne: true,
       startVolume: this.localStorage.getItem('startVolume') || 1.0,
-      startLanguage: this.localStorage.getItem('captions') || ''
+      startLanguage: this.localStorage.getItem('captions') || '',
+      // intervals for forward and backward jump using the player buttons
+      jumpForwardInterval: jumpInterval,
+      skipBackInterval: jumpInterval,
+      // jump forward and backward when player is not focused
+      defaultSeekBackwardInterval: function() { return jumpInterval },
+      defaultSeekForwardInterval: function() { return jumpInterval }
     };
 
     // Add duration as a root level config for Android devices

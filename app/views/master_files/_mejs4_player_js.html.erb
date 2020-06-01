@@ -26,7 +26,7 @@ Unless required by applicable law or agreed to in writing, software distributed
 <!-- Missing title and logo features -->
 var mejs4AvalonPlayer = new MEJSPlayer({
   currentStreamInfo: <%= section_info.to_json.html_safe %>,
-  features: ['playpause', 'current', 'progress', 'duration', 'volume', 'tracks', <%= quality_feature.html_safe %>'linkBack', 'fullscreen'],
+  features: ['playpause', 'skipback', 'jumpforward', 'current', 'progress', 'duration', 'volume', 'tracks', <%= quality_feature.html_safe %>'linkBack', 'fullscreen'],
   highlightRail: true,
   defaultQuality: '<%= current_quality(section_info) %>'
 });
