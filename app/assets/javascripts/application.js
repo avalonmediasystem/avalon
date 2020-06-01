@@ -49,6 +49,10 @@
 //= stub mediaelement/plugins/markers
 //= stub mediaelement/plugins/quality-avalon
 //= stub mediaelement/plugins/quality-i18n
+//= stub mediaelement/plugins/jump-forward/jump-forward
+//= stub mediaelement/plugins/jump-forward/jump-forward-i18n
+//= stub mediaelement/plugins/skip-back/skip-back
+//= stub mediaelement/plugins/skip-back/skip-back-i18n
 //= stub media_player_wrapper/mejs4_plugin_add_to_playlist
 //= stub media_player_wrapper/mejs4_plugin_add_marker_to_playlist
 //= stub media_player_wrapper/mejs4_plugin_create_thumbnail
