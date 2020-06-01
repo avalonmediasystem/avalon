@@ -4,4 +4,5 @@ timeliner:
   timeliner_url: http://localhost:3000/timeliner
 supplemental_files:
   proxy: true
-
+active_storage:
+  service: :minio
