@@ -3039,7 +3039,7 @@ Object.assign(_player2.default.prototype, {
 			keys: [38],
 			action: function action(player) {
 				var volumeSlider = player.getElement(player.container).querySelector('.' + _player.config.classPrefix + 'volume-slider');
-				if (volumeSlider || player.getElement(player.container).querySelector('.' + _player.config.classPrefix + 'volume-slider').matches(':focus')) {
+				if (volumeSlider) {
 					volumeSlider.style.display = 'block';
 				}
 				if (player.isVideo) {
@@ -3076,8 +3076,8 @@ Object.assign(_player2.default.prototype, {
 		}, {
 			keys: [77],
 			action: function action(player) {
-				player.getElement(player.container).querySelector('.' + _player.config.classPrefix + 'volume-slider').style.display = 'block';
 				if (player.isVideo) {
+					player.getElement(player.container).querySelector('.' + _player.config.classPrefix + 'volume-slider').style.display = 'block';
 					player.showControls();
 					player.startControlsTimer();
 				}
