@@ -284,6 +284,9 @@ class MEJSPlayer {
     // Build quality
     this.player.buildquality(this.player, null, null, this.mediaElement);
 
+    // Set startVolume in options from the current mediaelement instance
+    this.player.options.startVolume = this.mediaElement.volume;
+
     this.reInitializeCaptions();
 
     this.player.load();
