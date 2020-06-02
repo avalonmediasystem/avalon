@@ -40,19 +40,7 @@ describe WaveformJob do
       job.perform(master_file.id)
     end
 
-    context 'when on disk' do
-      before do
-        allow(File).to receive(:exist?).and_call_original
-        allow(File).to receive(:exist?).with(master_file.file_location).and_return(true)
-      end
-
-      it 'calls the waveform service with the file location' do
-        job.perform(master_file.id)
-        expect(service).to have_received(:get_waveform_json).with(master_file.file_location)
-      end
-    end
-
-    context 'when Derivative file is retrievable' do
+    context 'when Derivative file is on disk' do
       before do
         allow(File).to receive(:exist?).and_call_original
         allow(File).to receive(:exist?).with(derivative_path).and_return(true)
@@ -64,7 +52,44 @@ describe WaveformJob do
       end
     end
 
-    context 'when not on disk' do
+    context 'when Derivative file is on s3' do
+      before do
+        derivative = master_file.derivatives.first
+        derivative.absolute_location = "s3://derivatives/sample.mp4"
+        derivative.save
+      end
+
+      it 'calls the waveform service with the file location' do
+        job.perform(master_file.id)
+        expect(service).to have_received(:get_waveform_json).with(/\/tmp\/.*\/sample.mp4/)
+      end
+    end
+
+    context 'when MasterFile is on disk' do
+      before do
+        allow(File).to receive(:exist?).and_call_original
+        allow(File).to receive(:exist?).with(master_file.file_location).and_return(true)
+      end
+
+      it 'calls the waveform service with the file location' do
+        job.perform(master_file.id)
+        expect(service).to have_received(:get_waveform_json).with(master_file.file_location)
+      end
+    end
+
+    context 'when MasterFile file is on s3' do
+      before do
+        master_file.file_location = "s3://masterfiles/master.mp4"
+        master_file.save
+      end
+
+      it 'calls the waveform service with the file location' do
+        job.perform(master_file.id)
+        expect(service).to have_received(:get_waveform_json).with(/\/tmp\/.*\/master.mp4/)
+      end
+    end
+
+    context 'when MasterFile and Derivative are not retrievable' do
       let(:secure_hls_url) { "https://path/to/mp4:video.mp4/playlist.m3u8?token=abc" }
 
       before do

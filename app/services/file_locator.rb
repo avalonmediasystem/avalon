@@ -31,7 +31,7 @@ class FileLocator
       @object ||= Aws::S3::Object.new(bucket_name: bucket, key: key)
     end
 
-    def localize(dir="/tmp")
+    def localize(dir = "/tmp")
       new_dir = File.join dir, SecureRandom.uuid
       new_path = File.join new_dir, File.basename(key)
       FileUtils.mkdir_p new_dir
