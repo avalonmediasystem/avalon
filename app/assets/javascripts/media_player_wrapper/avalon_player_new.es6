@@ -586,6 +586,9 @@ class MEJSPlayer {
     // Interval in seconds to jump forward and backward in media
     let jumpInterval = 5;
 
+    // Set default quality value in localStorage  
+    this.localStorage.setItem('quality', this.defaultQuality);
+
     // Mediaelement default root level configuration
     let defaults = {
       pluginPath: '/assets/mediaelement/shims/',
