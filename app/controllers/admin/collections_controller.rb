@@ -143,7 +143,7 @@ class Admin::CollectionsController < ApplicationController
       ["group", "class", "user", "ipaddress"].each do |title|
         if params["submit_add_#{title}"].present?
           if params["add_#{title}"].present?
-            val = params["add_#{title}"].strip.remove_zero_width_chars
+            val = params["add_#{title}"]
             if title=='user'
               @collection.default_read_users += [val]
             elsif title=='ipaddress'

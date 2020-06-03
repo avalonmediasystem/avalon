@@ -41,7 +41,7 @@ class AccessControlStep < Avalon::Workflow::BasicStep
         end_time = context["add_#{title}_end"].blank? ? nil : context["add_#{title}_end"]
         create_lease = begin_time.present? || end_time.present?
         if context["add_#{title}"].present?
-          val = context["add_#{title}"].strip.remove_zero_width_chars
+          val = context["add_#{title}"]
           if title=='user'
             if create_lease
               begin

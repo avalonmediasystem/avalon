@@ -19,19 +19,32 @@ describe 'StringAdditions' do
     it 'removes zero-width characters from the beginning and end of strings' do
       expect("test\u200B".remove_zero_width_chars).to eq 'test'
       expect("\u200Btest".remove_zero_width_chars).to eq 'test'
-      # TODO: Add more test cases for other zero-width characters
       expect("\u200Btest\u200Btest\u200B".remove_zero_width_chars).to eq "test\u200Btest"
       expect("test\u200D".remove_zero_width_chars).to eq 'test'
       expect("\u200Dtest".remove_zero_width_chars).to eq 'test'
       expect("\u200Dtest\u200Dtest\u200D".remove_zero_width_chars).to eq "test\u200Dtest"
+      expect("test\u200C".remove_zero_width_chars).to eq 'test'
+      expect("\u200Ctest".remove_zero_width_chars).to eq 'test'
+      expect("\u200Ctest\u200Ctest\u200C".remove_zero_width_chars).to eq "test\u200Ctest"
+      expect("test\uFEFF".remove_zero_width_chars).to eq 'test'
+      expect("\uFEFFtest".remove_zero_width_chars).to eq 'test'
+      expect("\uFEFFtest\uFEFFtest\uFEFF".remove_zero_width_chars).to eq "test\uFEFFtest"
+      expect("test\u2060".remove_zero_width_chars).to eq 'test'
+      expect("\u2060test".remove_zero_width_chars).to eq 'test'
+      expect("\u2060test\u2060test\u2060".remove_zero_width_chars).to eq "test\u2060test"
     end
 
     it 'does not remove zero-width characters from the middle of strings' do
       expect("test\u200Btest".remove_zero_width_chars).to eq "test\u200Btest"
-      # TODO: Add more test cases for other zero-width characters
       expect("\u200Btest\u200Btest\u200B".remove_zero_width_chars).to eq "test\u200Btest"
       expect("test\u200Dtest".remove_zero_width_chars).to eq "test\u200Dtest"
       expect("\u200Dtest\u200Dtest\u200D".remove_zero_width_chars).to eq "test\u200Dtest"
+      expect("test\u200Ctest".remove_zero_width_chars).to eq "test\u200Ctest"
+      expect("\u200Ctest\u200Ctest\u200C".remove_zero_width_chars).to eq "test\u200Ctest"
+      expect("test\uFEFFtest".remove_zero_width_chars).to eq "test\uFEFFtest"
+      expect("\uFEFFtest\uFEFFtest\uFEFF".remove_zero_width_chars).to eq "test\uFEFFtest"
+      expect("test\u2060test".remove_zero_width_chars).to eq "test\u2060test"
+      expect("\u2060test\u2060test\u2060".remove_zero_width_chars).to eq "test\u2060test"
     end
 
     it 'does not remove non-zero-width characters' do
