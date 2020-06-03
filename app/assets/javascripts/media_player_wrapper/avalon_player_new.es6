@@ -281,6 +281,9 @@ class MEJSPlayer {
       this.player.buildplaylistItems(this.player, null, null, this.mediaElement);
     }
 
+    // Set defaultQuality in player options before building the quality feature
+    this.player.options.defaultQuality = this.localStorage.getItem('quality');
+
     // Build quality
     this.player.buildquality(this.player, null, null, this.mediaElement);
 
@@ -577,6 +580,9 @@ class MEJSPlayer {
     let currentStreamInfo = this.currentStreamInfo;
     // Interval in seconds to jump forward and backward in media
     let jumpInterval = 5;
+
+    // Set default quality value in localStorage  
+    this.localStorage.setItem('quality', this.defaultQuality);
 
     // Mediaelement default root level configuration
     let defaults = {
