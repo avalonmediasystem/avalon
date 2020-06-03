@@ -286,7 +286,12 @@ Object.assign(MediaElementPlayer.prototype, {
      * @return {Object} jQuery object
      */
     getNextItem() {
-      return this.$nowPlayingLi.next('li');
+      let nextItem = this.$nowPlayingLi.next('li');
+      // When next item is not a valid playlist item (e.g. from a deleted item) get the item after that
+      if(nextItem[0].className != 'queue') {
+        nextItem =  nextItem.next('li');
+      }
+      return nextItem;
     },
 
     /**
