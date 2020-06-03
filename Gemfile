@@ -3,7 +3,7 @@ source 'https://rubygems.org'
 # Core rails
 gem 'bootsnap', require: false
 gem 'listen'
-gem 'rails', '=5.2.3'
+gem 'rails', '= 5.2.3'
 gem 'sprockets', '~>3.7.2'
 gem 'sqlite3'
 
@@ -24,12 +24,12 @@ gem 'webpacker'
 gem 'active-fedora', '~> 12.1'
 gem 'active_fedora-datastreams', '~> 0.2.0'
 gem 'fedora-migrate', git: 'https://github.com/avalonmediasystem/fedora-migrate.git', tag: 'avalon-r6.5'
-gem 'hydra-head', '~> 10.6'
+gem 'hydra-head', '~> 10.6', '>= 10.6.2'
 gem 'noid-rails', '~> 3.0.1'
 gem 'rdf-rdfxml'
 
 # Samvera version pins
-gem 'blacklight', '< 7.0'
+gem 'blacklight', '>= 6.20.0', '< 7.0'
 gem 'rdf', '~> 2.2'
 gem 'rsolr', '~> 1.0'
 
@@ -62,7 +62,7 @@ gem 'omniauth-lti', git: "https://github.com/avalonmediasystem/omniauth-lti.git"
 # Media Access & Transcoding
 gem 'active_encode', '~> 0.7.0'
 gem 'audio_waveform-ruby', require: 'audio_waveform'
-gem 'browse-everything', '~> 0.13.0'
+gem 'browse-everything', '~> 0.13.1'
 gem 'fastimage'
 gem 'media_element_add_to_playlist', git: 'https://github.com/avalonmediasystem/media-element-add-to-playlist.git', tag: 'avalon-r6.5'
 gem 'mediainfo', git: "https://github.com/avalonmediasystem/mediainfo.git", tag: 'avalon-r6.5'
@@ -77,7 +77,7 @@ gem 'marc'
 
 # MediaElement.js & Plugins
 gem 'mediaelement_rails', git: 'https://github.com/avalonmediasystem/mediaelement_rails.git', tag: 'avalon-r6_flash-fix'
-gem 'media-element-logo-plugin'
+gem 'media-element-logo-plugin', '>= 0.0.2'
 gem 'media_element_thumbnail_selector', git: 'https://github.com/avalonmediasystem/media-element-thumbnail-selector', tag: 'avalon-r4'
 gem 'mediaelement-hd-toggle', git:'https://github.com/avalonmediasystem/mediaelement-hd-toggle.git', tag: 'avalon-r6.3'
 gem 'mediaelement-qualityselector', git:'https://github.com/avalonmediasystem/mediaelement-qualityselector.git', tag: 'avalon-r4'
@@ -109,7 +109,7 @@ group :development do
   # Use Bixby instead of rubocop directly
   gem 'bixby', require: false
   gem 'web-console'
-  gem 'xray-rails'
+  gem 'xray-rails', '>= 0.3.2'
 end
 
 group :development, :test do
@@ -150,7 +150,7 @@ end
 
 # Install the bundle --with aws when running on Amazon Elastic Beanstalk
 group :aws, optional: true do
-  gem 'active_elastic_job', '~> 2.0'
+  gem 'active_elastic_job', '~> 2.0', '>= 2.0.1'
   gem 'aws-sdk', '~> 2.0'
   gem 'aws-sdk-rails'
   gem 'cloudfront-signer'
