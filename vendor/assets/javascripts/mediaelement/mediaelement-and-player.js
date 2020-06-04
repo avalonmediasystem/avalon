@@ -3039,6 +3039,11 @@ Object.assign(_player2.default.prototype, {
 			keys: [38],
 			action: function action(player) {
 				var volumeSlider = player.getElement(player.container).querySelector('.' + _player.config.classPrefix + 'volume-slider');
+				/**
+				 * Removing condition for having focus on volumeSlider element;
+				 * volumeSlider is the volume control slider for video players, therefore using up arrow key on audio players to increase
+				 * volume doesn't work with this condition. This is already removed for reducing volume in line 3064 (under keys: [40])
+				 */
 				if (volumeSlider) {
 					volumeSlider.style.display = 'block';
 				}
@@ -3077,6 +3082,10 @@ Object.assign(_player2.default.prototype, {
 			keys: [77],
 			action: function action(player) {
 				if (player.isVideo) {
+					/**
+					 * Following element is present only in video players, therefore the mute functionality doesn't work for audio players
+					 * since the code breaks when trying to find this element
+					 */
 					player.getElement(player.container).querySelector('.' + _player.config.classPrefix + 'volume-slider').style.display = 'block';
 					player.showControls();
 					player.startControlsTimer();
