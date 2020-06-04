@@ -32,6 +32,7 @@ class ApplicationController < ActionController::Base
   around_action :handle_api_request, if: proc{|c| request.format.json? || request.format.atom? }
   before_action :rewrite_v4_ids, if: proc{|c| request.method_symbol == :get && [params[:id], params[:content]].compact.any? { |i| i =~ /^[a-z]+:[0-9]+$/}}
   before_action :set_no_cache_headers, if: proc{|c| request.xhr? }
+  prepend_before_action :remove_zero_width_chars
 
   def set_no_cache_headers
     response.headers["Cache-Control"] = "no-cache, no-store"
@@ -202,4 +203,26 @@ class ApplicationController < ActionController::Base
   def after_invite_path_for(_inviter, _invitee = nil)
     main_app.persona_users_path
   end
+
+  private
+
+    def remove_zero_width_chars
+      # params is a ActionController::Parameters
+      strip_zero_width_chars!(params)
+    end
+
+    def strip_zero_width_chars!(obj)
+      case obj
+      when String
+        obj.remove_zero_width_chars
+      when Array
+        obj.map! { |child| strip_zero_width_chars!(child) }
+      when Hash
+        obj.transform_values! { |value| strip_zero_width_chars!(value) }
+      when ActionController::Parameters
+        obj.each { |k, v| obj[k] = strip_zero_width_chars!(v) }
+      else
+        obj
+      end
+    end
 end
