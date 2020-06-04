@@ -37,7 +37,7 @@ class SupplementalFilesController < ApplicationController
     @supplemental_file = SupplementalFile.new(label: supplemental_file_params[:label])
     begin
       @supplemental_file.attach_file(supplemental_file_params[:file])
-    rescue Exception => e
+    rescue StandardError, LoadError => e
       raise Avalon::SaveError, "File could not be attached: #{e.full_message}"
     end
 
