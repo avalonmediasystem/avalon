@@ -119,7 +119,7 @@ class Admin::CollectionsController < ApplicationController
       if params["submit_add_#{title}"].present?
         if params["add_#{title}"].present? && can?("update_#{title.pluralize}".to_sym, @collection)
           begin
-            @collection.send "add_#{title}".to_sym, params["add_#{title}"].strip#.remove_zero_width_chars
+            @collection.send "add_#{title}".to_sym, params["add_#{title}"].strip
           rescue ArgumentError => e
             flash[:error] = e.message
           end
@@ -143,7 +143,7 @@ class Admin::CollectionsController < ApplicationController
       ["group", "class", "user", "ipaddress"].each do |title|
         if params["submit_add_#{title}"].present?
           if params["add_#{title}"].present?
-            val = params["add_#{title}"]
+            val = params["add_#{title}"].strip
             if title=='user'
               @collection.default_read_users += [val]
             elsif title=='ipaddress'

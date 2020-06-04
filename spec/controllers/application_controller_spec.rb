@@ -113,6 +113,19 @@ describe ApplicationController do
   end
 
   describe 'remove_zero_width_chars' do
-    # TODO: write tests!
+    it 'removes zero-width chars from string params' do
+      post :create, params: { id: 'abc1234', key: "\u200Bvalue\u2060" }
+      expect(controller.params[:key]).to eq "value"
+    end
+
+    it 'removes zero-width chars from array params' do
+      post :create, params: { id: 'abc1234', key: ["\u200Bvalue\u2060"] }
+      expect(controller.params[:key]).to eq ["value"]
+    end
+
+    it 'removes zero-width chars from hash params' do
+      post :create, params: { id: 'abc1234', key: { subkey: "\u200Bvalue\u2060" } }
+      expect(controller.params[:key][:subkey]).to eq "value"
+    end
   end
 end

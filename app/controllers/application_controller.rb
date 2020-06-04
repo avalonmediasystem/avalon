@@ -34,24 +34,6 @@ class ApplicationController < ActionController::Base
   before_action :set_no_cache_headers, if: proc{|c| request.xhr? }
   prepend_before_action :remove_zero_width_chars
 
-  def remove_zero_width_chars
-    # params is a ActionController::Parameters
-    params.each { |k,v| params[k] = strip_zero_width_chars!(v) }
-  end
-
-  def strip_zero_width_chars!(obj)
-    case obj
-    when String
-      obj.remove_zero_width_chars
-    when Array
-      obj.map! { |child| strip_zero_width_chars(child) }
-    when Hash
-      obj.transform_values! { |value| strip_zero_width_chars(value) }
-    else
-      obj
-    end
-  end
-
   def set_no_cache_headers
     response.headers["Cache-Control"] = "no-cache, no-store"
     response.headers["Pragma"] = "no-cache"
@@ -221,4 +203,26 @@ class ApplicationController < ActionController::Base
   def after_invite_path_for(_inviter, _invitee = nil)
     main_app.persona_users_path
   end
+
+  private
+
+    def remove_zero_width_chars
+      # params is a ActionController::Parameters
+      strip_zero_width_chars!(params)
+    end
+
+    def strip_zero_width_chars!(obj)
+      case obj
+      when String
+        obj.remove_zero_width_chars
+      when Array
+        obj.map! { |child| strip_zero_width_chars!(child) }
+      when Hash
+        obj.transform_values! { |value| strip_zero_width_chars!(value) }
+      when ActionController::Parameters
+        obj.each { |k, v| obj[k] = strip_zero_width_chars!(v) }
+      else
+        obj
+      end
+    end
 end
