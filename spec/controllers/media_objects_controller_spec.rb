@@ -1406,4 +1406,19 @@ describe MediaObjectsController, type: :controller do
       end
     end
   end
+
+  describe '#manifest' do
+    let(:media_object) { FactoryBot.create(:published_media_object) }
+    let(:master_file) { FactoryBot.create(:master_file, :with_derivative, media_object: media_object) }
+
+    before do
+      login_as :administrator
+    end
+
+    it 'returns a manifest' do
+      get :manifest, params: { id: media_object.id, format: 'json' }
+      expect(response.status).to eq 200
+      expect(response.content_type).to eq 'application/json'
+    end
+  end
 end
