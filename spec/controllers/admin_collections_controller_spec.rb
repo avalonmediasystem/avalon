@@ -94,6 +94,17 @@ describe Admin::CollectionsController, type: :controller do
       collection.reload
       expect(manager).not_to be_in(collection.managers)
     end
+
+    context 'with zero-width characters' do
+      let(:manager) { FactoryBot.create(:manager) }
+      let(:manager_key) { "#{manager.user_key}\u200B" }
+
+      it "should add users to manager role" do
+        put 'update', params: { id: collection.id, submit_add_manager: 'Add', add_manager: manager_key }
+        collection.reload
+        expect(manager).to be_in(collection.managers)
+      end
+    end
   end
 
   describe "#edit" do
