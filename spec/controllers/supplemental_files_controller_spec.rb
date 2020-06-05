@@ -151,7 +151,7 @@ RSpec.describe SupplementalFilesController, type: :controller do
       let(:supplemental_file) { FactoryBot.build(:supplemental_file) }
       before do
         allow(SupplementalFile).to receive(:new).and_return(supplemental_file)
-        allow(supplemental_file).to receive(:attach_file).and_raise("ERROR!!!!")
+        allow(supplemental_file).to receive(:attach_file).and_raise(LoadError, "ERROR!!!!")
       end
 
       it 'does not create a SupplementalFile record' do
