@@ -42,7 +42,7 @@ class WaveformJob < ActiveJob::Base
       path = master_file.file_location
       locator = FileLocator.new(path)
       if path.present? && locator.exist?
-        locator.local_location
+        locator.uri
       else
         nil
       end
@@ -50,18 +50,17 @@ class WaveformJob < ActiveJob::Base
 
     def derivative_file_uri(master_file)
       derivatives = master_file.derivatives
-      uri = nil
 
       # Find the lowest quality stream
-      ['high', 'medium', 'low'].each do |quality|
+      ['low', 'medium', 'high'].each do |quality|
         d = derivatives.select { |derivative| derivative.quality == quality }.first
         if d.present?
           loc = FileLocator.new(d.absolute_location)
-          uri = loc.local_location if loc.exist?
+          return loc.uri if loc.exist?
         end
       end
 
-      uri
+      nil
     end
 
     def playlist_url(master_file)

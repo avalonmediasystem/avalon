@@ -21,7 +21,7 @@ describe WaveformJob do
   let(:service) { instance_double("WaveformService") }
   let(:derivative_path) { URI.parse(master_file.derivatives.first.absolute_location).path }
 
-  describe "perform" do
+  describe "perform" do  
     before do
       allow(service).to receive(:get_waveform_json).and_return(waveform_json)
       allow(WaveformService).to receive(:new).and_return(service)
@@ -40,52 +40,69 @@ describe WaveformJob do
       job.perform(master_file.id)
     end
 
-    context 'when Derivative file is on disk' do
+    context 'file processing' do
+      let(:uri) { Addressable::URI.parse(path) }
+
       before do
-        allow(File).to receive(:exist?).and_call_original
-        allow(File).to receive(:exist?).with(derivative_path).and_return(true)
+        allow(Addressable::URI).to receive(:parse).and_call_original
+        allow(Addressable::URI).to receive(:parse).with(path).and_return(uri)
       end
 
-      it 'calls the waveform service with the file location' do
-        job.perform(master_file.id)
-        expect(service).to have_received(:get_waveform_json).with(derivative_path)
-      end
-    end
+      context 'when Derivative file is on disk' do
+        let(:path) { "file://#{derivative_path}" }
 
-    context 'when Derivative file is on s3' do
-      before do
-        derivative = master_file.derivatives.first
-        derivative.absolute_location = "s3://derivatives/sample.mp4"
-        derivative.save
-      end
+        before do
+          allow(File).to receive(:exist?).and_call_original
+          allow(File).to receive(:exist?).with(derivative_path).and_return(true)
+        end
 
-      it 'calls the waveform service with the file location' do
-        job.perform(master_file.id)
-        expect(service).to have_received(:get_waveform_json).with(/\/tmp\/.*\/sample.mp4/)
-      end
-    end
-
-    context 'when MasterFile is on disk' do
-      before do
-        allow(File).to receive(:exist?).and_call_original
-        allow(File).to receive(:exist?).with(master_file.file_location).and_return(true)
+        it 'calls the waveform service with the file location' do
+          job.perform(master_file.id)
+          expect(service).to have_received(:get_waveform_json).with(uri)
+        end
       end
 
-      it 'calls the waveform service with the file location' do
-        job.perform(master_file.id)
-        expect(service).to have_received(:get_waveform_json).with(master_file.file_location)
-      end
-    end
+      context 'when Derivative file is on s3' do
+        let(:path) { "s3://derivatives/sample.mp4" }
 
-    context 'when MasterFile file is on s3' do
-      before do
-        master_file.file_location = "s3://masterfiles/master.mp4"
-        master_file.save
+        before do
+          derivative = master_file.derivatives.first
+          derivative.absolute_location = path
+          derivative.save
+        end
+
+        it 'calls the waveform service with the file location' do
+          job.perform(master_file.id)
+          expect(service).to have_received(:get_waveform_json).with(uri)
+        end
       end
 
-      it 'calls the waveform service with the file location' do
-        job.perform(master_file.id)
-        expect(service).to have_received(:get_waveform_json).with(/\/tmp\/.*\/master.mp4/)
+      context 'when MasterFile is on disk' do
+        let(:path) { "file://#{master_file.file_location}" }
+
+        before do
+          allow(File).to receive(:exist?).and_call_original
+          allow(File).to receive(:exist?).with(master_file.file_location).and_return(true)
+        end
+
+        it 'calls the waveform service with the file location' do
+          job.perform(master_file.id)
+          expect(service).to have_received(:get_waveform_json).with(uri)
+        end
+      end
+
+      context 'when MasterFile file is on s3' do
+        let(:path) { "s3://masterfiles/master.mp4" }
+
+        before do
+          master_file.file_location = path
+          master_file.save
+        end
+
+        it 'calls the waveform service with the file location' do
+          job.perform(master_file.id)
+          expect(service).to have_received(:get_waveform_json).with(uri)
+        end
       end
     end
 

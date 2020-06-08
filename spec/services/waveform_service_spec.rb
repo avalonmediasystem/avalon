@@ -22,10 +22,24 @@ describe WaveformService, type: :service do
 
     it "should return waveform json from file" do
       allow(service).to receive(:get_wave_io).and_return(open(wav_path))
-      json = JSON.parse(service.get_waveform_json("/path/to/video.mp4"))
+      json = JSON.parse(service.get_waveform_json(Addressable::URI.parse("file:///path/to/video.mp4")))
       target_json = JSON.parse(File.read("spec/fixtures/meow.json"))
 
       expect(json).to eq(target_json)
+    end
+
+    context "s3 file" do
+      let(:uri) { Addressable::URI.parse("s3://path/to/video.mp4") }
+      let(:tmpfile) { Tempfile.new }
+      
+      before do
+        allow(Tempfile).to receive(:new).and_return tmpfile
+      end
+
+      it "should clean up Tempfile" do
+        service.get_waveform_json(uri)
+        expect(tmpfile.path).to eq nil
+      end
     end
 
     context 'when uri parameter is blank' do

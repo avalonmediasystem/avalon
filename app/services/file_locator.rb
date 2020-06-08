@@ -31,12 +31,12 @@ class FileLocator
       @object ||= Aws::S3::Object.new(bucket_name: bucket, key: key)
     end
 
-    def localize(dir = "/tmp")
-      new_dir = File.join dir, SecureRandom.uuid
-      new_path = File.join new_dir, File.basename(key)
-      FileUtils.mkdir_p new_dir
-      object.download_file new_path
-      new_path
+    def local_file
+      @local_file ||= Tempfile.new(File.basename(key))
+      object.download_file(@local_file.path) unless File.exist?(@local_file)
+      @local_file
+    ensure
+      @local_file.close
     end
   end
 
@@ -84,7 +84,7 @@ class FileLocator
   def local_location
     @local_location ||= begin
       if uri.scheme == 's3'
-        S3File.new(uri).localize
+        S3File.new(uri).local_file.path
       else
         location
       end
