@@ -38,6 +38,11 @@ body {
   }
 }
 
+/* Override Bootstrap CSS */
+.alert {
+  margin-bottom: 10px;
+}
+
 main {
   padding-bottom: 20px;
 }

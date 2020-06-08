@@ -46,7 +46,7 @@ Unless required by applicable law or agreed to in writing, software distributed
 <% content_for :page_scripts do %>
 <script>
   function inject_alert(message) {
-    $('#header-navbar').closest('.container-fluid').after(
+    $('.page-title').closest('.page-title-wrapper').before(
       '<div class="container-fluid" id="alerts"><div class="alert alert-danger"><button type="button" class="close" data-dismiss="alert">&times;</button>' +
       message + '</div></div>');
   }
@@ -54,7 +54,7 @@ Unless required by applicable law or agreed to in writing, software distributed
   $('form[data-remote][modal]').on('ajax:complete', function (jq_event, xhr) {
     if (xhr.responseJSON.hasOwnProperty('errors')) {
       $(this).closest('.modal').modal('hide')
-      inject_alert(xhr.responseJSON['errors'].join('<br/>'));
+      inject_alert(xhr.responseJSON['errors'].join(' '));
       $('.btn-stateful-loading').button('reset')
     } else window.location = '/admin/collections/' + encodeURIComponent(xhr.responseJSON['id']);
   });
