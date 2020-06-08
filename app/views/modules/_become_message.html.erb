@@ -16,6 +16,6 @@ Unless required by applicable law or agreed to in writing, software distributed
 <% if defined?(true_user) && current_user != true_user %>
   <div class="alert alert-info log-in-out" style="margin-bottom: 0;">
     You (<%= true_user.email %>) are signed in as <%= current_user.email %>
-    <%= link_to "Back to admin", stop_impersonating_persona_users_path, method: :post %>
+    <%= link_to "Back to admin", main_app.stop_impersonating_persona_users_path, method: :post %>
   </div>
 <% end %>
