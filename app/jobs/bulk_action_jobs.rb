@@ -176,10 +176,10 @@ module BulkActionJobs
           successes += [media_object]
         elsif result[:status].present?
           error = "There was an error pushing the item. (#{result[:status]}: #{result[:message]})"
-          media_object.errors[:base] += [error]
+          media_object.errors[:base] << [error]
           errors += [media_object]
         else
-          media_object.errors[:base] += [result[:message]]
+          media_object.errors[:base] << [result[:message]]
           errors += [media_object]
         end
       end
