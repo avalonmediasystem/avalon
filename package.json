@@ -33,7 +33,8 @@
     "tar": "^4.4.13",
     "minimist": "^1.2.3",
     "acorn": "^6.4.1",
-    "kind-of": "^6.0.3"
+    "kind-of": "^6.0.3",
+    "dot-prop": "^5.2.0"
   },
   "scripts": {
     "start-collection-index": "webpack-dev-server --mode development --config config/webpack/collection_index.js --host 0.0.0.0",
