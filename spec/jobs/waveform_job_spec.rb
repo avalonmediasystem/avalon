@@ -21,7 +21,7 @@ describe WaveformJob do
   let(:service) { instance_double("WaveformService") }
   let(:derivative_path) { URI.parse(master_file.derivatives.first.absolute_location).path }
 
-  describe "perform" do  
+  describe "perform" do
     before do
       allow(service).to receive(:get_waveform_json).and_return(waveform_json)
       allow(WaveformService).to receive(:new).and_return(service)
