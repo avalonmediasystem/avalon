@@ -42,6 +42,7 @@ context('Homepage', () => {
 		cy.contains('Playlists')
 		cy.contains('Manage Content')
 		cy.contains('Manage Groups')
+		cy.contains('Manage Worker Jobs')
 		cy.contains('Sign out')
   })
 
