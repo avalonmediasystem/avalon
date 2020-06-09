@@ -61,11 +61,6 @@ class WatchedEncode < ActiveEncode::Base
   protected
 
     def localize_s3_file(url)
-      obj = FileLocator::S3File.new(url).object
-      tempfile = Tempfile.new(File.basename(url))
-      new_path = tempfile.path
-      obj.download_file new_path
-
-      new_path
+      FileLocator.new(url).local_location
     end
 end

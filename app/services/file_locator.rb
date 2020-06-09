@@ -30,6 +30,14 @@ class FileLocator
     def object
       @object ||= Aws::S3::Object.new(bucket_name: bucket, key: key)
     end
+
+    def local_file
+      @local_file ||= Tempfile.new(File.basename(key))
+      object.download_file(@local_file.path) unless File.exist?(@local_file)
+      @local_file
+    ensure
+      @local_file.close
+    end
   end
 
   def initialize(source)
@@ -69,6 +77,17 @@ class FileLocator
       URI.decode(uri.path)
     else
       @uri.to_s
+    end
+  end
+
+  # If S3, download object to /tmp
+  def local_location
+    @local_location ||= begin
+      if uri.scheme == 's3'
+        S3File.new(uri).local_file.path
+      else
+        location
+      end
     end
   end
 
