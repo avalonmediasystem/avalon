@@ -28,7 +28,19 @@ class WaveformService
       samples_per_pixel: @samples_per_pixel,
       bits: @bit_res
     )
-    get_normalized_peaks(uri).each { |peak| waveform.append(peak[0], peak[1]) }
+
+    peaks = if uri.scheme == 's3'
+              begin
+                local_file = FileLocator::S3File.new(uri).local_file
+                get_normalized_peaks(local_file.path)
+              ensure
+                local_file.close!
+              end
+            else
+              get_normalized_peaks(uri)
+            end
+
+    peaks.each { |peak| waveform.append(peak[0], peak[1]) }
     return nil if waveform.size.zero?
     waveform.to_json
   end
