@@ -108,8 +108,8 @@ describe User do
 
   describe "#ldap_groups" do
     before do
-      Avalon::GROUP_LDAP = Net::LDAP.new unless defined?(Avalon::GROUP_LDAP)
-      Avalon::GROUP_LDAP_TREE = 'ou=Test,dc=avalonmediasystem,dc=org'.freeze unless defined?(Avalon::GROUP_LDAP_TREE)
+      stub_const("Avalon::GROUP_LDAP", Net::LDAP.new)
+      stub_const("Avalon::GROUP_LDAP_TREE", 'ou=Test,dc=avalonmediasystem,dc=org'.freeze)
     end
     it "should return [] if LDAP is not configured" do
       hide_const("Avalon::GROUP_LDAP")

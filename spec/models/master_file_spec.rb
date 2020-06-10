@@ -322,29 +322,14 @@ describe MasterFile do
   end
 
   describe "#encoder_class" do
-    subject { FactoryBot.create(:master_file) }
-
-    before :all do
-      class WorkflowEncode < ActiveEncode::Base
-      end
-
-      module EncoderModule
-        class MyEncoder < ActiveEncode::Base
-        end
-      end
-    end
-
-    after :all do
-      EncoderModule.send(:remove_const, :MyEncoder)
-      Object.send(:remove_const, :EncoderModule)
-      Object.send(:remove_const, :WorkflowEncode)
-    end
+    subject { FactoryBot.build(:master_file) }
 
     it "should default to WatchedEncode" do
       expect(subject.encoder_class).to eq(WatchedEncode)
     end
 
     it "should infer the class from a workflow name" do
+      stub_const("WorkflowEncode", Class.new(ActiveEncode::Base))
       subject.workflow_name = 'workflow'
       expect(subject.encoder_class).to eq(WorkflowEncode)
     end
@@ -354,7 +339,13 @@ describe MasterFile do
       expect(subject.encoder_class).to eq(WatchedEncode)
     end
 
+    it "should fall back to Watched when a workflow class can't be resolved" do
+      subject.encoder_classname = 'my-awesomeEncode'
+      expect(subject.encoder_class).to eq(WatchedEncode)
+    end
+
     it "should resolve an explicitly named encoder class" do
+      stub_const("EncoderModule::MyEncoder", Class.new(ActiveEncode::Base))
       subject.encoder_classname = 'EncoderModule::MyEncoder'
       expect(subject.encoder_class).to eq(EncoderModule::MyEncoder)
     end
@@ -365,6 +356,7 @@ describe MasterFile do
     end
 
     it "should correctly set the encoder classname from the encoder" do
+      stub_const("EncoderModule::MyEncoder", Class.new(ActiveEncode::Base))
       subject.encoder_class = EncoderModule::MyEncoder
       expect(subject.encoder_classname).to eq('EncoderModule::MyEncoder')
     end
@@ -374,16 +366,8 @@ describe MasterFile do
     end
 
     context 'with an encoder class named after the engine adapter' do
-      before :all do
-        class TestEncode < ActiveEncode::Base
-        end
-      end
-  
-      after :all do
-        Object.send(:remove_const, :TestEncode)
-      end
-  
       it "should find the encoder class" do
+        stub_const("TestEncode", Class.new(ActiveEncode::Base))
         expect(Settings.encoding.engine_adapter).to eq "test"
         expect(subject.encoder_class).to eq(TestEncode)
       end
@@ -607,13 +591,13 @@ describe MasterFile do
         :mimetype=>nil,
         :quality=>"high",
         :url=>
-         "http://localhost:3000/6f69c008-06a4-4bad-bb60-26297f0b4c06/35bddaa0-fbb4-404f-ab76-58f22921529c/warning.mp4.m3u8"},
+         "http://localhost:3000/streams/6f69c008-06a4-4bad-bb60-26297f0b4c06/35bddaa0-fbb4-404f-ab76-58f22921529c/warning.mp4.m3u8"},
       {:bitrate=>4163842,
         :format=>"video",
         :mimetype=>nil,
         :quality=>"medium",
         :url=>
-         "http://localhost:3000/6f69c008-06a4-4bad-bb60-26297f0b4c06/35bddaa0-fbb4-404f-ab76-58f22921529c/warning.mp4.m3u8"}]
+         "http://localhost:3000/streams/6f69c008-06a4-4bad-bb60-26297f0b4c06/35bddaa0-fbb4-404f-ab76-58f22921529c/warning.mp4.m3u8"}]
     end
     before do
       master_file.derivatives += [FactoryBot.create(:derivative, quality: 'high'), FactoryBot.create(:derivative, quality: 'medium')]
@@ -692,4 +676,5 @@ describe MasterFile do
       end
     end
   end
+
 end

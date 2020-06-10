@@ -37,7 +37,7 @@ class WatchedEncode < ActiveEncode::Base
         obj.upload_file file.location
         File.delete file.location
 
-        output.url = obj.public_url
+        output.url = "s3://#{obj.bucket.name}/#{obj.key}"
         output
       end
     end
@@ -62,9 +62,8 @@ class WatchedEncode < ActiveEncode::Base
 
     def localize_s3_file(url)
       obj = FileLocator::S3File.new(url).object
-      new_dir = "/tmp/#{SecureRandom.uuid}"
-      new_path = "#{new_dir}/#{File.basename url}"
-      FileUtils.mkdir_p new_dir
+      tempfile = Tempfile.new(File.basename(url))
+      new_path = tempfile.path
       obj.download_file new_path
 
       new_path

@@ -14,6 +14,7 @@
 
 # Copied here in full from samvera-persona 0.1.7
 # Added prepend_view_path
+# Added LDAP group recalculation in impersonate and stop_impersonating
 # TODO: Determine why this is necessary and remove this override
 module Samvera
   class Persona::UsersController < ApplicationController
@@ -77,11 +78,15 @@ module Samvera
     def impersonate
       user = User.find(params[:id])
       impersonate_user(user)
+      # Recalculate user_session[:virtual_groups]
+      user_session[:virtual_groups] = current_user.ldap_groups
       redirect_to main_app.root_path
     end
 
     def stop_impersonating
       stop_impersonating_user
+      # Recalculate user_session[:virtual_groups]
+      user_session[:virtual_groups] = current_user.ldap_groups
       redirect_to main_app.persona_users_path, notice: t('.become.over')
     end
 

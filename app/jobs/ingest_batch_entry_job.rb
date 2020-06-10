@@ -19,8 +19,11 @@ class IngestBatchEntryJob < ActiveJob::Base
   def perform(batch_entry)
     # Validation checking that it is okay to ingest this batch entry
     if batch_entry.media_object_pid.present? && MediaObject.exists?(batch_entry.media_object_pid)
-      published_error(batch_entry)
-      return
+      mo = MediaObject.find(batch_entry.media_object_pid)
+      if mo.published?
+        published_error(batch_entry)
+        return
+      end
     end
 
 

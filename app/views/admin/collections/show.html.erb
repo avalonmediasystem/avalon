@@ -45,6 +45,14 @@ Unless required by applicable law or agreed to in writing, software distributed
       <p><%= @collection.unit %></p>
       <p><strong>Description:</strong></p>
       <p class="collection-description"><%= @collection.description %></p>
+      <% if @collection.contact_email.present? %>
+        <p><strong>Contact email:</strong></p>
+        <p><%= mail_to(@collection.contact_email) %></p>
+      <% end %>
+      <% if @collection.website_url.present? %>
+        <p><strong>Website:</strong></p>
+        <p><%= link_to(@collection.website_label.presence || @collection.website_url, @collection.website_url)%></p>
+      <% end %>
     </div>
     <div class="col-md-3">
       <p><strong>Poster:</strong></p>
