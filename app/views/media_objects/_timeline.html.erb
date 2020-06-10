@@ -54,7 +54,7 @@ $(document).ready(function() {
   timeCheck = setInterval(enableTimelineBtn, 500);
 
   function enableTimelineBtn() {
-    if(currentPlayer.duration > 0) {
+    if(currentPlayer && currentPlayer.duration > 0) {
       timelineBtn[0].disabled = false;
       clearInterval(timeCheck);
     }
