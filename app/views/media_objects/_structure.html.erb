@@ -94,7 +94,9 @@ Unless required by applicable law or agreed to in writing, software distributed
             </div>
             <input type="button" class='btn btn-primary btn-xs' value="Advanced Edit" data-toggle="modal"
               data-target="#advanced_edit_structure_<%= index %>" />
-            <input type="submit" class="btn btn-danger btn-xs" value="Remove" />
+            <% if section.structuralMetadata.present? %>
+              <input type="submit" class="btn btn-danger btn-xs" value="Remove" />
+            <% end %>
           </div>
           <% end %>
         </div>
@@ -108,15 +110,17 @@ Unless required by applicable law or agreed to in writing, software distributed
         <div class="tool_actions">
           <span class="tool_label">Captions</span>
           <%= form_for section, :url => attach_captions_master_file_path(section.id), html: {method: "post"} do |form| %>
-          <%= form.file_field :captions, class: "filedata", style: "height:0px;width:0px;" %>
-          <input type="button" class="btn btn-primary btn-xs" onclick="$('#captions_<%= index %> .filedata').click();"
-            value="Upload" />
-          <input type="submit" class="btn btn-danger btn-xs" value="Remove" />
+            <%= form.file_field :captions, class: "filedata", style: "height:0px;width:0px;" %>
+            <input type="button" class="btn btn-primary btn-xs" onclick="$('#captions_<%= index %> .filedata').click();"
+              value="<%= section.captions.present? ? 'Replace' : 'Upload' %>" />
+            <% if section.captions.present? %>
+              <input type="submit" class="btn btn-danger btn-xs" value="Remove" />
+            <% end %>
+          <% end %>
+          <% if section.captions.present? %>
+            <div class="structure_view">Uploaded file: <%= section.captions.original_name %></div>
           <% end %>
         </div>
-        <% if section.captions.present? %>
-        <div class="structure_view">Uploaded file: <%= section.captions.original_name %></div>
-        <% end %>
       </div>
       <div id="files_<%= index %>" class="hidden structure_tool">
         <div class="tool_actions">
@@ -134,22 +138,22 @@ Unless required by applicable law or agreed to in writing, software distributed
                 <span name="label_<%= section.id + "_" + file.id.to_s %>" class="display-item"><%= file.label %></span>
                 <input name="label_<%= section.id + "_" + file.id.to_s %>" type="text" class="form-control edit-item outline_on" value="<%= file.label %>">
               </div>
-              <div class="col-sm-3">
-                <%# Update button %>
-                <%= button_tag name: 'edit_label', class:'btn btn-default btn-xs edit_label display-item outline_on pull-right', type: 'button' do %>
-                  <i class="fa fa-edit" title="Edit"></i> <span class="sm-hidden">Edit</span>
-                <% end %>
-                <%# Save button %>
-                <%= button_tag name: 'save_label', class:'btn btn-default btn-xs edit-item outline_on pull-right', type: 'button' do%>
-                  <i class="fa fa-check" title="Save"></i> <span class="sm-hidden">Save</span>
-                <% end %>
-              </div>
-              <div class="col-sm-3">
-                <%# Cancel button %>
-                <%= button_tag name: 'cancel_edit_label', class:'btn btn-danger btn-xs edit-item outline_on', type: 'button' do%>
-                  <i class="fa fa-times" title="Cancel"></i> <span class="sm-hidden">Cancel</span>
-                <% end %>
-                <%= link_to("Remove", master_file_supplemental_file_path(:master_file_id => section.id, :id => file.id), title: 'Remove', method: :delete, class: "btn btn-danger btn-xs file-remove") %>
+              <div class="col-sm-6">
+                <div class="btn-toolbar">
+                  <%# Update button %>
+                  <%= button_tag name: 'edit_label', class:'btn btn-default btn-xs edit_label display-item outline_on pull-right', type: 'button' do %>
+                    <i class="fa fa-edit" title="Edit"></i> <span class="sm-hidden">Edit</span>
+                  <% end %>
+                  <%# Save button %>
+                  <%= button_tag name: 'save_label', class:'btn btn-default btn-xs edit-item outline_on pull-right', type: 'button' do%>
+                    <i class="fa fa-check" title="Save"></i> <span class="sm-hidden">Save</span>
+                  <% end %>
+                  <%# Cancel button %>
+                  <%= button_tag name: 'cancel_edit_label', class:'btn btn-danger btn-xs edit-item outline_on', type: 'button' do%>
+                    <i class="fa fa-times" title="Cancel"></i> <span class="sm-hidden">Cancel</span>
+                  <% end %>
+                  <%= link_to("Remove", master_file_supplemental_file_path(:master_file_id => section.id, :id => file.id), title: 'Remove', method: :delete, class: "btn btn-danger btn-xs file-remove") %>
+                </div>
               </div>
             </div>
           <% end %>
