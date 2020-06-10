@@ -87,7 +87,14 @@ class Search extends Component {
     )}`;
 
     try {
-      let response = await axios.get(url);
+      let response = null;
+      if(this.props.collection) {
+        // Pass collection name as a param instead of appending it to the url as a string to
+        // accommodate for special characters (&, #, $, etc.) 
+        response = await axios.get(url, { params: { 'f[collection_ssim][]': this.props.collection}});
+      } else {
+        response = await axios.get(url);
+      }
       this.setState({
         isLoading: false,
         searchResult: response.data.response
@@ -115,9 +122,6 @@ class Search extends Component {
     appliedFacets.forEach(facet => {
       facetFilters = `${facetFilters}&f[${facet.facetField}][]=${facet.facetValue}`;
     });
-    if (this.props.collection) {
-      facetFilters = `${facetFilters}&f[collection_ssim][]=${this.props.collection}`;
-    }
     return facetFilters;
   }
 
