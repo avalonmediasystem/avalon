@@ -84,7 +84,7 @@ Unless required by applicable law or agreed to in writing, software distributed
           <% stream_url=hls_manifest_master_file_url(section.id, quality: 'auto') %>
           <div class="btn-toolbar">
             <input type="button" class="btn btn-primary btn-xs"
-              onclick="$('#structure_<%= index %> .filedata').click();" value="Upload" />
+              onclick="$('#structure_<%= index %> .filedata').click();" value="<%= section.structuralMetadata.present? ? 'Replace' : 'Upload'%>" />
             <div class="btn-group">
               <% if section.structuralMetadata.valid? %>
               <%= react_component("ReactButtonContainer", {sectionIndex: index, masterFileID: section.id, baseURL: request.protocol+request.host_with_port, streamDuration: section.duration, audioStreamURL: stream_url, initStructure: section.structuralMetadata.as_json}) %>
