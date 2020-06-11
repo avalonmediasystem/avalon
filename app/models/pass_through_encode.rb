@@ -21,8 +21,9 @@ class PassThroughEncode < WatchedEncode
 
   private
 
+    # Download s3 object to extract technical metadata locally
     def localize_input(encode)
-      return unless Settings.minio
+      return unless URI.parse(encode.input.url).scheme == 's3'
       encode.input.url = localize_s3_file encode.input.url
       encode.options[:outputs].each do |output|
         output[:url] = localize_s3_file output[:url]
