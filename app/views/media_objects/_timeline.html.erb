@@ -60,7 +60,6 @@ $(document).ready(function() {
     }
   }
   $('#timelineModal').on('show.bs.modal', function (e) {
-    console.log('in modal builder')
     let $modalBody = $('#timelineModal').find('div#new-timeline-inputs')[0]
     let bodyText = "<p>Choose scope for new timeline:</p>";
     scopes = currentPlayer.avalonWrapper.mejsUtility.timelineScopes(currentPlayer)
@@ -83,6 +82,13 @@ $(document).ready(function() {
     bodyText += "<input type=\"text\" name=\"customend\" id=\"customend\" size=\"10\" value=\""+ mejs.Utils.secondsToTimeCode(currentPlayer.duration, true)+"\" \>"
     bodyText += "</div>"
     $modalBody.innerHTML = bodyText;
+    // Disable ME.js keyboard shortcuts when timeline modal is shown
+    currentPlayer.options.enableKeyboard = false;
+  })
+
+  $('#timelineModal').on('hidden.bs.modal', function(e) {
+    // Enable ME.js keyboard shortcuts when create timeline modal closes
+    currentPlayer.options.enableKeyboard = true;
   })
 
   $('#timelineModalSave').on('click', function (e) {
