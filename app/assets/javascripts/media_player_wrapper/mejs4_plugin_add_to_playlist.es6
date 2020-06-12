@@ -349,6 +349,8 @@ Object.assign(MediaElementPlayer.prototype, {
       $(t.addToPlayListObj.playlistEl).slideToggle();
       // Update active (is showing) state
       t.addToPlayListObj.active = !t.addToPlayListObj.active;
+      // Disable ME.js keyboard shortcuts when form is open
+      addToPlayListObj.player.options.enableKeyboard = false;
     },
 
     /**
@@ -417,6 +419,8 @@ Object.assign(MediaElementPlayer.prototype, {
         }
       }
       t.active = false;
+      // Enable ME.js keyboard shortcuts when the form closes
+      t.player.options.enableKeyboard = true;
     }
   }
 });
