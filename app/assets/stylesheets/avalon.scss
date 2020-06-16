@@ -587,6 +587,11 @@ div.status-detail {
         }
       }
 
+      .btn-toolbar {
+        display: flex;
+        float: right;
+      }
+
       .edit-item {
         display: none;
       }
