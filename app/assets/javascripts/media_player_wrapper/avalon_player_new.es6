@@ -609,9 +609,11 @@ class MEJSPlayer {
       defaultSeekForwardInterval: function() { return jumpInterval }
     };
 
-    // Add duration as a root level config for Android devices
+    // Add root level config for Android devices
     if(mejs.Features.isAndroid) {
       defaults.duration = currentStreamInfo.duration
+      // Make use of native HLS for hls.js
+      defaults.renderers = ['native_hls']
     }
 
     if (this.currentStreamInfo.cookie_auth) {
