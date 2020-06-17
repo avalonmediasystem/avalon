@@ -30,8 +30,8 @@ describe PassThroughEncode do
     allow(MasterFile).to receive(:find).with(master_file.id).and_return(master_file)
   end
 
-  describe 'create' do
-    context 'with Minio' do
+  describe 'create' do  
+    context 'with S3 inputs' do
       let!(:altered_input) { Tempfile.new("sample.mp4") }
       let!(:altered_output) { Tempfile.new("sample.high.mp4") }
       let(:running_encode) do
@@ -44,7 +44,6 @@ describe PassThroughEncode do
       end
 
       before do
-        Settings.minio = double("minio", endpoint: "http://minio:9000", public_host: "http://domain:9000")
         allow(Tempfile).to receive(:new).with("sample.mp4").and_return(altered_input)
         allow(Tempfile).to receive(:new).with("sample.high.mp4").and_return(altered_output)
         allow(Settings).to receive(:encoding).and_return(double(engine_adapter: "pass_through"))
