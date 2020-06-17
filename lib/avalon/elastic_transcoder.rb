@@ -36,9 +36,8 @@ module Avalon
 
     def read_templates(path)
       templates = YAML.load(File.read(path))
-      [:audio, :video].product([:low, :medium, :high], ['ts', 'mp4']).collect do |format, quality, container|
+      temp = [:audio, :video].product([:low, :medium, :high], ['ts', 'mp4']).collect do |format, quality, container|
         next unless templates[:settings][format][quality].present?
-
         template = templates[:templates][format].deep_dup.deep_merge(templates[:settings][format][quality])
         container_description = container == 'ts' ? 'hls' : container
         template.merge!(
@@ -46,9 +45,9 @@ module Avalon
           description: "Avalon Media System: #{format}/#{quality}/#{container_description}",
           container: container
         )
-
         template
       end
+      temp.reject { |e| e.to_s.empty? }
     end
   end
 end
