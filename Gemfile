@@ -143,7 +143,6 @@ group :test do
   gem 'simplecov'
   gem 'webdrivers', '~> 3.0'
   gem 'webmock', '~> 3.5.1'
-  gem 'rspec-its'
 end
 
 group :production do
