@@ -564,10 +564,7 @@ class MasterFile < ActiveFedora::Base
   protected
 
   def mediainfo
-    if @mediainfo.nil?
-      @mediainfo = Mediainfo.new(FileLocator.new(file_location).location)
-    end
-    @mediainfo
+    @mediainfo ||= Mediainfo.new(FileLocator.new(file_location).location)
   end
 
   def find_frame_source(options={})

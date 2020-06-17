@@ -98,7 +98,6 @@ services:
       - DATABASE_URL=postgres://postgres:password@db/avalon
       - FEDORA_NAMESPACE=avalon
       - FEDORA_URL=http://fedoraAdmin:fedoraAdmin@fedora:8080/fedora/rest
-      - MEDIAINFO_PATH=/usr/bin/mediainfo
       - RAILS_ENV=development
       - SETTINGS__REDIS__HOST=redis
       - SETTINGS__REDIS__PORT=6379
