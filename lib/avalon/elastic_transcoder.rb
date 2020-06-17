@@ -47,7 +47,7 @@ module Avalon
         )
         template
       end
-    temp.reject { |e| e.to_s.empty? }
+      temp.reject { |e| e.to_s.empty? }
     end
   end
 end

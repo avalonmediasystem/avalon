@@ -135,6 +135,7 @@ group :test do
   gem 'faker'
   gem 'hashdiff'
   gem 'rails-controller-testing'
+  gem 'rspec-its'
   gem 'rspec-retry'
   gem 'rspec_junit_formatter'
   gem 'selenium-webdriver'
@@ -142,7 +143,6 @@ group :test do
   gem 'simplecov'
   gem 'webdrivers', '~> 3.0'
   gem 'webmock', '~> 3.5.1'
-  gem 'rspec-its'
 end
 
 group :production do
