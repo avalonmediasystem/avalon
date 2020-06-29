@@ -33,7 +33,7 @@ class FileLocator
 
     def local_file
       @local_file ||= Tempfile.new(File.basename(key))
-      object.download_file(@local_file.path) unless File.exist?(@local_file)
+      object.download_file(@local_file.path) if File.zero?(@local_file)
       @local_file
     ensure
       @local_file.close
