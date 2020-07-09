@@ -70,6 +70,8 @@ class Admin::Collection < ActiveFedora::Base
   around_save :reindex_members, if: Proc.new{ |c| c.name_changed? or c.unit_changed? }
   before_create :create_dropbox_directory!
 
+  before_destroy :destroy_s3_dropbox_directory!
+
   def self.units
     Avalon::ControlledVocabulary.find_by_name(:units, sort: true) || []
   end
@@ -298,6 +300,13 @@ class Admin::Collection < ActiveFedora::Base
       self.dropbox_directory_name = name
     end
 
+    def destroy_s3_dropbox_directory!
+      objects = Aws::S3::Resource.new.bucket(
+        ENV['SETTINGS__ENCODING__MASTERFILE_BUCKET']).objects(
+          { prefix: "/dropbox/#{self.dropbox_directory_name}" })
+      objects.batch_delete!
+    end
+
     def create_fs_dropbox_directory!
       name = calculate_dropbox_directory_name do |n|
         File.exist? dropbox_absolute_path(n)
@@ -314,6 +323,10 @@ class Admin::Collection < ActiveFedora::Base
       end
       self.dropbox_directory_name = name
     end
+
+    # def destroy_fs_dropbox_directory!
+      
+    # end
 
     # Override represented_visibility if you want to add another visibility that is
     # represented as a read group (e.g. on-campus)
