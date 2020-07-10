@@ -70,7 +70,7 @@ class Admin::Collection < ActiveFedora::Base
   around_save :reindex_members, if: Proc.new{ |c| c.name_changed? or c.unit_changed? }
   before_create :create_dropbox_directory!
 
-  before_destroy :destroy_s3_dropbox_directory!
+  before_destroy :destroy_dropbox_directory!
 
   def self.units
     Avalon::ControlledVocabulary.find_by_name(:units, sort: true) || []
@@ -210,6 +210,14 @@ class Admin::Collection < ActiveFedora::Base
     File.join(Settings.dropbox.path, name || dropbox_directory_name)
   end
 
+  def dropbox_object_count
+    if Settings.dropbox.path =~ %r(^s3://)
+      Aws::S3::Bucket.new(name: Settings.encoding.masterfile_bucket).objects(prefix: "/dropbox/#{dropbox_directory_name}").to_a.size
+    else
+      Dir["#{dropbox_absolute_path}/*"].count
+    end
+  end
+
   def media_objects_to_json
     media_objects.collect{|mo| [mo.id, mo.to_json] }.to_h
   end
@@ -273,6 +281,14 @@ class Admin::Collection < ActiveFedora::Base
       end
     end
 
+    def destroy_dropbox_directory!
+      if Settings.dropbox.path =~ %r(^s3://)
+        destroy_s3_dropbox_directory!
+      else
+        destroy_fs_dropbox_directory!
+      end
+    end
+
     def calculate_dropbox_directory_name
       name = self.dropbox_directory_name
 
@@ -301,9 +317,7 @@ class Admin::Collection < ActiveFedora::Base
     end
 
     def destroy_s3_dropbox_directory!
-      objects = Aws::S3::Resource.new.bucket(
-        ENV['SETTINGS__ENCODING__MASTERFILE_BUCKET']).objects(
-          { prefix: "/dropbox/#{self.dropbox_directory_name}" })
+      objects = Aws::S3::Bucket.new(name: Settings.encoding.masterfile_bucket).objects(prefix: "/dropbox/#{dropbox_directory_name}")
       objects.batch_delete!
     end
 
@@ -323,9 +337,13 @@ class Admin::Collection < ActiveFedora::Base
       self.dropbox_directory_name = name
     end
 
-    # def destroy_fs_dropbox_directory!
-      
-    # end
+    def destroy_fs_dropbox_directory!
+      if File.directory?(dropbox_absolute_path)
+        FileUtils.remove_dir(dropbox_absolute_path)
+      else
+        Rails.logger.error "Could not delete directory #{dropbox_absolute_path}. Directory not found"
+      end
+    end
 
     # Override represented_visibility if you want to add another visibility that is
     # represented as a read group (e.g. on-campus)

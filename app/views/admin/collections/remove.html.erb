@@ -28,10 +28,10 @@ Unless required by applicable law or agreed to in writing, software distributed
     content_pronoun = @objects.count > 1 ? 'them' : 'it'
   %>
 
-    <% if @dropbox_objects.count > 0 %>
+    <% if @collection.dropbox_object_count > 0 %>
       <div class="alert alert-warning">
         <span class="glyphicon glyphicon-warning-sign" aria-hidden="true"></span>
-        <span>There are <%= @dropbox_objects.count %> files in this collection's <b>Dropbox</b> that will be deleted when this collection is deleted.</span>
+        <span>There are <%= @collection.dropbox_object_count %> files in this collection's <b>Dropbox</b> that will be deleted when this collection is deleted.</span>
       </div>
     <% end %>
 
