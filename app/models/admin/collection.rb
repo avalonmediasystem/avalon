@@ -292,6 +292,11 @@ class Admin::Collection < ActiveFedora::Base
         obj = FileLocator::S3File.new(base_uri.join(n).to_s + '/').object
         obj.exists?
       end
+      avoid_special_chars = ['{', '}', '^', '#', '%', '`', '[', ']', '!', "'", '"', '>', '<', '~', '|']
+      avoid_special_chars.each { |spcl_char|
+        name = name.sub(spcl_char, "_")
+      }
+      #name = name.sub("#", "_")
       absolute_path = base_uri.join(name).to_s + '/'
       obj = FileLocator::S3File.new(absolute_path).object
       Aws::S3::Client.new.put_object(bucket: obj.bucket_name, key: obj.key)
