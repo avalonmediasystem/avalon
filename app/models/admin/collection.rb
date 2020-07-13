@@ -338,10 +338,16 @@ class Admin::Collection < ActiveFedora::Base
     end
 
     def destroy_fs_dropbox_directory!
-      if File.directory?(dropbox_absolute_path)
-        FileUtils.remove_dir(dropbox_absolute_path)
+      name = calculate_dropbox_directory_name do |n|
+        File.exist? dropbox_absolute_path(n)
+      end
+
+      absolute_path = dropbox_absolute_path(name)
+
+      if File.directory?(absolute_path)
+        FileUtils.remove_dir(absolute_path)
       else
-        Rails.logger.error "Could not delete directory #{dropbox_absolute_path}. Directory not found"
+        Rails.logger.error "Could not delete directory #{absolute_path}. Directory not found"
       end
     end
 
