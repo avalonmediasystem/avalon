@@ -29,6 +29,9 @@ Unless required by applicable law or agreed to in writing, software distributed
         <%= f.select(:unit, Admin::Collection.units) %>
         <% end %>
         <%= f.text_area :description, rows: 3  %>
+        <%= f.text_field :contact_email %>
+        <%= f.text_field :website_url %>
+        <%= f.text_field :website_label %>
       </div>
       <div class="modal-footer">
         <a href="#" data-dismiss="modal" aria-hidden="true" class="btn btn-default">Cancel</a>

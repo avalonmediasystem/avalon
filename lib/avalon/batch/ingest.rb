@@ -1,4 +1,4 @@
-# Copyright 2011-2019, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2020, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 #
@@ -104,7 +104,7 @@ module Avalon
         previous_entry = @previous_entries[position - 1]
         # Case 0, determine if we even have an updated at all
         # If the payload is the same it means no change and complete true means the migration ran
-        return nil if previous_entry.payload == entry.fields.to_json && previous_entry.complete
+        return nil if previous_entry.payload == entry.to_json && previous_entry.complete
 
         # Case 1, if there is a payload change and the item never completed, reset to pending
         # Also reset to pending if there is an error
@@ -129,7 +129,7 @@ module Avalon
       # @param [BatchEntries] the previous batch entry to reset_to_pending
       # @return [BatchEntries] the reset entrt
       def reset_to_pending(previous_entry, entry)
-        previous_entry.payload = entry.fields.to_json
+        previous_entry.payload = entry.to_json
         previous_entry.error = false
         previous_entry.error_message = false
         previous_entry.complete = false

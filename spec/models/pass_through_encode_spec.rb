@@ -32,10 +32,10 @@ describe PassThroughEncode do
 
   describe 'create' do
     context 'with Minio' do
-      let(:altered_input) { "/tmp/random_uuid/sample.mp4" }
-      let(:altered_output) { "/tmp/random_uuid/sample.high.mp4" }
+      let!(:altered_input) { Tempfile.new("sample.mp4") }
+      let!(:altered_output) { Tempfile.new("sample.high.mp4") }
       let(:running_encode) do
-        described_class.new(altered_input, outputs: [{ label: "high", url: altered_output }]).tap do |e|
+        described_class.new(altered_input.path, outputs: [{ label: "high", url: altered_output.path }]).tap do |e|
           e.id = SecureRandom.uuid
           e.state = :running
           e.created_at = Time.zone.now
@@ -45,19 +45,15 @@ describe PassThroughEncode do
 
       before do
         # Force AWS library to load local file before fakefs is activated
-        FileLocator::S3File.new("s3://bucket/sample.mp4").object
-        FakeFS.activate!
+        FileLocator::S3File.new("s3://bucket/sample.mp4").object.load
         Settings.minio = double("minio", endpoint: "http://minio:9000", public_host: "http://domain:9000")
-        allow(SecureRandom).to receive(:uuid).and_return("random_uuid")
+        allow(Tempfile).to receive(:new).with("sample.mp4").and_return(altered_input)
+        allow(Tempfile).to receive(:new).with("sample.high.mp4").and_return(altered_output)
         allow(Settings).to receive(:encoding).and_return(double(engine_adapter: "pass_through"))
       end
 
-      after do
-        FakeFS.deactivate!
-      end
-
       it 'download the input first' do
-        expect(described_class.engine_adapter).to receive(:create).with(altered_input, hash_including(outputs: [{ label: "high", url: altered_output }])).and_return(running_encode)
+        expect(described_class.engine_adapter).to receive(:create).with(altered_input.path, hash_including(outputs: [{ label: "high", url: altered_output.path }])).and_return(running_encode)
         encode.create!
         expect(File.exist?(altered_input)).to eq true
         expect(File.exist?(altered_output)).to eq true

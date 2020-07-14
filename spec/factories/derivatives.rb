@@ -17,7 +17,7 @@ FactoryBot.define do
     duration { "21575" }
     location_url { "rtmp://localhost/vod/mp4:6f69c008-06a4-4bad-bb60-26297f0b4c06/35bddaa0-fbb4-404f-ab76-58f22921529c/warning" }
     track_id { "track-6" }
-    hls_url { "http://localhost:3000/6f69c008-06a4-4bad-bb60-26297f0b4c06/35bddaa0-fbb4-404f-ab76-58f22921529c/warning.mp4.m3u8" }
+    hls_url { "http://localhost:3000/streams/6f69c008-06a4-4bad-bb60-26297f0b4c06/35bddaa0-fbb4-404f-ab76-58f22921529c/warning.mp4.m3u8" }
     hls_track_id { "track-8" }
     width { '1024' }
     height { '768' }
@@ -26,6 +26,7 @@ FactoryBot.define do
     video_bitrate { '4000000.0' }
     audio_codec { 'AAC' }
     audio_bitrate { '163842.0' }
+    absolute_location { 'file:///srv/avalon/content/6f69c008-06a4-4bad-bb60-26297f0b4c06/35bddaa0-fbb4-404f-ab76-58f22921529c/warning.mp4' }
 
     trait :with_master_file do
       after(:create) do |d|

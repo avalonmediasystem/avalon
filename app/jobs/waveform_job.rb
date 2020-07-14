@@ -21,15 +21,12 @@ class WaveformJob < ActiveJob::Base
 
   def perform(master_file_id, regenerate = false)
     master_file = MasterFile.find(master_file_id)
-    return if master_file.waveform.content.present? && !regenerate
+    return if master_file.waveform.content.present? && !regenerate || !master_file.has_audio?
 
     service = WaveformService.new(8, SAMPLES_PER_FRAME)
-    uri = file_uri(master_file) || playlist_url(master_file)
+    uri = file_uri(master_file) || derivative_file_uri(master_file) || playlist_url(master_file)
     json = service.get_waveform_json(uri)
-    if json.blank?
-      Rails.logger.error "No waveform generated for #{master_file.id}"
-      return
-    end
+    raise "No waveform generated for #{master_file.id}" if json.blank?
 
     master_file.waveform.content = Zlib::Deflate.deflate(json)
     master_file.waveform.mime_type = 'application/zlib'
@@ -49,6 +46,22 @@ class WaveformJob < ActiveJob::Base
       else
         nil
       end
+    end
+
+    def derivative_file_uri(master_file)
+      derivatives = master_file.derivatives
+      uri = nil
+
+      # Find the lowest quality stream
+      ['high', 'medium', 'low'].each do |quality|
+        d = derivatives.select { |derivative| derivative.quality == quality }.first
+        if d.present?
+          loc = FileLocator.new(d.absolute_location)
+          uri = loc.location if loc.exist?
+        end
+      end
+
+      uri
     end
 
     def playlist_url(master_file)

@@ -248,6 +248,7 @@ en:
         description: "Description"
       user:  
         login: "Username or email"
+
   iiif:
     auth:
       confirmLabel: "Login"
@@ -267,3 +268,10 @@ en:
       users:
         index:
           email_label: Email
+
+  helpers:
+    label:
+      admin_collection:
+        contact_email: "Contact Email"
+        website_label: "Website Name"
+        website_url: "Website Address"

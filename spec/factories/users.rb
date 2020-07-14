@@ -18,7 +18,7 @@ FactoryBot.define do
     username { [Faker::Name.last_name.gsub("'",""),Faker::Name.first_name.gsub("'","")].join('.').downcase }
     password { 'testing123' }
 
-    factory :administrator do
+    factory :administrator, aliases: [:admin] do
       after(:create) do |user|
         begin
           Avalon::RoleControls.add_user_role(user.user_key, 'administrator')

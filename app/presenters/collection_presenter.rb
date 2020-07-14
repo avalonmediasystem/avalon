@@ -13,10 +13,11 @@
 # ---  END LICENSE_HEADER BLOCK  ---
 
 class CollectionPresenter
-  attr_reader :document
+  attr_reader :document, :view_context
 
-  def initialize(solr_doc)
+  def initialize(solr_doc, view_context)
     @document = solr_doc
+    @view_context = view_context
   end
 
   delegate :id, to: :document
@@ -44,6 +45,14 @@ class CollectionPresenter
 
   def collection_url
     Rails.application.routes.url_helpers.collection_url(id)
+  end
+
+  def contact_email
+    document["contact_email_ssi"]
+  end
+
+  def website_link
+    view_context.link_to document["website_label_ssi"], document["website_url_ssi"]
   end
 
   def as_json(_)

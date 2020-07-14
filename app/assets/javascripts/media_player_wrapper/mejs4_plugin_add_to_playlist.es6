@@ -51,6 +51,8 @@ Object.assign(MediaElementPlayer.prototype, {
 
     addToPlayListObj.isVideo = player.isVideo;
 
+    player.cleanaddToPlaylist(player);
+
     // Create plugin control button for player
     player.addPlaylistButton = document.createElement('div');
     player.addPlaylistButton.className =
@@ -60,7 +62,21 @@ Object.assign(MediaElementPlayer.prototype, {
       'add-to-playlist-button';
     player.addPlaylistButton.innerHTML = `<button type="button" aria-controls="${
       t.id
-    }" title="${addTitle}" aria-label="${addTitle}" tabindex="0">${addTitle}</button>`;
+    }" title="${addTitle}" aria-label="${addTitle}" tabindex="0" style="opacity: 0.5; cursor: not-allowed;" disabled>${addTitle}</button>`;
+
+    let playlistBtn = player.addPlaylistButton.childNodes[0];
+
+    let enableBtn = () => {
+      if(player.duration > 0) {
+        playlistBtn.style.opacity = 1;
+        playlistBtn.style.cursor = 'pointer';
+        playlistBtn.disabled = false;
+        clearInterval(timeCheck);
+      }
+    }
+
+    // Enable add to playlist  button after derivative is loaded
+    let timeCheck = setInterval(enableBtn, 500);
 
     // Add control button to player
     t.addControlElement(player.addPlaylistButton, 'addToPlaylist');
@@ -121,6 +137,9 @@ Object.assign(MediaElementPlayer.prototype, {
         'click',
         addToPlayListObj.bindHandleCancel
       );
+    }
+    if (player && player.addPlaylistButton) {
+      player.addPlaylistButton.remove();
     }
   },
 

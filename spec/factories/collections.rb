@@ -17,6 +17,9 @@ FactoryBot.define do
     sequence(:name) {|n| "Collection #{n}" }
     unit {"Default Unit"}
     description {Faker::Lorem.sentence}
+    contact_email { Faker::Internet.email }
+    website_label { Faker::Lorem.words.join(' ') }
+    website_url { Faker::Internet.url }
     managers {[FactoryBot.create(:manager).user_key]}
     editors {[FactoryBot.create(:user).user_key]}
     depositors {[FactoryBot.create(:user).user_key]}

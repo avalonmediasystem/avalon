@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 # Copyright 2011-2020, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -12,15 +13,23 @@
 #   specific language governing permissions and limitations under the License.
 # ---  END LICENSE_HEADER BLOCK  ---
 
-require 'rails_helper'
+require 'fileutils'
 
-describe IngestBatchEntryJob do
-  let(:batch_entry) { FactoryBot.create(:batch_entries) }
-  let!(:collection) { FactoryBot.create(:collection, id: 'zc77sq08x') }
+class DeleteDerivativeJob < ActiveJob::Base
+  queue_as :default
 
-  describe "perform" do
-    it 'runs' do
-      expect { described_class.perform_now(batch_entry) }.to change { MediaObject.count }.by(1)
+  def perform(path)
+    Rails.logger.debug "Attempting to delete derivative #{path}"
+
+    locator = FileLocator.new(path)
+    if locator.exists?
+      case locator.uri.scheme
+      when 'file' then File.delete(locator.uri.path)
+      when 's3'   then FileLocator::S3File.new(locator.source).object.delete
+      end
+      Rails.logger.info "#{path} has been deleted"
+    else
+      Rails.logger.warn "Derivative #{path} does not exist"
     end
   end
 end
