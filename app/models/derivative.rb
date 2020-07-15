@@ -73,8 +73,8 @@ class Derivative < ActiveFedora::Base
   def set_streaming_locations!
     if managed
       path = URI.parse(absolute_location).path
-      self.location_url = Avalon::StreamMapper.map(path, 'rtmp', format)
-      self.hls_url      = Avalon::StreamMapper.map(path, 'http', format)
+      self.location_url = Avalon::StreamMapper.stream_path(path)
+      self.hls_url = Avalon::StreamMapper.map(path, 'http', format)
     end
     self
   end
@@ -87,7 +87,11 @@ class Derivative < ActiveFedora::Base
 
   def to_solr
     super.tap do |solr_doc|
-      solr_doc['stream_path_ssi'] = location_url.split(/:/).last if location_url.present?
+      solr_doc['stream_path_ssi'] = if location_url&.start_with?("rtmp")
+                                      location_url.split(/:/).last
+                                    else
+                                      location_url
+                                    end
       solr_doc['format_sim'] = self.format
     end
   end
