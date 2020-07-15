@@ -16,7 +16,7 @@ require 'rails_helper'
 
 describe SecurityHelper, type: :helper do
   let(:stream_info) {
-    {:id=>"bk1289888", :label=>nil, :is_video=>true, :poster_image=>nil, :embed_code=>"", :stream_flash=>[{:quality=>nil, :mimetype=>nil, :format=>"other", :url=>"rtmp://localhost/vod/mp4:6f69c008-06a4-4bad-bb60-26297f0b4c06/35bddaa0-fbb4-404f-ab76-58f22921529c/warning"}], :stream_hls=>[{:quality=>nil, :mimetype=>nil, :format=>"other", :url=>"http://localhost:3000/6f69c008-06a4-4bad-bb60-26297f0b4c06/35bddaa0-fbb4-404f-ab76-58f22921529c/warning.mp4.m3u8"}], :captions_path=>nil, :captions_format=>nil, :duration=>200.0, :embed_title=>"Fugit veniam numquam harum et adipisci est est. - video.mp4"}
+    {:id=>"bk1289888", :label=>nil, :is_video=>true, :poster_image=>nil, :embed_code=>"", :stream_hls=>[{:quality=>nil, :mimetype=>nil, :format=>"other", :url=>"http://localhost:3000/6f69c008-06a4-4bad-bb60-26297f0b4c06/35bddaa0-fbb4-404f-ab76-58f22921529c/warning.mp4.m3u8"}], :captions_path=>nil, :captions_format=>nil, :duration=>200.0, :embed_title=>"Fugit veniam numquam harum et adipisci est est. - video.mp4"}
   }
   let(:secure_url) { "http://example.com/secure/id" }
 

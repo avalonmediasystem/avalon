@@ -39,7 +39,7 @@ Lw03eHTNQghS0A==
 
   describe '.rewrite_url' do
     let(:url) { "http://example.com/streaming/id" }
-    let(:context) {{ session: {}, target: 'abcd1234', protocol: "stream_rtmp" }}
+    let(:context) {{ session: {}, target: 'abcd1234', protocol: :stream_hls }}
 
     context 'when AWS streaming server' do
       before do
@@ -49,29 +49,13 @@ Lw03eHTNQghS0A==
         allow(Settings.streaming).to receive(:signing_key_id).and_return("signing_key_id")
         allow(Settings.streaming).to receive(:stream_token_ttl).and_return(20)
         allow(Settings.streaming).to receive(:http_base).and_return("http://localhost:3000/streams")
-        allow(Settings.streaming).to receive(:rtmp_base).and_return("rtmp://localhost/avalon")
-      end
-
-      context 'when rtmp' do
-        let(:context) {{ session: {}, target: 'abcd1234', protocol: :stream_flash }}
-
-        it 'changes it into a rtmp url with signed params' do
-          new_url = subject.rewrite_url(url, context)
-          expect(new_url).to start_with "rtmp://localhost/cfx/st/:streaming/id"
-          params = CGI::parse(URI::parse(new_url).query)
-          expect(params).to include("Expires")
-          expect(params).to include("Signature")
-          expect(params).to include("Key-Pair-Id" => ["signing_key_id"])
-        end
       end
       context 'when hls' do
-        let(:context) {{ session: {}, target: 'abcd1234', protocol: :stream_hls }}
-
         it 'changes it into an hls url' do
           expect(subject.rewrite_url(url, context)).to eq "http://localhost:3000/streaming/id"
         end
       end
-      context 'when not rtmp or hls' do
+      context 'when not hls' do
         let(:context) {{ session: {}, target: 'abcd1234', protocol: :stream_dash }}
 
         it 'returns the url' do
@@ -102,7 +86,6 @@ Lw03eHTNQghS0A==
         allow(Settings.streaming).to receive(:signing_key_id).and_return("signing_key_id")
         allow(Settings.streaming).to receive(:stream_token_ttl).and_return(20)
         allow(Settings.streaming).to receive(:http_base).and_return("http://localhost:3000/streams")
-        allow(Settings.streaming).to receive(:rtmp_base).and_return("rtmp://localhost/avalon")
       end
 
       it 'returns a hash of cookies' do
