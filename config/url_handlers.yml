@@ -1,29 +1,17 @@
 ---
 generic:
-  rtmp:
-    video: <%=rtmp_base%>/<%=extension%>:<%=path%>/<%=filename%>
-    audio: <%=rtmp_base%>/<%=extension%>:<%=path%>/<%=filename%>
   http:
     video: <%=http_base%>/<%=path%>/<%=filename%>.<%=extension%>.m3u8
     audio: <%=http_base%>/<%=path%>/<%=filename%>.<%=extension%>.m3u8
 adobe:
-  rtmp:
-    video: <%=rtmp_base%>/<%=extension%>:<%=path%>/<%=filename%>
-    audio: <%=rtmp_base%>/<%=extension%>:<%=path%>/<%=filename%>
   http:
     video: <%=http_base%>/<%=path%>/<%=filename%>.<%=extension%>.m3u8
     audio: <%=http_base%>/audio-only/<%=path%>/<%=filename%>.<%=extension%>.m3u8
 wowza:
-  rtmp:
-    video: <%=rtmp_base%>/<%=extension%>:<%=path%>/<%=filename%>
-    audio: <%=rtmp_base%>/<%=extension%>:<%=path%>/<%=filename%>
   http:
     video: <%=http_base%>/<%=extension%>:<%=path%>/<%=filename%>.<%=extension%>/playlist.m3u8
     audio: <%=http_base%>/<%=extension%>:<%=path%>/<%=filename%>.<%=extension%>/playlist.m3u8
 nginx:
-  rtmp:
-    video: <%=rtmp_base%>/<%=extension%>:<%=path%>/<%=filename%>
-    audio: <%=rtmp_base%>/<%=extension%>:<%=path%>/<%=filename%>
   http:
     video: <%=http_base%>/<%=path%>/<%=filename%>.<%=extension%>/index.m3u8
     audio: <%=http_base%>/<%=path%>/<%=filename%>.<%=extension%>/index.m3u8
