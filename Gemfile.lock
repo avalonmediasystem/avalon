@@ -1754,7 +1754,7 @@ GEM
       unf_ext
     unf_ext (0.0.7.6)
     unicode-display_width (1.6.0)
-    user_agent_parser (2.6.0)
+    user_agent_parser (2.7.0)
     warden (1.2.8)
       rack (>= 2.0.6)
     wavefile (1.0.1)
