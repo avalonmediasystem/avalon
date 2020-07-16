@@ -20,15 +20,7 @@ class SecurityService
       configure_signer
       context[:protocol] ||= :stream_hls
       uri = Addressable::URI.parse(url)
-      expiration = Settings.streaming.stream_token_ttl.minutes.from_now
       case context[:protocol]
-      when :stream_flash
-        # WARNING: UGLY FILENAME MUNGING AHEAD
-        content_path = File.join(File.dirname(uri.path),File.basename(uri.path,File.extname(uri.path))).sub(%r(^/),'')
-        content_prefix = File.extname(uri.path).sub(%r(^\.),'')
-        result = Addressable::URI.join(Settings.streaming.rtmp_base,"cfx/st/#{content_prefix}:#{content_path}")
-        result.query = Aws::CF::Signer.signed_params(content_path, expires: expiration).to_param
-        result.to_s
       when :stream_hls
         Addressable::URI.join(Settings.streaming.http_base,uri.path).to_s
         #Aws::CF::Signer.sign_url(URI.join(Settings.streaming.http_base,uri.path).to_s, expires: expiration)
