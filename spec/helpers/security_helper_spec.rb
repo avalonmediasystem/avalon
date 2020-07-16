@@ -51,7 +51,7 @@ describe SecurityHelper, type: :helper do
 
        it 'rewrites urls in the stream_info' do
          expect { helper.secure_streams(stream_info) }.to change { stream_info.slice(:stream_flash, :stream_hls).values.flatten.collect {|v| v[:url]} }
-         [:stream_flash, :stream_hls].each do |protocol|
+         [:stream_hls].each do |protocol|
            stream_info[protocol].each do |quality|
              expect(quality[:url]).to eq secure_url
            end
@@ -74,7 +74,7 @@ describe SecurityHelper, type: :helper do
 
       it 'rewrites urls in the stream_info' do
         expect { helper.secure_streams(stream_info) }.to change { stream_info.slice(:stream_flash, :stream_hls).values.flatten.collect {|v| v[:url]} }
-        [:stream_flash, :stream_hls].each do |protocol|
+        [:stream_hls].each do |protocol|
           stream_info[protocol].each do |quality|
             expect(quality[:url]).to eq secure_url
           end

@@ -21,7 +21,7 @@ module SecurityHelper
 
   def secure_streams(stream_info)
     add_stream_cookies(id: stream_info[:id])
-    [:stream_flash, :stream_hls].each do |protocol|
+    [:stream_hls].each do |protocol|
       stream_info[protocol].each do |quality|
         quality[:url] = SecurityHandler.secure_url(quality[:url], session: session, target: stream_info[:id], protocol: protocol)
       end
