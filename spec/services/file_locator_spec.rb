@@ -121,4 +121,48 @@ describe FileLocator, type: :service do
       expect(locator.attachment).to eq locator.location
     end
   end
+
+  describe "Destroy dropbox directory" do
+    describe '#destroy_fs_dropbox_directory' do
+      let(:file_path) { "/tmp/dropbox/test/mykey.mp4" }
+      let(:locator) { FileLocator.new(file_path) }
+  
+      it 'deletes collection\'s fs dropbox dir' do
+        allow(File).to receive(:exist?).with(file_path) { true }
+        expect(locator.exist?).to be_truthy
+        locator.destroy_fs_dropbox_directory("/tmp/dropbox/test")
+        allow(File).to receive(:exist?).with(file_path) { false }
+        expect(locator.exist?).to be_falsey
+      end
+    end
+  
+    describe '#destroy_s3_dropbox_directory' do
+      let(:test_bucket) { "test_bucket" }
+      let(:dropbox_path) { "dropbox/test_collection"}
+      let(:s3_res) { Aws::S3::Resource.new }
+      let(:s3_bucket) { Aws::S3::Bucket.new(test_bucket) }
+      let(:s3_objects) { Aws::S3::ObjectSummary::Collection.new(bucket_name: test_bucket, key: "dropbox/test_collection/testkey.mp3") }
+      let(:s3_locator) { FileLocator.new("s3://test/dropbox/test_collection") }
+
+      let(:old_bucket) { Settings.encoding.masterfile_bucket }
+
+      before do
+        Settings.encoding.masterfile_bucket = test_bucket
+        allow(Aws::S3::Resource).to receive(:new).and_return(s3_res)
+        allow(s3_res).to receive(:bucket).and_return(s3_bucket)
+        allow(s3_bucket).to receive(:objects).with(prefix: "#{dropbox_path}/").and_return(s3_objects)
+        allow(s3_objects).to receive(:batch_delete!)
+      end
+
+      it 'deletes collection\'s s3 dropbox dir' do
+        expect(s3_bucket).to receive(:objects).with(prefix: "dropbox/test_collection/")
+        expect(s3_objects).to receive(:batch_delete!).once
+        s3_locator.destroy_s3_dropbox_directory("s3://test/dropbox/test_collection")
+      end
+  
+      after do
+        Settings.encoding.masterfile_bucket = old_bucket
+      end
+    end
+  end
 end
