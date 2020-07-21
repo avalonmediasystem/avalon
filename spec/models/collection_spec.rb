@@ -549,16 +549,6 @@ describe Admin::Collection do
     end
   end
 
-  describe '#destroy_dropbox_directory!' do
-    let(:collection){ FactoryBot.build(:collection)}
-
-    it 'deletes collection\'s dropbox directory' do
-      collection.name = 'black history'
-      collection.send(:destroy_dropbox_directory!)
-      expect(File.directory?(File.join(Settings.dropbox.path, 'black_history'))).to be_falsey
-    end
-  end
-
   describe 'Unicode' do
     let(:collection_name) { "Collections & Favorites / \u6211\u7684\u6536\u85cf / \u03a4\u03b1 \u03b1\u03b3\u03b1\u03c0\u03b7\u03bc\u03ad\u03bd\u03b1 \u03bc\u03bf\u03c5" }
     let(:collection_dir)  { "Collections___Favorites___\u6211\u7684\u6536\u85cf___\u03a4\u03b1_\u03b1\u03b3\u03b1\u03c0\u03b7\u03bc\u03ad\u03bd\u03b1_\u03bc\u03bf\u03c5" }
