@@ -124,4 +124,20 @@ class FileLocator
       location
     end
   end
+
+  def destroy_s3_dropbox_directory(dropbox_path)
+    # Build the prefix with dropbox directory name and collection name
+    obj_prefix = dropbox_path.split('/').last(2).join('/')
+    bucket = Aws::S3::Resource.new.bucket(Settings.encoding.masterfile_bucket)
+    objects = bucket.objects(prefix: "#{obj_prefix}/")
+    objects.batch_delete!
+  end
+
+  def destroy_fs_dropbox_directory(dropbox_path)
+    if File.directory?(dropbox_path)
+      FileUtils.remove_dir(dropbox_path)
+    else
+      Rails.logger.error "Could not delete directory #{dropbox_path}. Directory not found"
+    end
+  end
 end

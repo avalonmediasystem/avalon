@@ -212,7 +212,10 @@ class Admin::Collection < ActiveFedora::Base
 
   def dropbox_object_count
     if Settings.dropbox.path =~ %r(^s3://)
-      Aws::S3::Bucket.new(name: Settings.encoding.masterfile_bucket).objects(prefix: "/dropbox/#{dropbox_directory_name}").to_a.size
+      # Build the prefix with dropbox directory name and collection name
+      obj_prefix = dropbox_absolute_path.split('/').last(2).join('/')
+      response = Aws::S3::Client.new.list_objects(bucket: Settings.encoding.masterfile_bucket, max_keys: 10, prefix: "#{obj_prefix}/")
+      response.contents.size
     else
       Dir["#{dropbox_absolute_path}/*"].count
     end
@@ -282,11 +285,7 @@ class Admin::Collection < ActiveFedora::Base
     end
 
     def destroy_dropbox_directory!
-      if Settings.dropbox.path =~ %r(^s3://)
-        destroy_s3_dropbox_directory!
-      else
-        destroy_fs_dropbox_directory!
-      end
+      DeleteDropboxJob.perform_later(dropbox_absolute_path)
     end
 
     def calculate_dropbox_directory_name
@@ -316,11 +315,6 @@ class Admin::Collection < ActiveFedora::Base
       self.dropbox_directory_name = name
     end
 
-    def destroy_s3_dropbox_directory!
-      objects = Aws::S3::Bucket.new(name: Settings.encoding.masterfile_bucket).objects(prefix: "/dropbox/#{dropbox_directory_name}")
-      objects.batch_delete!
-    end
-
     def create_fs_dropbox_directory!
       name = calculate_dropbox_directory_name do |n|
         File.exist? dropbox_absolute_path(n)
@@ -336,20 +330,6 @@ class Admin::Collection < ActiveFedora::Base
         end
       end
       self.dropbox_directory_name = name
-    end
-
-    def destroy_fs_dropbox_directory!
-      name = calculate_dropbox_directory_name do |n|
-        File.exist? dropbox_absolute_path(n)
-      end
-
-      absolute_path = dropbox_absolute_path(name)
-
-      if File.directory?(absolute_path)
-        FileUtils.remove_dir(absolute_path)
-      else
-        Rails.logger.error "Could not delete directory #{absolute_path}. Directory not found"
-      end
     end
 
     # Override represented_visibility if you want to add another visibility that is
