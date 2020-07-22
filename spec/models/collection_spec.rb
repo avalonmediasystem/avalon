@@ -588,6 +588,11 @@ describe Admin::Collection do
 
     after do
       Settings.dropbox.path = old_path
+      Aws.config[:s3] = {
+        stub_responses: {
+          head_object: { status_code: 200, headers: {}, body: '', }
+        }
+      }
     end
   end
 end
