@@ -128,9 +128,13 @@ class FileLocator
   def destroy_s3_dropbox_directory(dropbox_path)
     # Build the prefix with dropbox directory name and collection name
     obj_prefix = dropbox_path.split('/').last(2).join('/')
+
     bucket = Aws::S3::Resource.new.bucket(Settings.encoding.masterfile_bucket)
-    objects = bucket.objects(prefix: "#{obj_prefix}/")
-    objects.batch_delete!
+    bucket.objects(prefix: "#{obj_prefix}/").batch_delete!
+
+    # When collection's dropbox directory is empty
+    dropbox_dir = bucket.object("#{obj_prefix}/")
+    dropbox_dir.delete if dropbox_dir.exists?
   end
 
   def destroy_fs_dropbox_directory(dropbox_path)

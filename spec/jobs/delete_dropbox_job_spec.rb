@@ -27,20 +27,20 @@ describe DeleteDropboxJob do
       allow(FileLocator).to receive(:new).and_return(fs_locator)
     end
 
-    context 'fs dropbox directory' do
-      it 'dir gets deleted' do
+    context 'using filesystem' do
+      it 'calls destroy_fs_dropbox_directory' do
         expect(fs_locator).to receive(:destroy_fs_dropbox_directory).with(fs_dropbox).once
         DeleteDropboxJob.perform_now(fs_dropbox)
       end
     end
 
-    context 's3 dropbox directory' do
+    context 'using s3' do
       before do
         Settings.dropbox.path = "s3://temp/dropbox"
         allow(FileLocator).to receive(:new).and_return(s3_locator)
       end
 
-      it 'dir gets deleted' do
+      it 'calls destroy_s3_dropbox_directory' do
         expect(s3_locator).to receive(:destroy_s3_dropbox_directory).with(s3_dropbox).once
         DeleteDropboxJob.perform_now(s3_dropbox)
       end

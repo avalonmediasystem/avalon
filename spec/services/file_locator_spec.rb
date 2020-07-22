@@ -137,29 +137,47 @@ describe FileLocator, type: :service do
     end
   
     describe '#destroy_s3_dropbox_directory' do
-      let(:test_bucket) { "test_bucket" }
+      let(:old_bucket) { Settings.encoding.masterfile_bucket }
+
       let(:dropbox_path) { "dropbox/test_collection"}
+      let(:test_bucket) { "test_bucket" }
       let(:s3_res) { Aws::S3::Resource.new }
       let(:s3_bucket) { Aws::S3::Bucket.new(test_bucket) }
-      let(:s3_objects) { Aws::S3::ObjectSummary::Collection.new(bucket_name: test_bucket, key: "dropbox/test_collection/testkey.mp3") }
       let(:s3_locator) { FileLocator.new("s3://test/dropbox/test_collection") }
 
-      let(:old_bucket) { Settings.encoding.masterfile_bucket }
+      let(:s3_directory) { Aws::S3::Object.new(bucket_name: test_bucket, key: "dropbox/test_collection") }
+      let(:s3_contents) { Aws::S3::ObjectSummary::Collection.new(bucket_name: test_bucket, key: "dropbox/test_collection/testkey.mp3") }
 
       before do
         Settings.encoding.masterfile_bucket = test_bucket
+
         allow(Aws::S3::Resource).to receive(:new).and_return(s3_res)
         allow(s3_res).to receive(:bucket).and_return(s3_bucket)
-        allow(s3_bucket).to receive(:objects).with(prefix: "#{dropbox_path}/").and_return(s3_objects)
-        allow(s3_objects).to receive(:batch_delete!)
+        allow(s3_bucket).to receive(:object).with("#{dropbox_path}/").and_return(s3_directory)
+        allow(s3_bucket).to receive(:objects).with(prefix: "#{dropbox_path}/").and_return(s3_contents)
+
+        allow(s3_directory).to receive(:exists?).and_return(true)
+        allow(s3_directory).to receive(:delete)
+
+        allow(s3_contents).to receive(:batch_delete!)
       end
 
-      it 'deletes collection\'s s3 dropbox dir' do
-        expect(s3_bucket).to receive(:objects).with(prefix: "dropbox/test_collection/")
-        expect(s3_objects).to receive(:batch_delete!).once
-        s3_locator.destroy_s3_dropbox_directory("s3://test/dropbox/test_collection")
+      context 'when collection\'s dropbox is empty' do
+        it 'deletes dir' do
+          expect(s3_bucket).to receive(:object).with("dropbox/test_collection/")
+          expect(s3_directory).to receive(:delete).once
+          s3_locator.destroy_s3_dropbox_directory("s3://test/dropbox/test_collection")
+        end
       end
-  
+
+      context 'when collection\'s dropbox is not empty' do
+        it 'deletes dir with its content' do
+          expect(s3_bucket).to receive(:objects).with(prefix: "dropbox/test_collection/")
+          expect(s3_contents).to receive(:batch_delete!).once
+          s3_locator.destroy_s3_dropbox_directory("s3://test/dropbox/test_collection")
+        end
+      end
+
       after do
         Settings.encoding.masterfile_bucket = old_bucket
       end
