@@ -27,9 +27,9 @@ class SearchBuilder < Blacklight::SearchBuilder
   end
 
   def only_published_items(solr_parameters)
-    if current_ability.cannot? :create, MediaObject
+    if current_ability.cannot? :discover_everything, MediaObject
       solr_parameters[:fq] ||= []
-      solr_parameters[:fq] << 'workflow_published_sim:"Published"'
+      solr_parameters[:fq] << [policy_clauses, 'workflow_published_sim:"Published"'].compact.join(" OR ")
     end
   end
 
