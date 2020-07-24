@@ -59,12 +59,15 @@ describe MediaObjectsController, type: :controller do
     end
     describe 'normal auth' do
       context 'with unauthenticated user' do
-        #New is isolated here due to issues caused by the controller instance not being regenerated
+        # New is isolated here due to issues caused by the controller instance not being regenerated
         it "should redirect to sign in" do
           expect(get :new).to redirect_to(/#{Regexp.quote(new_user_session_path)}\?url=.*/)
         end
+        # Item page is isolated since it does not require user authentication before action
+        it "item page should redirect to restricted content page" do
+          expect(get :show, params: { id: media_object.id }).to render_template('errors/restricted_pid')
+        end
         it "all routes should redirect to sign in" do
-          expect(get :show, params: { id: media_object.id }).to redirect_to(/#{Regexp.quote(new_user_session_path)}\?url=.*/)
           expect(get :edit, params: { id: media_object.id }).to redirect_to(/#{Regexp.quote(new_user_session_path)}\?url=.*/)
           expect(get :confirm_remove, params: { id: media_object.id }).to redirect_to(/#{Regexp.quote(new_user_session_path)}\?url=.*/)
           expect(put :update, params: { id: media_object.id }).to redirect_to(/#{Regexp.quote(new_user_session_path)}\?url=.*/)
@@ -85,21 +88,23 @@ describe MediaObjectsController, type: :controller do
         before do
           login_as :user
         end
-        #New is isolated here due to issues caused by the controller instance not being regenerated
-        it "should redirect to /" do
-          expect(get :new).to redirect_to(root_path)
+        # New is isolated here due to issues caused by the controller instance not being regenerated
+        it "should redirect to restricted content page" do
+          expect(get :new).to render_template('errors/restricted_pid')
         end
-        it "all routes should redirect to /" do
-          expect(get :show, params: { id: media_object.id }).to redirect_to(root_path)
-          expect(get :edit, params: { id: media_object.id }).to redirect_to(root_path)
-          expect(get :confirm_remove, params: { id: media_object.id }).to redirect_to(root_path)
-          expect(put :update, params: { id: media_object.id }).to redirect_to(root_path)
+        it "media object destroy and update_status should redirect to /" do
           expect(put :update_status, params: { id: media_object.id }).to redirect_to(root_path)
-          expect(get :tree, params: { id: media_object.id }).to redirect_to(root_path)
-          expect(get :deliver_content, params: { id: media_object.id, file: 'descMetadata' }).to redirect_to(root_path)
           expect(delete :destroy, params: { id: media_object.id }).to redirect_to(root_path)
-          expect(get :add_to_playlist_form, params: { id: media_object.id }).to redirect_to(root_path)
-          expect(post :add_to_playlist, params: { id: media_object.id }).to redirect_to(root_path)
+        end
+        it "all routes should redirect to restricted content page" do
+          expect(get :show, params: { id: media_object.id }).to render_template('errors/restricted_pid')
+          expect(get :edit, params: { id: media_object.id }).to render_template('errors/restricted_pid')
+          expect(get :confirm_remove, params: { id: media_object.id }).to render_template('errors/restricted_pid')
+          expect(put :update, params: { id: media_object.id }).to render_template('errors/restricted_pid')
+          expect(get :tree, params: { id: media_object.id }).to render_template('errors/restricted_pid')
+          expect(get :deliver_content, params: { id: media_object.id, file: 'descMetadata' }).to render_template('errors/restricted_pid')
+          expect(get :add_to_playlist_form, params: { id: media_object.id }).to render_template('errors/restricted_pid')
+          expect(post :add_to_playlist, params: { id: media_object.id }).to render_template('errors/restricted_pid')
         end
         it "json routes should return 401" do
           expect(post :create, format: 'json').to have_http_status(401)
@@ -735,7 +740,7 @@ describe MediaObjectsController, type: :controller do
         media_object.governing_policies+=[Lease.create(begin_time: Date.today-2.day, end_time: Date.yesterday, inherited_read_users: [user.user_key])]
         media_object.save!
         get 'show', params: { id: media_object.id }
-        expect(response.response_code).not_to eq(200)
+        expect(response).to render_template('errors/restricted_pid')
       end
       it "should be available to a user on an active lease" do
         media_object.governing_policies+=[Lease.create(begin_time: Date.yesterday, end_time: Date.tomorrow, inherited_read_users: [user.user_key])]
@@ -864,19 +869,19 @@ describe MediaObjectsController, type: :controller do
     end
 
     context "Items should not be available to unauthorized users" do
-      it "should redirect to sign in when not logged in and item is unpublished" do
+      it "should redirect to restricted content page when not logged in and item is unpublished" do
         media_object.publish!(nil)
         expect(media_object).not_to be_published
         get 'show', params: { id: media_object.id }
-        expect(response).to redirect_to /#{Regexp.quote(new_user_session_path)}\?url=.*/
+        expect(response).to render_template('errors/restricted_pid')
       end
 
-      it "should redirect to home page when logged in and item is unpublished" do
+      it "should redirect to restricted content page when logged in and item is unpublished" do
         media_object.publish!(nil)
         expect(media_object).not_to be_published
         login_as :user
         get 'show', params: { id: media_object.id }
-        expect(response).to redirect_to root_path
+        expect(response).to render_template('errors/restricted_pid')
       end
     end
 
@@ -996,11 +1001,10 @@ describe MediaObjectsController, type: :controller do
       login_user collection.managers.first
     end
 
-    it "redirects with message when user does not have ability to delete all items" do
+    it "renders restricted content page when user does not have ability to delete all items" do
       media_object = FactoryBot.create(:media_object)
       expect(controller.current_ability.can? :destroy, media_object).to be_falsey
-      expect(get :confirm_remove, params: { id: media_object.id }).to redirect_to(root_path)
-      expect(flash[:notice]).not_to be_empty
+      expect(get :confirm_remove, params: { id: media_object.id }).to render_template('errors/restricted_pid')
     end
     it "displays confirmation form" do
       media_object = FactoryBot.create(:media_object, collection: collection)

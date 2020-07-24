@@ -46,7 +46,7 @@ describe DropboxController do
     it "should not allow #{group} to delete" do
       login_as group
       delete :bulk_delete, params: { :collection_id => @collection.id, :filenames => @temp_files.map{|f| f[:name]} }
-      expect(response.status).to redirect_to(root_path)
+      expect(response).to render_template('errors/restricted_pid')
     end
   end
 end

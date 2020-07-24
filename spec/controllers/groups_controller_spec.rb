@@ -21,46 +21,40 @@ describe Admin::GroupsController do
   test_group_new = "rspec_test_group_new"
 
   describe 'index' do
-    it "index should redirect to sign in page with a notice when unauthenticated" do
+    it "index should redirect to restricted content page when unauthenticated" do
       get 'index'
-      expect(flash[:notice]).not_to be_nil
-      expect(response).to redirect_to(/#{Regexp.quote(new_user_session_path)}\?url=.*/)
+      expect(response).to render_template('errors/restricted_pid')
     end
 
-    it "index new should redirect to home page with a notice when authenticated but unauthorized" do
+    it "index new should redirect to restricted content page when authenticated but unauthorized" do
       login_as('student')
       get 'index'
-      expect(response).to redirect_to(root_path)
-      expect(flash[:notice]).not_to be_nil
+      expect(response).to render_template('errors/restricted_pid')
     end
   end
 
   describe "creating a new group" do
-    it "new should redirect to sign in page with a notice when unauthenticated" do
+    it "new should redirect to restricted content page when unauthenticated" do
   	  expect { get 'new' }.not_to change { Admin::Group.all.count }
-  	  expect(flash[:notice]).not_to be_nil
-  	  expect(response).to redirect_to(/#{Regexp.quote(new_user_session_path)}\?url=.*/)
+  	  expect(response).to render_template('errors/restricted_pid')
   	end
 
-    it "new should redirect to home page with a notice when authenticated but unauthorized" do
+    it "new should redirect to restricted content page when authenticated but unauthorized" do
       login_as('student')
       expect { get 'new' }.not_to change {Admin::Group.all.count}
-      expect(response).to redirect_to(root_path)
-      expect(flash[:notice]).not_to be_nil
+      expect(response).to render_template('errors/restricted_pid')
     end
 
-    it "create should redirect to sign in page with a notice on when unauthenticated" do
+    it "create should redirect to restricted content page when unauthenticated" do
       expect { post 'create', params: { admin_group: test_group } }.not_to change {Admin::Group.all.count }
-      expect(flash[:notice]).not_to be_nil
-      expect(response).to redirect_to(/#{Regexp.quote(new_user_session_path)}\?url=.*/)
+      expect(response).to render_template('errors/restricted_pid')
     end
 
-    it "create should redirect to home page with a notice when authenticated but unauthorized" do
+    it "create should redirect to restricted content page when authenticated but unauthorized" do
       login_as('student')
 
       expect { post 'create', params: { admin_group: test_group } }.not_to change {Admin::Group.all.count }
-      expect(flash[:notice]).not_to be_nil
-      expect(response).to redirect_to(root_path)
+      expect(response).to render_template('errors/restricted_pid')
     end
 
     it "create should redirect to group index page with a notice when group name is already taken" do
@@ -91,34 +85,30 @@ describe Admin::GroupsController do
     let!(:group) {Admin::Group.find(FactoryBot.create(:group).name)}
 
     context "editing a group" do
-      it "edit should redirect to sign in page with a notice on when unauthenticated" do
+      it "edit should redirect to restricted content page when unauthenticated" do
         get 'edit', params: { id: group.name }
-        expect(flash[:notice]).not_to be_nil
-        expect(response).to redirect_to(/#{Regexp.quote(new_user_session_path)}\?url=.*/)
+        expect(response).to render_template('errors/restricted_pid')
       end
 
-      it "edit should redirect to home page with a notice when authenticated but unauthorized" do
+      it "edit should redirect to restricted content page when authenticated but unauthorized" do
         login_as('student')
 
         get 'edit', params: { id: group.name }
-        expect(flash[:notice]).not_to be_nil
-        expect(response).to redirect_to(root_path)
+        expect(response).to render_template('errors/restricted_pid')
       end
 
-      it "update should redirect to sign in page with a notice on when unauthenticated" do
+      it "update should redirect to restricted content page when unauthenticated" do
         new_user = FactoryBot.build(:user).user_key
         put 'update', params: { group_name: group.name, id: group.name, new_user: new_user }
-        expect(flash[:notice]).not_to be_nil
-        expect(response).to redirect_to(/#{Regexp.quote(new_user_session_path)}\?url=.*/)
+        expect(response).to render_template('errors/restricted_pid')
       end
 
-      it "update should redirect to home page with a notice when authenticated but unauthorized" do
+      it "update should redirect to restricted content page when authenticated but unauthorized" do
         login_as('student')
         new_user = FactoryBot.build(:user).user_key
 
         put 'update', params: { group_name: group.name, id: group.name, new_user: new_user }
-        expect(flash[:notice]).not_to be_nil
-        expect(response).to redirect_to(root_path)
+        expect(response).to render_template('errors/restricted_pid')
       end
 
       it "should be able to change group users when authenticated and authorized" do
@@ -203,19 +193,17 @@ describe Admin::GroupsController do
     end
 
     context "Deleting a group" do
-      it "should redirect to sign in page with a notice on when unauthenticated" do
+      it "should redirect to restricted content page when unauthenticated" do
 
         expect { put 'update_multiple', params: { group_ids: [group.name] } }.not_to change { Avalon::RoleControls.users(group.name) }
-        expect(flash[:notice]).not_to be_nil
-        expect(response).to redirect_to(/#{Regexp.quote(new_user_session_path)}\?url=.*/)
+        expect(response).to render_template('errors/restricted_pid')
       end
 
-      it "should redirect to home page with a notice when authenticated but unauthorized" do
+      it "should redirect to restricted content page when authenticated but unauthorized" do
         login_as('student')
 
         expect { put 'update_multiple', params: { group_ids: [group.name] } }.not_to change { Avalon::RoleControls.users(group.name) }
-        expect(flash[:notice]).not_to be_nil
-        expect(response).to redirect_to(root_path)
+        expect(response).to render_template('errors/restricted_pid')
       end
 
       it "should be able to change group users when authenticated and authorized" do
