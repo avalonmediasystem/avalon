@@ -45,22 +45,22 @@ RSpec.describe SupplementalFilesController, type: :controller do
 
   describe 'security' do
     context 'with unauthenticated user' do
-      it "all routes should redirect to sign in" do
-        expect(post :create, params: { master_file_id: master_file.id }).to redirect_to(/#{Regexp.quote(new_user_session_path)}\?url=.*/)
-        expect(put :update, params: { master_file_id: master_file.id, id: supplemental_file.id }).to redirect_to(/#{Regexp.quote(new_user_session_path)}\?url=.*/)
-        expect(delete :destroy, params: { master_file_id: master_file.id, id: supplemental_file.id }).to redirect_to(/#{Regexp.quote(new_user_session_path)}\?url=.*/)
-        expect(get :show, params: { master_file_id: master_file.id, id: supplemental_file.id }).to redirect_to(/#{Regexp.quote(new_user_session_path)}\?url=.*/)
+      it "all routes should redirect to restricted content page" do
+        expect(post :create, params: { master_file_id: master_file.id }).to render_template('errors/restricted_pid')
+        expect(put :update, params: { master_file_id: master_file.id, id: supplemental_file.id }).to render_template('errors/restricted_pid')
+        expect(delete :destroy, params: { master_file_id: master_file.id, id: supplemental_file.id }).to render_template('errors/restricted_pid')
+        expect(get :show, params: { master_file_id: master_file.id, id: supplemental_file.id }).to render_template('errors/restricted_pid')
       end
     end
     context 'with end-user' do
       before do
         login_as :user
       end
-      it "all routes should redirect to /" do
-        expect(post :create, params: { master_file_id: master_file.id }).to redirect_to(root_path)
-        expect(put :update, params: { master_file_id: master_file.id, id: supplemental_file.id }).to redirect_to(root_path)
-        expect(delete :destroy, params: { master_file_id: master_file.id, id: supplemental_file.id }).to redirect_to(root_path)
-        expect(get :show, params: { master_file_id: master_file.id, id: supplemental_file.id }).to redirect_to(root_path)
+      it "all routes should redirect to restricted content page" do
+        expect(post :create, params: { master_file_id: master_file.id }).to render_template('errors/restricted_pid')
+        expect(put :update, params: { master_file_id: master_file.id, id: supplemental_file.id }).to render_template('errors/restricted_pid')
+        expect(delete :destroy, params: { master_file_id: master_file.id, id: supplemental_file.id }).to render_template('errors/restricted_pid')
+        expect(get :show, params: { master_file_id: master_file.id, id: supplemental_file.id }).to render_template('errors/restricted_pid')
       end
     end
   end

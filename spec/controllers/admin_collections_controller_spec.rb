@@ -42,22 +42,22 @@ describe Admin::CollectionsController, type: :controller do
         before do
           login_as :user
         end
-        #New is isolated here due to issues caused by the controller instance not being regenerated
-        it "should redirect to /" do
-          expect(get :new).to redirect_to(root_path)
+        # New is isolated here due to issues caused by the controller instance not being regenerated
+        it "should redirect to restricted content page" do
+          expect(get :new).to render_template('errors/restricted_pid')
         end
-        it "all routes should redirect to /" do
-          expect(get :index).to redirect_to(root_path)
-          expect(get :show, params: { id: collection.id }).to redirect_to(root_path)
-          expect(get :edit, params: { id: collection.id }).to redirect_to(root_path)
-          expect(get :remove, params: { id: collection.id }).to redirect_to(root_path)
-          expect(post :create).to redirect_to(root_path)
-          expect(put :update, params: { id: collection.id }).to redirect_to(root_path)
-          expect(patch :update, params: { id: collection.id }).to redirect_to(root_path)
-          expect(delete :destroy, params: { id: collection.id }).to redirect_to(root_path)
-          expect(post :attach_poster, params: { id: collection.id }).to redirect_to(root_path)
-          expect(delete :remove_poster, params: { id: collection.id }).to redirect_to(root_path)
-          expect(get :poster, params: { id: collection.id }).to redirect_to(root_path)
+        it "all routes should redirect to restricted content page" do
+          expect(get :index).to render_template('errors/restricted_pid')
+          expect(get :show, params: { id: collection.id }).to render_template('errors/restricted_pid')
+          expect(get :edit, params: { id: collection.id }).to render_template('errors/restricted_pid')
+          expect(get :remove, params: { id: collection.id }).to render_template('errors/restricted_pid')
+          expect(post :create).to render_template('errors/restricted_pid')
+          expect(put :update, params: { id: collection.id }).to render_template('errors/restricted_pid')
+          expect(patch :update, params: { id: collection.id }).to render_template('errors/restricted_pid')
+          expect(delete :destroy, params: { id: collection.id }).to render_template('errors/restricted_pid')
+          expect(post :attach_poster, params: { id: collection.id }).to render_template('errors/restricted_pid')
+          expect(delete :remove_poster, params: { id: collection.id }).to render_template('errors/restricted_pid')
+          expect(get :poster, params: { id: collection.id }).to render_template('errors/restricted_pid')
         end
       end
     end
@@ -369,11 +369,10 @@ describe Admin::CollectionsController, type: :controller do
   describe "#remove" do
     let!(:collection) { FactoryBot.create(:collection) }
 
-    it "redirects with message when user does not have ability to delete collection" do
+    it "redirects to restricted content page when user does not have ability to delete collection" do
       login_as :user
       expect(controller.current_ability.can? :destroy, collection).to be_falsey
-      expect(get :remove, params: { id: collection.id }).to redirect_to(root_path)
-      expect(flash[:notice]).not_to be_empty
+      expect(get :remove, params: { id: collection.id }).to render_template('errors/restricted_pid')
     end
     it "displays confirmation form for managers" do
       login_user collection.managers.first

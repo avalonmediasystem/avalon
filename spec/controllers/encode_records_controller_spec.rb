@@ -58,9 +58,9 @@ RSpec.describe EncodeRecordsController, type: :controller do
     context 'when not administrator' do
       let(:user) { FactoryBot.create(:user) }
 
-      it "redirects" do
+      it "redirects to restricted content page" do
         get :index, params: {}, session: valid_session
-        expect(response).to redirect_to(root_path)
+        expect(response).to render_template('errors/restricted_pid')
       end
     end
   end
@@ -74,9 +74,9 @@ RSpec.describe EncodeRecordsController, type: :controller do
     context 'when not administrator' do
       let(:user) { FactoryBot.create(:user) }
 
-      it "redirects" do
+      it "redirects to restricted content page" do
         get :index, params: {}, session: valid_session
-        expect(response).to redirect_to(root_path)
+        expect(response).to render_template('errors/restricted_pid')
       end
     end
   end

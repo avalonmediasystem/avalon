@@ -84,7 +84,7 @@ RSpec.describe TimelinesController, type: :controller do
       end
       context 'with a private timeline' do
         it "should NOT return the timeline view page" do
-          expect(get :show, params: { id: timeline.id }).to redirect_to(/#{Regexp.quote(new_user_session_path)}\?url=.*/)
+          expect(get :show, params: { id: timeline.id }).to render_template('errors/restricted_pid')
           expect(get :manifest, params: { id: timeline.id, format: :json }).to be_unauthorized
         end
       end
@@ -100,10 +100,10 @@ RSpec.describe TimelinesController, type: :controller do
       before do
         login_as :user
       end
-      it "all routes should redirect to /" do
-        expect(get :edit, params: { id: timeline.id }).to redirect_to(root_path)
-        expect(put :update, params: { id: timeline.id }).to redirect_to(root_path)
-        expect(delete :destroy, params: { id: timeline.id }).to redirect_to(root_path)
+      it "all routes should redirect to restriced content page" do
+        expect(get :edit, params: { id: timeline.id }).to render_template('errors/restricted_pid')
+        expect(put :update, params: { id: timeline.id }).to render_template('errors/restricted_pid')
+        expect(delete :destroy, params: { id: timeline.id }).to render_template('errors/restricted_pid')
       end
       context 'with a public timeline' do
         let(:timeline) { FactoryBot.create(:timeline, visibility: Timeline::PUBLIC) }
@@ -114,7 +114,7 @@ RSpec.describe TimelinesController, type: :controller do
       end
       context 'with a private timeline' do
         it "should NOT return the timeline view page" do
-          expect(get :show, params: { id: timeline.id }).to redirect_to(root_path)
+          expect(get :show, params: { id: timeline.id }).to render_template('errors/restricted_pid')
           expect(get :manifest, params: { id: timeline.id, format: :json }).to be_unauthorized
         end
       end

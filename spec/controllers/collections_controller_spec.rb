@@ -23,16 +23,16 @@ describe CollectionsController, type: :controller do
       before do
         login_as :user
       end
-      it "all routes should redirect to /" do
-        expect(get :show, params: { id: collection.id }).to redirect_to(root_path)
-        expect(get :poster, params: { id: collection.id }).to redirect_to(root_path)
+      it "all routes should redirect to restricted content page" do
+        expect(get :show, params: { id: collection.id }).to render_template('errors/restricted_pid')
+        expect(get :poster, params: { id: collection.id }).to render_template('errors/restricted_pid')
       end
     end
 
     context 'with unauthenticated user' do
-      it "all routes should redirect to sign in" do
-        expect(get :show, params: { id: collection.id }).to redirect_to(/#{Regexp.quote(new_user_session_path)}\?url=.*/)
-        expect(get :poster, params: { id: collection.id }).to redirect_to(/#{Regexp.quote(new_user_session_path)}\?url=.*/)
+      it "all routes should redirect to restricted content page" do
+        expect(get :show, params: { id: collection.id }).to render_template('errors/restricted_pid')
+        expect(get :poster, params: { id: collection.id }).to render_template('errors/restricted_pid')
       end
     end
   end
