@@ -543,7 +543,7 @@ describe Admin::Collection do
       FakeFS.activate!
       FileUtils.mkdir_p(File.join(Settings.dropbox.path, 'african_art'))
       FileUtils.mkdir_p(File.join(Settings.dropbox.path, 'african_art_2'))
-      expect(Dir).to receive(:mkdir).with(File.join(Settings.dropbox.path, 'african_art_3'))
+      expect(FileUtils).to receive(:mkdir_p).with(File.join(Settings.dropbox.path, 'african_art_3'))
       collection.send(:create_dropbox_directory!)
       FakeFS.deactivate!
     end
