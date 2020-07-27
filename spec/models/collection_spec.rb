@@ -574,4 +574,38 @@ describe Admin::Collection do
       collection.send(:create_dropbox_directory!)
     end
   end
+
+  describe 'create_s3_dropbox_directory!' do
+    let(:bucket) { "mybucket" }
+    let(:collection_name) { "Collection !@#$%^&*()[]{}123"}
+    let(:corrected_collection_name) { "Collection__@_$___*()____123/" }
+    let(:collection) { FactoryBot.build(:collection) }
+    let(:my_client) { Aws::S3::Client.new }
+    let!(:old_path) { Settings.dropbox.path }
+
+    before do
+      Settings.dropbox.path = "s3://#{bucket}/dropbox"
+      Aws.config[:s3] = {
+        stub_responses: {
+          head_object: { status_code: 404, headers: {}, body: '', }
+        }
+      }
+    end
+
+    it "should be able to handle special S3 avoidable characters and create object" do      
+      allow(Aws::S3::Client).to receive(:new).and_return(my_client)
+      collection.name = collection_name
+      expect(my_client).to receive(:put_object).with(bucket: bucket, key: corrected_collection_name)
+      collection.send(:create_s3_dropbox_directory!)
+    end
+
+    after do
+      Settings.dropbox.path = old_path
+      Aws.config[:s3] = {
+        stub_responses: {
+          head_object: { status_code: 200, headers: {}, body: '', }
+        }
+      }
+    end
+  end
 end

@@ -14,7 +14,7 @@
 
 module Avalon
   module Sanitizer
-    def self.sanitize(name, translations=['\\/ &:.?','_______'])
+    def self.sanitize(name, translations=['{}^#`%[]!><~|\\/ &:.?','____________________'])
       name.tr *translations
     end
   end
