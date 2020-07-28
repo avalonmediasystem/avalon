@@ -158,7 +158,7 @@ class ApplicationController < ActionController::Base
       head :unauthorized
     else
       session[:previous_url] = request.fullpath unless request.xhr?
-      render '/errors/restricted_pid'
+      render '/errors/restricted_pid', status: :unauthorized
     end
   end
 
@@ -200,6 +200,16 @@ class ApplicationController < ActionController::Base
 
   def after_invite_path_for(_inviter, _invitee = nil)
     main_app.persona_users_path
+  end
+
+  def fetch_object(id)
+    obj = ActiveFedora::Base.where(identifier_ssim: id.downcase).first
+    obj ||= begin
+              ActiveFedora::Base.find(id, cast: true)
+            rescue ActiveFedora::ObjectNotFoundError, Ldp::BadRequest
+              nil
+            end
+    obj || GlobalID::Locator.locate(id)
   end
 
   private

@@ -16,7 +16,7 @@ Unless required by applicable law or agreed to in writing, software distributed
 <div id="metadata_header">
   <ul class="nav nav-tabs">
     <li class="active"><a href="#details-tab" data-toggle="tab">Details</a></li>
-    <% if @masterFiles.any? { |section| section.supplemental_files.present? } %>
+    <% if @media_object.supplemental_files.present? || @masterFiles.any? { |section| section.supplemental_files.present? } %>
       <li><a href="#files-tab" data-toggle="tab">Files</a></li>
     <% end %>
   </ul>
@@ -58,7 +58,7 @@ Unless required by applicable law or agreed to in writing, software distributed
       </dl>
     </div>
 
-    <% if @masterFiles.any? { |section| section.supplemental_files.present? } %>
+    <% if @media_object.supplemental_files.present? || @masterFiles.any? { |section| section.supplemental_files.present? } %>
       <div class="tab-pane" id="files-tab">
         <%= render 'supplemental_files' %>
       </div>
