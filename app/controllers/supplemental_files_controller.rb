@@ -12,9 +12,10 @@
 #   specific language governing permissions and limitations under the License.
 # ---  END LICENSE_HEADER BLOCK  ---
 
+# frozen_string_literal: true
 class SupplementalFilesController < ApplicationController
-  before_action :set_master_file
-  # before_action :build_supplemental_file, only: [:create, :update]
+  before_action :set_object
+  before_action :authorize_object
 
   rescue_from Avalon::SaveError do |exception|
     message = "An error occurred when saving the supplemental file: #{exception.full_message}"
@@ -30,7 +31,6 @@ class SupplementalFilesController < ApplicationController
   end
 
   def create
-    authorize! :edit, @master_file
     # FIXME: move filedata to permanent location
     raise Avalon::BadRequest, "Missing required parameters" unless supplemental_file_params[:file]
 
@@ -46,24 +46,24 @@ class SupplementalFilesController < ApplicationController
 
     raise Avalon::SaveError, @supplemental_files.errors.full_messages unless @supplemental_file.save
 
-    @master_file.supplemental_files += [@supplemental_file]
-    raise Avalon::SaveError, @master_file.errors[:supplemental_files_json].full_messages unless @master_file.save
+    @object.supplemental_files += [@supplemental_file]
+    raise Avalon::SaveError, @object.errors[:supplemental_files_json].full_messages unless @object.save
 
     flash[:success] = "Supplemental file successfully added."
+
     respond_to do |format|
-      format.html { redirect_to edit_media_object_path(@master_file.media_object_id, step: 'structure') }
-      format.json { head :created, location: master_file_supplemental_file_path(id: @supplemental_file.id, master_file_id: @master_file.id) }
+      format.html { redirect_to edit_structure_path }
+      format.json { head :created, location: object_supplemental_file_path }
     end
   end
 
   def show
     # TODO: Use a master file presenter which reads from solr instead of loading the masterfile from fedora
     # FIXME: authorize supplemental file directly (needs supplemental file to have reference to masterfile)
-    authorize! :read, @master_file, message: "You do not have sufficient privileges"
     raise Avalon::NotFound, "Supplemental file: #{params[:id]} not found" unless SupplementalFile.exists? params[:id].to_s
 
     @supplemental_file = SupplementalFile.find(params[:id])
-    raise Avalon::NotFound, "Supplemental file: #{@supplemental_file.id} not found" unless @master_file.supplemental_files.any? { |f| f.id == @supplemental_file.id }
+    raise Avalon::NotFound, "Supplemental file: #{@supplemental_file.id} not found" unless @object.supplemental_files.any? { |f| f.id == @supplemental_file.id }
 
     # Redirect or proxy the content
     if Settings.supplemental_files.proxy
@@ -75,10 +75,9 @@ class SupplementalFilesController < ApplicationController
 
   # Update the label of the supplemental file
   def update
-    authorize! :edit, @master_file
     raise Avalon::NotFound, "Cannot update the supplemental file: #{params[:id]} not found" unless SupplementalFile.exists? params[:id].to_s
     @supplemental_file = SupplementalFile.find(params[:id])
-    raise Avalon::NotFound, "Cannot update the supplemental file: #{@supplemental_file.id} not found" unless @master_file.supplemental_files.any? { |f| f.id == @supplemental_file.id }
+    raise Avalon::NotFound, "Cannot update the supplemental file: #{@supplemental_file.id} not found" unless @object.supplemental_files.any? { |f| f.id == @supplemental_file.id }
     raise Avalon::BadRequest, "Updating file contents not allowed" if supplemental_file_params[:file].present?
 
     @supplemental_file.label = supplemental_file_params[:label]
@@ -86,33 +85,32 @@ class SupplementalFilesController < ApplicationController
 
     flash[:success] = "Supplemental file successfully updated."
     respond_to do |format|
-      format.html { redirect_to edit_media_object_path(@master_file.media_object_id, step: 'structure') }
-      format.json { head :ok, location: master_file_supplemental_file_path(id: @supplemental_file.id, master_file_id: @master_file.id) }
+      format.html { redirect_to edit_structure_path }
+      format.json { head :ok, location: object_supplemental_file_path }
     end
   end
 
   def destroy
-    authorize! :edit, @master_file
     raise Avalon::NotFound, "Cannot delete the supplemental file: #{params[:id]} not found" unless SupplementalFile.exists? params[:id].to_s
     @supplemental_file = SupplementalFile.find(params[:id])
-    raise Avalon::NotFound, "Cannot delete the supplemental file: #{@supplemental_file.id} not found" unless @master_file.supplemental_files.any? { |f| f.id == @supplemental_file.id }
+    raise Avalon::NotFound, "Cannot delete the supplemental file: #{@supplemental_file.id} not found" unless @object.supplemental_files.any? { |f| f.id == @supplemental_file.id }
 
-    @master_file.supplemental_files -= [@supplemental_file]
-    raise Avalon::SaveError, "An error occurred when deleting the supplemental file: #{@master_file.errors[:supplemental_files_json].full_messages}" unless @master_file.save
+    @object.supplemental_files -= [@supplemental_file]
+    raise Avalon::SaveError, "An error occurred when deleting the supplemental file: #{@object.errors[:supplemental_files_json].full_messages}" unless @object.save
     # FIXME: also wrap this in a transaction
     raise Avalon::SaveError, "An error occurred when deleting the supplemental file: #{@supplemental_file.errors.full_messages}" unless @supplemental_file.destroy
 
     flash[:success] = "Supplemental file successfully deleted."
     respond_to do |format|
-      format.html { redirect_to edit_media_object_path(@master_file.media_object_id, step: 'structure') }
+      format.html { redirect_to edit_structure_path }
       format.json { head :no_content }
     end
   end
 
   private
 
-    def set_master_file
-      @master_file = MasterFile.find(params[:master_file_id])
+    def set_object
+      @object = fetch_object params[:master_file_id] || params[:media_object_id]
     end
 
     def supplemental_file_params
@@ -125,7 +123,28 @@ class SupplementalFilesController < ApplicationController
         render json: { errors: message }, status: status
       else
         flash[:error] = message
-        redirect_to edit_media_object_path(@master_file.media_object_id, step: 'structure')
+        redirect_to edit_structure_path
       end
+    end
+
+    def edit_structure_path
+      media_object_id = if @object.is_a? MasterFile
+                          @object.media_object_id
+                        else
+                          @object.id
+                        end
+      edit_media_object_path(media_object_id, step: 'file-upload')
+    end
+
+    def object_supplemental_file_path
+      if @object.is_a? MasterFile
+        master_file_supplemental_file_path(id: @supplemental_file.id, master_file_id: @object.id)
+      else
+        media_object_supplemental_file_path(id: @supplemental_file.id, media_object_id: @object.id)
+      end
+    end
+
+    def authorize_object
+      authorize! action_name.to_sym, @object, message: "You do not have sufficient privileges to #{action_name} this supplemental file"
     end
 end
