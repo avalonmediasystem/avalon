@@ -320,10 +320,9 @@ class Admin::Collection < ActiveFedora::Base
       end
 
       absolute_path = dropbox_absolute_path(name)
-
       unless File.directory?(absolute_path)
         begin
-          Dir.mkdir(absolute_path)
+          FileUtils.mkdir_p absolute_path
         rescue Exception => e
           Rails.logger.error "Could not create directory (#{absolute_path}): #{e.inspect}"
         end
