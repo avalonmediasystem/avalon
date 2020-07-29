@@ -39,6 +39,8 @@ class BookmarksController < CatalogController
 
   self.add_show_tools_partial( :intercom_push, callback: :intercom_push_action, if: Proc.new { |context, config, options| context.user_can? :intercom_push } )
 
+  self.add_show_tools_partial( :merge, callback: :merge_action, if: Proc.new { |context, config, options| context.user_can? :merge } )
+  
   before_action :verify_permissions, only: :index
 
   #HACK next two methods are a hack for problems in the puppet VM tomcat/solr
@@ -64,7 +66,7 @@ class BookmarksController < CatalogController
 
   def verify_permissions
     @response, @documents = action_documents
-    @valid_user_actions = [:delete, :unpublish, :publish, :move, :update_access_control, :add_to_playlist]
+    @valid_user_actions = [:delete, :unpublish, :publish, :merge, :move, :update_access_control, :add_to_playlist]
     @valid_user_actions += [:intercom_push] if Settings.intercom.present?
     mos = @documents.collect { |doc| MediaObject.find( doc.id ) }
     @documents.each do |doc|
@@ -72,6 +74,7 @@ class BookmarksController < CatalogController
       @valid_user_actions.delete :delete if @valid_user_actions.include? :delete and cannot? :destroy, mo
       @valid_user_actions.delete :unpublish if @valid_user_actions.include? :unpublish and cannot? :unpublish, mo
       @valid_user_actions.delete :publish if @valid_user_actions.include? :publish and cannot? :update, mo
+      @valid_user_actions.delete :merge if @valid_user_actions.include? :merge and cannot? :update, mo
       @valid_user_actions.delete :move if @valid_user_actions.include? :move and cannot? :update, mo
       @valid_user_actions.delete :update_access_control if @valid_user_actions.include? :update_access_control and cannot? :update_access_control, mo
       @valid_user_actions.delete :intercom_push if @valid_user_actions.include? :intercom_push and cannot? :intercom_push, mo
@@ -227,4 +230,20 @@ class BookmarksController < CatalogController
       flash[:alert] = "You do not have permission to push to this collection."
     end
   end
+
+  def merge_action documents
+    errors = []
+    success_ids = []
+    Array(documents.map(&:id)).each do |id|
+      media_object = MediaObject.find(id)
+      if can? :destroy, media_object
+        success_ids << id
+      else
+        errors += ["#{media_object.title} (#{id}) #{t('blacklight.messages.permission_denied')}."]
+      end
+    end
+    flash[:success] = t("blacklight.delete.success", count: success_ids.count) if success_ids.count > 0
+    flash[:alert] = "#{t('blacklight.delete.alert', count: errors.count)}</br> #{ errors.join('<br/> ') }".html_safe if errors.count > 0
+    BulkActionJobs::Delete.perform_later success_ids, nil
+  end    
 end
