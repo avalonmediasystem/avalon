@@ -122,64 +122,66 @@ describe FileLocator, type: :service do
     end
   end
 
-  describe "Destroy dropbox directory" do
-    describe '#destroy_fs_dropbox_directory' do
+  describe "remove directory" do
+    describe '#remove_fs_dir' do
       let(:file_path) { "/tmp/dropbox/test/mykey.mp4" }
       let(:locator) { FileLocator.new(file_path) }
   
       it 'deletes collection\'s fs dropbox dir' do
         allow(File).to receive(:exist?).with(file_path) { true }
         expect(locator.exist?).to be_truthy
-        locator.destroy_fs_dropbox_directory("/tmp/dropbox/test")
+        FileLocator.remove_dir("file://tmp/dropbox/test")
         allow(File).to receive(:exist?).with(file_path) { false }
         expect(locator.exist?).to be_falsey
       end
     end
   
-    describe '#destroy_s3_dropbox_directory' do
+    describe '#remove_s3_dir' do
       let(:old_bucket) { Settings.encoding.masterfile_bucket }
+      let(:old_path) { Settings.dropbox.path }
 
-      let(:dropbox_path) { "dropbox/test_collection"}
+      let(:dropbox_path) { "s3://#{test_bucket}/dropbox/test_collection" }
       let(:test_bucket) { "test_bucket" }
+      let(:dropbox_prefix) { "/dropbox/test_collection/"}
       let(:s3_res) { Aws::S3::Resource.new }
       let(:s3_bucket) { Aws::S3::Bucket.new(test_bucket) }
-      let(:s3_locator) { FileLocator.new("s3://test/dropbox/test_collection") }
 
-      let(:s3_directory) { Aws::S3::Object.new(bucket_name: test_bucket, key: "dropbox/test_collection") }
-      let(:s3_contents) { Aws::S3::ObjectSummary::Collection.new(bucket_name: test_bucket, key: "dropbox/test_collection/testkey.mp3") }
+      let(:s3_directory) { Aws::S3::Object.new(bucket_name: test_bucket, key: "/dropbox/test_collection/") }
+      let(:s3_contents) { Aws::S3::ObjectSummary::Collection.new(bucket_name: test_bucket, key: "/dropbox/test_collection/testkey.mp3") }
 
       before do
         Settings.encoding.masterfile_bucket = test_bucket
+        Settings.dropbox.path = "s3://test_bucket/dropbox"
 
         allow(Aws::S3::Resource).to receive(:new).and_return(s3_res)
         allow(s3_res).to receive(:bucket).and_return(s3_bucket)
-        allow(s3_bucket).to receive(:object).with("#{dropbox_path}/").and_return(s3_directory)
-        allow(s3_bucket).to receive(:objects).with(prefix: "#{dropbox_path}/").and_return(s3_contents)
+        allow(s3_bucket).to receive(:object).with(dropbox_prefix).and_return(s3_directory)
+        allow(s3_bucket).to receive(:objects).with(prefix: dropbox_prefix).and_return(s3_contents)
 
+        # when dir is empty
         allow(s3_directory).to receive(:exists?).and_return(true)
         allow(s3_directory).to receive(:delete)
 
+        # when there's files in the dir
         allow(s3_contents).to receive(:batch_delete!)
       end
 
-      context 'when collection\'s dropbox is empty' do
-        it 'deletes dir' do
-          expect(s3_bucket).to receive(:object).with("dropbox/test_collection/")
-          expect(s3_directory).to receive(:delete).once
-          s3_locator.destroy_s3_dropbox_directory("s3://test/dropbox/test_collection")
-        end
+      it 'when empty' do
+        expect(s3_bucket).to receive(:object).with(dropbox_prefix)
+        expect(s3_directory).to receive(:exists?)
+        expect(s3_directory).to receive(:delete).once
+        FileLocator.remove_dir(dropbox_path)
       end
 
-      context 'when collection\'s dropbox is not empty' do
-        it 'deletes dir with its content' do
-          expect(s3_bucket).to receive(:objects).with(prefix: "dropbox/test_collection/")
-          expect(s3_contents).to receive(:batch_delete!).once
-          s3_locator.destroy_s3_dropbox_directory("s3://test/dropbox/test_collection")
-        end
+      it 'deletes dir with its content' do
+        expect(s3_bucket).to receive(:objects).with(prefix: dropbox_prefix)
+        expect(s3_contents).to receive(:batch_delete!).once
+        FileLocator.remove_dir(dropbox_path)
       end
 
       after do
         Settings.encoding.masterfile_bucket = old_bucket
+        Settings.dropbox.path = old_path
       end
     end
   end
