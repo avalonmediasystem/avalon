@@ -156,11 +156,9 @@ class ApplicationController < ActionController::Base
   rescue_from CanCan::AccessDenied do |exception|
     if request.format == :json
       head :unauthorized
-    elsif current_user
-      redirect_to root_path, flash: { notice: 'You are not authorized to perform this action.' }
     else
       session[:previous_url] = request.fullpath unless request.xhr?
-      redirect_to new_user_session_path(url: request.url), flash: { notice: 'You are not authorized to perform this action. Try logging in.' }
+      render '/errors/restricted_pid'
     end
   end
 

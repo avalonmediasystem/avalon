@@ -202,11 +202,10 @@ describe MasterFilesController do
       expect(master_file.media_object.reload.ordered_master_files.to_a).not_to include master_file
     end
 
-    it "redirects with a flash warning for end users" do
+    it "redirect to restricted content page for end users" do
       login_as :user
       expect(controller.current_ability.can?(:destroy, master_file)).to be_falsey
-      expect(post(:destroy, params: { id: master_file.id })).to redirect_to(root_path)
-      expect(flash[:notice]).not_to be_empty
+      expect(post(:destroy, params: { id: master_file.id })).to render_template('errors/restricted_pid')
     end
   end
 
@@ -264,14 +263,14 @@ describe MasterFilesController do
   describe "#set_frame" do
     subject(:mf) { FactoryBot.create(:master_file, :with_thumbnail, :with_media_object) }
 
-    it "redirects to sign in when not logged in" do
+    it "redirects to restricted content page when not logged in" do
       get(:set_frame, params: { id: mf.id })
-      expect(request).to redirect_to new_user_session_path(url: request.url)
+      expect(request).to render_template('errors/restricted_pid')
     end
 
-    it "redirects to home when logged in and not authorized" do
+    it "redirects to restricted content page when logged in and not authorized" do
       login_as :user
-      expect(get(:set_frame, params: { id: mf.id })).to redirect_to root_path
+      expect(get(:set_frame, params: { id: mf.id })).to render_template('errors/restricted_pid')
     end
 
     context "authorized" do
@@ -295,14 +294,14 @@ describe MasterFilesController do
     subject(:mf) { FactoryBot.create(:master_file, :with_thumbnail, :with_media_object) }
 
     context "not authorized" do
-      it "redirects to sign in when not logged in" do
+      it "redirects to restricted content page when not logged in" do
         get(:get_frame, params: { id: mf.id })
-        expect(request).to redirect_to new_user_session_path(url: request.url)
+        expect(request).to render_template('errors/restricted_pid')
       end
 
-      it "redirects to home when logged in and not authorized" do
+      it "redirects to restricted content page when logged in and not authorized" do
         login_as :user
-        expect(get(:get_frame, params: { id: mf.id })).to redirect_to root_path
+        expect(get(:get_frame, params: { id: mf.id })).to render_template('errors/restricted_pid')
       end
 
     end
@@ -580,28 +579,28 @@ describe MasterFilesController do
 
     context 'security' do
       context 'as anonymous' do
-        it 'redirects to home page' do
+        it 'redirects to restricted content page' do
           post('move', params: { id: master_file.id, target: target_media_object.id })
-          expect(response).to redirect_to(/#{Regexp.quote(new_user_session_path)}\?url=.*/)
+          expect(response).to render_template('errors/restricted_pid')
         end
       end
       context 'as an end user' do
         before do
           login_as :student
         end
-        it 'redirects to home page' do
+        it 'redirects to restricted content page' do
           post('move', params: { id: master_file.id, target: target_media_object.id })
-          expect(response).to redirect_to root_path
+          expect(response).to render_template('errors/restricted_pid')
         end
       end
       context 'when only have update permissions on one media object' do
-        it 'redirects to home page' do
+        it 'redirects to restricted content page' do
           login_user master_file.media_object.collection.managers.first
           post('move', params: { id: master_file.id, target: target_media_object.id })
-          expect(response).to redirect_to root_path
+          expect(response).to render_template('errors/restricted_pid')
           login_user target_media_object.collection.managers.first
           post('move', params: { id: master_file.id, target: target_media_object.id })
-          expect(response).to redirect_to root_path
+          expect(response).to render_template('errors/restricted_pid')
         end
       end
     end
