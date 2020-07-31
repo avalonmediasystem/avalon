@@ -232,18 +232,16 @@ class BookmarksController < CatalogController
   end
 
   def merge_action documents
-    errors = []
-    success_ids = []
-    Array(documents.map(&:id)).each do |id|
-      media_object = MediaObject.find(id)
-      if can? :destroy, media_object
-        success_ids << id
-      else
-        errors += ["#{media_object.title} (#{id}) #{t('blacklight.messages.permission_denied')}."]
-      end
+    target = MediaObject.find params[:media_object]
+    subject_ids = documents.collect(&:id)
+    subject_ids.delete(target.id)
+    success_ids = target.merge! subject_ids
+    fail_ids = subject_ids - success_ids
+
+    flash[:success] = t("blacklight.merge.success", count: success_ids.count, item_link: media_object_path(target), item_title: target.title || target.id).html_safe
+    if fail_ids.count > 0
+      flash[:error] = "#{t('blacklight.merge.fail', count: fail_ids.count)} #{ fail_ids.join(', ') }".html_safe
+      logger.error target.errors.full_messages.join("\n")
     end
-    flash[:success] = t("blacklight.delete.success", count: success_ids.count) if success_ids.count > 0
-    flash[:alert] = "#{t('blacklight.delete.alert', count: errors.count)}</br> #{ errors.join('<br/> ') }".html_safe if errors.count > 0
-    BulkActionJobs::Delete.perform_later success_ids, nil
   end    
 end

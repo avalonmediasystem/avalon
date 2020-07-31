@@ -332,9 +332,15 @@ class MediaObject < ActiveFedora::Base
     media_object_ids.each do |mo_id|
       begin
         mo = MediaObject.find(mo_id)
-        mo.ordered_master_files.each do |mf|
+        mf_ids = mo.ordered_master_file_ids
+        byebug
+        mf_ids.each do |mf_id|
+          byebug
+          mf = MasterFile.find mf_id
           mf.media_object = self
         end
+        byebug
+
         mo.destroy!
         merged_ids << mo_id
       rescue StandardError => e

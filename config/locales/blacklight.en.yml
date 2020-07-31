@@ -94,15 +94,11 @@ en:
       insufficient_rights: "You do not have sufficient rights to merge selected items."
       confirm: "Please choose a merge target (other items will be deleted after merging):"
       button: "Merge"
-      success: {
-        one: "One item is being moved to collection %{collection_name}.",
-      	other: "%{count} items are being moved to collection %{collection_name}. This operation could take a while for large numbers of items."
+      success: "%{count} items have been merged into item <a href='%{item_link}'>%{item_title}</a>"
+      fail: {
+        one: "Could not merge item:",
+        other: "Could not merge items:"
       }
-      fail: "Merge failed."
-      alert: {
-        one: "This item was not merged:",
-        other: "These items were not merged:"
-      }     	     
       error: "You do not have permission to merge these items %{failed}."
     add_to_playlist:
       form:
