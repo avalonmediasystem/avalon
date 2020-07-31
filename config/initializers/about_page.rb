@@ -9,7 +9,6 @@ AboutPage.configure do |config|
   config.fedora           = AboutPage::Fedora.new(ActiveFedora.fedora.connection)
   config.solr             = AboutPage::Solr.new(ActiveFedora.solr.conn, :numDocs => 1)
   config.database         = Avalon::About::Database.new(User)
-  config.matterhorn       = Avalon::About::Matterhorn.new(Rubyhorn) if defined? Rubyhorn
   config.mediainfo        = Avalon::About::MediaInfo.new(:version => '>=0.7.59')
   config.streaming_server = Avalon::About::HLSServer.new(Settings.streaming.http_base)
   config.git_log          = AboutPage::GitLog.new(limit: 15) if Rails.env.development?
