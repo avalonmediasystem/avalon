@@ -16,8 +16,7 @@ require 'rails_helper'
 require 'aws-sdk-s3'
 
 describe DeleteDropboxJob do
-  let(:old_path) { Settings.dropbox.path }
-  let(:fs_dropbox) { '/temp/dropbox/test_collection' }
+  let(:fs_dropbox) { 'file://temp/dropbox/test_collection' }
   let(:s3_dropbox) { 's3://temp/dropbox/test_collection' }
 
   describe "perform" do
@@ -26,19 +25,9 @@ describe DeleteDropboxJob do
       DeleteDropboxJob.perform_now(fs_dropbox)
     end
 
-    context 'using s3' do
-      before do
-        Settings.dropbox.path = "s3://temp/dropbox"
-      end
-
-      it 'deletes s3 dir' do
-        expect(FileLocator).to receive(:remove_dir).with(s3_dropbox).once
-        DeleteDropboxJob.perform_now(s3_dropbox)
-      end
-
-      after do
-        Settings.dropbox.path = old_path
-      end
+    it 'deletes s3 dir' do
+      expect(FileLocator).to receive(:remove_dir).with(s3_dropbox).once
+      DeleteDropboxJob.perform_now(s3_dropbox)
     end
   end
 end

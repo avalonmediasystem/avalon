@@ -127,7 +127,7 @@ describe FileLocator, type: :service do
       let(:file_path) { "/tmp/dropbox/test/mykey.mp4" }
       let(:locator) { FileLocator.new(file_path) }
   
-      it 'deletes collection\'s fs dropbox dir' do
+      it 'deletes fs dir' do
         allow(File).to receive(:exist?).with(file_path) { true }
         expect(locator.exist?).to be_truthy
         FileLocator.remove_dir("file://tmp/dropbox/test")
@@ -151,7 +151,6 @@ describe FileLocator, type: :service do
 
       before do
         Settings.encoding.masterfile_bucket = test_bucket
-        Settings.dropbox.path = "s3://test_bucket/dropbox"
 
         allow(Aws::S3::Resource).to receive(:new).and_return(s3_res)
         allow(s3_res).to receive(:bucket).and_return(s3_bucket)
@@ -170,18 +169,17 @@ describe FileLocator, type: :service do
         expect(s3_bucket).to receive(:object).with(dropbox_prefix)
         expect(s3_directory).to receive(:exists?)
         expect(s3_directory).to receive(:delete).once
-        FileLocator.remove_dir(dropbox_path)
+        FileLocator.remove_s3_dir(dropbox_path)
       end
 
-      it 'deletes dir with its content' do
+      it 'when there\'s files inside' do
         expect(s3_bucket).to receive(:objects).with(prefix: dropbox_prefix)
         expect(s3_contents).to receive(:batch_delete!).once
-        FileLocator.remove_dir(dropbox_path)
+        FileLocator.remove_s3_dir(dropbox_path)
       end
 
       after do
         Settings.encoding.masterfile_bucket = old_bucket
-        Settings.dropbox.path = old_path
       end
     end
   end

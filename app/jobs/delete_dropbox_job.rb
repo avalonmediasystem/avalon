@@ -17,10 +17,6 @@ class DeleteDropboxJob < ActiveJob::Base
   queue_as :default
   def perform(path)
     Rails.logger.debug "Attempting to delete dropbox directory #{path}"
-    begin
-      FileLocator.remove_dir(path)
-    rescue StandardError => err
-      Rails.logger.warn "Error deleting dropbox directory #{path}: #{err.message}"
-    end
+    FileLocator.remove_dir(path)
   end
 end
