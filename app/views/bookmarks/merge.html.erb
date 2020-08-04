@@ -41,7 +41,7 @@ Unless required by applicable law or agreed to in writing, software distributed
               <% @documents.each do |d| %>
                 <div class="form-check">
                   <%= radio_button_tag :media_object, d.id, style: 'width:100%;' %>
-                  <%= label_tag "media_object_#{d.id}", d["title_tesi"] || d.id %>
+                  <%= label_tag "media_object_#{d.id}", "#{d["title_tesi"] || "No title"} - #{d.id}" %>
                   <% if cannot? :destroy, MediaObject.find(d.id) %>
                     Insufficient privilege to merge this item
                   <% end %>

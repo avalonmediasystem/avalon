@@ -94,7 +94,7 @@ en:
       insufficient_rights: "You do not have sufficient rights to merge selected items."
       confirm: "Please choose a merge target (other items will be deleted after merging):"
       button: "Merge"
-      success: "%{count} items have been merged into item <a href='%{item_link}'>%{item_title}</a>"
+      success: "Merging %{count} items into <a href='%{item_link}'>%{item_title}</a>"
       fail: {
         one: "Could not merge item:",
         other: "Could not merge items:"

@@ -247,7 +247,6 @@ class MasterFile < ActiveFedora::Base
 
   # This requires the MasterFile having an actual id
   def media_object=(mo)
-    byebug
     # Removes existing association
     if self.media_object.present?
       self.media_object.master_files = self.media_object.master_files.to_a.reject { |mf| mf.id == self.id }

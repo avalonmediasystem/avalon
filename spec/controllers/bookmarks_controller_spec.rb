@@ -21,8 +21,13 @@ describe BookmarksController, type: :controller do
   render_views
 
   around(:example) do |example|
-    # In Rails 5.1+ this can be restricted to whitelist jobs allowed to be performed
-    perform_enqueued_jobs { example.run }
+    # In Rails 5.1+ this can be filtered using :only (or :except)
+    # but it will also prevent other jobs from being enqueued
+    unless example.metadata[:no_perform_enqueued_jobs]
+      perform_enqueued_jobs { example.run } 
+    else
+      example.run
+    end
   end
 
   let!(:collection) { FactoryBot.create(:collection) }
@@ -402,6 +407,33 @@ describe BookmarksController, type: :controller do
             expect(mo.leases.collect{|p|p.inherited_read_groups}.flatten.uniq.compact).not_to include '127.0.0.127'
           end
         end
+      end
+    end
+  end
+
+  describe "#merge", :no_perform_enqueued_jobs do
+    let(:target) { media_objects.first }
+    let!(:collection2) { FactoryBot.create(:collection) }
+
+    context 'user does not have destroy permission on some media object' do
+      before do
+        mo2 = media_objects.second
+        mo2.collection = collection2
+        mo2.save
+      end
+
+      it 'only merges items with permission' do
+        post 'merge', params: { media_object: target.id }
+        expect { post 'merge', params: { media_object: target.id } }.to have_enqueued_job(BulkActionJobs::Merge).with(target.id, [media_objects.last.id])
+        expect(flash[:success]).to start_with("Merging 1 items into")
+      end
+    end
+
+    context 'user has sufficient permissions' do
+      it 'enqueues background job' do
+        subject_ids = media_objects.collect(&:id) - [target.id]
+        expect { post 'merge', params: { media_object: target.id } }.to have_enqueued_job(BulkActionJobs::Merge).with(target.id, subject_ids.sort)
+        expect(flash[:success]).to start_with("Merging 2 items into")
       end
     end
   end

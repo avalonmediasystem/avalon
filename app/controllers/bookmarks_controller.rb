@@ -25,22 +25,22 @@ class BookmarksController < CatalogController
   blacklight_config.show.document_actions[:email].if = false if blacklight_config.show.document_actions[:email]
   blacklight_config.show.document_actions[:citation].if = false if blacklight_config.show.document_actions[:citation]
 
-  self.add_show_tools_partial( :update_access_control, callback: :access_control_action, if: Proc.new { |context, config, options| context.user_can? :update_access_control } )
+  add_show_tools_partial( :update_access_control, callback: :access_control_action, if: Proc.new { |context, config, options| context.user_can? :update_access_control } )
 
-  self.add_show_tools_partial( :move, callback: :move_action, if: Proc.new { |context, config, options| context.user_can? :move } )
+  add_show_tools_partial( :move, callback: :move_action, if: Proc.new { |context, config, options| context.user_can? :move } )
 
-  self.add_show_tools_partial( :publish, callback: :status_action, modal: false, partial: 'formless_document_action', if: Proc.new { |context, config, options| context.user_can? :publish } )
+  add_show_tools_partial( :publish, callback: :status_action, modal: false, partial: 'formless_document_action', if: Proc.new { |context, config, options| context.user_can? :publish } )
 
-  self.add_show_tools_partial( :unpublish, callback: :status_action, modal: false, partial: 'formless_document_action', if: Proc.new { |context, config, options| context.user_can? :unpublish } )
+  add_show_tools_partial( :unpublish, callback: :status_action, modal: false, partial: 'formless_document_action', if: Proc.new { |context, config, options| context.user_can? :unpublish } )
 
-  self.add_show_tools_partial( :delete, callback: :delete_action, if: Proc.new { |context, config, options| context.user_can? :delete } )
+  add_show_tools_partial( :delete, callback: :delete_action, if: Proc.new { |context, config, options| context.user_can? :delete } )
 
-  self.add_show_tools_partial( :add_to_playlist, callback: :add_to_playlist_action )
+  add_show_tools_partial( :add_to_playlist, callback: :add_to_playlist_action )
 
-  self.add_show_tools_partial( :intercom_push, callback: :intercom_push_action, if: Proc.new { |context, config, options| context.user_can? :intercom_push } )
+  add_show_tools_partial( :intercom_push, callback: :intercom_push_action, if: Proc.new { |context, config, options| context.user_can? :intercom_push } )
 
-  self.add_show_tools_partial( :merge, callback: :merge_action, if: Proc.new { |context, config, options| context.user_can? :merge } )
-  
+  add_show_tools_partial( :merge, callback: :merge_action, if: Proc.new { |context, config, options| context.user_can? :merge } )
+
   before_action :verify_permissions, only: :index
 
   #HACK next two methods are a hack for problems in the puppet VM tomcat/solr
@@ -232,16 +232,21 @@ class BookmarksController < CatalogController
   end
 
   def merge_action documents
+    errors = []
     target = MediaObject.find params[:media_object]
     subject_ids = documents.collect(&:id)
     subject_ids.delete(target.id)
-    success_ids = target.merge! subject_ids
-    fail_ids = subject_ids - success_ids
-
-    flash[:success] = t("blacklight.merge.success", count: success_ids.count, item_link: media_object_path(target), item_title: target.title || target.id).html_safe
-    if fail_ids.count > 0
-      flash[:error] = "#{t('blacklight.merge.fail', count: fail_ids.count)} #{ fail_ids.join(', ') }".html_safe
-      logger.error target.errors.full_messages.join("\n")
+    subject_ids.map { |id| MediaObject.find id }.each do |media_object|
+      if cannot? :destroy, media_object
+        errors += ["#{media_object.title || id} #{t('blacklight.messages.permission_denied')}."]
+      end
     end
-  end    
+
+    if errors.present?
+      flash[:error] = "#{t('blacklight.merge.fail', count: errors.count)} #{errors.join('<br>')}".html_safe
+    else
+      BulkActionJobs::Merge.perform_later target.id, subject_ids.sort
+      flash[:success] = t("blacklight.merge.success", count: subject_ids.count, item_link: media_object_path(target), item_title: target.title || target.id).html_safe
+    end
+  end
 end
