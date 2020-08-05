@@ -124,4 +124,30 @@ class FileLocator
       location
     end
   end
+
+  def self.remove_dir(path)
+    if Settings.dropbox.path.match? %r{^s3://}
+      remove_s3_dir(path)
+    else
+      remove_fs_dir(path)
+    end
+  end
+
+  def self.remove_s3_dir(path)
+    path_uri = URI.parse(path)
+    bucket = Aws::S3::Resource.new.bucket(Settings.encoding.masterfile_bucket)
+    bucket.objects(prefix: "#{path_uri.path}/").batch_delete!
+
+    # When directory is empty
+    dropbox_dir = bucket.object("#{path_uri.path}/")
+    dropbox_dir.delete if dropbox_dir.exists?
+  end
+
+  def self.remove_fs_dir(path)
+    if File.directory?(path)
+      FileUtils.remove_dir(path)
+    else
+      Rails.logger.error "Could not delete directory #{path}. Directory not found"
+    end
+  end
 end

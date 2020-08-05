@@ -27,27 +27,34 @@ Unless required by applicable law or agreed to in writing, software distributed
     item_count = "#{@objects.count} #{'item'.pluralize(@objects.count)}"
     content_pronoun = @objects.count > 1 ? 'them' : 'it'
   %>
-    <% if @collection.media_objects.count == 0 or @candidates.count > 0 %>
-    <div class="alert alert-danger">
-      <span class="glyphicon glyphicon-warning-sign" aria-hidden="true"></span>
-      <span>Are you certain you want to remove the collection <b><%=@collection.name%></b>?</span>
-    </div>
 
-    <%= bootstrap_form_for @collection, method: :delete do |f| %>
-    <% if @objects.count > 0 %>
-
-    <h2>Reassign Existing Items</h2>
-    <p>
-      <b><%=@collection.name%></b> currently contains <%=item_count%>. Before you can
-      delete it, you must select a new collection to move <%=content_pronoun%>
-      into.
-    </p>
-    <div class="form-group">
-      <%= select_tag :target_collection_id, options_from_collection_for_select(@candidates, "id", "name"), class: "form-control" %>
-    </div>
-
-
+    <% if @collection.dropbox_object_count > 0 %>
+      <div class="alert alert-warning">
+        <span class="glyphicon glyphicon-warning-sign" aria-hidden="true"></span>
+        <span>There are saved files in this collection's <b>Dropbox</b> that will be deleted when this collection is deleted.</span>
+      </div>
     <% end %>
+
+    <% if @collection.media_objects.count == 0 or @candidates.count > 0 %>
+      <div class="alert alert-danger">
+        <span class="glyphicon glyphicon-warning-sign" aria-hidden="true"></span>
+        <span>Are you certain you want to remove the collection <b><%=@collection.name%></b>?</span>
+      </div>
+
+      <%= bootstrap_form_for @collection, method: :delete do |f| %>
+      <% if @objects.count > 0 %>
+
+      <h2>Reassign Existing Items</h2>
+      <p>
+        <b><%=@collection.name%></b> currently contains <%=item_count%>. Before you can
+        delete it, you must select a new collection to move <%=content_pronoun%>
+        into.
+      </p>
+      <div class="form-group">
+        <%= select_tag :target_collection_id, options_from_collection_for_select(@candidates, "id", "name"), class: "form-control" %>
+      </div>
+    <% end %>
+
     <div class="form-group">
       <%= f.submit 'Yes, I am sure', class: 'btn btn-danger' %>
       <%= link_to 'No, go back', admin_collections_path, class: 'btn btn-default' %>
