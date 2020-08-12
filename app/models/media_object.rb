@@ -326,6 +326,25 @@ class MediaObject < ActiveFedora::Base
     governing_policies.select { |gp| gp.is_a?(Lease) and (scope == :all or gp.lease_type == scope) }
   end
 
+  # @return [Array<MediaObject>, Array<MediaObject>] A list of all succesfully merged and a list of failed media objects
+  def merge!(media_objects)
+    mergeds = []
+    faileds = []
+    media_objects.dup.each do |mo|
+      begin
+        # TODO: mass assignment may speed things up
+        mo.ordered_master_files.to_a.dup.each { |mf| mf.media_object = self }
+        mo.reload.destroy!
+
+        mergeds << mo
+      rescue StandardError => e
+        mo.errors.add(:base, "MediaObject #{mo.id} failed to merge successfully: #{e.full_message}")
+        faileds << mo
+      end
+    end
+    [mergeds, faileds]
+  end
+
   private
 
     def calculate_duration
