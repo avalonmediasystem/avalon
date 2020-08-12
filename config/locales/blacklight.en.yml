@@ -91,7 +91,8 @@ en:
     merge:
       form:
         title: "Merge Selected Items"
-      insufficient_rights: "You do not have sufficient rights to merge selected items."
+      insufficient_items: "You need to select 2 or more items to merge"
+      insufficient_rights: "Insufficient privilege to merge this item."
       confirm: "Please choose a merge target (other items will be deleted after merging):"
       button: "Merge"
       success: "Merging %{count} items into <a href='%{item_link}'>%{item_title}</a>"

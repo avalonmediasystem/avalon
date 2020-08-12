@@ -30,9 +30,9 @@ Unless required by applicable law or agreed to in writing, software distributed
   <div class="modal-body">
     <div class="row-fluid">
       <div class="btn-options">
-        <% if @documents.empty? %>
+        <% if @documents.empty? || @documents.count < 2 %>
           <div class="alert alert-danger">
-            <p><%= t('blacklight.bookmarks.no_bookmarks') %></p>
+            <p><%= t('blacklight.merge.insufficient_items') %></p>
           </div>
         <% else %>
           <div class="alert">
@@ -42,9 +42,7 @@ Unless required by applicable law or agreed to in writing, software distributed
                 <div class="form-check">
                   <%= radio_button_tag :media_object, d.id, style: 'width:100%;' %>
                   <%= label_tag "media_object_#{d.id}", "#{d["title_tesi"] || "No title"} - #{d.id}" %>
-                  <% if cannot? :destroy, MediaObject.find(d.id) %>
-                    Insufficient privilege to merge this item
-                  <% end %>
+                  <% t('blacklight.merge.insufficient_rights') if cannot? :destroy, MediaObject.find(d.id) %>
                 </div>
               <% end %>
             </fieldset>
