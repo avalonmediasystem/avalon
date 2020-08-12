@@ -183,7 +183,15 @@ module BulkActionJobs
           errors += [media_object]
         end
       end
-      return successes, errors
+      [successes, errors]
+    end
+  end
+
+  class Merge < ActiveJob::Base
+    def perform(target_id, subject_ids)
+      target = MediaObject.find target_id
+      subjects = subject_ids.map { |id| MediaObject.find id }
+      return target.merge!(subjects)
     end
   end
 end

@@ -50,3 +50,21 @@ describe BulkActionJobs::IntercomPush do
     end
   end
 end
+
+describe BulkActionJobs::Merge do
+  let(:target) { FactoryBot.create(:media_object) }
+  let(:subjects) { [] }
+
+  before do
+    2.times { subjects << FactoryBot.create(:media_object, :with_master_file) }
+    allow(MediaObject).to receive(:find).and_call_original
+    allow(MediaObject).to receive(:find).with(target.id).and_return(target)
+  end
+
+  describe "perform" do
+    it 'calls MediaObject #merge' do
+      expect(target).to receive(:merge!).with(subjects)
+      BulkActionJobs::Merge.perform_now target.id, subjects.collect(&:id)
+    end
+  end
+end

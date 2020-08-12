@@ -43,6 +43,8 @@ Rails.application.routes.draw do
       post 'add_to_playlist'
       get 'intercom_push'
       post 'intercom_push'
+      get 'merge'
+      post 'merge'
     end
   end
 

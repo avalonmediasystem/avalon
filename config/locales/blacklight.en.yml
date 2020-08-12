@@ -61,11 +61,11 @@ en:
         title: "Delete Selected Items"
       confirm: {
         one: "Are you certain you want to delete the following item?",
-	other: "Are you certain you want to delete the following items?"
+        other: "Are you certain you want to delete the following items?"
       }
       success: {
         one: "One item is being deleted.",
-	other: "%{count} items are being deleted. This operation could take a while for large numbers of items."
+        other: "%{count} items are being deleted. This operation could take a while for large numbers of items."
       }
       fail: "Delete failed."
       alert: {
@@ -80,7 +80,7 @@ en:
       button: "Move"
       success: {
         one: "One item is being moved to collection %{collection_name}.",
-	other: "%{count} items are being moved to collection %{collection_name}. This operation could take a while for large numbers of items."
+      	other: "%{count} items are being moved to collection %{collection_name}. This operation could take a while for large numbers of items."
       }
       fail: "Save failed."
       alert: {
@@ -88,6 +88,19 @@ en:
         other: "These items were not moved:"
       }     	     
       error: "You do not have permission to add to collection %{collection_name}."
+    merge:
+      form:
+        title: "Merge Selected Items"
+      insufficient_items: "You need to select 2 or more items to merge"
+      insufficient_rights: "Insufficient privilege to merge this item."
+      confirm: "Please choose a merge target (other items will be deleted after merging):"
+      button: "Merge"
+      success: "Merging %{count} items into <a href='%{item_link}'>%{item_title}</a>"
+      fail: {
+        one: "Could not merge item:",
+        other: "Could not merge items:"
+      }
+      error: "You do not have permission to merge these items %{failed}."
     add_to_playlist:
       form:
         title: "Add to Playlist"
