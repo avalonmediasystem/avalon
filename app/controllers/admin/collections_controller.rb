@@ -138,50 +138,11 @@ class Admin::CollectionsController < ApplicationController
       end
     end
 
-    # If Save Access Setting button or Add/Remove User/Group button has been clicked
-    if can?(:update_access_control, @collection)
-      ["group", "class", "user", "ipaddress"].each do |title|
-        if params["submit_add_#{title}"].present?
-          if params["add_#{title}"].present?
-            val = params["add_#{title}"].strip
-            if title=='user'
-              @collection.default_read_users += [val]
-            elsif title=='ipaddress'
-              if ( IPAddr.new(val) rescue false )
-                @collection.default_read_groups += [val]
-              else
-                flash[:notice] = "IP Address #{val} is invalid. Valid examples: 124.124.10.10, 124.124.0.0/16, 124.124.0.0/255.255.0.0"
-              end
-            else
-              @collection.default_read_groups += [val]
-            end
-          else
-            flash[:notice] = "#{title.titleize} can't be blank."
-          end
-        end
+    update_access @collection, params
 
-        if params["remove_#{title}"].present?
-          if ["group", "class", "ipaddress"].include? title
-            # This is a hack to deal with the fact that calling default_read_groups#delete isn't marking the record as dirty
-            # TODO: Ensure default_read_groups is tracked by ActiveModel::Dirty
-            @collection.default_read_groups_will_change!
-            @collection.default_read_groups.delete params["remove_#{title}"]
-          else
-            # This is a hack to deal with the fact that calling default_read_users#delete isn't marking the record as dirty
-            # TODO: Ensure default_read_users is tracked by ActiveModel::Dirty
-            @collection.default_read_users_will_change!
-            @collection.default_read_users.delete params["remove_#{title}"]
-          end
-        end
-    end
-
-      @collection.default_visibility = params[:visibility] unless params[:visibility].blank?
-
-      @collection.default_hidden = params[:hidden] == "1"
-    end
     @collection.update_attributes collection_params if collection_params.present?
     saved = @collection.save
-    if saved and name_changed
+    if saved
       User.where(Devise.authentication_keys.first => [Avalon::RoleControls.users('administrator')].flatten).each do |admin_user|
         NotificationsMailer.update_collection(
           updater_id: current_user.id,
@@ -190,7 +151,9 @@ class Admin::CollectionsController < ApplicationController
           old_name: @old_name,
           subject: "Notification: collection #{@old_name} changed to #{@collection.name}"
         ).deliver_later
-      end
+      end if name_changed
+
+      apply_access @collection, params
     end
 
     respond_to do |format|
@@ -293,6 +256,58 @@ class Admin::CollectionsController < ApplicationController
   end
 
   private
+
+  def update_access collection, params
+    # If Save Access Setting button or Add/Remove User/Group button has been clicked
+    if can?(:update_access_control, collection)
+      ["group", "class", "user", "ipaddress"].each do |title|
+        if params["submit_add_#{title}"].present?
+          if params["add_#{title}"].present?
+            val = params["add_#{title}"].strip
+            if title=='user'
+              collection.default_read_users += [val]
+            elsif title=='ipaddress'
+              if ( IPAddr.new(val) rescue false )
+                collection.default_read_groups += [val]
+              else
+                flash[:notice] = "IP Address #{val} is invalid. Valid examples: 124.124.10.10, 124.124.0.0/16, 124.124.0.0/255.255.0.0"
+              end
+            else
+              collection.default_read_groups += [val]
+            end
+          else
+            flash[:notice] = "#{title.titleize} can't be blank."
+          end
+        end
+
+        if params["remove_#{title}"].present?
+          if ["group", "class", "ipaddress"].include? title
+            # This is a hack to deal with the fact that calling default_read_groups#delete isn't marking the record as dirty
+            # TODO: Ensure default_read_groups is tracked by ActiveModel::Dirty
+            collection.default_read_groups_will_change!
+            collection.default_read_groups.delete params["remove_#{title}"]
+          else
+            # This is a hack to deal with the fact that calling default_read_users#delete isn't marking the record as dirty
+            # TODO: Ensure default_read_users is tracked by ActiveModel::Dirty
+            collection.default_read_users_will_change!
+            collection.default_read_users.delete params["remove_#{title}"]
+          end
+        end
+      end
+
+      collection.default_visibility = params[:visibility] unless params[:visibility].blank?
+
+      collection.default_hidden = params[:hidden] == "1"
+    end
+  end
+
+  def apply_access collection, params
+    if can?(:update_access_control, collection)
+      if params["apply_access"].present?
+        BulkActionJobs::ApplyCollectionAccessControl.perform_later collection.id, params[:overwrite] == "true"
+      end
+    end
+  end
 
   def collection_params
     params.permit(:admin_collection => [:name, :description, :unit, :contact_email, :website_label, :website_url, :managers => []])[:admin_collection]

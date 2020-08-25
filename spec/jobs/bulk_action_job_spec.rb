@@ -68,3 +68,49 @@ describe BulkActionJobs::Merge do
     end
   end
 end
+
+describe BulkActionJobs::ApplyCollectionAccessControl do
+  let(:mo) { FactoryBot.create(:media_object) }
+  let(:co) { mo.collection }
+
+  describe "perform" do
+    before do
+      co.default_read_users = ["co_user"]
+      co.default_read_groups = ["co_group"]
+      co.default_hidden = true
+      co.default_visibility = 'public'
+      co.save!
+
+      mo.read_users = ["mo_user"]
+      mo.read_groups = ["mo_group"]
+      mo.hidden = false
+      mo.visibility = 'restricted'
+      mo.save!
+    end
+
+    it "changes item discovery and access" do
+      BulkActionJobs::ApplyCollectionAccessControl.perform_now co.id, true
+      mo.reload
+      expect(mo.hidden?).to be_truthy
+      expect(mo.visibility).to eq('public')
+    end
+
+    context "overwrite is true" do
+      it "replaces existing Special Access" do
+        BulkActionJobs::ApplyCollectionAccessControl.perform_now co.id, true
+        mo.reload
+        expect(mo.read_users).to contain_exactly("co_user")
+        expect(mo.read_groups).to contain_exactly("co_group", "public")
+      end
+    end
+
+    context "overwrite is false" do
+      it "adds to existing Special Access" do
+        BulkActionJobs::ApplyCollectionAccessControl.perform_now co.id, false
+        mo.reload
+        expect(mo.read_users).to contain_exactly("mo_user", "co_user")
+        expect(mo.read_groups).to contain_exactly("mo_group", "co_group", "public")
+      end
+    end
+  end
+end

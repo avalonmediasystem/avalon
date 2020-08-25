@@ -194,4 +194,37 @@ module BulkActionJobs
       return target.merge!(subjects)
     end
   end
+
+  class ApplyCollectionAccessControl < ActiveJob::Base
+    queue_as :bulk_access_control
+    def perform(collection_id, overwrite = true)
+      errors = []
+      successes = []
+      collection = Admin::Collection.find collection_id
+      collection.media_object_ids.each do |id|
+        media_object = MediaObject.find(id)
+        media_object.hidden = collection.default_hidden
+        media_object.visibility = collection.default_visibility
+
+        # Special access
+        if overwrite
+          media_object.read_groups = collection.default_read_groups.to_a
+          media_object.read_users = collection.default_read_users.to_a
+        else
+          media_object.read_groups += collection.default_read_groups.to_a
+          media_object.read_groups.uniq!
+          media_object.read_users += collection.default_read_users.to_a
+          media_object.read_users.uniq!
+        end
+
+        if media_object.save
+          successes << media_object
+        else
+          errors << media_object
+        end
+      end
+
+      [successes, errors]
+    end
+  end
 end
