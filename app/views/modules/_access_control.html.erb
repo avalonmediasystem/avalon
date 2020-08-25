@@ -43,26 +43,28 @@ Unless required by applicable law or agreed to in writing, software distributed
   <div class="panel-body">
     <div class="form-group">
       <div class="radio">
-        <%= label_tag :visibility do %>
-        <%= radio_button_tag :visibility, 'public', (@visibility == 'public') %>
-        Available to the general public
-        <% end %>
+        <label>
+          <%= radio_button_tag :visibility, 'public', (@visibility == 'public') %>
+          Available to the general public
+        </label>
       </div>
       <div class="radio">
-        <%= label_tag :visibility do %>
-        <%= radio_button_tag :visibility, 'restricted', (@visibility == 'restricted') %>
-        Logged in users only
-        <% end %>
+        <label>
+          <%= radio_button_tag :visibility, 'restricted', (@visibility == 'restricted') %>
+          Logged in users only
+        </label>
       </div>
       <div class="radio">
-        <%= label_tag :visibility do %>
-        <%= radio_button_tag :visibility, 'private', (@visibility == 'private') %>
-        Collection staff only
-        <% end %>
+        <label>
+          <%= radio_button_tag :visibility, 'private', (@visibility == 'private') %>
+          Collection staff only
+        </label>
       </div>
     </div>
   </div>
 </div>
+
+<%= render modal[:partial], modal_title: modal[:title] if defined? modal %>
 
 <% end #form_for %>
 
