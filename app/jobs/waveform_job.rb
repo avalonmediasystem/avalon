@@ -15,9 +15,9 @@
 class WaveformJob < ActiveJob::Base
   queue_as :waveform
 
-  PLAYER_WIDTH_IN_PX = 1200
-  FINEST_ZOOM_IN_SEC = 5
-  SAMPLES_PER_FRAME = (44_100 * FINEST_ZOOM_IN_SEC) / PLAYER_WIDTH_IN_PX
+  PLAYER_WIDTH_IN_PX = Settings.waveform.player_width_in_px
+  FINEST_ZOOM_IN_SEC = Settings.waveform.finest_zoom_in_sec
+  SAMPLES_PER_FRAME = (Settings.waveform.sample_rate * FINEST_ZOOM_IN_SEC) / PLAYER_WIDTH_IN_PX
 
   def perform(master_file_id, regenerate = false)
     master_file = MasterFile.find(master_file_id)

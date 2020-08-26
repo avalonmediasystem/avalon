@@ -85,3 +85,7 @@ auth:
 # google_analytics_tracking_id: "someid"
 supplemental_files:
   proxy: false
+waveform:
+  player_width_in_px: 1200
+  finest_zoom_in_sec: 5
+  sample_rate: 41000
