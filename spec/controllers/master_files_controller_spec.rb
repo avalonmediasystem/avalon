@@ -510,6 +510,23 @@ describe MasterFilesController do
       expect(response.content_type).to eq('application/zlib')
       expect(response.headers['Content-Encoding']).to eq('deflate')
     end
+
+    context "empty waveform" do
+      let(:master_file) { FactoryBot.create(:master_file) }
+
+      it("returns not found when empty=true param is not present") do
+        login_as :administrator
+        expect(head('waveform', params: { id: master_file.id })).to have_http_status(:not_found)
+      end
+
+      it("returns an empty waveform json when empty=true is present") do
+        login_as :administrator
+        get('waveform', params: { id: master_file.id, empty: true })
+        expect(response).to have_http_status(:ok)
+        expect(response.content_type).to eq('application/json')
+        expect(response['Content-Disposition']).to eq('attachment; filename="empty_waveform.json"')
+      end
+    end
   end
 
   describe '#iiif_auth_token' do
