@@ -351,19 +351,81 @@ describe Admin::CollectionsController, type: :controller do
         expect(JSON.parse(response.body)["errors"].first.class).to eq String
       end
     end
+  end
 
-    context "access controls" do
-      let!(:collection) { FactoryBot.create(:collection)}
+  describe "#update_access" do
+    let(:collection) { FactoryBot.create(:collection) }
 
-      it "should not allow empty user" do
+    before do
+      login_user(collection.managers.first)
+    end
+
+    context "should not allow empty" do
+      it "user" do
         expect{ put 'update', params: { id: collection.id, submit_add_user: "Add", add_user: "", add_user_display: "" }}.not_to change{ collection.reload.default_read_users.size }
       end
 
-      it "should not allow empty class" do
+      it "class" do
         expect{ put 'update', params: { id: collection.id, submit_add_class: "Add", add_class: "", add_class_display: "" }}.not_to change{ collection.reload.default_read_groups.size }
       end
-
     end
+
+    context "add new special access" do
+      it "user" do
+        expect{ put 'update', params: { id: collection.id, submit_add_user: "Add", add_user: "test1@example.com", add_user_display: "test1" }}.to change{ collection.reload.default_read_users.size }.by(1)
+      end
+
+      it "group" do
+        expect{ put 'update', params: { id: collection.id, submit_add_group: "Add", add_group: "test_group" }}.to change{ collection.reload.default_read_groups.size }.by(1)
+      end
+
+      it "external group" do
+        expect{ put 'update', params: { id: collection.id, submit_add_class: "Add", add_class: "external", add_class_display: "external" }}.to change{ collection.reload.default_read_groups.size }.by(1)
+      end
+
+      it "IP address/range" do
+        expect{ put 'update', params: { id: collection.id, submit_add_ipaddress: "Add", add_ipaddress: "255.0.0.1" }}.to change{ collection.reload.default_read_groups.size }.by(1)
+      end
+    end
+
+
+    context "remove existing special access" do
+      before do
+        collection.default_read_users = ["test1@example.com"]
+        collection.default_read_groups = ["test_group", "external_group", "255.0.1.1"]
+        collection.save!
+      end
+      it "user" do
+        expect{ put 'update', params: { id: collection.id, remove_user: "test1@example.com" }}.to change{ collection.reload.default_read_users.size }.by(-1)
+      end
+
+      it "group" do
+        expect{ put 'update', params: { id: collection.id, remove_group: "test_group" }}.to change{ collection.reload.default_read_groups.size }.by(-1)
+      end
+
+      it "external group" do
+        expect{ put 'update', params: { id: collection.id, remove_class: "external_group" }}.to change{ collection.reload.default_read_groups.size }.by(-1)
+      end
+
+      it "IP address/range" do
+        expect{ put 'update', params: { id: collection.id, remove_ipaddress: "255.0.1.1" }}.to change{ collection.reload.default_read_groups.size }.by(-1)
+      end
+    end
+
+    context "change default access control for item" do
+      it "discovery" do
+        put 'update', params: { id: collection.id, save_access: "Save Access Settings", hidden: "1" }
+        collection.reload
+        expect(collection.default_hidden).to be_truthy
+      end
+
+      it "access" do
+        put 'update', params: { id: collection.id, save_access: "Save Access Settings", visibility: "public" }
+        collection.reload
+        expect(collection.default_visibility).to eq("public")
+      end
+    end
+
   end
 
   describe "#apply_access" do
