@@ -572,7 +572,7 @@ describe MasterFilesController do
     end
   end
 
-  describe 'move' do
+  describe '#move' do
     let(:master_file) { FactoryBot.create(:master_file, :with_media_object) }
     let(:target_media_object) { FactoryBot.create(:media_object) }
     let(:current_media_object) { master_file.media_object }
@@ -623,6 +623,29 @@ describe MasterFilesController do
         expect(target_media_object.reload.master_file_ids).to include master_file.id
         expect(target_media_object.ordered_master_file_ids).to include master_file.id
       end
+    end
+  end
+
+  describe "#update" do
+    let(:master_file) { FactoryBot.create(:master_file, :with_media_object) }
+    subject { put('update', params: { id: master_file.id, 
+                                      master_file: { title: "New label", 
+                                                    poster_offset: "00:00:03", 
+                                                    date_digitized: "2020-08-27", 
+                                                    permalink: "https://perma.link" }})}
+
+    before do
+      login_as :administrator
+    end
+
+    it 'updates the master file' do
+      path = edit_media_object_path(master_file.media_object_id, step: 'file-upload')
+      expect(subject).to redirect_to(path)
+      master_file.reload
+      expect(master_file.title).to eq "New label"
+      expect(master_file.poster_offset).to eq 3000
+      expect(master_file.date_digitized).to eq "2020-08-27T00:00:00Z"
+      expect(master_file.permalink).to eq "https://perma.link"
     end
   end
 end
