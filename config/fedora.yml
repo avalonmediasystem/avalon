@@ -13,3 +13,4 @@ production:
   password: fedoraAdmin
   url: http://127.0.0.1:8983/fedora4/rest
   base_path: /prod
+  request: { timeout: 600, open_timeout: 60} # Increase if Fedora connection times out for large operations
