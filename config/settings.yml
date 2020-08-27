@@ -86,6 +86,6 @@ auth:
 supplemental_files:
   proxy: false
 waveform:
-  player_width_in_px: 1200
-  finest_zoom_in_sec: 5
+  player_width: 1200 #pixels
+  finest_zoom: 5 #seconds
   sample_rate: 41000

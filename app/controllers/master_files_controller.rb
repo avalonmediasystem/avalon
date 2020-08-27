@@ -43,12 +43,7 @@ class MasterFilesController < ApplicationController
     @master_file = MasterFile.find(params[:id])
     authorize! :read, @master_file
 
-    ds = @master_file.waveform
-
-    # Generate empty waveform data
-    if params[:empty]
-      ds = WaveformService.new(8, samples_per_frame).empty_waveform(@master_file)
-    end
+    ds = params[:empty] ? WaveformService.new(8, samples_per_frame).empty_waveform(@master_file) : @master_file.waveform
 
     if ds.nil? || ds.empty?
       render plain: 'Not Found', status: :not_found
@@ -433,6 +428,6 @@ protected
   end
 
   def samples_per_frame
-    Settings.waveform.sample_rate * Settings.waveform.finest_zoom_in_sec / Settings.waveform.player_width_in_px
+    Settings.waveform.sample_rate * Settings.waveform.finest_zoom / Settings.waveform.player_width
   end
 end
