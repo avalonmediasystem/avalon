@@ -958,4 +958,6 @@ describe MediaObject do
       end
     end
   end
+
+  it_behaves_like "an object that has supplemental files"
 end

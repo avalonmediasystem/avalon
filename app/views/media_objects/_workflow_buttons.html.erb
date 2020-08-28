@@ -15,8 +15,12 @@ Unless required by applicable law or agreed to in writing, software distributed
 %>
 <% save_disabled = @active_step == "access-control" && cannot?( :update_access_control, @media_object) %>
 <div class="btn-group">
-<% form ||= nil %>
-<%= submit_tag 'Save', name: 'save', class: "btn btn-default", form: form, disabled: save_disabled %>
-<%= hidden_field_tag :step, @active_step, form: form %>
-<%= submit_tag "Save and continue", name: 'save_and_continue', class: 'btn btn-primary', form: form %>
+  <% form ||= nil %>
+  <%= hidden_field_tag :step, @active_step, form: form %>
+  <% if form.present? %>
+    <%= submit_tag 'Save', name: 'save', class: "btn btn-default", form: form, disabled: save_disabled %>
+    <%= submit_tag "Save and continue", name: 'save_and_continue', class: 'btn btn-primary', form: form %>
+  <% else %>
+    <%= submit_tag "Continue", name: 'save_and_continue', class: 'btn btn-primary', form: form %>
+  <% end %>
 </div>

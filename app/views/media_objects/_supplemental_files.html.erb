@@ -1,9 +1,23 @@
-<dl>
-  <% @masterFiles.each do |section| %>
-    <% next if section.supplemental_files.blank? %>
-    <dt><%= section.display_title %></dt>
-    <% section.supplemental_files.each do |file| %>
-      <dd><%= link_to file.label, master_file_supplemental_file_path(master_file_id: section.id, id: file.id) %></dd>
+<% if @masterFiles.any? { |section| section.supplemental_files.present? } %>
+  <h4>Section files</h4>
+  <hr>
+  <dl>
+    <% @masterFiles.each do |section| %>
+      <% next if section.supplemental_files.blank? %>
+      <dt><%= section.display_title %></dt>
+      <% section.supplemental_files.each do |file| %>
+        <dd><%= link_to file.label, object_supplemental_file_path(section, file) %></dd>
+      <% end %>
     <% end %>
-  <% end %>
-</dl>
+  </dl>
+<% end %>
+
+<% if @media_object.supplemental_files.present? %>
+  <h4>Item files</h4>
+  <hr>
+  <dl>
+      <% @media_object.supplemental_files.each do |file| %>
+        <dd><%= link_to file.label, object_supplemental_file_path(@media_object, file) %></dd>
+      <% end %>
+  </dl>
+<% end %>

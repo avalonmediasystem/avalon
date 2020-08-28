@@ -199,7 +199,7 @@ class MasterFilesController < ApplicationController
       end
     end
     respond_to do |format|
-      format.html { redirect_to edit_media_object_path(@master_file.media_object_id, step: 'structure') }
+      format.html { redirect_to edit_media_object_path(@master_file.media_object_id, step: 'file-upload') }
       format.json { render json: {captions: captions, flash: flash} }
     end
   end
@@ -237,6 +237,26 @@ class MasterFilesController < ApplicationController
     respond_to do |format|
     	format.html { redirect_to edit_media_object_path(params[:container_id], step: 'file-upload') }
     	format.js { }
+    end
+  end
+
+  def update
+    master_file = MasterFile.find(params[:id])
+    authorize! :update, master_file, message: "You do not have sufficient privileges to edit files"
+
+    master_file.title = master_file_params[:title] if master_file_params[:title].present?
+    master_file.date_digitized = DateTime.parse(master_file_params[:date_digitized]).to_time.utc.iso8601 if master_file_params[:date_digitized].present?
+    master_file.poster_offset = master_file_params[:poster_offset] if master_file_params[:poster_offset].present?
+    master_file.permalink = master_file_params[:permalink] if master_file_params[:permalink].present?
+
+    unless master_file.save!
+      raise Avalon::SaveError, master_file.errors.to_a.join('<br/>')
+    end
+
+    flash[:success] = "Successfully updated."
+    respond_to do |format|
+      format.html { redirect_to edit_media_object_path(master_file.media_object_id, step: 'file-upload'), success: flash[:success] }
+      format.json { render json: flash[:success] }
     end
   end
 
@@ -399,5 +419,9 @@ protected
     stream[:url] = playlist[:playlists][0]
     bandwidth = playlist["stream_inf"].match(/BANDWIDTH=(\d*)/).try(:[], 1)
     stream[:bitrate] = bandwidth if bandwidth
+  end
+
+  def master_file_params
+    params.require(:master_file).permit(:title, :label, :poster_offset, :date_digitized, :permalink)
   end
 end
