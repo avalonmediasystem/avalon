@@ -49,6 +49,17 @@ describe WaveformService, type: :service do
     end
   end
 
+  describe "get empty waveform" do
+    let(:service) { WaveformService.new }
+    let(:master_file) { FactoryBot.create(:master_file, :with_derivative, :with_structure) }
+
+    it "should return empty waveform json" do
+      waveform = service.empty_waveform(master_file)
+      expect(waveform).to be_kind_of IndexedFile
+      expect(waveform.original_name).to eq 'empty_waveform.json'
+    end
+  end
+
   describe "get_wave_io" do
     before do
       allow(IO).to receive(:popen).and_return(nil)
