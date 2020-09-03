@@ -65,6 +65,17 @@ Unless required by applicable law or agreed to in writing, software distributed
     <% end %>
   </div>
 
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      <h3 class="panel-title">
+        Access
+      </h3>
+    </div>
+    <div class="panel-body">
+      <%= @media_object.access_text %>
+    </div>
+  </div>
+
   <% if can? :inspect, @media_object %>
   <div class="panel panel-default">
     <div class="panel-heading">
