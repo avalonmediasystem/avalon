@@ -959,5 +959,51 @@ describe MediaObject do
     end
   end
 
+  describe '#access_text' do
+    let(:media_object) { FactoryBot.create(:media_object) }
+
+    context "public item" do
+      before do
+        media_object.visibility = "public"
+      end
+
+      it 'returns public text' do
+        expect(media_object.access_text).to eq("This item is accessible by: the public.")
+      end
+    end
+
+    context "restricted item" do
+      before do
+        media_object.visibility = "restricted"
+      end
+
+      it 'returns restricted text' do
+        expect(media_object.access_text).to eq("This item is accessible by: logged-in users.")
+      end
+    end
+
+    context "private item" do
+      before do
+        media_object.visibility = "private"
+      end
+
+      it 'returns private text' do
+        expect(media_object.access_text).to eq("This item is accessible by: collection staff.")
+      end
+    end
+
+    context "private item with leases" do
+      before do
+        media_object.visibility = "private"
+        media_object.governing_policies += [FactoryBot.create(:lease, inherited_read_groups: ['TestGroup'])]
+        media_object.governing_policies += [FactoryBot.create(:lease, inherited_read_groups: [Faker::Internet.ip_v4_address])]
+      end
+
+      it 'returns compound text' do
+        expect(media_object.access_text).to eq("This item is accessible by: collection staff, users in specific groups, users in specific IP Ranges.")
+      end
+    end
+  end
+
   it_behaves_like "an object that has supplemental files"
 end

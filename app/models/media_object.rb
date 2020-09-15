@@ -346,6 +346,26 @@ class MediaObject < ActiveFedora::Base
     [mergeds, faileds]
   end
 
+  def access_text
+    actors = []
+    if visibility == "public"
+      actors << "the public"
+    else
+      actors << "collection staff" if visibility == "private"
+      actors << "specific users" if read_users.any? || leases('user').any?
+
+      if visibility == "restricted"
+        actors << "logged-in users"
+      elsif virtual_read_groups.any? || local_read_groups.any? || leases('external').any? || leases('local').any?
+        actors << "users in specific groups"
+      end
+
+      actors << "users in specific IP Ranges" if ip_read_groups.any? || leases('ip').any?
+    end
+
+    "This item is accessible by: #{actors.join(', ')}."
+  end
+
   private
 
     def calculate_duration
