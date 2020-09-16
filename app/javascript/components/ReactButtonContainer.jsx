@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
-import { Modal, Button } from 'react-bootstrap';
+import { Modal } from 'react-bootstrap';
 import ReactSME from 'react-structural-metadata-editor';
-import './ReactButtonContainer.css';
+import './ReactButtonContainer.scss';
 
 class ReactButtonContainer extends Component {
   constructor(props) {
