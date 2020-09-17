@@ -8,7 +8,7 @@
     "hls.js": "https://github.com/avalonmediasystem/hls.js#stricter_ts_probing",
     "prop-types": "^15.7.2",
     "react": "^16.8.4",
-    "react-bootstrap": "^1.0.0-beta.8",
+    "react-bootstrap": "^1.0.0",
     "react-dom": "^16.8.4",
     "react-structural-metadata-editor": "https://github.com/avalonmediasystem/react-structural-metadata-editor",
     "react_ujs": "^2.4.4",
