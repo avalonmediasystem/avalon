@@ -192,7 +192,7 @@ class MasterFile < ActiveFedora::Base
     end
   end
 
-  def setContent(file)
+  def setContent(file, file_name: nil, file_size: nil, auth_header: nil)
     case file
     when Hash #Multiple files for pre-transcoded derivatives
       saveDerivativesHash(file)
@@ -205,10 +205,16 @@ class MasterFile < ActiveFedora::Base
       when 's3'
         self.file_location = file.to_s
         self.file_size = FileLocator::S3File.new(file).object.size
+      else
+        self.file_location = file.to_s
+        self.file_size = file_size
+        self.title = file_name
       end
     else #Batch
       saveOriginal(file, File.basename(file.path))
     end
+
+    @auth_header = auth_header
     reloadTechnicalMetadata!
   end
 
@@ -248,7 +254,7 @@ class MasterFile < ActiveFedora::Base
 
     return process_pass_through(file) if self.workflow_name == 'pass_through'
 
-    ActiveEncodeJobs::CreateEncodeJob.perform_later(input_path, id)
+    ActiveEncodeJobs::CreateEncodeJob.perform_later(input_path, id, { headers: @auth_header })
   end
 
   def process_pass_through(file)
@@ -546,7 +552,7 @@ class MasterFile < ActiveFedora::Base
   protected
 
   def mediainfo
-    @mediainfo ||= Mediainfo.new(FileLocator.new(file_location).location)
+    Mediainfo.new(FileLocator.new(file_location).location, { headers: @auth_header })
   end
 
   def find_frame_source(options={})
