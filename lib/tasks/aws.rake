@@ -9,8 +9,8 @@ namespace :avalon do
       templates = et.read_templates(Rails.root.join(Settings.encoding.presets_path))
       templates.each do |template|
         unless et.find_preset_by_name(template[:name]).present?
-          preset = et.create_preset(template)
-          Rails.logger.info "#{template[:name]}: #{preset.id}"
+          resp = et.create_preset(template)
+          Rails.logger.info "#{template[:name]}: #{resp.preset.id}"
         end
       end
     end
