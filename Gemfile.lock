@@ -42,8 +42,8 @@ GIT
 
 GIT
   remote: https://github.com/avalonmediasystem/mediainfo.git
-  revision: 788d7f268168e45961d2303e729d1ced71f93f58
-  tag: avalon-r6.5
+  revision: 11504137076169863509c1caaf3555ab65a4a64b
+  branch: avalon_fixes
   specs:
     mediainfo (0.7.1)
 
@@ -55,6 +55,15 @@ GIT
     omniauth-lti (0.0.2)
       ims-lti
       omniauth
+
+GIT
+  remote: https://github.com/samvera-labs/active_encode
+  revision: bc71eef52b9cf38777c583dae6d421ec482d5491
+  branch: master
+  specs:
+    active_encode (0.7.0)
+      rails
+      sprockets (< 4)
 
 GIT
   remote: https://github.com/tawan/active-elastic-job.git
@@ -109,9 +118,6 @@ GEM
     active_annotations (0.2.2)
       json-ld
       rdf-vocab (~> 2.1.0)
-    active_encode (0.7.0)
-      rails
-      sprockets (< 4)
     active_fedora-datastreams (0.2.0)
       active-fedora (>= 11.0.0.pre, < 13)
       nom-xml (>= 0.5.1)
@@ -1759,7 +1765,7 @@ DEPENDENCIES
   active-fedora (~> 12.1)
   active_annotations (~> 0.2.2)
   active_elastic_job!
-  active_encode (~> 0.7.0)
+  active_encode!
   active_fedora-datastreams (~> 0.2.0)
   activejob-traffic_control
   activejob-uniqueness
@@ -1782,7 +1788,7 @@ DEPENDENCIES
   bootsnap
   bootstrap-toggle-rails
   bootstrap_form
-  browse-everything (~> 0.13.0)
+  browse-everything (~> 0.13.1)
   byebug
   capistrano (~> 3.6)
   capistrano-passenger
