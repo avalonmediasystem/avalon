@@ -88,15 +88,16 @@ gem 'mediaelement-track-scrubber', git: 'https://github.com/avalonmediasystem/me
 
 # Jobs
 gem 'activejob-traffic_control'
+gem 'activejob-uniqueness'
 gem 'redis-rails'
 gem 'sidekiq', '~> 5.2.7'
+gem 'sidekiq-cron', '~> 1.2'
 
 # Coding Patterns
 gem 'config'
 gem 'hooks'
 gem 'jbuilder', '~> 2.0'
 gem 'parallel'
-gem 'whenever', '~> 0.11', require: false
 gem 'with_locking'
 
 group :development do
