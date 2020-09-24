@@ -18,6 +18,8 @@ module IngestBatchStatusEmailJobs
   # Sends an email to the user to alert them to this fact
   class IngestFinished < ActiveJob::Base
     queue_as :ingest_finished_job
+    unique :until_executed, on_conflict: :log
+
     def perform
       # Get all unlocked items that don't have an email sent for them and see if an email can be sent
       BatchRegistries.where(completed_email_sent: false, error_email_sent: false, locked: false).each do |br|

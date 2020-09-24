@@ -1192,7 +1192,6 @@ GEM
       xpath (~> 3.2)
     childprocess (1.0.1)
       rake (< 13.0)
-    chronic (0.10.2)
     cloudfront-signer (3.0.2)
     codeclimate-test-reporter (1.0.7)
       simplecov
@@ -1793,8 +1792,6 @@ GEM
     websocket-driver (0.7.1)
       websocket-extensions (>= 0.1.0)
     websocket-extensions (0.1.5)
-    whenever (0.11.0)
-      chronic (>= 0.6.3)
     with_locking (1.0.2)
     xml-simple (1.1.5)
     xpath (3.2.0)
@@ -1934,7 +1931,6 @@ DEPENDENCIES
   webdrivers (~> 3.0)
   webmock (~> 3.5.1)
   webpacker
-  whenever (~> 0.11)
   with_locking
   xray-rails
   zk

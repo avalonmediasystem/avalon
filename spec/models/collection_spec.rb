@@ -585,15 +585,13 @@ describe Admin::Collection do
 
     before do
       Settings.dropbox.path = "s3://#{bucket}/dropbox"
-      Aws.config[:s3] = {
-        stub_responses: {
-          head_object: { status_code: 404, headers: {}, body: '', }
-        }
-      }
     end
 
-    it "should be able to handle special S3 avoidable characters and create object" do      
+    it "should be able to handle special S3 avoidable characters and create object" do   
+      remote_object = double(key: corrected_collection_name, bucket_name: bucket, exists?: false)
       allow(Aws::S3::Client).to receive(:new).and_return(my_client)
+      allow(Aws::S3::Object).to receive(:new).and_return(remote_object)
+
       collection.name = collection_name
       expect(my_client).to receive(:put_object).with(bucket: bucket, key: corrected_collection_name)
       collection.send(:create_s3_dropbox_directory!)
@@ -601,11 +599,6 @@ describe Admin::Collection do
 
     after do
       Settings.dropbox.path = old_path
-      Aws.config[:s3] = {
-        stub_responses: {
-          head_object: { status_code: 200, headers: {}, body: '', }
-        }
-      }
     end
   end
 end
