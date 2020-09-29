@@ -220,6 +220,49 @@ RSpec.describe TimelinesController, type: :controller do
       end
     end
 
+    context "with custom scope" do
+      let(:master_file) { FactoryBot.create(:master_file, :with_structure) }
+      let(:valid_custom_attibutes) {
+        valid_attributes.merge(title: "custom scope")
+      }
+
+      it "timeline title is set to 'custom scope'" do
+        post :create, params: { timeline: valid_custom_attibutes, include_structure: true }, session: valid_session
+        timeline = Timeline.first
+        label = JSON.parse(timeline.manifest)['label']
+        expect(label['en'].first).to eq('custom scope')
+      end
+
+      it "included within an existing timespan" do
+        # does not enclose the timespan from 2:00-2:30
+        source_url = master_file_url(master_file) + "?t=120,145"
+        post :create, params: { timeline: valid_custom_attibutes.merge(source: source_url), include_structure: true }, session: valid_session
+        timeline = Timeline.last
+        structures = JSON.parse(timeline.manifest)['structures']
+        expect(structures.count).to eq(1)
+        expect(structures.first['label']['en'].first).to eq('')
+      end
+
+      it "wrapping an existing timespan" do
+        source_url = master_file_url(master_file) + "?t=30,45"
+        post :create, params: { timeline: valid_custom_attibutes.merge(source: source_url), include_structure: true }, session: valid_session
+        timeline = Timeline.last
+        structures = JSON.parse(timeline.manifest)['structures']
+        expect(structures.count).to eq(2)
+        expect(structures.first['label']['en'].first).to eq('Track 4. Buckaroo Holiday')
+      end
+
+      it "including parts of existing timespans" do
+        source_url = master_file_url(master_file) + "?t=30,55"
+        post :create, params: { timeline: valid_custom_attibutes.merge(source: source_url), include_structure: true }, session: valid_session
+        timeline = Timeline.last
+        structures = JSON.parse(timeline.manifest)['structures']
+        expect(structures.count).to eq(2)
+        expect(structures.first['label']['en'].first).to eq('Copland, Four Episodes from Rodeo')
+        expect(structures.last['label']['en'].first).to eq('')
+      end
+    end
+
     context "with structure" do
       let(:master_file) { FactoryBot.create(:master_file, :with_structure) }
       it "creates a new Timeline with initialize manifest structure" do
