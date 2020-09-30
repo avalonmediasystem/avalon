@@ -29,7 +29,7 @@ Unless required by applicable law or agreed to in writing, software distributed
     <%# Partial view for MEJS4 Add To Playlist plugin %>
     <%= render partial: 'mejs4_add_to_playlist' if current_user.present? && is_mejs_4? %>
     <%= render 'workflow_progress' %>
-    <%= render partial: 'timeline' if current_ability.can? :create, Timeline %>
+    <%= render partial: 'timeline' if (current_ability.can? :create, Timeline) && Settings['timeliner'].present? %>
     <%= render 'share' if will_partial_list_render? :share %>
 
     <!-- Sections -->

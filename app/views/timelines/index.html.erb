@@ -16,7 +16,15 @@ Unless required by applicable law or agreed to in writing, software distributed
 <% if current_user.nil? %>
   <%= link_to 'Please login to view your timelines.', new_user_session_path %>
 <% end %>
-<% unless current_user.nil? %>
+<% if Settings['timeliner'].blank? %>
+  <div id="main_content_container" class="container-fluid">
+    <div class="content" class="col-md-8">
+      <h2>Timelines</h2>
+      <p>Timelines feature is not-configured. Please contact your system administrator.</p>
+    </div>
+  </div>
+<% end %>
+<% unless current_user.nil? || Settings['timeliner'].blank? %>
   <% timelines = Timeline.where(user_id: current_user.id) %>
   <div class="container-fluid">
     <div class="row">

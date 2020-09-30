@@ -27,7 +27,7 @@ Unless required by applicable law or agreed to in writing, software distributed
     <%= link_to 'Playlists', main_app.playlists_path, id:'playlists_nav' %>
   </li>
   <% end %>
-  <% if current_ability.can? :create, Timeline %>
+  <% if (current_ability.can? :create, Timeline) && Settings['timeliner'].present? %>
   <li class=<%= active_for_controller('timelines') %>>
     <%= link_to 'Timelines', main_app.timelines_path, id:'timelines_nav' %>
   </li>
