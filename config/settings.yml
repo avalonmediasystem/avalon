@@ -73,15 +73,13 @@ encode_throttling:
   update_jobs_spacing: 10
 auth:
   registerable: true
-  configuration:
-    <% if ENV['LTI_AUTH_KEY'] %>
-    - :name: Avalon Lti OAuth
-      :provider: :lti
-      :hidden: true
-      :params:
-        :oauth_credentials:
-          <%= ENV['LTI_AUTH_KEY'] %>: <%= ENV['LTI_AUTH_SECRET'] %>
-    <% end %>
+#   configuration:
+#     - :name: Avalon Lti OAuth
+#       :provider: :lti
+#       :hidden: true
+#       :params:
+#         :oauth_credentials:
+#           somekey: somesecret
 # google_analytics_tracking_id: "someid"
 supplemental_files:
   proxy: false
