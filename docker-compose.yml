@@ -143,7 +143,8 @@ services:
       - redis-test
     environment:
       - DATABASE_URL=postgresql://postgres:password@db-test/avalon
-      - REDIS_HOST=redis-test
+      - SETTINGS__REDIS__HOST=redis-test
+      - SETTINGS__REDIS__PORT=6379
       - FEDORA_URL=http://fedora-test:8080/fedora/rest
       - SOLR_URL=http://solr-test:8983/solr/avalon
       - RAILS_ENV=test
