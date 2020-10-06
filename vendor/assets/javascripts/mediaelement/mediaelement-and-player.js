@@ -4656,6 +4656,11 @@ var MediaElementPlayer = function () {
 
 				siblingsWidth += totalMargin + (totalMargin === 0 ? railMargin * 2 : railMargin) + 1;
 
+				// Vertically align player elements in all embedded players when previous was set to 50px 
+				if (t.container.parentElement.offsetHeight == 50) {
+					t.container.style.bottom = '5px';
+				}
+
 				t.getElement(t.container).style.minWidth = siblingsWidth + 'px';
 
 				var event = (0, _general.createEvent)('controlsresize', t.getElement(t.container));
