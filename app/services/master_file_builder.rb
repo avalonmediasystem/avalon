@@ -90,7 +90,7 @@ module MasterFileBuilder
       params.require(:selected_files).permit!.values.collect do |entry|
         uri = Addressable::URI.parse(entry[:url])
         path = entry["file_name"] || URI.decode(uri.path)
-        Spec.new(uri, File.basename(path), Rack::Mime.mime_type(File.extname(path)), params[:workflow], entry["file_size"], entry["auth_header"].to_h)
+        Spec.new(uri, File.basename(path), Rack::Mime.mime_type(File.extname(path)), params[:workflow], entry["file_size"], entry["auth_header"])
       end
     end
   end
