@@ -22,7 +22,7 @@ Unless required by applicable law or agreed to in writing, software distributed
   <div class="container-fluid" id="alerts">
   <% [:success, :notice, :error, :alert].each do |type| %>
     <%- alert_class = case type
-      when :success then "alert-success"
+      when :success then "alert-info"
       when :notice  then "alert-info"
       when :alert   then "alert-warning"
       when :error   then "alert-danger"
