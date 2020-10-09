@@ -170,7 +170,7 @@ Object.assign(MediaElementPlayer.prototype, {
     clearAddAlert: function() {
       let alertEl = this.alertEl;
 
-      alertEl.classList.remove('alert-success');
+      alertEl.classList.remove('alert-info');
       alertEl.classList.remove('alert-danger');
       $(alertEl)
         .find('p')
@@ -237,7 +237,7 @@ Object.assign(MediaElementPlayer.prototype, {
       let $alertEl = $(alertEl);
       const offset = mejs.Utils.convertSMPTEtoSeconds(startTime);
 
-      alertEl.classList.add('alert-success');
+      alertEl.classList.add('alert-info');
       $alertEl.append('<p>' + response.message + '</p>');
       // Add page refresh message if needed
       if (!t.markersEl) {

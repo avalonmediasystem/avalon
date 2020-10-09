@@ -42,3 +42,8 @@ button.close {
     text-decoration: none;
   }
 }
+
+.btn-primary:hover {
+  background-color: $primary;
+  border-color: $primary;
+}

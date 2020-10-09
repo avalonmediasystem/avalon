@@ -791,7 +791,7 @@ h5.panel-title {
 }
 
 .is-invalid {
-  border-color:$danger;
+  border-color: $danger;
 }
 
 .is-invalid:focus {
@@ -881,7 +881,7 @@ h5.panel-title {
 /*Encode dashboard progress bar */
 #encode-records {
   .progress {
-    background-color: #BCBEBF;
+    background-color: #bcbebf;
     text-align: left;
     position: relative;
     height: 13px;
@@ -917,7 +917,6 @@ h5.panel-title {
   display: flex;
 }
 
-
 /* DataTables in Playlists, Timelines, Persona Users, and Encode Dashboard */
 .dataTableToolsTop {
   text-align: right;
@@ -938,13 +937,16 @@ h5.panel-title {
 }
 
 // Action column of each table
-#Playlists, #Timelines, #users-table {
+#Playlists,
+#Timelines,
+#users-table {
   td:last-child {
     white-space: nowrap;
   }
 }
 
-#users-table th, td{
+#users-table th,
+td {
   padding-right: 6px !important;
 }
 
@@ -955,4 +957,9 @@ h5.panel-title {
 
 .btn-light {
   background-color: $btn-light-bg;
+}
+
+// Alerts
+.alert-warning {
+  color: $blueGreen;
 }
