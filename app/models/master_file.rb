@@ -192,7 +192,7 @@ class MasterFile < ActiveFedora::Base
     end
   end
 
-  def setContent(file)
+  def setContent(file, file_name: nil, file_size: nil, auth_header: nil)
     case file
     when Hash #Multiple files for pre-transcoded derivatives
       saveDerivativesHash(file)
@@ -205,10 +205,16 @@ class MasterFile < ActiveFedora::Base
       when 's3'
         self.file_location = file.to_s
         self.file_size = FileLocator::S3File.new(file).object.size
+      else
+        self.file_location = file.to_s
+        self.file_size = file_size
+        self.title = file_name
       end
     else #Batch
       saveOriginal(file, File.basename(file.path))
     end
+
+    @auth_header = auth_header
     reloadTechnicalMetadata!
   end
 
@@ -248,7 +254,7 @@ class MasterFile < ActiveFedora::Base
 
     return process_pass_through(file) if self.workflow_name == 'pass_through'
 
-    ActiveEncodeJobs::CreateEncodeJob.perform_later(input_path, id)
+    ActiveEncodeJobs::CreateEncodeJob.perform_later(input_path, id, headers: @auth_header)
   end
 
   def process_pass_through(file)
@@ -264,7 +270,7 @@ class MasterFile < ActiveFedora::Base
       options[:outputs] = [{ label: 'high', url: input }]
     end
 
-    ActiveEncodeJobs::CreateEncodeJob.perform_later(input, id, options)
+    ActiveEncodeJobs::CreateEncodeJob.perform_now(input, id, options)
   end
 
   def input_path
@@ -360,7 +366,7 @@ class MasterFile < ActiveFedora::Base
 
   def update_stills_from_offset!
     # Update stills together
-    ExtractStillJob.perform_later(self.id, :type => 'both', :offset => self.poster_offset)
+    ExtractStillJob.perform_later(id, type: 'both', offset: poster_offset, headers: @auth_header)
 
     # Update stills independently
     # @stills_to_update.each do |type|
@@ -546,7 +552,7 @@ class MasterFile < ActiveFedora::Base
   protected
 
   def mediainfo
-    @mediainfo ||= Mediainfo.new(FileLocator.new(file_location).location)
+    Mediainfo.new(FileLocator.new(file_location).location, headers: @auth_header)
   end
 
   def find_frame_source(options={})
@@ -592,12 +598,12 @@ class MasterFile < ActiveFedora::Base
     (new_width,new_height) = frame_size.split(/x/).collect(&:to_f)
     new_height = (new_width/self.display_aspect_ratio.to_f).round
     frame_source = find_frame_source(offset: offset)
-    data = get_ffmpeg_frame_data(frame_source, new_width, new_height)
+    data = get_ffmpeg_frame_data(frame_source, new_width, new_height, options[:headers])
     raise RuntimeError, "Frame extraction failed. See log for details." if data.empty?
     data
   end
 
-  def get_ffmpeg_frame_data frame_source, new_width, new_height
+  def get_ffmpeg_frame_data(frame_source, new_width, new_height, headers)
     ffmpeg = Settings.ffmpeg.path
     unless File.executable?(ffmpeg)
       raise RuntimeError, "FFMPEG not at configured location: #{ffmpeg}"
@@ -622,6 +628,9 @@ class MasterFile < ActiveFedora::Base
         ]
         if frame_source[:master]
           options[0..3] = options.values_at(2,3,0,1)
+        end
+        unless headers&.empty?
+          options = ["-headers", headers.map { |k, v| "#{k}: #{v}\r\n" }.join] + options
         end
         Kernel.system(ffmpeg, *options)
         jpeg.rewind

@@ -14,7 +14,7 @@
 
 module MasterFileBuilder
   class BuildError < Exception; end
-  Spec = Struct.new(:content, :original_filename, :content_type, :workflow)
+  Spec = Struct.new(:content, :original_filename, :content_type, :workflow, :file_size, :auth_header)
 
   def self.build(media_object, params)
     builder = if params.has_key?(:Filedata) and params.has_key?(:original)
@@ -39,7 +39,7 @@ module MasterFileBuilder
       end
 
       master_file = MasterFile.new()
-      master_file.setContent(spec.content)
+      master_file.setContent(spec.content, file_name: spec.original_filename, file_size: spec.file_size, auth_header: spec.auth_header)
       master_file.set_workflow(spec.workflow)
 
       if 'Unknown' == master_file.file_format
@@ -87,10 +87,10 @@ module MasterFileBuilder
 
   module DropboxUpload
     def self.build(params)
-      params[:selected_files].values.collect do |entry|
+      params.require(:selected_files).permit!.values.collect do |entry|
         uri = Addressable::URI.parse(entry[:url])
-        path = URI.decode(uri.path)
-        Spec.new(uri, File.basename(path), Rack::Mime.mime_type(File.extname(path)), params[:workflow])
+        path = entry["file_name"] || URI.decode(uri.path)
+        Spec.new(uri, File.basename(path), Rack::Mime.mime_type(File.extname(path)), params[:workflow], entry["file_size"], entry["auth_header"])
       end
     end
   end

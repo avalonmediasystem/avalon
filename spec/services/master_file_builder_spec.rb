@@ -41,7 +41,7 @@ describe MasterFileBuilder, type: :service do
   describe 'DropboxUpload.build' do
     it "should return a Spec" do
       url = "file:///srv/dropbox/file.mp4"
-      params = { workflow: double("workflow"), selected_files: { afile: { url: url } } }
+      params = ActionController::Parameters.new({ workflow: double("workflow"), selected_files: { afile: { url: url } } })
 
       s = MasterFileBuilder::DropboxUpload.build(params)
       expect(s).to eq [MasterFileBuilder::Spec.new(Addressable::URI.parse(url), "file.mp4", "video/mp4", params[:workflow])]
