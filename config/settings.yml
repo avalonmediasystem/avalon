@@ -6,9 +6,6 @@ domain:
 dropbox:
   path: /srv/avalon/dropbox
   upload_uri: sftp://avalon.example.edu
-  # google_drive:
-  #   client_id: id
-  #   client_secret: secret
 encoding:
   engine_adapter: ffmpeg
   presets_path: config/ffmpeg_presets.yml

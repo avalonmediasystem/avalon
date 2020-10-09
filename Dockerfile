@@ -36,7 +36,7 @@ RUN         mkdir -p /tmp/ffmpeg && cd /tmp/ffmpeg \
 
 # Base stage for building final images
 FROM        ruby:2.5.5-slim-stretch as base
-RUN         apt-get update --fix-missing && apt-get install -y --no-install-recommends curl gnupg2 \
+RUN         apt-get update && apt-get install -y --no-install-recommends curl gnupg2 \
          && curl -sL http://deb.nodesource.com/setup_8.x | bash - \
          && curl -O https://mediaarea.net/repo/deb/repo-mediaarea_1.0-6_all.deb && dpkg -i repo-mediaarea_1.0-6_all.deb \
          && curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add - \

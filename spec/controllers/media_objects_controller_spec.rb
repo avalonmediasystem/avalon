@@ -482,7 +482,7 @@ describe MediaObjectsController, type: :controller do
           put 'json_update', params: { format: 'json', id: media_object.id, files: [master_file], collection_id: media_object.collection_id }
           media_object.reload
           expect(media_object.master_files.to_a.size).to eq 1
-          expect(ExtractStillJob).to have_been_enqueued.with(media_object.master_files.first.id, { type: 'both', offset: 2000, headers: nil })
+          expect(ExtractStillJob).to have_been_enqueued.with(media_object.master_files.first.id,{type:'both',offset:2000})
         end
         it "should update the waveform for its masterfile" do
           media_object = FactoryBot.create(:media_object)
