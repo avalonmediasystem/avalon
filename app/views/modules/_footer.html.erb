@@ -1,31 +1,70 @@
-<%#
-Copyright 2011-2019, The Trustees of Indiana University and Northwestern
-  University.  Licensed under the Apache License, Version 2.0 (the "License");
-  you may not use this file except in compliance with the License.
-
-You may obtain a copy of the License at
-
-http://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software distributed
-  under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
-  CONDITIONS OF ANY KIND, either express or implied. See the License for the
-  specific language governing permissions and limitations under the License.
----  END LICENSE_HEADER BLOCK  ---
-%>
-   <div class="container-fluid">
-          <footer>
-           <ul>
-             <li><%= image_tag "yale-wordmark-blue-default.png", alt: "Yale University" %>
-             <li><a href="http://findit.library.yale.edu">Digital Collections</a></li>
-             <li><a href="http://www.yale.edu/privacy-policy">Privacy Policy</a></li>
-             <li><a href="https://web.library.yale.edu/data-use">Data Use</a></li>
-             <li><a href="http://avalon.library.yale.edu/form/feedback?findITURL=http%3A//avalon.library.yale.edu/">Feedback</a></li>
-             <%# Removed "Contact Us" link %>
-           </ul>
-           <div class="release">
-                <%=release_text%>
-                <%= git_commit_info(" (%s %s [%s])") if Rails.env == 'development' %>
-           </div>
-       </footer>
+<div class="footer-container">
+  <div class="container-fluid">
+  <div class="container_classes">
+    <div class="footer-logo-wrapper">
+      <%= link_to application_name, root_path, class: 'footer-logo'%>
+      <div class="footer-links">
+        <ul>
+          <li>
+            <a href="http://web.library.yale.edu/gsearch" target="_blank">Search</a>
+          </li>
+          <li>
+            <a href="http://www.library.yale.edu/librarynews" target="_blank">News</a>
+          </li>
+          <li>
+            <a href="http://status.library.yale.edu" target="_blank">Systems Status</a>
+          </li>
+          <li>
+            <a href="http://www.yale.edu/privacy.html" target="_blank">Privacy Policy</a>
+          </li>
+          <li>
+            <a href="https://guides.library.yale.edu/about/policies/access" target="_blank">Terms</a>
+          </li>
+          <!--<% url = request.path() %>-->
+          <% url = request.original_url %>
+          <li>
+            <%= link_to(:"Feedback", "http://web.library.yale.edu/form/findit-feedback?findITURL=#{url}", :target => '_blank' ) %>
+          </li>
+          <li>
+            <a href="https://web.library.yale.edu/data-use" target="_blank">Data Use</a>
+          </li>
+          <li>
+            <a href="https://usability.yale.edu/web-accessibility/accessibility-yale" target="_blank">Accessibility</a>
+          </li>
+        </ul>
+      </div>
     </div>
+    <div class="footer-socmedia">
+      <a href="http://yaleuniversity.tumblr.com/" target="_blank">
+        <%= image_tag("soc_media/icon_tumblr.png", {id: 'tumblr', alt: 'Yale University Tumblr'})%>
+        <span class="sr-only">Yale University Library on Tumblr</span>
+      </a>
+      <a href="https://www.instagram.com/yalelibrary" target="_blank">
+        <%= image_tag("soc_media/icon_instagram.png", {id: 'instagram', alt: 'Yale Library Instagram'})%>
+        <span class="sr-only">Yale University Library on Instagram</span>
+      </a>
+      <a href="https://twitter.com/yalelibrary" target="_blank">
+        <%= image_tag("soc_media/icon_twitter.png", {id: 'twitter', alt: 'Yale Library Twitter'})%>
+        <span class="sr-only">Yale University Library on Twitter</span>
+      </a>
+      <a href="https://www.facebook.com/yalelibrary" target="_blank">
+        <%= image_tag("soc_media/icon_facebook.png", {id: 'facebook', alt: 'Yale Library Facebook'}) %>
+        <span class="sr-only">Yale University Library Facebook Page</span>
+      </a>
+    </div>
+  </div>
+</div>
+
+
+<div class="release">
+  <%=release_text%>
+  <%= git_commit_info(" (%s %s [%s])") if Rails.env == 'development' %>
+</div>
+
+
+
+
+
+<!--<div class="branch-name">-->
+<!--  <spanclass="branch-name">Branch:<spantitle="SHA:<%#=GIT_SHA%>"><%#=ENV['BLACKLIGHT_VERSION']||GIT_BRANCH%>,Deployed:<%#=DEPLOYED_AT%></span>-->
+<!--</div>-->

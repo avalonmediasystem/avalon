@@ -449,56 +449,6 @@ div[id*='facet-panel-'] {
   margin: 3px;
 }
 
-/* Footer */
-footer {
-  margin-top: 10px;
-  padding-top: 10px;
-  border-top: 1px solid #EEE;
-  /* border-bottom: 1px solid #fff; */
-
-  ul {
-    margin-left: 0;
-  }
-
-  li {
-    list-style-type: none;
-    display: inline;
-  }
-
-  li:before {
-    content: " | ";
-    color: $black
-  }
-
-  li:first-child:before {
-    content: none;
-  }
-}
-
-.yalemark {width: 65px; margin-right: 1em;}
-
-footer a {
-  color: $black;
-}
-
-footer ul {
-  float: left;
-  margin-left: -40px;
-  @media all and (max-width: 475px) {
-    float: none;
-  }
-}
-
-footer .links {margin-top: .5em;}
-
-footer .release {
-  float: right;
-  margin-top: .5em;
-  @media all and (max-width: 475px) {
-    float: none;
-  }
-}
-
 /* Alerts */
 
 .alert {
