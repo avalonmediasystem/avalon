@@ -1,0 +1,203 @@
+/********************************************************
+DEFAULT MOBILE STYLING
+********************************************************/
+
+
+
+.bg-dark {
+  background-color: $yale_blue !important;
+}
+
+.dropdown-menu.show {
+  display: contents;
+}
+
+.dropdown-menu {
+  color: $white !important;
+  text-transform: capitalize !important;
+}
+
+.iiif-logo img {
+  height: 30px;
+}
+
+.info-header {
+  text-transform: uppercase;
+  border-bottom: $white thin solid;
+  margin-left: -15%;
+  padding-left: 15.5%;
+}
+
+.nav-link {
+  margin-left: 5px;
+  margin-right: 5px;
+  font-family: $mallory_mp_medium, $mallory_medium, Arial, Helvetica, sans-serif !important;
+  font-weight: 500;
+  font-stretch: normal;
+  font-style: normal;
+  font-size: 12px;
+  line-height: 2.25;
+  letter-spacing: normal;
+  text-align: right;
+  color: $lightest_grey !important;
+}
+
+.nav-link-caret {
+  transform: rotate(180deg);
+  -ms-transform: rotate(180deg);  /*  for IE  */
+  -webkit-transform: rotate(180deg); /* for browsers supporting webkit (such as chrome, firefox, safari etc.). */
+  font-size: 14px;
+  display: inline-block;
+  padding-top: 3px;
+}
+
+.nav-link-title {
+  margin-bottom: 0px;
+}
+
+.navbar-brand {
+  color: transparent !important;
+}
+
+.navbar-logo {
+  background-image: image-url('yul_logo/yul_logo3x.png');
+  flex: 0 1 210px;
+  background-size: contain;
+  background-position-y: center;
+  margin-top: 5px;
+}
+
+.secondary-nav {
+  background-color: $yale_blue;
+  color: $white !important;
+  font-size: small;
+  border-top: $white thin solid;
+  align-items: center;
+}
+
+.secondary-nav > .row {
+  flex-direction: column;
+  margin-right: auto;
+  margin-left: auto;
+  padding-left: 15px;
+}
+
+.secondary-nav a {
+  color: $white !important;
+  font-size: 16px;
+  font-family: $yale_roman, 'Times New Roman', Times, serif !important;
+}
+
+
+@media screen and (min-width: $small_device) {
+  .info-header {
+    margin-left: -26%;
+    padding-left: 21%;
+  }
+
+  .navbar > div.container {
+    margin-right: auto;
+    margin-left: auto;
+    max-width: 95%;
+  }
+
+  .secondary-nav > .row {
+    padding-left: 9.5%;
+  }
+}
+
+
+@media screen and (min-width: $medium_device) {
+  .info-header {
+    padding-left: 26%;
+  }
+
+  .navbar > .container {
+    flex-direction: column;
+    align-items: start;
+  }
+
+  .navbar-expand-md .navbar-nav .nav-link {
+    padding-left: 0px;
+    padding-right: 28px;
+    margin-left: 0px;
+  }
+
+  .navbar-logo {
+    flex: 0 1 50%;
+    width: 215px;
+  }
+
+  .secondary-nav > .row {
+    padding-left: 6.5%;
+  }
+}
+
+
+@media screen and (min-width: $large_device) {
+  .info-header {
+    padding-left: 26%;
+  }
+
+  .navbar > div.container,
+  #main-container {
+    max-width: 85%;
+  }
+
+  .navbar-collapse {
+    margin-top: 5px;
+    padding-top: 5px;
+  }
+
+  .navbar-expand-md,
+  .navbar-expand-md > .container {
+    padding-left: 0px;
+    padding-right: 0px;
+  }
+
+  .secondary-nav > .row {
+    padding-left: 7.5%;
+  }
+}
+
+
+@media screen and (min-width: $xlarge_device) {
+  .info-header {
+    margin-right: 1rem;
+    border-bottom: none;
+  }
+
+  .menu-block-wrapper {
+    position: absolute;
+    width: max-content;
+  }
+
+  .navbar > .container {
+    flex-direction: initial;
+  }
+
+  .navbar-expand-md .navbar-nav .nav-link {
+    padding-right: 0px;
+    padding-left: 28px;
+    margin-right: 0px;
+  }
+
+  .navbar-logo {
+    flex: 0 1 25%;
+  }
+
+  .nav-link-title > a {
+    display: inline-block;
+  }
+
+  .secondary-nav .dropdown-menu > li {
+    position: relative;
+    float: none;
+    display: block;
+  }
+
+  .secondary-nav > .row {
+    flex-direction: initial;
+    padding-bottom: 0.15rem;
+  }
+}

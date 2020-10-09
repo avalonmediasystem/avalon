@@ -1,0 +1,138 @@
+/********************************************************
+DEFAULT MOBILE STYLING
+********************************************************/
+
+@import 'branding';
+//@import 'bootstrap/variables';
+@import 'helpers/breakpoints';
+@import 'colors';
+
+//TODOvariables yale_blue #043669 and font $mallory_mp_medium, $mallory_medium,
+.footer-container {
+  background-color: $yale_blue;
+  font-family: Arial, Helvetica, sans-serif !important;
+  margin-top: 15px;
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  padding: 2.5rem 1rem;
+}
+
+
+.footer-links > ul {
+  margin-left: -270px;
+  list-style-type: none;
+  margin-top: -5px;
+}
+
+.footer-links a {
+  margin: 0px !important;
+  font-size: 10px;
+}
+
+// hides the link and hover text of the footer logo only
+.footer-logo-wrapper a {
+  color: transparent;
+}
+
+.footer-logo {
+  display: grid;
+  margin-left: -232px;
+  background-size: contain;
+  background-position-y: center;
+  background-image: url(/assets/yul_logo/yul_logo3x.png);
+  width: 200px;
+  background-repeat: no-repeat;
+  height: 50px;
+  color: transparent !important;
+  margin-top: -30px;
+}
+
+.footer-logo > img {
+  width: 100%;
+}
+
+.footer-links {
+  text-transform: uppercase;
+}
+
+.footer-links a {
+  color: $white !important;
+  margin-left: 1rem;
+}
+
+.footer-socmedia{
+  display: flex;
+  margin-left: -232px;
+  margin-top: 0px;
+}
+.footer-socmedia a {
+  padding-right: 4px;
+}
+
+.footer-socmedia img {
+  width: 1.75rem;
+  margin-right: 3px;
+}
+
+.release{
+  font-size: 8px;
+  padding: 256px 7px 15px;
+  position: absolute;
+  color: white !important;
+}
+
+
+@media screen and (min-width: $medium_device) {
+
+}
+
+
+@media screen and (min-width: $large_device) {
+  .footer-logo {
+    margin-left: -232px!important;
+  }
+
+  .footer-links > ul {
+    display: flex;
+    margin-top: -11px;
+  }
+
+  .footer-links a {
+    padding-right: 2rem;
+  }
+  .release {
+    font-size: 8px;
+    padding: 115px 7px 15px;
+  }
+  .footer-socmedia{
+    display: flex;
+    margin-left: -230px;
+    margin-top: 14px;
+
+  }
+}
+
+
+@media screen and (min-width: $xlarge_device) {
+  .footer-logo{
+    margin-top: -18px;
+  }
+
+  .footer-links{
+    font-size: 12px;
+    margin-top: -30px;
+    padding-left: 20px;
+  }
+  .footer-links > ul {
+    margin-top: 0px;
+    margin-left: 10px;
+    display: flex;
+  }
+  .release{
+    padding: 100px 7px 15px;
+  }
+
+}

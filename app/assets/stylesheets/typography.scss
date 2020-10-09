@@ -1,0 +1,52 @@
+// primary typeface
+@font-face {
+  font-family: 'YaleNew-Roman';
+  src:  url(https://www.yale.edu/sites/all/themes/yale_blue/fonts/yalenew-roman-webfont.woff2);
+}
+
+@font-face {
+  font-family: 'YaleNew-Italic';
+  src:  url(https://environment.yale.edu/assets/eye/common/webfonts/yalenew-italic-webfont.ttf);
+}
+
+// secondary typeface
+@font-face {
+  font-family: 'Mallory-Book';
+  src:  url(https://www.yale.edu/sites/all/themes/yale_blue/fonts_new/Mallory/Mallory/Mallory-Light.woff);
+}
+
+@font-face {
+  font-family: 'Mallory-Light';
+  src:  url(https://www.yale.edu/sites/all/themes/yale_blue/fonts_new/Mallory/Mallory/Mallory-Light.woff);
+}
+
+@font-face {
+  font-family: 'Mallory-LightItalic';
+  src:  url(https://www.yale.edu/sites/all/themes/yale_blue/fonts_new/Mallory/Mallory/Mallory-LightItalic.woff);
+}
+
+@font-face {
+  font-family: 'Mallory-Medium';
+  src:  url(https://www.yale.edu/sites/all/themes/yale_blue/fonts_new/Mallory/Mallory/Mallory-Medium.woff);
+}
+
+// TODO(alishaevn): update the 2 fonts below with the correct url once we have them
+@font-face {
+  font-family: 'MalloryMP-Medium';
+  src:  url(https://www.yale.edu/sites/all/themes/yale_blue/fonts_new/Mallory/Mallory/Mallory-Medium.woff);
+}
+
+@font-face {
+  font-family: 'MalloryMP-Black';
+  src:  url(https://www.yale.edu/sites/all/themes/yale_blue/fonts_new/Mallory/Mallory/Mallory-Medium.woff);
+}
+
+
+$yale_roman: YaleNew-Roman;
+$yale_italic: YaleNew-Italic;
+$mallory_book: Mallory-Book;
+$mallory_light: Mallory-Light;
+$mallory_light_italic: Mallory-LightItalic;
+$mallory_medium: Mallory-Medium;
+$mallory_mp_medium: MalloryMP-Medium;
+$mallory_mp_black: MalloryMP-Black;
