@@ -17,10 +17,6 @@ require 'cancan/matchers'
 
 RSpec.describe Timeline, type: :model do
 
-  before :all do
-    Settings['timeliner'] = 'enabled'
-  end
-
   describe 'validations' do
     it { is_expected.to validate_presence_of(:title) }
     it { is_expected.to validate_presence_of(:user) }
