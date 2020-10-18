@@ -16,10 +16,24 @@ Unless required by applicable law or agreed to in writing, software distributed
 <div class="custom-header">
   <div class="container">
     <header class="header-wrapper">
-      <div class="header-logo">
-        <%= link_to main_app.root_path do %>
-        <%= image_tag "Home.png", class: "img-responvies", alt: "Avalon Media System - #{t(:release_label)} #{Avalon::VERSION}" %>
-        <% end %>
+      <div class="branding-header">
+        <div class="branding-header logo">
+          <%= link_to root_path do %>
+            <%= image_tag("emory_shield.svg", :alt => "Emory Library") %>
+          <% end %>
+        </div>
+        <div class="branding-header">
+          <div class="row ml-0">
+            <div>
+              <%= link_to "Emory University", "https://emory.edu/", class: "branding-header organization" %>
+            </div>
+          </div>
+          <div class="row ml-0">
+            <div>
+              <%= link_to "Emory Libraries", "https://libraries.emory.edu/", class: "branding-header division" %>
+            </div>
+          </div>
+        </div>
       </div>
 
       <% unless current_page?(main_app.root_path) %>

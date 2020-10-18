@@ -165,7 +165,7 @@
 }
 
 .manage-btn:hover {
-  background-color: $yellow!important;
+  background-color: $yellow !important;
   color: $primaryDark;
 }
 
@@ -190,4 +190,39 @@
   .manage-btn {
     height: 40px;
   }
+}
+
+.branding-row {
+  margin-top: 10px;
+  margin-bottom: 0;
+}
+
+.branding-header {
+  display: inline-block;
+  color: $primaryDark;
+  white-space: nowrap;
+  &:hover {
+    color: #004990;
+    text-decoration: none;
+  }
+}
+
+.branding-header.logo {
+  padding-top: 10px;
+}
+
+.branding-header.organization {
+  line-height: 23px;
+  text-transform: uppercase;
+  font-size: 14px;
+  font-family: 'Cardo', serif;
+  padding-left: 16px;
+}
+
+.branding-header.division {
+  padding-left: 16px;
+  font-size: 24px;
+  font-family: 'Open Sans', sans-serif;
+  font-weight: 700;
+  line-height: 24px;
 }
