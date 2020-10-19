@@ -51,11 +51,11 @@ class ApplicationController < ActionController::Base
     return if params[:controller] =~ /migration/
 
     params.permit!
-    new_id = ActiveFedora::SolrService.query(%{identifier_ssim:"#{params[:id]}"}, rows: 1, fl: 'id')
-    if new_id.size == 0
+    query_result = ActiveFedora::SolrService.query(%{identifier_ssim:"#{params[:id]}"}, rows: 1, fl: 'id')
+    if query_result.size == 0
       raise ActiveFedora::ObjectNotFoundError
     else
-      new_id = new_id.first['id']
+      new_id = query_result.first['id']
       new_content_id = params[:content] ? ActiveFedora::SolrService.query(%{identifier_ssim:"#{params[:content]}"}, rows: 1, fl: 'id').first['id'] : nil
       redirect_to(url_for(params.merge(id: new_id, content: new_content_id)))
     end
