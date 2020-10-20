@@ -74,6 +74,21 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
     end
   end
 
+  def shibboleth
+    @user = User.from_omniauth(request.env["omniauth.auth"])
+
+    if @user.persisted?
+      sign_in @user
+      # This will help the user go back to where they came.
+      # Refer: https://github.com/omniauth/omniauth/wiki/Saving-User-Location
+      redirect_to request.env["omniauth.origin"] || root_url
+      set_flash_message(:notice, :success, kind: "Shibboleth")
+    else
+      redirect_to root_path
+      set_flash_message(:notice, :failure, kind: "Shibboleth", reason: "you aren't authorized to use this application.")
+    end
+  end
+
   protected :find_user
 
   rescue_from Avalon::MissingUserId do |exception|

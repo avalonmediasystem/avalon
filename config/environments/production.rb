@@ -115,4 +115,20 @@ config.webpacker.check_yarn_integrity = false
 
   # Additional production specific initializers
   Dir["config/environments/production/*.rb"].each {|file| load file }
+
+  # OmniAuth configuration settings
+  config.idp_slo_target_url = ENV['IDP_SLO_TARGET_URL']
+  config.assertion_consumer_service_url = ENV['ASSERTION_CS_URL']
+  config.assertion_consumer_logout_service_url = ENV['ASSERTION_LOGOUT_URL']
+  config.issuer = ENV['ISSUER']
+  config.idp_sso_target_url = ENV['IDP_SSO_TARGET_URL']
+  config.idp_cert = ENV['IDP_CERT']
+  config.certificate = ENV['SP_CERT']
+  config.private_key = ENV['SP_KEY']
+  config.attribute_statements = {}
+  config.uid_attribute = "urn:oid:0.9.2342.19200300.100.1.1"
+  config.security = {
+     :want_assertions_encrypted  => true, #makes a 2nd KeyDescriptor, this one says use="encryption"
+     :want_assertions_signed  => true, # goes on md SPSSODescriptor tag
+  }
 end

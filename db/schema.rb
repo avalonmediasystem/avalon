@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_10_16_195828) do
+ActiveRecord::Schema.define(version: 2020_10_20_210257) do
 
   create_table "active_encode_encode_records", force: :cascade do |t|
     t.string "global_id"
@@ -233,6 +233,8 @@ ActiveRecord::Schema.define(version: 2019_10_16_195828) do
     t.integer "invited_by_id"
     t.string "invited_by_type"
     t.datetime "deleted_at"
+    t.string "display_name"
+    t.string "ppid"
     t.index ["deleted_at"], name: "index_users_on_deleted_at"
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["invitation_token"], name: "index_users_on_invitation_token", unique: true
