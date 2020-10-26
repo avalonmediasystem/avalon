@@ -14,9 +14,9 @@
 
 require 'rails_helper'
 
-describe User do
+describe User, :clean do
   subject { user }
-  let!(:user) { FactoryBot.build(:user) }
+  let(:user) { FactoryBot.build(:user) }
   let!(:list) { 0.upto(rand(5)).collect { Faker::Internet.email } }
 
   describe "validations" do
@@ -154,6 +154,124 @@ describe User do
       FactoryBot.create(:timeline, user: user, tags: ['foo'])
       FactoryBot.create(:timeline, user: user, tags: ['foo'])
       expect(user.timeline_tags).to eq ['foo']
+    end
+  end
+
+  describe 'from omniauth' do
+    before do
+      # User must exists before tests can run
+      described_class.create(provider:     'shibboleth',
+                             uid:          'brianbboys1967',
+                             ppid:         'P0000001',
+                             display_name: 'Brian Wilson',
+                             email:        'brianbboys1967@emory.edu',
+                             username:     'P0000001')
+    end
+
+    let(:auth_hash) do
+      OmniAuth::AuthHash.new(
+        provider: 'shibboleth',
+        uid:      "P0000001",
+        info:     {
+          display_name: "Brian Wilson",
+          uid:          'brianbboys1967'
+        }
+      )
+    end
+
+    let(:user) { described_class.from_omniauth(auth_hash) }
+
+    context "has attributes" do
+      it "has Shibboleth as a provider" do
+        expect(user.provider).to eq 'shibboleth'
+      end
+      it "has a uid" do
+        expect(user.uid).to eq auth_hash.info.uid
+      end
+      it "has a name" do
+        expect(user.display_name).to eq auth_hash.info.display_name
+      end
+      it "has a PPID" do
+        expect(user.ppid).to eq auth_hash.uid
+      end
+    end
+
+    context "updating an existing user" do
+      let(:updated_auth_hash) do
+        OmniAuth::AuthHash.new(
+          provider: 'shibboleth',
+          uid:      "P0000001",
+          info:     {
+            display_name: "Boaty McBoatface",
+            uid:          'brianbboys1968'
+          }
+        )
+      end
+
+      it "updates ppid and display_name with values from shibboleth" do
+        expect(user.uid).to eq auth_hash.info.uid
+        expect(user.ppid).to eq auth_hash.uid
+        expect(user.display_name).to eq auth_hash.info.display_name
+        described_class.from_omniauth(updated_auth_hash)
+        user.reload
+        expect(user.ppid).to eq updated_auth_hash.uid
+        expect(user.uid).not_to eq auth_hash.info.uid
+        expect(user.ppid).to eq updated_auth_hash.uid
+        expect(user.display_name).not_to eq auth_hash.info.display_name
+        expect(user.display_name).to eq updated_auth_hash.info.display_name
+      end
+    end
+
+    context "signing in twice" do
+      it "finds the original account instead of trying to make a new one" do
+        # login existing user second time
+        expect { described_class.from_omniauth(auth_hash) }
+          .not_to change { described_class.count }
+      end
+    end
+
+    context "attempting to sign in a new user" do
+      let(:new_auth_hash) do
+        OmniAuth::AuthHash.new(
+          provider: 'shibboleth',
+          uid:      'P0000003',
+          info:     {
+            display_name: 'Fake Person',
+            uid:          'egnetid'
+          }
+        )
+      end
+
+      it "does not allow a new user to sign in" do
+        expect { described_class.from_omniauth(new_auth_hash) }
+          .not_to change { described_class.count }
+        expect(Rails.logger).to receive(:error)
+        u = described_class.from_omniauth(new_auth_hash)
+        expect(u.class.name).to eql 'User'
+        expect(u.persisted?).to be false
+      end
+    end
+
+    context "invalid shibboleth data" do
+      let(:invalid_auth_hash) do
+        OmniAuth::AuthHash.new(
+          provider: 'shibboleth',
+          uid:      '',
+          info:     {
+            display_name: '',
+            uid:          ''
+          }
+        )
+      end
+
+      it "does not register new users" do
+        expect { described_class.from_omniauth(invalid_auth_hash) }
+          .not_to change { described_class.count }
+        expect(Rails.logger).to receive(:error)
+        u = described_class.from_omniauth(invalid_auth_hash)
+        expect(u.class.name).to eql 'User'
+        expect(u.persisted?).to be false
+      end
     end
   end
 end

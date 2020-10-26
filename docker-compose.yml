@@ -122,6 +122,7 @@ services:
       - SETTINGS__STREAMING__SERVER=nginx
       - SETTINGS__STREAMING__STREAM_TOKEN_TTL=20
       - SYSTEM_GROUPS=administrator,group_manager,manager
+      - DATABASE_AUTH=true
     volumes:
       - .:/home/app/avalon
       - npms:/home/app/avalon/node_modules
@@ -150,6 +151,7 @@ services:
       - RAILS_ENV=test
       - BUNDLE_FLAGS=--with aws test postgres --without production
       - DATABASE_CLEANER_ALLOW_REMOTE_DATABASE_URL=true
+      - DATABASE_AUTH=true
     ports: []
 
   worker:

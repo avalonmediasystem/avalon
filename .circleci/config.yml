@@ -11,6 +11,7 @@ jobs:
         - FEDORA_URL=http://localhost:8080/fcrepo/rest
         - FEDORA_TIMEOUT=300
         - RAILS_ENV=test
+        - DATABASE_AUTH=true
      # Secondary container image on common network.
      - image: postgres:10-alpine
        environment:

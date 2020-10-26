@@ -26,10 +26,8 @@ class User < ActiveRecord::Base
   # Include default devise modules. Others available are:
   # :confirmable, :lockable, :timeoutable
   # Registration is controlled via settings.yml
-  devise_list = [ :database_authenticatable, :invitable, :omniauthable,
-                  :recoverable, :rememberable, :trackable, :validatable ]
-  devise_list << :registerable if Settings.auth.registerable
-  devise_list << { authentication_keys: [:login] }
+  devise_list = [:omniauthable, :rememberable, :trackable, omniauth_providers: [:shibboleth], authentication_keys: [:login]]
+  devise_list.prepend(:database_authenticatable) if AuthConfig.use_database_auth?
 
   devise(*devise_list)
 
@@ -157,6 +155,32 @@ class User < ActiveRecord::Base
       User.walk_ldap_groups(User.ldap_member_of(g), seen)
     end
     seen
+  end
+
+  # When a user authenticates via shibboleth, find their User object or make
+  # a new one. Populate it with data we get from shibboleth.
+  # @param [OmniAuth::AuthHash] auth
+  def self.from_omniauth(auth)
+    begin
+      user = find_by!(provider: auth.provider, username: auth.uid.downcase)
+    rescue ActiveRecord::RecordNotFound
+      log_omniauth_error(auth)
+      return User.new
+    end
+    user.assign_attributes(display_name: auth.info.display_name, ppid: auth.uid, uid: auth.info.uid)
+    # tezprox@emory.edu isn't a real email address
+    user.email = auth.info.uid + '@emory.edu' unless auth.info.uid == 'tezprox'
+    user.save
+    user
+  end
+
+  def self.log_omniauth_error(auth)
+    if auth.info.uid.empty?
+      Rails.logger.error "Nil user detected: Shibboleth didn't pass a uid for #{auth.inspect}"
+    else
+      # Log unauthorized logins to error.
+      Rails.logger.error "Unauthorized user attemped login: #{auth.inspect}"
+    end
   end
 end
 

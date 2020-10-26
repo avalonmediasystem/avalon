@@ -59,6 +59,7 @@ gem 'ims-lti', '~> 1.1.13'
 gem 'net-ldap'
 gem 'omniauth-identity'
 gem 'omniauth-lti', git: "https://github.com/avalonmediasystem/omniauth-lti.git", tag: 'avalon-r4'
+gem 'omniauth-saml', '~> 1.10', '>= 1.10.3'
 
 # Media Access & Transcoding
 gem 'active_encode', '~> 0.7.0'
