@@ -18,10 +18,6 @@
 //= require mediaelement/plugins/markers
 //= require mediaelement/plugins/quality-avalon
 //= require mediaelement/plugins/quality-i18n
-//= require mediaelement/plugins/jump-forward/jump-forward
-//= require mediaelement/plugins/jump-forward/jump-forward-i18n
-//= require mediaelement/plugins/skip-back/skip-back
-//= require mediaelement/plugins/skip-back/skip-back-i18n
 //= require media_player_wrapper/mejs4_plugin_add_to_playlist
 //= require media_player_wrapper/mejs4_plugin_add_marker_to_playlist
 //= require media_player_wrapper/mejs4_plugin_create_thumbnail

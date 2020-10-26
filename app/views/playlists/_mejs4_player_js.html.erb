@@ -25,7 +25,7 @@ var playlistItem = <%= current_playlist_item.to_json.html_safe %>;
 
 var mejs4AvalonPlayer = new MEJSPlayer({
   currentStreamInfo: <%= section_info.to_json.html_safe %>,
-  features: ['playpause', 'skipback', 'jumpforward', 'current', 'progress', 'duration', 'trackScrubber', 'volume', 'tracks', 'quality', 'markers', 'addMarkerToPlaylist', 'fullscreen', 'playlistItems'],
+  features: ['playpause', 'current', 'progress', 'duration', 'trackScrubber', 'volume', 'tracks', 'quality', 'markers', 'addMarkerToPlaylist', 'fullscreen', 'playlistItems'],
   highlightRail: true,
   playlistItem: playlistItem,
   defaultQuality: '<%= current_quality(section_info) %>'
