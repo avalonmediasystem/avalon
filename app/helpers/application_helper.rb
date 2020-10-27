@@ -245,7 +245,7 @@ module ApplicationHelper
   end
 
   def object_supplemental_file_path(object, file)
-    if object.is_a? MasterFile
+    if object.is_a?(MasterFile) || object&.model == MasterFile
       master_file_supplemental_file_path(master_file_id: object.id, id: file.id)
     elsif object.is_a? MediaObject
       media_object_supplemental_file_path(media_object_id: object.id, id: file.id)
