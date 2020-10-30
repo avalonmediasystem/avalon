@@ -23,6 +23,7 @@ class ApplicationController < ActionController::Base
   include Samvera::Persona::BecomesBehavior
   layout 'avalon'
 
+  include Omniauth::Lti::Context
   # Prevent CSRF attacks by raising an exception.
   # For APIs, you may want to use :null_session instead.
   protect_from_forgery with: :exception, unless: proc{|c| request.headers['Avalon-Api-Key'].present? }

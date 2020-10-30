@@ -1,0 +1,6 @@
+- :name: Avalon Lti OAuth
+  :provider: :lti
+  :hidden: true
+  :params:
+    :oauth_credentials:
+      <%= ENV['LTI_AUTH_KEY'] %>: <%= ENV['LTI_AUTH_SECRET'] %>
