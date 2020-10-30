@@ -629,7 +629,7 @@ class MasterFile < ActiveFedora::Base
         if frame_source[:master]
           options[0..3] = options.values_at(2,3,0,1)
         end
-        unless headers&.empty?
+        if headers.present?
           options = ["-headers", headers.map { |k, v| "#{k}: #{v}\r\n" }.join] + options
         end
         Kernel.system(ffmpeg, *options)
