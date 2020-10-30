@@ -74,7 +74,7 @@ class WaveformService
 private
 
   def get_normalized_peaks(uri)
-    wave_io = get_wave_io(uri)
+    wave_io = get_wave_io(uri.to_s)
     peaks = gather_peaks(wave_io)
     return [] if peaks.blank?
     max_peak = peaks.flatten.map(&:abs).max
