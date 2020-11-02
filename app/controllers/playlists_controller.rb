@@ -17,13 +17,14 @@ require 'avalon/variations_playlist_importer'
 class PlaylistsController < ApplicationController
   include ConditionalPartials
 
-  before_action :authenticate_user!, except: [:show, :refresh_info]
+  before_action :authenticate_user!, except: [:show, :refresh_info, :create]
   load_and_authorize_resource except: [:import_variations_playlist, :refresh_info, :duplicate, :show, :index]
   load_resource only: [:show, :refresh_info]
   authorize_resource only: [:index]
   before_action :get_user_playlists, only: [:index, :paged_index]
   before_action :get_all_other_playlists, only: [:edit]
   before_action :load_playlist_token, only: [:show, :refresh_info, :duplicate]
+  skip_before_action :verify_authenticity_token, only: [:create]
 
   helper_method :access_token_url
 
