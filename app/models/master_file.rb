@@ -609,7 +609,6 @@ class MasterFile < ActiveFedora::Base
       raise RuntimeError, "FFMPEG not at configured location: #{ffmpeg}"
     end
     base = id.gsub(/\//,'_')
-    aspect = new_width/new_height
     Tempfile.open([base,'.jpg']) do |jpeg|
       file_source = frame_source[:source]
       unless file_source =~ %r(https?://)
@@ -617,21 +616,7 @@ class MasterFile < ActiveFedora::Base
         File.symlink(frame_source[:source],file_source)
       end
       begin
-        options = [
-          '-i',       file_source,
-          '-ss',      (frame_source[:offset] / 1000.0).to_s,
-          '-s',       "#{new_width.to_i}x#{new_height.to_i}",
-          '-vframes', '1',
-          '-aspect',  aspect.to_s,
-          '-q:v',       '4',
-          '-y',       jpeg.path
-        ]
-        if frame_source[:master]
-          options[0..3] = options.values_at(2,3,0,1)
-        end
-        unless headers&.empty?
-          options = ["-headers", headers.map { |k, v| "#{k}: #{v}\r\n" }.join] + options
-        end
+        options = ffmpeg_frame_options(file_source, jpeg.path, frame_source[:offset], new_width, new_height, frame_source[:master], headers)
         Kernel.system(ffmpeg, *options)
         jpeg.rewind
         data = jpeg.read
@@ -652,6 +637,26 @@ class MasterFile < ActiveFedora::Base
         File.unlink jpeg
       end
     end
+  end
+
+  def ffmpeg_frame_options(file_source, output_path, offset, new_width, new_height, master, headers)
+    options = [
+      '-i',       file_source,
+      '-ss',      (offset / 1000.0).to_s,
+      '-s',       "#{new_width.to_i}x#{new_height.to_i}",
+      '-vframes', '1',
+      '-aspect',  (new_width / new_height).to_s,
+      '-q:v',     '4',
+      '-y',       output_path
+    ]
+    if master
+      options[0..3] = options.values_at(2,3,0,1)
+    end
+    if headers.present?
+      options = ["-headers", headers.map { |k, v| "#{k}: #{v}\r\n" }.join] + options
+    end
+
+    options
   end
 
   def saveOriginal(file, original_name=nil)

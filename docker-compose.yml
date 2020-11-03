@@ -143,6 +143,7 @@ services:
       - redis-test
     environment:
       - DATABASE_URL=postgresql://postgres:password@db-test/avalon
+      - SETTINGS__FFMPEG__PATH=/usr/bin/ffmpeg
       - SETTINGS__REDIS__HOST=redis-test
       - SETTINGS__REDIS__PORT=6379
       - FEDORA_URL=http://fedora-test:8080/fedora/rest
