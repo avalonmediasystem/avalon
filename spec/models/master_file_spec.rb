@@ -545,6 +545,16 @@ describe MasterFile do
     end
   end
 
+  describe '#ffmpeg_frame_options' do
+    subject { FactoryBot.create(:master_file, :with_media_object, :with_derivative, display_aspect_ratio: '1') }
+
+    it "return the correct options" do
+      expect(subject.send(:ffmpeg_frame_options, "/tmp/test.mp4", "/tmp/test.jpg", 2000, 360, 240, true, { test_header: "header content" })).to eq(
+        ["-headers", "test_header: header content\r\n", "-ss", "2.0", "-i", "/tmp/test.mp4", "-s", "360x240", "-vframes", "1", "-aspect", "1", "-q:v", "4", "-y", "/tmp/test.jpg"]
+      )
+    end
+  end
+
   describe 'poster' do
     let(:master_file) { FactoryBot.create(:master_file) }
     it 'sets original_name to default value' do
