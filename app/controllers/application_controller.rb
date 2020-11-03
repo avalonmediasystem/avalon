@@ -174,8 +174,11 @@ class ApplicationController < ActionController::Base
   rescue_from Ldp::Gone do |exception|
     if request.format == :json
       render json: {errors: ["#{params[:id]} has been deleted"]}, status: 410
-    else
+    elsif request.format == :html
       render '/errors/deleted_pid', status: 410
+    else
+      # m3u8 request
+      head 410
     end
   end
 
