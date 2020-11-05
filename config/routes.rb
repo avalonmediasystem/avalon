@@ -43,6 +43,8 @@ Rails.application.routes.draw do
       post 'add_to_playlist'
       get 'intercom_push'
       post 'intercom_push'
+      get 'merge'
+      post 'merge'
     end
   end
 
@@ -125,9 +127,12 @@ Rails.application.routes.draw do
       delete :remove, :action => :destroy
       get :intercom_collections
     end
+
+    # Supplemental Files
+    resources :supplemental_files, except: [:new, :index, :edit]
   end
 
-  resources :master_files, except: [:new, :index, :update] do
+  resources :master_files, except: [:new, :index] do
     member do
       get  'thumbnail', :to => 'master_files#get_frame', :defaults => { :type => 'thumbnail' }
       get  'poster',    :to => 'master_files#get_frame', :defaults => { :type => 'poster' }
@@ -146,6 +151,9 @@ Rails.application.routes.draw do
       delete 'structure', to: 'master_files#delete_structure', constraints: { format: 'json' }
       post 'move'
     end
+
+    # Supplemental Files
+    resources :supplemental_files, except: [:new, :index, :edit]
   end
 
   match "iiif_auth_token/:id", to: 'master_files#iiif_auth_token', via: [:get], as: :iiif_auth_token

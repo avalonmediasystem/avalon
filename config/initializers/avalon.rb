@@ -1,3 +1,5 @@
+require 'string_additions'
+require 'avalon/errors'
 # Loads configuration information from the YAML file and then sets up the
 # dropbox
 #

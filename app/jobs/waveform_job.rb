@@ -15,16 +15,16 @@
 class WaveformJob < ActiveJob::Base
   queue_as :waveform
 
-  PLAYER_WIDTH_IN_PX = 1200
-  FINEST_ZOOM_IN_SEC = 5
-  SAMPLES_PER_FRAME = (44_100 * FINEST_ZOOM_IN_SEC) / PLAYER_WIDTH_IN_PX
+  PLAYER_WIDTH = Settings.waveform.player_width
+  FINEST_ZOOM = Settings.waveform.finest_zoom
+  SAMPLES_PER_FRAME = (Settings.waveform.sample_rate * FINEST_ZOOM) / PLAYER_WIDTH
 
   def perform(master_file_id, regenerate = false)
     master_file = MasterFile.find(master_file_id)
     return if master_file.waveform.content.present? && !regenerate || !master_file.has_audio?
 
     service = WaveformService.new(8, SAMPLES_PER_FRAME)
-    uri = file_uri(master_file) || derivative_file_uri(master_file) || playlist_url(master_file)
+    uri = derivative_file_uri(master_file) || file_uri(master_file) || playlist_url(master_file)
     json = service.get_waveform_json(uri)
     raise "No waveform generated for #{master_file.id}" if json.blank?
 
@@ -42,7 +42,7 @@ class WaveformJob < ActiveJob::Base
       path = master_file.file_location
       locator = FileLocator.new(path)
       if path.present? && locator.exist?
-        locator.location
+        locator.uri
       else
         nil
       end
@@ -50,18 +50,17 @@ class WaveformJob < ActiveJob::Base
 
     def derivative_file_uri(master_file)
       derivatives = master_file.derivatives
-      uri = nil
 
       # Find the lowest quality stream
-      ['high', 'medium', 'low'].each do |quality|
+      ['low', 'medium', 'high'].each do |quality|
         d = derivatives.select { |derivative| derivative.quality == quality }.first
         if d.present?
           loc = FileLocator.new(d.absolute_location)
-          uri = loc.location if loc.exist?
+          return loc.uri if loc.exist?
         end
       end
 
-      uri
+      nil
     end
 
     def playlist_url(master_file)

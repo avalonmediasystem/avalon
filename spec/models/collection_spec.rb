@@ -543,9 +543,22 @@ describe Admin::Collection do
       FakeFS.activate!
       FileUtils.mkdir_p(File.join(Settings.dropbox.path, 'african_art'))
       FileUtils.mkdir_p(File.join(Settings.dropbox.path, 'african_art_2'))
-      expect(Dir).to receive(:mkdir).with(File.join(Settings.dropbox.path, 'african_art_3'))
+      expect(FileUtils).to receive(:mkdir_p).with(File.join(Settings.dropbox.path, 'african_art_3'))
       collection.send(:create_dropbox_directory!)
       FakeFS.deactivate!
+    end
+  end
+
+  describe "#destroy_dropbox_directory!" do
+    let(:collection){ FactoryBot.build(:collection) }
+
+    before do
+      collection.send(:create_dropbox_directory!)
+    end
+
+    it 'should queue a delete dropbox job' do
+      collection.send(:destroy_dropbox_directory!)
+      expect(DeleteDropboxJob).to have_been_enqueued.with(collection.dropbox_absolute_path)
     end
   end
 
@@ -559,6 +572,33 @@ describe Admin::Collection do
       expect(Dir).to receive(:mkdir).with( File.join(Settings.dropbox.path, collection_dir) )
       allow(Dir).to receive(:mkdir)
       collection.send(:create_dropbox_directory!)
+    end
+  end
+
+  describe 'create_s3_dropbox_directory!' do
+    let(:bucket) { "mybucket" }
+    let(:collection_name) { "Collection !@#$%^&*()[]{}123"}
+    let(:corrected_collection_name) { "Collection__@_$___*()____123/" }
+    let(:collection) { FactoryBot.build(:collection) }
+    let(:my_client) { Aws::S3::Client.new }
+    let!(:old_path) { Settings.dropbox.path }
+
+    before do
+      Settings.dropbox.path = "s3://#{bucket}/dropbox"
+    end
+
+    it "should be able to handle special S3 avoidable characters and create object" do   
+      remote_object = double(key: corrected_collection_name, bucket_name: bucket, exists?: false)
+      allow(Aws::S3::Client).to receive(:new).and_return(my_client)
+      allow(Aws::S3::Object).to receive(:new).and_return(remote_object)
+
+      collection.name = collection_name
+      expect(my_client).to receive(:put_object).with(bucket: bucket, key: corrected_collection_name)
+      collection.send(:create_s3_dropbox_directory!)
+    end
+
+    after do
+      Settings.dropbox.path = old_path
     end
   end
 end

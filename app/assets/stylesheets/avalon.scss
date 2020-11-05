@@ -38,6 +38,11 @@ body {
   }
 }
 
+/* Override Bootstrap CSS */
+.alert {
+  margin-bottom: 10px;
+}
+
 main {
   padding-bottom: 20px;
 }
@@ -341,9 +346,22 @@ a[data-trigger='submit'] {
   }
 }
 
-#creation_metadata dd {
-  margin-left: 10px;
-  margin-bottom: 10px;
+#metadata_container {
+  dd {
+    margin-left: 10px;
+  }
+  dt {
+    margin-top: 10px;
+  }
+
+  h4 {
+    font-size: 16px;
+  }
+
+  hr {
+    margin-top: 10px;
+    margin-bottom: 10px;
+  }
 }
 
 .index_title {
@@ -472,7 +490,8 @@ div.status-detail {
   overflow-x: auto;
 
   a.structure_toggle,
-  a.captions_toggle {
+  a.captions_toggle,
+  a.files_toggle {
     cursor: pointer;
   }
 
@@ -520,12 +539,9 @@ div.status-detail {
         text-align: center;
       }
 
-      &:nth-of-type(2) {
-        width: 30%;
-      }
-
+      &:nth-of-type(2),
       &:nth-of-type(3) {
-        width: 30%;
+        width: 25%;
       }
 
       &:nth-of-type(4) {
@@ -533,15 +549,15 @@ div.status-detail {
         text-align: left;
       }
 
-      &:nth-of-type(5) {
+      &:nth-of-type(5),
+      &:nth-of-type(6) {
         width: 75px;
         text-align: center;
       }
 
-      &:nth-of-type(6) {
-        width: 75px;
+      &:nth-of-type(7) {
+        width: 50px;
         text-align: center;
-        float: right;
       }
     }
   }
@@ -551,17 +567,8 @@ div.status-detail {
     border-top: 1px dotted $gray;
     min-height: 40px;
 
-    div.structure_view {
-      margin-left: 20px;
-
-      ul {
-        padding-left: 20px;
-
-        li {
-          display: block;
-          width: 100%;
-        }
-      }
+    div.row {
+      margin-top: 5px;
     }
 
     div.tool_actions {
@@ -660,10 +667,6 @@ h5.panel-title {
   min-height: 1em;
 }
 
-.panel-heading {
-  border-top: 1px solid $gray;
-}
-
 .panel-heading .accordion-toggle:before {
   font-family: 'FontAwesome';
   content: '\f078';
@@ -673,8 +676,14 @@ h5.panel-title {
   content: '\f054';
 }
 
-#metadata_header h3 {
-  font-size: 18px;
+#metadata_header {
+  h3 {
+    font-size: 18px;
+  }
+
+  .tab-content {
+    padding-bottom: 20px;
+  }
 }
 
 .indicator {
@@ -741,10 +750,19 @@ h5.panel-title {
     margin-bottom: 1px;
   }
 
+  .help-text {
+    color: #737373;
+    display: block;
+  }
+
   .associated-files-block {
     background: #efefef;
-    margin-bottom: 20px;
-    padding: 10px 15px 10px 15px;
+    margin-bottom: 15px;
+    padding: 10px 15px 0px 15px;
+
+    .visible-inline {
+      display: inline-block;
+    }
   }
 
   .associated-files-top-row {
@@ -767,10 +785,109 @@ h5.panel-title {
   }
 
   .associated-files-wrapper {
-    input {
+    input[type=text] {
       @extend .form-control;
       padding: 3px 6px;
       height: auto;
+    }
+  }
+
+  .file-upload {
+    background-color: #efefef;
+  }
+}
+
+#associated_files, #supplemental_files {
+  div.section-files {
+    width: 100%;
+    padding: 5px 0 15px 5px;
+  }
+
+  .section-captions {
+    margin-top: 10px;
+    border-top: 1px dotted;
+    border-bottom: 1px dotted;
+  }
+
+  .section_files_tool {
+    padding: 5px;
+
+    .filedata {
+      height: 0px;
+      width: 0px;
+      display: none;
+    }
+
+    form {
+      float: right;
+    }
+
+    input[type=button], input[type=submit] {
+      @extend .btn-xs;
+    }
+
+    .btn-primary {
+      color: white;
+      background-color: #2a5459;
+      border-color: #2a5459;
+    }
+
+    .btn-danger {
+      color: white;
+      background-color: #f32c1e;
+      border-color: #f32c1e;
+    }
+
+    div.btn-toolbar {
+      display: flex;
+    }
+
+    span.tool_label {
+      font-weight: bold;
+    }
+  }
+  
+  div.file_view {
+    margin: 15px 0 0 20px;
+
+    ul {
+      padding-left: 20px;
+
+      li {
+        display: block;
+        width: 100%;
+      }
+    }
+
+    div.row {
+      &.is-editing {
+        .display-item {
+          display: none;
+        }
+        .edit-item {
+          display: block;
+        }
+        button.edit-item {
+          display: inline-block;
+        }
+        .file-remove {
+          display: none;
+        }
+      }
+      margin-top: 5px;
+    }
+
+    .btn-toolbar {
+      display: flex;
+      float: right;
+    }
+
+    .edit-item {
+      display: none;
+    }
+
+    .form-control {
+      height: 25px;
     }
   }
 }
@@ -791,7 +908,7 @@ h5.panel-title {
 }
 
 .is-invalid {
-  border-color:$danger;
+  border-color: $danger;
 }
 
 .is-invalid:focus {
@@ -881,7 +998,7 @@ h5.panel-title {
 /*Encode dashboard progress bar */
 #encode-records {
   .progress {
-    background-color: #BCBEBF;
+    background-color: #bcbebf;
     text-align: left;
     position: relative;
     height: 13px;
@@ -908,15 +1025,29 @@ h5.panel-title {
 
 /* File upload step */
 .file-upload-buttons {
-  flex: 1 1 25%;
   display: block;
-  padding-top: 7px;
+  padding-top: 5px;
+  min-width: 70px;
+  margin-right: 5px;
+  height: 30px;
+}
+
+.fileinput-filename {
+  width: auto;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding-top: 5px;
+}
+
+.fileinput-close {
+  padding-top: 5px;
+  float: none;
 }
 
 #file-upload {
   display: flex;
 }
-
 
 /* DataTables in Playlists, Timelines, Persona Users, and Encode Dashboard */
 .dataTableToolsTop {
@@ -938,13 +1069,16 @@ h5.panel-title {
 }
 
 // Action column of each table
-#Playlists, #Timelines, #users-table {
+#Playlists,
+#Timelines,
+#users-table {
   td:last-child {
     white-space: nowrap;
   }
 }
 
-#users-table th, td{
+#users-table th,
+td {
   padding-right: 6px !important;
 }
 

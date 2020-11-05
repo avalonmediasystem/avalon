@@ -27,7 +27,7 @@ class AvalonPlayer
     start_time = removeOpt('startTime')
     success_callback = removeOpt('success')
 
-    features = ['playpause','current','progress','duration',display_track_scrubber,'volume','tracks','qualities',thumbnail_selector, add_to_playlist, add_marker, 'fullscreen','responsive']
+    features = ['playpause', 'current','progress','duration',display_track_scrubber,'volume','tracks','qualities',thumbnail_selector, add_to_playlist, add_marker, 'fullscreen','responsive']
     features = (feature for feature in features when feature?)
     player_options =
       mode: 'auto_plugin'
@@ -70,8 +70,6 @@ class AvalonPlayer
       $('.scrubber-marker').remove()
       $('.mejs-time-clip').remove()
 
-      for flash in @stream_info.stream_flash
-        videoNode.append "<source src='#{flash.url}' data-quality='#{flash.quality}' data-plugin-type='flash' type='video/rtmp'>"
       for hls in @stream_info.stream_hls
         videoNode.append "<source src='#{hls.url}' data-quality='#{hls.quality}' data-plugin-type='native' type='application/vnd.apple.mpegURL'>"
       if @stream_info.captions_path

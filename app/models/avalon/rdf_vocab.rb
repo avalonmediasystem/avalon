@@ -34,6 +34,7 @@ module Avalon
 
     class MasterFile < RDF::StrictVocabulary("http://avalonmediasystem.org/rdf/vocab/master_file#")
       property :posterOffset,        "rdfs:isDefinedBy" => %(avr-master_file:).freeze, type: "rdfs:Class".freeze
+      property :supplementalFiles,   "rdfs:isDefinedBy" => %(avr-master_file:).freeze, type: "rdfs:Class".freeze
       property :thumbnailOffset,     "rdfs:isDefinedBy" => %(avr-master_file:).freeze, type: "rdfs:Class".freeze
       property :workingFilePath,     "rdfs:isDefinedBy" => %(avr-master_file:).freeze, type: "rdfs:Class".freeze
     end
@@ -52,6 +53,7 @@ module Avalon
     class MediaObject < RDF::StrictVocabulary("http://avalonmediasystem.org/rdf/vocab/media_object#")
       property :avalon_resource_type, "rdfs:isDefinedBy" => %(avr-media_object:).freeze, type: "rdfs:Class".freeze
       property :avalon_publisher,     "rdfs:isDefinedBy" => %(avr-media_object:).freeze, type: "rdfs:Class".freeze
+      property :supplementalFiles,    "rdfs:isDefinedBy" => %(avr-media_object:).freeze, type: "rdfs:Class".freeze
       property :avalon_uploader,      "rdfs:isDefinedBy" => %(avr-media_object:).freeze, type: "rdfs:Class".freeze
     end
 

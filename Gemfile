@@ -3,7 +3,7 @@ source 'https://rubygems.org'
 # Core rails
 gem 'bootsnap', require: false
 gem 'listen'
-gem 'rails', '=5.2.4.3'
+gem 'rails', '=5.2.4.4'
 gem 'sprockets', '~>3.7.2'
 gem 'sqlite3'
 
@@ -88,15 +88,16 @@ gem 'mediaelement-track-scrubber', git: 'https://github.com/avalonmediasystem/me
 
 # Jobs
 gem 'activejob-traffic_control'
+gem 'activejob-uniqueness'
 gem 'redis-rails'
 gem 'sidekiq', '~> 5.2.7'
+gem 'sidekiq-cron', '~> 1.2'
 
 # Coding Patterns
 gem 'config'
 gem 'hooks'
 gem 'jbuilder', '~> 2.0'
 gem 'parallel'
-gem 'whenever', '~> 0.11', require: false
 gem 'with_locking'
 
 group :development do
@@ -135,6 +136,7 @@ group :test do
   gem 'faker'
   gem 'hashdiff'
   gem 'rails-controller-testing'
+  gem 'rspec-its'
   gem 'rspec-retry'
   gem 'rspec_junit_formatter'
   gem 'selenium-webdriver'
@@ -147,14 +149,21 @@ end
 group :production do
   gem 'google-analytics-rails', '1.1.0'
   gem 'lograge'
+  gem 'okcomputer'
   gem 'puma'
 end
 
 # Install the bundle --with aws when running on Amazon Elastic Beanstalk
 group :aws, optional: true do
-  gem 'active_elastic_job', '~> 2.0'
-  gem 'aws-sdk', '~> 2.0'
+  gem 'active_elastic_job', github: 'tawan/active-elastic-job'
+  gem 'aws-partitions'
   gem 'aws-sdk-rails'
+  gem 'aws-sdk-cloudfront'
+  gem 'aws-sdk-elastictranscoder'
+  gem 'aws-sdk-s3'
+  gem 'aws-sdk-ses'
+  gem 'aws-sdk-sqs'
+  gem 'aws-sigv4'
   gem 'cloudfront-signer'
   gem 'zk'
 end

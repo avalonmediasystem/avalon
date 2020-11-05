@@ -677,4 +677,36 @@ describe MasterFile do
     end
   end
 
+  it_behaves_like "an object that has supplemental files"
+
+  describe 'has_audio?' do
+
+    context 'without derivative' do
+      let(:master_file) { FactoryBot.build(:master_file) }
+    
+      it 'returns false' do
+        expect(master_file.has_audio?).to eq false
+      end
+    end
+
+    context 'with derivative' do
+      let(:master_file) { FactoryBot.build(:master_file, derivatives: [derivative]) }
+
+      context 'with audio track' do
+        let(:derivative) { FactoryBot.build(:derivative, audio_codec: 'aac') }
+        
+        it 'returns true' do
+          expect(master_file.has_audio?).to eq true
+        end
+      end
+
+      context 'without audio track' do
+        let(:derivative) { FactoryBot.build(:derivative, audio_codec: nil) }
+        
+        it 'returns false' do
+          expect(master_file.has_audio?).to eq false
+        end
+      end
+    end
+  end
 end

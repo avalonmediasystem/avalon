@@ -243,4 +243,24 @@ module ApplicationHelper
     output = render(:file => "layouts/#{layout}")
     self.output_buffer = ActionView::OutputBuffer.new(output)
   end
+
+  def object_supplemental_file_path(object, file)
+    if object.is_a?(MasterFile) || object.try(:model) == MasterFile
+      master_file_supplemental_file_path(master_file_id: object.id, id: file.id)
+    elsif object.is_a? MediaObject
+      media_object_supplemental_file_path(media_object_id: object.id, id: file.id)
+    else
+      nil
+    end
+  end
+
+  def object_supplemental_files_path(object)
+    if object.is_a? MasterFile
+      master_file_supplemental_files_path(object.id)
+    elsif object.is_a? MediaObject
+      media_object_supplemental_files_path(object.id)
+    else
+      nil
+    end
+  end
 end

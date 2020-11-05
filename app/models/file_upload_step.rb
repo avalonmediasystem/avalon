@@ -14,40 +14,40 @@
 
 require 'avalon/dropbox'
 
-  class FileUploadStep < Avalon::Workflow::BasicStep
-    def initialize(step = 'file-upload',
-                   title = "Manage file(s)",
-                   summary = "Associated bitstreams",
-                   template = 'file_upload')
-      super
+class FileUploadStep < Avalon::Workflow::BasicStep
+  def initialize(step = 'file-upload',
+                 title = "Manage files",
+                 summary = "Associated bitstreams",
+                 template = 'file_upload')
+    super
+  end
+
+  # For file uploads the process of setting the context is easy. We
+  # just need to ask the dropbox if there are any files. If so load
+  # them into a variable that can be referred to later
+  def before_step context
+    dropbox_files = context[:media_object].collection.dropbox.all
+    context[:dropbox_files] = dropbox_files
+    context
+  end
+
+  def after_step context
+    context
+  end
+
+  def execute context
+    deleted_master_files = update_master_files context
+    context[:notice] = "Several clean up jobs have been sent out. Their statuses can be viewed by your sysadmin at #{ Settings.matterhorn.cleanup_log }" unless deleted_master_files.empty?
+
+    # Reloads media_object.master_files, should use .reload when we update hydra-head
+    media = MediaObject.find(context[:media_object].id)
+    unless media.master_files.empty?
+      media.save
+      context[:media_object] = media
     end
 
-    # For file uploads the process of setting the context is easy. We
-    # just need to ask the dropbox if there are any files. If so load
-    # them into a variable that can be referred to later
-    def before_step context
-       dropbox_files = context[:media_object].collection.dropbox.all
-       context[:dropbox_files] = dropbox_files
-       context
-    end
-
-    def after_step context
-       context
-    end
-
-    def execute context
-       deleted_master_files = update_master_files context
-       context[:notice] = "Several clean up jobs have been sent out. Their statuses can be viewed by your sysadmin at #{ Settings.matterhorn.cleanup_log }" unless deleted_master_files.empty?
-
-       # Reloads media_object.master_files, should use .reload when we update hydra-head
-       media = MediaObject.find(context[:media_object].id)
-       unless media.master_files.empty?
-         media.save
-         context[:media_object] = media
-       end
-
-       context
-    end
+    context
+  end
 
   # Passing in an ordered array of values update the master files below a
   # MediaObject. Accepted hash keys are
@@ -80,7 +80,6 @@ require 'avalon/dropbox'
         end
       end
     end
-    return deleted_master_files
+    deleted_master_files
   end
-
-  end
+end

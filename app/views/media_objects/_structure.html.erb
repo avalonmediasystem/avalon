@@ -17,109 +17,87 @@ Unless required by applicable law or agreed to in writing, software distributed
 <p class="muted">Drag files to reorder them.</p>
 
 <% if @masterFiles.blank? %>
-<div class="well">There are no media files</div>
+  <div class="well">There are no media files</div>
 <% else %>
-<div id="mediaobject_structure">
-  <ul class="header">
-    <li>Type</li>
-    <li>Section label</li>
-    <li>File name</li>
-    <li>Size</li>
-    <li>Structure</li>
-    <li>Captions</li>
-  </ul>
-  <ul class="sortable">
-    <% @masterFiles.each_with_index do |section, index| %>
-    <li class="section" data-segment="<%= section.id %>">
-      <ul class="fileinfo">
-        <li>
-          <% case section.file_format
-               when 'Sound' %>
-          <i class="fa fa-volume-up"></i>
-          <% when 'Moving image' %>
-          <i class="fa fa-film"></i>
-          <% else %>
-          <i class="fa fa-question-sign"></i>
-          <% end %>
-        </li>
-        <li>
-          <%= section.title.blank? ? '&#8212;'.html_safe : section.title %>
-        </li>
-        <li class="mediaobject-filename">
-          <% if section.file_location.present? %>
-          <%= truncate_center(File.basename(section.file_location.to_s), 50, 20) %>
-          <% else %>
-          -
-          <% end %>
-        </li>
-        <li>
-          <%= number_to_human_size(section.file_size) %>
-        </li>
-        <li>
-          <a class="structure_toggle" data-target="structure_<%= index %>">
-            <i class="fa fa-plus-square"></i>
-            <i class="fa fa-minus-square hidden"></i>
-          </a>
-        </li>
-        <li>
-          <a class="captions_toggle" data-target="captions_<%= index %>">
-            <i class="fa fa-plus-square"></i>
-            <i class="fa fa-minus-square hidden"></i>
-          </a>
-        </li>
-      </ul>
-      <div id="structure_<%= index %>" class="hidden structure_tool">
-        <div class="tool_actions">
-          <span class="tool_label">Structure</span>
-          <%= form_for section, :url => attach_structure_master_file_path(section.id), html: {method: "post"} do |form| %>
-          <%= form.file_field :structure, class: "filedata", style: "height:0px;width:0px;" %>
-          <% item_label=html_escape(stream_label_for(section)) %>
-          <% stream_url=hls_manifest_master_file_url(section.id, quality: 'auto') %>
-          <div class="btn-toolbar">
-            <input type="button" class="btn btn-primary btn-xs"
-              onclick="$('#structure_<%= index %> .filedata').click();" value="Upload" />
-            <div class="btn-group">
-              <% if section.structuralMetadata.valid? %>
-              <%= react_component("ReactButtonContainer", {sectionIndex: index, masterFileID: section.id, baseURL: request.protocol+request.host_with_port, streamDuration: section.duration, audioStreamURL: stream_url, initStructure: section.structuralMetadata.as_json}) %>
-              <% else %>
-              <%= react_component("ReactButtonContainer", {sectionIndex: index, masterFileID: section.id, baseURL: request.protocol+request.host_with_port, streamDuration: section.duration, audioStreamURL: stream_url, initStructure: "{ \"label\": \"#{item_label}\", \"type\": \"div\", \"items\": [] }"}, html_options={ class: 'react-button-container' }) %>
+  <div id="mediaobject_structure">
+    <ul class="header">
+      <li>Type</li>
+      <li>Section label</li>
+      <li>File name</li>
+      <li>Size</li>
+      <li></li>
+    </ul>
+    <ul class="sortable">
+      <% @masterFiles.each_with_index do |section, index| %>
+      <li class="section" data-segment="<%= section.id %>">
+        <ul class="fileinfo">
+          <li>
+            <% case section.file_format
+                when 'Sound' %>
+            <i class="fa fa-volume-up"></i>
+            <% when 'Moving image' %>
+            <i class="fa fa-film"></i>
+            <% else %>
+            <i class="fa fa-question-sign"></i>
+            <% end %>
+          </li>
+          <li>
+            <%= section.title.blank? ? '&#8212;'.html_safe : section.title %>
+          </li>
+          <li class="mediaobject-filename">
+            <% if section.file_location.present? %>
+            <%= truncate_center(File.basename(section.file_location.to_s), 50, 20) %>
+            <% else %>
+            -
+            <% end %>
+          </li>
+          <li>
+            <%= number_to_human_size(section.file_size) %>
+          </li>
+          <li>
+            <button class="btn btn-default btn-xs" type="button" data-toggle="collapse" data-target="#structure_<%= index %>" aria-expanded="false" aria-controls="structure_<%= index %>">
+              Edit Structure
+            </button>
+          </li>
+        </ul>
+        <div id="structure_<%= index %>" class="collapse structure_tool">
+          <div class="tool_actions">
+            <span class="tool_label">Structure</span>
+            <%= form_for section, :url => attach_structure_master_file_path(section.id), html: {method: "post"} do |form| %>
+            <%= form.file_field :structure, class: "filedata", style: "height:0px;width:0px;" %>
+            <% item_label=html_escape(stream_label_for(section)) %>
+            <% stream_url=hls_manifest_master_file_url(section.id, quality: 'auto') %>
+            <div class="btn-toolbar">
+              <input type="button" class="btn btn-primary btn-xs"
+                onclick="$('#structure_<%= index %> .filedata').click();" value="<%= section.structuralMetadata.present? ? 'Replace' : 'Upload'%>" />
+              <div class="btn-group">
+                <% if section.structuralMetadata.valid? %>
+                <%= react_component("ReactButtonContainer", {sectionIndex: index, masterFileID: section.id, baseURL: request.protocol+request.host_with_port, streamDuration: section.duration, audioStreamURL: stream_url, initStructure: section.structuralMetadata.as_json}) %>
+                <% else %>
+                <%= react_component("ReactButtonContainer", {sectionIndex: index, masterFileID: section.id, baseURL: request.protocol+request.host_with_port, streamDuration: section.duration, audioStreamURL: stream_url, initStructure: "{ \"label\": \"#{item_label}\", \"type\": \"div\", \"items\": [] }"}, html_options={ class: 'react-button-container' }) %>
+                <% end %>
+              </div>
+              <input type="button" class='btn btn-primary btn-xs' value="Advanced Edit" data-toggle="modal"
+                data-target="#advanced_edit_structure_<%= index %>" />
+              <% if section.structuralMetadata.present? %>
+                <input type="submit" class="btn btn-danger btn-xs" value="Remove" />
               <% end %>
             </div>
-            <input type="button" class='btn btn-primary btn-xs' value="Advanced Edit" data-toggle="modal"
-              data-target="#advanced_edit_structure_<%= index %>" />
-            <input type="submit" class="btn btn-danger btn-xs" value="Remove" />
+            <% end %>
           </div>
-          <% end %>
+          <div class="structure_view"></div>
+          <div style="margin-top: 5px; font-style: italic;">
+            Note: Any edits made with the Edit Structure tool will not be reflected here or in the Advanced Edit tool
+            until this page is refreshed.
+          </div>
         </div>
-        <div class="structure_view"></div>
-        <div style="margin-top: 5px; font-style: italic;">
-          Note: Any edits made with the Edit Structure tool will not be reflected here or in the Advanced Edit tool
-          until this page is refreshed.
-        </div>
-      </div>
-      <div id="captions_<%= index %>" class="hidden structure_tool">
-        <div class="tool_actions">
-          <span class="tool_label">Captions</span>
-          <%= form_for section, :url => attach_captions_master_file_path(section.id), html: {method: "post"} do |form| %>
-          <%= form.file_field :captions, class: "filedata", style: "height:0px;width:0px;" %>
-          <input type="button" class="btn btn-primary btn-xs" onclick="$('#captions_<%= index %> .filedata').click();"
-            value="Upload" />
-          <input type="submit" class="btn btn-danger btn-xs" value="Remove" />
-          <% end %>
-        </div>
-        <% if section.captions.present? %>
-        <div class="structure_view">Uploaded file: <%= section.captions.original_name %></div>
-        <% end %>
-      </div>
-    </li>
-    <% end %>
-  </ul>
-</div>
-
-<div />
-<br class="clear" />
-<%= bootstrap_form_for @media_object, html: { class: "form-horizontal" } do |media| %>
-<%= render "workflow_buttons" %>
+      </li>
+      <% end %>
+    </ul>
+  </div>
+  <br class="clear" />
+  <%= bootstrap_form_for @media_object, html: { class: "form-horizontal" } do |media| %>
+  <%= render "workflow_buttons" %>
 <% end %>
 
 <% @masterFiles.each_with_index do |section, index| %>
@@ -143,7 +121,6 @@ Unless required by applicable law or agreed to in writing, software distributed
 <% end %>
 
 <% content_for :page_scripts do %>
-
 <script>
   function htmlDecode(value) {
     return $('<div/>').html(value).text();
@@ -201,13 +178,6 @@ Unless required by applicable law or agreed to in writing, software distributed
     target = $(this).data('target')
     section_index = parseInt(target.split('_')[1]);
     populate_structure_preview(section_index)
-    $('#' + target).toggleClass('hidden');
-  });
-
-  $('.captions_toggle').on('click', function (e) {
-    e.preventDefault();
-    $(this).find('i.fa').toggleClass('hidden');
-    target = $(this).data('target')
     $('#' + target).toggleClass('hidden');
   });
 

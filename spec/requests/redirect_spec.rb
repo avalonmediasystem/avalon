@@ -18,7 +18,7 @@ describe 'redirect', type: :request do
   it 'stores url to redirect to when unauthorized and needing to authenticate (#authorize!)' do
     get '/admin/migration_report'
     expect(request.env['rack.session']['previous_url']).to eq '/admin/migration_report'
-    expect(response).to redirect_to(/#{Regexp.quote(new_user_session_path)}\?url=.*/)
+    expect(response).to render_template('errors/restricted_pid')
   end
 
   it 'stores url to redirect to when needing to authenticate (#authenticate_user!)' do

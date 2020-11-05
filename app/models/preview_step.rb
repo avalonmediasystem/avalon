@@ -12,19 +12,19 @@
 #   specific language governing permissions and limitations under the License.
 # ---  END LICENSE_HEADER BLOCK  ---
 
-	class PreviewStep < Avalon::Workflow::BasicStep
-                def initialize(step = 'preview',
-                               title = "Preview and publish",
-                               summary = "Release the item for use",
-                               template = 'preview')
-                  super
-                end
+class PreviewStep < Avalon::Workflow::BasicStep
+  def initialize(step = 'preview',
+                 title = "Preview and publish",
+                 summary = "Release the item for use",
+                 template = 'preview')
+    super
+  end
 
-		def execute context
-		  media_object = context[:media_object]
-	          # Publish the media object
-	          media_object.avalon_publisher = context[:user]
-	          media_object.save
-		  context
-		end
-	end
+  def execute context
+    media_object = context[:media_object]
+          # Publish the media object
+          media_object.avalon_publisher = context[:user]
+          media_object.save
+    context
+  end
+end

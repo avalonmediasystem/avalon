@@ -8,7 +8,7 @@ require 'resolv-replace'
 Bundler.require(*Rails.groups)
 
 module Avalon
-  VERSION = '7.1.1'
+  VERSION = '7.2.0'
 
   class Application < Rails::Application
     require 'avalon/configuration'
@@ -47,5 +47,7 @@ module Avalon
         resource '/timelines/*/manifest.json', headers: :any, methods: [:get, :post]
       end
     end
+
+    config.active_storage.service = (Settings&.active_storage&.service.presence || "local").to_sym
   end
 end

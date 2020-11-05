@@ -33,6 +33,7 @@ class ApplicationController < ActionController::Base
   before_action :rewrite_v4_ids, if: proc{|c| request.method_symbol == :get && [params[:id], params[:content]].compact.any? { |i| i =~ /^[a-z]+:[0-9]+$/}}
   before_action :set_no_cache_headers, if: proc{|c| request.xhr? }
   prepend_before_action :remove_zero_width_chars
+  skip_after_action :discard_flash_if_xhr # Suppress overwhelming Blacklight deprecation warning
 
   def set_no_cache_headers
     response.headers["Cache-Control"] = "no-cache, no-store"
@@ -156,11 +157,9 @@ class ApplicationController < ActionController::Base
   rescue_from CanCan::AccessDenied do |exception|
     if request.format == :json
       head :unauthorized
-    elsif current_user
-      redirect_to root_path, flash: { notice: 'You are not authorized to perform this action.' }
     else
       session[:previous_url] = request.fullpath unless request.xhr?
-      redirect_to new_user_session_path(url: request.url), flash: { notice: 'You are not authorized to perform this action. Try logging in.' }
+      render '/errors/restricted_pid', status: :unauthorized
     end
   end
 
@@ -202,6 +201,16 @@ class ApplicationController < ActionController::Base
 
   def after_invite_path_for(_inviter, _invitee = nil)
     main_app.persona_users_path
+  end
+
+  def fetch_object(id)
+    obj = ActiveFedora::Base.where(identifier_ssim: id.downcase).first
+    obj ||= begin
+              ActiveFedora::Base.find(id, cast: true)
+            rescue ActiveFedora::ObjectNotFoundError, Ldp::BadRequest
+              nil
+            end
+    obj || GlobalID::Locator.locate(id)
   end
 
   private

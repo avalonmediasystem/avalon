@@ -30,6 +30,7 @@ class MasterFile < ActiveFedora::Base
   include MigrationTarget
   include MasterFileBehavior
   include MasterFileIntercom
+  include SupplementalFileBehavior
 
   belongs_to :media_object, class_name: 'MediaObject', predicate: ActiveFedora::RDF::Fcrepo::RelsExt.isPartOf
   has_many :derivatives, class_name: 'Derivative', predicate: ActiveFedora::RDF::Fcrepo::RelsExt.isDerivationOf, dependent: :destroy
@@ -545,10 +546,7 @@ class MasterFile < ActiveFedora::Base
   protected
 
   def mediainfo
-    if @mediainfo.nil?
-      @mediainfo = Mediainfo.new(FileLocator.new(file_location).location)
-    end
-    @mediainfo
+    @mediainfo ||= Mediainfo.new(FileLocator.new(file_location).location)
   end
 
   def find_frame_source(options={})

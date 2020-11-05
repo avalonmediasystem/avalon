@@ -178,8 +178,7 @@ EOC
 
   desc 'clean out user sessions that have not been updated for 7 days'
   task session_cleanup: :environment do
-    sql = 'DELETE FROM sessions WHERE updated_at < DATE_SUB(NOW(), INTERVAL 7 DAY);'
-    ActiveRecord::Base.connection.execute(sql)
+    CleanupSessionJob.perform_now
   end
 
   namespace :services do
@@ -220,15 +219,7 @@ EOC
   namespace :batch do
     desc "Starts Avalon batch ingest"
     task :ingest => :environment do
-      # Starts the ingest process
-      require 'avalon/batch/ingest'
-
-      WithLocking.run(name: 'batch_ingest') do
-        Rails.logger.info "<< Scanning for new batch packages in existing collections >>"
-        Admin::Collection.all.each do |collection|
-          Avalon::Batch::Ingest.new(collection).scan_for_packages
-        end
-      end
+      BatchScanJob.perform_now
     end
 
     desc "Starts Status Checking and Email Notification of Existing Batches"
@@ -289,6 +280,26 @@ EOC
       User.where(email: username).each {|user| user.password = password; user.save}
 
       puts "Updated password for user #{username}"
+    end
+
+    desc "Assign user an an administrator"
+    task admin: :environment do
+      puts "Assign user as an administrator"
+      print "Email address for user: "
+      email_address = $stdin.gets.chomp
+      begin
+        new_administrator = User.find_by_email(email_address).user_key
+      rescue NoMethodError
+        abort "User with email address #{email_address} not found"
+      end
+      admin_group = Admin::Group.find('administrator')
+      if admin_group.users.any? new_administrator
+        puts "User with email address #{email_address} is already an administrator"
+      else
+        admin_group.users = admin_group.users + [new_administrator]
+        admin_group.save
+        puts "Successfully assigned #{new_administrator} as an administrator"
+      end
     end
   end
 
