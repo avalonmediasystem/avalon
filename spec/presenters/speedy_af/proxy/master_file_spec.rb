@@ -51,14 +51,7 @@ describe SpeedyAF::Proxy::MasterFile do
       context 'with encoder class name' do
         let(:master_file) { FactoryBot.create(:master_file, encoder_classname: 'EncoderModule::MyEncoder') }
         it "should resolve an explicitly named encoder class" do
-<<<<<<< HEAD
-<<<<<<< HEAD
           stub_const("EncoderModule::MyEncoder", Class.new(ActiveEncode::Base))
-=======
->>>>>>> 15ecb3a6c... Add tests for SpeedyAF MasterFile Proxy; fix #encoder_class
-=======
-          stub_const("EncoderModule::MyEncoder", Class.new(ActiveEncode::Base))
->>>>>>> 255ecf66d... Use Object#const_get instead of ActiveEncode::Base.descendants to get
           expect(subject.encoder_class).to eq(EncoderModule::MyEncoder)
         end
       end
