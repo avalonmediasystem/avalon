@@ -19,11 +19,6 @@ Unless required by applicable law or agreed to in writing, software distributed
                 controls
                 style="width: 100%;"
                 preload="auto">
-        <% if is_mejs_2? %>
-          <% section_info[:stream_flash].each do |flash| %>
-            <source src="<%= flash[:url] %>" data-quality="<%= flash[:quality] %>" data-plugin-type="flash" type="audio/rtmp"/>
-          <% end %>
-        <% end %>
         <% section_info[:stream_hls].each do |hls| %>
           <source src="<%= hls[:url] %>" data-quality="<%= hls[:quality] %>" data-plugin-type="native" type="application/x-mpegURL"/>
         <% end %>

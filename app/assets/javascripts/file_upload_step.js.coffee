@@ -23,7 +23,6 @@ $('input[type=text]',section_form).each () ->
         name='#{$(this).attr('name')}' 
         value='#{$(this).val()}'/>").appendTo(button_form)
     double.val($(this).val())
-$('input[type=submit]',section_form).hide()
 
 $('.date-input').datepicker
   dateFormat: 'yy-mm-dd'

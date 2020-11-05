@@ -57,7 +57,6 @@ describe Derivative do
   end
 
   describe "streaming" do
-    let(:rtmp_base)  { Settings.streaming.rtmp_base    }
     let(:http_base)  { Settings.streaming.http_base    }
     let(:root)       { Settings.streaming.content_path }
     let(:location)   { "file://#{root}/c5e0f8b8-3f69-40de-9524-604f03b5f867/8c871d4b-a9a6-4841-8e2a-dd98cf2ee625/content.mp4" }
@@ -67,14 +66,6 @@ describe Derivative do
     describe "generic" do
       before :each do
         Avalon::StreamMapper.streaming_server = :generic
-      end
-
-      it "RTMP video" do
-        expect(video_derivative.streaming_url(false)).to eq("#{rtmp_base}/mp4:c5e0f8b8-3f69-40de-9524-604f03b5f867/8c871d4b-a9a6-4841-8e2a-dd98cf2ee625/content")
-      end
-
-      it "RTMP audio" do
-        expect(audio_derivative.streaming_url(false)).to eq("#{rtmp_base}/mp4:c5e0f8b8-3f69-40de-9524-604f03b5f867/8c871d4b-a9a6-4841-8e2a-dd98cf2ee625/content")
       end
 
       it "HTTP video" do
@@ -91,14 +82,6 @@ describe Derivative do
         Avalon::StreamMapper.streaming_server = :adobe
       end
 
-      it "RTMP video" do
-        expect(video_derivative.streaming_url(false)).to eq("#{rtmp_base}/mp4:c5e0f8b8-3f69-40de-9524-604f03b5f867/8c871d4b-a9a6-4841-8e2a-dd98cf2ee625/content")
-      end
-
-      it "RTMP audio" do
-        expect(audio_derivative.streaming_url(false)).to eq("#{rtmp_base}/mp4:c5e0f8b8-3f69-40de-9524-604f03b5f867/8c871d4b-a9a6-4841-8e2a-dd98cf2ee625/content")
-      end
-
       it "HTTP video" do
         expect(video_derivative.streaming_url(true)).to eq("#{http_base}/c5e0f8b8-3f69-40de-9524-604f03b5f867/8c871d4b-a9a6-4841-8e2a-dd98cf2ee625/content.mp4.m3u8")
       end
@@ -111,14 +94,6 @@ describe Derivative do
     describe "wowza" do
       before :each do
         Avalon::StreamMapper.streaming_server = :wowza
-      end
-
-      it "RTMP video" do
-        expect(video_derivative.streaming_url(false)).to eq("#{rtmp_base}/mp4:c5e0f8b8-3f69-40de-9524-604f03b5f867/8c871d4b-a9a6-4841-8e2a-dd98cf2ee625/content")
-      end
-
-      it "RTMP audio" do
-        expect(audio_derivative.streaming_url(false)).to eq("#{rtmp_base}/mp4:c5e0f8b8-3f69-40de-9524-604f03b5f867/8c871d4b-a9a6-4841-8e2a-dd98cf2ee625/content")
       end
 
       it "HTTP video" do

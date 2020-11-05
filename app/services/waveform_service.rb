@@ -28,15 +28,53 @@ class WaveformService
       samples_per_pixel: @samples_per_pixel,
       bits: @bit_res
     )
-    get_normalized_peaks(uri).each { |peak| waveform.append(peak[0], peak[1]) }
+
+    peaks = if uri.scheme == 's3'
+              begin
+                local_file = FileLocator::S3File.new(uri).local_file
+                get_normalized_peaks(local_file.path)
+              ensure
+                local_file.close!
+              end
+            else
+              get_normalized_peaks(uri)
+            end
+
+    peaks.each { |peak| waveform.append(peak[0], peak[1]) }
     return nil if waveform.size.zero?
     waveform.to_json
+  end
+
+  def empty_waveform(master_file)
+    max_peak = 1.0
+    min_peak = -1.0
+    peaks_length = (44_100 * (master_file.duration.to_i / 1000)) / @samples_per_pixel.to_i
+    peaks_data = Array.new(peaks_length) { Array.new(2) }
+    peaks_data.each do |peak|
+      data_points = [rand * ((max_peak - min_peak) + min_peak), rand * ((max_peak - min_peak) + min_peak)]
+      peak[0] = data_points.min
+      peak[1] = data_points.max
+    end
+
+    empty_waveform = AudioWaveform::WaveformDataFile.new(
+      sample_rate: 44_100,
+      samples_per_pixel: @samples_per_pixel,
+      bits: @bit_res
+    )
+
+    peaks_data.each { |peak| empty_waveform.append(peak[0], peak[1]) }
+
+    waveform = IndexedFile.new
+    waveform.original_name = 'empty_waveform.json'
+    waveform.content = Zlib::Deflate.deflate(empty_waveform.to_json)
+    waveform.mime_type = 'application/zlib'
+    waveform
   end
 
 private
 
   def get_normalized_peaks(uri)
-    wave_io = get_wave_io(uri)
+    wave_io = get_wave_io(uri.to_s)
     peaks = gather_peaks(wave_io)
     return [] if peaks.blank?
     max_peak = peaks.flatten.map(&:abs).max

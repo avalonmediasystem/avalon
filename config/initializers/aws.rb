@@ -1,5 +1,5 @@
 if Settings.minio
-  require "aws-sdk"
+  require "aws-sdk-s3"
 
   Aws.config.update(
       endpoint: Settings.minio.endpoint,

@@ -70,6 +70,8 @@ class Admin::Collection < ActiveFedora::Base
   around_save :reindex_members, if: Proc.new{ |c| c.name_changed? or c.unit_changed? }
   before_create :create_dropbox_directory!
 
+  before_destroy :destroy_dropbox_directory!
+
   def self.units
     Avalon::ControlledVocabulary.find_by_name(:units, sort: true) || []
   end
@@ -208,6 +210,16 @@ class Admin::Collection < ActiveFedora::Base
     File.join(Settings.dropbox.path, name || dropbox_directory_name)
   end
 
+  def dropbox_object_count
+    if Settings.dropbox.path =~ %r(^s3://)
+      dropbox_path = URI.parse(dropbox_absolute_path)
+      response = Aws::S3::Client.new.list_objects(bucket: Settings.encoding.masterfile_bucket, max_keys: 10, prefix: "#{dropbox_path.path}/")
+      response.contents.size
+    else
+      Dir["#{dropbox_absolute_path}/*"].count
+    end
+  end
+
   def media_objects_to_json
     media_objects.collect{|mo| [mo.id, mo.to_json] }.to_h
   end
@@ -271,6 +283,10 @@ class Admin::Collection < ActiveFedora::Base
       end
     end
 
+    def destroy_dropbox_directory!
+      DeleteDropboxJob.perform_later(dropbox_absolute_path)
+    end
+
     def calculate_dropbox_directory_name
       name = self.dropbox_directory_name
 
@@ -304,10 +320,9 @@ class Admin::Collection < ActiveFedora::Base
       end
 
       absolute_path = dropbox_absolute_path(name)
-
       unless File.directory?(absolute_path)
         begin
-          Dir.mkdir(absolute_path)
+          FileUtils.mkdir_p absolute_path
         rescue Exception => e
           Rails.logger.error "Could not create directory (#{absolute_path}): #{e.inspect}"
         end

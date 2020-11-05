@@ -176,14 +176,55 @@ module BulkActionJobs
           successes += [media_object]
         elsif result[:status].present?
           error = "There was an error pushing the item. (#{result[:status]}: #{result[:message]})"
-          media_object.errors[:base] += [error]
+          media_object.errors[:base] << [error]
           errors += [media_object]
         else
-          media_object.errors[:base] += [result[:message]]
+          media_object.errors[:base] << [result[:message]]
           errors += [media_object]
         end
       end
-      return successes, errors
+      [successes, errors]
+    end
+  end
+
+  class Merge < ActiveJob::Base
+    def perform(target_id, subject_ids)
+      target = MediaObject.find target_id
+      subjects = subject_ids.map { |id| MediaObject.find id }
+      return target.merge!(subjects)
+    end
+  end
+
+  class ApplyCollectionAccessControl < ActiveJob::Base
+    queue_as :bulk_access_control
+    def perform(collection_id, overwrite = true)
+      errors = []
+      successes = []
+      collection = Admin::Collection.find collection_id
+      collection.media_object_ids.each do |id|
+        media_object = MediaObject.find(id)
+        media_object.hidden = collection.default_hidden
+        media_object.visibility = collection.default_visibility
+
+        # Special access
+        if overwrite
+          media_object.read_groups = collection.default_read_groups.to_a
+          media_object.read_users = collection.default_read_users.to_a
+        else
+          media_object.read_groups += collection.default_read_groups.to_a
+          media_object.read_groups.uniq!
+          media_object.read_users += collection.default_read_users.to_a
+          media_object.read_users.uniq!
+        end
+
+        if media_object.save
+          successes << media_object
+        else
+          errors << media_object
+        end
+      end
+
+      [successes, errors]
     end
   end
 end

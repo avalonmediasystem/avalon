@@ -62,6 +62,12 @@ explore the out-of-the-box functionality or do basic development.
 * ```rake db:test:prepare```
 * ``bundle exec rake server:development`` or ``bundle exec rake server:test`` Note: This process will not background itself, it will occupy the terminal you run it in
 
+# Docker Deployment
+To take advantage of multistage and parallel build, [Docker buildkit](https://docs.docker.com/develop/develop-images/build_enhancements/) is recommended.
+
+* Build a production-ready image `docker build -t myorg/avalon:version --target=prod .`
+* Use this newly tagged image in [avalon-docker](https://github.com/avalonmediasystem/avalon-docker) repo.
+
 ## Javascript style checking and code formatting
 ### ESLint - Style checking
 In order to run eslint on javascript files to check prior to creating a pull request do the following:

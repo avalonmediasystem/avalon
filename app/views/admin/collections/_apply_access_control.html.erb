@@ -1,0 +1,34 @@
+<div id="access_control_modal" class="modal fade">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal">
+                <span aria-hidden="true">&times;</span>
+                <span class="sr-only">Close</span>
+              </button>
+              <h4 class='modal-title'><%= modal_title %></h4>
+          </div>
+          <div class="modal-body">
+            <p>Would you like to keep all existing Special access entries on items (users, groups, IP addresses), and add the current access control settings?</p>
+            <div class="form-group">
+              <div class="radio">
+                <label>
+                  <%= radio_button_tag :overwrite, 'false', true %>
+                  Yes, add to existing Special Access entries
+                </label>
+              </div>
+              <div class="radio">
+                <label>
+                  <%= radio_button_tag :overwrite, 'true', false %>
+                  No, replace existing Special Access entries
+                </label>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <a href="#" data-dismiss="modal" aria-hidden="true" class="btn btn-default">Cancel</a>
+            <%= submit_tag "Apply", name: "apply_access", class: "btn btn-primary", form: 'access_control_form' %>
+          </div>
+        </div>
+    </div>
+</div>

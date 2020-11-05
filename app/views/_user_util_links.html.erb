@@ -65,6 +65,13 @@ Unless required by applicable law or agreed to in writing, software distributed
           <li class=<%= active_for_controller('samvera/persona/users') %>>
             <%= link_to 'Manage Users', main_app.persona_users_path %></li>
           <% end %>
+          <% if can? :manage, :jobs %>
+          <li>
+            <%= link_to(main_app.jobs_path, target: 'blank') do %>
+              Manage Worker Jobs <span class="fa fa-external-link"></span>
+            <% end %>
+          </li>
+          <% end %>
           <% end %>
         </ul>
       </div>

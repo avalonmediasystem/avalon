@@ -22,11 +22,6 @@ Unless required by applicable law or agreed to in writing, software distributed
                 height="<%= @player_height || 309 %>"
                 poster="<%= section_info[:poster_image] if f_start == 0 %>"
                 preload="auto">
-          <% if is_mejs_2? %>
-            <% section_info[:stream_flash].each do |flash| %>
-              <source src="<%= flash[:url] %>" data-quality="<%= flash[:quality] %>" data-plugin-type="flash" type="video/rtmp"/>
-            <% end %>
-          <% end %>
           <% section_info[:stream_hls].each do |hls| %>
             <source src="<%= hls[:url] %>" type="application/x-mpegURL" data-quality="<%= hls[:quality] %>"/>
           <% end %>

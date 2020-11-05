@@ -5,7 +5,7 @@ when :ffmpeg
 when :matterhorn
   Rubyhorn.init
 when :elastic_transcoder
-  require 'aws-sdk'
+  require 'aws-sdk-elastictranscoder'
   require 'avalon/elastic_transcoder'
 
   MasterFile.default_encoder_class = ElasticTranscoderEncode

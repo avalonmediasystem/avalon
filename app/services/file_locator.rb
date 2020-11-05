@@ -13,7 +13,7 @@
 # ---  END LICENSE_HEADER BLOCK  ---
 
 require 'addressable/uri'
-require 'aws-sdk'
+require 'aws-sdk-s3'
 
 class FileLocator
   attr_reader :source
@@ -29,6 +29,14 @@ class FileLocator
 
     def object
       @object ||= Aws::S3::Object.new(bucket_name: bucket, key: key)
+    end
+
+    def local_file
+      @local_file ||= Tempfile.new(File.basename(key))
+      object.download_file(@local_file.path) if File.zero?(@local_file)
+      @local_file
+    ensure
+      @local_file.close
     end
   end
 
@@ -72,6 +80,17 @@ class FileLocator
     end
   end
 
+  # If S3, download object to /tmp
+  def local_location
+    @local_location ||= begin
+      if uri.scheme == 's3'
+        S3File.new(uri).local_file.path
+      else
+        location
+      end
+    end
+  end
+
   def exist?
     case uri.scheme
     when 's3'
@@ -103,6 +122,32 @@ class FileLocator
       File.open(location,'r')
     else
       location
+    end
+  end
+
+  def self.remove_dir(path)
+    if Settings.dropbox.path.match? %r{^s3://}
+      remove_s3_dir(path)
+    else
+      remove_fs_dir(path)
+    end
+  end
+
+  def self.remove_s3_dir(path)
+    path_uri = URI.parse(path)
+    bucket = Aws::S3::Resource.new.bucket(Settings.encoding.masterfile_bucket)
+    bucket.objects(prefix: "#{path_uri.path}/").batch_delete!
+
+    # When directory is empty
+    dropbox_dir = bucket.object("#{path_uri.path}/")
+    dropbox_dir.delete if dropbox_dir.exists?
+  end
+
+  def self.remove_fs_dir(path)
+    if File.directory?(path)
+      FileUtils.remove_dir(path)
+    else
+      Rails.logger.error "Could not delete directory #{path}. Directory not found"
     end
   end
 end

@@ -1,0 +1,57 @@
+<%#
+Copyright 2011-2020, The Trustees of Indiana University and Northwestern
+  University.  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+
+You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+  under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+  CONDITIONS OF ANY KIND, either express or implied. See the License for the
+  specific language governing permissions and limitations under the License.
+---  END LICENSE_HEADER BLOCK  ---
+%>
+
+<script type="text/javascript">
+  $('#target_collection_id').select2({
+    dropdownParent: $('.modal-dialog')
+  });
+</script>
+
+<% @candidates = @documents %>
+<div class="modal-header">
+  <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+  <h1><%= t('blacklight.merge.form.title') %></h1>
+</div>
+
+<%= form_tag url_for(:controller => "bookmarks", :action => "merge"), :id => 'merge_form', :class => "form-horizontal", :method => :post do %>
+  <div class="modal-body">
+    <div class="row-fluid">
+      <div class="btn-options">
+        <% if @documents.empty? || @documents.count < 2 %>
+          <div class="alert alert-danger">
+            <p><%= t('blacklight.merge.insufficient_items') %></p>
+          </div>
+        <% else %>
+          <div class="alert">
+            <fieldset>
+              <p><%= t('blacklight.merge.confirm') %></p>
+              <% @documents.each do |d| %>
+                <div class="form-check">
+                  <%= radio_button_tag :media_object, d.id, style: 'width:100%;' %>
+                  <%= label_tag "media_object_#{d.id}", "#{d["title_tesi"] || "No title"} - #{d.id}" %>
+                  <% t('blacklight.merge.insufficient_rights') if cannot? :destroy, MediaObject.find(d.id) %>
+                </div>
+              <% end %>
+            </fieldset>
+          </div>
+          <div class="modal-footer">
+            <button type="submit" class="btn btn-primary"><%= t('blacklight.merge.button') %></button>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+<% end %>

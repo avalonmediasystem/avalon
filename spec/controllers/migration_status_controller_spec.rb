@@ -21,11 +21,11 @@ describe MigrationStatusController do
 
   describe 'security' do
     context 'not logged in' do
-      it "all routes should redirect to sign in" do
-        expect(get :index).to redirect_to(/#{Regexp.quote(new_user_session_path)}\?url=.*/)
-        expect(get :show, params: { class: 'MediaObject' }).to redirect_to(/#{Regexp.quote(new_user_session_path)}\?url=.*/)
-        expect(get :detail, params: { id: 'avalon:12345' }).to redirect_to(/#{Regexp.quote(new_user_session_path)}\?url=.*/)
-        expect(get :report, params: { id: 'avalon:12345' }).to redirect_to(/#{Regexp.quote(new_user_session_path)}\?url=.*/)
+      it "all routes should redirect to restricted content page" do
+        expect(get :index).to render_template('errors/restricted_pid')
+        expect(get :show, params: { class: 'MediaObject' }).to render_template('errors/restricted_pid')
+        expect(get :detail, params: { id: 'avalon:12345' }).to render_template('errors/restricted_pid')
+        expect(get :report, params: { id: 'avalon:12345' }).to render_template('errors/restricted_pid')
       end
     end
 
@@ -34,11 +34,11 @@ describe MigrationStatusController do
         login_as :user
       end
 
-      it "all routes should redirect to /" do
-        expect(get :index).to redirect_to(root_path)
-        expect(get :show, params: { class: 'MediaObject' }).to redirect_to(root_path)
-        expect(get :detail, params: { id: 'avalon:12345' }).to redirect_to(root_path)
-        expect(get :report, params: { id: 'avalon:12345' }).to redirect_to(root_path)
+      it "all routes should redirect to restricted content page" do
+        expect(get :index).to render_template('errors/restricted_pid')
+        expect(get :show, params: { class: 'MediaObject' }).to render_template('errors/restricted_pid')
+        expect(get :detail, params: { id: 'avalon:12345' }).to render_template('errors/restricted_pid')
+        expect(get :report, params: { id: 'avalon:12345' }).to render_template('errors/restricted_pid')
       end
     end
   end

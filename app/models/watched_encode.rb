@@ -26,8 +26,9 @@ class WatchedEncode < ActiveEncode::Base
   end
 
   after_completed do |encode|
-    # Upload to minio if using it with ffmpeg
-    if Settings.minio && Settings.encoding.engine_adapter.to_sym == :ffmpeg
+    # Upload to S3 if using ffmpeg or passthrough adapter
+    if Settings.encoding.derivative_bucket &&
+       (Settings.encoding.engine_adapter.to_sym == :ffmpeg || is_a?(PassThroughEncode))
       bucket = Aws::S3::Bucket.new(name: Settings.encoding.derivative_bucket)
       encode.output.collect! do |output|
         file = FileLocator.new output.url
@@ -61,11 +62,6 @@ class WatchedEncode < ActiveEncode::Base
   protected
 
     def localize_s3_file(url)
-      obj = FileLocator::S3File.new(url).object
-      tempfile = Tempfile.new(File.basename(url))
-      new_path = tempfile.path
-      obj.download_file new_path
-
-      new_path
+      FileLocator.new(url).local_location
     end
 end

@@ -202,11 +202,10 @@ describe MasterFilesController do
       expect(master_file.media_object.reload.ordered_master_files.to_a).not_to include master_file
     end
 
-    it "redirects with a flash warning for end users" do
+    it "redirect to restricted content page for end users" do
       login_as :user
       expect(controller.current_ability.can?(:destroy, master_file)).to be_falsey
-      expect(post(:destroy, params: { id: master_file.id })).to redirect_to(root_path)
-      expect(flash[:notice]).not_to be_empty
+      expect(post(:destroy, params: { id: master_file.id })).to render_template('errors/restricted_pid')
     end
   end
 
@@ -264,14 +263,14 @@ describe MasterFilesController do
   describe "#set_frame" do
     subject(:mf) { FactoryBot.create(:master_file, :with_thumbnail, :with_media_object) }
 
-    it "redirects to sign in when not logged in" do
+    it "redirects to restricted content page when not logged in" do
       get(:set_frame, params: { id: mf.id })
-      expect(request).to redirect_to new_user_session_path(url: request.url)
+      expect(request).to render_template('errors/restricted_pid')
     end
 
-    it "redirects to home when logged in and not authorized" do
+    it "redirects to restricted content page when logged in and not authorized" do
       login_as :user
-      expect(get(:set_frame, params: { id: mf.id })).to redirect_to root_path
+      expect(get(:set_frame, params: { id: mf.id })).to render_template('errors/restricted_pid')
     end
 
     context "authorized" do
@@ -295,14 +294,14 @@ describe MasterFilesController do
     subject(:mf) { FactoryBot.create(:master_file, :with_thumbnail, :with_media_object) }
 
     context "not authorized" do
-      it "redirects to sign in when not logged in" do
+      it "redirects to restricted content page when not logged in" do
         get(:get_frame, params: { id: mf.id })
-        expect(request).to redirect_to new_user_session_path(url: request.url)
+        expect(request).to render_template('errors/restricted_pid')
       end
 
-      it "redirects to home when logged in and not authorized" do
+      it "redirects to restricted content page when logged in and not authorized" do
         login_as :user
-        expect(get(:get_frame, params: { id: mf.id })).to redirect_to root_path
+        expect(get(:get_frame, params: { id: mf.id })).to render_template('errors/restricted_pid')
       end
 
     end
@@ -511,6 +510,23 @@ describe MasterFilesController do
       expect(response.content_type).to eq('application/zlib')
       expect(response.headers['Content-Encoding']).to eq('deflate')
     end
+
+    context "empty waveform" do
+      let(:master_file) { FactoryBot.create(:master_file) }
+
+      it("returns not found when empty=true param is not present") do
+        login_as :administrator
+        expect(head('waveform', params: { id: master_file.id })).to have_http_status(:not_found)
+      end
+
+      it("returns an empty waveform json when empty=true is present") do
+        login_as :administrator
+        get('waveform', params: { id: master_file.id, empty: true })
+        expect(response).to have_http_status(:ok)
+        expect(response.content_type).to eq('application/json')
+        expect(response['Content-Disposition']).to eq('attachment; filename="empty_waveform.json"')
+      end
+    end
   end
 
   describe '#iiif_auth_token' do
@@ -573,35 +589,35 @@ describe MasterFilesController do
     end
   end
 
-  describe 'move' do
+  describe '#move' do
     let(:master_file) { FactoryBot.create(:master_file, :with_media_object) }
     let(:target_media_object) { FactoryBot.create(:media_object) }
     let(:current_media_object) { master_file.media_object }
 
     context 'security' do
       context 'as anonymous' do
-        it 'redirects to home page' do
+        it 'redirects to restricted content page' do
           post('move', params: { id: master_file.id, target: target_media_object.id })
-          expect(response).to redirect_to(/#{Regexp.quote(new_user_session_path)}\?url=.*/)
+          expect(response).to render_template('errors/restricted_pid')
         end
       end
       context 'as an end user' do
         before do
           login_as :student
         end
-        it 'redirects to home page' do
+        it 'redirects to restricted content page' do
           post('move', params: { id: master_file.id, target: target_media_object.id })
-          expect(response).to redirect_to root_path
+          expect(response).to render_template('errors/restricted_pid')
         end
       end
       context 'when only have update permissions on one media object' do
-        it 'redirects to home page' do
+        it 'redirects to restricted content page' do
           login_user master_file.media_object.collection.managers.first
           post('move', params: { id: master_file.id, target: target_media_object.id })
-          expect(response).to redirect_to root_path
+          expect(response).to render_template('errors/restricted_pid')
           login_user target_media_object.collection.managers.first
           post('move', params: { id: master_file.id, target: target_media_object.id })
-          expect(response).to redirect_to root_path
+          expect(response).to render_template('errors/restricted_pid')
         end
       end
     end
@@ -624,6 +640,29 @@ describe MasterFilesController do
         expect(target_media_object.reload.master_file_ids).to include master_file.id
         expect(target_media_object.ordered_master_file_ids).to include master_file.id
       end
+    end
+  end
+
+  describe "#update" do
+    let(:master_file) { FactoryBot.create(:master_file, :with_media_object) }
+    subject { put('update', params: { id: master_file.id, 
+                                      master_file: { title: "New label", 
+                                                    poster_offset: "00:00:03", 
+                                                    date_digitized: "2020-08-27", 
+                                                    permalink: "https://perma.link" }})}
+
+    before do
+      login_as :administrator
+    end
+
+    it 'updates the master file' do
+      path = edit_media_object_path(master_file.media_object_id, step: 'file-upload')
+      expect(subject).to redirect_to(path)
+      master_file.reload
+      expect(master_file.title).to eq "New label"
+      expect(master_file.poster_offset).to eq 3000
+      expect(master_file.date_digitized).to eq "2020-08-27T00:00:00Z"
+      expect(master_file.permalink).to eq "https://perma.link"
     end
   end
 end

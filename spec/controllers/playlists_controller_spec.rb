@@ -63,6 +63,11 @@ RSpec.describe PlaylistsController, type: :controller do
       it "should redirect to sign in" do
         expect(get :new).to redirect_to(/#{Regexp.quote(new_user_session_path)}\?url=.*/)
       end
+      # Show is isolated because it does not require authorization before the action
+      it "playlist view page should redirect to restricted content page" do
+        expect(get :show, params: { id: playlist.id }).to render_template('errors/restricted_pid')
+        expect(get :refresh_info, params: { id: playlist.id, position: 1 }, xhr: true).to render_template('errors/restricted_pid')
+      end
       it "all routes should redirect to sign in" do
         expect(get :index).to redirect_to(/#{Regexp.quote(new_user_session_path)}\?url=.*/)
         expect(get :edit, params: { id: playlist.id }).to redirect_to(/#{Regexp.quote(new_user_session_path)}\?url=.*/)
@@ -70,7 +75,6 @@ RSpec.describe PlaylistsController, type: :controller do
         expect(put :update, params: { id: playlist.id }).to redirect_to(/#{Regexp.quote(new_user_session_path)}\?url=.*/)
         expect(put :update_multiple, params: { id: playlist.id }).to redirect_to(/#{Regexp.quote(new_user_session_path)}\?url=.*/)
         expect(delete :destroy, params: { id: playlist.id }).to redirect_to(/#{Regexp.quote(new_user_session_path)}\?url=.*/)
-        expect(get :refresh_info, params: { id: playlist.id, position: 1 }, xhr: true).to redirect_to(/#{Regexp.quote(new_user_session_path)}\?url=.*/)
       end
       context 'with a public playlist' do
         let(:playlist) { FactoryBot.create(:playlist, visibility: Playlist::PUBLIC, items: [playlist_item]) }
@@ -82,8 +86,8 @@ RSpec.describe PlaylistsController, type: :controller do
       end
       context 'with a private playlist' do
         it "should NOT return the playlist view page" do
-          expect(get :show, params: { id: playlist.id }).to redirect_to(/#{Regexp.quote(new_user_session_path)}\?url=.*/)
-          expect(get :refresh_info, params: { id: playlist.id, position: 1 }, xhr: true).to redirect_to(/#{Regexp.quote(new_user_session_path)}\?url=.*/)
+          expect(get :show, params: { id: playlist.id }).to render_template('errors/restricted_pid')
+          expect(get :refresh_info, params: { id: playlist.id, position: 1 }, xhr: true).to render_template('errors/restricted_pid')
         end
       end
       context 'with a private playlist and token' do
@@ -99,12 +103,12 @@ RSpec.describe PlaylistsController, type: :controller do
       before do
         login_as :user
       end
-      it "all routes should redirect to /" do
-        expect(get :edit, params: { id: playlist.id }).to redirect_to(root_path)
-        expect(put :update, params: { id: playlist.id }).to redirect_to(root_path)
-        expect(put :update_multiple, params: { id: playlist.id }).to redirect_to(root_path)
-        expect(delete :destroy, params: { id: playlist.id }).to redirect_to(root_path)
-        expect(get :refresh_info, params: { id: playlist.id, position: 1 }, xhr: true).to redirect_to(root_path)
+      it "all routes should redirect to restricted content page" do
+        expect(get :edit, params: { id: playlist.id }).to render_template('errors/restricted_pid')
+        expect(put :update, params: { id: playlist.id }).to render_template('errors/restricted_pid')
+        expect(put :update_multiple, params: { id: playlist.id }).to render_template('errors/restricted_pid')
+        expect(delete :destroy, params: { id: playlist.id }).to render_template('errors/restricted_pid')
+        expect(get :refresh_info, params: { id: playlist.id, position: 1 }, xhr: true).to render_template('errors/restricted_pid')
       end
       context 'with a public playlist' do
         let(:playlist) { FactoryBot.create(:playlist, visibility: Playlist::PUBLIC, items: [playlist_item]) }
@@ -115,9 +119,9 @@ RSpec.describe PlaylistsController, type: :controller do
         end
       end
       context 'with a private playlist' do
-        it "should NOT return the playlist view page" do
-          expect(get :show, params: { id: playlist.id }).to redirect_to(root_path)
-          expect(get :refresh_info, params: { id: playlist.id, position: 1 }, xhr: true).to redirect_to(root_path)
+        it "should NOT return the pdfslaylist view page" do
+          expect(get :show, params: { id: playlist.id }).to render_template('errors/restricted_pid')
+          expect(get :refresh_info, params: { id: playlist.id, position: 1 }, xhr: true).to render_template('errors/restricted_pid')
         end
       end
       context 'with a private playlist and token' do

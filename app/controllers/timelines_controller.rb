@@ -266,9 +266,12 @@ class TimelinesController < ApplicationController
         range = parse_timeline_node(n, starttime, endtime, duration)
         structures << range if range.present?
       end
+
       # pad ends of timeline if structure doesn't align
-      structure_start = min_range(structures)
-      structure_end = max_range(structures)
+      # when custom scope is specified avoiding overlapping the existing timespans in structure
+      # structures array is empty
+      structure_start = min_range(structures) || starttime
+      structure_end = max_range(structures) || endtime
       structures = [timeline_canvas('', 0, structure_start)] + structures if structure_start.positive?
       structures += [timeline_canvas('', structure_end, endtime - starttime)] if structure_end < endtime - starttime
       manifest = JSON.parse(@timeline.manifest)
@@ -278,6 +281,7 @@ class TimelinesController < ApplicationController
     end
 
     def min_range(structures)
+      return if structures.empty?
       first = structures.first
       if canvas_range?(first)
         view_context.parse_hour_min_sec(first[:items][0][:id].split('t=')[1].split(',')[0])
@@ -287,6 +291,7 @@ class TimelinesController < ApplicationController
     end
 
     def max_range(structures)
+      return if structures.empty?
       last = structures.last
       if canvas_range?(last)
         view_context.parse_hour_min_sec(last[:items][0][:id].split('t=')[1].split(',')[1])
@@ -309,6 +314,8 @@ class TimelinesController < ApplicationController
       elsif node.name == 'Span'
         spanbegin = view_context.parse_hour_min_sec(node.attribute('begin')&.value || '0')
         spanend = view_context.parse_hour_min_sec(node.attribute('end')&.value || duration.to_s)
+        # startlimit <= span <= endlimit condition picks up spans enclosed  within the specified range
+        # this sometimes returns an empty structure when a custom scope is given
         timeline_canvas(node.attribute('label')&.value || '', spanbegin - startlimit, spanend - startlimit) if spanbegin >= startlimit && spanend <= endlimit
       end
     end
