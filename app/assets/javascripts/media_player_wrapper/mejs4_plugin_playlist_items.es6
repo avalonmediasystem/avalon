@@ -288,7 +288,7 @@ Object.assign(MediaElementPlayer.prototype, {
     getNextItem() {
       let nextItem = this.$nowPlayingLi.next('li');
       // When next item is not a valid playlist item (e.g. from a deleted item) get the item after that
-      if(nextItem[0].className !== 'queue') {
+      if(nextItem[0] && nextItem[0].className !== 'queue') {
         nextItem = nextItem.next('li');
       }
       return nextItem;
