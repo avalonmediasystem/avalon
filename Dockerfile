@@ -72,7 +72,8 @@ COPY        --from=download /usr/bin/ff* /usr/bin/
 FROM        base as dev
 RUN         apt-get install -y --no-install-recommends --allow-unauthenticated \
             build-essential \
-            cmake
+            cmake \
+            vim
 
 COPY        --from=bundle-dev /usr/local/bundle /usr/local/bundle
 COPY        --from=download /chrome.deb /
