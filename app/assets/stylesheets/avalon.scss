@@ -583,6 +583,11 @@ div.status-detail {
     span.tool_label {
       font-weight: bold;
     }
+
+    label.file-upload-label {
+      float: left;
+      cursor: pointer;
+    }
   }
 }
 
