@@ -64,12 +64,11 @@ Unless required by applicable law or agreed to in writing, software distributed
           <div class="tool_actions">
             <span class="tool_label">Structure</span>
             <%= form_for section, :url => attach_structure_master_file_path(section.id), html: {method: "post"} do |form| %>
-            <%= form.file_field :structure, class: "filedata", style: "height:0px;width:0px;" %>
+            <%= form.file_field :structure, id: "structure_#{index}_filedata", class: "filedata", style: "display:none;" %>
             <% item_label=html_escape(stream_label_for(section)) %>
             <% stream_url=hls_manifest_master_file_url(section.id, quality: 'auto') %>
             <div class="btn-toolbar">
-              <input type="button" class="btn btn-primary btn-xs"
-                onclick="$('#structure_<%= index %> .filedata').click();" value="<%= section.structuralMetadata.present? ? 'Replace' : 'Upload'%>" />
+              <label class="btn btn-primary btn-xs file-upload-label" for="structure_<%= index %>_filedata"><%= section.structuralMetadata.present? ? 'Replace' : 'Upload'%></label>
               <div class="btn-group">
                 <% if section.structuralMetadata.valid? %>
                 <%= react_component("ReactButtonContainer", {sectionIndex: index, masterFileID: section.id, baseURL: request.protocol+request.host_with_port, streamDuration: section.duration, audioStreamURL: stream_url, initStructure: section.structuralMetadata.as_json}) %>
