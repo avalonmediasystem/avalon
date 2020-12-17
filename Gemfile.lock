@@ -79,8 +79,8 @@ GIT
 
 GIT
   remote: https://github.com/samvera-labs/active_encode
-  revision: bc71eef52b9cf38777c583dae6d421ec482d5491
-  branch: master
+  revision: 780b995ec215097d16e3018ffc658b52371d85c9
+  branch: aws-sdk-v3
   specs:
     active_encode (0.7.0)
       rails
