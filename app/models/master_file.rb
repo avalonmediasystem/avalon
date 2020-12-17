@@ -694,32 +694,32 @@ class MasterFile < ActiveFedora::Base
 
   def reloadTechnicalMetadata!
     #Reset mediainfo
-    @mediainfo = nil
+    @mediainfo = mediainfo
 
     # Formats like MP4 can be caught as both audio and video
     # so the case statement flows in the preferred order
-    self.file_format = if mediainfo.video?
+    self.file_format = if @mediainfo.video?
                          'Moving image'
-                       elsif mediainfo.audio?
+                       elsif @mediainfo.audio?
                          'Sound'
                        else
                          'Unknown'
                        end
 
     self.duration = begin
-      mediainfo.duration.to_s
+      @mediainfo.duration.to_s
     rescue
       nil
     end
 
-    unless mediainfo.video.streams.empty?
-      display_aspect_ratio_s = mediainfo.video.streams.first.display_aspect_ratio
+    unless @mediainfo.video.streams.empty?
+      display_aspect_ratio_s = @mediainfo.video.streams.first.display_aspect_ratio
       if ':'.in? display_aspect_ratio_s
         self.display_aspect_ratio = display_aspect_ratio_s.split(/:/).collect(&:to_f).reduce(:/).to_s
       else
         self.display_aspect_ratio = display_aspect_ratio_s
       end
-      self.original_frame_size = mediainfo.video.streams.first.frame_size
+      self.original_frame_size = @mediainfo.video.streams.first.frame_size
       self.poster_offset = [2000,self.duration.to_i].min
     end
   end

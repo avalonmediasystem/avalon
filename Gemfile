@@ -61,9 +61,9 @@ gem 'omniauth-identity'
 gem 'omniauth-lti', git: "https://github.com/avalonmediasystem/omniauth-lti.git", tag: 'avalon-r4'
 
 # Media Access & Transcoding
-gem 'active_encode', git: "https://github.com/samvera-labs/active_encode", branch: 'master'
+gem 'active_encode', git: "https://github.com/samvera-labs/active_encode", branch: 'aws-sdk-v3'
 gem 'audio_waveform-ruby', '~> 1.0.7', require: 'audio_waveform'
-gem 'browse-everything', '~> 0.13.1'
+gem 'browse-everything', git: "https://github.com/avalonmediasystem/browse-everything.git", branch: 'v0.16.1-gdrive-fixes'
 gem 'fastimage'
 gem 'media_element_add_to_playlist', git: 'https://github.com/avalonmediasystem/media-element-add-to-playlist.git', tag: 'avalon-r6.5'
 gem 'mediainfo', git: "https://github.com/avalonmediasystem/mediainfo.git", branch: 'avalon_fixes'
