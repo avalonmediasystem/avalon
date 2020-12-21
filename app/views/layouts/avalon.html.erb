@@ -22,7 +22,9 @@ Unless required by applicable law or agreed to in writing, software distributed
   <title><%= render_page_title %></title>
   
   <meta property="og:title" content="<%= render_page_title %>" />
+  <meta property="og:type" content=<%= @page_type || "website" %> />
   <meta property="og:url" content=<%= request.url %> />
+  <meta property="og:image" content=<%= @poster_url || request.base_url + image_path("AvalonMediaSystem_Logo_Large.png") %> />
 
   <%= csrf_meta_tags %>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">

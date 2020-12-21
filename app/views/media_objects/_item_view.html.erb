@@ -17,9 +17,10 @@ Unless required by applicable law or agreed to in writing, software distributed
 <% content_for :additional_head_content do %>
   <link rel="alternative" type="application/json+oembed" href="<%= "#{oembed_url(format: 'json', url: share_link_for(@currentStream))}" %>" />
   <link rel="alternative" type="application/xml+oembed" href="<%= "#{oembed_url(format: 'xml', url: share_link_for(@currentStream))}" %>" />
-  <meta property="og:image" content=<%= poster_master_file_url(@currentStream) %> />
-  <meta property="og:type" content=<%= @currentStream.is_video? ? 'video' : 'audio' %> />
 <% end %>
+
+<% @poster_url = poster_master_file_url(@currentStream) %>
+<% @page_type = @currentStream.is_video? ? 'video' : 'audio' %>
 
 <% f_start, f_end = parse_media_fragment params['t'] %>
 <div class="row">
