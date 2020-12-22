@@ -55,7 +55,7 @@ module MasterFileBehavior
     flash = sort_streams flash
     hls = sort_streams hls
 
-    poster_path = Rails.application.routes.url_helpers.poster_master_file_path(self) if has_poster?
+    poster_path = Rails.application.routes.url_helpers.poster_master_file_path(self)
     if has_captions?
       captions_path = Rails.application.routes.url_helpers.captions_master_file_path(self)
       captions_format = self.captions.mime_type
