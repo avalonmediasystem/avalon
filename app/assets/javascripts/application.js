@@ -59,6 +59,5 @@
 //= stub media_player_wrapper/mejs4_plugin_track_scrubber
 //= stub media_player_wrapper/mejs4_link_back
 //= stub media_player_wrapper/mejs4_plugin_playlist_items
-//= stub media_player_wrapper/mejs4_plugin_hd_toggle
 
 //= require_tree .
