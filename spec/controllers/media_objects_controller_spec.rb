@@ -1051,11 +1051,6 @@ describe MediaObjectsController, type: :controller do
         expect(media_object.permalink).to be_present
       end
 
-      it "should fail when id doesn't exist" do
-        get 'update_status', params: { id: 'this-id-is-fake', status: 'publish' }
-        expect(response.code).to eq '404'
-      end
-
       it "should publish multiple items" do
         media_objects = []
         3.times { media_objects << FactoryBot.create(:media_object, collection: collection) }
@@ -1065,6 +1060,24 @@ describe MediaObjectsController, type: :controller do
           mo.reload
           expect(mo).to be_published
           expect(mo.permalink).to be_present
+        end
+      end
+
+      context "should fail when" do
+        it "id doesn't exist" do
+          get 'update_status', params: { id: 'this-id-is-fake', status: 'publish' }
+          expect(response.code).to eq '404'
+        end
+
+        it "title/issued date is empty" do
+          media_object = FactoryBot.create(:media_object, collection: collection)
+          media_object.title = nil
+          media_object.date_issued = nil
+          media_object.save!
+          get 'update_status', params: { id: media_object.id, status: 'publish' }
+          expect(flash[:notice]).to eq("Unable to publish item: #{media_object.id}, missing required fields")
+          media_object.reload
+          expect(media_object).not_to be_published
         end
       end
     end
