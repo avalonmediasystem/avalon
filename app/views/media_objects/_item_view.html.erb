@@ -19,6 +19,9 @@ Unless required by applicable law or agreed to in writing, software distributed
   <link rel="alternative" type="application/xml+oembed" href="<%= "#{oembed_url(format: 'xml', url: share_link_for(@currentStream))}" %>" />
 <% end %>
 
+<% @poster_url = request.base_url + @currentStreamInfo[:poster_image] unless @currentStreamInfo[:poster_image].nil? %>
+<% @page_type = @currentStreamInfo[:is_video] ? 'video' : 'audio' %>
+
 <% f_start, f_end = parse_media_fragment params['t'] %>
 <div class="row">
   <div class="col-sm-8" id="left_column">

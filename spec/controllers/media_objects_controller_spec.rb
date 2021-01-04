@@ -731,7 +731,7 @@ describe MediaObjectsController, type: :controller do
 
     end
     context "Test lease access control" do
-      let!(:media_object) { FactoryBot.create(:published_media_object, visibility: 'private') }
+      let!(:media_object) { FactoryBot.create(:published_media_object, :with_master_file, visibility: 'private') }
       let!(:user) { FactoryBot.create(:user) }
       before :each do
         login_user user.user_key
