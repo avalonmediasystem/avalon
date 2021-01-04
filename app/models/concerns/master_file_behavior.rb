@@ -34,7 +34,7 @@ module MasterFileBehavior
   def stream_details
     flash, hls = [], []
 
-    common, poster_path, captions_path, captions_format = nil, nil, nil, nil, nil, nil
+    common, captions_path, captions_format = nil, nil, nil, nil, nil
 
     derivatives.each do |d|
       common = { quality: d.quality,
