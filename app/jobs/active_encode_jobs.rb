@@ -13,10 +13,6 @@
 # ---  END LICENSE_HEADER BLOCK  ---
 
 module ActiveEncodeJobs
-  require 'ffmpeg_encode'
-  require 'elastic_transcoder_encode'
-  require 'pass_through_encode'
-
   class CreateEncodeJob < ActiveJob::Base
     queue_as :create_encode
 
