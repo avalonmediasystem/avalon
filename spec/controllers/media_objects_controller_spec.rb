@@ -1069,13 +1069,14 @@ describe MediaObjectsController, type: :controller do
           expect(response.code).to eq '404'
         end
 
-        it "title/issued date is empty" do
+        it "item is invalid" do
           media_object = FactoryBot.create(:media_object, collection: collection)
           media_object.title = nil
           media_object.date_issued = nil
-          media_object.save!
+          media_object.workflow.last_completed_step = 'file-upload'
+          media_object.save!(validate: false)
           get 'update_status', params: { id: media_object.id, status: 'publish' }
-          expect(flash[:notice]).to eq("Unable to publish item: #{media_object.id}, missing required fields")
+          expect(flash[:notice]).to eq("Unable to publish item: #{media_object.id}, validation failed.")
           media_object.reload
           expect(media_object).not_to be_published
         end

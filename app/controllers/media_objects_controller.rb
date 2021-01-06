@@ -410,21 +410,31 @@ class MediaObjectsController < ApplicationController
   # it will just toggle the state.
   def update_status
     status = params[:status]
-    errors, update_errors = [], [], []
-    success_count, successes = 0
+    errors = []
+    success_count = 0
     Array(params[:id]).each do |id|
       media_object = MediaObject.find(id)
       if cannot? :update, media_object
         errors += ["#{media_object.title} (#{id}) (permission denied)."]
       else
-        case status
-        when 'publish'
-          update_errors, successes = update_publish(media_object)
-        when 'unpublish'
-          update_errors, successes = update_unpublish(media_object)
+        begin
+          case status
+          when 'publish'
+            media_object.publish!(user_key)
+            # additional save to set permalink
+            media_object.save( validate: false )
+            success_count += 1
+          when 'unpublish'
+            if can? :unpublish, media_object
+              media_object.publish!(nil)
+              success_count += 1
+            else
+              errors += ["#{media_object.title} (#{id}) (permission denied)."]
+            end
+          end
+        rescue ActiveFedora::RecordInvalid
+          errors += ["#{media_object.id}, validation failed."]
         end
-        errors += update_errors
-        success_count += successes
       end
     end
     message = "#{success_count} #{'media object'.pluralize(success_count)} successfully #{status}ed." if success_count.positive?
@@ -579,32 +589,6 @@ class MediaObjectsController < ApplicationController
       @currentStream = @media_object.indexed_master_files.first
     end
     return @currentStream
-  end
-
-  def update_publish(media_object)
-    errors = []
-    success_count = 0
-    if media_object.title.nil? || media_object.date_issued.nil?
-      errors += ["#{media_object.id}, missing required fields"]
-    else
-      media_object.publish!(user_key)
-      # additional save to set permalink
-      media_object.save( validate: false )
-      success_count += 1
-    end
-    return errors, success_count
-  end
-
-  def update_unpublish(media_object)
-    errors = []
-    success_count = 0
-    if can? :unpublish, media_object
-      media_object.publish!(nil)
-      success_count += 1
-    else
-      errors += ["#{media_object.title} (#{id}) (permission denied)."]
-    end
-    return errors, success_count
   end
 
   def media_object_parameters
