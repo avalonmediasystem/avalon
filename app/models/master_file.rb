@@ -54,6 +54,8 @@ class MasterFile < ActiveFedora::Base
     f.original_name = 'waveform.json'
   end
 
+  has_subresource 'transcripts', class_name: 'IndexedFile'
+
   property :title, predicate: ::RDF::Vocab::EBUCore.title, multiple: false do |index|
     index.as :stored_searchable
   end
