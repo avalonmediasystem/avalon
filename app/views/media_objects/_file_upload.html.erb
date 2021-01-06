@@ -155,7 +155,8 @@ Unless required by applicable law or agreed to in writing, software distributed
                       <div class="file_view">Uploaded file: <%= section.captions.original_name %></div>
                     <% end %>
                   </div>
-                  <%= render partial: "supplemental_files_upload", locals: { section: section, index: section.id, label: 'Section Supplemental Files' } %>
+                  <%= render partial: "supplemental_files_upload", locals: { section: section, index: section.id, label: 'Section Supplemental Files', tag: 'supplemental' } %>
+                  <%= render partial: "transcript_files_upload", locals: { section: section, index: section.id, label: 'Transcripts', tag: 'transcript' } %>
                 </div>
               </div>
             </div><!-- end associated-files-block -->
