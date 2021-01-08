@@ -77,7 +77,7 @@ services:
     <<: *redis
 
   avalon: &avalon
-    image: avalonmediasystem/avalon:7.2-slim-dev-20201210
+    image: avalonmediasystem/avalon:7.2-slim-dev-20200108
     build:
       context: .
       target: dev
