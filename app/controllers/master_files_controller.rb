@@ -165,47 +165,6 @@ class MasterFilesController < ApplicationController
     end
   end
 
-  # FIXME: this is written for transcripts to work in the UI as a first step
-  def attach_transcripts
-    transcripts = nil
-    if params[:id].blank? || (not MasterFile.exists?(params[:id]))
-      flash[:notice] = "MasterFile #{params[:id]} does not exist"
-    end
-    @master_file = MasterFile.find(params[:id])
-    if flash.empty?
-      if params[:master_file].present? && params[:master_file][:transcripts].present?
-        transcript_file = params[:master_file][:transcripts]
-        transcript_ext = File.extname(transcript_file.original_filename)
-        content_type = Mime::Type.lookup_by_extension(transcript_ext.slice(1..-1)).to_s if transcript_ext
-        if ["text/vtt", "text/srt"].include? content_type
-          transcripts = transcript_file.open.read
-        else
-          flash[:error] = "Uploaded file is not a recognized transcript file"
-        end
-      end
-      if transcripts.present?
-        @master_file.transcripts.content = transcripts.encode(Encoding.find('UTF-8'), invalid: :replace, undef: :replace, replace: '')
-        @master_file.transcripts.mime_type = content_type
-        @master_file.transcripts.original_name = params[:master_file][:transcripts].original_filename
-        flash[:success] = "Transcript file succesfully added."
-      elsif !transcript_file.present?
-        @master_file.transcripts.content = ''
-        @master_file.transcripts.original_name = ''
-        flash[:success] = "Transcript file succesfully removed."
-      end
-      if flash[:error].blank?
-        unless @master_file.save
-          flash[:success] = nil
-          flash[:error] = "There was a problem storing the file"
-        end
-      end
-    end
-    respond_to do |format|
-      format.html { redirect_to edit_media_object_path(@master_file.media_object_id, step: 'file-upload') }
-      format.json { render json: { transcripts: transcripts, flash: flash} }
-    end
-  end
-
   def attach_captions
     captions = nil
     if params[:id].blank? || (not MasterFile.exists?(params[:id]))
@@ -229,10 +188,6 @@ class MasterFilesController < ApplicationController
         @master_file.captions.mime_type = content_type
         @master_file.captions.original_name = params[:master_file][:captions].original_filename
         flash[:success] = "Captions file succesfully added."
-      elsif !captions_file.present?
-        @master_file.captions.content = ''
-        @master_file.captions.original_name = ''
-        flash[:success] = "Captions file succesfully removed."
       end
       if flash[:error].blank?
         unless @master_file.save
@@ -245,6 +200,24 @@ class MasterFilesController < ApplicationController
       format.html { redirect_to edit_media_object_path(@master_file.media_object_id, step: 'file-upload') }
       format.json { render json: {captions: captions, flash: flash} }
     end
+  end
+
+  def delete_captions
+    if params[:id].blank? || (not MasterFile.exists?(params[:id]))
+      flash[:notice] = "MasterFile #{params[:id]} does not exist"
+    end
+    @master_file = MasterFile.find(params[:id])
+    authorize! :edit, @master_file, message: "You do not have sufficient privileges to remove files"
+
+    @master_file.captions.content = ''
+    @master_file.captions.original_name = ''
+
+    if @master_file.save
+      flash[:success] = "Captions file succesfully removed."
+    else
+      flash[:error] = "There was a problem removing captions file."
+    end
+    redirect_to edit_media_object_path(@master_file.media_object_id, step: 'file-upload')
   end
 
   # Creates and Saves a File Asset to contain the the Uploaded file

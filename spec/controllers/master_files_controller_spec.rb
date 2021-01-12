@@ -461,16 +461,6 @@ describe MasterFilesController do
       expect(flash[:success]).not_to be_nil
     end
 
-    it "removes contents of captions datastream" do
-      # remove the contents of the datastream
-      post 'attach_captions', params: { id: master_file.id }
-      master_file.reload
-      expect(master_file.captions.empty?).to be true
-      expect(flash[:error]).to be_nil
-      expect(flash[:notice]).to be_nil
-      expect(flash[:success]).not_to be_nil
-    end
-
     context "with invalid file" do
       let(:file) { fixture_file_upload('/videoshort.mp4', 'video/mp4') }
 
@@ -485,6 +475,24 @@ describe MasterFilesController do
     end
   end
   # rubocop:enable RSpec/ExampleLength
+
+  describe "#delete_captions" do
+    let(:master_file) { FactoryBot.create(:master_file, :with_media_object, :with_captions) }
+
+    before do
+      disableCanCan!
+    end
+
+    it "removes contents of captions datastream" do
+      # remove the contents of the datastream
+      post 'delete_captions', params: { id: master_file.id }
+      master_file.reload
+      expect(master_file.captions.empty?).to be true
+      expect(flash[:error]).to be_nil
+      expect(flash[:notice]).to be_nil
+      expect(flash[:success]).not_to be_nil
+    end
+  end
 
   describe "#captions" do
     let(:master_file) { FactoryBot.create(:master_file, :with_media_object, :with_captions) }
