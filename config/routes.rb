@@ -143,7 +143,7 @@ Rails.application.routes.draw do
       get :embed
       post 'attach_structure'
       post 'attach_captions'
-      post 'attach_transcripts'
+      delete 'captions', action: :delete_captions, as: 'delete_captions'
       get :captions
       get :waveform
       match ':quality.m3u8', to: 'master_files#hls_manifest', via: [:get], as: :hls_manifest

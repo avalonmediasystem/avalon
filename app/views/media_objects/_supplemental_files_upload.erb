@@ -1,8 +1,9 @@
-      <div id="files_<%= index %>" class="section_files_tool">
+      <% file_section="#{tag}_#{section.id}" %>
+      <div id="<%= file_section %>" class="section_files_tool">
         <span class="tool_label"><%= label %></span>
         <%= form_for :supplemental_file, :url => object_supplemental_files_path(section), html: {method: "post"} do |form| %>
           <%= form.file_field :file, class: "filedata" %>
-          <input type="button" class="btn btn-primary btn-xs" onclick="$('#files_<%= index %> .filedata').click();"
+          <input type="button" class="btn btn-primary btn-xs" onclick="$('#<%= file_section %> .filedata').click();"
             value="Upload" />
         <% end %>
         <% if section.supplemental_files.present? %>
