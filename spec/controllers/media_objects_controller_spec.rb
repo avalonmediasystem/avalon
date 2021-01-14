@@ -1076,7 +1076,7 @@ describe MediaObjectsController, type: :controller do
           media_object.workflow.last_completed_step = 'file-upload'
           media_object.save!(validate: false)
           get 'update_status', params: { id: media_object.id, status: 'publish' }
-          expect(flash[:notice]).to eq("Unable to publish item: #{media_object.id}, validation failed.")
+          expect(flash[:notice]).to eq("Unable to publish item: Validation failed: Title field is required., Date issued field is required.")
           media_object.reload
           expect(media_object).not_to be_published
         end

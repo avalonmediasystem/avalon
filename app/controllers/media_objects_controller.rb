@@ -432,8 +432,8 @@ class MediaObjectsController < ApplicationController
               errors += ["#{media_object.title} (#{id}) (permission denied)."]
             end
           end
-        rescue ActiveFedora::RecordInvalid
-          errors += ["#{media_object.id}, validation failed."]
+        rescue ActiveFedora::RecordInvalid => e
+          errors += [e.message]
         end
       end
     end
