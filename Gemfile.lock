@@ -1,4 +1,12 @@
 GIT
+  remote: git://github.com/tawan/active-elastic-job.git
+  revision: c172e1f839f649b891431cbca158cc77916c30ca
+  specs:
+    active_elastic_job (3.0.0.alpha)
+      aws-sdk-sqs (~> 1)
+      rails (>= 5.0)
+
+GIT
   remote: https://github.com/avalonmediasystem/about_page.git
   revision: 1b920619cc54fdc99f1cb4da26c18818c1156070
   tag: avalon-r6.5
@@ -108,14 +116,6 @@ GIT
     omniauth-lti (0.0.2)
       ims-lti
       omniauth
-
-GIT
-  remote: https://github.com/tawan/active-elastic-job.git
-  revision: ec51c5d9dedc4a1b47f2db41f26d5fceb251e979
-  specs:
-    active_elastic_job (2.0.1)
-      aws-sdk-sqs (~> 1)
-      rails (>= 4.2)
 
 GEM
   remote: https://rubygems.org/
@@ -1331,7 +1331,7 @@ GEM
     hamster (3.0.0)
       concurrent-ruby (~> 1.0)
     hashdiff (0.3.9)
-    hashie (3.6.0)
+    hashie (4.1.0)
     hooks (0.4.1)
       uber (~> 0.0.14)
     htmlentities (4.3.4)
@@ -1460,7 +1460,7 @@ GEM
       activesupport (>= 3.2.18)
       i18n
       nokogiri
-    oauth (0.5.4)
+    oauth (0.5.5)
     oauth2 (1.4.1)
       faraday (>= 0.8, < 0.16.0)
       jwt (>= 1.0, < 3.0)
@@ -1473,8 +1473,8 @@ GEM
       activesupport
       nokogiri (>= 1.4.2)
       solrizer (~> 3.3)
-    omniauth (1.9.0)
-      hashie (>= 3.4.6, < 3.7.0)
+    omniauth (1.9.1)
+      hashie (>= 3.4.6)
       rack (>= 1.6.2, < 3)
     omniauth-identity (1.1.1)
       bcrypt-ruby (~> 3.0)
@@ -1937,4 +1937,4 @@ DEPENDENCIES
   zoom
 
 BUNDLED WITH
-   2.0.2
+   1.17.3
