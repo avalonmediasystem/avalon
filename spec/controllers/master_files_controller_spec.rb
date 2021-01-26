@@ -670,7 +670,7 @@ describe MasterFilesController do
                                                     permalink: "https://perma.link" }})}
 
     before do
-      login_as :administrator
+      login_user master_file.media_object.collection.managers.first
     end
 
     it 'updates the master file' do
