@@ -304,8 +304,6 @@ Object.assign(MediaElementPlayer.prototype, {
       $(t.addMarkerObj.formWrapperEl).slideToggle();
       // Update active (is showing) state
       t.addMarkerObj.active = !t.addMarkerObj.active;
-      // Disable ME.js keyboard shortcuts when form is displayed
-      t.addMarkerObj.player.options.enableKeyboard = false;
     },
 
     /**
@@ -335,8 +333,6 @@ Object.assign(MediaElementPlayer.prototype, {
         }
       }
       t.active = false;
-      // Enable ME.js keyboard shortcuts when form closes
-      t.player.options.enableKeyboard = true;
     }
   }
 });
