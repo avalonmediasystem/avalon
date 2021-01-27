@@ -24,7 +24,7 @@ GIT
 
 GIT
   remote: https://github.com/avalonmediasystem/browse-everything.git
-  revision: cf5f9af656517187ea62552ed474febb0fa03033
+  revision: 11b96eae5db8c9ad6982b7b4941db2b74a3a513c
   branch: v0.16.1-gdrive-fixes
   specs:
     browse-everything (0.16.1)
@@ -395,8 +395,8 @@ GEM
     fcrepo_wrapper (0.9.0)
       ruby-progressbar
     ffi (1.10.0)
-    font-awesome-rails (4.7.0.5)
-      railties (>= 3.2, < 6.1)
+    font-awesome-rails (4.7.0.6)
+      railties (>= 3.2, < 6.2)
     fugit (1.3.9)
       et-orbi (~> 1.1, >= 1.1.8)
       raabro (~> 1.3)
