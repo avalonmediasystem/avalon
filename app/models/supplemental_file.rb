@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # Copyright 2011-2020, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -15,7 +17,7 @@
 class SupplementalFile < ApplicationRecord
   has_one_attached :file
 
-  validates :tags, array_inclusion: %w(transcript caption)
+  validates :tags, array_inclusion: %w[transcript caption]
 
   serialize :tags, Array
 
