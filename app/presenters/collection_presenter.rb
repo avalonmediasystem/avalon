@@ -52,7 +52,7 @@ class CollectionPresenter
   end
 
   def website_link
-    view_context.link_to document["website_label_ssi"], document["website_url_ssi"]
+    view_context.link_to document["website_label_ssi"], document["website_url_ssi"] unless document["website_url_ssi"].nil?
   end
 
   def as_json(_)
