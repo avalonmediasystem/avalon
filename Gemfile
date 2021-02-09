@@ -53,7 +53,7 @@ gem 'speedy-af', '~> 0.1.3'
 gem 'avalon-workflow', git: "https://github.com/avalonmediasystem/avalon-workflow.git", tag: 'avalon-r6.5'
 
 # Authentication & Authorization
-gem 'devise', '~> 4.4'
+gem 'devise', github: 'heartcombo/devise', branch: 'ca-omniauth-2'
 gem 'devise_invitable', '~> 1.6'
 gem 'ims-lti', '~> 1.1.13'
 gem 'net-ldap'
