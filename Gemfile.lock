@@ -24,7 +24,7 @@ GIT
 
 GIT
   remote: https://github.com/avalonmediasystem/browse-everything.git
-  revision: f5e1286a23b15962f0077665295930d8e5f67850
+  revision: 8ca1648fa6f7fd0afe96ef1952bc967ede08c545
   branch: v0.16.1-gdrive-fixes
   specs:
     browse-everything (0.16.1)
