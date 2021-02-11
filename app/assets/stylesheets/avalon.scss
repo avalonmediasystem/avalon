@@ -764,10 +764,6 @@ h5.panel-title {
     background: #efefef;
     margin-bottom: 15px;
     padding: 10px 15px 0px 15px;
-
-    .visible-inline {
-      display: inline-block;
-    }
   }
 
   .associated-files-top-row {
@@ -882,6 +878,12 @@ h5.panel-title {
       margin-top: 5px;
     }
 
+    .supplemental-file-form {
+      float: left;
+      width: 100%;
+      height: 25px;
+    }
+
     .btn-toolbar {
       display: flex;
       float: right;
@@ -893,6 +895,10 @@ h5.panel-title {
 
     .form-control {
       height: 25px;
+    }
+
+    .visible-inline {
+      margin-left: 30px;
     }
   }
 }
