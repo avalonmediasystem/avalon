@@ -3,7 +3,7 @@ source 'https://rubygems.org'
 # Core rails
 gem 'bootsnap', require: false
 gem 'listen'
-gem 'rails', '=5.2.4.4'
+gem 'rails', '= 6.0.3.5'
 gem 'sprockets', '~>3.7.2'
 gem 'sqlite3'
 
@@ -24,12 +24,12 @@ gem 'webpacker'
 gem 'active-fedora', '~> 12.1'
 gem 'active_fedora-datastreams', '~> 0.2.0'
 gem 'fedora-migrate', git: 'https://github.com/avalonmediasystem/fedora-migrate.git', tag: 'avalon-r6.5'
-gem 'hydra-head', '~> 10.6'
+gem 'hydra-head', '~> 12.0', '>= 12.0.0'
 gem 'noid-rails', '~> 3.0.1'
 gem 'rdf-rdfxml'
 
 # Samvera version pins
-gem 'blacklight', '< 7.0'
+gem 'blacklight', '~> 7.3'
 gem 'rdf', '~> 2.2'
 gem 'rsolr', '~> 1.0'
 
@@ -101,7 +101,7 @@ group :development do
   # Use Bixby instead of rubocop directly
   gem 'bixby', require: false
   gem 'web-console'
-  gem 'xray-rails'
+  gem 'xray-rails', '>= 0.3.2'
 end
 
 group :development, :test do
