@@ -876,6 +876,28 @@ h5.panel-title {
         }
       }
       margin-top: 5px;
+      
+      .visible-inline {
+        margin-left: 30px;
+        display: none;
+      }
+
+      .alert {
+        display: inline;
+        color: white;
+        padding: 5px;
+        border-radius: 4px;
+      }
+
+      .success-alert {
+        background-color: $alert-success-bg;
+        border-color: $success;
+      }
+
+      .warning-alert {
+        background-color: $state-warning-bg;
+        border-color: $warning;
+      }
     }
 
     .supplemental-file-form {
@@ -895,10 +917,6 @@ h5.panel-title {
 
     .form-control {
       height: 25px;
-    }
-
-    .visible-inline {
-      margin-left: 30px;
     }
   }
 }

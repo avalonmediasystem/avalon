@@ -79,8 +79,8 @@ Unless required by applicable law or agreed to in writing, software distributed
                       </button>
                     </span>
                     <span>
-                      <button id="edit_section" class="btn btn-xs btn-primary" onclick="return false;" data-toggle="collapse" 
-                              data-target="<%="#collapseExample#{section.id}"%>" aria-expanded="false" aria-controls="collapseExample">
+                      <button id="<%="edit_section_#{section.id}"%>" class="btn btn-xs btn-primary" onclick="return false;" data-toggle="collapse" 
+                              data-target="<%="#collapseExample#{section.id}"%>" data-section-id="<%= section.id %>" aria-expanded="false" aria-controls="collapseExample">
                         Edit
                       </button>
                     </span>
@@ -144,7 +144,7 @@ Unless required by applicable law or agreed to in writing, software distributed
                    <!-- captions -->
                    <div id="captions_<%= section.id %>" class="section-captions section_files_tool">
                     <span class="tool_label">Captions</span>
-                    <%= form_with model: section, :url => attach_captions_master_file_path(section.id), html: {method: "post"} do |form| %>
+                    <%= form_with model: section, :url => attach_captions_master_file_path(section.id), html: {method: "post", class: "caption-file-form" } do |form| %>
                       <%= form.file_field :captions, class: "filedata" %>
                       <input type="button" class="btn btn-primary" onclick="$('#captions_<%= section.id %> .filedata').click();"
                         value="<%= section.captions.present? ? 'Replace' : 'Upload' %>" />
