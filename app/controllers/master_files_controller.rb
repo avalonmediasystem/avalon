@@ -20,7 +20,7 @@ class MasterFilesController < ApplicationController
   # include Avalon::Controller::ControllerBehavior
 
   before_action :authenticate_user!, :only => [:create]
-  before_action :set_masterfile, :except => [:create, :oembed]
+  before_action :set_masterfile, except: [:create, :oembed]
   before_action :ensure_readable_filedata, :only => [:create]
   skip_before_action :verify_authenticity_token, only: [:set_structure, :delete_structure]
 
@@ -299,10 +299,10 @@ class MasterFilesController < ApplicationController
         nil
       end
     end
-    unless content
-      redirect_to ActionController::Base.helpers.asset_path('audio_icon.png')
-    else
+    if content
       send_data content, :filename => "#{params[:type]}-#{@master_file.id.split(':')[1]}", :disposition => :inline, :type => mimeType
+    else
+      redirect_to ActionController::Base.helpers.asset_path('audio_icon.png')
     end
   end
 
@@ -345,7 +345,7 @@ class MasterFilesController < ApplicationController
 
   def iiif_auth_token
     if cannot? :read, @master_file
-      return head :unauthorized
+      head :unauthorized
     else
       message_id = params[:messageId]
       origin = params[:origin]
