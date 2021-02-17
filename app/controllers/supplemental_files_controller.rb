@@ -34,7 +34,7 @@ class SupplementalFilesController < ApplicationController
     # FIXME: move filedata to permanent location
     raise Avalon::BadRequest, "Missing required parameters" unless supplemental_file_params[:file]
 
-    @supplemental_file = SupplementalFile.new(label: supplemental_file_params[:label])
+    @supplemental_file = SupplementalFile.new(label: supplemental_file_params[:label], tags: supplemental_file_params[:tags])
     begin
       @supplemental_file.attach_file(supplemental_file_params[:file])
     rescue StandardError, LoadError => e
@@ -115,7 +115,7 @@ class SupplementalFilesController < ApplicationController
 
     def supplemental_file_params
       # TODO: Add parameters for minio and s3
-      params.fetch(:supplemental_file, {}).permit(:label, :file)
+      params.fetch(:supplemental_file, {}).permit(:label, :file, tags: [])
     end
 
     def handle_error(message:, status:)

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_04_14_154529) do
+ActiveRecord::Schema.define(version: 2021_02_02_160327) do
 
   create_table "active_encode_encode_records", force: :cascade do |t|
     t.string "global_id"
@@ -219,6 +219,7 @@ ActiveRecord::Schema.define(version: 2020_04_14_154529) do
     t.string "label"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "tags"
   end
 
   create_table "timelines", force: :cascade do |t|

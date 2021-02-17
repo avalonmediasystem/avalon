@@ -14,15 +14,13 @@
 #   specific language governing permissions and limitations under the License.
 # ---  END LICENSE_HEADER BLOCK  ---
 
-class SupplementalFile < ApplicationRecord
-  has_one_attached :file
+# Validate that an array attribute's values are allowed
+class ArrayInclusionValidator < ActiveModel::EachValidator
+  include ActiveModel::Validations::Clusivity
 
-  validates :tags, array_inclusion: %w[transcript caption]
-
-  serialize :tags, Array
-
-  def attach_file(new_file)
-    file.attach(new_file)
-    self.label = file.filename.to_s if label.blank?
+  def validate_each(record, attribute, array)
+    array.each do |val|
+      record.errors.add attribute, "#{val} is not an allowed value" unless include?(record, val)
+    end
   end
 end
