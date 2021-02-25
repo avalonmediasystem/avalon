@@ -1,13 +1,11 @@
       <% file_section=tag.empty? ? "supplemental_#{section.id}" : "#{tag}_#{section.id}" %>
       <div id="<%= file_section %>" class="section_files_tool">
         <span class="tool_label"><%= label %></span>
-        <%= form_for :supplemental_file, :url => object_supplemental_files_path(section), html: {method: "post"} do |form| %>
-          <%= form.hidden_field :tags, multiple: true, value: tag %>
+        <%= form_for :supplemental_file, :url => object_supplemental_files_path(section), html: { method: "post" } do |form| %>
+          <%= form.hidden_field(:tags, multiple: true, value: tag) if tag.present? %>
           <%= form.file_field :file, class: "filedata" %>
           <input type="button" class="btn btn-primary btn-xs" onclick="$('#<%= file_section %> .filedata').click();"
             value="Upload" />
         <% end %>
-          <% if section.supplemental_files.present? %>
-            <%= render partial: "supplemental_files_list", locals: { section: section, files: section.supplemental_files.select { |sf| sf.tags.include?(tag) } } %>
-          <% end %>
+        <%= render partial: "supplemental_files_list", locals: { section: section, tag: tag, supplemental_files: section.supplemental_files } %>
       </div>

@@ -161,7 +161,7 @@ Unless required by applicable law or agreed to in writing, software distributed
                   <!-- transcripts -->
                   <%= render partial: "supplemental_files_upload", locals: { section: section, label: 'Transcripts', tag: 'transcript' } %>
                   <!-- supplemental files -->
-                  <%= render partial: "supplemental_files_upload", locals: { section: section, label: 'Section Supplemental Files', tag: "" } %>
+                  <%= render partial: "supplemental_files_upload", locals: { section: section, label: 'Section Supplemental Files' } %>
                 </div>
               </div>
             </div><!-- end associated-files-block -->
@@ -273,7 +273,7 @@ Unless required by applicable law or agreed to in writing, software distributed
       <h3 class="panel-title">Item supplemental files</h3>
     </div>
     <div class="panel-body">
-      <%= render partial: "supplemental_files_upload", locals: { section: @media_object, index: 0, label: 'Files', tag: "" } %>
+      <%= render partial: "supplemental_files_upload", locals: { section: @media_object, index: 0, label: 'Files' } %>
     </div>
   </div>
 </div>
