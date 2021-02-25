@@ -786,7 +786,7 @@ h5.panel-title {
   }
 
   .associated-files-wrapper {
-    input[type=text] {
+    input[type='text'] {
       @extend .form-control;
       padding: 3px 6px;
       height: auto;
@@ -798,7 +798,8 @@ h5.panel-title {
   }
 }
 
-#associated_files, #supplemental_files {
+#associated_files,
+#supplemental_files {
   div.section-files {
     width: 100%;
     padding: 5px 0 15px 5px;
@@ -823,7 +824,8 @@ h5.panel-title {
       float: right;
     }
 
-    input[type=button], input[type=submit] {
+    input[type='button'],
+    input[type='submit'] {
       @extend .btn-xs;
     }
 
@@ -847,7 +849,7 @@ h5.panel-title {
       font-weight: bold;
     }
   }
-  
+
   div.file_view {
     margin: 15px 0 0 20px;
 
@@ -876,7 +878,7 @@ h5.panel-title {
         }
       }
       margin-top: 5px;
-      
+
       .visible-inline {
         margin-left: 30px;
         display: none;
@@ -884,19 +886,6 @@ h5.panel-title {
 
       .alert {
         display: inline;
-        color: white;
-        padding: 5px;
-        border-radius: 4px;
-      }
-
-      .success-alert {
-        background-color: $alert-success-bg;
-        border-color: $success;
-      }
-
-      .warning-alert {
-        background-color: $state-warning-bg;
-        border-color: $warning;
       }
     }
 
@@ -909,6 +898,7 @@ h5.panel-title {
     .btn-toolbar {
       display: flex;
       float: right;
+      padding-right: 7px;
     }
 
     .edit-item {

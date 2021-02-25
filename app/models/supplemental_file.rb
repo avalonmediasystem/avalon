@@ -17,7 +17,8 @@
 class SupplementalFile < ApplicationRecord
   has_one_attached :file
 
-  validates :tags, array_inclusion: %w[transcript caption]
+  # TODO: the empty tag should represent a generic supplemental file
+  validates :tags, array_inclusion: ['transcript', 'caption', '', nil]
 
   serialize :tags, Array
 
