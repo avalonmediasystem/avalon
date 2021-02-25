@@ -141,21 +141,27 @@ Unless required by applicable law or agreed to in writing, software distributed
                   </div>
                 <% end %>
                 <div class="section-files">
-                  <div id="captions_<%= section.id %>" class="section-captions section_files_tool">
+                   <!-- captions -->
+                   <div id="captions_<%= section.id %>" class="section-captions section_files_tool">
                     <span class="tool_label">Captions</span>
                     <%= form_with model: section, :url => attach_captions_master_file_path(section.id), html: {method: "post"} do |form| %>
                       <%= form.file_field :captions, class: "filedata" %>
                       <input type="button" class="btn btn-primary" onclick="$('#captions_<%= section.id %> .filedata').click();"
                         value="<%= section.captions.present? ? 'Replace' : 'Upload' %>" />
                       <% if section.captions.present? %>
-                        <input type="submit" class="btn btn-danger" value="Remove" />
+                        <%= link_to("Remove", delete_captions_master_file_path(section.id), title: 'Remove', method: :delete, class: "btn btn-danger btn-xs") %>
                       <% end %>
                     <% end %>
                     <% if section.captions.present? %>
-                      <div class="file_view">Uploaded file: <%= section.captions.original_name %></div>
+                      <div class="file_view">
+                        <div>Uploaded file: <%= section.captions.original_name %></div>
+                      </div>
                     <% end %>
                   </div>
-                  <%= render partial: "supplemental_files_upload", locals: { section: section, index: section.id, label: 'Section Supplemental Files' } %>
+                  <!-- transcripts -->
+                  <%= render partial: "supplemental_files_upload", locals: { section: section, label: 'Transcripts', tag: 'transcript' } %>
+                  <!-- supplemental files -->
+                  <%= render partial: "supplemental_files_upload", locals: { section: section, label: 'Section Supplemental Files', tag: "" } %>
                 </div>
               </div>
             </div><!-- end associated-files-block -->
@@ -267,7 +273,7 @@ Unless required by applicable law or agreed to in writing, software distributed
       <h3 class="panel-title">Item supplemental files</h3>
     </div>
     <div class="panel-body">
-      <%= render partial: "supplemental_files_upload", locals: { section: @media_object, index: 0, label: 'Files' } %>
+      <%= render partial: "supplemental_files_upload", locals: { section: @media_object, index: 0, label: 'Files', tag: "" } %>
     </div>
   </div>
 </div>

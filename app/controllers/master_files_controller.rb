@@ -20,6 +20,7 @@ class MasterFilesController < ApplicationController
   # include Avalon::Controller::ControllerBehavior
 
   before_action :authenticate_user!, :only => [:create]
+  before_action :set_masterfile, except: [:create, :oembed]
   before_action :ensure_readable_filedata, :only => [:create]
   skip_before_action :verify_authenticity_token, only: [:set_structure, :delete_structure]
 
@@ -27,7 +28,6 @@ class MasterFilesController < ApplicationController
   # Renders the captions content for an object or alerts the user that no caption content is present with html present
   # @return [String] The rendered template
   def captions
-    @master_file = MasterFile.find(params[:id])
     authorize! :read, @master_file
     ds = @master_file.captions
     if ds.nil? || ds.empty?
@@ -40,7 +40,6 @@ class MasterFilesController < ApplicationController
   # Renders the waveform data for an object or alerts the user that no waveform data is present with html present
   # @return [String] The rendered template
   def waveform
-    @master_file = MasterFile.find(params[:id])
     authorize! :read, @master_file
 
     ds = params[:empty] ? WaveformService.new(8, samples_per_frame).empty_waveform(@master_file) : @master_file.waveform
@@ -60,28 +59,16 @@ class MasterFilesController < ApplicationController
     end
   end
 
-  # return deflated waveform content. deflate only if necessary
-  def waveform_deflated(waveform)
-    waveform.mime_type == 'application/zlib' ? waveform.content : Zlib::Deflate.deflate(waveform.content)
-  end
-
-  # return inflated waveform content. inflate only if necessary
-  def waveform_inflated(waveform)
-    waveform.mime_type == 'application/zlib' ? Zlib::Inflate.inflate(waveform.content) : waveform.content
-  end
-
-  def can_embed?
-    params[:action] == 'embed'
-  end
+  # def can_embed?
+  #   params[:action] == 'embed'
+  # end
 
   def show
     params.permit!
-    master_file = MasterFile.find(params[:id])
-    redirect_to id_section_media_object_path(master_file.media_object_id, master_file.id, params.except(:id, :action, :controller))
+    redirect_to id_section_media_object_path(@master_file.media_object_id, @master_file.id, params.except(:id, :action, :controller))
   end
 
   def embed
-    @master_file = MasterFile.find(params[:id])
     if can? :read, @master_file
       @stream_info = secure_streams(@master_file.stream_details)
       @stream_info['t'] = view_context.parse_media_fragment(params[:t]) # add MediaFragment from params
@@ -130,10 +117,6 @@ class MasterFilesController < ApplicationController
   end
 
   def attach_structure
-    if params[:id].blank? || (not MasterFile.exists?(params[:id]))
-      flash[:notice] = "MasterFile #{params[:id]} does not exist"
-    end
-    @master_file = MasterFile.find(params[:id])
     if flash.empty?
       authorize! :edit, @master_file, message: "You do not have sufficient privileges to add files"
       structure = request.format.json? ? params[:xml_content] : nil
@@ -167,10 +150,6 @@ class MasterFilesController < ApplicationController
 
   def attach_captions
     captions = nil
-    if params[:id].blank? || (not MasterFile.exists?(params[:id]))
-      flash[:notice] = "MasterFile #{params[:id]} does not exist"
-    end
-    @master_file = MasterFile.find(params[:id])
     if flash.empty?
       authorize! :edit, @master_file, message: "You do not have sufficient privileges to add files"
       if params[:master_file].present? && params[:master_file][:captions].present?
@@ -188,10 +167,6 @@ class MasterFilesController < ApplicationController
         @master_file.captions.mime_type = content_type
         @master_file.captions.original_name = params[:master_file][:captions].original_filename
         flash[:success] = "Captions file succesfully added."
-      elsif !captions_file.present?
-        @master_file.captions.content = ''
-        @master_file.captions.original_name = ''
-        flash[:success] = "Captions file succesfully removed."
       end
       if flash[:error].blank?
         unless @master_file.save
@@ -204,6 +179,20 @@ class MasterFilesController < ApplicationController
       format.html { redirect_to edit_media_object_path(@master_file.media_object_id, step: 'file-upload') }
       format.json { render json: {captions: captions, flash: flash} }
     end
+  end
+
+  def delete_captions
+    authorize! :edit, @master_file, message: "You do not have sufficient privileges to remove files"
+
+    @master_file.captions.content = ''
+    @master_file.captions.original_name = ''
+
+    if @master_file.save
+      flash[:success] = "Captions file succesfully removed."
+    else
+      flash[:error] = "There was a problem removing captions file."
+    end
+    redirect_to edit_media_object_path(@master_file.media_object_id, step: 'file-upload')
   end
 
   # Creates and Saves a File Asset to contain the the Uploaded file
@@ -243,112 +232,105 @@ class MasterFilesController < ApplicationController
   end
 
   def update
-    master_file = MasterFile.find(params[:id])
-    authorize! :update, master_file, message: "You do not have sufficient privileges to edit files"
+    authorize! :update, @master_file, message: "You do not have sufficient privileges to edit files"
 
-    master_file.title = master_file_params[:title] if master_file_params[:title].present?
-    master_file.date_digitized = DateTime.parse(master_file_params[:date_digitized]).to_time.utc.iso8601 if master_file_params[:date_digitized].present?
-    master_file.poster_offset = master_file_params[:poster_offset] if master_file_params[:poster_offset].present?
-    master_file.permalink = master_file_params[:permalink] if master_file_params[:permalink].present?
+    @master_file.title = master_file_params[:title] if master_file_params[:title].present?
+    @master_file.date_digitized = DateTime.parse(master_file_params[:date_digitized]).to_time.utc.iso8601 if master_file_params[:date_digitized].present?
+    @master_file.poster_offset = master_file_params[:poster_offset] if master_file_params[:poster_offset].present?
+    @master_file.permalink = master_file_params[:permalink] if master_file_params[:permalink].present?
 
-    unless master_file.save!
-      raise Avalon::SaveError, master_file.errors.to_a.join('<br/>')
+    unless @master_file.save!
+      raise Avalon::SaveError, @master_file.errors.to_a.join('<br/>')
     end
 
     flash[:success] = "Successfully updated."
     respond_to do |format|
-      format.html { redirect_to edit_media_object_path(master_file.media_object_id, step: 'file-upload'), success: flash[:success] }
+      format.html { redirect_to edit_media_object_path(@master_file.media_object_id, step: 'file-upload'), success: flash[:success] }
       format.json { render json: flash[:success] }
     end
   end
 
   # When destroying a file asset be sure to stop it first
   def destroy
-    master_file = MasterFile.find(params[:id])
-    authorize! :destroy, master_file, message: "You do not have sufficient privileges to delete files"
-    filename = File.basename(master_file.file_location) if master_file.file_location.present?
-    filename ||= master_file.id
-    media_object = MediaObject.find(master_file.media_object_id)
-    media_object.ordered_master_files.delete(master_file)
-    media_object.master_files.delete(master_file)
+    authorize! :destroy, @master_file, message: "You do not have sufficient privileges to delete files"
+    filename = File.basename(@master_file.file_location) if @master_file.file_location.present?
+    filename ||= @master_file.id
+    media_object = MediaObject.find(@master_file.media_object_id)
+    media_object.ordered_master_files.delete(@master_file)
+    media_object.master_files.delete(@master_file)
     media_object.save
-    master_file.destroy
+    @master_file.destroy
     flash[:notice] = "#{filename} has been deleted from the system"
     redirect_to edit_media_object_path(media_object, step: "file-upload")
   end
 
   def set_frame
-    master_file = MasterFile.find(params[:id])
-    authorize! :read, master_file, message: "You do not have sufficient privileges to edit this file"
+    authorize! :read, @master_file, message: "You do not have sufficient privileges to edit this file"
     opts = { :type => params[:type], :size => params[:size], :offset => params[:offset].to_f*1000, :preview => params[:preview] }
     respond_to do |format|
       format.jpeg do
-        data = master_file.extract_still(opts)
-        send_data data, :filename => "#{opts[:type]}-#{master_file.id.split(':')[1]}", :disposition => :inline, :type => 'image/jpeg'
+        data = @master_file.extract_still(opts)
+        send_data data, :filename => "#{opts[:type]}-#{@master_file.id.split(':')[1]}", :disposition => :inline, :type => 'image/jpeg'
       end
       format.all do
-        master_file.poster_offset = opts[:offset]
-        unless master_file.save
-          flash[:notice] = master_file.errors.to_a.join('<br/>')
+        @master_file.poster_offset = opts[:offset]
+        unless @master_file.save
+          flash[:notice] = @master_file.errors.to_a.join('<br/>')
         end
-        redirect_to edit_media_object_path(master_file.media_object_id, step: "file-upload")
+        redirect_to edit_media_object_path(@master_file.media_object_id, step: "file-upload")
       end
     end
   end
 
   def get_frame
-    master_file = MasterFile.find(params[:id])
     mimeType = "image/jpeg"
     content = if params[:offset]
-      authorize! :edit, master_file, message: "You do not have sufficient privileges to edit this file"
+      authorize! :edit, @master_file, message: "You do not have sufficient privileges to edit this file"
       opts = { :type => params[:type], :size => params[:size], :offset => params[:offset].to_f*1000, :preview => true }
-      master_file.extract_still(opts)
+      @master_file.extract_still(opts)
     else
-      authorize! :read, master_file, message: "You do not have sufficient privileges to view this file"
+      authorize! :read, @master_file, message: "You do not have sufficient privileges to view this file"
       whitelist = ["thumbnail", "poster"]
       if whitelist.include? params[:type]
-        ds = master_file.send(params[:type].to_sym)
+        ds = @master_file.send(params[:type].to_sym)
         mimeType = ds.mime_type
         ds.content
       else
         nil
       end
     end
-    unless content
-      redirect_to ActionController::Base.helpers.asset_path('audio_icon.png')
+    if content
+      send_data content, :filename => "#{params[:type]}-#{@master_file.id.split(':')[1]}", :disposition => :inline, :type => mimeType
     else
-      send_data content, :filename => "#{params[:type]}-#{master_file.id.split(':')[1]}", :disposition => :inline, :type => mimeType
+      redirect_to ActionController::Base.helpers.asset_path('audio_icon.png')
     end
   end
 
   def hls_manifest
-    master_file = MasterFile.find(params[:id])
     quality = params[:quality]
     if request.head?
       auth_token = request.headers['Authorization']&.sub('Bearer ', '')
-      if StreamToken.valid_token?(auth_token, master_file.id) || can?(:read, master_file)
+      if StreamToken.valid_token?(auth_token, @master_file.id) || can?(:read, @master_file)
         return head :ok
       else
         return head :unauthorized
       end
     else
-      return head :unauthorized if cannot?(:read, master_file)
+      return head :unauthorized if cannot?(:read, @master_file)
       @hls_streams = if quality == "auto"
-                       gather_hls_streams(master_file)
+                       gather_hls_streams(@master_file)
                      else
-                       hls_stream(master_file, quality)
+                       hls_stream(@master_file, quality)
                      end
     end
   end
 
   def structure
-    @master_file = MasterFile.find(params[:id])
     authorize! :read, @master_file, message: "You do not have sufficient privileges"
     render json: @master_file.structuralMetadata.as_json
   end
 
   def set_structure
-    @master_file = MasterFile.find(params[:id])
     # Bypass authorization check for now
     # authorize! :edit, @master_file, message: "You do not have sufficient privileges"
     @master_file.structuralMetadata.content = StructuralMetadata.from_json(params[:json])
@@ -356,16 +338,14 @@ class MasterFilesController < ApplicationController
   end
 
   def delete_structure
-    @master_file = MasterFile.find(params[:id])
     authorize! :edit, @master_file, message: "You do not have sufficient privileges"
     @master_file.structuralMetadata.content = ''
     @master_file.save
   end
 
   def iiif_auth_token
-    @master_file = MasterFile.find(params[:id])
     if cannot? :read, @master_file
-      return head :unauthorized
+      head :unauthorized
     else
       message_id = params[:messageId]
       origin = params[:origin]
@@ -376,19 +356,35 @@ class MasterFilesController < ApplicationController
   end
 
   def move
-    master_file = MasterFile.find(params[:id])
-    current_media_object = master_file.media_object
+    current_media_object = @master_file.media_object
     authorize! :update, current_media_object
     target_media_object = MediaObject.find(params[:target])
     authorize! :update, target_media_object
 
-    master_file.media_object = target_media_object
-    master_file.save!
+    @master_file.media_object = target_media_object
+    @master_file.save!
     flash[:success] = "Successfully moved master file.  See it #{view_context.link_to 'here', edit_media_object_path(target_media_object)}.".html_safe
     redirect_to edit_media_object_path(current_media_object)
   end
 
 protected
+  def set_masterfile
+    if params[:id].blank? || (not MasterFile.exists?(params[:id]))
+      flash[:notice] = "MasterFile #{params[:id]} does not exist"
+    end
+    @master_file = MasterFile.find(params[:id])
+  end
+
+  # return deflated waveform content. deflate only if necessary
+  def waveform_deflated(waveform)
+    waveform.mime_type == 'application/zlib' ? waveform.content : Zlib::Deflate.deflate(waveform.content)
+  end
+
+  # return inflated waveform content. inflate only if necessary
+  def waveform_inflated(waveform)
+    waveform.mime_type == 'application/zlib' ? Zlib::Inflate.inflate(waveform.content) : waveform.content
+  end
+
   def ensure_readable_filedata
     if params[:Filedata].present?
       params[:Filedata].each do |file|
