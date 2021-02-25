@@ -91,3 +91,7 @@ waveform:
   player_width: 1200 #pixels
   finest_zoom: 5 #seconds
   sample_rate: 41000
+active_storage:
+  service: local
+  #bucket: supplementalfiles
+
