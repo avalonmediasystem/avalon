@@ -2,5 +2,3 @@ domain:
   port: 3000
 supplemental_files:
   proxy: true
-active_storage:
-  service: :minio
