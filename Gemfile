@@ -102,6 +102,7 @@ group :development do
   gem 'bixby', require: false
   gem 'web-console'
   gem 'xray-rails'
+  gem 'ruby-prof'
 end
 
 group :development, :test do

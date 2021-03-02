@@ -17,6 +17,7 @@ require 'hooks'
 require 'open-uri'
 require 'avalon/file_resolver'
 require 'avalon/m3u8_reader'
+require 'ruby-prof'
 
 class MasterFile < ActiveFedora::Base
   include ActiveFedora::Associations
@@ -753,6 +754,8 @@ class MasterFile < ActiveFedora::Base
   end
 
   def update_parent!
+    RubyProf.start
+
     return unless media_object.present?
     media_object.master_files.delete(self)
     media_object.ordered_master_files.delete(self)
@@ -761,6 +764,15 @@ class MasterFile < ActiveFedora::Base
     if !media_object.save
       logger.error "Failed when updating media object #{media_object.id} while destroying master file #{self.id}"
     end
+
+    result = RubyProf.stop
+    # printer = RubyProf::FlatPrinter.new(result)
+    # printer.print("./prof.log")  
+    
+    
+    printer = RubyProf::GraphHtmlPrinter.new(result)
+    File.open("/home/app/avalon/log/prof.log", 'w') { |file| printer.print(file) }
+    # printer.print(path: "/home/app/avalon/log/prof.html", min_percent: 0)
   end
 
   private
