@@ -20,225 +20,246 @@ require 'avalon/m3u8_reader'
 require 'ruby-prof'
 
 class MasterFile < ActiveFedora::Base
-  include ActiveFedora::Associations
-  # TODO: Do we need permissions on master files?
-  # include Hydra::AccessControls::Permissions
-  include Hooks
-  include Rails.application.routes.url_helpers
-  include Permalink
-  include FrameSize
-  include Identifier
-  include MigrationTarget
-  include MasterFileBehavior
-  include MasterFileIntercom
-  include SupplementalFileBehavior
+include ActiveFedora::Associations
+# TODO: Do we need permissions on master files?
+# include Hydra::AccessControls::Permissions
+include Hooks
+include Rails.application.routes.url_helpers
+include Permalink
+include FrameSize
+include Identifier
+include MigrationTarget
+include MasterFileBehavior
+include MasterFileIntercom
+include SupplementalFileBehavior
 
-  belongs_to :media_object, class_name: 'MediaObject', predicate: ActiveFedora::RDF::Fcrepo::RelsExt.isPartOf
-  has_many :derivatives, class_name: 'Derivative', predicate: ActiveFedora::RDF::Fcrepo::RelsExt.isDerivationOf, dependent: :destroy
+belongs_to :media_object, class_name: 'MediaObject', predicate: ActiveFedora::RDF::Fcrepo::RelsExt.isPartOf
+has_many :derivatives, class_name: 'Derivative', predicate: ActiveFedora::RDF::Fcrepo::RelsExt.isDerivationOf, dependent: :destroy
 
-  has_subresource 'structuralMetadata', class_name: 'StructuralMetadata' do |f|
-    f.original_name = 'structuralMetadata.xml'
-  end
+has_subresource 'structuralMetadata', class_name: 'StructuralMetadata' do |f|
+  f.original_name = 'structuralMetadata.xml'
+end
 
-  has_subresource 'thumbnail', class_name: 'IndexedFile' do |f|
-    f.original_name = 'thumbnail.jpg'
-  end
+has_subresource 'thumbnail', class_name: 'IndexedFile' do |f|
+  f.original_name = 'thumbnail.jpg'
+end
 
-  has_subresource 'poster', class_name: 'IndexedFile' do |f|
-    f.original_name = 'poster.jpg'
-  end
+has_subresource 'poster', class_name: 'IndexedFile' do |f|
+  f.original_name = 'poster.jpg'
+end
 
-  # Don't pass the block here since we save the original_name when the user uploads the captions file
-  has_subresource 'captions', class_name: 'IndexedFile'
+# Don't pass the block here since we save the original_name when the user uploads the captions file
+has_subresource 'captions', class_name: 'IndexedFile'
 
-  has_subresource 'waveform', class_name: 'IndexedFile' do |f|
-    f.original_name = 'waveform.json'
-  end
+has_subresource 'waveform', class_name: 'IndexedFile' do |f|
+  f.original_name = 'waveform.json'
+end
 
-  property :title, predicate: ::RDF::Vocab::EBUCore.title, multiple: false do |index|
-    index.as :stored_searchable
-  end
-  property :file_location, predicate: ::RDF::Vocab::EBUCore.locator, multiple: false do |index|
-    index.as :stored_sortable
-  end
-  property :file_checksum, predicate: ::RDF::Vocab::NFO.hashValue, multiple: false do |index|
-    index.as :stored_sortable
-  end
-  property :file_size, predicate: ::RDF::Vocab::EBUCore.fileSize, multiple: false # indexed in to_solr
-  property :duration, predicate: ::RDF::Vocab::EBUCore.duration, multiple: false do |index|
-    index.as :stored_sortable
-  end
-  property :display_aspect_ratio, predicate: ::RDF::Vocab::EBUCore.aspectRatio, multiple: false do |index|
-    index.as :stored_sortable
-  end
-  frame_size_property :original_frame_size, predicate: Avalon::RDFVocab::Common.resolution, multiple: false do |index|
-    index.as :stored_sortable
-  end
-  property :file_format, predicate: ::RDF::Vocab::PREMIS.hasFormatName, multiple: false do |index|
-    index.as :stored_sortable
-  end
-  property :poster_offset, predicate: Avalon::RDFVocab::MasterFile.posterOffset, multiple: false do |index|
-    index.as :stored_sortable
-  end
-  property :thumbnail_offset, predicate: Avalon::RDFVocab::MasterFile.thumbnailOffset, multiple: false do |index|
-    index.as :stored_sortable
-  end
-  property :date_digitized, predicate: ::RDF::Vocab::EBUCore.dateCreated, multiple: false do |index|
-    index.as :stored_sortable
-  end
-  property :physical_description, predicate: ::RDF::Vocab::EBUCore.hasFormat, multiple: false do |index|
-    index.as :stored_sortable
-  end
-  property :masterFile, predicate: ::RDF::Vocab::EBUCore.filename, multiple: false
-  property :identifier, predicate: ::RDF::Vocab::Identifiers.local, multiple: true do |index|
-    index.as :symbol
-  end
-  property :comment, predicate: ::RDF::Vocab::EBUCore.comments, multiple: true do |index|
-    index.as :stored_searchable
-  end
+property :title, predicate: ::RDF::Vocab::EBUCore.title, multiple: false do |index|
+  index.as :stored_searchable
+end
+property :file_location, predicate: ::RDF::Vocab::EBUCore.locator, multiple: false do |index|
+  index.as :stored_sortable
+end
+property :file_checksum, predicate: ::RDF::Vocab::NFO.hashValue, multiple: false do |index|
+  index.as :stored_sortable
+end
+property :file_size, predicate: ::RDF::Vocab::EBUCore.fileSize, multiple: false # indexed in to_solr
+property :duration, predicate: ::RDF::Vocab::EBUCore.duration, multiple: false do |index|
+  index.as :stored_sortable
+end
+property :display_aspect_ratio, predicate: ::RDF::Vocab::EBUCore.aspectRatio, multiple: false do |index|
+  index.as :stored_sortable
+end
+frame_size_property :original_frame_size, predicate: Avalon::RDFVocab::Common.resolution, multiple: false do |index|
+  index.as :stored_sortable
+end
+property :file_format, predicate: ::RDF::Vocab::PREMIS.hasFormatName, multiple: false do |index|
+  index.as :stored_sortable
+end
+property :poster_offset, predicate: Avalon::RDFVocab::MasterFile.posterOffset, multiple: false do |index|
+  index.as :stored_sortable
+end
+property :thumbnail_offset, predicate: Avalon::RDFVocab::MasterFile.thumbnailOffset, multiple: false do |index|
+  index.as :stored_sortable
+end
+property :date_digitized, predicate: ::RDF::Vocab::EBUCore.dateCreated, multiple: false do |index|
+  index.as :stored_sortable
+end
+property :physical_description, predicate: ::RDF::Vocab::EBUCore.hasFormat, multiple: false do |index|
+  index.as :stored_sortable
+end
+property :masterFile, predicate: ::RDF::Vocab::EBUCore.filename, multiple: false
+property :identifier, predicate: ::RDF::Vocab::Identifiers.local, multiple: true do |index|
+  index.as :symbol
+end
+property :comment, predicate: ::RDF::Vocab::EBUCore.comments, multiple: true do |index|
+  index.as :stored_searchable
+end
 
-  # Workflow status properties
-  property :workflow_id, predicate: Avalon::RDFVocab::Transcoding.workflowId, multiple: false do |index|
-    index.as :stored_sortable
-  end
-  property :encoder_classname, predicate: Avalon::RDFVocab::Transcoding.encoderClassname, multiple: false do |index|
-    index.as :stored_sortable
-  end
-  property :workflow_name, predicate: Avalon::RDFVocab::Transcoding.workflowName, multiple: false do |index|
-    index.as :stored_sortable
-  end
+# Workflow status properties
+property :workflow_id, predicate: Avalon::RDFVocab::Transcoding.workflowId, multiple: false do |index|
+  index.as :stored_sortable
+end
+property :encoder_classname, predicate: Avalon::RDFVocab::Transcoding.encoderClassname, multiple: false do |index|
+  index.as :stored_sortable
+end
+property :workflow_name, predicate: Avalon::RDFVocab::Transcoding.workflowName, multiple: false do |index|
+  index.as :stored_sortable
+end
 
-  # Delegated to EncodeRecord
-  def encode_record
-    return nil unless workflow_id
-    gid = "gid://ActiveEncode/#{encoder_class}/#{workflow_id}"
-    # @encode_record ||= ActiveEncode::EncodeRecord.find_by(global_id: gid)
-    ActiveEncode::EncodeRecord.find_by(global_id: gid)
-  end
+# Delegated to EncodeRecord
+def encode_record
+  return nil unless workflow_id
+  gid = "gid://ActiveEncode/#{encoder_class}/#{workflow_id}"
+  # @encode_record ||= ActiveEncode::EncodeRecord.find_by(global_id: gid)
+  ActiveEncode::EncodeRecord.find_by(global_id: gid)
+end
 
-  def raw_encode_record
-    return nil unless encode_record
-    # @raw_encode_record ||= JSON.parse(encode_record.raw_object)
-    JSON.parse(encode_record.raw_object)
-  end
+def raw_encode_record
+  return nil unless encode_record
+  # @raw_encode_record ||= JSON.parse(encode_record.raw_object)
+  JSON.parse(encode_record.raw_object)
+end
 
-  def status_code
-    return nil unless encode_record
-    encode_record.state.to_s.upcase
-  end
+def status_code
+  return nil unless encode_record
+  encode_record.state.to_s.upcase
+end
 
-  def percent_complete
-    return nil unless encode_record
-    encode_record.progress.to_s
-  end
+def percent_complete
+  return nil unless encode_record
+  encode_record.progress.to_s
+end
 
-  def operation
-    return nil unless encode_record
-    raw_encode_record['current_operations']&.first
-  end
+def operation
+  return nil unless encode_record
+  raw_encode_record['current_operations']&.first
+end
 
-  def error
-    return nil unless encode_record
-    raw_encode_record['errors'].first
-  end
+def error
+  return nil unless encode_record
+  raw_encode_record['errors'].first
+end
 
-  # For working file copy when Settings.encoding.working_file_path is set
-  property :working_file_path, predicate: Avalon::RDFVocab::MasterFile.workingFilePath, multiple: true
+# For working file copy when Settings.encoding.working_file_path is set
+property :working_file_path, predicate: Avalon::RDFVocab::MasterFile.workingFilePath, multiple: true
 
-  validates :workflow_name, presence: true, inclusion: { in: proc { WORKFLOWS } }
-  validates_each :date_digitized do |record, attr, value|
-    unless value.nil?
-      begin
-        Time.parse(value)
-      rescue Exception => err
-        record.errors.add attr, err.message
-      end
+validates :workflow_name, presence: true, inclusion: { in: proc { WORKFLOWS } }
+validates_each :date_digitized do |record, attr, value|
+  unless value.nil?
+    begin
+      Time.parse(value)
+    rescue Exception => err
+      record.errors.add attr, err.message
     end
   end
-  validates_each :poster_offset, :thumbnail_offset do |record, attr, value|
-    unless value.nil? or value.to_i.between?(0,record.duration.to_i)
-      record.errors.add attr, "must be between 0 and #{record.duration}"
-    end
+end
+validates_each :poster_offset, :thumbnail_offset do |record, attr, value|
+  unless value.nil? or value.to_i.between?(0,record.duration.to_i)
+    record.errors.add attr, "must be between 0 and #{record.duration}"
   end
-  # validates :file_format, presence: true, exclusion: { in: ['Unknown'], message: "The file was not recognized as audio or video." }
+end
+# validates :file_format, presence: true, exclusion: { in: ['Unknown'], message: "The file was not recognized as audio or video." }
 
-  after_save :update_stills_from_offset!, if: Proc.new { |mf| mf.previous_changes.include?("poster_offset") || mf.previous_changes.include?("thumbnail_offset") }
-  before_destroy :stop_processing!
-  before_destroy :update_parent!
-  define_hooks :after_transcoding, :after_processing
+after_save :update_stills_from_offset!, if: Proc.new { |mf| mf.previous_changes.include?("poster_offset") || mf.previous_changes.include?("thumbnail_offset") }
 
-  # Generate the waveform after proessing is complete but before master file management
-  after_transcoding :generate_waveform
-  after_transcoding :update_ingest_batch
+after_destroy :stop_profiling 
 
-  after_processing :post_processing_file_management
+before_destroy :start_profiling
+before_destroy :stop_processing!
+before_destroy :update_parent!
+define_hooks :after_transcoding, :after_processing
 
-  # First and simplest test - make sure that the uploaded file does not exceed the
-  # limits of the system. For now this is hard coded but should probably eventually
-  # be set up in a configuration file somewhere
-  #
-  # 250 MB is the file limit for now
-  MAXIMUM_UPLOAD_SIZE = Settings.max_upload_size || 2.gigabytes
+def start_profiling
+  RubyProf.start
+end
 
-  WORKFLOWS = ['fullaudio', 'avalon', 'pass_through', 'avalon-skip-transcoding', 'avalon-skip-transcoding-audio'].freeze
-  AUDIO_TYPES = ["audio/vnd.wave", "audio/mpeg", "audio/mp3", "audio/mp4", "audio/wav", "audio/x-wav"]
-  VIDEO_TYPES = ["application/mp4", "video/mpeg", "video/mpeg2", "video/mp4", "video/quicktime", "video/avi"]
-  UNKNOWN_TYPES = ["application/octet-stream", "application/x-upload-data"]
-  END_STATES = ['CANCELLED', 'COMPLETED', 'FAILED']
-  QUALITY_ORDER = { 'quality-high' => 3, 'quality-medium' => 2, 'quality-low' => 1 }.freeze
+def stop_profiling
+    result = RubyProf.stop
+    # printer = RubyProf::FlatPrinter.new(result)
+    # printer.print("./prof.log")  
+    
+    
+    #printer = RubyProf::GraphHtmlPrinter.new(result)
+    #File.open("/home/app/avalon/log/prof.log", 'w') { |file| printer.print(file) }
+    printer = RubyProf::MultiPrinter.new(result, [:flat, :graph_html, :stack, :graph, :tree])
+    printer.print(:path => "/home/app/avalon/log", :profile => "before_after_profiling")
+end
 
-  def save_parent
-    unless media_object.nil?
-      media_object.save
-    end
+
+# Generate the waveform after proessing is complete but before master file management
+after_transcoding :generate_waveform
+after_transcoding :update_ingest_batch
+
+after_processing :post_processing_file_management
+
+# First and simplest test - make sure that the uploaded file does not exceed the
+# limits of the system. For now this is hard coded but should probably eventually
+# be set up in a configuration file somewhere
+#
+# 250 MB is the file limit for now
+MAXIMUM_UPLOAD_SIZE = Settings.max_upload_size || 2.gigabytes
+
+WORKFLOWS = ['fullaudio', 'avalon', 'pass_through', 'avalon-skip-transcoding', 'avalon-skip-transcoding-audio'].freeze
+AUDIO_TYPES = ["audio/vnd.wave", "audio/mpeg", "audio/mp3", "audio/mp4", "audio/wav", "audio/x-wav"]
+VIDEO_TYPES = ["application/mp4", "video/mpeg", "video/mpeg2", "video/mp4", "video/quicktime", "video/avi"]
+UNKNOWN_TYPES = ["application/octet-stream", "application/x-upload-data"]
+END_STATES = ['CANCELLED', 'COMPLETED', 'FAILED']
+QUALITY_ORDER = { 'quality-high' => 3, 'quality-medium' => 2, 'quality-low' => 1 }.freeze
+
+def save_parent
+  unless media_object.nil?
+    media_object.save
   end
+end
 
-  def setContent(file, file_name: nil, file_size: nil, auth_header: nil)
-    case file
-    when Hash #Multiple files for pre-transcoded derivatives
-      saveDerivativesHash(file)
-    when ActionDispatch::Http::UploadedFile #Web upload
-      saveOriginal(file, file.original_filename)
-    when URI, Addressable::URI
-      case file.scheme
-      when 'file'
-        saveOriginal(File.open(file.path), File.basename(file.path))
-      when 's3'
-        self.file_location = file.to_s
-        self.file_size = FileLocator::S3File.new(file).object.size
-      else
-        self.file_location = file.to_s
-        self.file_size = file_size
-        self.title = file_name
-      end
-    else #Batch
-      saveOriginal(file, File.basename(file.path))
-    end
-
-    @auth_header = auth_header
-    reloadTechnicalMetadata!
-  end
-
-  def set_workflow( workflow  = nil )
-    if workflow == 'skip_transcoding'
-      workflow = 'pass_through'
-    elsif self.file_format == 'Sound'
-      workflow = 'fullaudio'
-    elsif self.file_format == 'Moving image'
-      workflow = 'avalon'
+def setContent(file, file_name: nil, file_size: nil, auth_header: nil)
+  case file
+  when Hash #Multiple files for pre-transcoded derivatives
+    saveDerivativesHash(file)
+  when ActionDispatch::Http::UploadedFile #Web upload
+    saveOriginal(file, file.original_filename)
+  when URI, Addressable::URI
+    case file.scheme
+    when 'file'
+      saveOriginal(File.open(file.path), File.basename(file.path))
+    when 's3'
+      self.file_location = file.to_s
+      self.file_size = FileLocator::S3File.new(file).object.size
     else
-      logger.warn "Could not find workflow for: #{self}"
+      self.file_location = file.to_s
+      self.file_size = file_size
+      self.title = file_name
     end
-    self.workflow_name = workflow
+  else #Batch
+    saveOriginal(file, File.basename(file.path))
   end
 
-  alias_method :'_media_object=', :'media_object='
+  @auth_header = auth_header
+  reloadTechnicalMetadata!
+end
 
-  # This requires the MasterFile having an actual id
-  def media_object=(mo)
-    # Removes existing association
-    if self.media_object.present?
-      self.media_object.master_files = self.media_object.master_files.to_a.reject { |mf| mf.id == self.id }
+def set_workflow( workflow  = nil )
+  if workflow == 'skip_transcoding'
+    workflow = 'pass_through'
+  elsif self.file_format == 'Sound'
+    workflow = 'fullaudio'
+  elsif self.file_format == 'Moving image'
+    workflow = 'avalon'
+  else
+    logger.warn "Could not find workflow for: #{self}"
+  end
+  self.workflow_name = workflow
+end
+
+alias_method :'_media_object=', :'media_object='
+
+# This requires the MasterFile having an actual id
+def media_object=(mo)
+  # Removes existing association
+  if self.media_object.present?
+    self.media_object.master_files = self.media_object.master_files.to_a.reject { |mf| mf.id == self.id }
       self.media_object.ordered_master_files = self.media_object.ordered_master_files.to_a.reject { |mf| mf.id == self.id }
       self.media_object.save
     end
@@ -754,9 +775,9 @@ class MasterFile < ActiveFedora::Base
   end
 
   def update_parent!
-    RubyProf.start
+    #RubyProf.start
 
-    return unless media_object.present?
+    #return unless media_object.present?
     media_object.master_files.delete(self)
     media_object.ordered_master_files.delete(self)
     media_object.set_media_types!
@@ -765,14 +786,9 @@ class MasterFile < ActiveFedora::Base
       logger.error "Failed when updating media object #{media_object.id} while destroying master file #{self.id}"
     end
 
-    result = RubyProf.stop
-    # printer = RubyProf::FlatPrinter.new(result)
-    # printer.print("./prof.log")  
-    
-    
-    printer = RubyProf::GraphHtmlPrinter.new(result)
-    File.open("/home/app/avalon/log/prof.log", 'w') { |file| printer.print(file) }
-    # printer.print(path: "/home/app/avalon/log/prof.html", min_percent: 0)
+    #result = RubyProf.stop
+    #printer = RubyProf::MultiPrinter.new(result, [:flat, :graph_html, :stack, :graph, :tree])
+    #printer.print(:path => "/home/app/avalon/log", :profile => "update_parent")
   end
 
   private

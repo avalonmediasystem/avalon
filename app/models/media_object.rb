@@ -1,3 +1,5 @@
+require 'ruby-prof'
+
 # Copyright 2011-2020, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -125,11 +127,16 @@ class MediaObject < ActiveFedora::Base
   end
 
   def destroy
+    RubyProf.start
     # attempt to stop the matterhorn processing job
     self.master_files.each(&:destroy)
     self.master_files.clear
     Bookmark.where(document_id: self.id).destroy_all
     super
+
+    result = RubyProf.stop
+    printer = RubyProf::MultiPrinter.new(result, [:flat, :graph_html, :stack, :graph, :tree])
+    printer.print(:path => "/home/app/avalon/log", :profile => "media_object_destroy")
   end
 
   alias_method :'_collection=', :'collection='

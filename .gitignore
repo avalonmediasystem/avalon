@@ -81,3 +81,5 @@ yarn-debug.log*
 # ActiveStorage
 /storage
 /tmp/storage
+
+.*.swp
