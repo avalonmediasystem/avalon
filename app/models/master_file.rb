@@ -178,9 +178,9 @@ end
 def stop_profiling
     result = RubyProf.stop
     # printer = RubyProf::FlatPrinter.new(result)
-    # printer.print("./prof.log")  
-    
-    
+    # printer.print("./prof.log")
+
+
     #printer = RubyProf::GraphHtmlPrinter.new(result)
     #File.open("/home/app/avalon/log/prof.log", 'w') { |file| printer.print(file) }
     printer = RubyProf::MultiPrinter.new(result, [:flat, :graph_html, :stack, :graph, :tree])
@@ -782,7 +782,7 @@ def media_object=(mo)
     media_object.ordered_master_files.delete(self)
     media_object.set_media_types!
     media_object.set_duration!
-    if !media_object.save
+    if !media_object.save( validate: false )
       logger.error "Failed when updating media object #{media_object.id} while destroying master file #{self.id}"
     end
 

@@ -181,7 +181,10 @@ class MediaObject < ActiveFedora::Base
 
   def set_media_types!
     mime_types = master_files.reject {|mf| mf.file_location.blank? }.collect { |mf|
+      print "FILE_LOCATION: #{mf.file_location}"
+      #mime_types
       Rack::Mime.mime_type(File.extname(mf.file_location))
+      #self.format
     }.uniq
     self.format = mime_types.empty? ? nil : mime_types
   end
