@@ -125,4 +125,5 @@ COPY        --from=assets --chown=app:app /home/app/avalon /home/app/avalon
 COPY        --from=bundle-prod --chown=app:app /usr/local/bundle /usr/local/bundle
 
 USER        app
+RUN         mkdir -p /home/app/storage
 ENV         RAILS_ENV=production
