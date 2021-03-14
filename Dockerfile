@@ -1,3 +1,5 @@
+ARG         DATABASE=postgres
+
 # Base stage for building gems
 FROM        ruby:2.5.5-stretch as bundle
 RUN         echo "deb http://deb.debian.org/debian stretch-backports main" >> /etc/apt/sources.list \
@@ -20,7 +22,8 @@ RUN         gem install bundler -v "$(grep -A 1 "BUNDLED WITH" Gemfile.lock | ta
 
 # Build development gems
 FROM        bundle as bundle-dev
-RUN         bundle install --with aws development test postgres --without production 
+ARG         DATABASE
+RUN         bundle install --with aws development test $DATABASE --without production 
 
 
 # Download binaries in parallel
@@ -87,7 +90,8 @@ RUN         dpkg -i /chrome.deb || apt-get install -yf
 
 # Build production gems
 FROM        bundle as bundle-prod
-RUN         bundle install --without development test --with aws production postgres
+ARG         DATABASE
+RUN         bundle install --without development test --with aws production $DATABASE
 
 
 # Install node modules
