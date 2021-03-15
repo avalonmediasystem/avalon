@@ -2,7 +2,7 @@
   "dependencies": {
     "@babel/core": "^7.0.0",
     "@babel/preset-react": "^7.0.0",
-    "@rails/webpacker": "^4.0.2",
+    "@rails/webpacker": "^5.2.0",
     "babel-plugin-transform-react-remove-prop-types": "^0.4.24",
     "cropperjs": "^1.5.5",
     "hls.js": "https://github.com/avalonmediasystem/hls.js#stricter_ts_probing",
