@@ -34,11 +34,13 @@ class MediaObject < ActiveFedora::Base
   has_and_belongs_to_many :governing_policies, class_name: 'ActiveFedora::Base', predicate: ActiveFedora::RDF::ProjectHydra.isGovernedBy
   belongs_to :collection, class_name: 'Admin::Collection', predicate: ActiveFedora::RDF::Fcrepo::RelsExt.isMemberOfCollection
 
+  before_save :start_profiling
   before_save :update_dependent_properties!, prepend: true
   before_save :update_permalink, if: Proc.new { |mo| mo.persisted? && mo.published? }, prepend: true
   before_save :assign_id!, prepend: true
   after_save :update_dependent_permalinks_job, if: Proc.new { |mo| mo.persisted? && mo.published? }
   after_save :remove_bookmarks
+  after_save :stop_profiling
 
   # Call custom validation methods to ensure that required fields are present and
   # that preferred controlled vocabulary standards are used
@@ -59,6 +61,31 @@ class MediaObject < ActiveFedora::Base
   validate  :validate_note_type, if: :resource_description_active?
   validate  :report_missing_attributes, if: :resource_description_active?
   validate  :validate_rights_statement, if: :resource_description_active?
+
+def start_profiling
+  RubyProf.start
+end
+
+def timestamp_filename(file)
+  #dir  = File.dirname(file)
+  #base = File.basename(file, ".*")
+  #time = Time.now.to_i  # or format however you like
+  time = Time.now.strftime("%m-%d_%H-%M-%S")
+  #ext  = File.extname(file)
+  #File.join(dir, "#{base}_#{time}#{ext}")
+  #File.join(dir, "#{time}_#{file}")
+  return "#{time}_#{file}"
+end
+
+def stop_profiling(profile="save_media_object")
+    result = RubyProf.stop
+    # printer = RubyProf::FlatPrinter.new(result)
+    # printer.print("./prof.log")
+    #printer = RubyProf::GraphHtmlPrinter.new(result)
+    #File.open("/home/app/avalon/log/prof.log", 'w') { |file| printer.print(file) }
+    printer = RubyProf::MultiPrinter.new(result, [:flat, :graph_html, :stack, :graph, :tree])
+    printer.print(:path => "/home/app/avalon/log/profiling", :profile => timestamp_filename("save_media_object"))
+end
 
   def resource_description_active?
     workflow.completed?("file-upload")
@@ -127,16 +154,16 @@ class MediaObject < ActiveFedora::Base
   end
 
   def destroy
-    RubyProf.start
+    #RubyProf.start
     # attempt to stop the matterhorn processing job
     self.master_files.each(&:destroy)
     self.master_files.clear
     Bookmark.where(document_id: self.id).destroy_all
     super
 
-    result = RubyProf.stop
-    printer = RubyProf::MultiPrinter.new(result, [:flat, :graph_html, :stack, :graph, :tree])
-    printer.print(:path => "/home/app/avalon/log", :profile => "media_object_destroy")
+    #result = RubyProf.stop
+    #printer = RubyProf::MultiPrinter.new(result, [:flat, :graph_html, :stack, :graph, :tree])
+    #printer.print(:path => "/home/app/avalon/log/profiling", :profile => "media_object_destroy")
   end
 
   alias_method :'_collection=', :'collection='
@@ -160,7 +187,8 @@ class MediaObject < ActiveFedora::Base
   # of publishing _explicit_ instead of an accidental side effect.
   def publish!(user_key)
     self.avalon_publisher = user_key.blank? ? nil : user_key
-    save!
+    #save!
+    save!( :validate => false ) # TODO : figure out impact of this in performance and issues
   end
 
   def finished_processing?

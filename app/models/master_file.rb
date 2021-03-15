@@ -164,9 +164,11 @@ end
 
 after_save :update_stills_from_offset!, if: Proc.new { |mf| mf.previous_changes.include?("poster_offset") || mf.previous_changes.include?("thumbnail_offset") }
 
-after_destroy :stop_profiling 
+#before_save :start_profiling
+#after_save :stop_profiling
+#after_destroy :stop_profiling 
+#before_destroy :start_profiling
 
-before_destroy :start_profiling
 before_destroy :stop_processing!
 before_destroy :update_parent!
 define_hooks :after_transcoding, :after_processing
@@ -175,16 +177,24 @@ def start_profiling
   RubyProf.start
 end
 
-def stop_profiling
+def timestamp_filename(file)
+  #dir  = File.dirname(file)
+  #base = File.basename(file, ".*")
+  #time = Time.now.to_i  # or format however you like
+  time = Time.now.strftime("%m-%d_%H-%M-%S")
+  #ext  = File.extname(file)
+  #File.join(dir, "#{base}_#{time}#{ext}")
+  File.join(dir, "#{time}_#{file}")
+end
+
+def stop_profiling(profile="save_master_file")
     result = RubyProf.stop
     # printer = RubyProf::FlatPrinter.new(result)
     # printer.print("./prof.log")
-
-
     #printer = RubyProf::GraphHtmlPrinter.new(result)
     #File.open("/home/app/avalon/log/prof.log", 'w') { |file| printer.print(file) }
     printer = RubyProf::MultiPrinter.new(result, [:flat, :graph_html, :stack, :graph, :tree])
-    printer.print(:path => "/home/app/avalon/log", :profile => "before_after_profiling")
+    printer.print(:path => "/home/app/avalon/log/profiling", :profile => timestamp_filename("save_master_file"))
 end
 
 

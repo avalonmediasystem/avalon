@@ -1,3 +1,6 @@
+require 'ruby-prof'
+
+
 # Copyright 2011-2020, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -29,6 +32,7 @@ class MediaObjectsController < ApplicationController
   before_action :inject_workflow_steps, only: [:edit, :update], unless: proc { request.format.json? }
   before_action :load_player_context, only: [:show]
 
+
   def self.is_editor ctx
     ctx.current_ability.is_editor_of?(ctx.instance_variable_get('@media_object').collection)
   end
@@ -42,6 +46,33 @@ class MediaObjectsController < ApplicationController
   add_conditional_partial :share, :share, partial: 'share_resource', if: is_editor_or_not_lti
   add_conditional_partial :share, :embed, partial: 'embed_resource', if: is_editor_or_not_lti
   add_conditional_partial :share, :lti_url, partial: 'lti_url',  if: is_editor_or_lti
+
+def start_profiling
+  RubyProf.start
+  logger.warn "starting profiling"
+end
+
+def timestamp_filename(file)
+  #dir  = File.dirname(file)
+  #base = File.basename(file, ".*")
+  #time = Time.now.to_i  # or format however you like
+  time = Time.now.strftime("%m-%d_%H-%M-%S")
+  #ext  = File.extname(file)
+  #File.join(dir, "#{base}_#{time}#{ext}")
+  #File.join(dir, "#{time}_#{file}")
+  return "#{time}_#{file}"
+end
+
+def stop_profiling(profile="controller_save")
+    logger.warn "stopping profiling"
+    result = RubyProf.stop
+    # printer = RubyProf::FlatPrinter.new(result)
+    # printer.print("./prof.log")
+    #printer = RubyProf::GraphHtmlPrinter.new(result)
+    #File.open("/home/app/avalon/log/prof.log", 'w') { |file| printer.print(file) }
+    printer = RubyProf::MultiPrinter.new(result, [:flat, :graph_html, :stack, :graph, :tree])
+    printer.print(:path => "/home/app/avalon/log/profiling", :profile => timestamp_filename("controller_save"))
+end
 
   def can_embed?
     params[:action] == 'show'
@@ -167,10 +198,14 @@ class MediaObjectsController < ApplicationController
   def json_update
     # Preset the workflow to the last workflow step to ensure validators run
     @media_object.workflow.last_completed_step = HYDRANT_STEPS.last.step
+    start_profiling
     update_media_object
+    stop_profiling
   end
 
   def update_media_object
+    logger.warn "Now you're in update_media_object"
+    #start_profiling
     begin
       collection = Admin::Collection.find(api_params[:collection_id])
     rescue ActiveFedora::ObjectNotFoundError
@@ -278,8 +313,10 @@ class MediaObjectsController < ApplicationController
       end
     end
     if error_messages.empty?
+      #stop_profiling
       render json: {id: @media_object.id}, status: 200
     else
+      #stop_profiling
       logger.warn "update_media_object failed for #{params[:fields][:title] rescue '<unknown>'}: #{error_messages}"
       render json: {errors: error_messages}, status: 422
       @media_object.destroy unless action_name == 'json_update'
