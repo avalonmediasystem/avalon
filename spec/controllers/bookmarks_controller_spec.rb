@@ -451,4 +451,11 @@ describe BookmarksController, type: :controller do
       end
     end
   end
+
+  describe "#count" do
+    it 'counts selected items' do
+      get 'count', params: { format:'json' }
+      expect(JSON.parse(response.body)["count"]).to eq(3)
+    end
+  end
 end
