@@ -109,7 +109,7 @@ class BookmarksController < CatalogController
   def count
     respond_to do |format|
       format.html
-      format.json { render :json => { :count => current_or_guest_user.bookmarks.count } }
+      format.json { render json: { count: current_or_guest_user.bookmarks.count } }
     end
   end
 
