@@ -45,6 +45,7 @@ Rails.application.routes.draw do
       post 'intercom_push'
       get 'merge'
       post 'merge'
+      get 'count', constraints: { format: 'json' }
     end
   end
 

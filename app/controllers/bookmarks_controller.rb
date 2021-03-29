@@ -106,6 +106,13 @@ class BookmarksController < CatalogController
   #   get_solr_response_for_document_ids(bookmark_ids, rows: bookmark_ids.count, defType: 'edismax')
   # end
 
+  def count
+    respond_to do |format|
+      format.html
+      format.json { render json: { count: current_or_guest_user.bookmarks.count } }
+    end
+  end
+
   def action_documents
     bookmarks = token_or_current_or_guest_user.bookmarks
     bookmark_ids = bookmarks.collect { |b| b.document_id.to_s }
