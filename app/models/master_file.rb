@@ -170,7 +170,7 @@ after_save :update_stills_from_offset!, if: Proc.new { |mf| mf.previous_changes.
 #before_destroy :start_profiling
 
 before_destroy :stop_processing!
-before_destroy :update_parent!
+before_destroy :update_parent! # TODO: see how few of the update parents bits we can do without
 define_hooks :after_transcoding, :after_processing
 
 def start_profiling
@@ -270,16 +270,16 @@ def media_object=(mo)
   # Removes existing association
   if self.media_object.present?
     self.media_object.master_files = self.media_object.master_files.to_a.reject { |mf| mf.id == self.id }
-      self.media_object.ordered_master_files = self.media_object.ordered_master_files.to_a.reject { |mf| mf.id == self.id }
-      self.media_object.save
-    end
-
-    self._media_object=(mo)
-    unless self.media_object.nil?
-      self.media_object.ordered_master_files += [self]
-      self.media_object.save
-    end
+    self.media_object.ordered_master_files = self.media_object.ordered_master_files.to_a.reject { |mf| mf.id == self.id }
+    self.media_object.save
   end
+
+  self._media_object=(mo)
+  unless self.media_object.nil?
+    self.media_object.ordered_master_files += [self]
+    self.media_object.save
+  end
+end
 
   def process file=nil
     raise "MasterFile is already being processed" if status_code.present? && !finished_processing?
@@ -790,8 +790,8 @@ def media_object=(mo)
     #return unless media_object.present?
     media_object.master_files.delete(self)
     media_object.ordered_master_files.delete(self)
-    media_object.set_media_types!
-    media_object.set_duration!
+    #media_object.set_media_types!
+    #media_object.set_duration!
     if !media_object.save( validate: false )
       logger.error "Failed when updating media object #{media_object.id} while destroying master file #{self.id}"
     end

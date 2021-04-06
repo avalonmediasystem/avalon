@@ -528,7 +528,9 @@ GEM
     mime-types (3.2.2)
       mime-types-data (~> 3.2015)
     mime-types-data (3.2019.0331)
-    mimemagic (0.3.5)
+    mimemagic (0.3.10)
+      nokogiri (~> 1)
+      rake
     mini_mime (1.0.2)
     mini_portile2 (2.5.0)
     minitest (5.14.2)
@@ -1023,4 +1025,4 @@ DEPENDENCIES
   zoom
 
 BUNDLED WITH
-   2.0.2
+   2.2.11

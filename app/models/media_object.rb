@@ -1,4 +1,6 @@
 require 'ruby-prof'
+ENABLE_PROFILING=false
+
 
 # Copyright 2011-2020, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
@@ -63,6 +65,7 @@ class MediaObject < ActiveFedora::Base
   validate  :validate_rights_statement, if: :resource_description_active?
 
 def start_profiling
+  return if !ENABLE_PROFILING
   RubyProf.start
 end
 
@@ -78,6 +81,7 @@ def timestamp_filename(file)
 end
 
 def stop_profiling(profile="save_media_object")
+  return if !ENABLE_PROFILING
     result = RubyProf.stop
     # printer = RubyProf::FlatPrinter.new(result)
     # printer.print("./prof.log")
@@ -231,9 +235,9 @@ end
   end
 
   def update_dependent_properties!
-    self.set_duration!
-    self.set_media_types!
-    self.set_resource_types!
+    #self.set_duration!
+    #self.set_media_types!
+    #self.set_resource_types!
   end
 
   def all_comments
