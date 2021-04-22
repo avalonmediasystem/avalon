@@ -64,6 +64,9 @@ docker-compose.override.yml
 yarn-debug.log*
 .yarn-integrity
 
+# Vim files
+.*.swp
+
 # IDE stuff
 .vscode/
 
