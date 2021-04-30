@@ -77,11 +77,11 @@ services:
     <<: *redis
 
   avalon: &avalon
-    image: avalonmediasystem/avalon:7.1-slim-dev-20200807
+    image: avalonmediasystem/avalon:7.2.1-slim-dev-20210428
     build:
       context: .
       target: dev
-    command: bash -c "/docker_init.sh && rails server -b 0.0.0.0"
+    command: bash -c "/docker_init.sh && bundle exec rails server -b 0.0.0.0"
     depends_on:
       - db
       - fedora
