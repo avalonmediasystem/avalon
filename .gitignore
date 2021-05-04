@@ -81,3 +81,9 @@ yarn-debug.log*
 # ActiveStorage
 /storage
 /tmp/storage
+
+# vim
+.*.swn
+.*.swo
+.*.swp
+
