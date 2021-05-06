@@ -192,9 +192,9 @@ GEM
       multi_json (~> 1.11, >= 1.11.2)
       rack (>= 2.0.8, < 3)
       railties (>= 5.2.4.1)
-    activestorage (5.2.4.4)
-      actionpack (= 5.2.4.4)
-      activerecord (= 5.2.4.4)
+    activestorage (5.2.4.5)
+      actionpack (= 5.2.4.5)
+      activerecord (= 5.2.4.5)
       marcel (~> 0.3.1)
     activesupport (5.2.4.5)
       concurrent-ruby (~> 1.0, >= 1.0.2)
@@ -1136,7 +1136,7 @@ GEM
       blacklight (~> 6.0)
       cancancan (~> 1.8)
       deprecation (~> 1.0)
-    bootsnap (1.4.4)
+    bootsnap (1.4.9)
       msgpack (~> 1.0)
     bootstrap-sass (3.3.7)
       autoprefixer-rails (>= 5.2.1)
@@ -1441,7 +1441,7 @@ GEM
     mini_mime (1.1.0)
     mini_portile2 (2.5.0)
     minitest (5.14.4)
-    msgpack (1.2.10)
+    msgpack (1.4.2)
     multi_json (1.15.0)
     multi_xml (0.6.0)
     multipart-post (2.1.1)
@@ -1938,6 +1938,7 @@ DEPENDENCIES
   with_locking
   xray-rails
   zk
+  zookeeper
   zoom
 
 BUNDLED WITH

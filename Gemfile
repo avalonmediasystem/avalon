@@ -165,6 +165,7 @@ group :aws, optional: true do
   gem 'aws-sdk-sqs'
   gem 'aws-sigv4'
   gem 'cloudfront-signer'
+  gem 'zookeeper'
   gem 'zk'
 end
 
