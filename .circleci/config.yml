@@ -4,31 +4,31 @@ orbs:
 jobs:
   build:
     docker:
-     # Primary container image where all steps run.
-     - image: avalonmediasystem/avalon:7.1-slim-dev-20200324
-       environment:
-        - DATABASE_URL=postgresql://postgres@localhost:5432/postgres
-        - FEDORA_URL=http://localhost:8080/fcrepo/rest
-        - FEDORA_TIMEOUT=300
-        - RAILS_ENV=test
-     # Secondary container image on common network.
-     - image: postgres:10-alpine
-       environment:
-         - POSTGRES_USER=postgres
-         - POSTGRES_DB=avalon
-         - POSTGRES_PASSWORD=password
-     - image: ualbertalib/docker-fcrepo4:4.7
-       environment:
-         CATALINA_OPTS: "-Djava.awt.headless=true -Dfile.encoding=UTF-8 -server -Xms512m -Xmx1024m -XX:NewSize=256m -XX:MaxNewSize=256m -XX:PermSize=256m -XX:MaxPermSize=256m -XX:+DisableExplicitGC"
-     - image: solr:7-alpine
-       command: bin/solr -cloud -noprompt -f -p <<parameters.solr_port>>
-     - image: redis:alpine
+      # Primary container image where all steps run.
+      - image: avalonmediasystem/avalon:7.2.1-buster-dev-20210507
+        environment:
+          - DATABASE_URL=postgresql://postgres@localhost:5432/postgres
+          - FEDORA_URL=http://localhost:8080/fcrepo/rest
+          - FEDORA_TIMEOUT=300
+          - RAILS_ENV=test
+      # Secondary container image on common network.
+      - image: postgres:10-alpine
+        environment:
+          - POSTGRES_USER=postgres
+          - POSTGRES_DB=avalon
+          - POSTGRES_PASSWORD=password
+      - image: ualbertalib/docker-fcrepo4:4.7
+        environment:
+          CATALINA_OPTS: '-Djava.awt.headless=true -Dfile.encoding=UTF-8 -server -Xms512m -Xmx1024m -XX:NewSize=256m -XX:MaxNewSize=256m -XX:PermSize=256m -XX:MaxPermSize=256m -XX:+DisableExplicitGC'
+      - image: solr:7-alpine
+        command: bin/solr -cloud -noprompt -f -p <<parameters.solr_port>>
+      - image: redis:alpine
 
     parameters:
       ruby_ver:
-        description: "Ruby version"
-        default: "2.5.5"
-        type: "string"
+        description: 'Ruby version'
+        default: '2.5.5'
+        type: 'string'
       solr_port:
         type: string
         default: '8985'
@@ -118,9 +118,9 @@ workflows:
     jobs:
       - build:
           ruby_ver: 2.5.5
-          name: "Ruby2-5-5"
+          name: 'Ruby2-5-5'
           parallelism: 4
       - upload-coverage:
           parallelism: 4
           requires:
-             - Ruby2-5-5
+            - Ruby2-5-5
