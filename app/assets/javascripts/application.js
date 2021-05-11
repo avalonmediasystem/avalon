@@ -12,7 +12,7 @@
  *   CONDITIONS OF ANY KIND, either express or implied. See the License for the
  *   specific language governing permissions and limitations under the License.
  * ---  END LICENSE_HEADER BLOCK  ---
-*/
+ */
 
 // This is a manifest file that'll be compiled into application.js, which will include all the files
 // listed below.
@@ -37,7 +37,6 @@
 //= require bootstrap-toggle
 //= require cropperjs/dist/cropper.min
 //= require url-search-params-polyfill/index.js
-//= require @babel/polyfill/dist/polyfill.min.js
 
 //= require hls.js/dist/hls.min.js
 
