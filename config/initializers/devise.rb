@@ -298,6 +298,7 @@ Devise.setup do |config|
   # config.omniauth :github, 'APP_ID', 'APP_SECRET', scope: 'user,public_repo'
 
   Avalon::Authentication::Providers.each do |provider|
+    puts "PROVIDERS: ${providers}"
     if provider[:provider] == :lti
       provider[:params].merge!({consumers: Avalon::Lti::Configuration})
     end
