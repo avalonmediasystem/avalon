@@ -319,14 +319,17 @@ Devise.setup do |config|
           if ( /_file$/ =~ file )
             puts "file #{file}"
             key = file.to_s.gsub(/_file$/, "")
-            puts "key #{key}"
+            puts "******* key #{key} ********"
 
             if provider[:params][file]
               cert_file = provider[:params][file]
-              puts "cert file ", cert_file
+              puts "'#{key}' cert file ", cert_file
               #idp_cert_path = File.expand_path(idp_cert_file, __FILE__)
               #puts "idp cert path ", idp_cert_path
               cert_contents = load_cert_file( cert_file )
+              # loaded_cert = OpenSSL::X509::Certificate.new(cert_contents)
+              # loaded_cert = OpenSSL::PKey::RSA.new cert_contents
+              #puts "#{key} loaded_cert #{loaded_cert}"
               provider[:params][ key ] = cert_contents 
               #idp_cert_contents = File.read(idp_cert_path)
               #provider[:params][file] = idp_cert_contents 
