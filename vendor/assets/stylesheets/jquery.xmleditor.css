@@ -15,12 +15,6 @@
 	position: relative;
 	top: 40px;
 }
-/* 
-@media(min-width: 900px) {
-  .xml_editor_header_backing {
-    margin-top: 76px;
-  }
-} */
 
 .xml_dialog.ui-dialog {
 	position: absolute;
@@ -376,9 +370,6 @@
 	z-index: 1000;
 }
 
-.xml_menu_container {
-}
-
 .xml_submit_status {
 	display: block;
 	margin: 5px 0px;
@@ -445,10 +436,6 @@
 	float: right;
 }
 
-/*.xml_content {
-	padding: 5px 0px 5px 5px;
-}*/
-
 /* Head tabs */
 
 .xml_work_area, .xml_tab_area {
@@ -466,26 +453,55 @@
 	background-color: #ffffff;
 }
 
-/* @media(min-width: 900px) {
-	.xml_tab_area {
-		margin-top: 0px;
-	}
-} */
-
-@media only screen and (max-width: 991px) {
-	.text_content {
-		padding: 35px 18px 0 0;
-	}
-}
-@media only screen and (min-width: 992px) {
-	.text_content {
-		padding: 5px 18px 0 0;
-	}
-} 
 .text_content {
 	line-height: 16px;
 }
 
+.xml_problems_panel {
+	background-color: #ffeeee;
+	padding: 5px;
+	white-space: pre-wrap;
+	margin: 5px 0px;
+}
+
+.xml_problems_panel {
+	background-color: #ffeeee;
+	padding: 5px;
+	white-space: pre-wrap;
+	margin: 5px 0px;
+}
+
+@media (max-width: 768px) {
+	.text_content {
+		padding: 5px 18px 0 0;
+	}
+}
+
+@media (min-width: 768px) {
+	.text_content {
+		padding: 0 18px 0 0;
+	}
+}
+
+@media (min-width: 901px) {
+	.text_content {
+		padding: 35px 18px 0 0;
+	}
+
+	.xml_problems_panel {
+		margin: 35px 0 0 0;
+	}
+}
+
+@media (min-width: 992px) {
+	.text_content {
+		padding: 0 18px 0 0;
+	}
+
+	.xml_problems_panel {
+		margin: 0;
+	}
+}
 
 .xml_tab_area .gui_content { 
 	padding: 3px 0 0 0;
@@ -497,13 +513,6 @@
 	background-color: #ffff00;
 	position: absolute;
 	box-shadow: 0 0 2px 2px #eeeeee;
-}
-
-.xml_problems_panel {
-	background-color: #ffeeee;
-	padding: 5px;
-	white-space: pre-wrap;
-	margin: 5px 0px;
 }
 
 /* Menu bar */
@@ -625,7 +634,6 @@
 
 .xml_menu_bar .header_mode_tab {
 	border: 1px solid #BBBBBB;
-	float: right;
 	margin-left: 10px;
 	margin-right: 0px;
 	transition: border-color 0.2s linear 0s, box-shadow 0.2s linear 0s, color 0.2s linear 0s;
