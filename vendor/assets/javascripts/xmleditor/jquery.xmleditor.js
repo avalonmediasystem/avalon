@@ -753,8 +753,9 @@ $.widget( "xml.xmlEditor", {
 		    this.clearProblemPanel();
 		} else {
 		    this.problemsPanel.show();
-	            this.xmlTabContainer.css('margin-top', '0')
-		    this.resize();
+	      this.xmlTabContainer.css('margin-top', '0');
+				this.textEditor.xmlContent[0].style.paddingTop = 0;
+				this.resize();
 		}
 	},
 
@@ -2699,9 +2700,8 @@ TextEditor.prototype.refreshDisplay = function() {
 // Adjust the size of the editor to reflect its environment
 TextEditor.prototype.resize = function() {
         var xmlEditorHeight = (this.editor.xmlTabContainer.height());
-	this.xmlContent.css({'height': xmlEditorHeight + 'px'});
 	this.xmlEditorDiv.width(this.xmlContent.innerWidth());
-	this.xmlEditorDiv.height(xmlEditorHeight-20);
+	this.xmlEditorDiv.height(xmlEditorHeight-40);
 	if (this.editor.modifyMenu.menuContainer != null){
 		this.editor.modifyMenu.menuContainer.css({
 			//'max-height': $(this.editor.xmlWorkAreaContainer).height() - this.editor.modifyMenu.menuContainer.offset().top
