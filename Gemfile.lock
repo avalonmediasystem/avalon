@@ -1,4 +1,13 @@
 GIT
+  remote: https://github.com/apertome/active_encode.git
+  revision: 366bba0b561eecbb8ddc7b4b48a4c4aceb9f8748
+  branch: ffmpeg-error-handling
+  specs:
+    active_encode (0.7.0)
+      rails
+      sprockets (< 4)
+
+GIT
   remote: https://github.com/avalonmediasystem/about_page.git
   revision: 1b920619cc54fdc99f1cb4da26c18818c1156070
   tag: avalon-r6.5
