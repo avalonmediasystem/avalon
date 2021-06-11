@@ -1,4 +1,13 @@
 GIT
+  remote: https://github.com/apertome/active_encode.git
+  revision: 366bba0b561eecbb8ddc7b4b48a4c4aceb9f8748
+  branch: ffmpeg-error-handling
+  specs:
+    active_encode (0.7.0)
+      rails
+      sprockets (< 4)
+
+GIT
   remote: https://github.com/avalonmediasystem/about_page.git
   revision: 1b920619cc54fdc99f1cb4da26c18818c1156070
   tag: avalon-r6.5
@@ -162,9 +171,6 @@ GEM
     active_annotations (0.2.2)
       json-ld
       rdf-vocab (~> 2.1.0)
-    active_encode (0.7.0)
-      rails
-      sprockets (< 4)
     active_fedora-datastreams (0.2.0)
       active-fedora (>= 11.0.0.pre, < 13)
       nom-xml (>= 0.5.1)
@@ -192,9 +198,9 @@ GEM
       multi_json (~> 1.11, >= 1.11.2)
       rack (>= 2.0.8, < 3)
       railties (>= 5.2.4.1)
-    activestorage (5.2.4.4)
-      actionpack (= 5.2.4.4)
-      activerecord (= 5.2.4.4)
+    activestorage (5.2.4.5)
+      actionpack (= 5.2.4.5)
+      activerecord (= 5.2.4.5)
       marcel (~> 0.3.1)
     activesupport (5.2.4.5)
       concurrent-ruby (~> 1.0, >= 1.0.2)
@@ -1815,7 +1821,7 @@ DEPENDENCIES
   active-fedora (~> 12.1)
   active_annotations (~> 0.2.2)
   active_elastic_job!
-  active_encode (~> 0.7.0)
+  active_encode (~> 0.7.0)!
   active_fedora-datastreams (~> 0.2.0)
   activejob-traffic_control
   activejob-uniqueness
