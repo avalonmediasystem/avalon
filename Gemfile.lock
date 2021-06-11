@@ -1,19 +1,11 @@
 GIT
-  remote: https://github.com/apertome/active_fedora.git
-  revision: 9b6b0a9ccdc59398f32220aa46c86edd6d334d6f
-  branch: ruby2.7-fixes
+  remote: https://github.com/apertome/active_encode.git
+  revision: 366bba0b561eecbb8ddc7b4b48a4c4aceb9f8748
+  branch: ffmpeg-error-handling
   specs:
-    active-fedora (12.2.3)
-      active-triples (>= 0.11.0, < 2.0.0)
-      activemodel (>= 4.2.10, < 5.3)
-      activesupport (>= 4.2.4, < 5.3)
-      deprecation
-      faraday (~> 0.12)
-      faraday-encoding (= 0.0.4)
-      ldp (>= 0.7.0, < 2)
-      rdf-vocab (< 3.1.5)
-      rsolr (>= 1.1.2, < 3)
-      ruby-progressbar (~> 1.0)
+    active_encode (0.7.0)
+      rails
+      sprockets (< 4)
 
 GIT
   remote: https://github.com/avalonmediasystem/about_page.git
@@ -142,9 +134,9 @@ GEM
       activesupport (>= 3.0.0)
       rdf (>= 2.0.2, < 4.0)
       rdf-vocab (>= 2.0, < 4.0)
-    active_encode (0.8.2)
-      rails
-      sprockets (< 4)
+    active_annotations (0.2.2)
+      json-ld
+      rdf-vocab (~> 2.1.0)
     active_fedora-datastreams (0.2.0)
       active-fedora (>= 11.0.0.pre, < 13)
       nom-xml (>= 0.5.1)
@@ -172,11 +164,11 @@ GEM
       multi_json (~> 1.11, >= 1.11.2)
       rack (>= 2.0.8, < 3)
       railties (>= 5.2.4.1)
-    activestorage (5.2.6)
-      actionpack (= 5.2.6)
-      activerecord (= 5.2.6)
-      marcel (~> 1.0.0)
-    activesupport (5.2.6)
+    activestorage (5.2.4.5)
+      actionpack (= 5.2.4.5)
+      activerecord (= 5.2.4.5)
+      marcel (~> 0.3.1)
+    activesupport (5.2.4.5)
       concurrent-ruby (~> 1.0, >= 1.0.2)
       i18n (>= 0.7, < 2)
       minitest (~> 5.1)
@@ -975,7 +967,8 @@ DEPENDENCIES
   active-fedora!
   active_annotations!
   active_elastic_job!
-  active_encode (~> 0.8.2)
+  # active_encode (~> 0.8.2)
+  active_encode (~> 0.7.0)!
   active_fedora-datastreams (~> 0.2.0)
   activejob-traffic_control
   activejob-uniqueness
