@@ -3910,9 +3910,9 @@ hls.js@^0.13.3-canary.5556:
     eventemitter3 "^4.0.3"
     url-toolkit "^2.1.6"
 
-"hls.js@https://github.com/avalonmediasystem/hls.js#stricter_ts_probing":
+"hls.js@https://github.com/avalonmediasystem/hls.js.git#stricter_ts_probing":
   version "0.13.1"
-  resolved "https://github.com/avalonmediasystem/hls.js#d2c208207c0f99c2fb911f6f8c2a9bf1937ebab4"
+  resolved "https://github.com/avalonmediasystem/hls.js.git#d2c208207c0f99c2fb911f6f8c2a9bf1937ebab4"
   dependencies:
     eventemitter3 "3.1.0"
     url-toolkit "^2.1.6"
