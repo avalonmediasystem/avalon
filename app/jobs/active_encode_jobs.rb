@@ -24,7 +24,8 @@ module ActiveEncodeJobs
       return unless MasterFile.exists? master_file_id
       master_file = MasterFile.find(master_file_id)
       return if master_file.workflow_id.present?
-      master_file.encoder_class.create(input, options.merge!(master_file_id: master_file_id, preset: master_file.workflow_name))
+    # LOOK AT THIS!
+    master_file.encoder_class.create(input, options.merge!(master_file_id: master_file_id, preset: master_file.workflow_name))
     end
   end
 
