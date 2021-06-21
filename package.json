@@ -5,7 +5,7 @@
     "@rails/webpacker": "^5.2.0",
     "babel-plugin-transform-react-remove-prop-types": "^0.4.24",
     "cropperjs": "^1.5.5",
-    "hls.js": "https://github.com/avalonmediasystem/hls.js.git#stricter_ts_probing",
+    "hls.js": "https://github.com/avalonmediasystem/hls.js#stricter_ts_probing",
     "prop-types": "^15.7.2",
     "react": "^16.8.4",
     "react-bootstrap": "^1.0.0",

@@ -50,7 +50,8 @@ RUN         mkdir -p /tmp/ffmpeg && cd /tmp/ffmpeg \
 FROM        ruby:2.5-slim-buster as base
 RUN         apt-get update && apt-get install -y --no-install-recommends curl gnupg2 \
          && curl -sL http://deb.nodesource.com/setup_12.x | bash - \
-         && curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add - \
+         && curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add - 
+# \
          #&& echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list
 
 RUN         apt-get update && apt-get install -y --no-install-recommends --allow-unauthenticated \
@@ -68,8 +69,10 @@ RUN         apt-get update && apt-get install -y --no-install-recommends --allow
             zip \
             dumb-init \
             libyaz-dev \
+ca-certificates \
         && npm install yarn \
-         && ln -s /usr/bin/lsof /usr/sbin/
+        && ln -s /usr/bin/lsof /usr/sbin/ \
+        && git config --global http.sslCAinfo /etc/ssl/certs/ca-certificates.crt
 
 
 RUN         useradd -m -U app \
@@ -85,6 +88,7 @@ FROM        base as dev
 RUN         apt-get install -y --no-install-recommends --allow-unauthenticated \
             build-essential \
             gcc-7 \
+ca-certificates \
             cmake
 
 COPY        --from=bundle-dev /usr/local/bundle /usr/local/bundle
@@ -104,10 +108,11 @@ RUN         bundle install --without development test --with aws production post
 
 # Install node modules
 FROM        node:12-buster-slim as node-modules
-RUN         apt-get update && apt-get install -y --no-install-recommends git
+RUN         apt-get update && apt-get install -y --no-install-recommends git ca-certificates \
+                && git config --global http.sslCAinfo /etc/ssl/certs/ca-certificates.crt
 COPY        package.json .
 COPY        yarn.lock .
-RUN         yarn install
+RUN         yarn --verbose install
 
 
 # Build production assets
