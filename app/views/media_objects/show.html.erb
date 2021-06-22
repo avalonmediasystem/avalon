@@ -17,7 +17,7 @@ Unless required by applicable law or agreed to in writing, software distributed
 <% content_for :additional_head_content do %>
   <script>
     dataLayer.push({
-      'Page Title' : '<%= @media_object.title %>',
+      'Item Title' : '<%= @media_object.title %>',
       'Collection Name': '<%= @media_object.collection.name %>',
       'Unit Name': '<%= @media_object.collection.unit %>'
     })
