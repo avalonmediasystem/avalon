@@ -7,7 +7,7 @@ RUN         echo "deb http://deb.debian.org/debian stretch-backports main" >> /e
             pkg-config \
             zip \
             git \
-            libyaz-dev \
+            #libyaz-dev \
          && rm -rf /var/lib/apt/lists/* \
          && apt-get clean
 
@@ -61,7 +61,7 @@ RUN         apt-get update && apt-get install -y --no-install-recommends --allow
             openssh-client \
             zip \
             dumb-init \
-            libyaz-dev \
+            #libyaz-dev \
          && apt-get -y -t testing install mediainfo \
          #&& npm install yarn \
          && ln -s /usr/bin/lsof /usr/sbin/
