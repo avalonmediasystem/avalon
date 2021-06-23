@@ -42,11 +42,14 @@ RUN         echo 'APT::Default-Release "stretch";' > /etc/apt/apt.conf.d/99defau
          && cat /etc/apt/apt.conf.d/99defaultrelease \
          && cat /etc/apt/sources.list.d/testing.list \
          && apt-get update && apt-get install -y --no-install-recommends curl gnupg2 \
+         && curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add - \
+         && echo "deb http://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list \
          && curl -sL http://deb.nodesource.com/setup_8.x | bash - \
          && cat /etc/apt/sources.list.d/nodesource.list
 
 RUN         apt-get update && apt-get install -y --no-install-recommends --allow-unauthenticated \
             nodejs \
+            yarn \
             #npm \
             lsof \
             x264 \
@@ -58,9 +61,9 @@ RUN         apt-get update && apt-get install -y --no-install-recommends --allow
             openssh-client \
             zip \
             dumb-init \
-            #libyaz-dev \
-         && apt-get -t testing install mediainfo \
-         && npm install yarn \
+            libyaz-dev \
+         && apt-get -y -t testing install mediainfo \
+         #&& npm install yarn \
          && ln -s /usr/bin/lsof /usr/sbin/
 
 

@@ -10,9 +10,12 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_04_14_154529) do
+ActiveRecord::Schema.define(version: 2021_06_11_162826) do
 
-  create_table "active_encode_encode_records", force: :cascade do |t|
+  # These are extensions that must be enabled in order to support this database
+  enable_extension "plpgsql"
+
+  create_table "active_encode_encode_records", id: :serial, force: :cascade do |t|
     t.string "global_id"
     t.string "state"
     t.string "adapter"
@@ -25,6 +28,7 @@ ActiveRecord::Schema.define(version: 2020_04_14_154529) do
     t.string "display_title"
     t.string "master_file_id"
     t.string "media_object_id"
+    t.integer "exit_status"
     t.index ["display_title"], name: "index_active_encode_encode_records_on_display_title"
     t.index ["master_file_id"], name: "index_active_encode_encode_records_on_master_file_id"
     t.index ["media_object_id"], name: "index_active_encode_encode_records_on_media_object_id"
@@ -33,8 +37,8 @@ ActiveRecord::Schema.define(version: 2020_04_14_154529) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
-    t.integer "record_id", null: false
-    t.integer "blob_id", null: false
+    t.bigint "record_id", null: false
+    t.bigint "blob_id", null: false
     t.datetime "created_at", null: false
     t.index ["blob_id"], name: "index_active_storage_attachments_on_blob_id"
     t.index ["record_type", "record_id", "name", "blob_id"], name: "index_active_storage_attachments_uniqueness", unique: true
@@ -54,7 +58,7 @@ ActiveRecord::Schema.define(version: 2020_04_14_154529) do
   create_table "annotations", force: :cascade do |t|
     t.string "uuid"
     t.string "source_uri"
-    t.integer "playlist_item_id"
+    t.bigint "playlist_item_id"
     t.text "annotation"
     t.string "type"
     t.index ["playlist_item_id"], name: "index_annotations_on_playlist_item_id"
@@ -72,12 +76,12 @@ ActiveRecord::Schema.define(version: 2020_04_14_154529) do
   end
 
   create_table "batch_entries", force: :cascade do |t|
-    t.integer "batch_registries_id"
-    t.text "payload", limit: 1073741823
+    t.bigint "batch_registries_id"
+    t.text "payload"
     t.boolean "complete", default: false, null: false
     t.boolean "error", default: false, null: false
     t.string "current_status"
-    t.text "error_message", limit: 65535
+    t.text "error_message"
     t.string "media_object_pid"
     t.integer "position"
     t.datetime "created_at", null: false
@@ -157,7 +161,7 @@ ActiveRecord::Schema.define(version: 2020_04_14_154529) do
     t.string "namespace", default: "default", null: false
     t.string "template", null: false
     t.text "counters"
-    t.integer "seq", default: 0
+    t.bigint "seq", default: 0
     t.binary "rand"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -165,8 +169,8 @@ ActiveRecord::Schema.define(version: 2020_04_14_154529) do
   end
 
   create_table "playlist_items", force: :cascade do |t|
-    t.integer "playlist_id", null: false
-    t.integer "clip_id", null: false
+    t.bigint "playlist_id", null: false
+    t.bigint "clip_id", null: false
     t.integer "position"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -176,7 +180,7 @@ ActiveRecord::Schema.define(version: 2020_04_14_154529) do
 
   create_table "playlists", force: :cascade do |t|
     t.string "title"
-    t.integer "user_id", null: false
+    t.bigint "user_id", null: false
     t.string "comment"
     t.string "visibility"
     t.datetime "created_at", null: false
@@ -219,17 +223,18 @@ ActiveRecord::Schema.define(version: 2020_04_14_154529) do
     t.string "label"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "tags"
   end
 
   create_table "timelines", force: :cascade do |t|
     t.string "title"
-    t.integer "user_id"
+    t.bigint "user_id"
     t.string "visibility"
     t.text "description"
     t.string "access_token"
     t.string "tags"
     t.string "source"
-    t.text "manifest", limit: 16777215
+    t.text "manifest"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["user_id"], name: "index_timelines_on_user_id"
@@ -267,4 +272,6 @@ ActiveRecord::Schema.define(version: 2020_04_14_154529) do
     t.index ["username"], name: "index_users_on_username", unique: true
   end
 
+  add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "timelines", "users"
 end
