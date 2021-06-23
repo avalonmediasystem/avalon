@@ -36,15 +36,18 @@ RUN         mkdir -p /tmp/ffmpeg && cd /tmp/ffmpeg \
 
 # Base stage for building final images
 FROM        ruby:2.5.5-slim-stretch as base
-RUN         apt-get update && apt-get install -y --no-install-recommends curl gnupg2 \
+RUN         echo 'APT::Default-Release "stretch";' > /etc/apt/apt.conf.d/99defaultrelease \
+         && echo "deb     http://ftp.us.debian.org/debian/    testing main contrib non-free"  >  /etc/apt/sources.list.d/testing.list \
+         && echo "deb-src http://ftp.us.debian.org/debian/    testing main contrib non-free"  >> /etc/apt/sources.list.d/testing.list \
+         && cat /etc/apt/apt.conf.d/99defaultrelease \
+         && cat /etc/apt/sources.list.d/testing.list \
+         && apt-get update && apt-get install -y --no-install-recommends curl gnupg2 \
          && curl -sL http://deb.nodesource.com/setup_8.x | bash - \
-         && curl -O https://mediaarea.net/repo/deb/repo-mediaarea_1.0-6_all.deb && dpkg -i repo-mediaarea_1.0-6_all.deb \
-         && curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add - \
-         && echo "deb http://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list
+         && cat /etc/apt/sources.list.d/nodesource.list
 
 RUN         apt-get update && apt-get install -y --no-install-recommends --allow-unauthenticated \
-            yarn \
             nodejs \
+            #npm \
             lsof \
             x264 \
             sendmail \
@@ -52,11 +55,12 @@ RUN         apt-get update && apt-get install -y --no-install-recommends --allow
             libxml2-dev \
             libxslt-dev \
             libpq-dev \
-            mediainfo \
             openssh-client \
             zip \
             dumb-init \
-            libyaz-dev \
+            #libyaz-dev \
+         && apt-get -t testing install mediainfo \
+         && npm install yarn \
          && ln -s /usr/bin/lsof /usr/sbin/
 
 
