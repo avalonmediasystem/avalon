@@ -1091,7 +1091,7 @@
   resolved "https://registry.yarnpkg.com/@popperjs/core/-/core-2.10.2.tgz#0798c03351f0dea1a5a4cabddf26a55a7cbee590"
   integrity sha512-IXf3XA7+XyN7CP9gGh/XB0UxVMlvARGEgGXLubFICsUMGz6Q+DU+i4gGlpOxTjKvXjkJDJC8YdqdKkDj9qZHEQ==
 
-"@rails/webpacker@^5.2.0":
+"@rails/webpacker@^5.2.2":
   version "5.4.3"
   resolved "https://registry.yarnpkg.com/@rails/webpacker/-/webpacker-5.4.3.tgz#cfe2d8faffe7db5001bad50a1534408b4f2efb2f"
   integrity sha512-tEM8tpUtfx6FxKwcuQ9+v6pzgqM5LeAdhT6IJ4Te3BPKFO1xrGrXugqeRuZ+gE8ASDZRTOK6yuQkapOpuX5JdA==
