@@ -73,13 +73,36 @@ encode_throttling:
   update_jobs_spacing: 10
 auth:
   registerable: true
-#   configuration:
-#     - :name: Avalon Lti OAuth
-#       :provider: :lti
-#       :hidden: true
-#       :params:
-#         :oauth_credentials:
-#           somekey: somesecret
+  configuration:
+    - :name: Avalon Lti OAuth
+      :provider: :lti
+      #       :hidden: true
+      :params:
+        :oauth_credentials:
+          CanvasIU: 'somesecret'
+    - :name: saml auth
+      :logo: iu_logo.png
+      :provider: :saml
+      # :hidden: true
+      :params:
+        :sp_entity_id: mco-staging.dlib.indiana.edu
+        #:attribute_service_name: mco-staging.dlib.indiana.edu
+        #:idp_sso_service_url: https://idp-stg.login.iu.edu/idp/profile/SAML2/POST/SSO
+        # :assertion_consumer_service_url: https://mco-staing.dlib.iu.edu/users/auth/saml/callback
+        # :uid_attribute: https://mco-staging.dlib.indiana.edu/
+        #:issuer: MCO Staging
+        #:security:
+        #  :authn_requests_signed: true
+        # certificate (SP)
+        # :idp_cert_file: ../../crypt/saml/idp_cert.pem
+        # :certificate_file: ../../crypt/saml/sp_cert.x509
+        # :private_key_file: ../../crypt/saml/sp_privkey.pem
+        # :host: asdf.edu
+        # :login_url: /saml/login
+        # :service_validate_url: /saml/validate
+        # :logout_url: /saml/logout
+        # :ssl: true
+
 # google_analytics_tracking_id: "someid"
 supplemental_files:
   proxy: false

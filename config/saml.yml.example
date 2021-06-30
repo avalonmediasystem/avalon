@@ -1,0 +1,10 @@
+---
+FQDN:
+  :idp_sso_service_url: https://IDPHOST/idp/profile/SAML2/POST/SSO
+  :issuer: Avalon
+  :attribute_service_name: FQDN
+  :security:
+      :authn_requests_signed: true
+  :idp_cert_file: ../../crypt/saml/idp_cert.pem
+  :certificate_file: ../../crypt/saml/sp_cert.x509
+  :private_key_file: ../../crypt/saml/sp_privkey.pem
