@@ -63,7 +63,7 @@ gem 'omniauth-lti', git: "https://github.com/avalonmediasystem/omniauth-lti.git"
 # Media Access & Transcoding
 gem 'active_encode', '~> 0.7.0'
 gem 'audio_waveform-ruby', '~> 1.0.7', require: 'audio_waveform'
-gem 'browse-everything', '~> 0.13.0'
+gem 'browse-everything', '~> 0.13.1'
 gem 'fastimage'
 gem 'media_element_add_to_playlist', git: 'https://github.com/avalonmediasystem/media-element-add-to-playlist.git', tag: 'avalon-r6.5'
 gem 'mediainfo', git: "https://github.com/avalonmediasystem/mediainfo.git", tag: 'avalon-r6.5'
@@ -127,10 +127,10 @@ group :development, :test do
 end
 
 group :test do
-  gem 'capybara'
+  gem 'capybara', '>= 3.19.1'
   gem 'codeclimate-test-reporter'
   gem 'database_cleaner'
-  gem 'email_spec'
+  gem 'email_spec', '>= 2.2.0'
   gem 'factory_bot_rails'
   gem 'fakefs', require: 'fakefs/safe'
   gem 'faker'
