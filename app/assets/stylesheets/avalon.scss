@@ -592,10 +592,6 @@ div.status-detail {
 }
 
 div.structure_edit {
-  .modal-dialog {
-    min-width: 900px;
-  }
-
   ul {
     list-style: none;
     padding: 0;
@@ -637,6 +633,10 @@ div.structure_edit {
   .section_edit_submit {
     margin-bottom: 10px;
     margin-top: 4px;
+  }
+
+  .modal-content {
+    overflow: auto;
   }
 }
 
