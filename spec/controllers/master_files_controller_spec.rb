@@ -827,6 +827,16 @@ describe MasterFilesController do
         expect(a_request(:any, /#{ActiveFedora.fedora.base_uri}/)).not_to have_been_made
       end
     end
+
+    context 'with special characters in url' do
+      let(:public_master_file) { FactoryBot.create(:master_file, media_object: public_media_object, derivatives: [deriv_1]) }
+      let(:deriv_1) { FactoryBot.create(:derivative, quality: 'high', derivativeFile: "file:///srv/avalon/content/path to the file/2-Danny's Song (1971).mp4") }
+
+      it 'does not HTML encode urls' do
+        expect(get('hls_manifest', params: { id: public_master_file.id, quality: 'auto' })).to have_http_status(:ok)
+        expect(response.body).to include("path to the file/2-Danny's Song (1971).mp4.m3u8")
+      end
+    end
   end
 
   describe '#stream' do
