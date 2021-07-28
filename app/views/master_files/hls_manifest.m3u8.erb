@@ -16,5 +16,5 @@ Unless required by applicable law or agreed to in writing, software distributed
 #EXTM3U
 <% @hls_streams.each do |hls| %>
 #EXT-X-STREAM-INF:BANDWIDTH=<%= hls[:bitrate] %>
-<%= hls[:url] %>
+<%= hls[:url].html_safe %>
 <% end %>
