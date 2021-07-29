@@ -1,5 +1,6 @@
 # Base stage for building gems
 FROM        ruby:2.5.5-stretch as bundle
+LABEL       stage=build
 RUN         echo "deb http://deb.debian.org/debian stretch-backports main" >> /etc/apt/sources.list \
          && apt-get update && apt-get upgrade -y build-essential \
          && apt-get install -y --no-install-recommends \
@@ -20,11 +21,13 @@ RUN         gem install bundler -v "$(grep -A 1 "BUNDLED WITH" Gemfile.lock | ta
 
 # Build development gems
 FROM        bundle as bundle-dev
+LABEL       stage=build
 RUN         bundle install --with aws development test postgres --without production 
 
 
 # Download binaries in parallel
 FROM        ruby:2.5.5-stretch as download
+LABEL       stage=build
 RUN         curl -L https://github.com/jwilder/dockerize/releases/download/v0.6.1/dockerize-linux-amd64-v0.6.1.tar.gz | tar xvz -C /usr/bin/
 RUN         curl https://chromedriver.storage.googleapis.com/2.46/chromedriver_linux64.zip -o /usr/local/bin/chromedriver \
          && chmod +x /usr/local/bin/chromedriver
@@ -36,6 +39,7 @@ RUN         mkdir -p /tmp/ffmpeg && cd /tmp/ffmpeg \
 
 # Base stage for building final images
 FROM        ruby:2.5.5-slim-stretch as base
+LABEL       stage=build
 RUN         apt-get update && apt-get install -y --no-install-recommends curl gnupg2 \
          && curl -sL http://deb.nodesource.com/setup_8.x | bash - \
          && curl -O https://mediaarea.net/repo/deb/repo-mediaarea_1.0-6_all.deb && dpkg -i repo-mediaarea_1.0-6_all.deb \
@@ -70,6 +74,7 @@ COPY        --from=download /usr/bin/ff* /usr/bin/
 
 # Build devevelopment image
 FROM        base as dev
+LABEL       stage=build
 RUN         apt-get install -y --no-install-recommends --allow-unauthenticated \
             build-essential \
             cmake
@@ -86,11 +91,13 @@ RUN         dpkg -i /chrome.deb || apt-get install -yf
 
 # Build production gems
 FROM        bundle as bundle-prod
+LABEL       stage=build
 RUN         bundle install --without development test --with aws production postgres
 
 
 # Install node modules
 FROM        node:8.17.0-stretch-slim as node-modules
+LABEL       stage=build
 RUN         apt-get update && apt-get install -y --no-install-recommends git
 COPY        package.json .
 COPY        yarn.lock .
@@ -99,6 +106,7 @@ RUN         yarn install
 
 # Build production assets
 FROM        base as assets
+LABEL       stage=build
 COPY        --from=bundle-prod --chown=app:app /usr/local/bundle /usr/local/bundle
 COPY        --chown=app:app . .
 COPY        --from=node-modules --chown=app:app /node_modules ./node_modules
@@ -113,6 +121,7 @@ RUN         cp config/controlled_vocabulary.yml.example config/controlled_vocabu
 
 # Build production image
 FROM        base as prod
+LABEL       stage=build
 COPY        --from=assets --chown=app:app /home/app/avalon /home/app/avalon
 COPY        --from=bundle-prod --chown=app:app /usr/local/bundle /usr/local/bundle
 
