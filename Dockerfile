@@ -74,7 +74,7 @@ COPY        --from=download /usr/bin/ff* /usr/bin/
 
 # Build devevelopment image
 FROM        base as dev
-LABEL       stage=build
+LABEL       stage=final
 RUN         apt-get install -y --no-install-recommends --allow-unauthenticated \
             build-essential \
             cmake
@@ -121,7 +121,7 @@ RUN         cp config/controlled_vocabulary.yml.example config/controlled_vocabu
 
 # Build production image
 FROM        base as prod
-LABEL       stage=build
+LABEL       stage=final
 COPY        --from=assets --chown=app:app /home/app/avalon /home/app/avalon
 COPY        --from=bundle-prod --chown=app:app /usr/local/bundle /usr/local/bundle
 
