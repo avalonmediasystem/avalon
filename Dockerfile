@@ -11,6 +11,8 @@ RUN     echo "deb http://deb.debian.org/debian buster-backports main" >> /etc/ap
             libyaz-dev \
             gcc-7 \
             g++-7 \
+            gcc-8 \
+            g++-8 \
          && rm -rf /var/lib/apt/lists/* \
          && apt-get clean \
          && ls -l /usr/bin/g* \
@@ -18,8 +20,8 @@ RUN     echo "deb http://deb.debian.org/debian buster-backports main" >> /etc/ap
          && update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-7 20 \
          && update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-8 8 \
          && update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-8 8 \
-         # && update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-9 9 \
-         # && update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-9 9 \
+         #&& update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-9 9 \
+         #&& update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-9 9 \
          && gcc --version \
          && g++ --version
 
@@ -57,7 +59,10 @@ RUN         apt-get update && apt-get install -y --no-install-recommends curl gn
          && curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add - \
          && echo "deb http://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list
 
-RUN         apt-get update && apt-get install -y --no-install-recommends --allow-unauthenticated \
+RUN         apt-get update && \
+            # apt-get install --fix-broken && \
+            apt-get -y dist-upgrade && \
+            apt-get install -y --no-install-recommends --allow-unauthenticated \
             yarn \
             nodejs \
             lsof \
@@ -85,7 +90,7 @@ COPY        --from=download /usr/bin/ff* /usr/bin/
 
 # Build devevelopment image
 FROM        base as dev
-LABEL       stage=build
+LABEL       stage=final
 RUN         apt-get install -y --no-install-recommends --allow-unauthenticated \
             build-essential \
             gcc-7 \
