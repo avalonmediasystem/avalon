@@ -12,8 +12,8 @@ RUN     echo "deb http://deb.debian.org/debian buster-backports main" >> /etc/ap
             libyaz-dev \
             gcc-7 \
             g++-7 \
-            gcc-8 \
-            g++-8 \
+            # gcc-8 \
+            # g++-8 \
          && rm -rf /var/lib/apt/lists/* \
          && apt-get clean \
          && ls -l /usr/bin/g* \
