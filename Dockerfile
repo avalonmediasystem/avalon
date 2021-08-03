@@ -1,6 +1,7 @@
 # Base stage for building gems
 FROM        ruby:2.5-buster as bundle
 LABEL       stage=build
+LABEL       project=avalon
 RUN     echo "deb http://deb.debian.org/debian buster-backports main" >> /etc/apt/sources.list && \
         apt-get update && apt-get upgrade -y build-essential \
          && apt-get install -y --no-install-recommends \
@@ -35,12 +36,14 @@ RUN         gem install bundler -v "$(grep -A 1 "BUNDLED WITH" Gemfile.lock | ta
 # Build development gems
 FROM        bundle as bundle-dev
 LABEL       stage=build
+LABEL       project=avalon
 RUN         bundle install --with aws development test postgres --without production
 
 
 # Download binaries in parallel
 FROM        ruby:2.5-buster as download
 LABEL       stage=build
+LABEL       project=avalon
 RUN         curl -L https://github.com/jwilder/dockerize/releases/download/v0.6.1/dockerize-linux-amd64-v0.6.1.tar.gz | tar xvz -C /usr/bin/
 RUN         curl https://chromedriver.storage.googleapis.com/2.46/chromedriver_linux64.zip -o /usr/local/bin/chromedriver \
          && chmod +x /usr/local/bin/chromedriver
@@ -53,6 +56,7 @@ RUN         mkdir -p /tmp/ffmpeg && cd /tmp/ffmpeg \
 # Base stage for building final images
 FROM        ruby:2.5-slim-buster as base
 LABEL       stage=build
+LABEL       project=avalon
 RUN         apt-get update && apt-get install -y --no-install-recommends curl gnupg2 \
          && curl -sL http://deb.nodesource.com/setup_12.x | bash - \
          && curl -O https://mediaarea.net/repo/deb/repo-mediaarea_1.0-16_all.deb && dpkg -i repo-mediaarea_1.0-16_all.deb \
@@ -91,6 +95,7 @@ COPY        --from=download /usr/bin/ff* /usr/bin/
 # Build devevelopment image
 FROM        base as dev
 LABEL       stage=final
+LABEL       project=avalon
 RUN         apt-get install -y --no-install-recommends --allow-unauthenticated \
             build-essential \
             gcc-7 \
@@ -109,12 +114,14 @@ RUN         dpkg -i /chrome.deb || apt-get install -yf
 # Build production gems
 FROM        bundle as bundle-prod
 LABEL       stage=build
+LABEL       project=avalon
 RUN         bundle install --without development test --with aws production postgres
 
 
 # Install node modules
 FROM        node:12-buster-slim as node-modules
 LABEL       stage=build
+LABEL       project=avalon
 RUN         apt-get update && apt-get install -y --no-install-recommends git
 COPY        package.json .
 COPY        yarn.lock .
@@ -124,6 +131,7 @@ RUN         yarn install
 # Build production assets
 FROM        base as assets
 LABEL       stage=build
+LABEL       project=avalon
 COPY        --from=bundle-prod --chown=app:app /usr/local/bundle /usr/local/bundle
 COPY        --chown=app:app . .
 COPY        --from=node-modules --chown=app:app /node_modules ./node_modules
@@ -139,6 +147,7 @@ RUN         cp config/controlled_vocabulary.yml.example config/controlled_vocabu
 # Build production image
 FROM        base as prod
 LABEL       stage=final
+LABEL       project=avalon
 COPY        --from=assets --chown=app:app /home/app/avalon /home/app/avalon
 COPY        --from=bundle-prod --chown=app:app /usr/local/bundle /usr/local/bundle
 
