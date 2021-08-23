@@ -128,7 +128,7 @@ class Ability
           is_member_of?(media_object.collection)
         end
 
-        can [:edit, :destroy], MasterFile do |master_file|
+        can [:edit, :update, :destroy], MasterFile do |master_file|
           can? :edit, master_file.media_object
         end
 
