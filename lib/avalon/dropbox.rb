@@ -24,6 +24,7 @@ module Avalon
 
     # Returns available files in the dropbox
     def all
+      FileUtils.mkdir_p @base_directory
       return nil if @base_directory.blank? or not Dir.exists?(@base_directory)
       contents = Dir.entries(@base_directory).reject { |fn| fn.start_with?('.') }
       open_files = find_open_files(contents)
