@@ -3,7 +3,7 @@ source 'https://rubygems.org'
 # Core rails
 gem 'bootsnap', require: false
 gem 'listen'
-gem 'rails', '=5.2.4.6'
+gem 'rails', '=5.2.6'
 gem 'sprockets', '~>3.7.2'
 gem 'sqlite3'
 
