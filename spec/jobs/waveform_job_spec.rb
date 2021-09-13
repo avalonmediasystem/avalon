@@ -107,7 +107,7 @@ describe WaveformJob do
     end
 
     context 'when MasterFile and Derivative are not retrievable' do
-      let(:secure_hls_url) { "https://path/to/mp4:video.mp4/playlist.m3u8?token=abc" }
+      let(:secure_hls_url) { URI("https://path/to/mp4:video.mp4/playlist.m3u8?token=abc") }
 
       before do
         allow(File).to receive(:exist?).and_call_original
