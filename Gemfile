@@ -3,7 +3,7 @@ source 'https://rubygems.org'
 # Core rails
 gem 'bootsnap', require: false
 gem 'listen'
-gem 'rails', '=5.2.4.5'
+gem 'rails', '=5.2.6'
 gem 'sprockets', '~>3.7.2'
 gem 'sqlite3'
 
@@ -76,16 +76,6 @@ gem 'edtf'
 gem 'iconv', '~> 1.0.6'
 gem 'marc'
 
-# MediaElement.js & Plugins
-gem 'mediaelement_rails', git: 'https://github.com/avalonmediasystem/mediaelement_rails.git', tag: 'avalon-r6_flash-fix'
-gem 'media-element-logo-plugin'
-gem 'media_element_thumbnail_selector', git: 'https://github.com/avalonmediasystem/media-element-thumbnail-selector', tag: 'avalon-r4'
-gem 'mediaelement-hd-toggle', git:'https://github.com/avalonmediasystem/mediaelement-hd-toggle.git', tag: 'avalon-r6.3'
-gem 'mediaelement-qualityselector', git:'https://github.com/avalonmediasystem/mediaelement-qualityselector.git', tag: 'avalon-r4'
-gem 'mediaelement-skin-avalon', git:'https://github.com/avalonmediasystem/mediaelement-skin-avalon.git', tag: 'avalon-r5'
-gem 'mediaelement-title', git:'https://github.com/avalonmediasystem/mediaelement-title.git', tag: 'avalon-r4'
-gem 'mediaelement-track-scrubber', git: 'https://github.com/avalonmediasystem/mediaelement-track-scrubber.git', tag: 'avalon-r6'
-
 # Jobs
 gem 'activejob-traffic_control'
 gem 'activejob-uniqueness'
@@ -150,7 +140,7 @@ group :production do
   gem 'google-analytics-rails', '1.1.0'
   gem 'lograge'
   gem 'okcomputer'
-  gem 'puma'
+  gem 'puma', '>= 4.3.8'
 end
 
 # Install the bundle --with aws when running on Amazon Elastic Beanstalk
