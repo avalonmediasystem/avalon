@@ -31,6 +31,7 @@ class MEJSPlayer {
     this.mejsMarkersHelper = new MEJSMarkersHelper();
     this.mejsQualityHelper = new MEJSQualityHelper();
     this.localStorage = window.localStorage;
+    this.canvasIndex = 0;
 
     // Unpack player configuration object for the new player.
     // This allows for variable params to be sent in.
@@ -109,7 +110,8 @@ class MEJSPlayer {
     let itemScope = document.querySelector('[itemscope="itemscope"]');
     let node = this.mejsUtility.createHTML5MediaNode(
       this.mediaType,
-      this.currentStreamInfo
+      this.currentStreamInfo,
+      this.canvasIndex
     );
 
     // Mount new <audio> or <video> element to the DOM and initialize
@@ -248,6 +250,13 @@ class MEJSPlayer {
    */
   switchPlayer(playlistItemsT) {
     let markup = '';
+
+    // Update 'data-canvasindex' attribute for each element of the existing
+    // player node on page.
+    let childrenEls = this.mediaElement.children;
+    for (var i = 0; i < childrenEls.length; i++) {
+      childrenEls[i].setAttribute('data-canvasindex', this.canvasIndex)
+    }
 
     this.node.innerHTML = '';
     this.currentStreamInfo.stream_hls.map(source => {
@@ -671,7 +680,7 @@ class MEJSPlayer {
         let fullConfiguration = Object.assign({}, defaults, markerConfig);
         // Create a MediaElement instance
         this.player = new MediaElementPlayer(
-          `mejs-avalon-${this.mediaType}`,
+          'mejs-avalon-player',
           fullConfiguration
         );
         // Add default title from stream info which mejs plugins can access
@@ -766,6 +775,13 @@ class MEJSPlayer {
       document.getElementById('accordion'),
       currentStreamInfo
     );
+
+    const $sections = $('#accordion').find('.panel-heading[data-section-id]');
+    const sectionsIdArray = $sections.map((index, item) =>
+      $(item).data('sectionId').toString()
+    );
+    const currentIdIndex = [...sectionsIdArray].indexOf(currentStreamInfo.id);
+    this.canvasIndex = currentIdIndex;
   }
 
   /**

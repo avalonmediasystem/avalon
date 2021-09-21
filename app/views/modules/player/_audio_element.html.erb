@@ -14,10 +14,11 @@ Unless required by applicable law or agreed to in writing, software distributed
 ---  END LICENSE_HEADER BLOCK  ---
 %>
       <%= master_file_meta_properties(section) do %>
-        <audio id="mejs-avalon-audio"
+        <audio id="mejs-avalon-player"
                 class="mejs-avalon <%= is_mejs_2? ? '' : 'invisible' %>"
                 controls
                 style="width: 100%;"
+                data-canvasindex=0
                 preload="auto">
         <% section_info[:stream_hls].each do |hls| %>
           <source src="<%= hls[:url] %>" data-quality="<%= hls[:quality] %>" data-plugin-type="native" type="application/x-mpegURL"/>

@@ -21,18 +21,19 @@ class MEJSUtility {
    * @function createHTML5MediaNode
    * @return {string} markup - HTML markup containing <audio> or <video> and <source>s
    */
-  createHTML5MediaNode(mediaType, currentStreamInfo) {
+  createHTML5MediaNode(mediaType, currentStreamInfo, canvasIndex) {
     let markup = '';
     let node = null;
 
     // Create <video> markup
     if (mediaType === 'video') {
       node = document.createElement('video');
-      node.setAttribute('id', 'mejs-avalon-video');
+      node.setAttribute('id', 'mejs-avalon-player');
       node.setAttribute('controls', '');
       node.setAttribute('width', '450');
       node.setAttribute('height', '309');
       node.setAttribute('style', 'width: 100%; height: 100%');
+      node.setAttribute('data-canvasindex', canvasIndex);
       if (currentStreamInfo.poster_image) {
         node.setAttribute('poster', currentStreamInfo.poster_image);
       }
@@ -57,10 +58,11 @@ class MEJSUtility {
     // Create <audio> markup
     if (mediaType === 'audio') {
       node = document.createElement('audio');
-      node.setAttribute('id', 'mejs-avalon-audio');
+      node.setAttribute('id', 'mejs-avalon-player');
       node.setAttribute('controls', '');
       node.setAttribute('style', 'width: 100%;');
       node.setAttribute('preload', 'auto');
+      node.setAttribute('data-canvasindex', canvasIndex);
       node.classList.add('mejs-avalon');
       node.classList.add('invisible');
 
