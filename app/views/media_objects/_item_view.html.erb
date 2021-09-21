@@ -25,21 +25,7 @@ Unless required by applicable law or agreed to in writing, software distributed
 <% f_start, f_end = parse_media_fragment params['t'] %>
 <div class="row">
   <div class="col-sm-8" id="left_column">
-    <%= render partial: "modules/player/section", locals: {section: @currentStream, section_info: @currentStreamInfo, f_start: @f_start, f_end: @f_end} %>
-
-    <%= render file: '_track_scrubber.html.erb' if is_mejs_2? %>
-    <%= render file: '_add_to_playlist.html.erb' if current_user.present? && is_mejs_2? %>
-    <%# Partial view for MEJS4 Add To Playlist plugin %>
-    <%= render partial: 'mejs4_add_to_playlist' if current_user.present? && is_mejs_4? %>
-    <%= render 'workflow_progress' %>
-    <%= render partial: 'timeline' if current_ability.can? :create, Timeline %>
-    <%= render 'share' if will_partial_list_render? :share %>
-
-    <!-- Sections -->
-    <%= render partial: 'sections',
-        locals: { mediaobject: @media_object,
-                 sections: @masterFiles,
-                 activeStream: @currentStream } %>
+    <%= react_component("ReactIIIFPlayer", { manifestUrl: request.base_url + '/media_objects/' + @media_object.id + "/manifest.json" }) %>
   </div>
   <div class="col-sm-4" id="right-column">
     <div id="metadata_container" class="">
