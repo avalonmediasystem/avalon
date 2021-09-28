@@ -58,8 +58,11 @@ module Avalon
         # Otherwise this should be set
         # Validate the package if a side package is passed in
         unless package.nil?
-          return unless valid_package?
           @current_package = package
+          unless valid_package?
+            @current_package = nil
+            return
+          end
         end
 
         # We have a valid batch so we can go ahead and delete the manifest file
