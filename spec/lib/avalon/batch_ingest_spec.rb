@@ -316,4 +316,26 @@ describe Avalon::Batch::Ingest do
       expect(batch.manifest.error?).to be true
     end
   end
+
+  describe '#process_valid_package' do
+    let(:collection) { FactoryBot.create(:collection, name: 'Ut minus ut accusantium odio autem odit.', managers: ['frances.dickens@reichel.com']) }
+    let(:ingest) { Avalon::Batch::Ingest.new(collection) }
+
+    before :each do
+      @dropbox_dir = collection.dropbox.base_directory
+      FileUtils.cp_r 'spec/fixtures/dropbox/example_batch_ingest', @dropbox_dir
+      @manifest_file = File.join(@dropbox_dir,'example_batch_ingest','batch_manifest.xlsx')
+      @package = Avalon::Batch::Package.new(@manifest_file, collection)
+    end
+
+    after :each do
+      if @dropbox_dir =~ %r{spec/fixtures/dropbox/Ut}
+        FileUtils.rm_rf @dropbox_dir
+      end
+    end
+
+    it "shouldn't error if package is passed in" do
+      expect { ingest.process_valid_package(package: @package) }.to change { BatchRegistries.count }.by(1)
+    end
+  end
 end
