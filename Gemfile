@@ -175,5 +175,3 @@ end
 
 extra_gems = File.expand_path("../Gemfile.local", __FILE__)
 eval File.read(extra_gems) if File.exist?(extra_gems)
-
-gem "omniauth-saml", "~> 1.10"
