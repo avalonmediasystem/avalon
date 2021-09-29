@@ -95,7 +95,7 @@ auth:
         :sp_entity_id: mco-staging.dlib.indiana.edu
         # certificate (SP)
         :idp_cert_file: ../../../crypt/saml/idp_cert.pem
-        :certificate_file: ../../../crypt/saml/sp_cert.x509
+        :certificate_file: ../../../crypt/saml/sp_cert.pem
         :private_key_file: ../../../crypt/saml/sp_privkey.pem
         # :host: asdf.edu
         # :login_url: /saml/login
