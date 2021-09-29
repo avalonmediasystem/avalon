@@ -18,4 +18,3 @@
   - update_dependent_permalinks
   - waveform
 :max_retries: 14
-:concurrency: 4
