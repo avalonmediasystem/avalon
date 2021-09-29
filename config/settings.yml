@@ -85,23 +85,12 @@ auth:
       :provider: :saml
       # :hidden: true
       :params:
-        :idp_sso_service_url: https://idp-stg.login.iu.edu/idp/profile/SAML2/POST/SSO
-        # :assertion_consumer_service_url: https://mco-staing.dlib.iu.edu/users/auth/saml/callback
-        :attribute_service_name: mco-staging.dlib.iu.edu
-        # :uid_attribute: https://mco-staging.dlib.iu.edu/
-        :issuer: MCO Staging
-        :security:
-          :authn_requests_signed: true
-        :sp_entity_id: mco-staging.dlib.indiana.edu
-        # certificate (SP)
-        :idp_cert_file: ../../../crypt/saml/idp_cert.pem
-        :certificate_file: ../../../crypt/saml/sp_cert.pem
-        :private_key_file: ../../../crypt/saml/sp_privkey.pem
         # :host: asdf.edu
         # :login_url: /saml/login
         # :service_validate_url: /saml/validate
         # :logout_url: /saml/logout
         # :ssl: true
+          :idp_sso_service_url: https://idp-stg.login.iu.edu/idp/profile/SAML2/POST/SSO 
 
 # google_analytics_tracking_id: "someid"
 supplemental_files:
