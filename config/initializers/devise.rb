@@ -312,8 +312,7 @@ Devise.setup do |config|
     if provider[:provider] == :saml
       sp_entity_id = provider[:params][:sp_entity_id]
       puts "sp_entity_id #{sp_entity_id}"
-      begin
-        provider[:params].merge!(Avalon::Saml::Configuration[ sp_entity_id ])
+      provider[:params].merge!(Avalon::Saml::Configuration[ sp_entity_id ])
       puts "SAML MERGED ", provider[:params]
       cert_files = [ :idp_cert_file, :certificate_file, :private_key_file ]
       cert_files.each do | file |
@@ -337,10 +336,12 @@ Devise.setup do |config|
               puts "cert from file", provider[:params][key]
             end
           end
-      end
-      rescue TypeError => e
-        puts "Error loading SAML config: ", e
-      end
+        #rescue Exception => e
+          # Errno::ENOENT
+        #  puts "Exception Class: #{ e.class.name }"
+        #  puts "Exception Message: #{ e.message }"
+        #  puts "Exception Backtrace: #{ e.backtrace }"
+      end 
       puts "SAML with certs #{provider[:params]}"
     end
     if provider[:provider] == :identity
