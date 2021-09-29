@@ -73,25 +73,13 @@ encode_throttling:
   update_jobs_spacing: 10
 auth:
   registerable: true
-  configuration:
-    - :name: Avalon Lti OAuth
-      :provider: :lti
-      #       :hidden: true
-      :params:
-        :oauth_credentials:
-          CanvasIU: 'somesecret'
-    - :name: saml auth
-      :logo: iu_logo.png
-      :provider: :saml
-      # :hidden: true
-      :params:
-        # :host: asdf.edu
-        # :login_url: /saml/login
-        # :service_validate_url: /saml/validate
-        # :logout_url: /saml/logout
-        # :ssl: true
-          :idp_sso_service_url: https://idp-stg.login.iu.edu/idp/profile/SAML2/POST/SSO 
-
+#   configuration:
+#     - :name: Avalon Lti OAuth
+#       :provider: :lti
+#       :hidden: true
+#       :params:
+#         :oauth_credentials:
+#           somekey: somesecret
 # google_analytics_tracking_id: "someid"
 supplemental_files:
   proxy: false

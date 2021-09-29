@@ -38,7 +38,6 @@ module Avalon
       #return configs
 
     Providers = Config.reject {|provider| provider[:provider].blank? }
-    puts "providers", Providers
     VisibleProviders = Providers.reject {|provider| provider[:hidden]}
     HiddenProviders = Providers - VisibleProviders
   end
