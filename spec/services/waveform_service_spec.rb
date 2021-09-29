@@ -30,15 +30,14 @@ describe WaveformService, type: :service do
 
     context "s3 file" do
       let(:uri) { Addressable::URI.parse("s3://path/to/video.mp4") }
-      let(:tmpfile) { Tempfile.new }
 
       before do
-        allow(Tempfile).to receive(:new).and_return tmpfile
+        allow(Tempfile).to receive(:new).and_return double('tempfile', path: '/tmp/fakepath')
       end
 
-      it "should clean up Tempfile" do
+      it "does not use a Tempfile" do
         service.get_waveform_json(uri)
-        expect(tmpfile.path).to eq nil
+        expect(Tempfile).not_to have_received(:new)
       end
     end
 
