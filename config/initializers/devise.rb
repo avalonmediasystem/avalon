@@ -312,7 +312,7 @@ Devise.setup do |config|
     if provider[:provider] == :saml
       sp_entity_id = provider[:params][:sp_entity_id]
       puts "sp_entity_id #{sp_entity_id}"
-      provider[:params].merge!(Avalon::Saml::Configuration[ sp_entity_id ])
+      provider[:params].merge!({params: Avalon::Saml::Configuration[ sp_entity_id ]})
       puts "SAML MERGED ", provider[:params]
       cert_files = [ :idp_cert_file, :certificate_file, :private_key_file ]
       cert_files.each do | file |
