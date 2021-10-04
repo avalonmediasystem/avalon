@@ -2,25 +2,28 @@
 FROM        ruby:2.5-buster as bundle
 LABEL       stage=build
 LABEL       project=avalon
-RUN     echo "deb http://deb.debian.org/debian buster-backports main" >> /etc/apt/sources.list && \
-        apt-get update && apt-get upgrade -y build-essential \
-         && apt-get install -y --no-install-recommends \
+#RUN     echo "deb http://deb.debian.org/debian buster-backports main" >> /etc/apt/sources.list && \
+#dpkg --get-selections | grep hold && \
+RUN        apt-get update && apt-get upgrade -y build-essential && apt-get autoremove \
+         && apt-get install -y --no-install-recommends --fix-missing \
             cmake \
             pkg-config \
             zip \
             git \
+            ffmpeg \
             #libyaz-dev \
-            gcc-7 \
-            g++-7 \
-            # gcc-8 \
-            # g++-8 \
+            #libgcc-7-dev \
+            #gcc-7 \
+            #g++-7 \
+            #gcc-9 \
+            #g++-9 \
          && rm -rf /var/lib/apt/lists/* \
          && apt-get clean \
          && ls -l /usr/bin/g* \
-         && update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-7 20 \
-         && update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-7 20 \
-         && update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-8 8 \
-         && update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-8 8 \
+         #&& update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-7 20 \
+         #&& update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-7 20 \
+         #&& update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-8 8 \
+         #&& update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-8 8 \
          #&& update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-9 9 \
          #&& update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-9 9 \
          && gcc --version \
@@ -48,26 +51,28 @@ RUN         curl -L https://github.com/jwilder/dockerize/releases/download/v0.6.
 RUN         curl https://chromedriver.storage.googleapis.com/2.46/chromedriver_linux64.zip -o /usr/local/bin/chromedriver \
          && chmod +x /usr/local/bin/chromedriver
 RUN         curl https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb -o /chrome.deb
-RUN         mkdir -p /tmp/ffmpeg && cd /tmp/ffmpeg \
-         && curl https://johnvansickle.com/ffmpeg/releases/ffmpeg-release-amd64-static.tar.xz | tar xJ \
-         && cp `find . -type f -executable` /usr/bin/
+RUN apt-get -y update && apt-get install -y ffmpeg 
+#RUN         mkdir -p /tmp/ffmpeg && cd /tmp/ffmpeg \
+#         && curl https://johnvansickle.com/ffmpeg/releases/ffmpeg-release-amd64-static.tar.xz | tar xJ \
+#         && cp `find . -type f -executable` /usr/bin/
 
 
 # Base stage for building final images
 FROM        ruby:2.5-slim-buster as base
 LABEL       stage=build
 LABEL       project=avalon
-RUN         echo 'APT::Default-Release "stretch";' > /etc/apt/apt.conf.d/99defaultrelease \
-         && echo "deb     http://ftp.us.debian.org/debian/    testing main contrib non-free"  >  /etc/apt/sources.list.d/testing.list \
+RUN         echo "deb     http://ftp.us.debian.org/debian/    testing main contrib non-free"  >  /etc/apt/sources.list.d/testing.list \
          && echo "deb-src http://ftp.us.debian.org/debian/    testing main contrib non-free"  >> /etc/apt/sources.list.d/testing.list \
-         && cat /etc/apt/apt.conf.d/99defaultrelease \
+         # && echo 'APT::Default-Release "buster";' > /etc/apt/apt.conf.d/99defaultrelease \
+         # && cat /etc/apt/apt.conf.d/99defaultrelease \
          && cat /etc/apt/sources.list.d/testing.list \
          && apt-get update && apt-get install -y --no-install-recommends curl gnupg2 \
          && curl -sL http://deb.nodesource.com/setup_12.x | bash - \
-         && curl -O https://mediaarea.net/repo/deb/repo-mediaarea_1.0-16_all.deb && dpkg -i repo-mediaarea_1.0-16_all.deb \
+ #        && curl -O https://mediaarea.net/repo/deb/repo-mediaarea_1.0-16_all.deb && dpkg -i repo-mediaarea_1.0-16_all.deb \
+# && cat /etc/apt/sources.list.d/mediaarea.list \
          && curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add - \
          && echo "deb http://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list \
-         && curl -sL http://deb.nodesource.com/setup_8.x | bash - \
+         # && curl -sL http://deb.nodesource.com/setup_8.x | bash - \
          && cat /etc/apt/sources.list.d/nodesource.list
 
 RUN         apt-get update && \
@@ -107,7 +112,7 @@ LABEL       stage=final
 LABEL       project=avalon
 RUN         apt-get install -y --no-install-recommends --allow-unauthenticated \
             build-essential \
-            gcc-7 \
+            #gcc-7 \
             cmake
 
 COPY        --from=bundle-dev /usr/local/bundle /usr/local/bundle
