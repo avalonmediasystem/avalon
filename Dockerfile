@@ -70,17 +70,17 @@ RUN         echo "deb     http://ftp.us.debian.org/debian/    buster main contri
          && curl -sL http://deb.nodesource.com/setup_12.x | bash - \
  #        && curl -O https://mediaarea.net/repo/deb/repo-mediaarea_1.0-16_all.deb && dpkg -i repo-mediaarea_1.0-16_all.deb \
 # && cat /etc/apt/sources.list.d/mediaarea.list \
-         # && curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add - \
-         # && echo "deb http://dl.yarnpkg.com/debian/ buster main" | tee /etc/apt/sources.list.d/yarn.list \
-         # && curl -sL http://deb.nodesource.com/setup_8.x | bash - \
-         && cat /etc/apt/sources.list.d/nodesource.list
+         && curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add - \
+         && echo "deb http://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list \
+         && cat /etc/apt/sources.list.d/nodesource.list \
+         && cat /etc/apt/sources.list.d/yarn.list
 
 RUN         apt-get update && \
             # apt-get install --fix-broken && \
             apt-get -y dist-upgrade && \
             apt-get install -y --no-install-recommends --allow-unauthenticated \
             nodejs \
-            yarnpkg \
+            yarn \
             #npm \
             lsof \
             x264 \
