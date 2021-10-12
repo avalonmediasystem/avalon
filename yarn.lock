@@ -1158,10 +1158,10 @@
     "@types/minimatch" "*"
     "@types/node" "*"
 
-"@samvera/iiif-react-media-player@^1.2.0-beta.6":
-  version "1.2.0-beta.6"
-  resolved "https://registry.yarnpkg.com/@samvera/iiif-react-media-player/-/iiif-react-media-player-1.2.0-beta.6.tgz#5489fcf2254d1fa27b4064bc59c717d2ee2bf9af"
-  integrity sha512-VNbXnTRlTOXvjxviDeJq+mNYoSR66F0Sfd4ZgJQUvOSv7+vQmDfl6u4Eg/2QMSQndRaOWYPp7ogPcYsUz7xoqQ==
+"@samvera/iiif-react-media-player@^1.2.0":
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/@samvera/iiif-react-media-player/-/iiif-react-media-player-1.2.0.tgz#bfe3fefd05cc1b14082f74fc7491272f661e4367"
+  integrity sha512-8ogK6UF/0mMpnxqvInfF6VoifukuVDG5UzjJt+OoKHQEnWRRE8HJeFuB+oGOBci55dyO1qNoyEVVXJEvNQdxNQ==
   dependencies:
     "@silvermine/videojs-quality-selector" "^1.2.4"
     manifesto.js "^4.1.0"
