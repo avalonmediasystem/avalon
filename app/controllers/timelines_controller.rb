@@ -107,7 +107,7 @@ class TimelinesController < ApplicationController
           url_fragment += "&resource=#{URI.escape(manifest_timeline_url(@timeline, format: :json, token: @timeline.access_token), '://?=')}"
           url_fragment += "&callback=#{URI.escape(timelines_url, '://?=')}"
         end
-        @timeliner_iframe_url = Settings.timeliner.timeliner_url + "##{url_fragment}"
+        @timeliner_iframe_url = timeliner_path + "##{url_fragment}"
       end
       format.json do
         render json: @timeline

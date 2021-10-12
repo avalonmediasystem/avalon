@@ -78,6 +78,20 @@ describe BookmarksController, type: :controller do
       	  expect(mo.permalink).to be_present
         end
       end
+
+      it "should show a warning for incomplete items" do
+        invalid_mo = media_objects.first
+        invalid_mo.title = nil
+        invalid_mo.date_issued = nil
+        invalid_mo.save
+
+        post 'publish'
+	      expect(flash[:success]).to eq( I18n.t("blacklight.status.success", count: 2, status: 'publish'))
+        expect(flash[:alert]).to eq("This item was not published:</br> #{invalid_mo.id}, Unable to Publish Item. Missing required fields.")
+        
+        invalid_mo.reload
+        expect(invalid_mo).not_to be_published
+      end
     end
 
     context 'unpublishing' do
@@ -435,6 +449,13 @@ describe BookmarksController, type: :controller do
         expect { post 'merge', params: { media_object: target.id } }.to have_enqueued_job(BulkActionJobs::Merge).with(target.id, subject_ids.sort)
         expect(flash[:success]).to start_with("Merging 2 items into")
       end
+    end
+  end
+
+  describe "#count" do
+    it 'counts selected items' do
+      get 'count', params: { format:'json' }
+      expect(JSON.parse(response.body)["count"]).to eq(3)
     end
   end
 end

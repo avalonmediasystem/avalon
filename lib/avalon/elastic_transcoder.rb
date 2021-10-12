@@ -13,6 +13,7 @@
 # ---  END LICENSE_HEADER BLOCK  ---
 
 # frozen_string_literal: true
+require 'aws-sdk-elastictranscoder'
 require 'singleton'
 
 module Avalon

@@ -461,16 +461,6 @@ describe MasterFilesController do
       expect(flash[:success]).not_to be_nil
     end
 
-    it "removes contents of captions datastream" do
-      # remove the contents of the datastream
-      post 'attach_captions', params: { id: master_file.id }
-      master_file.reload
-      expect(master_file.captions.empty?).to be true
-      expect(flash[:error]).to be_nil
-      expect(flash[:notice]).to be_nil
-      expect(flash[:success]).not_to be_nil
-    end
-
     context "with invalid file" do
       let(:file) { fixture_file_upload('/videoshort.mp4', 'video/mp4') }
 
@@ -485,6 +475,24 @@ describe MasterFilesController do
     end
   end
   # rubocop:enable RSpec/ExampleLength
+
+  describe "#delete_captions" do
+    let(:master_file) { FactoryBot.create(:master_file, :with_media_object, :with_captions) }
+
+    before do
+      disableCanCan!
+    end
+
+    it "removes contents of captions datastream" do
+      # remove the contents of the datastream
+      post 'delete_captions', params: { id: master_file.id }
+      master_file.reload
+      expect(master_file.captions.empty?).to be true
+      expect(flash[:error]).to be_nil
+      expect(flash[:notice]).to be_nil
+      expect(flash[:success]).not_to be_nil
+    end
+  end
 
   describe "#captions" do
     let(:master_file) { FactoryBot.create(:master_file, :with_media_object, :with_captions) }
@@ -565,6 +573,16 @@ describe MasterFilesController do
 
       it 'returns ok (200) if public' do
         expect(head('hls_manifest', params: { id: public_master_file.id, quality: 'auto' })).to have_http_status(:ok)
+      end
+    end
+
+    context 'master file has been deleted' do
+      before do
+        allow(MasterFile).to receive(:find).and_raise(Ldp::Gone)
+      end
+
+      it 'returns gone (403)' do
+        expect(get('hls_manifest', params: { id: "deleted", quality: 'auto' })).to have_http_status(:gone)
       end
     end
 
@@ -652,7 +670,7 @@ describe MasterFilesController do
                                                     permalink: "https://perma.link" }})}
 
     before do
-      login_as :administrator
+      login_user master_file.media_object.collection.managers.first
     end
 
     it 'updates the master file' do

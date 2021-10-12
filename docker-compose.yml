@@ -104,6 +104,8 @@ services:
       - SECRET_KEY_BASE=abcd
       - SOLR_URL=http://solr:8983/solr/avalon
       - AWS_REGION=us-east-1
+      - SETTINGS__ACTIVE_STORAGE__BUCKET=supplementalfiles
+      - SETTINGS__ACTIVE_STORAGE__SERVICE=generic_s3
       - SETTINGS__FFMPEG__PATH=/usr/bin/ffmpeg
       - SETTINGS__MINIO__ENDPOINT=http://minio:9000
       - SETTINGS__MINIO__PUBLIC_HOST=http://localhost:9000
@@ -143,6 +145,7 @@ services:
       - redis-test
     environment:
       - DATABASE_URL=postgresql://postgres:password@db-test/avalon
+      - SETTINGS__FFMPEG__PATH=/usr/bin/ffmpeg
       - SETTINGS__REDIS__HOST=redis-test
       - SETTINGS__REDIS__PORT=6379
       - FEDORA_URL=http://fedora-test:8080/fedora/rest

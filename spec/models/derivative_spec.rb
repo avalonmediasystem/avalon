@@ -63,6 +63,15 @@ describe Derivative do
     let(:audio_derivative) { Derivative.new(audio_codec: 'AAC').tap { |d| d.absolute_location = location } }
     let(:video_derivative) { Derivative.new(video_codec: 'AVC').tap { |d| d.absolute_location = location } }
 
+    around :each do |example|
+      old_value = Avalon::StreamMapper.streaming_server
+      begin
+        example.run
+      ensure
+        Avalon::StreamMapper.streaming_server = old_value
+      end
+    end
+
     describe "generic" do
       before :each do
         Avalon::StreamMapper.streaming_server = :generic
