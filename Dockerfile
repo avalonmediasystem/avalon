@@ -136,7 +136,7 @@ RUN         bundle install --without development test --with aws production post
 FROM        node:12-buster-slim as node-modules
 LABEL       stage=build
 LABEL       project=avalon
-RUN         apt-get update && apt-get install -y --no-install-recommends git
+RUN         apt-get update && apt-get install -y --no-install-recommends git ca-certificates
 COPY        package.json .
 COPY        yarn.lock .
 RUN         yarn install
