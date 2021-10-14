@@ -80,7 +80,7 @@ GIT
 GIT
   remote: https://github.com/samvera-labs/active_encode
   revision: 58edbae2d5f6d00a33f39863a75a8cd927f799e1
-  branch: master
+  branch: main
   specs:
     active_encode (0.7.0)
       rails
