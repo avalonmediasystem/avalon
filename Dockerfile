@@ -1,8 +1,8 @@
 # Base stage for building gems
-FROM        ruby:2.7-buster as bundle
+FROM        ruby:2.7-bullseye as bundle
 LABEL       stage=build
 LABEL       project=avalon
-#RUN     echo "deb http://deb.debian.org/debian buster-backports main" >> /etc/apt/sources.list && \
+#RUN     echo "deb http://deb.debian.org/debian bullseye-backports main" >> /etc/apt/sources.list && \
 #dpkg --get-selections | grep hold && \
 RUN        apt-get update && apt-get upgrade -y build-essential && apt-get autoremove \
          && apt-get install -y --no-install-recommends --fix-missing \
@@ -44,7 +44,7 @@ RUN         bundle install --with aws development test postgres --without produc
 
 
 # Download binaries in parallel
-FROM        ruby:2.7-buster as download
+FROM        ruby:2.7-bullseye as download
 LABEL       stage=build
 LABEL       project=avalon
 RUN         curl -L https://github.com/jwilder/dockerize/releases/download/v0.6.1/dockerize-linux-amd64-v0.6.1.tar.gz | tar xvz -C /usr/bin/
@@ -58,14 +58,14 @@ RUN      apt-get -y update && apt-get install -y ffmpeg
 
 
 # Base stage for building final images
-FROM        ruby:2.7-slim-buster as base
+FROM        ruby:2.7-slim-bullseye as base
 LABEL       stage=build
 LABEL       project=avalon
-RUN         echo "deb     http://ftp.us.debian.org/debian/    buster main contrib non-free"  >  /etc/apt/sources.list.d/buster.list \
-         && echo "deb-src http://ftp.us.debian.org/debian/    buster main contrib non-free"  >> /etc/apt/sources.list.d/buster.list \
-         # && echo 'APT::Default-Release "buster";' > /etc/apt/apt.conf.d/99defaultrelease \
+RUN         echo "deb     http://ftp.us.debian.org/debian/    bullseye main contrib non-free"  >  /etc/apt/sources.list.d/bullseye.list \
+         && echo "deb-src http://ftp.us.debian.org/debian/    bullseye main contrib non-free"  >> /etc/apt/sources.list.d/bullseye.list \
+         # && echo 'APT::Default-Release "bullseye";' > /etc/apt/apt.conf.d/99defaultrelease \
          # && cat /etc/apt/apt.conf.d/99defaultrelease \
-         && cat /etc/apt/sources.list.d/buster.list \
+         && cat /etc/apt/sources.list.d/bullseye.list \
          && apt-get update && apt-get install -y --no-install-recommends curl gnupg2 ffmpeg \
          && curl -sL http://deb.nodesource.com/setup_12.x | bash - \
  #        && curl -O https://mediaarea.net/repo/deb/repo-mediaarea_1.0-16_all.deb && dpkg -i repo-mediaarea_1.0-16_all.deb \
@@ -133,7 +133,7 @@ RUN         bundle install --without development test --with aws production post
 
 
 # Install node modules
-FROM        node:12-buster-slim as node-modules
+FROM        node:12-bullseye-slim as node-modules
 LABEL       stage=build
 LABEL       project=avalon
 RUN         apt-get update && apt-get install -y --no-install-recommends git ca-certificates
