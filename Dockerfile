@@ -1,5 +1,5 @@
 # Base stage for building gems
-FROM        ruby:2.5-buster as bundle
+FROM        ruby:2.7-buster as bundle
 LABEL       stage=build
 LABEL       project=avalon
 #RUN     echo "deb http://deb.debian.org/debian buster-backports main" >> /etc/apt/sources.list && \
@@ -44,7 +44,7 @@ RUN         bundle install --with aws development test postgres --without produc
 
 
 # Download binaries in parallel
-FROM        ruby:2.5-buster as download
+FROM        ruby:2.7-buster as download
 LABEL       stage=build
 LABEL       project=avalon
 RUN         curl -L https://github.com/jwilder/dockerize/releases/download/v0.6.1/dockerize-linux-amd64-v0.6.1.tar.gz | tar xvz -C /usr/bin/
@@ -58,7 +58,7 @@ RUN      apt-get -y update && apt-get install -y ffmpeg
 
 
 # Base stage for building final images
-FROM        ruby:2.5-slim-buster as base
+FROM        ruby:2.7-slim-buster as base
 LABEL       stage=build
 LABEL       project=avalon
 RUN         echo "deb     http://ftp.us.debian.org/debian/    buster main contrib non-free"  >  /etc/apt/sources.list.d/buster.list \
