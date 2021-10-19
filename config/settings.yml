@@ -56,6 +56,7 @@ streaming:
 redis:
   host: localhost
   port: 6379
+  db: 0
 groups:
   system_groups: [administrator, group_manager, manager]
 master_file_management:
