@@ -30,12 +30,13 @@ gem 'rdf-rdfxml'
 
 # Samvera version pins
 gem 'blacklight', '< 7.0'
-gem 'rdf', '~> 2.2'
+gem 'rdf', '~> 3.1'
 gem 'rsolr', '~> 1.0'
 
 # Rails & Samvera Plugins
 gem 'about_page', git: 'https://github.com/avalonmediasystem/about_page.git', tag: 'avalon-r6.5'
-gem 'active_annotations', '~> 0.2.2'
+gem 'active_annotations', git: 'https://github.com/apertome/active_annotations.git', branch: 'ruby2.7-fixes'
+#gem 'active_annotations', '~> 0.2.2'
 gem 'activerecord-session_store', '>= 2.0.0'
 gem 'acts_as_list'
 gem 'api-pagination'
