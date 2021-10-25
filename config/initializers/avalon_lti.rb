@@ -9,6 +9,5 @@ module Avalon
     rescue
       Configuration = {}
     end
-    puts "LTI Configuration #{Configuration}"
   end
 end

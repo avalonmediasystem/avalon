@@ -482,7 +482,7 @@ describe MediaObjectsController, type: :controller do
           put 'json_update', params: { format: 'json', id: media_object.id, files: [master_file], collection_id: media_object.collection_id }
           media_object.reload
           expect(media_object.master_files.to_a.size).to eq 1
-          expect(ExtractStillJob).to have_been_enqueued.with(media_object.master_files.first.id,{type:'both',offset:2000})
+          expect(ExtractStillJob).to have_been_enqueued.with(media_object.master_files.first.id, { type: 'both', offset: 2000, headers: nil })
         end
         it "should update the waveform for its masterfile" do
           media_object = FactoryBot.create(:media_object)
@@ -731,7 +731,7 @@ describe MediaObjectsController, type: :controller do
 
     end
     context "Test lease access control" do
-      let!(:media_object) { FactoryBot.create(:published_media_object, visibility: 'private') }
+      let!(:media_object) { FactoryBot.create(:published_media_object, :with_master_file, visibility: 'private') }
       let!(:user) { FactoryBot.create(:user) }
       before :each do
         login_user user.user_key
@@ -1051,11 +1051,6 @@ describe MediaObjectsController, type: :controller do
         expect(media_object.permalink).to be_present
       end
 
-      it "should fail when id doesn't exist" do
-        get 'update_status', params: { id: 'this-id-is-fake', status: 'publish' }
-        expect(response.code).to eq '404'
-      end
-
       it "should publish multiple items" do
         media_objects = []
         3.times { media_objects << FactoryBot.create(:media_object, collection: collection) }
@@ -1065,6 +1060,25 @@ describe MediaObjectsController, type: :controller do
           mo.reload
           expect(mo).to be_published
           expect(mo.permalink).to be_present
+        end
+      end
+
+      context "should fail when" do
+        it "id doesn't exist" do
+          get 'update_status', params: { id: 'this-id-is-fake', status: 'publish' }
+          expect(response.code).to eq '404'
+        end
+
+        it "item is invalid" do
+          media_object = FactoryBot.create(:media_object, collection: collection)
+          media_object.title = nil
+          media_object.date_issued = nil
+          media_object.workflow.last_completed_step = 'file-upload'
+          media_object.save!(validate: false)
+          get 'update_status', params: { id: media_object.id, status: 'publish' }
+          expect(flash[:notice]).to eq("Unable to publish item: Validation failed: Title field is required., Date issued field is required.")
+          media_object.reload
+          expect(media_object).not_to be_published
         end
       end
     end

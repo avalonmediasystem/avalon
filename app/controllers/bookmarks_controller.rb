@@ -106,6 +106,13 @@ class BookmarksController < CatalogController
   #   get_solr_response_for_document_ids(bookmark_ids, rows: bookmark_ids.count, defType: 'edismax')
   # end
 
+  def count
+    respond_to do |format|
+      format.html
+      format.json { render json: { count: current_or_guest_user.bookmarks.count } }
+    end
+  end
+
   def action_documents
     bookmarks = token_or_current_or_guest_user.bookmarks
     bookmark_ids = bookmarks.collect { |b| b.document_id.to_s }
@@ -143,17 +150,19 @@ class BookmarksController < CatalogController
   end
 
   def status_action documents
-    errors = []
-    success_ids = []
-    status = params['action']
+    errors, success_ids = [], [], []
     Array(documents.map(&:id)).each do |id|
       media_object = MediaObject.find(id)
       if cannot? :update, media_object
         errors += ["#{media_object.title} (#{id}) #{t('blacklight.messages.permission_denied')}."]
       else
-        case status
+        case params['action']
         when 'publish'
-          success_ids << id
+          if media_object.title.nil? || media_object.date_issued.nil?
+            errors += ["#{id}, Unable to Publish Item. Missing required fields."]
+          else
+            success_ids << id
+          end
         when 'unpublish'
           if can? :unpublish, media_object
             success_ids << id
@@ -163,8 +172,8 @@ class BookmarksController < CatalogController
         end
       end
     end
-    flash[:success] = t("blacklight.status.success", count: success_ids.count, status: status) if success_ids.count > 0
-    flash[:alert] = "#{t('blacklight.status.alert', count: errors.count, status: status)}</br> #{ errors.join('<br/> ') }".html_safe if errors.count > 0
+    flash[:success] = t("blacklight.status.success", count: success_ids.count, status: params['action']) if success_ids.count > 0
+    flash[:alert] = "#{t('blacklight.status.alert', count: errors.count, status: params['action'])}</br> #{ errors.join('<br/> ') }".html_safe if errors.count > 0
     BulkActionJobs::UpdateStatus.perform_later success_ids, current_user.user_key, params.permit('action').to_h
   end
 

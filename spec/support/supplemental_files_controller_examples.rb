@@ -105,6 +105,21 @@ RSpec.shared_examples 'a nested controller for' do |object_class|
           expect(object.supplemental_files.first.label).to eq 'label'
           expect(object.supplemental_files.first.file).to be_attached
         end
+
+        let(:tags) { ["transcript"] }
+        let(:valid_create_attributes_with_tags) { valid_create_attributes.merge(tags: tags) }
+        it "creates a SupplementalFile with tags for #{object_class}" do
+          expect {
+            post :create, params: { class_id => object.id, supplemental_file: valid_create_attributes_with_tags, format: :json }, session: valid_session
+          }.to change { object.reload.supplemental_files.size }.by(1)
+          expect(response).to have_http_status(:created)
+          expect(response.location).to eq "/#{object_class.model_name.plural}/#{object.id}/supplemental_files/#{assigns(:supplemental_file).id}"
+
+          expect(object.supplemental_files.first.id).to eq 1
+          expect(object.supplemental_files.first.label).to eq 'label'
+          expect(object.supplemental_files.first.tags).to eq tags
+          expect(object.supplemental_files.first.file).to be_attached
+        end
       end
 
       context "with invalid params" do

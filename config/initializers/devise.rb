@@ -296,52 +296,10 @@ Devise.setup do |config|
   # Add a new OmniAuth provider. Check the wiki for more information on setting
   # up on your models and hooks.
   # config.omniauth :github, 'APP_ID', 'APP_SECRET', scope: 'user,public_repo'
-  def load_cert_file( cert_file )
-      cert_path = File.expand_path(cert_file, __FILE__)
-      puts "cert_path #{cert_path}"
-      cert_contents = File.read(cert_path)
-      puts "pust cert_contents #{cert_contents}"
-      cert_contents
-  end
 
   Avalon::Authentication::Providers.each do |provider|
-    puts "PROVIDER: #{provider}"
     if provider[:provider] == :lti
       provider[:params].merge!({consumers: Avalon::Lti::Configuration})
-    end
-    if provider[:provider] == :saml
-      sp_entity_id = provider[:params][:sp_entity_id]
-      puts "sp_entity_id #{sp_entity_id}"
-      begin
-        provider[:params].merge!(Avalon::Saml::Configuration[ sp_entity_id ])
-      puts "SAML MERGED ", provider[:params]
-      cert_files = [ :idp_cert_file, :certificate_file, :private_key_file ]
-      cert_files.each do | file |
-          if ( /_file$/ =~ file )
-            puts "file #{file}"
-            key = file.to_s.gsub(/_file$/, "")
-            puts "******* key #{key} ********"
-
-            if provider[:params][file]
-              cert_file = provider[:params][file]
-              puts "'#{key}' cert file ", cert_file
-              #idp_cert_path = File.expand_path(idp_cert_file, __FILE__)
-              #puts "idp cert path ", idp_cert_path
-              cert_contents = load_cert_file( cert_file )
-              # loaded_cert = OpenSSL::X509::Certificate.new(cert_contents)
-              # loaded_cert = OpenSSL::PKey::RSA.new cert_contents
-              #puts "#{key} loaded_cert #{loaded_cert}"
-              provider[:params][ key ] = cert_contents 
-              #idp_cert_contents = File.read(idp_cert_path)
-              #provider[:params][file] = idp_cert_contents 
-              puts "cert from file", provider[:params][key]
-            end
-          end
-      end
-      rescue TypeError => e
-        puts "Error loading SAML config: ", e
-      end
-      puts "SAML with certs #{provider[:params]}"
     end
     if provider[:provider] == :identity
       provider[:params].merge!({

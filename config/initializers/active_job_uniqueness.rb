@@ -26,7 +26,7 @@ ActiveJob::Uniqueness.configure do |config|
   # Array of redis servers for Redlock quorum.
   # Read more at https://github.com/leandromoreira/redlock-rb#redis-client-configuration
   #
-  config.redlock_servers = ["redis://#{Settings.redis.host}:#{Settings.redis.port}"]
+  config.redlock_servers = ["redis://#{Settings.redis.host}:#{Settings.redis.port}/#{Settings.redis.db}"]
 
   # Custom options for Redlock.
   # Read more at https://github.com/leandromoreira/redlock-rb#redlock-configuration

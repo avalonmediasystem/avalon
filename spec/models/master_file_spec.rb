@@ -120,7 +120,7 @@ describe MasterFile do
     end
 
     it 'creates an encode' do
-      expect(master_file.encoder_class).to receive(:create).with("file://" + URI.escape(master_file.file_location), { master_file_id: master_file.id, preset: master_file.workflow_name })
+      expect(master_file.encoder_class).to receive(:create).with("file://" + URI.escape(master_file.file_location), { master_file_id: master_file.id, preset: master_file.workflow_name, headers: nil })
       master_file.process
     end
 
@@ -199,7 +199,7 @@ describe MasterFile do
       it "should update on save" do
         master_file.poster_offset = 12345
         master_file.save
-        expect(ExtractStillJob).to have_been_enqueued.with(master_file.id,{type:'both',offset:12345})
+        expect(ExtractStillJob).to have_been_enqueued.with(master_file.id, { type: 'both', offset: 12345, headers: nil })
       end
     end
   end
@@ -317,6 +317,24 @@ describe MasterFile do
           Settings.encoding.working_file_path = media_path
           expect(File.fnmatch("#{media_path}/*/#{original}", subject.working_file_path.first)).to be true
         end
+      end
+    end
+
+    context "google drive" do
+      let(:file) { Addressable::URI.parse("https://www.googleapis.com/drive/v3/files/1QFnOuYM7o7wUn-k8hwfgGYPuM6v6c_Ct?alt=media") }
+      let(:file_name) { "sample.mp4" }
+      let(:file_size) { 12345 }
+      let(:auth_header) { {"Authorization"=>"Bearer ya29.a0AfH6SMC6vSj4D6po1aDxAr6JmY92azh3lxevSuPKxf9QPPSKmMzqbZvI7B3oIACqqMVono1P0XD2F1Jl_rkayoI6JGz-P2cpg44-55oJFcWychAvUliWeRKf1cifMo9JF10YmXxhIfrG5mu7Ahy9FZpudN92p2JhvTI"} }
+
+      subject { MasterFile.new }
+
+      it "should set the right properties" do
+        allow(subject).to receive(:reloadTechnicalMetadata!).and_return(nil)
+        subject.setContent(file, file_name: file_name, file_size: file_size, auth_header: auth_header)
+        expect(subject.file_location).to eq(file.to_s)
+        expect(subject.file_size).to eq(file_size)
+        expect(subject.title).to eq(file_name)
+        expect(subject.instance_variable_get(:@auth_header)).to eq(auth_header)
       end
     end
   end
@@ -524,6 +542,16 @@ describe MasterFile do
     end
     it "raises an exception when ffmpeg doesn't extract anything" do
       expect {video_master_file.send(:extract_frame, {size: '160x120', offset: 1})}.to raise_error
+    end
+  end
+
+  describe '#ffmpeg_frame_options' do
+    subject { FactoryBot.create(:master_file, :with_media_object, :with_derivative, display_aspect_ratio: '1') }
+
+    it "return the correct options" do
+      expect(subject.send(:ffmpeg_frame_options, "/tmp/test.mp4", "/tmp/test.jpg", 2000, 360, 240, true, { test_header: "header content" })).to eq(
+        ["-headers", "test_header: header content\r\n", "-ss", "2.0", "-i", "/tmp/test.mp4", "-s", "360x240", "-vframes", "1", "-aspect", "1", "-q:v", "4", "-y", "/tmp/test.jpg"]
+      )
     end
   end
 

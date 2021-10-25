@@ -292,6 +292,9 @@ class MEJSPlayer {
 
     this.reInitializeCaptions();
 
+    // Build time rail highlight based on structure
+    this.buildTimeRailHighlight();
+
     this.player.load();
     this.player.play();
   }
@@ -311,6 +314,25 @@ class MEJSPlayer {
       // Clear captions object
       delete this.player.tracks;
       this.player.cleartracks(this.player);
+    }
+  }
+
+  /**
+   * Build time rail highlight when intializing the player instance
+   * and advancing to the next section/playlist item
+   */
+  buildTimeRailHighlight() {
+    if (this.highlightRail) {
+      const t = this.mejsTimeRailHelper.calculateSegmentT(
+        this.segmentsMap[this.activeSegmentId],
+        this.currentStreamInfo
+      );
+
+      // Create our custom time rail highlighter element
+      this.highlightSpanEl = this.mejsTimeRailHelper.createTimeHighlightEl(
+        document.getElementById('content')
+      );
+      this.highlightTimeRail(t, this.activeSegmentId);
     }
   }
 
@@ -467,18 +489,7 @@ class MEJSPlayer {
     );
 
     // Show highlighted time in time rail
-    if (this.highlightRail) {
-      const t = this.mejsTimeRailHelper.calculateSegmentT(
-        this.segmentsMap[this.activeSegmentId],
-        this.currentStreamInfo
-      );
-
-      // Create our custom time rail highlighter element
-      this.highlightSpanEl = this.mejsTimeRailHelper.createTimeHighlightEl(
-        document.getElementById('content')
-      );
-      this.highlightTimeRail(t, this.activeSegmentId);
-    }
+    this.buildTimeRailHighlight();
 
     // Filter playlist item player from handling MEJS's time update event
     if (Object.keys(this.playlistItem).length === 0) {

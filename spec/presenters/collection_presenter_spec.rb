@@ -74,6 +74,20 @@ describe CollectionPresenter do
     end
   end
 
+  describe '#website_link' do
+    it 'provides a link tag' do
+      expect(presenter.website_link).to eq website_link
+    end
+
+    context 'without a website url' do
+      let(:website_url) { nil }
+
+      it 'returns null' do
+        expect(presenter.website_link).to be_nil
+      end
+    end
+  end
+
   describe '#as_json' do
     subject(:presenter_json) { presenter.as_json({}) }
     it 'returns json' do

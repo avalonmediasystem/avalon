@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # Copyright 2011-2020, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -12,10 +14,13 @@
 #   specific language governing permissions and limitations under the License.
 # ---  END LICENSE_HEADER BLOCK  ---
 
-# Mark each item on page as bookmarks when 'Select All' is clicked
-$("#bookmarks_selectall").on "change", (e) ->
-  if @checked
-    $("label.toggle_bookmark:not(.checked) input.toggle_bookmark").click()
-  else
-    $("label.toggle_bookmark.checked input.toggle_bookmark").click()
-  return
+# Validate that an array attribute's values are allowed
+class ArrayInclusionValidator < ActiveModel::EachValidator
+  include ActiveModel::Validations::Clusivity
+
+  def validate_each(record, attribute, array)
+    array.each do |val|
+      record.errors.add attribute, "#{val} is not an allowed value" unless include?(record, val)
+    end
+  end
+end

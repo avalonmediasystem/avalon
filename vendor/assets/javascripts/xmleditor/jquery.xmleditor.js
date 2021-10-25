@@ -398,17 +398,23 @@ $.widget( "xml.xmlEditor", {
 		this.xmlWorkAreaContainer = $("<div/>").attr('class', xmlWorkAreaContainerClass).appendTo(this.xmlEditorContainer);
 		
 		// Menu bar
-		var editorHeaderBacking = $("<div/>").addClass(editorHeaderClass + "_backing").appendTo(this.xmlWorkAreaContainer);
-		this.editorHeader = $("<div/>").attr('class', editorHeaderClass).appendTo(this.xmlWorkAreaContainer);
+		var editorHeaderBacking = $("<div/>").addClass(editorHeaderClass + "_backing").appendTo(this.xmlEditorContainer);
+		this.editorHeader = $("<div/>").attr('class', editorHeaderClass).appendTo(this.xmlEditorContainer);
 		if (this.options.documentTitle != null)
 			$("<h2/>").html("Editing Description: " + this.options.documentTitle).appendTo(this.editorHeader);
 		this.menuBar.render(this.editorHeader);
-		editorHeaderBacking.height(this.editorHeader.outerHeight());
+		editorHeaderBacking.height(this.editorHeader.outerHeight()/2);
 		// Create grouping of header elements that need to be positioned together
 		this.editorHeaderGroup = this.editorHeader.add(editorHeaderBacking);
-		this.problemsPanel = $("<pre/>").attr('class', problemsPanelClass).css("margin-top", (this.editorHeader.outerHeight()) + "px").hide().appendTo(this.xmlWorkAreaContainer);
 		
-		this.xmlTabContainer = $("<div/>").attr("class", editorTabAreaClass).css("margin-top", (this.editorHeader.outerHeight()) + "px").appendTo(this.xmlWorkAreaContainer);
+		const mediaQuery = window.matchMedia("(max-width: 900px)");
+		if(mediaQuery.matches) {
+			this.problemsPanel = $("<pre/>").attr('class', problemsPanelClass).css("margin-top", (this.editorHeader.outerHeight()/2) + "px").hide().appendTo(this.xmlWorkAreaContainer);
+			this.xmlTabContainer = $("<div/>").attr("class", editorTabAreaClass).css("margin-top", (this.editorHeader.outerHeight()/2) + "px").appendTo(this.xmlWorkAreaContainer);
+		} else {
+			this.problemsPanel = $("<pre/>").attr('class', problemsPanelClass).hide().appendTo(this.xmlWorkAreaContainer);
+			this.xmlTabContainer = $("<div/>").attr("class", editorTabAreaClass).appendTo(this.xmlWorkAreaContainer);
+		}
 		
 		if (this.viewportFixedHeight) {
 		    this.xmlTabContainer.css('overflow-y','auto');
@@ -747,8 +753,9 @@ $.widget( "xml.xmlEditor", {
 		    this.clearProblemPanel();
 		} else {
 		    this.problemsPanel.show();
-	            this.xmlTabContainer.css('margin-top', '0')
-		    this.resize();
+	      this.xmlTabContainer.css('margin-top', '0');
+				this.textEditor.xmlContent[0].style.paddingTop = 0;
+				this.resize();
 		}
 	},
 
@@ -1937,7 +1944,9 @@ function MenuBar(editor) {
 			binding : null,
 			action : "http://www.loc.gov/standards/mods/mods-outline.html"
 		} ]
-	}*/, {
+	},*/];
+
+  this.headerEditorTypes = [{
 		label : self.editor.options.xmlEditorLabel,
 		enabled : true, 
 		itemClass : 'header_mode_tab',
@@ -1951,7 +1960,7 @@ function MenuBar(editor) {
 		action : function() {
 			self.editor.modeChange(1);
 		}
-	} ];
+	}];
 }
 
 // Causes the targeted menu to be displayed, as well as triggering update functions
@@ -1977,13 +1986,24 @@ MenuBar.prototype.render = function(parentElement) {
 	this.menuBarContainer = $("<div/>").addClass(xmlMenuBarClass).appendTo(parentElement);
 	
 	this.headerMenu = $("<ul/>");
+  this.headerMenuRow = $("<div class=\"row\"/>");
+  this.headerCol1 = $("<div class=\"col-8 col-sm-8\"/>");
+  this.headerCol2 = $("<div class=\"col-4 col-sm-4\"/>");
+  this.headerMenuRow.append(this.headerCol1);
+  this.headerMenuRow.append(this.headerCol2);
+
+  this.headerMenu.append(this.headerMenuRow);
 	this.menuBarContainer.append(this.headerMenu);
 	this.initEventHandlers();
 	
 	var menuBar = this;
 	$.each(this.headerMenuData, function() {
-		menuBar.generateMenuItem(this, menuBar.headerMenu);
+		menuBar.generateMenuItem(this, menuBar.headerCol1);
 	});
+
+  $.each(this.headerEditorTypes, function() {
+    menuBar.generateMenuItem(this, menuBar.headerCol2);
+  })
 };
 
 MenuBar.prototype.initEventHandlers = function() {
@@ -2324,15 +2344,19 @@ ModifyMenuPanel.prototype.setMenuPosition = function(){
 		return;
 	var xmlEditorContainer = this.editor.xmlEditorContainer;
 	if (this.editor.viewportFixedHeight) {
-	  this.menuColumn.css({
-	    position : 'absolute',
-	    left : xmlEditorContainer.outerWidth() - this.menuColumn.innerWidth(),
-	    top : "-"+this.editor.editorHeader.outerHeight()+'px',
-	  });
-	  this.editor.editorHeaderGroup.css({
-	    position : 'absolute',
-	    top : "-"+this.editor.editorHeader.outerHeight()+'px',
-	  });
+		const editorHeaderHeight = this.editor.editorHeader.outerHeight();
+		const cssTop = (editorHeaderHeight > 43) ? editorHeaderHeight-30 : editorHeaderHeight
+		if((editorHeaderHeight > 43)) {
+			this.menuColumn.css({
+				position : 'absolute',
+				left : xmlEditorContainer.outerWidth() - this.menuColumn.innerWidth(),
+				top : "-"+cssTop+'px',
+			});
+			this.editor.editorHeaderGroup.css({
+				position : 'absolute',
+				top : "-"+cssTop+'px',
+			});
+		}
 	  return;
 	}
 	var xmlWorkAreaContainer = this.editor.xmlWorkAreaContainer;
@@ -2676,9 +2700,8 @@ TextEditor.prototype.refreshDisplay = function() {
 // Adjust the size of the editor to reflect its environment
 TextEditor.prototype.resize = function() {
         var xmlEditorHeight = (this.editor.xmlTabContainer.height());
-	this.xmlContent.css({'height': xmlEditorHeight + 'px'});
 	this.xmlEditorDiv.width(this.xmlContent.innerWidth());
-	this.xmlEditorDiv.height(xmlEditorHeight-20);
+	this.xmlEditorDiv.height(xmlEditorHeight-40);
 	if (this.editor.modifyMenu.menuContainer != null){
 		this.editor.modifyMenu.menuContainer.css({
 			//'max-height': $(this.editor.xmlWorkAreaContainer).height() - this.editor.modifyMenu.menuContainer.offset().top
