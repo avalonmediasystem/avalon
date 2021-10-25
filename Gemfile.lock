@@ -1,4 +1,13 @@
 GIT
+  remote: https://github.com/apertome/active_annotations.git
+  revision: 26b28af8b03f067ace46201b5e5fdd7b76ae091b
+  branch: ruby2.7-fixes
+  specs:
+    active_annotations (0.2.2)
+      json-ld
+      rdf-vocab (~> 3.1.0)
+
+GIT
   remote: https://github.com/avalonmediasystem/about_page.git
   revision: 1b920619cc54fdc99f1cb4da26c18818c1156070
   tag: avalon-r6.5
@@ -136,9 +145,6 @@ GEM
       activesupport (>= 3.0.0)
       rdf (>= 2.0.2, < 4.0)
       rdf-vocab (>= 2.0, < 4.0)
-    active_annotations (0.2.2)
-      json-ld
-      rdf-vocab (~> 2.1.0)
     active_fedora-datastreams (0.2.0)
       active-fedora (>= 11.0.0.pre, < 13)
       nom-xml (>= 0.5.1)
@@ -669,8 +675,8 @@ GEM
     rdf-turtle (2.2.2)
       ebnf (~> 1.1)
       rdf (>= 2.2, < 4.0)
-    rdf-vocab (2.1.1)
-      rdf (~> 2.1)
+    rdf-vocab (3.1.4)
+      rdf (~> 3.1)
     rdf-xsd (2.2.1)
       rdf (>= 2.2, < 4.0)
     react-rails (2.5.0)
@@ -909,7 +915,7 @@ PLATFORMS
 DEPENDENCIES
   about_page!
   active-fedora (~> 12.1)
-  active_annotations (~> 0.2.2)
+  active_annotations!
   active_elastic_job!
   active_encode!
   active_fedora-datastreams (~> 0.2.0)
@@ -993,7 +999,7 @@ DEPENDENCIES
   rails-controller-testing
   rails_same_site_cookie
   rb-readline
-  rdf (~> 2.2)
+  rdf (~> 3.1)
   rdf-rdfxml
   react-rails
   recaptcha
