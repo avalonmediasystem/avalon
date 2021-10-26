@@ -11,6 +11,7 @@ RUN        apt-get update && apt-get upgrade -y build-essential && apt-get autor
             zip \
             git \
             ffmpeg \
+            libsqlite3-dev \
             #libyaz-dev \
             #libgcc-7-dev \
             #gcc-7 \
