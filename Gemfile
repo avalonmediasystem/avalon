@@ -24,7 +24,7 @@ gem 'webpacker'
 gem 'active-fedora', '~> 12.1'
 gem 'active_fedora-datastreams', '~> 0.2.0'
 gem 'fedora-migrate', git: 'https://github.com/avalonmediasystem/fedora-migrate.git', tag: 'avalon-r6.5'
-gem 'hydra-head', '~> 10.6'
+gem 'hydra-head', '~> 11.0'
 gem 'noid-rails', '~> 3.0.1'
 gem 'rdf-rdfxml'
 
