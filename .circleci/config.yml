@@ -118,7 +118,7 @@ workflows:
   build_test_report:
     jobs:
       - build:
-          ruby_ver: 2.7 
+          ruby_ver: '2.7'
           name: 'Ruby2-7'
           parallelism: 4
       - upload-coverage:
