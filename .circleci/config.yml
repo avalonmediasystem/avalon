@@ -5,7 +5,7 @@ jobs:
   build:
     docker:
       # Primary container image where all steps run.
-      - image: avalonmediasystem/avalon:7.2.1-buster-dev-20210507
+      - image: avalonmediasystem/avalon:7.3.0-dev
         environment:
           - DATABASE_URL=postgresql://postgres@localhost:5432/postgres
           - FEDORA_URL=http://localhost:8080/fcrepo/rest
@@ -27,7 +27,7 @@ jobs:
     parameters:
       ruby_ver:
         description: 'Ruby version'
-        default: '2.5.5'
+        default: '2.7'
         type: 'string'
       solr_port:
         type: string
@@ -94,7 +94,8 @@ jobs:
         default: 4
     docker:
       # Primary container image where all steps run.
-      - image: avalonmediasystem/avalon:6.x-dev
+      # - image: avalonmediasystem/avalon:6.x-dev
+      - image: avalonmediasystem/avalon:7.3.0-dev
 
     working_directory: /home/app/avalon
 
@@ -117,10 +118,10 @@ workflows:
   build_test_report:
     jobs:
       - build:
-          ruby_ver: 2.5.5
-          name: 'Ruby2-5-5'
+          ruby_ver: 2.7 
+          name: 'Ruby2-7'
           parallelism: 4
       - upload-coverage:
           parallelism: 4
           requires:
-            - Ruby2-5-5
+            - Ruby2-7
