@@ -56,6 +56,7 @@ Unless required by applicable law or agreed to in writing, software distributed
     </thead>
     <tbody>
       <% @presenter.users.each do |user| %>
+        <% last_accessed=@presenter.last_accessed(user).getutc.iso8601 %>
         <tr>
           <td><%= link_to user.username, main_app.edit_persona_user_path(user) %></td>
           <td><%= link_to user.email, main_app.edit_persona_user_path(user) %></td>
@@ -65,9 +66,9 @@ Unless required by applicable law or agreed to in writing, software distributed
                 <% end %>
               </ul>
           </td>
-          <td>
+          <td data-order=<%= last_accessed %>>
             <%# in the case that a user is created who never signs in, this is necessary %>
-            <relative-time datetime="<%= @presenter.last_accessed(user).getutc.iso8601 %>" title="<%= @presenter.last_accessed(user).to_formatted_s(:standard) %>">
+            <relative-time datetime="<%= last_accessed %>" title="<%= @presenter.last_accessed(user).to_formatted_s(:standard) %>">
               <%= @presenter.last_accessed(user).to_formatted_s(:long_ordinal) %>
             </relative-time>
           </td>
