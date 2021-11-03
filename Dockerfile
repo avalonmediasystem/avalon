@@ -41,7 +41,9 @@ RUN         gem install bundler -v "$(grep -A 1 "BUNDLED WITH" Gemfile.lock | ta
 FROM        bundle as bundle-dev
 LABEL       stage=build
 LABEL       project=avalon
-RUN         bundle install --with aws development test postgres --without production
+RUN         bundle config set --local without 'production' \
+         && bundle config set --local with 'aws development test postgres' \
+         && bundle install
 
 
 # Download binaries in parallel
@@ -130,7 +132,9 @@ RUN         dpkg -i /chrome.deb || apt-get install -yf
 FROM        bundle as bundle-prod
 LABEL       stage=build
 LABEL       project=avalon
-RUN         bundle install --without development test --with aws production postgres
+RUN         bundle config set --local without 'development test' \
+         && bundle config set --local with 'aws production postgres' \
+         && bundle install 
 
 
 # Install node modules
