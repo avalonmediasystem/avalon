@@ -149,7 +149,7 @@ GEM
     active-triples (1.1.1)
       activemodel (>= 3.0.0)
       activesupport (>= 3.0.0)
-      rdf (>= 2.0.2, < 4.0)
+      rdf (~> 3.1)
       rdf-vocab (>= 2.0, < 4.0)
     active_fedora-datastreams (0.2.0)
       active-fedora (>= 11.0.0.pre, < 13)
@@ -548,7 +548,7 @@ GEM
       rdf (>= 1.1)
       rdf-isomorphic
       rdf-turtle
-      rdf-vocab (>= 0.8)
+      rdf-vocab (~> 3.1)
       slop
     link_header (0.0.8)
     listen (3.7.0)
