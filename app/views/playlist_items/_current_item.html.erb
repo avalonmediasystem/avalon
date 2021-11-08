@@ -20,11 +20,12 @@ Unless required by applicable law or agreed to in writing, software distributed
 <div id="metadata_header">
   <h3>
     <%= link_to master_file_path(@current_masterfile.id) do %>
-      <% unless @current_masterfile.title.blank? %>
-        <%= @current_masterfile.title %>
+      <% unless @current_mediaobject.title.blank? %>
+        <%= @current_mediaobject.title %>
       <% else %>
-        <%= @current_masterfile.id %>
+        <%= @current_mediaobject.id %>
       <% end %>
+      <%= "/ #{@current_mediaobject.statement_of_responsibility}" if @current_mediaobject.statement_of_responsibility.present? %>
     <% end %>
   </h3>
 </div>
