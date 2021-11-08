@@ -23,6 +23,10 @@ class Admin::Collection < ActiveFedora::Base
   include Identifier
   include MigrationTarget
 
+  before_save do
+    self.default_permissions.map(&:save!)
+  end
+
   has_many :media_objects, class_name: 'MediaObject', predicate: ActiveFedora::RDF::Fcrepo::RelsExt.isMemberOfCollection
 
   validates :name, :uniqueness => { :solr_name => 'name_uniq_si'}, presence: true

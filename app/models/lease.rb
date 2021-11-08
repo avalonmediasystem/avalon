@@ -31,6 +31,10 @@ class Lease < ActiveFedora::Base
 
   before_save :apply_default_begin_time, :ensure_end_time_present, :validate_dates#, :format_times
 
+  before_save do
+    self.default_permissions.map(&:save!)
+  end
+
   has_many :media_objects, class_name: 'MediaObject', predicate: ActiveFedora::RDF::ProjectHydra.isGovernedBy
 
   property :begin_time, predicate: ::RDF::Vocab::SCHEMA.startDate, multiple: false do |index|
