@@ -74,7 +74,7 @@ class FileLocator
     when 's3'
       S3File.new(uri).object.presigned_url(:get)
     when 'file'
-      URI.decode(uri.path)
+      Addressable::URI.escape(uri.path)
     else
       @uri.to_s
     end
