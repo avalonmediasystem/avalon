@@ -25,6 +25,22 @@ GIT
       ruby-progressbar (~> 1.0)
 
 GIT
+  remote: https://github.com/apertome/ldp.git
+  revision: 4409dc69a9b4215a3c09bbe95afb4c6c02c5e6ac
+  branch: ruby2.7-fixes
+  specs:
+    ldp (1.0.3)
+      deprecation
+      faraday
+      http_logger
+      json-ld
+      rdf (>= 1.1)
+      rdf-isomorphic
+      rdf-turtle
+      rdf-vocab (>= 0.8)
+      slop
+
+GIT
   remote: https://github.com/avalonmediasystem/about_page.git
   revision: 1b920619cc54fdc99f1cb4da26c18818c1156070
   tag: avalon-r6.5
@@ -149,7 +165,7 @@ GEM
     active-triples (1.1.1)
       activemodel (>= 3.0.0)
       activesupport (>= 3.0.0)
-      rdf (~> 3.1)
+      rdf (>= 2.0.2, < 4.0)
       rdf-vocab (>= 2.0, < 4.0)
     active_fedora-datastreams (0.2.0)
       active-fedora (>= 11.0.0.pre, < 13)
@@ -482,7 +498,7 @@ GEM
     http-cookie (1.0.4)
       domain_name (~> 0.5)
     http-form_data (2.3.0)
-    http_logger (0.6.0)
+    http_logger (0.7.0)
     httpclient (2.8.3)
     hydra-access-controls (11.0.7)
       active-fedora (>= 10.0.0)
@@ -498,7 +514,7 @@ GEM
       hydra-access-controls (= 11.0.7)
       hydra-core (= 11.0.7)
       rails (>= 5.2, < 6.1)
-    i18n (1.8.10)
+    i18n (1.8.11)
       concurrent-ruby (~> 1.0)
     iconv (1.0.8)
     iiif_manifest (0.6.0)
@@ -540,16 +556,6 @@ GEM
     kaminari-core (1.2.1)
     launchy (2.5.0)
       addressable (~> 2.7)
-    ldp (1.0.3)
-      deprecation
-      faraday
-      http_logger
-      json-ld
-      rdf (>= 1.1)
-      rdf-isomorphic
-      rdf-turtle
-      rdf-vocab (~> 3.1)
-      slop
     link_header (0.0.8)
     listen (3.7.0)
       rb-fsevent (~> 0.10, >= 0.10.3)
@@ -774,28 +780,28 @@ GEM
       rubyzip (>= 1.3.0, < 3.0.0)
     rsolr (1.1.2)
       builder (>= 2.1.2)
-    rspec-core (3.8.2)
-      rspec-support (~> 3.8.0)
-    rspec-expectations (3.8.2)
+    rspec-core (3.10.1)
+      rspec-support (~> 3.10.0)
+    rspec-expectations (3.10.1)
       diff-lcs (>= 1.2.0, < 2.0)
-      rspec-support (~> 3.8.0)
+      rspec-support (~> 3.10.0)
     rspec-its (1.3.0)
       rspec-core (>= 3.0.0)
       rspec-expectations (>= 3.0.0)
-    rspec-mocks (3.8.2)
+    rspec-mocks (3.10.2)
       diff-lcs (>= 1.2.0, < 2.0)
-      rspec-support (~> 3.8.0)
+      rspec-support (~> 3.10.0)
     rspec-rails (5.0.2)
       actionpack (>= 5.2)
       activesupport (>= 5.2)
       railties (>= 5.2)
-      rspec-core (~> 3.8)
-      rspec-expectations (~> 3.8)
-      rspec-mocks (~> 3.8)
-      rspec-support (~> 3.8)
+      rspec-core (~> 3.10)
+      rspec-expectations (~> 3.10)
+      rspec-mocks (~> 3.10)
+      rspec-support (~> 3.10)
     rspec-retry (0.6.2)
       rspec-core (> 3.3)
-    rspec-support (3.8.3)
+    rspec-support (3.10.3)
     rspec_junit_formatter (0.4.1)
       rspec-core (>= 2, < 4, != 2.12.0)
     rubocop (0.85.1)
@@ -1041,6 +1047,7 @@ DEPENDENCIES
   jquery-datatables
   jquery-rails
   jquery-ui-rails
+  ldp!
   listen
   lograge
   marc
