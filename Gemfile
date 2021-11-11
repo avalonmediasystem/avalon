@@ -28,6 +28,7 @@ gem 'fedora-migrate', git: 'https://github.com/avalonmediasystem/fedora-migrate.
 gem 'hydra-head', '~> 11.0'
 gem 'noid-rails', '~> 3.0.1'
 gem 'rdf-rdfxml'
+gem 'ldp', git: 'https://github.com/apertome/ldp.git', branch: 'ruby2.7-fixes'
 
 # Samvera version pins
 gem 'blacklight', '< 7.0'
