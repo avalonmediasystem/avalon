@@ -3,7 +3,7 @@
     "@babel/core": "^7.0.0",
     "@babel/preset-react": "^7.0.0",
     "@rails/webpacker": "^5.2.2",
-    "@samvera/iiif-react-media-player": "^1.2.0",
+    "@samvera/iiif-react-media-player": "1.2.1-beta.0",
     "babel-plugin-transform-react-remove-prop-types": "^0.4.24",
     "cropperjs": "^1.5.5",
     "hls.js": "https://github.com/avalonmediasystem/hls.js#stricter_ts_probing",

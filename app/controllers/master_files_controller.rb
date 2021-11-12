@@ -330,6 +330,14 @@ class MasterFilesController < ApplicationController
     render json: @master_file.structuralMetadata.as_json
   end
 
+  def transcript
+    authorize! :read, @master_file, message: "You do not have sufficient privileges"
+    puts("___________________________TRANSCRIPT____________________________")
+    puts(params)
+    @supplemental_file = SupplementalFile.find(params[:t_id])
+    send_data @supplemental_file.file.download, filename: @supplemental_file.file.filename.to_s, type: @supplemental_file.file.content_type, disposition: 'inline'
+  end
+
   def set_structure
     # Bypass authorization check for now
     # authorize! :edit, @master_file, message: "You do not have sufficient privileges"
