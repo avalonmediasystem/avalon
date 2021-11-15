@@ -49,15 +49,16 @@ gem 'iiif_manifest', '~> 0.6'
 gem 'rack-cors', require: 'rack/cors'
 gem 'rails_same_site_cookie'
 gem 'recaptcha', require: 'recaptcha/rails'
-gem 'samvera-persona', '~> 0.1.7'
+#gem 'samvera-persona', '~> 0.2.0'
+gem 'samvera-persona', git: "https://github.com/apertome/samvera-persona", branch: 'ruby2.7-fixes'
 gem 'speedy-af', '~> 0.1.3'
 
 # Avalon Components
 gem 'avalon-workflow', git: "https://github.com/avalonmediasystem/avalon-workflow.git", tag: 'avalon-r6.5'
 
 # Authentication & Authorization
-gem 'devise', '~> 4.4'
-gem 'devise_invitable', '~> 1.6'
+gem 'devise', '~> 4.6'
+gem 'devise_invitable', '~> 2.0'
 gem 'ims-lti', '~> 1.1.13'
 gem 'net-ldap'
 gem 'omniauth-identity'
