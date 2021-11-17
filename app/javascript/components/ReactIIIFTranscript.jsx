@@ -14,6 +14,7 @@ const ReactIIIFTranscript = ({ base_url, transcripts }) => {
     let trProps = [];
     transcripts.forEach((tr, i) => {
       let transcriptItems = tr.transcripts;
+      // construct URLs as expected within the transcript component
       let canvasTrs = {
         canvasId: i,
         items: transcriptItems.length > 0
@@ -26,11 +27,8 @@ const ReactIIIFTranscript = ({ base_url, transcripts }) => {
                   )
                 : []
       }
-      console.log(tr)
       trProps.push(canvasTrs)
-    });
-    console.log(trProps);
-    
+    });    
     setTrancsriptProp(trProps)
   }
   
