@@ -17,8 +17,8 @@ namespace :avalon do
   namespace :tools do
 DEFAULT_TOOLS = [
   {:name => "ffmpeg", :path => "/usr/bin/ffmpeg", :version_params => "-version", :version_string => ">=4"},
-  {:name => "mediainfo", :path => "/usr/bin/mediainfo", :version_string => ">18"},
-  {:name => "yarn", :path => "/usr/bin/yarn", :version_string => ">=1.20" }
+  {:name => "mediainfo", :path => "/usr/bin/mediainfo", :version_string => ">18", :version_line => 1},
+  {:name => "yarn", :path => "/usr/bin/yarn", :version_string => ">=1.20"}
 ]
 DEFAULT_VERSION_PARAMS="--version"
     desc "List third-party tools"
@@ -28,6 +28,30 @@ DEFAULT_VERSION_PARAMS="--version"
       pp :environment
       puts "list of tools:"
       pp DEFAULT_TOOLS
+
+      tools = DEFAULT_TOOLS
+      tools.each do |tool|
+        puts "\nTOOL: #{tool[:name]}"
+        params = tool[:version_params] || "--version"
+        command = "#{tool[:path]} #{params}"
+        puts "path: #{tool[:path]}"
+        puts "version_command: #{command}"
+        puts "file_exists: #{File.file?(tool[:path])}"
+        output = `#{command}` || ""
+        #puts "output", output
+        line = tool[:version_line] || 0
+        if ! output.empty? then
+          output_line = output.lines[line]
+          puts "file_executes: true"
+          puts "version: #{output.lines[line]}"
+        else
+          puts "file_executes: false"
+        end
+        exit_code = $?
+          # puts "exit_code: #{exit_code.exitstatus}"
+          # pp exit_code
+      end
+
 
       #user = ENV['username']
       #criteria = { username: user }.reject { |k,v| v.nil? }
