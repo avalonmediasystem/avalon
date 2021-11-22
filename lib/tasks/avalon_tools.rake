@@ -15,19 +15,21 @@
 
 namespace :avalon do
   namespace :tools do
-DEFAULT_TOOLS = [
-  {:name => "ffmpeg", :path => "/usr/bin/ffmpeg", :version_params => "-version", :version_string => ">=4"},
-  {:name => "mediainfo", :path => "/usr/bin/mediainfo", :version_string => ">18", :version_line => 1},
-  {:name => "yarn", :path => "/usr/bin/yarn", :version_string => ">=1.20"}
-]
-DEFAULT_VERSION_PARAMS="--version"
+    ffmpeg_path    = Settings.ffmpeg.path || "/usr/bin/ffmpeg"
+    mediainfo_path = Settings.mediainfo.path || "/usr/bin/mediainfo"
+    DEFAULT_TOOLS = [
+      {:name => "ffmpeg", :path => ffmpeg_path, :version_params => "-version", :version_string => ">=4", :version_trim_pre => "ffmpeg version ", :version_trim_last_char => "-"},
+      {:name => "mediainfo", :path => mediainfo_path, :version_string => ">18", :version_line => 1, :version_trim_pre => "MediaInfoLib - v"},
+      {:name => "node", :path => "/usr/bin/node", :version_string => ">=12", :version_trim_pre => "v"},
+      {:name => "yarn", :path => "/usr/bin/yarn", :version_string => ">=1.20"}
+    ]
+
+    DEFAULT_VERSION_PARAMS="--version"
+
     desc "List third-party tools"
     task :list => :environment do
       puts "Listing third-party tools ..."
-      puts ":environment"
-      pp :environment
-      puts "list of tools:"
-      pp DEFAULT_TOOLS
+      # pp DEFAULT_TOOLS
 
       tools = DEFAULT_TOOLS
       tools.each do |tool|
@@ -43,7 +45,19 @@ DEFAULT_VERSION_PARAMS="--version"
         if ! output.empty? then
           output_line = output.lines[line]
           puts "file_executes: true"
-          puts "version: #{output.lines[line]}"
+          version = output.lines[line]
+          puts "version: #{version}"
+          version_parsed = version
+          if tool[:version_trim_pre] then
+            version_parsed = version_parsed.delete_prefix tool[:version_trim_pre]
+          end
+          if tool[:version_trim_last_char] then
+            version_parsed = version_parsed.partition(tool[:version_trim_last_char]).first
+          end
+          puts "version_parsed: #{version_parsed}"
+          if tool[:version_string] then
+            puts "version_string: #{tool[:version_string]}"
+          end
         else
           puts "file_executes: false"
         end
@@ -52,12 +66,6 @@ DEFAULT_VERSION_PARAMS="--version"
           # pp exit_code
       end
 
-
-      #user = ENV['username']
-      #criteria = { username: user }.reject { |k,v| v.nil? }
-      #ApiToken.where(criteria).each do |api_token|
-      #  puts [api_token.token,api_token.username].join('|')
-      #end
     end
 
   end

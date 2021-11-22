@@ -22,7 +22,7 @@ namespace :avalon do
         puts [api_token.token,api_token.username].join('|')
       end
     end
-    
+
     desc "Generate an API token for a user"
     task :generate => :environment do
       user = ENV['username']
@@ -34,7 +34,7 @@ namespace :avalon do
       new_token = ApiToken.create username: user, email: email, token: token
       puts new_token.token
     end
-    
+
     desc "Revoke an API token or all of a given user's API tokens"
     task :revoke => :environment do
       user = ENV['username']
