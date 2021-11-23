@@ -18,13 +18,26 @@ namespace :avalon do
     ffmpeg_path    = Settings.ffmpeg.path || "/usr/bin/ffmpeg"
     mediainfo_path = Settings.mediainfo.path || "/usr/bin/mediainfo"
     DEFAULT_TOOLS = [
-      {:name => "ffmpeg", :path => ffmpeg_path, :version_params => "-version", :version_string => ">=4", :version_trim_pre => "ffmpeg version ", :version_trim_last_char => "-"},
-      {:name => "mediainfo", :path => mediainfo_path, :version_string => ">18", :version_line => 1, :version_trim_pre => "MediaInfoLib - v"},
-      {:name => "node", :path => "/usr/bin/node", :version_string => ">=12", :version_trim_pre => "v"},
-      {:name => "yarn", :path => "/usr/bin/yarn", :version_string => ">=1.20"}
+      {:name => "ffmpeg", :path => ffmpeg_path, :version_params => "-version", :version_string => ">= 4", :version_trim_pre => "ffmpeg version ", :version_trim_last_char => "-"},
+      {:name => "mediainfo", :path => mediainfo_path, :version_string => "> 18", :version_line => 1, :version_trim_pre => "MediaInfoLib - v"},
+      {:name => "node", :path => "/usr/bin/node", :version_string => ">= 12", :version_trim_pre => "v"},
+      {:name => "yarn", :path => "/usr/bin/yarn", :version_string => ">= 1.20"}
     ]
 
     DEFAULT_VERSION_PARAMS="--version"
+
+    def get_version_numeric( version_string )
+      parts = version_string.split(".")
+      major = parts[0] || 0
+      minor = parts[1] || 0
+      patch = parts[2] || 0 
+
+      #puts "major, minor, patch"
+      #puts major, minor, patch
+
+      version_numeric = "#{major}.#{minor}#{patch}".to_f
+
+    end
 
     desc "List third-party tools"
     task :list => :environment do
@@ -58,6 +71,15 @@ namespace :avalon do
           if tool[:version_string] then
             puts "version_string: #{tool[:version_string]}"
           end
+          version_num = get_version_numeric(version_parsed)
+          requirements = tool[:version_string].split(" ")
+          operator = requirements[0]
+          requirement_version = requirements[1]
+          requirement_num = get_version_numeric(requirement_version)
+          puts "version_numeric: #{version_num}"
+          puts "requirement_numeric: #{requirement_num}"
+          requirement_met = version_num.public_send(operator, requirement_num)
+          puts "requirement_met #{requirement_met}"
         else
           puts "file_executes: false"
         end
