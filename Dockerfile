@@ -2,8 +2,6 @@
 FROM        ruby:2.7-bullseye as bundle
 LABEL       stage=build
 LABEL       project=avalon
-#RUN     echo "deb http://deb.debian.org/debian bullseye-backports main" >> /etc/apt/sources.list && \
-#dpkg --get-selections | grep hold && \
 RUN        apt-get update && apt-get upgrade -y build-essential && apt-get autoremove \
          && apt-get install -y --no-install-recommends --fix-missing \
             cmake \
@@ -54,7 +52,7 @@ RUN         curl -L https://github.com/jwilder/dockerize/releases/download/v0.6.
 RUN         curl https://chromedriver.storage.googleapis.com/2.46/chromedriver_linux64.zip -o /usr/local/bin/chromedriver \
          && chmod +x /usr/local/bin/chromedriver
 RUN         curl https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb -o /chrome.deb
-RUN      apt-get -y update && apt-get install -y ffmpeg 
+RUN      apt-get -y update && apt-get install -y ffmpeg
 #RUN         mkdir -p /tmp/ffmpeg && cd /tmp/ffmpeg \
 #         && curl https://johnvansickle.com/ffmpeg/releases/ffmpeg-release-amd64-static.tar.xz | tar xJ \
 #         && cp `find . -type f -executable` /usr/bin/
@@ -134,7 +132,7 @@ LABEL       stage=build
 LABEL       project=avalon
 RUN         bundle config set --local without 'development test' \
          && bundle config set --local with 'aws production postgres' \
-         && bundle install 
+         && bundle install
 
 
 # Install node modules
