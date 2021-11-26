@@ -122,6 +122,22 @@ describe CatalogController do
         expect(assigns(:document_list).count).to eq 1
         expect(assigns(:document_list).map(&:id)).to eq([mo.id])
       end
+      it "should show results for all pushed items" do
+        mo = FactoryBot.create(:fully_searchable_media_object, note: [{note: 'Pushed by user at time', type: 'intercom'}])
+        get 'index', :q => "intercom_pushed_bsi:true"
+        expect(response).to be_success
+        expect(response).to render_template('catalog/index')
+        expect(assigns(:document_list).count).to eq 1
+        expect(assigns(:document_list).map(&:id)).to eq([mo.id])
+      end
+      it "should show results for all non-pushed items" do
+        mo = FactoryBot.create(:fully_searchable_media_object)
+        get 'index', :q => "intercom_pushed_bsi:false"
+        expect(response).to be_success
+        expect(response).to render_template('catalog/index')
+        expect(assigns(:document_list).count).to eq 1
+        expect(assigns(:document_list).map(&:id)).to eq([mo.id])
+      end
     end
     describe "as an lti user" do
       let!(:user) { login_lti 'student' }
