@@ -659,7 +659,7 @@ class MasterFile < ActiveFedora::Base
     options
   end
 
-  def saveOriginal(file, original_name=nil, dropbox_dir=media_object.collection.dropbox_absolute_path)
+  def saveOriginal(file, original_name = nil, dropbox_dir = media_object.collection.dropbox_absolute_path)
     realpath = File.realpath(file.path)
 
     if original_name.present?
@@ -669,6 +669,11 @@ class MasterFile < ActiveFedora::Base
         # Move files which aren't under the collection's dropbox into the root of the dropbox
         parent_dir = dropbox_dir unless dropbox_dir.nil? || parent_dir.start_with?(dropbox_dir)
         path = File.join(parent_dir, original_name)
+        num = 1
+        while File.exist? path
+          path = File.join(parent_dir, duplicate_file_name(original_name, num))
+          num += 1
+        end
         FileUtils.move(realpath, path)
         realpath = path
       end
@@ -679,6 +684,11 @@ class MasterFile < ActiveFedora::Base
     self.file_size = file.size.to_s
   ensure
     file.close
+  end
+
+  def duplicate_file_name(filename, num)
+    extension = File.extname(filename)
+    File.basename(filename).sub(extension, "-#{num}#{extension}")
   end
 
   def saveDerivativesHash(derivative_hash)

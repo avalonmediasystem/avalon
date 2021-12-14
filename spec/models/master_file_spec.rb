@@ -325,6 +325,19 @@ describe MasterFile do
           Settings.encoding.working_file_path = media_path
           expect(File.fnmatch("#{media_path}/*/#{original}", subject.working_file_path.first)).to be true
         end
+
+        context "when file with same name already exists in the collection's dropbox" do
+          let(:duplicate) { "videoshort-1.mp4" }
+
+          before do
+            FileUtils.cp fixture, File.join(collection.dropbox_absolute_path, original)
+          end
+
+          it "appends a numerical suffix" do
+            Settings.encoding.working_file_path = nil
+            expect(subject.file_location).to eq(File.realpath(File.join(collection.dropbox_absolute_path,duplicate)))
+          end
+        end
       end
     end
 
