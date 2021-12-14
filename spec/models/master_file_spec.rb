@@ -289,10 +289,14 @@ describe MasterFile do
         let(:original)   { File.basename(fixture) }
         let(:tempfile)   { Tempfile.new('foo') }
         let(:media_path) { File.expand_path("../../master_files-#{SecureRandom.uuid}",__FILE__)}
+        let(:dropbox_path) { File.expand_path("../../collection-#{SecureRandom.uuid}",__FILE__)}
         let(:upload)     { ActionDispatch::Http::UploadedFile.new :tempfile => tempfile, :filename => original, :type => 'video/mp4' }
+        let(:media_object) { MediaObject.new }
+        let(:collection) { Admin::Collection.new }
         subject {
           mf = MasterFile.new
-          mf.setContent(upload)
+          mf.media_object = media_object
+          mf.setContent(upload, dropbox_dir: collection.dropbox_absolute_path)
           mf
         }
 
@@ -300,17 +304,21 @@ describe MasterFile do
           @old_media_path = Settings.encoding.working_file_path
           FileUtils.mkdir_p media_path
           FileUtils.cp fixture, tempfile
+          allow(media_object).to receive(:collection).and_return(collection)
+          FileUtils.mkdir_p dropbox_path
+          allow(collection).to receive(:dropbox_absolute_path).and_return(File.absolute_path(dropbox_path))
         end
 
         after(:each) do
           Settings.encoding.working_file_path = @old_media_path
           File.unlink subject.file_location
           FileUtils.rm_rf media_path
+          FileUtils.rm_rf dropbox_path
         end
 
-        it "should rename an uploaded file in place" do
+        it "should move an uploaded file into the root of the collection's dropbox" do
           Settings.encoding.working_file_path = nil
-          expect(subject.file_location).to eq(File.realpath(File.join(File.dirname(tempfile),original)))
+          expect(subject.file_location).to eq(File.realpath(File.join(collection.dropbox_absolute_path,original)))
         end
 
         it "should copy an uploaded file to the media path" do

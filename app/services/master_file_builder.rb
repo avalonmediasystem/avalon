@@ -39,7 +39,7 @@ module MasterFileBuilder
       end
 
       master_file = MasterFile.new()
-      master_file.setContent(spec.content, file_name: spec.original_filename, file_size: spec.file_size, auth_header: spec.auth_header)
+      master_file.setContent(spec.content, file_name: spec.original_filename, file_size: spec.file_size, auth_header: spec.auth_header, dropbox_dir: media_object.collection.dropbox_absolute_path)
       master_file.set_workflow(spec.workflow)
 
       if 'Unknown' == master_file.file_format

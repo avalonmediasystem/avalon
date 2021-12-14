@@ -192,16 +192,16 @@ class MasterFile < ActiveFedora::Base
     end
   end
 
-  def setContent(file, file_name: nil, file_size: nil, auth_header: nil)
+  def setContent(file, file_name: nil, file_size: nil, auth_header: nil, dropbox_dir: nil)
     case file
     when Hash #Multiple files for pre-transcoded derivatives
       saveDerivativesHash(file)
     when ActionDispatch::Http::UploadedFile #Web upload
-      saveOriginal(file, file.original_filename)
+      saveOriginal(file, file.original_filename, dropbox_dir)
     when URI, Addressable::URI
       case file.scheme
       when 'file'
-        saveOriginal(File.open(file.path), File.basename(file.path))
+        saveOriginal(File.open(file.path), File.basename(file.path), dropbox_dir)
       when 's3'
         self.file_location = file.to_s
         self.file_size = FileLocator::S3File.new(file).object.size
@@ -211,7 +211,7 @@ class MasterFile < ActiveFedora::Base
         self.title = file_name
       end
     else #Batch
-      saveOriginal(file, File.basename(file.path))
+      saveOriginal(file, File.basename(file.path), dropbox_dir)
     end
 
     @auth_header = auth_header
@@ -659,14 +659,17 @@ class MasterFile < ActiveFedora::Base
     options
   end
 
-  def saveOriginal(file, original_name=nil)
+  def saveOriginal(file, original_name=nil, dropbox_dir=media_object.collection.dropbox_absolute_path)
     realpath = File.realpath(file.path)
 
     if original_name.present?
       # If we have a temp name from an upload, rename to the original name supplied by the user
       unless File.basename(realpath) == original_name
-        path = File.join(File.dirname(realpath), original_name)
-        File.rename(realpath, path)
+        parent_dir = File.dirname(realpath)
+        # Move files which aren't under the collection's dropbox into the root of the dropbox
+        parent_dir = dropbox_dir unless dropbox_dir.nil? || parent_dir.start_with?(dropbox_dir)
+        path = File.join(parent_dir, original_name)
+        FileUtils.move(realpath, path)
         realpath = path
       end
 
