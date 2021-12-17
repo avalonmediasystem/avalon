@@ -20,6 +20,14 @@ Unless required by applicable law or agreed to in writing, software distributed
 <div id="metadata_header">
   <h3>
     <%= link_to master_file_path(@current_masterfile.id) do %>
+      <% unless @current_masterfile.title.blank? %>
+        <%= @current_masterfile.title %>
+      <% else %>
+        <%= @current_masterfile.id %>
+      <% end %>
+    <% end %>
+    from
+    <%= link_to media_object_path(@current_mediaobject) do %>
       <% unless @current_mediaobject.title.blank? %>
         <%= @current_mediaobject.title %>
       <% else %>
