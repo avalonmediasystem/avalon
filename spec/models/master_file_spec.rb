@@ -120,7 +120,7 @@ describe MasterFile do
     end
 
     it 'creates an encode' do
-      expect(master_file.encoder_class).to receive(:create).with("file://" + URI.escape(master_file.file_location), { master_file_id: master_file.id, preset: master_file.workflow_name, headers: nil })
+      expect(master_file.encoder_class).to receive(:create).with("file://" + Addressable::URI.escape(master_file.file_location), { master_file_id: master_file.id, preset: master_file.workflow_name, headers: nil })
       master_file.process
     end
 
@@ -472,11 +472,11 @@ describe MasterFile do
     describe 'uri' do
       it 'returns a uri for a sound master file' do
         expect(sound_master_file.rdf_uri.class).to eq(String)
-        expect { URI.parse(sound_master_file.rdf_uri) }.not_to raise_error
+        expect { Addressable::URI.parse(sound_master_file.rdf_uri) }.not_to raise_error
       end
       it 'returns a uri for a video master file' do
         expect(video_master_file.rdf_uri.class).to eq(String)
-        expect { URI.parse(video_master_file.rdf_uri) }.not_to raise_error
+        expect { Addressable::URI.parse(video_master_file.rdf_uri) }.not_to raise_error
       end
     end
   end

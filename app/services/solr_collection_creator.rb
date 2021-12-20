@@ -85,7 +85,7 @@ class SolrCollectionCreator
                          "#{Settings.solr.url}/"
                        end
 
-      uri = URI(normalized_uri) + name
+      uri = Addressable::URI.normalized_encode(normalized_uri) + name
 
       uri.to_s
     end

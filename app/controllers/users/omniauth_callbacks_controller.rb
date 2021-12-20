@@ -30,7 +30,7 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
     when 'lti'
       default_msg = I18n.t 'devise.omniauth_callbacks.failure', reason: failure_message
       msg = I18n.t 'devise.omniauth_callbacks.lti.failure', default: default_msg
-      uri = URI.parse request['launch_presentation_return_url']
+      uri = Addressable::URI.parse request['launch_presentation_return_url']
       uri.query = {lti_errormsg: msg}.to_query
       uri.to_s
     else

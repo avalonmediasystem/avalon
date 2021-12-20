@@ -23,7 +23,7 @@ class SecurityService
       case context[:protocol]
       when :stream_hls
         Addressable::URI.join(Settings.streaming.http_base,uri.path).to_s
-        #Aws::CF::Signer.sign_url(URI.join(Settings.streaming.http_base,uri.path).to_s, expires: expiration)
+        #Aws::CF::Signer.sign_url(Addressable::URI.join(Settings.streaming.http_base,uri.path).to_s, expires: expiration)
       else
         url
       end

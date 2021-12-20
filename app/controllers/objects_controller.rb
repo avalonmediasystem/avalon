@@ -34,11 +34,11 @@ class ObjectsController < ApplicationController
   private
 
     def determine_redirect_url(obj)
-      url = URI.join(polymorphic_url(obj)+'/', params[:urlappend].sub(/^[\/]/,'')) if params[:urlappend]
+      url = Addressable::URI.join(polymorphic_url(obj)+'/', params[:urlappend].sub(/^[\/]/,'')) if params[:urlappend]
       Rails.application.routes.recognize_path(url.to_s) # This will raise an error if it doesn't match
       raise ActionController::RoutingError if url.host != request.host # urls without paths incorrectly pass the above check
       url
     rescue
-      URI(polymorphic_url(obj))
+      Addressable::URI.parse(polymorphic_url(obj))
     end
 end
