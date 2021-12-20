@@ -85,7 +85,7 @@ describe MediaObject do
           'unknown/unknown' => ['Unknown']
         }}
       it "should not accept invalid EDTF formatted dates" do
-        [Faker::Lorem.sentence(4),'-999','17000'].each do |d|
+        [Faker::Lorem.sentence(word_count: 4),'-999','17000'].each do |d|
           media_object.date_issued = d
           expect(media_object.valid?).to be_falsey
           expect(media_object.errors[:date_issued].present?).to be_truthy
