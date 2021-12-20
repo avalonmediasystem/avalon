@@ -128,7 +128,7 @@ group :test do
   gem 'factory_bot_rails'
   gem 'fakefs', require: 'fakefs/safe'
   gem 'faker'
-  gem 'hashdiff'
+  gem 'hashdiff', ">= 1.0"
   gem 'rails-controller-testing'
   gem 'rspec-its'
   gem 'rspec-retry'

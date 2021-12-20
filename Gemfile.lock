@@ -1043,7 +1043,7 @@ DEPENDENCIES
   fcrepo_wrapper
   fedora-migrate!
   google-analytics-rails (= 1.1.0)
-  hashdiff
+  hashdiff (>= 1.0)
   hooks
   hydra-head (~> 11.0)
   iconv (~> 1.0.6)
