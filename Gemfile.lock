@@ -300,7 +300,7 @@ GEM
       deprecation (~> 1.0)
     bootsnap (1.9.1)
       msgpack (~> 1.0)
-    bootstrap-sass (3.4.1)
+    bootstrap-sass (3.4.0)
       autoprefixer-rails (>= 5.2.1)
       sassc (>= 2.0.0)
     bootstrap-toggle-rails (2.2.1.0)
@@ -1014,6 +1014,7 @@ DEPENDENCIES
   bixby
   blacklight (< 7.0)
   bootsnap
+  bootstrap-sass (< 3.4.1)
   bootstrap-toggle-rails
   bootstrap_form
   browse-everything!
