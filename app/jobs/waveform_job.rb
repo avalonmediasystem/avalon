@@ -25,7 +25,7 @@ class WaveformJob < ActiveJob::Base
 
     service = WaveformService.new(8, SAMPLES_PER_FRAME)
     uri = derivative_file_uri(master_file) || file_uri(master_file) || playlist_url(master_file)
-    json = service.get_waveform_json(URI(uri))
+    json = service.get_waveform_json(Addressable::URI.parse(uri))
     raise "No waveform generated for #{master_file.id}" if json.blank?
 
     master_file.waveform.content = Zlib::Deflate.deflate(json)

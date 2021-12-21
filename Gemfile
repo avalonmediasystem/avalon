@@ -21,11 +21,11 @@ gem 'uglifier', '>= 1.3.0'
 gem 'webpacker'
 
 # Core Samvera
-#gem 'active-fedora', '~> 12.1'
 gem 'active-fedora', git: 'https://github.com/apertome/active_fedora.git', branch: 'ruby2.7-fixes'
 gem 'active_fedora-datastreams', '~> 0.2.0'
 gem 'fedora-migrate', git: 'https://github.com/avalonmediasystem/fedora-migrate.git', tag: 'avalon-r6.5'
 gem 'hydra-head', '~> 11.0'
+gem 'ldp', git: 'https://github.com/apertome/ldp.git', branch: 'ruby2.7-fixes'
 gem 'noid-rails', '~> 3.0.1'
 gem 'rdf-rdfxml'
 gem 'ldp', git: 'https://github.com/apertome/ldp.git', branch: 'ruby2.7-fixes'
@@ -37,19 +37,18 @@ gem 'rsolr', '~> 1.0'
 
 # Rails & Samvera Plugins
 gem 'about_page', git: 'https://github.com/avalonmediasystem/about_page.git', tag: 'avalon-r6.5'
-gem 'active_annotations', git: 'https://github.com/apertome/active_annotations.git', branch: 'ruby2.7-fixes'
-# gem 'active_annotations', '~> 0.2.2'
+gem 'active_annotations', git: 'https://github.com/avalonmediasystem/active_annotations.git', branch: 'rails5.2'
 gem 'activerecord-session_store', '>= 2.0.0'
 gem 'acts_as_list'
 gem 'api-pagination'
 gem 'avalon-about', git: 'https://github.com/avalonmediasystem/avalon-about.git', tag: 'avalon-r6.4'
+gem 'bootstrap-sass', '< 3.4.1' # Pin to less than 3.4.1 due to change in behavior with popovers
 gem 'bootstrap-toggle-rails'
 gem 'bootstrap_form'
 gem 'iiif_manifest', '~> 0.6'
 gem 'rack-cors', require: 'rack/cors'
 gem 'rails_same_site_cookie'
 gem 'recaptcha', require: 'recaptcha/rails'
-#gem 'samvera-persona', '~> 0.2.0'
 gem 'samvera-persona', git: "https://github.com/apertome/samvera-persona", branch: 'ruby2.7-fixes'
 gem 'speedy-af', '~> 0.1.3'
 
@@ -63,6 +62,7 @@ gem 'ims-lti', '~> 1.1.13'
 gem 'net-ldap'
 gem 'omniauth-identity'
 gem 'omniauth-lti', git: "https://github.com/avalonmediasystem/omniauth-lti.git", tag: 'avalon-r4'
+gem "omniauth-saml", "~> 1.10"
 
 # Media Access & Transcoding
 gem 'active_encode', git: "https://github.com/samvera-labs/active_encode", branch: 'main'
@@ -128,7 +128,7 @@ group :test do
   gem 'factory_bot_rails'
   gem 'fakefs', require: 'fakefs/safe'
   gem 'faker'
-  gem 'hashdiff'
+  gem 'hashdiff', ">= 1.0"
   gem 'rails-controller-testing'
   gem 'rspec-its'
   gem 'rspec-retry'

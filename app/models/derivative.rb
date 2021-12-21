@@ -72,7 +72,7 @@ class Derivative < ActiveFedora::Base
 
   def set_streaming_locations!
     if managed
-      path = URI.parse(absolute_location).path
+      path = Addressable::URI.parse(absolute_location).path
       self.location_url = Avalon::StreamMapper.stream_path(path)
       self.hls_url = Avalon::StreamMapper.map(path, 'http', format)
     end

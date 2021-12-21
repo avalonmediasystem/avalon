@@ -7,9 +7,8 @@
 For more information and regular project updates visit the [Avalon blog](http://www.avalonmediasystem.org/blog).
 
 # Installing Avalon Media System
-Installation instructions are available for the following platforms:
- - [Linux](https://wiki.dlib.indiana.edu/display/VarVideo/Getting+Started+(Linux))
- - [macOS](https://wiki.dlib.indiana.edu/display/VarVideo/Getting+Started+(OS+X))
+Installation instructions are available on Avalon's documentation site:
+ - https://wiki.dlib.indiana.edu/display/VarVideo/Manual+Installation+Instructions
 
 # Development
 

@@ -36,7 +36,7 @@ module Avalon
     end
 
     def path_to(file_location)
-      url = URI.parse(file_location)
+      url = Addressable::URI.parse(file_location)
       if url.scheme.nil? or url.scheme == 'file'
         mount_map.each_pair do |path,mount|
           if file_location.start_with? path

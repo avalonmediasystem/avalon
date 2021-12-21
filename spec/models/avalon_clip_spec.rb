@@ -25,7 +25,7 @@ describe AvalonClip do
     end
     it 'sets the source uri' do
       expect(clip.source).not_to be_nil
-      expect { URI.parse(clip.source) }.not_to raise_error
+      expect { Addressable::URI.parse(clip.source) }.not_to raise_error
     end
     it 'sets default end and start times' do
       expect(clip.start_time).to eq(0)

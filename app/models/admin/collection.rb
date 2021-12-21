@@ -212,7 +212,7 @@ class Admin::Collection < ActiveFedora::Base
 
   def dropbox_object_count
     if Settings.dropbox.path =~ %r(^s3://)
-      dropbox_path = URI.parse(dropbox_absolute_path)
+      dropbox_path = Addressable::URI.parse(dropbox_absolute_path)
       response = Aws::S3::Client.new.list_objects(bucket: Settings.encoding.masterfile_bucket, max_keys: 10, prefix: "#{dropbox_path.path}/")
       response.contents.size
     else

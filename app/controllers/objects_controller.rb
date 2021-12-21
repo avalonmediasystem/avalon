@@ -18,12 +18,7 @@ class ObjectsController < ApplicationController
     if obj.blank?
       redirect_to root_path
     else
-      if params[:urlappend]
-        url = URI.join(polymorphic_url(obj)+'/', params[:urlappend].sub(/^[\/]/,''))
-      else
-        url = URI(polymorphic_url(obj))
-      end
-
+      url = determine_redirect_url(obj)
       newparams = params.except(:controller, :action, :id, :urlappend)
       url.query = newparams.permit!.to_query if newparams.present?
       redirect_to url.to_s
@@ -36,4 +31,14 @@ class ObjectsController < ApplicationController
     render json: model.send(:autocomplete, params[:q].strip)
   end
 
+  private
+
+    def determine_redirect_url(obj)
+      url = Addressable::URI.join(polymorphic_url(obj)+'/', params[:urlappend].sub(/^[\/]/,'')) if params[:urlappend]
+      Rails.application.routes.recognize_path(url.to_s) # This will raise an error if it doesn't match
+      raise ActionController::RoutingError if url.host != request.host # urls without paths incorrectly pass the above check
+      url
+    rescue
+      Addressable::URI.parse(polymorphic_url(obj))
+    end
 end

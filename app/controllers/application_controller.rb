@@ -83,7 +83,7 @@ class ApplicationController < ActionController::Base
       objects_path(params['target_id'], params.permit('t', 'position', 'token'))
     elsif params[:url]
       # Limit redirects to current host only (Fixes bug https://bugs.dlib.indiana.edu/browse/VOV-5662)
-      uri = URI.parse(params[:url])
+      uri = Addressable::URI.parse(params[:url])
       request.host == uri.host ? uri.path : root_path
     elsif auth_type == 'lti' && lti_group.present?
       search_catalog_path('f[read_access_virtual_group_ssim][]' => lti_group)

@@ -47,14 +47,14 @@ class FileLocator
   def uri
     if @uri.nil?
       if source.is_a? File
-        @uri = Addressable::URI.parse("file://#{URI.encode(File.expand_path(source))}")
+        @uri = Addressable::URI.parse("file://#{Addressable::URI.escape(File.expand_path(source))}")
       else
         encoded_source = source
         begin
           @uri = Addressable::URI.parse(encoded_source)
-        rescue URI::InvalidURIError
+        rescue Addressable::URI::InvalidURIError
           if encoded_source == source
-            encoded_source = URI.encode(encoded_source)
+            encoded_source = Addressable::URI.escape(encoded_source)
             retry
           else
             raise
@@ -62,7 +62,7 @@ class FileLocator
         end
 
         if @uri.scheme.nil?
-          @uri = Addressable::URI.parse("file://#{URI.encode(File.expand_path(source))}")
+          @uri = Addressable::URI.parse("file://#{Addressable::URI.escape(File.expand_path(source))}")
         end
       end
     end
@@ -74,7 +74,7 @@ class FileLocator
     when 's3'
       S3File.new(uri).object.presigned_url(:get)
     when 'file'
-      Addressable::URI.escape(uri.path)
+      Addressable::URI.unencode(uri.path)
     else
       @uri.to_s
     end
@@ -134,7 +134,7 @@ class FileLocator
   end
 
   def self.remove_s3_dir(path)
-    path_uri = URI.parse(path)
+    path_uri = Addressable::URI.parse(path)
     bucket = Aws::S3::Resource.new.bucket(Settings.encoding.masterfile_bucket)
     bucket.objects(prefix: "#{path_uri.path}/").batch_delete!
 

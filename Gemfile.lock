@@ -1,13 +1,4 @@
 GIT
-  remote: https://github.com/apertome/active_annotations.git
-  revision: 26b28af8b03f067ace46201b5e5fdd7b76ae091b
-  branch: ruby2.7-fixes
-  specs:
-    active_annotations (0.2.2)
-      json-ld
-      rdf-vocab (~> 3.1.0)
-
-GIT
   remote: https://github.com/apertome/active_fedora.git
   revision: 9b6b0a9ccdc59398f32220aa46c86edd6d334d6f
   branch: ruby2.7-fixes
@@ -59,6 +50,15 @@ GIT
   specs:
     about_page (0.3.1)
       rails (>= 3.2)
+
+GIT
+  remote: https://github.com/avalonmediasystem/active_annotations.git
+  revision: c1f602779ac934aba1d4ff6d4fdab0145e6bf1d4
+  branch: rails5.2
+  specs:
+    active_annotations (0.2.2)
+      json-ld
+      rdf-vocab (>= 2.1.0)
 
 GIT
   remote: https://github.com/avalonmediasystem/avalon-about.git
@@ -1014,6 +1014,7 @@ DEPENDENCIES
   bixby
   blacklight (< 7.0)
   bootsnap
+  bootstrap-sass (< 3.4.1)
   bootstrap-toggle-rails
   bootstrap_form
   browse-everything!
@@ -1043,7 +1044,7 @@ DEPENDENCIES
   fcrepo_wrapper
   fedora-migrate!
   google-analytics-rails (= 1.1.0)
-  hashdiff
+  hashdiff (>= 1.0)
   hooks
   hydra-head (~> 11.0)
   iconv (~> 1.0.6)

@@ -456,7 +456,7 @@ describe Admin::Collection do
     end
 
     describe "groups" do
-      let(:groups) {(1..3).map {Faker::Lorem.sentence(4)}}
+      let(:groups) {(1..3).map {Faker::Lorem.sentence(word_count: 4)}}
 
       before :each do
         collection.default_read_groups = groups
