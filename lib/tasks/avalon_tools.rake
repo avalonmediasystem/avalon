@@ -17,25 +17,25 @@ namespace :avalon do
     ffmpeg_path    = Settings.ffmpeg.path || "/usr/bin/ffmpeg"
     mediainfo_path = Settings.mediainfo.path || "/usr/bin/mediainfo"
     DEFAULT_TOOLS = [
-      {:name => "ffmpeg", :path => ffmpeg_path, :version_params => "-version", :version_string => ">= 4", :version_trim_pre => "ffmpeg version ", :version_trim_last_char => "-"},
-      {:name => "mediainfo", :path => mediainfo_path, :version_string => "> 18", :version_line => 1, :version_trim_pre => "MediaInfoLib - v"},
-      {:name => "node", :path => "/usr/bin/node", :version_string => ">= 12", :version_trim_pre => "v"},
-      {:name => "yarn", :path => "/usr/bin/yarn", :version_string => ">= 1.20"}
-    ]
+      { name: "ffmpeg", path: ffmpeg_path, version_params: "-version", version_string: ">= 4", version_trim_pre: "ffmpeg version ", version_trim_last_char: "-" },
+      { name: "mediainfo", path: mediainfo_path, version_string: "> 18", version_line: 1, version_trim_pre: "MediaInfoLib - v" },
+      { name: "node", path: "/usr/bin/node", version_string: ">= 12", version_trim_pre: "v" },
+      { name: "yarn", path: "/usr/bin/yarn", version_string: ">= 1.20" }
+    ].freeze
 
-    DEFAULT_VERSION_PARAMS="--version"
+    DEFAULT_VERSION_PARAMS = "--version".freeze
 
-    def get_version_numeric( version_string )
+    def get_version_numeric(version_string)
       parts = version_string.split(".")
       major = parts[0] || 0
       minor = parts[1] || 0
-      patch = parts[2] || 0 
+      patch = parts[2] || 0
 
-      version_numeric = "#{major}.#{minor}#{patch}".to_f
+      "#{major}.#{minor}#{patch}".to_f
     end
 
     desc "List third-party tools"
-    task :list => :environment do
+    task list: :environment do
       puts "Listing third-party tools ..."
 
       tools = DEFAULT_TOOLS
@@ -48,22 +48,15 @@ namespace :avalon do
         puts "file_exists: #{File.file?(tool[:path])}"
         output = `#{command}` || ""
         line = tool[:version_line] || 0
-        if ! output.empty? then
-          output_line = output.lines[line]
+        if output.present?
           puts "file_executes: true"
           version = output.lines[line]
           puts "version: #{version}"
           version_parsed = version
-          if tool[:version_trim_pre] then
-            version_parsed = version_parsed.delete_prefix tool[:version_trim_pre]
-          end
-          if tool[:version_trim_last_char] then
-            version_parsed = version_parsed.partition(tool[:version_trim_last_char]).first
-          end
+          version_parsed = version_parsed.delete_prefix(tool[:version_trim_pre]) if tool[:version_trim_pre]
+          version_parsed = version_parsed.partition(tool[:version_trim_last_char]).first if tool[:version_trim_last_char]
           puts "version_parsed: #{version_parsed}"
-          if tool[:version_string] then
-            puts "version_string: #{tool[:version_string]}"
-          end
+          puts "version_string: #{tool[:version_string]}" if tool[:version_string]
           version_num = get_version_numeric(version_parsed)
           requirements = tool[:version_string].split(" ")
           operator = requirements[0]
@@ -76,7 +69,6 @@ namespace :avalon do
         else
           puts "file_executes: false"
         end
-        exit_code = $?
       end
     end
   end
