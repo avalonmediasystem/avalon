@@ -26,9 +26,9 @@ gem 'active-fedora', git: 'https://github.com/apertome/active_fedora.git', branc
 gem 'active_fedora-datastreams', '~> 0.2.0'
 gem 'fedora-migrate', git: 'https://github.com/avalonmediasystem/fedora-migrate.git', tag: 'avalon-r6.5'
 gem 'hydra-head', '~> 11.0'
+gem 'ldp', git: 'https://github.com/apertome/ldp.git', branch: 'ruby2.7-fixes'
 gem 'noid-rails', '~> 3.0.1'
 gem 'rdf-rdfxml'
-gem 'ldp', git: 'https://github.com/apertome/ldp.git', branch: 'ruby2.7-fixes'
 
 # Samvera version pins
 gem 'blacklight', '< 7.0'
@@ -43,9 +43,9 @@ gem 'activerecord-session_store', '>= 2.0.0'
 gem 'acts_as_list'
 gem 'api-pagination'
 gem 'avalon-about', git: 'https://github.com/avalonmediasystem/avalon-about.git', tag: 'avalon-r6.4'
+gem 'bootstrap-sass', '< 3.4.1' # Pin to less than 3.4.1 due to change in behavior with popovers
 gem 'bootstrap-toggle-rails'
 gem 'bootstrap_form'
-gem 'bootstrap-sass', '< 3.4.1' # Pin to less than 3.4.1 due to change in behavior with popovers
 gem 'iiif_manifest', '~> 0.6'
 gem 'rack-cors', require: 'rack/cors'
 gem 'rails_same_site_cookie'
@@ -64,6 +64,7 @@ gem 'ims-lti', '~> 1.1.13'
 gem 'net-ldap'
 gem 'omniauth-identity'
 gem 'omniauth-lti', git: "https://github.com/avalonmediasystem/omniauth-lti.git", tag: 'avalon-r4'
+gem "omniauth-saml", "~> 1.10"
 
 # Media Access & Transcoding
 gem 'active_encode', git: "https://github.com/samvera-labs/active_encode", branch: 'main'
@@ -180,5 +181,3 @@ end
 
 extra_gems = File.expand_path("../Gemfile.local", __FILE__)
 eval File.read(extra_gems) if File.exist?(extra_gems)
-
-gem "omniauth-saml", "~> 1.10"
