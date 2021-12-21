@@ -28,7 +28,6 @@ gem 'hydra-head', '~> 11.0'
 gem 'ldp', git: 'https://github.com/apertome/ldp.git', branch: 'ruby2.7-fixes'
 gem 'noid-rails', '~> 3.0.1'
 gem 'rdf-rdfxml'
-gem 'ldp', git: 'https://github.com/apertome/ldp.git', branch: 'ruby2.7-fixes'
 
 # Samvera version pins
 gem 'blacklight', '< 7.0'
@@ -179,5 +178,3 @@ end
 
 extra_gems = File.expand_path("../Gemfile.local", __FILE__)
 eval File.read(extra_gems) if File.exist?(extra_gems)
-
-gem "omniauth-saml", "~> 1.10"
