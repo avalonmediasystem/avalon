@@ -12,7 +12,6 @@
 #   specific language governing permissions and limitations under the License.
 # ---  END LICENSE_HEADER BLOCK  ---
 
-
 namespace :avalon do
   namespace :tools do
     ffmpeg_path    = Settings.ffmpeg.path || "/usr/bin/ffmpeg"
@@ -32,17 +31,12 @@ namespace :avalon do
       minor = parts[1] || 0
       patch = parts[2] || 0 
 
-      #puts "major, minor, patch"
-      #puts major, minor, patch
-
       version_numeric = "#{major}.#{minor}#{patch}".to_f
-
     end
 
     desc "List third-party tools"
     task :list => :environment do
       puts "Listing third-party tools ..."
-      # pp DEFAULT_TOOLS
 
       tools = DEFAULT_TOOLS
       tools.each do |tool|
@@ -53,7 +47,6 @@ namespace :avalon do
         puts "version_command: #{command}"
         puts "file_exists: #{File.file?(tool[:path])}"
         output = `#{command}` || ""
-        #puts "output", output
         line = tool[:version_line] || 0
         if ! output.empty? then
           output_line = output.lines[line]
@@ -84,11 +77,7 @@ namespace :avalon do
           puts "file_executes: false"
         end
         exit_code = $?
-          # puts "exit_code: #{exit_code.exitstatus}"
-          # pp exit_code
       end
-
     end
-
   end
 end

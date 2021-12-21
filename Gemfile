@@ -21,7 +21,6 @@ gem 'uglifier', '>= 1.3.0'
 gem 'webpacker'
 
 # Core Samvera
-#gem 'active-fedora', '~> 12.1'
 gem 'active-fedora', git: 'https://github.com/apertome/active_fedora.git', branch: 'ruby2.7-fixes'
 gem 'active_fedora-datastreams', '~> 0.2.0'
 gem 'fedora-migrate', git: 'https://github.com/avalonmediasystem/fedora-migrate.git', tag: 'avalon-r6.5'
@@ -38,7 +37,6 @@ gem 'rsolr', '~> 1.0'
 # Rails & Samvera Plugins
 gem 'about_page', git: 'https://github.com/avalonmediasystem/about_page.git', tag: 'avalon-r6.5'
 gem 'active_annotations', git: 'https://github.com/avalonmediasystem/active_annotations.git', branch: 'rails5.2'
-# gem 'active_annotations', '~> 0.2.2'
 gem 'activerecord-session_store', '>= 2.0.0'
 gem 'acts_as_list'
 gem 'api-pagination'
@@ -50,7 +48,6 @@ gem 'iiif_manifest', '~> 0.6'
 gem 'rack-cors', require: 'rack/cors'
 gem 'rails_same_site_cookie'
 gem 'recaptcha', require: 'recaptcha/rails'
-#gem 'samvera-persona', '~> 0.2.0'
 gem 'samvera-persona', git: "https://github.com/apertome/samvera-persona", branch: 'ruby2.7-fixes'
 gem 'speedy-af', '~> 0.1.3'
 
