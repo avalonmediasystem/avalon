@@ -132,15 +132,6 @@ GIT
       omniauth
 
 GIT
-  remote: https://github.com/samvera-labs/active_encode
-  revision: e29bf98bf917550d0cda9cc1ec9a4bb132a00dc4
-  branch: main
-  specs:
-    active_encode (0.8.2)
-      rails
-      sprockets (< 4)
-
-GIT
   remote: https://github.com/tawan/active-elastic-job.git
   revision: 7d210bdbcc9c465cc9704bc6b130882fe4c8eb9f
   specs:
@@ -179,6 +170,9 @@ GEM
       activesupport (>= 3.0.0)
       rdf (>= 2.0.2, < 4.0)
       rdf-vocab (>= 2.0, < 4.0)
+    active_encode (0.8.2)
+      rails
+      sprockets (< 4)
     active_fedora-datastreams (0.2.0)
       active-fedora (>= 11.0.0.pre, < 13)
       nom-xml (>= 0.5.1)
@@ -300,7 +294,7 @@ GEM
       deprecation (~> 1.0)
     bootsnap (1.9.1)
       msgpack (~> 1.0)
-    bootstrap-sass (3.4.1)
+    bootstrap-sass (3.4.0)
       autoprefixer-rails (>= 5.2.1)
       sassc (>= 2.0.0)
     bootstrap-toggle-rails (2.2.1.0)
@@ -993,7 +987,7 @@ DEPENDENCIES
   active-fedora!
   active_annotations!
   active_elastic_job!
-  active_encode!
+  active_encode (~> 0.8.2)
   active_fedora-datastreams (~> 0.2.0)
   activejob-traffic_control
   activejob-uniqueness
