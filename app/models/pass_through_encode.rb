@@ -23,7 +23,7 @@ class PassThroughEncode < WatchedEncode
 
     # Download s3 object to extract technical metadata locally
     def localize_input(encode)
-      return unless URI.parse(encode.input.url).scheme == 's3'
+      return unless Addressable::URI.parse(encode.input.url).scheme == 's3'
       encode.input.url = localize_s3_file encode.input.url
       encode.options[:outputs].each do |output|
         output[:url] = localize_s3_file output[:url]

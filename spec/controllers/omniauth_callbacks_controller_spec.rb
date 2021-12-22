@@ -37,7 +37,7 @@ describe Users::OmniauthCallbacksController, type: :controller do
 
       it 'redirects to url without params' do
         post :identity, params: params
-        expect(response).to redirect_to(URI.parse(url).path)
+        expect(response).to redirect_to(Addressable::URI.parse(url).path)
       end
 
       context "and does not match app host" do

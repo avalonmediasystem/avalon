@@ -24,7 +24,7 @@ module Avalon
         new(io.read, recursive: recursive)
       elsif io.is_a?(String)
         if io =~ /^https?:/
-          open(io, "Referer" => Rails.application.routes.url_helpers.root_url) { |resp| new(resp, URI.parse(io), recursive: recursive) }
+          open(io, "Referer" => Rails.application.routes.url_helpers.root_url) { |resp| new(resp, Addressable::URI.parse(io), recursive: recursive) }
         elsif io =~ /\.m3u8?$/i
           new(File.read(io), io, recursive: recursive)
         else
@@ -49,10 +49,10 @@ module Avalon
           tags[:duration] = Regexp.last_match(1).to_f
           tags[:title] = Regexp.last_match(2)
         elsif line =~ /\.m3u8?.*$/i && recursive
-          url = @base.is_a?(URI) ? @base.merge(line).to_s : File.expand_path(line, @base.to_s)
+          url = @base.is_a?(Addressable::URI) ? @base.merge(line).to_s : File.expand_path(line, @base.to_s)
           @playlist.merge!(Avalon::M3U8Reader.read(url).playlist)
         elsif line =~ /\.m3u8?.*$/i
-          url = @base.is_a?(URI) ? @base.merge(line).to_s : File.expand_path(line, @base.to_s)
+          url = @base.is_a?(Addressable::URI) ? @base.merge(line).to_s : File.expand_path(line, @base.to_s)
           @playlist[:playlists] << url
         elsif line =~ /^[^#]/
           tags[:filename] = line
@@ -73,7 +73,7 @@ module Avalon
       files.each do |f|
         duration = f[:duration] * 1000
         if elapsed + duration > offset
-          location = @base.is_a?(URI) ? @base.merge(f[:filename]).to_s : File.expand_path(f[:filename], @base.to_s)
+          location = @base.is_a?(Addressable::URI) ? @base.merge(f[:filename]).to_s : File.expand_path(f[:filename], @base.to_s)
           return { location: location, filename: f[:filename], offset: offset - elapsed }
         end
         elapsed += duration

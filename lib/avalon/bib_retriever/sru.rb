@@ -34,8 +34,8 @@ module Avalon
       end
       
       def url_for(query, bib_id)
-        uri = URI.parse config['url']
-        query_param = URI.encode(query % { bib_id: bib_id.to_s })
+        uri = Addressable::URI.parse config['url']
+        query_param = Addressable::URI.escape(query % { bib_id: bib_id.to_s })
         uri.query = "version=1.1&operation=searchRetrieve&maximumRecords=1&recordSchema=marcxml&query=#{query_param}"
         uri.to_s
       end

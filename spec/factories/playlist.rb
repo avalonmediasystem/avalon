@@ -21,7 +21,7 @@ FactoryBot.define do
 
     trait :with_access_token do
       visibility { Playlist::PRIVATE_WITH_TOKEN }
-      access_token { Faker::Lorem.characters(10) }
+      access_token { Faker::Lorem.characters(number: 10) }
     end
 
     trait :with_playlist_item do

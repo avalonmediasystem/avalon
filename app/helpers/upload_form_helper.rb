@@ -33,7 +33,7 @@ module UploadFormHelper
       {
         'form-data' => (direct_post.fields),
         'url' => direct_post.url,
-        'host' => URI.parse(direct_post.url).host
+        'host' => Addressable::URI.parse(direct_post.url).host
       }
     else
       {}
