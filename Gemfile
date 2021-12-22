@@ -25,7 +25,7 @@ gem 'active-fedora', git: 'https://github.com/apertome/active_fedora.git', branc
 gem 'active_fedora-datastreams', '~> 0.2.0'
 gem 'fedora-migrate', git: 'https://github.com/avalonmediasystem/fedora-migrate.git', tag: 'avalon-r6.5'
 gem 'hydra-head', '~> 11.0'
-gem 'ldp', git: 'https://github.com/apertome/ldp.git', branch: 'ruby2.7-fixes'
+gem 'ldp', '~> 0.3' 
 gem 'noid-rails', '~> 3.0.1'
 gem 'rdf-rdfxml'
 
@@ -48,7 +48,7 @@ gem 'iiif_manifest', '~> 0.6'
 gem 'rack-cors', require: 'rack/cors'
 gem 'rails_same_site_cookie'
 gem 'recaptcha', require: 'recaptcha/rails'
-gem 'samvera-persona', git: "https://github.com/apertome/samvera-persona", branch: 'ruby2.7-fixes'
+gem 'samvera-persona', '~> 0.3'
 gem 'speedy-af', '~> 0.1.3'
 
 # Avalon Components
