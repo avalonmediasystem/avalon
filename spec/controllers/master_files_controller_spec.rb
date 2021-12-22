@@ -692,7 +692,7 @@ describe MasterFilesController do
     it 'serves transcript file content' do
       login_as :administrator
       expect(master_file.supplemental_files.first['tags']).to eq (["transcript"])
-      get('transcript', params: { use_route: 'master_files/:id/transcript', id: master_file.id, t_id: supplemental_file.id, filename: supplemental_file.file.filename.to_s })
+      get('transcript', params: { use_route: 'master_files/:id/transcript', id: master_file.id, t_id: supplemental_file.id })
       expect(response.headers['Content-Type']).to eq('text/vtt')
       expect(response).to have_http_status(:ok)
       expect(response.body.include? "Example captions").to be_truthy

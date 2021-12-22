@@ -21,7 +21,7 @@ const ReactIIIFTranscript = ({ base_url, transcripts }) => {
                 ? transcriptItems.map(
                     t => (
                       { title: t.label,
-                        url: `${base_url}/master_files/${tr.id}/transcript/${t.id}/${t.label}`
+                        url: `${base_url}/master_files/${tr.id}/transcript/${t.id}`
                       }
                     )
                   )
