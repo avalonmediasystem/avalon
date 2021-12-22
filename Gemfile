@@ -55,13 +55,14 @@ gem 'speedy-af', '~> 0.1.3'
 gem 'avalon-workflow', git: "https://github.com/avalonmediasystem/avalon-workflow.git", tag: 'avalon-r6.5'
 
 # Authentication & Authorization
-gem 'devise', '~> 4.6'
+gem 'devise', '~> 4.8'
 gem 'devise_invitable', '~> 2.0'
 gem 'ims-lti', '~> 1.1.13'
 gem 'net-ldap'
-gem 'omniauth-identity'
+gem 'omniauth', '~> 2.0'
+gem 'omniauth-identity', '>= 2.0.0'
 gem 'omniauth-lti', git: "https://github.com/avalonmediasystem/omniauth-lti.git", tag: 'avalon-r4'
-gem "omniauth-saml", "~> 1.10"
+gem "omniauth-saml", "~> 2.0"
 
 # Media Access & Transcoding
 gem 'active_encode', '~> 0.8.2'
