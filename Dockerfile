@@ -72,6 +72,7 @@ RUN         apt-get update && \
             openssh-client \
             zip \
             dumb-init \
+            libsqlite3-dev \
          && apt-get -y install mediainfo \
          && ln -s /usr/bin/lsof /usr/sbin/
 
