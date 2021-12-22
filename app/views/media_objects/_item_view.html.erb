@@ -45,6 +45,9 @@ Unless required by applicable law or agreed to in writing, software distributed
     <div id="metadata_container" class="">
       <section id="metadata"><%= render "metadata_display" %></section>
     </div>
+
+    <% supplemental_files = @media_object.ordered_master_files.to_a.map { |mf| {"id" => mf.id, "transcripts" => mf.supplemental_files.select { |sf| sf.tags.include?('transcript')} } }.flatten(1) %>
+    <%= react_component("ReactIIIFTranscript", {base_url: request.protocol+request.host_with_port, transcripts: supplemental_files }) %>
   </div>
 
 </div>

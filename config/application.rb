@@ -41,6 +41,7 @@ module Avalon
         origins '*'
         resource '/media_objects/*/manifest*', headers: :any, methods: [:get]
         resource '/master_files/*/thumbnail', headers: :any, methods: [:get]
+        resource '/master_files/*/transcript/*/*', headers: :any, methods: [:get]
         resource '/master_files/*/structure.json', headers: :any, methods: [:get, :post, :delete]
         resource '/master_files/*/waveform.json', headers: :any, methods: [:get]
         resource '/master_files/*/*.m3u8', headers: :any, methods: [:get, :head]

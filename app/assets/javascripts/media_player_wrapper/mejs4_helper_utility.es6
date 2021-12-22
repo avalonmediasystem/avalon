@@ -21,14 +21,14 @@ class MEJSUtility {
    * @function createHTML5MediaNode
    * @return {string} markup - HTML markup containing <audio> or <video> and <source>s
    */
-  createHTML5MediaNode(mediaType, currentStreamInfo) {
+  createHTML5MediaNode(mediaType, currentStreamInfo, cIndex) {
     let markup = '';
     let node = null;
 
     // Create <video> markup
     if (mediaType === 'video') {
       node = document.createElement('video');
-      node.setAttribute('id', 'mejs-avalon-video');
+      node.setAttribute('id', 'mejs-avalon-player');
       node.setAttribute('controls', '');
       node.setAttribute('width', '450');
       node.setAttribute('height', '309');
@@ -41,23 +41,19 @@ class MEJSUtility {
       node.classList.add('invisible');
 
       // Add <source>s
-      currentStreamInfo.stream_hls.map(source => {
-        markup += `<source src="${
-          source.url
-        }" type="application/x-mpegURL" data-quality="${source.quality}"/>`;
+      currentStreamInfo.stream_hls.map((source) => {
+        markup += `<source src="${source.url}" type="application/x-mpegURL" data-quality="${source.quality}"/>`;
       });
 
       // Add captions
       if (currentStreamInfo.captions_path) {
-        markup += `<track srclang="en" kind="subtitles" type="${
-          currentStreamInfo.captions_format
-        }" src="${currentStreamInfo.captions_path}"></track>`;
+        markup += `<track srclang="en" kind="subtitles" type="${currentStreamInfo.captions_format}" src="${currentStreamInfo.captions_path}"></track>`;
       }
     }
     // Create <audio> markup
     if (mediaType === 'audio') {
       node = document.createElement('audio');
-      node.setAttribute('id', 'mejs-avalon-audio');
+      node.setAttribute('id', 'mejs-avalon-player');
       node.setAttribute('controls', '');
       node.setAttribute('style', 'width: 100%;');
       node.setAttribute('preload', 'auto');
@@ -65,13 +61,12 @@ class MEJSUtility {
       node.classList.add('invisible');
 
       // Add <source>s
-      currentStreamInfo.stream_hls.map(source => {
-        markup += `<source src="${source.url}" data-quality="${
-          source.quality
-        }" data-plugin-type="native" type="application/x-mpegURL" />`;
+      currentStreamInfo.stream_hls.map((source) => {
+        markup += `<source src="${source.url}" data-quality="${source.quality}" data-plugin-type="native" type="application/x-mpegURL" />`;
       });
       markup += `</audio>`;
     }
+    node.setAttribute('data-canvasindex', cIndex);
     node.innerHTML = markup;
     return node;
   }
@@ -83,7 +78,9 @@ class MEJSUtility {
    * <a> element's 'id' attribute
    */
   createSegmentsMap(el, currentStreamInfo) {
-    if (!el) { return {} }
+    if (!el) {
+      return {};
+    }
     let segmentsMap = {};
     const segmentEls = el
       ? [].slice.call(
@@ -91,7 +88,7 @@ class MEJSUtility {
         )
       : [];
 
-    segmentEls.forEach(el => {
+    segmentEls.forEach((el) => {
       if (el.id) {
         segmentsMap[el.id] = Object.assign({}, el.dataset);
       }
@@ -153,7 +150,7 @@ class MEJSUtility {
     let segmentEl = document.getElementById(segmentId);
 
     // Clear "active" style on all section links
-    segmentLinks.forEach(segmentLink => {
+    segmentLinks.forEach((segmentLink) => {
       segmentLink.classList.remove('current-stream');
       segmentLink.classList.remove('current-section');
     });
@@ -195,10 +192,13 @@ class MEJSUtility {
   timelineScopes(player) {
     let duration = player.duration;
     let scopes = new Array();
-    let trackCount = 1
+    let trackCount = 1;
     const currentStream = $('#accordion li a.current-stream');
 
-    if (currentStream.length > 0 && !currentStream.closest('div').hasClass('panel-heading')) {
+    if (
+      currentStream.length > 0 &&
+      !currentStream.closest('div').hasClass('panel-heading')
+    ) {
       let $firstCurrentStream = $(currentStream[0]);
       let re1 = /^\s*\d\.\s*/; // index number in front of section title '1. '
       let re2 = /\s*\(.*\)$/; // duration notation at end of section title ' (2:00)'
@@ -207,28 +207,38 @@ class MEJSUtility {
         .replace(re1, '')
         .replace(re2, '')
         .trim();
-      let begin = parseFloat($firstCurrentStream[0].dataset["fragmentbegin"]) || 0
-      let end = parseFloat($firstCurrentStream[0].dataset["fragmentend"]) || duration
+      let begin =
+        parseFloat($firstCurrentStream[0].dataset['fragmentbegin']) || 0;
+      let end =
+        parseFloat($firstCurrentStream[0].dataset['fragmentend']) || duration;
 
-      scopes.push({'label': label, 'tracks': trackCount, 't': 't='+begin+','+end})
+      scopes.push({
+        label: label,
+        tracks: trackCount,
+        t: 't=' + begin + ',' + end
+      });
 
-      let parent = $firstCurrentStream
-        .closest('ul')
-        .closest('li');
+      let parent = $firstCurrentStream.closest('ul').closest('li');
 
       while (parent.length > 0) {
         let tracks = parent.find('li a');
         trackCount = tracks.length;
-        begin = parseFloat(tracks[0].dataset["fragmentbegin"]) || 0;
-        end = parseFloat(tracks[trackCount-1].dataset["fragmentend"]) || '';
-        scopes.push({'label': parent.prev().text().trim(), 'tracks': trackCount, 't': 't='+begin+','+end})
-        parent = parent
-          .closest('ul')
-          .closest('li')
+        begin = parseFloat(tracks[0].dataset['fragmentbegin']) || 0;
+        end = parseFloat(tracks[trackCount - 1].dataset['fragmentend']) || '';
+        scopes.push({
+          label: parent.prev().text().trim(),
+          tracks: trackCount,
+          t: 't=' + begin + ',' + end
+        });
+        parent = parent.closest('ul').closest('li');
       }
     }
-    trackCount = currentStream.closest('div').find('li a').length
-    scopes.push({'label': player.avalonWrapper.currentStreamInfo.embed_title, 'tracks': trackCount, 't': 't=0,'})
-    return scopes.reverse()
+    trackCount = currentStream.closest('div').find('li a').length;
+    scopes.push({
+      label: player.avalonWrapper.currentStreamInfo.embed_title,
+      tracks: trackCount,
+      t: 't=0,'
+    });
+    return scopes.reverse();
   }
 }
