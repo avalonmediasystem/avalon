@@ -1157,15 +1157,14 @@
   dependencies:
     dequal "^2.0.2"
 
-"@samvera/iiif-react-media-player@1.2.1-beta.5":
-  version "1.2.1-beta.5"
-  resolved "https://registry.yarnpkg.com/@samvera/iiif-react-media-player/-/iiif-react-media-player-1.2.1-beta.5.tgz#911f2d274831ffd63a07e3ff88ce4a515534be1c"
-  integrity sha512-kFchUFthtBBCWHK9QRq5B9CiPjJOb5yRqopVRAhu82nMRsJmU4aWPdmCzdCCgJiFxgKDF0xMl1TKN7SU1W1Vug==
+"@samvera/iiif-react-media-player@1.2.1":
+  version "1.2.1"
+  resolved "https://registry.yarnpkg.com/@samvera/iiif-react-media-player/-/iiif-react-media-player-1.2.1.tgz#1124732203d06ce7892e46fce75de3112f8cb8b5"
+  integrity sha512-VrCMj5whoXJc9CSYSy7FZlwDl6D+Qn/Z3HiXWAGrSrwVZBiBPYpPigZ4vk/rAhWu4or3rxQnlH/rAt6MOT+Y1w==
   dependencies:
     "@silvermine/videojs-quality-selector" "^1.2.4"
     mammoth "^1.4.19"
     manifesto.js "^4.1.0"
-    videojs-hotkeys "^0.2.27"
     videojs-markers-plugin "^1.0.2"
 
 "@silvermine/videojs-quality-selector@^1.2.4":
