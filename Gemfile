@@ -21,8 +21,8 @@ gem 'uglifier', '>= 1.3.0'
 gem 'webpacker'
 
 # Core Samvera
-gem 'active-fedora', git: 'https://github.com/apertome/active_fedora.git', branch: 'ruby2.7-fixes'
-gem 'active_fedora-datastreams', '~> 0.2.0'
+gem 'active-fedora', '~> 13.2'
+gem 'active_fedora-datastreams', git: 'https://github.com/samvera-labs/active_fedora-datastreams', branch: 'af13'
 gem 'fedora-migrate', git: 'https://github.com/avalonmediasystem/fedora-migrate.git', tag: 'avalon-r6.5'
 gem 'hydra-head', '~> 11.0'
 gem 'ldp', '~> 0.3' 
@@ -36,7 +36,7 @@ gem 'rsolr', '~> 1.0'
 
 # Rails & Samvera Plugins
 gem 'about_page', git: 'https://github.com/avalonmediasystem/about_page.git', tag: 'avalon-r6.5'
-gem 'active_annotations', git: 'https://github.com/avalonmediasystem/active_annotations.git', branch: 'rails5.2'
+gem 'active_annotations', '~> 0.3'
 gem 'activerecord-session_store', '>= 2.0.0'
 gem 'acts_as_list'
 gem 'api-pagination'
