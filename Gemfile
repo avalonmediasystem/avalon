@@ -28,6 +28,7 @@ gem 'hydra-head', '~> 11.0'
 gem 'ldp', '~> 0.3' 
 gem 'noid-rails', '~> 3.0.1'
 gem 'rdf-rdfxml'
+gem 'rdf-vocab', '< 3.1.5'
 
 # Samvera version pins
 gem 'blacklight', '< 7.0'
