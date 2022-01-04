@@ -78,19 +78,6 @@ GIT
       omniauth
 
 GIT
-  remote: https://github.com/samvera-labs/active_fedora-datastreams
-  revision: f3f4da60b17ce245053f50dbceba888235316a34
-  branch: af13
-  specs:
-    active_fedora-datastreams (0.2.0)
-      active-fedora (>= 11.0.0.pre, < 14)
-      activemodel (< 6.0)
-      nom-xml (>= 0.5.1)
-      om (~> 3.1)
-      rdf (< 3.2)
-      rdf-rdfxml (~> 2.0)
-
-GIT
   remote: https://github.com/tawan/active-elastic-job.git
   revision: 7d210bdbcc9c465cc9704bc6b130882fe4c8eb9f
   specs:
@@ -146,6 +133,13 @@ GEM
     active_encode (0.8.2)
       rails
       sprockets (< 4)
+    active_fedora-datastreams (0.3.0)
+      active-fedora (>= 11.0.0.pre, < 14)
+      activemodel (< 6.0)
+      nom-xml (>= 0.5.1)
+      om (~> 3.1)
+      rdf (< 3.2)
+      rdf-rdfxml (~> 2.0)
     activejob (5.2.6)
       activesupport (= 5.2.6)
       globalid (>= 0.3.6)
@@ -972,7 +966,7 @@ DEPENDENCIES
   active_annotations (~> 0.3)
   active_elastic_job!
   active_encode (~> 0.8.2)
-  active_fedora-datastreams!
+  active_fedora-datastreams (~> 0.3)
   activejob-traffic_control
   activejob-uniqueness
   activerecord-session_store (>= 2.0.0)
