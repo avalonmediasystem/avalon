@@ -36,7 +36,7 @@ gem 'rsolr', '~> 1.0'
 
 # Rails & Samvera Plugins
 gem 'about_page', git: 'https://github.com/avalonmediasystem/about_page.git', tag: 'avalon-r6.5'
-gem 'active_annotations', git: 'https://github.com/avalonmediasystem/active_annotations.git', branch: 'rails5.2'
+gem 'active_annotations', git: 'https://github.com/avalonmediasystem/active_annotations.git', branch: 'v0.3.0'
 gem 'activerecord-session_store', '>= 2.0.0'
 gem 'acts_as_list'
 gem 'api-pagination'
