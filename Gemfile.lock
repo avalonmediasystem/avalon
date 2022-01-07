@@ -281,9 +281,10 @@ GEM
     capistrano-rvm (0.1.2)
       capistrano (~> 3.0)
       sshkit (~> 1.2)
-    capistrano-sidekiq (1.0.3)
+    capistrano-sidekiq (2.0.0)
       capistrano (>= 3.9.0)
-      sidekiq (>= 3.4, < 6.0)
+      capistrano-bundler
+      sidekiq (>= 6.0)
     capistrano-yarn (2.0.2)
       capistrano (~> 3.0)
     capybara (3.36.0)
@@ -718,7 +719,7 @@ GEM
       tilt
     recaptcha (5.8.1)
       json
-    redis (4.1.4)
+    redis (4.5.1)
     redis-actionpack (5.2.0)
       actionpack (>= 5, < 7)
       redis-rack (>= 2.1.0, < 3)
@@ -844,11 +845,10 @@ GEM
     semantic_range (3.0.0)
     shoulda-matchers (5.0.0)
       activesupport (>= 5.2.0)
-    sidekiq (5.2.9)
-      connection_pool (~> 2.2, >= 2.2.2)
+    sidekiq (6.3.1)
+      connection_pool (>= 2.2.2)
       rack (~> 2.0)
-      rack-protection (>= 1.5.0)
-      redis (>= 3.3.5, < 4.2)
+      redis (>= 4.2.0)
     sidekiq-cron (1.2.0)
       fugit (~> 1.1)
       sidekiq (>= 4.2.1)
@@ -1069,7 +1069,7 @@ DEPENDENCIES
   sass-rails (~> 5.0)
   selenium-webdriver
   shoulda-matchers
-  sidekiq (~> 5.2.7)
+  sidekiq (~> 6.2)
   sidekiq-cron (~> 1.2)
   simplecov
   solr_wrapper (>= 0.16)

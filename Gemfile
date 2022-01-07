@@ -85,7 +85,7 @@ gem 'marc'
 gem 'activejob-traffic_control'
 gem 'activejob-uniqueness'
 gem 'redis-rails'
-gem 'sidekiq', '~> 5.2.7'
+gem 'sidekiq', '~> 6.2'
 gem 'sidekiq-cron', '~> 1.2'
 
 # Coding Patterns
