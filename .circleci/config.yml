@@ -77,7 +77,19 @@ jobs:
       - run:
           command: ./cc-test-reporter before-build
 
-      - samvera/parallel_rspec
+      # Pull in the parallel_rspec step and modify it to ensure that test results get stored
+      # - samvera/parallel_rspec
+      - run:
+          name: Run rspec in parallel
+          command: |
+            mkdir /tmp/test-results
+            bundle exec rspec --format progress --format RspecJunitFormatter -o /tmp/test-results/rspec.xml $(circleci tests glob "spec/**/*_spec.rb" | circleci tests split --split-by=timings)
+      # collect reports
+      - store_test_results:
+          path: /tmp/test-results
+      - store_artifacts:
+          path: /tmp/test-results
+          destination: test-results
 
       - run:
           command: ./cc-test-reporter format-coverage -t simplecov -o "coverage/codeclimate.$CIRCLE_NODE_INDEX.json"
