@@ -1,36 +1,10 @@
 GIT
-  remote: https://github.com/apertome/active_fedora.git
-  revision: 9b6b0a9ccdc59398f32220aa46c86edd6d334d6f
-  branch: ruby2.7-fixes
-  specs:
-    active-fedora (12.2.3)
-      active-triples (>= 0.11.0, < 2.0.0)
-      activemodel (>= 4.2.10, < 5.3)
-      activesupport (>= 4.2.4, < 5.3)
-      deprecation
-      faraday (~> 0.12)
-      faraday-encoding (= 0.0.4)
-      ldp (>= 0.7.0, < 2)
-      rdf-vocab (< 3.1.5)
-      rsolr (>= 1.1.2, < 3)
-      ruby-progressbar (~> 1.0)
-
-GIT
   remote: https://github.com/avalonmediasystem/about_page.git
   revision: 1b920619cc54fdc99f1cb4da26c18818c1156070
   tag: avalon-r6.5
   specs:
     about_page (0.3.1)
       rails (>= 3.2)
-
-GIT
-  remote: https://github.com/avalonmediasystem/active_annotations.git
-  revision: c1f602779ac934aba1d4ff6d4fdab0145e6bf1d4
-  branch: rails5.2
-  specs:
-    active_annotations (0.2.2)
-      json-ld
-      rdf-vocab (>= 2.1.0)
 
 GIT
   remote: https://github.com/avalonmediasystem/avalon-about.git
@@ -137,18 +111,34 @@ GEM
       erubi (~> 1.4)
       rails-dom-testing (~> 2.0)
       rails-html-sanitizer (~> 1.0, >= 1.0.3)
+    active-fedora (13.2.4)
+      active-triples (>= 0.11.0, < 2.0.0)
+      activemodel (>= 5.1)
+      activesupport (>= 5.1)
+      deprecation
+      faraday (~> 0.12)
+      faraday-encoding (>= 0.0.5)
+      ldp (>= 0.7.0, < 2)
+      rsolr (>= 1.1.2, < 3)
+      ruby-progressbar (~> 1.0)
     active-triples (1.1.1)
       activemodel (>= 3.0.0)
       activesupport (>= 3.0.0)
       rdf (>= 2.0.2, < 4.0)
       rdf-vocab (>= 2.0, < 4.0)
+    active_annotations (0.3.0)
+      json-ld
+      rails (~> 5.2)
+      rdf-vocab (>= 2.1.0)
     active_encode (0.8.2)
       rails
       sprockets (< 4)
-    active_fedora-datastreams (0.2.0)
-      active-fedora (>= 11.0.0.pre, < 13)
+    active_fedora-datastreams (0.3.0)
+      active-fedora (>= 11.0.0.pre, < 14)
+      activemodel (< 6.0)
       nom-xml (>= 0.5.1)
       om (~> 3.1)
+      rdf (< 3.2)
       rdf-rdfxml (~> 2.0)
     activejob (5.2.6)
       activesupport (= 5.2.6)
@@ -420,7 +410,7 @@ GEM
       i18n (>= 1.6, < 2)
     faraday (0.17.4)
       multipart-post (>= 1.2, < 3)
-    faraday-encoding (0.0.4)
+    faraday-encoding (0.0.5)
       faraday
     fastimage (2.2.5)
     fcrepo_wrapper (0.9.0)
@@ -511,7 +501,7 @@ GEM
     jquery-ui-rails (6.0.1)
       railties (>= 3.2.16)
     json (2.6.1)
-    json-canonicalization (0.2.1)
+    json-canonicalization (0.3.0)
     json-ld (3.1.10)
       htmlentities (~> 4.3)
       json-canonicalization (~> 0.2)
@@ -578,7 +568,7 @@ GEM
     mime-types-data (3.2021.0901)
     mini_mime (1.1.2)
     mini_portile2 (2.6.1)
-    minitest (5.14.4)
+    minitest (5.15.0)
     msgpack (1.4.2)
     multi_json (1.15.0)
     multi_xml (0.6.0)
@@ -972,11 +962,11 @@ PLATFORMS
 
 DEPENDENCIES
   about_page!
-  active-fedora!
-  active_annotations!
+  active-fedora (~> 13.2)
+  active_annotations (~> 0.3)
   active_elastic_job!
   active_encode (~> 0.8.2)
-  active_fedora-datastreams (~> 0.2.0)
+  active_fedora-datastreams (~> 0.3)
   activejob-traffic_control
   activejob-uniqueness
   activerecord-session_store (>= 2.0.0)
@@ -1061,6 +1051,7 @@ DEPENDENCIES
   rb-readline
   rdf (~> 3.1)
   rdf-rdfxml
+  rdf-vocab (< 3.1.5)
   react-rails
   recaptcha
   redis-rails
