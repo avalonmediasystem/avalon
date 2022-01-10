@@ -17,3 +17,20 @@ ActiveFedora::Aggregation::ListSource.class_eval do
     attributes_changed_by_setter[:nodes] = true
   end
 end
+
+# Override to avoid deprecation warning.  Remove this monkey-patch whenever Avalon upgrades to a version of ActiveFedora which has this fix.
+ActiveFedora::File.class_eval do
+  def ldp_headers
+    headers = { 'Content-Type'.freeze => mime_type, 'Content-Length'.freeze => content.size.to_s }
+    headers['Content-Disposition'.freeze] = "attachment; filename=\"#{URI::DEFAULT_PARSER.escape(@original_name)}\"" if @original_name
+    headers
+  end
+end
+
+# Override to avoid deprecation warning.  Remove this monkey-patch whenever Avalon upgrades to a version of LDP which has this fix.
+Ldp::Response.class_eval do
+  def content_disposition_filename
+    filename = content_disposition_attributes['filename']
+    ::RDF::URI.decode(filename) if filename
+  end
+end

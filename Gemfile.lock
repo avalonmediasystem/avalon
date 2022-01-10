@@ -525,7 +525,7 @@ GEM
     kaminari-core (1.2.1)
     launchy (2.5.0)
       addressable (~> 2.7)
-    ldp (0.7.2)
+    ldp (1.0.3)
       deprecation
       faraday
       http_logger
@@ -1027,7 +1027,7 @@ DEPENDENCIES
   jquery-datatables
   jquery-rails
   jquery-ui-rails
-  ldp (~> 0.3)
+  ldp (~> 1.0.3)
   listen
   lograge
   marc
