@@ -199,7 +199,7 @@ module Avalon
           # master_file.media_object = media_object
           files = self.class.gatherFiles(file_spec[:file])
           self.class.attach_datastreams_to_master_file(master_file, file_spec[:file])
-          master_file.setContent(files)
+          master_file.setContent(files, dropbox_dir: media_object.collection.dropbox_absolute_path)
 
           # Overwrite files hash with working file paths to pass to matterhorn
           if files.is_a?(Hash) && master_file.working_file_path.present?
