@@ -21,7 +21,7 @@ gem 'uglifier', '>= 1.3.0'
 gem 'webpacker'
 
 # Core Samvera
-gem 'active-fedora', '~> 13.2'
+gem 'active-fedora', '~> 13.2', '>= 13.2.5'
 gem 'active_fedora-datastreams', '~> 0.3'
 gem 'fedora-migrate', git: 'https://github.com/avalonmediasystem/fedora-migrate.git', tag: 'avalon-r6.5'
 gem 'hydra-head', '~> 11.0'
