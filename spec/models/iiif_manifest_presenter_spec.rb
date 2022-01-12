@@ -20,13 +20,13 @@ describe IiifManifestPresenter do
   let(:presenter) { described_class.new(media_object: media_object, master_files: [master_file]) }
 
   context 'homepage' do
-    subject { presenter.homepage }
+    subject { presenter.homepage.first }
 
     it 'provices a homepage' do
       expect(subject[:id]).to eq Rails.application.routes.url_helpers.media_object_url(media_object)
       expect(subject[:type]).to eq "Text"
       expect(subject[:format]).to eq "text/html"
-      expect(subject[:label]).to include("@none" => ["View in Repository"])
+      expect(subject[:label]).to include("none" => ["View in Repository"])
     end
   end
 end
