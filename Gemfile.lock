@@ -111,7 +111,7 @@ GEM
       erubi (~> 1.4)
       rails-dom-testing (~> 2.0)
       rails-html-sanitizer (~> 1.0, >= 1.0.3)
-    active-fedora (13.2.4)
+    active-fedora (13.2.5)
       active-triples (>= 0.11.0, < 2.0.0)
       activemodel (>= 5.1)
       activesupport (>= 5.1)
@@ -963,7 +963,7 @@ PLATFORMS
 
 DEPENDENCIES
   about_page!
-  active-fedora (~> 13.2)
+  active-fedora (~> 13.2, >= 13.2.5)
   active_annotations (~> 0.3)
   active_elastic_job!
   active_encode (~> 0.8.2)
