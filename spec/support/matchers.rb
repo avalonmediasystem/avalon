@@ -1,4 +1,4 @@
-# Copyright 2011-2020, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2022, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 #
@@ -14,7 +14,7 @@
 
 RSpec::Matchers.define :hash_match do |expected|
   match do |actual|
-    diff = HashDiff.diff(actual,expected) do |p,a,e|
+    diff = Hashdiff.diff(actual,expected) do |p,a,e|
       if a.is_a?(RealFile) && e.is_a?(RealFile)
         FileUtils.cmp(a,e)
       elsif a.is_a?(File) && e.is_a?(File)

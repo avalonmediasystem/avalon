@@ -8,7 +8,7 @@ require 'resolv-replace'
 Bundler.require(*Rails.groups)
 
 module Avalon
-  VERSION = '7.2.1'
+  VERSION = '7.3.0'
 
   class Application < Rails::Application
     require 'avalon/configuration'
@@ -41,6 +41,7 @@ module Avalon
         origins '*'
         resource '/media_objects/*/manifest*', headers: :any, methods: [:get]
         resource '/master_files/*/thumbnail', headers: :any, methods: [:get]
+        resource '/master_files/*/transcript/*/*', headers: :any, methods: [:get]
         resource '/master_files/*/structure.json', headers: :any, methods: [:get, :post, :delete]
         resource '/master_files/*/waveform.json', headers: :any, methods: [:get]
         resource '/master_files/*/*.m3u8', headers: :any, methods: [:get, :head]

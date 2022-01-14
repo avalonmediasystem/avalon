@@ -1,4 +1,4 @@
-# Copyright 2011-2020, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2022, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 #
@@ -30,7 +30,7 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
     when 'lti'
       default_msg = I18n.t 'devise.omniauth_callbacks.failure', reason: failure_message
       msg = I18n.t 'devise.omniauth_callbacks.lti.failure', default: default_msg
-      uri = URI.parse request['launch_presentation_return_url']
+      uri = Addressable::URI.parse request['launch_presentation_return_url']
       uri.query = {lti_errormsg: msg}.to_query
       uri.to_s
     else

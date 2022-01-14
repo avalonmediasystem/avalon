@@ -1,4 +1,4 @@
-# Copyright 2011-2020, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2022, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 #
@@ -120,7 +120,7 @@ describe MasterFile do
     end
 
     it 'creates an encode' do
-      expect(master_file.encoder_class).to receive(:create).with("file://" + URI.escape(master_file.file_location), { master_file_id: master_file.id, preset: master_file.workflow_name, headers: nil })
+      expect(master_file.encoder_class).to receive(:create).with("file://" + Addressable::URI.escape(master_file.file_location), { master_file_id: master_file.id, preset: master_file.workflow_name, headers: nil })
       master_file.process
     end
 
@@ -283,40 +283,104 @@ describe MasterFile do
 
     end
 
-    describe "single uploaded file" do
-      describe "uploaded file" do
-        let(:fixture)    { File.expand_path('../../fixtures/videoshort.mp4',__FILE__) }
-        let(:original)   { File.basename(fixture) }
-        let(:tempfile)   { Tempfile.new('foo') }
-        let(:media_path) { File.expand_path("../../master_files-#{SecureRandom.uuid}",__FILE__)}
-        let(:upload)     { ActionDispatch::Http::UploadedFile.new :tempfile => tempfile, :filename => original, :type => 'video/mp4' }
-        subject {
-          mf = MasterFile.new
-          mf.setContent(upload)
-          mf
-        }
+    describe "web-uploaded file" do
+      let(:fixture)    { File.expand_path('../../fixtures/videoshort.mp4',__FILE__) }
+      let(:original)   { File.basename(fixture) }
+      let(:tempfile)   { Tempfile.new('foo') }
+      let(:media_path) { File.expand_path("../../master_files-#{SecureRandom.uuid}",__FILE__)}
+      let(:dropbox_path) { File.expand_path("../../collection-#{SecureRandom.uuid}",__FILE__)}
+      let(:upload)     { ActionDispatch::Http::UploadedFile.new :tempfile => tempfile, :filename => original, :type => 'video/mp4' }
+      let(:media_object) { MediaObject.new }
+      let(:collection) { Admin::Collection.new }
+      subject {
+        mf = MasterFile.new
+        mf.media_object = media_object
+        mf.setContent(upload, dropbox_dir: collection.dropbox_absolute_path)
+        mf
+      }
 
-        before(:each) do
-          @old_media_path = Settings.encoding.working_file_path
-          FileUtils.mkdir_p media_path
-          FileUtils.cp fixture, tempfile
+      before(:each) do
+        @old_media_path = Settings.encoding.working_file_path
+        FileUtils.mkdir_p media_path
+        FileUtils.cp fixture, tempfile
+        allow(media_object).to receive(:collection).and_return(collection)
+        FileUtils.mkdir_p dropbox_path
+        allow(collection).to receive(:dropbox_absolute_path).and_return(File.absolute_path(dropbox_path))
+      end
+
+      after(:each) do
+        Settings.encoding.working_file_path = @old_media_path
+        File.unlink subject.file_location
+        FileUtils.rm_rf media_path
+        FileUtils.rm_rf dropbox_path
+      end
+
+      it "should move an uploaded file into the root of the collection's dropbox" do
+        Settings.encoding.working_file_path = nil
+        expect(subject.file_location).to eq(File.realpath(File.join(collection.dropbox_absolute_path,original)))
+      end
+
+      it "should copy an uploaded file to the media path" do
+        Settings.encoding.working_file_path = media_path
+        expect(File.fnmatch("#{media_path}/*/#{original}", subject.working_file_path.first)).to be true
+      end
+
+      context "when file with same name already exists in the collection's dropbox" do
+        let(:duplicate) { "videoshort-1.mp4" }
+
+        before do
+          FileUtils.cp fixture, File.join(collection.dropbox_absolute_path, original)
         end
 
-        after(:each) do
-          Settings.encoding.working_file_path = @old_media_path
-          File.unlink subject.file_location
-          FileUtils.rm_rf media_path
-        end
-
-        it "should rename an uploaded file in place" do
+        it "appends a numerical suffix" do
           Settings.encoding.working_file_path = nil
-          expect(subject.file_location).to eq(File.realpath(File.join(File.dirname(tempfile),original)))
+          expect(subject.file_location).to eq(File.realpath(File.join(collection.dropbox_absolute_path,duplicate)))
         end
+      end
+    end
 
-        it "should copy an uploaded file to the media path" do
-          Settings.encoding.working_file_path = media_path
-          expect(File.fnmatch("#{media_path}/*/#{original}", subject.working_file_path.first)).to be true
-        end
+    context "server-side dropbox" do
+      let(:fixture)    { File.expand_path('../../fixtures/videoshort.mp4',__FILE__) }
+      let(:original)   { File.basename(fixture) }
+      let(:dropbox_file_path) { File.join(dropbox_path, 'nested-dir', original)}
+      let(:media_path) { File.expand_path("../../master_files-#{SecureRandom.uuid}",__FILE__)}
+      let(:dropbox_path) { File.expand_path("../../collection-#{SecureRandom.uuid}",__FILE__)}
+      let(:media_object) { MediaObject.new }
+      let(:collection) { Admin::Collection.new }
+      subject {
+        mf = MasterFile.new
+        mf.media_object = media_object
+        mf.setContent(File.new(dropbox_file_path), dropbox_dir: collection.dropbox_absolute_path)
+        mf
+      }
+
+      before(:each) do
+        @old_media_path = Settings.encoding.working_file_path
+        FileUtils.mkdir_p dropbox_path
+        FileUtils.mkdir_p media_path
+        FileUtils.mkdir_p File.dirname(dropbox_file_path)
+        FileUtils.cp fixture, dropbox_file_path
+        allow(media_object).to receive(:collection).and_return(collection)
+        allow(collection).to receive(:dropbox_absolute_path).and_return(File.absolute_path(dropbox_path))
+      end
+
+      after(:each) do
+        Settings.encoding.working_file_path = @old_media_path
+        File.unlink subject.file_location
+        FileUtils.rm_rf media_path
+        FileUtils.rm_rf dropbox_path
+      end
+
+      it "should not move a file in a subdirectory of the collection's dropbox" do
+        Settings.encoding.working_file_path = nil
+        expect(subject.file_location).to eq dropbox_file_path
+        expect(File.exist?(dropbox_file_path)).to eq true
+        expect(File.exist?(File.join(collection.dropbox_absolute_path,original))).to eq false
+      end
+
+      it "should copy an uploaded file to the media path" do
+        Settings.encoding.working_file_path = media_path
+        expect(File.fnmatch("#{media_path}/*/#{original}", subject.working_file_path.first)).to be true
       end
     end
 
@@ -472,11 +536,11 @@ describe MasterFile do
     describe 'uri' do
       it 'returns a uri for a sound master file' do
         expect(sound_master_file.rdf_uri.class).to eq(String)
-        expect { URI.parse(sound_master_file.rdf_uri) }.not_to raise_error
+        expect { Addressable::URI.parse(sound_master_file.rdf_uri) }.not_to raise_error
       end
       it 'returns a uri for a video master file' do
         expect(video_master_file.rdf_uri.class).to eq(String)
-        expect { URI.parse(video_master_file.rdf_uri) }.not_to raise_error
+        expect { Addressable::URI.parse(video_master_file.rdf_uri) }.not_to raise_error
       end
     end
   end

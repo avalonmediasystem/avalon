@@ -1,4 +1,4 @@
-# Copyright 2011-2020, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2022, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 #
@@ -39,13 +39,13 @@ module Avalon
       begin
         resp = RestClient::Request.execute(
           method: :post,
-          url: URI.join(@avalon['url'], 'media_objects.json').to_s,
+          url: Addressable::URI.join(@avalon['url'], 'media_objects.json').to_s,
           payload: build_payload(media_object, collection_id, include_structure),
           headers: { content_type: :json, accept: :json, :'Avalon-Api-Key' => @avalon['api_token'] },
           verify_ssl: false,
           timeout: 3600
         )
-        { link: URI.join(@avalon['url'], 'media_objects/', JSON.parse(resp.body)['id']).to_s }
+        { link: Addressable::URI.join(@avalon['url'], 'media_objects/', JSON.parse(resp.body)['id']).to_s }
       rescue StandardError => e
         { message: e.message, status: e.respond_to?(:response) && e.response.present? ? e.response.code : 500 }
       end
@@ -63,7 +63,7 @@ module Avalon
 
       def fetch_user_collections
         return [] unless @avalon.present?
-        uri = URI.join(@avalon['url'], 'admin/collections.json')
+        uri = Addressable::URI.join(@avalon['url'], 'admin/collections.json')
         uri.query = "user=#{@user}&per_page=#{Integer::EXABYTE}"
         resp = RestClient::Request.execute(
           method: :get,

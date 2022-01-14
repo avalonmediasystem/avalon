@@ -1,4 +1,4 @@
-# Copyright 2011-2020, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2022, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 #
@@ -83,7 +83,7 @@ class ApplicationController < ActionController::Base
       objects_path(params['target_id'], params.permit('t', 'position', 'token'))
     elsif params[:url]
       # Limit redirects to current host only (Fixes bug https://bugs.dlib.indiana.edu/browse/VOV-5662)
-      uri = URI.parse(params[:url])
+      uri = Addressable::URI.parse(params[:url])
       request.host == uri.host ? uri.path : root_path
     elsif auth_type == 'lti' && lti_group.present?
       search_catalog_path('f[read_access_virtual_group_ssim][]' => lti_group)

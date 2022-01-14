@@ -1,4 +1,4 @@
-# Copyright 2011-2020, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2022, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 #
@@ -39,7 +39,7 @@ module MasterFileBuilder
       end
 
       master_file = MasterFile.new()
-      master_file.setContent(spec.content, file_name: spec.original_filename, file_size: spec.file_size, auth_header: spec.auth_header)
+      master_file.setContent(spec.content, file_name: spec.original_filename, file_size: spec.file_size, auth_header: spec.auth_header, dropbox_dir: media_object.collection.dropbox_absolute_path)
       master_file.set_workflow(spec.workflow)
 
       if 'Unknown' == master_file.file_format
@@ -89,7 +89,7 @@ module MasterFileBuilder
     def self.build(params)
       params.require(:selected_files).permit!.values.collect do |entry|
         uri = Addressable::URI.parse(entry[:url])
-        path = entry["file_name"] || URI.decode(uri.path)
+        path = entry["file_name"] || Addressable::URI.unencode(uri.path)
         Spec.new(uri, File.basename(path), Rack::Mime.mime_type(File.extname(path)), params[:workflow], entry["file_size"], entry["auth_header"]&.to_h)
       end
     end

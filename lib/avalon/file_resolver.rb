@@ -1,4 +1,4 @@
-# Copyright 2011-2020, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2022, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 #
@@ -36,7 +36,7 @@ module Avalon
     end
 
     def path_to(file_location)
-      url = URI.parse(file_location)
+      url = Addressable::URI.parse(file_location)
       if url.scheme.nil? or url.scheme == 'file'
         mount_map.each_pair do |path,mount|
           if file_location.start_with? path

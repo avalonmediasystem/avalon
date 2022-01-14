@@ -152,6 +152,7 @@ Rails.application.routes.draw do
       post 'structure', to: 'master_files#set_structure', constraints: { format: 'json' }
       delete 'structure', to: 'master_files#delete_structure', constraints: { format: 'json' }
       post 'move'
+      get 'transcript/:t_id', to: 'master_files#transcript'
     end
 
     # Supplemental Files

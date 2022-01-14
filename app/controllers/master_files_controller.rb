@@ -1,4 +1,4 @@
-# Copyright 2011-2020, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2022, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 #
@@ -365,6 +365,12 @@ class MasterFilesController < ApplicationController
     @master_file.save!
     flash[:success] = "Successfully moved master file.  See it #{view_context.link_to 'here', edit_media_object_path(target_media_object)}.".html_safe
     redirect_to edit_media_object_path(current_media_object)
+  end
+
+  def transcript
+    authorize! :read, @master_file, message: "You do not have sufficient privileges"
+    @supplemental_file = SupplementalFile.find(params[:t_id])
+    send_data @supplemental_file.file.download, filename: @supplemental_file.file.filename.to_s, type: @supplemental_file.file.content_type, disposition: 'inline'
   end
 
 protected

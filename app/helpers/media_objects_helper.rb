@@ -1,4 +1,4 @@
-# Copyright 2011-2020, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2022, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 #
@@ -46,7 +46,7 @@ module MediaObjectsHelper
 
       def dropbox_url collection
          ic = Iconv.new('UTF-8//IGNORE', 'UTF-8')
-         path = URI::Parser.new.escape(collection.dropbox_directory_name || "", %r{[/\\%& #]})
+         path = Addressable::URI.escape_component(collection.dropbox_directory_name || "", %r{[/\\%& #]})
          url = File.join(Settings.dropbox.upload_uri, path)
          ic.iconv(url)
       end

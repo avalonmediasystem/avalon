@@ -1,4 +1,4 @@
-# Copyright 2011-2020, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2022, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 #
@@ -72,7 +72,7 @@ class Derivative < ActiveFedora::Base
 
   def set_streaming_locations!
     if managed
-      path = URI.parse(absolute_location).path
+      path = Addressable::URI.parse(absolute_location).path
       self.location_url = Avalon::StreamMapper.stream_path(path)
       self.hls_url = Avalon::StreamMapper.map(path, 'http', format)
     end

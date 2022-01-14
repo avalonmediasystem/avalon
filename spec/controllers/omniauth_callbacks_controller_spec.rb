@@ -1,4 +1,4 @@
-# Copyright 2011-2020, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2022, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 #
@@ -37,7 +37,7 @@ describe Users::OmniauthCallbacksController, type: :controller do
 
       it 'redirects to url without params' do
         post :identity, params: params
-        expect(response).to redirect_to(URI.parse(url).path)
+        expect(response).to redirect_to(Addressable::URI.parse(url).path)
       end
 
       context "and does not match app host" do

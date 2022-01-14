@@ -1,4 +1,4 @@
-# Copyright 2011-2020, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2022, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 #
@@ -85,7 +85,7 @@ class SolrCollectionCreator
                          "#{Settings.solr.url}/"
                        end
 
-      uri = URI(normalized_uri) + name
+      uri = Addressable::URI.normalized_encode(normalized_uri) + name
 
       uri.to_s
     end
