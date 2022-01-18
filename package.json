@@ -28,6 +28,7 @@
   },
   "resolutions": {
     "elliptic": "^6.5.2",
+    "follow-redirects": "^1.14.7",
     "fstream": "^1.0.12",
     "js-yaml": "^3.13.1",
     "lodash": "^4.17.19",
