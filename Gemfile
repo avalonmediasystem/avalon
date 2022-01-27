@@ -90,7 +90,7 @@ gem 'mediaelement-track-scrubber', git: 'https://github.com/avalonmediasystem/me
 gem 'activejob-traffic_control'
 gem 'activejob-uniqueness'
 gem 'redis-rails'
-gem 'sidekiq', '~> 5.2.7'
+gem 'sidekiq', '~> 6.4.0'
 gem 'sidekiq-cron', '~> 1.2'
 
 # Coding Patterns
