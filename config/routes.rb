@@ -49,7 +49,7 @@ Rails.application.routes.draw do
     end
   end
 
-  devise_for :users, controllers: { omniauth_callbacks: 'users/omniauth_callbacks', sessions: 'users/sessions' }, format: false
+  devise_for :users, controllers: { omniauth_callbacks: 'users/omniauth_callbacks', sessions: 'users/sessions' }
   devise_scope :user do
     match '/users/auth/:provider', to: 'users/omniauth_callbacks#passthru', as: :user_omniauth_authorize, via: [:get, :post]
     Avalon::Authentication::Providers.collect { |provider| provider[:provider] }.uniq.each do |provider_name|
