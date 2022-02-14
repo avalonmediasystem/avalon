@@ -60,7 +60,7 @@ class MasterFile < ActiveFedora::Base
   property :file_location, predicate: ::RDF::Vocab::EBUCore.locator, multiple: false do |index|
     index.as :stored_sortable
   end
-  property :file_checksum, predicate: ::RDF::Vocab::NFO.hashValue, multiple: false do |index|
+  property :file_checksum, predicate: Avalon::RDFVocab::Derivative.file_checksum, multiple: false do |index|
     index.as :stored_sortable
   end
   property :file_size, predicate: ::RDF::Vocab::EBUCore.fileSize, multiple: false # indexed in to_solr
@@ -296,6 +296,7 @@ class MasterFile < ActiveFedora::Base
         label: output.label,
         url: output.url,
         duration: output.duration,
+        file_checksum: output.file_checksum,
         # TODO: add support for mime_type to ActiveEncode?
         # mime_type: output.mime_type,
         audio_bitrate: output.audio_bitrate,
@@ -682,6 +683,8 @@ class MasterFile < ActiveFedora::Base
     end
     self.file_location = realpath
     self.file_size = file.size.to_s
+    # self.file_checksum = `sha1sum #{realpath}`
+    self.file_checksum = "asdf"
   ensure
     file.close
   end
@@ -699,6 +702,7 @@ class MasterFile < ActiveFedora::Base
       next unless usable_files.has_key?(quality)
       self.file_location = File.realpath(usable_files[quality])
       self.file_size = usable_files[quality].size.to_s
+      self.file_checksum = usable_files[quality].file_checksum
       break
     end
   ensure

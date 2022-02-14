@@ -61,11 +61,17 @@ module MasterFileBehavior
       captions_format = self.captions.mime_type
     end
 
+    puts "\n\n"
+    puts "---> file_checksum <---"
+    pp file_checksum
+    puts "\n\n"
+
     # Returns the hash
     return({
       id: self.id,
       label: title,
       is_video: is_video?,
+      file_checksum: self.file_checksum,
       poster_image: poster_path,
       embed_code: embed_code(EMBED_SIZE[:medium], {urlappend: '/embed'}),
       stream_flash: flash,

@@ -1,4 +1,13 @@
 GIT
+  remote: https://github.com/apertome/active_encode.git
+  revision: 2cfd5a48eaa8577b58c83d4cb50fe337cee33462
+  branch: checksum
+  specs:
+    active_encode (0.7.0)
+      rails
+      sprockets (< 4)
+
+GIT
   remote: https://github.com/avalonmediasystem/about_page.git
   revision: 1b920619cc54fdc99f1cb4da26c18818c1156070
   tag: avalon-r6.5
@@ -130,9 +139,6 @@ GEM
       json-ld
       rails (~> 5.2)
       rdf-vocab (>= 2.1.0)
-    active_encode (0.8.2)
-      rails
-      sprockets (< 4)
     active_fedora-datastreams (0.3.0)
       active-fedora (>= 11.0.0.pre, < 14)
       activemodel (< 6.0)
@@ -551,7 +557,7 @@ GEM
       activesupport (>= 4)
       railties (>= 4)
       request_store (~> 1.0)
-    loofah (2.13.0)
+    loofah (2.14.0)
       crass (~> 1.0.2)
       nokogiri (>= 1.5.9)
     mail (2.7.1)
@@ -966,7 +972,7 @@ DEPENDENCIES
   active-fedora (~> 13.2, >= 13.2.5)
   active_annotations (~> 0.3)
   active_elastic_job!
-  active_encode (~> 0.8.2)
+  active_encode!
   active_fedora-datastreams (~> 0.3)
   activejob-traffic_control
   activejob-uniqueness

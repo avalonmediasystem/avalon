@@ -31,7 +31,8 @@ module DerivativeIntercom
       track_id: track_id,
       hls_track_id: hls_track_id,
       managed: false,
-      derivativeFile: derivativeFile
+      derivativeFile: derivativeFile,
+      file_checksum: file_checksum
     }
   end
 end

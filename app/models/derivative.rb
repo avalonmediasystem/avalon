@@ -31,6 +31,9 @@ class Derivative < ActiveFedora::Base
   property :duration, predicate: ::RDF::Vocab::EBUCore.duration, multiple: false do |index|
     index.as :stored_sortable
   end
+  property :file_checksum, predicate: Avalon::RDFVocab::Derivative.file_checksum, multiple: false do |index|
+    index.as :stored_sortable
+  end
   property :track_id, predicate: ::RDF::Vocab::EBUCore.identifier, multiple: false
   property :hls_track_id, predicate: Avalon::RDFVocab::Derivative.hlsTrackID, multiple: false
   property :managed, predicate: Avalon::RDFVocab::Derivative.isManaged, multiple: false do |index|
@@ -111,6 +114,14 @@ class Derivative < ActiveFedora::Base
     derivative.video_bitrate = output[:video_bitrate]
     derivative.video_codec = output[:video_codec]
     derivative.resolution = "#{output[:width]}x#{output[:height]}" if output[:width] && output[:height]
+    derivative.file_checksum = output[:file_checksum]
+  puts "OUTPUT derivative.rb"
+  pp output
+
+  puts "DERIVATIVE derivative.rb"
+  pp derivative
+
+
 
     # FIXME: Transform to stream url here? How do we distribute to the streaming server?
     derivative.location_url = output[:url]

@@ -37,12 +37,15 @@ module Avalon
       property :supplementalFiles,   "rdfs:isDefinedBy" => %(avr-master_file:).freeze, type: "rdfs:Class".freeze
       property :thumbnailOffset,     "rdfs:isDefinedBy" => %(avr-master_file:).freeze, type: "rdfs:Class".freeze
       property :workingFilePath,     "rdfs:isDefinedBy" => %(avr-master_file:).freeze, type: "rdfs:Class".freeze
+      property :file_checksum,       "rdfs:isDefinedBy" => %(avr-master_file:).freeze, type: "rdfs:Class".freeze
+
     end
 
     class Derivative < RDF::StrictVocabulary("http://avalonmediasystem.org/rdf/vocab/derivative#")
       property :hlsURL,         "rdfs:isDefinedBy" => %(avr-derivative:).freeze, type: "rdfs:Class".freeze
       property :hlsTrackID,     "rdfs:isDefinedBy" => %(avr-derivative:).freeze, type: "rdfs:Class".freeze
       property :isManaged,      "rdfs:isDefinedBy" => %(avr-derivative:).freeze, type: "rdfs:Class".freeze
+      property :file_checksum,  "rdfs:isDefinedBy" => %(avr-derivative:).freeze, type: "rdfs:Class".freeze
     end
 
     class Encoding < RDF::StrictVocabulary("http://avalonmediasystem.org/rdf/vocab/encoding#")

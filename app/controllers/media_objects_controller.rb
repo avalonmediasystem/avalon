@@ -222,6 +222,8 @@ class MediaObjectsController < ApplicationController
     elsif master_files_params.respond_to?('each')
       old_ordered_master_files = @media_object.ordered_master_files.to_a.collect(&:id)
       master_files_params.each_with_index do |file_spec, index|
+logger.error "file_spec " , file_spec.to_json
+logger.error "index " , index.to_json
         master_file = MasterFile.new(file_spec.except(:structure, :captions, :captions_type, :files, :other_identifier, :label, :date_digitized))
         # master_file.media_object = @media_object
         master_file.structuralMetadata.content = file_spec[:structure] if file_spec[:structure].present?
@@ -231,6 +233,7 @@ class MediaObjectsController < ApplicationController
         end
         # TODO: This inconsistency should eventually be addressed by updating the API
         master_file.title = file_spec[:label] if file_spec[:label].present?
+        master_file.file_checksum = file_spec[:file_checksum] if file_spec[:file_checksum].present?
         master_file.date_digitized = DateTime.parse(file_spec[:date_digitized]).to_time.utc.iso8601 if file_spec[:date_digitized].present?
         master_file.identifier += Array(params[:files][index][:other_identifier])
         master_file.comment += Array(params[:files][index][:comment])
