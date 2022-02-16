@@ -61,22 +61,22 @@ describe MediaObjectsController, type: :controller do
       context 'with unauthenticated user' do
         # New is isolated here due to issues caused by the controller instance not being regenerated
         it "should redirect to sign in" do
-          expect(get :new).to redirect_to(/#{Regexp.quote(new_user_session_path)}\?url=.*/)
+          expect(get :new).to render_template('errors/restricted_pid')
         end
         # Item page is isolated since it does not require user authentication before action
         it "item page should redirect to restricted content page" do
           expect(get :show, params: { id: media_object.id }).to render_template('errors/restricted_pid')
         end
         it "all routes should redirect to sign in" do
-          expect(get :edit, params: { id: media_object.id }).to redirect_to(/#{Regexp.quote(new_user_session_path)}\?url=.*/)
-          expect(get :confirm_remove, params: { id: media_object.id }).to redirect_to(/#{Regexp.quote(new_user_session_path)}\?url=.*/)
-          expect(put :update, params: { id: media_object.id }).to redirect_to(/#{Regexp.quote(new_user_session_path)}\?url=.*/)
-          expect(put :update_status, params: { id: media_object.id }).to redirect_to(/#{Regexp.quote(new_user_session_path)}\?url=.*/)
-          expect(get :tree, params: { id: media_object.id }).to redirect_to(/#{Regexp.quote(new_user_session_path)}\?url=.*/)
-          expect(get :deliver_content, params: { id: media_object.id, file: 'descMetadata' }).to redirect_to(/#{Regexp.quote(new_user_session_path)}\?url=.*/)
-          expect(delete :destroy, params: { id: media_object.id }).to redirect_to(/#{Regexp.quote(new_user_session_path)}\?url=.*/)
-          expect(get :add_to_playlist_form, params: { id: media_object.id }).to redirect_to(/#{Regexp.quote(new_user_session_path)}\?url=.*/)
-          expect(post :add_to_playlist, params: { id: media_object.id }).to redirect_to(/#{Regexp.quote(new_user_session_path)}\?url=.*/)
+          expect(get :edit, params: { id: media_object.id }).to render_template('errors/restricted_pid')
+          expect(get :confirm_remove, params: { id: media_object.id }).to render_template('errors/restricted_pid')
+          expect(put :update, params: { id: media_object.id }).to render_template('errors/restricted_pid')
+          expect(put :update_status, params: { id: media_object.id }).to render_template('errors/restricted_pid')
+          expect(get :tree, params: { id: media_object.id }).to render_template('errors/restricted_pid')
+          expect(get :deliver_content, params: { id: media_object.id, file: 'descMetadata' }).to render_template('errors/restricted_pid')
+          expect(delete :destroy, params: { id: media_object.id }).to render_template('errors/restricted_pid')
+          expect(get :add_to_playlist_form, params: { id: media_object.id }).to render_template('errors/restricted_pid')
+          expect(post :add_to_playlist, params: { id: media_object.id }).to render_template('errors/restricted_pid')
         end
         it "json routes should return 401" do
           expect(post :create, format: 'json').to have_http_status(401)

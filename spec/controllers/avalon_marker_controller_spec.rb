@@ -29,8 +29,8 @@ describe AvalonMarkerController, type: :controller do
     let(:playlist_item) { FactoryBot.create(:playlist_item, playlist: playlist) }
     context 'with unauthenticated user' do
       it "all routes should redirect to sign in" do
-        expect(post :create, params: { marker: { playlist_item_id: playlist_item.id, master_file_id: master_file.id, title: Faker::Lorem.word, start_time: 0.0 } }).to redirect_to(/#{Regexp.quote(new_user_session_path)}\?url=.*/)
-        expect(put :update, params: { id: avalon_marker.id, marker: { title: Faker::Lorem.word } }).to redirect_to(/#{Regexp.quote(new_user_session_path)}\?url=.*/)
+        expect(post :create, params: { marker: { playlist_item_id: playlist_item.id, master_file_id: master_file.id, title: Faker::Lorem.word, start_time: 0.0 } }).to render_template('errors/restricted_pid')
+        expect(put :update, params: { id: avalon_marker.id, marker: { title: Faker::Lorem.word } }).to render_template('errors/restricted_pid')
       end
     end
     context 'with end-user' do

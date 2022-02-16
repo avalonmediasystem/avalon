@@ -24,6 +24,6 @@ describe 'redirect', type: :request do
   it 'stores url to redirect to when needing to authenticate (#authenticate_user!)' do
     get '/bookmarks'
     expect(request.env['rack.session']['previous_url']).to eq '/bookmarks'
-    expect(response).to redirect_to(/#{Regexp.quote(new_user_session_path)}\?url=.*/)
+    expect(response).to render_template('errors/restricted_pid')
   end
 end
