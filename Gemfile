@@ -3,7 +3,7 @@ source 'https://rubygems.org'
 # Core rails
 gem 'bootsnap', require: false
 gem 'listen'
-gem 'rails', '=5.2.6.3'
+gem 'rails', '=6.0.4.6'
 gem 'sprockets', '~>3.7.2'
 gem 'sqlite3'
 
@@ -13,7 +13,7 @@ gem 'jquery-datatables'
 gem 'jquery-rails'
 gem 'jquery-ui-rails'
 gem 'react-rails'
-gem 'sass-rails', '~> 5.0'
+gem 'sass-rails', '>= 6'
 # Use the last known good version of sass
 gem 'sass', '3.4.22'
 gem 'sprockets-es6'
@@ -22,22 +22,22 @@ gem 'webpacker'
 
 # Core Samvera
 gem 'active-fedora', '~> 13.2', '>= 13.2.5'
-gem 'active_fedora-datastreams', '~> 0.3'
-gem 'fedora-migrate', git: 'https://github.com/avalonmediasystem/fedora-migrate.git', tag: 'avalon-r6.5'
-gem 'hydra-head', '~> 11.0'
+gem 'active_fedora-datastreams', git: 'https://github.com/samvera-labs/active_fedora-datastreams', branch: 'rails6'
+#gem 'fedora-migrate', git: 'https://github.com/avalonmediasystem/fedora-migrate.git', tag: 'avalon-r6.5'
+gem 'hydra-head', '~> 12.0'
 gem 'ldp', '~> 1.0.3'
 gem 'noid-rails', '~> 3.0.1'
 gem 'rdf-rdfxml'
 gem 'rdf-vocab', '< 3.1.5'
 
 # Samvera version pins
-gem 'blacklight', '< 7.0'
+gem 'blacklight', '< 8'
 gem 'rdf', '~> 3.1'
 gem 'rsolr', '~> 1.0'
 
 # Rails & Samvera Plugins
 gem 'about_page', git: 'https://github.com/avalonmediasystem/about_page.git', tag: 'avalon-r6.5'
-gem 'active_annotations', '~> 0.3'
+gem 'active_annotations', git: 'https://github.com/avalonmediasystem/active_annotations.git', branch: 'the_future'
 gem 'activerecord-session_store', '>= 2.0.0'
 gem 'acts_as_list'
 gem 'api-pagination'
@@ -50,7 +50,7 @@ gem 'rack-cors', require: 'rack/cors'
 gem 'rails_same_site_cookie'
 gem 'recaptcha', require: 'recaptcha/rails'
 gem 'samvera-persona', '~> 0.3'
-gem 'speedy-af', '~> 0.1.3'
+gem 'speedy-af', git: 'https://github.com/samvera-labs/speedy_af.git', branch: 'rails6'
 
 # Avalon Components
 gem 'avalon-workflow', git: "https://github.com/avalonmediasystem/avalon-workflow.git", tag: 'avalon-r6.5'
