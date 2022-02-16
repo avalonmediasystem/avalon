@@ -61,7 +61,7 @@ RSpec.describe PlaylistsController, type: :controller do
     context 'with unauthenticated user' do
       # New is isolated here due to issues caused by the controller instance not being regenerated
       it "should redirect to sign in" do
-        expect(get :new).to redirect_to(/#{Regexp.quote(new_user_session_path)}\?url=.*/)
+        expect(get :new).to render_template('errors/restricted_pid')
       end
       # Show is isolated because it does not require authorization before the action
       it "playlist view page should redirect to restricted content page" do
@@ -69,12 +69,12 @@ RSpec.describe PlaylistsController, type: :controller do
         expect(get :refresh_info, params: { id: playlist.id, position: 1 }, xhr: true).to render_template('errors/restricted_pid')
       end
       it "all routes should redirect to sign in" do
-        expect(get :index).to redirect_to(/#{Regexp.quote(new_user_session_path)}\?url=.*/)
-        expect(get :edit, params: { id: playlist.id }).to redirect_to(/#{Regexp.quote(new_user_session_path)}\?url=.*/)
-        expect(post :create).to redirect_to(/#{Regexp.quote(new_user_session_path)}\?url=.*/)
-        expect(put :update, params: { id: playlist.id }).to redirect_to(/#{Regexp.quote(new_user_session_path)}\?url=.*/)
-        expect(put :update_multiple, params: { id: playlist.id }).to redirect_to(/#{Regexp.quote(new_user_session_path)}\?url=.*/)
-        expect(delete :destroy, params: { id: playlist.id }).to redirect_to(/#{Regexp.quote(new_user_session_path)}\?url=.*/)
+        expect(get :index).to render_template('errors/restricted_pid')
+        expect(get :edit, params: { id: playlist.id }).to render_template('errors/restricted_pid')
+        expect(post :create).to render_template('errors/restricted_pid')
+        expect(put :update, params: { id: playlist.id }).to render_template('errors/restricted_pid')
+        expect(put :update_multiple, params: { id: playlist.id }).to render_template('errors/restricted_pid')
+        expect(delete :destroy, params: { id: playlist.id }).to render_template('errors/restricted_pid')
       end
       context 'with a public playlist' do
         let(:playlist) { FactoryBot.create(:playlist, visibility: Playlist::PUBLIC, items: [playlist_item]) }

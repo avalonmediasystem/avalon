@@ -202,7 +202,7 @@ class ApplicationController < ActionController::Base
       head :unauthorized
     else
       session[:previous_url] = request.fullpath unless request.xhr?
-      redirect_to new_user_session_path(url: request.url), flash: { notice: 'You need to login to perform this action.' }
+      render '/errors/restricted_pid', status: :unauthorized
     end
   end
 
