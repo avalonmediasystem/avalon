@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/apertome/active_encode.git
-  revision: 2cfd5a48eaa8577b58c83d4cb50fe337cee33462
+  revision: bf6ca2471d054f4e3e401ae85d103cfa7077c3c9
   branch: checksum
   specs:
     active_encode (0.7.0)
@@ -489,7 +489,7 @@ GEM
       hydra-access-controls (= 11.0.7)
       hydra-core (= 11.0.7)
       rails (>= 5.2, < 6.1)
-    i18n (1.9.1)
+    i18n (1.10.0)
       concurrent-ruby (~> 1.0)
     iconv (1.0.8)
     iiif_manifest (0.6.0)

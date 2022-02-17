@@ -216,7 +216,14 @@ class MasterFilesController < ApplicationController
     end
 
     begin
+puts "CONTROLLER masterfile params"
+#params.file_checksum = "QWERTY"
+pp params
       result = MasterFileBuilder.build(media_object, params)
+
+puts "CONTROLLER result"
+pp result
+
       @master_files = result[:master_files]
       [:notice, :error].each { |type| flash[type] = result[:flash][type] }
     rescue MasterFileBuilder::BuildError => err
@@ -238,6 +245,7 @@ class MasterFilesController < ApplicationController
     @master_file.date_digitized = DateTime.parse(master_file_params[:date_digitized]).to_time.utc.iso8601 if master_file_params[:date_digitized].present?
     @master_file.poster_offset = master_file_params[:poster_offset] if master_file_params[:poster_offset].present?
     @master_file.permalink = master_file_params[:permalink] if master_file_params[:permalink].present?
+    @master_file.file_checksum = master_file_params[:file_checksum] if master_file_params[:file_checksum].present?
 
     unless @master_file.save!
       raise Avalon::SaveError, @master_file.errors.to_a.join('<br/>')

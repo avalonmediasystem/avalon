@@ -14,7 +14,7 @@
 
 module MasterFileBuilder
   class BuildError < Exception; end
-  Spec = Struct.new(:content, :original_filename, :content_type, :workflow, :file_size, :auth_header)
+  Spec = Struct.new(:content, :original_filename, :content_type, :workflow, :file_size, :auth_header, :file_checksum)
 
   def self.build(media_object, params)
     builder = if params.has_key?(:Filedata) and params.has_key?(:original)
@@ -32,6 +32,9 @@ module MasterFileBuilder
   end
 
   def self.from_specs(media_object, specs)
+  puts "BUILDING FROM SPECS! media_object, specs"
+  pp media_object
+  pp specs
     response = { flash: { error: [] }, master_files: [] }
     specs.each do |spec|
       unless spec.original_filename.valid_encoding? && spec.original_filename.ascii_only?
@@ -39,7 +42,9 @@ module MasterFileBuilder
       end
 
       master_file = MasterFile.new()
-      master_file.setContent(spec.content, file_name: spec.original_filename, file_size: spec.file_size, auth_header: spec.auth_header, dropbox_dir: media_object.collection.dropbox_absolute_path)
+      master_file.setContent(spec.content, file_name: spec.original_filename, file_size: spec.file_size, auth_header: spec.auth_header, dropbox_dir: media_object.collection.dropbox_absolute_path, file_checksum: spec.file_checksum)
+      # TODO: ADD statement like master_file.calculate_file_checksum
+      
       master_file.set_workflow(spec.workflow)
 
       if 'Unknown' == master_file.file_format

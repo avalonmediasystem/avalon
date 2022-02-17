@@ -60,7 +60,7 @@ class MasterFile < ActiveFedora::Base
   property :file_location, predicate: ::RDF::Vocab::EBUCore.locator, multiple: false do |index|
     index.as :stored_sortable
   end
-  property :file_checksum, predicate: Avalon::RDFVocab::Derivative.file_checksum, multiple: false do |index|
+  property :file_checksum, predicate: Avalon::RDFVocab::MasterFile.file_checksum, multiple: false do |index|
     index.as :stored_sortable
   end
   property :file_size, predicate: ::RDF::Vocab::EBUCore.fileSize, multiple: false # indexed in to_solr
@@ -192,7 +192,15 @@ class MasterFile < ActiveFedora::Base
     end
   end
 
-  def setContent(file, file_name: nil, file_size: nil, auth_header: nil, dropbox_dir: nil)
+  def setContent(file, file_name: nil, file_size: nil, auth_header: nil, dropbox_dir: nil, file_checksum: nil)
+    puts "setContent flags"
+    puts "file #{file.to_s}"
+    puts "file_name #{file_name}"
+    puts "file_size #{file_size}"
+    puts "auth_header #{auth_header}"
+    puts "dropbox_dir #{dropbox_dir}"
+    puts "file_checksum #{file_checksum}"
+
     case file
     when Hash #Multiple files for pre-transcoded derivatives
       saveDerivativesHash(file)
@@ -205,10 +213,12 @@ class MasterFile < ActiveFedora::Base
       when 's3'
         self.file_location = file.to_s
         self.file_size = FileLocator::S3File.new(file).object.size
+        self.file_checksum =  FileLocator::S3File.new(file).object.etag
       else
         self.file_location = file.to_s
         self.file_size = file_size
         self.title = file_name
+        self.file_checksum = file_checksum
       end
     else #Batch
       saveOriginal(file, File.basename(file.path), dropbox_dir)
@@ -661,7 +671,12 @@ class MasterFile < ActiveFedora::Base
   end
 
   def saveOriginal(file, original_name = nil, dropbox_dir = media_object.collection.dropbox_absolute_path)
+    puts "INSIDE saveOriginal CONTROLLER MODEL"
     realpath = File.realpath(file.path)
+    # self.file_checksum = "asdf" # TODO: remove
+puts "CONTROLLER realpath"
+pp realpath
+
 
     if original_name.present?
       # If we have a temp name from an upload, rename to the original name supplied by the user
@@ -681,10 +696,11 @@ class MasterFile < ActiveFedora::Base
 
       create_working_file!(realpath)
     end
+
     self.file_location = realpath
     self.file_size = file.size.to_s
-    # self.file_checksum = `sha1sum #{realpath}`
-    self.file_checksum = "asdf"
+
+    self.file_checksum = `sha1sum #{realpath}`
   ensure
     file.close
   end
