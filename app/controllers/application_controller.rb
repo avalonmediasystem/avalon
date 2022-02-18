@@ -33,7 +33,6 @@ class ApplicationController < ActionController::Base
   before_action :rewrite_v4_ids, if: proc{|c| request.method_symbol == :get && [params[:id], params[:content]].compact.any? { |i| i =~ /^[a-z]+:[0-9]+$/}}
   before_action :set_no_cache_headers, if: proc{|c| request.xhr? }
   prepend_before_action :remove_zero_width_chars
-  skip_after_action :discard_flash_if_xhr # Suppress overwhelming Blacklight deprecation warning
 
   def set_no_cache_headers
     response.headers["Cache-Control"] = "no-cache, no-store"
