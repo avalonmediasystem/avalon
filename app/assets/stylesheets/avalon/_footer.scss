@@ -42,7 +42,7 @@ footer {
     float: right;
   }
 
-  @media screen and (max-width: $screen-xs-max) {
+  @include media-breakpoint-down(xs) {
     font-size: 12px;
 
     ul {

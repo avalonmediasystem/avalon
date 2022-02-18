@@ -33,27 +33,6 @@ GIT
     avalon-workflow (0.0.3)
 
 GIT
-  remote: https://github.com/avalonmediasystem/browse-everything.git
-  revision: 7dddc2bbafe9e30c5caa9d88e57d136b8bca521a
-  branch: v0.16.1-gdrive-fixes-plus
-  specs:
-    browse-everything (0.16.1)
-      addressable (~> 2.5)
-      aws-sdk-s3
-      bootstrap-sass (~> 3.2)
-      dropbox_api (>= 0.1.10)
-      font-awesome-rails
-      google-api-client (~> 0.21)
-      google_drive (~> 2.1)
-      googleauth (= 0.6.2)
-      rails (>= 4.2)
-      ruby-box
-      sass-rails
-      signet (~> 0.8)
-      thor (~> 0.20)
-      typhoeus
-
-GIT
   remote: https://github.com/avalonmediasystem/media-element-add-to-playlist.git
   revision: dfde0084f6c17ca16fa675086eb025440f99a02d
   tag: avalon-r6.5
@@ -279,13 +258,25 @@ GEM
       deprecation (~> 1.0)
     bootsnap (1.10.3)
       msgpack (~> 1.2)
-    bootstrap-sass (3.4.0)
-      autoprefixer-rails (>= 5.2.1)
-      sassc (>= 2.0.0)
+    bootstrap (4.6.1)
+      autoprefixer-rails (>= 9.1.0)
+      popper_js (>= 1.14.3, < 2)
+      sassc-rails (>= 2.0.0)
     bootstrap-toggle-rails (2.2.1.0)
     bootstrap_form (5.0.0)
       actionpack (>= 5.2)
       activemodel (>= 5.2)
+    browse-everything (1.1.2)
+      addressable (~> 2.5)
+      aws-sdk-s3
+      dropbox_api (>= 0.1.10)
+      google-api-client (~> 0.23)
+      google_drive (>= 2.1, < 4)
+      googleauth (>= 0.6.6, < 1.0)
+      rails (>= 4.2, < 7.0)
+      ruby-box
+      signet (~> 0.8)
+      typhoeus
     builder (3.2.4)
     byebug (11.1.3)
     cancancan (1.17.0)
@@ -448,29 +439,46 @@ GEM
     fugit (1.5.2)
       et-orbi (~> 1.1, >= 1.1.8)
       raabro (~> 1.4)
+    gems (1.2.0)
     globalid (1.0.0)
       activesupport (>= 5.0)
     google-analytics-rails (1.1.0)
-    google-api-client (0.32.1)
+    google-api-client (0.53.0)
+      google-apis-core (~> 0.1)
+      google-apis-generator (~> 0.1)
+    google-apis-core (0.4.2)
       addressable (~> 2.5, >= 2.5.1)
-      googleauth (>= 0.5, < 0.10.0)
-      httpclient (>= 2.8.1, < 3.0)
+      googleauth (>= 0.16.2, < 2.a)
+      httpclient (>= 2.8.1, < 3.a)
       mini_mime (~> 1.0)
       representable (~> 3.0)
-      retriable (>= 2.0, < 4.0)
-      signet (~> 0.10)
-    google_drive (2.1.3)
-      google-api-client (>= 0.11.0, < 1.0.0)
+      retriable (>= 2.0, < 4.a)
+      rexml
+      webrick
+    google-apis-discovery_v1 (0.8.0)
+      google-apis-core (>= 0.4, < 2.a)
+    google-apis-drive_v3 (0.18.0)
+      google-apis-core (>= 0.4, < 2.a)
+    google-apis-generator (0.4.1)
+      activesupport (>= 5.0)
+      gems (~> 1.2)
+      google-apis-core (>= 0.4, < 2.a)
+      google-apis-discovery_v1 (~> 0.5)
+      thor (>= 0.20, < 2.a)
+    google-apis-sheets_v4 (0.11.0)
+      google-apis-core (>= 0.4, < 2.a)
+    google_drive (3.0.7)
+      google-apis-drive_v3 (>= 0.5.0, < 1.0.0)
+      google-apis-sheets_v4 (>= 0.4.0, < 1.0.0)
       googleauth (>= 0.5.0, < 1.0.0)
       nokogiri (>= 1.5.3, < 2.0.0)
-    googleauth (0.6.2)
-      faraday (~> 0.12)
+    googleauth (0.17.1)
+      faraday (>= 0.17.3, < 2.0)
       jwt (>= 1.4, < 3.0)
-      logging (~> 2.0)
-      memoist (~> 0.12)
+      memoist (~> 0.16)
       multi_json (~> 1.11)
-      os (~> 0.9)
-      signet (~> 0.7)
+      os (>= 0.9, < 2.0)
+      signet (~> 0.15)
     haml (5.2.2)
       temple (>= 0.8.0)
       tilt
@@ -562,13 +570,9 @@ GEM
     listen (3.7.1)
       rb-fsevent (~> 0.10, >= 0.10.3)
       rb-inotify (~> 0.9, >= 0.9.10)
-    little-plugger (1.1.4)
     llhttp-ffi (0.4.0)
       ffi-compiler (~> 1.0)
       rake (~> 13.0)
-    logging (2.3.0)
-      little-plugger (~> 1.1)
-      multi_json (~> 1.14)
     lograge (0.11.2)
       actionpack (>= 4)
       activesupport (>= 4)
@@ -638,7 +642,7 @@ GEM
       omniauth (~> 2.0)
       ruby-saml (~> 1.9)
     orm_adapter (0.5.0)
-    os (0.9.6)
+    os (1.1.4)
     ostruct (0.5.3)
     parallel (1.21.0)
     paranoia (2.5.2)
@@ -646,6 +650,7 @@ GEM
     parser (3.1.0.0)
       ast (~> 2.4.1)
     pg (1.3.2)
+    popper_js (1.16.0)
     pretender (0.4.0)
       actionpack (>= 5.2)
     pry (0.13.1)
@@ -844,8 +849,6 @@ GEM
       pretender
       rails (>= 5.2.4.3, < 6.1)
     sass (3.4.22)
-    sass-rails (6.0.0)
-      sassc-rails (~> 2.1, >= 2.1.1)
     sassc (2.4.0)
       ffi (~> 1.9)
     sassc-rails (2.1.2)
@@ -919,6 +922,10 @@ GEM
     thread_safe (0.3.6)
     tilt (2.0.10)
     trailblazer-option (0.1.2)
+    twitter-typeahead-rails (0.11.1.pre.corejavascript)
+      actionpack (>= 3.1)
+      jquery-rails
+      railties (>= 3.1)
     typhoeus (1.4.0)
       ethon (>= 0.9.0)
     tzinfo (1.2.9)
@@ -956,6 +963,7 @@ GEM
       rack-proxy (>= 0.6.1)
       railties (>= 5.2)
       semantic_range (>= 2.3.0)
+    webrick (1.7.0)
     websocket-driver (0.7.5)
       websocket-extensions (>= 0.1.0)
     websocket-extensions (0.1.5)
@@ -1001,10 +1009,10 @@ DEPENDENCIES
   bixby
   blacklight (< 8)
   bootsnap
-  bootstrap-sass (< 3.4.1)
+  bootstrap (~> 4.0)
   bootstrap-toggle-rails
   bootstrap_form
-  browse-everything!
+  browse-everything
   byebug
   capistrano (~> 3.6)
   capistrano-passenger
@@ -1029,6 +1037,7 @@ DEPENDENCIES
   faker
   fastimage
   fcrepo_wrapper
+  font-awesome-rails
   google-analytics-rails (= 1.1.0)
   hashdiff (>= 1.0)
   hooks
@@ -1079,7 +1088,6 @@ DEPENDENCIES
   rspec_junit_formatter
   samvera-persona (~> 0.3)
   sass (= 3.4.22)
-  sass-rails (>= 6)
   selenium-webdriver
   shoulda-matchers
   sidekiq (~> 6.2)
@@ -1090,6 +1098,7 @@ DEPENDENCIES
   sprockets (~> 3.7.2)
   sprockets-es6
   sqlite3
+  twitter-typeahead-rails (= 0.11.1.pre.corejavascript)
   uglifier (>= 1.3.0)
   wavefile (~> 1.0.1)
   web-console
