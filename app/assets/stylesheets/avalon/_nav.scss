@@ -14,6 +14,18 @@
  * ---  END LICENSE_HEADER BLOCK  ---
 */
 
+// Copied from bootstrap-sass
+$line-height-computed:    floor(($font-size-base * $line-height-base)) !default; // ~20px
+$gray-base:              #000 !default;
+$gray-lighter:           lighten($gray-base, 93.5%) !default; // #eee
+$gray-darker:            lighten($gray-base, 13.5%) !default; // #222
+$state-success-text:             #3c763d !default;
+$state-success-bg:               #dff0d8 !default;
+$state-success-border:           darken(adjust-hue($state-success-bg, -10), 5%) !default;
+$state-info-text:                #31708f !default;
+$state-info-bg:                  #d9edf7 !default;
+$state-info-border:              darken(adjust-hue($state-info-bg, -10), 7%) !default;
+
 /**
  *  Overridding Blacklight's brand logo
  */
@@ -26,7 +38,7 @@
   }
 
   .navbar-toggle {
-    @media screen and (max-width: $screen-xs-max) {
+    @include media-breakpoint-down(xs) {
       background: $primaryDark;
     }
   }
@@ -48,7 +60,7 @@
 
 .navbar-nav {
   > li > a {
-    @media screen and (max-width: $screen-sm-max) {
+    @include media-breakpoint-down(sm) {
       padding-left: 10px;
       padding-right: 10px;
     }
@@ -56,7 +68,7 @@
 }
 
 .navbar-default {
-  @media screen and (max-width: $screen-xs-max) {
+  @include media-breakpoint-down(xs) {
     background: $primaryDark;
   }
 }
@@ -73,7 +85,7 @@
     margin-right: 6px;
   }
 
-  @media screen and (max-width: $screen-xs-max) {
+  @include media-breakpoint-down(xs) {
     background: white;
     box-shadow: 0 0 5px;
   }
@@ -186,7 +198,7 @@
   width: 100%;
 }
 
-@media (max-width: $screen-xs-max) {
+@include media-breakpoint-down(xs) {
   .manage-btn {
     height: 40px;
   }

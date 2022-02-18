@@ -140,19 +140,19 @@ div.alert-danger {
 }
 
 .mobile-hidden {
-  @media (max-width: $screen-xs-max) {
+  @include media-breakpoint-down(xs) {
     display: none !important;
   }
 }
 
 .sm-hidden {
-  @media (max-width: $screen-sm-max) {
+  @include media-breakpoint-down(sm) {
     display: none !important;
   }
 }
 
 .desktop-hidden {
-  @media (min-width: $screen-sm-min) {
+  @include media-breakpoint-up(sm) {
     display: none !important;
   }
 }
@@ -412,7 +412,7 @@ a[data-trigger='submit'] {
   }
 }
 
-@media (max-width: $screen-xs-max) {
+@include media-breakpoint-down(xs) {
   #content {
     .btn {
       margin-top: 2px;
@@ -1073,14 +1073,14 @@ h5.panel-title {
   text-align: right;
 }
 
-@media (min-width: $screen-xs-max) {
+@include media-breakpoint-up(xs) {
   .dataTables_length {
     float: left;
   }
 }
 
 // Make table body scrollable in mobile devices
-@media (max-width: $screen-xs-max) {
+@include media-breakpoint-down(xs) {
   .dataTableBody {
     width: 100%;
     overflow-x: scroll;

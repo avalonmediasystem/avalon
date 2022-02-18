@@ -26,10 +26,14 @@
 // Read Sprockets README (https://github.com/rails/sprockets#sprockets-directives) for details
 // about supported directives.
 //
-//= require jquery
+//= require jquery3
 //= require jquery_ujs
+//= require rails-ujs
 
 // Required by Blacklight
+//= require popper
+//= require twitter/typeahead
+//= require bootstrap
 //= require jquery-ui
 //= require blacklight/blacklight
 //= require browse_everything
