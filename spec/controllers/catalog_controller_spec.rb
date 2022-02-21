@@ -262,7 +262,7 @@ describe CatalogController do
           get 'index', params: { q: "", format: 'atom' }
           expect(response).to be_successful
           expect(response).to render_template('catalog/index')
-          expect(response.content_type).to eq "application/atom+xml"
+          expect(response.content_type).to eq "application/atom+xml; charset=utf-8"
           expect(assigns(:document_list).count).to eq 2
           expect(assigns(:document_list).map(&:id)).to match_array [private_media_object.id, public_media_object.id]
         end
@@ -271,7 +271,7 @@ describe CatalogController do
         it "should not show results" do
           get 'index', params: { q: "", format: 'atom' }
           expect(response).to be_successful
-          expect(response.content_type).to eq "application/atom+xml"
+          expect(response.content_type).to eq "application/atom+xml; charset=utf-8"
           expect(response).to render_template('catalog/index')
           expect(assigns(:document_list).count).to eq 1
           expect(assigns(:document_list).map(&:id)).to eq([public_media_object.id])

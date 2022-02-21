@@ -1374,7 +1374,7 @@ describe MediaObjectsController, type: :controller do
     it 'returns descMetadata' do
       get :deliver_content, params: { id: media_object.id, file: 'descMetadata' }
       expect(response.status).to eq 200
-      expect(response.content_type).to eq 'text/xml'
+      expect(response.content_type).to eq 'text/xml; charset=utf-8'
       expect(response.body).to eq media_object.descMetadata.content
     end
   end
@@ -1389,7 +1389,7 @@ describe MediaObjectsController, type: :controller do
     it 'returns a json preview of the media object' do
       get :move_preview, params: { id: media_object.id, format: 'json' }
       expect(response.status).to eq 200
-      expect(response.content_type).to eq 'application/json'
+      expect(response.content_type).to eq 'application/json; charset=utf-8'
       json_preview = JSON.parse(response.body)
       expect(json_preview.keys).to eq ['id', 'title', 'collection', 'main_contributors', 'publication_date', 'published_by', 'published']
     end
@@ -1404,7 +1404,7 @@ describe MediaObjectsController, type: :controller do
       it 'returns a json preview of the media object' do
         get :move_preview, params: { id: media_object.id, format: 'json' }
         expect(response.status).to eq 200
-        expect(response.content_type).to eq 'application/json'
+        expect(response.content_type).to eq 'application/json; charset=utf-8'
         json_preview = JSON.parse(response.body)
         expect(json_preview.keys).to eq ['id', 'title', 'collection', 'main_contributors', 'publication_date', 'published_by', 'published']
       end
