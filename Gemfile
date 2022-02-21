@@ -27,7 +27,6 @@ gem 'webpacker'
 # Core Samvera
 gem 'active-fedora', '~> 13.2', '>= 13.2.5'
 gem 'active_fedora-datastreams', git: 'https://github.com/samvera-labs/active_fedora-datastreams', branch: 'rails6'
-#gem 'fedora-migrate', git: 'https://github.com/avalonmediasystem/fedora-migrate.git', tag: 'avalon-r6.5'
 gem 'hydra-head', '~> 12.0'
 gem 'ldp', '~> 1.0.3'
 gem 'noid-rails', '~> 3.0.1'
