@@ -1,8 +1,8 @@
 #config/solr_wrapper_test.yml
-# version: 6.0.0
+version: 8.11.1
 port: 8985
 instance_dir: tmp/solr-test
 collection:
     persist: false
-    dir: solr/config
+    dir: solr/conf
     name: hydra-test

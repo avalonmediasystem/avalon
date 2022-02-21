@@ -1,6 +1,6 @@
 version: 2.1
 orbs:
-  samvera: samvera/circleci-orb@1.0.0
+  samvera: samvera/circleci-orb@1
 jobs:
   build:
     docker:
@@ -20,8 +20,12 @@ jobs:
       - image: ualbertalib/docker-fcrepo4:4.7
         environment:
           CATALINA_OPTS: '-Djava.awt.headless=true -Dfile.encoding=UTF-8 -server -Xms512m -Xmx1024m -XX:NewSize=256m -XX:MaxNewSize=256m -XX:PermSize=256m -XX:MaxPermSize=256m -XX:+DisableExplicitGC'
-      - image: solr:7-alpine
-        command: bin/solr -cloud -noprompt -f -p <<parameters.solr_port>>
+      - image: zookeeper:3.4
+      - image: solr:8-slim
+        environment:
+          VERBOSE: yes
+          SECURITY_JSON: '{"authentication":{"blockUnknown": false, "class":"solr.BasicAuthPlugin", "credentials":{"solr":"IV0EHq1OnNrj6gvRCwvFwTrZ1+z1oBbnQdiVC3otuq0= Ndd7LKvVBAaZIF0QAVi1ekCfAJXr1GGfLtRUXhgrF8c="}, "realm":"My Solr users", "forwardCredentials": false}, "authorization":{ "class":"solr.RuleBasedAuthorizationPlugin", "permissions":[{"name":"security-edit", "role":"admin"}], "user-role":{"solr":"admin"}}}'
+        command: sh -c "server/scripts/cloud-scripts/zkcli.sh -zkhost localhost:2181 -cmd put /security.json \"${SECURITY_JSON}\" && solr-fg -cloud -noprompt  -p << parameters.solr_port >> -z localhost:2181"
       - image: redis:alpine
 
     parameters:
@@ -66,7 +70,8 @@ jobs:
           paths:
             - .cache/yarn
 
-      - samvera/install_solr_core
+      - samvera/install_solr_core:
+          solr_config_path: 'solr/conf'
 
       - run:
           command: |
