@@ -303,7 +303,7 @@ RSpec.describe TimelinesController, type: :controller do
         it "returns the created timeline as json" do
           post :create, params: { timeline: valid_attributes, format: :json }, session: valid_session
           expect(response).to be_created
-          expect(response.content_type).to eq 'application/json'
+          expect(response.content_type).to eq 'application/json; charset=utf-8'
           expect(response.location).to eq "http://test.host/timelines/1"
           response_json = JSON.parse(response.body)
           new_timeline = Timeline.last
@@ -314,7 +314,7 @@ RSpec.describe TimelinesController, type: :controller do
         it 'generates a token if visibility is private-with-token' do
           post :create, params: { timeline: valid_attributes.merge(visibility: Timeline::PRIVATE_WITH_TOKEN), format: :json }, session: valid_session
           expect(response).to be_successful
-          expect(response.content_type).to eq 'application/json'
+          expect(response.content_type).to eq 'application/json; charset=utf-8'
           response_json = JSON.parse(response.body)
           expect(response_json["access_token"]).not_to be_blank
         end
@@ -328,7 +328,7 @@ RSpec.describe TimelinesController, type: :controller do
         it "returns an unprocessable_entity response with the errors" do
           post :create, params: { timeline: invalid_attributes, format: :json }, session: valid_session
           expect(response).to be_unprocessable
-          expect(response.content_type).to eq 'application/json'
+          expect(response.content_type).to eq 'application/json; charset=utf-8'
           expect(JSON.parse(response.body)).not_to be_blank
         end
       end
@@ -402,7 +402,7 @@ RSpec.describe TimelinesController, type: :controller do
           post :create, params: { format: :json }, body: submitted_manifest.to_json, session: valid_session
           new_timeline = Timeline.last
           expect(response).to be_created
-          expect(response.content_type).to eq 'application/json'
+          expect(response.content_type).to eq 'application/json; charset=utf-8'
           expect(response.location).to eq "http://test.host/timelines/#{new_timeline.id}"
           response_json = JSON.parse(response.body)
           # Ensure that stored timeline, response timeline, and submitted manifest all match

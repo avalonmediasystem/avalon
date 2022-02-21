@@ -77,7 +77,7 @@ describe CollectionsController, type: :controller do
         login_as :administrator
         get 'index', params: { format: :json }
         expect(response).to be_ok
-        expect(response.content_type).to eq "application/json"
+        expect(response.content_type).to eq "application/json; charset=utf-8"
         expect(assigns(:doc_presenters).count).to eql(1)
         expect(assigns(:doc_presenters).map(&:id)).to match_array([collection.id])
       end
@@ -131,7 +131,7 @@ describe CollectionsController, type: :controller do
         login_as :administrator
         get 'show', params: { id: collection.id, format: :json }
         expect(response).to be_ok
-        expect(response.content_type).to eq "application/json"
+        expect(response.content_type).to eq "application/json; charset=utf-8"
         expect(assigns(:doc_presenter).id).to eq collection.id
         end
     end
@@ -147,7 +147,7 @@ describe CollectionsController, type: :controller do
     it 'returns the poster image' do
       get 'poster', params: { id: collection.id }
       expect(response).to be_ok
-      expect(response.content_type).to eq 'image/png'
+      expect(response.content_type).to eq 'image/png; charset=utf-8'
     end
 
     context 'when the collection does not have a poster image' do

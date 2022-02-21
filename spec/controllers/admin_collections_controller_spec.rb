@@ -542,7 +542,7 @@ describe Admin::CollectionsController, type: :controller do
     it 'returns the poster' do
       get :poster, params: { id: collection.id }
       expect(response).to have_http_status(:ok)
-      expect(response.content_type).to eq "image/png"
+      expect(response.content_type).to eq "image/png; charset=utf-8"
       expect(response.body).not_to be_blank
     end
   end
