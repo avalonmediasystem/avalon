@@ -281,7 +281,7 @@ describe Admin::CollectionsController, type: :controller do
       # allow(mock_email).to receive(:deliver_later)
       # expect(NotificationsMailer).to receive(:new_collection).and_return(mock_email)
       # FIXME: This delivers two instead of one for some reason
-      expect {post 'create', params: { format:'json', admin_collection: {name: collection.name, description: collection.description, unit: collection.unit, managers: collection.managers} }}.to have_enqueued_job(ActionMailer::DeliveryJob).twice
+      expect {post 'create', params: { format:'json', admin_collection: {name: collection.name, description: collection.description, unit: collection.unit, managers: collection.managers} }}.to have_enqueued_job(ActionMailer::MailDeliveryJob).twice
       # post 'create', format:'json', admin_collection: {name: collection.name, description: collection.description, unit: collection.unit, managers: collection.managers}
     end
     it "should create a new collection" do
@@ -317,7 +317,7 @@ describe Admin::CollectionsController, type: :controller do
       # expect(mock_delay).to receive(:update_collection)
       @collection = FactoryBot.create(:collection)
       # put 'update', id: @collection.id, admin_collection: {name: "#{@collection.name}-new", description: @collection.description, unit: @collection.unit}
-      expect {put 'update', params: { id: @collection.id, admin_collection: {name: "#{@collection.name}-new", description: @collection.description, unit: @collection.unit} }}.to have_enqueued_job(ActionMailer::DeliveryJob).once
+      expect {put 'update', params: { id: @collection.id, admin_collection: {name: "#{@collection.name}-new", description: @collection.description, unit: @collection.unit} }}.to have_enqueued_job(ActionMailer::MailDeliveryJob).once
     end
 
     context "update REST API" do
