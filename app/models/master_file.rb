@@ -214,11 +214,16 @@ class MasterFile < ActiveFedora::Base
         self.file_location = file.to_s
         self.file_size = FileLocator::S3File.new(file).object.size
         self.file_checksum =  FileLocator::S3File.new(file).object.etag
+        puts "s3 file checksum: #{self.file_checksum}"
+        puts "S3File object:"
+        pp FileLocator::S3File.new(file).to_json
       else
         self.file_location = file.to_s
         self.file_size = file_size
         self.title = file_name
         self.file_checksum = file_checksum
+        puts "else file checksum: #{self.file_checksum}"
+
       end
     else #Batch
       saveOriginal(file, File.basename(file.path), dropbox_dir)
