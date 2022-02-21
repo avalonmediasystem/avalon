@@ -16,8 +16,8 @@ require 'rails_helper'
 
 describe 'redirect', type: :request do
   it 'stores url to redirect to when unauthorized and needing to authenticate (#authorize!)' do
-    get '/admin/migration_report'
-    expect(request.env['rack.session']['previous_url']).to eq '/admin/migration_report'
+    get '/admin/collections'
+    expect(request.env['rack.session']['previous_url']).to eq '/admin/collections'
     expect(response).to render_template('errors/restricted_pid')
   end
 

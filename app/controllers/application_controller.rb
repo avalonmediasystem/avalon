@@ -47,8 +47,6 @@ class ApplicationController < ActionController::Base
   end
 
   def rewrite_v4_ids
-    return if params[:controller] =~ /migration/
-
     params.permit!
     query_result = ActiveFedora::SolrService.query(%{identifier_ssim:"#{params[:id]}"}, rows: 1, fl: 'id')
 
