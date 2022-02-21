@@ -627,8 +627,7 @@ logger.error "index " , index.to_json
   def master_files_params
     params.permit(:files => [:file_location,
                              :title,
-                             :label,
-                             :file_location,
+                             :label,                             
                              :file_checksum,
                              :file_size,
                              :duration,
