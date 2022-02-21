@@ -25,21 +25,21 @@ class BookmarksController < CatalogController
   blacklight_config.show.document_actions[:email].if = false if blacklight_config.show.document_actions[:email]
   blacklight_config.show.document_actions[:citation].if = false if blacklight_config.show.document_actions[:citation]
 
-  add_show_tools_partial( :update_access_control, callback: :access_control_action, if: Proc.new { |context, config, options| context.user_can? :update_access_control } )
+  blacklight_config.add_show_tools_partial( :update_access_control, callback: :access_control_action, if: Proc.new { |context, config, options| context.user_can? :update_access_control } )
 
-  add_show_tools_partial( :move, callback: :move_action, if: Proc.new { |context, config, options| context.user_can? :move } )
+  blacklight_config.add_show_tools_partial( :move, callback: :move_action, if: Proc.new { |context, config, options| context.user_can? :move } )
 
-  add_show_tools_partial( :publish, callback: :status_action, modal: false, partial: 'formless_document_action', if: Proc.new { |context, config, options| context.user_can? :publish } )
+  blacklight_config.add_show_tools_partial( :publish, callback: :status_action, modal: false, partial: 'formless_document_action', if: Proc.new { |context, config, options| context.user_can? :publish } )
 
-  add_show_tools_partial( :unpublish, callback: :status_action, modal: false, partial: 'formless_document_action', if: Proc.new { |context, config, options| context.user_can? :unpublish } )
+  blacklight_config.add_show_tools_partial( :unpublish, callback: :status_action, modal: false, partial: 'formless_document_action', if: Proc.new { |context, config, options| context.user_can? :unpublish } )
 
-  add_show_tools_partial( :delete, callback: :delete_action, if: Proc.new { |context, config, options| context.user_can? :delete } )
+  blacklight_config.add_show_tools_partial( :delete, callback: :delete_action, if: Proc.new { |context, config, options| context.user_can? :delete } )
 
-  add_show_tools_partial( :add_to_playlist, callback: :add_to_playlist_action )
+  blacklight_config.add_show_tools_partial( :add_to_playlist, callback: :add_to_playlist_action )
 
-  add_show_tools_partial( :intercom_push, callback: :intercom_push_action, if: Proc.new { |context, config, options| context.user_can? :intercom_push } )
+  blacklight_config.add_show_tools_partial( :intercom_push, callback: :intercom_push_action, if: Proc.new { |context, config, options| context.user_can? :intercom_push } )
 
-  add_show_tools_partial( :merge, callback: :merge_action, if: Proc.new { |context, config, options| context.user_can? :merge } )
+  blacklight_config.add_show_tools_partial( :merge, callback: :merge_action, if: Proc.new { |context, config, options| context.user_can? :merge } )
 
   before_action :verify_permissions, only: :index
 
