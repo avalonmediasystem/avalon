@@ -1,4 +1,13 @@
 GIT
+  remote: https://github.com/apertome/active_encode.git
+  revision: e9080ed5adf9c26adbb7238403426dba214f5b5a
+  branch: ffmpeg-error-handling
+  specs:
+    active_encode (0.8.3)
+      rails
+      sprockets (< 4)
+
+GIT
   remote: https://github.com/avalonmediasystem/about_page.git
   revision: 1b920619cc54fdc99f1cb4da26c18818c1156070
   tag: avalon-r6.5
@@ -130,9 +139,6 @@ GEM
       json-ld
       rails (~> 5.2)
       rdf-vocab (>= 2.1.0)
-    active_encode (0.8.2)
-      rails
-      sprockets (< 4)
     active_fedora-datastreams (0.3.0)
       active-fedora (>= 11.0.0.pre, < 14)
       activemodel (< 6.0)
@@ -483,7 +489,7 @@ GEM
       hydra-access-controls (= 11.0.7)
       hydra-core (= 11.0.7)
       rails (>= 5.2, < 6.1)
-    i18n (1.9.1)
+    i18n (1.10.0)
       concurrent-ruby (~> 1.0)
     iconv (1.0.8)
     iiif_manifest (0.6.0)
@@ -568,7 +574,7 @@ GEM
       mime-types-data (~> 3.2015)
     mime-types-data (3.2021.0901)
     mini_mime (1.1.2)
-    mini_portile2 (2.7.1)
+    mini_portile2 (2.8.0)
     minitest (5.15.0)
     msgpack (1.4.2)
     multi_json (1.15.0)
@@ -585,8 +591,8 @@ GEM
     noid-rails (3.0.3)
       actionpack (>= 5.0.0, < 7)
       noid (~> 0.9)
-    nokogiri (1.13.1)
-      mini_portile2 (~> 2.7.0)
+    nokogiri (1.13.3)
+      mini_portile2 (~> 2.8.0)
       racc (~> 1.4)
     nom-xml (1.1.0)
       activesupport (>= 3.2.18)
@@ -966,7 +972,7 @@ DEPENDENCIES
   active-fedora (~> 13.2, >= 13.2.5)
   active_annotations (~> 0.3)
   active_elastic_job!
-  active_encode (~> 0.8.2)
+  active_encode (~> 0.8.3)!
   active_fedora-datastreams (~> 0.3)
   activejob-traffic_control
   activejob-uniqueness
