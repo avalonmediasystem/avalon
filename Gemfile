@@ -3,17 +3,17 @@ source 'https://rubygems.org'
 # Core rails
 gem 'bootsnap', require: false
 gem 'listen'
-gem 'rails', '=5.2.4.5'
+gem 'rails', '= 5.2.4.5'
 gem 'sprockets', '~>3.7.2'
 gem 'sqlite3'
 
 # Assets
-gem 'coffee-rails', '~> 4.2.0'
+gem 'coffee-rails', '~> 4.2.2'
 gem 'jquery-datatables'
 gem 'jquery-rails'
 gem 'jquery-ui-rails'
 gem 'react-rails'
-gem 'sass-rails', '~> 5.0'
+gem 'sass-rails', '~> 5.0', '>= 5.0.7'
 # Use the last known good version of sass
 gem 'sass', '3.4.22'
 gem 'sprockets-es6'
@@ -21,15 +21,15 @@ gem 'uglifier', '>= 1.3.0'
 gem 'webpacker'
 
 # Core Samvera
-gem 'active-fedora', '~> 12.1'
+gem 'active-fedora', '~> 12.1', '>= 12.1.1'
 gem 'active_fedora-datastreams', '~> 0.2.0'
 gem 'fedora-migrate', git: 'https://github.com/avalonmediasystem/fedora-migrate.git', tag: 'avalon-r6.5'
-gem 'hydra-head', '~> 10.6'
+gem 'hydra-head', '~> 12.0', '>= 12.0.0'
 gem 'noid-rails', '~> 3.0.1'
 gem 'rdf-rdfxml'
 
 # Samvera version pins
-gem 'blacklight', '< 7.0'
+gem 'blacklight', '~> 7.0'
 gem 'rdf', '~> 2.2'
 gem 'rsolr', '~> 1.0'
 
@@ -53,8 +53,8 @@ gem 'speedy-af', '~> 0.1.3'
 gem 'avalon-workflow', git: "https://github.com/avalonmediasystem/avalon-workflow.git", tag: 'avalon-r6.5'
 
 # Authentication & Authorization
-gem 'devise', '~> 4.4'
-gem 'devise_invitable', '~> 1.6'
+gem 'devise', '~> 4.7', '>= 4.7.1'
+gem 'devise_invitable', '~> 1.7', '>= 1.7.5'
 gem 'ims-lti', '~> 1.1.13'
 gem 'net-ldap'
 gem 'omniauth-identity'
@@ -63,7 +63,7 @@ gem 'omniauth-lti', git: "https://github.com/avalonmediasystem/omniauth-lti.git"
 # Media Access & Transcoding
 gem 'active_encode', '~> 0.7.0'
 gem 'audio_waveform-ruby', '~> 1.0.7', require: 'audio_waveform'
-gem 'browse-everything', '~> 0.13.0'
+gem 'browse-everything', '~> 0.13.1'
 gem 'fastimage'
 gem 'media_element_add_to_playlist', git: 'https://github.com/avalonmediasystem/media-element-add-to-playlist.git', tag: 'avalon-r6.5'
 gem 'mediainfo', git: "https://github.com/avalonmediasystem/mediainfo.git", tag: 'avalon-r6.5'
@@ -142,7 +142,7 @@ group :test do
   gem 'selenium-webdriver'
   gem 'shoulda-matchers'
   gem 'simplecov'
-  gem 'webdrivers', '~> 3.0'
+  gem 'webdrivers', '~> 3.9', '>= 3.9.1'
   gem 'webmock', '~> 3.5.1'
 end
 
