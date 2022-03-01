@@ -78,6 +78,15 @@ GIT
       omniauth
 
 GIT
+  remote: https://github.com/avalonmediasystem/sidekiq-cron.git
+  revision: 9bb8c76863aade7849a1a85a1232683e96c41c1f
+  tag: v1.2.1-avalon
+  specs:
+    sidekiq-cron (1.2.1)
+      fugit (~> 1.1)
+      sidekiq (>= 4.2.1)
+
+GIT
   remote: https://github.com/tawan/active-elastic-job.git
   revision: 7d210bdbcc9c465cc9704bc6b130882fe4c8eb9f
   specs:
@@ -396,7 +405,7 @@ GEM
     equivalent-xml (0.6.0)
       nokogiri (>= 1.4.3)
     erubi (1.10.0)
-    et-orbi (1.2.5)
+    et-orbi (1.2.6)
       tzinfo
     ethon (0.15.0)
       ffi (>= 1.15.0)
@@ -849,9 +858,6 @@ GEM
       connection_pool (>= 2.2.2)
       rack (~> 2.0)
       redis (>= 4.2.0)
-    sidekiq-cron (1.2.0)
-      fugit (~> 1.1)
-      sidekiq (>= 4.2.1)
     signet (0.16.0)
       addressable (~> 2.8)
       faraday (>= 0.17.3, < 2.0)
@@ -1070,7 +1076,7 @@ DEPENDENCIES
   selenium-webdriver
   shoulda-matchers
   sidekiq (~> 6.2)
-  sidekiq-cron (~> 1.2)
+  sidekiq-cron (~> 1.2)!
   simplecov
   solr_wrapper (>= 0.16)
   speedy-af (~> 0.1.3)
