@@ -79,10 +79,10 @@ GIT
 
 GIT
   remote: https://github.com/avalonmediasystem/sidekiq-cron.git
-  revision: f27b9dfca7db07cd0e9493ebbd6805fa05e61736
-  branch: 1.2.0-plus-warnings-fix-avalon
+  revision: 9bb8c76863aade7849a1a85a1232683e96c41c1f
+  tag: v1.2.1-avalon
   specs:
-    sidekiq-cron (1.2.0)
+    sidekiq-cron (1.2.1)
       fugit (~> 1.1)
       sidekiq (>= 4.2.1)
 
