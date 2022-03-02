@@ -11,10 +11,7 @@ RUN        apt-get update && apt-get upgrade -y build-essential && apt-get autor
             ffmpeg \
             libsqlite3-dev \
          && rm -rf /var/lib/apt/lists/* \
-         && apt-get clean \
-         && ls -l /usr/bin/g* \
-         && gcc --version \
-         && g++ --version
+         && apt-get clean
 
 COPY        Gemfile ./Gemfile
 COPY        Gemfile.lock ./Gemfile.lock

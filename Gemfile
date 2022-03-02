@@ -86,7 +86,7 @@ gem 'activejob-traffic_control'
 gem 'activejob-uniqueness'
 gem 'redis-rails'
 gem 'sidekiq', '~> 6.2'
-gem 'sidekiq-cron', '~> 1.2'
+gem 'sidekiq-cron', '~> 1.2', git: "https://github.com/avalonmediasystem/sidekiq-cron.git", tag: 'v1.2.1-avalon'
 
 # Coding Patterns
 gem 'config'
