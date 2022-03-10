@@ -13,61 +13,61 @@ Unless required by applicable law or agreed to in writing, software distributed
   specific language governing permissions and limitations under the License.
 ---  END LICENSE_HEADER BLOCK  ---
 %>
-<ul class="nav navbar-nav">
-  <li><%= link_to 'Browse', main_app.search_catalog_path(search_field: 'all_fields', utf8: '✓', q: '') %></li>
-  <li class=<%= active_for_controller('collections') %>><%= link_to 'Collections', main_app.collections_path %></li>
+<ul class="navbar-nav">
+  <li class="nav-item"><%= link_to 'Browse', main_app.search_catalog_path(search_field: 'all_fields', utf8: '✓', q: ''), class: 'nav-link' %></li>
+  <li class=<%= "nav-item #{active_for_controller('collections')}" %>><%= link_to 'Collections', main_app.collections_path, class: 'nav-link' %></li>
 
   <% if user_session && user_session[:lti_group] %>
-  <li>
-    <%= link_to(vgroup_display(user_session[:lti_group]), main_app.search_catalog_path('f[read_access_virtual_group_ssim][]' => user_session[:lti_group])) %>
-  </li>
+    <li>
+      <%= link_to(vgroup_display(user_session[:lti_group]), main_app.search_catalog_path('f[read_access_virtual_group_ssim][]' => user_session[:lti_group])) %>
+    </li>
   <% end %>
   <% if current_ability.can? :create, Playlist %>
   <li class=<%= active_for_controller('playlists') %>>
-    <%= link_to 'Playlists', main_app.playlists_path, id:'playlists_nav' %>
+    <%= link_to 'Playlists', main_app.playlists_path, id:'playlists_nav', class: 'nav-link' %>
   </li>
   <% end %>
   <% if current_ability.can? :create, Timeline %>
   <li class=<%= active_for_controller('timelines') %>>
-    <%= link_to 'Timelines', main_app.timelines_path, id:'timelines_nav' %>
+    <%= link_to 'Timelines', main_app.timelines_path, id:'timelines_nav', class: 'nav-link' %>
   </li>
   <% end %>
   <% if render_bookmarks_control? %>
-  <li class=<%= active_for_controller('bookmarks') %>>
-    <%= link_to main_app.bookmarks_path, id:'bookmarks_nav' do %>
-    <%= t('blacklight.header_links.bookmarks') %>
-    (<span data-role='bookmark-counter'><%= current_or_guest_user.bookmarks.count %></span>)
+  <li class=<%= "nav-item #{active_for_controller('bookmarks')}" %>>
+    <%= link_to main_app.bookmarks_path, id:'bookmarks_nav', class: 'nav-link' do %>
+      <%= t('blacklight.header_links.bookmarks') %>
+      (<span data-role='bookmark-counter'><%= current_or_guest_user.bookmarks.count %></span>)
     <% end %>
   </li>
   <% end %>
   <% if can?(:read, Admin::Collection) || can?(:manage, Admin::Group) || (defined?(Samvera::Persona) && can?(:manage, User)) %>
-    <li>
-      <div class="btn-group manage-dropdown" id="manage-dropdown">
-        <button id="manageDropdown" class="btn btn-primary manage-btn" data-toggle="dropdown">
+    <li class="nav-item">
+      <div class="btn-group manage-dropdown dropdown" id="manage-dropdown">
+        <button id="manageDropdown" class="btn manage-btn dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
           Manage
         </button>
-        <ul class="dropdown-menu nav navbar-default navbar-nav manage-dropdown-menu">
+        <ul class="dropdown-menu manage-dropdown-menu" aria-labelledby="manageDropdown">
           <% if can? :read, Admin::Collection %>
           <li class=<%= active_for_controller('admin/collections') %>>
-            <%= link_to 'Manage Content', main_app.admin_collections_path %></li>
+            <%= link_to 'Manage Content', main_app.admin_collections_path, class: 'dropdown-item' %></li>
           <% end %>
           <% if can? :read, :encode_dashboard %>
           <li class=<%= active_for_controller('encode_records') %>>
-            <%= link_to 'Manage Encoding Jobs', main_app.encode_records_path %></li>
+            <%= link_to 'Manage Encoding Jobs', main_app.encode_records_path, class: 'dropdown-item' %></li>
           <% end %>
 
           <% if can? :manage, Admin::Group %>
           <li class=<%= active_for_controller('admin/groups') %>>
-            <%= link_to 'Manage Groups', main_app.admin_groups_path %></li>
+            <%= link_to 'Manage Groups', main_app.admin_groups_path, class: 'dropdown-item' %></li>
           <% end %>
           <% if defined?(Samvera::Persona) %>
           <% if can? :manage, User %>
           <li class=<%= active_for_controller('samvera/persona/users') %>>
-            <%= link_to 'Manage Users', main_app.persona_users_path %></li>
+            <%= link_to 'Manage Users', main_app.persona_users_path, class: 'dropdown-item' %></li>
           <% end %>
           <% if can? :manage, :jobs %>
           <li>
-            <%= link_to(main_app.jobs_path, target: 'blank') do %>
+            <%= link_to(main_app.jobs_path, target: 'blank', class: 'dropdown-item') do %>
               Manage Worker Jobs <span class="fa fa-external-link"></span>
             <% end %>
           </li>

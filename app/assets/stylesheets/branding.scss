@@ -31,7 +31,7 @@ $museoSlab: 'MuseoSlab';
 
 // Primary colors
 $primary: #80a590;
-$primaryDark: #2a5459;
+$secondary: #2a5459;
 $dark: #0a2326;
 
 // Secondary colors
@@ -62,7 +62,7 @@ $lightblue: #31708f;
   * https://github.com/twbs/bootstrap-sass/blob/master/assets/stylesheets/bootstrap/_variables.scss */
 
 /* Branding colors */
-$brand-primary: $primaryDark;
+$brand-primary: $secondary;
 $brand-success: $success;
 $brand-info: $info;
 $brand-warning: $warning;
@@ -79,7 +79,7 @@ $padding-base-vertical: 4px;
 // $headings-font-family: $museoSlab;
 
 /* Links */
-$link-color: $primaryDark;
+$link-color: $secondary;
 $link-hover-color: $primary;
 
 /* Alerts */
@@ -97,7 +97,7 @@ $state-danger-text: $danger;
 
 /* Header */
 $login-text-color: $gray;
-$login-link-color: $primaryDark;
+$login-link-color: $secondary;
 $login-link-background-color: $orange;
 
 /* Sidenav */
@@ -106,17 +106,17 @@ $login-link-background-color: $orange;
 $navCollapseWidth: 650px;
 
 /* Navbar */
-$navbar-default-bg: $primaryDark;
-$navbar-default-color: $white;
-$navbar-default-toggle-hover-bg: $yellow;
-$navbar-default-link-color: $white;
-$navbar-default-link-hover-color: $primaryDark;
-$navbar-default-link-hover-bg: $yellow;
-$navbar-default-link-active-color: $primaryDark;
-$navbar-default-link-active-bg: $yellow;
+// $navbar-light-bg: $secondary;
+$navbar-light-color: $white;
+$navbar-light-toggle-hover-bg: $yellow;
+$navbar-light-link-color: $white;
+$navbar-light-link-hover-color: $secondary;
+// $navbar-light-link-hover-bg: $yellow;
+$navbar-light-link-active-color: $secondary;
+// $navbar-light-link-active-bg: $yellow;
 $navbar-border-radius: 0;
-$navbar-default-toggle-icon-bar-bg: $white;
-$navbar-default-toggle-border-color: $white;
+$navbar-light-toggle-icon-bar-bg: $white;
+$navbar-light-toggle-border-color: $white;
 
 // Panels
 $panel-primary-text: red;
@@ -135,12 +135,12 @@ $btn-default-color: $dark;
 $btn-default-bg: $white;
 $btn-default-border: $gray;
 $btn-primary-color: $white;
-$btn-primary-bg: $primaryDark;
-$btn-primary-border: $primaryDark;
+$btn-primary-bg: $secondary;
+$btn-primary-border: $secondary;
 $btn-success-color: $white;
 $btn-success-bg: $success;
 $btn-success-border: $success;
-$btn-info-color: $primaryDark;
+$btn-info-color: $secondary;
 $btn-info-bg: $info;
 $btn-info-border: $info;
 $btn-danger-color: $white;

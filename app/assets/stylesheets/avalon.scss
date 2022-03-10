@@ -39,6 +39,17 @@ body {
 }
 
 /* Override Bootstrap CSS */
+
+/*
+  Bootstrap 4 has increased global font-size from 14px to 1rem. 
+  This font size of 1rem, gets computed as 16px by browsers, increasing
+  font-size for text elements. Reset this to 14px.
+  See https://getbootstrap.com/docs/4.0/migration/#global-changes.
+*/
+html {
+  font-size: 14px;
+}
+
 .alert {
   margin-bottom: 10px;
 }
@@ -119,7 +130,7 @@ div.alert-danger {
 
 // Dotted line separator from branding guide
 .separator {
-  border-bottom: 2px dotted $primaryDark;
+  border-bottom: 2px dotted $secondary;
   background: white;
   height: 1px;
 }
@@ -130,7 +141,7 @@ div.alert-danger {
   font-family: $museoSlab;
 }
 .headline {
-  color: $primaryDark;
+  color: $secondary;
   font-size: 29.3px;
   font-family: $museoSlab;
 }
