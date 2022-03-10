@@ -39,7 +39,7 @@ $state-info-border:              darken(adjust-hue($state-info-bg, -10), 7%) !de
 
   .navbar-toggle {
     @include media-breakpoint-down(xs) {
-      background: $primaryDark;
+      background: $secondary;
     }
   }
 }
@@ -59,7 +59,7 @@ $state-info-border:              darken(adjust-hue($state-info-bg, -10), 7%) !de
 }
 
 .navbar-nav {
-  > li > a {
+  > .nav-item > .nav-link {
     @include media-breakpoint-down(sm) {
       padding-left: 10px;
       padding-right: 10px;
@@ -67,9 +67,9 @@ $state-info-border:              darken(adjust-hue($state-info-bg, -10), 7%) !de
   }
 }
 
-.navbar-default {
+.navbar-light {
   @include media-breakpoint-down(xs) {
-    background: $primaryDark;
+    background: $secondary;
   }
 }
 
@@ -91,9 +91,9 @@ $state-info-border:              darken(adjust-hue($state-info-bg, -10), 7%) !de
   }
 }
 
-.container > .navbar-header {
-  height: auto;
-}
+// .container > .navbar-header {
+//   height: auto;
+// }
 
 .navbar-inner {
   padding-right: 12px;
@@ -178,12 +178,17 @@ $state-info-border:              darken(adjust-hue($state-info-bg, -10), 7%) !de
 
 .manage-btn:hover {
   background-color: $yellow!important;
-  color: $primaryDark;
+  color: $secondary;
+}
+
+#manage-dropdown:hover .manage-dropdown-menu {
+  display: block;
+  margin-top: 0;
 }
 
 .manage-btn:focus {
   background-color: $yellow;
-  color: $primaryDark;
+  color: $secondary;
 }
 
 .manage-dropdown-menu {
@@ -191,6 +196,10 @@ $state-info-border:              darken(adjust-hue($state-info-bg, -10), 7%) !de
   border-radius: inherit;
   li {
     width: 100%;
+  }
+
+  .dropdown-item:hover {
+    background-color: $yellow;
   }
 }
 

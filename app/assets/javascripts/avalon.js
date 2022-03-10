@@ -105,19 +105,6 @@ $(document).ready(function() {
     }
   });
 
-  /* Handle dropdown list for `Manage` in nav-bar */
-  // Manage user access with mouse-point
-  $('#manage-dropdown').hover(
-    function() {
-      $(this).addClass('open');
-      $(this).attr('aria-expanded', 'true');
-    },
-    function() {
-      $(this).removeClass('open');
-      $(this).attr('aria-expanded', 'false');
-    }
-  );
-
   // Close dropdown when Tab key is used with Shift key
   $('#manage-dropdown').keydown(function(e) {
     if (e.which == 9 && e.shiftKey) {
@@ -126,11 +113,4 @@ $(document).ready(function() {
     }
   });
 
-  // Close dropdown if Tab key is pressed when focused on last element
-  $('#manage-dropdown ul > li:last-child').keydown(function(e) {
-    if (e.which == 9) {
-      $('#manage-dropdown').removeClass('open');
-      $('#manage-dropdown').attr('aria-expanded', 'false');
-    }
-  });
 });
