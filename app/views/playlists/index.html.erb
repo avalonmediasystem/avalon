@@ -20,7 +20,7 @@ Unless required by applicable law or agreed to in writing, software distributed
 <% unless current_user.nil? %>
   <% playlists = Playlist.where(user_id: current_user.id) %>
   <div class="Playlist-index">
-    <div class="page-title-wrapper">
+    <div class="page-title-wrapper mb-3">
       <div class="row">
         <div class="col-sm-6">
           <h1 class="page-title">Playlists <small>(<%= playlists.size %> total)</small></h1>

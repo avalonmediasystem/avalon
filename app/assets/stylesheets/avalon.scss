@@ -47,7 +47,11 @@ body {
   See https://getbootstrap.com/docs/4.0/migration/#global-changes.
 */
 html {
-  font-size: 14px;
+  font-size: 15px;
+}
+
+.row {
+  justify-content: center !important;
 }
 
 .alert {
@@ -65,6 +69,13 @@ h2 {
 
 tr.active-false td {
   color: $gray;
+}
+
+pre {
+  background-color: #f5f5f5;
+  border: 1px solid #ccc;
+  padding: 9.5px;
+  border-radius: 4px;
 }
 
 input[type='text']#admin_group {
@@ -130,7 +141,7 @@ div.alert-danger {
 
 // Dotted line separator from branding guide
 .separator {
-  border-bottom: 2px dotted $secondary;
+  border-bottom: 2px dotted $primary;
   background: white;
   height: 1px;
 }
@@ -151,7 +162,7 @@ div.alert-danger {
 }
 
 .mobile-hidden {
-  @include media-breakpoint-down(xs) {
+  @include media-breakpoint-down(sm) {
     display: none !important;
   }
 }
@@ -506,13 +517,13 @@ div.status-detail {
     cursor: pointer;
   }
 
-  @media (max-width: 1199px) and (min-width: 768px) {
+  @include media-breakpoint-between (md, xl) {
     ul {
       width: 750px;
     }
   }
 
-  @media (max-width: 767px) {
+  @include media-breakpoint-down (sm) {
     ul {
       width: 730px;
     }
@@ -1091,10 +1102,13 @@ h5.panel-title {
 }
 
 // Make table body scrollable in mobile devices
-@include media-breakpoint-down(xs) {
+@include media-breakpoint-down(sm) {
   .dataTableBody {
     width: 100%;
     overflow-x: scroll;
+  }
+  .pagination {
+    justify-content: center !important;
   }
 }
 
