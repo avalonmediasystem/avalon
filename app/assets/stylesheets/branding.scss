@@ -30,8 +30,8 @@ $sansFontFamily: Arial, Helvetica, sans-serif;
 $museoSlab: 'MuseoSlab';
 
 // Primary colors
-$primary: #80a590;
-$secondary: #2a5459;
+$primary: #2a5459;
+$secondary: #80a590;
 $dark: #0a2326;
 
 // Secondary colors
@@ -48,7 +48,7 @@ $warning: #bf841b;
 $danger: #f44336;
 
 // Colors not from the Styleguide
-$greenBG: scale-color($primary, $saturation: -40%, $lightness: 60%);
+$greenBG: scale-color($secondary, $saturation: -40%, $lightness: 60%);
 $gray: #999;
 $lightgray: #f2f2f2;
 $red: #d9534f;
@@ -62,7 +62,7 @@ $lightblue: #31708f;
   * https://github.com/twbs/bootstrap-sass/blob/master/assets/stylesheets/bootstrap/_variables.scss */
 
 /* Branding colors */
-$brand-primary: $secondary;
+$brand-primary: $primary;
 $brand-success: $success;
 $brand-info: $info;
 $brand-warning: $warning;
@@ -79,7 +79,7 @@ $padding-base-vertical: 4px;
 // $headings-font-family: $museoSlab;
 
 /* Links */
-$link-color: $secondary;
+$link-color: $primary;
 $link-hover-color: $primary;
 
 /* Alerts */
@@ -97,7 +97,7 @@ $state-danger-text: $danger;
 
 /* Header */
 $login-text-color: $gray;
-$login-link-color: $secondary;
+$login-link-color: $primary;
 $login-link-background-color: $orange;
 
 /* Sidenav */
@@ -106,13 +106,13 @@ $login-link-background-color: $orange;
 $navCollapseWidth: 650px;
 
 /* Navbar */
-// $navbar-light-bg: $secondary;
+// $navbar-light-bg: $primary;
 $navbar-light-color: $white;
 $navbar-light-toggle-hover-bg: $yellow;
 $navbar-light-link-color: $white;
-$navbar-light-link-hover-color: $secondary;
+$navbar-light-link-hover-color: $primary;
 // $navbar-light-link-hover-bg: $yellow;
-$navbar-light-link-active-color: $secondary;
+$navbar-light-link-active-color: $primary;
 // $navbar-light-link-active-bg: $yellow;
 $navbar-border-radius: 0;
 $navbar-light-toggle-icon-bar-bg: $white;
@@ -134,13 +134,13 @@ $btn-border-radius-base: 2px;
 $btn-default-color: $dark;
 $btn-default-bg: $white;
 $btn-default-border: $gray;
-$btn-primary-color: $white;
-$btn-primary-bg: $secondary;
-$btn-primary-border: $secondary;
+// $btn-primary-color: $white;
+// $btn-primary-bg: $secondary;
+// $btn-primary-border: $secondary;
 $btn-success-color: $white;
 $btn-success-bg: $success;
 $btn-success-border: $success;
-$btn-info-color: $secondary;
+$btn-info-color: $primary;
 $btn-info-bg: $info;
 $btn-info-border: $info;
 $btn-danger-color: $white;
@@ -149,16 +149,16 @@ $btn-light-bg: $lightgray;
 /* Pagination */
 $pagination-color: $link-color;
 $pagination-bg: $white;
-$pagination-border: $gray;
+$pagination-border-color: $gray;
 $pagination-hover-color: $link-hover-color;
 $pagination-hover-bg: $lightgray;
-$pagination-hover-border: $gray;
+$pagination-hover-border-color: $gray;
 $pagination-active-color: $gray;
 $pagination-active-bg: $lightgray;
-$pagination-active-border: $gray;
+$pagination-active-border-color: $gray;
 $pagination-disabled-color: $gray;
 $pagination-disabled-bg: $white;
-$pagination-disabled-border: $gray;
+$pagination-disabled-border-color: $gray;
 
 $nav-tabs-active-link-hover-color: $dark;
 $input-color: $dark;

@@ -102,3 +102,7 @@ table.dataTable thead .sorting_desc_disabled:after {
   background-image: url("datatables/sort_desc_disabled.png");
   bottom: 1px;
 }
+
+.dataTableToolsBottom .pagination .active a {
+  cursor: default;
+}

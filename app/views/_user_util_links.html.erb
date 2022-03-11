@@ -13,7 +13,7 @@ Unless required by applicable law or agreed to in writing, software distributed
   specific language governing permissions and limitations under the License.
 ---  END LICENSE_HEADER BLOCK  ---
 %>
-<ul class="navbar-nav">
+<ul class="navbar-nav navbar">
   <li class="nav-item"><%= link_to 'Browse', main_app.search_catalog_path(search_field: 'all_fields', utf8: '✓', q: ''), class: 'nav-link' %></li>
   <li class=<%= "nav-item #{active_for_controller('collections')}" %>><%= link_to 'Collections', main_app.collections_path, class: 'nav-link' %></li>
 
@@ -23,12 +23,12 @@ Unless required by applicable law or agreed to in writing, software distributed
     </li>
   <% end %>
   <% if current_ability.can? :create, Playlist %>
-  <li class=<%= active_for_controller('playlists') %>>
+  <li class=<%= "nav-item #{active_for_controller('playlists')}" %>>
     <%= link_to 'Playlists', main_app.playlists_path, id:'playlists_nav', class: 'nav-link' %>
   </li>
   <% end %>
   <% if current_ability.can? :create, Timeline %>
-  <li class=<%= active_for_controller('timelines') %>>
+  <li class=<%= "nav-item #{active_for_controller('timelines')}" %>>
     <%= link_to 'Timelines', main_app.timelines_path, id:'timelines_nav', class: 'nav-link' %>
   </li>
   <% end %>
@@ -43,31 +43,31 @@ Unless required by applicable law or agreed to in writing, software distributed
   <% if can?(:read, Admin::Collection) || can?(:manage, Admin::Group) || (defined?(Samvera::Persona) && can?(:manage, User)) %>
     <li class="nav-item">
       <div class="btn-group manage-dropdown dropdown" id="manage-dropdown">
-        <button id="manageDropdown" class="btn manage-btn dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+        <button id="manageDropdown" class="btn btn-primary manage-btn" data-toggle="dropdown" aria-expanded="false">
           Manage
         </button>
-        <ul class="dropdown-menu manage-dropdown-menu" aria-labelledby="manageDropdown">
+        <ul class="dropdown-menu manage-dropdown-menu bg-primary" aria-labelledby="manageDropdown">
           <% if can? :read, Admin::Collection %>
-          <li class=<%= active_for_controller('admin/collections') %>>
-            <%= link_to 'Manage Content', main_app.admin_collections_path, class: 'dropdown-item' %></li>
+          <li class=<%= "nav-item #{active_for_controller('admin/collections')}" %>>
+            <%= link_to 'Manage Content', main_app.admin_collections_path, class: 'nav-link' %></li>
           <% end %>
           <% if can? :read, :encode_dashboard %>
-          <li class=<%= active_for_controller('encode_records') %>>
-            <%= link_to 'Manage Encoding Jobs', main_app.encode_records_path, class: 'dropdown-item' %></li>
+          <li class=<%= "nav-item #{active_for_controller('encode_records')}" %>>
+            <%= link_to 'Manage Encoding Jobs', main_app.encode_records_path, class: 'nav-link' %></li>
           <% end %>
 
           <% if can? :manage, Admin::Group %>
-          <li class=<%= active_for_controller('admin/groups') %>>
-            <%= link_to 'Manage Groups', main_app.admin_groups_path, class: 'dropdown-item' %></li>
+          <li class=<%= "nav-item #{active_for_controller('admin/groups')}" %>>
+            <%= link_to 'Manage Groups', main_app.admin_groups_path, class: 'nav-link' %></li>
           <% end %>
           <% if defined?(Samvera::Persona) %>
           <% if can? :manage, User %>
-          <li class=<%= active_for_controller('samvera/persona/users') %>>
-            <%= link_to 'Manage Users', main_app.persona_users_path, class: 'dropdown-item' %></li>
+          <li class=<%= "nav-item #{active_for_controller('samvera/persona/users')}" %>>
+            <%= link_to 'Manage Users', main_app.persona_users_path, class: 'nav-link' %></li>
           <% end %>
           <% if can? :manage, :jobs %>
           <li>
-            <%= link_to(main_app.jobs_path, target: 'blank', class: 'dropdown-item') do %>
+            <%= link_to(main_app.jobs_path, target: 'blank', class: 'nav-link') do %>
               Manage Worker Jobs <span class="fa fa-external-link"></span>
             <% end %>
           </li>
@@ -78,12 +78,13 @@ Unless required by applicable law or agreed to in writing, software distributed
     </li>
   <% end %>
 
-  <li class="divider desktop-hidden" />
-  <%= link_to_if user_signed_in?, 'Sign out', main_app.destroy_user_session_path do %>
-  <%# Fallback if the test above fails %>
-  <%= link_to 'Sign in', main_app.new_user_session_path %>
-  <% end %>
+  <li class="dropdown-divider desktop-hidden dropdown-item">
+    <%= link_to_if user_signed_in?, 'Sign out', main_app.destroy_user_session_path do %>
+      <%# Fallback if the test above fails %>
+      <%= link_to 'Sign in', main_app.new_user_session_path %>
+    <% end %>
+  </li>
   <% unless current_page?(main_app.root_path) %>
-  <li class="desktop-hidden"><%= render :partial=>'modules/avalon_search_form' %></li>
+    <li class="desktop-hidden"><%= render :partial=>'modules/avalon_search_form' %></li>
   <% end %>
 </ul>
