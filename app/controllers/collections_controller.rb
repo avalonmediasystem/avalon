@@ -35,7 +35,7 @@ class CollectionsController < CatalogController
   def show
     response = repository.search(CollectionSearchBuilder.new(self))
     document = response.documents.find { |doc| doc.id == params[:id] }
-    # Only go on if params[:id] is in @document_list
+    # Only go on if params[:id] is in @response.documents
     raise CanCan::AccessDenied unless document
     @doc_presenter = CollectionPresenter.new(document, view_context)
 
@@ -48,7 +48,7 @@ class CollectionsController < CatalogController
   def poster
     response = repository.search(CollectionSearchBuilder.new(self))
     document = response.documents.find { |doc| doc.id == params[:id] }
-    # Only go on if params[:id] is in @document_list
+    # Only go on if params[:id] is in @response.documents
     raise CanCan::AccessDenied unless document
 
     @collection = Admin::Collection.find(params['id'])

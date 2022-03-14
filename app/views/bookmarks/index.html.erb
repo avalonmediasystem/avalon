@@ -20,14 +20,14 @@ Unless required by applicable law or agreed to in writing, software distributed
 
   <h2><%= t('blacklight.bookmarks.need_login') %></h2>
 
-  <%- elsif @document_list.blank? -%>
+  <%- elsif @response.documents.blank? -%>
 
   <div class="alert alert-info" role="alert"><%= t('blacklight.bookmarks.no_bookmarks') %></div>
 
   <% else %>
   <%# link_to t('blacklight.bookmarks.clear.action_title'), clear_bookmarks_path, :method => :delete, :data => { :confirm => t('blacklight.bookmarks.clear.action_confirm') }, :class => 'clear-bookmarks btn btn-danger pull-right' %>
   <%= render 'sort_and_per_page' %>
-  <%= render partial: 'tools', locals: { document_list: @document_list } %>
+  <%= render partial: 'tools', locals: { document_list: @response.documents } %>
 
   <%= render_document_index %>
   <%= render 'results_pagination' %>
