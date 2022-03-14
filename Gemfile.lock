@@ -134,7 +134,7 @@ GEM
       erubi (~> 1.4)
       rails-dom-testing (~> 2.0)
       rails-html-sanitizer (~> 1.1, >= 1.2.0)
-    active-fedora (13.2.5)
+    active-fedora (13.2.7)
       active-triples (>= 0.11.0, < 2.0.0)
       activemodel (>= 5.1)
       activesupport (>= 5.1)
@@ -432,7 +432,7 @@ GEM
     fakefs (1.4.1)
     faker (2.19.0)
       i18n (>= 1.6, < 2)
-    faraday (0.17.4)
+    faraday (0.17.5)
       multipart-post (>= 1.2, < 3)
     faraday-encoding (0.0.5)
       faraday
