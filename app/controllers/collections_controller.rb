@@ -16,7 +16,7 @@ class CollectionsController < CatalogController
   skip_before_action :enforce_show_permissions, only: :show
 
   def index
-    response = repository.search(CollectionSearchBuilder.new(self))
+    response = blacklight_config.repository.search(CollectionSearchBuilder.new(self))
     collections = response.documents
     if (params[:only] == 'carousel')
       collections = collections.select { |doc| Settings.home_page&.carousel_collections&.include? doc.id }
@@ -33,7 +33,7 @@ class CollectionsController < CatalogController
   end
 
   def show
-    response = repository.search(CollectionSearchBuilder.new(self))
+    response = blacklight_config.repository.search(CollectionSearchBuilder.new(self))
     document = response.documents.find { |doc| doc.id == params[:id] }
     # Only go on if params[:id] is in @response.documents
     raise CanCan::AccessDenied unless document
@@ -46,7 +46,7 @@ class CollectionsController < CatalogController
   end
 
   def poster
-    response = repository.search(CollectionSearchBuilder.new(self))
+    response = blacklight_config.repository.search(CollectionSearchBuilder.new(self))
     document = response.documents.find { |doc| doc.id == params[:id] }
     # Only go on if params[:id] is in @response.documents
     raise CanCan::AccessDenied unless document
