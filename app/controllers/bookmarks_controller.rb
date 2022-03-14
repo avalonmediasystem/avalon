@@ -116,7 +116,7 @@ class BookmarksController < CatalogController
   def action_documents
     bookmarks = token_or_current_or_guest_user.bookmarks
     bookmark_ids = bookmarks.collect { |b| b.document_id.to_s }
-    fetch(bookmark_ids, rows: bookmark_ids.count)
+    search_service.fetch(bookmark_ids, rows: bookmark_ids.count)
   end
 
   def access_control_action documents
