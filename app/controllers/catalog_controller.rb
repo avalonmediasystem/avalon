@@ -200,7 +200,7 @@ class CatalogController < ApplicationController
       featured_collections = Settings.home_page&.featured_collections
       if featured_collections.present?
         builder = ::CollectionSearchBuilder.new(self).rows(100_000)
-        response = repository.search(builder)
+        response = blacklight_config.repository.search(builder)
         collection = response.documents.select { |doc| featured_collections.include? doc.id }.sample
         @featured_collection = ::Admin::CollectionPresenter.new(collection) if collection
       end

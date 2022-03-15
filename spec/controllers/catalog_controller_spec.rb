@@ -22,22 +22,22 @@ describe CatalogController do
         get 'index', params: { :q => "" }
         expect(response).to be_successful
         expect(response).to render_template('catalog/index')
-        expect(assigns(:document_list).count).to eql(1)
-        expect(assigns(:document_list).map(&:id)).to eq([mo.id])
+        expect(assigns(:response).documents.count).to eql(1)
+        expect(assigns(:response).documents.map(&:id)).to eq([mo.id])
       end
       it "should not show results for items that are not public" do
         mo = FactoryBot.create(:published_media_object, visibility: 'restricted')
         get 'index', params: { :q => "" }
         expect(response).to be_successful
         expect(response).to render_template('catalog/index')
-        expect(assigns(:document_list).count).to eql(0)
+        expect(assigns(:response).documents.count).to eql(0)
       end
       it "should not show results for items that are not published" do
         mo = FactoryBot.create(:media_object, visibility: 'public')
         get 'index', params: { :q => "" }
         expect(response).to be_successful
         expect(response).to render_template('catalog/index')
-        expect(assigns(:document_list).count).to eql(0)
+        expect(assigns(:response).documents.count).to eql(0)
       end
     end
     describe "as an authenticated user" do
@@ -49,22 +49,22 @@ describe CatalogController do
         get 'index', params: { :q => "" }
         expect(response).to be_successful
         expect(response).to render_template('catalog/index')
-        expect(assigns(:document_list).count).to eql(1)
-        expect(assigns(:document_list).map(&:id)).to eq([mo.id])
+        expect(assigns(:response).documents.count).to eql(1)
+        expect(assigns(:response).documents.map(&:id)).to eq([mo.id])
       end
       it "should not show results for items that are not public or available to registered users" do
         mo = FactoryBot.create(:published_media_object, visibility: 'private')
         get 'index', params: { :q => "" }
         expect(response).to be_successful
         expect(response).to render_template('catalog/index')
-        expect(assigns(:document_list).count).to eql(0)
+        expect(assigns(:response).documents.count).to eql(0)
       end
       it "should not show results for items that are not published" do
         mo = FactoryBot.create(:media_object, visibility: 'public')
         get 'index', params: { :q => "" }
         expect(response).to be_successful
         expect(response).to render_template('catalog/index')
-        expect(assigns(:document_list).count).to eql(0)
+        expect(assigns(:response).documents.count).to eql(0)
       end
     end
     describe "as a manager" do
@@ -76,16 +76,16 @@ describe CatalogController do
         get 'index', params: { :q => "" }
         expect(response).to be_successful
         expect(response).to render_template('catalog/index')
-        expect(assigns(:document_list).count).to eql(1)
-        expect(assigns(:document_list).map(&:id)).to eq([mo.id])
+        expect(assigns(:response).documents.count).to eql(1)
+        expect(assigns(:response).documents.map(&:id)).to eq([mo.id])
       end
       it "should show results for items that are hidden and belong to one of my collections" do
         mo = FactoryBot.create(:media_object, hidden: true, visibility: 'private', collection: collection)
         get 'index', params: { :q => "" }
         expect(response).to be_successful
         expect(response).to render_template('catalog/index')
-        expect(assigns(:document_list).count).to eql(1)
-        expect(assigns(:document_list).map(&:id)).to eq([mo.id])
+        expect(assigns(:response).documents.count).to eql(1)
+        expect(assigns(:response).documents.map(&:id)).to eq([mo.id])
       end
       it "should show results for items that are not hidden and do not belong to one of my collections along with hidden items that belong to my collections" do
         mo = FactoryBot.create(:media_object, hidden: true, visibility: 'private', collection: collection)
@@ -93,22 +93,22 @@ describe CatalogController do
         get 'index', params: { :q => "" }
         expect(response).to be_successful
         expect(response).to render_template('catalog/index')
-        expect(assigns(:document_list).count).to eql(2)
-        expect(assigns(:document_list).map(&:id)).to match_array([mo.id, mo2.id])
+        expect(assigns(:response).documents.count).to eql(2)
+        expect(assigns(:response).documents.map(&:id)).to match_array([mo.id, mo2.id])
       end
       it "should not show results for items that do not belong to one of my collections" do
         mo = FactoryBot.create(:media_object, visibility: 'private')
         get 'index', params: { :q => "" }
         expect(response).to be_successful
         expect(response).to render_template('catalog/index')
-        expect(assigns(:document_list).count).to eql(0)
+        expect(assigns(:response).documents.count).to eql(0)
       end
       it "should not show results for hidden items that do not belong to one of my collections" do
         mo = FactoryBot.create(:media_object, hidden: true, visibility: 'private', read_users: [manager.user_key])
         get 'index', params: { :q => "" }
         expect(response).to be_successful
         expect(response).to render_template('catalog/index')
-        expect(assigns(:document_list).count).to eql(0)
+        expect(assigns(:response).documents.count).to eql(0)
       end
     end
     describe "as an administrator" do
@@ -119,8 +119,8 @@ describe CatalogController do
         get 'index', params: { :q => "" }
         expect(response).to be_successful
         expect(response).to render_template('catalog/index')
-        expect(assigns(:document_list).count).to eq 1
-        expect(assigns(:document_list).map(&:id)).to eq([mo.id])
+        expect(assigns(:response).documents.count).to eq 1
+        expect(assigns(:response).documents.map(&:id)).to eq([mo.id])
       end
     end
     describe "as an lti user" do
@@ -131,8 +131,8 @@ describe CatalogController do
         get 'index', params: { :q => "read_access_virtual_group_ssim:#{lti_group}" }
         expect(response).to be_successful
         expect(response).to render_template('catalog/index')
-        expect(assigns(:document_list).count).to eql(1)
-        expect(assigns(:document_list).map(&:id)).to eq([mo.id])
+        expect(assigns(:response).documents.count).to eql(1)
+        expect(assigns(:response).documents.map(&:id)).to eq([mo.id])
       end
     end
 
@@ -144,29 +144,29 @@ describe CatalogController do
       end
       it "should show no results when no items are visible to the user's IP address" do
         get 'index', params: { :q => "" }
-        expect(assigns(:document_list).count).to eq 0
+        expect(assigns(:response).documents.count).to eq 0
       end
       it "should show results for items visible to the the user's IP address" do
         allow_any_instance_of(ActionDispatch::Request).to receive(:remote_ip).and_return(@ip_address1)
         get 'index', params: { :q => "" }
-        expect(assigns(:document_list).count).to eq 1
-        expect(assigns(:document_list).map(&:id)).to include @mo.id
+        expect(assigns(:response).documents.count).to eq 1
+        expect(assigns(:response).documents.map(&:id)).to include @mo.id
       end
       it "should show results for items visible to the the user's IPv4 subnet" do
         ip_address2 = Faker::Internet.ip_v4_address
         allow_any_instance_of(ActionDispatch::Request).to receive(:remote_ip).and_return(ip_address2)
         mo2 = FactoryBot.create(:published_media_object, visibility: 'private', read_groups: [ip_address2+'/30'])
         get 'index', params: { :q => "" }
-        expect(assigns(:document_list).count).to be >= 1
-        expect(assigns(:document_list).map(&:id)).to include mo2.id
+        expect(assigns(:response).documents.count).to be >= 1
+        expect(assigns(:response).documents.map(&:id)).to include mo2.id
       end
       it "should show results for items visible to the the user's IPv6 subnet" do
         ip_address3 = Faker::Internet.ip_v6_address
         allow_any_instance_of(ActionDispatch::Request).to receive(:remote_ip).and_return(ip_address3)
         mo3 = FactoryBot.create(:published_media_object, visibility: 'private', read_groups: [ip_address3+'/ffff:ffff:ffff:ffff:ffff:ffff:ffff:ff00'])
         get 'index', params: { :q => "" }
-        expect(assigns(:document_list).count).to be >= 1
-        expect(assigns(:document_list).map(&:id)).to include mo3.id
+        expect(assigns(:response).documents.count).to be >= 1
+        expect(assigns(:response).documents.map(&:id)).to include mo3.id
       end
     end
 
@@ -181,8 +181,8 @@ describe CatalogController do
           #since an incorrect one will lead to an empty query resulting in a false positive below
           expect(query).not_to be_empty
           get 'index', params: { :q => query }
-          expect(assigns(:document_list).count).to eq 1
-          expect(assigns(:document_list).map(&:id)). to eq [media_object.id]
+          expect(assigns(:response).documents.count).to eq 1
+          expect(assigns(:response).documents.map(&:id)). to eq [media_object.id]
         end
       end
     end
@@ -195,19 +195,19 @@ describe CatalogController do
       end
       it "should find results based upon structure" do
         get 'index', params: { q: 'CD 1' }
-        expect(assigns(:document_list).count).to eq 1
-        expect(assigns(:document_list).collect(&:id)). to eq [@media_object.id]
+        expect(assigns(:response).documents.count).to eq 1
+        expect(assigns(:response).documents.collect(&:id)). to eq [@media_object.id]
       end
       it 'should find results based upon section labels' do
         get 'index', params: { q: 'Test Label' }
-        expect(assigns(:document_list).count).to eq 1
-        expect(assigns(:document_list).collect(&:id)). to eq [@media_object.id]
+        expect(assigns(:response).documents.count).to eq 1
+        expect(assigns(:response).documents.collect(&:id)). to eq [@media_object.id]
       end
       it 'should find items in correct relevancy order' do
         media_object_1 = FactoryBot.create(:fully_searchable_media_object, title: 'Test Label')
         get 'index', params: { q: 'Test Label' }
-        expect(assigns(:document_list).count).to eq 2
-        expect(assigns(:document_list).collect(&:id)).to eq [media_object_1.id, @media_object.id]
+        expect(assigns(:response).documents.count).to eq 2
+        expect(assigns(:response).documents.collect(&:id)).to eq [media_object_1.id, @media_object.id]
       end
     end
 
@@ -218,15 +218,15 @@ describe CatalogController do
 
       it "should sort correctly by title" do
         get :index, params: { :sort => 'title_ssort asc, date_ssi desc' }
-        expect(assigns(:document_list).map(&:id)).to eq [m2.id, m3.id, m1.id]
+        expect(assigns(:response).documents.map(&:id)).to eq [m2.id, m3.id, m1.id]
       end
       it "should sort correctly by date" do
         get :index, params: { :sort => 'date_ssi desc, title_ssort asc' }
-        expect(assigns(:document_list).map(&:id)).to eq [m3.id, m2.id, m1.id]
+        expect(assigns(:response).documents.map(&:id)).to eq [m3.id, m2.id, m1.id]
       end
       it "should sort correctly by creator" do
         get :index, params: { :sort => 'creator_ssort asc, title_ssort asc' }
-        expect(assigns(:document_list).map(&:id)).to eq [m2.id, m1.id, m3.id]
+        expect(assigns(:response).documents.map(&:id)).to eq [m2.id, m1.id, m3.id]
       end
     end
 
@@ -242,8 +242,8 @@ describe CatalogController do
           get :index, params: { q: "" }
           expect(response).to be_successful
           expect(response).to render_template('catalog/index')
-          expect(assigns(:document_list).count).to eq 1
-          expect(assigns(:document_list).collect(&:id)). to eq [media_object.id]
+          expect(assigns(:response).documents.count).to eq 1
+          expect(assigns(:response).documents.collect(&:id)). to eq [media_object.id]
         end
       end
     end
@@ -263,8 +263,8 @@ describe CatalogController do
           expect(response).to be_successful
           expect(response).to render_template('catalog/index')
           expect(response.content_type).to eq "application/atom+xml; charset=utf-8"
-          expect(assigns(:document_list).count).to eq 2
-          expect(assigns(:document_list).map(&:id)).to match_array [private_media_object.id, public_media_object.id]
+          expect(assigns(:response).documents.count).to eq 2
+          expect(assigns(:response).documents.map(&:id)).to match_array [private_media_object.id, public_media_object.id]
         end
       end
       context "without api key" do
@@ -273,8 +273,8 @@ describe CatalogController do
           expect(response).to be_successful
           expect(response.content_type).to eq "application/atom+xml; charset=utf-8"
           expect(response).to render_template('catalog/index')
-          expect(assigns(:document_list).count).to eq 1
-          expect(assigns(:document_list).map(&:id)).to eq([public_media_object.id])
+          expect(assigns(:response).documents.count).to eq 1
+          expect(assigns(:response).documents.map(&:id)).to eq([public_media_object.id])
         end
       end
     end
