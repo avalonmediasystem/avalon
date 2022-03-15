@@ -5,7 +5,9 @@ if Settings.minio
       endpoint: Settings.minio.endpoint,
       access_key_id: Settings.minio.access,
       secret_access_key: Settings.minio.secret,
-      force_path_style: true,
       region: ENV["AWS_REGION"]
-    )
+  )
+
+  # Service specific global configuration
+  Aws.config[:s3] = { force_path_style: true }
 end
