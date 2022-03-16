@@ -35,6 +35,7 @@ gem 'rdf-vocab', '< 3.1.5'
 
 # Samvera version pins
 gem 'blacklight', '< 8'
+gem 'blacklight-access_controls', git: 'https://github.com/projectblacklight/blacklight-access_controls.git'
 gem 'rdf', '~> 3.1'
 gem 'rsolr', '~> 1.0'
 
