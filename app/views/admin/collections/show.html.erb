@@ -59,9 +59,9 @@ Unless required by applicable law or agreed to in writing, software distributed
       <p id="poster_original_name"><%= @collection.poster.original_name if @collection.poster.present? %></p>
       <div class="well-vertical-spacer">
         <% if @collection.poster.present? %>
-        <%= image_tag(poster_admin_collection_path(@collection), class: 'img-responsive', id: 'poster-image') %>
+        <%= image_tag(poster_admin_collection_path(@collection), class: 'img-fluid', id: 'poster-image') %>
         <% else %>
-        <img src="" class="img-responsive" id="poster-image">
+        <img src="" class="img-fluid" id="poster-image">
         <% end %>
       </div>
       <div class="collection_poster">
