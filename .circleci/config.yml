@@ -1,34 +1,34 @@
 version: 2.1
 orbs:
-  samvera: samvera/circleci-orb@0
+  samvera: samvera/circleci-orb@1.0.0
 jobs:
   build:
     docker:
-     # Primary container image where all steps run.
-     - image: avalonmediasystem/avalon:7.1-slim-dev-20200324
-       environment:
-        - DATABASE_URL=postgresql://postgres@localhost:5432/postgres
-        - FEDORA_URL=http://localhost:8080/fcrepo/rest
-        - FEDORA_TIMEOUT=300
-        - RAILS_ENV=test
-     # Secondary container image on common network.
-     - image: postgres:10-alpine
-       environment:
-         - POSTGRES_USER=postgres
-         - POSTGRES_DB=avalon
-         - POSTGRES_PASSWORD=password
-     - image: ualbertalib/docker-fcrepo4:4.7
-       environment:
-         CATALINA_OPTS: "-Djava.awt.headless=true -Dfile.encoding=UTF-8 -server -Xms512m -Xmx1024m -XX:NewSize=256m -XX:MaxNewSize=256m -XX:PermSize=256m -XX:MaxPermSize=256m -XX:+DisableExplicitGC"
-     - image: solr:7-alpine
-       command: bin/solr -cloud -noprompt -f -p <<parameters.solr_port>>
-     - image: redis:alpine
+      # Primary container image where all steps run.
+      - image: avalonmediasystem/avalon:7.3.0-dev
+        environment:
+          - DATABASE_URL=postgresql://postgres@localhost:5432/postgres
+          - FEDORA_URL=http://localhost:8080/fcrepo/rest
+          - FEDORA_TIMEOUT=300
+          - RAILS_ENV=test
+      # Secondary container image on common network.
+      - image: postgres:10-alpine
+        environment:
+          - POSTGRES_USER=postgres
+          - POSTGRES_DB=avalon
+          - POSTGRES_PASSWORD=password
+      - image: ualbertalib/docker-fcrepo4:4.7
+        environment:
+          CATALINA_OPTS: '-Djava.awt.headless=true -Dfile.encoding=UTF-8 -server -Xms512m -Xmx1024m -XX:NewSize=256m -XX:MaxNewSize=256m -XX:PermSize=256m -XX:MaxPermSize=256m -XX:+DisableExplicitGC'
+      - image: solr:7-alpine
+        command: bin/solr -cloud -noprompt -f -p <<parameters.solr_port>>
+      - image: redis:alpine
 
     parameters:
       ruby_ver:
-        description: "Ruby version"
-        default: "2.5.5"
-        type: "string"
+        description: 'Ruby version'
+        default: '2.7'
+        type: 'string'
       solr_port:
         type: string
         default: '8985'
@@ -77,7 +77,19 @@ jobs:
       - run:
           command: ./cc-test-reporter before-build
 
-      - samvera/parallel_rspec
+      # Pull in the parallel_rspec step and modify it to ensure that test results get stored
+      # - samvera/parallel_rspec
+      - run:
+          name: Run rspec in parallel
+          command: |
+            mkdir /tmp/test-results
+            bundle exec rspec --format progress --format RspecJunitFormatter -o /tmp/test-results/rspec.xml $(circleci tests glob "spec/**/*_spec.rb" | circleci tests split --split-by=timings)
+      # collect reports
+      - store_test_results:
+          path: /tmp/test-results
+      - store_artifacts:
+          path: /tmp/test-results
+          destination: test-results
 
       - run:
           command: ./cc-test-reporter format-coverage -t simplecov -o "coverage/codeclimate.$CIRCLE_NODE_INDEX.json"
@@ -94,7 +106,7 @@ jobs:
         default: 4
     docker:
       # Primary container image where all steps run.
-      - image: avalonmediasystem/avalon:6.x-dev
+      - image: avalonmediasystem/avalon:7.3.0-dev
 
     working_directory: /home/app/avalon
 
@@ -117,10 +129,10 @@ workflows:
   build_test_report:
     jobs:
       - build:
-          ruby_ver: 2.5.5
-          name: "Ruby2-5-5"
+          ruby_ver: '2.7'
+          name: 'Ruby2-7'
           parallelism: 4
       - upload-coverage:
           parallelism: 4
           requires:
-             - Ruby2-5-5
+            - Ruby2-7

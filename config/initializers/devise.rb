@@ -342,3 +342,12 @@ Devise.setup do |config|
   # config.omniauth_path_prefix = '/my_engine/users/auth'
   OmniAuth.config.logger = Rails.logger
 end
+
+# Override script_name to always return empty string and avoid looking in @env
+# This override is needed due to our direct rendering of the identity login form in AuthFormsController
+# which doesn't initialize @env leading to a NoMethodError when trying read a hash value from it.
+OmniAuth::Strategies::Identity.class_eval do
+  def script_name
+    ''
+  end
+end

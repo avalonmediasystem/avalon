@@ -1,4 +1,4 @@
-# Copyright 2011-2020, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2022, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 #
@@ -63,12 +63,14 @@ class IiifManifestPresenter
   end
 
   def homepage
-    {
-      id: Rails.application.routes.url_helpers.media_object_url(media_object),
-      type: "Text",
-      label: { "@none" => [I18n.t('iiif.manifest.homepageLabel')] },
-      format: "text/html"
-    }
+    [
+      {
+        id: Rails.application.routes.url_helpers.media_object_url(media_object),
+        type: "Text",
+        label: { "none" => [I18n.t('iiif.manifest.homepageLabel')] },
+        format: "text/html"
+      }
+    ]
   end
 
   private

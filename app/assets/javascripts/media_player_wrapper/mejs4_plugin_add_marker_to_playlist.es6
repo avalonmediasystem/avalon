@@ -1,4 +1,4 @@
-// Copyright 2011-2018, The Trustees of Indiana University and Northwestern
+// Copyright 2011-2022, The Trustees of Indiana University and Northwestern
 //   University.  Licensed under the Apache License, Version 2.0 (the "License");
 //   you may not use this file except in compliance with the License.
 //
@@ -304,8 +304,6 @@ Object.assign(MediaElementPlayer.prototype, {
       $(t.addMarkerObj.formWrapperEl).slideToggle();
       // Update active (is showing) state
       t.addMarkerObj.active = !t.addMarkerObj.active;
-      // Disable ME.js keyboard shortcuts when form is displayed
-      t.addMarkerObj.player.options.enableKeyboard = false;
     },
 
     /**
@@ -335,8 +333,6 @@ Object.assign(MediaElementPlayer.prototype, {
         }
       }
       t.active = false;
-      // Enable ME.js keyboard shortcuts when form closes
-      t.player.options.enableKeyboard = true;
     }
   }
 });

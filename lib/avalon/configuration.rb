@@ -1,4 +1,4 @@
-# Copyright 2011-2020, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2022, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 #
@@ -36,12 +36,12 @@ module Avalon
 
       def read_avalon_url(v)
         return({}) if v.nil?
-        avalon_url = URI.parse(v)
+        avalon_url = Addressable::URI.parse(v)
         { 'host'=>avalon_url.host, 'port'=>avalon_url.port, 'protocol'=>avalon_url.scheme }
       end
 
       def write_avalon_url(v)
-        URI::Generic.build(scheme: v.fetch('protocol','http'), host: v['host'], port: v['port']).to_s
+        Addressable::URI.build(scheme: v.fetch('protocol','http'), host: v['host'], port: v['port']).to_s
       end
     end
 

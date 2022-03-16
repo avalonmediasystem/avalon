@@ -1,5 +1,5 @@
 <%#
-Copyright 2011-2020, The Trustees of Indiana University and Northwestern
+Copyright 2011-2022, The Trustees of Indiana University and Northwestern
   University.  Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
 
@@ -19,6 +19,14 @@ Unless required by applicable law or agreed to in writing, software distributed
 <% @current_mediaobject = MediaObject.find(@current_masterfile.media_object_id) %>
 <div id="metadata_header">
   <h3>
+    <%= link_to master_file_path(@current_masterfile.id) do %>
+      <% unless @current_masterfile.title.blank? %>
+        <%= @current_masterfile.title %>
+      <% else %>
+        <%= @current_masterfile.id %>
+      <% end %>
+    <% end %>
+    from
     <%= link_to media_object_path(@current_mediaobject) do %>
       <% unless @current_mediaobject.title.blank? %>
         <%= @current_mediaobject.title %>

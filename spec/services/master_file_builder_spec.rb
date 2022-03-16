@@ -1,4 +1,4 @@
-# Copyright 2011-2020, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2022, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 #
@@ -41,7 +41,7 @@ describe MasterFileBuilder, type: :service do
   describe 'DropboxUpload.build' do
     it "should return a Spec" do
       url = "file:///srv/dropbox/file.mp4"
-      params = { workflow: double("workflow"), selected_files: { afile: { url: url } } }
+      params = ActionController::Parameters.new({ workflow: double("workflow"), selected_files: { afile: { url: url } } })
 
       s = MasterFileBuilder::DropboxUpload.build(params)
       expect(s).to eq [MasterFileBuilder::Spec.new(Addressable::URI.parse(url), "file.mp4", "video/mp4", params[:workflow])]

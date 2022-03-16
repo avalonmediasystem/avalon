@@ -1,4 +1,4 @@
-// Copyright 2011-2018, The Trustees of Indiana University and Northwestern
+// Copyright 2011-2022, The Trustees of Indiana University and Northwestern
 //   University.  Licensed under the Apache License, Version 2.0 (the "License");
 //   you may not use this file except in compliance with the License.
 //
@@ -288,7 +288,7 @@ Object.assign(MediaElementPlayer.prototype, {
     getNextItem() {
       let nextItem = this.$nowPlayingLi.next('li');
       // When next item is not a valid playlist item (e.g. from a deleted item) get the item after that
-      if(nextItem[0].className !== 'queue') {
+      if(nextItem[0] && nextItem[0].className !== 'queue') {
         nextItem = nextItem.next('li');
       }
       return nextItem;

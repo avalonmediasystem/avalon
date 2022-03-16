@@ -1,4 +1,4 @@
-// Copyright 2011-2018, The Trustees of Indiana University and Northwestern
+// Copyright 2011-2022, The Trustees of Indiana University and Northwestern
 //   University.  Licensed under the Apache License, Version 2.0 (the "License");
 //   you may not use this file except in compliance with the License.
 //
@@ -65,8 +65,6 @@ class MEJSMarkersHelper {
         .addClass('is-editing');
       // Track original marker offset value of edited row
       originalMarkerValues[markerId] = offset;
-      // Disable ME.js keyboard shortcuts when editing markers
-      player.options.enableKeyboard = false;
     });
 
     // Cancel button click
@@ -80,8 +78,6 @@ class MEJSMarkersHelper {
 
       // Remove original marker offset value
       delete originalMarkerValues[markerId];
-      // Enable ME.js keyboard shortcuts when inline form closes
-      player.options.enableKeyboard = true;
     });
 
     // Delete button click
@@ -178,8 +174,6 @@ class MEJSMarkersHelper {
           $alertError.find('p').text(msg);
           $alertError.slideDown();
         });
-      // Enable ME.js keyboard shortcuts when inline form closes
-      player.options.enableKeyboard = true;
     });
   }
 

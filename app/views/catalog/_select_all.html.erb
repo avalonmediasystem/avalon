@@ -1,5 +1,5 @@
 <%#
-Copyright 2011-2020, The Trustees of Indiana University and Northwestern
+Copyright 2011-2022, The Trustees of Indiana University and Northwestern
   University.  Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
 
@@ -18,9 +18,31 @@ Unless required by applicable law or agreed to in writing, software distributed
 <% if current_or_guest_user %>
   <div class="col-sm-3 col-sm-offset-9 col-lg-2 col-lg-offset-10">
       <% all_selected = @document_list.all? do |d|
-           current_or_guest_user.bookmarks.where({document_id: d.id, document_type: blacklight_config.solr_document_model.to_s}).exists?
+           current_or_guest_user.bookmarks.where({ document_id: d.id }).exists?
          end %>
       <%= check_box_tag('bookmarks_selectall', '', all_selected) %>
       <%= label_tag 'selectall', t('blacklight.bookmarks.addall.button') %>
   </div>
+<% end %>
+
+<% content_for :page_scripts do %>
+<script>
+  // Disable 'Select All' to prevent collision between select
+  // and deselect POST requests while the page is getting updated
+  $('#bookmarks_selectall').on('click', function () {
+    if(!<%= all_selected %>) {
+      $('#bookmarks_selectall')[0].disabled = true;
+    }
+  });
+  // Fetch total bookmarks count after all POST requests for each document 
+  // finishes. And update 'Selected Items' count in the nav bar
+  $(document).ajaxStop(function() {
+    fetch('/bookmarks/count.json')
+      .then(response => response.json())
+      .then(data => {
+        $("span[data-role='bookmark-counter']").text(data['count']);
+        $('#bookmarks_selectall')[0].disabled = false;
+      });
+  });
+</script>
 <% end %>

@@ -1,4 +1,4 @@
-# Copyright 2011-2020, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2022, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 #
@@ -24,7 +24,7 @@ if ENV['COVERAGE'] || ENV['CI']
 end
 
 # Stub out all AWS clients
-require 'aws-sdk'
+require 'aws-sdk-core'
 Aws.config[:stub_responses] = true
 
 # This file is copied to spec/ when you run 'rails generate rspec:install'
@@ -160,6 +160,9 @@ RSpec.configure do |config|
   config.filter_rails_from_backtrace!
   # arbitrary gems may also be filtered via:
   # config.filter_gems_from_backtrace("gem name")
+
+  config.formatter = 'LdpCallProfileFormatter'
+  config.default_formatter = 'doc' if config.files_to_run.one?
 
   # config.include FactoryBot::Syntax::Methods
   config.include Devise::Test::ControllerHelpers, type: :controller

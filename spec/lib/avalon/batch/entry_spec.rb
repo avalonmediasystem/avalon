@@ -1,4 +1,4 @@
-# Copyright 2011-2020, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2022, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 #
@@ -92,7 +92,7 @@ describe Avalon::Batch::Entry do
 
       it 'should call MasterFile.setContent with a hash of derivatives' do
       	allow_any_instance_of(MasterFile).to receive(:file_format).and_return('Moving image')
-      	expect_any_instance_of(MasterFile).to receive(:setContent).with(hash_match(derivative_hash))
+        expect_any_instance_of(MasterFile).to receive(:setContent).with(hash_match(derivative_hash), dropbox_dir: entry.media_object.collection.dropbox_absolute_path)
       	expect_any_instance_of(MasterFile).to receive(:process).with(hash_match(derivative_hash))
       	entry.process!
       end

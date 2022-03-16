@@ -1,4 +1,4 @@
-# Copyright 2011-2020, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2022, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 #
@@ -61,22 +61,22 @@ describe MediaObjectsController, type: :controller do
       context 'with unauthenticated user' do
         # New is isolated here due to issues caused by the controller instance not being regenerated
         it "should redirect to sign in" do
-          expect(get :new).to redirect_to(/#{Regexp.quote(new_user_session_path)}\?url=.*/)
+          expect(get :new).to render_template('errors/restricted_pid')
         end
         # Item page is isolated since it does not require user authentication before action
         it "item page should redirect to restricted content page" do
           expect(get :show, params: { id: media_object.id }).to render_template('errors/restricted_pid')
         end
         it "all routes should redirect to sign in" do
-          expect(get :edit, params: { id: media_object.id }).to redirect_to(/#{Regexp.quote(new_user_session_path)}\?url=.*/)
-          expect(get :confirm_remove, params: { id: media_object.id }).to redirect_to(/#{Regexp.quote(new_user_session_path)}\?url=.*/)
-          expect(put :update, params: { id: media_object.id }).to redirect_to(/#{Regexp.quote(new_user_session_path)}\?url=.*/)
-          expect(put :update_status, params: { id: media_object.id }).to redirect_to(/#{Regexp.quote(new_user_session_path)}\?url=.*/)
-          expect(get :tree, params: { id: media_object.id }).to redirect_to(/#{Regexp.quote(new_user_session_path)}\?url=.*/)
-          expect(get :deliver_content, params: { id: media_object.id, file: 'descMetadata' }).to redirect_to(/#{Regexp.quote(new_user_session_path)}\?url=.*/)
-          expect(delete :destroy, params: { id: media_object.id }).to redirect_to(/#{Regexp.quote(new_user_session_path)}\?url=.*/)
-          expect(get :add_to_playlist_form, params: { id: media_object.id }).to redirect_to(/#{Regexp.quote(new_user_session_path)}\?url=.*/)
-          expect(post :add_to_playlist, params: { id: media_object.id }).to redirect_to(/#{Regexp.quote(new_user_session_path)}\?url=.*/)
+          expect(get :edit, params: { id: media_object.id }).to render_template('errors/restricted_pid')
+          expect(get :confirm_remove, params: { id: media_object.id }).to render_template('errors/restricted_pid')
+          expect(put :update, params: { id: media_object.id }).to render_template('errors/restricted_pid')
+          expect(put :update_status, params: { id: media_object.id }).to render_template('errors/restricted_pid')
+          expect(get :tree, params: { id: media_object.id }).to render_template('errors/restricted_pid')
+          expect(get :deliver_content, params: { id: media_object.id, file: 'descMetadata' }).to render_template('errors/restricted_pid')
+          expect(delete :destroy, params: { id: media_object.id }).to render_template('errors/restricted_pid')
+          expect(get :add_to_playlist_form, params: { id: media_object.id }).to render_template('errors/restricted_pid')
+          expect(post :add_to_playlist, params: { id: media_object.id }).to render_template('errors/restricted_pid')
         end
         it "json routes should return 401" do
           expect(post :create, format: 'json').to have_http_status(401)
@@ -482,7 +482,7 @@ describe MediaObjectsController, type: :controller do
           put 'json_update', params: { format: 'json', id: media_object.id, files: [master_file], collection_id: media_object.collection_id }
           media_object.reload
           expect(media_object.master_files.to_a.size).to eq 1
-          expect(ExtractStillJob).to have_been_enqueued.with(media_object.master_files.first.id,{type:'both',offset:2000})
+          expect(ExtractStillJob).to have_been_enqueued.with(media_object.master_files.first.id, { type: 'both', offset: 2000, headers: nil })
         end
         it "should update the waveform for its masterfile" do
           media_object = FactoryBot.create(:media_object)
@@ -731,7 +731,7 @@ describe MediaObjectsController, type: :controller do
 
     end
     context "Test lease access control" do
-      let!(:media_object) { FactoryBot.create(:published_media_object, visibility: 'private') }
+      let!(:media_object) { FactoryBot.create(:published_media_object, :with_master_file, visibility: 'private') }
       let!(:user) { FactoryBot.create(:user) }
       before :each do
         login_user user.user_key
@@ -1051,11 +1051,6 @@ describe MediaObjectsController, type: :controller do
         expect(media_object.permalink).to be_present
       end
 
-      it "should fail when id doesn't exist" do
-        get 'update_status', params: { id: 'this-id-is-fake', status: 'publish' }
-        expect(response.code).to eq '404'
-      end
-
       it "should publish multiple items" do
         media_objects = []
         3.times { media_objects << FactoryBot.create(:media_object, collection: collection) }
@@ -1065,6 +1060,25 @@ describe MediaObjectsController, type: :controller do
           mo.reload
           expect(mo).to be_published
           expect(mo.permalink).to be_present
+        end
+      end
+
+      context "should fail when" do
+        it "id doesn't exist" do
+          get 'update_status', params: { id: 'this-id-is-fake', status: 'publish' }
+          expect(response.code).to eq '404'
+        end
+
+        it "item is invalid" do
+          media_object = FactoryBot.create(:media_object, collection: collection)
+          media_object.title = nil
+          media_object.date_issued = nil
+          media_object.workflow.last_completed_step = 'file-upload'
+          media_object.save!(validate: false)
+          get 'update_status', params: { id: media_object.id, status: 'publish' }
+          expect(flash[:notice]).to eq("Unable to publish item: Validation failed: Title field is required., Date issued field is required.")
+          media_object.reload
+          expect(media_object).not_to be_published
         end
       end
     end

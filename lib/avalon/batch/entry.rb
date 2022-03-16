@@ -1,4 +1,4 @@
-# Copyright 2011-2020, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2022, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 #
@@ -199,7 +199,7 @@ module Avalon
           # master_file.media_object = media_object
           files = self.class.gatherFiles(file_spec[:file])
           self.class.attach_datastreams_to_master_file(master_file, file_spec[:file])
-          master_file.setContent(files)
+          master_file.setContent(files, dropbox_dir: media_object.collection.dropbox_absolute_path)
 
           # Overwrite files hash with working file paths to pass to matterhorn
           if files.is_a?(Hash) && master_file.working_file_path.present?

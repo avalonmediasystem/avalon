@@ -1,4 +1,4 @@
-# Copyright 2011-2020, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2022, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 #
@@ -13,10 +13,6 @@
 # ---  END LICENSE_HEADER BLOCK  ---
 
 module ActiveEncodeJobs
-  require 'ffmpeg_encode'
-  require 'elastic_transcoder_encode'
-  require 'pass_through_encode'
-
   class CreateEncodeJob < ActiveJob::Base
     queue_as :create_encode
 

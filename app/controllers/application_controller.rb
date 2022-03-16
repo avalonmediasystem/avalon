@@ -1,4 +1,4 @@
-# Copyright 2011-2020, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2022, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 #
@@ -51,7 +51,11 @@ class ApplicationController < ActionController::Base
     return if params[:controller] =~ /migration/
 
     params.permit!
-    new_id = ActiveFedora::SolrService.query(%{identifier_ssim:"#{params[:id]}"}, rows: 1, fl: 'id').first['id']
+    query_result = ActiveFedora::SolrService.query(%{identifier_ssim:"#{params[:id]}"}, rows: 1, fl: 'id')
+
+    raise ActiveFedora::ObjectNotFoundError if query_result.empty?
+
+    new_id = query_result.first['id']
     new_content_id = params[:content] ? ActiveFedora::SolrService.query(%{identifier_ssim:"#{params[:content]}"}, rows: 1, fl: 'id').first['id'] : nil
     redirect_to(url_for(params.merge(id: new_id, content: new_content_id)))
   end
@@ -79,7 +83,7 @@ class ApplicationController < ActionController::Base
       objects_path(params['target_id'], params.permit('t', 'position', 'token'))
     elsif params[:url]
       # Limit redirects to current host only (Fixes bug https://bugs.dlib.indiana.edu/browse/VOV-5662)
-      uri = URI.parse(params[:url])
+      uri = Addressable::URI.parse(params[:url])
       request.host == uri.host ? uri.path : root_path
     elsif auth_type == 'lti' && lti_group.present?
       search_catalog_path('f[read_access_virtual_group_ssim][]' => lti_group)
@@ -174,8 +178,11 @@ class ApplicationController < ActionController::Base
   rescue_from Ldp::Gone do |exception|
     if request.format == :json
       render json: {errors: ["#{params[:id]} has been deleted"]}, status: 410
-    else
+    elsif request.format == :html
       render '/errors/deleted_pid', status: 410
+    else
+      # m3u8 request
+      head 410
     end
   end
 
@@ -195,7 +202,7 @@ class ApplicationController < ActionController::Base
       head :unauthorized
     else
       session[:previous_url] = request.fullpath unless request.xhr?
-      redirect_to new_user_session_path(url: request.url), flash: { notice: 'You need to login to perform this action.' }
+      render '/errors/restricted_pid', status: :unauthorized
     end
   end
 

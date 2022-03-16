@@ -1,5 +1,5 @@
 <%#
-Copyright 2011-2020, The Trustees of Indiana University and Northwestern
+Copyright 2011-2022, The Trustees of Indiana University and Northwestern
   University.  Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
 
@@ -80,11 +80,14 @@ Unless required by applicable law or agreed to in writing, software distributed
 <% content_for :page_scripts do %>
   <script>
     // Enable/disable ME.js keyboard shortcuts when modal is hidden/shown
-    $('#copy-playlist-modal').on('show.bs.modal', function (e) {
-      currentPlayer.options.enableKeyboard = false;
-    })
-    $('#copy-playlist-modal').on('hidden.bs.modal', function (e) {
-      currentPlayer.options.enableKeyboard = true;
-    })
+    // if a player is rendered on the page
+    if(currentPlayer) {
+      $('#copy-playlist-modal').on('show.bs.modal', function (e) {
+        currentPlayer.options.enableKeyboard = false;
+      });
+      $('#copy-playlist-modal').on('hidden.bs.modal', function (e) {
+        currentPlayer.options.enableKeyboard = true;
+      });
+    }
   </script>
 <% end %>

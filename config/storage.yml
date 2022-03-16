@@ -1,16 +1,21 @@
 local:
   service: Disk
-  root: <%= Rails.root.join("storage") %>
+  root: <%= ENV['SETTINGS__ACTIVE_STORAGE__ROOT'] || Rails.root.join("storage") %>
 
 test:
   service: Disk
   root: <%= Rails.root.join("tmp/storage") %>
 
-minio:
+generic_s3:
   service: S3
   access_key_id: <%= ENV['SETTINGS__MINIO__ACCESS'] %>
   secret_access_key: <%= ENV['SETTINGS__MINIO__SECRET'] %>
   region: <%= ENV['AWS_REGION'] %>
-  bucket: 'supplementalfiles'
+  bucket: <%= ENV['SETTINGS__ACTIVE_STORAGE__BUCKET'] %>
   endpoint: <%= ENV['SETTINGS__MINIO__ENDPOINT'] %>
   force_path_style: true
+
+amazon:
+  service: S3
+  bucket: <%= ENV['SETTINGS__ACTIVE_STORAGE__BUCKET'] %>
+  region: <%= ENV['AWS_REGION'] %>

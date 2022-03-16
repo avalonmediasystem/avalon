@@ -1,4 +1,4 @@
-# Copyright 2011-2020, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2022, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 #
@@ -24,6 +24,7 @@ module Avalon
 
     # Returns available files in the dropbox
     def all
+      FileUtils.mkdir_p @base_directory
       return nil if @base_directory.blank? or not Dir.exists?(@base_directory)
       contents = Dir.entries(@base_directory).reject { |fn| fn.start_with?('.') }
       open_files = find_open_files(contents)

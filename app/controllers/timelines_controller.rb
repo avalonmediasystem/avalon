@@ -1,4 +1,4 @@
-# Copyright 2011-2020, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2022, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 #
@@ -101,13 +101,13 @@ class TimelinesController < ApplicationController
       format.html do
         url_fragment = "noHeader=true&noFooter=true&noSourceLink=false"
         if current_user == @timeline.user
-          url_fragment += "&resource=#{URI.escape(manifest_timeline_url(@timeline, format: :json), '://?=')}"
-          url_fragment += "&callback=#{URI.escape(manifest_timeline_url(@timeline, format: :json), '://?=')}"
+          url_fragment += "&resource=#{Addressable::URI.escape_component(manifest_timeline_url(@timeline, format: :json), '://?=')}"
+          url_fragment += "&callback=#{Addressable::URI.escape_component(manifest_timeline_url(@timeline, format: :json), '://?=')}"
         elsif current_user
-          url_fragment += "&resource=#{URI.escape(manifest_timeline_url(@timeline, format: :json, token: @timeline.access_token), '://?=')}"
-          url_fragment += "&callback=#{URI.escape(timelines_url, '://?=')}"
+          url_fragment += "&resource=#{Addressable::URI.escape_component(manifest_timeline_url(@timeline, format: :json, token: @timeline.access_token), '://?=')}"
+          url_fragment += "&callback=#{Addressable::URI.escape_component(timelines_url, '://?=')}"
         end
-        @timeliner_iframe_url = Settings.timeliner.timeliner_url + "##{url_fragment}"
+        @timeliner_iframe_url = timeliner_path + "##{url_fragment}"
       end
       format.json do
         render json: @timeline

@@ -1,4 +1,4 @@
-# Copyright 2011-2020, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2022, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 #
@@ -24,6 +24,6 @@ describe 'redirect', type: :request do
   it 'stores url to redirect to when needing to authenticate (#authenticate_user!)' do
     get '/bookmarks'
     expect(request.env['rack.session']['previous_url']).to eq '/bookmarks'
-    expect(response).to redirect_to(/#{Regexp.quote(new_user_session_path)}\?url=.*/)
+    expect(response).to render_template('errors/restricted_pid')
   end
 end

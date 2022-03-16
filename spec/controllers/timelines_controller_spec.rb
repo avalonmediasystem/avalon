@@ -1,4 +1,4 @@
-# Copyright 2011-2020, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2022, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 #
@@ -66,14 +66,14 @@ RSpec.describe TimelinesController, type: :controller do
     context 'with unauthenticated user' do
       # New is isolated here due to issues caused by the controller instance not being regenerated
       it "should redirect to sign in" do
-        expect(get :new).to redirect_to(/#{Regexp.quote(new_user_session_path)}\?url=.*/)
+        expect(get :new).to render_template('errors/restricted_pid')
       end
       it "all routes should redirect to sign in" do
-        expect(get :index).to redirect_to(/#{Regexp.quote(new_user_session_path)}\?url=.*/)
-        expect(get :edit, params: { id: timeline.id }).to redirect_to(/#{Regexp.quote(new_user_session_path)}\?url=.*/)
-        expect(post :create).to redirect_to(/#{Regexp.quote(new_user_session_path)}\?url=.*/)
-        expect(put :update, params: { id: timeline.id }).to redirect_to(/#{Regexp.quote(new_user_session_path)}\?url=.*/)
-        expect(delete :destroy, params: { id: timeline.id }).to redirect_to(/#{Regexp.quote(new_user_session_path)}\?url=.*/)
+        expect(get :index).to render_template('errors/restricted_pid')
+        expect(get :edit, params: { id: timeline.id }).to render_template('errors/restricted_pid')
+        expect(post :create).to render_template('errors/restricted_pid')
+        expect(put :update, params: { id: timeline.id }).to render_template('errors/restricted_pid')
+        expect(delete :destroy, params: { id: timeline.id }).to render_template('errors/restricted_pid')
       end
       context 'with a public timeline' do
         let(:timeline) { FactoryBot.create(:timeline, visibility: Timeline::PUBLIC) }

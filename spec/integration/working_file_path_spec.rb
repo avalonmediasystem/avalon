@@ -1,4 +1,4 @@
-# Copyright 2011-2020, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2022, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 #
@@ -96,7 +96,7 @@ describe "MasterFile#working_file_path" do
         master_file = media_object.reload.master_files.first
         expect(File.exists? master_file.working_file_path.first).to be true
         input = FileLocator.new(master_file.working_file_path.first).uri.to_s
-        expect(encoder_class).to have_received(:create).with(input, { master_file_id: master_file.id, preset: workflow })
+        expect(encoder_class).to have_received(:create).with(input, { headers: nil, master_file_id: master_file.id, preset: workflow })
       end
 
       context "with skip transcoding" do
@@ -115,14 +115,14 @@ describe "MasterFile#working_file_path" do
     context "using dropbox upload" do
       let(:file) { fixture_file_upload('spec/fixtures/videoshort.mp4', 'video/mp4') }
       let(:url) { Addressable::URI.convert_path(File.absolute_path(file.to_path)) }
-      let(:params) { { selected_files: { "0" => { url: url, file_name: 'videoshort.mp4' } }, workflow: workflow } }
+      let(:params) { ActionController::Parameters.new({ selected_files: { "0" => { url: url, file_name: 'videoshort.mp4' } }, workflow: workflow }) }
 
       it 'sends the working_file_path to active_encode' do
         MasterFileBuilder.build(media_object, params)
         master_file = media_object.reload.master_files.first
         expect(File.exists? master_file.working_file_path.first).to be true
         input = FileLocator.new(master_file.working_file_path.first).uri.to_s
-        expect(encoder_class).to have_received(:create).with(input, { master_file_id: master_file.id, preset: workflow })
+        expect(encoder_class).to have_received(:create).with(input, { headers: nil, master_file_id: master_file.id, preset: workflow })
       end
 
       context "with skip transcoding" do
@@ -155,7 +155,7 @@ describe "MasterFile#working_file_path" do
         master_file = media_object.reload.master_files.first
         expect(File.exists? master_file.working_file_path.first).to be true
         input = FileLocator.new(master_file.working_file_path.first).uri.to_s
-        expect(encoder_class).to have_received(:create).with(input, { master_file_id: master_file.id, preset: workflow })
+        expect(encoder_class).to have_received(:create).with(input, { headers: nil, master_file_id: master_file.id, preset: workflow })
       end
 
       context 'with skip transcoding' do
@@ -226,7 +226,7 @@ describe "MasterFile#working_file_path" do
         MasterFileBuilder.build(media_object, params)
         master_file = media_object.reload.master_files.first
         input = FileLocator.new(master_file.file_location).uri.to_s
-        expect(encoder_class).to have_received(:create).with(input, { master_file_id: master_file.id, preset: workflow })
+        expect(encoder_class).to have_received(:create).with(input, { headers: nil, master_file_id: master_file.id, preset: workflow })
       end
 
       context "with skip transcoding" do
@@ -244,13 +244,13 @@ describe "MasterFile#working_file_path" do
     context "using dropbox upload" do
       let(:file) { fixture_file_upload('spec/fixtures/videoshort.mp4', 'video/mp4') }
       let(:url) { Addressable::URI.convert_path(File.absolute_path(file.to_path)) }
-      let(:params) { { selected_files: { "0" => { url: url, file_name: 'videoshort.mp4' } }, workflow: workflow } }
+      let(:params) { ActionController::Parameters.new({ selected_files: { "0" => { url: url, file_name: 'videoshort.mp4' } }, workflow: workflow }) }
 
       it 'sends the file_location to active_encode' do
         MasterFileBuilder.build(media_object, params)
         master_file = media_object.reload.master_files.first
         input = FileLocator.new(master_file.file_location).uri.to_s
-        expect(encoder_class).to have_received(:create).with(input, { master_file_id: master_file.id, preset: workflow })
+        expect(encoder_class).to have_received(:create).with(input, { headers: nil, master_file_id: master_file.id, preset: workflow })
       end
 
       context "with skip transcoding" do
@@ -281,7 +281,7 @@ describe "MasterFile#working_file_path" do
         entry.process!
         master_file = media_object.reload.master_files.first
         input = FileLocator.new(master_file.file_location).uri.to_s
-        expect(encoder_class).to have_received(:create).with(input, { master_file_id: master_file.id, preset: workflow })
+        expect(encoder_class).to have_received(:create).with(input, { headers: nil, master_file_id: master_file.id, preset: workflow })
       end
 
       context 'with skip transcoding' do

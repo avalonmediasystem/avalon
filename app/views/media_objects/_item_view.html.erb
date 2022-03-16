@@ -1,5 +1,5 @@
 <%#
-Copyright 2011-2020, The Trustees of Indiana University and Northwestern
+Copyright 2011-2022, The Trustees of Indiana University and Northwestern
   University.  Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
 
@@ -18,6 +18,9 @@ Unless required by applicable law or agreed to in writing, software distributed
   <link rel="alternative" type="application/json+oembed" href="<%= "#{oembed_url(format: 'json', url: share_link_for(@currentStream))}" %>" />
   <link rel="alternative" type="application/xml+oembed" href="<%= "#{oembed_url(format: 'xml', url: share_link_for(@currentStream))}" %>" />
 <% end %>
+
+<% @poster_url = request.base_url + @currentStreamInfo[:poster_image] unless @currentStreamInfo[:poster_image].nil? %>
+<% @page_type = @currentStreamInfo[:is_video] ? 'video' : 'audio' %>
 
 <% f_start, f_end = parse_media_fragment params['t'] %>
 <div class="row">
@@ -42,6 +45,9 @@ Unless required by applicable law or agreed to in writing, software distributed
     <div id="metadata_container" class="">
       <section id="metadata"><%= render "metadata_display" %></section>
     </div>
+
+    <% supplemental_files = @media_object.ordered_master_files.to_a.map { |mf| {"id" => mf.id, "transcripts" => mf.supplemental_files.select { |sf| sf.tags.include?('transcript')} } }.flatten(1) %>
+    <%= react_component("ReactIIIFTranscript", {base_url: request.protocol+request.host_with_port, transcripts: supplemental_files }) %>
   </div>
 
 </div>

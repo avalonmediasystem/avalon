@@ -6,6 +6,10 @@ domain:
 dropbox:
   path: /srv/avalon/dropbox
   upload_uri: sftp://avalon.example.edu
+  # google_drive:
+  #   client_id: id
+  #   client_secret: secret
+  #   redis_token_store_url: redis://host:port # if different from Avalon's Redis
 encoding:
   engine_adapter: ffmpeg
   presets_path: config/ffmpeg_presets.yml
@@ -52,6 +56,7 @@ streaming:
 redis:
   host: localhost
   port: 6379
+  db: 0
 groups:
   system_groups: [administrator, group_manager, manager]
 master_file_management:
@@ -87,3 +92,7 @@ waveform:
   player_width: 1200 #pixels
   finest_zoom: 5 #seconds
   sample_rate: 41000
+active_storage:
+  service: local
+  #bucket: supplementalfiles
+

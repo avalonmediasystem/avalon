@@ -1,4 +1,4 @@
-# Copyright 2011-2020, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2022, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 #
@@ -417,7 +417,8 @@ class MediaObjectsController < ApplicationController
       if cannot? :update, media_object
         errors += ["#{media_object.title} (#{id}) (permission denied)."]
       else
-        case status
+        begin
+          case status
           when 'publish'
             media_object.publish!(user_key)
             # additional save to set permalink
@@ -430,11 +431,14 @@ class MediaObjectsController < ApplicationController
             else
               errors += ["#{media_object.title} (#{id}) (permission denied)."]
             end
+          end
+        rescue ActiveFedora::RecordInvalid => e
+          errors += [e.message]
         end
       end
     end
-    message = "#{success_count} #{'media object'.pluralize(success_count)} successfully #{status}ed."
-    message += "These objects were not #{status}ed:</br> #{ errors.join('<br/> ') }" if errors.count > 0
+    message = "#{success_count} #{'media object'.pluralize(success_count)} successfully #{status}ed." if success_count.positive?
+    message = "Unable to publish #{'item'.pluralize(errors.count)}: #{ errors.join('<br/> ') }" if errors.count > 0
     redirect_back(fallback_location: root_path, flash: {notice: message.html_safe})
   end
 

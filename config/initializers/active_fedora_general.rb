@@ -17,3 +17,11 @@ ActiveFedora::Aggregation::ListSource.class_eval do
     attributes_changed_by_setter[:nodes] = true
   end
 end
+
+# Override to avoid deprecation warning.  Remove this monkey-patch whenever Avalon upgrades to a version of LDP which has this fix.
+Ldp::Response.class_eval do
+  def content_disposition_filename
+    filename = content_disposition_attributes['filename']
+    ::RDF::URI.decode(filename) if filename
+  end
+end

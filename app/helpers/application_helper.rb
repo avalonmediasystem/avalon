@@ -1,4 +1,4 @@
-# Copyright 2011-2020, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2022, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 #
@@ -205,7 +205,7 @@ module ApplicationHelper
 
   def build_solr_request_from_response
     qs = @response['responseHeader']['params'].reject { |k,v| k == 'wt' }.collect do |k,v|
-      v.is_a?(Array) ? v.collect { |v1| [k,URI.encode(v1.to_s)].join('=') } : [k,URI.encode(v.to_s)].join('=')
+      v.is_a?(Array) ? v.collect { |v1| [k, Addressable::URI.escape(v1.to_s)].join('=') } : [k, Addressable::URI.escape(v.to_s)].join('=')
     end.flatten.join('&')
     ActiveFedora.solr.conn.uri.merge("select?#{qs}").to_s.html_safe
   end

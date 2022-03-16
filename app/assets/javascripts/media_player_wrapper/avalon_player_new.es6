@@ -1,4 +1,4 @@
-// Copyright 2011-2018, The Trustees of Indiana University and Northwestern
+// Copyright 2011-2022, The Trustees of Indiana University and Northwestern
 //   University.  Licensed under the Apache License, Version 2.0 (the "License");
 //   you may not use this file except in compliance with the License.
 //
@@ -31,6 +31,7 @@ class MEJSPlayer {
     this.mejsMarkersHelper = new MEJSMarkersHelper();
     this.mejsQualityHelper = new MEJSQualityHelper();
     this.localStorage = window.localStorage;
+    this.canvasIndex = 0;
 
     // Unpack player configuration object for the new player.
     // This allows for variable params to be sent in.
@@ -109,7 +110,8 @@ class MEJSPlayer {
     let itemScope = document.querySelector('[itemscope="itemscope"]');
     let node = this.mejsUtility.createHTML5MediaNode(
       this.mediaType,
-      this.currentStreamInfo
+      this.currentStreamInfo,
+      this.canvasIndex
     );
 
     // Mount new <audio> or <video> element to the DOM and initialize
@@ -249,6 +251,13 @@ class MEJSPlayer {
   switchPlayer(playlistItemsT) {
     let markup = '';
 
+    // Update 'data-canvasindex' attribute for each element of the existing
+    // player node on page.
+    let childrenEls = this.mediaElement.children;
+    for (var i = 0; i < childrenEls.length; i++) {
+      childrenEls[i].setAttribute('data-canvasindex', this.canvasIndex)
+    }
+
     this.node.innerHTML = '';
     this.currentStreamInfo.stream_hls.map(source => {
       markup += `<source src="${
@@ -292,6 +301,9 @@ class MEJSPlayer {
 
     this.reInitializeCaptions();
 
+    // Build time rail highlight based on structure
+    this.buildTimeRailHighlight();
+
     this.player.load();
     this.player.play();
   }
@@ -311,6 +323,25 @@ class MEJSPlayer {
       // Clear captions object
       delete this.player.tracks;
       this.player.cleartracks(this.player);
+    }
+  }
+
+  /**
+   * Build time rail highlight when intializing the player instance
+   * and advancing to the next section/playlist item
+   */
+  buildTimeRailHighlight() {
+    if (this.highlightRail) {
+      const t = this.mejsTimeRailHelper.calculateSegmentT(
+        this.segmentsMap[this.activeSegmentId],
+        this.currentStreamInfo
+      );
+
+      // Create our custom time rail highlighter element
+      this.highlightSpanEl = this.mejsTimeRailHelper.createTimeHighlightEl(
+        document.getElementById('content')
+      );
+      this.highlightTimeRail(t, this.activeSegmentId);
     }
   }
 
@@ -467,18 +498,7 @@ class MEJSPlayer {
     );
 
     // Show highlighted time in time rail
-    if (this.highlightRail) {
-      const t = this.mejsTimeRailHelper.calculateSegmentT(
-        this.segmentsMap[this.activeSegmentId],
-        this.currentStreamInfo
-      );
-
-      // Create our custom time rail highlighter element
-      this.highlightSpanEl = this.mejsTimeRailHelper.createTimeHighlightEl(
-        document.getElementById('content')
-      );
-      this.highlightTimeRail(t, this.activeSegmentId);
-    }
+    this.buildTimeRailHighlight();
 
     // Filter playlist item player from handling MEJS's time update event
     if (Object.keys(this.playlistItem).length === 0) {
@@ -660,7 +680,7 @@ class MEJSPlayer {
         let fullConfiguration = Object.assign({}, defaults, markerConfig);
         // Create a MediaElement instance
         this.player = new MediaElementPlayer(
-          `mejs-avalon-${this.mediaType}`,
+          'mejs-avalon-player',
           fullConfiguration
         );
         // Add default title from stream info which mejs plugins can access
@@ -755,6 +775,13 @@ class MEJSPlayer {
       document.getElementById('accordion'),
       currentStreamInfo
     );
+
+    const $sections = $('#accordion').find('.panel-heading[data-section-id]');
+    const sectionsIdArray = $sections.map((index, item) =>
+      $(item).data('sectionId').toString()
+    );
+    const currentIdIndex = [...sectionsIdArray].indexOf(currentStreamInfo.id);
+    this.canvasIndex = currentIdIndex;
   }
 
   /**
