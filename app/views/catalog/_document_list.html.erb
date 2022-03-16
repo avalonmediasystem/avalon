@@ -14,9 +14,10 @@ Unless required by applicable law or agreed to in writing, software distributed
 ---  END LICENSE_HEADER BLOCK  ---
 %>
 <% # container for all documents in index list view -%>
+<% view_config = local_assigns[:view_config] || blacklight_config&.view_config(document_index_view_type) %>
 <div id="documents" class="documents-<%= document_index_view_type %>">
   <% if render_bookmarks_control? && documents.count>1 %> 
     <%= render "select_all" %>
   <% end %>
-  <%= render documents, :as => :document %>
+  <%= render documents, as: :document, view_config: view_config %>
 </div>
