@@ -40,13 +40,6 @@ $orange: #fbb040;
 $white: rgb(255, 255, 255);
 $blueGreen: #477076;
 
-// Generated palate colors from http://colormind.io/ for Avalon style guide
-// Add new HEX values below to match your organization's flavor of info/success/warning/danger
-$info: #fbb040;
-$success: #429453;
-$warning: #bf841b;
-$danger: #f44336;
-
 // Colors not from the Styleguide
 $greenBG: scale-color($secondary, $saturation: -40%, $lightness: 60%);
 $gray: #999;
@@ -54,6 +47,13 @@ $lightgray: #f2f2f2;
 $red: #d9534f;
 $blue: #2a4d59;
 $lightblue: #31708f;
+
+// Generated palate colors from http://colormind.io/ for Avalon style guide
+// Add new HEX values below to match your organization's flavor of info/success/warning/danger
+$info: #fbb040;
+$success: #429453;
+$warning: #bf841b;
+$danger: #f44336;
 
 /**
   * Bootstrap variable overrides
@@ -80,7 +80,7 @@ $padding-base-vertical: 4px;
 
 /* Links */
 $link-color: $primary;
-$link-hover-color: $primary;
+$link-hover-color: $secondary;
 
 /* Alerts */
 $alert-success-bg: $success;
@@ -130,20 +130,22 @@ $navbar-inverse-toggle-border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1)
 $grid-gutter-width: 16px;
 
 /* Buttons */
-$btn-border-radius-base: 2px;
-$btn-default-color: $dark;
-$btn-default-bg: $white;
-$btn-default-border: $gray;
+// $btn-border-radius-base: 2px;
+// $btn-default-color: $dark;
+// $btn-default-bg: $white;
+// $btn-default-border: $gray;
 // $btn-primary-color: $white;
 // $btn-primary-bg: $secondary;
 // $btn-primary-border: $secondary;
-$btn-success-color: $white;
-$btn-success-bg: $success;
-$btn-success-border: $success;
-$btn-info-color: $primary;
-$btn-info-bg: $info;
-$btn-info-border: $info;
-$btn-danger-color: $white;
+// $btn-success-color: $white;
+// $btn-success-bg: $success;
+// $btn-success-border: $success;
+// $btn-info-color: $primary;
+// $btn-info-bg: $info;
+// $btn-info-border: $info;
+$btn-outline-color: $dark;
+$btn-outline-border-color: $gray;
+$btn-outline-bg-color: $white;
 $btn-light-bg: $lightgray;
 
 /* Pagination */

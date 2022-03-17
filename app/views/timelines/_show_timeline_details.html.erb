@@ -24,7 +24,15 @@ Unless required by applicable law or agreed to in writing, software distributed
   </div>
   <div class="row">
     <div class="col-sm-12">
-      <h3 style="display:inline-block"><%= t("timeline.details") %></h3>
+      <h3 style="display:inline-block" class="my-3"><%= t("timeline.details") %></h3>
+    </div>
+  </div>
+
+  <div id="popover-link-content" style="display: none;">
+    <p>If you get a new link, the previous link will stop working.<p>
+    <div>
+      <button type="submit" class="btn btn-danger btn-confirm" id="confirm-yes-btn" style="margin-right:5px;" form="timeline_new_link_form">Yes</button>
+      <button type="submit" class="btn btn-primary btn-confirm" id="confirm-cancel-btn" form="timeline_new_link_form">Cancel</button>
     </div>
   </div>
 
@@ -77,42 +85,37 @@ Unless required by applicable law or agreed to in writing, software distributed
     }, 3000);
   });
 
-  var popover_content = '<p>If you get a new link, the previous link will stop working.<p>'+
-          '<div>'+
-            '<button type="submit" onclick="new_link_confirm()" class="btn btn-danger btn-confirm" style="margin-right:5px;" form="timeline_new_link_form">Yes</button>' +
-            '<button type="submit" onclick="new_link_cancel()" class="btn btn-primary btn-confirm" form="timeline_new_link_form">Cancel</button>'+
-          '</div>'
-  var popover_template = '<div class="popover" role="tooltip" style="width: 12em;">'+
-      '<div class="arrow"></div>'+
-      '<h3 class="popover-title"></h3>'+
-      '<div class="popover-content"></div>'+
-    '</div>'
 
-  $('#get-new-link').popover({
-    trigger: 'click',
-    html: true,
-    placement: 'top',
-    title: 'Get a new link?',
-    template: popover_template,
-    content: popover_content,
-  });
-
-  var new_link_cancel = function (event) {
-    $('#get-new-link').popover('hide').click();
-  }
-
-  var new_link_confirm = function (event) {
-    $.ajax({
-      type: "PATCH",
-      url: '/timelines/' + $('#get-new-link').data().timelineId + '/regenerate_access_token',
-      success: function (data, status) {
-        $('#timeline-share-link').attr('value', data.access_token_url)
-      },
-      complete: function () {
-          $('#get-new-link').popover('hide').click();
-      }
+  var createNewLinkPopover = function() {
+    var $popoverDialog = $('#get-new-link')
+    
+    $popoverDialog.popover({
+      trigger: 'click',
+      html: true,
+      placement: 'top',
+      title: 'Get a new link?',
+      content: function() { return $('#popover-link-content').html(); },
+    }).on('shown.bs.popover', function(e) {
+      console.log($('#popover-link-content').find('#confirm-cancel-btn'))
+      $('#popover-link-content').find('#confirm-cancel-btn').click(function() {
+        $('#get-new-link').popover('hide');
+      });
+      $('#popover-link-content').find('#confirm-yes-btn').click(function() {
+        $.ajax({
+          type: "PATCH",
+          url: '/timelines/' + $('#get-new-link').data().timelineId + '/regenerate_access_token',
+          success: function (data, status) {
+            $('#timeline-share-link').attr('value', data.access_token_url)
+          },
+          complete: function () {
+              $('#get-new-link').popover('hide').click();
+          }
+        });
+      });
     });
+    return $popoverDialog;
   }
 
+  createNewLinkPopover();
   </script>
 <% end %>

@@ -16,6 +16,7 @@
 
 main.homepage-main {
   padding-bottom: 0;
+  padding-top: 0.25rem;
 
   .alert {
     margin-bottom: 40px;
@@ -63,7 +64,7 @@ main.homepage-main {
   color: white;
   width: 100%;
   background: rgba(42, 84, 89, 0.8);
-  padding: 2.5rem 0;
+  padding: 1.5rem 0;
   font-family: $museoSlab;
 
   .lead {

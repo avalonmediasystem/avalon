@@ -80,13 +80,13 @@ class PlaylistsController < ApplicationController
       "recordsFiltered": playlistsFilteredTotal,
       "data": @playlists.collect do |playlist|
         copy_button = view_context.button_tag( type: 'button', data: { playlist: playlist },
-          class: 'copy-playlist-button btn btn-default btn-xs') do
+          class: 'copy-playlist-button btn btn-outline btn-sm') do
           "<i class='fa fa-clone' aria-hidden='true'></i> Copy".html_safe
         end
-        edit_button = view_context.link_to(edit_playlist_path(playlist), class: 'btn btn-default btn-xs') do
+        edit_button = view_context.link_to(edit_playlist_path(playlist), class: 'btn btn-outline btn-sm') do
           "<i class='fa fa-edit' aria-hidden='true'></i> Edit".html_safe
         end
-        delete_button = view_context.link_to(playlist_path(playlist), method: :delete, class: 'btn btn-xs btn-danger btn-confirmation', data: {placement: 'bottom'}) do
+        delete_button = view_context.link_to(playlist_path(playlist), method: :delete, class: 'btn btn-sm btn-danger btn-confirmation', data: {placement: 'bottom'}) do
           "<i class='fa fa-times' aria-hidden='true'></i> Delete".html_safe
         end
         [
