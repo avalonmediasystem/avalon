@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+
+# grep VERSION config/application.rb
+VERSION=`grep -Pv "^\s*\#" config/application.rb | grep "VERSION" | grep -Po "\d+\.\d+\.\d+(\.\d+)?"`
+echo $VERSION
+AU_NAME=AU_MSM3-3.7-00.01.02.03
+IFS=. VER=($VERSION)
+for i in {0..3} ; do
+        echo ${VER[i]}
+done
+
+    major=${VER[0]}
+    minor=${VER[1]}
+    patch=${VER[2]}
+    build=${VER[3]}
+
+echo "major $major"
+echo "minor $minor"
+echo "patch $patch"
+echo "build $build"
+
+echo "VERSION: $VERSION"
+echo "TAGS"
+echo "$major"
+echo "$major.$minor"
+echo "$major.$minor.$patch"
+if [ $build ]; then
+    echo "$major.$minor.$patch.$build"
+fi
+
