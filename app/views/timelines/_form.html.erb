@@ -26,31 +26,31 @@ Unless required by applicable law or agreed to in writing, software distributed
   <div class="row form-group">
     <%= label_tag nil, t("timeline.visibility"), class: 'col-sm-2 control-label' %>
     <div class="col-sm-10">
-      <label class="radio-inline">
-        <%= f.radio_button(:visibility, Timeline::PUBLIC) %>
+      <label class="checkbox-inline">
+        <%= f.radio_button(:visibility, Timeline::PUBLIC, class: 'm-1') %>
         <%= timeline_human_friendly_visibility Timeline::PUBLIC %>
       </label>
-      <label class="radio-inline">
-        <%= f.radio_button(:visibility, Timeline::PRIVATE) %>
+      <label class="checkbox-inline">
+        <%= f.radio_button(:visibility, Timeline::PRIVATE, class: 'm-1') %>
         <%= timeline_human_friendly_visibility Timeline::PRIVATE %>
       </label>
-      <label class="radio-inline">
-        <%= f.radio_button(:visibility, Timeline::PRIVATE_WITH_TOKEN, class: 'share-timeline') %>
+      <label class="checkbox-inline">
+        <%= f.radio_button(:visibility, Timeline::PRIVATE_WITH_TOKEN, class: 'share-timeline m-1') %>
         <%= timeline_human_friendly_visibility Timeline::PRIVATE_WITH_TOKEN %>
       </label>
       <p class="text-info visibility-help-text" style="padding-top:5px;font-style:italic;">
         <%= timeline_visibility_description @timeline.visibility %>
       </p>
-      <div id="timeline_token_row" class="row container collapse <%= 'in' if @timeline.visibility=='private-with-token' %>" style="margin-top:9px;">
-        <div class="col-xs-9">
+      <div id="timeline_token_row" class="row container collapse <%= 'show' if @timeline.visibility=='private-with-token' %>" style="margin-top:9px;">
+        <div class="col-sm-9">
           <div class="input-group">
             <input type="text" class="form-control" id="timeline-share-link" value="<%= access_token_url(@timeline) %>" placeholder="<%= access_token_url(@timeline) %>" onClick="this.select();" readonly="readonly">
-            <span class="input-group-btn" id="timeline-share-btn-result">
+            <span class="input-group-append" id="timeline-share-btn-result">
               <%= button_tag "Copy", id: 'timeline-share-btn', class: "btn btn-success", form: 'timeline_new_link_form' %>
             </span>
           </div>
         </div>
-        <div class="col-xs-2">
+        <div class="col-sm-3">
           <%= button_tag "Get new link", id: 'get-new-link', form: 'timeline_new_link_form',
             class: 'btn btn-success', data: { 'timeline_id': @timeline.id } %>
         </div>
@@ -58,7 +58,7 @@ Unless required by applicable law or agreed to in writing, software distributed
     </div>
   </div>
   <% if Avalon::Authentication.lti_configured? %>
-    <div id="timeline_lti_share" class="row form-group collapse <%= 'in' if @timeline.visibility != 'private' %>">
+    <div id="timeline_lti_share" class="row form-group collapse <%= 'show' if @timeline.visibility != 'private' %>">
       <%= label_tag nil, 'LTI URL', class: 'col-sm-2 control-label' %>
 
       <div class="col-sm-10">
@@ -69,7 +69,7 @@ Unless required by applicable law or agreed to in writing, software distributed
           <div class="col-xs-9">
             <div class="input-group">
               <input type="text" class="form-control" id="timeline-lti-share-link" value="<%= lti_share_url_for(@timeline) %>" placeholder="<%= lti_share_url_for(@timeline) %>" onClick="this.select();" readonly="readonly">
-              <span class="input-group-btn" id="timeline-lti-share-btn-result">
+              <span class="input-group-append" id="timeline-lti-share-btn-result">
                 <%= button_tag "Copy", id: 'timeline-lti-share-btn', class: "btn btn-success", form: 'timeline_new_link_form' %>
               </span>
             </div>

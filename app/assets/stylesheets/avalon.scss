@@ -47,7 +47,7 @@ body {
   See https://getbootstrap.com/docs/4.0/migration/#global-changes.
 */
 html {
-  font-size: 15px;
+  font-size: 14px;
 }
 
 // .row {
@@ -65,6 +65,10 @@ main {
 h1,
 h2 {
   font-family: $museoSlab;
+}
+
+.btn-info {
+  color: $primary;
 }
 
 tr.active-false td {
@@ -152,7 +156,7 @@ div.alert-danger {
   font-family: $museoSlab;
 }
 .headline {
-  color: $secondary;
+  color: $primary;
   font-size: 29.3px;
   font-family: $museoSlab;
 }
@@ -1133,4 +1137,14 @@ td {
 
 .btn-light {
   background-color: $btn-light-bg;
+}
+
+.btn-outline {
+  background-color: $btn-outline-bg-color;
+  color: $btn-outline-color;
+  border: 1px solid $btn-outline-border-color;
+
+  &:hover {
+    background-color: $lightgray;
+  }
 }
