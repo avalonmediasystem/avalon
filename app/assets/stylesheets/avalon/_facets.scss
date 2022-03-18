@@ -60,6 +60,17 @@
   }
 }
 
+#content {
+  .btn-outline-secondary {
+    color: $primary;
+    border: 1px solid $gray;
+    
+    &:hover {
+      background-color: $lightgray;
+    }
+  }
+}
+
 div[id*='facet-panel-'] {
   @extend .navbar-collapse;
   padding-left: 0 !important;
@@ -71,11 +82,11 @@ div[id*='facet-panel-'] {
 
 .facets-toggle {
   margin-top: -6px;
-  background-color: $white;
+  // background-color: $white;
 
-  .icon-bar {
-    background-color: #888888;
-  }
+  // .icon-bar {
+  //   background-color: #888888;
+  // }
 
   margin: 3px;
 }

@@ -60,20 +60,23 @@ $state-info-border:              darken(adjust-hue($state-info-bg, -10), 7%) !de
   }
 }
 
-.navbar-nav {
-  > .nav-item > .nav-link {
-    @include media-breakpoint-up(md) {
-      padding-top: 0.85em;
-    }
-    @include media-breakpoint-down(sm) {
-      padding-left: 10px;
-      padding-right: 10px;
-    }
-    &:hover, &:focus {
-      background-color: $yellow;
-      border-color: $yellow;
-    }
+.navbar-nav .nav-item .nav-link {
+  @include media-breakpoint-up(md) {
+    padding: 0.85rem 0.9rem;
   }
+  @include media-breakpoint-down(sm) {
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+  &:hover, &:focus {
+    background-color: $yellow;
+    border-color: $yellow;
+  }
+}
+
+.navbar-nav > .nav-item.active {
+  background-color: $yellow;
+  border-color: $yellow;
 }
 
 .navbar-light {
@@ -183,8 +186,8 @@ $state-info-border:              darken(adjust-hue($state-info-bg, -10), 7%) !de
   border-radius: 0px;
   width: 100%;
   text-align: left;
-  padding-top: 0.85em;
-  padding-bottom: 0.5em;
+  padding: 0.85rem 0.9rem;
+  // padding-bottom: 0.5em;
 
   &:hover {
     background-color: $yellow !important;

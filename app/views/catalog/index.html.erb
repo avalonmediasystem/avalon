@@ -14,53 +14,55 @@ Unless required by applicable law or agreed to in writing, software distributed
 ---  END LICENSE_HEADER BLOCK  ---
 %>
 <% if current_page?(main_app.root_path) %>
-<div class="homepage-splash-wrapper">
-  <section class="homepage-splash-top-section">
-    <div class="homepage-splash-search">
-      <%= render :partial=>'modules/avalon_search_form' %>
-    </div>
-
-    <div class="homepage-splash-lead-copy">
-      <div class="container">
-        <p class="lead">Avalon Media System is an open source system for managing and providing access to large
-          collections of
-          digital audio and video.</p>
+  <div class="homepage-splash-wrapper">
+    <section class="homepage-splash-top-section">
+      <div class="homepage-splash-search">
+        <%= render :partial=>'modules/avalon_search_form' %>
       </div>
-    </div>
-  </section>
 
-  <% if @featured_collection.present? %>
-  <section class="homepage-splash-featured-collection">
-    <div>
-      <%= image_tag poster_collection_url(@featured_collection.id), class: "homepage-featured-collection-image" %>
-    </div>
-    <div class="homepage-splash-featured-collection-content">
-      <h3 class="serif-font">featured collection</h3>
-      <h2><%= @featured_collection.name %></h2>
-      <p><%= @featured_collection.description %></p>
-      <a href="<%= collection_url(@featured_collection.id) %>" class="btn btn-default">View Collection</a>
-    </div>
-  </section>
-  <% end %>
+      <div class="homepage-splash-lead-copy">
+        <div class="container">
+          <p class="lead">Avalon Media System is an open source system for managing and providing access to large
+            collections of
+            digital audio and video.</p>
+        </div>
+      </div>
+    </section>
 
-  <% if Settings.home_page&.carousel_collections&.present? %>
-  <section class="homepage-splash-collections">
-    <div class="container">
-      <h3 class="homepage-splash-collections-title serif-font"><a href="<%= collections_url %>">view all collections</a>
-      </h3>
-    </div>
-    <div class="container-fluid">
-      <%= react_component("CollectionCarousel", { baseUrl: collections_url(format: :json, only: :carousel, limit: 10) }) %>
-    </div>
-  </section>
-  <% end %>
-</div>
+    <% if @featured_collection.present? %>
+    <section class="homepage-splash-featured-collection">
+      <div>
+        <%= image_tag poster_collection_url(@featured_collection.id), class: "homepage-featured-collection-image" %>
+      </div>
+      <div class="homepage-splash-featured-collection-content">
+        <h3 class="serif-font">featured collection</h3>
+        <h2><%= @featured_collection.name %></h2>
+        <p><%= @featured_collection.description %></p>
+        <a href="<%= collection_url(@featured_collection.id) %>" class="btn btn-default">View Collection</a>
+      </div>
+    </section>
+    <% end %>
+
+    <% if Settings.home_page&.carousel_collections&.present? %>
+    <section class="homepage-splash-collections">
+      <div class="container">
+        <h3 class="homepage-splash-collections-title serif-font"><a href="<%= collections_url %>">view all collections</a>
+        </h3>
+      </div>
+      <div class="container-fluid">
+        <%= react_component("CollectionCarousel", { baseUrl: collections_url(format: :json, only: :carousel, limit: 10) }) %>
+      </div>
+    </section>
+    <% end %>
+  </div>
 <% else %>
-<div id="sidebar" class="<%= sidebar_classes %>">
-  <%= render 'search_sidebar' %>
-</div>
+  <div class="row">
+    <div id="sidebar" class="<%= sidebar_classes %>">
+      <%= render 'search_sidebar' %>
+    </div>
 
-<div id="content" class="<%= main_content_classes %>">
-  <%= render 'search_results' %>
-</div>
+    <div id="content" class="<%= main_content_classes %>">
+      <%= render 'search_results' %>
+    </div>
+  </div>
 <% end %>
