@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+
+echo "pwd"
+echo `pwd`
+echo "readlink"
+SCRIPT_PATH=`dirname "$(readlink -f "$0")"`
+echo $SCRIPT_PATH
+
+VERSION=`${SCRIPT_PATH}/avalon_version`
+
+echo $VERSION
+IFS=. VER=($VERSION)
+for i in {0..3} ; do
+        echo ${VER[i]}
+done
+
+    major=${VER[0]}
+    minor=${VER[1]}
+    patch=${VER[2]}
+    build=${VER[3]}
+
+echo "major $major"
+echo "minor $minor"
+echo "patch $patch"
+echo "build $build"
+
+echo "VERSION: $VERSION"
+echo "TAGS"
+echo "$major"
+echo "$major.$minor"
+echo "$major.$minor.$patch"
+if [ $build ]; then
+    echo "$major.$minor.$patch.$build"
+fi
+
