@@ -75,7 +75,7 @@ class AvalonProgress
       $('.avalon-player').html('<div id="nojs"></div>')
 
 $(document).ready ->
-  if $('.progress-bar').size() == 0
+  if $('.progress-bar').length == 0
     return
 
   progress_controller = new AvalonProgress()
