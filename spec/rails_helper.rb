@@ -142,6 +142,11 @@ RSpec.configure do |config|
     ActiveFedora::Cleaner.clean!
   end
 
+  # Remove this check to test on smaller window sizes?
+  config.before(:each, js: true) do
+    Capybara.page.driver.browser.manage.window.resize_to(1920,1080) # desktop size
+  end
+
   # RSpec Rails can automatically mix in different behaviours to your tests
   # based on their file location, for example enabling you to call `get` and
   # `post` in specs under `spec/controllers`.
