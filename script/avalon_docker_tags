@@ -1,35 +1,52 @@
 #!/usr/bin/env bash
 
-echo "pwd"
-echo `pwd`
-echo "readlink"
+BRANCH=$1
+TAGS=()
 SCRIPT_PATH=`dirname "$(readlink -f "$0")"`
-echo $SCRIPT_PATH
-
 VERSION=`${SCRIPT_PATH}/avalon_version`
 
-echo $VERSION
 IFS=. VER=($VERSION)
-for i in {0..3} ; do
-        echo ${VER[i]}
-done
+IFS=" "
 
-    major=${VER[0]}
-    minor=${VER[1]}
-    patch=${VER[2]}
-    build=${VER[3]}
+major=${VER[0]}
+minor=${VER[1]}
+patch=${VER[2]}
+build=${VER[3]}
 
-echo "major $major"
-echo "minor $minor"
-echo "patch $patch"
-echo "build $build"
+#echo "major $major"
+#echo "minor $minor"
+#echo "patch $patch"
+#echo "build $build"
 
-echo "VERSION: $VERSION"
-echo "TAGS"
-echo "$major"
-echo "$major.$minor"
-echo "$major.$minor.$patch"
-if [ $build ]; then
-    echo "$major.$minor.$patch.$build"
+#echo "VERSION: $VERSION"
+#echo "TAGS"
+#echo "$major"
+TAGS+=( $major )
+#echo "$major.$minor"
+TAGS+=( "$major.$minor" )
+if [ $patch ]; then
+    #echo "$major.$minor.$patch"
+    TAGS+=( "$major.$minor.$patch" )
+    #echo "PATCH is NOT EMPTY"
 fi
+# echo "$major.$minor.$patch"
+if [ $build ]; then
+    #echo "$major.$minor.$patch.$build"
+    TAGS+=( "$major.$minor.$patch.$build" )
+fi
+
+if [ $BRANCH ] ; then
+    #echo "BRANCH: $BRANCH"
+    TAGS+=( "$BRANCH" )
+fi
+
+#echo "TAGS CSV"
+#echo ${TAGS[0]}
+#echo ${TAGS[1]}
+#echo ${TAGS[2]}
+#echo "ARRA"
+#echo ${TAGS[@]}
+
+printf -v joined '%s,' "${TAGS[@]}"
+echo "${joined%,}"
 
