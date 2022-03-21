@@ -17,9 +17,9 @@ Unless required by applicable law or agreed to in writing, software distributed
 <div class="modal-dialog" role="document">
   <div class="modal-content">
     <div class="modal-header">
+      <h4 class="modal-title">Add <%= scope=='master_file'? 'Section' : 'Item'%> to Playlist</h4>
       <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
           aria-hidden="true">&times;</span></button>
-      <h4 class="modal-title">Add <%= scope=='master_file'? 'Section' : 'Item'%> to Playlist</h4>
     </div>
     <div class="modal-body">
       <form id="add_to_playlist_form" action="<%= add_to_playlist_media_object_path(@media_object) %>"
@@ -52,7 +52,7 @@ Unless required by applicable law or agreed to in writing, software distributed
       </form>
     </div>
     <div class="modal-footer">
-      <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      <button type="button" class="btn btn-outline" data-dismiss="modal">Close</button>
       <input type="submit" form="add_to_playlist_form" name="commit" data-loading-text="Working..." value="Add to Playlist" class="btn btn-primary"
         id="playlistitem_submit">
     </div>

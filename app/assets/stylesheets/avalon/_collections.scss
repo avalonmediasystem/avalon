@@ -40,21 +40,3 @@
     margin-top: 1rem;
   }
 }
-
-.collection_poster {
-  display: flex;
-  justify-content: space-evenly;
-
-  form {
-    flex: auto;
-    margin-right: 5px;
-  }
-
-  form:last-child {
-    margin-right: 0px;
-  }
-
-  input.btn {
-    width: 100%;
-  }
-}

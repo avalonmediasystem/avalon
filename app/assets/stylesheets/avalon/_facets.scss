@@ -41,11 +41,11 @@
 #facets {
   padding-bottom: 10px;
 
-  .panel {
+  .card {
     border-radius: 0px;
   }
 
-  .panel-group {
+  .facet-group {
     margin-bottom: 0px;
     padding-right: 0px;
     padding-left: 0px;
@@ -64,6 +64,7 @@
   .btn-outline-secondary {
     color: $primary;
     border: 1px solid $gray;
+    background-color: $white;
     
     &:hover {
       background-color: $lightgray;
@@ -72,7 +73,7 @@
 }
 
 div[id*='facet-panel-'] {
-  @extend .navbar-collapse;
+  @extend .navbar-expand-md;
   padding-left: 0 !important;
   padding-right: 0 !important;
   border-top: none;
@@ -81,13 +82,6 @@ div[id*='facet-panel-'] {
 }
 
 .facets-toggle {
-  margin-top: -6px;
-  // background-color: $white;
-
-  // .icon-bar {
-  //   background-color: #888888;
-  // }
-
   margin: 3px;
 }
 
@@ -131,10 +125,16 @@ div[id*='facet-panel-'] {
   width: 5em;
 }
 
-.facets .panel-group .panel {
-  margin-top: 0px;
+.facets .facet-group {
+  @include media-breakpoint-up(md) {
+    display: block;
+  }
+
+  .card {
+    margin-bottom: 0px;
+  }
 }
 
-:not(.facet_limit-active).facet_limit > .panel-heading {
+:not(.facet_limit-active).facet_limit > .card-header {
   background-color: $white;
 }

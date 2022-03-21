@@ -16,11 +16,11 @@ Unless required by applicable law or agreed to in writing, software distributed
 <%= hidden_field_tag :donot_advance, true %>
 <%= hidden_field_tag :step, 'file-upload' %>
 <div id="associated_files">
-  <div class="panel panel-default">
-    <div class="panel-heading">
-      <h3 class="panel-title">Section files</h3>
+  <div class="card">
+    <div class="card-header">
+      <h3 class="card-title">Section files</h3>
     </div>
-    <div class="panel-body">
+    <div class="card-body">
       <% unless @masterFiles.blank? %>
         <div class="collapse form-tooltip" id="title-tooltip">
           <button class="close">&times;</button>
@@ -268,11 +268,11 @@ Unless required by applicable law or agreed to in writing, software distributed
 </div>
 
 <div id="supplemental_files">
-  <div class="panel panel-default">
-    <div class="panel-heading">
-      <h3 class="panel-title">Item supplemental files</h3>
+  <div class="card">
+    <div class="card-header">
+      <h3 class="card-title">Item supplemental files</h3>
     </div>
-    <div class="panel-body">
+    <div class="card-body">
       <%= render partial: "supplemental_files_upload", locals: { section: @media_object, index: 0, label: 'Files' } %>
     </div>
   </div>
@@ -282,9 +282,9 @@ Unless required by applicable law or agreed to in writing, software distributed
   <div class="modal-dialog modal-md">
     <div class="modal-content">
       <div class="modal-header">
+        <h3 class='modal-title'>Move Section</h3>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
             aria-hidden="true">×</span></button>
-        <h3 class='modal-title'>Move Section</h3>
       </div>
       <div class="modal-body">
         <%= form_tag move_master_file_path, id: 'move_form', method: 'POST' do %>
