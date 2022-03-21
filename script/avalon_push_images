@@ -1,0 +1,64 @@
+#!/usr/bin/env bash
+
+IMAGE_NAME=$1
+DESTINATION=$2
+TAGS_CSV=$3
+TAGS=()
+COMMAND_BASE="podman image push "
+#SCRIPT_PATH=`dirname "$(readlink -f "$0")"`
+#VERSION=`${SCRIPT_PATH}/avalon_version`
+
+IFS=, TAGS=($TAGS_CSV)
+IFS=" "
+
+echo "TAGS"
+echo ${TAGS[@]}
+
+for tag in "${TAGS[@]}"; do
+  #echo "tag $tag"
+  command="${COMMAND_BASE} $IMAGE_NAME $DESTINATION:${tag}"
+  echo "command"
+  echo $command
+
+done
+
+exit
+
+#major=${VER[0]}
+
+#echo "major $major"
+#echo "minor $minor"
+#echo "patch $patch"
+#echo "build $build"
+
+#echo "VERSION: $VERSION"
+#echo "TAGS"
+#echo "$major"
+TAGS+=( $major )
+#echo "$major.$minor"
+TAGS+=( "$major.$minor" )
+if [ $patch ]; then
+    #echo "$major.$minor.$patch"
+    TAGS+=( "$major.$minor.$patch" )
+    #echo "PATCH is NOT EMPTY"
+fi
+# echo "$major.$minor.$patch"
+if [ $build ]; then
+    #echo "$major.$minor.$patch.$build"
+    TAGS+=( "$major.$minor.$patch.$build" )
+fi
+
+if [ $BRANCH ] ; then
+    #echo "BRANCH: $BRANCH"
+    TAGS+=( "$BRANCH" )
+fi
+
+#echo "TAGS CSV"
+#echo ${TAGS[0]}
+#echo ${TAGS[1]}
+#echo ${TAGS[2]}
+#echo "ARRA"
+#echo ${TAGS[@]}
+
+printf -v joined '%s,' "${TAGS[@]}"
+echo "${joined%,}"
