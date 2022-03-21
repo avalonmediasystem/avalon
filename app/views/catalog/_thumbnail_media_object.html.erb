@@ -14,7 +14,7 @@ Unless required by applicable law or agreed to in writing, software distributed
 ---  END LICENSE_HEADER BLOCK  ---
 %>
 
-<div class="col-md-3">
+<div class="col-md-3 row">
   <% if image_url = image_for(document) %>
     <%= link_to(media_object_path(document[:id]), {class: 'result-thumbnail'}) do %>
       <%= image_tag( image_url ) %>

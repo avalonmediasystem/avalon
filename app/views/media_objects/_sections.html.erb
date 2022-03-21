@@ -17,9 +17,9 @@ Unless required by applicable law or agreed to in writing, software distributed
 <% unless hide_sections?(sections) and not show_progress %>
 
 <div class="panel-group media-show-page" id="accordion" role="tablist" aria-multiselectable="true">
-  <div class="panel panel-default">
-    <div class="panel-heading" role="tab" id="sections_heading" style="border-bottom: 1px solid #ddd;">
-      <h4 class="panel-title">
+  <div class="card">
+    <div class="card-header" role="tab" id="sections_heading" style="border-bottom: 1px solid #ddd;">
+      <h4 class="card-title">
         <span id="section-label">Sections</span>
         <% if current_ability.can? :create, Playlist %>
           <button type="button" title="Add all sections to playlist" aria-label="Add all sections to playlist" class="structure_add_to_playlist outline_on btn btn-primary" data-scope="media_object"></button>

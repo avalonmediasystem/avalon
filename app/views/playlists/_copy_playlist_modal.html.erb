@@ -25,10 +25,10 @@ Unless required by applicable law or agreed to in writing, software distributed
       <%= hidden_field_tag 'token' %>
 
       <div class="modal-header">
+        <h4 class="modal-title">Copy Playlist</h4>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
-        <h4 class="modal-title">Copy Playlist</h4>
       </div>
 
       <div class="modal-body">
@@ -66,7 +66,7 @@ Unless required by applicable law or agreed to in writing, software distributed
       <div class="modal-footer">
         <div class="btn-group">
           <%= f.submit id: 'copy-playlist-submit',
-                  class: 'btn btn-default outline_on', value: t("playlist.create.action") %>
+                  class: 'btn btn-outline outline_on', value: t("playlist.create.action") %>
 
           <%= f.submit id: 'copy-playlist-submit-edit',
                   class: 'btn btn-primary outline_on', value: t("playlist.create_and_edit.action") %>

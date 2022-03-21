@@ -141,6 +141,10 @@ div.alert-danger {
 // Generic content spacer
 .content-block {
   padding-bottom: 3rem;
+
+  .card {
+    margin-bottom: 1.5rem;
+  }
 }
 
 // Dotted line separator from branding guide
@@ -178,7 +182,7 @@ div.alert-danger {
 }
 
 .desktop-hidden {
-  @include media-breakpoint-up(sm) {
+  @include media-breakpoint-up(md) {
     display: none !important;
   }
 }
@@ -993,6 +997,13 @@ h5.panel-title {
 
 .collection-description {
   white-space: pre-wrap;
+}
+
+.admin-collection-details {
+  border-radius: 4px;
+  border: 1px solid #e3e3e3;
+  background-color: #f5f5f5;
+  padding: 1.25rem;
 }
 
 // Admin Collection list page

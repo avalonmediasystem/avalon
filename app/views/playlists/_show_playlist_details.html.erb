@@ -29,9 +29,9 @@ Unless required by applicable law or agreed to in writing, software distributed
 
   <div id="playlist_view_div" class="container collapse <%= 'show' if @playlist.errors.empty? %>">
     <dl class="row">
-      <dt class="col-sm-2"><%=t("activerecord.attributes.playlist.title")%></dt>
+      <dt class="col-sm-2"><%=t("activerecord.attributes.playlist.title")%>:</dt>
       <dd class="col-sm-10"><%= @playlist.title %></dd>
-      <dt class="col-sm-2"><%= t("activerecord.attributes.playlist.comment") %></dt>
+      <dt class="col-sm-2"><%= t("activerecord.attributes.playlist.comment") %>:</dt>
       <dd class="col-sm-10">
         <% if @playlist.comment.blank? %>
         <span class="info-text-gray">No description</span>
@@ -39,7 +39,7 @@ Unless required by applicable law or agreed to in writing, software distributed
         <%= @playlist.comment %>
         <% end %>
       </dd>
-      <dt class="col-sm-2"><%= t("playlist.visibility") %></dt>
+      <dt class="col-sm-2"><%= t("playlist.visibility") %>:</dt>
       <dd class="col-sm-10">
         <%= human_friendly_visibility @playlist.visibility %> -
         <i><%= visibility_description @playlist.visibility %></i>
@@ -64,7 +64,7 @@ Unless required by applicable law or agreed to in writing, software distributed
 
         <% end %>
       </dd>
-      <dt class="col-sm-2"><%= t("playlist.tags.label") %></dt>
+      <dt class="col-sm-2"><%= t("playlist.tags.label") %>:</dt>
       <dd class="col-sm-10">
         <% if @playlist.tags.empty? %>
         <span class="info-text-gray">No tags</span>
