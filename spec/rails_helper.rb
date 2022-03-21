@@ -72,12 +72,15 @@ ActiveJob::Base.queue_adapter = :test
 Capybara.server = :webrick
 Capybara.register_driver :selenium_chrome_headless_docker_friendly do |app|
   Capybara::Selenium::Driver.load_selenium
+  caps = Selenium::WebDriver::Remote::Capabilities.chrome(loggingPrefs:{browser: 'ALL'})
   browser_options = ::Selenium::WebDriver::Chrome::Options.new
   browser_options.args << '--headless'
   browser_options.args << '--disable-gpu'
   # Sandbox cannot be used inside unprivileged Docker container
   browser_options.args << '--no-sandbox'
-  Capybara::Selenium::Driver.new(app, browser: :chrome, options: browser_options)
+  # Next line commented out in favor of before(:each) resize_to that applies to all drivers
+  # browser_options.args << '--window-size=1920,1080'
+  Capybara::Selenium::Driver.new(app, browser: :chrome, options: browser_options, desired_capabilities: caps)
 end
 
 # eg `SHOW_BROWSER=true ./bin/rspec` will show you an actual chrome browser
@@ -140,6 +143,11 @@ RSpec.configure do |config|
   config.after :each do
     DatabaseCleaner.clean
     ActiveFedora::Cleaner.clean!
+  end
+
+  # Remove this check to test on smaller window sizes?
+  config.before(:each, js: true) do
+    Capybara.page.driver.browser.manage.window.resize_to(1920,1080) # desktop size
   end
 
   # RSpec Rails can automatically mix in different behaviours to your tests

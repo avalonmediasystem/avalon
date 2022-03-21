@@ -66,15 +66,6 @@ GIT
       sidekiq (>= 4.2.1)
 
 GIT
-  remote: https://github.com/projectblacklight/blacklight-access_controls.git
-  revision: 21e04f53217b7d6a0c90faf6393286635cf525f0
-  specs:
-    blacklight-access_controls (6.0.0)
-      blacklight (> 6.0, < 8)
-      cancancan (>= 1.8)
-      deprecation (~> 1.0)
-
-GIT
   remote: https://github.com/samvera-labs/active_fedora-datastreams
   revision: 13eefc7bdc879fd6c3ad607a1ecc087898777d3d
   branch: rails6
@@ -270,6 +261,10 @@ GEM
       ostruct (>= 0.3.2)
       rails (>= 5.1, < 7.1)
       view_component (~> 2.43)
+    blacklight-access_controls (6.0.1)
+      blacklight (> 6.0, < 8)
+      cancancan (>= 1.8)
+      deprecation (~> 1.0)
     bootsnap (1.10.3)
       msgpack (~> 1.2)
     bootstrap (4.6.1)
@@ -1019,7 +1014,7 @@ DEPENDENCIES
   aws-sigv4
   bixby
   blacklight (< 8)
-  blacklight-access_controls!
+  blacklight-access_controls (>= 6.0.1)
   bootsnap
   bootstrap (~> 4.0)
   bootstrap-toggle-rails
