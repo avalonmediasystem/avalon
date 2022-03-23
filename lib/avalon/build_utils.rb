@@ -10,7 +10,9 @@
 # 7.3.0
 # 7.3.0.15
 
-class AvalonVersionUtils
+module Avalon
+
+class BuildUtils
 
   COMMAND_BASE="podman image push"
   def initialize
@@ -20,7 +22,7 @@ class AvalonVersionUtils
     script_path = __dir__
     # puts "script_path: #{script_path}"
 
-    parent = File.dirname(script_path)
+    parent = File.dirname( File.dirname(script_path) )
     file = "#{parent}/config/application.rb"
     # puts "parent: #{parent}"
     # puts "file: #{file}"
@@ -31,6 +33,7 @@ class AvalonVersionUtils
   def detect_version(contents="")
     contents = read_config_file if contents.empty?
     version = ""
+    contents = contents.split("\n") if (contents.is_a? String )
     contents.each { |line|
       next if line[/^\s*#/]
       version = line[/\d+\.\d+(\.\d+)*/]; break  if line[/^\s*VERSION/]
@@ -52,7 +55,7 @@ class AvalonVersionUtils
       tags.push(tag)
       break if i >= len
     }
-    tags.push(additional_tags) unless additional_tags.nil? || additional_tags.empty? 
+    tags.push(additional_tags) unless additional_tags.nil? || additional_tags.empty?
 
 
     tags
@@ -69,4 +72,6 @@ class AvalonVersionUtils
     commands
 
   end
+end
+
 end

@@ -9,13 +9,13 @@
 # 7.3
 # 7.3.0
 # 7.3.0.15
-require("#{__dir__}/avalon_version_functions.rb")
+require("#{__dir__}/../lib/avalon/build_utils.rb")
 
 additional_tags = ARGV.slice(0,ARGV.length) if ARGV.length >= 1
 
 #puts "additional_tags #{additional_tags}"
 
-utils = AvalonVersionUtils.new
+utils = Avalon::BuildUtils.new
 version = utils.detect_version
 tags = utils.get_tags(version, additional_tags)
 
