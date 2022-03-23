@@ -16,4 +16,8 @@ if server_options
   Rails.application.routes.default_url_options.merge!( server_options )
   ActionMailer::Base.default_url_options.merge!( server_options )
   ApplicationController.default_url_options = server_options
+
+  # Required for rails 6+
+  # See https://blog.saeloun.com/2019/10/31/rails-6-adds-guard-against-dns-rebinding-attacks.html
+  Rails.application.config.hosts << server_options[:host]
 end
