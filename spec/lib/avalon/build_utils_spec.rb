@@ -18,7 +18,7 @@ require 'avalon/build_utils'
 #Utils = Avalon::AvalonVersionUtls.init
 
 describe Avalon::BuildUtils do
-    before  do
+    before :all  do
       Utils = Avalon::BuildUtils.new
     end
   def get_contents_string(version)
@@ -59,24 +59,32 @@ describe Avalon::BuildUtils do
 
     end
 
-    it 'Detects 2 part version correctly' do
-      version = "1.2"
+    it 'Detects >4 part version correctly (not supported)' do
+      version = "1.2.3.4.5.6"
       contents_arr = get_contents_array(version)
-      expect(Utils.detect_version(contents_arr)).to eq('1.2')
+
+      expect(Utils.detect_version(contents_arr)).to eq('1.2.3.4')
+
     end
 
-    it 'Detects 1 part version correctly' do
+    it 'Detects 2 part version correctly (not supported)' do
+      version = "1.2"
+      contents_arr = get_contents_array(version)
+      expect(Utils.detect_version(contents_arr)).to eq('')
+    end
+
+    it 'Detects 1 part version correctly (not supported)' do
       version = "1"
       contents_arr = get_contents_array(version)
-      expect(Utils.detect_version(contents_arr)).to be_nil
+      expect(Utils.detect_version(contents_arr)).to eq('')
     end
 
     it 'Ignores commented lines in config file contents' do
-      version = "3.14"
+      version = "3.14.1"
       contents_arr = []
-      contents_arr.push "# VERSION = '2.0'"
+      contents_arr.push "# VERSION = '2.0.1'"
       contents_arr.concat get_contents_array(version)
-      expect(Utils.detect_version(contents_arr)).to eq('3.14')
+      expect(Utils.detect_version(contents_arr)).to eq('3.14.1')
     end
 
 

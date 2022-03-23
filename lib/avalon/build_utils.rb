@@ -36,7 +36,7 @@ class BuildUtils
     contents = contents.split("\n") if (contents.is_a? String )
     contents.each { |line|
       next if line[/^\s*#/]
-      version = line[/\d+\.\d+(\.\d+)*/]; break  if line[/^\s*VERSION/]
+      version = line[/\d+\.\d+(\.\d+){1,2}/] || ""; break  if line[/^\s*VERSION/]
     }
     version
   end
