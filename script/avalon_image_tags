@@ -2,7 +2,7 @@
 
 BRANCH=$1
 TAGS=()
-SCRIPT_PATH=`dirname "$(readlink -f "$0")"`
+SCRIPT_PATH=`dirname "$(readlink -f "${BASH_SOURCE[0]}")"`
 VERSION=`${SCRIPT_PATH}/avalon_version`
 
 IFS=. VER=($VERSION)
@@ -49,4 +49,3 @@ fi
 
 printf -v joined '%s,' "${TAGS[@]}"
 echo "${joined%,}"
-

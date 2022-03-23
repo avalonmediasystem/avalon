@@ -10,10 +10,9 @@
 # 7.3.0
 # 7.3.0.15
 
-SCRIPT_PATH=`dirname "$(readlink -f "$0")"`
+SCRIPT_PATH=`dirname "$(readlink -f "${BASH_SOURCE[0]}")"`
 
 #VERSION=`grep -Pv "^\s*\#" "${SCRIPT_PATH}/../config/application.rb" | grep "VERSION" | grep -Po "\d+\.\d+\.\d+(\.\d+)?"`
 
 VERSION=`grep -Pv "^\s*\#" "${SCRIPT_PATH}/../config/application.rb" | grep "VERSION" | grep -Po "\d+\.\d+(\.\d+)*"`
 echo $VERSION
-

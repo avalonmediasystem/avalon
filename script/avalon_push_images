@@ -5,7 +5,7 @@ DESTINATION=$2
 TAGS_CSV=$3
 TAGS=()
 COMMAND_BASE="podman image push "
-#SCRIPT_PATH=`dirname "$(readlink -f "$0")"`
+#SCRIPT_PATH=`dirname "$(readlink -f "$BASH_SOURCE[0]")"`
 #VERSION=`${SCRIPT_PATH}/avalon_version`
 
 IFS=, TAGS=($TAGS_CSV)
