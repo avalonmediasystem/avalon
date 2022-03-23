@@ -65,9 +65,9 @@ Unless required by applicable law or agreed to in writing, software distributed
     <% end %>
   </div>
 
-  <div class="panel panel-default">
-    <div class="panel-heading">
-      <h3 class="panel-title">
+  <div class="card">
+    <div class="card-header">
+      <h3 class="card-title">
         Access Restrictions
       </h3>
     </div>
@@ -77,13 +77,13 @@ Unless required by applicable law or agreed to in writing, software distributed
   </div>
 
   <% if can? :inspect, @media_object %>
-  <div class="panel panel-default">
-    <div class="panel-heading">
-      <h3 class="panel-title">
+  <div class="card">
+    <div class="card-header">
+      <h3 class="card-title">
         <%= link_to 'Fedora Objects', "#object_tree", :id => 'show_object_tree', role: "button", "data-toggle":"collapse", "aria-expanded": "false", "aria-controls": "object_tree" %>
       </h3>
     </div>
-    <div class="panel-body collapse" id="object_tree" data-src="<%=tree_media_object_path(@media_object.id)%>"></div>
+    <div class="card-body collapse" id="object_tree" data-src="<%=tree_media_object_path(@media_object.id)%>"></div>
   </div>
   <% end %>
 

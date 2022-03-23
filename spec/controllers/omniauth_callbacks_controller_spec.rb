@@ -56,7 +56,7 @@ describe Users::OmniauthCallbacksController, type: :controller do
 
       it 'returns self-closing page' do
         post :identity, params: params
-        expect(response.content_type).to eq 'text/html'
+        expect(response.content_type).to eq 'text/html; charset=utf-8'
         expect(response.body).to eq self_closing_html
       end
     end

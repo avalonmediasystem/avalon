@@ -24,53 +24,53 @@ Unless required by applicable law or agreed to in writing, software distributed
   <div class="playlist-details-headline-wrapper">
     <h2 class="headline" style="display:inline-block"><%= t("playlist.details") %></h2>
     <a id="playlist_edit_button" data-toggle="collapse" data-target="#playlist_edit_div, #playlist_view_div"
-    class="fa fa-edit btn btn-lg playlist-details-edit-button"></a>
+    class="fa fa-edit btn btn-lg"></a>
   </div>
 
-  <div id="playlist_view_div" class="container collapse <%= 'in' if @playlist.errors.empty? %>">
-    <dl class="dl-horizontal">
-      <dt><%=t("activerecord.attributes.playlist.title")%></dt>
-      <dd><%= @playlist.title %></dd>
-      <dt><%= t("activerecord.attributes.playlist.comment") %></dt>
-      <dd>
+  <div id="playlist_view_div" class="container collapse <%= 'show' if @playlist.errors.empty? %>">
+    <dl class="row">
+      <dt class="col-sm-2"><%=t("activerecord.attributes.playlist.title")%>:</dt>
+      <dd class="col-sm-10"><%= @playlist.title %></dd>
+      <dt class="col-sm-2"><%= t("activerecord.attributes.playlist.comment") %>:</dt>
+      <dd class="col-sm-10">
         <% if @playlist.comment.blank? %>
         <span class="info-text-gray">No description</span>
         <% else %>
         <%= @playlist.comment %>
         <% end %>
       </dd>
-      <dt><%= t("playlist.visibility") %></dt>
-      <dd>
+      <dt class="col-sm-2"><%= t("playlist.visibility") %>:</dt>
+      <dd class="col-sm-10">
         <%= human_friendly_visibility @playlist.visibility %> -
         <i><%= visibility_description @playlist.visibility %></i>
         <% if @playlist.visibility == Playlist::PRIVATE_WITH_TOKEN %>
         <div class="row" style="margin-top:9px;">
-          <div class="col-xs-9">
+          <div class="col-sm-9">
             <div class="input-group">
               <input type="text" class="form-control" id="playlist-share-link"
                 value="<%= access_token_url(@playlist) %>" placeholder="<%= access_token_url(@playlist) %>"
                 onClick="this.select();" readonly="readonly">
-              <span class="input-group-btn" id="playlist-share-btn-result">
+              <span class="input-group-append" id="playlist-share-btn-result">
                 <%= button_tag "Copy", id: 'playlist-share-btn',
                     class: "btn btn-success" %>
               </span>
             </div>
           </div>
-          <div class="col-xs-2">
-            <%= button_tag "Get new link", id: 'get-new-link',
+          <div class="col-sm-3">
+            <%= button_tag "Get new link", id: 'get-new-link', rel: 'popover',
                 class: 'btn btn-success', data: { 'playlist_id': @playlist.id } %>
           </div>
         </div>
 
         <% end %>
       </dd>
-      <dt><%= t("playlist.tags.label") %></dt>
-      <dd>
+      <dt class="col-sm-2"><%= t("playlist.tags.label") %>:</dt>
+      <dd class="col-sm-10">
         <% if @playlist.tags.empty? %>
         <span class="info-text-gray">No tags</span>
         <% end %>
         <% @playlist.tags.each do |tag| %>
-        <span class="btn btn-xs btn-info"><%=tag%></span>
+        <span class="btn btn-sm btn-info"><%=tag%></span>
         <% end %>
       </dd>
     </dl>
@@ -119,8 +119,8 @@ Unless required by applicable law or agreed to in writing, software distributed
       '</div>'
     var popover_template = '<div class="popover" role="tooltip" style="width: 12em;">' +
       '<div class="arrow"></div>' +
-      '<h3 class="popover-title"></h3>' +
-      '<div class="popover-content"></div>' +
+      '<h3 class="popover-header"></h3>' +
+      '<div class="popover-body"></div>' +
       '</div>'
 
     $('#get-new-link').popover({
@@ -129,7 +129,7 @@ Unless required by applicable law or agreed to in writing, software distributed
       placement: 'top',
       title: 'Get a new link?',
       template: popover_template,
-      content: popover_content,
+      content: popover_content
     });
 
     var new_link_cancel = function (event) {

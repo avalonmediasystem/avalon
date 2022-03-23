@@ -30,7 +30,6 @@
  * Require stylesheets for our gems
  *
  *= require jquery-ui/datepicker
- *= require datatables
  *
  * Require all of our vendored stylesheets
  *= require_tree ../../../vendor/assets/stylesheets/.
@@ -43,7 +42,6 @@
  *= require_self
 */
 
-@import 'bootstrap-sprockets';
 @import 'branding';
 @import 'bootstrap';
 @import 'bootstrap-toggle';
@@ -60,3 +58,5 @@
 
 @import 'nestable';
 @import 'avalon';
+
+@import "datatables";

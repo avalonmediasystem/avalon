@@ -1,9 +1,10 @@
 require 'rails_helper'
 
 RSpec.describe SearchBuilder do
-  subject(:builder) { described_class.new processor_chain }
+  subject(:builder) { described_class.new(processor_chain, scope) }
 
   let(:processor_chain) { [] }
+  let(:scope) { CatalogController.new }
   let(:manager) { FactoryBot.create(:manager) }
   let(:ability) { Ability.new(manager) }
 

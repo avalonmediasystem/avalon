@@ -24,7 +24,15 @@ Unless required by applicable law or agreed to in writing, software distributed
   </div>
   <div class="row">
     <div class="col-sm-12">
-      <h3 style="display:inline-block"><%= t("timeline.details") %></h3>
+      <h3 style="display:inline-block" class="my-3"><%= t("timeline.details") %></h3>
+    </div>
+  </div>
+
+  <div id="popover-link-content" style="display: none;">
+    <p>If you get a new link, the previous link will stop working.<p>
+    <div>
+      <button type="submit" class="btn btn-danger btn-confirm" id="confirm-yes-btn" style="margin-right:5px;" form="timeline_new_link_form">Yes</button>
+      <button type="submit" class="btn btn-primary btn-confirm" id="confirm-cancel-btn" form="timeline_new_link_form">Cancel</button>
     </div>
   </div>
 
@@ -77,16 +85,17 @@ Unless required by applicable law or agreed to in writing, software distributed
     }, 3000);
   });
 
-  var popover_content = '<p>If you get a new link, the previous link will stop working.<p>'+
-          '<div>'+
-            '<button type="submit" onclick="new_link_confirm()" class="btn btn-danger btn-confirm" style="margin-right:5px;" form="timeline_new_link_form">Yes</button>' +
-            '<button type="submit" onclick="new_link_cancel()" class="btn btn-primary btn-confirm" form="timeline_new_link_form">Cancel</button>'+
-          '</div>'
-  var popover_template = '<div class="popover" role="tooltip" style="width: 12em;">'+
-      '<div class="arrow"></div>'+
-      '<h3 class="popover-title"></h3>'+
-      '<div class="popover-content"></div>'+
+  var popover_content = '<p>If you get a new link, the previous link will stop working.<p>' +
+    '<div>' +
+    '<button type="submit" onclick="new_link_confirm()" class="btn btn-danger btn-confirm" style="margin-right:5px;">Yes</button>' +
+    '<button type="submit" onclick="new_link_cancel()" class="btn btn-primary btn-confirm">Cancel</button>' +
     '</div>'
+  var popover_template = '<div class="popover" role="tooltip" style="width: 12em;">' +
+    '<div class="arrow"></div>' +
+    '<h3 class="popover-header"></h3>' +
+    '<div class="popover-body"></div>' +
+    '</div>'
+
 
   $('#get-new-link').popover({
     trigger: 'click',
@@ -94,7 +103,7 @@ Unless required by applicable law or agreed to in writing, software distributed
     placement: 'top',
     title: 'Get a new link?',
     template: popover_template,
-    content: popover_content,
+    content: popover_content
   });
 
   var new_link_cancel = function (event) {
@@ -113,6 +122,5 @@ Unless required by applicable law or agreed to in writing, software distributed
       }
     });
   }
-
   </script>
 <% end %>

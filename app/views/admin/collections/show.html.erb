@@ -31,13 +31,13 @@ Unless required by applicable law or agreed to in writing, software distributed
         </div>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal" id="crop-cancel">Cancel</button>
+        <button type="button" class="btn btn-outline" data-dismiss="modal" id="crop-cancel">Cancel</button>
         <button type="button" class="btn btn-primary" id="crop">Upload</button>
       </div>
     </div>
   </div>
 </div>
-<div class="well">
+<div class="admin-collection-details mb-2">
   <h2><%= @collection.name %></h2>
   <div class="row">
     <div class="col-md-9">
@@ -59,19 +59,19 @@ Unless required by applicable law or agreed to in writing, software distributed
       <p id="poster_original_name"><%= @collection.poster.original_name if @collection.poster.present? %></p>
       <div class="well-vertical-spacer">
         <% if @collection.poster.present? %>
-        <%= image_tag(poster_admin_collection_path(@collection), class: 'img-responsive', id: 'poster-image') %>
+        <%= image_tag(poster_admin_collection_path(@collection), class: 'img-fluid', id: 'poster-image') %>
         <% else %>
-        <img src="" class="img-responsive" id="poster-image">
+        <img src="" class="img-fluid" id="poster-image">
         <% end %>
       </div>
-      <div class="collection_poster">
+      <div class="row">
         <%= form_for @collection, url: attach_poster_admin_collection_path(@collection.id), html: {method: "post"} do |form| %>
           <%= form.file_field :poster, id: 'poster_input', class: "filedata", style: "height:0px;width:0px;" %>
-          <input type="button" class="btn btn-primary btn-xs" onclick="$('.filedata').click();" value="<% if @collection.poster.present? %>Change Poster<%else%>Upload Poster<%end%>"
+          <input type="button" class="btn btn-primary btn-sm mr-2" onclick="$('.filedata').click();" value="<% if @collection.poster.present? %>Change Poster<%else%>Upload Poster<%end%>"
             <% if cannot?(:edit, @collection) %>disabled<%end%> />
         <% end %>
         <%= form_for @collection, url: remove_poster_admin_collection_path(@collection.id), html: {method: "delete"} do |form| %>
-          <input type="submit" class="btn btn-danger btn-xs" value="Remove Poster" <% if @collection.poster.blank? || cannot?(:edit, @collection) %>disabled<%end%> />
+          <input type="submit" class="btn btn-danger btn-sm" value="Remove Poster" <% if @collection.poster.blank? || cannot?(:edit, @collection) %>disabled<%end%> />
         <% end %>
       </div>
       <div class="well-vertical-spacer">
@@ -85,8 +85,8 @@ Unless required by applicable law or agreed to in writing, software distributed
   </div>
   <div class="well-vertical-spacer">
     <%= link_to('Create An Item', new_media_object_path(collection_id: @collection.id), class: 'btn btn-primary') if can? :create, MediaObject %>
-    <%= link_to('List All Items', search_catalog_path('f[collection_ssim][]' => @collection.name), class: 'btn btn-default') %>
-    <%= button_tag('Edit Collection Info', class: 'btn btn-default', data: {toggle:"modal", target:"#new_collection"}) if can? :update, @collection %>
+    <%= link_to('List All Items', search_catalog_path('f[collection_ssim][]' => @collection.name), class: 'btn btn-outline') %>
+    <%= button_tag('Edit Collection Info', class: 'btn btn-outline', data: {toggle:"modal", target:"#new_collection"}) if can? :update, @collection %>
   </div>
   <div>
     <p>Or <a
@@ -95,11 +95,11 @@ Unless required by applicable law or agreed to in writing, software distributed
   </div>
 </div><!-- /well -->
 
-<div class="panel panel-default">
-  <div class="panel-heading">
-    <h3 class="panel-title">Assign Staff Roles</h3>
+<div class="card">
+  <div class="card-header">
+    <h3 class="card-title">Assign Staff Roles</h3>
   </div>
-  <div class="panel-body">
+  <div class="card-body">
     <div class='staff-roles-section'>
       <%= render "modules/access_object",
             access_object: "manager",
@@ -132,7 +132,7 @@ Unless required by applicable law or agreed to in writing, software distributed
 
   <% if can? :update_access_control, @collection %>
   <%= submit_tag "Save Access Settings", name: "save_access", class: "btn btn-primary", form: 'access_control_form' %>
-  <%= button_tag "Apply to All Existing Items", class: "btn btn-default", data: { toggle:"modal", target:"#access_control_modal" } %>
+  <%= button_tag "Apply to All Existing Items", class: "btn btn-outline", data: { toggle:"modal", target:"#access_control_modal" } %>
   <% end %>
 </div>
 

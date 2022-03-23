@@ -16,6 +16,7 @@
 
 main.homepage-main {
   padding-bottom: 0;
+  padding-top: 0.25rem;
 
   .alert {
     margin-bottom: 40px;
@@ -32,7 +33,7 @@ main.homepage-main {
   height: 500px;
   position: relative;
 
-  @media screen and (max-width: $screen-xs-max) {
+  @include media-breakpoint-down(xs) {
     height: 350px;
   }
 }
@@ -50,7 +51,7 @@ main.homepage-main {
   .global-search-wrapper {
     width: 400px;
 
-    @media screen and (max-width: $screen-xs-max) {
+    @include media-breakpoint-down(xs) {
       width: 300px;
       margin-bottom: 100px;
     }
@@ -63,7 +64,7 @@ main.homepage-main {
   color: white;
   width: 100%;
   background: rgba(42, 84, 89, 0.8);
-  padding: 2.5rem 0;
+  padding: 1.5rem 0;
   font-family: $museoSlab;
 
   .lead {
@@ -73,20 +74,20 @@ main.homepage-main {
 
 .homepage-splash-featured-collection {
   display: flex;
-  @media screen and (max-width: $screen-xs-max) {
+  @include media-breakpoint-down(xs) {
     padding-bottom: 2rem;
     flex-direction: column;
   }
 
   .homepage-featured-collection-image {
     width: 100%;
-    @media screen and (min-width: $screen-sm-min) {
+    @include media-breakpoint-up(sm) {
       width: 400px;
     }
-    @media screen and (min-width: $screen-md-min) {
+    @include media-breakpoint-up(md) {
       width: 500px;
     }
-    @media screen and (min-width: $screen-lg-min) {
+    @include media-breakpoint-up(lg) {
       width: 600px;
     }
   }

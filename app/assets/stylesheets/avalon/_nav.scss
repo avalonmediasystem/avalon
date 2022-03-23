@@ -14,6 +14,18 @@
  * ---  END LICENSE_HEADER BLOCK  ---
 */
 
+// Copied from bootstrap-sass
+$line-height-computed:    floor(($font-size-base * $line-height-base)) !default; // ~20px
+$gray-base:              #000 !default;
+$gray-lighter:           lighten($gray-base, 93.5%) !default; // #eee
+$gray-darker:            lighten($gray-base, 13.5%) !default; // #222
+$state-success-text:             #3c763d !default;
+$state-success-bg:               #dff0d8 !default;
+$state-success-border:           darken(adjust-hue($state-success-bg, -10), 5%) !default;
+$state-info-text:                #31708f !default;
+$state-info-bg:                  #d9edf7 !default;
+$state-info-border:              darken(adjust-hue($state-info-bg, -10), 7%) !default;
+
 /**
  *  Overridding Blacklight's brand logo
  */
@@ -26,10 +38,12 @@
   }
 
   .navbar-toggle {
-    @media screen and (max-width: $screen-xs-max) {
-      background: $primaryDark;
+    @include media-breakpoint-down(xs) {
+      background: $secondary;
     }
   }
+
+  padding: 0 1rem;
 }
 
 .navbar {
@@ -46,18 +60,28 @@
   }
 }
 
-.navbar-nav {
-  > li > a {
-    @media screen and (max-width: $screen-sm-max) {
-      padding-left: 10px;
-      padding-right: 10px;
-    }
+.navbar-nav .nav-item .nav-link {
+  @include media-breakpoint-up(md) {
+    padding: 0.85rem 0.9rem;
+  }
+  @include media-breakpoint-down(sm) {
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+  &:hover, &:focus {
+    background-color: $yellow;
+    border-color: $yellow;
   }
 }
 
-.navbar-default {
-  @media screen and (max-width: $screen-xs-max) {
-    background: $primaryDark;
+.navbar-nav > .nav-item.active {
+  background-color: $yellow;
+  border-color: $yellow;
+}
+
+.navbar-light {
+  @include media-breakpoint-down(xs) {
+    background: $secondary;
   }
 }
 
@@ -73,15 +97,15 @@
     margin-right: 6px;
   }
 
-  @media screen and (max-width: $screen-xs-max) {
+  @include media-breakpoint-down(xs) {
     background: white;
     box-shadow: 0 0 5px;
   }
 }
 
-.container > .navbar-header {
-  height: auto;
-}
+// .container > .navbar-header {
+//   height: auto;
+// }
 
 .navbar-inner {
   padding-right: 12px;
@@ -156,22 +180,29 @@
 
 /* Manage menu in the nav-bar */
 .manage-btn {
-  height: 50px;
+  height: inherit;
   font-size: inherit;
   border: none;
   border-radius: 0px;
   width: 100%;
   text-align: left;
+  padding: 0.85rem 0.9rem;
+  // padding-bottom: 0.5em;
+
+  &:hover {
+    background-color: $yellow !important;
+    color: $primary;
+  }
 }
 
-.manage-btn:hover {
-  background-color: $yellow!important;
-  color: $primaryDark;
+#manage-dropdown:hover .manage-dropdown-menu {
+  display: block;
+  margin-top: 0;
 }
 
 .manage-btn:focus {
   background-color: $yellow;
-  color: $primaryDark;
+  color: $secondary;
 }
 
 .manage-dropdown-menu {
@@ -180,13 +211,17 @@
   li {
     width: 100%;
   }
+
+  .dropdown-item:hover {
+    background-color: $yellow;
+  }
 }
 
 .manage-dropdown {
   width: 100%;
 }
 
-@media (max-width: $screen-xs-max) {
+@include media-breakpoint-down(xs) {
   .manage-btn {
     height: 40px;
   }

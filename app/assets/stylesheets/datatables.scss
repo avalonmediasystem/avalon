@@ -14,21 +14,21 @@
  * ---  END LICENSE_HEADER BLOCK  ---
 */
 
-/*
-*= require datatables/dataTables.bootstrap
-*
-*optional add '=' enable
-* require datatables/extensions/AutoFill/autoFill.bootstrap
-* require datatables/extensions/Buttons/buttons.bootstrap
-* require datatables/extensions/ColReorder/colReorder.bootstrap
-* require datatables/extensions/FixedColumns/fixedColumns.bootstrap
-* require datatables/extensions/FixedHeader/fixedHeader.bootstrap
-* require datatables/extensions/KeyTable/keyTable.bootstrap
-* require datatables/extensions/Responsive/responsive.bootstrap
-* require datatables/extensions/RowReorder/rowReorder.bootstrap
-* require datatables/extensions/Scroller/scroller.bootstrap
-* require datatables/extensions/Select/select.bootstrap
-*/
+@import 'datatables/dataTables.bootstrap4';
+
+// optional remove '//=' to enable
+
+//@import 'datatables/extensions/AutoFill/autoFill.bootstrap4';
+//@import 'datatables/extensions/Buttons/buttons.bootstrap4';
+//@import 'datatables/extensions/ColReorder/colReorder.bootstrap4';
+//@import 'datatables/extensions/FixedColumns/fixedColumns.bootstrap4';
+//@import 'datatables/extensions/FixedHeader/fixedHeader.bootstrap4';
+//@import 'datatables/extensions/KeyTable/keyTable.bootstrap4';
+//@import 'datatables/extensions/Responsive/responsive.bootstrap4';
+//@import 'datatables/extensions/RowGroup/rowGroup.bootstrap4';
+//@import 'datatables/extensions/RowReorder/rowReorder.bootstrap4';
+//@import 'datatables/extensions/Scroller/scroller.bootstrap4';
+//@import 'datatables/extensions/Select/select.bootstrap4';
 
 table.dataTable {
   border-collapse: collapse !important;
@@ -56,6 +56,14 @@ table.dataTable thead .sorting_desc_disabled {
   white-space: nowrap;
   cursor: pointer;
   *cursor: hand;
+}
+
+table.dataTable thead .sorting:before,
+table.dataTable thead .sorting_asc:before,
+table.dataTable thead .sorting_desc:before,
+table.dataTable thead .sorting_asc_disabled:before,
+table.dataTable thead .sorting_desc_disabled:before {
+  display: none;
 }
 
 table.dataTable thead .sorting:after,
@@ -93,4 +101,8 @@ table.dataTable thead .sorting_asc_disabled:after {
 table.dataTable thead .sorting_desc_disabled:after {
   background-image: url("datatables/sort_desc_disabled.png");
   bottom: 1px;
+}
+
+.dataTableToolsBottom .pagination .active a {
+  cursor: default;
 }

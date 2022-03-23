@@ -20,17 +20,17 @@ Unless required by applicable law or agreed to in writing, software distributed
     <%= devise_error_messages! %>
 
     <div class="form-group">
-      <%= f.label :username %><br />
+      <%= f.label :username, class: 'font-weight-bold' %><br />
       <%= f.text_field :username, autofocus: true, autocomplete: 'username' %>
     </div>
 
     <div class="form-group">
-      <%= f.label :email %><br />
+      <%= f.label :email, class: 'font-weight-bold' %><br />
       <%= f.email_field :email, autofocus: true, autocomplete: "email" %>
     </div>
 
     <div class="form-group">
-      <%= f.label :password %>
+      <%= f.label :password, class: 'font-weight-bold' %>
       <% if @minimum_password_length %>
         <em>(<%= @minimum_password_length %> characters minimum)</em>
       <% end %><br />
@@ -38,7 +38,7 @@ Unless required by applicable law or agreed to in writing, software distributed
     </div>
 
     <div class="form-group">
-      <%= f.label :password_confirmation %><br />
+      <%= f.label :password_confirmation, class: 'font-weight-bold' %><br />
       <%= f.password_field :password_confirmation, autocomplete: "off" %>
     </div>
 

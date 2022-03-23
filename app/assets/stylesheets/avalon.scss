@@ -39,6 +39,21 @@ body {
 }
 
 /* Override Bootstrap CSS */
+
+/*
+  Bootstrap 4 has increased global font-size from 14px to 1rem. 
+  This font size of 1rem, gets computed as 16px by browsers, increasing
+  font-size for text elements. Reset this to 14px.
+  See https://getbootstrap.com/docs/4.0/migration/#global-changes.
+*/
+html {
+  font-size: 14px;
+}
+
+// .row {
+//   justify-content: center !important;
+// }
+
 .alert {
   margin-bottom: 10px;
 }
@@ -52,8 +67,19 @@ h2 {
   font-family: $museoSlab;
 }
 
+.btn-info {
+  color: $primary;
+}
+
 tr.active-false td {
   color: $gray;
+}
+
+pre {
+  background-color: #f5f5f5;
+  border: 1px solid #ccc;
+  padding: 9.5px;
+  border-radius: 4px;
 }
 
 input[type='text']#admin_group {
@@ -115,11 +141,15 @@ div.alert-danger {
 // Generic content spacer
 .content-block {
   padding-bottom: 3rem;
+
+  .card {
+    margin-bottom: 1.5rem;
+  }
 }
 
 // Dotted line separator from branding guide
 .separator {
-  border-bottom: 2px dotted $primaryDark;
+  border-bottom: 2px dotted $primary;
   background: white;
   height: 1px;
 }
@@ -130,7 +160,7 @@ div.alert-danger {
   font-family: $museoSlab;
 }
 .headline {
-  color: $primaryDark;
+  color: $primary;
   font-size: 29.3px;
   font-family: $museoSlab;
 }
@@ -140,19 +170,19 @@ div.alert-danger {
 }
 
 .mobile-hidden {
-  @media (max-width: $screen-xs-max) {
+  @include media-breakpoint-down(sm) {
     display: none !important;
   }
 }
 
 .sm-hidden {
-  @media (max-width: $screen-sm-max) {
+  @include media-breakpoint-down(sm) {
     display: none !important;
   }
 }
 
 .desktop-hidden {
-  @media (min-width: $screen-sm-min) {
+  @include media-breakpoint-up(md) {
     display: none !important;
   }
 }
@@ -412,7 +442,7 @@ a[data-trigger='submit'] {
   }
 }
 
-@media (max-width: $screen-xs-max) {
+@include media-breakpoint-down(xs) {
   #content {
     .btn {
       margin-top: 2px;
@@ -495,13 +525,13 @@ div.status-detail {
     cursor: pointer;
   }
 
-  @media (max-width: 1199px) and (min-width: 768px) {
+  @include media-breakpoint-between (md, xl) {
     ul {
       width: 750px;
     }
   }
 
-  @media (max-width: 767px) {
+  @include media-breakpoint-down (sm) {
     ul {
       width: 730px;
     }
@@ -969,6 +999,13 @@ h5.panel-title {
   white-space: pre-wrap;
 }
 
+.admin-collection-details {
+  border-radius: 4px;
+  border: 1px solid #e3e3e3;
+  background-color: #f5f5f5;
+  padding: 1.25rem;
+}
+
 // Admin Collection list page
 .row.display-flex {
   display: flex;
@@ -1073,17 +1110,20 @@ h5.panel-title {
   text-align: right;
 }
 
-@media (min-width: $screen-xs-max) {
+@include media-breakpoint-up(xs) {
   .dataTables_length {
     float: left;
   }
 }
 
 // Make table body scrollable in mobile devices
-@media (max-width: $screen-xs-max) {
+@include media-breakpoint-down(sm) {
   .dataTableBody {
     width: 100%;
     overflow-x: scroll;
+  }
+  .pagination {
+    justify-content: center !important;
   }
 }
 
@@ -1108,4 +1148,14 @@ td {
 
 .btn-light {
   background-color: $btn-light-bg;
+}
+
+.btn-outline {
+  background-color: $btn-outline-bg-color;
+  color: $btn-outline-color;
+  border: 1px solid $btn-outline-border-color;
+
+  &:hover {
+    background-color: $lightgray;
+  }
 }

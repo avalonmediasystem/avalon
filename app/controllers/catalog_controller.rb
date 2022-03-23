@@ -26,6 +26,15 @@ class CatalogController < ApplicationController
   before_action :load_home_page_collections, only: :index, if: proc { helpers.current_page? root_path }
 
   configure_blacklight do |config|
+
+    # Default component configuration
+    config.add_results_document_tool(:bookmark, partial: 'bookmark_control', if: :render_bookmarks_control?)
+    config.add_results_collection_tool(:sort_widget)
+    config.add_results_collection_tool(:per_page_widget)
+    config.add_results_collection_tool(:view_type_group)
+    config.add_show_tools_partial(:bookmark, partial: 'bookmark_control', if: :render_bookmarks_control?)
+    config.add_nav_action(:bookmark, partial: 'blacklight/nav/bookmark', if: :render_bookmarks_control?)
+
     ## Class for sending and receiving requests from a search index
     # config.repository_class = Blacklight::Solr::Repository
     #
@@ -191,7 +200,7 @@ class CatalogController < ApplicationController
       featured_collections = Settings.home_page&.featured_collections
       if featured_collections.present?
         builder = ::CollectionSearchBuilder.new(self).rows(100_000)
-        response = repository.search(builder)
+        response = blacklight_config.repository.search(builder)
         collection = response.documents.select { |doc| featured_collections.include? doc.id }.sample
         @featured_collection = ::Admin::CollectionPresenter.new(collection) if collection
       end

@@ -15,7 +15,7 @@
 */
 
 .logo {
-  @media screen and (max-width: $screen-sm-max) {
+  @include media-breakpoint-down(sm) {
     max-width: 120px;
   }
 }
@@ -28,7 +28,7 @@
   .header-logo {
     flex-grow: 1;
 
-    @media screen and (max-width: $screen-sm-max) {
+    @include media-breakpoint-down(sm) {
       img {
         max-width: 120px;
         margin-right: 10px;
@@ -69,7 +69,7 @@ header div {
     border: 0;
   }
 
-  @media screen and (max-width: $screen-sm-max) {
+  @include media-breakpoint-down(sm) {
     width: inherit;
     margin: 7px 7px 0 7px;
     margin-bottom: 1rem;

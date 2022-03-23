@@ -18,15 +18,15 @@ Unless required by applicable law or agreed to in writing, software distributed
   <div class="modal-dialog modal-lg">
     <div class="modal-content">
       <div class="modal-header">
+        <h4 class='modal-title'><%= modal_title %></h4>
         <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span
             class="sr-only">Close</span></button>
-        <h4 class='modal-title'><%= modal_title %></h4>
       </div>
       <%= bootstrap_form_for @collection, remote: true, html: { modal: true }, format: 'json' do |f| %>
       <div class="modal-body">
         <%= f.text_field :name %>
         <% if @collection.new_record? || can?(:update_unit, @collection)%>
-        <%= f.select(:unit, Admin::Collection.units) %>
+          <%= f.select(:unit, Admin::Collection.units, {}, {:class => 'form-control'}) %>
         <% end %>
         <%= f.text_area :description, rows: 3  %>
         <%= f.text_field :contact_email %>
@@ -34,7 +34,7 @@ Unless required by applicable law or agreed to in writing, software distributed
         <%= f.text_field :website_label %>
       </div>
       <div class="modal-footer">
-        <a href="#" data-dismiss="modal" aria-hidden="true" class="btn btn-default">Cancel</a>
+        <a href="#" data-dismiss="modal" aria-hidden="true" class="btn btn-outline">Cancel</a>
         <%= f.submit class: 'btn btn-primary btn-stateful-loading', data: {loading_text: 'Saving...'} %>
       </div>
       <% end %>

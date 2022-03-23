@@ -16,20 +16,20 @@ Unless required by applicable law or agreed to in writing, software distributed
 <%# Override of samvera-persona view partial to update table display %>
 <%= render partial: 'index_title' %>
 
-<div class="panel panel-default users-invite">
-  <div class="panel-heading">
+<div class="card users-invite mb-3">
+  <div class="card-header">
       <%= t('.invite_users') %>
   </div>
 
-  <div class="panel-body">
+  <div class="card-body">
     <% @user ||= User.new %>
-    <%= form_for(:user, url: main_app.user_invitation_path, html: { method: :post , class: 'simple-form form-inline pull-left'}) do |f| %>
+    <%= form_for(:user, url: main_app.user_invitation_path, html: { method: :post , class: 'simple-form form-inline'}) do |f| %>
       <%= render "devise/shared/error_messages", resource: @user %>
 
       <% @user.class.invite_key_fields.each do |field| -%>
-        <div class="form-group">
-          <%= f.label field, t('.invite_users'), for: field, class: 'control-label required' %>
-          <%= f.text_field field, class: 'form-control required' %>
+        <div class="form-group mr-2">
+          <%= f.label field, t('.invite_users'), for: field, class: 'col-form-label font-weight-bold required' %>
+          <%= f.text_field field, class: 'form-control ml-2 required' %>
         </div>
       <% end -%>
 

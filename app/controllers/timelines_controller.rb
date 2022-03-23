@@ -67,13 +67,13 @@ class TimelinesController < ApplicationController
       "data": @timelines.collect do |timeline|
         copy_button = view_context.button_tag(type: 'button',
                                               data: { timeline: timeline },
-                                              class: 'copy-timeline-button btn btn-default btn-xs') do
+                                              class: 'copy-timeline-button btn btn-sm btn-outline') do
           "<i class='fa fa-clone' aria-hidden='true'></i> Copy".html_safe
         end
-        edit_button = view_context.link_to(edit_timeline_path(timeline), class: 'btn btn-default btn-xs') do
+        edit_button = view_context.link_to(edit_timeline_path(timeline), class: 'btn btn-sm btn-outline') do
           "<i class='fa fa-edit' aria-hidden='true'></i> Edit Details".html_safe
         end
-        delete_button = view_context.link_to(timeline_path(timeline), method: :delete, class: 'btn btn-xs btn-danger btn-confirmation', data: { placement: 'bottom' }) do
+        delete_button = view_context.link_to(timeline_path(timeline), method: :delete, class: 'btn btn-sm btn-danger btn-confirmation', data: { placement: 'bottom' }) do
           "<i class='fa fa-times' aria-hidden='true'></i> Delete".html_safe
         end
         [
