@@ -52,7 +52,7 @@ class AvalonVersionUtils
       tags.push(tag)
       break if i >= len
     }
-    tags.push(additional_tags) if ! additional_tags.empty?
+    tags.push(additional_tags) unless additional_tags.nil? || additional_tags.empty? 
 
 
     tags

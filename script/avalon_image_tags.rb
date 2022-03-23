@@ -11,7 +11,6 @@
 # 7.3.0.15
 require("#{__dir__}/avalon_version_functions.rb")
 
-#version = ARGV[0]
 additional_tags = ARGV.slice(0,ARGV.length) if ARGV.length >= 1
 
 #puts "additional_tags #{additional_tags}"
@@ -24,3 +23,5 @@ tags = utils.get_tags(version, additional_tags)
 #puts "TAGS"
 #puts tags
 puts tags.join(",")
+
+tags
