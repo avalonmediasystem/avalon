@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+
+SOURCE=$1
+DESTINATION=$2
+TAGS_CSV=$3
+TAGS=()
+COMMAND_BASE="podman image push "
+
+IFS=, TAGS=($TAGS_CSV)
+IFS=" "
+
+echo "TAGS"
+echo ${TAGS[@]}
+
+
+for tag in "${TAGS[@]}"; do
+  #echo "tag $tag"
+  command="${COMMAND_BASE} ${SOURCE} ${DESTINATION}:${tag}"
+  echo "pushing image ... command:"
+  echo $command
+  `$command`
+done
