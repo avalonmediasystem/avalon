@@ -18,5 +18,5 @@ for tag in "${TAGS[@]}"; do
   command="${COMMAND_BASE} ${SOURCE} ${DESTINATION}:${tag}"
   echo "pushing image ... command:"
   echo $command
-  `$command`
+  #`$command`
 done

@@ -12,20 +12,17 @@
 #   specific language governing permissions and limitations under the License.
 # ---  END LICENSE_HEADER BLOCK  ---
 
-#require 'rails_helper'
 require 'avalon/build_utils'
-
-#Utils = Avalon::AvalonVersionUtls.init
 
 describe Avalon::BuildUtils do
     before :all  do
       Utils = Avalon::BuildUtils.new
     end
   def get_contents_string(version)
-    out = "some junk content \
-    VERSION = '#{version}' \
-    blahblahblah \
-    "
+    out = " some junk content\n"
+    out += "  VERSION = '#{version}' \n"
+    out += "blahblahblah \n"
+
   end
   def get_contents_array(version)
     contents_arr = []
@@ -48,6 +45,7 @@ describe Avalon::BuildUtils do
     it 'Detects 3 part version correctly with contents string' do
       version = "1.2.3"
       contents_str = get_contents_string(version)
+      #puts "#{contents_str}"
       expect(Utils.detect_version(contents_str)).to eq('1.2.3')
     end
 
@@ -116,12 +114,5 @@ describe Avalon::BuildUtils do
 
     end
 
-    # it 'replaces multiple blacklisted characters' do
-    #   expect(Avalon::Sanitizer.sanitize('avalon*media&system',['*&','__'])).to eq('avalon_media_system')
-    # end
-    #
-    # it 'does not modify a string without any blacklisted characters' do
-    #   expect(Avalon::Sanitizer.sanitize('avalon_media_system',['*&','__'])).to eq('avalon_media_system')
-    # end
   end
 end
