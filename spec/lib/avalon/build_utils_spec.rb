@@ -36,7 +36,7 @@ describe Avalon::BuildUtils do
 
 # TODO: ADD TESTS FOR READING CONFIG FILE
 
-  describe 'detect_version' do
+  describe '#detect_version' do
     it 'Detects 3 part version correctly with contents array' do
       version = "1.2.3"
       contents_arr = get_contents_array(version)
@@ -60,10 +60,10 @@ describe Avalon::BuildUtils do
     end
 
     it 'Detects >4 part version correctly (not supported)' do
-      version = "1.2.3.4.5.6"
+      version = "1.2.3.4.5"
       contents_arr = get_contents_array(version)
 
-      expect(Utils.detect_version(contents_arr)).to eq('1.2.3.4')
+      expect(Utils.detect_version(contents_arr)).to eq('')
 
     end
 
@@ -87,7 +87,34 @@ describe Avalon::BuildUtils do
       expect(Utils.detect_version(contents_arr)).to eq('3.14.1')
     end
 
+    describe '#get_tags' do
+      it 'Outputs correct tags for a 3-part version and no additional tags' do
+        version = "1.2.3"
+        expect(Utils.get_tags(version)).to eq(["1", "1.2", "1.2.3"])
+      end
 
+      it 'Outputs correct tags for a 3-part version and a branch tag' do
+        version = "3.2.1"
+        tag = "staging"
+        expect(Utils.get_tags(version, tag)).to eq(["3","3.2","3.2.1","staging"])
+      end
+
+      it 'Outputs correct tags for a 4-part version and several tags' do
+        version = "1.2.3.4"
+        tags = "develop,latest,testing_something"
+        expect(Utils.get_tags(version, tags)).to eq(["1", "1.2", "1.2.3", "1.2.3.4",tags])
+      end
+
+      it 'Outputs correct CSV tags for a 4-part version and several tags' do
+        version = "11.12.13"
+        tags = "develop,latest,testing_something"
+        expect(Utils.get_tags(version, tags)).to eq(["11","11.12","11.12.13",tags])
+      end
+
+
+
+
+    end
 
     # it 'replaces multiple blacklisted characters' do
     #   expect(Avalon::Sanitizer.sanitize('avalon*media&system',['*&','__'])).to eq('avalon_media_system')

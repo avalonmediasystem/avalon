@@ -36,7 +36,12 @@ class BuildUtils
     contents = contents.split("\n") if (contents.is_a? String )
     contents.each { |line|
       next if line[/^\s*#/]
-      version = line[/\d+\.\d+(\.\d+){1,2}/] || ""; break  if line[/^\s*VERSION/]
+      if match = line.match( /^\s*VERSION\s*=\s*['"](\d+\.\d+(\.\d+){1,2})['"]/ )
+        version = match.captures[0]
+      # || ""; break  if line[/^\s*VERSION\s*=\s*['"]/]
+        # version = $1
+      end
+      #puts "verwion is #{version}"
     }
     version
   end
