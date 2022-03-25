@@ -20,12 +20,9 @@ class BuildUtils
 
   def read_config_file
     script_path = __dir__
-    # puts "script_path: #{script_path}"
 
     parent = File.dirname( File.dirname(script_path) )
     file = "#{parent}/config/application.rb"
-    # puts "parent: #{parent}"
-    # puts "file: #{file}"
     contents = File.readlines(file)
 
   end
@@ -38,33 +35,54 @@ class BuildUtils
       next if line[/^\s*#/]
       if match = line.match( /^\s*VERSION\s*=\s*['"](\d+\.\d+(\.\d+){1,2})['"]/ )
         version = match.captures[0]
-      # || ""; break  if line[/^\s*VERSION\s*=\s*['"]/]
-        # version = $1
       end
-      #puts "verwion is #{version}"
     }
     version
   end
 
-  def get_tags(version, additional_tags="")
+  def get_tags(version, split=false, branch="", top_level=false, additional_tags="")
     tags = []
     parts = version.split('.')
     len = parts.length
+    version_tags = []
+    extra_tags = additional_tags.split(",")
     return if len < 2 || len > 4
 
 
-    1.step{ |i|
-      #puts "parts[i] #{parts[i]}"
-      tag = parts.slice( 0, i ).join('.')
-      # puts "tag: #{tag}"
-      tags.push(tag)
-      break if i >= len
-    }
-    tags.push(additional_tags) unless additional_tags.nil? || additional_tags.empty?
+    if split
+      version_tags = split_parts(version)
+      version_tags.each{|tag|
+        if branch.empty?
+          tags.push(tag)
+        else
+          tags.push "#{tag}-#{branch}"
+        end
+      }
+    else
+      version_tags.push(version) if top_level
+      version = "#{version}-#{branch}" unless branch.empty?
+      tags.push(version)
+    end
+    tags.concat(version_tags) if top_level
+    tags.push(branch) unless branch.empty?
+    tags.concat(extra_tags) unless extra_tags.nil? || extra_tags.empty?
 
 
     tags
 
+  end
+
+  def split_parts(version)
+    parts = version.split('.')
+    len = parts.length
+    tags = []
+    1.step{ |i|
+      tag = parts.slice( 0, i ).join('.')
+      tags.push(tag)
+      break if i >= len
+    }
+
+    tags
   end
 
   def get_commands(tags, source, dest)

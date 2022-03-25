@@ -9,9 +9,8 @@
 # 7.3
 # 7.3.0
 # 7.3.0.15
+
 require("#{__dir__}/../lib/avalon/build_utils.rb")
 utils = Avalon::BuildUtils.new
-#contents = utils.read_config_file
-#puts "contents #{contents}"
 version = utils.detect_version
 puts version
