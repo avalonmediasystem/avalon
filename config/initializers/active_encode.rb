@@ -6,7 +6,7 @@ when :matterhorn
   Rubyhorn.init
 when :elastic_transcoder
   require 'aws-sdk-elastictranscoder'
-  require 'avalon/elastic_transcoder'
+  require 'avalon/elastic_transcoder_encode'
 
   MasterFile.default_encoder_class = ElasticTranscoderEncode
   pipeline = Aws::ElasticTranscoder::Client.new.read_pipeline(id: Settings.encoding.pipeline)
