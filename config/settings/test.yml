@@ -1,7 +1,7 @@
 domain:
-  host: test.host
+  host: www.example.com
 dropbox:
-  upload_uri: smb://test.host/dropbox
+  upload_uri: smb://www.example.com/dropbox
 auth:
   configuration:
     - :name: Avalon Test Auth
