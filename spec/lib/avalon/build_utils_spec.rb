@@ -86,81 +86,75 @@ describe Avalon::BuildUtils do
     end
 
     describe '#get_tags' do
-      it 'Outputs correct tags for a 3-part version and no additional tags' do
+      it 'Returns an empty array if no branch nor top_level options' do
         version = "1.2.3"
-        expect(Utils.get_tags(version)).to eq(["1.2.3"])
+        expect(Utils.get_tags(version)).to eq([])
+      end
+      it 'Outputs correct tags for a 3-part version and top_level true' do
+        version = "1.2.3"
+        options = {"top_level": true}
+        expect(Utils.get_tags(version, options)).to eq(["1.2.3"])
       end
 
       it 'SPLITS and outputs correct tags for a 3-part version and no additional tags' do
         version = "1.2.3"
-        split = true
-        expect(Utils.get_tags(version, split)).to eq(["1", "1.2", "1.2.3"])
+        options = {"top_level": true, "split": true}
+        expect(Utils.get_tags(version, options)).to eq(["1", "1.2", "1.2.3"])
       end
 
       it 'Outputs correct tags for a 3-part version and a branch tag' do
         version = "3.2.1"
-        tag = "staging"
-        split = false
-        expect(Utils.get_tags(version, split, tag)).to eq(["3.2.1-staging", "staging"])
+        options = {"split": false, "branch": "staging"}
+        expect(Utils.get_tags(version, options)).to eq(["3.2.1-staging", "staging"])
       end
 
       it 'SPLITS and Outputs correct tags for a 3-part version and a branch tag TOP LEVEL production branch' do
         version = "3.2.1"
-        branch = "production"
-        split = true
-        top_level = true
-        expect(Utils.get_tags(version, split, branch, top_level)).to eq(["3-production", "3.2-production", "3.2.1-production", "3", "3.2", "3.2.1", "production"])
+        options = {"split": true, "branch": "production", "top_level": true}
+        expect(Utils.get_tags(version, options)).to eq(["3-production", "3.2-production", "3.2.1-production", "production"])
+      end
+
+      it 'SPLITS and Outputs correct tags for a 3-part version and a branch tag NOT TOP LEVEL production branch' do
+        version = "3.2.1"
+        options = {"split": true, "branch": "production", "top_level": false}
+        expect(Utils.get_tags(version, options)).to eq(["3-production", "3.2-production", "3.2.1-production", "production"])
       end
 
       it 'Outputs correct tags for a 3-part version and a branch tag TOP LEVEL production branch' do
         version = "3.2.1"
         branch = "production"
-        split = false
-        top_level = true
-        expect(Utils.get_tags(version, split, branch, top_level)).to eq(["3.2.1-production", "3.2.1", "production"])
+        options = {"split": false, "branch": "production", "top_level": true}
+        expect(Utils.get_tags(version, options)).to eq(["3.2.1-production", "3.2.1", "production"])
       end
 
       it 'SPLITS and outputs correct tags for a 3-part version and a branch tag' do
         version = "3.2.1"
-        tag = "staging"
-        split = true
-        expect(Utils.get_tags(version, split, tag)).to eq(["3-staging", "3.2-staging", "3.2.1-staging", "staging"])
+        options = {"split": true, "branch": "staging"}
+        expect(Utils.get_tags(version, options)).to eq(["3-staging", "3.2-staging", "3.2.1-staging", "staging"])
       end
 
       it 'SPLITS and Outputs correct tags for a 4-part version and several tags' do
         version = "1.2.3.4"
-        branch = "develop"
-        tags = "latest,testing_something"
-        split = true
-        top_level = false
-        expect(Utils.get_tags(version, split, branch, top_level, tags)).to eq(["1-develop", "1.2-develop", "1.2.3-develop", "1.2.3.4-develop", "develop", "latest", "testing_something"])
+        options = {"split": true, "branch": "develop", "additional_tags": "latest,testing_something"}
+        expect(Utils.get_tags(version, options)).to eq(["1-develop", "1.2-develop", "1.2.3-develop", "1.2.3.4-develop", "develop", "latest", "testing_something"])
       end
 
       it 'Outputs correct tags for a 4-part version and several tags' do
         version = "1.2.3.4"
-        branch = "develop"
-        tags = "latest,testing_something"
-        split = false
-        top_level = false
-        expect(Utils.get_tags(version, split, branch, top_level, tags)).to eq(["1.2.3.4-develop", "develop", "latest", "testing_something"])
+        options = {"split": false, "branch": "develop", "additional_tags": "latest,testing_something"}
+        expect(Utils.get_tags(version, options)).to eq(["1.2.3.4-develop", "develop", "latest", "testing_something"])
       end
 
       it 'SPLITS and Outputs correct CSV tags for a 4-part version and several tags' do
         version = "11.12.13"
-        branch= "develop"
-        tags = "latest,testing_something"
-        split = true
-        top_level = false
-        expect(Utils.get_tags(version, split, branch, top_level, tags)).to eq(["11-develop", "11.12-develop", "11.12.13-develop", "develop", "latest", "testing_something"])
+        options = {"split": true, "branch": "develop", "additional_tags": "latest,testing_something"}
+        expect(Utils.get_tags(version, options)).to eq(["11-develop", "11.12-develop", "11.12.13-develop", "develop", "latest", "testing_something"])
       end
 
       it 'Outputs correct CSV tags for a 4-part version and several tags' do
         version = "11.12.13"
-        branch= "develop"
-        tags = "latest,testing_something"
-        split = false
-        top_level = false
-        expect(Utils.get_tags(version, split, branch, top_level, tags)).to eq(["11.12.13-develop", "develop", "latest", "testing_something"])
+        options = {"split": false, "branch": "develop", "additional_tags": "latest,testing_something"}
+        expect(Utils.get_tags(version, options)).to eq(["11.12.13-develop", "develop", "latest", "testing_something"])
       end
 
 

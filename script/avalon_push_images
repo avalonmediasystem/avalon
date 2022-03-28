@@ -12,9 +12,14 @@ IFS=" "
 echo "TAGS"
 echo ${TAGS[@]}
 
+if [ "${TAGS}" == "" ]; then
+  echo "No tags found; exiting"
+  exit 1
+fi
 
 for tag in "${TAGS[@]}"; do
-  #echo "tag $tag"
+  echo "tag '$tag'"
+  #exit 1 if $tag.empty?
   command="${COMMAND_BASE} ${SOURCE} ${DESTINATION}:${tag}"
   echo "pushing image ... command:"
   echo $command

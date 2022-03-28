@@ -40,33 +40,42 @@ class BuildUtils
     version
   end
 
-  def get_tags(version, split=false, branch="", top_level=false, additional_tags="")
-    tags = []
+  def get_tags(version, options={})
+
+    split = options[:split] || false
+    branch = options[:branch] || ""
+    top_level = options[:top_level] || false
+    additional_tags = options[:additional_tags].split(",") if options[:additional_tags]
+    extra_tags = additional_tags || []
     parts = version.split('.')
     len = parts.length
-    version_tags = []
-    extra_tags = additional_tags.split(",")
-    return if len < 2 || len > 4
 
+    # only accept between 2 and 4 parts
+    return if len < 2 || len > 4
+    return [] if branch.empty? && !top_level
+
+    version_tags = []
+    tags = []
 
     if split
       version_tags = split_parts(version)
       version_tags.each{|tag|
         if branch.empty?
-          tags.push(tag)
+          tags.push(tag) if top_level
         else
           tags.push "#{tag}-#{branch}"
         end
       }
     else
       version_tags.push(version) if top_level
-      version = "#{version}-#{branch}" unless branch.empty?
-      tags.push(version)
+      branch_tag = ""
+      branch_tag = "#{version}-#{branch}" if !branch.empty?
+      tags.push(branch_tag) if !branch_tag.empty?
+      tags.concat(version_tags) if top_level
     end
-    tags.concat(version_tags) if top_level
-    tags.push(branch) unless branch.empty?
-    tags.concat(extra_tags) unless extra_tags.nil? || extra_tags.empty?
 
+    tags.push(branch) unless branch.empty?
+    tags.concat(extra_tags) unless extra_tags.empty?  
 
     tags
 

@@ -1,7 +1,6 @@
 #!/usr/bin/env ruby
 
-# Detects the Avalon version by grepping
-# through config/application.rb
+# Detects the Avalon version by using a shared lib
 # Version should be sematic format like this:
 # major.minor.patch.build
 # Must have at least major.minor
