@@ -1,4 +1,5 @@
 #!/usr/bin/env ruby
+# frozen_string_literal: true
 
 # Detects the Avalon version by using a shared lib
 # Version should be sematic format like this:
