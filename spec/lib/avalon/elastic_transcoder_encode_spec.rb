@@ -14,6 +14,7 @@
 
 # frozen_string_literal: true
 require 'rails_helper'
+require 'avalon/elastic_transcoder_encode'
 
 describe ElasticTranscoderEncode do
   let(:master_file) { FactoryBot.create(:master_file) }
