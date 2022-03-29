@@ -70,6 +70,10 @@ ActiveRecord::Migration.maintain_test_schema!
 ActiveJob::Base.queue_adapter = :test
 
 Capybara.server = :webrick
+Capybara.server_host = Rails.application.routes.url_helpers.root_url
+Capybara.app_host = Rails.application.routes.url_helpers.root_url
+Capybara.asset_host = Rails.application.routes.url_helpers.root_url
+Capybara.server_port = Rails.application.default_url_options[:port]
 Capybara.register_driver :selenium_chrome_headless_docker_friendly do |app|
   Capybara::Selenium::Driver.load_selenium
   caps = Selenium::WebDriver::Remote::Capabilities.chrome(loggingPrefs:{browser: 'ALL'})
@@ -143,6 +147,10 @@ RSpec.configure do |config|
   config.after :each do
     DatabaseCleaner.clean
     ActiveFedora::Cleaner.clean!
+  end
+
+  config.before(:each, type: :request) do
+    host! Rails.application.default_url_options[:host]
   end
 
   # Remove this check to test on smaller window sizes?

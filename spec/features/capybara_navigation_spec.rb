@@ -21,14 +21,14 @@ describe 'checks navigation after logging in' do
     login_as user, scope: :user
     visit '/'
     click_link('Browse')
-    expect(page.current_url).to eq('http://www.example.com/catalog?q=&search_field=all_fields&utf8=%E2%9C%93')
+    expect(page).to have_current_path('/catalog?q=&search_field=all_fields&utf8=%E2%9C%93')
   end
   it 'checks navigation to Manage Content' do
     user = FactoryBot.create(:administrator)
     login_as user, scope: :user
     visit '/'
     click_link('Manage Content')
-    expect(page.current_url).to eq('http://www.example.com/admin/collections')
+    expect(page).to have_current_path('/admin/collections')
     expect(page).to have_content('Skip to main content')
     expect(page).to have_link('Selected Items (0)')
     expect(page).to have_button('Create Collection')
@@ -43,7 +43,7 @@ describe 'checks navigation after logging in' do
     login_as user, scope: :user
     visit '/'
     click_link('Manage Groups')
-    expect(page.current_url).to eq('http://www.example.com/admin/groups')
+    expect(page).to have_current_path('/admin/groups')
     expect(page).to have_content('System Groups')
     expect(page).to have_content('Additional Groups')
     expect(page).to have_content('Group Name')
@@ -56,7 +56,7 @@ describe 'checks navigation after logging in' do
     login_as user, scope: :user
     visit '/'
     click_link('Playlist')
-    expect(page.current_url).to eq('http://www.example.com/playlists')
+    expect(page).to have_current_path('/playlists')
     expect(page).to have_content('Playlists')
     expect(page).to have_content('Create New Playlist')
   end
@@ -74,7 +74,7 @@ describe 'Search' do
     visit '/'
     fill_in('Search', with: 'Video', match: :first)
     click_button('global-search-submit', match: :first)
-    expect(page.current_url).to eq('http://www.example.com/catalog?utf8=%E2%9C%93&search_field=all_fields&q=Video')
+    expect(page).to have_current_path('/catalog?utf8=%E2%9C%93&search_field=all_fields&q=Video')
   end
   it 'gives appropriate error when keyword returns no results' do
     visit '/'

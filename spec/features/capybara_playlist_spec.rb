@@ -22,7 +22,7 @@ describe 'Playlist', skip: "Datatables fails to load only in test" do
     visit '/'
     click_link('Playlists')
     click_on('Create New Playlist')
-    expect(page.current_url).to eq('http://www.example.com/playlists/new')
+    expect(page).to have_current_path('/playlists/new')
   end
   it 'is able to create private (default) playlist', js: true do
     hide_const('Avalon::GROUP_LDAP')
