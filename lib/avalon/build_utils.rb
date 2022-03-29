@@ -47,8 +47,9 @@ module Avalon
       split = options[:split] || false
       branch = options[:branch] || ""
       top_level = options[:top_level] || false
-      additional_tags = options[:additional_tags].split(",") if options[:additional_tags]
-      extra_tags = additional_tags || []
+      additional_tags_str = options[:additional_tags]
+      additional_tags_str ||= ""
+      extra_tags = additional_tags_str.split(",")
       parts = version.split('.')
       len = parts.length
 
@@ -64,11 +65,10 @@ module Avalon
       if split
         version_tags = split_parts(version)
         version_tags.each do |tag|
-          if branch.empty?
-            tags.push(tag) if top_level
-          else
-            tags.push "#{tag}-#{branch}"
-          end
+          # unshift to add the version tags to the start of the result
+          # purely for human readability reasons
+          tags.unshift(tag) if top_level
+          tags.push "#{tag}-#{branch}" unless branch.empty?
         end
       else
         version_tags.push(version) if top_level
@@ -95,15 +95,6 @@ module Avalon
         break if i >= len
       end
       tags
-    end
-
-    def get_commands(tags, source, dest)
-      commands = []
-      tags.each do |tag|
-        command = "#{COMMAND_BASE} #{source} #{dest}:#{tag} "
-        commands.push(command)
-      end
-      commands
     end
   end
 end
