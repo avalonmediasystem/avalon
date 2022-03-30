@@ -7,6 +7,5 @@ require 'avalon/errors'
 # out what is available. See lib/avalon/dropbox.rb for details on the API
 require 'avalon/dropbox'
 require 'avalon/batch'
-require 'string_additions'
 
 I18n.config.enforce_available_locales = true
