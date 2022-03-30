@@ -47,16 +47,23 @@ module Avalon
       version
     end
 
+    def clean_option_values(options)
+      options[:branch] = options[:branch] || ""
+      options[:top_level] = options[:top_level] || false
+      options[:additional_tags] = options[:additional_tags] || ""
+      options[:split] = options[:split] || false
+      options
+    end
+
     def get_tags(version, options = {})
-      branch = options[:branch] || ""
-      top_level = options[:top_level] || false
+      options = clean_option_values options
+
       # if top level isn't enabled and there is no branch specified,
       # return an empty array, as there will be no tags
-      return [] if branch.empty? && !top_level
+      return [] if options[:branch].empty? && !options[:top_level]
 
-      additional_tags_str = options[:additional_tags]
-      additional_tags_str ||= ""
-      extra_tags = additional_tags_str.split(",")
+      # additional_tags = options[:additional_tags]
+      extra_tags = options[:additional_tags].split(",")
       parts = version.split('.')
       len = parts.length
 
@@ -64,7 +71,7 @@ module Avalon
       return if len <= 2 || len > 4
 
       tags = get_version_tags(version, options)
-      tags.push(branch) unless branch.empty?
+      tags.push(options[:branch]) unless options[:branch].empty?
       tags.concat(extra_tags) unless extra_tags.empty?
       # enforce uniqueness and sort to ensure ordering consistency
       tags = tags.uniq.sort
@@ -72,22 +79,20 @@ module Avalon
     end
 
     def get_version_tags(version, options)
-      split = options[:split] || false
-      top_level = options[:top_level] || false
-      branch = options[:branch] || ""
+      options = clean_option_values options
       version_tags = []
-      if split
+      if options[:split]
         tags = split_parts(version)
         tags.each do |tag|
-          version_tags.push(tag) if top_level
-          version_tags.push "#{tag}-#{branch}" unless branch.empty?
+          version_tags.push(tag) if options[:top_level]
+          version_tags.push "#{tag}-#{options[:branch]}" unless options[:branch].empty?
         end
       else
-        version_tags.push(version) if top_level
+        version_tags.push(version) if options[:top_level]
         branch_tag = ""
-        branch_tag = "#{version}-#{branch}" unless branch.empty?
+        branch_tag = "#{version}-#{options[:branch]}" unless options[:branch].empty?
         version_tags.push(branch_tag) unless branch_tag.empty?
-        version_tags.concat(version_tags) if top_level
+        version_tags.concat(version_tags) if options[:top_level]
       end
       version_tags
     end
