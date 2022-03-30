@@ -1,0 +1,63 @@
+#!/usr/bin/env bash
+
+validate_image_name ( ) {
+  name=$1
+  pattern='^[-.0-9a-zA-Z,_/:]+$'
+  [[ $name =~ $pattern ]]
+}
+
+ACTION=$1
+if [ $ACTION != "--dry-run" ] && [ $ACTION != "--execute" ]; then
+  echo "No action specified; must specifiy --dry-run or --execute as the first parameter"
+  exit 1
+fi
+SOURCE=$2
+DESTINATION=$3
+TAGS_CSV=$4
+TAGS=()
+COMMAND_BASE="podman image push "
+
+pattern='^[-.0-9a-zA-Z,_/:]+$'
+
+format_err=""
+if [[ ! $SOURCE =~ $pattern ]]; then
+  format_err+="\n  SOURCE\n"
+fi
+
+if [[ ! $DESTINATION =~ $pattern ]]; then
+  format_err+="  DESTINATION\n"
+fi
+
+if [[ ! $TAGS_CSV =~ $pattern ]]; then
+  format_err+="  TAGS\n"
+fi
+
+if [[ $format_err != "" ]]; then
+  echo -e "Argument formats incorrect: ${format_err}"
+  exit 2
+fi
+
+IFS=, TAGS=($TAGS_CSV)
+IFS=" "
+
+if [ "${TAGS}" == "" ]; then
+  echo "No tags found; exiting"
+  exit 1
+fi
+
+for tag in "${TAGS[@]}"; do
+  command="${COMMAND_BASE} ${SOURCE} ${DESTINATION}:${tag}"
+  if [ $ACTION == "--execute" ]; then
+    echo "Pushing image; executing command ..."
+    echo $command
+    `$command`
+    success=$?
+    if [ $success != 0 ]; then
+      echo "FAILED; error code: $success"
+      exit $success
+    fi
+  else
+    echo $command
+  fi
+
+done
