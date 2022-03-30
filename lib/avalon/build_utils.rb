@@ -80,8 +80,9 @@ module Avalon
 
       tags.push(branch) unless branch.empty?
       tags.concat(extra_tags) unless extra_tags.empty?
+      tags = tags.uniq
 
-      tags
+      tags.join(",")
 
     end
 

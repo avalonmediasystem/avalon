@@ -49,6 +49,4 @@ utils = Avalon::BuildUtils.new
 version = utils.detect_version if version.empty?
 tags = utils.get_tags(version, options)
 
-puts tags.join(",")
-
-tags
+puts tags
