@@ -32,7 +32,7 @@ module Avalon
     def detect_version(contents = "")
       contents = read_config_file if contents.empty?
       contents = contents.split("\n") if contents.is_a? String
-      version = extract_version_from_lines (contents)
+      version = extract_version_from_lines contents
       version
     end
 
@@ -41,14 +41,13 @@ module Avalon
       lines.each do |line|
         next if line[/^\s*#/]
         if (match = line.match(/^\s*VERSION\s*=\s*['"](\d+\.\d+(\.\d+){1,2})['"]/))
-          version =  match.captures[0]
+          version = match.captures[0]
         end
       end
       version
     end
 
     def get_tags(version, options = {})
-      split = options[:split] || false
       branch = options[:branch] || ""
       top_level = options[:top_level] || false
       # if top level isn't enabled and there is no branch specified,

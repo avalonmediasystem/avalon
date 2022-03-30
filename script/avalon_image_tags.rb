@@ -40,9 +40,9 @@ OptionParser.new do |opts|
 end.parse!
 
 if !options[:top_level] && (options[:branch].nil? || options[:branch].empty?)
- warn "Error: must supply --branch and/or --top-level\n"
- warn help_text
- exit 1
+  warn "Error: must supply --branch and/or --top-level\n"
+  warn help_text
+  exit 1
 end
 
 utils = Avalon::BuildUtils.new
