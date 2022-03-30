@@ -44,7 +44,6 @@ describe Avalon::BuildUtils do
     it 'Detects 3 part version correctly with contents string' do
       version = "1.2.3"
       contents_str = get_contents_string(version)
-      #puts "#{contents_str}"
       expect(subject.detect_version(contents_str)).to eq('1.2.3')
     end
 
@@ -98,7 +97,7 @@ describe Avalon::BuildUtils do
       it 'SPLITS and outputs correct tags for a 3-part version and no additional tags' do
         version = "1.2.3"
         options = {"top_level": true, "split": true}
-        expect(subject.get_tags(version, options)).to eq("1.2.3,1.2,1")
+        expect(subject.get_tags(version, options)).to eq("1,1.2,1.2.3")
       end
 
       it 'Outputs correct tags for a 3-part version and a branch tag' do
@@ -110,7 +109,7 @@ describe Avalon::BuildUtils do
       it 'SPLITS and Outputs correct tags for a 3-part version and a branch tag TOP LEVEL production branch' do
         version = "3.2.1"
         options = {"split": true, "branch": "production", "top_level": true}
-        expect(subject.get_tags(version, options)).to eq("3.2.1,3.2,3,3-production,3.2-production,3.2.1-production,production")
+        expect(subject.get_tags(version, options)).to eq("3,3-production,3.2,3.2-production,3.2.1,3.2.1-production,production")
       end
 
       it 'SPLITS and Outputs correct tags for a 3-part version and a branch tag NOT TOP LEVEL staging branch' do
@@ -123,7 +122,7 @@ describe Avalon::BuildUtils do
         version = "3.2.1"
         branch = "production"
         options = {"split": false, "branch": "production", "top_level": true}
-        expect(subject.get_tags(version, options)).to eq("3.2.1-production,3.2.1,production")
+        expect(subject.get_tags(version, options)).to eq("3.2.1,3.2.1-production,production")
       end
 
       it 'SPLITS and Outputs correct tags for a 4-part version and several tags' do
@@ -155,10 +154,6 @@ describe Avalon::BuildUtils do
         options = {"split": false, "branch": "develop", "additional_tags": "latest,test,develop"}
         expect(subject.get_tags(version, options)).to eq("11.12.13-develop,develop,latest,test")
       end
-
-
-
-
     end
 
   end

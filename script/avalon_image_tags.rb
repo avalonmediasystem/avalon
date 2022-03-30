@@ -28,18 +28,18 @@ OptionParser.new do |opts|
   opts.on("-b", "--branch BRANCH", "Specifies what branch to use") do |branch_cli|
     options[:branch] = branch_cli
   end
-  opts.on("-t", "--top-level", "Allows tagging top-level version tags (i.e. 1.2.3 with no branch; only for 'production' branch)") do |top_cli|
+  opts.on("-t", "--top-level", "Allows tagging top-level version tags (i.e. 1.2.3 with no branch; only for 'production' branch)") do
     options[:top_level] = true
   end
   opts.on("-a", "--additional-tags TAGS", "Additional tags, comma-separated (no spaces)") do |tags_cli|
     options[:additional_tags] = tags_cli
   end
-  opts.on("-s", "--split", "Split version number, i.e. 1.2.3 becomes 1.2.3,1.2,1") do |dh|
+  opts.on("-s", "--split", "Split version number, i.e. 1.2.3 becomes 1.2.3,1.2,1") do
     options[:split] = true
   end
 end.parse!
 
-if !options[:top_level] && (options[:branch].nil? || options[:branch].empty? )
+if !options[:top_level] && (options[:branch].nil? || options[:branch].empty?)
  warn "Error: must supply --branch and/or --top-level\n"
  warn help_text
  exit 1

@@ -18,7 +18,7 @@
 
 module Avalon
   class BuildUtils
-    COMMAND_BASE="podman image push"
+    COMMAND_BASE = "podman image push"
 
     def initialize; end
 
@@ -31,22 +31,30 @@ module Avalon
 
     def detect_version(contents = "")
       contents = read_config_file if contents.empty?
-      version = ""
       contents = contents.split("\n") if contents.is_a? String
-      contents.each do |line|
+      version = extract_version_from_lines (contents)
+      version
+    end
+
+    def extract_version_from_lines(lines = [])
+      version = ""
+      lines.each do |line|
         next if line[/^\s*#/]
-        if match = line.match(/^\s*VERSION\s*=\s*['"](\d+\.\d+(\.\d+){1,2})['"]/)
-          version = match.captures[0]
+        if (match = line.match(/^\s*VERSION\s*=\s*['"](\d+\.\d+(\.\d+){1,2})['"]/))
+          version =  match.captures[0]
         end
       end
       version
     end
 
     def get_tags(version, options = {})
-
       split = options[:split] || false
       branch = options[:branch] || ""
       top_level = options[:top_level] || false
+      # if top level isn't enabled and there is no branch specified,
+      # return an empty array, as there will be no tags
+      return [] if branch.empty? && !top_level
+
       additional_tags_str = options[:additional_tags]
       additional_tags_str ||= ""
       extra_tags = additional_tags_str.split(",")
@@ -54,36 +62,35 @@ module Avalon
       len = parts.length
 
       # only accept between 2 and 4 parts
-      return if len < 2 || len > 4
+      return if len <= 2 || len > 4
 
-      # if top level isn't enabled and there is no branch specified,
-      # return an empty array, as there will be no tags
-      return [] if branch.empty? && !top_level
+      tags = get_version_tags(version, options)
+      tags.push(branch) unless branch.empty?
+      tags.concat(extra_tags) unless extra_tags.empty?
+      # enforce uniqueness and sort to ensure ordering consistency
+      tags = tags.uniq.sort
+      tags.join(",")
+    end
 
+    def get_version_tags(version, options)
+      split = options[:split] || false
+      top_level = options[:top_level] || false
+      branch = options[:branch] || ""
       version_tags = []
-      tags = []
       if split
-        version_tags = split_parts(version)
-        version_tags.each do |tag|
-          # unshift to add the version tags to the start of the result
-          # purely for human readability reasons
-          tags.unshift(tag) if top_level
-          tags.push "#{tag}-#{branch}" unless branch.empty?
+        tags = split_parts(version)
+        tags.each do |tag|
+          version_tags.push(tag) if top_level
+          version_tags.push "#{tag}-#{branch}" unless branch.empty?
         end
       else
         version_tags.push(version) if top_level
         branch_tag = ""
         branch_tag = "#{version}-#{branch}" unless branch.empty?
-        tags.push(branch_tag) unless branch_tag.empty?
-        tags.concat(version_tags) if top_level
+        version_tags.push(branch_tag) unless branch_tag.empty?
+        version_tags.concat(version_tags) if top_level
       end
-
-      tags.push(branch) unless branch.empty?
-      tags.concat(extra_tags) unless extra_tags.empty?
-      tags = tags.uniq
-
-      tags.join(",")
-
+      version_tags
     end
 
     def split_parts(version)
