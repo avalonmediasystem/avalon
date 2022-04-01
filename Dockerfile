@@ -84,7 +84,7 @@ WORKDIR     /home/app/avalon
 FROM        base as dev
 LABEL       stage=final
 LABEL       project=avalon
-RUN         apt-get install -y --no-install-recommends --allow-unauthenticated \
+RUN         apt-get update && apt-get install -y --no-install-recommends --allow-unauthenticated \
             build-essential \
             cmake
 
