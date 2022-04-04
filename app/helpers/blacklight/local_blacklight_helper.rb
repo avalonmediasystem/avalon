@@ -26,14 +26,7 @@ module Blacklight::LocalBlacklightHelper
   end
 
   def url_for_document doc, options = {}
-    case doc["has_model_ssim"].first
-    when "MediaObject"
-      media_object_path(doc[:id])
-    when "Admin::Collection"
-      collection_path(doc[:id])
-    else
-      object_path(doc[:id])
-    end
+    SpeedyAF::Base.find(doc[:id])
   end
 
   def contributor_index_display args
