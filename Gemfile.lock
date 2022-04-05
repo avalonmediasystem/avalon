@@ -1,29 +1,11 @@
 GIT
   remote: https://github.com/apertome/active_encode.git
-  revision: 7dee0a34d886dbde186f1a98a4f9738712b890a9
+  revision: ea628efa838e050cfb8aef9e40d9374fed121a97
   branch: ffmpeg-error-handling
   specs:
-    active_encode (0.7.0)
+    active_encode (0.8.3)
       rails
       sprockets (< 4)
-
-GIT
-  remote: https://github.com/apertome/active_fedora.git
-  revision: 97a3df406e674f7dae9ea1c7eaf3942c409832e1
-  branch: ruby2.7-fixes
-  specs:
-    active-fedora (12.2.3)
-      active-triples (>= 0.11.0, < 2.0.0)
-      activemodel (>= 4.2.10, < 5.3)
-      activesupport (>= 4.2.4, < 5.3)
-      addressable
-      deprecation
-      faraday (~> 0.12)
-      faraday-encoding (= 0.0.4)
-      ldp (>= 0.7.0, < 2)
-      rdf-vocab (< 3.1.5)
-      rsolr (>= 1.1.2, < 3)
-      ruby-progressbar (~> 1.0)
 
 GIT
   remote: https://github.com/avalonmediasystem/about_page.git
@@ -35,12 +17,12 @@ GIT
 
 GIT
   remote: https://github.com/avalonmediasystem/active_annotations.git
-  revision: c08ea4f874bdd48e88c10d90db5af05ac0d13cd1
-  branch: v0.3.0
+  revision: 0b8f5a8b4c319e6bc2c4764d9d0a3a7f351f1501
+  branch: the_future
   specs:
     active_annotations (0.3.0)
       json-ld
-      rails (~> 5.2)
+      rails (>= 5.2, < 7.1)
       rdf-vocab (>= 2.1.0)
 
 GIT
@@ -116,7 +98,7 @@ GIT
 
 GIT
   remote: https://github.com/tawan/active-elastic-job.git
-  revision: 5528edd973d6beb5343cf3b475a3b9d8bf649b9f
+  revision: e1735bb48373dc398f704cffea52c73564fc1dcb
   specs:
     active_elastic_job (3.2.0)
       aws-sdk-sqs (~> 1)
@@ -176,13 +158,8 @@ GEM
       activesupport (>= 3.0.0)
       rdf (>= 2.0.2, < 4.0)
       rdf-vocab (>= 2.0, < 4.0)
-    active_fedora-datastreams (0.2.0)
-      active-fedora (>= 11.0.0.pre, < 13)
-      nom-xml (>= 0.5.1)
-      om (~> 3.1)
-      rdf-rdfxml (~> 2.0)
-    activejob (5.2.6)
-      activesupport (= 5.2.6)
+    activejob (6.0.4.6)
+      activesupport (= 6.0.4.6)
       globalid (>= 0.3.6)
     activejob-traffic_control (0.1.3)
       activejob (>= 4.2)
@@ -221,32 +198,31 @@ GEM
       sshkit (>= 1.6.1, != 1.7.0)
     amazing_print (1.4.0)
     api-pagination (5.0.0)
-    arel (9.0.0)
     ast (2.4.2)
     audio_waveform-ruby (1.0.7)
       json (~> 2.3)
-    autoprefixer-rails (10.4.0.0)
+    autoprefixer-rails (10.4.2.0)
       execjs (~> 2)
     aws-eventstream (1.2.0)
-    aws-partitions (1.545.0)
+    aws-partitions (1.555.0)
     aws-record (2.7.0)
       aws-sdk-dynamodb (~> 1.18)
-    aws-sdk-cloudfront (1.61.0)
-      aws-sdk-core (~> 3, >= 3.125.0)
+    aws-sdk-cloudfront (1.62.0)
+      aws-sdk-core (~> 3, >= 3.126.0)
       aws-sigv4 (~> 1.1)
-    aws-sdk-core (3.125.1)
+    aws-sdk-core (3.126.2)
       aws-eventstream (~> 1, >= 1.0.2)
       aws-partitions (~> 1, >= 1.525.0)
       aws-sigv4 (~> 1.1)
       jmespath (~> 1.0)
-    aws-sdk-dynamodb (1.70.0)
-      aws-sdk-core (~> 3, >= 3.125.0)
+    aws-sdk-dynamodb (1.72.0)
+      aws-sdk-core (~> 3, >= 3.126.0)
       aws-sigv4 (~> 1.1)
-    aws-sdk-elastictranscoder (1.36.0)
-      aws-sdk-core (~> 3, >= 3.125.0)
+    aws-sdk-elastictranscoder (1.37.0)
+      aws-sdk-core (~> 3, >= 3.126.0)
       aws-sigv4 (~> 1.1)
-    aws-sdk-kms (1.53.0)
-      aws-sdk-core (~> 3, >= 3.125.0)
+    aws-sdk-kms (1.54.0)
+      aws-sdk-core (~> 3, >= 3.126.0)
       aws-sigv4 (~> 1.1)
     aws-sdk-rails (3.6.1)
       aws-record (~> 2)
@@ -255,15 +231,15 @@ GEM
       aws-sessionstore-dynamodb (~> 2)
       concurrent-ruby (~> 1)
       railties (>= 5.2.0)
-    aws-sdk-s3 (1.111.0)
-      aws-sdk-core (~> 3, >= 3.125.0)
+    aws-sdk-s3 (1.112.0)
+      aws-sdk-core (~> 3, >= 3.126.0)
       aws-sdk-kms (~> 1)
       aws-sigv4 (~> 1.4)
-    aws-sdk-ses (1.45.0)
-      aws-sdk-core (~> 3, >= 3.125.0)
+    aws-sdk-ses (1.46.0)
+      aws-sdk-core (~> 3, >= 3.126.0)
       aws-sigv4 (~> 1.1)
-    aws-sdk-sqs (1.49.0)
-      aws-sdk-core (~> 3, >= 3.125.0)
+    aws-sdk-sqs (1.50.0)
+      aws-sdk-core (~> 3, >= 3.126.0)
       aws-sigv4 (~> 1.1)
     aws-sessionstore-dynamodb (2.0.1)
       aws-sdk-dynamodb (~> 1)
@@ -295,11 +271,12 @@ GEM
       blacklight (> 6.0, < 8)
       cancancan (>= 1.8)
       deprecation (~> 1.0)
-    bootsnap (1.9.3)
-      msgpack (~> 1.0)
-    bootstrap-sass (3.4.0)
-      autoprefixer-rails (>= 5.2.1)
-      sassc (>= 2.0.0)
+    bootsnap (1.10.3)
+      msgpack (~> 1.2)
+    bootstrap (4.6.1)
+      autoprefixer-rails (>= 9.1.0)
+      popper_js (>= 1.14.3, < 2)
+      sassc-rails (>= 2.0.0)
     bootstrap-toggle-rails (2.2.1.0)
     bootstrap_form (5.0.0)
       actionpack (>= 5.2)
@@ -361,7 +338,7 @@ GEM
       execjs
     coffee-script-source (1.12.2)
     concurrent-ruby (1.1.9)
-    config (3.1.1)
+    config (4.0.0)
       deep_merge (~> 1.2, >= 1.2.1)
       dry-validation (~> 1.0, >= 1.0.0)
     connection_pool (2.2.5)
@@ -369,7 +346,7 @@ GEM
       rexml
     crass (1.0.6)
     daemons (1.4.1)
-    dalli (3.2.0)
+    dalli (3.2.1)
     database_cleaner (2.0.1)
       database_cleaner-active_record (~> 2.0.0)
     database_cleaner-active_record (2.0.1)
@@ -431,15 +408,15 @@ GEM
       dry-container (~> 0.7, >= 0.7.1)
       dry-core (~> 0.5, >= 0.5)
       dry-initializer (~> 3.0)
-      dry-schema (~> 1.8, >= 1.8.0)
-    ebnf (2.3.0)
-      amazing_print (~> 1.4)
+      dry-schema (~> 1.9, >= 1.9.1)
+    ebnf (2.2.1)
+      amazing_print (~> 1.2)
       htmlentities (~> 4.3)
-      rdf (~> 3.2)
+      rdf (~> 3.1)
       scanf (~> 1.0)
-      sxp (~> 1.2)
-      unicode-types (~> 1.7)
-    edtf (3.0.7)
+      sxp (~> 1.1)
+      unicode-types (~> 1.6)
+    edtf (3.0.8)
       activesupport (>= 3.0, < 8.0)
     email_spec (2.2.0)
       htmlentities (~> 4.3.3)
@@ -477,6 +454,7 @@ GEM
     fugit (1.5.2)
       et-orbi (~> 1.1, >= 1.1.8)
       raabro (~> 1.4)
+    gems (1.2.0)
     globalid (1.0.0)
       activesupport (>= 5.0)
     google-analytics-rails (1.1.0)
@@ -519,6 +497,8 @@ GEM
     haml (5.2.2)
       temple (>= 0.8.0)
       tilt
+    hamster (3.0.0)
+      concurrent-ruby (~> 1.0)
     hashdiff (1.0.1)
     hashie (5.0.0)
     hooks (0.4.1)
@@ -569,13 +549,13 @@ GEM
       railties (>= 3.2.16)
     json (2.6.1)
     json-canonicalization (0.3.0)
-    json-ld (3.2.0)
+    json-ld (3.1.10)
       htmlentities (~> 4.3)
-      json-canonicalization (~> 0.3)
+      json-canonicalization (~> 0.2)
       link_header (~> 0.0, >= 0.0.8)
-      multi_json (~> 1.15)
-      rack (~> 2.2)
-      rdf (~> 3.2)
+      multi_json (~> 1.14)
+      rack (~> 2.0)
+      rdf (~> 3.1)
     jwt (2.3.0)
     kaminari (1.2.2)
       activesupport (>= 4.1.0)
@@ -613,7 +593,7 @@ GEM
       activesupport (>= 4)
       railties (>= 4)
       request_store (~> 1.0)
-    loofah (2.13.0)
+    loofah (2.15.0)
       crass (~> 1.0.2)
       nokogiri (>= 1.5.9)
     mail (2.7.1)
@@ -628,11 +608,11 @@ GEM
     method_source (1.0.0)
     mime-types (3.4.1)
       mime-types-data (~> 3.2015)
-    mime-types-data (3.2021.1115)
+    mime-types-data (3.2022.0105)
     mini_mime (1.1.2)
-    mini_portile2 (2.6.1)
+    mini_portile2 (2.8.0)
     minitest (5.15.0)
-    msgpack (1.4.2)
+    msgpack (1.4.5)
     multi_json (1.15.0)
     multi_xml (0.6.0)
     multipart-post (2.1.1)
@@ -654,8 +634,8 @@ GEM
       i18n
       nokogiri
     oauth (0.5.8)
-    oauth2 (1.4.7)
-      faraday (>= 0.8, < 2.0)
+    oauth2 (1.4.8)
+      faraday (>= 0.8, < 3.0)
       jwt (>= 1.0, < 3.0)
       multi_json (~> 1.3)
       multi_xml (~> 0.5)
@@ -697,7 +677,7 @@ GEM
     pry-rails (0.3.9)
       pry (>= 0.10.4)
     public_suffix (4.0.6)
-    puma (5.6.2)
+    puma (5.6.4)
       nio4r (~> 2.0)
     raabro (1.4.0)
     racc (1.6.0)
@@ -749,13 +729,13 @@ GEM
     rb-inotify (0.10.1)
       ffi (~> 1.0)
     rb-readline (0.5.5)
-    rchardet (1.8.0)
-    rdf (3.2.2)
+    rdf (3.1.15)
+      hamster (~> 3.0)
       link_header (~> 0.0, >= 0.0.8)
-    rdf-aggregate-repo (3.2.0)
-      rdf (~> 3.2)
-    rdf-isomorphic (3.2.0)
-      rdf (~> 3.2)
+    rdf-aggregate-repo (3.1.0)
+      rdf (~> 3.1)
+    rdf-isomorphic (3.1.1)
+      rdf (~> 3.1)
     rdf-rdfa (3.1.0)
       haml (~> 5.1)
       htmlentities (~> 4.3)
@@ -767,13 +747,13 @@ GEM
       rdf (>= 2.2, < 4.0)
       rdf-rdfa (>= 2.2, < 4.0)
       rdf-xsd (>= 2.2, < 4.0)
-    rdf-turtle (3.2.0)
-      ebnf (~> 2.3)
-      rdf (~> 3.2)
+    rdf-turtle (3.1.3)
+      ebnf (~> 2.1)
+      rdf (~> 3.1, >= 3.1.8)
     rdf-vocab (3.1.4)
       rdf (~> 3.1)
-    rdf-xsd (3.2.0)
-      rdf (~> 3.2)
+    rdf-xsd (3.1.1)
+      rdf (~> 3.1)
       rexml (~> 3.2)
     react-rails (2.6.1)
       babel-transpiler (>= 0.7.0)
@@ -802,7 +782,7 @@ GEM
       redis (>= 4, < 5)
     redlock (1.2.2)
       redis (>= 3.0.0, < 5.0)
-    regexp_parser (2.2.0)
+    regexp_parser (2.2.1)
     representable (3.1.1)
       declarative (< 0.1.0)
       trailblazer-option (>= 0.1.1, < 0.2.0)
@@ -845,8 +825,8 @@ GEM
       rspec-support (~> 3.10)
     rspec-retry (0.6.2)
       rspec-core (> 3.3)
-    rspec-support (3.10.3)
-    rspec_junit_formatter (0.5.0)
+    rspec-support (3.11.0)
+    rspec_junit_formatter (0.5.1)
       rspec-core (>= 2, < 4, != 2.12.0)
     rubocop (0.85.1)
       parallel (~> 1.10)
@@ -947,9 +927,8 @@ GEM
       dalli
       msgpack
       redis
-    sxp (1.2.0)
-      matrix
-      rdf (~> 3.2)
+    sxp (1.1.0)
+      rdf (~> 3.1)
     temple (0.8.2)
     thor (1.2.1)
     thread_safe (0.3.6)
@@ -971,7 +950,10 @@ GEM
     unf_ext (0.0.8)
     unicode-display_width (1.8.0)
     unicode-types (1.7.0)
-    user_agent_parser (2.8.0)
+    user_agent_parser (2.9.0)
+    view_component (2.50.0)
+      activesupport (>= 5.0.0, < 8.0)
+      method_source (~> 1.0)
     warden (1.2.9)
       rack (>= 2.0.9)
     wavefile (1.0.1)
@@ -1018,8 +1000,8 @@ DEPENDENCIES
   active-fedora (~> 13.2, >= 13.2.5)
   active_annotations!
   active_elastic_job!
-  active_encode (~> 0.7.0)!
-  active_fedora-datastreams (~> 0.2.0)
+  active_encode (~> 0.8.2)!
+  active_fedora-datastreams!
   activejob-traffic_control
   activejob-uniqueness
   activerecord-session_store (>= 2.0.0)
