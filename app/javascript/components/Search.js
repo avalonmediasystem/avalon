@@ -97,7 +97,7 @@ class Search extends Component {
       }
       this.setState({
         isLoading: false,
-        searchResult: response.data.response
+        searchResult: {docs: response.data.data, facets: response.data.included, pages: response.data.meta.pages}
       });
     } catch (e) {
       console.log('Error retrieving results', e);

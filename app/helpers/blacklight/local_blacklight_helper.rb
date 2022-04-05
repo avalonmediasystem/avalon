@@ -26,14 +26,7 @@ module Blacklight::LocalBlacklightHelper
   end
 
   def url_for_document doc, options = {}
-    case doc["has_model_ssim"].first
-    when "MediaObject"
-      media_object_path(doc[:id])
-    when "Admin::Collection"
-      collection_path(doc[:id])
-    else
-      object_path(doc[:id])
-    end
+    SpeedyAF::Base.find(doc[:id])
   end
 
   def contributor_index_display args
@@ -43,6 +36,10 @@ module Blacklight::LocalBlacklightHelper
   def description_index_display args
     field = args[:document][args[:field]]
     truncate(field, length: 200) unless field.blank?
+  end
+
+  def section_id_json_index_display args
+    Array(args[:document][args[:field]])
   end
 
   def constraints_filters_string filters
