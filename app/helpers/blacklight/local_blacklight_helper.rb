@@ -38,6 +38,10 @@ module Blacklight::LocalBlacklightHelper
     truncate(field, length: 200) unless field.blank?
   end
 
+  def section_id_json_index_display args
+    Array(args[:document][args[:field]])
+  end
+
   def constraints_filters_string filters
     return if filters.nil?
     filters.map {|facet, values| contstraints_filter_string(facet, values)}.join(' / ')

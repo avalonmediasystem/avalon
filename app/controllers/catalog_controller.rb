@@ -104,9 +104,12 @@ class CatalogController < ApplicationController
 
     # solr fields to be displayed in the index (search results) view
     #   The ordering of the field names is the order of the display
+    config.add_index_field 'title_tesi', label: 'Title', if: Proc.new {|context, _field_config, _document| context.request.format == :json }
     config.add_index_field 'date_ssi', label: 'Date', helper_method: :combined_display_date
     config.add_index_field 'creator_ssim', label: 'Main contributors', helper_method: :contributor_index_display
     config.add_index_field 'summary_ssi', label: 'Summary', helper_method: :description_index_display
+    config.add_index_field 'duration_ssi', label: 'Duration', if: Proc.new {|context, _field_config, _document| context.request.format == :json }
+    config.add_index_field 'section_id_ssim', label: 'Sections', if: Proc.new {|context, _field_config, _document| context.request.format == :json }, helper_method: :section_id_json_index_display
 
     # solr fields to be displayed in the show (single result) view
     #   The ordering of the field names is the order of the display
