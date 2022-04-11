@@ -33,7 +33,7 @@ Unless required by applicable law or agreed to in writing, software distributed
       	  </div>
       	  <div class="col-xs-3 col-md-3 text-right">
             <% if can? :edit, marker %>
-      	      <%= button_tag name: 'edit_marker', id: "edit_marker_#{marker.id}", class:'btn btn-default btn-xs edit_marker', type: 'button' do %>
+      	      <%= button_tag name: 'edit_marker', id: "edit_marker_#{marker.id}", class:'btn btn-outline btn-sm edit_marker', type: 'button' do %>
                 <i class='fa fa-edit' title='Edit'></i> <span class='sm-hidden'>Edit</span>
               <% end %>
       	    <% end %>

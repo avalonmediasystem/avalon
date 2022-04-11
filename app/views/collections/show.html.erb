@@ -19,24 +19,24 @@ Unless required by applicable law or agreed to in writing, software distributed
 
 <div class="collections-landing-wrapper">
   <ol class="breadcrumb">
-    <li style="padding-bottom: 0px"><%= link_to 'All Collections', collections_path %></li>
-    <li style="padding-bottom: 0px"><%= link_to @doc_presenter.unit, collections_path(filter: @doc_presenter.unit) %>
+    <li style="padding-bottom: 0px" class="breadcrumb-item"><%= link_to 'All Collections', collections_path %></li>
+    <li style="padding-bottom: 0px" class="breadcrumb-item"><%= link_to @doc_presenter.unit, collections_path(filter: @doc_presenter.unit) %>
     </li>
-    <li class="active" style="padding-bottom: 0px"><%= @doc_presenter.name %></li>
+    <li class="breadcrumb-item active" style="padding-bottom: 0px"><%= @doc_presenter.name %></li>
   </ol>
 
   <div class="row">
-    <div class="document-thumbnail col-sm-4 col-sm-push-8">
+    <div class="document-thumbnail col-sm-4 order-8">
       <%= image_tag @doc_presenter.poster_url %>
       <div class="filter-collection-button-wrapper">
         <a href="<%= search_catalog_path('f[collection_ssim][]' => @doc_presenter.name) %>"
-          class="btn btn-default btn-block">
-          <span class="glyphicon glyphicon-filter" aria-hidden="true"></span>
+          class="btn btn-outline btn-block">
+          <span class="fa fa-filter" aria-hidden="true"></span>
           Filter this collection
         </a>
       </div>
     </div>
-    <div class="col-sm-7 col-sm-pull-4">
+    <div class="col-sm-7 order-4">
       <h1 class="page-title"><%= @doc_presenter.name %></h1>
       <div>
         <h3 class="sub-headline"><strong>Unit:</strong> <%= @doc_presenter.unit %></h3>

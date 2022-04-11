@@ -15,7 +15,7 @@
 
 $ ->
   form = $('div.import-button').closest('form').prop('id')
-  import_button_html = '<div class="input-group-btn"><button id="media_object_bibliographic_id_btn" type="submit" name="media_object[import_bib_record]" class="btn btn-default btn-light" value="yes" >Import</button></div>'
+  import_button_html = '<div class="input-group-btn"><button id="media_object_bibliographic_id_btn" type="submit" name="media_object[import_bib_record]" class="btn btn-outline btn-light" value="yes" >Import</button></div>'
   $('div.import-button').append(import_button_html)
   enable_bib_btn()
   $('#media_object_bibliographic_id').keyup -> enable_bib_btn()

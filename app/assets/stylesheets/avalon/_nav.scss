@@ -74,9 +74,8 @@ $state-info-border:              darken(adjust-hue($state-info-bg, -10), 7%) !de
   }
 }
 
-.navbar-nav > .nav-item.active {
+.navbar-nav .active > .nav-link {
   background-color: $yellow;
-  border-color: $yellow;
 }
 
 .navbar-light {

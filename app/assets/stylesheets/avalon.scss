@@ -696,18 +696,18 @@ div.structure_edit {
   width: auto;
 }
 
-h5.panel-title {
+h5.card-title {
   font-size: 1.15em;
   padding-left: 0.4em;
   min-height: 1em;
 }
 
-.panel-heading .accordion-toggle:before {
+.card-header .accordion-toggle:before {
   font-family: 'FontAwesome';
   content: '\f078';
 }
 
-.panel-heading .accordion-toggle.collapsed:before {
+.card-header .accordion-toggle.collapsed:before {
   content: '\f054';
 }
 
@@ -799,6 +799,7 @@ h5.panel-title {
   .associated-files-top-row {
     font-size: 18px;
     padding-bottom: 10px;
+    justify-content: space-between;
 
     > span {
       padding: 0 5px;
@@ -871,9 +872,9 @@ h5.panel-title {
       border-color: #f32c1e;
     }
 
-    div.btn-toolbar {
-      display: flex;
-    }
+    // div.btn-toolbar {
+    //   display: flex;
+    // }
 
     span.tool_label {
       font-weight: bold;

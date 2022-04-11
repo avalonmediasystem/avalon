@@ -18,7 +18,7 @@ Unless required by applicable law or agreed to in writing, software distributed
   <% form ||= nil %>
   <%= hidden_field_tag :step, @active_step, form: form %>
   <% if form.present? %>
-    <%= submit_tag 'Save', name: 'save', class: "btn btn-default", form: form, disabled: save_disabled %>
+    <%= submit_tag 'Save', name: 'save', class: "btn btn-outline", form: form, disabled: save_disabled %>
     <%= submit_tag "Save and continue", name: 'save_and_continue', class: 'btn btn-primary', form: form %>
   <% else %>
     <%= submit_tag "Continue", name: 'save_and_continue', class: 'btn btn-primary', form: form %>

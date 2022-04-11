@@ -30,14 +30,14 @@ Unless required by applicable law or agreed to in writing, software distributed
 
     <% if @collection.dropbox_object_count > 0 %>
       <div class="alert alert-warning">
-        <span class="glyphicon glyphicon-warning-sign" aria-hidden="true"></span>
+        <span class="fa fa-warning" aria-hidden="true"></span>
         <span>There are saved files in this collection's <b>Dropbox</b> that will be deleted when this collection is deleted.</span>
       </div>
     <% end %>
 
     <% if @collection.media_objects.count == 0 or @candidates.count > 0 %>
       <div class="alert alert-danger">
-        <span class="glyphicon glyphicon-warning-sign" aria-hidden="true"></span>
+        <span class="fa fa-warning" aria-hidden="true"></span>
         <span>Are you certain you want to remove the collection <b><%=@collection.name%></b>?</span>
       </div>
 
@@ -57,7 +57,7 @@ Unless required by applicable law or agreed to in writing, software distributed
 
     <div class="form-group">
       <%= f.submit 'Yes, I am sure', class: 'btn btn-danger' %>
-      <%= link_to 'No, go back', admin_collections_path, class: 'btn btn-default' %>
+      <%= link_to 'No, go back', admin_collections_path, class: 'btn btn-outline' %>
     </div>
     <% end %>
     <% else %>

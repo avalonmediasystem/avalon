@@ -20,7 +20,7 @@ Unless required by applicable law or agreed to in writing, software distributed
           <div class="alert alert-danger">
 	    <p>No resources were selected.</p>
 	  </div>
-	  <%= link_to 'Go back', :back, class: 'btn btn-default' %> 
+	  <%= link_to 'Go back', :back, class: 'btn btn-outline' %> 
 	<% else %>
 	  <% params[:id] = Array(params[:id]) %>
           <div class="alert alert-danger">
@@ -37,7 +37,7 @@ Unless required by applicable law or agreed to in writing, software distributed
 	    </ul>
         </div>
 	<%= link_to 'Yes, I am sure', remove_media_objects_path( id: params[:id], previous_view: @previous_view ), method: :delete, id: 'deleteLink', name: 'delete', class: 'btn btn-danger' %>
-	<%= link_to 'No, go back', :back, class: 'btn btn-default' %> 
+	<%= link_to 'No, go back', :back, class: 'btn btn-outline' %> 
 	<% end %>
       </div>
     </div>

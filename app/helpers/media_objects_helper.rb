@@ -191,7 +191,7 @@ EOF
           #{headerclose}
 
     <div id="section#{index}" class="panel-collapse collapse #{current ? 'in' : ''}" role="tabpanel" aria-labelledby="heading#{index}">
-      <div class="panel-body">
+      <div class="card-body">
         <ul>
 EOF
           wrapperclose = <<EOF

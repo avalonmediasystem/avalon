@@ -17,7 +17,7 @@ Unless required by applicable law or agreed to in writing, software distributed
 <% fieldarray = options[:multivalued]? "[]" : "" %>
 
 <div class="input-group-btn">
-  <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+  <button type="button" class="btn btn-outline dropdown-toggle" data-toggle="dropdown">
     <span><%= options[:dropdown_options][selected_value] %></span> <span class="caret"></span>
   </button>
   <%= hidden_field_tag "media_object[#{options[:dropdown_field]}]#{fieldarray}", selected_value %>

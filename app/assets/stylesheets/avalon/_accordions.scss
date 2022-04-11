@@ -36,7 +36,7 @@ $accordionPadding: 20px;
     }
   }
 
-  .panel-title {
+  .card-title {
     .fa-plus-square,
     .fa-minus-square {
       font-size: 0.9em;
@@ -62,7 +62,7 @@ $accordionPadding: 20px;
     left: accordion-indent(1);
   }
 
-  .panel-heading {
+  .card-header {
     border-bottom: 1px solid #dddddd;
     padding: 7px 10px;
 
@@ -79,7 +79,7 @@ $accordionPadding: 20px;
     }
   }
 
-  .panel-body {
+  .card-body {
     border-top: none;
     position: relative;
 
