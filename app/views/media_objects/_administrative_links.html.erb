@@ -16,7 +16,7 @@ Unless required by applicable law or agreed to in writing, software distributed
 <% if can? :update, @media_object %>
 <div class="row-fluid">
   <p>
-    <ul class="unstyled hidden">
+    <ul class="unstyled" style="display: none;">
       <li>
         <% if @media_object.published? %>
         <span class="label label-success">Published</span> Authorized users can view the item</li>

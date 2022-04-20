@@ -37,7 +37,7 @@ class PlaylistItemsController < ApplicationController
       render json: { message: ["Item was not created: #{clip.errors.full_messages}"] }, status: 500 and return
     end
     if PlaylistItem.create(playlist: @playlist, clip: clip)
-      render json: { message: "Add to playlist was successful. #{view_context.link_to('See it here', playlist_url(@playlist), class: 'btn btn-outline btn-xs')}" }, status: 201 and return
+      render json: { message: "Add to playlist was successful. #{view_context.link_to('See it here', playlist_url(@playlist), class: 'btn btn-outline btn-sm')}" }, status: 201 and return
     end
   rescue StandardError => error
     logger.warn("Error creating playlist item: #{error.message}")

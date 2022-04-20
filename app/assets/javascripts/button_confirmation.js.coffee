@@ -24,16 +24,17 @@ $ ->
     $('.btn-confirmation').popover 'hide'
     true
   $('.btn-confirmation').popover(
-    trigger: 'manual'
+    trigger: 'click'
     html: true
+    sanitize: false
     content: ->
       button = undefined
       if typeof $(this).attr('form') == "undefined"
-        button = '<a href="' + $(this).attr('href') + '" class="btn btn-xs btn-danger btn-confirm" data-method="delete" rel="nofollow">Yes, Delete</a>'
+        button = '<a href="' + $(this).attr('href') + '" class="btn btn-sm btn-danger btn-confirm" data-method="delete" rel="nofollow">Yes, Delete</a>'
       else
-        button = '<input class="btn btn-xs btn-danger btn-confirm" form="' + $(this).attr('form') + '" type="submit">'
+        button = '<input class="btn btn-sm btn-danger btn-confirm" form="' + $(this).attr('form') + '" type="submit">'
         $('#' + $(this).attr('form')).find('[name=\'_method\']').val 'delete'
-      '<p>Are you sure?</p> ' + button + ' <a href="#" class="btn btn-xs btn-primary" id="special_button_color">No, Cancel</a>'
+      '<p>Are you sure?</p> ' + button + ' <a href="#" class="btn btn-sm btn-primary" id="special_button_color">No, Cancel</a>'
   ).click ->
     t = this
     $('.btn-confirmation').filter(->

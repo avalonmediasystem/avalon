@@ -38,7 +38,7 @@ Unless required by applicable law or agreed to in writing, software distributed
               <% end %>
       	    <% end %>
             <% if can? :delete, marker %>
-              <%= button_tag name: 'delete_marker', class:'btn btn-danger btn-xs btn-confirmation', form: "edit_avalon_marker_#{marker.id}", data: {placement: 'top'} do %>
+              <%= button_tag name: 'delete_marker', class:'btn btn-danger btn-sm btn-confirmation', form: "edit_avalon_marker_#{marker.id}", data: {placement: 'top'} do %>
             		<i class='fa fa-times' title='Delete'></i> <span class='sm-hidden'>Delete</span>
       	      <% end %>
       	    <% end %>

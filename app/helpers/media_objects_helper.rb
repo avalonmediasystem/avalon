@@ -149,12 +149,12 @@ module MediaObjectsHelper
 
         headeropen = <<EOF
        <div class="card-header" role="tab" id="heading#{index}" data-media-object-id="#{section.media_object_id}" data-section-id="#{section.id}">
-       <h4 class="card-title #{ 'progress-indented' if progress_div.present? }">
+       <h5 class="card-title #{ 'progress-indented' if progress_div.present? }">
        #{playlist_btn}
 EOF
         headerclose = <<EOF
        #{progress_div}
-       </h4>
+       </h5>
        </div>
 EOF
 
@@ -185,8 +185,8 @@ EOF
                          class: 'playable wrap' + (current ? ' current-stream current-section' : '')
           wrapperopen = <<EOF
           #{headeropen}
-          <button class="fa fa-minus-square #{current ? '' : 'hidden'}" data-toggle="collapse" data-target="#section#{index}" aria-expanded="#{current ? 'true' : 'false' }" aria-controls="collapse#{index}"></button>
-          <button class="fa fa-plus-square #{current ? 'hidden' : ''}" data-toggle="collapse" data-target="#section#{index}" aria-expanded="#{current ? 'true' : 'false' }" aria-controls="collapse#{index}"></button>
+          <button class="fa fa-minus-square #{current ? 'no-show' : ''}" data-toggle="collapse" data-target="#section#{index}" aria-expanded="#{current ? 'true' : 'false' }" aria-controls="collapse#{index}"></button>
+          <button class="fa fa-plus-square #{current ? '' : 'no-show'}" data-toggle="collapse" data-target="#section#{index}" aria-expanded="#{current ? 'true' : 'false' }" aria-controls="collapse#{index}"></button>
           <ul><li>#{link}</li></ul>
           #{headerclose}
 

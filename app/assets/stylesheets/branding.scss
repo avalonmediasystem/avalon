@@ -83,9 +83,9 @@ $link-color: $primary;
 $link-hover-color: $secondary;
 
 /* Alerts */
-$alert-success-bg: $success;
-$alert-success-text: $white;
-$alert-success-border: $success;
+$alert-bg-level: 0;
+$alert-border-level: 1;
+$alert-color-level: -10;
 
 /* General states (success, info, warning, danger) */
 $state-warning-bg: $warning;
@@ -130,23 +130,13 @@ $navbar-inverse-toggle-border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1)
 $grid-gutter-width: 16px;
 
 /* Buttons */
-// $btn-border-radius-base: 2px;
-// $btn-default-color: $dark;
-// $btn-default-bg: $white;
-// $btn-default-border: $gray;
-// $btn-primary-color: $white;
-// $btn-primary-bg: $secondary;
-// $btn-primary-border: $secondary;
-// $btn-success-color: $white;
-// $btn-success-bg: $success;
-// $btn-success-border: $success;
-// $btn-info-color: $primary;
-// $btn-info-bg: $info;
-// $btn-info-border: $info;
 $btn-outline-color: $dark;
 $btn-outline-border-color: $gray;
 $btn-outline-bg-color: $white;
 $btn-light-bg: $lightgray;
+$btn-xs-font-size: 0.85rem;
+$btn-xs-height: 1.65rem;
+$btn-xs-padding: 0.15rem 0.5rem;
 
 /* Pagination */
 $pagination-color: $link-color;

@@ -207,6 +207,9 @@ $state-info-border:              darken(adjust-hue($state-info-bg, -10), 7%) !de
 .manage-dropdown-menu {
   border: none;
   border-radius: inherit;
+  width: max-content;
+  z-index: 10000;
+  
   li {
     width: 100%;
   }

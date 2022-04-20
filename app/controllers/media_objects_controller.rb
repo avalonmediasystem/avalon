@@ -151,7 +151,7 @@ class MediaObjectsController < ApplicationController
         playlist.items += [PlaylistItem.new(clip: clip, playlist: playlist)]
       end
     end
-    link = view_context.link_to('View Playlist', playlist_path(playlist), class: "btn btn-primary btn-xs")
+    link = view_context.link_to('View Playlist', playlist_path(playlist), class: "btn btn-primary btn-sm")
     render json: {message: "<p>Playlist items created successfully.</p> #{link}", status: 200}
   end
 

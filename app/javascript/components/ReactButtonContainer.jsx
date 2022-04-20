@@ -50,7 +50,7 @@ class ReactButtonContainer extends Component {
     return (
       <div className="ReactButtonContainer">
         <button
-          className="btn btn-primary btn-xs btn-edit"
+          className="btn btn-primary btn-sm btn-edit"
           onClick={this.handleShow}
         >
           Edit Structure

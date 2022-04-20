@@ -857,7 +857,7 @@ h5.card-title {
 
     input[type='button'],
     input[type='submit'] {
-      @extend .btn-xs;
+      @extend .btn-sm;
     }
 
     .btn-primary {
@@ -1159,4 +1159,32 @@ td {
   &:hover {
     background-color: $lightgray;
   }
+}
+
+.gal-img{
+  position: relative;
+ margin-top: 10px;
+  .delete-img{
+     position: absolute;
+     right: -10px;
+     top: -10px;
+     background: white;
+     width: 30px;
+     height: 30px;
+     line-height: 30px;
+     text-align: center;
+    //  .border-radius(50%);
+    //  .box-shadow(0 0 3px 1px rgba(0,0,0,0.3));
+     i{
+        font-size: 1.7rem;
+        line-height: 30px;
+     }
+  }
+}
+.done-son{
+ color: green;
+ text-align: center;
+ padding: 45px 15px;
+ border: 2px solid green;
+ background: fade(green,12);
 }

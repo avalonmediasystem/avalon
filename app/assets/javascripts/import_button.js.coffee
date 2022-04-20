@@ -30,8 +30,8 @@ $ ->
       placement: 'top'
       container: 'body'
       content: ->
-        button = '<button id="media_object_bibliographic_id_confirm_btn" class="btn btn-xs btn-danger btn-confirm" type="submit" name="media_object[import_bib_record]" value="yes" data-original-title="" title="" form="'+form+'" >Import</button>'
-        '<p>Note: this will replace all metadata except for Other Identifiers</p> ' + button + ' <button id=\'cancel_bibimport\' class=\'btn btn-xs btn-primary\'>No, Cancel</button>'
+        button = '<button id="media_object_bibliographic_id_confirm_btn" class="btn btn-sm btn-danger btn-confirm" type="submit" name="media_object[import_bib_record]" value="yes" data-original-title="" title="" form="'+form+'" >Import</button>'
+        '<p>Note: this will replace all metadata except for Other Identifiers</p> ' + button + ' <button id=\'cancel_bibimport\' class=\'btn btn-sm btn-primary\'>No, Cancel</button>'
     ).click ->
       $('.btn-confirmation').popover 'hide'
       $(this).popover 'show'

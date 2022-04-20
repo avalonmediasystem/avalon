@@ -45,6 +45,10 @@ $accordionPadding: 20px;
       border: none;
       background-color: $lightgray;
     }
+
+    .no-show {
+      display: none;
+    }
   }
 
   ul,
@@ -64,7 +68,7 @@ $accordionPadding: 20px;
 
   .card-header {
     border-bottom: 1px solid #dddddd;
-    padding: 7px 10px;
+    padding: 0.75rem 1rem 0 1rem;
 
     ul {
       padding-left: $accordionPadding;
@@ -74,8 +78,12 @@ $accordionPadding: 20px;
 
     #expand_button,
     #collapse_button {
+      display: none;
       float: right;
       margin-top: -2px;
+      font-size: $btn-xs-font-size;
+      height: $btn-xs-height;
+      padding: $btn-xs-padding;
     }
   }
 
