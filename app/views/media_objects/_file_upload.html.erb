@@ -99,9 +99,8 @@ Unless required by applicable law or agreed to in writing, software distributed
                           </span>
                         </label>
 
-                        <span class="help-block tooltip-block collapse" id="section_label_tooltip">
-                          <%= content_tag :span, '', class: 'close fa fa-times' %>
-                          <p class="muted">
+                        <span class="form-text tooltip-block collapse" id="section_label_tooltip">
+                          <p class="text-muted">
                             A label displayed to users. Users will click on these labels to switch between files.
                           </p>
                         </span>
@@ -240,9 +239,8 @@ Unless required by applicable law or agreed to in writing, software distributed
                 </span>
               </p>
 
-              <span class="help-block tooltip-block collapse" id="dropbox_tooltip">
-                <%= content_tag :span, '', class: 'close fa fa-times' %>
-                <p class="muted">
+              <span class="form-text tooltip-block collapse" id="dropbox_tooltip">
+                <p class="text-muted">
                   Attach selected files after uploading. Files will begin
                   processing when you click <strong>"Save and continue"</strong>.
                 </p>
@@ -288,11 +286,15 @@ Unless required by applicable law or agreed to in writing, software distributed
       </div>
       <div class="modal-body">
         <%= form_tag move_master_file_path, id: 'move_form', method: 'POST' do %>
-        <label for="target" class="col-sm-2">Target Item Identifier: </label>
-        <%= text_field_tag :target, nil, class: 'form-control', style: 'width: 25%;', type: 'text', onkeyup: 'previewTargetItem(this)' %>
-        <div id="show_target_object">
-          <p class="invalid-feedback">Please enter a valid ID</p>
-        </div>
+          <div class="form-group row">
+            <label for="target" class="col-sm-4 col-form-label">Target Item Identifier: </label>
+            <div class="col-sm-8">
+              <%= text_field_tag :target, nil, class: 'form-control', style: 'width: 50%;', type: 'text', onkeyup: 'previewTargetItem(this)' %>
+            </div>
+            <div id="show_target_object" class="ml-3"></div>
+          </div>
+      </div>
+      <div class="modal-footer">
         <%= submit_tag "Move", class: "btn btn-large btn-primary", disabled: true, id: "move_action_btn" %>
         <a href="#" data-dismiss="modal" aria-hidden="true" class="btn">Cancel</a>
         <% end %>

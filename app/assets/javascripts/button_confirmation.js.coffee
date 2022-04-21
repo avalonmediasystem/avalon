@@ -20,11 +20,11 @@ $ ->
   apply_button_confirmation()
 
 @apply_button_confirmation = () ->
-  $(document).on 'click', '.btn-confirmation+.popover .btn', ->
+  $(document).on 'click', '#special_button_color', ->
     $('.btn-confirmation').popover 'hide'
     true
   $('.btn-confirmation').popover(
-    trigger: 'click'
+    trigger: 'manual'
     html: true
     sanitize: false
     content: ->
@@ -36,9 +36,6 @@ $ ->
         $('#' + $(this).attr('form')).find('[name=\'_method\']').val 'delete'
       '<p>Are you sure?</p> ' + button + ' <a href="#" class="btn btn-sm btn-primary" id="special_button_color">No, Cancel</a>'
   ).click ->
-    t = this
-    $('.btn-confirmation').filter(->
-      this != t
-    ).popover 'hide'
+    $('.btn-confirmation').popover 'hide'
     $(this).popover 'show'
     false

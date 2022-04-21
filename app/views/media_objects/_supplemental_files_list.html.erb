@@ -2,17 +2,17 @@
             <% files=tag.empty? ? supplemental_files.select { |sf| sf.tags.empty? } : supplemental_files.select { |sf| sf.tags.include?(tag) } %>
             <div class="file_view">
               <% files.each do |file| %>
-                <div data-file-id="<%= file.id %>" data-masterfile-id="<%= section.id %>" >
+                <div class="supplemental-file-data" data-file-id="<%= file.id %>" data-masterfile-id="<%= section.id %>" >
                     <span name="label_<%= section.id + "_" + file.id.to_s %>" class="display-item"><%= file.label %></span>
                     <%= form_for :supplemental_file, url: object_supplemental_file_path(section, file), remote: true,
                           html: { method: "put", class: "supplemental-file-form edit-item", id: "form-#{file.id}" },
                           data: { file_id: file.id, masterfile_id: section.id } do |form| %>
-                        <div class="col-sm-6 col-xs-6">
+                        <div class="col-sm-6">
                           <div class="form-group">
                             <%= form.text_field :label, id: "supplemental_file_input_#{section.id}_#{file.id}", value: file.label %>
                           </div>
                         </div>
-                        <div class="col-sm-6 col-xs-6">
+                        <div class="col-sm-6">
                           <div class="btn-toolbar">
                             <%= button_tag name: 'save_label', :class => "btn btn-outline btn-sm edit-item" do %>
                               <i class="fa fa-check" title="Save"></i> <span class="sm-hidden">Save</span>

@@ -50,10 +50,6 @@ html {
   font-size: 14px;
 }
 
-// .row {
-//   justify-content: center !important;
-// }
-
 .alert {
   margin-bottom: 10px;
 }
@@ -842,7 +838,7 @@ h5.card-title {
   }
 
   .section_files_tool {
-    padding: 5px;
+    padding: 0.5rem;
     border-top: 1px dotted;
 
     .filedata {
@@ -882,7 +878,7 @@ h5.card-title {
   }
 
   div.file_view {
-    margin: 15px 0 0 20px;
+    margin: 15px 0 5px 20px;
 
     ul {
       padding-left: 20px;
@@ -893,13 +889,13 @@ h5.card-title {
       }
     }
 
-    div.row {
+    div.supplemental-file-data {
       &.is-editing {
         .display-item {
           display: none;
         }
         .edit-item {
-          display: block;
+          display: flex;
         }
         button.edit-item {
           display: inline-block;
@@ -929,7 +925,10 @@ h5.card-title {
     .btn-toolbar {
       display: flex;
       float: right;
-      padding-right: 7px;
+
+      .btn {
+        margin-left: 0.35rem;
+      }
     }
 
     .edit-item {
@@ -1155,6 +1154,7 @@ td {
   background-color: $btn-outline-bg-color;
   color: $btn-outline-color;
   border: 1px solid $btn-outline-border-color;
+  height: fit-content;
 
   &:hover {
     background-color: $lightgray;

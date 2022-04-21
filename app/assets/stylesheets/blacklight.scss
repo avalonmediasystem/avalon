@@ -22,14 +22,26 @@
   max-width: 160px;
 }
 
-.nav-pills > li + li {
-  margin-left: 0px;
+// .nav-pills > li + li {
+//   margin-left: 0px;
+// }
+
+// .nav-pills > li {
+//   margin-right: 2px;
+// }
+
+// .clear-bookmarks {
+//   margin-left: 0px;
+// }
+
+.btn-outline-primary {
+  @extend .btn-sm;
+  @extend .btn-outline;
 }
 
-.nav-pills > li {
-  margin-right: 2px;
-}
-
-.clear-bookmarks {
-  margin-left: 0px;
+#sort-dropdown, #per_page-dropdown {
+  .dropdown-item.active {
+    color: $dark;
+    background-color: $white;
+  }
 }
