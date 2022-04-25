@@ -26,7 +26,7 @@ Unless required by applicable law or agreed to in writing, software distributed
   </div>
   <div class="col-sm-6">
     <% if current_ability.can? :duplicate, @playlist %>
-    <%= button_tag( type: 'button', data: { playlist: @playlist }, class: 'copy-playlist-button btn btn-default btn-block') do %>
+    <%= button_tag( type: 'button', data: { playlist: @playlist }, class: 'copy-playlist-button btn btn-outline btn-block') do %>
     <i class="fa fa-clone" aria-hidden="true"></i> Copy Playlist
     <% end %>
     <% end %>

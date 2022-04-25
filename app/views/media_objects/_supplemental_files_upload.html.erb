@@ -4,7 +4,7 @@
         <%= form_for :supplemental_file, :url => object_supplemental_files_path(section), html: { method: "post" } do |form| %>
           <%= form.hidden_field(:tags, multiple: true, value: tag) if tag.present? %>
           <%= form.file_field :file, class: "filedata" %>
-          <input type="button" class="btn btn-primary btn-xs" onclick="$('#<%= file_section %> .filedata').click();"
+          <input type="button" class="btn btn-primary btn-sm" onclick="$('#<%= file_section %> .filedata').click();"
             value="Upload" />
         <% end %>
         <%= render partial: "supplemental_files_list", locals: { section: section, tag: tag, supplemental_files: section.supplemental_files } %>

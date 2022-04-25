@@ -36,7 +36,7 @@ $accordionPadding: 20px;
     }
   }
 
-  .panel-title {
+  .card-title {
     .fa-plus-square,
     .fa-minus-square {
       font-size: 0.9em;
@@ -44,6 +44,10 @@ $accordionPadding: 20px;
       cursor: pointer;
       border: none;
       background-color: $lightgray;
+    }
+
+    .no-show {
+      display: none;
     }
   }
 
@@ -62,9 +66,9 @@ $accordionPadding: 20px;
     left: accordion-indent(1);
   }
 
-  .panel-heading {
+  .card-header {
     border-bottom: 1px solid #dddddd;
-    padding: 7px 10px;
+    padding: 0.75rem 1rem 0 1rem;
 
     ul {
       padding-left: $accordionPadding;
@@ -74,12 +78,16 @@ $accordionPadding: 20px;
 
     #expand_button,
     #collapse_button {
+      display: none;
       float: right;
       margin-top: -2px;
+      font-size: $btn-xs-font-size;
+      height: $btn-xs-height;
+      padding: $btn-xs-padding;
     }
   }
 
-  .panel-body {
+  .card-body {
     border-top: none;
     position: relative;
 

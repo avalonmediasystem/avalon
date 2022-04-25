@@ -85,7 +85,7 @@ Unless required by applicable law or agreed to in writing, software distributed
               <%= link_to t('.edit'), main_app.edit_persona_user_path(user) %>&nbsp;|&nbsp;
             <% end %>
             <%= link_to t('.become'), main_app.impersonate_persona_user_path(user.id), method: :post %>&nbsp;|&nbsp; 
-            <%= link_to t('.delete'), main_app.persona_user_path(user), class: 'btn btn-danger btn-xs action-delete', method: :delete, data: { confirm: t('.destroy.confirmation', user: user.email) } %>
+            <%= link_to t('.delete'), main_app.persona_user_path(user), class: 'btn btn-danger btn-sm action-delete', method: :delete, data: { confirm: t('.destroy.confirmation', user: user.email) } %>
           </td>
         </tr>
       <% end %>

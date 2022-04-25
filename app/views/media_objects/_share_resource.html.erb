@@ -20,12 +20,12 @@ Unless required by applicable law or agreed to in writing, software distributed
       <form role="form">
         <div class="form-group">
           <label for="link-object">Item</label>
-          <input type="text" class="col-md-5 form-control" id="link-object" value="<%= share_link_for(@media_object) %>" placeholder="<%= share_link_for(@media_object) %>" onClick="this.select();" readonly="readonly">
+          <input type="text" class="col-md-12 form-control" id="link-object" value="<%= share_link_for(@media_object) %>" placeholder="<%= share_link_for(@media_object) %>" onClick="this.select();" readonly="readonly">
         </div>
         <div class="form-group">
           <label for="share-link-section">Section</label>
           <% if @currentStream.present? %>
-          <input type="text" class="col-md-5 form-control" id="share-link-section" value="<%= share_link_for(@currentStream) %>" placeholder="<%= share_link_for(@currentStream) %>" onClick="this.select();" readonly="readonly">
+          <input type="text" class="col-md-12 form-control" id="share-link-section" value="<%= share_link_for(@currentStream) %>" placeholder="<%= share_link_for(@currentStream) %>" onClick="this.select();" readonly="readonly">
           <% else %>
           <p class="muted"> <%= I18n.t('media_object.empty_share_section_permalink_notice') %> </p>
           <% end %>
@@ -35,6 +35,6 @@ Unless required by applicable law or agreed to in writing, software distributed
 
 <% elsif section=='share-tabs' %>
 
-    <li><a href="#link-tab" data-toggle="tab">Share this resource</a></li>
+    <li class="nav-item"><a href="#link-tab" data-toggle="tab" class="nav-link active">Share this resource</a></li>
 
 <% end %>

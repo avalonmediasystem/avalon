@@ -46,19 +46,19 @@ Unless required by applicable law or agreed to in writing, software distributed
             <% if showActions %>
               <td class="text-right" id="popover-container-<%= marker.id %>">
                 <%# Edit button %>
-                <%= button_tag name: 'edit_marker', class:'btn btn-default btn-xs edit_marker display-item outline_on', type: 'button' do %>
+                <%= button_tag name: 'edit_marker', class:'btn btn-outline btn-sm edit_marker display-item outline_on', type: 'button' do %>
                   <i class="fa fa-edit" title="Edit"></i> <span class="sm-hidden">Edit</span>
                 <% end %>
                 <%# Save button %>
-                <%= button_tag name: 'save_marker', class:'btn btn-default btn-xs edit-item outline_on', type: 'button' do%>
+                <%= button_tag name: 'save_marker', class:'btn btn-outline btn-sm edit-item outline_on', type: 'button' do%>
                   <i class="fa fa-check" title="Save"></i> <span class="sm-hidden">Save</span>
                 <% end %>
                 <%# Cancel button %>
-                <%= button_tag name: 'marker_edit_cancel', class:'btn btn-danger btn-xs edit-item outline_on', type: 'button' do%>
+                <%= button_tag name: 'marker_edit_cancel', class:'btn btn-danger btn-sm edit-item outline_on', type: 'button' do%>
                   <i class="fa fa-times" title="Cancel"></i> <span class="sm-hidden">Cancel</span>
                 <% end %>
               <%# Delete button %>
-                <button data-marker-id="<%= marker.id %>" name="delete_marker" class="btn btn-danger btn-xs display-item outline_on">
+                <button data-marker-id="<%= marker.id %>" name="delete_marker" class="btn btn-danger btn-sm display-item outline_on">
                   <i class="fa fa-times" title="Delete"></i> <span class="sm-hidden">Delete</span>
                 </button>
               </td>

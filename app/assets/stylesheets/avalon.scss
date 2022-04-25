@@ -50,10 +50,6 @@ html {
   font-size: 14px;
 }
 
-// .row {
-//   justify-content: center !important;
-// }
-
 .alert {
   margin-bottom: 10px;
 }
@@ -696,18 +692,18 @@ div.structure_edit {
   width: auto;
 }
 
-h5.panel-title {
+h5.card-title {
   font-size: 1.15em;
   padding-left: 0.4em;
   min-height: 1em;
 }
 
-.panel-heading .accordion-toggle:before {
+.card-header .accordion-toggle:before {
   font-family: 'FontAwesome';
   content: '\f078';
 }
 
-.panel-heading .accordion-toggle.collapsed:before {
+.card-header .accordion-toggle.collapsed:before {
   content: '\f054';
 }
 
@@ -799,6 +795,7 @@ h5.panel-title {
   .associated-files-top-row {
     font-size: 18px;
     padding-bottom: 10px;
+    justify-content: space-between;
 
     > span {
       padding: 0 5px;
@@ -841,7 +838,7 @@ h5.panel-title {
   }
 
   .section_files_tool {
-    padding: 5px;
+    padding: 0.5rem;
     border-top: 1px dotted;
 
     .filedata {
@@ -856,7 +853,7 @@ h5.panel-title {
 
     input[type='button'],
     input[type='submit'] {
-      @extend .btn-xs;
+      @extend .btn-sm;
     }
 
     .btn-primary {
@@ -871,9 +868,9 @@ h5.panel-title {
       border-color: #f32c1e;
     }
 
-    div.btn-toolbar {
-      display: flex;
-    }
+    // div.btn-toolbar {
+    //   display: flex;
+    // }
 
     span.tool_label {
       font-weight: bold;
@@ -881,7 +878,7 @@ h5.panel-title {
   }
 
   div.file_view {
-    margin: 15px 0 0 20px;
+    margin: 15px 0 5px 20px;
 
     ul {
       padding-left: 20px;
@@ -892,13 +889,13 @@ h5.panel-title {
       }
     }
 
-    div.row {
+    div.supplemental-file-data {
       &.is-editing {
         .display-item {
           display: none;
         }
         .edit-item {
-          display: block;
+          display: flex;
         }
         button.edit-item {
           display: inline-block;
@@ -928,7 +925,10 @@ h5.panel-title {
     .btn-toolbar {
       display: flex;
       float: right;
-      padding-right: 7px;
+
+      .btn {
+        margin-left: 0.35rem;
+      }
     }
 
     .edit-item {
@@ -1154,8 +1154,37 @@ td {
   background-color: $btn-outline-bg-color;
   color: $btn-outline-color;
   border: 1px solid $btn-outline-border-color;
+  height: fit-content;
 
   &:hover {
     background-color: $lightgray;
   }
+}
+
+.gal-img{
+  position: relative;
+ margin-top: 10px;
+  .delete-img{
+     position: absolute;
+     right: -10px;
+     top: -10px;
+     background: white;
+     width: 30px;
+     height: 30px;
+     line-height: 30px;
+     text-align: center;
+    //  .border-radius(50%);
+    //  .box-shadow(0 0 3px 1px rgba(0,0,0,0.3));
+     i{
+        font-size: 1.7rem;
+        line-height: 30px;
+     }
+  }
+}
+.done-son{
+ color: green;
+ text-align: center;
+ padding: 45px 15px;
+ border: 2px solid green;
+ background: fade(green,12);
 }

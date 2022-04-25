@@ -14,8 +14,6 @@
  * ---  END LICENSE_HEADER BLOCK  ---
 */
 
-var errorMessage = '<p class="invalid-feedback">Please enter a valid ID</p>';
-
 function showMoveModal(obj) {
   $('#move_modal').show();
   var id = $(obj).data('id');
@@ -32,7 +30,6 @@ function previewTargetItem(obj) {
   var moid = obj.value;
   if (moid.length < 8) {
     toggleCSS($('#target'), 'is-invalid', '');
-    container.html(errorMessage);
   } else {
     $.ajax({
       url: '/media_objects/' + moid + '/move_preview',
@@ -46,7 +43,6 @@ function previewTargetItem(obj) {
       error: function(err) {
         toggleCSS($('#target'), 'is-invalid', 'is-valid');
         $('#move_action_btn').prop('disabled', true);
-        container.html(errorMessage);
       }
     });
   }
@@ -83,7 +79,7 @@ function toggleCSS(el, addCls, removeCls) {
 // Reset modal on close
 $('#move_modal').on('hidden.bs.modal', function(e) {
   $('#move_form')[0].reset();
-  $('#show_target_object').html(errorMessage);
+  $('#show_target_object').html('');
   toggleCSS($('#target'), '', 'is-valid');
   toggleCSS($('#target'), '', 'is-invalid');
   $('#move_action_btn').prop('disabled', true);

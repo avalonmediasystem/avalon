@@ -14,8 +14,8 @@
 
 
 $ ->
-  add_button_html = '<div class="input-group-btn"><button type="button" class="add-dynamic-field btn btn-default btn-light"><span class="glyphicon glyphicon-plus"></span></button></div>'
-  remove_button_html = '<div class="input-group-btn"><button type="button" class="remove-dynamic-field btn btn-default btn-light"><span class="glyphicon glyphicon-minus"></span></button></div>'
+  add_button_html = '<div class="input-group-append"><button type="button" class="add-dynamic-field btn btn-outline btn-light"><span class="fa fa-plus"></span></button></div>'
+  remove_button_html = '<div class="input-group-btn"><button type="button" class="remove-dynamic-field btn btn-default btn-light"><span class="fa fa-minus"></span></button></div>'
   
   $('.form-group.multivalued').each ->
       t = $(this)

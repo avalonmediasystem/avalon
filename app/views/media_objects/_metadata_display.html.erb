@@ -15,9 +15,9 @@ Unless required by applicable law or agreed to in writing, software distributed
 %>
 <div id="metadata_header">
   <ul class="nav nav-tabs">
-    <li class="active"><a href="#details-tab" data-toggle="tab">Details</a></li>
+    <li class="nav-item"><a href="#details-tab" data-toggle="tab" class="nav-link active">Details</a></li>
     <% if @media_object.supplemental_files.present? || @masterFiles.any? { |section| section.supplemental_files.present? } %>
-      <li><a href="#files-tab" data-toggle="tab">Files</a></li>
+      <li class="nav-item"><a href="#files-tab" data-toggle="tab" class="nav-link">Files</a></li>
     <% end %>
   </ul>
   <div class="tab-content">
@@ -65,13 +65,13 @@ Unless required by applicable law or agreed to in writing, software distributed
     <% end %>
   </div>
 
-  <div class="card">
+  <div class="card mb-4">
     <div class="card-header">
       <h3 class="card-title">
         Access Restrictions
       </h3>
     </div>
-    <div class="panel-body">
+    <div class="card-body">
       <%= @media_object.access_text %>
     </div>
   </div>

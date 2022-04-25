@@ -38,9 +38,9 @@ Unless required by applicable law or agreed to in writing, software distributed
           </label>
 
           <div class="dropdown" >
-            <%= button_tag( { type: 'button', class: "move_to btn btn-default btn-xs dropdown-toggle",
+            <%= button_tag( { type: 'button', class: "move_to btn btn-outline btn-sm dropdown-toggle",
               data: { toggle: "dropdown"}, disabled:'disabled' } ) do %>
-              <span class="filter-option">Move to... </span><span class="fa fa-caret-down"></span>
+              <span class="filter-option">Move to... </span>
             <% end # button_tag %>
             <ul class="dropdown-menu dropdown-menu-right">
               <% @playlists.each do |p| %>
@@ -53,9 +53,9 @@ Unless required by applicable law or agreed to in writing, software distributed
           </div>
 
           <div class="dropdown">
-            <%= button_tag( { type: 'button', class: "copy_to btn btn-default btn-xs dropdown-toggle",
+            <%= button_tag( { type: 'button', class: "copy_to btn btn-outline btn-sm dropdown-toggle",
               data: { toggle: "dropdown"}, disabled:'disabled' } ) do %>
-              <span class="filter-option">Copy to... </span><span class="fa fa-caret-down"></span>
+              <span class="filter-option">Copy to... </span>
             <% end # button_tag %>
             <ul class="dropdown-menu dropdown-menu-right">
               <% @playlists.each do |p| %>
@@ -68,9 +68,8 @@ Unless required by applicable law or agreed to in writing, software distributed
           </div>
 
         <% end # playlists.present?%>
-        <%= f.submit "Delete Selected", id: 'delete_selected_playlist_items', class: 'btn btn-danger btn-confirmation btn-xs',
-          form:"edit_playlist_#{@playlist.id}", data: { placement: 'bottom' }, disabled:'disabled' %>
-
+        <%= f.submit "Delete Selected", id: 'delete_selected_playlist_items', class: 'btn btn-danger btn-confirmation btn-sm',
+          form:"edit_playlist_#{@playlist.id}", data: { placement: 'bottom' }, disabled:'disabled', sanitize: false %>
       </div>
     </div>
     <% end #form_for update_multiple %>
@@ -149,8 +148,8 @@ Unless required by applicable law or agreed to in writing, software distributed
                 </div>
                 <div class="row form-group">
                   <div class="col-sm-3 col-sm-offset-2">
-                    <button class='btn btn-xs btn-primary playlist_item_form_submit'  data-loading-text="Saving..." data-id="<%= i.id %>" form="playlist_item_form_<%= i.id %>">Save Item</button>
-                    <span id="playlist_item_edit_cancel_<%= i.id %>" class="btn btn-default btn-xs playlist_item_edit_cancel" data-id="<%= i.id %>" data-target="playlist_item_edit_<%= i.id %>">Cancel</span>
+                    <button class='btn btn-sm btn-primary playlist_item_form_submit'  data-loading-text="Saving..." data-id="<%= i.id %>" form="playlist_item_form_<%= i.id %>">Save Item</button>
+                    <span id="playlist_item_edit_cancel_<%= i.id %>" class="btn btn-outline btn-sm playlist_item_edit_cancel" data-id="<%= i.id %>" data-target="playlist_item_edit_<%= i.id %>">Cancel</span>
                   </div>
                   <div class="col-sm-7" id="playlist_item_edit_alert_<%= i.id %>"></div>
                 </div>
@@ -161,7 +160,7 @@ Unless required by applicable law or agreed to in writing, software distributed
         <% end #playlist.items.each %>
       </ol>
     </div>
-    <%= fs.submit class: 'btn btn-primary btn-xs', value: 'Save Changes', form: 'playlist_sort_form', style: 'visibility:hidden' %>
+    <%= fs.submit class: 'btn btn-primary btn-sm', value: 'Save Changes', form: 'playlist_sort_form', style: 'visibility:hidden' %>
     <% end #form_for playlist_sort_form %>
   <% end #playlist empty else%>
 </div>
@@ -259,6 +258,28 @@ Unless required by applicable law or agreed to in writing, software distributed
       $('#avalon_clip_end_time_'+id).val($form.find('.end_time_original').data('value'));
       $('#playlist_item_edit_alert_'+id).html('');
       $('#'+$(this).data('target')).removeClass('in');
+    });
+
+    $(document).ready(function(){
+      $("[data-toggle=popover]").popover({
+          html: true,
+          trigger: 'focus',
+          content: function() {
+            console.log('edit form popover')
+            var did = $(this).data('id');
+            return $('#confirm_'+did).children(".confirm-delete").html();
+          }
+      });
+      
+      $('#pop_1').on('inserted.bs.popover', function () {
+        // Listen for when confirmation is cancelled
+        $('.confirm-delete-btn').on('click',function(e){
+          e.preventDefault();
+          var parent_id = $(this).data('rel');
+          $("#img_"+parent_id).html('<div class="done-son">Boom shaka! This actually worked!</div>');
+        });
+      })
+      
     });
 
   </script>

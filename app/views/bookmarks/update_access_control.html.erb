@@ -83,8 +83,8 @@ Unless required by applicable law or agreed to in writing, software distributed
             <%= text_field_tag "add_user_begin", nil, placeholder: 'Begin Date (yyyy-mm-dd)', class: 'form-control date-input access_date', autocomplete: 'off' %><br>
             <%= text_field_tag "add_user_end", nil, placeholder: 'End Date (yyyy-mm-dd)', class: 'form-control date-input access_date', autocomplete: 'off' %>
           </div>
-          <%= button_tag "Add", name: 'submit_add_user', class:'btn btn-default', value: 'Add' %>
-          <%= button_tag "Remove", name: 'submit_remove_user', class:'btn btn-default remove_access', value: 'Remove' %>
+          <%= button_tag "Add", name: 'submit_add_user', class:'btn btn-outline', value: 'Add' %>
+          <%= button_tag "Remove", name: 'submit_remove_user', class:'btn btn-outline remove_access', value: 'Remove' %>
         <% end %>
         <%= label_tag "group" do %>
           <%= render partial: "modules/tooltip", locals: { form: form, field: 'group', tooltip: t("access_control.group"), options: {display_label: t("access_control.grouplabel").html_safe} } %>
@@ -95,8 +95,8 @@ Unless required by applicable law or agreed to in writing, software distributed
         { include_blank: true, class: "form-control"}%><br>
             <%= text_field_tag "add_group_begin", nil, placeholder: 'Begin Date (yyyy-mm-dd)', class: 'form-control date-input access_date', autocomplete: 'off' %><br>
             <%= text_field_tag "add_group_end", nil, placeholder: 'End Date (yyyy-mm-dd)', class: 'form-control date-input access_date', autocomplete: 'off' %>
-          <%= button_tag "Add", name: 'submit_add_group', class:'btn btn-default', value: 'Add'  %>
-          <%= button_tag "Remove", name: 'submit_remove_group', class:'btn btn-default remove_access', value: 'Remove' %>
+          <%= button_tag "Add", name: 'submit_add_group', class:'btn btn-outline', value: 'Add'  %>
+          <%= button_tag "Remove", name: 'submit_remove_group', class:'btn btn-outline remove_access', value: 'Remove' %>
         <% end %>
         <%= label_tag "class" do %>
           <%= render partial: "modules/tooltip", locals: { form: form, field: 'class', tooltip: t("access_control.class"), options: {display_label: t("access_control.classlabel").html_safe} } %>
@@ -108,8 +108,8 @@ Unless required by applicable law or agreed to in writing, software distributed
             <%= text_field_tag "add_class_begin", nil, placeholder: 'Begin Date (yyyy-mm-dd)', class: 'form-control date-input access_date', autocomplete: 'off' %><br>
             <%= text_field_tag "add_class_end", nil, placeholder: 'End Date (yyyy-mm-dd)', class: 'form-control date-input access_date', autocomplete: 'off' %>
           </div>
-          <%= button_tag "Add", name: 'submit_add_class', class:'btn btn-default', value: 'Add'  %>
-          <%= button_tag "Remove", name: 'submit_remove_class', class:'btn btn-default remove_access', value: 'Remove' %>
+          <%= button_tag "Add", name: 'submit_add_class', class:'btn btn-outline', value: 'Add'  %>
+          <%= button_tag "Remove", name: 'submit_remove_class', class:'btn btn-outline remove_access', value: 'Remove' %>
     <% end %>
         <%= label_tag "ipaddress" do %>
           <%= render partial: "modules/tooltip", locals: { form: form, field: 'ipaddress', tooltip: t("access_control.ipaddress"), options: {display_label: t("access_control.ipaddresslabel").html_safe} } %>
@@ -118,8 +118,8 @@ Unless required by applicable law or agreed to in writing, software distributed
             <%= text_field_tag "add_ipaddress_begin", nil, placeholder: 'Begin Date (yyyy-mm-dd)', class: 'form-control date-input access_date', autocomplete: 'off' %><br>
             <%= text_field_tag "add_ipaddress_end", nil, placeholder: 'End Date (yyyy-mm-dd)', class: 'form-control date-input access_date', autocomplete: 'off' %>
           </div>
-          <%= button_tag "Add", name: 'submit_add_ipaddress', class:'btn btn-default', value: 'Add'  %>
-          <%= button_tag "Remove", name: 'submit_remove_ipaddress', class:'btn btn-default remove_access', value: 'Remove' %>
+          <%= button_tag "Add", name: 'submit_add_ipaddress', class:'btn btn-outline', value: 'Add'  %>
+          <%= button_tag "Remove", name: 'submit_remove_ipaddress', class:'btn btn-outline remove_access', value: 'Remove' %>
         <% end %>
 
 

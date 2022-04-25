@@ -18,7 +18,7 @@
 
 /* Show form to edit label */
 $('button[name="edit_label"]').on('click', (e) => {
-  const $row = getHTMLInfo(e, '.row');
+  const $row = getHTMLInfo(e, '.supplemental-file-data');
   const { masterfileId, fileId } = $row[0].dataset;
 
   $row.addClass('is-editing');
@@ -31,13 +31,13 @@ $('button[name="edit_label"]').on('click', (e) => {
 
 /* Hide form when form is cancelled */
 $('button[name="cancel_edit_label"]').on('click', (e) => {
-  const $row = getHTMLInfo(e, '.row');
+  const $row = getHTMLInfo(e, '.supplemental-file-data');
   $row.removeClass('is-editing');
 });
 
 /* After editing, close the form and show the new label */
 $('button[name="save_label"]').on('click', (e) => {
-  const $row = getHTMLInfo(e, '.row');
+  const $row = getHTMLInfo(e, '.supplemental-file-data');
   const { fileId, masterfileId } = getHTMLInfo(e, 'form')[0].dataset;
 
   $row.removeClass('is-editing');

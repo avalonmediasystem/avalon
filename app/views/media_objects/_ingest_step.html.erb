@@ -13,10 +13,10 @@ Unless required by applicable law or agreed to in writing, software distributed
   specific language governing permissions and limitations under the License.
 ---  END LICENSE_HEADER BLOCK  ---
 %>
-<li class="<%= class_for_step(@media_object, step.step) %>">
+<li class="nav-item <%= class_for_step(@media_object, step.step) %>">
   <% if active %>
-  <%= link_to edit_media_object_path(@media_object, step: step.step) do %>
-  <strong><%= step.title %></strong>
+  <%= link_to edit_media_object_path(@media_object, step: step.step), class: "nav-link" do %>
+    <strong><%= step.title %></strong>
   <% end %>
   <% else %>
   <span><strong><%= step.title %></strong></span>

@@ -19,15 +19,15 @@ Unless required by applicable law or agreed to in writing, software distributed
 <div class="panel-group media-show-page" id="accordion" role="tablist" aria-multiselectable="true">
   <div class="card">
     <div class="card-header" role="tab" id="sections_heading" style="border-bottom: 1px solid #ddd;">
-      <h4 class="card-title">
+      <h5 class="card-title">
         <span id="section-label">Sections</span>
         <% if current_ability.can? :create, Playlist %>
           <button type="button" title="Add all sections to playlist" aria-label="Add all sections to playlist" class="structure_add_to_playlist outline_on btn btn-primary" data-scope="media_object"></button>
         <% end %>
-	      <button class="btn btn-primary btn-xs" id="expand_button">Expand All</button>
-	      <button class="btn btn-primary btn-xs hidden" id="collapse_button">Collapse All</button>
+	      <button class="btn btn-primary btn-sm" id="expand_button">Expand All</button>
+	      <button class="btn btn-primary btn-sm" id="collapse_button">Collapse All</button>
         <br class="clear"/>
-      </h4>
+      </h5>
     </div>
 
 <% show_all_sections = can? :edit, @media_object %>
@@ -46,42 +46,54 @@ Unless required by applicable law or agreed to in writing, software distributed
 
 <% content_for :page_scripts do %>
 <script>
+  function toggleDisplay(ele) {
+    if(ele.css("display") === "none") {
+      ele.css("display", "block");
+    } else {
+      ele.css("display", "none");
+    }
+  }
   if ($('.fa-plus-square').length + $('.fa-minus-square').length <= 2){
-    $('#collapse_button').addClass('hidden');
-    $('#expand_button').addClass('hidden');
+    $('#collapse_button').css("display", "none");
+    $('#expand_button').css("display", "block");
   } else {
-    <!-- $('.panel-title #section-label').addClass('hidden'); -->
     $('#accordion.panel-group .panel-collapse').on('shown.bs.collapse', function() {
       if($('#accordion.panel-group .panel-collapse').length == $('#accordion.panel-group .panel-collapse.in').length) {
-        $('#expand_button').addClass('hidden');
-        $('#collapse_button').removeClass('hidden');
+        $('#expand_button').css("display", "none");
+        $('#collapse_button').css("display", "block");
       }
     });
     $('#accordion.panel-group .panel-collapse').on('hidden.bs.collapse', function() {
-      $('#expand_button').removeClass('hidden');
-      $('#collapse_button').addClass('hidden');
+      $('#expand_button').css("display", "block");
+      $('#collapse_button').css("display", "none");
     });
   }
   $('#expand_button').on('click', function() {
     $('#accordion.panel-group .panel-collapse').collapse('show');
-    $('#accordion.panel-group .panel-title .fa-plus-square').addClass('hidden');
-    $('#accordion.panel-group .panel-title .fa-minus-square').removeClass('hidden');
+    $('#collapse_button').css("display", "block");
+    $('#expand_button').css("display", "none");
+    $('#accordion.panel-group .card-title .fa-plus-square').css("display", "none");
+    $('#accordion.panel-group .card-title .fa-minus-square').css("display", "block");
   });
   $('#collapse_button').on('click', function() {
     $('#accordion.panel-group .panel-collapse').collapse('hide');
-    $('#accordion.panel-group .panel-title .fa-plus-square').removeClass('hidden');
-    $('#accordion.panel-group .panel-title .fa-minus-square').addClass('hidden');
+    $('#expand_button').css("display", "block");
+    $('#collapse_button').css("display", "none");
+    $('#accordion.panel-group .card-title .fa-plus-square').css("display", "block");
+    $('#accordion.panel-group .card-title .fa-minus-square').css("display", "none");
   });
-  $('#accordion.panel-group .panel-title .fa-plus-square').on('click', function() {
-    $(this).toggleClass('hidden');
-    $(this).closest('.panel-title').find('.fa-minus-square').toggleClass('hidden');
+  $('#accordion.panel-group .card-title .fa-plus-square').on('click', function() {
+    toggleDisplay($(this));
+    $(this).closest('.card-title').find('.fa-minus-square').css("display", "block");
   });
-  $('#accordion.panel-group .panel-title .fa-minus-square').on('click', function() {
-    $(this).toggleClass('hidden');
-    $(this).closest('.panel-title').find('.fa-plus-square').toggleClass('hidden');
+  $('#accordion.panel-group .card-title .fa-minus-square').on('click', function() {
+    toggleDisplay($(this));
+    $(this).closest('.card-title').find('.fa-plus-square').css("display", "block");
+    $('#expand_button').css("display", "block");
+    $('#collapse_button').css("display", "none");
   });
-  $('.panel-title a').on('click',function(){
-    var panelheader = $(this).closest('.panel-title');
+  $('.card-title a').on('click',function(){
+    var panelheader = $(this).closest('.card-title');
     var sectiondiv = $(panelheader.find('.fa-plus-square').data('target'));
     if (!sectiondiv.hasClass('in')) panelheader.find('.fa-plus-square').click();
   });

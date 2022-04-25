@@ -126,6 +126,7 @@ Unless required by applicable law or agreed to in writing, software distributed
     $('#get-new-link').popover({
       trigger: 'click',
       html: true,
+      sanitize: false,
       placement: 'top',
       title: 'Get a new link?',
       template: popover_template,
@@ -133,7 +134,7 @@ Unless required by applicable law or agreed to in writing, software distributed
     });
 
     var new_link_cancel = function (event) {
-      $('#get-new-link').popover('hide').click();
+      $('#get-new-link').popover('hide');
     }
 
     var new_link_confirm = function (event) {
@@ -144,7 +145,7 @@ Unless required by applicable law or agreed to in writing, software distributed
           $('#playlist-share-link').attr('value', data.access_token_url)
         },
         complete: function () {
-          $('#get-new-link').popover('hide').click();
+          $('#get-new-link').popover('hide');
         }
       });
     }

@@ -55,7 +55,7 @@ Unless required by applicable law or agreed to in writing, software distributed
             <%= number_to_human_size(section.file_size) %>
           </li>
           <li>
-            <button class="btn btn-default btn-xs" type="button" data-toggle="collapse" data-target="#structure_<%= index %>" aria-expanded="false" aria-controls="structure_<%= index %>">
+            <button class="btn btn-outline btn-sm" type="button" data-toggle="collapse" data-target="#structure_<%= index %>" aria-expanded="false" aria-controls="structure_<%= index %>">
               Edit Structure
             </button>
           </li>
@@ -68,7 +68,7 @@ Unless required by applicable law or agreed to in writing, software distributed
             <% item_label=html_escape(stream_label_for(section)) %>
             <% stream_url=hls_manifest_master_file_url(section.id, quality: 'auto') %>
             <div class="btn-toolbar">
-              <label class="btn btn-primary btn-xs file-upload-label" for="structure_<%= index %>_filedata"><%= section.structuralMetadata.present? ? 'Replace' : 'Upload'%></label>
+              <label class="btn btn-primary btn-sm file-upload-label" for="structure_<%= index %>_filedata"><%= section.structuralMetadata.present? ? 'Replace' : 'Upload'%></label>
               <div class="btn-group">
                 <% if section.structuralMetadata.valid? %>
                 <%= react_component("ReactButtonContainer", {sectionIndex: index, masterFileID: section.id, baseURL: request.protocol+request.host_with_port, streamDuration: section.duration, audioStreamURL: stream_url, initStructure: section.structuralMetadata.as_json}) %>
@@ -76,10 +76,10 @@ Unless required by applicable law or agreed to in writing, software distributed
                 <%= react_component("ReactButtonContainer", {sectionIndex: index, masterFileID: section.id, baseURL: request.protocol+request.host_with_port, streamDuration: section.duration, audioStreamURL: stream_url, initStructure: "{ \"label\": \"#{item_label}\", \"type\": \"div\", \"items\": [] }"}, html_options={ class: 'react-button-container' }) %>
                 <% end %>
               </div>
-              <input type="button" class='btn btn-primary btn-xs' value="Advanced Edit" data-toggle="modal"
+              <input type="button" class='btn btn-primary btn-sm' value="Advanced Edit" data-toggle="modal"
                 data-target="#advanced_edit_structure_<%= index %>" />
               <% if section.structuralMetadata.present? %>
-                <input type="submit" class="btn btn-danger btn-xs" value="Remove" />
+                <input type="submit" class="btn btn-danger btn-sm" value="Remove" />
               <% end %>
             </div>
             <% end %>
