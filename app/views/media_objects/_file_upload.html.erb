@@ -100,6 +100,7 @@ Unless required by applicable law or agreed to in writing, software distributed
                         </label>
 
                         <span class="form-text tooltip-block collapse" id="section_label_tooltip">
+                          <%= content_tag :span, '', class: 'close fa fa-times' %>
                           <p class="text-muted">
                             A label displayed to users. Users will click on these labels to switch between files.
                           </p>
@@ -240,6 +241,7 @@ Unless required by applicable law or agreed to in writing, software distributed
               </p>
 
               <span class="form-text tooltip-block collapse" id="dropbox_tooltip">
+                <%= content_tag :span, '', class: 'close fa fa-times' %>
                 <p class="text-muted">
                   Attach selected files after uploading. Files will begin
                   processing when you click <strong>"Save and continue"</strong>.

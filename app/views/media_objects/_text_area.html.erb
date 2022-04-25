@@ -17,7 +17,7 @@ Unless required by applicable law or agreed to in writing, software distributed
   <div class="form-group <% if options[:multivalued] %>multivalued<% end %> <% if @media_object.errors[field].any? %>invalid-feedback<% end %>">
     <%= render partial: "modules/tooltip", locals: { form: form, field: field, tooltip: t("metadata_tip.#{field.to_s}"), options: options } %>
     <% if @media_object.errors[field].any? %>
-      <%= content_tag :span, @media_object.errors[field].join(", "), class: (@media_object.errors[field].any? ? 'help-block invalid-feedback' : 'help-block') %>
+      <%= content_tag :span, @media_object.errors[field].join(", "), class: (@media_object.errors[field].any? ? 'form-text invalid-feedback' : 'form-text') %>
     <% end %>
     <% values = @media_object.send(field) || "" %>
     <% fieldarray = "" %>
@@ -33,7 +33,7 @@ Unless required by applicable law or agreed to in writing, software distributed
       <% if options[:dropdown_field] %>
         <div class="input-group typed-textarea <%=options[:extra_classes]%>" data-textarea='<%= "typed_textarea_#{field}_#{i}" %>'>
           <%= render partial: "multipart_dropdown_field", locals: {selected_value: value.present? ? value[options[:secondary_hash_key]] : nil, options: options} %>
-          <input type="text" class="form-control hidden"><%# to maintain spacing %>
+          <input type="text" class="form-control" style="display: none;"><%# to maintain spacing %>
           <% value = value.present? ? value[options[:primary_hash_key]] : "" %>
         </div>
         <%= text_area_tag fieldname, value || '', rows: 10, class: 'form-control typed-textarea', id: "typed_textarea_#{field}_#{i}" %>
