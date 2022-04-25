@@ -20,7 +20,7 @@ Unless required by applicable law or agreed to in writing, software distributed
   <% doc_presenter.field_presenters.each do |field_presenter| %>
     <% if field_presenter.render_field? %>
       <dt class="blacklight-<%= field_presenter.key %> col-sm-2"><%= field_presenter.label %>:</dt>
-      <dd class="blacklight-<%= field_presenter.key %> col-sm-10"><%= field_presenter.values %></dd>
+      <dd class="blacklight-<%= field_presenter.key %> col-sm-10"><%= field_presenter.values.join(', ') %></dd>
     <% end %>
   <% end %>
 </dl>
