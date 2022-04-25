@@ -19,7 +19,7 @@ $border-radius-base:        4px !default;
 
 // Form-group input fields
 .form-group .input-group {
-  width: 100%;
+  width: 100.5%;
 
   .form-control {
     border-radius: 0;
@@ -44,23 +44,32 @@ $border-radius-base:        4px !default;
   }
 }
 
-.form-group .input-group.typed-textarea {
-  .input-group-btn:first-of-type {
-    width: 100%;
+.form-text .close {
+  cursor: pointer;
+}
 
-    button {
+.form-group .input-group.typed-textarea {
+  .input-group-prepend:first-of-type {
+    width: 95%;
+
+    select {
       width: 100%;
       text-align: left;
-      border-bottom-left-radius: 0;
+      padding: 0.375rem 0.75rem;
+      background-color: $white;
+      border-radius: 0;
+      border-top-left-radius: 0.25rem;
     }
+
   }
 
-  .input-group-btn:last-of-type {
+  .input-group-prepend:last-of-type,.input-group-append:last-of-type {
     button {
       border-bottom-right-radius: 0;
-    }
+    }  
   }
 }
+
 
 .form-group textarea.typed-textarea {
   border-top: none;

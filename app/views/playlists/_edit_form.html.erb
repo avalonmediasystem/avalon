@@ -44,7 +44,7 @@ Unless required by applicable law or agreed to in writing, software distributed
             <% end # button_tag %>
             <ul class="dropdown-menu dropdown-menu-right">
               <% @playlists.each do |p| %>
-              <li>
+              <li class="dropdown-item">
                 <a data-id="<%= p.id %>" style="text-decoration:underline; cursor:pointer"
                   class="move_to_playlist" form="edit_playlist_<%= @playlist.id %>"><%= p.title %></a>
               </li>
@@ -59,7 +59,7 @@ Unless required by applicable law or agreed to in writing, software distributed
             <% end # button_tag %>
             <ul class="dropdown-menu dropdown-menu-right">
               <% @playlists.each do |p| %>
-              <li>
+              <li class="dropdown-item">
                 <a data-id="<%= p.id %>" style="text-decoration:underline; cursor:pointer"
                   class="copy_to_playlist" form="edit_playlist_<%= @playlist.id %>"><%= p.title %></a>
               </li>
@@ -259,29 +259,6 @@ Unless required by applicable law or agreed to in writing, software distributed
       $('#playlist_item_edit_alert_'+id).html('');
       $('#'+$(this).data('target')).removeClass('in');
     });
-
-    $(document).ready(function(){
-      $("[data-toggle=popover]").popover({
-          html: true,
-          trigger: 'focus',
-          content: function() {
-            console.log('edit form popover')
-            var did = $(this).data('id');
-            return $('#confirm_'+did).children(".confirm-delete").html();
-          }
-      });
-      
-      $('#pop_1').on('inserted.bs.popover', function () {
-        // Listen for when confirmation is cancelled
-        $('.confirm-delete-btn').on('click',function(e){
-          e.preventDefault();
-          var parent_id = $(this).data('rel');
-          $("#img_"+parent_id).html('<div class="done-son">Boom shaka! This actually worked!</div>');
-        });
-      })
-      
-    });
-
   </script>
 
 <% end %>
