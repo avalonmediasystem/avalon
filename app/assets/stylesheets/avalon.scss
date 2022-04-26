@@ -456,6 +456,10 @@ a[data-trigger='submit'] {
 
 #resource_description_content {
   max-width: 700px;
+
+  .control-label {
+    font-weight: bold;
+  }
 }
 
 .edit_media_object .form-group {
