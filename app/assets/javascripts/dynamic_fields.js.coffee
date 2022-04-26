@@ -41,7 +41,7 @@ $ ->
       target = $(e).attr('data-target').split('_')
       target.push(parseInt(target.pop()) + 1)
       $(e).attr('data-target', target.join('_'))
-    if current_input_group.find('.twitter-typeahead').legth
+    if current_input_group.find('.twitter-typeahead').length
       new_input = new_input_group.find('.tt-input').clone()
       new_input.removeClass('tt-input')
       new_input_group.find('.twitter-typeahead').before(new_input)

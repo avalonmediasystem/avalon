@@ -1949,14 +1949,14 @@ function MenuBar(editor) {
   this.headerEditorTypes = [{
 		label : self.editor.options.xmlEditorLabel,
 		enabled : true, 
-		itemClass : 'header_mode_tab',
+		itemClass : 'header_mode_tab nav-item',
 		action : function() {
 			self.editor.modeChange(0);
 		}
 	}, {
 		label : self.editor.options.textEditorLabel,
 		enabled : true, 
-		itemClass : 'header_mode_tab',
+		itemClass : 'header_mode_tab nav-item',
 		action : function() {
 			self.editor.modeChange(1);
 		}
@@ -1988,7 +1988,7 @@ MenuBar.prototype.render = function(parentElement) {
 	this.headerMenu = $("<ul/>");
   this.headerMenuRow = $("<div class=\"row\"/>");
   this.headerCol1 = $("<div class=\"col-8 col-sm-8\"/>");
-  this.headerCol2 = $("<div class=\"col-4 col-sm-4\"/>");
+  this.headerCol2 = $("<div class=\"col-4 col-sm-4 nav\"/>");
   this.headerMenuRow.append(this.headerCol1);
   this.headerMenuRow.append(this.headerCol2);
 

@@ -54,3 +54,8 @@
     }
   }
 }
+
+div[id*="edit_structure"].modal-dialog {
+  max-width: 75%;
+}
+

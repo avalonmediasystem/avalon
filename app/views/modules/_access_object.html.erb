@@ -18,12 +18,12 @@ Unless required by applicable law or agreed to in writing, software distributed
   <%= bootstrap_form_for object do |form| %>
   <input id="step" name="step" type="hidden" value="access-control" />
   <input id="donot_advance" name="donot_advance" type="hidden" value="true" />
-  <div class="form-row">
+  <div class="form-group">
     <div class="form-row">
       <% if is_leasable %>
-        <div class="col-xs-5">
+        <div class="col-5">
       <% else %>
-        <div class="col-xs-11">
+        <div class="col-11">
       <% end %>
           <%= render partial: "modules/tooltip", locals: { form: form, field: access_object, tooltip: t("access_control.#{access_object}"), options: {display_label: (t("access_control.#{access_object}label")+'*').html_safe} } %><br />
           <% if defined?(dropdown_values) && dropdown_values.present? %>
@@ -44,22 +44,22 @@ Unless required by applicable law or agreed to in writing, software distributed
           <% end %>
         </div>
         <% if is_leasable %>
-          <div class="col-xs-3">
+          <div class="col-3">
             <label class="control-label" for="add_#{access_object}_begin">
               <span class="tooltip-label" data-title="Begin Date">Begin Date</span>
             </label>
             <%= text_field_tag "add_#{access_object}_begin", nil, placeholder: 'Begin Date (yyyy-mm-dd)', class: 'form-control date-input', disabled: input_disabled, autocomplete: 'off' %>
           </div>
-          <div class="col-xs-3">
+          <div class="col-3">
             <label class="control-label" for="add_#{access_object}_end">
               <span class="tooltip-label" data-title="End Date">End Date</span>
             </label>
             <%= text_field_tag "add_#{access_object}_end", nil, placeholder: 'End Date (yyyy-mm-dd)', class: 'form-control date-input', disabled: input_disabled, autocomplete: 'off' %>
           </div>
         <% end %>
-        <div class="col-xs-1">
+        <div class="col-1">
           <%= button_tag "Add", name: "submit_add_#{access_object}", type: "submit",
-            class: "btn btn-outline btn-sm", style: 'margin-top:2.1em', disabled: input_disabled, value: "Add" %>
+            class: "btn btn-outline", style: 'margin-top:2rem', disabled: input_disabled, value: "Add" %>
         </div>
       </div>
     </div>

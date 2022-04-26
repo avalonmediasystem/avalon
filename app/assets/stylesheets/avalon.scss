@@ -207,6 +207,10 @@ div.alert-danger {
   cursor: help;
 }
 
+.tooltip-label {
+  font-weight: bold;
+}
+
 .tooltip-label * {
   cursor: pointer;
 }
@@ -218,6 +222,10 @@ div.alert-danger {
 .access-block {
   .row {
     margin-right: 0;
+  }
+
+  span.twitter-typeahead {
+    width: 100%;
   }
 
   .remove:hover,
@@ -448,10 +456,6 @@ a[data-trigger='submit'] {
 
 #resource_description_content {
   max-width: 700px;
-
-  .control-label {
-    font-weight: bold;
-  }
 }
 
 .edit_media_object .form-group {
@@ -527,7 +531,7 @@ div.status-detail {
 
   @include media-breakpoint-between (md, xl) {
     ul {
-      width: 750px;
+      width: 100%;
     }
   }
 
@@ -553,6 +557,13 @@ div.status-detail {
     &:nth-of-type(2n) {
       background-color: $lightgray;
     }
+  }
+
+  .btn-struct {
+    font-size: $btn-xs-font-size;
+    height: $btn-xs-height;
+    padding: $btn-xs-padding;
+    width: max-content;
   }
 
   ul.fileinfo,
@@ -589,14 +600,7 @@ div.status-detail {
         width: 50px;
         text-align: center;
       }
-    }
-
-    button.edit-struct-btn {
-      font-size: $btn-xs-font-size;
-      height: $btn-xs-height;
-      padding: $btn-xs-padding;
-      width: max-content;
-    }
+    }  
   }
 
   div.structure_tool {
@@ -622,7 +626,6 @@ div.status-detail {
     }
 
     label.file-upload-label {
-      float: left;
       cursor: pointer;
     }
   }
