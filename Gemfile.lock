@@ -66,6 +66,21 @@ GIT
       sidekiq (>= 4.2.1)
 
 GIT
+  remote: https://github.com/projectblacklight/blacklight.git
+  revision: e56e18796ddde72d6ea7ea8ecb48b3b5da11deb6
+  branch: release-7.x
+  specs:
+    blacklight (7.24.0)
+      deprecation
+      globalid
+      i18n (>= 1.7.0)
+      jbuilder (~> 2.7)
+      kaminari (>= 0.15)
+      ostruct (>= 0.3.2)
+      rails (>= 5.1, < 7.1)
+      view_component (~> 2.43)
+
+GIT
   remote: https://github.com/samvera-labs/active_fedora-datastreams
   revision: 13eefc7bdc879fd6c3ad607a1ecc087898777d3d
   branch: rails6
@@ -252,15 +267,6 @@ GEM
       rubocop-performance
       rubocop-rails
       rubocop-rspec
-    blacklight (7.24.0)
-      deprecation
-      globalid
-      i18n (>= 1.7.0)
-      jbuilder (~> 2.7)
-      kaminari (>= 0.15)
-      ostruct (>= 0.3.2)
-      rails (>= 5.1, < 7.1)
-      view_component (~> 2.43)
     blacklight-access_controls (6.0.1)
       blacklight (> 6.0, < 8)
       cancancan (>= 1.8)
@@ -621,7 +627,7 @@ GEM
     noid-rails (3.0.3)
       actionpack (>= 5.0.0, < 7)
       noid (~> 0.9)
-    nokogiri (1.13.3)
+    nokogiri (1.13.4)
       mini_portile2 (~> 2.8.0)
       racc (~> 1.4)
     nom-xml (1.2.0)
@@ -1013,7 +1019,7 @@ DEPENDENCIES
   aws-sdk-sqs
   aws-sigv4
   bixby
-  blacklight (< 8)
+  blacklight (< 8)!
   blacklight-access_controls (>= 6.0.1)
   bootsnap
   bootstrap (~> 4.0)
