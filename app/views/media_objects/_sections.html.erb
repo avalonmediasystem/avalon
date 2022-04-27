@@ -25,7 +25,7 @@ Unless required by applicable law or agreed to in writing, software distributed
           <button type="button" title="Add all sections to playlist" aria-label="Add all sections to playlist" class="structure_add_to_playlist outline_on btn btn-primary" data-scope="media_object"></button>
         <% end %>
 	      <button class="btn btn-primary btn-sm" id="expand_button">Expand All</button>
-	      <button class="btn btn-primary btn-sm" id="collapse_button">Collapse All</button>
+	      <button class="btn btn-primary btn-sm" style="display: none;" id="collapse_button">Collapse All</button>
         <br class="clear"/>
       </h5>
     </div>
@@ -53,9 +53,11 @@ Unless required by applicable law or agreed to in writing, software distributed
       ele.css("display", "none");
     }
   }
+
+  console.log($('.fa-plus-square').length + $('.fa-minus-square').length)
   if ($('.fa-plus-square').length + $('.fa-minus-square').length <= 2){
     $('#collapse_button').css("display", "none");
-    $('#expand_button').css("display", "block");
+    $('#expand_button').css("display", "none");
   } else {
     $('#accordion.panel-group .panel-collapse').on('shown.bs.collapse', function() {
       if($('#accordion.panel-group .panel-collapse').length == $('#accordion.panel-group .panel-collapse.in').length) {
