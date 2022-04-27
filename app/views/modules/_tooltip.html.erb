@@ -18,11 +18,11 @@ Unless required by applicable law or agreed to in writing, software distributed
     <%= form.label(field, class: 'control-label') do %>
       <%= content_tag :span, class: 'tooltip-label', :'data-title' => options[:display_label], :'data-tooltip' => "##{field.to_s}_tooltip" do %>
          <%= options[:display_label] %><% if options[:required] %>*<% end %>
-         <%= content_tag :span, '', class: 'fa fa-question-sign' %>
+         <%= content_tag :span, '', class: 'fa fa-question-circle' %>
       <% end %>
     <% end %>
     
-    <span class="form-text tooltip-block collapse" id="<%= field.to_s %>_tooltip">
+    <span class="form-text tooltip-block text-muted collapse" id="<%= field.to_s %>_tooltip">
       <%= content_tag :span, '', class: 'close fa fa-times' %>
       <%= tooltip.html_safe %>
     </span>

@@ -17,7 +17,7 @@ Unless required by applicable law or agreed to in writing, software distributed
   <div class="form-group <% if options[:multivalued] %>multivalued<% end %> <% if @media_object.errors[field].any? %>invalid-feedback<% end %>">
     <%= render partial: "modules/tooltip", locals: { form: form, field: field, tooltip: t("metadata_tip.#{field.to_s}"), error: @media_object.errors[field].any?, options: options } %>
     <% if @media_object.errors[field].any? %>
-      <%= content_tag :span, @media_object.errors[field].join(", "), class: (@media_object.errors[field].any? ? 'help-block invalid-feedback' : 'help-block') %>
+      <%= content_tag :span, @media_object.errors[field].join(", "), class: (@media_object.errors[field].any? ? 'form-text invalid-feedback' : 'form-text') %>
     <% end %>
     <% values = @media_object.send(field) || "" %>
     <% fieldarray = "" %>

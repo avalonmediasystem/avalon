@@ -28,6 +28,6 @@ $('.tooltip-label')
     targetNode = $(this).data('tooltip')
     $(targetNode).collapse('toggle')
 
-$('.help-block .close').click (event) ->
+$('.form-text .close').click (event) ->
   event.preventDefault()
   $(this).parent().collapse('toggle')
