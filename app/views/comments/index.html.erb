@@ -27,7 +27,7 @@ Unless required by applicable law or agreed to in writing, software distributed
       <%= comment.hidden_field :nickname %>
       <%= comment.email_field :email, label: 'Email address' %>
       <%= comment.email_field :email_confirmation, label: 'Confirm email address' %>
-      <%= comment.select :subject, @subjects, prompt: 'Select one' %>
+      <%= comment.select :subject, options_for_select(@subjects), { :prompt => 'Select one' }, { :control_class => 'form-control' } %>
       <%= comment.text_area :comment, rows: 10 %>
       <% if Settings.recaptcha.present?%>
         <div class="form-group">
