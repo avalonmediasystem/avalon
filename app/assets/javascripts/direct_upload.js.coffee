@@ -42,6 +42,7 @@ $ ->
           css('background', 'green').
           css('display', 'block').
           css('width', '0%').
+          css('padding', '7px').
           text("Loading...")
       done: (e, data)->
         submit_button.prop('disabled', false)
