@@ -66,4 +66,15 @@ module Blacklight::LocalBlacklightHelper
     result
   end
 
+  # Override of blacklight helper to add row class
+  def render_document_class(document)
+    types = controller.helpers.document_presenter(document).display_type
+    return if types.blank?
+
+    classes = Array(types).compact.map do |t|
+      "#{controller.helpers.document_class_prefix}#{t.try(:parameterize) || t}"
+    end
+    classes << "row"
+    classes.join(' ')
+  end
 end
