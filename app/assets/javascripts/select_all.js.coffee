@@ -15,7 +15,7 @@
 # Mark each item on page as bookmarks when 'Select All' is clicked
 $("#bookmarks_selectall").on "change", (e) ->
   if @checked
-    $("label.toggle_bookmark:not(.checked) input.toggle_bookmark").click()
+    $("label.toggle-bookmark:not(.checked) input.toggle-bookmark").click()
   else
-    $("label.toggle_bookmark.checked input.toggle_bookmark").click()
+    $("label.toggle-bookmark.checked input.toggle-bookmark").click()
   return
