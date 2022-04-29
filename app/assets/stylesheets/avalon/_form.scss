@@ -110,3 +110,9 @@ label {
 .upload-file-wrapper {
   padding: 5px 5px 0 5px !important;
 }
+
+#new_comment {
+  .form-label {
+    font-weight: bold;
+  }
+}
