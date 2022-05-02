@@ -51,6 +51,7 @@ class IiifCanvasPresenter
                                            height: master_file.height.to_i,
                                            duration: stream_info[:duration],
                                            type: 'Video',
+                                           format: 'application/x-mpegURL',
                                            auth_service: auth_service(quality))
     end
 
@@ -63,6 +64,7 @@ class IiifCanvasPresenter
                                            label: quality,
                                            duration: stream_info[:duration],
                                            type: 'Sound',
+                                           format: 'application/x-mpegURL',
                                            auth_service: auth_service(quality))
     end
 
