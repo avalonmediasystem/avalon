@@ -38,4 +38,22 @@ describe IiifCanvasPresenter do
       expect(logout_service[:@id]).to eq Rails.application.routes.url_helpers.destroy_user_session_url
     end
   end
+
+  describe '#display_content' do
+    subject { presenter.display_content.first }
+
+    context 'when audio file' do
+      let(:master_file) { FactoryBot.build(:master_file, :audio, media_object: media_object, derivatives: [derivative]) }
+
+      it 'has format' do
+        expect(subject.format).to eq "application/x-mpegURL"
+      end
+    end
+
+    context 'when video file' do
+      it 'has format' do
+        expect(subject.format).to eq "application/x-mpegURL"
+      end
+    end
+  end
 end

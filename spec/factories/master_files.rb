@@ -37,6 +37,15 @@ FactoryBot.define do
       end
     end
 
+    trait :audio do
+      file_format { 'Sound' }
+      workflow_name { 'fullaudio' }
+      display_aspect_ratio { nil }
+      original_frame_size { nil }
+      width { nil }
+      height { nil }
+    end
+
     trait :with_media_object do
       association :media_object #, factory: :media_object
     end
