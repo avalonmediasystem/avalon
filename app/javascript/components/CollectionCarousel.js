@@ -44,7 +44,7 @@ const CollectionCarousel = ({ baseUrl }) => {
               <img
                 src={poster_url}
                 alt={`${name} Collection thumbnail`}
-                className="img-responsive"
+                className="img-fluid"
               />
               <p className="collection-carousel-item-title">{name}</p>
             </a>

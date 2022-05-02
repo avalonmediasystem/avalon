@@ -17,7 +17,7 @@
 import React from 'react';
 
 const CollectionCardShell = ({ children }) => (
-  <div className="collection-card panel panel-default">{children}</div>
+  <div className="collection-card card mb-4">{children}</div>
 );
 
 export default CollectionCardShell;

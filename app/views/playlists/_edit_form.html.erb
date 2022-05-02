@@ -90,7 +90,10 @@ Unless required by applicable law or agreed to in writing, software distributed
                 <%= link_to i.clip.title, i.clip.mediafragment_uri, id: "playlist_item_title_label_#{i.id}" %>
               </div>
               <div class="col-sm-2 text-right" style="margin-top:5px">
-                <a id="playlist_item_edit_button" data-toggle="collapse" href="#playlist_item_edit_<%= i.id %>" aria-expanded="false" aria-controls="collapseExample" class="fa fa-edit btn btn-sm"></a>
+                <a id="playlist_item_edit_button <%= i.clip.master_file.nil? ? "disabled" : "" %>" aria-disabled=<%= i.clip.master_file.nil? ? "true" : "false" %>
+                  data-toggle="collapse" href="#playlist_item_edit_<%= i.id %>" aria-expanded="false" 
+                  aria-controls="collapseExample" class="fa fa-edit btn btn-sm">
+                </a>
                 <label>
                   <%= check_box_tag 'clip_ids[]', i.id, false, form:"edit_playlist_#{@playlist.id}", class:"playlist_item_select" %>
                   Select
@@ -115,24 +118,24 @@ Unless required by applicable law or agreed to in writing, software distributed
             <% end %>
           </div>
           <div id="playlist_item_edit_<%= i.id %>" class="row collapse">
-            <div class="col-sm-9 col-sm-offset-2 playlist_item_edit">
+            <div class="col-sm-9 offset-2 playlist_item_edit">
               <%= bootstrap_form_for i, remote: true, html: { id: "playlist_item_form_#{i.id}", class: "playlist_item_edit_form" }, format: 'json' do |pif| %>
                 <%= hidden_field_tag "playlist_id", @playlist.id, form: "playlist_item_form_#{i.id}" %>
                 <div class="row form-group">
-                  <%= pif.label :title, class: 'col-sm-2 control-label' %>
+                  <%= pif.label :title, class: 'col-sm-2 col-form-label' %>
                   <div class="col-sm-10">
                     <%= text_field_tag :title, i.title, class: 'form-control', id: "avalon_clip_title_#{i.id}", form:"playlist_item_form_#{i.id}" %>
                     <span style='display:none' class='title_original' data-value="<%= i.title %>"></span>
                   </div>
                 </div>
                 <div class="row form-group">
-                  <div class="col-sm-2" style="text-align:right;margin-top:2pt"><%= pif.label :start_time, class: 'control-label' %></div>
+                  <div class="col-sm-2" style="text-align:right;margin-top:2pt"><%= pif.label :start_time, class: 'col-form-label' %></div>
                   <div class="col-sm-4">
                     <%= text_field_tag :start_time, pretty_time(i.start_time), class: 'form-control', id: "avalon_clip_start_time_#{i.id}", form:"playlist_item_form_#{i.id}" %>
                     <span style='display:none' class='start_time_original' data-value="<%= pretty_time(i.start_time) %>"></span>
                   </div>
                   <div class="col-sm-2" style="text-align:right;margin-top:2pt">
-                    <%= pif.label :end_time, class: 'control-label' %>
+                    <%= pif.label :end_time, class: 'col-form-label' %>
                   </div>
                   <div class="col-sm-4">
                     <%= text_field_tag :end_time, pretty_time(i.end_time), class: 'form-control', id: "avalon_clip_end_time_#{i.id}", form:"playlist_item_form_#{i.id}" %>
@@ -140,14 +143,14 @@ Unless required by applicable law or agreed to in writing, software distributed
                   </div>
                 </div>
                 <div class="row form-group">
-                  <%= pif.label :comment, class: 'col-sm-2 control-label' %>
+                  <%= pif.label :comment, class: 'col-sm-2 col-form-label' %>
                   <div class="col-sm-10">
                     <%= text_area_tag :comment, i.comment, class: 'form-control', id: "avalon_clip_comment_#{i.id}", form:"playlist_item_form_#{i.id}" %>
                     <span style='display:none' class='comment_original' data-value="<%= i.comment %>"></span>
                   </div>
                 </div>
                 <div class="row form-group">
-                  <div class="col-sm-3 col-sm-offset-2">
+                  <div class="col-sm-3 offset-2">
                     <button class='btn btn-sm btn-primary playlist_item_form_submit'  data-loading-text="Saving..." data-id="<%= i.id %>" form="playlist_item_form_<%= i.id %>">Save Item</button>
                     <span id="playlist_item_edit_cancel_<%= i.id %>" class="btn btn-outline btn-sm playlist_item_edit_cancel" data-id="<%= i.id %>" data-target="playlist_item_edit_<%= i.id %>">Cancel</span>
                   </div>
@@ -257,7 +260,7 @@ Unless required by applicable law or agreed to in writing, software distributed
       $('#avalon_clip_start_time_'+id).val($form.find('.start_time_original').data('value'));
       $('#avalon_clip_end_time_'+id).val($form.find('.end_time_original').data('value'));
       $('#playlist_item_edit_alert_'+id).html('');
-      $('#'+$(this).data('target')).removeClass('in');
+      $('#'+$(this).data('target')).removeClass('show');
     });
   </script>
 

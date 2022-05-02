@@ -46,12 +46,12 @@ const CollectionListStickyUtils = ({
       <div className="col-sm-6">
         <div className="text-right">
           <span className="collection-list-view-toggle-label">View by:</span>
-          <div className="btn-group" data-toggle="buttons">
+          <div className="btn-group btn-group-toggle">
             <label
               className={
                 'btn btn-primary sort-btn' + (sort === 'unit' ? ' active' : '')
               }
-              onClick={handleSortChange}
+              onClick={() => handleSortChange('unit')}
             >
               <input type="radio" value="unit" /> Unit
             </label>
@@ -59,7 +59,7 @@ const CollectionListStickyUtils = ({
               className={
                 'btn btn-primary sort-btn' + (sort === 'az' ? ' active' : '')
               }
-              onClick={handleSortChange}
+              onClick={() => handleSortChange('az')}
             >
               <input type="radio" value="az" /> A-Z
             </label>

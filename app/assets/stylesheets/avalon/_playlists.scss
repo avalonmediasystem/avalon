@@ -154,11 +154,9 @@
   }
 }
 
-#playlist_view_div {
-  .dl-horizontal {
-    dd {
-      margin-bottom: 5px;
-    }
+.playlist_item_edit {
+  label.col-form-label {
+    font-weight: bold;
   }
 }
 

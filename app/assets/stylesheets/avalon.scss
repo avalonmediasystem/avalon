@@ -161,7 +161,7 @@ div.alert-danger {
   font-family: $museoSlab;
 }
 .sub-headline {
-  color: $primary;
+  color: $secondary;
   font-family: $museoSlab;
 }
 
@@ -457,7 +457,7 @@ a[data-trigger='submit'] {
 #resource_description_content {
   max-width: 700px;
 
-  .control-label {
+  .col-form-label {
     font-weight: bold;
   }
 }
@@ -993,18 +993,6 @@ h5.card-title {
 /**
  * Collections
  */
-.collections-list-wrapper {
-  overflow-x: auto;
-
-  table {
-    td {
-      &:nth-child(1) {
-        width: 20%;
-      }
-    }
-  }
-}
-
 .well-vertical-spacer {
   margin-bottom: 10px;
 }

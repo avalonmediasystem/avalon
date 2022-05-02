@@ -139,7 +139,7 @@ Object.assign(MediaElementPlayer.prototype, {
               <h4 class="modal-title">Update Poster Image</h4>
             </div>
             <div class="modal-body text-center">
-              <p><img class="img-polaroid img-responsive"></p>
+              <p><img class="img-polaroid img-fluid"></p>
               <div class="alert alert-warning alert-dismissible" role="alert">
                 <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                 This will update the poster and thumbnail images for this video.
