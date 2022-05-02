@@ -112,7 +112,7 @@ Unless required by applicable law or agreed to in writing, software distributed
                     <div class="col-sm-2">
                       <div class="form-group">
                         <label>Date Digitized</label>
-                        <%= form.text_field :date_digitized, class: 'date-input' %>
+                        <%= form.text_field :date_digitized, class: 'date-input', id: "master_file_date_digitized_#{section.id}" %>
                       </div>
                     </div>
                     <div class="col-sm-2">
@@ -202,7 +202,7 @@ Unless required by applicable law or agreed to in writing, software distributed
                 <span class="fileinput-exists">Change</span>
                 <input type="file" name="Filedata[]">
               </span>
-              <span class="fileinput-filename fileinput-exists"></span>
+              <span class="fileinput-filename"></span>
               <a href="#" class="close fileinput-exists fileinput-close" data-dismiss="fileinput">&times;</a>
             </div>
 
