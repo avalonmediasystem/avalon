@@ -68,11 +68,20 @@ module Blacklight::LocalBlacklightHelper
 
   # Override of blacklight helper to add row class
   def render_document_class(document)
-    types = helpers.document_presenter(document).display_type
+    # HACK I'm not sure why CatalogController needs to reference these helpers through helpers, but BookmarksController doesn't
+    types = if respond_to? :document_presenter
+              document_presenter(document).display_type
+            else
+              helpers.document_presenter(document).display_type
+            end
     return if types.blank?
 
     classes = Array(types).compact.map do |t|
-      "#{helpers.document_class_prefix}#{t.try(:parameterize) || t}"
+      if respond_to? :document_class_prefix
+        "#{document_class_prefix}#{t.try(:parameterize) || t}"
+      else
+        "#{helpers.document_class_prefix}#{t.try(:parameterize) || t}"
+      end
     end
     classes << "row"
     classes.join(' ')
