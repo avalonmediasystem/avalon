@@ -68,7 +68,6 @@ $border-radius-base:        4px !default;
   }
 }
 
-
 .form-group textarea.typed-textarea {
   border-top: none;
   border-top-right-radius: 0;
@@ -112,5 +111,12 @@ label {
 #new_comment {
   .form-label {
     font-weight: bold;
+  }
+}
+
+// Access control update in Bookmarks
+#update_access_control_form {
+  .item-discovery, .item-access {
+    border-bottom: 1px solid $lightgray;
   }
 }

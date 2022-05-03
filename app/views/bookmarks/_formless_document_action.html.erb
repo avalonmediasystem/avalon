@@ -19,4 +19,4 @@ Unless required by applicable law or agreed to in writing, software distributed
             id: document_action_config.fetch(:id, "#{document_action_config.key}Link"),
             class: "btn btn-default",
             method: :post,
-            data: {}.merge(({ajax_modal: "trigger"} if document_action_config.modal != false) || {}) %>
+            data: {}.merge(({blacklight_modal: "trigger"} if document_action_config.modal != false) || {}) %>

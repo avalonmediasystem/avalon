@@ -63,9 +63,9 @@ Unless required by applicable law or agreed to in writing, software distributed
     <br>
   </div>
   <div class = "col-lg-7">
-    <a href="/playlists/" class="btn btn-danger outline_on">Cancel</a>
+    <a href="/playlists/" class="btn btn-danger">Cancel</a>
     <%= form_tag(import_variations_playlist_playlists_path, method:"post", style:"display:inline") do %>
-      <input type="submit" class="btn btn-default outline_on" value="Import"/>
+      <input type="submit" class="btn btn-outline" value="Import"/>
       <input type="hidden" name="skip_errors" value="true"/>
     <% end %>
   </div>

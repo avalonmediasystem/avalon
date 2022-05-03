@@ -22,7 +22,7 @@ Unless required by applicable law or agreed to in writing, software distributed
       <h5 class="card-title">
         <span id="section-label">Sections</span>
         <% if current_ability.can? :create, Playlist %>
-          <button type="button" title="Add all sections to playlist" aria-label="Add all sections to playlist" class="structure_add_to_playlist outline_on btn btn-primary" data-scope="media_object"></button>
+          <button type="button" title="Add all sections to playlist" aria-label="Add all sections to playlist" class="structure_add_to_playlist btn btn-primary" data-scope="media_object"></button>
         <% end %>
 	      <button class="btn btn-primary btn-sm" id="expand_button">Expand All</button>
 	      <button class="btn btn-primary btn-sm" style="display: none;" id="collapse_button">Collapse All</button>
@@ -111,14 +111,14 @@ Unless required by applicable law or agreed to in writing, software distributed
           modal = $('#add-to-playlist-modal')
           modal.html(result);
           modal.find('#playlistitem_submit').on('click', function(){
-              $(this).button('loading')
+              $(this).val('Working...');
           })
           modal.find('#add_to_playlist_form').on('ajax:success', function(e, data, status, xhr){
             $('#add-to-playlist-modal .modal-body').html(data["message"]);
-            $('#playlistitem_submit').button('reset').hide();
+            $('#playlistitem_submit').val('Add to Playlist').hide();
           }).on('ajax:error',function(e, xhr, status, error){
             $('#add-to-playlist-modal .modal-body').html(error);
-            $('#playlistitem_submit').button('reset').hide();
+            $('#playlistitem_submit').val('Add to Playlist').hide();
           });
           modal.modal('show');
         },

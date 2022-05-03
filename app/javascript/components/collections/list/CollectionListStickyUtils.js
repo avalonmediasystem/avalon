@@ -36,7 +36,7 @@ const CollectionListStickyUtils = ({
               value={filter}
               onChange={handleFilterChange}
               name="q"
-              className="form-control input-lg"
+              className="form-control form-control-lg"
               placeholder="Search collections..."
               autoFocus="autofocus"
             />

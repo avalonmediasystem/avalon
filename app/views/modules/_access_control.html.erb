@@ -26,7 +26,7 @@ Unless required by applicable law or agreed to in writing, software distributed
   </div>
   <div class="card-body">
     <div class="form-group">
-      <div class="checkbox">
+      <div class="form-check">
         <%= label_tag :hidden do %>
         <%= check_box_tag :hidden, '1', (hidden) %>
         Hide this item from search results
@@ -42,19 +42,19 @@ Unless required by applicable law or agreed to in writing, software distributed
   </div>
   <div class="card-body">
     <div class="form-group">
-      <div class="radio">
+      <div class="form-check">
         <label>
           <%= radio_button_tag :visibility, 'public', (@visibility == 'public') %>
           Available to the general public
         </label>
       </div>
-      <div class="radio">
+      <div class="form-check">
         <label>
           <%= radio_button_tag :visibility, 'restricted', (@visibility == 'restricted') %>
           Logged in users only
         </label>
       </div>
-      <div class="radio">
+      <div class="form-check">
         <label>
           <%= radio_button_tag :visibility, 'private', (@visibility == 'private') %>
           Collection staff only

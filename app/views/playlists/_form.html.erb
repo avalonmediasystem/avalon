@@ -15,7 +15,7 @@ Unless required by applicable law or agreed to in writing, software distributed
 %>
 <div id="playlist_edit_div" class="collapse <%= 'show' if !@playlist.persisted? || !@playlist.errors.empty? %>">
   <%= form_for(@playlist, html: { id: 'playlist_form', class: 'playlist_actions' }) do |f| %>
-  <div class="form-group <% if @playlist.errors[:title].any? %>invalid-feedback<% end %>">
+  <div class="form-group">
     <%= f.label "Name", class: "font-weight-bold" %>
     <%= f.text_field :title, class: (@playlist.errors[:title].any? ? 'is-invalid form-control' : 'form-control') %>
   </div>
@@ -26,20 +26,19 @@ Unless required by applicable law or agreed to in writing, software distributed
   </div>
 
   <div class="form-group">
-
-    <div class="radio">
+    <div class="form-check">
       <label aria-describedby="helpVisibility">
         <%= f.radio_button(:visibility, Playlist::PUBLIC) %>
         <%= human_friendly_visibility Playlist::PUBLIC %>
       </label>
     </div>
-    <div class="radio">
+    <div class="form-check">
       <label aria-describedby="helpVisibility">
         <%= f.radio_button(:visibility, Playlist::PRIVATE) %>
         <%= human_friendly_visibility Playlist::PRIVATE %>
       </label>
     </div>
-    <div class="radio">
+    <div class="form-check">
       <label aria-describedby="helpVisibility">
         <%= f.radio_button(:visibility, Playlist::PRIVATE_WITH_TOKEN, class: 'share-playlist') %>
         <%= human_friendly_visibility Playlist::PRIVATE_WITH_TOKEN %>

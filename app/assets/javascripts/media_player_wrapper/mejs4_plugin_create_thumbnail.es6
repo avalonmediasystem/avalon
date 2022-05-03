@@ -135,8 +135,8 @@ Object.assign(MediaElementPlayer.prototype, {
         <div class="modal-dialog modal-lg" role="document">
           <div class="modal-content">
             <div class="modal-header">
-              <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
               <h4 class="modal-title">Update Poster Image</h4>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
             </div>
             <div class="modal-body text-center">
               <p><img class="img-polaroid img-fluid"></p>
@@ -146,7 +146,7 @@ Object.assign(MediaElementPlayer.prototype, {
               </div>
             </div>
             <div class="modal-footer">
-              <button data-dismiss="modal" class="btn btn-default">Cancel</button>
+              <button data-dismiss="modal" class="btn btn-outline">Cancel</button>
               <button id="create-thumbnail-submit-button" class="btn btn-primary">Update Poster Image</button>
             </div>
           </div>

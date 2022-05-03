@@ -14,8 +14,8 @@ Unless required by applicable law or agreed to in writing, software distributed
 ---  END LICENSE_HEADER BLOCK  ---
 %>
 <div class="modal-header">
-  <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
   <h1><%= t('blacklight.update_access_control.form.title') %></h1>
+  <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
 </div>
 
 <% if (@documents.empty?)%>
@@ -35,20 +35,19 @@ Unless required by applicable law or agreed to in writing, software distributed
    @hidden = @media_objects.all? {|doc| doc.hidden? == true}
   %>
 
-  <%= form_for "add", url: url_for(:controller => "bookmarks", :action => "update_access_control"), html: { :id => 'update_access_control_form', :class => "form-horizontal" } do |form| %>
+  <%= form_for "add", url: url_for(:controller => "bookmarks", :action => "update_access_control"), html: { :id => 'update_access_control_form' } do |form| %>
     <div class="modal-body">
       <div class="row-fluid">
-        <div class="btn-options">
           <% if @documents.empty? %>
             <div class="alert alert-danger">
               <p><%= t('blacklight.bookmarks.no_bookmarks') %></p>
             </div>
           <% else %>
-            <div class="alert hidden">
+            <div class="alert" style="display: none;">
       </div>
-            <fieldset class="item-discovery">
+      <fieldset class="item-discovery mb-3">
         <legend>Discovery</legend>
-        <%= label_tag :hidden do %>
+        <%= label_tag :hidden, class: "form-check" do %>
           <%= radio_button_tag :hidden, false, @shown %>
           Show these items in search results
           <br>
@@ -56,22 +55,22 @@ Unless required by applicable law or agreed to in writing, software distributed
           Hide these items from search results
         <% end %>
       </fieldset>
-            <fieldset class="item-access">
+      <fieldset class="item-access mb-3">
         <legend>Item Access</legend>
-        <%= label_tag :visibility do %>
+        <%= label_tag :visibility, class: "form-check" do %>
           <%= radio_button_tag :visibility, 'public', (@visibility == 'public') %>
           Available to the general public
         <% end %>
-        <%= label_tag :visibility do %>
+        <%= label_tag :visibility, class: "form-check" do %>
           <%= radio_button_tag :visibility, 'restricted', (@visibility == 'restricted') %>
           Logged in users only
         <% end %>
-        <%= label_tag :visibility do %>
+        <%= label_tag :visibility, class: "form-check" do %>
           <%= radio_button_tag :visibility, 'private', (@visibility == 'private') %>
           Collection staff only
         <% end %>
       </fieldset>
-            <fieldset class="special-access">
+      <fieldset class="special-access">
         <legend>Special Access</legend>
         <%= label_tag "user" do %>
           <%= render partial: "modules/tooltip", locals: { form: form, field: 'user', tooltip: t("access_control.user"), options: {display_label: t("access_control.userlabel").html_safe} } %>
@@ -129,7 +128,6 @@ Unless required by applicable law or agreed to in writing, software distributed
             </div>
           <% end %>
         </div>
-      </div>
     </div>
   <% end %>
 <% end %>

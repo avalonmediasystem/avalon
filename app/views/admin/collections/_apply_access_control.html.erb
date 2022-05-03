@@ -11,13 +11,13 @@
           <div class="modal-body">
             <p>Would you like to keep all existing Special access entries on items (users, groups, IP addresses), and add the current access control settings?</p>
             <div class="form-group">
-              <div class="radio">
+              <div class="form-check">
                 <label>
                   <%= radio_button_tag :overwrite, 'false', true %>
                   Yes, add to existing Special Access entries
                 </label>
               </div>
-              <div class="radio">
+              <div class="form-check">
                 <label>
                   <%= radio_button_tag :overwrite, 'true', false %>
                   No, replace existing Special Access entries

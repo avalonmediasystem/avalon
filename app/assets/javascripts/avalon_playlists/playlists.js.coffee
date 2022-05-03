@@ -33,7 +33,6 @@ submit_edit = null
       modal.find('#copy-playlist-submit-edit').prop("disabled", false)
 
       # toggle title error off
-      modal.find('#playlist_title').parent().removeClass('has-error')
       modal.find('#title_error').hide()
 
       modal.modal('show')
@@ -44,22 +43,18 @@ $('#copy-playlist-submit-edit').on('click',
     submit_edit = true
 )
 
-$('#copy-playlist-form').submit(
+$('#playlist_title').on('keyup',
   () ->
     modal = $('#copy-playlist-modal')
-    if(modal.find('#playlist_title').val())
-      disable_submit()
-      return true
-    else
+    if($(this).val() == '')
       modal.find('#title_error').show()
-      modal.find('#playlist_title').parent().addClass('has-error')
-    return false
+      modal.find('#copy-playlist-submit').prop("disabled", true)
+      modal.find('#copy-playlist-submit-edit').prop("disabled", true)
+    else
+      modal.find('#title_error').hide()
+      modal.find('#copy-playlist-submit').prop("disabled", false)
+      modal.find('#copy-playlist-submit-edit').prop("disabled", false)
 )
-
-disable_submit = () ->
-  modal = $('#copy-playlist-modal')
-  modal.find('#copy-playlist-submit').prop("disabled", true)
-  modal.find('#copy-playlist-submit-edit').prop("disabled", true)
 
 $('#copy-playlist-form').bind('ajax:success',
   (event, data, status, xhr) ->
@@ -75,6 +70,7 @@ $('#copy-playlist-form').bind('ajax:success',
   (e, xhr, status, error) ->
     console.log(xhr.responseJSON.errors)
 )
+
 $('input[name="playlist[visibility]"]').on('click', () ->
   new_val = $(this).val()
   new_text = $('.human_friendly_visibility_'+new_val).attr('title')

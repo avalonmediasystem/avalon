@@ -97,17 +97,17 @@ This view file goes with the custom 'Add To Playlist' MediaElement 4 plugin.
           </div>
           <div class="form-group playlist-visibility-form-group">
             <%= label_tag nil, t("playlist.visibility") %>
-            <label class="radio-inline">
+            <label>
               <%= f.radio_button(:visibility, Playlist::PUBLIC) %>
               <%= human_friendly_visibility Playlist::PUBLIC %>
             </label>
-            <label class="radio-inline">
+            <label class="ml-2">
               <%= f.radio_button(:visibility, Playlist::PRIVATE) %>
               <%= human_friendly_visibility Playlist::PRIVATE %>
             </label>
           </div>
           <div class="form-group text-right">
-            <%= f.submit id: 'new_playlist_submit', class: 'btn btn-primary outline_on', value: t("playlist.create.action") %>
+            <%= f.submit id: 'new_playlist_submit', class: 'btn btn-primary', value: t("playlist.create.action") %>
           </div>
         </div><!-- /.modal-body -->
       <% end # form_for playlist_form%>
