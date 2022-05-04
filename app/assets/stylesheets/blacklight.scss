@@ -37,3 +37,12 @@
 .dl-invert dt {
   text-align: left;
 }
+
+// Access control update modal form in Bookmarks
+#update_access_control_form {
+  .item-discovery, .item-access, .special-access {
+    legend {
+      border-bottom: 1px solid #e5e5e5;
+    }
+  }
+}

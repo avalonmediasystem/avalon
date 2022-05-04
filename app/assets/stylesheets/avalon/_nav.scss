@@ -37,9 +37,9 @@ $state-info-border:              darken(adjust-hue($state-info-bg, -10), 7%) !de
     background-position: 20%;
   }
 
-  .navbar-toggle {
+  .navbar-toggler {
     @include media-breakpoint-down(xs) {
-      background: $secondary;
+      background: $primary;
     }
   }
 

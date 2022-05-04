@@ -169,15 +169,6 @@ Unless required by applicable law or agreed to in writing, software distributed
     }
   }
 
-  $('.structure_toggle').on('click', function (e) {
-    e.preventDefault();
-    $(this).find('i.fa').toggleClass('hidden');
-    target = $(this).data('target')
-    section_index = parseInt(target.split('_')[1]);
-    populate_structure_preview(section_index)
-    $('#' + target).toggleClass('hidden');
-  });
-
   $('.filedata').change(function () {
     $(this).closest('form').submit();
   });

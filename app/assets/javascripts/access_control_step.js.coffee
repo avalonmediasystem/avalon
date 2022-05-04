@@ -15,7 +15,7 @@
 $('.date-input').datepicker
   dateFormat: 'yy-mm-dd'
 
-$('#ajax-modal').on 'shown.bs.modal', (event) ->
+$('#blacklight-modal').on 'shown.bs.modal', (event) ->
   $('.date-input').datepicker
     dateFormat: 'yy-mm-dd'
     onSelect: ->

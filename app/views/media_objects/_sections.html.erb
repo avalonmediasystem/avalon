@@ -54,13 +54,12 @@ Unless required by applicable law or agreed to in writing, software distributed
     }
   }
 
-  console.log($('.fa-plus-square').length + $('.fa-minus-square').length)
   if ($('.fa-plus-square').length + $('.fa-minus-square').length <= 2){
     $('#collapse_button').css("display", "none");
     $('#expand_button').css("display", "none");
   } else {
     $('#accordion.panel-group .panel-collapse').on('shown.bs.collapse', function() {
-      if($('#accordion.panel-group .panel-collapse').length == $('#accordion.panel-group .panel-collapse.in').length) {
+      if($('#accordion.panel-group .panel-collapse').length == $('#accordion.panel-group .panel-collapse.show').length) {
         $('#expand_button').css("display", "none");
         $('#collapse_button').css("display", "block");
       }
@@ -72,15 +71,11 @@ Unless required by applicable law or agreed to in writing, software distributed
   }
   $('#expand_button').on('click', function() {
     $('#accordion.panel-group .panel-collapse').collapse('show');
-    $('#collapse_button').css("display", "block");
-    $('#expand_button').css("display", "none");
     $('#accordion.panel-group .card-title .fa-plus-square').css("display", "none");
     $('#accordion.panel-group .card-title .fa-minus-square').css("display", "block");
   });
   $('#collapse_button').on('click', function() {
     $('#accordion.panel-group .panel-collapse').collapse('hide');
-    $('#expand_button').css("display", "block");
-    $('#collapse_button').css("display", "none");
     $('#accordion.panel-group .card-title .fa-plus-square').css("display", "block");
     $('#accordion.panel-group .card-title .fa-minus-square').css("display", "none");
   });
@@ -91,8 +86,6 @@ Unless required by applicable law or agreed to in writing, software distributed
   $('#accordion.panel-group .card-title .fa-minus-square').on('click', function() {
     toggleDisplay($(this));
     $(this).closest('.card-title').find('.fa-plus-square').css("display", "block");
-    $('#expand_button').css("display", "block");
-    $('#collapse_button').css("display", "none");
   });
   $('.card-title a').on('click',function(){
     var panelheader = $(this).closest('.card-title');

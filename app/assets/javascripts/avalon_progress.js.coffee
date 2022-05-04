@@ -37,7 +37,7 @@ class AvalonProgress
     sections = $('a[data-segment]')
     sections.each (i,sec) =>
       id = $(sec).data('segment')
-      section_node = $(sec).closest('.panel-title')
+      section_node = $(sec).closest('.card-title')
       bar = section_node.find('span.progress')
       info_box = section_node.find('div.alert')
 

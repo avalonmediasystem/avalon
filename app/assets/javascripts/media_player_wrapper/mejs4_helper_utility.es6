@@ -197,7 +197,7 @@ class MEJSUtility {
 
     if (
       currentStream.length > 0 &&
-      !currentStream.closest('div').hasClass('panel-heading')
+      !currentStream.closest('div').hasClass('card-header')
     ) {
       let $firstCurrentStream = $(currentStream[0]);
       let re1 = /^\s*\d\.\s*/; // index number in front of section title '1. '

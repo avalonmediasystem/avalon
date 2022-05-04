@@ -527,12 +527,6 @@ div.status-detail {
 #mediaobject_structure {
   overflow-x: auto;
 
-  a.structure_toggle,
-  a.captions_toggle,
-  a.files_toggle {
-    cursor: pointer;
-  }
-
   @include media-breakpoint-between (md, xl) {
     ul {
       width: 100%;
