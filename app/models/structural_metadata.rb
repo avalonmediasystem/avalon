@@ -21,7 +21,7 @@ class StructuralMetadata < ActiveFedora::File
   end
 
   def self.schema
-    Nokogiri::XML::Schema(File.read('public/avalon_structure.xsd'))
+    Nokogiri::XML::Schema(File.read(Rails.root.join('public', 'avalon_structure.xsd')))
   end
 
   @sanitizer = Rails::Html::FullSanitizer.new
