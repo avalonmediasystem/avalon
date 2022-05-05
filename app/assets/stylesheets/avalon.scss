@@ -71,6 +71,13 @@ tr.active-false td {
   color: $gray;
 }
 
+// Override Bootstrap CSS from $info for alerts
+.alert-info {
+  background-color: $state-info-bg;
+  color: $state-info-text;
+  border-color: $state-info-border;
+}
+
 pre {
   background-color: #f5f5f5;
   border: 1px solid #ccc;

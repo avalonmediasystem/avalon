@@ -91,17 +91,6 @@ $state-info-border:              darken(adjust-hue($state-info-bg, -10), 7%) !de
 }
 
 .navbar-header {
-  // .row {
-  //   margin-left: 6px;
-  //   margin-right: 6px;
-  // }
-
-  // @include media-breakpoint-down(md) {
-  //   .row {
-  //     display: none;
-  //   }
-  // }
-
   @include media-breakpoint-down(md) {
     .row {
       display: flex;
