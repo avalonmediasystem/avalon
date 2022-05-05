@@ -28,6 +28,16 @@ module Avalon
       @config.send(sym, *args, &block)
     end
 
+    def sanitize_filename
+      @sanitize_filename = lambda do |filename|
+        if filename.include? ' '
+          filename.gsub(/\s+/, '_')
+        else
+          filename
+        end
+      end
+    end
+
     private
     class << self
       def coerce(value, method)

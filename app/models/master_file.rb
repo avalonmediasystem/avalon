@@ -470,9 +470,9 @@ class MasterFile < ActiveFedora::Base
   def self.post_processing_move_filename(oldpath, options = {})
     prefix = options[:id].tr(':', '_')
     if File.basename(oldpath).start_with?(prefix)
-      File.basename(oldpath)
+      Avalon::Configuration.sanitize_filename.call(File.basename(oldpath))
     else
-      "#{prefix}-#{File.basename(oldpath)}"
+      Avalon::Configuration.sanitize_filename.call("#{prefix}-#{File.basename(oldpath)}")
     end
   end
 
