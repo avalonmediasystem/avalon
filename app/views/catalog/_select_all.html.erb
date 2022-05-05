@@ -16,7 +16,7 @@ Unless required by applicable law or agreed to in writing, software distributed
 <% # container for select_all bookmarks button -%>
 
 <% if current_or_guest_user %>
-  <div class="col-sm-3 col-sm-offset-9 col-lg-2 offset-lg-10">
+  <div class="col-sm-3 offset-9 col-lg-2 offset-lg-10">
       <% all_selected = @response.documents.all? do |d|
            current_or_guest_user.bookmarks.where({ document_id: d.id }).exists?
          end %>

@@ -22,11 +22,11 @@ Unless required by applicable law or agreed to in writing, software distributed
 <% end %>
 
 <div class="row" style="padding-top: 3rem;">
-  <div class="col-md-8 col-md-offset-2">
+  <div class="col-md-8 offset-2">
     <%
     item_count = "#{@objects.count} #{'item'.pluralize(@objects.count)}"
     content_pronoun = @objects.count > 1 ? 'them' : 'it'
-  %>
+    %>
 
     <% if @collection.dropbox_object_count > 0 %>
       <div class="alert alert-warning">

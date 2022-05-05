@@ -36,7 +36,7 @@ Unless required by applicable law or agreed to in writing, software distributed
         <%= clip.title %>
       <% end %>
     <% end %>
-    <span class="pull-right"> <span class="fa <%= item_type %>"></span> <%= clip.duration %></span>
+    <span class="float-right"> <span class="fa <%= item_type %>"></span> <%= clip.duration %></span>
   </li>
 <% else %>
   <% denied_class = item_class %>
@@ -52,6 +52,6 @@ Unless required by applicable law or agreed to in writing, software distributed
       <i class="fa fa-lock"></i>
       <span title="You do not playback permission for the source item, <%=clip.master_file.media_object_id%>, this playlist item references.">[Inaccessible Item] <%=clip.master_file.media_object_id%></span>
     <% end %>
-    <span class="pull-right"><%= clip.duration %></span>
+    <span class="float-right"><%= clip.duration %></span>
   </li>
 <% end %>

@@ -27,7 +27,7 @@ Unless required by applicable law or agreed to in writing, software distributed
       <p class="muted">Copy the link below to share this playlist.  It can only be seen and shared by people with this link.</p>
       <form role="form">
         <div class="form-group">
-          <input type="text" class="col-md-5 form-control" id="link-object" value="<%= access_token_url(@playlist) %>" placeholder="<%= access_token_url(@playlist) %>" onClick="this.select();" readonly="readonly">
+          <input type="text" class="form-control" id="link-object" value="<%= access_token_url(@playlist) %>" placeholder="<%= access_token_url(@playlist) %>" onClick="this.select();" readonly="readonly">
         </div>
       </form>
       <% else %>
@@ -37,6 +37,6 @@ Unless required by applicable law or agreed to in writing, software distributed
 
 <% elsif section=='share-tabs' %>
 
-    <li><a href="#link-tab" data-toggle="tab">Share this playlist</a></li>
+    <li class="nav-item"><a class="nav-link active" href="#link-tab" data-toggle="tab">Share this playlist</a></li>
 
 <% end %>

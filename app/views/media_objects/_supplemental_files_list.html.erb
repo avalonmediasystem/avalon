@@ -26,7 +26,7 @@
                     <small class="visible-inline" name="flash-message-<%= section.id %>-<%= file.id %>"></small>
                     <div class="btn-toolbar float-right">
                       <%# Update button %>
-                      <%= button_tag name: 'edit_label', class:'btn btn-outline btn-sm edit_label display-item pull-right', type: 'button' do %>
+                      <%= button_tag name: 'edit_label', class:'btn btn-outline btn-sm edit_label display-item', type: 'button' do %>
                         <i class="fa fa-edit" title="Edit"></i> <span class="sm-hidden">Edit</span>
                       <% end %>
                       <%= link_to("Remove", object_supplemental_file_path(section, file), title: 'Remove', method: :delete, class: "btn btn-danger btn-sm file-remove") %>

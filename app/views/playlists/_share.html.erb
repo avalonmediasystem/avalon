@@ -21,15 +21,6 @@ Unless required by applicable law or agreed to in writing, software distributed
   <br class="clear"/>
 </div>
 
-<div id="share-list" class="collapse">
-  <ul class="nav nav-tabs share-tabs">
-    <%= render_conditional_partials :share, section:'share-tabs' %>
-  </ul>
-
-  <div class="tab-content">
-    <%= render_conditional_partials :share, section:'tab-content' %>
-  </div>
-</div>
 <% content_for :page_scripts do %>
 
 <script>

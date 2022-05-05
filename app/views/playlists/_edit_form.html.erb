@@ -81,7 +81,7 @@ Unless required by applicable law or agreed to in writing, software distributed
         <li class="container dd-item" data-id="<%= i.id %>">
           <div class="row">
             <div class="col-sm-2">
-              <span class="glyphicon glyphicon-resize-vertical hidden pull-left dd-handle"></span>
+              <span class="fa fa-arrows-v float-left dd-handle"></span>
               <%= text_field_tag "playlist[items_attributes[#{index}[position]]]", i.position, class: 'form-control position-input', form: 'playlist_sort_form' %>
               <%= hidden_field_tag "playlist[items_attributes[#{index}[id]]]", i.id, form: 'playlist_sort_form' %>
             </div>

@@ -14,12 +14,6 @@
  * ---  END LICENSE_HEADER BLOCK  ---
 */
 
-.playlist-view-wrapper {
-  #share-button {
-    margin: -1.6em 1em 1em 0em;
-  }
-}
-
 .playlist-details-headline-wrapper {
   margin: 2rem 0 1rem;
   display: flex;
@@ -51,10 +45,6 @@
 }
 
 .playlist-autoplay-wrapper {
-  display: flex;
-  align-items: center;
-  margin-left: 1em;
-
   .playlist-autoplay-label {
     font-weight: bold;
     margin-right: 1rem;
@@ -146,11 +136,6 @@
 
   a {
     cursor: pointer;
-  }
-
-  .pull-right {
-    text-align: right;
-    margin-right: 21px;
   }
 }
 
