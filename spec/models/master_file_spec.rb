@@ -559,6 +559,12 @@ describe MasterFile do
       path = '/path/to/avalon_12345-video.mp4'
       expect(MasterFile.post_processing_move_filename(path, id: id).include?(id_prefix + '-' + id_prefix)).to be_falsey
     end
+    context 'path contains spaces' do
+      path = '/path/to/video file.mp4'
+      it 'removes spaces' do
+        expect(MasterFile.post_processing_move_filename(path, id: id)).not_to include(' ')
+      end
+    end
   end
 
   context 'with a working directory' do
@@ -775,7 +781,7 @@ describe MasterFile do
 
     context 'without derivative' do
       let(:master_file) { FactoryBot.build(:master_file) }
-    
+
       it 'returns false' do
         expect(master_file.has_audio?).to eq false
       end
@@ -786,7 +792,7 @@ describe MasterFile do
 
       context 'with audio track' do
         let(:derivative) { FactoryBot.build(:derivative, audio_codec: 'aac') }
-        
+
         it 'returns true' do
           expect(master_file.has_audio?).to eq true
         end
@@ -794,7 +800,7 @@ describe MasterFile do
 
       context 'without audio track' do
         let(:derivative) { FactoryBot.build(:derivative, audio_codec: nil) }
-        
+
         it 'returns false' do
           expect(master_file.has_audio?).to eq false
         end
