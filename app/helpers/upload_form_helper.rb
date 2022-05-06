@@ -18,7 +18,7 @@ module UploadFormHelper
   end
 
   def upload_form_classes
-    result = %w(uploader-form form-horizontal step)
+    result = %w(uploader-form step)
     result << 'directupload' if direct_upload?
     result.join(' ')
   end

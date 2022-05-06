@@ -22,8 +22,8 @@ $( document ).ready(function() {
   })
   let searchParams = new URLSearchParams(window.location.search)
   if(searchParams.has('email')){
-    $('#email-box').removeClass('hidden')
-    $('#sign-in-select').addClass('hidden')
-    $('#sign-in-buttons').addClass('hidden')
+    $('#email-box').css('display', 'block')
+    $('#sign-in-select').css('display', 'none')
+    $('#sign-in-buttons').css('display', 'none')
   }
 })

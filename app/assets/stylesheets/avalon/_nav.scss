@@ -37,9 +37,9 @@ $state-info-border:              darken(adjust-hue($state-info-bg, -10), 7%) !de
     background-position: 20%;
   }
 
-  .navbar-toggle {
+  .navbar-toggler {
     @include media-breakpoint-down(xs) {
-      background: $secondary;
+      background: $primary;
     }
   }
 
@@ -91,9 +91,10 @@ $state-info-border:              darken(adjust-hue($state-info-bg, -10), 7%) !de
 }
 
 .navbar-header {
-  .row {
-    margin-left: 6px;
-    margin-right: 6px;
+  @include media-breakpoint-down(md) {
+    .row {
+      display: flex;
+    }
   }
 
   @include media-breakpoint-down(xs) {
@@ -101,10 +102,6 @@ $state-info-border:              darken(adjust-hue($state-info-bg, -10), 7%) !de
     box-shadow: 0 0 5px;
   }
 }
-
-// .container > .navbar-header {
-//   height: auto;
-// }
 
 .navbar-inner {
   padding-right: 12px;
@@ -186,7 +183,6 @@ $state-info-border:              darken(adjust-hue($state-info-bg, -10), 7%) !de
   width: 100%;
   text-align: left;
   padding: 0.85rem 0.9rem;
-  // padding-bottom: 0.5em;
 
   &:hover {
     background-color: $yellow !important;

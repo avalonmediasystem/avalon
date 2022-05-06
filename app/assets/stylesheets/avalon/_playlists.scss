@@ -14,12 +14,6 @@
  * ---  END LICENSE_HEADER BLOCK  ---
 */
 
-.playlist-view-wrapper {
-  #share-button {
-    margin: -1.6em 1em 1em 0em;
-  }
-}
-
 .playlist-details-headline-wrapper {
   margin: 2rem 0 1rem;
   display: flex;
@@ -51,10 +45,6 @@
 }
 
 .playlist-autoplay-wrapper {
-  display: flex;
-  align-items: center;
-  margin-left: 1em;
-
   .playlist-autoplay-label {
     font-weight: bold;
     margin-right: 1rem;
@@ -147,19 +137,16 @@
   a {
     cursor: pointer;
   }
+}
 
-  .pull-right {
-    text-align: right;
-    margin-right: 21px;
+.playlist_item_edit {
+  label.col-form-label {
+    font-weight: bold;
   }
 }
 
-#playlist_view_div {
-  .dl-horizontal {
-    dd {
-      margin-bottom: 5px;
-    }
-  }
+#playlist_edit_div .form-check {
+  padding-left: 0;
 }
 
 /* Playlist show page */
@@ -184,4 +171,10 @@
 
 #Playlists_paginate {
   float: right;
+}
+
+/* Playlist copy modal */
+#playlist_title:invalid {
+  border-color: $danger;
+  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px $danger;
 }

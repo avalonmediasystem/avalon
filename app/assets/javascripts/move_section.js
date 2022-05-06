@@ -14,12 +14,12 @@
  * ---  END LICENSE_HEADER BLOCK  ---
 */
 
-function showMoveModal(obj) {
+$('#show_move_modal').on('click', function(){
   $('#move_modal').show();
-  var id = $(obj).data('id');
+  var id = $(this).data('id');
   // Set the URL for form POST action
   $('#move_form').attr('action', '/master_files/' + id + '/move');
-}
+})
 
 $('#move_modal').on('shown.bs.modal', function() {
   $('#target').focus();

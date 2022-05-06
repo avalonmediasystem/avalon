@@ -45,13 +45,13 @@ Unless required by applicable law or agreed to in writing, software distributed
         </div>
         <% if is_leasable %>
           <div class="col-3">
-            <label class="control-label" for="add_#{access_object}_begin">
+            <label class="col-form-label" for="add_#{access_object}_begin">
               <span class="tooltip-label" data-title="Begin Date">Begin Date</span>
             </label>
             <%= text_field_tag "add_#{access_object}_begin", nil, placeholder: 'Begin Date (yyyy-mm-dd)', class: 'form-control date-input', disabled: input_disabled, autocomplete: 'off' %>
           </div>
           <div class="col-3">
-            <label class="control-label" for="add_#{access_object}_end">
+            <label class="col-form-label" for="add_#{access_object}_end">
               <span class="tooltip-label" data-title="End Date">End Date</span>
             </label>
             <%= text_field_tag "add_#{access_object}_end", nil, placeholder: 'End Date (yyyy-mm-dd)', class: 'form-control date-input', disabled: input_disabled, autocomplete: 'off' %>
@@ -59,7 +59,7 @@ Unless required by applicable law or agreed to in writing, software distributed
         <% end %>
         <div class="col-1">
           <%= button_tag "Add", name: "submit_add_#{access_object}", type: "submit",
-            class: "btn btn-outline", style: 'margin-top:2rem', disabled: input_disabled, value: "Add" %>
+            class: "btn btn-outline", style: 'margin-top:2.4rem', disabled: input_disabled, value: "Add" %>
         </div>
       </div>
     </div>

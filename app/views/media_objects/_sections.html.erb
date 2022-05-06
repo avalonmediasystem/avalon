@@ -22,7 +22,7 @@ Unless required by applicable law or agreed to in writing, software distributed
       <h5 class="card-title">
         <span id="section-label">Sections</span>
         <% if current_ability.can? :create, Playlist %>
-          <button type="button" title="Add all sections to playlist" aria-label="Add all sections to playlist" class="structure_add_to_playlist outline_on btn btn-primary" data-scope="media_object"></button>
+          <button type="button" title="Add all sections to playlist" aria-label="Add all sections to playlist" class="structure_add_to_playlist btn btn-primary" data-scope="media_object"></button>
         <% end %>
 	      <button class="btn btn-primary btn-sm" id="expand_button">Expand All</button>
 	      <button class="btn btn-primary btn-sm" style="display: none;" id="collapse_button">Collapse All</button>
@@ -54,13 +54,12 @@ Unless required by applicable law or agreed to in writing, software distributed
     }
   }
 
-  console.log($('.fa-plus-square').length + $('.fa-minus-square').length)
   if ($('.fa-plus-square').length + $('.fa-minus-square').length <= 2){
     $('#collapse_button').css("display", "none");
     $('#expand_button').css("display", "none");
   } else {
     $('#accordion.panel-group .panel-collapse').on('shown.bs.collapse', function() {
-      if($('#accordion.panel-group .panel-collapse').length == $('#accordion.panel-group .panel-collapse.in').length) {
+      if($('#accordion.panel-group .panel-collapse').length == $('#accordion.panel-group .panel-collapse.show').length) {
         $('#expand_button').css("display", "none");
         $('#collapse_button').css("display", "block");
       }
@@ -72,15 +71,11 @@ Unless required by applicable law or agreed to in writing, software distributed
   }
   $('#expand_button').on('click', function() {
     $('#accordion.panel-group .panel-collapse').collapse('show');
-    $('#collapse_button').css("display", "block");
-    $('#expand_button').css("display", "none");
     $('#accordion.panel-group .card-title .fa-plus-square').css("display", "none");
     $('#accordion.panel-group .card-title .fa-minus-square').css("display", "block");
   });
   $('#collapse_button').on('click', function() {
     $('#accordion.panel-group .panel-collapse').collapse('hide');
-    $('#expand_button').css("display", "block");
-    $('#collapse_button').css("display", "none");
     $('#accordion.panel-group .card-title .fa-plus-square').css("display", "block");
     $('#accordion.panel-group .card-title .fa-minus-square').css("display", "none");
   });
@@ -91,8 +86,6 @@ Unless required by applicable law or agreed to in writing, software distributed
   $('#accordion.panel-group .card-title .fa-minus-square').on('click', function() {
     toggleDisplay($(this));
     $(this).closest('.card-title').find('.fa-plus-square').css("display", "block");
-    $('#expand_button').css("display", "block");
-    $('#collapse_button').css("display", "none");
   });
   $('.card-title a').on('click',function(){
     var panelheader = $(this).closest('.card-title');
@@ -111,14 +104,14 @@ Unless required by applicable law or agreed to in writing, software distributed
           modal = $('#add-to-playlist-modal')
           modal.html(result);
           modal.find('#playlistitem_submit').on('click', function(){
-              $(this).button('loading')
+              $(this).val('Working...');
           })
           modal.find('#add_to_playlist_form').on('ajax:success', function(e, data, status, xhr){
             $('#add-to-playlist-modal .modal-body').html(data["message"]);
-            $('#playlistitem_submit').button('reset').hide();
+            $('#playlistitem_submit').val('Add to Playlist').hide();
           }).on('ajax:error',function(e, xhr, status, error){
             $('#add-to-playlist-modal .modal-body').html(error);
-            $('#playlistitem_submit').button('reset').hide();
+            $('#playlistitem_submit').val('Add to Playlist').hide();
           });
           modal.modal('show');
         },

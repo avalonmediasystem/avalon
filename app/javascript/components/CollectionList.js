@@ -103,9 +103,8 @@ class CollectionList extends Component {
     this.setState({ filter: event.target.value });
   };
 
-  handleSortChange = event => {
-    let val = event.target.querySelector('input').value;
-    this.setState({ sort: val });
+  handleSortChange = value => {
+    this.setState({ sort: value });
   };
 
   handleSubmit = event => {

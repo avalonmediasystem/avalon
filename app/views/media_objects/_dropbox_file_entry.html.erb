@@ -14,7 +14,7 @@ Unless required by applicable law or agreed to in writing, software distributed
 ---  END LICENSE_HEADER BLOCK  ---
 %>
  		      <tr class="active-<%=file[:available]%>">
-                        <td class='checkbox'><%= check_box_tag "dropbox[#{index}][id]", file[:id], false, :disabled => !file[:available] %></td>
+                        <td class='form-check'><%= check_box_tag "dropbox[#{index}][id]", file[:id], false, :disabled => !file[:available] %></td>
                         <td class='name'><%= file[:name] %></td>
                         <td><%= file[:size].is_a?(String) ? file[:size] : number_to_human_size(file[:size]) %></td>
                         <td><%= file[:modified].strftime('%Y-%m-%d %H:%M:%S') %></td>

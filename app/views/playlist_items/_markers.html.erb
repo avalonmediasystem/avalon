@@ -20,7 +20,7 @@ Unless required by applicable law or agreed to in writing, software distributed
     <p></p>
   </div>
   <% showActions = can? :edit, @playlist_item %>
-  <table class="table table-condensed">
+  <table class="table table-sm">
     <thead>
       <tr>
         <th>Name</th>
@@ -36,29 +36,29 @@ Unless required by applicable law or agreed to in writing, software distributed
           <% start = marker.start_time.to_f/1000 %>
           <tr data-offset="<%= start %>" data-marker-id="<%= marker.id %>">
             <td>
-              <a class="marker_title display-item outline_on" data-offset="<%= start %>"><%= marker.title %></a>
-              <input name="title_<%= marker.id %>" type="text" class="form-control edit-item outline_on" value="<%= marker.title %>">
+              <a class="marker_title display-item" data-offset="<%= start %>"><%= marker.title %></a>
+              <input name="title_<%= marker.id %>" type="text" class="form-control edit-item" value="<%= marker.title %>">
             </td>
             <td>
               <span class="marker_start_time display-item"><%= pretty_time(marker.start_time) %></span>
-              <input name="offset_<%= marker.id %>" type="text" class="form-control edit-item outline_on" value="<%= pretty_time(marker.start_time) %>">
+              <input name="offset_<%= marker.id %>" type="text" class="form-control edit-item" value="<%= pretty_time(marker.start_time) %>">
             </td>
             <% if showActions %>
               <td class="text-right" id="popover-container-<%= marker.id %>">
                 <%# Edit button %>
-                <%= button_tag name: 'edit_marker', class:'btn btn-outline btn-sm edit_marker display-item outline_on', type: 'button' do %>
+                <%= button_tag name: 'edit_marker', class:'btn btn-outline btn-sm edit_marker display-item', type: 'button' do %>
                   <i class="fa fa-edit" title="Edit"></i> <span class="sm-hidden">Edit</span>
                 <% end %>
                 <%# Save button %>
-                <%= button_tag name: 'save_marker', class:'btn btn-outline btn-sm edit-item outline_on', type: 'button' do%>
+                <%= button_tag name: 'save_marker', class:'btn btn-outline btn-sm edit-item', type: 'button' do%>
                   <i class="fa fa-check" title="Save"></i> <span class="sm-hidden">Save</span>
                 <% end %>
                 <%# Cancel button %>
-                <%= button_tag name: 'marker_edit_cancel', class:'btn btn-danger btn-sm edit-item outline_on', type: 'button' do%>
+                <%= button_tag name: 'marker_edit_cancel', class:'btn btn-danger btn-sm edit-item', type: 'button' do%>
                   <i class="fa fa-times" title="Cancel"></i> <span class="sm-hidden">Cancel</span>
                 <% end %>
               <%# Delete button %>
-                <button data-marker-id="<%= marker.id %>" name="delete_marker" class="btn btn-danger btn-sm display-item outline_on">
+                <button data-marker-id="<%= marker.id %>" name="delete_marker" class="btn btn-danger btn-sm display-item">
                   <i class="fa fa-times" title="Delete"></i> <span class="sm-hidden">Delete</span>
                 </button>
               </td>

@@ -35,7 +35,7 @@ Unless required by applicable law or agreed to in writing, software distributed
     <% @markers = @current_playlist_item.marker %>
     <div class="card-header" role="tab" id="markers_heading" <%= "style=display:none" if @markers.empty? %>>
       <h5 class="card-title ">
-        <a href="#markers_section" class="accordion-toggle collapsed pull-left" data-toggle="collapse">
+        <a href="#markers_section" class="accordion-toggle collapsed" data-toggle="collapse">
           Markers
         </a>
       </h5>
@@ -51,7 +51,7 @@ Unless required by applicable law or agreed to in writing, software distributed
     </div>
     <div class="card-header" id="source_details_heading">
       <h5 class="card-title">
-        <a href="#source_details_section" class="accordion-toggle collapsed pull-left" data-toggle="collapse">
+        <a href="#source_details_section" class="accordion-toggle collapsed" data-toggle="collapse">
           Source Item Details
         </a>
       </h5>
@@ -68,7 +68,7 @@ Unless required by applicable law or agreed to in writing, software distributed
     <% @related_clips = @playlist.related_clips(@current_playlist_item)%>
     <div class="card-header" role="tab" id="related_items_heading">
       <h5 class="card-title ">
-        <a href="#related_items_section" class="accordion-toggle collapsed pull-left" data-toggle="collapse">
+        <a href="#related_items_section" class="accordion-toggle collapsed" data-toggle="collapse">
           Related
         </a>
       </h5>

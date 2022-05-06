@@ -30,7 +30,7 @@ Unless required by applicable law or agreed to in writing, software distributed
               <% if Settings['variations'].present? %>
                 <%= form_tag(import_variations_timeline_timelines_path, method:"post", enctype:"multipart/form-data", style:"display:inline") do %>
                   <input type="file" name="Filedata" class="filedata" style="visibility:hidden; display:inline; width:0;" />
-                  <input type="button" class="btn btn-primary outline_on" id="variations_import" onclick="$(this).closest('form').find('.filedata').click();" value="Import Variations Timeline" />
+                  <input type="button" class="btn btn-primary" id="variations_import" onclick="$(this).closest('form').find('.filedata').click();" value="Import Variations Timeline" />
                 <% end %>
               <% end %>
             </div>

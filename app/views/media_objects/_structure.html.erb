@@ -93,7 +93,7 @@ Unless required by applicable law or agreed to in writing, software distributed
     </ul>
   </div>
   <br class="clear" />
-  <%= bootstrap_form_for @media_object, html: { class: "form-horizontal" } do |media| %>
+  <%= bootstrap_form_for @media_object do |media| %>
   <%= render "workflow_buttons" %>
 <% end %>
 
@@ -168,15 +168,6 @@ Unless required by applicable law or agreed to in writing, software distributed
       return ["", tracknumber];
     }
   }
-
-  $('.structure_toggle').on('click', function (e) {
-    e.preventDefault();
-    $(this).find('i.fa').toggleClass('hidden');
-    target = $(this).data('target')
-    section_index = parseInt(target.split('_')[1]);
-    populate_structure_preview(section_index)
-    $('#' + target).toggleClass('hidden');
-  });
 
   $('.filedata').change(function () {
     $(this).closest('form').submit();

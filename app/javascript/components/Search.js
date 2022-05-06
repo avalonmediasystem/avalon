@@ -131,7 +131,7 @@ class Search extends Component {
     return (
       <div className="search-wrapper">
         <div className="row">
-          <form onSubmit={this.handleSubmit} className="search-bar col-sm-6 col-sm-offset-3">
+          <form onSubmit={this.handleSubmit} className="search-bar col-sm-6 offset-3">
             <label htmlFor="q" className="sr-only">
               search for
             </label>
@@ -139,7 +139,7 @@ class Search extends Component {
               value={query}
               onChange={this.handleQueryChange}
               name="q"
-              className="form-control input-lg"
+              className="form-control form-control-lg"
               placeholder="Search within collection..."
               autoFocus="autofocus"
             ></input>

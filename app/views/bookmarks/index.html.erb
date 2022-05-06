@@ -25,7 +25,7 @@ Unless required by applicable law or agreed to in writing, software distributed
   <div class="alert alert-info" role="alert"><%= t('blacklight.bookmarks.no_bookmarks') %></div>
 
   <% else %>
-  <%# link_to t('blacklight.bookmarks.clear.action_title'), clear_bookmarks_path, :method => :delete, :data => { :confirm => t('blacklight.bookmarks.clear.action_confirm') }, :class => 'clear-bookmarks btn btn-danger pull-right' %>
+  <%# link_to t('blacklight.bookmarks.clear.action_title'), clear_bookmarks_path, :method => :delete, :data => { :confirm => t('blacklight.bookmarks.clear.action_confirm') }, :class => 'clear-bookmarks btn btn-danger float-right' %>
   <%= render 'sort_and_per_page' %>
   <%= render partial: 'tools', locals: { document_list: @response.documents } %>
 

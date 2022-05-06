@@ -22,6 +22,7 @@ const expandBtn = {
 };
 
 const descriptionStyle = {
+  marginLeft: '10px',
   fontSize: '16px',
   fontWeight: '200'
 }
@@ -57,17 +58,17 @@ const CollectionDetails = ({ content = '', email = '', website = '' }) => {
           )}
         </p>
       )}
-      <dl className="dl-horizontal">
+      <dl className="row">
         { email &&
           <>
             <dt style={descriptionStyle}>Contact email:</dt>
-            <dd><a href={`mailto:${email}`}>{email}</a></dd>
+            <dd className='ml-2'><a href={`mailto:${email}`}>{email}</a></dd>
           </>
         }
         { website &&
           <>
             <dt style={descriptionStyle}>Website:</dt>
-            <dd dangerouslySetInnerHTML={{ __html: website }}></dd>
+            <dd className='ml-2' dangerouslySetInnerHTML={{ __html: website }}></dd>
           </>
         }
       </dl>

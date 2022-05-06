@@ -18,7 +18,7 @@ class AvalonProgress
 
   updateBar = (bar, attrs) ->
     for type, percent of attrs
-      target = $(".progress-bar.progress-bar-#{type}",bar)
+      target = $(".progress-bar.bg-#{type}",bar)
       target.css('width',"#{percent}%")
 
   retrieve: (auto=false) ->
@@ -37,7 +37,7 @@ class AvalonProgress
     sections = $('a[data-segment]')
     sections.each (i,sec) =>
       id = $(sec).data('segment')
-      section_node = $(sec).closest('.panel-title')
+      section_node = $(sec).closest('.card-title')
       bar = section_node.find('span.progress')
       info_box = section_node.find('div.alert')
 
@@ -82,9 +82,9 @@ $(document).ready ->
 
   $('.progress-indented').prepend('
     <span class="progress progress-inline">
-      <div class="progress-bar progress-bar-success" style="width:0%"></div>
-      <div class="progress-bar progress-bar-danger" style="width:0%"></div>
-      <div class="progress-bar progress-bar-warning" style="width:0%"></div>
+      <div class="progress-bar bg-success" style="width:0%"></div>
+      <div class="progress-bar bg-danger" style="width:0%"></div>
+      <div class="progress-bar bg-warning" style="width:0%"></div>
     </span>')
   $('.status-detail').hide()
   progress_controller.retrieve(true)

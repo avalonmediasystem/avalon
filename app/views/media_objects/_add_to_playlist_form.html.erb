@@ -33,7 +33,7 @@ Unless required by applicable law or agreed to in writing, software distributed
         <div class="form-group">
           <label>Playlist Item Scope</label>
 
-          <div class="radio">
+          <div class="form-check">
             <label>
               <input type="radio" value="section" name="post[playlistitem_scope]" id="playlistitem_scope_section"
                 checked="true">
@@ -41,7 +41,7 @@ Unless required by applicable law or agreed to in writing, software distributed
               <%= 'each ' if scope != 'master_file' %>section<%= " (#{stream_label_for(MasterFile.find(masterfile_id))})" if scope == 'master_file' %>
             </label>
           </div>
-          <div class="radio">
+          <div class="form-check">
             <label>
               <input type="radio" value="structure" name="post[playlistitem_scope]" id="playlistitem_scope_structure">
               Create multiple items from subsections, if available
@@ -53,7 +53,7 @@ Unless required by applicable law or agreed to in writing, software distributed
     </div>
     <div class="modal-footer">
       <button type="button" class="btn btn-outline" data-dismiss="modal">Close</button>
-      <input type="submit" form="add_to_playlist_form" name="commit" data-loading-text="Working..." value="Add to Playlist" class="btn btn-primary"
+      <input type="submit" form="add_to_playlist_form" name="commit" value="Add to Playlist" class="btn btn-primary"
         id="playlistitem_submit">
     </div>
   </div><!-- /.modal-content -->

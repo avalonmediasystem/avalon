@@ -35,8 +35,8 @@ const CardMetaData = ({ doc, fieldLabel, fieldName }) => {
   if (doc.attributes[fieldName]) {
     return (
       <React.Fragment>
-        <dt>{fieldLabel}</dt>
-        <dd>{metaData}</dd>
+        <dt className='col-sm-5'>{fieldLabel}</dt>
+        <dd className='col-sm-7'>{metaData}</dd>
       </React.Fragment>
     );
   }
@@ -99,7 +99,7 @@ const SearchResultsCard = props => {
               { doc.attributes['title_tesi'] && doc.attributes['title_tesi'].attributes.value.length >= 50 && <span>...</span> }
             </a>
           </h4>
-          <dl id={'card-body-' + index} className="card-text dl-horizontal">
+          <dl id={'card-body-' + index} className="card-text row">
             <CardMetaData doc={doc} fieldLabel="Date" fieldName="date_ssi" />
             <CardMetaData
               doc={doc}

@@ -33,7 +33,6 @@ submit_edit = null
       modal.find('#copy-timeline-submit-edit').prop("disabled", false)
 
       # toggle title error off
-      modal.find('#timeline_title').parent().removeClass('has-error')
       modal.find('#title_error').hide()
 
       modal.modal('show')
@@ -44,22 +43,26 @@ $('#copy-timeline-submit-edit').on('click',
     submit_edit = true
 )
 
+$('#timeline_title').on('keyup',
+  () ->
+    modal = $('#copy-timeline-modal')
+    if($(this).val() == '')
+      modal.find('#title_error').show()
+      modal.find('#copy-timeline-submit').prop("disabled", true)
+      modal.find('#copy-timeline-submit-edit').prop("disabled", true)
+    else
+      modal.find('#title_error').hide()
+      modal.find('#copy-timeline-submit').prop("disabled", false)
+      modal.find('#copy-timeline-submit-edit').prop("disabled", false)
+)
+
 $('#copy-timeline-form').submit(
   () ->
     modal = $('#copy-timeline-modal')
     if(modal.find('#timeline_title').val())
-      disable_submit()
+      modal.find('#copy-timeline-submit').prop("disabled", true)
       return true
-    else
-      modal.find('#title_error').show()
-      modal.find('#timeline_title').parent().addClass('has-error')
-    return false
 )
-
-disable_submit = () ->
-  modal = $('#copy-timeline-modal')
-  modal.find('#copy-timeline-submit').prop("disabled", true)
-  modal.find('#copy-timeline-submit-edit').prop("disabled", true)
 
 $('#copy-timeline-form').bind('ajax:success',
   (event, data, status, xhr) ->
@@ -75,6 +78,7 @@ $('#copy-timeline-form').bind('ajax:success',
   (e, xhr, status, error) ->
     console.log(xhr.responseJSON.errors)
 )
+
 $('input[name="timeline[visibility]"]').on('click', () ->
   new_val = $(this).val()
   new_text = $('.human_friendly_visibility_'+new_val).attr('title')

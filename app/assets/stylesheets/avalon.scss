@@ -71,6 +71,13 @@ tr.active-false td {
   color: $gray;
 }
 
+// Override Bootstrap CSS from $info for alerts
+.alert-info {
+  background-color: $state-info-bg;
+  color: $state-info-text;
+  border-color: $state-info-border;
+}
+
 pre {
   background-color: #f5f5f5;
   border: 1px solid #ccc;
@@ -161,7 +168,7 @@ div.alert-danger {
   font-family: $museoSlab;
 }
 .sub-headline {
-  color: $primary;
+  color: $secondary;
   font-family: $museoSlab;
 }
 
@@ -457,7 +464,7 @@ a[data-trigger='submit'] {
 #resource_description_content {
   max-width: 700px;
 
-  .control-label {
+  .col-form-label {
     font-weight: bold;
   }
 }
@@ -526,12 +533,6 @@ div.status-detail {
 
 #mediaobject_structure {
   overflow-x: auto;
-
-  a.structure_toggle,
-  a.captions_toggle,
-  a.files_toggle {
-    cursor: pointer;
-  }
 
   @include media-breakpoint-between (md, xl) {
     ul {
@@ -965,11 +966,6 @@ h5.card-title {
   z-index: 1;
 }
 
-// Input form validation styling
-.invalid-feedback {
-  color: $danger;
-}
-
 .is-invalid {
   border-color: $danger;
 }
@@ -993,18 +989,6 @@ h5.card-title {
 /**
  * Collections
  */
-.collections-list-wrapper {
-  overflow-x: auto;
-
-  table {
-    td {
-      &:nth-child(1) {
-        width: 20%;
-      }
-    }
-  }
-}
-
 .well-vertical-spacer {
   margin-bottom: 10px;
 }
