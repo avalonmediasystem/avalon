@@ -42,6 +42,51 @@ module Samvera
       @presenter = Samvera::Persona::UsersPresenter.new
     end
 
+    def paged_index
+      @presenter = Samvera::Persona::UsersPresenter.new
+      records_total = @presenter.user_count
+      columns = ['username', 'email', 'groups', 'last_sign_in_at', 'accepted_or_not_invited', 'provider', 'actions']
+
+      # TODO: Filter username, email, groups, status, provider
+      # Filter username
+      username_filter = params['search']['value']
+      @presenter = @presenter.username_like(username_filter) if username_filter.present?
+
+      # Filter email
+      email_filter = params['columns']['1']['search']['value']
+      @presenter = @presenter.email_like(email_filter) if email_filter.present?
+
+      # Filter groups
+      group_filter = params['columns']['2']['search']['value']
+      @presenter = @presenter.group_like(group_filter) if group_filter.present?
+
+      # Filter status
+      status_filter = params['columns']['4']['search']['value']
+      @presenter = @presenter.status_like(status_filter) if status_filter.present?
+
+      # Filter provider
+      provider_filter = params['columns']['5']['search']['value']
+      @presenter = @presenter.provider_like(provider_filter) if provider_filter.present?
+
+      # TODO: Sort
+      sort_column = params['order']['0']['column'].to_i rescue 0
+      sort_direction = params['order']['0']['dir'] rescue 'asc'
+      session[:presenter_sort] = [sort_column, sort_direction]
+      @presenter = @presenter.order(columns[sort_column].downcase => sort_direction)
+      @presenter = @presenter.offset(params['start']).limit(params['length'])
+
+      # TODO: Count
+      presenter_filtered_total = @presenter.count
+
+      # TODO: Build json response with actions and other values
+
+      respond_to do |format|
+        format.json do
+          render json: response
+        end
+      end
+    end
+
     # GET /persona/users/1/edit
     def edit
       # Hyrax derivitives have breadcrumbs, Avalon does not
