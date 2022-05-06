@@ -34,7 +34,7 @@ gem 'rdf-rdfxml'
 gem 'rdf-vocab', '< 3.1.5'
 
 # Samvera version pins
-gem 'blacklight', '< 8', git: 'https://github.com/projectblacklight/blacklight.git', branch: 'release-7.x'
+gem 'blacklight', '~> 7.25'
 gem 'blacklight-access_controls', '>= 6.0.1' # ensure rails 6 support
 gem 'rdf', '~> 3.1'
 gem 'rsolr', '~> 1.0'
