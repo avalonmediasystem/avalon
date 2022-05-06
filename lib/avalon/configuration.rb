@@ -28,13 +28,10 @@ module Avalon
       @config.send(sym, *args, &block)
     end
 
+    attr_writer :sanitize_filename
     def sanitize_filename
-      @sanitize_filename = lambda do |filename|
-        if filename.include? ' '
-          filename.gsub(/\s+/, '_')
-        else
-          filename
-        end
+      @sanitize_filename ||= lambda do |filename|
+        filename.gsub(/\s+/, '_')
       end
     end
 
