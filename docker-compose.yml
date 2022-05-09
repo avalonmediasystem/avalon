@@ -99,6 +99,7 @@ services:
       - FEDORA_NAMESPACE=avalon
       - FEDORA_URL=http://fedoraAdmin:fedoraAdmin@fedora:8080/fedora/rest
       - RAILS_ENV=development
+      - RAILS_ADDITIONAL_HOSTS=avalon
       - SETTINGS__REDIS__HOST=redis
       - SETTINGS__REDIS__PORT=6379
       - SECRET_KEY_BASE=abcd
