@@ -46,3 +46,10 @@
     }
   }
 }
+
+// Search constraint remove button
+// Needed to override btn-secondary-outline
+.applied-filter .remove:hover {
+  color: white !important;
+  background-color: #f44336 !important;
+}
