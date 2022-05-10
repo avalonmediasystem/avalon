@@ -228,4 +228,12 @@ Rails.application.routes.draw do
     mount Sidekiq::Web, at: '/jobs', as: 'jobs'
   end
   get '/jobs(.:format)', to: redirect('/')
+
+  scope :persona, as: 'persona' do
+    resources :users, only: [:paged_index], controller: 'samvera/persona/users' do
+      collection do
+        post 'paged_index'
+      end
+    end
+  end
 end
