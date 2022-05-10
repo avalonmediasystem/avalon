@@ -107,7 +107,7 @@ Unless required by applicable law or agreed to in writing, software distributed
         <h4 class="modal-title">Advanced Edit Structure</h4>
         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
       </div>
-      <div class="modal-body structure_edit col-md-12">
+      <div class="modal-body structure_edit col-md-12" style="height:480px">
         <textarea rows=20 class="col-md-12 original_textarea" id="structure_<%= index %>"
           style="visibility:hidden"><%= section.structuralMetadata.valid? ? section.structuralMetadata.to_xml : default_structure %></textarea>
       </div>
@@ -188,48 +188,42 @@ Unless required by applicable law or agreed to in writing, software distributed
       }
       return msg;
     } else {
-      current_xml_editor.find('textarea.original_textarea').html(r['structure']);
-      section_index = parseInt(current_xml_editor.attr('id').split('_').pop());
+      modal = $(`.structure_edit[data-submit_url='${$(this)[0].url}']`)
+      modal.find('textarea.original_textarea').html(r['structure']);
+      section_index = parseInt(modal.attr('id').split('_').pop());
       populate_structure_preview(section_index);
-      current_xml_editor.modal('hide');
-      current_xml_editor = null;
+      modal.modal('hide');
     }
   }
 
-  var current_xml_editor;
   var extractor = new Xsd2Json('avalon_structure.xsd', {
     'schemaURI': '/',
     'rootElement': 'item'
   });
   $('.structure_edit.modal').on('shown.bs.modal', function () {
     modal = $(this);
-    current_xml_editor = modal;
+    if (modal.find('.xml_editor_container').length > 0) return;
+
     te = modal.find('.original_textarea').first();
-    footer = modal.find('.modal-footer').first();
-    mb = modal.find('.modal-body').first();
-    te.height($(window).height() + modal.offset().top - te.offset().top - footer.height() - (mb.outerHeight() - mb
-      .height()));
-    if (modal.find('.xml_editor_container').length == 0) {
-      te.xmlEditor({
-        schema: extractor.getSchema(),
-        floatingMenu: false,
-        confirmExitWhenUnsubmitted: false,
-        loadSchemaAsychronously: false,
-        xmlEditorLabel: 'Graphical',
-        textEditorLabel: 'Raw XML',
-        containerElement: {
-          element: mb,
-          fixedHeight: true,
-        },
-        submitButtonConfigs: [{
-          url: $(this).data('submit_url'),
-          responseHandler: attach_structure_response,
-          label: 'Save and Exit',
-          cssClass: 'btn btn-primary section_edit_submit',
-        }],
-        defaultView: 'text',
-      });
-    }
+    te.xmlEditor({
+      schema: extractor.getSchema(),
+      floatingMenu: false,
+      confirmExitWhenUnsubmitted: false,
+      loadSchemaAsychronously: false,
+      xmlEditorLabel: 'Graphical',
+      textEditorLabel: 'Raw XML',
+      containerElement: {
+        element: modal.find('.modal-body').first(),
+        fixedHeight: true,
+      },
+      submitButtonConfigs: [{
+        url: $(this).data('submit_url'),
+        responseHandler: attach_structure_response,
+        label: 'Save and Exit',
+        cssClass: 'btn btn-primary section_edit_submit',
+      }],
+      defaultView: 'text',
+    });
   });
 </script>
 <% end %>
