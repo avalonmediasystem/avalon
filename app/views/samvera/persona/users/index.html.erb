@@ -45,7 +45,7 @@ Unless required by applicable law or agreed to in writing, software distributed
       <tr>
         <th><%= t('.id_label') %></th>
         <th><%= t('.email_label') %></th>
-        <th><%= t('.role_label') %></th>
+         <!-- <th> <<%= t('.role_label') %></th> -->
         <th><%= t('.access_label') %></th>
         <th><%= t('.status_label') %></th>
         <% if User.column_names.include? 'provider' %>
@@ -55,40 +55,6 @@ Unless required by applicable law or agreed to in writing, software distributed
       </tr>
     </thead>
     <tbody>
-      <% @presenter.users.each do |user| %>
-        <% last_accessed=@presenter.last_accessed(user).getutc.iso8601 %>
-        <tr>
-          <td><%= link_to user.username, main_app.edit_persona_user_path(user) %></td>
-          <td><%= link_to user.email, main_app.edit_persona_user_path(user) %></td>
-          <td><% roles = @presenter.user_roles(user) %>
-              <ul><% roles.each do |role| %>
-                <li><%= role %></li>
-                <% end %>
-              </ul>
-          </td>
-          <td data-order=<%= last_accessed %>>
-            <%# in the case that a user is created who never signs in, this is necessary %>
-            <relative-time datetime="<%= last_accessed %>" title="<%= @presenter.last_accessed(user).to_formatted_s(:standard) %>">
-              <%= @presenter.last_accessed(user).to_formatted_s(:long_ordinal) %>
-            </relative-time>
-          </td>
-          <td><%= user.accepted_or_not_invited? ? t('.status.active') : t('.status.pending') %></td>
-          <% if user.has_attribute?(:provider) %>
-            <td>
-              <%= user.provider %>
-            </td>
-          <% end %>
-          <td>
-            <% if user.has_attribute?(:provider) && !user.provider.nil? %>
-              <span class="text-muted" data-toggle="tooltip" title="Edit user is unavailable because this user is single sign on"><%= t('.edit') %>&nbsp;|&nbsp;</span>
-            <% else %>
-              <%= link_to t('.edit'), main_app.edit_persona_user_path(user) %>&nbsp;|&nbsp;
-            <% end %>
-            <%= link_to t('.become'), main_app.impersonate_persona_user_path(user.id), method: :post %>&nbsp;|&nbsp; 
-            <%= link_to t('.delete'), main_app.persona_user_path(user), class: 'btn btn-danger btn-sm action-delete', method: :delete, data: { confirm: t('.destroy.confirmation', user: user.email) } %>
-          </td>
-        </tr>
-      <% end %>
     </tbody>
   </table>
 </div>
@@ -97,9 +63,28 @@ Unless required by applicable law or agreed to in writing, software distributed
   <script>
     $(document).ready( function () {
       $('#users-table').DataTable({
+        processing: true,
+        serverSide: true,
         dom: '<"dataTableToolsTop"lf><"dataTableBody"t><"dataTableToolsBottom"ip>',
-        autoWidth: true
-      });
+        autoWidth: true,
+        ajax: {
+          url: '/persona/users/paged_index',
+          type: 'POST'
+        },
+        order: [ <%= "[#{session[:users_sort][0]}, '#{session[:users_sort][1]}']".html_safe if session[:users_sort] %>
+      ],
+      "columns": [
+        null,
+        null,
+        // null,
+        null,
+        null,
+        null,
+        { className: "text-right"}
+      ]
+    }).on('draw', function () {
+      window.apply_button_confirmation()
+    });
     });
   </script>
 <% end %>
