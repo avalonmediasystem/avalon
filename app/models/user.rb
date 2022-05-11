@@ -42,7 +42,7 @@ class User < ActiveRecord::Base
   scope :username_like, ->(username_filter) { where("username LIKE ?", "%#{username_filter}%") }
   scope :email_like, ->(email_filter) { where("email LIKE ?", "%#{email_filter}%") }
   scope :group_like, ->(group_filter) { where("role LIKE ?", "%#{group_filter}%")}
-  scope :status_like, ->(status_filter) { where("status LIKE ?", "%#{status_filter}%")}
+  scope :status_like, ->(status_filter) { where("accepted_or_not_invited LIKE ?", "%#{status_filter}%")}
   scope :provider_like, ->(provider_filter) { where("provider LIKE ?", "%#{provider_filter}%")}
 
   def username_email_uniqueness

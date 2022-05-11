@@ -51,7 +51,7 @@ Unless required by applicable law or agreed to in writing, software distributed
         <% if User.column_names.include? 'provider' %>
           <th><%= t('.auth_label') %></th>
         <% end %>
-        <th data-orderable="false"><%= t('.action_label') %></th>
+        <th class="text-right" data-orderable="false"><%= t('.action_label') %></th>
       </tr>
     </thead>
     <tbody>

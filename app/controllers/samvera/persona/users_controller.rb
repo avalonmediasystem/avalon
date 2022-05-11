@@ -92,7 +92,6 @@ module Samvera
         "recordsTotal": records_total,
         "recordsFiltered": presenter_filtered_total,
         "data": @presenter.collect do |presenter|
-          # require pry, binding.pry
           edit_button = view_context.link_to(main_app.edit_persona_user_path(presenter), class: 'btn btn-default btn-xs') do
             "<i class='fa fa-edit' aria-hidden='true'></i> Edit".html_safe
           end
@@ -102,17 +101,16 @@ module Samvera
           delete_button = view_context.link_to(main_app.persona_user_path(presenter), method: :delete, class: 'btn btn-xs btn-danger action-delete', data: { confirm: t('.destroy.confirmation', user:presenter.email)}) do
             "<i class='fa fa-times' aria-hidden='true'></i> Delete".html_safe
           end
-          if presenter.has_attribute?(:provider)
-            user_provider = presenter.provider
-          end
           [
             view_context.link_to(presenter.username, main_app.edit_persona_user_path(presenter)),
             view_context.link_to(presenter.email, main_app.edit_persona_user_path(presenter)),
-            "placeholder",
+            presenter.groups.each do |role|
+              role
+            end,
             "placeholder",
             # "<td data-order=#{view_context.last_accessed(presenter).getutc.iso8601}><relative-time datetime='#{view_context.last_accessed(presenter).to_formatted_s(:standard)}'>#{view_context.last_accessed(presenter).to_formatted_s(:long_ordinal)}</relative-time></td>",
             presenter.accepted_or_not_invited? ? t('.status.active') : t('.status.pending'),
-            "<td>#{user_provider}</td>",
+            presenter.provider,
             "#{edit_button} #{become_button} #{delete_button}"
           ]
         end
