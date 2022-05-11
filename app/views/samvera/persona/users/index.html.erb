@@ -45,7 +45,7 @@ Unless required by applicable law or agreed to in writing, software distributed
       <tr>
         <th><%= t('.id_label') %></th>
         <th><%= t('.email_label') %></th>
-         <!-- <th> <<%= t('.role_label') %></th> -->
+        <th> <%= t('.role_label') %></th>
         <th><%= t('.access_label') %></th>
         <th><%= t('.status_label') %></th>
         <% if User.column_names.include? 'provider' %>
@@ -76,7 +76,7 @@ Unless required by applicable law or agreed to in writing, software distributed
       "columns": [
         null,
         null,
-        // null,
+        null,
         null,
         null,
         null,

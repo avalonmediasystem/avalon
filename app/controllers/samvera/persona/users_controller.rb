@@ -52,64 +52,66 @@ module Samvera
 
       @presenter = Samvera::Persona::UsersPresenter.new
       records_total = @presenter.user_count
+      @presenter = @presenter.users
       columns = ['username', 'email', 'groups', 'last_sign_in_at', 'accepted_or_not_invited', 'provider', 'actions']
 
       # TODO: Filter username, email, groups, status, provider
-      # # Filter username
-      # username_filter = params['search']['value']
-      # @presenter = @presenter.username_like(username_filter) if username_filter.present?
-      #
-      # # Filter email
-      # email_filter = params['columns']['1']['search']['value']
-      # @presenter = @presenter.email_like(email_filter) if email_filter.present?
-      #
-      # # Filter groups
-      # group_filter = params['columns']['2']['search']['value']
-      # @presenter = @presenter.group_like(group_filter) if group_filter.present?
-      #
-      # # Filter status
-      # status_filter = params['columns']['4']['search']['value']
-      # @presenter = @presenter.status_like(status_filter) if status_filter.present?
-      #
-      # # Filter provider
-      # provider_filter = params['columns']['5']['search']['value']
-      # @presenter = @presenter.provider_like(provider_filter) if provider_filter.present?
-      #
-      # # TODO: Sort
-      # sort_column = params['order']['0']['column'].to_i rescue 0
-      # sort_direction = params['order']['0']['dir'] rescue 'asc'
-      # session[:presenter_sort] = [sort_column, sort_direction]
-      # @presenter = @presenter.order(columns[sort_column].downcase => sort_direction)
-      # @presenter = @presenter.offset(params['start']).limit(params['length'])
-      #
-      # # TODO: Count
-      # presenter_filtered_total = @presenter.count
+      # Filter username
+      username_filter = params['search']['value']
+      @presenter = @presenter.username_like(username_filter) if username_filter.present?
+
+      # Filter email
+      email_filter = params['columns']['1']['search']['value']
+      @presenter = @presenter.email_like(email_filter) if email_filter.present?
+
+      # Filter groups
+      group_filter = params['columns']['2']['search']['value']
+      @presenter = @presenter.group_like(group_filter) if group_filter.present?
+
+      # Filter status
+      status_filter = params['columns']['4']['search']['value']
+      @presenter = @presenter.status_like(status_filter) if status_filter.present?
+
+      # Filter provider
+      provider_filter = params['columns']['5']['search']['value']
+      @presenter = @presenter.provider_like(provider_filter) if provider_filter.present?
+
+      # TODO: Sort
+      sort_column = params['order']['0']['column'].to_i rescue 0
+      sort_direction = params['order']['0']['dir'] rescue 'asc'
+      session[:presenter_sort] = [sort_column, sort_direction]
+      @presenter = @presenter.order(columns[sort_column].downcase => sort_direction)
+      @presenter = @presenter.offset(params['start']).limit(params['length'])
+
+      # TODO: Count
+      presenter_filtered_total = @presenter.count
 
       # TODO: Build json response with actions and other values
       response = {
         "draw": params['draw'],
         "recordsTotal": records_total,
-        # "recordsFiltered": presenter_filtered_total,
-        "data": @presenter.users.each do |user|
-          require pry, binding.pry
-          edit_button = view_context.link_to(main_app.edit_persona_user_path(user), class: 'btn btn-default btn-xs') do
+        "recordsFiltered": presenter_filtered_total,
+        "data": @presenter.collect do |presenter|
+          # require pry, binding.pry
+          edit_button = view_context.link_to(main_app.edit_persona_user_path(presenter), class: 'btn btn-default btn-xs') do
             "<i class='fa fa-edit' aria-hidden='true'></i> Edit".html_safe
           end
-          become_button = view_context.link_to(main_app.impersonate_persona_user_path(user.id), method: :post, class: 'btn btn-xs btn-confirmation') do
-            "<i class='fa fa-become' aria-hidden='true'></i> Become".html_safe
+          become_button = view_context.link_to(main_app.impersonate_persona_user_path(presenter), method: :post, class: 'btn btn-xs btn-confirmation') do
+            "<i class='fa fa-user' aria-hidden='true'></i> Become".html_safe
           end
-          delete_button = view_context.link_to(main_app.persona_user_path(user), method: :delete, class: 'btn btn-xs btn-danger action-delete', data: { confirm: t('.destroy.confirmation', user:user.email)}) do
+          delete_button = view_context.link_to(main_app.persona_user_path(presenter), method: :delete, class: 'btn btn-xs btn-danger action-delete', data: { confirm: t('.destroy.confirmation', user:presenter.email)}) do
             "<i class='fa fa-times' aria-hidden='true'></i> Delete".html_safe
           end
-          if user.has_attribute?(:provider)
-            user_provider = user.provider
+          if presenter.has_attribute?(:provider)
+            user_provider = presenter.provider
           end
           [
-            view_context.link_to(user.username, main_app.edit_persona_user_path(user)),
-            view_context.link_to(user.email, main_app.edit_persona_user_path(user)),
-            # Placeholder for roles
-            "<td data-order=#{@presenter.last_accessed(user).getutc.iso8601}><relative-time datetime='#{@presenter.last_accessed(user).to_formatted_s(:standard)}'>#{@presenter.last_accessed(user).to_formatted_s(:long_ordinal)}</relative-time></td>",
-            "<td>#{user.accepted_or_not_invited? ? t('.status.active') : t('.status.pending')}</td>",
+            view_context.link_to(presenter.username, main_app.edit_persona_user_path(presenter)),
+            view_context.link_to(presenter.email, main_app.edit_persona_user_path(presenter)),
+            "placeholder",
+            "placeholder",
+            # "<td data-order=#{view_context.last_accessed(presenter).getutc.iso8601}><relative-time datetime='#{view_context.last_accessed(presenter).to_formatted_s(:standard)}'>#{view_context.last_accessed(presenter).to_formatted_s(:long_ordinal)}</relative-time></td>",
+            presenter.accepted_or_not_invited? ? t('.status.active') : t('.status.pending'),
             "<td>#{user_provider}</td>",
             "#{edit_button} #{become_button} #{delete_button}"
           ]
