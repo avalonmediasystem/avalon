@@ -19,13 +19,6 @@ $ ->
   initialized = false
   $('#browse-btn').browseEverything()
     .show ->
-      alertMsg = $('<div>')
-        .html('Warning! Uploading too many files at once can lead to ingest failures.')
-        .addClass('alert')
-        .addClass('alert-danger')
-        .css('margin','3px')
-        .css('text-align','center')
-      $('.ev-body').prepend(alertMsg)
       unless $('#browse-everything input[name=workflow]').length > 0
         skip_box = $('#web_upload input[name=workflow]').closest('span')
           .clone().removeClass().css('margin-right','10px')
