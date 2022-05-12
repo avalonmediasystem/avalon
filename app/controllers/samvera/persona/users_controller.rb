@@ -102,7 +102,7 @@ module Samvera
           become_button = view_context.link_to(main_app.impersonate_persona_user_path(presenter), method: :post) do
             "Become"
           end
-          delete_button = view_context.link_to(main_app.persona_user_path(presenter), method: :delete, class: 'btn btn-xs btn-danger action-delete', data: { confirm: t('.destroy.confirmation', user:presenter.email)}) do
+          delete_button = view_context.link_to(main_app.persona_user_path(presenter), method: :delete, class: 'btn btn-danger btn-xs action-delete', data: { confirm: "Are you sure you wish to delete the user '#{presenter.email}'? This action is irreversible."}) do
             "Delete"
           end
           @formatted_roles = Array.new
