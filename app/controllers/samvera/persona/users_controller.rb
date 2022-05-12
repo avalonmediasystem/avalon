@@ -53,7 +53,7 @@ module Samvera
       @presenter = Samvera::Persona::UsersPresenter.new
       records_total = @presenter.user_count
       @presenter = @presenter.users
-      columns = ['username', 'email', 'groups', 'last_sign_in_at', 'accepted_or_not_invited', 'provider', 'actions']
+      columns = ['username', 'email', 'role_maps', 'last_sign_in_at', 'invitation_accepted_at', 'provider', 'actions']
 
       # TODO: Filter username, email, groups, status, provider
       # Filter username
@@ -92,26 +92,33 @@ module Samvera
         "recordsTotal": records_total,
         "recordsFiltered": presenter_filtered_total,
         "data": @presenter.collect do |presenter|
-          edit_button = view_context.link_to(main_app.edit_persona_user_path(presenter), class: 'btn btn-default btn-xs') do
-            "<i class='fa fa-edit' aria-hidden='true'></i> Edit".html_safe
+          if presenter.has_attribute?(:provider) && !presenter.provider.nil?
+            edit_button = "<span class='text-muted' data-toggle='tooltip' title='Edit user is unavailable because this user is single sign on'> Edit".html_safe
+          else
+            edit_button = view_context.link_to(main_app.edit_persona_user_path(presenter)) do
+              "Edit"
+            end
           end
-          become_button = view_context.link_to(main_app.impersonate_persona_user_path(presenter), method: :post, class: 'btn btn-xs btn-confirmation') do
-            "<i class='fa fa-user' aria-hidden='true'></i> Become".html_safe
+          become_button = view_context.link_to(main_app.impersonate_persona_user_path(presenter), method: :post) do
+            "Become"
           end
           delete_button = view_context.link_to(main_app.persona_user_path(presenter), method: :delete, class: 'btn btn-xs btn-danger action-delete', data: { confirm: t('.destroy.confirmation', user:presenter.email)}) do
-            "<i class='fa fa-times' aria-hidden='true'></i> Delete".html_safe
+            "Delete"
           end
+          @formatted_roles = Array.new
+          @roles = presenter.groups
+          @roles.each do |role|
+            @formatted_roles.append("<li>#{role}</li>".html_safe)
+          end
+          last_sign_in = Time.at(presenter.last_sign_in_at.to_i)
           [
             view_context.link_to(presenter.username, main_app.edit_persona_user_path(presenter)),
             view_context.link_to(presenter.email, main_app.edit_persona_user_path(presenter)),
-            presenter.groups.each do |role|
-              role
-            end,
-            "placeholder",
-            # "<td data-order=#{view_context.last_accessed(presenter).getutc.iso8601}><relative-time datetime='#{view_context.last_accessed(presenter).to_formatted_s(:standard)}'>#{view_context.last_accessed(presenter).to_formatted_s(:long_ordinal)}</relative-time></td>",
-            presenter.accepted_or_not_invited? ? t('.status.active') : t('.status.pending'),
-            presenter.provider,
-            "#{edit_button} #{become_button} #{delete_button}"
+            "<ul>#{@formatted_roles.join()}</ul>".html_safe,
+            "<td data-order='#{last_sign_in.getutc.iso8601}'><relative-time datetime='#{last_sign_in.getutc.iso8601}' title='#{last_sign_in.to_formatted_s(:standard)}'>#{last_sign_in.to_formatted_s(:long_ordinal)}</relative-time></td>".html_safe,
+            presenter.accepted_or_not_invited? ? 'Active' : 'Pending',
+            presenter.has_attribute?(:provider) ? presenter.provider : nil,
+            "#{edit_button}&nbsp;|&nbsp;#{become_button}&nbsp;|&nbsp;#{delete_button}"
           ]
         end
       }
