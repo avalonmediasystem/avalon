@@ -115,7 +115,7 @@ module Samvera
             view_context.link_to(presenter.username, main_app.edit_persona_user_path(presenter)),
             view_context.link_to(presenter.email, main_app.edit_persona_user_path(presenter)),
             "<ul>#{@formatted_roles.join()}</ul>".html_safe,
-            "<td data-order='#{last_sign_in.getutc.iso8601}'><relative-time datetime='#{last_sign_in.getutc.iso8601}' title='#{last_sign_in.to_formatted_s(:standard)}'>#{last_sign_in.to_formatted_s(:long_ordinal)}</relative-time></td>".html_safe,
+            "<relative-time datetime='#{last_sign_in.getutc.iso8601}' title='#{last_sign_in.to_formatted_s(:standard)}'>#{last_sign_in.to_formatted_s(:long_ordinal)}</relative-time>".html_safe,
             presenter.accepted_or_not_invited? ? 'Active' : 'Pending',
             presenter.has_attribute?(:provider) ? presenter.provider : nil,
             "#{edit_button}&nbsp;|&nbsp;#{become_button}&nbsp;|&nbsp;#{delete_button}"
