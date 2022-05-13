@@ -39,7 +39,7 @@ $state-info-border:              darken(adjust-hue($state-info-bg, -10), 7%) !de
   }
 
   .navbar-toggler {
-    @include media-breakpoint-down(xs) {
+    @include media-breakpoint-down(sm) {
       background: $primary;
       margin: 0.5rem 1rem 0.5rem 0.5rem;
     }
@@ -94,14 +94,13 @@ $state-info-border:              darken(adjust-hue($state-info-bg, -10), 7%) !de
 
 .navbar-header {
   @include media-breakpoint-down(md) {
-    width: 100%;
-
     .row {
       display: flex;
     }
   }
 
-  @include media-breakpoint-down(xs) {
+  @include media-breakpoint-down(sm) {
+    width: 100%;
     background: white;
     box-shadow: 0 0 5px;
   }
