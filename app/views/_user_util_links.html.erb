@@ -78,10 +78,10 @@ Unless required by applicable law or agreed to in writing, software distributed
     </li>
   <% end %>
 
-  <li class="dropdown-divider desktop-hidden dropdown-item">
-    <%= link_to_if user_signed_in?, 'Sign out', main_app.destroy_user_session_path do %>
+  <li class="nav-item desktop-hidden">
+    <%= link_to_if user_signed_in?, 'Sign out', main_app.destroy_user_session_path, class: 'nav-link' do %>
       <%# Fallback if the test above fails %>
-      <%= link_to 'Sign in', main_app.new_user_session_path %>
+      <%= link_to 'Sign in', main_app.new_user_session_path, class: 'nav-link' %>
     <% end %>
   </li>
   <% unless current_page?(main_app.root_path) %>
