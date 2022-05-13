@@ -53,7 +53,7 @@ module Samvera
       @presenter = Samvera::Persona::UsersPresenter.new
       records_total = @presenter.user_count
       @presenter = @presenter.users
-      columns = ['username', 'email', 'role_maps', 'last_sign_in_at', 'invitation_accepted_at', 'provider', 'actions']
+      columns = ['username', 'email', 'entry', 'last_sign_in_at', 'invitation_token', 'provider', 'actions']
 
       # TODO: Filter username, email, groups, status, provider
       # Filter username
@@ -80,7 +80,8 @@ module Samvera
       sort_column = params['order']['0']['column'].to_i rescue 0
       sort_direction = params['order']['0']['dir'] rescue 'asc'
       session[:presenter_sort] = [sort_column, sort_direction]
-      @presenter = @presenter.order(columns[sort_column].downcase => sort_direction)
+      # @presenter = @presenter.order(columns[sort_column].downcase => sort_direction)
+      @presenter = @presenter.joins('LEFT JOIN role_maps ON role_maps.parent_id=users.id').merge(@presenter.order(columns[sort_column].downcase => sort_direction))
       @presenter = @presenter.offset(params['start']).limit(params['length'])
 
       # TODO: Count
