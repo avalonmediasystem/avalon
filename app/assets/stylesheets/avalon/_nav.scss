@@ -35,15 +35,17 @@ $state-info-border:              darken(adjust-hue($state-info-bg, -10), 7%) !de
     background-size: contain;
     background-color: white;
     background-position: 20%;
+    margin-top: 0;
   }
 
   .navbar-toggler {
     @include media-breakpoint-down(xs) {
       background: $primary;
+      margin: 0.5rem 1rem 0.5rem 0.5rem;
     }
   }
 
-  padding: 0 1rem;
+  padding: 0;
 }
 
 .navbar {
@@ -92,6 +94,8 @@ $state-info-border:              darken(adjust-hue($state-info-bg, -10), 7%) !de
 
 .navbar-header {
   @include media-breakpoint-down(md) {
+    width: 100%;
+
     .row {
       display: flex;
     }
@@ -193,6 +197,7 @@ $state-info-border:              darken(adjust-hue($state-info-bg, -10), 7%) !de
 #manage-dropdown:hover .manage-dropdown-menu {
   display: block;
   margin-top: 0;
+  width: 100%;
 }
 
 .manage-btn:focus {
@@ -217,6 +222,7 @@ $state-info-border:              darken(adjust-hue($state-info-bg, -10), 7%) !de
 
 .manage-dropdown {
   width: 100%;
+  display: block;
 }
 
 @include media-breakpoint-down(xs) {
