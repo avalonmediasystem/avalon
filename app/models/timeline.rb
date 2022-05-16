@@ -160,8 +160,8 @@ class Timeline < ActiveRecord::Base
             description
           ]
         },
-        "homepage":[
-          {
+        "homepage": [
+        {
           "id": source,
           "type": "Text",
           "label": {
@@ -170,7 +170,7 @@ class Timeline < ActiveRecord::Base
             ]
           },
           "format": "text/html"
-          }
+        }
         ],
         "items": [
           {
