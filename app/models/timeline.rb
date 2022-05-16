@@ -171,7 +171,7 @@ class Timeline < ActiveRecord::Base
           },
           "format": "text/html"
         }
-        ],
+      ],
         "items": [
           {
             "id": "#{manifest_url}/canvas",
