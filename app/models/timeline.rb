@@ -161,17 +161,17 @@ class Timeline < ActiveRecord::Base
           ]
         },
         "homepage": [
-        {
-          "id": source,
-          "type": "Text",
-          "label": {
-            "en": [
-                    "View Source Item"
-            ]
-          },
-          "format": "text/html"
-        }
-      ],
+          {
+            "id": source,
+            "type": "Text",
+            "label": {
+              "en": [
+                "View Source Item"
+              ]
+            },
+            "format": "text/html"
+          }
+        ],
         "items": [
           {
             "id": "#{manifest_url}/canvas",
