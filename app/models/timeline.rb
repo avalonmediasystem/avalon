@@ -60,7 +60,7 @@ class Timeline < ActiveRecord::Base
 
     manifest_json = JSON.parse(manifest)
     manifest_json["homepage"] ||= {}
-    manifest_json["homepage"]["id"] = "#{base_url}?t=#{media_fragment}"
+    manifest_json["homepage"][0]["id"] = "#{base_url}?t=#{media_fragment}"
     self.manifest = manifest_json.to_json
   end
 
@@ -160,7 +160,8 @@ class Timeline < ActiveRecord::Base
             description
           ]
         },
-        "homepage": {
+        "homepage":[
+          {
           "id": source,
           "type": "Text",
           "label": {
@@ -169,7 +170,8 @@ class Timeline < ActiveRecord::Base
             ]
           },
           "format": "text/html"
-        },
+          }
+        ],
         "items": [
           {
             "id": "#{manifest_url}/canvas",

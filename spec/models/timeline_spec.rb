@@ -294,7 +294,7 @@ RSpec.describe Timeline, type: :model do
         expect(timeline.source_changed?).to eq true
         timeline.save
         manifest_json = JSON.parse(timeline.manifest)
-        expect(manifest_json["homepage"]["id"]).to eq new_homepage
+        expect(manifest_json["homepage"][0]["id"]).to eq new_homepage
       end
     end
 
@@ -310,7 +310,7 @@ RSpec.describe Timeline, type: :model do
         expect(timeline.source_changed?).to eq true
         timeline.standardize_homepage
         manifest_json = JSON.parse(timeline.manifest)
-        expect(manifest_json["homepage"]["id"]).to eq new_homepage
+        expect(manifest_json["homepage"][0]["id"]).to eq new_homepage
       end
     end
   end
