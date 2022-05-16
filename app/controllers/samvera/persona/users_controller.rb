@@ -44,12 +44,6 @@ module Samvera
 
     # POST /persona/users/paged_index
     def paged_index
-      if defined?(add_breadcrumb)
-        add_breadcrumb t(:'hyrax.controls.home'), main_app.root_path
-        add_breadcrumb t(:'hyrax.dashboard.breadcrumbs.admin'), hyrax.dashboard_path
-        add_breadcrumb t(:'samvera.persona.users.index.title'), main_app.persona_users_path
-      end
-
       @presenter = Samvera::Persona::UsersPresenter.new
       records_total = @presenter.user_count
       @presenter = @presenter.users
@@ -93,20 +87,20 @@ module Samvera
         "recordsTotal": records_total,
         "recordsFiltered": presenter_filtered_total,
         "data": @presenter.collect do |presenter|
-          if presenter.has_attribute?(:provider) && !presenter.provider.nil?
-            edit_button = "<span class='text-muted' data-toggle='tooltip' title='Edit user is unavailable because this user is single sign on'> Edit".html_safe
+          edit_button = if presenter.has_attribute?(:provider) && !presenter.provider.nil?
+            "<span class='text-muted' data-toggle='tooltip' title='Edit user is unavailable because this user is single sign on'> Edit".html_safe
           else
-            edit_button = view_context.link_to(main_app.edit_persona_user_path(presenter)) do
+            view_context.link_to(main_app.edit_persona_user_path(presenter)) do
               "Edit"
             end
           end
           become_button = view_context.link_to(main_app.impersonate_persona_user_path(presenter), method: :post) do
             "Become"
           end
-          delete_button = view_context.link_to(main_app.persona_user_path(presenter), method: :delete, class: 'btn btn-danger btn-xs action-delete', data: { confirm: "Are you sure you wish to delete the user '#{presenter.email}'? This action is irreversible."}) do
+          delete_button = view_context.link_to(main_app.persona_user_path(presenter), method: :delete, class: 'btn btn-danger btn-xs action-delete', data: { confirm: "Are you sure you wish to delete the user '#{presenter.email}'? This action is irreversible." }) do
             "Delete"
           end
-          @formatted_roles = Array.new
+          @formatted_roles = []
           @roles = presenter.groups
           @roles.each do |role|
             @formatted_roles.append("<li>#{role}</li>".html_safe)
@@ -115,7 +109,7 @@ module Samvera
           [
             view_context.link_to(presenter.username, main_app.edit_persona_user_path(presenter)),
             view_context.link_to(presenter.email, main_app.edit_persona_user_path(presenter)),
-            "<ul>#{@formatted_roles.join()}</ul>".html_safe,
+            "<ul>#{@formatted_roles.join}</ul>".html_safe,
             "<relative-time datetime='#{last_sign_in.getutc.iso8601}' title='#{last_sign_in.to_formatted_s(:standard)}'>#{last_sign_in.to_formatted_s(:long_ordinal)}</relative-time>".html_safe,
             presenter.accepted_or_not_invited? ? 'Active' : 'Pending',
             presenter.has_attribute?(:provider) ? presenter.provider : nil,
