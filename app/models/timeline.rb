@@ -60,6 +60,7 @@ class Timeline < ActiveRecord::Base
 
     manifest_json = JSON.parse(manifest)
     manifest_json["homepage"] ||= []
+    manifest_json["homepage"][0] ||= {}
     manifest_json["homepage"][0]["id"] = "#{base_url}?t=#{media_fragment}"
     self.manifest = manifest_json.to_json
   end

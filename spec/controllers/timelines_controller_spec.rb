@@ -351,14 +351,16 @@ RSpec.describe TimelinesController, type: :controller do
             "summary": {
               "en": [description]
             },
-            "homepage": {
-              "id": source,
-              "type": "Text",
-              "label": {
-                "en": ["View Source Item"]
-              },
-              "format": "text/html"
-            },
+            "homepage": [
+              {
+                "id": source,
+                "type": "Text",
+                "label": {
+                  "en": ["View Source Item"]
+                },
+                "format": "text/html"
+              }
+            ],
             "items": [
               {
                 "id": "http://test.host/timelines/1/manifest/canvas",
