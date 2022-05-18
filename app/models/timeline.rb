@@ -59,8 +59,9 @@ class Timeline < ActiveRecord::Base
     base_url ||= Rails.application.routes.url_helpers.master_file_url(master_file)
 
     manifest_json = JSON.parse(manifest)
-    manifest_json["homepage"] ||= {}
-    manifest_json["homepage"]["id"] = "#{base_url}?t=#{media_fragment}"
+    manifest_json["homepage"] ||= []
+    manifest_json["homepage"][0] ||= {}
+    manifest_json["homepage"][0]["id"] = "#{base_url}?t=#{media_fragment}"
     self.manifest = manifest_json.to_json
   end
 
@@ -160,16 +161,18 @@ class Timeline < ActiveRecord::Base
             description
           ]
         },
-        "homepage": {
-          "id": source,
-          "type": "Text",
-          "label": {
-            "en": [
-              "View Source Item"
-            ]
-          },
-          "format": "text/html"
-        },
+        "homepage": [
+          {
+            "id": source,
+            "type": "Text",
+            "label": {
+              "en": [
+                "View Source Item"
+              ]
+            },
+            "format": "text/html"
+          }
+        ],
         "items": [
           {
             "id": "#{manifest_url}/canvas",
