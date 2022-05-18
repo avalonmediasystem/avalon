@@ -193,10 +193,15 @@ $state-info-border:              darken(adjust-hue($state-info-bg, -10), 7%) !de
   }
 }
 
-#manage-dropdown:hover .manage-dropdown-menu {
+#manage-dropdown:hover .manage-dropdown-menu.show {
   display: block;
   margin-top: 0;
-  width: 100%;
+
+  @include media-breakpoint-down(sm) {
+    width: 100%;
+  }
+
+  width: max-content;
 }
 
 .manage-btn:focus {
@@ -205,6 +210,7 @@ $state-info-border:              darken(adjust-hue($state-info-bg, -10), 7%) !de
 }
 
 .manage-dropdown-menu {
+  display: none;
   border: none;
   border-radius: inherit;
   width: max-content;
@@ -224,7 +230,7 @@ $state-info-border:              darken(adjust-hue($state-info-bg, -10), 7%) !de
   display: block;
 }
 
-@include media-breakpoint-down(xs) {
+@include media-breakpoint-down(sm) {
   .manage-btn {
     height: 40px;
   }

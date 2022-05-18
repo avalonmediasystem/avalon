@@ -426,6 +426,7 @@ a[data-trigger='submit'] {
 
 #documents .document {
   padding-bottom: $padding-base-vertical;
+  margin-left: 1rem;
 
   &:last-child {
     border-bottom: none;
@@ -1001,6 +1002,10 @@ h5.card-title {
 }
 
 // Admin Collection list page
+#admin-collections-table.table-responsive {
+  display: table;
+}
+
 .row.display-flex {
   display: flex;
   flex-direction: row;
@@ -1111,7 +1116,7 @@ h5.card-title {
 }
 
 // Make table body scrollable in mobile devices
-@include media-breakpoint-down(sm) {
+@include media-breakpoint-down(md) {
   .dataTableBody {
     width: 100%;
     overflow-x: scroll;

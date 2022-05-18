@@ -104,13 +104,4 @@ $(document).ready(function() {
       $searchSubmit.addClass('btn-primary');
     }
   });
-
-  // Close dropdown when Tab key is used with Shift key
-  $('#manage-dropdown').keydown(function(e) {
-    if (e.which == 9 && e.shiftKey) {
-      $(this).removeClass('open');
-      $(this).attr('aria-expanded', 'false');
-    }
-  });
-
 });
