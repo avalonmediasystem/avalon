@@ -28,7 +28,7 @@ Unless required by applicable law or agreed to in writing, software distributed
     <div class="input-group" style="flex-flow: nowrap">
       <%= select_tag :collection_id, options_from_collection_for_select(@collections, "id", "name", session[:intercom_default_collection] ), required: true, style: 'width:100%;', class:'form-control', form:'intercom_push_form' %>
       <span class="input-group-btn">
-        <button class="btn" style="lightgrey" title="Refresh list" onclick="getIntercomCollections(true, '<%= intercom_collections_media_objects_path %>');"><i class="fa fa-refresh"></i></button>
+        <button class="btn btn-outline" title="Refresh list" onclick="getIntercomCollections(true, '<%= intercom_collections_media_objects_path %>');"><i class="fa fa-refresh"></i></button>
       </span>
     </div>
   </div>
