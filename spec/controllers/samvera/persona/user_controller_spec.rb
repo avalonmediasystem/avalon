@@ -34,6 +34,10 @@ RSpec.describe Samvera::Persona::UsersController, type: :controller do
     before { sign_in user }
 
     describe 'DELETE #destroy' do
+      before :each do
+        new_hash = {"administrator"=>[user.username], "group_manager"=>[user.username, "alice.archivist@example.edu"], "registered"=>["bob.user@example.edu"]}
+        RoleMap.replace_with!(new_hash)
+      end
       before { delete :destroy, params: { id: user.to_param } }
 
       it "deletes the user and displays success message" do
@@ -44,6 +48,15 @@ RSpec.describe Samvera::Persona::UsersController, type: :controller do
       it "deletes the user without paranoia gem" do
         # expect{User.with_deleted.find(user.id)}.to_not raise_error
         expect(User.exists?(user.id)).to eq false
+      end
+
+      it "removes the user from groups" do
+        expect(RoleMap.all.find_by(entry: user.username)).to be_nil
+      end
+
+      it "doesn't remove other users from groups" do
+        expect(RoleMap.all.find_by(entry: 'alice.archivist@example.edu').entry).to eq 'alice.archivist@example.edu'
+        expect(RoleMap.all.find_by(entry: 'bob.user@example.edu').entry).to eq 'bob.user@example.edu'
       end
     end
   end
@@ -92,7 +105,7 @@ RSpec.describe Samvera::Persona::UsersController, type: :controller do
           @controller.user_session[:virtual_groups] = old_ldap_groups
         end
 
-        it 'sets the virtual groups for the new user' do  
+        it 'sets the virtual groups for the new user' do
           expect { post :stop_impersonating, params: { id: current_user.id }}.to change { @controller.user_session[:virtual_groups] }.from(old_ldap_groups).to([])
         end
       end

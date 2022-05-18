@@ -95,6 +95,7 @@ module Samvera
       #TODO update hyku user.destroy to do roles.destroy_all instead
       if @user.present? && @user.destroy
         redirect_to main_app.persona_users_path, notice: t('.success', user: @user)
+        RoleMap.delete_by(entry: @user.username)
       else
         redirect_to main_app.persona_users_path flash: { error: t('.failure', user: @user) }
       end
