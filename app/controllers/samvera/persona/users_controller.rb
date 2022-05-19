@@ -75,11 +75,12 @@ module Samvera
       sort_direction = params['order']['0']['dir'] rescue 'asc'
       session[:presenter_sort] = [sort_column, sort_direction]
       # @presenter = @presenter.order(columns[sort_column].downcase => sort_direction)
-      @presenter = @presenter.joins('LEFT JOIN role_maps ON role_maps.parent_id=users.id').merge(@presenter.order(columns[sort_column].downcase => sort_direction))
+      @presenter = @presenter.joins('LEFT JOIN role_maps ON role_maps.entry=users.username').group(:id, :entry).merge(@presenter.order(columns[sort_column].downcase => sort_direction))
       @presenter = @presenter.offset(params['start']).limit(params['length'])
 
       # TODO: Count
       presenter_filtered_total = @presenter.count
+      require pry, binding.pry
 
       # TODO: Build json response with actions and other values
       response = {
@@ -105,7 +106,7 @@ module Samvera
           @roles.each do |role|
             @formatted_roles.append("<li>#{role}</li>".html_safe)
           end
-          last_sign_in = Time.at(presenter.last_sign_in_at.to_i)
+          last_sign_in = presenter.last_sign_in_at? ? Time.at(presenter.last_sign_in_at.to_i) : Time.at(presenter.invitation_sent_at.to_i)
           [
             view_context.link_to(presenter.username, main_app.edit_persona_user_path(presenter)),
             view_context.link_to(presenter.email, main_app.edit_persona_user_path(presenter)),
