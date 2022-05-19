@@ -59,8 +59,8 @@ module Samvera
       @presenter = @presenter.email_like(email_filter) if email_filter.present?
 
       # Filter groups
-      group_filter = params['columns']['2']['search']['value']
-      @presenter = @presenter.group_like(group_filter) if group_filter.present?
+      # group_filter = params['columns']['2']['search']['value']
+      # @presenter = @presenter.group_like(group_filter) if group_filter.present?
 
       # Filter status
       status_filter = params['columns']['4']['search']['value']
