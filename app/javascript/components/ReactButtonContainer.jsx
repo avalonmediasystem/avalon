@@ -7,14 +7,15 @@ class ReactButtonContainer extends Component {
   constructor(props) {
     super(props);
 
+    const { audioURL, baseURL, initStructure, masterFileID, streamDuration } = this.props;
     this.state = {
       show: false,
       smeProps: {
-        masterFileID: this.props.masterFileID,
-        baseURL: this.props.baseURL,
-        initStructure: this.props.initStructure,
-        audioStreamURL: this.props.audioStreamURL,
-        streamDuration: this.props.streamDuration
+        structureURL: baseURL + '/master_files/' + masterFileID + '/structure.json',
+        waveformURL: baseURL + '/master_files/' + masterFileID + '/waveform.json',
+        initStructure: initStructure,
+        audioURL: audioURL,
+        streamDuration: Number(streamDuration)
       },
       structureSaved: true
     };
