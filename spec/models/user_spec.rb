@@ -98,20 +98,19 @@ describe User do
       end
     end
 
-    # describe 'group_like' do
-    #   let(:user1) { FactoryBot.create(:admin) }
-    #   let(:user2) { FactoryBot.create(:group_manager) }
-    #   let(:user3) { FactoryBot.create(:manager) }
-    #   let(:group_filter) { 'administrator' }
-    #   it 'returns users with matching groups' do
-    #     byebug
-    #     expect(User.group_like(group_filter)).to include(user1)
-    #   end
-    #   it 'does not return users without matching groups' do
-    #     expect(User.group_like(group_filter)).not_to include(user2)
-    #     expect(User.group_like(group_filter)).not_to include(user3)
-    #   end
-    # end
+    describe 'group_like' do
+      let(:user1) { FactoryBot.create(:admin, username: 'admin@example.edu') }
+      let(:user2) { FactoryBot.create(:group_manager, username: 'group_manager@example.edu') }
+      let(:user3) { FactoryBot.create(:manager, username: 'manager@example.edu') }
+      let(:group_filter) { 'admin@example.edu' }
+      it 'returns users with matching groups' do
+        expect(User.group_like(group_filter)).to include(user1)
+      end
+      it 'does not return users without matching groups' do
+        expect(User.group_like(group_filter)).not_to include(user2)
+        expect(User.group_like(group_filter)).not_to include(user3)
+      end
+    end
 
     describe 'status_like' do
       let(:user1) { FactoryBot.create(:user, invitation_token: 'Accepted') }
