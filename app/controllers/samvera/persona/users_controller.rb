@@ -81,20 +81,20 @@ module Samvera
       # TODO: Count
       presenter_filtered_total = @presenter.size
 
-
       # TODO: Build json response with actions and other values
       response = {
         "draw": params['draw'],
         "recordsTotal": records_total,
         "recordsFiltered": presenter_filtered_total,
         "data": @presenter.collect do |presenter|
-          edit_button = if presenter.has_attribute?(:provider) && !presenter.provider.nil?
-            "<span class='text-muted' data-toggle='tooltip' title='Edit user is unavailable because this user is single sign on'> Edit".html_safe
-          else
-            view_context.link_to(main_app.edit_persona_user_path(presenter)) do
-              "Edit"
+          edit_button =
+            if presenter.has_attribute?(:provider) && !presenter.provider.nil?
+              "<span class='text-muted' data-toggle='tooltip' title='Edit user is unavailable because this user is single sign on'> Edit".html_safe
+            else
+              view_context.link_to(main_app.edit_persona_user_path(presenter)) do
+                "Edit"
+              end
             end
-          end
           become_button = view_context.link_to(main_app.impersonate_persona_user_path(presenter), method: :post) do
             "Become"
           end
