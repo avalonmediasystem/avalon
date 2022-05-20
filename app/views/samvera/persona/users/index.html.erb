@@ -76,7 +76,7 @@ Unless required by applicable law or agreed to in writing, software distributed
       "columnDefs": [{
         'targets': 3,
         'createdCell': function (td, cellData, rowData, row, col) {
-          $(td).attr('data-order', cellData.match(/(?<=datetime=').*Z/))
+          $(td).attr('data-sort', cellData.match(/(?<=datetime=').*Z/))
         }
       }],
       "columns": [

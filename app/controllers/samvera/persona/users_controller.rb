@@ -59,8 +59,8 @@ module Samvera
       @presenter = @presenter.email_like(email_filter) if email_filter.present?
 
       # Filter groups
-      # group_filter = params['columns']['2']['search']['value']
-      # @presenter = @presenter.group_like(group_filter) if group_filter.present?
+      group_filter = params['columns']['2']['search']['value']
+      @presenter = @presenter.group_like(group_filter) if group_filter.present?
 
       # Filter status
       status_filter = params['columns']['4']['search']['value']
@@ -75,12 +75,12 @@ module Samvera
       sort_direction = params['order']['0']['dir'] rescue 'asc'
       session[:presenter_sort] = [sort_column, sort_direction]
       # @presenter = @presenter.order(columns[sort_column].downcase => sort_direction)
-      @presenter = @presenter.joins('LEFT JOIN role_maps ON role_maps.entry=users.username').group(:id, :entry).merge(@presenter.order(columns[sort_column].downcase => sort_direction))
+      @presenter = @presenter.select('DISTINCT users.id, users.username, users.email, role_maps.entry, users.last_sign_in_at, users.invitation_token, users.provider, users.invitation_accepted_at, users.invitation_sent_at').joins('LEFT JOIN role_maps ON role_maps.entry=users.username').merge(@presenter.order(columns[sort_column].downcase => sort_direction))
       @presenter = @presenter.offset(params['start']).limit(params['length'])
 
       # TODO: Count
-      presenter_filtered_total = @presenter.count
-      require pry, binding.pry
+      presenter_filtered_total = @presenter.size
+
 
       # TODO: Build json response with actions and other values
       response = {
@@ -106,7 +106,7 @@ module Samvera
           @roles.each do |role|
             @formatted_roles.append("<li>#{role}</li>".html_safe)
           end
-          last_sign_in = presenter.last_sign_in_at? ? Time.at(presenter.last_sign_in_at.to_i) : Time.at(presenter.invitation_sent_at.to_i)
+          last_sign_in = presenter.last_sign_in_at? ? presenter.last_sign_in_at : presenter.invitation_sent_at
           [
             view_context.link_to(presenter.username, main_app.edit_persona_user_path(presenter)),
             view_context.link_to(presenter.email, main_app.edit_persona_user_path(presenter)),
