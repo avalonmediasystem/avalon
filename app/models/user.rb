@@ -41,7 +41,6 @@ class User < ActiveRecord::Base
 
   scope :username_like, ->(username_filter) { where("username LIKE ?", "%#{username_filter}%") }
   scope :email_like, ->(email_filter) { where("email LIKE ?", "%#{email_filter}%") }
-  scope :group_like, ->(group_filter) { joins('LEFT JOIN role_maps ON role_maps.entry=users.username').merge(where("entry LIKE ?", "%#{group_filter}%")) }
   scope :status_like, ->(status_filter) { where("invitation_token LIKE ?", "%#{status_filter}%") }
   scope :provider_like, ->(provider_filter) { where("provider LIKE ?", "%#{provider_filter}%") }
 

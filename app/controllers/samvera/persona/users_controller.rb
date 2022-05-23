@@ -58,10 +58,6 @@ module Samvera
       email_filter = params['columns']['1']['search']['value']
       @presenter = @presenter.email_like(email_filter) if email_filter.present?
 
-      # Filter groups
-      group_filter = params['columns']['2']['search']['value']
-      @presenter = @presenter.group_like(group_filter) if group_filter.present?
-
       # Filter status
       status_filter = params['columns']['4']['search']['value']
       @presenter = @presenter.status_like(status_filter) if status_filter.present?
@@ -70,16 +66,23 @@ module Samvera
       provider_filter = params['columns']['5']['search']['value']
       @presenter = @presenter.provider_like(provider_filter) if provider_filter.present?
 
+      # TODO: Count
+      presenter_filtered_total = @presenter.count
+
       # TODO: Sort
       sort_column = params['order']['0']['column'].to_i rescue 0
       sort_direction = params['order']['0']['dir'] rescue 'asc'
       session[:presenter_sort] = [sort_column, sort_direction]
-      # @presenter = @presenter.order(columns[sort_column].downcase => sort_direction)
-      @presenter = @presenter.select('DISTINCT users.id, users.username, users.email, role_maps.entry, users.last_sign_in_at, users.invitation_token, users.provider, users.invitation_accepted_at, users.invitation_sent_at').joins('LEFT JOIN role_maps ON role_maps.entry=users.username').merge(@presenter.order(columns[sort_column].downcase => sort_direction))
-      @presenter = @presenter.offset(params['start']).limit(params['length'])
-
-      # TODO: Count
-      presenter_filtered_total = @presenter.size
+      if columns[sort_column] != 'entry'
+        @presenter = @presenter.order(columns[sort_column].downcase => sort_direction)
+        @presenter = @presenter.offset(params['start']).limit(params['length'])
+      else
+        user_roles = @presenter.collect{|p| [ p.groups, p ]}
+        user_roles.sort_by! { |r| [r[0].empty? ? 1 : 0, r] }
+        @presenter = user_roles.collect{|p| p[1]}
+        @presenter.reverse! if sort_direction == 'desc'
+        @presenter = @presenter.slice(params['start'].to_i, params['length'].to_i)
+      end
 
       # TODO: Build json response with actions and other values
       response = {
