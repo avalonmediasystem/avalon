@@ -78,7 +78,7 @@ module Samvera
         @presenter = @presenter.offset(params['start']).limit(params['length'])
       else
         user_roles = @presenter.collect { |p| [ p.groups, p ] }
-        user_roles.sort_by! { |r| [r[0].empty? ? 1 : 0, r] }
+        user_roles.sort_by! { |r| [-r[0].length, r] }
         @presenter = user_roles.collect { |p| p[1] }
         @presenter.reverse! if sort_direction == 'desc'
         @presenter = @presenter.slice(params['start'].to_i, params['length'].to_i)
@@ -94,20 +94,14 @@ module Samvera
             if presenter.has_attribute?(:provider) && !presenter.provider.nil?
               "<span class='text-muted' data-toggle='tooltip' title='Edit user is unavailable because this user is single sign on'> Edit".html_safe
             else
-              view_context.link_to(main_app.edit_persona_user_path(presenter)) do
-                "Edit"
-              end
+              view_context.link_to('Edit', main_app.edit_persona_user_path(presenter))
             end
-          become_button = view_context.link_to(main_app.impersonate_persona_user_path(presenter), method: :post) do
-            "Become"
-          end
-          delete_button = view_context.link_to(main_app.persona_user_path(presenter), method: :delete, class: 'btn btn-danger btn-xs action-delete', data: { confirm: "Are you sure you wish to delete the user '#{presenter.email}'? This action is irreversible." }) do
-            "Delete"
-          end
+          become_button = view_context.link_to('Become', main_app.impersonate_persona_user_path(presenter), method: :post)
+          delete_button = view_context.link_to('Delete', main_app.persona_user_path(presenter), method: :delete, class: 'btn btn-danger btn-xs action-delete', data: { confirm: "Are you sure you wish to delete the user '#{presenter.email}'? This action is irreversible." })
           @formatted_roles = []
           @roles = presenter.groups
           @roles.each do |role|
-            @formatted_roles.append("<li>#{role}</li>".html_safe)
+            @formatted_roles.append("<li>#{role}</li>")
           end
           last_sign_in = presenter.last_sign_in_at? ? presenter.last_sign_in_at : presenter.invitation_sent_at
           [
@@ -116,7 +110,7 @@ module Samvera
             "<ul>#{@formatted_roles.join}</ul>".html_safe,
             "<relative-time datetime='#{last_sign_in.getutc.iso8601}' title='#{last_sign_in.to_formatted_s(:standard)}'>#{last_sign_in.to_formatted_s(:long_ordinal)}</relative-time>".html_safe,
             presenter.accepted_or_not_invited? ? 'Active' : 'Pending',
-            presenter.has_attribute?(:provider) ? presenter.provider : nil,
+            presenter.provider,
             "#{edit_button}&nbsp;|&nbsp;#{become_button}&nbsp;|&nbsp;#{delete_button}"
           ]
         end
