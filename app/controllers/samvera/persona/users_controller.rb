@@ -77,9 +77,9 @@ module Samvera
         @presenter = @presenter.order(columns[sort_column].downcase => sort_direction)
         @presenter = @presenter.offset(params['start']).limit(params['length'])
       else
-        user_roles = @presenter.collect{|p| [ p.groups, p ]}
+        user_roles = @presenter.collect { |p| [ p.groups, p ] }
         user_roles.sort_by! { |r| [r[0].empty? ? 1 : 0, r] }
-        @presenter = user_roles.collect{|p| p[1]}
+        @presenter = user_roles.collect { |p| p[1] }
         @presenter.reverse! if sort_direction == 'desc'
         @presenter = @presenter.slice(params['start'].to_i, params['length'].to_i)
       end
