@@ -39,11 +39,6 @@ class User < ActiveRecord::Base
 
   before_destroy :remove_bookmarks
 
-  scope :username_like, ->(username_filter) { where("username LIKE ?", "%#{username_filter}%") }
-  scope :email_like, ->(email_filter) { where("email LIKE ?", "%#{email_filter}%") }
-  scope :status_like, ->(status_filter) { where("invitation_token LIKE ?", "%#{status_filter}%") }
-  scope :provider_like, ->(provider_filter) { where("provider LIKE ?", "%#{provider_filter}%") }
-
   def username_email_uniqueness
     errors.add(:email, :taken, value: email) if User.find_by_username(email) && User.find_by_username(email).id != id
     errors.add(:username, :taken, valud: username) if User.find_by_email(username) && User.find_by_email(username).id != id

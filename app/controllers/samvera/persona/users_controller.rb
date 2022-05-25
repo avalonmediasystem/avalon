@@ -49,22 +49,16 @@ module Samvera
       @presenter = @presenter.users
       columns = ['username', 'email', 'entry', 'last_sign_in_at', 'invitation_token', 'provider', 'actions']
 
-      # TODO: Filter username, email, groups, status, provider
-      # Filter username
-      username_filter = params['search']['value']
-      @presenter = @presenter.username_like(username_filter) if username_filter.present?
-
-      # Filter email
-      email_filter = params['columns']['1']['search']['value']
-      @presenter = @presenter.email_like(email_filter) if email_filter.present?
-
-      # Filter status
-      status_filter = params['columns']['4']['search']['value']
-      @presenter = @presenter.status_like(status_filter) if status_filter.present?
-
-      # Filter provider
-      provider_filter = params['columns']['5']['search']['value']
-      @presenter = @presenter.provider_like(provider_filter) if provider_filter.present?
+      search_value = params['search']['value']
+      @presenter = if search_value.present?
+                     @presenter.where %(
+                       username LIKE :search_value OR
+                       email LIKE :search_value OR
+                       invitation_token LIKE :search_value OR
+                       provider LIKE :search_value), search_value: "%#{search_value}%"
+                   else
+                     @presenter
+                   end
 
       # TODO: Count
       presenter_filtered_total = @presenter.count
@@ -199,7 +193,7 @@ module Samvera
 
     def user_params
       new_params = params.require(:user).permit(:email, :username, :password, :password_confirmation, :is_superadmin, :facebook_handle, :twitter_handle, :googleplus_handle, :display_name, :address, :department, :title, :office, :chat_id, :website, :affiliation, :telephone, :avatar, :group_list, :linkedin_handle, :orcid, :arkivo_token, :arkivo_subscription, :zotero_token, :zotero_userid, :preferred_locale, role_ids: [])
-      new_params[:tags] = JSON.parse(new_params[:tags]) if new_params[:tags].present?
+      # new_params[:tags] = JSON.parse(new_params[:tags]) if new_params[:tags].present?
       new_params
     end
   end

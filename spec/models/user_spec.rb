@@ -70,59 +70,6 @@ describe User do
     end
   end
 
-  describe "scopes" do
-    describe 'user_like' do
-      let(:user1) { FactoryBot.create(:user, username: 'alice.archivist') }
-      let(:user2) { FactoryBot.create(:user, username: 'bob.user') }
-      let(:user3) { FactoryBot.create(:user, username: 'charlie.manager') }
-      let(:username_filter) { 'alice' }
-      it 'returns users with matching usernames' do
-        expect(User.username_like(username_filter)).to include(user1)
-      end
-      it 'does not return users without matching usernames' do
-        expect(User.username_like(username_filter)).not_to include(user2)
-      end
-    end
-
-    describe 'email_like' do
-      let(:user1) { FactoryBot.create(:user, email: 'alice.archivist@example.edu') }
-      let(:user2) { FactoryBot.create(:user, email: 'bob.user@example.edu') }
-      let(:user3) { FactoryBot.create(:user, email: 'charlie.user@example.edu') }
-      let(:email_filter) { 'user' }
-      it 'returns users with matching emails' do
-        expect(User.email_like(email_filter)).to include(user2)
-        expect(User.email_like(email_filter)).to include(user3)
-      end
-      it 'does not return users without matching usernames' do
-        expect(User.email_like(email_filter)).not_to include(user1)
-      end
-    end
-
-    describe 'status_like' do
-      let(:user1) { FactoryBot.create(:user, invitation_token: 'Accepted') }
-      let(:user2) { FactoryBot.create(:user, invitation_token: 'Pending') }
-      let(:status_filter) { 'Accepted' }
-      it 'returns users with matching status' do
-        expect(User.status_like(status_filter)).to include(user1)
-      end
-      it 'does not return users without matching status' do
-        expect(User.status_like(status_filter)).not_to include(user2)
-      end
-    end
-
-    describe 'provider_like' do
-      let(:user1) { FactoryBot.create(:user, provider: 'Indiana University') }
-      let(:user2) { FactoryBot.create(:user, provider: 'Northwestern') }
-      let(:provider_filter) { 'Indiana' }
-      it 'returns users with matching provider' do
-        expect(User.provider_like(provider_filter)).to include(user1)
-      end
-      it 'does not return users without matching provider' do
-        expect(User.provider_like(provider_filter)).not_to include(user2)
-      end
-    end
-  end
-
   describe "Membership" do
     it "should be a member if its key is in the list" do
       expect(user).to be_in(list,[user.user_key])
