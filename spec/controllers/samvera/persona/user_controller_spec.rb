@@ -21,7 +21,7 @@ RSpec.describe Samvera::Persona::UsersController, type: :controller do
     let(:user) {FactoryBot.create(:admin, username: 'aardvark', last_sign_in_at: Time.new(2022,05,15))}
     before do
       sign_in(user)
-      FactoryBot.create(:user, username: 'zzzebra', email: 'zzzebra@example.edu', last_sign_in_at: Time.new(2022,05,26))
+      FactoryBot.create(:user, username: 'zzzebra', email: 'zzzebra@example.edu', last_sign_in_at: Time.new(2022,05,26), invitation_token: 'invited')
       FactoryBot.create_list(:user, 10, last_sign_in_at: Time.new(2022,06,01))
     end
 
@@ -81,6 +81,15 @@ RSpec.describe Samvera::Persona::UsersController, type: :controller do
         expect(parsed_response['data'].count).to eq(2)
         expect(parsed_response['data'][0][3]).to eq("<relative-time datetime='2022-05-15T00:00:00Z' title='2022-05-15 00:00:00 UTC'>May 15th, 2022 00:00</relative-time>")
       end
+
+      let(:common_params) { { start: 0, length: 20, order: { '0': { column: 0, dir: 'asc' } } } }
+      it "returns results filtered by status" do
+        post :paged_index, format: 'json', params: common_params.merge( { search: { value: 'Pending' } } )
+        parsed_response = JSON.parse(response.body)
+        expect(parsed_response['recordsFiltered']).to eq(1)
+        expect(parsed_response['data'].count).to eq(1)
+        expect(parsed_response['data'][0][0]).to eq("<a href=\"/persona/users/2/edit\">zzzebra</a>")
+      end
     end
 
     context 'sorting' do
@@ -102,15 +111,15 @@ RSpec.describe Samvera::Persona::UsersController, type: :controller do
       it "returns results sorted by role ascending" do
         post :paged_index, format: 'json', params: common_params.merge(order: { '0': { column: 2, dir: 'asc' } })
         parsed_response = JSON.parse(response.body)
-        expect(parsed_response['data'][0][2]).to eq("<ul></ul>")
-        expect(parsed_response['data'][11][2]).to eq("<ul><li>administrator</li></ul>")
+        expect(parsed_response['data'][0][2]).to eq("<ul><li>administrator</li></ul>")
+        expect(parsed_response['data'][11][2]).to eq("<ul></ul>")
       end
 
       it "returns results sorted by role descending" do
         post :paged_index, format: 'json', params: common_params.merge(order: { '0': { column: 2, dir: 'desc' } })
         parsed_response = JSON.parse(response.body)
-        expect(parsed_response['data'][0][2]).to eq("<ul><li>administrator</li></ul>")
-        expect(parsed_response['data'][11][2]).to eq("<ul></ul>")
+        expect(parsed_response['data'][0][2]).to eq("<ul></ul>")
+        expect(parsed_response['data'][11][2]).to eq("<ul><li>administrator</li></ul>")
       end
     end
   end

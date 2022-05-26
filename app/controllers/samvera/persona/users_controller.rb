@@ -53,12 +53,15 @@ module Samvera
       @presenter = if search_value.present?
                      search_role = @presenter.select { |p| p.groups.any? { |g| g.include? search_value } }
                      search_date = @presenter.select { |p| last_sign_in(p).to_formatted_s(:long_ordinal).include? search_value }
+                     search_status = @presenter.select { |p| user_status(p).downcase.include? search_value.downcase }
                      @presenter.where(%(
                        username LIKE :search_value OR
                        email LIKE :search_value OR
-                       invitation_token LIKE :search_value OR
                        provider LIKE :search_value),
-                       search_value: "%#{search_value}%").or(User.where(id: search_role.map(&:id))).or(User.where(id: search_date.map(&:id)))
+                       search_value: "%#{search_value}%")
+                     .or(User.where(id: search_role.map(&:id)))
+                     .or(User.where(id: search_date.map(&:id)))
+                     .or(User.where(id: search_status.map(&:id)))
                    else
                      @presenter
                    end
@@ -75,7 +78,7 @@ module Samvera
         @presenter = @presenter.offset(params['start']).limit(params['length'])
       else
         user_roles = @presenter.collect { |p| [ p.groups, p ] }
-        user_roles.sort_by! { |r| [r[0].length, r] }
+        user_roles.sort_by! { |r| [-r[0].length, r] }
         @presenter = user_roles.collect { |p| p[1] }
         @presenter.reverse! if sort_direction == 'desc'
         @presenter = @presenter.slice(params['start'].to_i, params['length'].to_i)
@@ -95,18 +98,14 @@ module Samvera
             end
           become_button = view_context.link_to('Become', main_app.impersonate_persona_user_path(presenter), method: :post)
           delete_button = view_context.link_to('Delete', main_app.persona_user_path(presenter), method: :delete, class: 'btn btn-danger btn-xs action-delete', data: { confirm: "Are you sure you wish to delete the user '#{presenter.email}'? This action is irreversible." })
-          formatted_roles = []
-          roles = presenter.groups
-          roles.each do |role|
-            formatted_roles.append("<li>#{role}</li>")
-          end
+          formatted_roles = format_roles(presenter.groups)
           sign_in = last_sign_in(presenter)
           [
             view_context.link_to(presenter.username, main_app.edit_persona_user_path(presenter)),
             view_context.link_to(presenter.email, main_app.edit_persona_user_path(presenter)),
             "<ul>#{formatted_roles.join}</ul>".html_safe,
             "<relative-time datetime='#{sign_in.getutc.iso8601}' title='#{sign_in.to_formatted_s(:standard)}'>#{sign_in.to_formatted_s(:long_ordinal)}</relative-time>".html_safe,
-            presenter.accepted_or_not_invited? ? 'Active' : 'Pending',
+            user_status(presenter),
             presenter.provider,
             "#{edit_button}&nbsp;|&nbsp;#{become_button}&nbsp;|&nbsp;#{delete_button}"
           ]
@@ -196,6 +195,18 @@ module Samvera
 
     def last_sign_in(user)
       user.last_sign_in_at? ? user.last_sign_in_at : user.invitation_sent_at
+    end
+
+    def format_roles(roles)
+      formatted_roles = []
+      roles.each do |role|
+        formatted_roles.append("<li>#{role}</li>")
+      end
+      return formatted_roles
+    end
+
+    def user_status(user)
+      user.accepted_or_not_invited? ? 'Active' : 'Pending'
     end
 
     def user_params
