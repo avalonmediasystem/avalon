@@ -1,0 +1,29 @@
+<p id="notice"><%= notice %></p>
+
+<h1>Checkouts</h1>
+
+<table>
+  <thead>
+    <tr>
+      <th>User</th>
+      <th>Media object</th>
+      <th>Checkout time</th>
+      <th>Return time</th>
+      <th colspan="3"></th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% @checkouts.each do |checkout| %>
+      <tr>
+        <td><%= checkout.user.user_key %></td>
+        <td><%= checkout.media_object.title %></td>
+        <td><%= checkout.checkout_time %></td>
+        <td><%= checkout.return_time %></td>
+        <td><%= link_to 'Destroy', checkout, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<br>

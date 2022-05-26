@@ -26,6 +26,8 @@ Rails.application.routes.draw do
     end
   end
 
+  resources :checkouts, only: [:index, :create, :show, :update, :destroy]
+
   resources :bookmarks do
     concerns :exportable
 

@@ -184,6 +184,7 @@ RSpec.configure do |config|
   # config.include FactoryBot::Syntax::Methods
   config.include Devise::Test::ControllerHelpers, type: :controller
   config.include ControllerMacros, type: :controller
+  config.include Devise::Test::IntegrationHelpers, type: :request
   config.include Warden::Test::Helpers,type: :feature
   config.include FixtureMacros, type: :controller
   config.include OptionalExample
