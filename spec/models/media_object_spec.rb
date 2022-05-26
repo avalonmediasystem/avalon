@@ -1006,4 +1006,18 @@ describe MediaObject do
   end
 
   it_behaves_like "an object that has supplemental files"
+
+  describe 'lending_status' do
+    it 'is available when no active checkouts' do
+      expect(media_object.lending_status).to eq "available"
+    end
+
+    context 'with an active checkout' do
+      before { FactoryBot.create(:checkout, media_object_id: media_object.id) }
+
+      it 'is checked_out' do
+        expect(media_object.lending_status).to eq "checked_out"
+      end
+    end
+  end
 end

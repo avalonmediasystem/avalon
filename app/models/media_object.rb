@@ -279,7 +279,8 @@ class MediaObject < ActiveFedora::Base
       published: published?,
       summary: abstract,
       visibility: visibility,
-      read_groups: read_groups
+      read_groups: read_groups,
+      lending_status: lending_status,
     }.merge(to_ingest_api_hash(options.fetch(:include_structure, false)))
   end
 
@@ -364,6 +365,10 @@ class MediaObject < ActiveFedora::Base
     end
 
     "This item is accessible by: #{actors.join(', ')}."
+  end
+
+  def lending_status
+    Checkout.active_for(id).any? ? "checked_out" : "available"
   end
 
   private
