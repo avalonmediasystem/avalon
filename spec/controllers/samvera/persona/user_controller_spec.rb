@@ -15,9 +15,6 @@ RSpec.describe Samvera::Persona::UsersController, type: :controller do
   end
 
   describe "POST #paged_index" do
-    # before :each do
-    #   FactoryBot.create_list(:user, 11)
-    # end
     let(:user) {FactoryBot.create(:admin, username: 'aardvark', last_sign_in_at: Time.new(2022,05,15))}
     before do
       sign_in(user)

@@ -49,29 +49,30 @@ module Samvera
       @presenter = @presenter.users
       columns = ['username', 'email', 'entry', 'last_sign_in_at', 'invitation_token', 'provider', 'actions']
 
+      # Filtering
       search_value = params['search']['value']
       @presenter = if search_value.present?
                      search_role = @presenter.select { |p| p.groups.any? { |g| g.include? search_value } }
                      search_date = @presenter.select { |p| last_sign_in(p).to_formatted_s(:long_ordinal).include? search_value }
                      search_status = @presenter.select { |p| user_status(p).downcase.include? search_value.downcase }
                      @presenter.where(%(
-                       username LIKE :search_value OR
-                       email LIKE :search_value OR
-                       provider LIKE :search_value),
-                       search_value: "%#{search_value}%")
-                     .or(User.where(id: search_role.map(&:id)))
-                     .or(User.where(id: search_date.map(&:id)))
-                     .or(User.where(id: search_status.map(&:id)))
+                                username LIKE :search_value OR
+                                email LIKE :search_value OR
+                                provider LIKE :search_value
+                              ), search_value: "%#{search_value}%")
+                               .or(User.where(id: search_role.map(&:id)))
+                               .or(User.where(id: search_date.map(&:id)))
+                               .or(User.where(id: search_status.map(&:id)))
                    else
                      @presenter
                    end
 
-      # TODO: Count
+      # Count
       presenter_filtered_total = @presenter.count
 
-      # TODO: Sort
+      # Sort
       sort_column = params['order']['0']['column'].to_i rescue 0
-      sort_direction = params['order']['0']['dir'] rescue 'asc'
+      sort_direction = params['order']['0']['dir'] == 'desc' ? 'desc' : 'asc'
       session[:presenter_sort] = [sort_column, sort_direction]
       if columns[sort_column] != 'entry'
         @presenter = @presenter.order(columns[sort_column].downcase => sort_direction)
@@ -84,7 +85,7 @@ module Samvera
         @presenter = @presenter.slice(params['start'].to_i, params['length'].to_i)
       end
 
-      # TODO: Build json response with actions and other values
+      # Build json response
       response = {
         "draw": params['draw'],
         "recordsTotal": records_total,
@@ -202,7 +203,7 @@ module Samvera
       roles.each do |role|
         formatted_roles.append("<li>#{role}</li>")
       end
-      return formatted_roles
+      formatted_roles
     end
 
     def user_status(user)
@@ -211,7 +212,6 @@ module Samvera
 
     def user_params
       new_params = params.require(:user).permit(:email, :username, :password, :password_confirmation, :is_superadmin, :facebook_handle, :twitter_handle, :googleplus_handle, :display_name, :address, :department, :title, :office, :chat_id, :website, :affiliation, :telephone, :avatar, :group_list, :linkedin_handle, :orcid, :arkivo_token, :arkivo_subscription, :zotero_token, :zotero_userid, :preferred_locale, role_ids: [])
-      # new_params[:tags] = JSON.parse(new_params[:tags]) if new_params[:tags].present?
       new_params
     end
   end
