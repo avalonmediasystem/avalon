@@ -3,17 +3,17 @@ source 'https://rubygems.org'
 # Core rails
 gem 'bootsnap', require: false
 gem 'listen'
-gem 'rails', '=5.2.6.3'
-gem 'sprockets', '~>3.7.2'
+gem 'rails', '= 5.2.6.3'
+gem 'sprockets', '~> 3.7.2'
 gem 'sqlite3'
 
 # Assets
-gem 'coffee-rails', '~> 4.2.0'
+gem 'coffee-rails', '~> 4.2.2'
 gem 'jquery-datatables'
 gem 'jquery-rails'
 gem 'jquery-ui-rails'
 gem 'react-rails'
-gem 'sass-rails', '~> 5.0'
+gem 'sass-rails', '~> 5.1', '>= 5.1.0'
 # Use the last known good version of sass
 gem 'sass', '3.4.22'
 gem 'sprockets-es6'
@@ -22,22 +22,22 @@ gem 'webpacker'
 
 # Core Samvera
 gem 'active-fedora', '~> 13.2', '>= 13.2.5'
-gem 'active_fedora-datastreams', '~> 0.3'
+gem 'active_fedora-datastreams', '~> 0.3', '>= 0.3.0'
 gem 'fedora-migrate', git: 'https://github.com/avalonmediasystem/fedora-migrate.git', tag: 'avalon-r6.5'
-gem 'hydra-head', '~> 11.0'
+gem 'hydra-head', '~> 12.0', '>= 12.0.0'
 gem 'ldp', '~> 1.0.3'
-gem 'noid-rails', '~> 3.0.1'
+gem 'noid-rails', '~> 3.0.3'
 gem 'rdf-rdfxml'
 gem 'rdf-vocab', '< 3.1.5'
 
 # Samvera version pins
-gem 'blacklight', '< 7.0'
+gem 'blacklight', '~> 7.0'
 gem 'rdf', '~> 3.1'
 gem 'rsolr', '~> 1.0'
 
 # Rails & Samvera Plugins
 gem 'about_page', git: 'https://github.com/avalonmediasystem/about_page.git', tag: 'avalon-r6.5'
-gem 'active_annotations', '~> 0.3'
+gem 'active_annotations', '~> 0.3', '>= 0.3.0'
 gem 'activerecord-session_store', '>= 2.0.0'
 gem 'acts_as_list'
 gem 'api-pagination'
@@ -49,21 +49,21 @@ gem 'iiif_manifest', '~> 0.6'
 gem 'rack-cors', require: 'rack/cors'
 gem 'rails_same_site_cookie'
 gem 'recaptcha', require: 'recaptcha/rails'
-gem 'samvera-persona', '~> 0.3'
+gem 'samvera-persona', '~> 0.3', '>= 0.3.0'
 gem 'speedy-af', '~> 0.1.3'
 
 # Avalon Components
 gem 'avalon-workflow', git: "https://github.com/avalonmediasystem/avalon-workflow.git", tag: 'avalon-r6.5'
 
 # Authentication & Authorization
-gem 'devise', '~> 4.8'
-gem 'devise_invitable', '~> 2.0'
+gem 'devise', '~> 4.8', '>= 4.8.1'
+gem 'devise_invitable', '~> 2.0', '>= 2.0.5'
 gem 'ims-lti', '~> 1.1.13'
 gem 'net-ldap'
-gem 'omniauth', '~> 2.0'
-gem 'omniauth-identity', '>= 2.0.0'
+gem 'omniauth', '~> 2.0', '>= 2.0.4'
+gem 'omniauth-identity', '>= 3.0.9'
 gem 'omniauth-lti', git: "https://github.com/avalonmediasystem/omniauth-lti.git", tag: 'avalon-r4'
-gem "omniauth-saml", "~> 2.0"
+gem "omniauth-saml", "~> 2.0", ">= 2.0.0"
 
 # Media Access & Transcoding
 gem 'active_encode', '~> 0.8.2'
@@ -85,7 +85,7 @@ gem 'marc'
 gem 'activejob-traffic_control'
 gem 'activejob-uniqueness'
 gem 'redis-rails'
-gem 'sidekiq', '~> 6.2'
+gem 'sidekiq', '~> 6.4', '>= 6.4.1'
 gem 'sidekiq-cron', '~> 1.2', git: "https://github.com/avalonmediasystem/sidekiq-cron.git", tag: 'v1.2.1-avalon'
 
 # Coding Patterns
