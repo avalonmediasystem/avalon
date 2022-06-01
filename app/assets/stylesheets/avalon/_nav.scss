@@ -190,18 +190,14 @@ $state-info-border:              darken(adjust-hue($state-info-bg, -10), 7%) !de
   &:hover {
     background-color: $yellow !important;
     color: $primary;
+
+
   }
 }
 
-#manage-dropdown:hover .manage-dropdown-menu.show {
+#manage-dropdown:hover .manage-dropdown-menu {
   display: block;
   margin-top: 0;
-
-  @include media-breakpoint-down(sm) {
-    width: 100%;
-  }
-
-  width: max-content;
 }
 
 .manage-btn:focus {
@@ -223,6 +219,10 @@ $state-info-border:              darken(adjust-hue($state-info-bg, -10), 7%) !de
   .dropdown-item:hover {
     background-color: $yellow;
   }
+
+  @include media-breakpoint-down(sm) {
+    width: 100%;
+  }
 }
 
 .manage-dropdown {
@@ -232,6 +232,7 @@ $state-info-border:              darken(adjust-hue($state-info-bg, -10), 7%) !de
 
 @include media-breakpoint-down(sm) {
   .manage-btn {
-    height: 40px;
+    height: 38px;
+    padding: 0 0.9rem;
   }
 }
