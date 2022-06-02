@@ -24,7 +24,7 @@
     "html-webpack-plugin": "^5.3.2",
     "prop-types": "^15.7.2",
     "webpack-cli": "^3.2.3",
-    "webpack-dev-server": "^3.2.1"
+    "webpack-dev-server": "^4.9.1"
   },
   "resolutions": {
     "elliptic": "^6.5.2",
