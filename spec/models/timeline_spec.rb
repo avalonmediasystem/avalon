@@ -165,6 +165,20 @@ RSpec.describe Timeline, type: :model do
         expect(Timeline.title_like(title_filter)).not_to include(timeline3)
       end
     end
+    describe 'desc_like' do
+      let(:timeline1) { FactoryBot.create(:timeline, description: 'Moose tunes') }
+      let(:timeline2) { FactoryBot.create(:timeline, description: 'My favorite by smoose') }
+      let(:timeline3) { FactoryBot.create(:timeline, description: 'Favorites') }
+      let(:desc_filter) { 'moose' }
+      it 'returns timelines with matching descriptions' do
+        # Commented out since case insensitivity is default for mysql but not postgres
+        # expect(Timeline.desc_like(desc_filter)).to include(timeline1)
+        expect(Timeline.desc_like(desc_filter)).to include(timeline2)
+      end
+      it 'does not return timelines without matching descriptions' do
+        expect(Timeline.desc_like(desc_filter)).not_to include(timeline3)
+      end
+    end
     describe 'with_tag' do
       let(:timeline1) { FactoryBot.create(:timeline, tags: ['Moose']) }
       let(:timeline2) { FactoryBot.create(:timeline, tags: ['Goose', 'moose']) }

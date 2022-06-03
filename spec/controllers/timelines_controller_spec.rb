@@ -137,6 +137,72 @@ RSpec.describe TimelinesController, type: :controller do
     end
   end
 
+  describe "POST #paged_index" do
+    before do
+      login_as :user
+    end
+    before :each do
+      FactoryBot.reload
+      FactoryBot.create(:timeline, title: 'aardvark', description: 'Aardvark lorem ipsum.', user: user)
+      FactoryBot.create(:timeline, title: 'zzzebra', description: 'Zzzebra lorem ipsum.', user: user)
+      FactoryBot.create_list(:timeline, 9, user: user)
+    end
+
+    context 'paging' do
+      let(:common_params) { { order: { '0': { column: 0, dir: 'asc' } }, search: { value: '' }, columns: { '4': { search: { value: '' } } } } }
+      it 'returns all results' do
+        post :paged_index, format: 'json', params: common_params.merge(start: 0, length: 20), session: valid_session
+        parsed_response = JSON.parse(response.body)
+        expect(parsed_response['recordsTotal']).to eq(11)
+        expect(parsed_response['data'].count).to eq(11)
+      end
+      it 'returns first page' do
+        post :paged_index, format: 'json', params: common_params.merge(start: 0, length: 10), session: valid_session
+        parsed_response = JSON.parse(response.body)
+        expect(parsed_response['data'].count).to eq(10)
+      end
+      it 'returns second page' do
+        post :paged_index, format: 'json', params: common_params.merge(start: 10, length: 10), session: valid_session
+        parsed_response = JSON.parse(response.body)
+        expect(parsed_response['data'].count).to eq(1)
+      end
+    end
+
+    context 'searching' do
+      let(:common_params) { { start: 0, length: 20, order: { '0': { column: 0, dir: 'asc' } } } }
+      it "returns results filtered by title" do
+        post :paged_index, format: 'json', params: common_params.merge(search: { value: "aardvark" }, columns: { '4': { search: { value: '' } } }), session: valid_session
+        parsed_response = JSON.parse(response.body)
+        expect(parsed_response['recordsFiltered']).to eq(1)
+        expect(parsed_response['data'].count).to eq(1)
+        expect(parsed_response['data'][0][0]).to eq("<a title=\"#{Timeline.all[0].description}\" href=\"/timelines/1\">aardvark</a>")
+      end
+      it "returns results filtered by description" do
+        post :paged_index, format: 'json', params: common_params.merge({ search: { value: 'Aardvark lorem ipsum.' } }, columns: { '4': { search: { value: '' } } }), session: valid_session
+        parsed_response = JSON.parse(response.body)
+        expect(parsed_response['recordsFiltered']).to eq(1)
+        expect(parsed_response['data'].count).to eq(1)
+        expect(parsed_response['data'][0][0]).to eq("<a title=\"#{Timeline.all[0].description}\" href=\"/timelines/1\">aardvark</a>")
+      end
+    end
+
+    context 'sorting' do
+      let(:common_params) { { start: 0, length: 20, search: { value: '' }, columns: { '4': { search: { value: '' } } } } }
+      it "returns results sorted by title ascending" do
+        post :paged_index, format: 'json', params: common_params.merge(order: { '0': { column: 0, dir: 'asc' } }), session: valid_session
+        parsed_response = JSON.parse(response.body)
+        expect(parsed_response['data'][0][0]).to eq("<a title=\"#{Timeline.all[0].description}\" href=\"/timelines/1\">aardvark</a>")
+        expect(parsed_response['data'][10][0]).to eq("<a title=\"#{Timeline.all[1].description}\" href=\"/timelines/2\">zzzebra</a>")
+      end
+      it "returns results sorted by title descending" do
+        post :paged_index, format: 'json', params: common_params.merge(order: { '0': { column: 0, dir: 'desc' } }), session: valid_session
+        parsed_response = JSON.parse(response.body)
+        expect(parsed_response['data'][0][0]).to eq("<a title=\"#{Timeline.all[1].description}\" href=\"/timelines/2\">zzzebra</a>")
+        expect(parsed_response['data'][10][0]).to eq("<a title=\"#{Timeline.all[0].description}\" href=\"/timelines/1\">aardvark</a>")
+      end
+    end
+  end
+
   describe "GET #show" do
     it "renders the timeliner tool" do
       timeline = Timeline.create! valid_attributes
