@@ -46,9 +46,9 @@ class TimelinesController < ApplicationController
     records_total = @timelines.count
     columns = ['title', 'description', 'visibility', 'updated_at', 'tags', 'actions']
 
-    # Filter title
-    title_filter = params['search']['value']
-    @timelines = @timelines.title_like(title_filter) if title_filter.present?
+    # Filter title and description
+    filter = params['search']['value']
+    @timelines = @timelines.title_like(filter).or(@timelines.desc_like(filter)) if filter.present?
 
     # Apply tag filter if requested
     tag_filter = params['columns']['4']['search']['value']
