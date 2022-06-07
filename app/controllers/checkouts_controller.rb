@@ -4,7 +4,7 @@ class CheckoutsController < ApplicationController
 
   # GET /checkouts or /checkouts.json
   def index
-    @checkouts = Checkout.all
+    @checkouts = Checkout.checkouts(current_user.id)
   end
 
   # GET /checkouts/1.json

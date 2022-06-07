@@ -32,6 +32,14 @@ Unless required by applicable law or agreed to in writing, software distributed
     <%= link_to 'Timelines', main_app.timelines_path, id:'timelines_nav', class: 'nav-link' %>
   </li>
   <% end %>
+  <% if current_ability.can? :create, Checkout %>
+  <li class="nav-item <%= active_for_controller('checkouts') %>">
+    <%= link_to main_app.checkouts_path, id:'checkouts_nav', class: 'nav-link' do %>
+      Checkouts
+      (<span data-role='checkout-counter'><%= Checkout.checkouts(current_or_guest_user.id).count %></span>)
+    <% end %>
+  </li>
+  <% end %>
   <% if render_bookmarks_control? %>
   <li class="nav-item <%= active_for_controller('bookmarks') %>">
     <%= link_to main_app.bookmarks_path, id:'bookmarks_nav', class: 'nav-link' do %>
