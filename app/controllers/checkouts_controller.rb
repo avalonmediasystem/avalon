@@ -1,10 +1,11 @@
 class CheckoutsController < ApplicationController
   before_action :set_checkout, only: %i[show update destroy]
+  before_action :user_checkouts, only: %i[index return_all]
   load_and_authorize_resource except: [:create]
 
   # GET /checkouts or /checkouts.json
   def index
-    @checkouts = Checkout.all
+    @checkouts
   end
 
   # GET /checkouts/1.json
@@ -47,11 +48,29 @@ class CheckoutsController < ApplicationController
     end
   end
 
+  # DELETE /checkouts
+  def return_all
+    @checkouts.destroy_all
+
+    respond_to do |format|
+      format.html { redirect_to checkouts_url, notice: "Checkouts were sucessfully destroyed." }
+      format.json { head :no_content }
+    end
+  end
+
   private
 
     # Use callbacks to share common setup or constraints between actions.
     def set_checkout
       @checkout = Checkout.find(params[:id])
+    end
+
+    def user_checkouts
+      @checkouts = if current_user.groups.include? 'administrator'
+                     Checkout.all.where("return_time > now()")
+                   else
+                     Checkout.checkouts(current_user.id)
+                   end
     end
 
     # Only allow a list of trusted parameters through.
