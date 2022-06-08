@@ -371,6 +371,11 @@ class MediaObject < ActiveFedora::Base
     Checkout.active_for_media_object(id).any? ? "checked_out" : "available"
   end
 
+  def current_checkout(user_id)
+    checkouts = Checkout.active_for(id)
+    checkouts.select{ |ch| ch.user_id == user_id }.first
+  end
+
   private
 
     def calculate_duration
