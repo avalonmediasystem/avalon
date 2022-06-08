@@ -19,7 +19,7 @@ class CheckoutsController < ApplicationController
     respond_to do |format|
       # TODO: move this can? check into a checkout ability (can?(:create, @checkout))
       if can?(:create, @checkout) && @checkout.save
-        format.json { render :show, status: :created, location: @checkout }
+        format.json { redirect_to media_object_path, status: :created, location: @checkout }
       else
         format.json { render json: @checkout.errors, status: :unprocessable_entity }
       end
@@ -62,10 +62,10 @@ class CheckoutsController < ApplicationController
   # DELETE /checkouts/1 or /checkouts/1.json
   def destroy
     @checkout.destroy
-
+    flash[:notice] = "Checkout was successfully destroyed."
     respond_to do |format|
       format.html { redirect_to checkouts_url, notice: "Checkout was successfully destroyed." }
-      format.json { head :no_content }
+      format.json { render json:flash[:notice] }
     end
   end
 

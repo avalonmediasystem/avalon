@@ -34,6 +34,7 @@ Unless required by applicable law or agreed to in writing, software distributed
     <%= render 'workflow_progress' %>
     <%= render partial: 'timeline' if current_ability.can? :create, Timeline %>
     <%= render 'share' if will_partial_list_render? :share %>
+    <%= render 'checkout' %>
 
     <!-- Sections -->
     <%= render partial: 'sections',

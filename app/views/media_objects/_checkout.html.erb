@@ -1,0 +1,69 @@
+<%#
+Copyright 2011-2022, The Trustees of Indiana University and Northwestern
+  University.  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+
+You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+  under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+  CONDITIONS OF ANY KIND, either express or implied. See the License for the
+  specific language governing permissions and limitations under the License.
+---  END LICENSE_HEADER BLOCK  ---
+%>
+<% if can? :read, @media_object %>
+  <% if @media_object.lending_status == "checked_out" %>
+    <%= button_tag "Return Item", id: "return-btn", rel: "popover", class: "btn btn-danger pull-right", data: { checkout_id: @media_object.current_checkout(current_user.id).id } %>
+  <% elsif @media_object.lending_status == "available" %>
+    <form id="create_checkout_form" action="<%= checkouts_path %>" method="post" style="display: inline;">
+      <input type="hidden" name="checkout[media_object_id]" value=<%= @media_object.id%> />
+      <input type="submit" form="create_checkout_form" name="commit" value="Check Out" class="btn btn-primary pull-right"
+        id="checkout-btn">
+    </form>
+  <% end %>
+<% end %>
+
+<% content_for :page_scripts do %>
+  <script>
+    var popover_content = '<p>Are you sure you want to return the item?<p>' +
+      '<div>' +
+      '<button type="submit" onclick="confirm_return()" class="btn btn-danger btn-confirm" style="margin-right:5px;">Yes</button>' +
+      '<button type="submit" onclick="cancel_return()" class="btn btn-primary btn-confirm">Cancel</button>' +
+      '</div>'
+    var popover_template = '<div class="popover" role="tooltip" style="width: 12em;">' +
+      '<div class="arrow"></div>' +
+      '<h3 class="popover-header"></h3>' +
+      '<div class="popover-body"></div>' +
+      '</div>'
+
+    $('#return-btn').popover({
+      trigger: 'click',
+      html: true,
+      sanitize: false,
+      placement: 'top',
+      title: 'Return Item?',
+      template: popover_template,
+      content: popover_content
+    });
+
+    var cancel_return = function (event) {
+      $('#return-btn').popover('hide');
+    }
+
+    var confirm_return = function (event) {
+      $.ajax({
+        url: '/checkouts/' + $('#return-btn').data().checkoutId + '.json',
+        type: "POST",
+        data: {
+          _method: 'delete'
+        },
+        complete: function () {
+          $('#return-btn').popover('hide');
+          location.reload();
+        }
+      });
+    }
+  </script>
+<% end %>
