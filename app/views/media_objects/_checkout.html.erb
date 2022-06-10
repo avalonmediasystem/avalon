@@ -14,19 +14,106 @@ Unless required by applicable law or agreed to in writing, software distributed
 ---  END LICENSE_HEADER BLOCK  ---
 %>
 <% if can? :read, @media_object %>
-  <% if @media_object.lending_status == "checked_out" %>
-    <%= button_tag "Return Item", id: "return-btn", rel: "popover", class: "btn btn-danger pull-right", data: { checkout_id: @media_object.current_checkout(current_user.id).id } %>
-  <% elsif @media_object.lending_status == "available" %>
-    <form id="create_checkout_form" action="<%= checkouts_path %>" method="post" style="display: inline;">
-      <input type="hidden" name="checkout[media_object_id]" value=<%= @media_object.id%> />
-      <input type="submit" form="create_checkout_form" name="commit" value="Check Out" class="btn btn-primary pull-right"
-        id="checkout-btn">
-    </form>
-  <% end %>
+  <div class="pull-right cdl-controls" >
+    <% current_checkout=@media_object.current_checkout(current_user.id) %>
+    <% media_object_id=@media_object.id %>
+    <% if @media_object.lending_status == "checked_out" && !current_checkout.nil? %>
+      <div class="remaining-time" style="display: none;">
+        <p>Remaining time: </p>
+        <span class="weeks"></span>
+        <span class="days"></span>
+        <span class="hours"></span>
+        <span class="minutes"></span>
+        <span class="seconds"></span>
+      </div>
+      <%= button_tag "Return Item", id: "return-btn", rel: "popover", class: "btn btn-danger pull-right",
+            data: { checkout_id: current_checkout.id, checkout_returntime: current_checkout.return_time } %>
+    <% elsif @media_object.lending_status == "available" %>
+      <%= form_for(Checkout.new, remote: true, format: 'json', html: { style: "display: inline;" }) do |f| %>
+        <%= hidden_field_tag "checkout[media_object_id]", media_object_id %>
+        <%= f.submit "Check Out", class: "btn btn-primary pull-right", id: "checkout-btn" %>
+      <% end %>
+    <% end %>
+  </div>
 <% end %>
+
+<div id="check-out-expired" class="modal fade" role="dialog" data-backdrop="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class='modal-title'>Check Out Expired.</h4>
+        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span
+            class="sr-only">Close</span></button>
+      </div>
+      <div class="modal-body">
+        <p>Your check out time period has been expired. Depending on the availability you may try checking it out again.
+      </div>
+      <div class="modal-footer">
+        <a href="#" data-dismiss="modal" aria-hidden="true" class="btn btn-outline">Close</a>
+      </div>
+    </div>
+  </div>
+</div>
 
 <% content_for :page_scripts do %>
   <script>
+    $(document).ready(function() {
+      function calcRemainingTime() {
+        $('.remaining-time').css('display', 'flex');
+        var dateStr = $('#return-btn').data().checkoutReturntime.replace(/['"]+/g, '');
+        var returnDate = new Date(dateStr);
+        var currentDate = new Date();
+
+        var seconds = (returnDate - currentDate) / 1000;
+
+        if(seconds > 0) {
+          var weeks = Math.floor(seconds / (3600 * 24 * 7));
+          seconds -= weeks * (3600 * 24 * 7);
+
+          var days = Math.floor(seconds / (3600 * 24));
+          seconds -= days * (3600 * 24);
+
+          var hours = Math.floor((seconds / (60 * 60)) % 24);
+          seconds -= hours * (60 * 60);
+
+          var minutes = Math.floor((seconds / 60) % 60);
+          seconds -= minutes * 60;
+
+          seconds = Math.floor(seconds);
+          return { weeks, days, hours, minutes, seconds };
+        } else {
+          console.log('Check Out Expired.');
+          return 'expired';
+        }
+      }
+
+      function buildString(number, label) {
+        let numberText = number + '<br />' + label;
+        numberText += number > 1 ? 's' : '';
+        return numberText;
+      }
+
+      var interval = setInterval(setTime, 1000);
+
+      function setTime() {
+        if($('#return-btn').length > 0) {
+        let remainingTime = calcRemainingTime();
+        if(remainingTime == 'expired') {
+          clearInterval(interval);
+          $('.remaining-time').css('display', 'none');
+          // $('#check-out-expired').modal('show');
+        } else {
+          const { weeks, days, hours, minutes, seconds } = remainingTime;
+          $('.weeks').html(buildString(weeks, 'week'));
+          $('.days').html(buildString(days, 'day'));
+          $('.hours').html(buildString(hours, 'hour'));
+          $('.minutes').html(buildString(minutes, 'min'));
+          $('.seconds').html(buildString(seconds, 'sec'));
+        }
+        }
+      }
+    });
+
     var popover_content = '<p>Are you sure you want to return the item?<p>' +
       '<div>' +
       '<button type="submit" onclick="confirm_return()" class="btn btn-danger btn-confirm" style="margin-right:5px;">Yes</button>' +

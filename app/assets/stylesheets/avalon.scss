@@ -1167,3 +1167,28 @@ td {
 .irmp--transcript_nav {
   padding: 10px 0 0 0;
 }
+
+/* CDL controls on view page styles */
+.cdl-controls {
+  display: inline-flex;
+  margin-top: 10px;
+
+  .remaining-time {
+    display: flex;
+    text-align: center;
+  }
+
+  .remaining-time p {
+    margin-top: 5px;
+  }
+
+  .remaining-time span{
+    color: #fff;
+    margin-right: 3px;
+    padding: 2px 5px;
+    border-radius: 3px;
+    background: $primary;
+    font-size: x-small;
+  }
+}
+/* End of CDL controls on view page styles */
