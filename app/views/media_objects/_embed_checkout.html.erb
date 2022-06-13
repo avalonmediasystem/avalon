@@ -13,22 +13,13 @@ Unless required by applicable law or agreed to in writing, software distributed
   specific language governing permissions and limitations under the License.
 ---  END LICENSE_HEADER BLOCK  ---
 %>
-
-<% @page_title = t('media_objects.show.title', :media_object_title => (@media_object.title || @media_object.id), :application_name => application_name) %>
-
-<div class="page-title-wrapper">
-  <h1>
-    <% unless @media_object.title.blank? %>
-    <%= @media_object.title %><%= " / #{@media_object.statement_of_responsibility}" if @media_object.statement_of_responsibility.present? %>
+  <% master_file=@media_object.master_files.first%>
+  <div class="checkout <%= master_file.is_video? ? 'video' : 'audio' %>" style="height: <%= master_file.is_video? ? master_file.height : 100 %>px">
+    <% if master_file.is_video? %>
+      <%=t('media_object.cdl.video_checkout').html_safe%>
+      <%= render "checkout" %>
     <% else %>
-    <%= @media_object.id %>
+      <%=t('media_object.cdl.audio_checkout').html_safe%>
+      <%= render "checkout" %>
     <% end %>
-  </h1>
-</div>
-
-<% if @media_object.lending_status == "available" %>
-  <%= render 'embed_checkout' %>
-<% else %>
-  <%= render 'administrative_links' %>
-  <%= render 'item_view' %>
-<% end %>
+  </div>

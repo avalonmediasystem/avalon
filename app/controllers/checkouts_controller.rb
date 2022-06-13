@@ -19,7 +19,7 @@ class CheckoutsController < ApplicationController
     respond_to do |format|
       # TODO: move this can? check into a checkout ability (can?(:create, @checkout))
       if can?(:create, @checkout) && @checkout.save
-        format.json { redirect_to media_object_path, status: :created, location: @checkout }
+        format.json { render :show, status: :created, location: @checkout }
       else
         format.json { render json: @checkout.errors, status: :unprocessable_entity }
       end

@@ -1,0 +1,138 @@
+<%#
+Copyright 2011-2022, The Trustees of Indiana University and Northwestern
+  University.  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+
+You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+  under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+  CONDITIONS OF ANY KIND, either express or implied. See the License for the
+  specific language governing permissions and limitations under the License.
+---  END LICENSE_HEADER BLOCK  ---
+%>
+<% if can? :read, @media_object %>
+  <div class="cdl-controls" >
+    <% current_checkout=@media_object.current_checkout(current_user.id) %>
+    <% if @media_object.lending_status == "checked_out" && !current_checkout.nil? %>
+      <%= button_tag "Return Item", id: "return-btn", rel: "popover", class: "btn btn-danger",
+              data: { checkout_id: current_checkout.id, checkout_returntime: current_checkout.return_time } %>
+      <% end %>
+      <div class="remaining-time" style="display: none;">
+        <p><small>Time <br />remaining: </small></p>
+        <span class="days"></span>
+        <span class="time"></span>
+      </div>
+  </div>
+<% end %>
+
+<div id="check-out-expired" class="modal fade" role="dialog" data-backdrop="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class='modal-title'>Check Out Expired.</h4>
+        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span
+            class="sr-only">Close</span></button>
+      </div>
+      <div class="modal-body">
+        <p>Your check out time period has been expired. Depending on the availability you may try checking it out again.
+      </div>
+      <div class="modal-footer">
+        <a href="#" data-dismiss="modal" aria-hidden="true" class="btn btn-outline">Close</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<% content_for :page_scripts do %>
+  <script>
+    $(document).ready(function() {
+      function calcRemainingTime() {
+        $('.remaining-time').css('display', 'flex');
+        var dateStr = $('#return-btn').data().checkoutReturntime.replace(/['"]+/g, '');
+        var returnDate = new Date(dateStr);
+        var currentDate = new Date();
+
+        var seconds = (returnDate - currentDate) / 1000;
+
+        if(seconds > 0) {
+          var days = Math.floor(seconds / (3600 * 24));
+          seconds -= days * (3600 * 24);
+
+          var hours = Math.floor((seconds / (60 * 60)) % 24);
+          seconds -= hours * (60 * 60);
+
+          var minutes = Math.floor((seconds / 60) % 60);
+          seconds -= minutes * 60;
+
+          seconds = Math.floor(seconds);
+
+          return { days, hours, minutes, seconds };
+        } else {
+          console.log('Check Out Expired.');
+          return 'expired';
+        }
+      }
+
+      var interval = setInterval(setTime, 1000);
+
+      function setTime() {
+        if($('#return-btn').length > 0) {
+        let remainingTime = calcRemainingTime();
+        if(remainingTime == 'expired') {
+          clearInterval(interval);
+          $('.remaining-time').css('display', 'none');
+          // $('#check-out-expired').modal('show');
+        } else {
+          const { days, hours, minutes, seconds } = remainingTime;
+          var daysText = `${days}<br />day${days > 1 ? 's': ''}`;
+          $('.days').html(daysText);
+          var timeText = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}<br />hh:mm:ss`;
+          $('.time').html(timeText);
+        }
+        }
+      }
+    });
+
+    var popover_content = '<p>Are you sure you want to return this item?<p>' +
+      '<div>' +
+      '<button type="submit" onclick="confirm_return()" class="btn btn-danger btn-sm btn-confirm" style="margin-right:5px;">Yes</button>' +
+      '<button type="submit" onclick="cancel_return()" class="btn btn-primary btn-sm btn-confirm">No, Cancel</button>' +
+      '</div>'
+    var popover_template = '<div class="popover" role="tooltip" style="width: 12em;">' +
+      '<div class="arrow"></div>' +
+      '<h3 class="popover-header"></h3>' +
+      '<div class="popover-body"></div>' +
+      '</div>'
+
+    $('#return-btn').popover({
+      trigger: 'click',
+      html: true,
+      sanitize: false,
+      placement: 'bottom',
+      title: 'Are you sure?',
+      template: popover_template,
+      content: popover_content
+    });
+
+    var cancel_return = function (event) {
+      $('#return-btn').popover('hide');
+    }
+
+    var confirm_return = function (event) {
+      $.ajax({
+        url: '/checkouts/' + $('#return-btn').data().checkoutId + '.json',
+        type: "POST",
+        data: {
+          _method: 'delete'
+        },
+        complete: function () {
+          $('#return-btn').popover('hide');
+          location.reload();
+        }
+      });
+    }
+  </script>
+<% end %>
