@@ -3,7 +3,7 @@
 <h1>Checkouts</h1>
 
 <div class="Checkout-index">
-  <% if Checkout.returned_checkouts(current_user.id).count > 0 or current_user.groups.include? 'administrator' %>
+  <% if Checkout.returned_checkouts(current_user.id).any? || current_ability.is_administrator? %>
     <%= render "inactive_checkout" %>
   <% end %>
 
