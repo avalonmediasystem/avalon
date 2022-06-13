@@ -30,8 +30,7 @@ RSpec.describe "checkouts/index", type: :view do
     end
   end
   context 'as an admin user' do
-    let(:admin) { FactoryBot.create(:admin) }
-    before { allow(view).to receive(:current_user).and_return(admin) }
+    let(:user) { FactoryBot.create(:admin) }
     it 'renders a list of checkouts with usernames' do
       render
       assert_select "tr>td", text: checkouts.first.user.user_key
