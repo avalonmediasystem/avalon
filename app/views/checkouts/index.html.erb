@@ -3,14 +3,14 @@
 <h1>Checkouts</h1>
 
 <div class="Checkout-index">
-  <% if Checkout.returned_checkouts(current_user.id).any? || current_ability.is_administrator? %>
+  <% if Checkout.returned_for_user(current_user.id).any? || current_ability.is_administrator? %>
     <%= render "inactive_checkout" %>
   <% end %>
 
   <table id="checkouts-table" class="table table-striped datatable">
     <thead>
       <tr>
-        <% if current_user.groups.include? 'administrator' %>
+        <% if current_ability.is_administrator? %>
           <th>User</th>
         <% end %>
         <th>Media object</th>
@@ -18,7 +18,7 @@
         <th>Return time</th>
         <th>Time remaining</th>
         <th data-orderable="false">
-          <% if Checkout.checkouts(current_user.id).count > 1 or current_user.groups.include? 'administrator' %>
+          <% if Checkout.active_for_user(current_user.id).count > 1 || current_ability.is_administrator? %>
               <%= link_to 'Return All', main_app.checkouts_path , class: 'btn btn-primary btn-xs', method: :delete, data: { confirm: 'Are you sure?' } %>
           <% end %>
         </th>
@@ -28,7 +28,7 @@
     <tbody>
       <% @checkouts.each do |checkout| %>
         <tr>
-          <% if current_user.groups.include? 'administrator' %>
+          <% if current_ability.is_administrator? %>
             <td><%= checkout.user.user_key %></td>
           <% end %>
           <td><%= link_to checkout.media_object.title, main_app.media_object_url(checkout.media_object) %></td>

@@ -1,6 +1,6 @@
 class CheckoutsController < ApplicationController
   before_action :set_checkout, only: %i[show update destroy]
-  before_action :user_checkouts, only: %i[index return_all]
+  before_action :set_checkouts, only: %i[index return_all]
   load_and_authorize_resource except: [:create]
 
   # GET /checkouts or /checkouts.json
@@ -49,7 +49,7 @@ class CheckoutsController < ApplicationController
   end
 
   # DELETE /checkouts
-  def return_all
+  def destroy_all
     @checkouts.destroy_all
 
     respond_to do |format|
@@ -65,11 +65,11 @@ class CheckoutsController < ApplicationController
       @checkout = Checkout.find(params[:id])
     end
 
-    def user_checkouts
-      @checkouts = if current_user.groups.include? 'administrator'
+    def set_checkouts
+      @checkouts = if current_ability.is_administrator?
                      Checkout.all.where("return_time > now()")
                    else
-                     Checkout.checkouts(current_user.id)
+                     Checkout.active_for_user(current_user.id)
                    end
     end
 

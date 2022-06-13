@@ -2,10 +2,12 @@ require 'rails_helper'
 
 RSpec.describe "checkouts/index", type: :view do
   let(:user) { FactoryBot.create(:user) }
+  let(:ability) { Ability.new(user) }
   let(:checkouts) { [FactoryBot.create(:checkout), FactoryBot.create(:checkout)] }
   before(:each) do
     assign(:checkouts, checkouts)
     allow(view).to receive(:current_user).and_return(user)
+    allow(view).to receive(:current_ability).and_return(ability)
   end
   context 'as a regular user' do
     it 'renders a list of checkouts without username' do
@@ -15,7 +17,7 @@ RSpec.describe "checkouts/index", type: :view do
       assert_select "tr>td", text: checkouts.second.user.user_key, count: 0
       assert_select "tr>td", text: checkouts.second.media_object.title
     end
-    context 'no previously returned checkouts' do
+    context 'has no previously returned checkouts' do
       it 'does not render the show inactive checkouts checkbox' do
         render
         expect(response).not_to render_template('checkouts/_inactive_checkout')
