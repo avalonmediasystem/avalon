@@ -74,5 +74,10 @@ FactoryBot.define do
         mo.save
       end
     end
+    trait :with_checkout do
+      after(:create) do |mo|
+        mo.current_checkout = FactoryBot.create(:checkout)
+        mo.save
+    end
   end
 end

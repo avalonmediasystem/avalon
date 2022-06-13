@@ -22,6 +22,9 @@ en:
     empty_share_link: ""
     empty_share_link_notice: "After processing has started the embedded link will be available."
     empty_share_section_permalink_notice: "After processing has started the section link will be available."
+    cdl:
+      video_checkout: "<p>To enable streaming please check out resource. This video content is available to be checked out.</p>"
+      audio_checkout: "<p>To enable streaming please check out resource. This audio content is available to be checked out.</p>"
   metadata_tip:
     abstract: |
       Summary provides a space for describing the contents of the item. Examples
