@@ -54,7 +54,7 @@ RSpec.describe Checkout, type: :model do
     end
 
     describe 'active_for_user' do
-      it 'returns active checkouts for the given media object' do
+      it 'returns active checkouts for the given user' do
         expect(Checkout.active_for_user(user.id)).to include(checkout)
       end
 
@@ -64,7 +64,7 @@ RSpec.describe Checkout, type: :model do
     end
 
     describe 'returned_for_user' do
-      it 'does not return active checkouts for the given media object' do
+      it 'does not return active checkouts for the given user' do
         expect(Checkout.returned_for_user(user.id)).not_to include(checkout)
       end
 

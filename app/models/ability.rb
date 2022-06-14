@@ -226,7 +226,6 @@ class Ability
       can :create, Checkout do |checkout|
         checkout.user == @user && can?(:read, checkout.media_object)
       end
-      can :destroy_all, Checkout, user: @user
       can :read, Checkout, user: @user
       can :update, Checkout, user: @user
       can :destroy, Checkout, user: @user
