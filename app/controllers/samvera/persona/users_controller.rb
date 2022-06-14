@@ -72,7 +72,7 @@ module Samvera
 
       # Sort
       sort_column = params['order']['0']['column'].to_i rescue 0
-      sort_direction = params['order']['0']['dir'] == 'desc' ? 'desc' : 'asc'
+      sort_direction = params['order']['0']['dir'] == 'desc' ? 'desc' : 'asc' rescue 'asc'
       session[:presenter_sort] = [sort_column, sort_direction]
       if columns[sort_column] != 'entry'
         @presenter = @presenter.order(columns[sort_column].downcase => sort_direction)
@@ -93,7 +93,7 @@ module Samvera
         "data": @presenter.collect do |presenter|
           edit_button =
             if presenter.has_attribute?(:provider) && !presenter.provider.nil?
-              "<span class='text-muted' data-toggle='tooltip' title='Edit user is unavailable because this user is single sign on'> Edit".html_safe
+              view_context.tag.span("Edit", class: 'text-muted', title: 'Edit user is unavailable because this user is single sign on', data: { toggle: 'tooltip' })
             else
               view_context.link_to('Edit', main_app.edit_persona_user_path(presenter))
             end
@@ -104,8 +104,8 @@ module Samvera
           [
             view_context.link_to(presenter.username, main_app.edit_persona_user_path(presenter)),
             view_context.link_to(presenter.email, main_app.edit_persona_user_path(presenter)),
-            "<ul>#{formatted_roles.join}</ul>".html_safe,
-            "<relative-time datetime='#{sign_in.getutc.iso8601}' title='#{sign_in.to_formatted_s(:standard)}'>#{sign_in.to_formatted_s(:long_ordinal)}</relative-time>".html_safe,
+            view_context.tag.ul(formatted_roles.join, escape: false),
+            view_context.tag.relative_time(sign_in.to_formatted_s(:long_ordinal), datetime: sign_in.getutc.iso8601, title: sign_in.to_formatted_s(:standard)),
             user_status(presenter),
             presenter.provider,
             "#{edit_button}&nbsp;|&nbsp;#{become_button}&nbsp;|&nbsp;#{delete_button}"
@@ -199,11 +199,7 @@ module Samvera
     end
 
     def format_roles(roles)
-      formatted_roles = []
-      roles.each do |role|
-        formatted_roles.append("<li>#{role}</li>")
-      end
-      formatted_roles
+      roles.collect { |r| view_context.tag.li r }
     end
 
     def user_status(user)

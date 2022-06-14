@@ -76,7 +76,7 @@ RSpec.describe Samvera::Persona::UsersController, type: :controller do
         parsed_response = JSON.parse(response.body)
         expect(parsed_response['recordsFiltered']).to eq(2)
         expect(parsed_response['data'].count).to eq(2)
-        expect(parsed_response['data'][0][3]).to eq("<relative-time datetime='2022-05-15T00:00:00Z' title='2022-05-15 00:00:00 UTC'>May 15th, 2022 00:00</relative-time>")
+        expect(parsed_response['data'][0][3]).to eq("<relative-time datetime=\"2022-05-15T00:00:00Z\" title=\"2022-05-15 00:00:00 UTC\">May 15th, 2022 00:00</relative-time>")
       end
 
       let(:common_params) { { start: 0, length: 20, order: { '0': { column: 0, dir: 'asc' } } } }
