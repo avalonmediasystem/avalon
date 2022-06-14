@@ -26,11 +26,7 @@ Rails.application.routes.draw do
     end
   end
 
-  resources :checkouts, only: [:index, :create, :show, :update, :destroy] do
-    collection do
-      delete '', as: '', to: 'checkouts#destroy_all'
-    end
-  end
+  resources :checkouts, only: [:index, :create, :show, :update, :destroy]
 
   resources :bookmarks do
     concerns :exportable

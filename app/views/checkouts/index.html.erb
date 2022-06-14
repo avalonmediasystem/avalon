@@ -18,9 +18,7 @@
         <th>Return time</th>
         <th>Time remaining</th>
         <th data-orderable="false">
-          <% if Checkout.active_for_user(current_user.id).count > 1 || current_ability.is_administrator? %>
-              <%= link_to 'Return All', main_app.checkouts_path , class: 'btn btn-primary btn-xs', method: :delete, data: { confirm: 'Are you sure?' } %>
-          <% end %>
+          Return All
         </th>
       </tr>
     </thead>
