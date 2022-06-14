@@ -19,6 +19,7 @@ class CheckoutsController < ApplicationController
     respond_to do |format|
       # TODO: move this can? check into a checkout ability (can?(:create, @checkout))
       if can?(:create, @checkout) && @checkout.save
+        format.html { redirect_to media_object_path(checkout_params[:media_object_id]), flash: { success: "Checkout was successfully created."} }
         format.json { render :show, status: :created, location: @checkout }
       else
         format.json { render json: @checkout.errors, status: :unprocessable_entity }
@@ -64,7 +65,7 @@ class CheckoutsController < ApplicationController
     @checkout.destroy
     flash[:notice] = "Checkout was successfully destroyed."
     respond_to do |format|
-      format.html { redirect_to checkouts_url, notice: "Checkout was successfully destroyed." }
+      format.html { redirect_to checkouts_url, flash: flash }
       format.json { render json:flash[:notice] }
     end
   end
