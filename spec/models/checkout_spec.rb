@@ -38,9 +38,10 @@ RSpec.describe Checkout, type: :model do
   end
 
   describe 'scopes' do
+    let(:user) { FactoryBot.create(:user) }
     let(:media_object) { FactoryBot.create(:media_object) }
-    let!(:checkout) { FactoryBot.create(:checkout, media_object_id: media_object.id) }
-    let!(:expired_checkout) { FactoryBot.create(:checkout, media_object_id: media_object.id, checkout_time: DateTime.now - 2.weeks, return_time: DateTime.now - 1.day) }
+    let!(:checkout) { FactoryBot.create(:checkout, user: user, media_object_id: media_object.id) }
+    let!(:expired_checkout) { FactoryBot.create(:checkout, user: user, media_object_id: media_object.id, checkout_time: DateTime.now - 2.weeks, return_time: DateTime.now - 1.day) }
 
     describe 'active_for_media_object' do
       it 'returns active checkouts for the given media object' do
@@ -49,6 +50,26 @@ RSpec.describe Checkout, type: :model do
 
       it 'does not return inactive checkouts' do
         expect(Checkout.active_for_media_object(media_object.id)).not_to include(expired_checkout)
+      end
+    end
+
+    describe 'active_for_user' do
+      it 'returns active checkouts for the given user' do
+        expect(Checkout.active_for_user(user.id)).to include(checkout)
+      end
+
+      it 'does not return inactive checkouts' do
+        expect(Checkout.active_for_user(user.id)).not_to include(expired_checkout)
+      end
+    end
+
+    describe 'returned_for_user' do
+      it 'does not return active checkouts for the given user' do
+        expect(Checkout.returned_for_user(user.id)).not_to include(checkout)
+      end
+
+      it 'does return inactive checkouts' do
+        expect(Checkout.returned_for_user(user.id)).to include(expired_checkout)
       end
     end
   end

@@ -1,10 +1,11 @@
 class CheckoutsController < ApplicationController
   before_action :set_checkout, only: %i[show update destroy]
+  before_action :set_checkouts, only: %i[index return_all]
   load_and_authorize_resource except: [:create]
 
   # GET /checkouts or /checkouts.json
   def index
-    @checkouts = Checkout.active_for_user(current_user.id)
+    @checkouts
   end
 
   # GET /checkouts/1.json
@@ -52,6 +53,14 @@ class CheckoutsController < ApplicationController
     # Use callbacks to share common setup or constraints between actions.
     def set_checkout
       @checkout = Checkout.find(params[:id])
+    end
+
+    def set_checkouts
+      @checkouts = if current_ability.is_administrator?
+                     Checkout.all.where("return_time > now()")
+                   else
+                     Checkout.active_for_user(current_user.id)
+                   end
     end
 
     # Only allow a list of trusted parameters through.
