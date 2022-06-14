@@ -48,16 +48,6 @@ class CheckoutsController < ApplicationController
     end
   end
 
-  # DELETE /checkouts
-  def destroy_all
-    @checkouts.destroy_all
-
-    respond_to do |format|
-      format.html { redirect_to checkouts_url, notice: "Checkouts were sucessfully destroyed." }
-      format.json { head :no_content }
-    end
-  end
-
   private
 
     # Use callbacks to share common setup or constraints between actions.

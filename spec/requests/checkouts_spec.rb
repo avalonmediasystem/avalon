@@ -118,37 +118,4 @@ RSpec.describe "/checkouts", type: :request do
       expect(response).to redirect_to(checkouts_url)
     end
   end
-
-  describe 'DELETE #destroy_all' do
-    before :each do
-      FactoryBot.reload
-      FactoryBot.create_list(:checkout, 2)
-    end
-    context 'as a regular user' do
-      it "deletes the current user's checkouts" do
-        checkout
-        delete checkouts_url
-        expect(Checkout.all.count).to eq(2)
-      end
-      
-      it "redirects to the checkouts list" do
-        delete checkout_url(checkout)
-        expect(response).to redirect_to(checkouts_url)
-      end
-    end
-    context 'as an admin user' do
-      let(:admin) { FactoryBot.create(:admin) }
-      before { sign_in admin }
-
-      it 'deletes all checkouts' do
-        delete checkouts_url
-        expect(Checkout.all.count).to eq(0)
-      end
-
-      it "redirects to the checkouts list" do
-        delete checkout_url(checkout)
-        expect(response).to redirect_to(checkouts_url)
-      end
-    end
-  end
 end
