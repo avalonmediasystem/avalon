@@ -25,6 +25,9 @@ en:
     cdl:
       video_checkout: "<p>To enable streaming please check out resource. This video content is available to be checked out.</p>"
       audio_checkout: "<p>To enable streaming please check out resource. This audio content is available to be checked out.</p>"
+      expire: 
+        heading: "Check Out Expired"
+        message: "Your lending period has been expired. Please return the item, and check for availability later."
   metadata_tip:
     abstract: |
       Summary provides a space for describing the contents of the item. Examples

@@ -19,28 +19,26 @@ Unless required by applicable law or agreed to in writing, software distributed
     <% if @media_object.lending_status == "checked_out" && !current_checkout.nil? %>
       <%= button_tag "Return Item", id: "return-btn", rel: "popover", class: "btn btn-danger",
               data: { checkout_id: current_checkout.id, checkout_returntime: current_checkout.return_time } %>
-      <% end %>
-      <div class="remaining-time" style="display: none;">
+      <div class="remaining-time">
         <p><small>Time <br />remaining: </small></p>
-        <span class="days"></span>
-        <span class="time"></span>
+        <span class="days">0 <br />days</span>
+        <span class="time">00:00:00 <br />hh:mm:ss</span>
       </div>
+    <% end %>
   </div>
 <% end %>
 
-<div id="check-out-expired" class="modal fade" role="dialog" data-backdrop="true">
+<div id="check-out-expired" class="modal fade" role="dialog" data-backdrop="static">
   <div class="modal-dialog modal-lg">
     <div class="modal-content">
       <div class="modal-header">
-        <h4 class='modal-title'>Check Out Expired.</h4>
-        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span
-            class="sr-only">Close</span></button>
+        <h4 class='modal-title'><%= t('media_object.cdl.expire.heading') %></h4>
       </div>
       <div class="modal-body">
-        <p>Your check out time period has been expired. Depending on the availability you may try checking it out again.
+        <p><%= t('media_object.cdl.expire.message') %></p>
       </div>
       <div class="modal-footer">
-        <a href="#" data-dismiss="modal" aria-hidden="true" class="btn btn-outline">Close</a>
+        <a href="#" data-dismiss="modal" aria-hidden="true" onclick="confirm_return()" class="btn btn-danger">Return Item</a>
       </div>
     </div>
   </div>
@@ -49,8 +47,8 @@ Unless required by applicable law or agreed to in writing, software distributed
 <% content_for :page_scripts do %>
   <script>
     $(document).ready(function() {
+      /* Calculate remaining days and time for the lending perriod */
       function calcRemainingTime() {
-        $('.remaining-time').css('display', 'flex');
         var dateStr = $('#return-btn').data().checkoutReturntime.replace(/['"]+/g, '');
         var returnDate = new Date(dateStr);
         var currentDate = new Date();
@@ -78,13 +76,13 @@ Unless required by applicable law or agreed to in writing, software distributed
 
       var interval = setInterval(setTime, 1000);
 
+      /* Interval update remaining time in the lending period */
       function setTime() {
         if($('#return-btn').length > 0) {
         let remainingTime = calcRemainingTime();
         if(remainingTime == 'expired') {
           clearInterval(interval);
-          $('.remaining-time').css('display', 'none');
-          // $('#check-out-expired').modal('show');
+          $('#check-out-expired').modal('show');
         } else {
           const { days, hours, minutes, seconds } = remainingTime;
           var daysText = `${days}<br />day${days > 1 ? 's': ''}`;
@@ -96,6 +94,7 @@ Unless required by applicable law or agreed to in writing, software distributed
       }
     });
 
+    /* Popover dialog for item return */
     var popover_content = '<p>Are you sure you want to return this item?<p>' +
       '<div>' +
       '<button type="submit" onclick="confirm_return()" class="btn btn-danger btn-sm btn-confirm" style="margin-right:5px;">Yes</button>' +

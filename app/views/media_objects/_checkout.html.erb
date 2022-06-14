@@ -14,7 +14,8 @@ Unless required by applicable law or agreed to in writing, software distributed
 ---  END LICENSE_HEADER BLOCK  ---
 %>
 <% media_object_id=@media_object.id %>
-<%= form_for(Checkout.new, remote: true, format: 'json', html: { style: "display: inline;" }) do |f| %>
+<%= form_for(Checkout.new, html: { style: "display: inline;" }) do |f| %>
+  <%= hidden_field_tag "authenticity_token", form_authenticity_token %>
   <%= hidden_field_tag "checkout[media_object_id]", media_object_id %>
   <%= f.submit "Check Out", class: "btn btn-secondary" %>
 <% end %>
