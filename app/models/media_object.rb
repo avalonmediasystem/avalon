@@ -368,7 +368,7 @@ class MediaObject < ActiveFedora::Base
   end
 
   def lending_status
-    Checkout.active_for(id).any? ? "checked_out" : "available"
+    Checkout.active_for_media_object(id).any? ? "checked_out" : "available"
   end
 
   private

@@ -42,13 +42,13 @@ RSpec.describe Checkout, type: :model do
     let!(:checkout) { FactoryBot.create(:checkout, media_object_id: media_object.id) }
     let!(:expired_checkout) { FactoryBot.create(:checkout, media_object_id: media_object.id, checkout_time: DateTime.now - 2.weeks, return_time: DateTime.now - 1.day) }
 
-    describe 'active_for' do
+    describe 'active_for_media_object' do
       it 'returns active checkouts for the given media object' do
-        expect(Checkout.active_for(media_object.id)).to include(checkout)
+        expect(Checkout.active_for_media_object(media_object.id)).to include(checkout)
       end
 
       it 'does not return inactive checkouts' do
-        expect(Checkout.active_for(media_object.id)).not_to include(expired_checkout)
+        expect(Checkout.active_for_media_object(media_object.id)).not_to include(expired_checkout)
       end
     end
   end
