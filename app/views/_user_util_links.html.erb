@@ -36,7 +36,7 @@ Unless required by applicable law or agreed to in writing, software distributed
   <li class="nav-item <%= active_for_controller('checkouts') %>">
     <%= link_to main_app.checkouts_path, id:'checkouts_nav', class: 'nav-link' do %>
       Checkouts
-      (<span data-role='checkout-counter'><%= Checkout.checkouts(current_or_guest_user.id).count %></span>)
+      (<span data-role='checkout-counter'><%= Checkout.active_for_user(current_or_guest_user.id).count %></span>)
     <% end %>
   </li>
   <% end %>
