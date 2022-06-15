@@ -5,6 +5,8 @@ RSpec.describe Checkout, type: :model do
   let(:checkout) { FactoryBot.create(:checkout) }
 
   describe 'validations' do
+    let(:checkout) { FactoryBot.build(:checkout) }
+
     it { is_expected.to validate_presence_of(:user) }
     it { is_expected.to validate_presence_of(:media_object_id) }
     it { is_expected.to validate_presence_of(:checkout_time) }
@@ -41,7 +43,11 @@ RSpec.describe Checkout, type: :model do
     let(:user) { FactoryBot.create(:user) }
     let(:media_object) { FactoryBot.create(:media_object) }
     let!(:checkout) { FactoryBot.create(:checkout, user: user, media_object_id: media_object.id) }
-    let!(:expired_checkout) { FactoryBot.create(:checkout, user: user, media_object_id: media_object.id, checkout_time: DateTime.now - 2.weeks, return_time: DateTime.now - 1.day) }
+    let!(:expired_checkout) { FactoryBot.create(:checkout, user: user, media_object_id: media_object.id) }
+
+    before do
+      expired_checkout.update(return_time: DateTime.current - 1.day)
+    end
 
     describe 'active_for_media_object' do
       it 'returns active checkouts for the given media object' do
