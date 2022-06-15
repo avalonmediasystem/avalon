@@ -674,7 +674,7 @@ describe MediaObjectsController, type: :controller do
   end
 
   describe "#show" do
-    let!(:media_object) { FactoryBot.create(:published_media_object, :with_master_file, visibility: 'public') }
+    let!(:media_object) { FactoryBot.create(:published_media_object, visibility: 'public') }
 
     context "Known items should be retrievable" do
       context 'with fedora 3 pid' do

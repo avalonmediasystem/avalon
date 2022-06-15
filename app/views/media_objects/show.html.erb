@@ -26,7 +26,7 @@ Unless required by applicable law or agreed to in writing, software distributed
   </h1>
 </div>
 
-<% if @media_object.lending_status == "available" %>
+<% if @media_object.lending_status == "available" && @currentStream %>
   <%= render 'embed_checkout' %>
 <% else %>
   <%= render 'administrative_links' %>
