@@ -23,8 +23,8 @@ en:
     empty_share_link_notice: "After processing has started the embedded link will be available."
     empty_share_section_permalink_notice: "After processing has started the section link will be available."
     cdl:
-      video_checkout: "<p>To enable streaming please check out resource. This video content is available to be checked out.</p>"
-      audio_checkout: "<p>To enable streaming please check out resource. This audio content is available to be checked out.</p>"
+      checkout_message: "<p>To enable streaming please check out resource. This content is available to be checked out.</p>"
+      not_available_message: "<p>This resource is not available to be checked out at the moment. Please check again later.</p>"
       expire: 
         heading: "Check Out Expired"
         message: "Your lending period has been expired. Please return the item, and check for availability later."
