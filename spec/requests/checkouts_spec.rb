@@ -116,7 +116,9 @@ RSpec.describe "/checkouts", type: :request do
     it "redirects to the checkouts list" do
       delete checkout_url(checkout)
       expect(response).to redirect_to(checkouts_url)
+      expect(flash[:notice]).not_to be_empty
     end
+
   end
 
   describe "PATCH /return" do

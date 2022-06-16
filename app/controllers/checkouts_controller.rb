@@ -65,7 +65,7 @@ class CheckoutsController < ApplicationController
     @checkout.destroy
     flash[:notice] = "Checkout was successfully destroyed."
     respond_to do |format|
-      format.html { redirect_to checkouts_url, flash: flash }
+      format.html { redirect_to checkouts_url, notice: flash[:notice] }
       format.json { render json:flash[:notice] }
     end
   end

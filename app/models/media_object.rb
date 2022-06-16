@@ -372,8 +372,8 @@ class MediaObject < ActiveFedora::Base
   end
 
   def current_checkout(user_id)
-    checkouts = Checkout.active_for(id)
-    checkouts.select{ |ch| ch.user_id == user_id }.first
+    checkouts = Checkout.active_for_media_object(id)
+    checkouts.select{ |ch| ch.user_id == user_id  }.first
   end
 
   private
