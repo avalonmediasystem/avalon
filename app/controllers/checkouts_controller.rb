@@ -61,6 +61,15 @@ class CheckoutsController < ApplicationController
     end
   end
 
+  # GET /checkouts/display_returned.json
+  def display_returned
+    if current_ability.is_administrator?
+      @checkouts = @checkouts.or(Checkout.all.where("return_time <= now()"))
+    else
+      @checkouts = @checkouts.or(Checkout.returned_for_user(current_user.id))
+    end
+  end
+
   # DELETE /checkouts/1 or /checkouts/1.json
   def destroy
     @checkout.destroy
