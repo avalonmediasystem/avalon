@@ -228,6 +228,7 @@ class Ability
       end
       can :return, Checkout, user: @user
       can :return_all, Checkout, user: @user
+      can :display_returned, Checkout, user: @user
       can :read, Checkout, user: @user
       can :update, Checkout, user: @user
       can :destroy, Checkout, user: @user
