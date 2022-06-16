@@ -25,5 +25,13 @@ RSpec.describe CheckoutsController, type: :routing do
     it "routes to #destroy" do
       expect(delete: "/checkouts/1").to route_to("checkouts#destroy", id: "1")
     end
+
+    it "routes to #return_all" do
+      expect(patch: "/checkouts/return_all").to route_to("checkouts#return_all")
+    end
+
+    it "routes to #return" do
+      expect(patch: "/checkouts/1/return").to route_to("checkouts#return", id: "1")
+    end
   end
 end

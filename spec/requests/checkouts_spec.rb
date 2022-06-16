@@ -118,4 +118,52 @@ RSpec.describe "/checkouts", type: :request do
       expect(response).to redirect_to(checkouts_url)
     end
   end
+
+  describe "PATCH /return" do
+    it "updates the return time of requested checkout" do
+      patch return_checkout_url(checkout)
+      checkout.reload
+      expect(checkout.return_time).to be <= DateTime.current
+    end
+    it "redirects to the checkouts list" do
+      patch return_checkout_url(checkout)
+      expect(response).to redirect_to(checkouts_url)
+    end
+  end
+
+  describe "PATCH /return_all" do
+    before :each do
+      FactoryBot.reload
+      FactoryBot.create_list(:checkout, 2)
+      FactoryBot.create(:checkout, user: user)
+    end
+
+    context "as a regular user" do
+      it "updates the user's active checkouts" do
+        patch return_all_checkouts_url
+        expect(Checkout.where(user_id: user.id).first.return_time).to be <= DateTime.current
+      end
+      it "does not update other checkouts" do
+        patch return_all_checkouts_url
+        expect(Checkout.where.not(user_id: user.id).first.return_time).to be > DateTime.current
+        expect(Checkout.where.not(user_id: user.id).second.return_time).to be > DateTime.current
+      end
+      it "redirects to the checkouts list" do
+        patch return_all_checkouts_url
+        expect(response).to redirect_to(checkouts_url)
+      end
+    end
+    context "as an admin user" do
+      let(:user) { FactoryBot.create(:admin) }
+      it "updates all active checkouts" do
+        patch return_all_checkouts_url
+        sleep 1
+        expect(Checkout.where("return_time <= '#{DateTime.current}'").count).to eq(3)
+      end
+      it "redirects to the checkouts list" do
+        patch return_all_checkouts_url
+        expect(response).to redirect_to(checkouts_url)
+      end
+    end
+  end
 end

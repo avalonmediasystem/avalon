@@ -26,7 +26,15 @@ Rails.application.routes.draw do
     end
   end
 
-  resources :checkouts, only: [:index, :create, :show, :update, :destroy]
+  resources :checkouts, only: [:index, :create, :show, :update, :destroy] do
+    collection do
+      patch :return_all
+    end
+
+    member do
+      patch :return
+    end
+  end
 
   resources :bookmarks do
     concerns :exportable
