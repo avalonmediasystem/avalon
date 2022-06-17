@@ -1,6 +1,6 @@
 version: 2.1
 orbs:
-  samvera: samvera/circleci-orb@1.0.0
+  samvera: samvera/circleci-orb@1
 jobs:
   build:
     docker:
@@ -20,8 +20,12 @@ jobs:
       - image: ualbertalib/docker-fcrepo4:4.7
         environment:
           CATALINA_OPTS: '-Djava.awt.headless=true -Dfile.encoding=UTF-8 -server -Xms512m -Xmx1024m -XX:NewSize=256m -XX:MaxNewSize=256m -XX:PermSize=256m -XX:MaxPermSize=256m -XX:+DisableExplicitGC'
-      - image: solr:7-alpine
-        command: bin/solr -cloud -noprompt -f -p <<parameters.solr_port>>
+      - image: zookeeper:3.4
+      - image: solr:8-slim
+        environment:
+          VERBOSE: yes
+          SECURITY_JSON: '{"authentication":{"blockUnknown": false, "class":"solr.BasicAuthPlugin", "credentials":{"solr":"IV0EHq1OnNrj6gvRCwvFwTrZ1+z1oBbnQdiVC3otuq0= Ndd7LKvVBAaZIF0QAVi1ekCfAJXr1GGfLtRUXhgrF8c="}, "realm":"My Solr users", "forwardCredentials": false}, "authorization":{ "class":"solr.RuleBasedAuthorizationPlugin", "permissions":[{"name":"security-edit", "role":"admin"}], "user-role":{"solr":"admin"}}}'
+        command: sh -c "server/scripts/cloud-scripts/zkcli.sh -zkhost localhost:2181 -cmd put /security.json \"${SECURITY_JSON}\" && solr-fg -cloud -noprompt  -p << parameters.solr_port >> -z localhost:2181"
       - image: redis:alpine
 
     parameters:
@@ -35,6 +39,12 @@ jobs:
       parallelism:
         type: integer
         default: 4
+      solr_config_path:
+        type: string
+        default: 'solr/conf'
+      core_name:
+        type: string
+        default: 'hydra-test'
 
     working_directory: /home/app/avalon
 
@@ -66,7 +76,29 @@ jobs:
           paths:
             - .cache/yarn
 
-      - samvera/install_solr_core
+      # Copy solr 8 compliant step from unreleased version of orb
+      #- samvera/install_solr_core:
+      #    solr_config_path: << parameters.solr_config_path >>
+      - run:
+          name: Wait for Solr
+          command: dockerize -wait tcp://localhost:<< parameters.solr_port >> -timeout 1m
+      - run:
+          name: Create solr core
+          command: |
+            if [ -d << parameters.solr_config_path >> ]
+            then
+              cd << parameters.solr_config_path >>
+            else
+              if [ -d "$(bundle show active-fedora)/lib/generators/active_fedora/config/solr/templates/solr/conf" ]
+              then
+                cd "$(bundle show active-fedora)/lib/generators/active_fedora/config/solr/templates/solr/conf"
+              else
+                cd "$(bundle show active-fedora)/lib/generators/active_fedora/config/solr/templates/solr/config"
+              fi
+            fi
+            zip -1 -r solr_conf.zip ./*
+            curl -H "Content-type:application/octet-stream" --data-binary @solr_conf.zip "http://solr:SolrRocks@127.0.0.1:<< parameters.solr_port >>/solr/admin/configs?action=UPLOAD&name=solrconfig"
+            curl -H 'Content-type: application/json' http://solr:SolrRocks@127.0.0.1:<< parameters.solr_port >>/api/collections/ -d '{create: {name: << parameters.core_name >>, config: solrconfig, numShards: 1}}'
 
       - run:
           command: |

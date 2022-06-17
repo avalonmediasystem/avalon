@@ -21,8 +21,11 @@ services:
       - POSTGRES_USER=postgres
       - POSTGRES_DB=avalon
       - POSTGRES_PASSWORD=password
+    ports:
+      - '5432:5432'
     networks:
       internal:
+      external:
   db-test:
     <<: *db-avalon
     volumes: []
@@ -35,8 +38,11 @@ services:
       - fedora:/data
     environment:
       - JAVA_OPTIONS=-Dfcrepo.modeshape.configuration=classpath:/config/file-simple/repository.json -Dfcrepo.home=/data
+    ports:
+      - '8080:8080'
     networks:
       internal:
+      external:
   fedora-test:
     <<: *fedora
     volumes: []
@@ -50,8 +56,12 @@ services:
       - solr-precreate
       - avalon
       - /opt/solr/avalon_conf
+    ports:
+      - '8983:8983'
     networks:
       internal:
+      external:
+
   solr-test:
     <<: *solr
     volumes:
@@ -62,6 +72,8 @@ services:
     environment:
       - AVALON_DOMAIN=http://avalon:3000
       - AVALON_STREAMING_BUCKET_URL=http://minio:9000/derivatives/
+    depends_on:
+      - minio
     ports:
       - '8880:80'
     networks:
@@ -70,8 +82,11 @@ services:
 
   redis: &redis
     image: redis:alpine
+    ports:
+      - '6379:6379'
     networks:
       internal:
+      external:
   redis-test:
     <<: *redis
 
@@ -120,6 +135,7 @@ services:
       - SETTINGS__STREAMING__CONTENT_PATH=/
       - SETTINGS__STREAMING__STREAM_DEFAULT_QUALITY=medium
       - SETTINGS__STREAMING__HTTP_BASE=http://localhost:8880/avalon
+      # - STREAMING_HOST=localhost
       - SETTINGS__STREAMING__SERVER=nginx
       - SETTINGS__STREAMING__STREAM_TOKEN_TTL=20
       - SYSTEM_GROUPS=administrator,group_manager,manager
