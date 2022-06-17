@@ -125,15 +125,28 @@ RSpec.describe "/checkouts", type: :request do
       checkout.reload
       expect(checkout.return_time).to be <= DateTime.current
     end
-    it "redirects to the checkouts list" do
-      patch return_checkout_url(checkout)
-      expect(response).to redirect_to(checkouts_url)
+    context "user is on the checkouts page" do
+      it "redirects to the checkouts list" do
+        patch return_checkout_url(checkout), headers: { "HTTP_REFERER" => checkouts_url }
+        expect(response).to redirect_to(checkouts_url)
+      end
+    end
+    context "user is on the item view page" do
+      it "redirects to the item view page" do
+        patch return_checkout_url(checkout), headers: { "HTTP_REFERER" => media_object_url(checkout.media_object)}
+        expect(response).to redirect_to(media_object_url(checkout.media_object))
+      end
+    end
+    context "the http referrer fails" do
+      it "redirects to the checkouts page" do
+        patch return_checkout_url(checkout)
+        expect(response).to redirect_to(checkouts_url)
+      end
     end
   end
 
   describe "PATCH /return_all" do
     before :each do
-      FactoryBot.reload
       FactoryBot.create_list(:checkout, 2)
       FactoryBot.create(:checkout, user: user)
     end
