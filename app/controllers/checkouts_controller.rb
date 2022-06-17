@@ -14,7 +14,7 @@ class CheckoutsController < ApplicationController
 
   # POST /checkouts.json
   def create
-    @checkout = Checkout.new(user: current_user, media_object_id: checkout_params[:media_object_id], checkout_time: DateTime.current, return_time: DateTime.current + 2.weeks)
+    @checkout = Checkout.new(user: current_user, media_object_id: checkout_params[:media_object_id])
 
     respond_to do |format|
       # TODO: move this can? check into a checkout ability (can?(:create, @checkout))
