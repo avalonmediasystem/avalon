@@ -170,8 +170,7 @@ RSpec.describe "/checkouts", type: :request do
       let(:user) { FactoryBot.create(:admin) }
       it "updates all active checkouts" do
         patch return_all_checkouts_url
-        sleep 1
-        expect(Checkout.where("return_time <= '#{DateTime.current}'").count).to eq(3)
+        expect(Checkout.where("return_time <= ?", DateTime.current).count).to eq(3)
       end
       it "redirects to the checkouts list" do
         patch return_all_checkouts_url
