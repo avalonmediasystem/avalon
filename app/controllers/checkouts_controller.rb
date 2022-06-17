@@ -43,7 +43,7 @@ class CheckoutsController < ApplicationController
     @checkout.update(return_time: DateTime.current)
 
     respond_to do |format|
-      format.html { redirect_to checkouts_url, notice: "Checkout was successfully returned." }
+      format.html { redirect_back fallback_location: checkouts_url, notice: "Checkout was successfully returned." }
       format.json { head :no_content }
     end
   end
