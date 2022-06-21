@@ -18,7 +18,9 @@
         <th>Return time</th>
         <th>Time remaining</th>
         <th data-orderable="false">
-          Return All
+          <% if Checkout.active_for_user(current_user.id).count > 1 || current_ability.is_administrator? %>
+              <%= link_to 'Return All', main_app.return_all_checkouts_path , class: 'btn btn-primary btn-xs', method: :patch, data: { confirm: 'Are you sure you want to return all items?' } %>
+          <% end %>
         </th>
       </tr>
     </thead>
@@ -35,9 +37,11 @@
           <td><%= distance_of_time_in_words(checkout.return_time - DateTime.current) %></td>
           <td>
             <% if checkout.return_time > DateTime.current %>
-              <%= link_to 'Return', checkout, class: 'btn btn-danger btn-xs', method: :delete, data: { confirm: 'Are you sure?' } %>
-            <% else %>
+              <%= link_to 'Return', return_checkout_url(checkout), class: 'btn btn-danger btn-xs', method: :patch, data: { confirm: "Are you sure you want to return this item?" } %>
+            <% elsif checkout.return_time < DateTime.current && media_object.lending_status == 'available' %>
               <%= link_to 'Checkout', checkout, class: 'btn btn-primary btn-xs', method: :post %>
+            <% else %>
+              <%= 'Item Unavailable' %>
             <% end %>
           </td>
         </tr>

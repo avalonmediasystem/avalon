@@ -38,6 +38,27 @@ class CheckoutsController < ApplicationController
     end
   end
 
+  #PATCH /checkouts/1/return
+  def return
+    @checkout.update(return_time: DateTime.current)
+
+    respond_to do |format|
+      format.html { redirect_back fallback_location: checkouts_url, notice: "Checkout was successfully returned." }
+      format.json { head :no_content }
+    end
+  end
+
+
+  # PATCH /checkouts/return_all
+  def return_all
+    @checkouts.each { |c| c.update(return_time: DateTime.current) }
+
+    respond_to do |format|
+      format.html { redirect_to checkouts_url, notice: "All checkouts were successfully returned." }
+      format.json { head :no_content }
+    end
+  end
+
   # DELETE /checkouts/1 or /checkouts/1.json
   def destroy
     @checkout.destroy
