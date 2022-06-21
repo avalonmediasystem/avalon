@@ -26,7 +26,7 @@ Unless required by applicable law or agreed to in writing, software distributed
   </h1>
 </div>
 
-<% can_stream=!current_user.nil? && !@media_object.current_checkout(current_user.id).nil? %>
+<% can_stream = current_user && @media_object.current_checkout(current_user.id).present? %>
 <% if  can_stream && @currentStream %>
   <%= render 'administrative_links' %>
   <%= render 'item_view' %>
