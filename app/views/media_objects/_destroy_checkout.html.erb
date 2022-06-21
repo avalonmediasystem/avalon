@@ -122,10 +122,10 @@ Unless required by applicable law or agreed to in writing, software distributed
 
     var confirm_return = function (event) {
       $.ajax({
-        url: '/checkouts/' + $('#return-btn').data().checkoutId + '.json',
+        url: '/checkouts/' + $('#return-btn').data().checkoutId + '/return.json',
         type: "POST",
         data: {
-          _method: 'delete'
+          _method: 'patch'
         },
         complete: function () {
           $('#return-btn').popover('hide');
