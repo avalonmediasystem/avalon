@@ -687,7 +687,7 @@ describe MediaObjectsController, type: :controller do
       end
 
       it "should be accesible by its PID" do
-        FactoryBot.create(:master_file, media_object: media_object).save
+        FactoryBot.create(:master_file, media_object: media_object)
         get :show, params: { id: media_object.id }
         expect(response.response_code).to eq(200)
       end
