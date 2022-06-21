@@ -43,9 +43,10 @@ class CheckoutsController < ApplicationController
   def return
     @checkout.update(return_time: DateTime.current)
 
+    flash[:notice] = "Checkout was successfully returned."
     respond_to do |format|
-      format.html { redirect_back fallback_location: checkouts_url, notice: "Checkout was successfully returned." }
-      format.json { head :no_content }
+      format.html { redirect_back fallback_location: checkouts_url, notice: flash[:notice] }
+      format.json { render json:flash[:notice] }
     end
   end
 

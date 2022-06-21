@@ -21,32 +21,39 @@ Unless required by applicable law or agreed to in writing, software distributed
 
 <% @poster_url = request.base_url + @currentStreamInfo[:poster_image] unless @currentStreamInfo[:poster_image].nil? %>
 <% @page_type = @currentStreamInfo[:is_video] ? 'video' : 'audio' %>
+<% can_stream = current_user && @media_object.current_checkout(current_user.id).present? %>
 
 <% f_start, f_end = parse_media_fragment params['t'] %>
 <div class="row">
   <div class="col-sm-8" id="left_column">
-    <%= render partial: "modules/player/section", locals: {section: @currentStream, section_info: @currentStreamInfo, f_start: @f_start, f_end: @f_end} %>
-    <%= render file: '_track_scrubber.html.erb' if is_mejs_2? %>
-    <%= render file: '_add_to_playlist.html.erb' if current_user.present? && is_mejs_2? %>
-    <%# Partial view for MEJS4 Add To Playlist plugin %>
-    <%= render partial: 'mejs4_add_to_playlist' if current_user.present? && is_mejs_4? %>
-    <%= render 'workflow_progress' %>
-    <%= render partial: 'timeline' if current_ability.can? :create, Timeline %>
-    <%= render 'share' if will_partial_list_render? :share %>
+    <% if can_stream && @currentStream %>
+      <%= render partial: "modules/player/section", locals: {section: @currentStream, section_info: @currentStreamInfo, f_start: @f_start, f_end: @f_end} %>
+      <%= render file: '_track_scrubber.html.erb' if is_mejs_2? %>
+      <%= render file: '_add_to_playlist.html.erb' if current_user.present? && is_mejs_2? %>
+      <%# Partial view for MEJS4 Add To Playlist plugin %>
+      <%= render partial: 'mejs4_add_to_playlist' if current_user.present? && is_mejs_4? %>
+      <%= render 'workflow_progress' %>
+      <%= render partial: 'timeline' if current_ability.can? :create, Timeline %>
+      <%= render 'share' if will_partial_list_render? :share %>
 
-    <!-- Sections -->
-    <%= render partial: 'sections',
-        locals: { mediaobject: @media_object,
-                sections: @masterFiles,
-                activeStream: @currentStream } %>
+      <!-- Sections -->
+      <%= render partial: 'sections',
+          locals: { mediaobject: @media_object,
+                  sections: @masterFiles,
+                  activeStream: @currentStream } %>
+    <% else %>
+      <%= render 'embed_checkout' %>
+    <% end %>
   </div>
   <div class="col-sm-4" id="right-column">
     <div id="metadata_container" class="">
       <section id="metadata"><%= render "metadata_display" %></section>
     </div>
 
-    <% supplemental_files = @media_object.ordered_master_files.to_a.map { |mf| {"id" => mf.id, "transcripts" => mf.supplemental_files.select { |sf| sf.tags.include?('transcript')} } }.flatten(1) %>
-    <%= react_component("ReactIIIFTranscript", {base_url: request.protocol+request.host_with_port, transcripts: supplemental_files }) %>
+    <% if can_stream && @currentStream %>
+      <% supplemental_files = @media_object.ordered_master_files.to_a.map { |mf| {"id" => mf.id, "transcripts" => mf.supplemental_files.select { |sf| sf.tags.include?('transcript')} } }.flatten(1) %>
+      <%= react_component("ReactIIIFTranscript", {base_url: request.protocol+request.host_with_port, transcripts: supplemental_files }) %>
+    <% end %>
   </div>
 
 </div>
