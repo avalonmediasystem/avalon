@@ -6,6 +6,23 @@ class CheckoutsController < ApplicationController
   # GET /checkouts or /checkouts.json
   def index
     @checkouts
+
+    response = {
+      "data": @checkouts.collect do |checkout|
+        if current_ability.is_administrator?
+          index_array(checkout)
+        else
+          user_array(index_array(checkout))
+        end
+      end
+    }
+
+    respond_to do |format|
+      format.html { render :index }
+      format.json do
+        render json: response
+      end
+    end
   end
 
   # GET /checkouts/1.json
@@ -66,6 +83,22 @@ class CheckoutsController < ApplicationController
     else
       @checkouts = @checkouts.or(Checkout.returned_for_user(current_user.id))
     end
+
+    response = {
+      "data": @checkouts.collect do |checkout|
+        if current_ability.is_administrator?
+          index_array(checkout)
+        else
+          user_array(index_array(checkout))
+        end
+      end
+    }
+
+    respond_to do |format|
+      format.json do
+        render json: response
+      end
+    end
   end
 
   # DELETE /checkouts/1 or /checkouts/1.json
@@ -91,6 +124,32 @@ class CheckoutsController < ApplicationController
                    else
                      Checkout.active_for_user(current_user.id)
                    end
+    end
+
+    def index_array(checkout)
+      [
+        checkout.user.user_key,
+        view_context.link_to(checkout.media_object.title, main_app.media_object_url(checkout.media_object)),
+        checkout.checkout_time.to_s(:long_ordinal),
+        checkout.return_time.to_s(:long_ordinal),
+        if checkout.return_time > DateTime.current
+          view_context.distance_of_time_in_words(checkout.return_time - DateTime.current)
+        else
+          "-"
+        end,
+        if checkout.return_time > DateTime.current
+          view_context.link_to('Return', return_checkout_url(checkout), class: 'btn btn-danger btn-xs', method: :patch, data: { confirm: "Are you sure you want to return this item?" })
+        elsif checkout.return_time < DateTime.current && checkout.media_object.lending_status == 'available'
+          view_context.link_to('Checkout', checkouts_url(params: { checkout: { media_object_id: checkout.media_object_id } }), class: 'btn btn-primary btn-xs', method: :post)
+        else
+          'Item Unavailable'
+        end
+      ]
+    end
+
+    def user_array(array)
+      array.shift
+      array
     end
 
     # Only allow a list of trusted parameters through.
