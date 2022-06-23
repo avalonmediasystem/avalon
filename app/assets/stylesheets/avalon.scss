@@ -1159,3 +1159,52 @@ td {
     background-color: $lightgray;
   }
 }
+
+/* CDL controls on view page styles */
+.cdl-controls {
+  display: inline-flex;
+  margin-bottom: 10px;
+  height: 2.5rem;
+  float: right;
+
+  @include media-breakpoint-down(sm) {
+    float: left;
+    margin-top: 0.5rem;
+  }
+
+  .remaining-time {
+    display: flex;
+    text-align: center;
+  }
+
+  .remaining-time p {
+    line-height: 1rem;
+    margin-left: 1rem;
+    text-align: left;
+  }
+
+  .remaining-time span{
+    color: #fff;
+    margin-left: 3px;
+    padding: 2px 5px;
+    border-radius: 3px;
+    background: $primary;
+    font-size: x-small;
+  }
+}
+
+.checkout {
+  background-color: $dark;
+  color: $white;
+}
+
+.checkout.audio {
+  padding: 1rem;
+  height: 25%;
+}
+
+.checkout.video {
+  padding: 3rem;
+  height: 50%;
+}
+/* End of CDL controls on view page styles */
