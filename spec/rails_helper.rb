@@ -1,11 +1,11 @@
 # Copyright 2011-2022, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
-#
+# 
 # You may obtain a copy of the License at
-#
+# 
 # http://www.apache.org/licenses/LICENSE-2.0
-#
+# 
 # Unless required by applicable law or agreed to in writing, software distributed
 #   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
 #   CONDITIONS OF ANY KIND, either express or implied. See the License for the
@@ -18,7 +18,6 @@ if ENV['COVERAGE'] || ENV['CI']
 
   SimpleCov.start('rails') do
     add_filter '/spec'
-    add_filter '/app/migration'
   end
   SimpleCov.command_name 'spec'
 end
@@ -71,14 +70,21 @@ ActiveRecord::Migration.maintain_test_schema!
 ActiveJob::Base.queue_adapter = :test
 
 Capybara.server = :webrick
+Capybara.server_host = Rails.application.routes.url_helpers.root_url
+Capybara.app_host = Rails.application.routes.url_helpers.root_url
+Capybara.asset_host = Rails.application.routes.url_helpers.root_url
+Capybara.server_port = Rails.application.default_url_options[:port]
 Capybara.register_driver :selenium_chrome_headless_docker_friendly do |app|
   Capybara::Selenium::Driver.load_selenium
+  caps = Selenium::WebDriver::Remote::Capabilities.chrome(loggingPrefs:{browser: 'ALL'})
   browser_options = ::Selenium::WebDriver::Chrome::Options.new
   browser_options.args << '--headless'
   browser_options.args << '--disable-gpu'
   # Sandbox cannot be used inside unprivileged Docker container
   browser_options.args << '--no-sandbox'
-  Capybara::Selenium::Driver.new(app, browser: :chrome, options: browser_options)
+  # Next line commented out in favor of before(:each) resize_to that applies to all drivers
+  # browser_options.args << '--window-size=1920,1080'
+  Capybara::Selenium::Driver.new(app, browser: :chrome, options: browser_options, desired_capabilities: caps)
 end
 
 # eg `SHOW_BROWSER=true ./bin/rspec` will show you an actual chrome browser
@@ -105,6 +111,8 @@ RSpec.configure do |config|
 
   config.before :suite do
     WebMock.disable_net_connect!(allow: ['localhost', '127.0.0.1', 'fedora', 'fedora-test', 'solr', 'solr-test', 'matterhorn', 'https://chromedriver.storage.googleapis.com'])
+    DatabaseCleaner.allow_remote_database_url = true
+    DatabaseCleaner.url_allowlist = ['postgres://postgres:password@db/avalon', 'postgresql://postgres@localhost:5432/postgres']
     DatabaseCleaner.clean_with(:truncation)
     ActiveFedora::Cleaner.clean!
     disable_production_minter!
@@ -139,6 +147,15 @@ RSpec.configure do |config|
   config.after :each do
     DatabaseCleaner.clean
     ActiveFedora::Cleaner.clean!
+  end
+
+  config.before(:each, type: :request) do
+    host! Rails.application.default_url_options[:host]
+  end
+
+  # Remove this check to test on smaller window sizes?
+  config.before(:each, js: true) do
+    Capybara.page.driver.browser.manage.window.resize_to(1920,1080) # desktop size
   end
 
   # RSpec Rails can automatically mix in different behaviours to your tests

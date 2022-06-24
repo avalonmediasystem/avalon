@@ -17,12 +17,9 @@ Unless required by applicable law or agreed to in writing, software distributed
 <% if has_facet_values? facet_field_names(groupname) %>
 <div id="facets<%= "-#{groupname}" unless groupname.nil? %>" class="facets sidenav">
 
-  <div class="top-panel-heading panel-heading">
-    <button type="button" class="facets-toggle" data-toggle="collapse" data-target="#facet-panel<%= "-#{groupname}" unless groupname.nil? %>-collapse">
-      <span class="sr-only">Toggle facets</span>
-      <span class="icon-bar"></span>
-      <span class="icon-bar"></span>
-      <span class="icon-bar"></span>
+  <div class="top-panel-heading card-header">
+    <button type="button" class="navbar-toggler facets-toggle float-right desktop-hidden" data-toggle="collapse" href="#facet-panel<%= "-#{groupname}" unless groupname.nil? %>-collapse" aria-expanded="true" >
+      <span class="navbar-toggler-icon"></span>
     </button>
 
   <h2>
@@ -30,7 +27,7 @@ Unless required by applicable law or agreed to in writing, software distributed
   </h2>
     </div>
 
-  <div id="facet-panel<%= "-#{groupname}" unless groupname.nil? %>-collapse" class="collapse panel-group">
+  <div id="facet-panel<%= "-#{groupname}" unless groupname.nil? %>-collapse" class="collapse facet-group">
   <%= render_facet_partials facet_field_names(groupname) %>
 </div>
 </div>

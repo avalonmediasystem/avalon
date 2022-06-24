@@ -14,36 +14,34 @@ Unless required by applicable law or agreed to in writing, software distributed
 ---  END LICENSE_HEADER BLOCK  ---
 %>
 <div class="modal-header">
-  <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
   <h1><%= t('blacklight.delete.form.title') %></h1>
+  <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
 </div>
-<%= form_tag url_for(:controller => "bookmarks", :action => "delete"), :id => 'delete_form', :class => "form-horizontal", :method => :post do %>
-<div class="modal-body">
+<%= form_tag url_for(:controller => "bookmarks", :action => "delete"), :id => 'delete_form', :method => :post do %>
+  <div class="modal-body">
     <div class="row-fluid">
-      <div class="btn-options">
-  <% if @documents.empty? %>
-          <div class="alert alert-danger">
-      <p><%= t('blacklight.bookmarks.no_bookmarks') %></p>
+      <% if @documents.empty? %>
+        <div class="alert alert-danger">
+          <p><%= t('blacklight.bookmarks.no_bookmarks') %></p>
+        </div>
+      <% else %>
+        <div class="alert alert-danger">
+          <p><%= t('blacklight.delete.confirm', count: @documents.count) %></p>
+          <ul>
+            <% @documents.each do |doc| %>
+              <% @mediaobject = MediaObject.find(doc.id)  %>
+              <% if can? :destroy, @mediaobject  %>
+                <li><%= @mediaobject.title %> (<%= doc.id %>)<%=hidden_field_tag "id[]", doc.id %></li>
+              <% else %>
+                <li><%= @mediaobject.title %> (<%= doc.id %>): <%= t('blacklight.messages.permission_denied') %></li>
+              <% end %>
+            <% end %>
+          </ul>
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-primary"><%= t('blacklight.messages.yes_sure') %></button>
+        </div>
+      <% end %>
     </div>
-  <% else %>
-          <div class="alert alert-danger">
-            <p><%= t('blacklight.delete.confirm', count: @documents.count) %></p>
-      <ul>
-        <% @documents.each do |doc| %>
-    <% @mediaobject = MediaObject.find(doc.id)  %>
-    <% if can? :destroy, @mediaobject  %>
-            <li><%= @mediaobject.title %> (<%= doc.id %>)<%=hidden_field_tag "id[]", doc.id %></li>
-          <% else %>
-            <li><%= @mediaobject.title %> (<%= doc.id %>): <%= t('blacklight.messages.permission_denied') %></li>
-          <% end %>
-        <% end %>
-      </ul>
-          </div>
-    <div class="modal-footer">
-      <button type="submit" class="btn btn-primary"><%= t('blacklight.messages.yes_sure') %></button>
-    </div>
-  <% end %>
-      </div>
-    </div>
-</div>
+  </div>
 <% end %>

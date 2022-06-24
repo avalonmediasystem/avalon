@@ -213,7 +213,7 @@ class MEJSPlayer {
       return;
     }
 
-    const $sections = $('#accordion').find('.panel-heading[data-section-id]');
+    const $sections = $('#accordion').find('.card-header[data-section-id]');
     const sectionsIdArray = $sections.map((index, item) =>
       $(item).data('sectionId').toString()
     );
@@ -223,7 +223,7 @@ class MEJSPlayer {
     if (currentIdIndex > -1 && currentIdIndex + 1 < sectionsIdArray.length) {
       const sectionId = sectionsIdArray[currentIdIndex + 1];
       const mediaObjectId = $('#accordion')
-        .find(`.panel-heading[data-section-id="${sectionId}"]`)
+        .find(`.card-header[data-section-id="${sectionId}"]`)
         .data('mediaObjectId');
 
       // Update helper object noting we want the new media clip to auto start
@@ -387,10 +387,10 @@ class MEJSPlayer {
       this.getNewStreamAjax(url, false);
     } else {
       // Clicked within the same section...
-      const parentPanel = $(target).closest('div[class*=panel]');
+      const parentPanel = $(target).closest('div[class*=card]');
       const isHeader =
-        parentPanel.hasClass('panel-heading') ||
-        parentPanel.hasClass('panel-title');
+        parentPanel.hasClass('card-header') ||
+        parentPanel.hasClass('card-title');
       const time = isHeader
         ? 0
         : parseFloat(this.segmentsMap[target.id].fragmentbegin);
@@ -776,7 +776,7 @@ class MEJSPlayer {
       currentStreamInfo
     );
 
-    const $sections = $('#accordion').find('.panel-heading[data-section-id]');
+    const $sections = $('#accordion').find('.card-header[data-section-id]');
     const sectionsIdArray = $sections.map((index, item) =>
       $(item).data('sectionId').toString()
     );

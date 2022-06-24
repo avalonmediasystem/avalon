@@ -87,13 +87,14 @@ class MEJSMarkersHelper {
       let confirmButtonId = 'delete_marker_confirm_' + markerId;
       let cancelButtonId = 'delete_marker_cancel_' + markerId;
       let content = `<p>Are you sure?</p>
-                      <button id="${confirmButtonId}" class="btn btn-xs btn-danger">Submit</button>
-                      <button id="${cancelButtonId}" class="btn btn-xs btn-primary">No, cancel</button>`;
+                      <button id="${confirmButtonId}" class="btn btn-sm btn-danger">Submit</button>
+                      <button id="${cancelButtonId}" class="btn btn-sm btn-primary">No, cancel</button>`;
 
       // Show popover confirmation
       $button.popover({
         container: '#popover-container-' + $button[0].dataset.markerId,
         content: content,
+        sanitize: false,
         html: true,
         placement: 'top'
       });
@@ -114,7 +115,7 @@ class MEJSMarkersHelper {
               'tr[data-marker-id="' + response.id + '"]'
             );
 
-            $button.popover('destroy');
+            $button.popover('hide');
             // Remove from list
             row.parentNode.removeChild(row);
             // Update visual markers in player's time rail
@@ -127,7 +128,7 @@ class MEJSMarkersHelper {
 
       // Delete cancel click
       $('#' + cancelButtonId).on('click', e => {
-        $button.popover('destroy');
+        $button.popover('hide');
       });
     });
 

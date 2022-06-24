@@ -1,11 +1,11 @@
 # Copyright 2011-2022, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
-#
+# 
 # You may obtain a copy of the License at
-#
+# 
 # http://www.apache.org/licenses/LICENSE-2.0
-#
+# 
 # Unless required by applicable law or agreed to in writing, software distributed
 #   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
 #   CONDITIONS OF ANY KIND, either express or implied. See the License for the
@@ -46,9 +46,9 @@ class TimelinesController < ApplicationController
     records_total = @timelines.count
     columns = ['title', 'description', 'visibility', 'updated_at', 'tags', 'actions']
 
-    # Filter title
-    title_filter = params['search']['value']
-    @timelines = @timelines.title_like(title_filter) if title_filter.present?
+    # Filter title and description
+    filter = params['search']['value']
+    @timelines = @timelines.title_like(filter).or(@timelines.desc_like(filter)) if filter.present?
 
     # Apply tag filter if requested
     tag_filter = params['columns']['4']['search']['value']
@@ -67,13 +67,13 @@ class TimelinesController < ApplicationController
       "data": @timelines.collect do |timeline|
         copy_button = view_context.button_tag(type: 'button',
                                               data: { timeline: timeline },
-                                              class: 'copy-timeline-button btn btn-default btn-xs') do
+                                              class: 'copy-timeline-button btn btn-sm btn-outline') do
           "<i class='fa fa-clone' aria-hidden='true'></i> Copy".html_safe
         end
-        edit_button = view_context.link_to(edit_timeline_path(timeline), class: 'btn btn-default btn-xs') do
+        edit_button = view_context.link_to(edit_timeline_path(timeline), class: 'btn btn-sm btn-outline') do
           "<i class='fa fa-edit' aria-hidden='true'></i> Edit Details".html_safe
         end
-        delete_button = view_context.link_to(timeline_path(timeline), method: :delete, class: 'btn btn-xs btn-danger btn-confirmation', data: { placement: 'bottom' }) do
+        delete_button = view_context.link_to(timeline_path(timeline), method: :delete, class: 'btn btn-sm btn-danger btn-confirmation', data: { placement: 'bottom' }) do
           "<i class='fa fa-times' aria-hidden='true'></i> Delete".html_safe
         end
         [

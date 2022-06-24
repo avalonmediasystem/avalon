@@ -1,12 +1,12 @@
-/*
+/* 
  * Copyright 2011-2022, The Trustees of Indiana University and Northwestern
  *   University.  Licensed under the Apache License, Version 2.0 (the "License");
  *   you may not use this file except in compliance with the License.
- *
+ * 
  * You may obtain a copy of the License at
- *
+ * 
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software distributed
  *   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
  *   CONDITIONS OF ANY KIND, either express or implied. See the License for the
@@ -20,7 +20,7 @@ $accordionPadding: 20px;
   @return -1 * $n * $accordionPadding;
 }
 
-#accordion.panel-group {
+#accordion.media-show-page {
   margin-top: 10px;
   position: relative;
 
@@ -36,7 +36,7 @@ $accordionPadding: 20px;
     }
   }
 
-  .panel-title {
+  .card-title {
     .fa-plus-square,
     .fa-minus-square {
       font-size: 0.9em;
@@ -44,6 +44,10 @@ $accordionPadding: 20px;
       cursor: pointer;
       border: none;
       background-color: $lightgray;
+    }
+
+    .no-show {
+      display: none;
     }
   }
 
@@ -62,9 +66,9 @@ $accordionPadding: 20px;
     left: accordion-indent(1);
   }
 
-  .panel-heading {
+  .card-header {
     border-bottom: 1px solid #dddddd;
-    padding: 7px 10px;
+    padding: 0.75rem 1rem 0 1rem;
 
     ul {
       padding-left: $accordionPadding;
@@ -76,10 +80,13 @@ $accordionPadding: 20px;
     #collapse_button {
       float: right;
       margin-top: -2px;
+      font-size: $btn-xs-font-size;
+      height: $btn-xs-height;
+      padding: $btn-xs-padding;
     }
   }
 
-  .panel-body {
+  .card-body {
     border-top: none;
     position: relative;
 

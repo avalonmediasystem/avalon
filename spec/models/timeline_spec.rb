@@ -1,11 +1,11 @@
 # Copyright 2011-2022, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
-#
+# 
 # You may obtain a copy of the License at
-#
+# 
 # http://www.apache.org/licenses/LICENSE-2.0
-#
+# 
 # Unless required by applicable law or agreed to in writing, software distributed
 #   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
 #   CONDITIONS OF ANY KIND, either express or implied. See the License for the
@@ -165,6 +165,20 @@ RSpec.describe Timeline, type: :model do
         expect(Timeline.title_like(title_filter)).not_to include(timeline3)
       end
     end
+    describe 'desc_like' do
+      let(:timeline1) { FactoryBot.create(:timeline, description: 'Moose tunes') }
+      let(:timeline2) { FactoryBot.create(:timeline, description: 'My favorite by smoose') }
+      let(:timeline3) { FactoryBot.create(:timeline, description: 'Favorites') }
+      let(:desc_filter) { 'moose' }
+      it 'returns timelines with matching descriptions' do
+        # Commented out since case insensitivity is default for mysql but not postgres
+        # expect(Timeline.desc_like(desc_filter)).to include(timeline1)
+        expect(Timeline.desc_like(desc_filter)).to include(timeline2)
+      end
+      it 'does not return timelines without matching descriptions' do
+        expect(Timeline.desc_like(desc_filter)).not_to include(timeline3)
+      end
+    end
     describe 'with_tag' do
       let(:timeline1) { FactoryBot.create(:timeline, tags: ['Moose']) }
       let(:timeline2) { FactoryBot.create(:timeline, tags: ['Goose', 'moose']) }
@@ -294,7 +308,7 @@ RSpec.describe Timeline, type: :model do
         expect(timeline.source_changed?).to eq true
         timeline.save
         manifest_json = JSON.parse(timeline.manifest)
-        expect(manifest_json["homepage"]["id"]).to eq new_homepage
+        expect(manifest_json["homepage"][0]["id"]).to eq new_homepage
       end
     end
 
@@ -310,7 +324,7 @@ RSpec.describe Timeline, type: :model do
         expect(timeline.source_changed?).to eq true
         timeline.standardize_homepage
         manifest_json = JSON.parse(timeline.manifest)
-        expect(manifest_json["homepage"]["id"]).to eq new_homepage
+        expect(manifest_json["homepage"][0]["id"]).to eq new_homepage
       end
     end
   end

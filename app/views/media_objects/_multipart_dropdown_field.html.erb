@@ -16,14 +16,9 @@ Unless required by applicable law or agreed to in writing, software distributed
 <% selected_value ||= options[:dropdown_options].keys.first %>
 <% fieldarray = options[:multivalued]? "[]" : "" %>
 
-<div class="input-group-btn">
-  <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-    <span><%= options[:dropdown_options][selected_value] %></span> <span class="caret"></span>
-  </button>
-  <%= hidden_field_tag "media_object[#{options[:dropdown_field]}]#{fieldarray}", selected_value %>
-  <ul class="dropdown-menu" role="menu">
-    <% options[:dropdown_options].each_pair do |value, display| %>
-    <li><a class="dropdown-field"><%= display %></a><span class="hidden"><%= value %></li>
-    <% end %>
-  </ul>
+<div class="input-group-prepend">
+  <% fieldname = "media_object[#{options[:dropdown_field]}]#{fieldarray}" %>
+  <%= hidden_field_tag fieldname, selected_value %>
+  <% option_hash = (options[:dropdown_options].values).zip(options[:dropdown_options].keys) %>
+  <%= select_tag fieldname.to_s, options_for_select(option_hash, selected_value) %>
 </div>

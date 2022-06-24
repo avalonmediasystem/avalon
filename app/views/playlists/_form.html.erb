@@ -13,50 +13,49 @@ Unless required by applicable law or agreed to in writing, software distributed
   specific language governing permissions and limitations under the License.
 ---  END LICENSE_HEADER BLOCK  ---
 %>
-<div id="playlist_edit_div" class="collapse <%= 'in' if !@playlist.persisted? || !@playlist.errors.empty? %>">
+<div id="playlist_edit_div" class="collapse <%= 'show' if !@playlist.persisted? || !@playlist.errors.empty? %>">
   <%= form_for(@playlist, html: { id: 'playlist_form', class: 'playlist_actions' }) do |f| %>
-  <div class="form-group <% if @playlist.errors[:title].any? %>invalid-feedback<% end %>">
-    <%= f.label "Name" %>
+  <div class="form-group">
+    <%= f.label "Name", class: "font-weight-bold" %>
     <%= f.text_field :title, class: (@playlist.errors[:title].any? ? 'is-invalid form-control' : 'form-control') %>
   </div>
 
   <div class="form-group">
-    <%= f.label :comment, 'Description' %>
+    <%= f.label :comment, 'Description', class: "font-weight-bold" %>
     <%= f.text_area :comment, class: 'form-control', rows: '4' %>
   </div>
 
   <div class="form-group">
-
-    <div class="radio">
+    <div class="form-check">
       <label aria-describedby="helpVisibility">
         <%= f.radio_button(:visibility, Playlist::PUBLIC) %>
         <%= human_friendly_visibility Playlist::PUBLIC %>
       </label>
     </div>
-    <div class="radio">
+    <div class="form-check">
       <label aria-describedby="helpVisibility">
         <%= f.radio_button(:visibility, Playlist::PRIVATE) %>
         <%= human_friendly_visibility Playlist::PRIVATE %>
       </label>
     </div>
-    <div class="radio">
+    <div class="form-check">
       <label aria-describedby="helpVisibility">
         <%= f.radio_button(:visibility, Playlist::PRIVATE_WITH_TOKEN, class: 'share-playlist') %>
         <%= human_friendly_visibility Playlist::PRIVATE_WITH_TOKEN %>
       </label>
     </div>
-    <span id="helpVisibility" class="help-block"><%= visibility_description @playlist.visibility %></span>
+    <span id="helpVisibility" class="form-text text-muted"><%= visibility_description @playlist.visibility %></span>
   </div>
 
   <div class="form-group">
-    <%= label_tag nil, t("playlist.tags.label") %>
+    <%= label_tag nil, t("playlist.tags.label"), class: "font-weight-bold" %>
     <%= render partial:'tag_form' %>
   </div>
 
   <div class="form-group">
     <%= f.submit id: 'submit-playlist-form', class: 'btn btn-primary', value: t("playlist.#{params[:action]}.action") %>
       <% if params[:action] == "edit" || params[:action] == "update" %>
-      <a id="playlist_edit_cancel" class="btn btn-default" data-toggle="collapse"
+      <a id="playlist_edit_cancel" class="btn btn-outline" data-toggle="collapse"
         data-target="#playlist_edit_div, #playlist_view_div">Cancel</a>
       <% end %>
   </div>

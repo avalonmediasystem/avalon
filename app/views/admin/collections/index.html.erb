@@ -25,44 +25,41 @@ Unless required by applicable law or agreed to in writing, software distributed
   </div>
 </div>
 
-
-<div class="collections-list-wrapper">
-  <table class='table table-striped'>
-    <thead>
-      <tr>
-        <th>Title</th>
-        <th>Items</th>
-        <th>Managers</th>
-        <th>Description</th>
-        <th></th>
-      </tr>
-    </thead>
-    <tbody>
-      <% @collections.to_a.each do |collection| %>
-      <tr>
-        <td> <strong><%= link_to collection.name, admin_collection_path(collection.id) %></strong> </td>
-        <td>
-          <%= link_to(pluralize(collection.media_object_count, 'item'), search_catalog_path('f[collection_ssim][]' => collection.name)) %>
-          <% if collection.unpublished_media_object_count > 0 %>
-          <%=link_to("(#{collection.unpublished_media_object_count} unpublished)", search_catalog_path('f[collection_ssim][]' => collection.name, 'f[workflow_published_sim][]' => "Unpublished")) %>
-          <% end %>
-        </td>
-        <td> <%= pluralize(collection.manager_count, 'manager') %> </td>
-        <td> <%= collection.description&.truncate(100, separator: ' ') %> </td>
-        <td class="text-right">
-          <% if can?(:destroy, collection) %>
-          <div class="btn-group">
-            <%= link_to('Delete', remove_admin_collection_path(collection.id), class: 'btn btn-danger btn-sm')%>
-          </div>
-          <% else %>
-          &nbsp;
-          <% end %>
-        </td>
-      </tr>
-      <% end %>
-    </tbody>
-  </table>
-</div>
+<table class='table table-striped table-responsive' id='admin-collections-table'>
+  <thead>
+    <tr>
+      <th>Title</th>
+      <th>Items</th>
+      <th>Managers</th>
+      <th>Description</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @collections.to_a.each do |collection| %>
+    <tr>
+      <td> <strong><%= link_to collection.name, admin_collection_path(collection.id) %></strong> </td>
+      <td>
+        <%= link_to(pluralize(collection.media_object_count, 'item'), search_catalog_path('f[collection_ssim][]' => collection.name)) %>
+        <% if collection.unpublished_media_object_count > 0 %>
+        <%=link_to("(#{collection.unpublished_media_object_count} unpublished)", search_catalog_path('f[collection_ssim][]' => collection.name, 'f[workflow_published_sim][]' => "Unpublished")) %>
+        <% end %>
+      </td>
+      <td> <%= pluralize(collection.manager_count, 'manager') %> </td>
+      <td> <%= collection.description&.truncate(100, separator: ' ') %> </td>
+      <td class="text-right">
+        <% if can?(:destroy, collection) %>
+        <div class="btn-group">
+          <%= link_to('Delete', remove_admin_collection_path(collection.id), class: 'btn btn-danger btn-sm')%>
+        </div>
+        <% else %>
+        &nbsp;
+        <% end %>
+      </td>
+    </tr>
+    <% end %>
+  </tbody>
+</table>
 
 <% else %>
 <div class="hero-unit">

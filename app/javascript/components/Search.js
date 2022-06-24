@@ -1,12 +1,12 @@
-/*
+/* 
  * Copyright 2011-2022, The Trustees of Indiana University and Northwestern
  *   University.  Licensed under the Apache License, Version 2.0 (the "License");
  *   you may not use this file except in compliance with the License.
- *
+ * 
  * You may obtain a copy of the License at
- *
+ * 
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software distributed
  *   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
  *   CONDITIONS OF ANY KIND, either express or implied. See the License for the
@@ -97,7 +97,7 @@ class Search extends Component {
       }
       this.setState({
         isLoading: false,
-        searchResult: response.data.response
+        searchResult: {docs: response.data.data, facets: response.data.included, pages: response.data.meta.pages}
       });
     } catch (e) {
       console.log('Error retrieving results', e);
@@ -131,7 +131,7 @@ class Search extends Component {
     return (
       <div className="search-wrapper">
         <div className="row">
-          <form onSubmit={this.handleSubmit} className="search-bar col-sm-6 col-sm-offset-3">
+          <form onSubmit={this.handleSubmit} className="search-bar col-sm-6 offset-3">
             <label htmlFor="q" className="sr-only">
               search for
             </label>
@@ -139,7 +139,7 @@ class Search extends Component {
               value={query}
               onChange={this.handleQueryChange}
               name="q"
-              className="form-control input-lg"
+              className="form-control form-control-lg"
               placeholder="Search within collection..."
               autoFocus="autofocus"
             ></input>

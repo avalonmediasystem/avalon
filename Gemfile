@@ -3,46 +3,50 @@ source 'https://rubygems.org'
 # Core rails
 gem 'bootsnap', require: false
 gem 'listen'
-gem 'rails', '=5.2.6.3'
+gem 'rails', '=6.0.5'
 gem 'sprockets', '~>3.7.2'
+#gem 'sprockets-rails', require: 'sprockets/railtie'
 gem 'sqlite3'
 
 # Assets
+gem 'bootstrap', '~> 4.0'
 gem 'coffee-rails', '~> 4.2.0'
+gem "font-awesome-rails"
 gem 'jquery-datatables'
 gem 'jquery-rails'
 gem 'jquery-ui-rails'
 gem 'react-rails'
-gem 'sass-rails', '~> 5.0'
+#gem 'sass-rails', '>= 6'
 # Use the last known good version of sass
 gem 'sass', '3.4.22'
 gem 'sprockets-es6'
+gem 'twitter-typeahead-rails', '0.11.1.pre.corejavascript'
 gem 'uglifier', '>= 1.3.0'
 gem 'webpacker'
 
 # Core Samvera
 gem 'active-fedora', '~> 13.2', '>= 13.2.5'
-gem 'active_fedora-datastreams', '~> 0.3'
-gem 'fedora-migrate', git: 'https://github.com/avalonmediasystem/fedora-migrate.git', tag: 'avalon-r6.5'
-gem 'hydra-head', '~> 11.0'
+gem 'active_fedora-datastreams', '~> 0.4'
+gem 'hydra-head', '~> 12.0'
 gem 'ldp', '~> 1.0.3'
 gem 'noid-rails', '~> 3.0.1'
 gem 'rdf-rdfxml'
 gem 'rdf-vocab', '< 3.1.5'
 
 # Samvera version pins
-gem 'blacklight', '< 7.0'
+gem 'blacklight', '~> 7.25'
+gem 'blacklight-access_controls', '>= 6.0.1' # ensure rails 6 support
 gem 'rdf', '~> 3.1'
 gem 'rsolr', '~> 1.0'
 
 # Rails & Samvera Plugins
 gem 'about_page', git: 'https://github.com/avalonmediasystem/about_page.git', tag: 'avalon-r6.5'
-gem 'active_annotations', '~> 0.3'
+gem 'active_annotations', '~> 0.4'
 gem 'activerecord-session_store', '>= 2.0.0'
 gem 'acts_as_list'
 gem 'api-pagination'
 gem 'avalon-about', git: 'https://github.com/avalonmediasystem/avalon-about.git', tag: 'avalon-r6.4'
-gem 'bootstrap-sass', '< 3.4.1' # Pin to less than 3.4.1 due to change in behavior with popovers
+#gem 'bootstrap-sass', '< 3.4.1' # Pin to less than 3.4.1 due to change in behavior with popovers
 gem 'bootstrap-toggle-rails'
 gem 'bootstrap_form'
 gem 'iiif_manifest', '~> 0.6'
@@ -50,7 +54,7 @@ gem 'rack-cors', require: 'rack/cors'
 gem 'rails_same_site_cookie'
 gem 'recaptcha', require: 'recaptcha/rails'
 gem 'samvera-persona', '~> 0.3'
-gem 'speedy-af', '~> 0.1.3'
+gem 'speedy-af', '~> 0.2'
 
 # Avalon Components
 gem 'avalon-workflow', git: "https://github.com/avalonmediasystem/avalon-workflow.git", tag: 'avalon-r6.5'
@@ -68,7 +72,7 @@ gem "omniauth-saml", "~> 2.0"
 # Media Access & Transcoding
 gem 'active_encode', '~> 0.8.2'
 gem 'audio_waveform-ruby', '~> 1.0.7', require: 'audio_waveform'
-gem 'browse-everything', git: "https://github.com/avalonmediasystem/browse-everything.git", branch: 'v0.16.1-gdrive-fixes-plus'
+gem 'browse-everything'#, git: "https://github.com/avalonmediasystem/browse-everything.git", branch: 'v0.16.1-gdrive-fixes-plus'
 gem 'fastimage'
 gem 'media_element_add_to_playlist', git: 'https://github.com/avalonmediasystem/media-element-add-to-playlist.git', tag: 'avalon-r6.5'
 gem 'mediainfo', git: "https://github.com/avalonmediasystem/mediainfo.git", branch: 'avalon_fixes'

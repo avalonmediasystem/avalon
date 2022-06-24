@@ -1,11 +1,11 @@
 # Copyright 2011-2022, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
-#
+# 
 # You may obtain a copy of the License at
-#
+# 
 # http://www.apache.org/licenses/LICENSE-2.0
-#
+# 
 # Unless required by applicable law or agreed to in writing, software distributed
 #   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
 #   CONDITIONS OF ANY KIND, either express or implied. See the License for the
@@ -77,7 +77,7 @@ describe CollectionsController, type: :controller do
         login_as :administrator
         get 'index', params: { format: :json }
         expect(response).to be_ok
-        expect(response.content_type).to eq "application/json"
+        expect(response.content_type).to eq "application/json; charset=utf-8"
         expect(assigns(:doc_presenters).count).to eql(1)
         expect(assigns(:doc_presenters).map(&:id)).to match_array([collection.id])
       end
@@ -131,7 +131,7 @@ describe CollectionsController, type: :controller do
         login_as :administrator
         get 'show', params: { id: collection.id, format: :json }
         expect(response).to be_ok
-        expect(response.content_type).to eq "application/json"
+        expect(response.content_type).to eq "application/json; charset=utf-8"
         expect(assigns(:doc_presenter).id).to eq collection.id
         end
     end
@@ -147,7 +147,7 @@ describe CollectionsController, type: :controller do
     it 'returns the poster image' do
       get 'poster', params: { id: collection.id }
       expect(response).to be_ok
-      expect(response.content_type).to eq 'image/png'
+      expect(response.content_type).to eq 'image/png; charset=utf-8'
     end
 
     context 'when the collection does not have a poster image' do

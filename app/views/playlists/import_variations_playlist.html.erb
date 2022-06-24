@@ -16,8 +16,8 @@ Unless required by applicable law or agreed to in writing, software distributed
 <div class="col-md-9 col-sm-8">
   <h1>Import Results</h1>
   <p>The following errors were encountered in the playlist file.</p>
-  <div class="panel panel-default" style="background-color:#F9F9F9;">
-    <div class="panel-body">
+  <div class="card" style="background-color:#F9F9F9;">
+    <div class="card-body">
       <% playlist.items.each do |item| %>
         <% if item.clip.valid? && item.valid? %>
           <div><p style="font-weight: bold"><i class='fa fa-plus-circle success-color'></i> <%= item.title %></p></div>
@@ -63,9 +63,9 @@ Unless required by applicable law or agreed to in writing, software distributed
     <br>
   </div>
   <div class = "col-lg-7">
-    <a href="/playlists/" class="btn btn-danger outline_on">Cancel</a>
+    <a href="/playlists/" class="btn btn-danger">Cancel</a>
     <%= form_tag(import_variations_playlist_playlists_path, method:"post", style:"display:inline") do %>
-      <input type="submit" class="btn btn-default outline_on" value="Import"/>
+      <input type="submit" class="btn btn-outline" value="Import"/>
       <input type="hidden" name="skip_errors" value="true"/>
     <% end %>
   </div>

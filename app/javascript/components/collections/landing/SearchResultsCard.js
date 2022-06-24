@@ -1,12 +1,12 @@
-/*
+/* 
  * Copyright 2011-2022, The Trustees of Indiana University and Northwestern
  *   University.  Licensed under the Apache License, Version 2.0 (the "License");
  *   you may not use this file except in compliance with the License.
- *
+ * 
  * You may obtain a copy of the License at
- *
+ * 
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software distributed
  *   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
  *   CONDITIONS OF ANY KIND, either express or implied. See the License for the
@@ -22,20 +22,21 @@ import CollectionCardBody from '../CollectionCardBody';
 
 const CardMetaData = ({ doc, fieldLabel, fieldName }) => {
   let metaData = null;
-  if (Array.isArray(doc[fieldName]) && doc[fieldName].length > 1) {
-    metaData = doc[fieldName].join(', ');
-  } else if (typeof doc[fieldName] == 'string') {
-    const summary = doc[fieldName].substring(0, 50);
-    metaData = doc[fieldName].length >= 50 ? `${summary}...` : doc[fieldName];
+  let value = doc.attributes[fieldName]?.attributes?.value;
+  if (Array.isArray(value) && value.length > 1) {
+    metaData = value.join(', ');
+  } else if (typeof value == 'string') {
+    const summary = value.substring(0, 50);
+    metaData = value.length >= 50 ? `${summary}...` : value;
   } else {
-    metaData = doc[fieldName];
+    metaData = value;
   }
 
-  if (doc[fieldName]) {
+  if (doc.attributes[fieldName]) {
     return (
       <React.Fragment>
-        <dt>{fieldLabel}</dt>
-        <dd>{metaData}</dd>
+        <dt className='col-sm-5'>{fieldLabel}</dt>
+        <dd className='col-sm-7'>{metaData}</dd>
       </React.Fragment>
     );
   }
@@ -67,8 +68,8 @@ const duration = ms => {
 };
 
 const thumbnailSrc = (doc, props) => {
-  if (doc['section_id_ssim']) {
-    return `${props.baseUrl}master_files/${props.doc['section_id_ssim'][0]}/thumbnail`;
+  if (doc.attributes['section_id_ssim']) {
+    return `${props.baseUrl}master_files/${doc.attributes['section_id_ssim'].attributes.value[0]}/thumbnail`;
   }
 };
 
@@ -78,7 +79,7 @@ const SearchResultsCard = props => {
     <CollectionCardShell>
       <CollectionCardThumbnail>
         <span className="timestamp badge badge-dark">
-          {duration(doc['duration_ssi'])}
+          {duration(doc.attributes['duration_ssi'].attributes.value)}
         </span>
         <a href={baseUrl + 'media_objects/' + doc['id']}>
           {thumbnailSrc(doc, props) && (
@@ -94,11 +95,11 @@ const SearchResultsCard = props => {
         <>
           <h4>
             <a href={baseUrl + 'media_objects/' + doc['id']}>
-              { doc['title_tesi'] && doc['title_tesi'].substring(0, 50) || doc['id'] }
-              { doc['title_tesi'] && doc['title_tesi'].length >= 50 && <span>...</span> }
+              { doc.attributes['title_tesi'] && doc.attributes['title_tesi'].attributes.value.substring(0, 50) || doc['id'] }
+              { doc.attributes['title_tesi'] && doc.attributes['title_tesi'].attributes.value.length >= 50 && <span>...</span> }
             </a>
           </h4>
-          <dl id={'card-body-' + index} className="card-text dl-horizontal">
+          <dl id={'card-body-' + index} className="card-text row">
             <CardMetaData doc={doc} fieldLabel="Date" fieldName="date_ssi" />
             <CardMetaData
               doc={doc}

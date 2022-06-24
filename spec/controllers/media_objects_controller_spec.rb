@@ -1,11 +1,11 @@
 # Copyright 2011-2022, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
-#
+# 
 # You may obtain a copy of the License at
-#
+# 
 # http://www.apache.org/licenses/LICENSE-2.0
-#
+# 
 # Unless required by applicable law or agreed to in writing, software distributed
 #   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
 #   CONDITIONS OF ANY KIND, either express or implied. See the License for the
@@ -1374,7 +1374,7 @@ describe MediaObjectsController, type: :controller do
     it 'returns descMetadata' do
       get :deliver_content, params: { id: media_object.id, file: 'descMetadata' }
       expect(response.status).to eq 200
-      expect(response.content_type).to eq 'text/xml'
+      expect(response.content_type).to eq 'text/xml; charset=utf-8'
       expect(response.body).to eq media_object.descMetadata.content
     end
   end
@@ -1389,7 +1389,7 @@ describe MediaObjectsController, type: :controller do
     it 'returns a json preview of the media object' do
       get :move_preview, params: { id: media_object.id, format: 'json' }
       expect(response.status).to eq 200
-      expect(response.content_type).to eq 'application/json'
+      expect(response.content_type).to eq 'application/json; charset=utf-8'
       json_preview = JSON.parse(response.body)
       expect(json_preview.keys).to eq ['id', 'title', 'collection', 'main_contributors', 'publication_date', 'published_by', 'published']
     end
@@ -1404,7 +1404,7 @@ describe MediaObjectsController, type: :controller do
       it 'returns a json preview of the media object' do
         get :move_preview, params: { id: media_object.id, format: 'json' }
         expect(response.status).to eq 200
-        expect(response.content_type).to eq 'application/json'
+        expect(response.content_type).to eq 'application/json; charset=utf-8'
         json_preview = JSON.parse(response.body)
         expect(json_preview.keys).to eq ['id', 'title', 'collection', 'main_contributors', 'publication_date', 'published_by', 'published']
       end

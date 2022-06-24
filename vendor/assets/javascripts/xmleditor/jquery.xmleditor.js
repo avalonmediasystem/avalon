@@ -743,7 +743,7 @@ $.widget( "xml.xmlEditor", {
 	clearProblemPanel: function() {
 		this.problemsPanel.hide();
 		this.problemsPanel.html('');
-                this.xmlTabContainer.css("margin-top", this.editorHeader.outerHeight() + "px");
+		this.xmlTabContainer.css("margin-top", this.editorHeader.outerHeight()/2 + "px");
 		this.resize();
 	},
 	
@@ -1987,8 +1987,8 @@ MenuBar.prototype.render = function(parentElement) {
 	
 	this.headerMenu = $("<ul/>");
   this.headerMenuRow = $("<div class=\"row\"/>");
-  this.headerCol1 = $("<div class=\"col-8 col-sm-8\"/>");
-  this.headerCol2 = $("<div class=\"col-4 col-sm-4\"/>");
+  this.headerCol1 = $("<div class=\"col-8 col-sm-7\"/>");
+  this.headerCol2 = $("<div class=\"col-4 col-sm-5\"/>");
   this.headerMenuRow.append(this.headerCol1);
   this.headerMenuRow.append(this.headerCol2);
 
@@ -2343,20 +2343,19 @@ ModifyMenuPanel.prototype.setMenuPosition = function(){
 	if (this.menuColumn == null || this.menuColumn.offset() == null)
 		return;
 	var xmlEditorContainer = this.editor.xmlEditorContainer;
+	// Use fixed value instead of calculating from editor header height
+	// to stop element shifting when switcing between editors
+	var cssTop = 51;
 	if (this.editor.viewportFixedHeight) {
-		const editorHeaderHeight = this.editor.editorHeader.outerHeight();
-		const cssTop = (editorHeaderHeight > 43) ? editorHeaderHeight-30 : editorHeaderHeight
-		if((editorHeaderHeight > 43)) {
-			this.menuColumn.css({
-				position : 'absolute',
-				left : xmlEditorContainer.outerWidth() - this.menuColumn.innerWidth(),
-				top : "-"+cssTop+'px',
-			});
-			this.editor.editorHeaderGroup.css({
-				position : 'absolute',
-				top : "-"+cssTop+'px',
-			});
-		}
+		this.menuColumn.css({
+			position : 'absolute',
+			left : xmlEditorContainer.outerWidth() - this.menuColumn.innerWidth(),
+			top : "-"+cssTop+'px',
+		});
+		this.editor.editorHeaderGroup.css({
+			position : 'absolute',
+			top : "-"+cssTop+'px',
+		});
 	  return;
 	}
 	var xmlWorkAreaContainer = this.editor.xmlWorkAreaContainer;

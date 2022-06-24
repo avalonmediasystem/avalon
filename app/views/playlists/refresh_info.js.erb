@@ -56,12 +56,12 @@ $('button[name="delete_marker"]').popover({
     var button;
     button = void 0;
     if (typeof $(this).attr('form') === typeof void 0) {
-      button = '<a href=\'' + $(this).attr('href') + '\' class=\'btn btn-xs btn-danger btn-confirm\' data-method=\'delete\' rel=\'nofollow\'>Yes, Delete</a>';
+      button = '<a href=\'' + $(this).attr('href') + '\' class=\'btn btn-sm btn-danger btn-confirm\' data-method=\'delete\' rel=\'nofollow\'>Yes, Delete</a>';
     } else {
-      button = '<input class="btn btn-xs btn-danger btn-confirm" form="' + $(this).attr('form') + '" type="submit">';
+      button = '<input class="btn btn-sm btn-danger btn-confirm" form="' + $(this).attr('form') + '" type="submit">';
       $('#' + $(this).attr('form')).find('[name=\'_method\']').val('delete');
     }
-    return '<p>Are you sure?</p> ' + button + ' <a href=\'#\' class=\'btn btn-xs btn-primary\' id=\'special_button_color\'>No, Cancel</a>';
+    return '<p>Are you sure?</p> ' + button + ' <a href=\'#\' class=\'btn btn-sm btn-primary\' id=\'special_button_color\'>No, Cancel</a>';
   }
 }).click(function() {
   var t;

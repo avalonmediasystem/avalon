@@ -1,12 +1,12 @@
-/*
+/* 
  * Copyright 2011-2022, The Trustees of Indiana University and Northwestern
  *   University.  Licensed under the Apache License, Version 2.0 (the "License");
  *   you may not use this file except in compliance with the License.
- *
+ * 
  * You may obtain a copy of the License at
- *
+ * 
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software distributed
  *   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
  *   CONDITIONS OF ANY KIND, either express or implied. See the License for the
@@ -102,35 +102,6 @@ $(document).ready(function() {
     } else {
       $searchWrapper.addClass('input-group-lg');
       $searchSubmit.addClass('btn-primary');
-    }
-  });
-
-  /* Handle dropdown list for `Manage` in nav-bar */
-  // Manage user access with mouse-point
-  $('#manage-dropdown').hover(
-    function() {
-      $(this).addClass('open');
-      $(this).attr('aria-expanded', 'true');
-    },
-    function() {
-      $(this).removeClass('open');
-      $(this).attr('aria-expanded', 'false');
-    }
-  );
-
-  // Close dropdown when Tab key is used with Shift key
-  $('#manage-dropdown').keydown(function(e) {
-    if (e.which == 9 && e.shiftKey) {
-      $(this).removeClass('open');
-      $(this).attr('aria-expanded', 'false');
-    }
-  });
-
-  // Close dropdown if Tab key is pressed when focused on last element
-  $('#manage-dropdown ul > li:last-child').keydown(function(e) {
-    if (e.which == 9) {
-      $('#manage-dropdown').removeClass('open');
-      $('#manage-dropdown').attr('aria-expanded', 'false');
     }
   });
 });

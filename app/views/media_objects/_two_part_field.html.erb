@@ -16,5 +16,5 @@ Unless required by applicable law or agreed to in writing, software distributed
 <% fieldarray = options[:multivalued]? "[]" : "" %>
 <% secondaryfieldname = "media_object[#{options[:secondary_field].to_s}]#{fieldarray}" %>
 
-<%= text_field_tag secondaryfieldname, value.present? ? value[options[:secondary_key]] : '', class: 'form-control', style: 'width:50%', placeholder: options[:secondary_label] %>
-<%= text_field_tag fieldname, value.present? ? value[options[:primary_key]] : '', class: 'form-control', style: 'width:50%', placeholder: options[:primary_label] %>
+<%= text_field_tag secondaryfieldname, value.present? ? value[options[:secondary_key]] : '', class: 'form-control', style: 'width:45%', placeholder: options[:secondary_label] %>
+<%= text_field_tag fieldname, value.present? ? value[options[:primary_key]] : '', class: 'form-control', style: 'width:45%', placeholder: options[:primary_label] %>

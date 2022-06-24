@@ -15,7 +15,7 @@ Unless required by applicable law or agreed to in writing, software distributed
 %>
 
 <% unless @error_items.empty? %>
-<p>Initial processing of your batch ingest failed. Details are below. Please see the <a href="https://wiki.dlib.indiana.edu/display/VarVideo/Batch+Ingest+Package+Format">Batch Ingest Package Format</a> for further help.</p>
+<p>Initial processing of your batch ingest failed. Details are below. Please see the <a href="https://samvera.atlassian.net/wiki/spaces/AVALON/pages/1957953586/Batch+Ingest+Package+Format">Batch Ingest Package Format</a> for further help.</p>
 <% end %>
 <p>To replay this batch, please rename your spreadsheet to <%= @batch_registry.replay_name %> and reupload it after making desired changes.  Only unpublished items can be updated via this method.  Retain all rows in the spreadsheet including those that have no changes.</p>
 

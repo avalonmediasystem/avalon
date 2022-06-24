@@ -1,11 +1,11 @@
 # Copyright 2011-2022, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
-#
+# 
 # You may obtain a copy of the License at
-#
+# 
 # http://www.apache.org/licenses/LICENSE-2.0
-#
+# 
 # Unless required by applicable law or agreed to in writing, software distributed
 #   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
 #   CONDITIONS OF ANY KIND, either express or implied. See the License for the
@@ -49,10 +49,10 @@ module Avalon
           tags[:duration] = Regexp.last_match(1).to_f
           tags[:title] = Regexp.last_match(2)
         elsif line =~ /\.m3u8?.*$/i && recursive
-          url = @base.is_a?(Addressable::URI) ? @base.merge(line).to_s : File.expand_path(line, @base.to_s)
+          url = @base.is_a?(Addressable::URI) ? @base.join(line).to_s : File.expand_path(line, @base.to_s)
           @playlist.merge!(Avalon::M3U8Reader.read(url).playlist)
         elsif line =~ /\.m3u8?.*$/i
-          url = @base.is_a?(Addressable::URI) ? @base.merge(line).to_s : File.expand_path(line, @base.to_s)
+          url = @base.is_a?(Addressable::URI) ? @base.join(line).to_s : File.expand_path(line, @base.to_s)
           @playlist[:playlists] << url
         elsif line =~ /^[^#]/
           tags[:filename] = line
@@ -73,7 +73,7 @@ module Avalon
       files.each do |f|
         duration = f[:duration] * 1000
         if elapsed + duration > offset
-          location = @base.is_a?(Addressable::URI) ? @base.merge(f[:filename]).to_s : File.expand_path(f[:filename], @base.to_s)
+          location = @base.is_a?(Addressable::URI) ? @base.join(f[:filename]).to_s : File.expand_path(f[:filename], @base.to_s)
           return { location: location, filename: f[:filename], offset: offset - elapsed }
         end
         elapsed += duration

@@ -13,7 +13,7 @@ networks:
 
 services:
   db: &db-avalon
-    image: postgres:10-alpine
+    image: postgres:14-alpine
     volumes:
       - database:/data
     environment:
@@ -42,12 +42,11 @@ services:
     volumes: []
 
   solr: &solr
-    image: solr:6.6.4-alpine
+    image: solr:8-slim
     volumes:
-      - ./solr/config:/opt/solr/avalon_conf
+      - ./solr/conf:/opt/solr/avalon_conf
       - solr:/opt/solr/server/solr/mycores
-    entrypoint:
-      - docker-entrypoint.sh
+    command:
       - solr-precreate
       - avalon
       - /opt/solr/avalon_conf
@@ -56,7 +55,7 @@ services:
   solr-test:
     <<: *solr
     volumes:
-      - ./solr/config:/opt/solr/avalon_conf
+      - ./solr/conf:/opt/solr/avalon_conf
 
   hls:
     image: avalonmediasystem/nginx:minio
@@ -77,7 +76,7 @@ services:
     <<: *redis
 
   avalon: &avalon
-    image: avalonmediasystem/avalon:7.3.0-dev
+    image: avalonmediasystem/avalon:7.4.0-dev
     build:
       context: .
       target: dev
@@ -99,6 +98,7 @@ services:
       - FEDORA_NAMESPACE=avalon
       - FEDORA_URL=http://fedoraAdmin:fedoraAdmin@fedora:8080/fedora/rest
       - RAILS_ENV=development
+      - RAILS_ADDITIONAL_HOSTS=avalon
       - SETTINGS__REDIS__HOST=redis
       - SETTINGS__REDIS__PORT=6379
       - SECRET_KEY_BASE=abcd

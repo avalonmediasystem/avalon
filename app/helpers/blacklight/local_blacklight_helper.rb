@@ -1,11 +1,11 @@
 # Copyright 2011-2022, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
-#
+# 
 # You may obtain a copy of the License at
-#
+# 
 # http://www.apache.org/licenses/LICENSE-2.0
-#
+# 
 # Unless required by applicable law or agreed to in writing, software distributed
 #   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
 #   CONDITIONS OF ANY KIND, either express or implied. See the License for the
@@ -26,14 +26,7 @@ module Blacklight::LocalBlacklightHelper
   end
 
   def url_for_document doc, options = {}
-    case doc["has_model_ssim"].first
-    when "MediaObject"
-      media_object_path(doc[:id])
-    when "Admin::Collection"
-      collection_path(doc[:id])
-    else
-      object_path(doc[:id])
-    end
+    SpeedyAF::Base.find(doc[:id])
   end
 
   def contributor_index_display args
@@ -43,6 +36,10 @@ module Blacklight::LocalBlacklightHelper
   def description_index_display args
     field = args[:document][args[:field]]
     truncate(field, length: 200) unless field.blank?
+  end
+
+  def section_id_json_index_display args
+    Array(args[:document][args[:field]])
   end
 
   def constraints_filters_string filters
@@ -69,4 +66,24 @@ module Blacklight::LocalBlacklightHelper
     result
   end
 
+  # Override of blacklight helper to add row class
+  def render_document_class(document)
+    # HACK I'm not sure why CatalogController needs to reference these helpers through helpers, but BookmarksController doesn't
+    types = if respond_to? :document_presenter
+              document_presenter(document).display_type
+            else
+              helpers.document_presenter(document).display_type
+            end
+    return if types.blank?
+
+    classes = Array(types).compact.map do |t|
+      if respond_to? :document_class_prefix
+        "#{document_class_prefix}#{t.try(:parameterize) || t}"
+      else
+        "#{helpers.document_class_prefix}#{t.try(:parameterize) || t}"
+      end
+    end
+    classes << "row"
+    classes.join(' ')
+  end
 end

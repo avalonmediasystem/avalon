@@ -1,11 +1,11 @@
 # Copyright 2011-2022, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
-#
+# 
 # You may obtain a copy of the License at
-#
+# 
 # http://www.apache.org/licenses/LICENSE-2.0
-#
+# 
 # Unless required by applicable law or agreed to in writing, software distributed
 #   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
 #   CONDITIONS OF ANY KIND, either express or implied. See the License for the
@@ -134,6 +134,72 @@ RSpec.describe TimelinesController, type: :controller do
       timeline = Timeline.create! valid_attributes
       get :index, params: {}, session: valid_session
       expect(assigns(:timelines)).to eq([timeline])
+    end
+  end
+
+  describe "POST #paged_index" do
+    before do
+      login_as :user
+    end
+    before :each do
+      FactoryBot.reload
+      FactoryBot.create(:timeline, title: 'aardvark', description: 'Aardvark lorem ipsum.', user: user)
+      FactoryBot.create(:timeline, title: 'zzzebra', description: 'Zzzebra lorem ipsum.', user: user)
+      FactoryBot.create_list(:timeline, 9, user: user)
+    end
+
+    context 'paging' do
+      let(:common_params) { { order: { '0': { column: 0, dir: 'asc' } }, search: { value: '' }, columns: { '4': { search: { value: '' } } } } }
+      it 'returns all results' do
+        post :paged_index, format: 'json', params: common_params.merge(start: 0, length: 20), session: valid_session
+        parsed_response = JSON.parse(response.body)
+        expect(parsed_response['recordsTotal']).to eq(11)
+        expect(parsed_response['data'].count).to eq(11)
+      end
+      it 'returns first page' do
+        post :paged_index, format: 'json', params: common_params.merge(start: 0, length: 10), session: valid_session
+        parsed_response = JSON.parse(response.body)
+        expect(parsed_response['data'].count).to eq(10)
+      end
+      it 'returns second page' do
+        post :paged_index, format: 'json', params: common_params.merge(start: 10, length: 10), session: valid_session
+        parsed_response = JSON.parse(response.body)
+        expect(parsed_response['data'].count).to eq(1)
+      end
+    end
+
+    context 'searching' do
+      let(:common_params) { { start: 0, length: 20, order: { '0': { column: 0, dir: 'asc' } } } }
+      it "returns results filtered by title" do
+        post :paged_index, format: 'json', params: common_params.merge(search: { value: "aardvark" }, columns: { '4': { search: { value: '' } } }), session: valid_session
+        parsed_response = JSON.parse(response.body)
+        expect(parsed_response['recordsFiltered']).to eq(1)
+        expect(parsed_response['data'].count).to eq(1)
+        expect(parsed_response['data'][0][0]).to eq("<a title=\"#{Timeline.all[0].description}\" href=\"/timelines/1\">aardvark</a>")
+      end
+      it "returns results filtered by description" do
+        post :paged_index, format: 'json', params: common_params.merge({ search: { value: 'Aardvark lorem ipsum.' } }, columns: { '4': { search: { value: '' } } }), session: valid_session
+        parsed_response = JSON.parse(response.body)
+        expect(parsed_response['recordsFiltered']).to eq(1)
+        expect(parsed_response['data'].count).to eq(1)
+        expect(parsed_response['data'][0][0]).to eq("<a title=\"#{Timeline.all[0].description}\" href=\"/timelines/1\">aardvark</a>")
+      end
+    end
+
+    context 'sorting' do
+      let(:common_params) { { start: 0, length: 20, search: { value: '' }, columns: { '4': { search: { value: '' } } } } }
+      it "returns results sorted by title ascending" do
+        post :paged_index, format: 'json', params: common_params.merge(order: { '0': { column: 0, dir: 'asc' } }), session: valid_session
+        parsed_response = JSON.parse(response.body)
+        expect(parsed_response['data'][0][0]).to eq("<a title=\"#{Timeline.all[0].description}\" href=\"/timelines/1\">aardvark</a>")
+        expect(parsed_response['data'][10][0]).to eq("<a title=\"#{Timeline.all[1].description}\" href=\"/timelines/2\">zzzebra</a>")
+      end
+      it "returns results sorted by title descending" do
+        post :paged_index, format: 'json', params: common_params.merge(order: { '0': { column: 0, dir: 'desc' } }), session: valid_session
+        parsed_response = JSON.parse(response.body)
+        expect(parsed_response['data'][0][0]).to eq("<a title=\"#{Timeline.all[1].description}\" href=\"/timelines/2\">zzzebra</a>")
+        expect(parsed_response['data'][10][0]).to eq("<a title=\"#{Timeline.all[0].description}\" href=\"/timelines/1\">aardvark</a>")
+      end
     end
   end
 
@@ -303,7 +369,7 @@ RSpec.describe TimelinesController, type: :controller do
         it "returns the created timeline as json" do
           post :create, params: { timeline: valid_attributes, format: :json }, session: valid_session
           expect(response).to be_created
-          expect(response.content_type).to eq 'application/json'
+          expect(response.content_type).to eq 'application/json; charset=utf-8'
           expect(response.location).to eq "http://test.host/timelines/1"
           response_json = JSON.parse(response.body)
           new_timeline = Timeline.last
@@ -314,7 +380,7 @@ RSpec.describe TimelinesController, type: :controller do
         it 'generates a token if visibility is private-with-token' do
           post :create, params: { timeline: valid_attributes.merge(visibility: Timeline::PRIVATE_WITH_TOKEN), format: :json }, session: valid_session
           expect(response).to be_successful
-          expect(response.content_type).to eq 'application/json'
+          expect(response.content_type).to eq 'application/json; charset=utf-8'
           response_json = JSON.parse(response.body)
           expect(response_json["access_token"]).not_to be_blank
         end
@@ -328,7 +394,7 @@ RSpec.describe TimelinesController, type: :controller do
         it "returns an unprocessable_entity response with the errors" do
           post :create, params: { timeline: invalid_attributes, format: :json }, session: valid_session
           expect(response).to be_unprocessable
-          expect(response.content_type).to eq 'application/json'
+          expect(response.content_type).to eq 'application/json; charset=utf-8'
           expect(JSON.parse(response.body)).not_to be_blank
         end
       end
@@ -351,14 +417,16 @@ RSpec.describe TimelinesController, type: :controller do
             "summary": {
               "en": [description]
             },
-            "homepage": {
-              "id": source,
-              "type": "Text",
-              "label": {
-                "en": ["View Source Item"]
-              },
-              "format": "text/html"
-            },
+            "homepage": [
+              {
+                "id": source,
+                "type": "Text",
+                "label": {
+                  "en": ["View Source Item"]
+                },
+                "format": "text/html"
+              }
+            ],
             "items": [
               {
                 "id": "http://test.host/timelines/1/manifest/canvas",
@@ -402,7 +470,7 @@ RSpec.describe TimelinesController, type: :controller do
           post :create, params: { format: :json }, body: submitted_manifest.to_json, session: valid_session
           new_timeline = Timeline.last
           expect(response).to be_created
-          expect(response.content_type).to eq 'application/json'
+          expect(response.content_type).to eq 'application/json; charset=utf-8'
           expect(response.location).to eq "http://test.host/timelines/#{new_timeline.id}"
           response_json = JSON.parse(response.body)
           # Ensure that stored timeline, response timeline, and submitted manifest all match
