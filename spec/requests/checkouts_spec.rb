@@ -34,9 +34,40 @@ RSpec.describe "/checkouts", type: :request do
   describe "GET /index" do
     before { checkout }
 
-    it "renders a successful response" do
-      get checkouts_url
-      expect(response).to be_successful
+    context "html request" do
+      it "renders a successful response" do
+        get checkouts_url
+        expect(response).to be_successful
+      end
+      it "renders the index partial" do
+        get checkouts_url
+        expect(response).to render_template(:index)
+      end
+    end
+
+    context "json request" do
+      it "renders a successful JSON response" do
+        get checkouts_url(format: :json)
+        expect(response).to be_successful
+        expect(response.content_type).to eq("application/json; charset=utf-8")
+      end
+      context "as a regular user" do
+        before { FactoryBot.create(:checkout) }
+        it "returns only the active user's checkouts" do
+          get checkouts_url(format: :json)
+          parsed_body = JSON.parse(response.body)
+          expect(parsed_body['data'].count).to eq(1)
+        end
+      end
+      context "as an admin user" do
+        let(:user) { FactoryBot.create(:admin) }
+        before { FactoryBot.create(:checkout) }
+        it "returns all checkouts" do
+          get checkouts_url(format: :json)
+          parsed_body = JSON.parse(response.body)
+          expect(parsed_body['data'].count).to eq(2)
+        end
+      end
     end
   end
 
@@ -128,7 +159,7 @@ RSpec.describe "/checkouts", type: :request do
       expect(checkout.return_time).to be <= DateTime.current
     end
     context "user is on the checkouts page" do
-      it "redirects to the checkouts list" do
+      it "redirects to the checkouts page" do
         patch return_checkout_url(checkout), headers: { "HTTP_REFERER" => checkouts_url }
         expect(response).to redirect_to(checkouts_url)
       end
@@ -177,6 +208,40 @@ RSpec.describe "/checkouts", type: :request do
       it "redirects to the checkouts list" do
         patch return_all_checkouts_url
         expect(response).to redirect_to(checkouts_url)
+      end
+    end
+  end
+
+  describe "GET /display_returned" do
+    before :each do
+      FactoryBot.create_list(:checkout, 2)
+      FactoryBot.create(:checkout, user: user)
+      FactoryBot.create(:checkout, user: user, return_time: DateTime.current - 1.day)
+    end
+    context "as a regular user" do
+      it "renders a successful JSON response" do
+        get display_returned_checkouts_url(format: :json)
+        expect(response).to be_successful
+        expect(response.content_type).to eq("application/json; charset=utf-8")
+      end
+      it "returns user's active and inactive checkouts" do
+        get display_returned_checkouts_url(format: :json)
+        parsed_body = JSON.parse(response.body)
+        expect(parsed_body['data'].count).to eq(2)
+      end
+    end
+
+    context "as an admin user" do
+      let (:user) { FactoryBot.create(:admin) }
+      it "renders a successful JSON response" do
+        get display_returned_checkouts_url(format: :json)
+        expect(response).to be_successful
+        expect(response.content_type).to eq("application/json; charset=utf-8")
+      end
+      it "returns all checkouts" do
+        get display_returned_checkouts_url(format: :json)
+        parsed_body = JSON.parse(response.body)
+        expect(parsed_body['data'].count).to eq(4)
       end
     end
   end
