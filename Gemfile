@@ -10,7 +10,7 @@ gem 'sqlite3'
 
 # Assets
 gem 'bootstrap', '~> 4.0'
-gem 'coffee-rails', '~> 4.2.0'
+gem 'coffee-rails', '~> 5.0'
 gem "font-awesome-rails"
 gem 'jquery-datatables'
 gem 'jquery-rails'
