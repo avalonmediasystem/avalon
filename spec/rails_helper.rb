@@ -27,6 +27,7 @@ end
 
 # Stub out all AWS clients
 require 'aws-sdk-core'
+require 'aws-sdk-s3'
 Aws.config[:stub_responses] = true
 
 # This file is copied to spec/ when you run 'rails generate rspec:install'
