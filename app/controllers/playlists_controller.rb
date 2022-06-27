@@ -64,7 +64,7 @@ class PlaylistsController < ApplicationController
     sort_direction = params['order']['0']['dir'] rescue 'asc'
     session[:playlist_sort] = [sort_column, sort_direction]
     if columns[sort_column] != 'size'
-      @playlists = @playlists.order({ columns[sort_column].downcase => sort_direction })
+      @playlists = @playlists.order("lower(#{columns[sort_column].downcase}) #{sort_direction}, #{columns[sort_column].downcase} #{sort_direction}")
       @playlists = @playlists.offset(params['start']).limit(params['length'])
     else
       # sort by size (item count): decorate list with playlistitem count then sort and undecorate
@@ -275,7 +275,7 @@ class PlaylistsController < ApplicationController
   end
 
   def get_all_other_playlists
-    @playlists = Playlist.by_user(current_user).where.not( id: @playlist ).order(:title)
+    @playlists = Playlist.by_user(current_user).where.not( id: @playlist ).order("lower(title), title")
   end
 
   def load_playlist_token

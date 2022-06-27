@@ -75,7 +75,7 @@ module Samvera
       sort_direction = params['order']['0']['dir'] == 'desc' ? 'desc' : 'asc' rescue 'asc'
       session[:presenter_sort] = [sort_column, sort_direction]
       if columns[sort_column] != 'entry'
-        @presenter = @presenter.order(columns[sort_column].downcase => sort_direction)
+        @presenter = @presenter.order("lower(#{columns[sort_column].downcase}) #{sort_direction}, #{columns[sort_column].downcase} #{sort_direction}")
         @presenter = @presenter.offset(params['start']).limit(params['length'])
       else
         user_roles = @presenter.collect { |p| [ p.groups, p ] }
@@ -196,7 +196,10 @@ module Samvera
     end
 
     def last_sign_in(user)
-      user.last_sign_in_at? ? user.last_sign_in_at : user.invitation_sent_at
+      result = user.last_sign_in_at if user.last_sign_in_at?
+      result ||= user.invitation_sent_at
+      result ||= user.created_at
+      result
     end
 
     def format_roles(roles)

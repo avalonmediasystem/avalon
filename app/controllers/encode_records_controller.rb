@@ -59,7 +59,7 @@ class EncodeRecordsController < ApplicationController
     # Sort
     sort_column = columns[params['order']['0']['column'].to_i]
     sort_direction = params['order']['0']['dir'] == 'desc' ? 'desc' : 'asc'
-    @encode_records = @encode_records.order(sort_column + ' ' + sort_direction)
+    @encode_records = @encode_records.order("lower(CAST(#{sort_column} as char)) #{sort_direction}, #{sort_column} #{sort_direction}")
 
     # Paginate
     page_num = (params['start'].to_i / params['length'].to_i).floor + 1
