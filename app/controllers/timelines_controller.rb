@@ -54,11 +54,11 @@ class TimelinesController < ApplicationController
     tag_filter = params['columns']['4']['search']['value']
     @timelines = @timelines.with_tag(tag_filter) if tag_filter.present?
     timelines_filtered_total = @timelines.count
-
     sort_column = params['order']['0']['column'].to_i rescue 0
     sort_direction = params['order']['0']['dir'] rescue 'asc'
+
     session[:timeline_sort] = [sort_column, sort_direction]
-    @timelines = @timelines.order(columns[sort_column].downcase => sort_direction)
+    @timelines = @timelines.order("lower(#{columns[sort_column].downcase}) #{sort_direction}, #{columns[sort_column].downcase} #{sort_direction}")
     @timelines = @timelines.offset(params['start']).limit(params['length'])
     response = {
       "draw": params['draw'],
