@@ -12,6 +12,9 @@
 #   specific language governing permissions and limitations under the License.
 # ---  END LICENSE_HEADER BLOCK  ---
 
+# Force test rails environment
+ENV['RAILS_ENV'] = 'test'
+
 if ENV['COVERAGE'] || ENV['CI']
   require 'simplecov'
   require 'codeclimate-test-reporter'
@@ -27,7 +30,6 @@ require 'aws-sdk-core'
 Aws.config[:stub_responses] = true
 
 # This file is copied to spec/ when you run 'rails generate rspec:install'
-ENV['RAILS_ENV'] ||= 'test'
 require File.expand_path('../../config/environment', __FILE__)
 # Prevent database truncation if the environment is production
 abort('The Rails environment is running in production mode!') if Rails.env.production?
