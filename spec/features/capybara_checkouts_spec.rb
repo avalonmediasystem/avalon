@@ -31,14 +31,14 @@ describe "Checkouts", skip: "Datatables fails to load only in test" do
     expect(page).to have_content('Time remaining')
     expect(page).to have_link('Return All')
     expect(page).to have_link('Return')
-    expect(page).to have_content(active_checkout.media_object.title)
-    expect(page).not_to have_content(returned_checkout.media_object.title)
+    expect(page).to have_link(active_checkout.media_object.title)
+    expect(page).not_to have_link(returned_checkout.media_object.title)
   end
 
   it "displays active and inactive checkouts when checkbox is checked", js: true do
     visit('/checkouts')
     check('inactive_checkouts')
-    expect(page).to have_content(active_checkout.media_object.title)
-    expect(page).to have_content(returned_checkout.media_object.title)
+    expect(page).to have_link(active_checkout.media_object.title)
+    expect(page).to have_link(returned_checkout.media_object.title)
   end
 end
