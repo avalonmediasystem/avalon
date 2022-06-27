@@ -90,7 +90,6 @@ services:
       - minio
     environment:
       - APP_NAME=avalon
-      - SETTINGS__DOMAIN=http://localhost:3000
       - BUNDLE_FLAGS=--with development postgres --without production test
       - ENCODE_WORK_DIR=/tmp
       - CONTROLLED_VOCABULARY=config/controlled_vocabulary.yml
