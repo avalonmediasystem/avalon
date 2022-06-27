@@ -26,7 +26,7 @@ gem 'webpacker'
 
 # Core Samvera
 gem 'active-fedora', '~> 13.2', '>= 13.2.5'
-gem 'active_fedora-datastreams', git: 'https://github.com/samvera-labs/active_fedora-datastreams', branch: 'rails6'
+gem 'active_fedora-datastreams', '~> 0.4'
 gem 'hydra-head', '~> 12.0'
 gem 'ldp', '~> 1.0.3'
 gem 'noid-rails', '~> 3.0.1'
@@ -41,7 +41,7 @@ gem 'rsolr', '~> 1.0'
 
 # Rails & Samvera Plugins
 gem 'about_page', git: 'https://github.com/avalonmediasystem/about_page.git', tag: 'avalon-r6.5'
-gem 'active_annotations', git: 'https://github.com/avalonmediasystem/active_annotations.git', branch: 'the_future'
+gem 'active_annotations', '~> 0.4'
 gem 'activerecord-session_store', '>= 2.0.0'
 gem 'acts_as_list'
 gem 'api-pagination'
@@ -54,7 +54,7 @@ gem 'rack-cors', require: 'rack/cors'
 gem 'rails_same_site_cookie'
 gem 'recaptcha', require: 'recaptcha/rails'
 gem 'samvera-persona', '~> 0.3'
-gem 'speedy-af', git: 'https://github.com/samvera-labs/speedy_af.git', branch: 'rails6'
+gem 'speedy-af', '~> 0.2'
 
 # Avalon Components
 gem 'avalon-workflow', git: "https://github.com/avalonmediasystem/avalon-workflow.git", tag: 'avalon-r6.5'
