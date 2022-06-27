@@ -79,29 +79,58 @@ RSpec.describe "/checkouts", type: :request do
   end
 
   describe "POST /create" do
-    context "with valid parameters" do
-      it "creates a new Checkout" do
-        expect {
+    context "json request" do
+      context "with valid parameters" do
+        it "creates a new Checkout" do
+          expect {
+            post checkouts_url, params: { checkout: valid_attributes, format: :json }
+          }.to change(Checkout, :count).by(1)
+        end
+
+        it "redirects to the created checkout" do
           post checkouts_url, params: { checkout: valid_attributes, format: :json }
-        }.to change(Checkout, :count).by(1)
+          expect(response).to be_created
+        end
       end
 
-      it "redirects to the created checkout" do
-        post checkouts_url, params: { checkout: valid_attributes, format: :json }
-        expect(response).to be_created
+      context "with invalid parameters" do
+        it "does not create a new Checkout" do
+          expect {
+            post checkouts_url, params: { checkout: invalid_attributes, format: :json }
+          }.to change(Checkout, :count).by(0)
+        end
+
+        it "returns 404 because the media object cannot be found" do
+          post checkouts_url, params: { checkout: invalid_attributes, format: :json }
+          expect(response).to be_not_found
+        end
       end
     end
 
-    context "with invalid parameters" do
-      it "does not create a new Checkout" do
+    context "html request" do
+      it "creates a new checkout" do
         expect {
-          post checkouts_url, params: { checkout: invalid_attributes, format: :json }
-        }.to change(Checkout, :count).by(0)
+          post checkouts_url, params: { checkout: valid_attributes }
+        }.to change(Checkout, :count).by(1)
       end
 
-      it "returns 404 because the media object cannot be found" do
-        post checkouts_url, params: { checkout: invalid_attributes, format: :json }
-        expect(response).to be_not_found
+      context "user is on the checkouts page" do
+        it "redirects to the checkouts page" do
+          post checkouts_url, params: { checkout: valid_attributes }, headers: { "HTTP_REFERER" => checkouts_url }
+          expect(response).to redirect_to(checkouts_url)
+        end
+      end
+      context "user is on the item view page" do
+        it "redirects to the item view page" do
+          post checkouts_url, params: { checkout: valid_attributes }, headers: { "HTTP_REFERER" => media_object_url(checkout.media_object)}
+          expect(response).to redirect_to(media_object_url(checkout.media_object))
+        end
+      end
+      context "the http referrer fails" do
+        it "redirects to the checkouts page" do
+          post checkouts_url, params: { checkout: valid_attributes }
+          expect(response).to redirect_to(checkouts_url)
+        end
       end
     end
   end

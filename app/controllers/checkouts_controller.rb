@@ -7,19 +7,18 @@ class CheckoutsController < ApplicationController
   def index
     @checkouts
 
-    response = {
-      "data": @checkouts.collect do |checkout|
-        if current_ability.is_administrator?
-          index_array(checkout)
-        else
-          user_array(index_array(checkout))
-        end
-      end
-    }
-
     respond_to do |format|
       format.html { render :index }
       format.json do
+        response = {
+          "data": @checkouts.collect do |checkout|
+            if current_ability.is_administrator?
+              index_array(checkout)
+            else
+              user_array(index_array(checkout))
+            end
+          end
+        }
         render json: response
       end
     end
@@ -29,13 +28,14 @@ class CheckoutsController < ApplicationController
   def show
   end
 
-  # POST /checkouts.json
+  # POST /checkouts or /checkouts.json
   def create
     @checkout = Checkout.new(user: current_user, media_object_id: checkout_params[:media_object_id])
 
     respond_to do |format|
       # TODO: move this can? check into a checkout ability (can?(:create, @checkout))
       if can?(:create, @checkout) && @checkout.save
+        format.html { redirect_back fallback_location: checkouts_url, notice: "Item has been successfully checked out."}
         format.json { render :show, status: :created, location: @checkout }
       else
         format.json { render json: @checkout.errors, status: :unprocessable_entity }
@@ -140,7 +140,7 @@ class CheckoutsController < ApplicationController
         if checkout.return_time > DateTime.current
           view_context.link_to('Return', return_checkout_url(checkout), class: 'btn btn-danger btn-xs', method: :patch, data: { confirm: "Are you sure you want to return this item?" })
         elsif checkout.return_time < DateTime.current && checkout.media_object.lending_status == 'available'
-          view_context.link_to('Checkout', checkouts_url(params: { checkout: { media_object_id: checkout.media_object_id } }), class: 'btn btn-primary btn-xs', method: :post)
+          view_context.link_to('Checkout', checkouts_url(params: { checkout: { media_object_id: checkout.media_object_id }, format: :json }), class: 'btn btn-primary btn-xs', method: :post)
         else
           'Item Unavailable'
         end
