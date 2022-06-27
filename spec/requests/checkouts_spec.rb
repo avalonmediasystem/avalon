@@ -113,24 +113,9 @@ RSpec.describe "/checkouts", type: :request do
           post checkouts_url, params: { checkout: valid_attributes }
         }.to change(Checkout, :count).by(1)
       end
-
-      context "user is on the checkouts page" do
-        it "redirects to the checkouts page" do
-          post checkouts_url, params: { checkout: valid_attributes }, headers: { "HTTP_REFERER" => checkouts_url }
-          expect(response).to redirect_to(checkouts_url)
-        end
-      end
-      context "user is on the item view page" do
-        it "redirects to the item view page" do
-          post checkouts_url, params: { checkout: valid_attributes }, headers: { "HTTP_REFERER" => media_object_url(checkout.media_object)}
-          expect(response).to redirect_to(media_object_url(checkout.media_object))
-        end
-      end
-      context "the http referrer fails" do
-        it "redirects to the checkouts page" do
-          post checkouts_url, params: { checkout: valid_attributes }
-          expect(response).to redirect_to(checkouts_url)
-        end
+      it "redirects to the media_object page" do
+        post checkouts_url, params: { checkout: valid_attributes }
+        expect(response).to redirect_to(media_object_url(checkout.media_object))
       end
     end
   end

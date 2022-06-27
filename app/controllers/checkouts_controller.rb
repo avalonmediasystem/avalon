@@ -35,7 +35,7 @@ class CheckoutsController < ApplicationController
     respond_to do |format|
       # TODO: move this can? check into a checkout ability (can?(:create, @checkout))
       if can?(:create, @checkout) && @checkout.save
-        format.html { redirect_back fallback_location: checkouts_url, notice: "Item has been successfully checked out."}
+        format.html { redirect_to media_object_path(checkout_params[:media_object_id]), flash: { "Checkout was successfully created."} }
         format.json { render :show, status: :created, location: @checkout }
       else
         format.json { render json: @checkout.errors, status: :unprocessable_entity }
