@@ -147,7 +147,7 @@ describe User do
 
     it 'is a list of timeline tags' do
       timeline = FactoryBot.create(:timeline, user: user)
-      expect(user.timeline_tags).to match_array timeline.tags
+      expect(user.timeline_tags).to match_array timeline.tags.uniq
     end
 
     it 'does not contain duplicates' do
