@@ -29,7 +29,6 @@ Rails.application.routes.draw do
   resources :checkouts, only: [:index, :create, :show, :update, :destroy] do
     collection do
       patch :return_all
-      get :display_returned
     end
 
     member do

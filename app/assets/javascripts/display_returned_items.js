@@ -18,7 +18,7 @@
 $('#inactive_checkouts').on('change', function() {
   var table = $('#checkouts-table').DataTable();
   if (this.checked) {
-    table.ajax.url('/checkouts/display_returned').load();
+    table.ajax.url('/checkouts.json?display_returned=true').load();
   } else {
     table.ajax.url('/checkouts.json').load();
   }
