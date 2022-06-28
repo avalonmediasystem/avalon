@@ -15,7 +15,7 @@
 FactoryBot.define do
   factory :timeline do
     user { FactoryBot.create(:user) }
-    title { Faker::Lorem.word }
+    title { "Timeline: #{Faker::Lorem.word}" }
     description { Faker::Lorem.sentence }
     visibility { Playlist::PRIVATE }
     manifest { }

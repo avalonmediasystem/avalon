@@ -1,6 +1,8 @@
 ---
 :queues:
   - default
+  - active_storage_analysis
+  - active_storage_purge
   - batch_ingest
   - bulk_access_control
   - create_encode
