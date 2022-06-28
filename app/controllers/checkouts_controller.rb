@@ -13,9 +13,9 @@ class CheckoutsController < ApplicationController
         response = {
           "data": @checkouts.collect do |checkout|
             if current_ability.is_administrator?
-              index_array(checkout)
+              admin_array(checkout)
             else
-              user_array(index_array(checkout))
+              user_array(checkout)
             end
           end
         }
@@ -77,31 +77,6 @@ class CheckoutsController < ApplicationController
     end
   end
 
-  # GET /checkouts/display_returned.json
-  def display_returned
-    if current_ability.is_administrator?
-      @checkouts = @checkouts.or(Checkout.all.where("return_time <= now()"))
-    else
-      @checkouts = @checkouts.or(Checkout.returned_for_user(current_user.id))
-    end
-
-    response = {
-      "data": @checkouts.collect do |checkout|
-        if current_ability.is_administrator?
-          index_array(checkout)
-        else
-          user_array(index_array(checkout))
-        end
-      end
-    }
-
-    respond_to do |format|
-      format.json do
-        render json: response
-      end
-    end
-  end
-
   # DELETE /checkouts/1 or /checkouts/1.json
   def destroy
     @checkout.destroy
@@ -120,6 +95,18 @@ class CheckoutsController < ApplicationController
     end
 
     def set_checkouts
+      unless params[:display_returned] == 'true'
+        @checkouts = set_active_checkouts
+      else
+        @checkouts = if current_ability.is_administrator?
+                       set_active_checkouts.or(Checkout.all.where("return_time <= now()"))
+                     else
+                       set_active_checkouts.or(Checkout.returned_for_user(current_user.id))
+                     end
+      end
+    end
+
+    def set_active_checkouts
       @checkouts = if current_ability.is_administrator?
                      Checkout.all.where("return_time > now()")
                    else
@@ -127,34 +114,40 @@ class CheckoutsController < ApplicationController
                    end
     end
 
-    def index_array(checkout)
+    def admin_array(checkout)
+      [checkout.user.user_key] + user_array(checkout)
+    end
+
+    def user_array(checkout)
       [
-        checkout.user.user_key,
         view_context.link_to(checkout.media_object.title, main_app.media_object_url(checkout.media_object)),
         checkout.checkout_time.to_s(:long_ordinal),
         checkout.return_time.to_s(:long_ordinal),
-        if checkout.return_time > DateTime.current
-          view_context.distance_of_time_in_words(checkout.return_time - DateTime.current)
-        else
-          "-"
-        end,
-        if checkout.return_time > DateTime.current
-          view_context.link_to('Return', return_checkout_url(checkout), class: 'btn btn-danger btn-xs', method: :patch, data: { confirm: "Are you sure you want to return this item?" })
-        elsif checkout.return_time < DateTime.current && checkout.media_object.lending_status == 'available'
-          view_context.link_to('Checkout', checkouts_url(params: { checkout: { media_object_id: checkout.media_object_id }, format: :json }), class: 'btn btn-primary btn-xs', method: :post)
-        else
-          'Item Unavailable'
-        end
+        time_remaining(checkout),
+        checkout_actions(checkout)
       ]
     end
 
-    def user_array(array)
-      array.shift
-      array
+    def time_remaining(checkout)
+      if checkout.return_time > DateTime.current
+        view_context.distance_of_time_in_words(checkout.return_time - DateTime.current)
+      else
+        "-"
+      end
+    end
+
+    def checkout_actions(checkout)
+      if checkout.return_time > DateTime.current
+        view_context.link_to('Return', return_checkout_url(checkout), class: 'btn btn-danger btn-xs', method: :patch, data: { confirm: "Are you sure you want to return this item?" })
+      elsif checkout.return_time < DateTime.current && checkout.media_object.lending_status == 'available'
+        view_context.link_to('Checkout', checkouts_url(params: { checkout: { media_object_id: checkout.media_object_id }, format: :json }), class: 'btn btn-primary btn-xs', method: :post)
+      else
+        'Item Unavailable'
+      end
     end
 
     # Only allow a list of trusted parameters through.
     def checkout_params
-      params.require(:checkout).permit(:media_object_id, :return_time)
+      params.require(:checkout).permit(:media_object_id, :return_time, :display_returned)
     end
 end

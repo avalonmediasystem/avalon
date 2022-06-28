@@ -68,6 +68,38 @@ RSpec.describe "/checkouts", type: :request do
           expect(parsed_body['data'].count).to eq(2)
         end
       end
+      context "with display_returned param" do
+        before :each do
+          FactoryBot.create_list(:checkout, 2)
+          FactoryBot.create(:checkout, user: user, return_time: DateTime.current - 1.day)
+        end
+        context "as a regular user" do
+          it "renders a successful JSON response" do
+            get checkouts_url(format: :json, params: { display_returned: true } )
+            expect(response).to be_successful
+            expect(response.content_type).to eq("application/json; charset=utf-8")
+          end
+          it "returns user's active and inactive checkouts" do
+            get checkouts_url(format: :json, params: { display_returned: true } )
+            parsed_body = JSON.parse(response.body)
+            expect(parsed_body['data'].count).to eq(2)
+          end
+        end
+
+        context "as an admin user" do
+          let (:user) { FactoryBot.create(:admin) }
+          it "renders a successful JSON response" do
+            get checkouts_url(format: :json, params: { display_returned: true } )
+            expect(response).to be_successful
+            expect(response.content_type).to eq("application/json; charset=utf-8")
+          end
+          it "returns all checkouts" do
+            get checkouts_url(format: :json, params: { display_returned: true } )
+            parsed_body = JSON.parse(response.body)
+            expect(parsed_body['data'].count).to eq(4)
+          end
+        end
+      end
     end
   end
 
@@ -222,40 +254,6 @@ RSpec.describe "/checkouts", type: :request do
       it "redirects to the checkouts list" do
         patch return_all_checkouts_url
         expect(response).to redirect_to(checkouts_url)
-      end
-    end
-  end
-
-  describe "GET /display_returned" do
-    before :each do
-      FactoryBot.create_list(:checkout, 2)
-      FactoryBot.create(:checkout, user: user)
-      FactoryBot.create(:checkout, user: user, return_time: DateTime.current - 1.day)
-    end
-    context "as a regular user" do
-      it "renders a successful JSON response" do
-        get display_returned_checkouts_url(format: :json)
-        expect(response).to be_successful
-        expect(response.content_type).to eq("application/json; charset=utf-8")
-      end
-      it "returns user's active and inactive checkouts" do
-        get display_returned_checkouts_url(format: :json)
-        parsed_body = JSON.parse(response.body)
-        expect(parsed_body['data'].count).to eq(2)
-      end
-    end
-
-    context "as an admin user" do
-      let (:user) { FactoryBot.create(:admin) }
-      it "renders a successful JSON response" do
-        get display_returned_checkouts_url(format: :json)
-        expect(response).to be_successful
-        expect(response.content_type).to eq("application/json; charset=utf-8")
-      end
-      it "returns all checkouts" do
-        get display_returned_checkouts_url(format: :json)
-        parsed_body = JSON.parse(response.body)
-        expect(parsed_body['data'].count).to eq(4)
       end
     end
   end

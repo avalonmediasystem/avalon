@@ -33,9 +33,5 @@ RSpec.describe CheckoutsController, type: :routing do
     it "routes to #return" do
       expect(patch: "/checkouts/1/return").to route_to("checkouts#return", id: "1")
     end
-
-    it "routes to #display_returned" do
-      expect(get: "checkouts/display_returned").to route_to("checkouts#display_returned")
-    end
   end
 end
