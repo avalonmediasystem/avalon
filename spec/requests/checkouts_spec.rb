@@ -119,7 +119,7 @@ RSpec.describe "/checkouts", type: :request do
           }.to change(Checkout, :count).by(1)
         end
 
-        it "redirects to the created checkout" do
+        it "returns created status" do
           post checkouts_url, params: { checkout: valid_attributes, format: :json }
           expect(response).to be_created
         end
