@@ -34,9 +34,72 @@ RSpec.describe "/checkouts", type: :request do
   describe "GET /index" do
     before { checkout }
 
-    it "renders a successful response" do
-      get checkouts_url
-      expect(response).to be_successful
+    context "html request" do
+      it "renders a successful response" do
+        get checkouts_url
+        expect(response).to be_successful
+      end
+      it "renders the index partial" do
+        get checkouts_url
+        expect(response).to render_template(:index)
+      end
+    end
+
+    context "json request" do
+      it "renders a successful JSON response" do
+        get checkouts_url(format: :json)
+        expect(response).to be_successful
+        expect(response.content_type).to eq("application/json; charset=utf-8")
+      end
+      context "as a regular user" do
+        before { FactoryBot.create(:checkout) }
+        it "returns only the active user's checkouts" do
+          get checkouts_url(format: :json)
+          parsed_body = JSON.parse(response.body)
+          expect(parsed_body['data'].count).to eq(1)
+        end
+      end
+      context "as an admin user" do
+        let(:user) { FactoryBot.create(:admin) }
+        before { FactoryBot.create(:checkout) }
+        it "returns all checkouts" do
+          get checkouts_url(format: :json)
+          parsed_body = JSON.parse(response.body)
+          expect(parsed_body['data'].count).to eq(2)
+        end
+      end
+      context "with display_returned param" do
+        before :each do
+          FactoryBot.create_list(:checkout, 2)
+          FactoryBot.create(:checkout, user: user, return_time: DateTime.current - 1.day)
+        end
+        context "as a regular user" do
+          it "renders a successful JSON response" do
+            get checkouts_url(format: :json, params: { display_returned: true } )
+            expect(response).to be_successful
+            expect(response.content_type).to eq("application/json; charset=utf-8")
+          end
+          it "returns user's active and inactive checkouts" do
+            get checkouts_url(format: :json, params: { display_returned: true } )
+            parsed_body = JSON.parse(response.body)
+            expect(parsed_body['data'].count).to eq(2)
+          end
+        end
+
+        context "as an admin user" do
+          let (:user) { FactoryBot.create(:admin) }
+          it "renders a successful JSON response" do
+            get checkouts_url(format: :json, params: { display_returned: true } )
+            expect(response).to be_successful
+            expect(response.content_type).to eq("application/json; charset=utf-8")
+          end
+          it "returns all checkouts" do
+            get checkouts_url(format: :json, params: { display_returned: true } )
+            parsed_body = JSON.parse(response.body)
+            expect(parsed_body['data'].count).to eq(4)
+          end
+        end
+      end
     end
   end
 
@@ -48,29 +111,43 @@ RSpec.describe "/checkouts", type: :request do
   end
 
   describe "POST /create" do
-    context "with valid parameters" do
-      it "creates a new Checkout" do
-        expect {
+    context "json request" do
+      context "with valid parameters" do
+        it "creates a new Checkout" do
+          expect {
+            post checkouts_url, params: { checkout: valid_attributes, format: :json }
+          }.to change(Checkout, :count).by(1)
+        end
+
+        it "returns created status" do
           post checkouts_url, params: { checkout: valid_attributes, format: :json }
-        }.to change(Checkout, :count).by(1)
+          expect(response).to be_created
+        end
       end
 
-      it "redirects to the created checkout" do
-        post checkouts_url, params: { checkout: valid_attributes, format: :json }
-        expect(response).to be_created
+      context "with invalid parameters" do
+        it "does not create a new Checkout" do
+          expect {
+            post checkouts_url, params: { checkout: invalid_attributes, format: :json }
+          }.to change(Checkout, :count).by(0)
+        end
+
+        it "returns 404 because the media object cannot be found" do
+          post checkouts_url, params: { checkout: invalid_attributes, format: :json }
+          expect(response).to be_not_found
+        end
       end
     end
 
-    context "with invalid parameters" do
-      it "does not create a new Checkout" do
+    context "html request" do
+      it "creates a new checkout" do
         expect {
-          post checkouts_url, params: { checkout: invalid_attributes, format: :json }
-        }.to change(Checkout, :count).by(0)
+          post checkouts_url, params: { checkout: valid_attributes }
+        }.to change(Checkout, :count).by(1)
       end
-
-      it "returns 404 because the media object cannot be found" do
-        post checkouts_url, params: { checkout: invalid_attributes, format: :json }
-        expect(response).to be_not_found
+      it "redirects to the media_object page" do
+        post checkouts_url, params: { checkout: valid_attributes }
+        expect(response).to redirect_to(media_object_url(checkout.media_object))
       end
     end
   end
@@ -128,7 +205,7 @@ RSpec.describe "/checkouts", type: :request do
       expect(checkout.return_time).to be <= DateTime.current
     end
     context "user is on the checkouts page" do
-      it "redirects to the checkouts list" do
+      it "redirects to the checkouts page" do
         patch return_checkout_url(checkout), headers: { "HTTP_REFERER" => checkouts_url }
         expect(response).to redirect_to(checkouts_url)
       end
