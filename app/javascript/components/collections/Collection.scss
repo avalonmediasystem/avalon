@@ -22,6 +22,7 @@
 .collection-unit-wrapper {
   border-top: 2px dotted #1f3f42;
   margin-top: 6rem;
+
   &:first-of-type {
     border-top: none;
     margin-top: inherit;
@@ -43,8 +44,13 @@
 
 /* Collection cards */
 .collection-card {
-  height: 375px;
+  height: 400px;
   overflow: hidden;
+
+  // For medium screens
+  @media (min-width: 768px) and (max-width: 1199.98px) {
+    height: 420px;
+  }
 
   // For smaller screens
   @media screen and (max-width: 767px) {
