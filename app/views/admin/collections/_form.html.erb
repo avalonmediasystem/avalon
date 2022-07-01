@@ -35,7 +35,7 @@ Unless required by applicable law or agreed to in writing, software distributed
       </div>
       <div class="modal-footer">
         <a href="#" data-dismiss="modal" aria-hidden="true" class="btn btn-outline">Cancel</a>
-        <%= f.submit class: 'btn btn-primary btn-stateful-loading', data: {loading_text: 'Saving...'} %>
+        <%= f.submit class: 'btn btn-primary btn-stateful-loading', data: { loading_text: 'Saving...' } %>
       </div>
       <% end %>
     </div>
@@ -56,23 +56,35 @@ Unless required by applicable law or agreed to in writing, software distributed
       message + '</div></div>');
   }
 
-  $('form[data-remote][modal]').on('ajax:complete', function (jq_event, xhr) {
-    if (xhr.responseJSON.hasOwnProperty('errors')) {
+  function resetButton(btnName) {
+    let $btn = $(btnName)
+    const disableWith = $btn[0].dataset['disableWith'];
+    $btn.val(disableWith);
+  }
+
+  $('form[data-remote][modal]').on('ajax:success', function(event) {
+    const [data, status, xhr]= event.detail;
+    resetButton('.btn-stateful-loading');
+    window.location = '/admin/collections/' + encodeURIComponent(data['id']);
+  }).on('ajax:error',function(event) {
+    const [data, status, xhr]= event.detail;
+    const responseJSON = $.parseJSON(xhr.response);
+    if (responseJSON.hasOwnProperty('errors')) {
       $(this).closest('.modal').modal('hide')
-      if(xhr.responseJSON['errors'].length > 2) {
+      if(responseJSON['errors'].length > 2) {
         // When there are multiple errors
-        let markup = xhr.responseJSON['errors'][0];
-        xhr.responseJSON['errors'].shift();
-        xhr.responseJSON['errors'].forEach(msg => {
+        let markup = responseJSON['errors'][0];
+        responseJSON['errors'].shift();
+        responseJSON['errors'].forEach(msg => {
           markup += "<li>" + msg + "</li>"
         })
         inject_alert(markup);
       } else {
         // When there is one error
-        inject_alert(xhr.responseJSON['errors'].join(' '));
+        inject_alert(responseJSON['errors'].join(' '));
       }
-      $('.btn-stateful-loading').button('reset')
-    } else window.location = '/admin/collections/' + encodeURIComponent(xhr.responseJSON['id']);
+    }
+    resetButton('.btn-stateful-loading');
   });
 </script>
 <% end %>

@@ -92,6 +92,7 @@ Unless required by applicable law or agreed to in writing, software distributed
     var sectiondiv = $(panelheader.find('.fa-plus-square').data('target'));
     if (!sectiondiv.hasClass('in')) panelheader.find('.fa-plus-square').click();
   });
+
   $('.structure_add_to_playlist').on('click',function(){
     $.ajax({
         type: "GET",
@@ -104,13 +105,15 @@ Unless required by applicable law or agreed to in writing, software distributed
           modal = $('#add-to-playlist-modal')
           modal.html(result);
           modal.find('#playlistitem_submit').on('click', function(){
-              $(this).val('Working...');
+            $(this).val('Working...');
           })
-          modal.find('#add_to_playlist_form').on('ajax:success', function(e, data, status, xhr){
+          modal.find('#add_to_playlist_form').on('ajax:success', function(event) {
+            const [data, status, xhr] = event.detail;
             $('#add-to-playlist-modal .modal-body').html(data["message"]);
             $('#playlistitem_submit').val('Add to Playlist').hide();
-          }).on('ajax:error',function(e, xhr, status, error){
-            $('#add-to-playlist-modal .modal-body').html(error);
+          }).on('ajax:error',function(event) {
+            const [data, status, xhr] = event.detail;
+            $('#add-to-playlist-modal .modal-body').html(data["message"]);
             $('#playlistitem_submit').val('Add to Playlist').hide();
           });
           modal.modal('show');
