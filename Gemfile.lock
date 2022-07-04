@@ -55,14 +55,6 @@ GIT
       fugit (~> 1.1)
       sidekiq (>= 4.2.1)
 
-GIT
-  remote: https://github.com/tawan/active-elastic-job.git
-  revision: e1735bb48373dc398f704cffea52c73564fc1dcb
-  specs:
-    active_elastic_job (3.2.0)
-      aws-sdk-sqs (~> 1)
-      rails (>= 5.2.6, < 7.1)
-
 GEM
   remote: https://rubygems.org/
   specs:
@@ -121,6 +113,9 @@ GEM
       json-ld
       rails (>= 5.2, < 7.1)
       rdf-vocab (>= 2.1.0)
+    active_elastic_job (3.2.0)
+      aws-sdk-sqs (~> 1)
+      rails (>= 5.2.6, < 7.1)
     active_encode (0.8.2)
       rails
       sprockets (< 4)
@@ -975,7 +970,7 @@ DEPENDENCIES
   about_page!
   active-fedora (~> 13.2, >= 13.2.5)
   active_annotations (~> 0.4)
-  active_elastic_job!
+  active_elastic_job
   active_encode (~> 0.8.2)
   active_fedora-datastreams (~> 0.4)
   activejob-traffic_control

@@ -154,7 +154,7 @@ end
 
 # Install the bundle --with aws when running on Amazon Elastic Beanstalk
 group :aws, optional: true do
-  gem 'active_elastic_job', github: 'tawan/active-elastic-job'
+  gem 'active_elastic_job'
   gem 'aws-partitions'
   gem 'aws-sdk-rails'
   gem 'aws-sdk-cloudfront'
