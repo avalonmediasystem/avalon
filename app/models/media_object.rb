@@ -377,7 +377,11 @@ class MediaObject < ActiveFedora::Base
   end
 
   def set_lending_period
-    self.lending_period ||= ActiveSupport::Duration.parse(Settings.controlled_digital_lending.default_lending_period).to_s
+    build_iso8601_duration
+    unless self.lending_period.nil?
+      self.lending_period = ActiveSupport::Duration.parse(@lend_period).to_i
+    end
+    self.lending_period ||= ActiveSupport::Duration.parse(Settings.controlled_digital_lending.default_lending_period).to_i
   end
 
   def current_checkout(user_id)
@@ -397,6 +401,23 @@ class MediaObject < ActiveFedora::Base
         addr.to_range.map(&:to_s)
       end
       ips.flatten.compact.uniq || []
+    end
+
+    def build_iso8601_duration
+      @lend_period = self.lending_period.dup
+      @lend_period = @lend_period.gsub(/\s+[Dd]ays?/, 'D').gsub(/\s+[Hh]ours?/, 'H').gsub(/,?\s+/, 'T')
+
+      if @lend_period.match?(/D/)
+        unless @lend_period.include? 'P'
+          @lend_period.prepend('P')
+        end
+      else
+        unless @lend_period.include? 'PT'
+          @lend_period.prepend('PT')
+        end
+      end
+
+      @lend_period
     end
 
 end
