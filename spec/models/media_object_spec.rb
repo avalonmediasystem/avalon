@@ -17,7 +17,7 @@ require 'cancan/matchers'
 
 describe MediaObject do
   let(:media_object) { FactoryBot.create(:media_object) }
-  
+
   it 'assigns a noid id' do
     media_object = MediaObject.new
     expect { media_object.assign_id! }.to change { media_object.id }.from(nil).to(String)
@@ -929,7 +929,7 @@ describe MediaObject do
 
   describe '#merge!' do
     let(:media_objects) { [] }
-    
+
     before do
       2.times { media_objects << FactoryBot.create(:media_object, :with_master_file) }
     end
@@ -1017,6 +1017,20 @@ describe MediaObject do
 
       it 'is checked_out' do
         expect(media_object.lending_status).to eq "checked_out"
+      end
+    end
+  end
+
+  describe 'lending_period' do
+    context 'a custom lending period has not been set' do
+      it 'is equal to the default period in the settings.yml' do
+        expect(media_object.lending_period).to eq ActiveSupport::Duration.parse(Settings.controlled_digital_lending.default_lending_period).to_s
+      end
+    end
+    context 'a custom lending period has been set' do
+      let(:media_object) { FactoryBot.create(:media_object, lending_period: "1 day")}
+      it 'is equal to the custom lending period' do
+        expect(media_object.lending_period).to eq "1 day"
       end
     end
   end
