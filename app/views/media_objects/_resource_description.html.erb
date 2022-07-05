@@ -101,6 +101,9 @@ Unless required by applicable law or agreed to in writing, software distributed
              locals: {form: form, field: :terms_of_use,
                       options: {display_label: 'Terms of Use'}} %>
   <%= render partial: 'text_field',
+             locals: {form: form, field: :lending_period,
+                      options: {display_label: 'Lending Period'}} %>
+  <%= render partial: 'text_field',
              locals: {form: form, field: :other_identifier,
                       options: {display_label: 'Other Identifier(s)',
                                 multivalued: true,
