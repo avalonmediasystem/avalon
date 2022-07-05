@@ -114,6 +114,10 @@ module MediaObjectsHelper
         content_tag(:dt, 'Rights Statement') + content_tag(:dd) { link }
       end
 
+      def display_lending_period media_object
+        ActiveSupport::Duration.build(media_object.lending_period).parts.map{ |k, v| "#{v} #{k}" }.join(' ')
+      end
+
       def current_quality stream_info
         available_qualities = Array(stream_info[:stream_flash]).collect {|s| s[:quality]}
         available_qualities += Array(stream_info[:stream_hls]).collect {|s| s[:quality]}
