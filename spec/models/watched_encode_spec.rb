@@ -31,11 +31,12 @@ describe WatchedEncode do
   let(:completed_encode) do
     running_encode.clone.tap do |e| 
       e.state = :completed
-      output = double(url: 'file://' + Rails.root.join('spec', 'fixtures', 'videoshort.mp4').to_s)
+      output = double(url: 'file://' + Rails.root.join('spec', 'fixtures', fixture_file).to_s)
       allow(output).to receive(:url=)
       e.output = [output]
     end
   end
+  let(:fixture_file) { 'videoshort.mp4' }
 
   before do
     allow(MasterFile).to receive(:find).with(master_file.id).and_return(master_file)
@@ -85,6 +86,24 @@ describe WatchedEncode do
 
       after do
         Settings.minio = nil
+      end
+
+      context 'with filename with spaces' do
+        let(:fixture_file) { 'video short.mp4' }
+
+        it 'uploads to Minio' do
+          encode.create!
+          expect(master_file).to have_received(:update_progress_on_success!)
+        end
+      end
+
+      context 'with filename with escaped spaces' do
+        let(:fixture_file) { 'short%20video.mp4' }
+
+        it 'uploads to Minio' do
+          encode.create!
+          expect(master_file).to have_received(:update_progress_on_success!)
+        end
       end
     end
   end

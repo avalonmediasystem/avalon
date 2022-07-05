@@ -35,8 +35,15 @@ class WatchedEncode < ActiveEncode::Base
         key = file.location.sub(/\/(.*?)\//, "")
         obj = bucket.object key
 
-        obj.upload_file file.location
-        File.delete file.location
+        if File.exist? file.location
+          obj.upload_file file.location
+          File.delete file.location
+        else
+          # Calls to Addressable::URI.escape here are to counter the unescaping that happens in FileLocator
+          # This is needed because files uploaded to minio (and probably AWS) escape spaces (%20) instead of keeping spaces
+          obj.upload_file Addressable::URI.escape(file.location)
+          File.delete Addressable::URI.escape(file.location)
+        end
 
         output.url = "s3://#{obj.bucket.name}/#{obj.key}"
         output
