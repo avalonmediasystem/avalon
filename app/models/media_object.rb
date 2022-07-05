@@ -38,6 +38,8 @@ class MediaObject < ActiveFedora::Base
   after_save :update_dependent_permalinks_job, if: Proc.new { |mo| mo.persisted? && mo.published? }
   after_save :remove_bookmarks
 
+  after_initialize :set_lending_period
+
   # Call custom validation methods to ensure that required fields are present and
   # that preferred controlled vocabulary standards are used
 
@@ -110,6 +112,9 @@ class MediaObject < ActiveFedora::Base
   end
   property :comment, predicate: ::RDF::Vocab::EBUCore.comments, multiple: true do |index|
     index.as :stored_searchable
+  end
+  property :lending_period, predicate: ::RDF::Vocab::SCHEMA.eligibleDuration, multiple: false do |index|
+    index.as :stored_sortable
   end
 
   ordered_aggregation :master_files, class_name: 'MasterFile', through: :list_source
@@ -369,6 +374,10 @@ class MediaObject < ActiveFedora::Base
 
   def lending_status
     Checkout.active_for_media_object(id).any? ? "checked_out" : "available"
+  end
+
+  def set_lending_period
+    self.lending_period ||= ActiveSupport::Duration.parse(Settings.controlled_digital_lending.default_lending_period).to_s
   end
 
   def current_checkout(user_id)
