@@ -36,7 +36,7 @@ const CardMetaData = ({ doc, fieldLabel, fieldName }) => {
     return (
       <React.Fragment>
         <dt className='col-sm-5'>{fieldLabel}</dt>
-        <dd className='col-sm-7'>{metaData}</dd>
+        <dd className='col-sm-7' dangerouslySetInnerHTML={{__html: metaData}}></dd>
       </React.Fragment>
     );
   }
@@ -73,6 +73,14 @@ const thumbnailSrc = (doc, props) => {
   }
 };
 
+const titleHTML = (doc) => {
+  var title = doc.attributes['title_tesi'] && doc.attributes['title_tesi'].attributes.value.substring(0, 50) || doc['id'];
+  if (doc.attributes['title_tesi'] && doc.attributes['title_tesi'].attributes.value.length >= 50) {
+    title += "<span>...</span>"
+  }
+  return {__html: title};
+}
+
 const SearchResultsCard = props => {
   const { baseUrl, index, doc } = props;
   return (
@@ -94,10 +102,7 @@ const SearchResultsCard = props => {
       <CollectionCardBody>
         <>
           <h4>
-            <a href={baseUrl + 'media_objects/' + doc['id']}>
-              { doc.attributes['title_tesi'] && doc.attributes['title_tesi'].attributes.value.substring(0, 50) || doc['id'] }
-              { doc.attributes['title_tesi'] && doc.attributes['title_tesi'].attributes.value.length >= 50 && <span>...</span> }
-            </a>
+            <a href={baseUrl + 'media_objects/' + doc['id']} dangerouslySetInnerHTML={titleHTML(doc)} />
           </h4>
           <dl id={'card-body-' + index} className="card-text row">
             <CardMetaData doc={doc} fieldLabel="Date" fieldName="date_ssi" />
