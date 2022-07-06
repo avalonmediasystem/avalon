@@ -25,7 +25,7 @@ en:
     cdl:
       checkout_message: "<p>To enable streaming please check out resource. This content is available to be checked out.</p>"
       not_available_message: "<p>This resource is not available to be checked out at the moment. Please check again later.</p>"
-      expire: 
+      expire:
         heading: "Check Out Expired"
         message: "Your lending period has been expired. Please return the item, and check for availability later."
   metadata_tip:
@@ -121,6 +121,12 @@ en:
       Other Identifier should be used for an external record identifier that can connect the Avalon item to a catalog record or other record for the original item. This identifier differs from Bibliographic Identifier in that it is not used to retrieve a record from another system. Type specifies the type of external record identifier.
     table_of_contents: |
       Table of Contents is used to provide the titles of separate works or parts of a resource. Information provided may also contain statements of responsibility or other sequential designations. Titles of separate works or parts should be separated by ' -- ' (space-hyphen-hyphen-space).
+    lending_period: |
+      Lending Period is the length of time that an item can be checked out for.
+      Accepted formats are ISO8601 duration (ex. P1DT12H), the time measured in seconds (ex. 129600),
+      or a human-readable string using numerals without punctuation or conjunctions (ex. 1 day 12 hours).
+      Values entered as strings must be entered as whole days and/or hours. For example, one month would be entered as
+      '30 days' and 1.5 days would be entered as '1 day 12 hours' or '36 hours'.
 
   file_upload_tip:
     title: |
@@ -252,7 +258,7 @@ en:
       timeline:
         title: "Title"
         description: "Description"
-      user:  
+      user:
         login: "Username or email"
 
   iiif:

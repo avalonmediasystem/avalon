@@ -102,4 +102,34 @@ describe MediaObjectsHelper do
       end
     end
   end
+
+  describe '#display_lending_period' do
+    context 'when lending period is measured in days' do
+      let(:media_object) { instance_double("MediaObject", lending_period: 172800) }
+
+      subject { helper.display_lending_period(media_object) }
+
+      it 'returns the lending period as a human readable string' do
+        expect(subject).to eq("2 days")
+      end
+    end
+    context 'when lending period is measured in hours' do
+      let(:media_object) { instance_double("MediaObject", lending_period: 7200) }
+
+      subject { helper.display_lending_period(media_object) }
+
+      it 'returns the lending period as a human readable string' do
+        expect(subject).to eq("2 hours")
+      end
+    end
+    context 'when lending period is measured in days and hours' do
+      let(:media_object) { instance_double("MediaObject", lending_period: 129600) }
+
+      subject { helper.display_lending_period(media_object) }
+
+      it 'returns the lending period as a human readable string' do
+        expect(subject).to eq("1 days 12 hours")
+      end
+    end
+  end
 end

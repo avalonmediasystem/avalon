@@ -377,8 +377,8 @@ class MediaObject < ActiveFedora::Base
   end
 
   def set_lending_period
-    build_iso8601_duration
-    unless self.lending_period.nil?
+    if (!self.lending_period.nil? && !(self.lending_period.is_a? Integer))
+      build_lend_period
       self.lending_period = ActiveSupport::Duration.parse(@lend_period).to_i
     end
     self.lending_period ||= ActiveSupport::Duration.parse(Settings.controlled_digital_lending.default_lending_period).to_i
@@ -403,10 +403,29 @@ class MediaObject < ActiveFedora::Base
       ips.flatten.compact.uniq || []
     end
 
-    def build_iso8601_duration
+    def build_lend_period
       @lend_period = self.lending_period.dup
-      @lend_period = @lend_period.gsub(/\s+[Dd]ays?/, 'D').gsub(/\s+[Hh]ours?/, 'H').gsub(/,?\s+/, 'T')
 
+      replacement = {
+        /\s+days?/i => 'D',
+        /\s+hours?/i => 'H',
+        /,?\s+/ => 'T'
+      }
+
+      rules = replacement.collect{ |k, v| k }
+
+      matcher = Regexp.union(rules)
+
+      @lend_period = @lend_period.gsub(matcher) do |match|
+        replacement.detect{ |k, v| k =~ match }[1]
+      end
+
+      build_iso8601_duration(@lend_period)
+
+      @lend_period
+    end
+
+    def build_iso8601_duration(lend_period)
       if @lend_period.match?(/D/)
         unless @lend_period.include? 'P'
           @lend_period.prepend('P')
