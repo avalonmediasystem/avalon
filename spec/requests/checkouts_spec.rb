@@ -149,6 +149,19 @@ RSpec.describe "/checkouts", type: :request do
         post checkouts_url, params: { checkout: valid_attributes }
         expect(response).to redirect_to(media_object_url(checkout.media_object))
       end
+
+      context "non-default lending period" do
+        let(:media_object) { FactoryBot.create(:published_media_object, lending_period: "1 day", visibility: 'public') }
+        it "creates a new checkout" do
+          expect{
+            post checkouts_url, params: { checkout: valid_attributes }
+          }.to change(Checkout, :count).by(1)
+        end
+        it "sets the return time based on the given lending period" do
+          post checkouts_url, params: { checkout: valid_attributes }
+          expect(Checkout.find_by(media_object_id: media_object.id).return_time).to eq DateTime.current + 1.day
+        end
+      end
     end
   end
 
