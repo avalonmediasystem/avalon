@@ -340,7 +340,13 @@ class MasterFilesController < ApplicationController
   def delete_structure
     authorize! :edit, @master_file, message: "You do not have sufficient privileges"
     @master_file.structuralMetadata.content = ''
-    @master_file.save
+
+    if @master_file.save
+      flash[:success] = "Structure succesfully removed."
+    else
+      flash[:error] = "There was a problem removing structure."
+    end
+    redirect_to edit_media_object_path(@master_file.media_object_id, step: 'structure')
   end
 
   def iiif_auth_token

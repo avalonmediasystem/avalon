@@ -424,6 +424,7 @@ describe MasterFilesController do
 
     it "returns structuralMetadata datastream as JSON" do
       expect(master_file.structuralMetadata.content).to eq('')
+      expect(flash[:success]).to eq('Structure succesfully removed.')
     end
   end
 
@@ -688,7 +689,7 @@ describe MasterFilesController do
     let(:supplemental_file) { FactoryBot.create(:supplemental_file) }
     let(:master_file) { FactoryBot.create(:master_file, supplemental_files: [supplemental_file]) }
     let(:supplemental_file) { FactoryBot.create(:supplemental_file, :with_transcript_file, :with_transcript_tag, label: 'transcript') }
-    
+
     it 'serves transcript file content' do
       login_as :administrator
       expect(master_file.supplemental_files.first['tags']).to eq (["transcript"])
