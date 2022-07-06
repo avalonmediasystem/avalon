@@ -72,12 +72,12 @@ Unless required by applicable law or agreed to in writing, software distributed
               <% if section.structuralMetadata.valid? %>
               <%= react_component("ReactButtonContainer", {sectionIndex: index, masterFileID: section.id, baseURL: request.protocol+request.host_with_port, streamDuration: section.duration, audioURL: stream_url, initStructure: section.structuralMetadata.as_json}) %>
               <% else %>
-              <%= react_component("ReactButtonContainer", {sectionIndex: index, masterFileID: section.id, baseURL: request.protocol+request.host_with_port, streamDuration: section.duration, audioURL: stream_url, initStructure: "{ \"label\": \"#{item_label}\", \"type\": \"div\", \"items\": [] }"}, html_options={ class: 'react-button-container' }) %>
+              <%= react_component("ReactButtonContainer", {sectionIndex: index, masterFileID: section.id, baseURL: request.protocol+request.host_with_port, streamDuration: section.duration, audioURL: stream_url, initStructure: { label: "#{item_label}", type: "div", items: [] }}, html_options={ class: 'react-button-container' }) %>
               <% end %>
               <button type="button" class="btn btn-primary btn-struct mr-1" value="Advanced Edit" data-toggle="modal"
                 data-target="#advanced_edit_structure_<%= index %>">Advanced Edit</button>
               <% if section.structuralMetadata.present? %>
-                <button type="submit" class="btn btn-danger btn-struct" value="Remove">Remove</button>
+                <%= link_to 'Remove', structure_master_file_path(section.id), method: :delete, class: 'btn btn-danger btn-struct btn-confirmation', data: {placement: 'top'} %>
               <% end %>
             </div>
             <% end %>
