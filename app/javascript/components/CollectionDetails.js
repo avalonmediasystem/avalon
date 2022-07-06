@@ -46,7 +46,6 @@ const CollectionDetails = ({ content = '', email = '', website = '' }) => {
     setExpanded(!expanded);
   };
 
-  console.log(website);
   return (
     <div>
       {words.length > 0 && (
