@@ -285,6 +285,7 @@ class MediaObject < ActiveFedora::Base
       summary: abstract,
       visibility: visibility,
       read_groups: read_groups,
+      lending_period: lending_period,
       lending_status: lending_status,
     }.merge(to_ingest_api_hash(options.fetch(:include_structure, false)))
   end
@@ -420,9 +421,7 @@ class MediaObject < ActiveFedora::Base
         replacement.detect{ |k, v| k =~ match }[1]
       end
 
-      build_iso8601_duration(@lend_period)
-
-      @lend_period
+      @lend_period.match(/P/) ? @lend_period : build_iso8601_duration(@lend_period)
     end
 
     def build_iso8601_duration(lend_period)
@@ -435,8 +434,6 @@ class MediaObject < ActiveFedora::Base
           @lend_period.prepend('PT')
         end
       end
-
-      @lend_period
     end
 
 end

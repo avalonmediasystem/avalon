@@ -128,7 +128,7 @@ describe MediaObjectsHelper do
       subject { helper.display_lending_period(media_object) }
 
       it 'returns the lending period as a human readable string' do
-        expect(subject).to eq("1 days 12 hours")
+        expect(subject).to eq("36 hours")
       end
     end
   end

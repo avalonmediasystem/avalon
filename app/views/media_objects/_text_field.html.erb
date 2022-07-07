@@ -39,8 +39,6 @@ Unless required by applicable law or agreed to in writing, software distributed
           <% if options[:dropdown_field] %>
             <%= render partial: "multipart_dropdown_field", locals: {selected_value: value.present? ? value[options[:secondary_hash_key]] : nil, options: options} %>
               <% value = value.present? ? value[options[:primary_hash_key]] : "" %>
-          <% elsif fieldname == "media_object[lending_period]" %>
-            <% value = ActiveSupport::Duration.build(value).parts.map{ |k, v| "#{v} #{k}" }.join(' ') %>
           <% end %>
           <%= text_field_tag fieldname, value || '', class: (@media_object.errors[field].any? ? 'form-control is-invalid' : 'form-control') %>
         <% end %>

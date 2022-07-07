@@ -64,6 +64,21 @@ Unless required by applicable law or agreed to in writing, software distributed
   </div>
 </div>
 
+<div class="card item-lending-period">
+  <div class="card-header">
+    <h3 class="card-title">Item lending period</h3>
+  </div>
+  <div class="card-body">
+    <div class="form-group">
+      <%=  render partial: "modules/tooltip", locals: { form: vid, field: :lending_period, tooltip: t("access_control.#{:lending_period}"), options: {display_label: (t("access_control.#{:lending_period}label")+'*').html_safe} } %><br />
+      <div class="input-group">
+        <% value = display_lending_period(object) %>
+        <%= text_field_tag "lending_period", value || '', class: 'form-control' %>
+      </div>
+    </div>
+  </div>
+</div>
+
 <%= render modal[:partial], modal_title: modal[:title] if defined? modal %>
 
 <% end #form_for %>
@@ -100,6 +115,18 @@ Unless required by applicable law or agreed to in writing, software distributed
           when "private"
             "collection staff only"
           end %>
+    </div>
+  </div>
+</div>
+
+<div class="card item-access">
+  <div class="card-header">
+    <h3 class="card-title">Item lending period</h3>
+  </div>
+  <div class="card-body">
+    <div class="form-group">
+      Item is available to be checked out for
+      <%= display_lending_period(object) %>
     </div>
   </div>
 </div>

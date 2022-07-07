@@ -1028,21 +1028,33 @@ describe MediaObject do
       end
     end
     context 'a plain text custom lending period has been set' do
-      let(:media_object) { FactoryBot.create(:media_object, lending_period: "1 day")}
+      let(:media_object) { FactoryBot.create(:media_object, lending_period: "1 day") }
+      let(:complex_date) { FactoryBot.create(:media_object, lending_period: "6 days 4 hours")}
       it 'is equal to the custom lending period measured in seconds' do
         media_object.set_lending_period
         expect(media_object.lending_period).to eq 86400
+      end
+      it 'accepts strings containing day and hour' do
+        expect { complex_date.set_lending_period }.not_to raise_error
       end
     end
     context 'an ISO8601 duration format custom lending period has been set' do
-      let(:media_object) { FactoryBot.create(:media_object, lending_period: "P1D")}
+      let(:media_object) { FactoryBot.create(:media_object, lending_period: "P1D") }
+      let(:year_month) { FactoryBot.create(:media_object, lending_period: "P1Y2M") }
+      let(:day_hr_min_sec) { FactoryBot.create(:media_object, lending_period: "P4DT6H3M30S")}
+      let(:sec) { FactoryBot.create(:media_object, lending_period: "PT3650.015S")}
       it 'is equal to the custom lending period measured in seconds' do
         media_object.set_lending_period
         expect(media_object.lending_period).to eq 86400
       end
+      it 'accepts any ISO8601 duration' do
+        expect { year_month.set_lending_period }.not_to raise_error
+        expect { day_hr_min_sec.set_lending_period }.not_to raise_error
+        expect { sec.set_lending_period }.not_to raise_error
+      end
     end
-    context 'a integer custom lending period has been set' do
-      let(:media_object) { FactoryBot.create(:media_object, lending_period: 86400)}
+    context 'an integer custom lending period has been set' do
+      let(:media_object) { FactoryBot.create(:media_object, lending_period: 86400) }
       it 'is equal to the custom lending period measured in seconds' do
         media_object.set_lending_period
         expect(media_object.lending_period).to eq 86400
