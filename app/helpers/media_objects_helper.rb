@@ -114,8 +114,23 @@ module MediaObjectsHelper
         content_tag(:dt, 'Rights Statement') + content_tag(:dd) { link }
       end
 
+      # Lending period is stored as seconds. Convert to days for display.
       def display_lending_period media_object
-        ActiveSupport::Duration.build(media_object.lending_period).parts.map{ |k, v| "#{v} #{k}" }.join(' ')
+        if media_object.lending_period % (60*60*24) == 0
+          day_count = (media_object.lending_period/(60*60*24)).to_s
+          build_lending_display(day_count, 'day')
+        else
+          hour_count = (media_object.lending_period/(60*60)).to_s
+          build_lending_display(hour_count, 'hour')
+        end
+      end
+
+      def build_lending_display(count, unit)
+        if count == '1'
+          count + ' ' + unit
+        else
+          count + ' ' + unit + 's'
+        end
       end
 
       def current_quality stream_info

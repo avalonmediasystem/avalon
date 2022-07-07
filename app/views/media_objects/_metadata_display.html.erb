@@ -42,7 +42,6 @@ Unless required by applicable law or agreed to in writing, software distributed
         <%= display_metadata('Language', display_language(@media_object)) %>
         <%= display_rights_statement(@media_object) %>
         <%= display_metadata('Terms of Use', @media_object.terms_of_use) %>
-        <%= display_metadata('Lending Period', display_lending_period(@media_object)) %>
         <%= display_metadata('Physical Description', @media_object.physical_description) %>
         <%= display_metadata('Related Item', display_related_item(@media_object)) %>
         <%= display_metadata('Notes', display_notes(@media_object)) %>
@@ -73,7 +72,8 @@ Unless required by applicable law or agreed to in writing, software distributed
       </h3>
     </div>
     <div class="card-body">
-      <%= @media_object.access_text %>
+      <%= @media_object.access_text %> <br />
+      <b>Lending Period:</b> <%= display_lending_period(@media_object) %>
     </div>
   </div>
 
