@@ -115,13 +115,17 @@ module MediaObjectsHelper
       end
 
       # Lending period is stored as seconds. Convert to days for display.
-      def display_lending_period media_object
-        if media_object.lending_period % (60*60*24) == 0
-          day_count = (media_object.lending_period/(60*60*24)).to_s
-          build_lending_display(day_count, 'day')
+      def display_lending_period object
+        if object.is_a?(Admin::Collection)
+          0
         else
-          hour_count = (media_object.lending_period/(60*60)).to_s
-          build_lending_display(hour_count, 'hour')
+          if object.lending_period % (60*60*24) == 0
+            day_count = (object.lending_period/(60*60*24)).to_s
+            build_lending_display(day_count, 'day')
+          else
+            hour_count = (object.lending_period/(60*60)).to_s
+            build_lending_display(hour_count, 'hour')
+          end
         end
       end
 
