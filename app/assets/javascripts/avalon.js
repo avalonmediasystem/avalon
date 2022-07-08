@@ -17,10 +17,10 @@
 // Empty file for future js
 /* Override the search_context so it stops POSTing links which confuses
  * Rails and causes it to redirect to the wrong place. */
-$(document).ready(function() {
-  Blacklight.do_search_context_behavior = function() {};
+$(document).ready(function () {
+  Blacklight.do_search_context_behavior = function () { };
 
-  $(document).on('click', '.btn-stateful-loading', function() {
+  $(document).on('click', '.btn-stateful-loading', function () {
     $(this).button('loading');
   });
 
@@ -29,14 +29,14 @@ $(document).ready(function() {
     html: true,
     trigger: 'hover',
     delay: { show: 250, hide: 500 },
-    content: function() {
+    content: function () {
       return $(this)
         .next('.po-body')
         .html();
     }
   });
 
-  $('#show_object_tree').on('click', function() {
+  $('#show_object_tree').on('click', function () {
     var ot = $('#object_tree');
     ot.load(ot.data('src'));
     // return false;
@@ -44,7 +44,7 @@ $(document).ready(function() {
 
   var iOS = !!/(iPad|iPhone|iPod)/g.test(navigator.userAgent);
   if (iOS) {
-    $('input[readonly], textarea[readonly]').on('cut paste keydown', function(
+    $('input[readonly], textarea[readonly]').on('cut paste keydown', function (
       e
     ) {
       e.preventDefault();
@@ -60,7 +60,7 @@ $(document).ready(function() {
 
   window.addEventListener(
     'hashchange',
-    function(event) {
+    function (event) {
       var element = document.getElementById(location.hash.substring(1));
       if (element) {
         if (!/^(?:a|select|input|button|textarea)$/i.test(element.tagName)) {
@@ -72,7 +72,7 @@ $(document).ready(function() {
     false
   );
 
-  $('#content').focus(function() {
+  $('#content').focus(function () {
     $('.mejs-controls').css('visibility', 'visible');
     $('.mejs-controls button:first').focus();
   });
@@ -91,7 +91,7 @@ $(document).ready(function() {
   }
 
   // Toggle CSS classes when window resizes
-  $(window).resize(function() {
+  $(window).resize(function () {
     if ($(window).width() < 768) {
       if ($searchWrapper.hasClass('input-group-lg')) {
         $searchWrapper.removeClass('input-group-lg');
@@ -104,4 +104,20 @@ $(document).ready(function() {
       $searchSubmit.addClass('btn-primary');
     }
   });
+
+  /**
+   * jQuery plugin to retain stateful button behavior after
+   * Bootstrap 4 upgrade.
+   * Reference: https://www.robertmullaney.com/2018/10/25/continue-using-data-loading-text-buttons-bootstrap-4-jquery/
+   */
+  (function ($) {
+    $.fn.button = function (action) {
+      let $btn = this[0];
+      if (action === 'loading' && $btn.dataset.loadingText) {
+        $btn.value = $btn.dataset.loadingText;
+        $btn.style.cursor = 'not-allowed';
+        $btn.style.opacity = 0.5;
+      }
+    };
+  }(jQuery));
 });

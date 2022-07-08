@@ -26,6 +26,8 @@ class WatchedEncode < ActiveEncode::Base
   end
 
   after_completed do |encode|
+    record = ActiveEncode::EncodeRecord.find_by(global_id: encode.to_global_id.to_s)
+
     # Upload to S3 if using ffmpeg or passthrough adapter
     if Settings.encoding.derivative_bucket &&
        (Settings.encoding.engine_adapter.to_sym == :ffmpeg || is_a?(PassThroughEncode))
@@ -35,15 +37,24 @@ class WatchedEncode < ActiveEncode::Base
         key = file.location.sub(/\/(.*?)\//, "")
         obj = bucket.object key
 
-        obj.upload_file file.location
-        File.delete file.location
+        if File.exist? file.location
+          obj.upload_file file.location
+          File.delete file.location
+        else
+          # Calls to Addressable::URI.escape here are to counter the unescaping that happens in FileLocator
+          # This is needed because files uploaded to minio (and probably AWS) escape spaces (%20) instead of keeping spaces
+          obj.upload_file Addressable::URI.escape(file.location)
+          File.delete Addressable::URI.escape(file.location)
+        end
 
         output.url = "s3://#{obj.bucket.name}/#{obj.key}"
         output
       end
+
+      # Save translated output urls
+      record.update(raw_object: encode.to_json)
     end
 
-    record = ActiveEncode::EncodeRecord.find_by(global_id: encode.to_global_id.to_s)
     master_file = MasterFile.find(record.master_file_id)
     master_file.update_progress_on_success!(encode)
   end
