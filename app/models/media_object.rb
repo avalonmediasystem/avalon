@@ -25,6 +25,7 @@ class MediaObject < ActiveFedora::Base
   include SpeedyAF::OrderedAggregationIndex
   include MediaObjectIntercom
   include SupplementalFileBehavior
+  include LendingPeriod
   require 'avalon/controlled_vocabulary'
 
   include Kaminari::ActiveFedoraModelExtension
@@ -37,8 +38,6 @@ class MediaObject < ActiveFedora::Base
   before_save :assign_id!, prepend: true
   after_save :update_dependent_permalinks_job, if: Proc.new { |mo| mo.persisted? && mo.published? }
   after_save :remove_bookmarks
-
-  after_initialize :set_lending_period
 
   # Call custom validation methods to ensure that required fields are present and
   # that preferred controlled vocabulary standards are used
@@ -112,9 +111,6 @@ class MediaObject < ActiveFedora::Base
   end
   property :comment, predicate: ::RDF::Vocab::EBUCore.comments, multiple: true do |index|
     index.as :stored_searchable
-  end
-  property :lending_period, predicate: ::RDF::Vocab::SCHEMA.eligibleDuration, multiple: false do |index|
-    index.as :stored_sortable
   end
 
   ordered_aggregation :master_files, class_name: 'MasterFile', through: :list_source
@@ -377,19 +373,6 @@ class MediaObject < ActiveFedora::Base
     Checkout.active_for_media_object(id).any? ? "checked_out" : "available"
   end
 
-  def set_lending_period
-    if (!self.lending_period.nil? && !(self.lending_period.is_a? Integer))
-      build_lend_period
-      self.lending_period = ActiveSupport::Duration.parse(@lend_period).to_i
-    end
-    self.lending_period ||= ActiveSupport::Duration.parse(Settings.controlled_digital_lending.default_lending_period).to_i
-  end
-
-  def current_checkout(user_id)
-    checkouts = Checkout.active_for_media_object(id)
-    checkouts.select{ |ch| ch.user_id == user_id  }.first
-  end
-
   private
 
     def calculate_duration
@@ -403,37 +386,4 @@ class MediaObject < ActiveFedora::Base
       end
       ips.flatten.compact.uniq || []
     end
-
-    def build_lend_period
-      @lend_period = self.lending_period.dup
-
-      replacement = {
-        /\s+days?/i => 'D',
-        /\s+hours?/i => 'H',
-        /,?\s+/ => 'T'
-      }
-
-      rules = replacement.collect{ |k, v| k }
-
-      matcher = Regexp.union(rules)
-
-      @lend_period = @lend_period.gsub(matcher) do |match|
-        replacement.detect{ |k, v| k =~ match }[1]
-      end
-
-      @lend_period.match(/P/) ? @lend_period : build_iso8601_duration(@lend_period)
-    end
-
-    def build_iso8601_duration(lend_period)
-      if @lend_period.match?(/D/)
-        unless @lend_period.include? 'P'
-          @lend_period.prepend('P')
-        end
-      else
-        unless @lend_period.include? 'PT'
-          @lend_period.prepend('PT')
-        end
-      end
-    end
-
 end

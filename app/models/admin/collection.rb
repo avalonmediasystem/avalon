@@ -22,6 +22,7 @@ class Admin::Collection < ActiveFedora::Base
   include ActiveFedora::Associations
   include Identifier
   include MigrationTarget
+  include LendingPeriod
 
   has_many :media_objects, class_name: 'MediaObject', predicate: ActiveFedora::RDF::Fcrepo::RelsExt.isMemberOfCollection
 
