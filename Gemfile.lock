@@ -24,7 +24,7 @@ GIT
 
 GIT
   remote: https://github.com/avalonmediasystem/browse-everything.git
-  revision: fb8a059d369000c9ce01b0e6053c1795309fcb36
+  revision: 38610d19d36105ca9c311e0a641fdb43697fabea
   branch: v1.2-avalon
   specs:
     browse-everything (1.2.0)
