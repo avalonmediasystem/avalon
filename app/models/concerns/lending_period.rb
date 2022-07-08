@@ -11,19 +11,23 @@ module LendingPeriod
   end
 
   def set_lending_period
+    if self.is_a? Admin::Collection
+      custom_lend_period
+      self.lending_period ||= ActiveSupport::Duration.parse(Settings.controlled_digital_lending.default_lending_period).to_i
+    elsif !self.collection_id.nil?
+      custom_lend_period
+      self.lending_period ||= Admin::Collection.find(self.collection_id).lending_period
+    end
+  end
+
+  private
+
+  def custom_lend_period
     if (!self.lending_period.nil? && !(self.lending_period.is_a? Integer))
       build_lend_period
       self.lending_period = ActiveSupport::Duration.parse(@lend_period).to_i
     end
-    self.lending_period ||= ActiveSupport::Duration.parse(Settings.controlled_digital_lending.default_lending_period).to_i
   end
-
-  def current_checkout(user_id)
-    checkouts = Checkout.active_for_media_object(id)
-    checkouts.select{ |ch| ch.user_id == user_id  }.first
-  end
-
-  private
 
   def build_lend_period
     @lend_period = self.lending_period.dup
@@ -56,7 +60,4 @@ module LendingPeriod
       end
     end
   end
-
-
-
 end
