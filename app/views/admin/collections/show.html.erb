@@ -125,9 +125,10 @@ Unless required by applicable law or agreed to in writing, software distributed
 
 <div class="content-block">
   <h3 style="padding-top: 3rem;">Set Default Access Control for New Items</h3>
-  <%= render "modules/access_control", { object: @collection, 
-                                         visibility: @collection.default_visibility, 
-                                         hidden: @collection.default_hidden, 
+  <%= render "modules/access_control", { object: @collection,
+                                         visibility: @collection.default_visibility,
+                                         hidden: @collection.default_hidden,
+                                         lending_period: @collection.lending_period,
                                          modal: { partial: "apply_access_control", title: "Apply current Default Access settings to all existing Items" } } %>
 
   <% if can? :update_access_control, @collection %>

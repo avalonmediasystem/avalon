@@ -114,26 +114,28 @@ module MediaObjectsHelper
         content_tag(:dt, 'Rights Statement') + content_tag(:dd) { link }
       end
 
-      # Lending period is stored as seconds. Convert to days for display.
+      # Lending period is stored as seconds. Convert to days and hours for display.
       def display_lending_period object
-        if object.is_a?(Admin::Collection)
-          0
-        else
-          if object.lending_period % (60*60*24) == 0
-            day_count = (object.lending_period/(60*60*24)).to_s
-            build_lending_display(day_count, 'day')
-          else
-            hour_count = (object.lending_period/(60*60)).to_s
-            build_lending_display(hour_count, 'hour')
-          end
-        end
-      end
+        d, h = (object.lending_period/3600).divmod(24)
+        # TODO: Figure out how to get this to not have 's' on the end of singular day/hour
+        replacement = {
+          /(?<=1\s)hours/ => ' hour',
+          /(?<=^1\s)days/ => 'day'
+        }
 
-      def build_lending_display(count, unit)
-        if count == '1'
-          count + ' ' + unit
+        rules = replacement.collect{ |k, v| k }
+
+        matcher = Regexp.union(rules)
+
+        if d == 0
+          (h.to_s + ' hours').gsub(matcher, 'hour')
+        elsif h == 0
+          (d.to_s + ' days').gsub(matcher, 'day')
         else
-          count + ' ' + unit + 's'
+          date_string = "%d days %d hours" % [d, h]
+          date_string = date_string.gsub(matcher) do |match|
+            replacement.detect{ |k, v| k =~ match }[1]
+          end
         end
       end
 
