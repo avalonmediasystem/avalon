@@ -79,12 +79,14 @@ describe BulkActionJobs::ApplyCollectionAccessControl do
       co.default_read_groups = ["co_group"]
       co.default_hidden = true
       co.default_visibility = 'public'
+      co.lending_period = 129600
       co.save!
 
       mo.read_users = ["mo_user"]
       mo.read_groups = ["mo_group"]
       mo.hidden = false
       mo.visibility = 'restricted'
+      mo.lending_period = 1209600
       mo.save!
     end
 
@@ -93,6 +95,12 @@ describe BulkActionJobs::ApplyCollectionAccessControl do
       mo.reload
       expect(mo.hidden?).to be_truthy
       expect(mo.visibility).to eq('public')
+    end
+
+    it "changes item lending period" do
+      BulkActionJobs::ApplyCollectionAccessControl.perform_now co.id, true
+      mo.reload
+      expect(mo.lending_period).to eq(co.lending_period)
     end
 
     context "overwrite is true" do

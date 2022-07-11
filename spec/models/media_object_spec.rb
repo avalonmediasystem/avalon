@@ -1024,6 +1024,7 @@ describe MediaObject do
   describe 'set_lending_period' do
     context 'a custom lending period has not been set' do
       it 'is equal to the default period in the settings.yml' do
+        media_object.set_lending_period
         expect(media_object.lending_period).to eq ActiveSupport::Duration.parse(Settings.controlled_digital_lending.default_lending_period).to_i
       end
     end
@@ -1051,13 +1052,6 @@ describe MediaObject do
         expect { year_month.set_lending_period }.not_to raise_error
         expect { day_hr_min_sec.set_lending_period }.not_to raise_error
         expect { sec.set_lending_period }.not_to raise_error
-      end
-    end
-    context 'an integer custom lending period has been set' do
-      let(:media_object) { FactoryBot.create(:media_object, lending_period: 86400) }
-      it 'is equal to the custom lending period measured in seconds' do
-        media_object.set_lending_period
-        expect(media_object.lending_period).to eq 86400
       end
     end
   end
