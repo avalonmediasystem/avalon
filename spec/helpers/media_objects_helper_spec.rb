@@ -128,7 +128,20 @@ describe MediaObjectsHelper do
       subject { helper.display_lending_period(media_object) }
 
       it 'returns the lending period as a human readable string' do
-        expect(subject).to eq("36 hours")
+        expect(subject).to eq("1 day 12 hours")
+      end
+    end
+    context 'when lending period includes 1 day and/or 1 hour' do
+      let(:day) { instance_double("MediaObject", lending_period: 86400) }
+      let(:hour) { instance_double("MediaObject", lending_period: 3600) }
+      let(:day_hour) { instance_double("MediaObject", lending_period: 90000) }
+
+      subject { [helper.display_lending_period(day), helper.display_lending_period(hour), helper.display_lending_period(day_hour)] }
+
+      it 'returns the lending period as a human readable string with singular day and/or hour' do
+        expect(subject[0]).to eq("1 day")
+        expect(subject[1]).to eq("1 hour")
+        expect(subject[2]).to eq("1 day 1 hour")
       end
     end
   end

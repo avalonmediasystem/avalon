@@ -117,10 +117,10 @@ module MediaObjectsHelper
       # Lending period is stored as seconds. Convert to days and hours for display.
       def display_lending_period object
         d, h = (object.lending_period/3600).divmod(24)
-        # TODO: Figure out how to get this to not have 's' on the end of singular day/hour
+
         replacement = {
-          /(?<=1\s)hours/ => ' hour',
-          /(?<=^1\s)days/ => 'day'
+          /^?\s?1\shours/ => ' 1 hour',
+          /^1\sdays/ => '1 day'
         }
 
         rules = replacement.collect{ |k, v| k }
@@ -128,9 +128,9 @@ module MediaObjectsHelper
         matcher = Regexp.union(rules)
 
         if d == 0
-          (h.to_s + ' hours').gsub(matcher, 'hour')
+          (h.to_s + ' hours').gsub(matcher, '1 hour')
         elsif h == 0
-          (d.to_s + ' days').gsub(matcher, 'day')
+          (d.to_s + ' days').gsub(matcher, '1 day')
         else
           date_string = "%d days %d hours" % [d, h]
           date_string = date_string.gsub(matcher) do |match|
