@@ -146,6 +146,7 @@ class MediaObject < ActiveFedora::Base
       self.visibility = co.default_visibility
       self.read_users = co.default_read_users.to_a
       self.read_groups = co.default_read_groups.to_a + self.read_groups #Make sure to include any groups added by visibility
+      self.lending_period = co.lending_period
     end
   end
 
