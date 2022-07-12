@@ -770,7 +770,7 @@ describe MediaObject do
 
   describe '#collection=' do
     let(:new_media_object) { MediaObject.new }
-    let(:collection) { FactoryBot.create(:collection, default_hidden: true, default_read_users: ['archivist1@example.com'], default_read_groups: ['TestGroup', 'public'])}
+    let(:collection) { FactoryBot.create(:collection, default_hidden: true, default_read_users: ['archivist1@example.com'], default_read_groups: ['TestGroup', 'public'], lending_period: 86400)}
 
     it 'sets hidden based upon collection for new media objects' do
       expect {new_media_object.collection = collection}.to change {new_media_object.hidden?}.to(true).from(false)
@@ -785,11 +785,15 @@ describe MediaObject do
       expect(new_media_object.read_groups).not_to include "TestGroup"
       expect {new_media_object.collection = collection}.to change {new_media_object.read_groups}.to include 'TestGroup'
     end
+    it 'sets lending_period based upon collection for new media objects' do
+      expect {new_media_object.collection = collection}.to change {new_media_object.lending_period}.to(86400).from(nil)
+    end
     it 'does not change access control fields if not new media object' do
       expect {media_object.collection = collection}.not_to change {new_media_object.hidden?}
       expect {media_object.collection = collection}.not_to change {new_media_object.visibility}
       expect {media_object.collection = collection}.not_to change {new_media_object.read_users}
       expect {media_object.collection = collection}.not_to change {new_media_object.read_users}
+      expect {media_object.collection = collection}.not_to change {new_media_object.lending_period}
     end
   end
 
@@ -1017,41 +1021,6 @@ describe MediaObject do
 
       it 'is checked_out' do
         expect(media_object.lending_status).to eq "checked_out"
-      end
-    end
-  end
-
-  describe 'set_lending_period' do
-    context 'a custom lending period has not been set' do
-      it 'is equal to the default period in the settings.yml' do
-        media_object.set_lending_period
-        expect(media_object.lending_period).to eq ActiveSupport::Duration.parse(Settings.controlled_digital_lending.default_lending_period).to_i
-      end
-    end
-    context 'a plain text custom lending period has been set' do
-      let(:media_object) { FactoryBot.create(:media_object, lending_period: "1 day") }
-      let(:complex_date) { FactoryBot.create(:media_object, lending_period: "6 days 4 hours")}
-      it 'is equal to the custom lending period measured in seconds' do
-        media_object.set_lending_period
-        expect(media_object.lending_period).to eq 86400
-      end
-      it 'accepts strings containing day and hour' do
-        expect { complex_date.set_lending_period }.not_to raise_error
-      end
-    end
-    context 'an ISO8601 duration format custom lending period has been set' do
-      let(:media_object) { FactoryBot.create(:media_object, lending_period: "P1D") }
-      let(:year_month) { FactoryBot.create(:media_object, lending_period: "P1Y2M") }
-      let(:day_hr_min_sec) { FactoryBot.create(:media_object, lending_period: "P4DT6H3M30S")}
-      let(:sec) { FactoryBot.create(:media_object, lending_period: "PT3650.015S")}
-      it 'is equal to the custom lending period measured in seconds' do
-        media_object.set_lending_period
-        expect(media_object.lending_period).to eq 86400
-      end
-      it 'accepts any ISO8601 duration' do
-        expect { year_month.set_lending_period }.not_to raise_error
-        expect { day_hr_min_sec.set_lending_period }.not_to raise_error
-        expect { sec.set_lending_period }.not_to raise_error
       end
     end
   end
