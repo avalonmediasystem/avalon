@@ -13,6 +13,7 @@ require 'rails_helper'
 # sticking to rails and rspec-rails APIs to keep things simple and stable.
 
 RSpec.describe "/checkouts", type: :request do
+  include ActiveSupport::Testing::TimeHelpers
 
   let(:user) { FactoryBot.create(:user) }
   let(:media_object) { FactoryBot.create(:published_media_object, visibility: 'public') }
@@ -152,6 +153,8 @@ RSpec.describe "/checkouts", type: :request do
 
       context "non-default lending period" do
         let(:media_object) { FactoryBot.create(:published_media_object, lending_period: "1 day", visibility: 'public') }
+        before { freeze_time }
+        after { travel_back }
         it "creates a new checkout" do
           expect{
             post checkouts_url, params: { checkout: valid_attributes }
