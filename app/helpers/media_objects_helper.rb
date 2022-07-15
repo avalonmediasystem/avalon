@@ -114,31 +114,6 @@ module MediaObjectsHelper
         content_tag(:dt, 'Rights Statement') + content_tag(:dd) { link }
       end
 
-      # Lending period is stored as seconds. Convert to days and hours for display.
-      def display_lending_period object
-        d, h = (object.lending_period/3600).divmod(24)
-
-        replacement = {
-          /^?\s?1\shours/ => ' 1 hour',
-          /^1\sdays/ => '1 day'
-        }
-
-        rules = replacement.collect{ |k, v| k }
-
-        matcher = Regexp.union(rules)
-
-        if d == 0
-          (h.to_s + ' hours').gsub(matcher, '1 hour')
-        elsif h == 0
-          (d.to_s + ' days').gsub(matcher, '1 day')
-        else
-          date_string = "%d days %d hours" % [d, h]
-          date_string = date_string.gsub(matcher) do |match|
-            replacement.detect{ |k, v| k =~ match }[1]
-          end
-        end
-      end
-
       def current_quality stream_info
         available_qualities = Array(stream_info[:stream_flash]).collect {|s| s[:quality]}
         available_qualities += Array(stream_info[:stream_hls]).collect {|s| s[:quality]}

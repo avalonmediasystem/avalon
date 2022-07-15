@@ -72,7 +72,7 @@ Unless required by applicable law or agreed to in writing, software distributed
     <div class="form-group">
       <%=  render partial: "modules/tooltip", locals: { form: vid, field: :lending_period, tooltip: t("access_control.#{:lending_period}"), options: {display_label: (t("access_control.#{:lending_period}label")+'*').html_safe} } %><br />
       <div class="input-group">
-        <% value = display_lending_period(object) %>
+        <% value = ActiveSupport::Duration.build(object.lending_period).to_human_readable_s %>
         <%= text_field_tag "lending_period", value || '', class: 'form-control' %>
       </div>
     </div>
