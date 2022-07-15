@@ -3,34 +3,34 @@ module LendingPeriod
   extend ActiveSupport::Concern
 
   included do
-    property :lending_period, predicate: ::RDF::Vocab::SCHEMA.eligibleDuration, multiple: false do |index|
-      index.as :stored_sortable
-    end
-
     after_initialize :set_lending_period
   end
 
   def set_lending_period
     if self.is_a? Admin::Collection
-      custom_lend_period
-      self.lending_period ||= ActiveSupport::Duration.parse(Settings.controlled_digital_lending.default_lending_period).to_i
+      param_name = 'default_lending_period'
+      custom_lend_period(param_name)
+      self.default_lending_period = @duration
+      self.default_lending_period ||= ActiveSupport::Duration.parse(Settings.controlled_digital_lending.default_lending_period).to_i
     elsif !self.collection_id.nil?
-      custom_lend_period
-      self.lending_period ||= Admin::Collection.find(self.collection_id).lending_period
+      param_name = 'lending_period'
+      custom_lend_period(param_name)
+      self.lending_period = @duration
+      self.lending_period ||= Admin::Collection.find(self.collection_id).default_lending_period
     end
   end
 
   private
 
-  def custom_lend_period
-    if (!self.lending_period.nil? && !(self.lending_period.is_a? Integer))
-      build_lend_period
-      self.lending_period = ActiveSupport::Duration.parse(@lend_period).to_i
+  def custom_lend_period(param_name)
+    if (!self.send(param_name).nil? && !(self.send(param_name).is_a? Integer))
+      build_lend_period(param_name)
+      @duration = ActiveSupport::Duration.parse(@lend_period).to_i
     end
   end
 
-  def build_lend_period
-    @lend_period = self.lending_period.dup
+  def build_lend_period(param_name)
+    @lend_period = self.send(param_name).dup
 
     replacement = {
       /\s+days?/i => 'D',

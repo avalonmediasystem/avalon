@@ -20,6 +20,10 @@ describe LendingPeriod do
     class Foo < ActiveFedora::Base
       include LendingPeriod
 
+      property :lending_period, predicate: ::RDF::Vocab::SCHEMA.eligibleDuration, multiple: false do |index|
+        index.as :stored_sortable
+      end
+
       attr_accessor :collection_id
     end
   end
@@ -32,10 +36,6 @@ describe LendingPeriod do
 
   before { subject.collection_id = co.id }
 
-  it 'defines lending_period' do
-    expect(subject.attributes).to include('lending_period')
-  end
-
   describe 'set_lending_period' do
     context 'a custom lending period has not been set' do
       it 'is equal to the default period in the settings.yml' do
@@ -45,7 +45,7 @@ describe LendingPeriod do
     end
     context 'a plain text custom lending period has been set' do
       let(:media_object) { FactoryBot.create(:media_object, lending_period: "1 day") }
-      let(:complex_date) { FactoryBot.create(:collection, lending_period: "6 days 4 hours")}
+      let(:complex_date) { FactoryBot.create(:collection, default_lending_period: "6 days 4 hours")}
       it 'is equal to the custom lending period measured in seconds' do
         media_object.set_lending_period
         expect(media_object.lending_period).to eq 86400
@@ -55,13 +55,13 @@ describe LendingPeriod do
       end
     end
     context 'an ISO8601 duration format custom lending period has been set' do
-      let(:media_object) { FactoryBot.create(:collection, lending_period: "P1D") }
+      let(:collection) { FactoryBot.create(:collection, default_lending_period: "P1D") }
       let(:year_month) { FactoryBot.create(:media_object, lending_period: "P1Y2M") }
-      let(:day_hr_min_sec) { FactoryBot.create(:collection, lending_period: "P4DT6H3M30S")}
+      let(:day_hr_min_sec) { FactoryBot.create(:collection, default_lending_period: "P4DT6H3M30S")}
       let(:sec) { FactoryBot.create(:media_object, lending_period: "PT3650.015S")}
       it 'is equal to the custom lending period measured in seconds' do
-        media_object.set_lending_period
-        expect(media_object.lending_period).to eq 86400
+        collection.set_lending_period
+        expect(collection.default_lending_period).to eq 86400
       end
       it 'accepts any ISO8601 duration' do
         expect { year_month.set_lending_period }.not_to raise_error
