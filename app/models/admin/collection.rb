@@ -65,6 +65,9 @@ class Admin::Collection < ActiveFedora::Base
   property :identifier, predicate: ::RDF::Vocab::Identifiers.local, multiple: true do |index|
     index.as :symbol
   end
+  property :default_lending_period, predicate: ::RDF::Vocab::SCHEMA.eligibleDuration, multiple: false do |index|
+    index.as :stored_sortable
+  end
 
   has_subresource 'poster', class_name: 'IndexedFile'
 
