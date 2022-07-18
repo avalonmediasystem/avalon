@@ -304,7 +304,7 @@ class Admin::CollectionsController < ApplicationController
 
   def build_default_lending_period
     iso_duration = "P#{params["add_default_lending_period_days"]}DT#{params["add_default_lending_period_hours"]}H"
-    int_duration = ActiveSupport::Duration.parse(iso_duration).to_i
+    int_duration = iso_duration.is_a?(Integer) ? ActiveSupport::Duration.parse(iso_duration).to_i : Settings.controlled_digital_lending.default_lending_period.to_i
   end
 
   def apply_access(collection, params)

@@ -152,7 +152,7 @@ RSpec.describe "/checkouts", type: :request do
       end
 
       context "non-default lending period" do
-        let(:media_object) { FactoryBot.create(:published_media_object, lending_period: "1 day", visibility: 'public') }
+        let(:media_object) { FactoryBot.create(:published_media_object, lending_period: 86400, visibility: 'public') }
         before { freeze_time }
         after { travel_back }
         it "creates a new checkout" do
