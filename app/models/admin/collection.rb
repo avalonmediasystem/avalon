@@ -22,7 +22,7 @@ class Admin::Collection < ActiveFedora::Base
   include ActiveFedora::Associations
   include Identifier
   include MigrationTarget
-  include LendingPeriod
+  # include LendingPeriod
 
   has_many :media_objects, class_name: 'MediaObject', predicate: ActiveFedora::RDF::Fcrepo::RelsExt.isMemberOfCollection
 
@@ -71,6 +71,7 @@ class Admin::Collection < ActiveFedora::Base
 
   has_subresource 'poster', class_name: 'IndexedFile'
 
+  before_save :set_default_lending_period
   around_save :reindex_members, if: Proc.new{ |c| c.name_changed? or c.unit_changed? }
   before_create :create_dropbox_directory!
 
@@ -267,6 +268,10 @@ class Admin::Collection < ActiveFedora::Base
 
   def default_visibility_changed?
     !!@default_visibility_will_change
+  end
+
+  def set_default_lending_period
+    self.default_lending_period ||= Settings.controlled_digital_lending.default_lending_period.to_i
   end
 
   private

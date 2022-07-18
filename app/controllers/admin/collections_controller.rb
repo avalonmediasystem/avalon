@@ -299,7 +299,12 @@ class Admin::CollectionsController < ApplicationController
 
     collection.default_visibility = params[:visibility] unless params[:visibility].blank?
     collection.default_hidden = params[:hidden] == "1"
-    collection.default_lending_period = params[:default_lending_period]
+    collection.default_lending_period = build_default_lending_period
+  end
+
+  def build_default_lending_period
+    iso_duration = "P#{params["add_default_lending_period_days"]}DT#{params["add_default_lending_period_hours"]}H"
+    int_duration = ActiveSupport::Duration.parse(iso_duration).to_i
   end
 
   def apply_access(collection, params)

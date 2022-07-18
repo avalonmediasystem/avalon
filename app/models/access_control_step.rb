@@ -95,9 +95,11 @@ class AccessControlStep < Avalon::Workflow::BasicStep
       lease.destroy
     end
     unless limited_access_submit
+      iso_duration = "P#{context[:add_lending_period_days]}DT#{context[:add_lending_period_hours]}H"
+      int_duration = ActiveSupport::Duration.parse(iso_duration).to_i
       media_object.visibility = context[:visibility] unless context[:visibility].blank?
       media_object.hidden = context[:hidden] == "1"
-      media_object.lending_period = context[:lending_period]
+      media_object.lending_period = int_duration
     end
     media_object.save!
 

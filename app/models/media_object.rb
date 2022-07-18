@@ -25,7 +25,7 @@ class MediaObject < ActiveFedora::Base
   include SpeedyAF::OrderedAggregationIndex
   include MediaObjectIntercom
   include SupplementalFileBehavior
-  include LendingPeriod
+  # include LendingPeriod
   require 'avalon/controlled_vocabulary'
 
   include Kaminari::ActiveFedoraModelExtension
@@ -36,6 +36,7 @@ class MediaObject < ActiveFedora::Base
   before_save :update_dependent_properties!, prepend: true
   before_save :update_permalink, if: Proc.new { |mo| mo.persisted? && mo.published? }, prepend: true
   before_save :assign_id!, prepend: true
+  before_save :set_lending_period
   after_save :update_dependent_permalinks_job, if: Proc.new { |mo| mo.persisted? && mo.published? }
   after_save :remove_bookmarks
 
@@ -377,9 +378,9 @@ class MediaObject < ActiveFedora::Base
     Checkout.active_for_media_object(id).any? ? "checked_out" : "available"
   end
 
-  # def lending_period
-  #   self.lending_period || Settings.controlled_digital_lending.default_lending_period
-  # end
+  def set_lending_period
+    self.lending_period ||= Admin::Collection.find(self.collection_id).default_lending_period
+  end
 
   def current_checkout(user_id)
     checkouts = Checkout.active_for_media_object(id)
