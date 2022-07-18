@@ -24,10 +24,10 @@ describe 'HumanReadableDuration' do
       end
     end
     context 'when lending period is measured in hours' do
-      let(:collection) { instance_double("Admin::Collection", lending_period: 7200) }
+      let(:collection) { instance_double("Admin::Collection", default_lending_period: 7200) }
 
       it 'returns the lending period as a human readable string' do
-        expect(ActiveSupport::Duration.build(collection.lending_period).to_human_readable_s).to eq("2 hours")
+        expect(ActiveSupport::Duration.build(collection.default_lending_period).to_human_readable_s).to eq("2 hours")
       end
     end
     context 'when lending period is measured in days and hours' do
@@ -40,12 +40,12 @@ describe 'HumanReadableDuration' do
     context 'when lending period includes 1 day and/or 1 hour' do
       let(:day) { instance_double("MediaObject", lending_period: 86400) }
       let(:hour) { instance_double("MediaObject", lending_period: 3600) }
-      let(:day_hour) { instance_double("Admin::Collection", lending_period: 90000) }
+      let(:day_hour) { instance_double("Admin::Collection", default_lending_period: 90000) }
 
       it 'returns the lending period as a human readable string with singular day and/or hour' do
         expect(ActiveSupport::Duration.build(day.lending_period).to_human_readable_s).to eq("1 day")
         expect(ActiveSupport::Duration.build(hour.lending_period).to_human_readable_s).to eq("1 hour")
-        expect(ActiveSupport::Duration.build(day_hour.lending_period).to_human_readable_s).to eq("1 day 1 hour")
+        expect(ActiveSupport::Duration.build(day_hour.default_lending_period).to_human_readable_s).to eq("1 day 1 hour")
       end
     end
   end
