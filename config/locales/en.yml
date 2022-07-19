@@ -171,12 +171,7 @@ en:
       or ffaa:aaff:bbcc:ddee:1122:3344:5566:7777/ffff:ffff:ffff:ffff:ffff:ffff:ffff:ff00
       Start and end dates are not required; if included, access for the specified IP Address(es) will start at the beginning of the start date and end at the beginning of the end date. Otherwise, access will be open ended for the specified IP Address(es).
     lending_period: |
-      Lending Period is the length of time that an item can be checked out for.
-      Accepted formats are ISO8601 duration (ex. P1DT12H) or a human-readable
-      string using numerals without punctuation or conjunctions (ex. 1 day 12 hours).
-      Values entered as strings may only contain days and/or hours and must use whole numbers.
-      For example, 1 month would be entered as '30 days' and 1.5 days would
-      be entered as '1 day 12 hours' or '36 hours'.
+      Lending Period is the length of time that an item may be checked out for. 
 
   contact:
     title: 'Contact Us - %{application_name}'
