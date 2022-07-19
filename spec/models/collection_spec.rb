@@ -587,7 +587,7 @@ describe Admin::Collection do
       Settings.dropbox.path = "s3://#{bucket}/dropbox"
     end
 
-    it "should be able to handle special S3 avoidable characters and create object" do   
+    it "should be able to handle special S3 avoidable characters and create object" do
       remote_object = double(key: corrected_collection_name, bucket_name: bucket, exists?: false)
       allow(Aws::S3::Client).to receive(:new).and_return(my_client)
       allow(Aws::S3::Object).to receive(:new).and_return(remote_object)
@@ -599,6 +599,22 @@ describe Admin::Collection do
 
     after do
       Settings.dropbox.path = old_path
+    end
+  end
+
+  describe 'set_default_lending_period' do
+    context 'a custom lending period has not been set' do
+      it 'sets the lending period equal to the system default' do
+        collection.set_default_lending_period
+        expect(collection.default_lending_period).to eq ActiveSupport::Duration.parse(Settings.controlled_digital_lending.default_lending_period).to_i
+      end
+    end
+    context 'a custom lending period has been set' do
+      let(:collection) { FactoryBot.create(:collection, default_lending_period: 86400) }
+      it 'leaves the lending period equal to the custom value' do
+        collection.set_default_lending_period
+        expect(collection.default_lending_period).to eq 86400
+      end
     end
   end
 end
