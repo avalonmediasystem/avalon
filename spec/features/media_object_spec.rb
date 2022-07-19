@@ -64,5 +64,12 @@ describe 'MediaObject' do
       visit media_object_path(media_object)
       expect(page.has_content?(contributor)).to be_truthy
     end
+    it 'displays the lending period properly' do
+      lending_period = 90000
+      media_object.lending_period = lending_period
+      media_object.save
+      visit media_object_path(media_object)
+      expect(page.has_content?('1 day 1 hour')).to be_truthy
+    end
   end
 end

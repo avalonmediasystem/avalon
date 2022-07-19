@@ -22,7 +22,6 @@ class Admin::Collection < ActiveFedora::Base
   include ActiveFedora::Associations
   include Identifier
   include MigrationTarget
-  # include LendingPeriod
 
   has_many :media_objects, class_name: 'MediaObject', predicate: ActiveFedora::RDF::Fcrepo::RelsExt.isMemberOfCollection
 
@@ -271,7 +270,7 @@ class Admin::Collection < ActiveFedora::Base
   end
 
   def set_default_lending_period
-    self.default_lending_period ||= Settings.controlled_digital_lending.default_lending_period.to_i
+    self.default_lending_period ||= ActiveSupport::Duration.parse(Settings.controlled_digital_lending.default_lending_period).to_i
   end
 
   private

@@ -25,7 +25,6 @@ class MediaObject < ActiveFedora::Base
   include SpeedyAF::OrderedAggregationIndex
   include MediaObjectIntercom
   include SupplementalFileBehavior
-  # include LendingPeriod
   require 'avalon/controlled_vocabulary'
 
   include Kaminari::ActiveFedoraModelExtension
