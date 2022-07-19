@@ -16,11 +16,11 @@ Unless required by applicable law or agreed to in writing, software distributed
 
 <div class="row">
   <div class="col-md-6">
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h3 class="panel-title">Group</h3>
+    <div class="card mb-3">
+      <div class="card-header">
+        <h3 class="card-title">Group</h3>
       </div>
-      <div class="panel-body">
+      <div class="card-body">
         <%= bootstrap_form_for @group  do |f| %>
 
         <% if @group.class.name_is_static? @group.name %>
@@ -29,7 +29,7 @@ Unless required by applicable law or agreed to in writing, software distributed
         <div class="form-group">
           <div class="input-group">
             <%= text_field_tag :group_name, "Group name", value: @group.name, class: 'form-control' %>
-            <span class="input-group-btn">
+            <span class="input-group-append">
               <%= button_tag "Save", type: "submit", class: "btn btn-primary" %>
               <%= link_to "Delete Group", admin_group_path(@group.name),
           method: :delete, confirm: "Deleted group cannot be recovered. Are you sure?",
@@ -47,18 +47,18 @@ Unless required by applicable law or agreed to in writing, software distributed
 
   <div class="col-md-6">
 
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h3 class="panel-title">Group Members</h3>
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title">Group Members</h3>
       </div>
 
-      <div class="panel-body">
+      <div class="card-body">
         <%= bootstrap_form_for @group  do |f| %>
         <div class="form-group">
           <div class="input-group">
             <%= text_field_tag :new_user, nil, class: 'typeahead from-model form-control',
-          data: { model: 'user' }, placeholder: 'Enter a username' %>
-            <span class="input-group-btn">
+                data: { model: 'user' }, placeholder: 'Enter a username' %>
+            <span class="input-group-append">
               <%= button_tag "Add user", type: "submit", class: "btn btn-primary" %>
             </span>
           </div>

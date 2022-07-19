@@ -16,7 +16,7 @@ Unless required by applicable law or agreed to in writing, software distributed
 <% if can? :update, @media_object %>
 <div class="row-fluid">
   <p>
-    <ul class="unstyled hidden">
+    <ul class="unstyled" style="display: none;">
       <li>
         <% if @media_object.published? %>
         <span class="label label-success">Published</span> Authorized users can view the item</li>
@@ -38,10 +38,10 @@ Unless required by applicable law or agreed to in writing, software distributed
 
     <% if @media_object.published? %>
     <% if can?(:unpublish, @media_object) %>
-    <%= link_to 'Unpublish', update_status_media_object_path(@media_object, status:'unpublish'), method: :put, class: 'btn btn-default' %>
+    <%= link_to 'Unpublish', update_status_media_object_path(@media_object, status:'unpublish'), method: :put, class: 'btn btn-outline' %>
     <% end %>
     <% else %>
-    <%= link_to 'Publish', update_status_media_object_path(@media_object, status:'publish'), method: :put, class: 'btn btn-default' %>
+    <%= link_to 'Publish', update_status_media_object_path(@media_object, status:'publish'), method: :put, class: 'btn btn-outline' %>
     <% end %>
 
     <%# This might not be the best approach because it makes accidental
@@ -53,7 +53,7 @@ Unless required by applicable law or agreed to in writing, software distributed
     <% end %>
 
     <% if Settings.intercom.present? and can? :intercom_push, @media_object %>
-    <%= button_tag(Settings.intercom['default']['push_label'], class: 'btn btn-default', data: {toggle:"modal", target:"#intercom_push"}) %>
+    <%= button_tag(Settings.intercom['default']['push_label'], class: 'btn btn-outline', data: {toggle:"modal", target:"#intercom_push"}) %>
     <%= render "intercom_push_modal" %>
     <% end %>
   </div>

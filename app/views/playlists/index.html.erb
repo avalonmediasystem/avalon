@@ -20,7 +20,7 @@ Unless required by applicable law or agreed to in writing, software distributed
 <% unless current_user.nil? %>
   <% playlists = Playlist.where(user_id: current_user.id) %>
   <div class="Playlist-index">
-    <div class="page-title-wrapper">
+    <div class="page-title-wrapper mb-3">
       <div class="row">
         <div class="col-sm-6">
           <h1 class="page-title">Playlists <small>(<%= playlists.size %> total)</small></h1>
@@ -31,7 +31,7 @@ Unless required by applicable law or agreed to in writing, software distributed
               <% if Settings['variations'].present? %>
                 <%= form_tag(import_variations_playlist_playlists_path, method:"post", enctype:"multipart/form-data", style:"display:inline") do %>
                   <input type="file" name="Filedata" class="filedata" style="visibility:hidden; display:inline; width:0;" />
-                  <input type="button" class="btn btn-primary outline_on" id="variations_import"
+                  <input type="button" class="btn btn-primary" id="variations_import"
                     onclick="$(this).closest('form').find('.filedata').click();" value="Import Variations Playlist" />
                 <% end %>
               <% end %>

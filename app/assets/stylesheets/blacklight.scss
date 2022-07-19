@@ -1,20 +1,18 @@
-/*
+/* 
  * Copyright 2011-2022, The Trustees of Indiana University and Northwestern
  *   University.  Licensed under the Apache License, Version 2.0 (the "License");
  *   you may not use this file except in compliance with the License.
- *
+ * 
  * You may obtain a copy of the License at
- *
+ * 
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software distributed
  *   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
  *   CONDITIONS OF ANY KIND, either express or implied. See the License for the
  *   specific language governing permissions and limitations under the License.
  * ---  END LICENSE_HEADER BLOCK  ---
 */
-
-@import 'bootstrap-sprockets';
 
 @import 'bootstrap';
 
@@ -24,14 +22,34 @@
   max-width: 160px;
 }
 
-.nav-pills > li + li {
-  margin-left: 0px;
+.btn-outline-primary {
+  @extend .btn-sm;
+  @extend .btn-outline;
 }
 
-.nav-pills > li {
-  margin-right: 2px;
+#sort-dropdown, #per_page-dropdown {
+  .dropdown-item.active {
+    color: $dark;
+    background-color: $white;
+  }
 }
 
-.clear-bookmarks {
-  margin-left: 0px;
+.dl-invert dt {
+  text-align: left;
+}
+
+// Access control update modal form in Bookmarks
+#update_access_control_form {
+  .item-discovery, .item-access, .special-access {
+    legend {
+      border-bottom: 1px solid #e5e5e5;
+    }
+  }
+}
+
+// Search constraint remove button
+// Needed to override btn-secondary-outline
+.applied-filter .remove:hover {
+  color: white !important;
+  background-color: #f44336 !important;
 }

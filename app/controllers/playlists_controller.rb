@@ -1,11 +1,11 @@
 # Copyright 2011-2022, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
-#
+# 
 # You may obtain a copy of the License at
-#
+# 
 # http://www.apache.org/licenses/LICENSE-2.0
-#
+# 
 # Unless required by applicable law or agreed to in writing, software distributed
 #   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
 #   CONDITIONS OF ANY KIND, either express or implied. See the License for the
@@ -64,7 +64,7 @@ class PlaylistsController < ApplicationController
     sort_direction = params['order']['0']['dir'] rescue 'asc'
     session[:playlist_sort] = [sort_column, sort_direction]
     if columns[sort_column] != 'size'
-      @playlists = @playlists.order({ columns[sort_column].downcase => sort_direction })
+      @playlists = @playlists.order("lower(#{columns[sort_column].downcase}) #{sort_direction}, #{columns[sort_column].downcase} #{sort_direction}")
       @playlists = @playlists.offset(params['start']).limit(params['length'])
     else
       # sort by size (item count): decorate list with playlistitem count then sort and undecorate
@@ -80,13 +80,13 @@ class PlaylistsController < ApplicationController
       "recordsFiltered": playlistsFilteredTotal,
       "data": @playlists.collect do |playlist|
         copy_button = view_context.button_tag( type: 'button', data: { playlist: playlist },
-          class: 'copy-playlist-button btn btn-default btn-xs') do
+          class: 'copy-playlist-button btn btn-outline btn-sm') do
           "<i class='fa fa-clone' aria-hidden='true'></i> Copy".html_safe
         end
-        edit_button = view_context.link_to(edit_playlist_path(playlist), class: 'btn btn-default btn-xs') do
+        edit_button = view_context.link_to(edit_playlist_path(playlist), class: 'btn btn-outline btn-sm') do
           "<i class='fa fa-edit' aria-hidden='true'></i> Edit".html_safe
         end
-        delete_button = view_context.link_to(playlist_path(playlist), method: :delete, class: 'btn btn-xs btn-danger btn-confirmation', data: {placement: 'bottom'}) do
+        delete_button = view_context.link_to(playlist_path(playlist), method: :delete, class: 'btn btn-sm btn-danger btn-confirmation', data: {placement: 'bottom'}) do
           "<i class='fa fa-times' aria-hidden='true'></i> Delete".html_safe
         end
         [
@@ -275,7 +275,7 @@ class PlaylistsController < ApplicationController
   end
 
   def get_all_other_playlists
-    @playlists = Playlist.by_user(current_user).where.not( id: @playlist ).order(:title)
+    @playlists = Playlist.by_user(current_user).where.not( id: @playlist ).order("lower(title), title")
   end
 
   def load_playlist_token

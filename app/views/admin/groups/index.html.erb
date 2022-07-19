@@ -21,11 +21,11 @@ Unless required by applicable law or agreed to in writing, software distributed
 
 <div class="row">
   <div class="col-md-6">
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h2 class="panel-title">System Groups</h2>
+    <div class="card mb-3">
+      <div class="card-header">
+        <h2 class="card-title">System Groups</h2>
       </div>
-      <div class="panel-body">
+      <div class="card-body">
         <table class="table table-striped ">
           <thead>
             <tr>
@@ -47,16 +47,16 @@ Unless required by applicable law or agreed to in writing, software distributed
   </div>
 
   <div class="col-md-6">
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h2 class="panel-title"> Additional Groups</h2>
+    <div class="card">
+      <div class="card-header">
+        <h2 class="card-title"> Additional Groups</h2>
       </div>
-      <div class="panel-body">
+      <div class="card-body">
         <%= form_tag(admin_groups_path) do -%>
         <div class="form-group">
           <div class="input-group">
             <%= text_field_tag 'admin_group', nil, :placeholder => 'Enter group name here...', class: 'form-control' %>
-            <span class="input-group-btn">
+            <span class="input-group-append">
               <%= button_tag 'Create Group', type: 'submit', class: 'btn btn-primary' %>
             </span>
 

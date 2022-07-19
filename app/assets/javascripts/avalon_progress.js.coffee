@@ -1,11 +1,11 @@
 # Copyright 2011-2022, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
-#
+# 
 # You may obtain a copy of the License at
-#
+# 
 # http://www.apache.org/licenses/LICENSE-2.0
-#
+# 
 # Unless required by applicable law or agreed to in writing, software distributed
 #   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
 #   CONDITIONS OF ANY KIND, either express or implied. See the License for the
@@ -18,7 +18,7 @@ class AvalonProgress
 
   updateBar = (bar, attrs) ->
     for type, percent of attrs
-      target = $(".progress-bar.progress-bar-#{type}",bar)
+      target = $(".progress-bar.bg-#{type}",bar)
       target.css('width',"#{percent}%")
 
   retrieve: (auto=false) ->
@@ -37,7 +37,7 @@ class AvalonProgress
     sections = $('a[data-segment]')
     sections.each (i,sec) =>
       id = $(sec).data('segment')
-      section_node = $(sec).closest('.panel-title')
+      section_node = $(sec).closest('.card-title')
       bar = section_node.find('span.progress')
       info_box = section_node.find('div.alert')
 
@@ -75,16 +75,16 @@ class AvalonProgress
       $('.avalon-player').html('<div id="nojs"></div>')
 
 $(document).ready ->
-  if $('.progress-bar').size() == 0
+  if $('.progress-bar').length == 0
     return
 
   progress_controller = new AvalonProgress()
 
   $('.progress-indented').prepend('
     <span class="progress progress-inline">
-      <div class="progress-bar progress-bar-success" style="width:0%"></div>
-      <div class="progress-bar progress-bar-danger" style="width:0%"></div>
-      <div class="progress-bar progress-bar-warning" style="width:0%"></div>
+      <div class="progress-bar bg-success" style="width:0%"></div>
+      <div class="progress-bar bg-danger" style="width:0%"></div>
+      <div class="progress-bar bg-warning" style="width:0%"></div>
     </span>')
   $('.status-detail').hide()
   progress_controller.retrieve(true)

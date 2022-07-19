@@ -15,14 +15,14 @@ Unless required by applicable law or agreed to in writing, software distributed
 %>
 <% options[:display_label] ||= options[:multivalued] ? "#{field.to_s.humanize}(s)" : field.to_s.humanize %>
 
-    <%= form.label(field, class: 'control-label') do %>
+    <%= form.label(field, class: 'col-form-label') do %>
       <%= content_tag :span, class: 'tooltip-label', :'data-title' => options[:display_label], :'data-tooltip' => "##{field.to_s}_tooltip" do %>
          <%= options[:display_label] %><% if options[:required] %>*<% end %>
-         <%= content_tag :span, '', class: 'glyphicon glyphicon-question-sign' %>
+         <%= content_tag :span, '', class: 'fa fa-question-circle' %>
       <% end %>
     <% end %>
     
-    <span class="help-block tooltip-block collapse" id="<%= field.to_s %>_tooltip">
-      <%= content_tag :span, '', class: 'close glyphicon glyphicon-remove' %>
+    <span class="form-text tooltip-block text-muted collapse" id="<%= field.to_s %>_tooltip">
+      <%= content_tag :span, '', class: 'close fa fa-times' %>
       <%= tooltip.html_safe %>
     </span>

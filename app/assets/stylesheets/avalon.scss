@@ -39,6 +39,17 @@ body {
 }
 
 /* Override Bootstrap CSS */
+
+/*
+  Bootstrap 4 has increased global font-size from 14px to 1rem.
+  This font size of 1rem, gets computed as 16px by browsers, increasing
+  font-size for text elements. Reset this to 14px.
+  See https://getbootstrap.com/docs/4.0/migration/#global-changes.
+*/
+html {
+  font-size: 14px;
+}
+
 .alert {
   margin-bottom: 10px;
 }
@@ -52,8 +63,26 @@ h2 {
   font-family: $museoSlab;
 }
 
+.btn-info {
+  color: $primary;
+}
+
 tr.active-false td {
   color: $gray;
+}
+
+// Override Bootstrap CSS from $info for alerts
+.alert-info {
+  background-color: $state-info-bg;
+  color: $state-info-text;
+  border-color: $state-info-border;
+}
+
+pre {
+  background-color: #f5f5f5;
+  border: 1px solid #ccc;
+  padding: 9.5px;
+  border-radius: 4px;
 }
 
 input[type='text']#admin_group {
@@ -115,11 +144,15 @@ div.alert-danger {
 // Generic content spacer
 .content-block {
   padding-bottom: 3rem;
+
+  .card {
+    margin-bottom: 1.5rem;
+  }
 }
 
 // Dotted line separator from branding guide
 .separator {
-  border-bottom: 2px dotted $primaryDark;
+  border-bottom: 2px dotted $primary;
   background: white;
   height: 1px;
 }
@@ -130,29 +163,29 @@ div.alert-danger {
   font-family: $museoSlab;
 }
 .headline {
-  color: $primaryDark;
+  color: $primary;
   font-size: 29.3px;
   font-family: $museoSlab;
 }
 .sub-headline {
-  color: $primary;
+  color: $secondary;
   font-family: $museoSlab;
 }
 
 .mobile-hidden {
-  @media (max-width: $screen-xs-max) {
+  @include media-breakpoint-down(sm) {
     display: none !important;
   }
 }
 
 .sm-hidden {
-  @media (max-width: $screen-sm-max) {
+  @include media-breakpoint-down(sm) {
     display: none !important;
   }
 }
 
 .desktop-hidden {
-  @media (min-width: $screen-sm-min) {
+  @include media-breakpoint-up(md) {
     display: none !important;
   }
 }
@@ -181,6 +214,10 @@ div.alert-danger {
   cursor: help;
 }
 
+.tooltip-label {
+  font-weight: bold;
+}
+
 .tooltip-label * {
   cursor: pointer;
 }
@@ -192,6 +229,10 @@ div.alert-danger {
 .access-block {
   .row {
     margin-right: 0;
+  }
+
+  span.twitter-typeahead {
+    width: 100%;
   }
 
   .remove:hover,
@@ -326,10 +367,6 @@ span.constraints-label {
   }
 }
 
-.ev-browser {
-  background-color: $white;
-}
-
 a[data-trigger='submit'] {
   text-decoration: none;
   color: $dark;
@@ -389,6 +426,7 @@ a[data-trigger='submit'] {
 
 #documents .document {
   padding-bottom: $padding-base-vertical;
+  margin-left: 1rem;
 
   &:last-child {
     border-bottom: none;
@@ -412,7 +450,7 @@ a[data-trigger='submit'] {
   }
 }
 
-@media (max-width: $screen-xs-max) {
+@include media-breakpoint-down(xs) {
   #content {
     .btn {
       margin-top: 2px;
@@ -422,6 +460,10 @@ a[data-trigger='submit'] {
 
 #resource_description_content {
   max-width: 700px;
+
+  .col-form-label {
+    font-weight: bold;
+  }
 }
 
 .edit_media_object .form-group {
@@ -489,19 +531,13 @@ div.status-detail {
 #mediaobject_structure {
   overflow-x: auto;
 
-  a.structure_toggle,
-  a.captions_toggle,
-  a.files_toggle {
-    cursor: pointer;
-  }
-
-  @media (max-width: 1199px) and (min-width: 768px) {
+  @include media-breakpoint-between (md, xl) {
     ul {
-      width: 750px;
+      width: 100%;
     }
   }
 
-  @media (max-width: 767px) {
+  @include media-breakpoint-down (sm) {
     ul {
       width: 730px;
     }
@@ -523,6 +559,13 @@ div.status-detail {
     &:nth-of-type(2n) {
       background-color: $lightgray;
     }
+  }
+
+  .btn-struct {
+    font-size: $btn-xs-font-size;
+    height: $btn-xs-height;
+    padding: $btn-xs-padding;
+    width: max-content;
   }
 
   ul.fileinfo,
@@ -585,7 +628,6 @@ div.status-detail {
     }
 
     label.file-upload-label {
-      float: left;
       cursor: pointer;
     }
   }
@@ -666,18 +708,18 @@ div.structure_edit {
   width: auto;
 }
 
-h5.panel-title {
+h5.card-title {
   font-size: 1.15em;
   padding-left: 0.4em;
   min-height: 1em;
 }
 
-.panel-heading .accordion-toggle:before {
+.card-header .accordion-toggle:before {
   font-family: 'FontAwesome';
   content: '\f078';
 }
 
-.panel-heading .accordion-toggle.collapsed:before {
+.card-header .accordion-toggle.collapsed:before {
   content: '\f054';
 }
 
@@ -769,6 +811,7 @@ h5.panel-title {
   .associated-files-top-row {
     font-size: 18px;
     padding-bottom: 10px;
+    justify-content: space-between;
 
     > span {
       padding: 0 5px;
@@ -785,14 +828,6 @@ h5.panel-title {
     }
   }
 
-  .associated-files-wrapper {
-    input[type='text'] {
-      @extend .form-control;
-      padding: 3px 6px;
-      height: auto;
-    }
-  }
-
   .file-upload {
     background-color: #efefef;
   }
@@ -800,6 +835,12 @@ h5.panel-title {
 
 #associated_files,
 #supplemental_files {
+  input[type='text'] {
+    @extend .form-control;
+    padding: 3px 6px;
+    height: auto;
+  }
+
   div.section-files {
     width: 100%;
     padding: 5px 0 15px 5px;
@@ -811,7 +852,7 @@ h5.panel-title {
   }
 
   .section_files_tool {
-    padding: 5px;
+    padding: 0.75rem;
     border-top: 1px dotted;
 
     .filedata {
@@ -826,7 +867,7 @@ h5.panel-title {
 
     input[type='button'],
     input[type='submit'] {
-      @extend .btn-xs;
+      @extend .btn-sm;
     }
 
     .btn-primary {
@@ -841,17 +882,13 @@ h5.panel-title {
       border-color: #f32c1e;
     }
 
-    div.btn-toolbar {
-      display: flex;
-    }
-
     span.tool_label {
       font-weight: bold;
     }
   }
 
   div.file_view {
-    margin: 15px 0 0 20px;
+    margin: 10px 0 5px 20px;
 
     ul {
       padding-left: 20px;
@@ -862,13 +899,15 @@ h5.panel-title {
       }
     }
 
-    div.row {
+    div.supplemental-file-data {
+      height: 1.5rem;
+
       &.is-editing {
         .display-item {
           display: none;
         }
         .edit-item {
-          display: block;
+          display: flex;
         }
         button.edit-item {
           display: inline-block;
@@ -876,8 +915,9 @@ h5.panel-title {
         .file-remove {
           display: none;
         }
+        display: flex;
       }
-      margin-top: 5px;
+      margin-top: 0.75rem;
 
       .visible-inline {
         margin-left: 30px;
@@ -892,13 +932,15 @@ h5.panel-title {
     .supplemental-file-form {
       float: left;
       width: 100%;
-      height: 25px;
     }
 
     .btn-toolbar {
       display: flex;
       float: right;
-      padding-right: 7px;
+
+      .btn {
+        margin-left: 0.35rem;
+      }
     }
 
     .edit-item {
@@ -919,11 +961,6 @@ h5.panel-title {
 .fileinput {
   position: relative;
   z-index: 1;
-}
-
-// Input form validation styling
-.invalid-feedback {
-  color: $danger;
 }
 
 .is-invalid {
@@ -949,18 +986,6 @@ h5.panel-title {
 /**
  * Collections
  */
-.collections-list-wrapper {
-  overflow-x: auto;
-
-  table {
-    td {
-      &:nth-child(1) {
-        width: 20%;
-      }
-    }
-  }
-}
-
 .well-vertical-spacer {
   margin-bottom: 10px;
 }
@@ -969,7 +994,18 @@ h5.panel-title {
   white-space: pre-wrap;
 }
 
+.admin-collection-details {
+  border-radius: 4px;
+  border: 1px solid #e3e3e3;
+  background-color: #f5f5f5;
+  padding: 1.25rem;
+}
+
 // Admin Collection list page
+#admin-collections-table.table-responsive {
+  display: table;
+}
+
 .row.display-flex {
   display: flex;
   flex-direction: row;
@@ -1046,7 +1082,7 @@ h5.panel-title {
 .file-upload-buttons {
   display: block;
   padding-top: 5px;
-  min-width: 70px;
+  min-width: 75px;
   margin-right: 5px;
   height: 30px;
 }
@@ -1073,17 +1109,20 @@ h5.panel-title {
   text-align: right;
 }
 
-@media (min-width: $screen-xs-max) {
+@include media-breakpoint-up(xs) {
   .dataTables_length {
     float: left;
   }
 }
 
 // Make table body scrollable in mobile devices
-@media (max-width: $screen-xs-max) {
+@include media-breakpoint-down(md) {
   .dataTableBody {
     width: 100%;
     overflow-x: scroll;
+  }
+  .pagination {
+    justify-content: center !important;
   }
 }
 
@@ -1108,4 +1147,23 @@ td {
 
 .btn-light {
   background-color: $btn-light-bg;
+}
+
+.btn-outline {
+  background-color: $btn-outline-bg-color;
+  color: $btn-outline-color;
+  border: 1px solid $btn-outline-border-color;
+  height: fit-content;
+
+  &:hover {
+    background-color: $lightgray;
+  }
+}
+
+/*
+  Override CSS for transcript component imported
+  from @samvera/iiif-react-media-player
+*/
+.irmp--transcript_nav {
+  padding: 10px 0 0 0;
 }

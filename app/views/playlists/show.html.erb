@@ -29,7 +29,7 @@ Unless required by applicable law or agreed to in writing, software distributed
     </div>
 
     <% if first_playable_item.nil? %>
-    <%= image_tag "media-placeholder.png", :class => "img-responsive" %>
+    <%= image_tag "media-placeholder.png", :class => "img-fluid" %>
     <% else %>
     <% position = first_playable_item.position %>
     <% @current_playlist_item = first_playable_item %>

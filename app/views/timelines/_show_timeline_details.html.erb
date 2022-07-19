@@ -13,7 +13,7 @@ Unless required by applicable law or agreed to in writing, software distributed
   specific language governing permissions and limitations under the License.
 ---  END LICENSE_HEADER BLOCK  ---
 %>
-<div class="col-md-9">
+<div class="col-md-12">
   <div class="row">
     <div class="col-sm-12">
       <%= link_to "View Timeline", @timeline, { class: 'btn btn-primary' } %>
@@ -24,7 +24,7 @@ Unless required by applicable law or agreed to in writing, software distributed
   </div>
   <div class="row">
     <div class="col-sm-12">
-      <h3 style="display:inline-block"><%= t("timeline.details") %></h3>
+      <h3 style="display:inline-block" class="my-3"><%= t("timeline.details") %></h3>
     </div>
   </div>
 
@@ -77,28 +77,30 @@ Unless required by applicable law or agreed to in writing, software distributed
     }, 3000);
   });
 
-  var popover_content = '<p>If you get a new link, the previous link will stop working.<p>'+
-          '<div>'+
-            '<button type="submit" onclick="new_link_confirm()" class="btn btn-danger btn-confirm" style="margin-right:5px;" form="timeline_new_link_form">Yes</button>' +
-            '<button type="submit" onclick="new_link_cancel()" class="btn btn-primary btn-confirm" form="timeline_new_link_form">Cancel</button>'+
-          '</div>'
-  var popover_template = '<div class="popover" role="tooltip" style="width: 12em;">'+
-      '<div class="arrow"></div>'+
-      '<h3 class="popover-title"></h3>'+
-      '<div class="popover-content"></div>'+
+  var popover_content = '<p>If you get a new link, the previous link will stop working.<p>' +
+    '<div>' +
+    '<button type="submit" onclick="new_link_confirm()" class="btn btn-danger btn-confirm" style="margin-right:5px;">Yes</button>' +
+    '<button type="submit" onclick="new_link_cancel()" class="btn btn-primary btn-confirm">Cancel</button>' +
     '</div>'
+  var popover_template = '<div class="popover" role="tooltip" style="width: 12em;">' +
+    '<div class="arrow"></div>' +
+    '<h3 class="popover-header"></h3>' +
+    '<div class="popover-body"></div>' +
+    '</div>'
+
 
   $('#get-new-link').popover({
     trigger: 'click',
     html: true,
+    sanitize: false,
     placement: 'top',
     title: 'Get a new link?',
     template: popover_template,
-    content: popover_content,
+    content: popover_content
   });
 
   var new_link_cancel = function (event) {
-    $('#get-new-link').popover('hide').click();
+    $('#get-new-link').popover('hide');
   }
 
   var new_link_confirm = function (event) {
@@ -109,10 +111,9 @@ Unless required by applicable law or agreed to in writing, software distributed
         $('#timeline-share-link').attr('value', data.access_token_url)
       },
       complete: function () {
-          $('#get-new-link').popover('hide').click();
+          $('#get-new-link').popover('hide');
       }
     });
   }
-
   </script>
 <% end %>

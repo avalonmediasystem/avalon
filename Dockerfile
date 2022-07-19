@@ -34,9 +34,11 @@ FROM        ruby:2.7-bullseye as download
 LABEL       stage=build
 LABEL       project=avalon
 RUN         curl -L https://github.com/jwilder/dockerize/releases/download/v0.6.1/dockerize-linux-amd64-v0.6.1.tar.gz | tar xvz -C /usr/bin/
-RUN         curl https://chromedriver.storage.googleapis.com/2.46/chromedriver_linux64.zip -o /usr/local/bin/chromedriver \
-         && chmod +x /usr/local/bin/chromedriver
 RUN         curl https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb -o /chrome.deb
+RUN         chrome_version=`dpkg-deb -f /chrome.deb Version | cut -d '.' -f 1-3`
+RUN         chromedriver_version=`curl https://chromedriver.storage.googleapis.com/LATEST_RELEASE_${chrome_version}`
+RUN         curl https://chromedriver.storage.googleapis.com/index.html?path=${chromedriver_version} -o /usr/local/bin/chromedriver \
+         && chmod +x /usr/local/bin/chromedriver
 RUN      apt-get -y update && apt-get install -y ffmpeg
 
 
@@ -82,7 +84,7 @@ WORKDIR     /home/app/avalon
 FROM        base as dev
 LABEL       stage=final
 LABEL       project=avalon
-RUN         apt-get install -y --no-install-recommends --allow-unauthenticated \
+RUN         apt-get update && apt-get install -y --no-install-recommends --allow-unauthenticated \
             build-essential \
             cmake
 

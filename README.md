@@ -2,13 +2,14 @@
 [![Build Status](https://travis-ci.org/avalonmediasystem/avalon.svg?branch=develop)](https://travis-ci.org/avalonmediasystem/avalon)
 [![Coverage Status](https://coveralls.io/repos/avalonmediasystem/avalon/badge.svg?branch=master&service=github)](https://coveralls.io/github/avalonmediasystem/avalon?branch=master)
 
-[Avalon Media System](http://www.avalonmediasystem.org) is an open source system for managing large collections of digital audio and video. The project is led by the libraries of [Indiana University](http://www.iu.edu) and [Northwestern University](http://www.northwestern.edu) with funding in part by a three-year National Leadership Grant from the [Institute of Museum and Library Services](http://www.imls.gov).
+[Avalon Media System](http://www.avalonmediasystem.org) is an open source system for managing large collections of digital audio and video. 
+The project is led by [Indiana University Libraries](https://libraries.indiana.edu/library-technologies).
 
-For more information and regular project updates visit the [Avalon blog](http://www.avalonmediasystem.org/blog).
+For more information and regular project updates visit the [Avalon website](http://www.avalonmediasystem.org) and [documentation wiki](https://samvera.atlassian.net/wiki/spaces/AVALON/overview).
 
 # Installing Avalon Media System
 Installation instructions are available on Avalon's documentation site:
- - https://wiki.dlib.indiana.edu/display/VarVideo/Manual+Installation+Instructions
+ - https://samvera.atlassian.net/wiki/spaces/AVALON/pages/1957954771/Manual+Installation+Instructions
 
 # Development
 
@@ -43,8 +44,6 @@ To run Cypress E2E tests, first bring up the development stack, manually create 
 
 ## (Not Recommended) Manually Setting Up an Avalon Media System Development Environment
 > **Warning**: The docker instructions above are the currently maintained development environment.  If you're unable to use docker you can try the instructions below but they may be out of date.
-
-For developers using OS X, you can get a full Avalon development environment, including transcoding and streaming using docker.  [See the wiki](https://github.com/avalonmediasystem/avalon/wiki/Configuring-an-OS-X-Development-Environment-With-Docker-Containers) for details, this is currently our recommended way to setup a dev environment.  
 
 The following steps will let you run the avalon stack locally in order to
 explore the out-of-the-box functionality or do basic development.

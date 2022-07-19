@@ -1,35 +1,50 @@
+<%#
+Copyright 2011-2022, The Trustees of Indiana University and Northwestern
+  University.  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+
+You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+  under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+  CONDITIONS OF ANY KIND, either express or implied. See the License for the
+  specific language governing permissions and limitations under the License.
+---  END LICENSE_HEADER BLOCK  ---
+%>
           <% if section.supplemental_files.present? %>
             <% files=tag.empty? ? supplemental_files.select { |sf| sf.tags.empty? } : supplemental_files.select { |sf| sf.tags.include?(tag) } %>
             <div class="file_view">
               <% files.each do |file| %>
-                <div class="row" data-file-id="<%= file.id %>" data-masterfile-id="<%= section.id %>" >
+                <div class="supplemental-file-data" data-file-id="<%= file.id %>" data-masterfile-id="<%= section.id %>" >
                     <span name="label_<%= section.id + "_" + file.id.to_s %>" class="display-item"><%= file.label %></span>
                     <%= form_for :supplemental_file, url: object_supplemental_file_path(section, file), remote: true,
                           html: { method: "put", class: "supplemental-file-form edit-item", id: "form-#{file.id}" },
                           data: { file_id: file.id, masterfile_id: section.id } do |form| %>
-                        <div class="col-sm-6 col-xs-6">
+                        <div class="col-sm-6">
                           <div class="form-group">
                             <%= form.text_field :label, id: "supplemental_file_input_#{section.id}_#{file.id}", value: file.label %>
                           </div>
                         </div>
-                        <div class="col-sm-6 col-xs-6">
+                        <div class="col-sm-6">
                           <div class="btn-toolbar">
-                            <%= button_tag name: 'save_label', :class => "btn btn-default btn-xs edit-item" do %>
+                            <%= button_tag name: 'save_label', :class => "btn btn-outline btn-sm edit-item" do %>
                               <i class="fa fa-check" title="Save"></i> <span class="sm-hidden">Save</span>
                             <% end %>
-                            <%= button_tag name: 'cancel_edit_label', class:'btn btn-danger btn-xs edit-item outline_on', type: 'button' do%>
+                            <%= button_tag name: 'cancel_edit_label', class:'btn btn-danger btn-sm edit-item', type: 'button' do%>
                               <i class="fa fa-times" title="Cancel"></i> <span class="sm-hidden">Cancel</span>
                             <% end %>
                           </div>
                         </div>
                     <% end %>
                     <small class="visible-inline" name="flash-message-<%= section.id %>-<%= file.id %>"></small>
-                    <div class="btn-toolbar">
+                    <div class="btn-toolbar float-right">
                       <%# Update button %>
-                      <%= button_tag name: 'edit_label', class:'btn btn-default btn-xs edit_label display-item outline_on pull-right', type: 'button' do %>
+                      <%= button_tag name: 'edit_label', class:'btn btn-outline btn-sm edit_label display-item', type: 'button' do %>
                         <i class="fa fa-edit" title="Edit"></i> <span class="sm-hidden">Edit</span>
                       <% end %>
-                      <%= link_to("Remove", object_supplemental_file_path(section, file), title: 'Remove', method: :delete, class: "btn btn-danger btn-xs file-remove") %>
+                      <%= link_to("Remove", object_supplemental_file_path(section, file), title: 'Remove', method: :delete, class: "btn btn-danger btn-sm file-remove") %>
                     </div>
                 </div>
               <% end %>

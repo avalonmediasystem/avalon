@@ -1,11 +1,11 @@
 # Copyright 2011-2022, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
-#
+# 
 # You may obtain a copy of the License at
-#
+# 
 # http://www.apache.org/licenses/LICENSE-2.0
-#
+# 
 # Unless required by applicable law or agreed to in writing, software distributed
 #   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
 #   CONDITIONS OF ANY KIND, either express or implied. See the License for the
@@ -145,16 +145,16 @@ module MediaObjectsHelper
       def structure_html section, index, show_progress
         current = is_current_section? section
         progress_div = show_progress ? '<div class="status-detail alert" style="display: none"></div>' : ''
-        playlist_btn = current_ability.can?(:create, Playlist) ? "<button type=\"button\" title=\"Add section to playlist\" aria-label=\"Add section to playlist\" class=\"structure_add_to_playlist outline_on btn btn-primary\" data-scope=\"master_file\" data-masterfile-id=\"#{section.id}\"></button>" : ''
+        playlist_btn = current_ability.can?(:create, Playlist) ? "<button type=\"button\" title=\"Add section to playlist\" aria-label=\"Add section to playlist\" class=\"structure_add_to_playlist btn btn-primary\" data-scope=\"master_file\" data-masterfile-id=\"#{section.id}\"></button>" : ''
 
         headeropen = <<EOF
-       <div class="panel-heading" role="tab" id="heading#{index}" data-media-object-id="#{section.media_object_id}" data-section-id="#{section.id}">
-       <h4 class="panel-title #{ 'progress-indented' if progress_div.present? }">
+       <div class="card-header" role="tab" id="heading#{index}" data-media-object-id="#{section.media_object_id}" data-section-id="#{section.id}">
+       <h5 class="card-title #{ 'progress-indented' if progress_div.present? }">
        #{playlist_btn}
 EOF
         headerclose = <<EOF
        #{progress_div}
-       </h4>
+       </h5>
        </div>
 EOF
 
@@ -185,13 +185,13 @@ EOF
                          class: 'playable wrap' + (current ? ' current-stream current-section' : '')
           wrapperopen = <<EOF
           #{headeropen}
-          <button class="fa fa-minus-square #{current ? '' : 'hidden'}" data-toggle="collapse" data-target="#section#{index}" aria-expanded="#{current ? 'true' : 'false' }" aria-controls="collapse#{index}"></button>
-          <button class="fa fa-plus-square #{current ? 'hidden' : ''}" data-toggle="collapse" data-target="#section#{index}" aria-expanded="#{current ? 'true' : 'false' }" aria-controls="collapse#{index}"></button>
+          <button class="fa fa-minus-square #{current ? '' : 'no-show'}" data-toggle="collapse" data-target="#section#{index}" aria-expanded="#{current ? 'true' : 'false' }" aria-controls="collapse#{index}"></button>
+          <button class="fa fa-plus-square #{current ? 'no-show' : ''}" data-toggle="collapse" data-target="#section#{index}" aria-expanded="#{current ? 'true' : 'false' }" aria-controls="collapse#{index}"></button>
           <ul><li>#{link}</li></ul>
           #{headerclose}
 
-    <div id="section#{index}" class="panel-collapse collapse #{current ? 'in' : ''}" role="tabpanel" aria-labelledby="heading#{index}">
-      <div class="panel-body">
+    <div id="section#{index}" class="panel-collapse collapse #{current ? 'show' : ''}" role="tabpanel" aria-labelledby="heading#{index}">
+      <div class="card-body">
         <ul>
 EOF
           wrapperclose = <<EOF

@@ -14,31 +14,29 @@ Unless required by applicable law or agreed to in writing, software distributed
 ---  END LICENSE_HEADER BLOCK  ---
 %>
 <div class="container-fluid">
-    <div class="row-fluid">
-      <div class="btn-options">
-	<% if params[:id].empty? %>
-          <div class="alert alert-danger">
-	    <p>No resources were selected.</p>
-	  </div>
-	  <%= link_to 'Go back', :back, class: 'btn btn-default' %> 
-	<% else %>
-	  <% params[:id] = Array(params[:id]) %>
-          <div class="alert alert-danger">
-            <p>Are you certain you want to delete the following <%= 'resource'.pluralize(params[:id].count) %>?</p>
-	    <ul>
-	      <% params[:id].each do |id| %>
-		<% @media_object = MediaObject.find(id)  %>
-		<% if can? :destroy, @media_object  %>
-	          <li><%= @media_object.title %> (<%= id %>)</li>
-	        <% else %>
-	          <li><%= @media_object.title %> (<%= id %>): permission denied</li>
-	        <% end %>
-	      <% end %>
-	    </ul>
-        </div>
-	<%= link_to 'Yes, I am sure', remove_media_objects_path( id: params[:id], previous_view: @previous_view ), method: :delete, id: 'deleteLink', name: 'delete', class: 'btn btn-danger' %>
-	<%= link_to 'No, go back', :back, class: 'btn btn-default' %> 
-	<% end %>
-      </div>
-    </div>
+	<div class="row-fluid">
+		<% if params[:id].empty? %>
+			<div class="alert alert-danger">
+				<p>No resources were selected.</p>
+			</div>
+			<%= link_to 'Go back', :back, class: 'btn btn-outline' %> 
+		<% else %>
+			<% params[:id] = Array(params[:id]) %>
+				<div class="alert alert-danger">
+					<p>Are you certain you want to delete the following <%= 'resource'.pluralize(params[:id].count) %>?</p>
+					<ul>
+						<% params[:id].each do |id| %>
+							<% @media_object = MediaObject.find(id)  %>
+							<% if can? :destroy, @media_object  %>
+								<li><%= @media_object.title %> (<%= id %>)</li>
+							<% else %>
+								<li><%= @media_object.title %> (<%= id %>): permission denied</li>
+							<% end %>
+						<% end %>
+					</ul>
+				</div>
+			<%= link_to 'Yes, I am sure', remove_media_objects_path( id: params[:id], previous_view: @previous_view ), method: :delete, id: 'deleteLink', name: 'delete', class: 'btn btn-danger' %>
+			<%= link_to 'No, go back', :back, class: 'btn btn-outline' %> 
+		<% end %>
+	</div>
 </div>

@@ -17,17 +17,18 @@ Unless required by applicable law or agreed to in writing, software distributed
 <% @collections = session[:intercom_collections] || Avalon::Intercom.new(user_key).user_collections %>
 <% @collections.map! { |c| OpenStruct.new(c) } %>
 <div class="modal-header">
-  <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-  <h1><%= Settings.intercom['default']['push_label'] %></h1>
+   <h4 class='modal-title'><%= Settings.intercom['default']['push_label'] %></h4>
+   <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span
+      class="sr-only">Close</span></button>
 </div>
 
 <div class="modal-body">
   <div class="form-group">
     <label for "collection_id">Choose Target Collection:</label>
-    <div class="input-group">
+    <div class="input-group" style="flex-flow: nowrap">
       <%= select_tag :collection_id, options_from_collection_for_select(@collections, "id", "name", session[:intercom_default_collection] ), required: true, style: 'width:100%;', class:'form-control', form:'intercom_push_form' %>
       <span class="input-group-btn">
-        <button class="btn btn-secondary" title="Refresh list" onclick="getIntercomCollections(true, '<%= intercom_collections_media_objects_path %>');"><i class="fa fa-refresh"></i></button>
+        <button class="btn btn-outline" title="Refresh list" onclick="getIntercomCollections(true, '<%= intercom_collections_media_objects_path %>');"><i class="fa fa-refresh"></i></button>
       </span>
     </div>
   </div>

@@ -1,11 +1,11 @@
 # Copyright 2011-2022, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
-#
+# 
 # You may obtain a copy of the License at
-#
+# 
 # http://www.apache.org/licenses/LICENSE-2.0
-#
+# 
 # Unless required by applicable law or agreed to in writing, software distributed
 #   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
 #   CONDITIONS OF ANY KIND, either express or implied. See the License for the
@@ -22,7 +22,7 @@ class Admin::CollectionsController < ApplicationController
 
   def load_and_authorize_collections
     authorize!(params[:action].to_sym, Admin::Collection)
-    repository = CatalogController.new.repository
+    repository = CatalogController.new.blacklight_config.repository
     # Allow the number of collections to be greater than 100
     blacklight_config.max_per_page = 100_000
     builder = ::CollectionSearchBuilder.new([:add_access_controls_to_solr_params_if_not_admin, :only_wanted_models, :add_paging_to_solr], self).rows(100_000)

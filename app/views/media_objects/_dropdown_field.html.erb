@@ -19,7 +19,7 @@ Unless required by applicable law or agreed to in writing, software distributed
   <div class="form-group <% if options[:multivalued] %>multivalued<% end %> <% if @media_object.errors[field].any? %>invalid-feedback<% end %>">
     <%= render partial: "modules/tooltip", locals: { form: form, field: field, tooltip: t("metadata_tip.#{field.to_s}"), options: options } %>
     <% if @media_object.errors[field].any? %>
-      <%= content_tag :span, @media_object.errors[field].join(", "), class: (@media_object.errors[field].any? ? 'help-block invalid-feedback' : 'help-block') %>
+      <%= content_tag :span, @media_object.errors[field].join(", "), class: (@media_object.errors[field].any? ? 'form-text invalid-feedback' : 'form-text') %>
     <% end %>
     <% values = @media_object.send(field) || "" %>
     <% fieldarray = "" %>
@@ -32,17 +32,9 @@ Unless required by applicable law or agreed to in writing, software distributed
     <% count = [1, values.length].max %>
     <% count.times do |i| %>
       <% value = values[i] %>
-      <div class="input-group-btn <%=options[:extra_classes]%>">
-        <button type="button" class="dropdown-toggle form-control" data-toggle="dropdown" style="border-radius: 4px">
-          <div style="float:left"><span><%= options[:dropdown_options][value] %></span></div>
-          <div style="float:right"><span class="caret"></span></div>
-        </button>
-        <%= hidden_field_tag "#{fieldname}", value %>
-        <ul class="dropdown-menu" role="menu" style="width: 100%">
-        <% options[:dropdown_options].each_pair do |value, display| %>
-          <li><a class="dropdown-field"><%= display %></a><span class="hidden"><%= value %></li>
-        <% end %>
-        </ul>
+      <div class="input-group-prepend <%=options[:extra_classes]%>">
+        <% option_hash = (options[:dropdown_options].values).zip(options[:dropdown_options].keys) %>
+        <%= select_tag fieldname.to_s, options_for_select(option_hash, value), class: "form-control" %>
       </div>
     <% end %>
   </div>

@@ -13,7 +13,7 @@ Unless required by applicable law or agreed to in writing, software distributed
   specific language governing permissions and limitations under the License.
 ---  END LICENSE_HEADER BLOCK  ---
 %>
-<table class="table table-condensed">
+<table class="table table-sm">
   <thead><tr><th>Title</th><th>Start</th><th>End</th><th>Position</th></tr></thead>
   <tbody>
     <% @related_clips.sort_by { |hash| hash['start_time'].to_i}.each do |clip| %>

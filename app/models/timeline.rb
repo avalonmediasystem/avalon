@@ -1,11 +1,11 @@
 # Copyright 2011-2022, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
-#
+# 
 # You may obtain a copy of the License at
-#
+# 
 # http://www.apache.org/licenses/LICENSE-2.0
-#
+# 
 # Unless required by applicable law or agreed to in writing, software distributed
 #   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
 #   CONDITIONS OF ANY KIND, either express or implied. See the License for the
@@ -16,6 +16,7 @@ class Timeline < ActiveRecord::Base
   belongs_to :user
   scope :by_user, ->(user) { where(user_id: user.id) }
   scope :title_like, ->(title_filter) { where("title LIKE ?", "%#{title_filter}%") }
+  scope :desc_like, ->(desc_filter) { where("description LIKE ?", "%#{desc_filter}%") }
   scope :with_tag, ->(tag_filter) { where("tags LIKE ?", "%\n- #{tag_filter}\n%") }
 
   validates :user, presence: true
@@ -59,8 +60,9 @@ class Timeline < ActiveRecord::Base
     base_url ||= Rails.application.routes.url_helpers.master_file_url(master_file)
 
     manifest_json = JSON.parse(manifest)
-    manifest_json["homepage"] ||= {}
-    manifest_json["homepage"]["id"] = "#{base_url}?t=#{media_fragment}"
+    manifest_json["homepage"] ||= []
+    manifest_json["homepage"][0] ||= {}
+    manifest_json["homepage"][0]["id"] = "#{base_url}?t=#{media_fragment}"
     self.manifest = manifest_json.to_json
   end
 
@@ -160,16 +162,18 @@ class Timeline < ActiveRecord::Base
             description
           ]
         },
-        "homepage": {
-          "id": source,
-          "type": "Text",
-          "label": {
-            "en": [
-              "View Source Item"
-            ]
-          },
-          "format": "text/html"
-        },
+        "homepage": [
+          {
+            "id": source,
+            "type": "Text",
+            "label": {
+              "en": [
+                "View Source Item"
+              ]
+            },
+            "format": "text/html"
+          }
+        ],
         "items": [
           {
             "id": "#{manifest_url}/canvas",

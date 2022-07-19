@@ -20,13 +20,13 @@ Unless required by applicable law or agreed to in writing, software distributed
 <%= bootstrap_form_for object, html: { id: 'access_control_form'}  do |vid| %>
 <%= hidden_field_tag :step, @active_step %>
 
-<div class="panel panel-default item-discovery">
-  <div class="panel-heading">
-    <h3 class="panel-title">Item discovery</h3>
+<div class="card item-discovery">
+  <div class="card-header">
+    <h3 class="card-title">Item discovery</h3>
   </div>
-  <div class="panel-body">
+  <div class="card-body">
     <div class="form-group">
-      <div class="checkbox">
+      <div class="form-check">
         <%= label_tag :hidden do %>
         <%= check_box_tag :hidden, '1', (hidden) %>
         Hide this item from search results
@@ -36,25 +36,25 @@ Unless required by applicable law or agreed to in writing, software distributed
   </div>
 </div>
 
-<div class="panel panel-default item-access">
-  <div class="panel-heading">
-    <h3 class="panel-title">Item access</h3>
+<div class="card item-access">
+  <div class="card-header">
+    <h3 class="card-title">Item access</h3>
   </div>
-  <div class="panel-body">
+  <div class="card-body">
     <div class="form-group">
-      <div class="radio">
+      <div class="form-check">
         <label>
           <%= radio_button_tag :visibility, 'public', (@visibility == 'public') %>
           Available to the general public
         </label>
       </div>
-      <div class="radio">
+      <div class="form-check">
         <label>
           <%= radio_button_tag :visibility, 'restricted', (@visibility == 'restricted') %>
           Logged in users only
         </label>
       </div>
-      <div class="radio">
+      <div class="form-check">
         <label>
           <%= radio_button_tag :visibility, 'private', (@visibility == 'private') %>
           Collection staff only
@@ -73,11 +73,11 @@ Unless required by applicable law or agreed to in writing, software distributed
 <%= bootstrap_form_for object, html: { id: 'access_control_form'}  do |vid| %>
 <%= hidden_field_tag :step, @active_step %>
 
-<div class="panel panel-default item-discovery">
-  <div class="panel-heading">
-    <h3 class="panel-title">Item discovery</h3>
+<div class="card item-discovery">
+  <div class="card-header">
+    <h3 class="card-title">Item discovery</h3>
   </div>
-  <div class="panel-body">
+  <div class="card-body">
     <div class="form-group">
       <%= hidden ? "Item is hidden from search results" :
         "Item is not hidden from search results" %>
@@ -85,11 +85,11 @@ Unless required by applicable law or agreed to in writing, software distributed
   </div>
 </div>
 
-<div class="panel panel-default item-access">
-  <div class="panel-heading">
-    <h3 class="panel-title">Item access</h3>
+<div class="card item-access">
+  <div class="card-header">
+    <h3 class="card-title">Item access</h3>
   </div>
-  <div class="panel-body">
+  <div class="card-body">
     <div class="form-group">
       Item is viewable by
       <%= case @visibility
@@ -108,11 +108,11 @@ Unless required by applicable law or agreed to in writing, software distributed
 
 <% end %>
 
-<div class="panel panel-default special-access">
-  <div class="panel-heading">
-    <h3 class="panel-title">Assign special access</h3>
+<div class="card special-access">
+  <div class="card-header">
+    <h3 class="card-title">Assign special access</h3>
   </div>
-  <div class="panel-body">
+  <div class="card-body">
     <%= render "modules/access_object", object: object,
           access_object: "user", members: @users, leases: @user_leases,
           autocomplete_model: 'user',

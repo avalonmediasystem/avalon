@@ -19,46 +19,47 @@ Unless required by applicable law or agreed to in writing, software distributed
   <input id="step" name="step" type="hidden" value="access-control" />
   <input id="donot_advance" name="donot_advance" type="hidden" value="true" />
   <div class="form-group">
-    <div class="form-group row">
+    <div class="form-row">
       <% if is_leasable %>
-      <div class="col-xs-5">
-        <% else %>
-        <div class="col-xs-11">
-          <% end %>
+        <div class="col-5">
+      <% else %>
+        <div class="col-11">
+      <% end %>
           <%= render partial: "modules/tooltip", locals: { form: form, field: access_object, tooltip: t("access_control.#{access_object}"), options: {display_label: (t("access_control.#{access_object}label")+'*').html_safe} } %><br />
           <% if defined?(dropdown_values) && dropdown_values.present? %>
-          <%= select_tag "add_#{access_object}",
-	    options_from_collection_for_select(*dropdown_values),
-	    { include_blank: true, disabled: input_disabled, class: "form-control"}%>
+            <%= select_tag "add_#{access_object}",
+              options_from_collection_for_select(*dropdown_values),
+              { include_blank: true, disabled: input_disabled, class: "form-control"} %>
           <% elsif defined?(autocomplete_model) && autocomplete_model.present? %>
-          <%= hidden_field_tag "add_#{access_object}" %>
-          <%= text_field_tag "add_#{access_object}_display", nil,
-	    class: "typeahead from-model form-control",
-	    data: { model: autocomplete_model, target: "add_#{access_object}" },
-	    disabled: input_disabled %>
+            <%= hidden_field_tag "add_#{access_object}" %>
+            <%= text_field_tag "add_#{access_object}_display", nil,
+              class: "typeahead from-model form-control",
+              style: "width: 100%;",
+              data: { model: autocomplete_model, target: "add_#{access_object}" },
+              disabled: input_disabled %>
           <% else %>
-          <%= text_field_tag "add_#{access_object}", nil,
-            class: "form-control",
-	    disabled: input_disabled  %>
+            <%= text_field_tag "add_#{access_object}", nil,
+              class: "form-control",
+              disabled: input_disabled  %>
           <% end %>
         </div>
         <% if is_leasable %>
-        <div class="col-xs-3">
-          <label class="control-label" for="add_#{access_object}_begin">
-            <span class="tooltip-label" data-title="Begin Date">Begin Date</span>
-          </label>
-          <%= text_field_tag "add_#{access_object}_begin", nil, placeholder: 'Begin Date (yyyy-mm-dd)', class: 'form-control date-input', disabled: input_disabled, autocomplete: 'off' %>
-        </div>
-        <div class="col-xs-3">
-          <label class="control-label" for="add_#{access_object}_end">
-            <span class="tooltip-label" data-title="End Date">End Date</span>
-          </label>
-          <%= text_field_tag "add_#{access_object}_end", nil, placeholder: 'End Date (yyyy-mm-dd)', class: 'form-control date-input', disabled: input_disabled, autocomplete: 'off' %>
-        </div>
+          <div class="col-3">
+            <label class="col-form-label" for="add_#{access_object}_begin">
+              <span class="tooltip-label" data-title="Begin Date">Begin Date</span>
+            </label>
+            <%= text_field_tag "add_#{access_object}_begin", nil, placeholder: 'Begin Date (yyyy-mm-dd)', class: 'form-control date-input', disabled: input_disabled, autocomplete: 'off' %>
+          </div>
+          <div class="col-3">
+            <label class="col-form-label" for="add_#{access_object}_end">
+              <span class="tooltip-label" data-title="End Date">End Date</span>
+            </label>
+            <%= text_field_tag "add_#{access_object}_end", nil, placeholder: 'End Date (yyyy-mm-dd)', class: 'form-control date-input', disabled: input_disabled, autocomplete: 'off' %>
+          </div>
         <% end %>
-        <div class="col-xs-1">
+        <div class="col-1">
           <%= button_tag "Add", name: "submit_add_#{access_object}", type: "submit",
-            class: "btn btn-default btn-sm", style: 'margin-top:2.1em', disabled: input_disabled, value: "Add" %>
+            class: "btn btn-outline", style: 'margin-top:2.4rem', disabled: input_disabled, value: "Add" %>
         </div>
       </div>
     </div>
@@ -85,7 +86,7 @@ Unless required by applicable law or agreed to in writing, software distributed
             <%= link_to "×",
                 polymorphic_path(object, "remove_#{access_object}".to_sym => member_object, step: @active_step, donot_advance: true),
                 method: "put",
-                class: "btn btn-xs close remove" %>
+                class: "btn btn-sm close remove" %>
           </td>
           <% end %>
         </tr>
@@ -111,7 +112,7 @@ Unless required by applicable law or agreed to in writing, software distributed
             <%= link_to "×",
                 polymorphic_path(object, "remove_lease".to_sym => lease_object, step: @active_step, donot_advance: true),
                 method: "put",
-                class: "btn btn-xs close remove" %>
+                class: "btn btn-sm close remove" %>
           </td>
           <% end %>
         </tr>

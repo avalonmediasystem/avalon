@@ -68,7 +68,7 @@ This view file goes with the custom 'Add To Playlist' MediaElement 4 plugin.
       </div>
       <div class="form-group text-right">
         <%= button_tag("Add", type:"button", id:"add_playlist_item_submit", class:"btn btn-primary add_playlist_item_submit") %>
-        <%= button_tag("Cancel", type:"button", id:"add_playlist_item_cancel", class:"btn btn-default add_playlist_item_cancel") %>
+        <%= button_tag("Cancel", type:"button", id:"add_playlist_item_cancel", class:"btn btn-outline add_playlist_item_cancel") %>
       </div>
     <% end %>
   <% end %>
@@ -82,8 +82,8 @@ This view file goes with the custom 'Add To Playlist' MediaElement 4 plugin.
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
         <h4 class="modal-title">Create Playlist</h4>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
       </div>
       <div class="modal-body">
         <%= form_for(Playlist.new, remote: true, format: 'json', html: { id: 'playlist_form', class: 'playlist_actions' }) do |f| %>
@@ -97,17 +97,17 @@ This view file goes with the custom 'Add To Playlist' MediaElement 4 plugin.
           </div>
           <div class="form-group playlist-visibility-form-group">
             <%= label_tag nil, t("playlist.visibility") %>
-            <label class="radio-inline">
+            <label>
               <%= f.radio_button(:visibility, Playlist::PUBLIC) %>
               <%= human_friendly_visibility Playlist::PUBLIC %>
             </label>
-            <label class="radio-inline">
+            <label class="ml-2">
               <%= f.radio_button(:visibility, Playlist::PRIVATE) %>
               <%= human_friendly_visibility Playlist::PRIVATE %>
             </label>
           </div>
           <div class="form-group text-right">
-            <%= f.submit id: 'new_playlist_submit', class: 'btn btn-primary outline_on', value: t("playlist.create.action") %>
+            <%= f.submit id: 'new_playlist_submit', class: 'btn btn-primary', value: t("playlist.create.action") %>
           </div>
         </div><!-- /.modal-body -->
       <% end # form_for playlist_form%>
