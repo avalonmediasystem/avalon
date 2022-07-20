@@ -303,7 +303,7 @@ class Admin::CollectionsController < ApplicationController
   end
 
   def build_default_lending_period
-    params["add_lending_period_days"].days + params["add_lending_period_hours"].hours
+    params["add_lending_period_days"].to_i.days + params["add_lending_period_hours"].to_i.hours
   rescue
     Settings.controlled_digital_lending.default_lending_period
   end
