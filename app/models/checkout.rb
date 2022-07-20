@@ -21,9 +21,7 @@ class Checkout < ApplicationRecord
   end
 
   def duration
-    if !media_object_id.nil?
-      duration = media_object.lending_period
-    end
+    duration = media_object.lending_period if media_object_id.present?
     duration ||= ActiveSupport::Duration.parse(Settings.controlled_digital_lending.default_lending_period)
     duration
   end

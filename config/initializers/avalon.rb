@@ -1,6 +1,6 @@
 require 'string_additions'
 require 'avalon/errors'
-require 'human_readable_duration'
+require 'day_hour_string'
 # Loads configuration information from the YAML file and then sets up the
 # dropbox
 #
