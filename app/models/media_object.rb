@@ -378,7 +378,7 @@ class MediaObject < ActiveFedora::Base
   end
 
   def set_lending_period
-    self.lending_period ||= Admin::Collection.find(self.collection_id).default_lending_period
+    self.lending_period ||= collection.default_lending_period
   end
 
   def current_checkout(user_id)

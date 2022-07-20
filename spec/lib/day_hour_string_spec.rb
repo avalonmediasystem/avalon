@@ -20,21 +20,21 @@ describe 'HumanReadableDuration' do
       let(:media_object) { instance_double("MediaObject", lending_period: 172800) }
 
       it 'returns the lending period as a human readable string' do
-        expect(ActiveSupport::Duration.build(media_object.lending_period).to_human_readable_s).to eq("2 days")
+        expect(ActiveSupport::Duration.build(media_object.lending_period).to_day_hour_s).to eq("2 days")
       end
     end
     context 'when lending period is measured in hours' do
       let(:collection) { instance_double("Admin::Collection", default_lending_period: 7200) }
 
       it 'returns the lending period as a human readable string' do
-        expect(ActiveSupport::Duration.build(collection.default_lending_period).to_human_readable_s).to eq("2 hours")
+        expect(ActiveSupport::Duration.build(collection.default_lending_period).to_day_hour_s).to eq("2 hours")
       end
     end
     context 'when lending period is measured in days and hours' do
       let(:media_object) { instance_double("MediaObject", lending_period: 129600) }
 
       it 'returns the lending period as a human readable string' do
-        expect(ActiveSupport::Duration.build(media_object.lending_period).to_human_readable_s).to eq("1 day 12 hours")
+        expect(ActiveSupport::Duration.build(media_object.lending_period).to_day_hour_s).to eq("1 day 12 hours")
       end
     end
     context 'when lending period includes 1 day and/or 1 hour' do
@@ -43,9 +43,9 @@ describe 'HumanReadableDuration' do
       let(:day_hour) { instance_double("Admin::Collection", default_lending_period: 90000) }
 
       it 'returns the lending period as a human readable string with singular day and/or hour' do
-        expect(ActiveSupport::Duration.build(day.lending_period).to_human_readable_s).to eq("1 day")
-        expect(ActiveSupport::Duration.build(hour.lending_period).to_human_readable_s).to eq("1 hour")
-        expect(ActiveSupport::Duration.build(day_hour.default_lending_period).to_human_readable_s).to eq("1 day 1 hour")
+        expect(ActiveSupport::Duration.build(day.lending_period).to_day_hour_s).to eq("1 day")
+        expect(ActiveSupport::Duration.build(hour.lending_period).to_day_hour_s).to eq("1 hour")
+        expect(ActiveSupport::Duration.build(day_hour.default_lending_period).to_day_hour_s).to eq("1 day 1 hour")
       end
     end
   end

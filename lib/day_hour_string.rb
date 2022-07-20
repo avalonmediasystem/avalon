@@ -13,8 +13,8 @@
 # ---  END LICENSE_HEADER BLOCK  ---
 
 
-module HumanReadableDuration
-  def to_human_readable_s
+module DayHourString
+  def to_day_hour_s
     d, h = (self/3600).divmod(24)
 
     day_string = d > 0 ? d.to_s + ' day'.pluralize(d) : nil
@@ -29,4 +29,4 @@ module HumanReadableDuration
     end
   end
 end
-ActiveSupport::Duration.prepend(HumanReadableDuration)
+ActiveSupport::Duration.prepend(DayHourString)
