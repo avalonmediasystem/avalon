@@ -95,11 +95,11 @@ class AccessControlStep < Avalon::Workflow::BasicStep
       lease.destroy
     end
     unless limited_access_submit
-      iso_duration = "P#{context[:add_lending_period_days]}DT#{context[:add_lending_period_hours]}H"
-      int_duration = ActiveSupport::Duration.parse(iso_duration).to_i
       media_object.visibility = context[:visibility] unless context[:visibility].blank?
       media_object.hidden = context[:hidden] == "1"
-      media_object.lending_period = int_duration
+      d = context['add_lending_period_days']
+      h = context['add_lending_period_hours']
+      media_object.lending_period = build_lending_period(d, h).to_i
     end
     media_object.save!
 
@@ -117,5 +117,12 @@ class AccessControlStep < Avalon::Workflow::BasicStep
     context[:addable_courses] = Course.all.reject { |c| context[:virtual_groups].include? c.context_id }
     context[:lending_period] = media_object.lending_period
     context
+  end
+
+  private
+  def build_lending_period(d, h)
+    int_duration = d.to_i.days + h.to_i.hours
+  rescue
+    int_duration = Settings.controlled_digital_lending.default_lending_period
   end
 end
