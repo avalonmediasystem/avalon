@@ -17,9 +17,11 @@ require 'rails_helper'
 describe 'MediaObject' do
   after { Warden.test_reset! }
   let(:media_object) { FactoryBot.build(:media_object).tap {|mo| mo.workflow.last_completed_step = "resource-description"} }
+  let!(:master_file) { FactoryBot.create(:master_file, media_object: media_object) }
   before :each do
     @user = FactoryBot.create(:administrator)
     login_as @user, scope: :user
+    FactoryBot.create(:checkout, media_object_id: media_object.id, user_id: @user.id).save
   end
   it 'can visit a media object' do
     media_object.save
@@ -61,6 +63,13 @@ describe 'MediaObject' do
       media_object.save
       visit media_object_path(media_object)
       expect(page.has_content?(contributor)).to be_truthy
+    end
+    it 'displays the lending period properly' do
+      lending_period = 90000
+      media_object.lending_period = lending_period
+      media_object.save
+      visit media_object_path(media_object)
+      expect(page.has_content?('1 day 1 hour')).to be_truthy
     end
   end
 end

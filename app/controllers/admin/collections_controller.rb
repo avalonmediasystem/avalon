@@ -56,6 +56,7 @@ class Admin::CollectionsController < ApplicationController
         @virtual_groups = @collection.default_virtual_read_groups
         @ip_groups = @collection.default_ip_read_groups
         @visibility = @collection.default_visibility
+        @default_lending_period = @collection.default_lending_period
 
         @addable_groups = Admin::Group.non_system_groups.reject { |g| @groups.include? g.name }
         @addable_courses = Course.all.reject { |c| @virtual_groups.include? c.context_id }
@@ -298,6 +299,13 @@ class Admin::CollectionsController < ApplicationController
 
     collection.default_visibility = params[:visibility] unless params[:visibility].blank?
     collection.default_hidden = params[:hidden] == "1"
+    collection.default_lending_period = build_default_lending_period.to_i
+  end
+
+  def build_default_lending_period
+    params["add_lending_period_days"].to_i.days + params["add_lending_period_hours"].to_i.hours
+  rescue
+    Settings.controlled_digital_lending.default_lending_period
   end
 
   def apply_access(collection, params)

@@ -13,9 +13,12 @@ Unless required by applicable law or agreed to in writing, software distributed
   specific language governing permissions and limitations under the License.
 ---  END LICENSE_HEADER BLOCK  ---
 %>
-
-  <%= render 'modules/access_control', {object: @media_object,
-                                        visibility: @media_object.visibility,
-                                        hidden: @media_object.hidden?,
-                                        lending_period: @media_object.lending_period} %>
-  <%= render 'workflow_buttons', form: 'access_control_form' %>
+  <% master_file=@media_object.master_files.first if @media_object.master_files.size > 0%>
+  <div class="checkout <%= master_file.is_video? ? 'video' : 'audio' %>" style="height: <%= master_file.is_video? ? 400 : 100 %>px">
+    <% if  @media_object.lending_status == "available" %>
+      <%= t('media_object.cdl.checkout_message').html_safe %>
+      <%= render "checkout" %>
+    <% else %>
+      <%= t('media_object.cdl.not_available_message').html_safe %>
+    <% end %>
+  </div>

@@ -13,9 +13,9 @@ Unless required by applicable law or agreed to in writing, software distributed
   specific language governing permissions and limitations under the License.
 ---  END LICENSE_HEADER BLOCK  ---
 %>
-
-  <%= render 'modules/access_control', {object: @media_object,
-                                        visibility: @media_object.visibility,
-                                        hidden: @media_object.hidden?,
-                                        lending_period: @media_object.lending_period} %>
-  <%= render 'workflow_buttons', form: 'access_control_form' %>
+<% media_object_id=@media_object.id %>
+<%= form_for(Checkout.new, html: { style: "display: inline;" }) do |f| %>
+  <%= hidden_field_tag "authenticity_token", form_authenticity_token %>
+  <%= hidden_field_tag "checkout[media_object_id]", media_object_id %>
+  <%= f.submit "Check Out", class: "btn btn-secondary" %>
+<% end %>

@@ -97,6 +97,9 @@ class AccessControlStep < Avalon::Workflow::BasicStep
     unless limited_access_submit
       media_object.visibility = context[:visibility] unless context[:visibility].blank?
       media_object.hidden = context[:hidden] == "1"
+      d = context['add_lending_period_days']
+      h = context['add_lending_period_hours']
+      media_object.lending_period = build_lending_period(d, h).to_i
     end
     media_object.save!
 
@@ -112,6 +115,15 @@ class AccessControlStep < Avalon::Workflow::BasicStep
     context[:ip_leases] = media_object.leases('ip')
     context[:addable_groups] = Admin::Group.non_system_groups.reject { |g| context[:groups].include? g.name }
     context[:addable_courses] = Course.all.reject { |c| context[:virtual_groups].include? c.context_id }
+    context[:lending_period] = media_object.lending_period
     context
   end
+
+  private
+
+    def build_lending_period(d, h)
+      d.to_i.days + h.to_i.hours
+    rescue
+      Settings.controlled_digital_lending.default_lending_period
+    end
 end

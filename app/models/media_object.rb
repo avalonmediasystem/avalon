@@ -35,6 +35,7 @@ class MediaObject < ActiveFedora::Base
   before_save :update_dependent_properties!, prepend: true
   before_save :update_permalink, if: Proc.new { |mo| mo.persisted? && mo.published? }, prepend: true
   before_save :assign_id!, prepend: true
+  before_save :set_lending_period
   after_save :update_dependent_permalinks_job, if: Proc.new { |mo| mo.persisted? && mo.published? }
   after_save :remove_bookmarks
 
@@ -111,6 +112,9 @@ class MediaObject < ActiveFedora::Base
   property :comment, predicate: ::RDF::Vocab::EBUCore.comments, multiple: true do |index|
     index.as :stored_searchable
   end
+  property :lending_period, predicate: ::RDF::Vocab::SCHEMA.eligibleDuration, multiple: false do |index|
+    index.as :stored_sortable
+  end
 
   ordered_aggregation :master_files, class_name: 'MasterFile', through: :list_source
   # ordered_aggregation gives you accessors media_obj.master_files and media_obj.ordered_master_files
@@ -145,6 +149,7 @@ class MediaObject < ActiveFedora::Base
       self.visibility = co.default_visibility
       self.read_users = co.default_read_users.to_a
       self.read_groups = co.default_read_groups.to_a + self.read_groups #Make sure to include any groups added by visibility
+      self.lending_period = co.default_lending_period
     end
   end
 
@@ -279,7 +284,9 @@ class MediaObject < ActiveFedora::Base
       published: published?,
       summary: abstract,
       visibility: visibility,
-      read_groups: read_groups
+      read_groups: read_groups,
+      lending_period: lending_period,
+      lending_status: lending_status,
     }.merge(to_ingest_api_hash(options.fetch(:include_structure, false)))
   end
 
@@ -366,6 +373,19 @@ class MediaObject < ActiveFedora::Base
     "This item is accessible by: #{actors.join(', ')}."
   end
 
+  def lending_status
+    Checkout.active_for_media_object(id).any? ? "checked_out" : "available"
+  end
+
+  def set_lending_period
+    self.lending_period ||= collection.default_lending_period
+  end
+
+  def current_checkout(user_id)
+    checkouts = Checkout.active_for_media_object(id)
+    checkouts.select{ |ch| ch.user_id == user_id  }.first
+  end
+
   private
 
     def calculate_duration
@@ -379,5 +399,4 @@ class MediaObject < ActiveFedora::Base
       end
       ips.flatten.compact.uniq || []
     end
-
 end

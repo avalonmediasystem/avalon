@@ -64,9 +64,13 @@ class Admin::Collection < ActiveFedora::Base
   property :identifier, predicate: ::RDF::Vocab::Identifiers.local, multiple: true do |index|
     index.as :symbol
   end
+  property :default_lending_period, predicate: ::RDF::Vocab::SCHEMA.eligibleDuration, multiple: false do |index|
+    index.as :stored_sortable
+  end
 
   has_subresource 'poster', class_name: 'IndexedFile'
 
+  before_save :set_default_lending_period
   around_save :reindex_members, if: Proc.new{ |c| c.name_changed? or c.unit_changed? }
   before_create :create_dropbox_directory!
 
@@ -263,6 +267,10 @@ class Admin::Collection < ActiveFedora::Base
 
   def default_visibility_changed?
     !!@default_visibility_will_change
+  end
+
+  def set_default_lending_period
+    self.default_lending_period ||= ActiveSupport::Duration.parse(Settings.controlled_digital_lending.default_lending_period).to_i
   end
 
   private

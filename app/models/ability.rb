@@ -17,8 +17,12 @@ class Ability
   include Hydra::Ability
   include Hydra::MultiplePolicyAwareAbility
 
-  self.ability_logic += [ :playlist_permissions, :playlist_item_permissions, :marker_permissions, :encode_dashboard_permissions ]
-  self.ability_logic += [ :timeline_permissions ]
+  self.ability_logic += [:playlist_permissions,
+                         :playlist_item_permissions,
+                         :marker_permissions,
+                         :encode_dashboard_permissions,
+                         :timeline_permissions,
+                         :checkout_permissions]
 
   def encode_dashboard_permissions
     can :read, :encode_dashboard if is_administrator?
@@ -214,6 +218,19 @@ class Ability
     can :read, Timeline, visibility: Timeline::PUBLIC
     can :read, Timeline do |timeline|
       timeline.valid_token?(@options[:timeline_token])
+    end
+  end
+
+  def checkout_permissions
+    if @user.id.present?
+      can :create, Checkout do |checkout|
+        checkout.user == @user && can?(:read, checkout.media_object)
+      end
+      can :return, Checkout, user: @user
+      can :return_all, Checkout, user: @user
+      can :read, Checkout, user: @user
+      can :update, Checkout, user: @user
+      can :destroy, Checkout, user: @user
     end
   end
 

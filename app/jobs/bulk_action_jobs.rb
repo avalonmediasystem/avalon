@@ -205,6 +205,7 @@ module BulkActionJobs
         media_object = MediaObject.find(id)
         media_object.hidden = collection.default_hidden
         media_object.visibility = collection.default_visibility
+        media_object.lending_period = collection.default_lending_period
 
         # Special access
         if overwrite

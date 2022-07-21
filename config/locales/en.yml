@@ -22,6 +22,12 @@ en:
     empty_share_link: ""
     empty_share_link_notice: "After processing has started the embedded link will be available."
     empty_share_section_permalink_notice: "After processing has started the section link will be available."
+    cdl:
+      checkout_message: "<p>To enable streaming please check out resource. This content is available to be checked out.</p>"
+      not_available_message: "<p>This resource is not available to be checked out at the moment. Please check again later.</p>"
+      expire:
+        heading: "Check Out Expired"
+        message: "Your lending period has been expired. Please return the item, and check for availability later."
   metadata_tip:
     abstract: |
       Summary provides a space for describing the contents of the item. Examples
@@ -135,6 +141,7 @@ en:
     grouplabel: "Avalon Group"
     classlabel: "External Group"
     ipaddresslabel: "IP Address or Range"
+    lending_periodlabel: "Lending Period"
     depositor: |
       Depositors add media to the collection and describe it with metadata.
       They can publish items but not unpublish. They can only modify or
@@ -163,6 +170,8 @@ en:
       or ffaa:aaff:bbcc:ddee:1122:3344:5566:7777
       or ffaa:aaff:bbcc:ddee:1122:3344:5566:7777/ffff:ffff:ffff:ffff:ffff:ffff:ffff:ff00
       Start and end dates are not required; if included, access for the specified IP Address(es) will start at the beginning of the start date and end at the beginning of the end date. Otherwise, access will be open ended for the specified IP Address(es).
+    lending_period: |
+      Lending Period is the length of time that an item may be checked out for. 
 
   contact:
     title: 'Contact Us - %{application_name}'
@@ -246,7 +255,7 @@ en:
       timeline:
         title: "Title"
         description: "Description"
-      user:  
+      user:
         login: "Username or email"
 
   iiif:
