@@ -15,14 +15,14 @@ class Checkout < ApplicationRecord
 
   private
 
-  def set_checkout_return_times!
-    self.checkout_time ||= DateTime.current
-    self.return_time ||= checkout_time + duration
-  end
+    def set_checkout_return_times!
+      self.checkout_time ||= DateTime.current
+      self.return_time ||= checkout_time + duration
+    end
 
-  def duration
-    duration = media_object.lending_period if media_object_id.present?
-    duration ||= ActiveSupport::Duration.parse(Settings.controlled_digital_lending.default_lending_period)
-    duration
-  end
+    def duration
+      duration = media_object.lending_period if media_object_id.present?
+      duration ||= ActiveSupport::Duration.parse(Settings.controlled_digital_lending.default_lending_period)
+      duration
+    end
 end

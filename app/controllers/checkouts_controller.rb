@@ -5,8 +5,6 @@ class CheckoutsController < ApplicationController
 
   # GET /checkouts or /checkouts.json
   def index
-    @checkouts
-
     respond_to do |format|
       format.html { render :index }
       format.json do
@@ -25,8 +23,7 @@ class CheckoutsController < ApplicationController
   end
 
   # GET /checkouts/1.json
-  def show
-  end
+  def show; end
 
   # POST /checkouts or /checkouts.json
   def create
@@ -35,7 +32,7 @@ class CheckoutsController < ApplicationController
     respond_to do |format|
       # TODO: move this can? check into a checkout ability (can?(:create, @checkout))
       if can?(:create, @checkout) && @checkout.save
-        format.html { redirect_to media_object_path(checkout_params[:media_object_id]), flash: { success: "Checkout was successfully created."} }
+        format.html { redirect_to media_object_path(checkout_params[:media_object_id]), flash: { success: "Checkout was successfully created." } }
         format.json { render :show, status: :created, location: @checkout }
       else
         format.json { render json: @checkout.errors, status: :unprocessable_entity }
@@ -55,17 +52,16 @@ class CheckoutsController < ApplicationController
     end
   end
 
-  #PATCH /checkouts/1/return
+  # PATCH /checkouts/1/return
   def return
     @checkout.update(return_time: DateTime.current)
 
     flash[:notice] = "Checkout was successfully returned."
     respond_to do |format|
       format.html { redirect_back fallback_location: checkouts_url, notice: flash[:notice] }
-      format.json { render json:flash[:notice] }
+      format.json { render json: flash[:notice] }
     end
   end
-
 
   # PATCH /checkouts/return_all
   def return_all
@@ -83,7 +79,7 @@ class CheckoutsController < ApplicationController
     flash[:notice] = "Checkout was successfully destroyed."
     respond_to do |format|
       format.html { redirect_to checkouts_url, notice: flash[:notice] }
-      format.json { render json:flash[:notice] }
+      format.json { render json: flash[:notice] }
     end
   end
 
@@ -95,14 +91,14 @@ class CheckoutsController < ApplicationController
     end
 
     def set_checkouts
-      unless params[:display_returned] == 'true'
-        @checkouts = set_active_checkouts
-      else
+      if params[:display_returned] == 'true'
         @checkouts = if current_ability.is_administrator?
                        set_active_checkouts.or(Checkout.all.where("return_time <= now()"))
                      else
                        set_active_checkouts.or(Checkout.returned_for_user(current_user.id))
                      end
+      else
+        @checkouts = set_active_checkouts
       end
     end
 

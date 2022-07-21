@@ -120,9 +120,10 @@ class AccessControlStep < Avalon::Workflow::BasicStep
   end
 
   private
-  def build_lending_period(d, h)
-    int_duration = d.to_i.days + h.to_i.hours
-  rescue
-    int_duration = Settings.controlled_digital_lending.default_lending_period
-  end
+
+    def build_lending_period(d, h)
+      d.to_i.days + h.to_i.hours
+    rescue
+      Settings.controlled_digital_lending.default_lending_period
+    end
 end

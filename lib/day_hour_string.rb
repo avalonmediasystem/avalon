@@ -12,13 +12,12 @@
 #   specific language governing permissions and limitations under the License.
 # ---  END LICENSE_HEADER BLOCK  ---
 
-
 module DayHourString
   def to_day_hour_s
-    d, h = (self/3600).divmod(24)
+    d, h = (self / 3600).divmod(24)
 
-    day_string = d > 0 ? d.to_s + ' day'.pluralize(d) : nil
-    hour_string = h > 0 ? h.to_s + ' hour'.pluralize(h) : nil
+    day_string = d.positive? ? d.to_s + ' day'.pluralize(d) : nil
+    hour_string = h.positive? ? h.to_s + ' hour'.pluralize(h) : nil
 
     if day_string.nil?
       hour_string
