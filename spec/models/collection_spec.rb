@@ -602,17 +602,15 @@ describe Admin::Collection do
     end
   end
 
-  describe 'set_default_lending_period' do
+  describe 'default_lending_period' do
     context 'a custom lending period has not been set' do
       it 'sets the lending period equal to the system default' do
-        collection.set_default_lending_period
         expect(collection.default_lending_period).to eq ActiveSupport::Duration.parse(Settings.controlled_digital_lending.default_lending_period).to_i
       end
     end
     context 'a custom lending period has been set' do
       let(:collection) { FactoryBot.create(:collection, default_lending_period: 86400) }
       it 'leaves the lending period equal to the custom value' do
-        collection.set_default_lending_period
         expect(collection.default_lending_period).to eq 86400
       end
     end

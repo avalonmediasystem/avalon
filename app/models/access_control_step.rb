@@ -94,13 +94,18 @@ class AccessControlStep < Avalon::Workflow::BasicStep
       media_object.governing_policies.delete( lease )
       lease.destroy
     end
+
     unless limited_access_submit
       media_object.visibility = context[:visibility] unless context[:visibility].blank?
       media_object.hidden = context[:hidden] == "1"
-      d = context['add_lending_period_days']
-      h = context['add_lending_period_hours']
-      media_object.lending_period = build_lending_period(d, h).to_i
+      lending_period = build_lending_period(context['add_lending_period_days'], context['add_lending_period_hours'])
+      if lending_period.positive?
+        media_object.lending_period = lending_period
+      else
+        context[:error] = "Lending period days and hours need to be positive integers."
+      end
     end
+
     media_object.save!
 
     #Setup these values in the context because the edit partial is being rendered without running the controller's #edit (VOV-2978)
@@ -122,8 +127,11 @@ class AccessControlStep < Avalon::Workflow::BasicStep
   private
 
     def build_lending_period(d, h)
-      d.to_i.days + h.to_i.hours
+      lending_period = 0
+      lending_period += d.to_i.days if d.to_i.positive?
+      lending_period += h.to_i.hours if h.to_i.positive?
+      lending_period.to_i
     rescue
-      Settings.controlled_digital_lending.default_lending_period
+      0
     end
 end

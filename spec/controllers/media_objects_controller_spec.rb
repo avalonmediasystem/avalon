@@ -1332,6 +1332,17 @@ describe MediaObjectsController, type: :controller do
           }.not_to change{media_object.leases.count}
         end
       end
+
+      context "lending period" do
+        it "sets a custom lending period" do
+          expect { put :update, params: { id: media_object.id, step: 'access-control', donot_advance: 'true', add_lending_period_days: 7, add_lending_period_hours: 8 } }.to change { media_object.reload.lending_period }.to(633600)
+        end
+
+        it "returns error if invalid" do
+          expect { put :update, params: { id: media_object.id, step: 'access-control', donot_advance: 'true', add_lending_period_days: -1, add_lending_period_hours: -1 } }.not_to change { media_object.reload.lending_period }
+          expect(flash[:error]).to be_present
+        end
+      end
     end
 
     context 'resource description' do
