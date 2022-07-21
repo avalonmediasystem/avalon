@@ -137,7 +137,7 @@ Unless required by applicable law or agreed to in writing, software distributed
   <div class="card-body">
     <div class="form-group">
       Item is available to be checked out for
-      <%= ActiveSupport::Duration.build(object.lending_period).to_human_readable_s %>
+      <%= ActiveSupport::Duration.build(object.lending_period).to_day_hour_s %>
     </div>
   </div>
 </div>
