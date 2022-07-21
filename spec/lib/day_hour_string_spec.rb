@@ -14,8 +14,8 @@
 
 require 'rails_helper'
 
-describe 'HumanReadableDuration' do
-  describe 'to_human_readable_s' do
+describe 'DayHourString' do
+  describe 'to_day_hour_s' do
     context 'when lending period is measured in days' do
       let(:media_object) { instance_double("MediaObject", lending_period: 172800) }
 
