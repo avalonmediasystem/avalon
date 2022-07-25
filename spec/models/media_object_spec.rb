@@ -1025,10 +1025,9 @@ describe MediaObject do
     end
   end
 
-  describe 'set_lending_period' do
+  describe 'lending_period' do
     context 'there is not a custom lending period' do
       it 'sets the lending period to the system default' do
-        media_object.set_lending_period
         expect(media_object.lending_period).to eq ActiveSupport::Duration.parse(Settings.controlled_digital_lending.default_lending_period).to_i
       end
     end
@@ -1036,13 +1035,11 @@ describe MediaObject do
       let(:collection) { FactoryBot.create(:collection, default_lending_period: 86400) }
       let(:media_object) { FactoryBot.create(:media_object, collection_id: collection.id) }
       it "sets the lending period to equal the collection's default lending period" do
-        media_object.set_lending_period
         expect(media_object.lending_period).to eq collection.default_lending_period
       end
       context 'the media object has a custom lending period' do
         let(:media_object) { FactoryBot.create(:media_object, collection_id: collection.id, lending_period: 172800)}
         it "leaves the lending period equal to the custom value" do
-          media_object.set_lending_period
           expect(media_object.lending_period).to eq 172800
         end
       end

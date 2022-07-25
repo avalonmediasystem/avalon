@@ -299,13 +299,35 @@ class Admin::CollectionsController < ApplicationController
 
     collection.default_visibility = params[:visibility] unless params[:visibility].blank?
     collection.default_hidden = params[:hidden] == "1"
-    collection.default_lending_period = build_default_lending_period.to_i
+    lending_period = build_default_lending_period(collection)
+    collection.default_lending_period = lending_period if lending_period.positive?
   end
 
-  def build_default_lending_period
-    params["add_lending_period_days"].to_i.days + params["add_lending_period_hours"].to_i.hours
-  rescue
-    Settings.controlled_digital_lending.default_lending_period
+  def build_default_lending_period(collection)
+    lending_period = 0
+
+    begin
+      if params["add_lending_period_days"].to_i.positive?
+        lending_period += params["add_lending_period_days"].to_i.days
+      else
+        collection.errors.add(:lending_period, "days needs to be a positive integer.")
+      end
+    rescue
+      collection.errors.add(:lending_period, "days needs to be a positive integer.")
+    end
+
+    begin
+      if params["add_lending_period_hours"].to_i.positive?
+        lending_period += params["add_lending_period_hours"].to_i.hours
+      else
+        collection.errors.add(:lending_period, "hours needs to be a positive integer.")
+      end
+    rescue
+      collection.errors.add(:lending_period, "hours needs to be a positive integer.")
+    end
+
+    flash[:notice] = collection.errors.full_messages.join if collection.errors.present?
+    lending_period.to_i
   end
 
   def apply_access(collection, params)

@@ -70,7 +70,6 @@ class Admin::Collection < ActiveFedora::Base
 
   has_subresource 'poster', class_name: 'IndexedFile'
 
-  before_save :set_default_lending_period
   around_save :reindex_members, if: Proc.new{ |c| c.name_changed? or c.unit_changed? }
   before_create :create_dropbox_directory!
 
@@ -269,8 +268,9 @@ class Admin::Collection < ActiveFedora::Base
     !!@default_visibility_will_change
   end
 
-  def set_default_lending_period
-    self.default_lending_period ||= ActiveSupport::Duration.parse(Settings.controlled_digital_lending.default_lending_period).to_i
+  alias_method :'_default_lending_period', :'default_lending_period'
+  def default_lending_period
+    self._default_lending_period || ActiveSupport::Duration.parse(Settings.controlled_digital_lending.default_lending_period).to_i
   end
 
   private
