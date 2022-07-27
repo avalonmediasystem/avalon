@@ -20,8 +20,11 @@ A @comment has been received from the system
 FROM
 <%= @comment.name %> (<<%= @comment.email %>>)
 
+SITE
+<%= Settings.name %>
+
 SUBJECT
-<%= @comment.subject %>
+<%= @comment.subject.gsub(/#{Settings.name}:\s/, '') %>
 
 COMMENT
 <%= @comment.comment %>
