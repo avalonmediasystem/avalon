@@ -18,14 +18,17 @@ Unless required by applicable law or agreed to in writing, software distributed
 <hr />
 <dl>
   <dt>From</dt>
-  <dd><%= @comment.name %> (<<%= @comment.email %>>)</dd>
+  <dd><%= @comment.name %> (&lt<%= @comment.email %>&gt)</dd>
+
+  <dt>Site</dt>
+  <dd><%= Settings.name %></dd>
 
   <dt>Subject</dt>
   <dd><%= @comment.subject %></dd>
 
   <dt>Comment</dt>
   <dd><%= @comment.comment %></dd>
-  
+
   <dt>Received</dt>
   <dd><%= DateTime.now %>
 </dl>
