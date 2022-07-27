@@ -51,7 +51,7 @@ describe CommentsController do
       it 'produces an email with proper contents' do
         expect { post comments_url, params: attributes }.to(
           have_enqueued_mail(CommentsMailer, :contact_email).with(
-            name: attributes[:comment][:name], subject: Settings.name + ': ' + attributes[:comment][:subject],
+            name: attributes[:comment][:name], subject: attributes[:comment][:subject],
             email: email, nickname: '', comment: attributes[:comment][:comment]
           )
         )

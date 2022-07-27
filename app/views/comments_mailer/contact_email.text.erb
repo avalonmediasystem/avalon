@@ -24,7 +24,7 @@ SITE
 <%= Settings.name %>
 
 SUBJECT
-<%= @comment.subject.gsub(/#{Settings.name}:\s/, '') %>
+<%= @comment.subject %>
 
 COMMENT
 <%= @comment.comment %>

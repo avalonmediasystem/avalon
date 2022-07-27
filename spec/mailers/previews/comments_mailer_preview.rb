@@ -5,7 +5,7 @@ class CommentsMailerPreview < ActionMailer::Preview
     @comment.nickname = ''
     @comment.email = 'emunson@archive.edu'
     @comment.email_confirmation = 'emunson@archive.edu'
-    @comment.subject = "#{Settings.name}: General feedback"
+    @comment.subject = "General feedback"
     @comment.comment = 'Testing, testing, testing'
 
     CommentsMailer.contact_email(@comment.to_h)
