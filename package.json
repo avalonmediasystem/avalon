@@ -12,7 +12,7 @@
     "react": "^16.8.4",
     "react-bootstrap": "^1.0.0",
     "react-dom": "^16.8.4",
-    "react-structural-metadata-editor": "https://github.com/avalonmediasystem/react-structural-metadata-editor",
+    "react-structural-metadata-editor": "https://github.com/avalonmediasystem/react-structural-metadata-editor#iiif-manifest",
     "react_ujs": "^2.4.4",
     "url-search-params-polyfill": "^7.0.1",
     "video.js": "^7.15.4",

@@ -77,7 +77,7 @@ class IiifCanvasPresenter
     def simple_iiif_range
       # TODO: embed_title?
       IiifManifestRange.new(
-        label: { '@none'.to_sym => [stream_info[:embed_title]] },
+        label: { "none" => [stream_info[:embed_title]] },
         items: [
           IiifCanvasPresenter.new(master_file: master_file, stream_info: stream_info, media_fragment: 't=0,')
         ]
@@ -102,7 +102,7 @@ class IiifCanvasPresenter
       raise Nokogiri::XML::SyntaxError, "Empty root or Div node: #{div_node[:label]}" if items.empty?
 
       IiifManifestRange.new(
-        label: { '@none' => [div_node[:label]] },
+        label: { "none" => [div_node[:label]] },
         items: items
       )
     end
@@ -110,7 +110,7 @@ class IiifCanvasPresenter
     def span_to_iiif_range(span_node)
       fragment = "t=#{parse_hour_min_sec(span_node[:begin])},#{parse_hour_min_sec(span_node[:end])}"
       IiifManifestRange.new(
-        label: { '@none' => [span_node[:label]] },
+        label: { "none" => [span_node[:label]] },
         items: [
           IiifCanvasPresenter.new(master_file: master_file, stream_info: stream_info, media_fragment: fragment)
         ]
