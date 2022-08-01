@@ -13,7 +13,7 @@ Unless required by applicable law or agreed to in writing, software distributed
   specific language governing permissions and limitations under the License.
 ---  END LICENSE_HEADER BLOCK  ---
 %>
-<% current_checkout=@media_object.current_checkout(current_user.id) %>
+<% current_checkout=@media_object.current_checkout(current_user.id) if current_user %>
 <% if (can? :read, @media_object) && !current_checkout.nil? %>
   <div class=<%= (can? :update, @media_object) ? "col-sm-7" : "col-sm-12"%>>
     <div class="cdl-controls" >
