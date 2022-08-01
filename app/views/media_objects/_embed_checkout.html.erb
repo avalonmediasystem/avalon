@@ -13,7 +13,8 @@ Unless required by applicable law or agreed to in writing, software distributed
   specific language governing permissions and limitations under the License.
 ---  END LICENSE_HEADER BLOCK  ---
 %>
-  <% master_file=@media_object.master_files.first if @media_object.master_files.size > 0%>
+<% if !@masterFiles.blank? %>
+  <% master_file=@media_object.master_files.first %>
   <div class="checkout <%= master_file.is_video? ? 'video' : 'audio' %>" style="height: <%= master_file.is_video? ? 400 : 100 %>px">
     <% if  @media_object.lending_status == "available" %>
       <%= t('media_object.cdl.checkout_message').html_safe %>
@@ -22,3 +23,8 @@ Unless required by applicable law or agreed to in writing, software distributed
       <%= t('media_object.cdl.not_available_message').html_safe %>
     <% end %>
   </div>
+<% else %>
+  <div class="alert">
+    <p>No media is associated with this item</p>
+  </div>
+<% end %>
