@@ -26,5 +26,12 @@ Unless required by applicable law or agreed to in writing, software distributed
   </h1>
 </div>
 
-<%= render 'administrative_links' %>
+<div class="row">
+  <% if can? :update, @media_object %>
+    <div class="col-sm-5 mb-3">
+      <%= render 'administrative_links' %>
+    </div>
+  <% end %>
+  <%= render 'destroy_checkout' %>
+</div>
 <%= render 'item_view' %>
