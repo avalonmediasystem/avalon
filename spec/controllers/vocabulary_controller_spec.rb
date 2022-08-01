@@ -93,8 +93,8 @@ describe VocabularyController, type: :controller do
         expect(Avalon::ControlledVocabulary.vocabulary[:units]).to include("New Unit")
       end
     end
-    context "new unit is a key value pair" do
-      it "should add unit to controlled vocabulary" do
+    context "new entry is a key value pair" do
+      it "should add to controlled vocabulary" do
         put 'update', params: { format:'json', id: :identifier_types, entry: { key: 'value' } }
         expect(Avalon::ControlledVocabulary.vocabulary[:identifier_types]).to include({ 'key' => 'value' })
       end
