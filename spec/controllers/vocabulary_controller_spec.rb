@@ -1,11 +1,11 @@
 # Copyright 2011-2022, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
-# 
+#
 # You may obtain a copy of the License at
-# 
+#
 # http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software distributed
 #   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
 #   CONDITIONS OF ANY KIND, either express or implied. See the License for the
@@ -87,9 +87,17 @@ describe VocabularyController, type: :controller do
     end
   end
   describe "#update" do
-    it "should add unit to controlled vocabulary" do
-      put 'update', params: { format:'json', id: :units, entry: 'New Unit' }
-      expect(Avalon::ControlledVocabulary.vocabulary[:units]).to include("New Unit")
+    context "new unit is a string" do
+      it "should add unit to controlled vocabulary" do
+        put 'update', params: { format:'json', id: :units, entry: 'New Unit' }
+        expect(Avalon::ControlledVocabulary.vocabulary[:units]).to include("New Unit")
+      end
+    end
+    context "new unit is a key value pair" do
+      it "should add unit to controlled vocabulary" do
+        put 'update', params: { format:'json', id: :identifier_types, entry: { key: 'value' } }
+        expect(Avalon::ControlledVocabulary.vocabulary[:identifier_types]).to include({ 'key' => 'value' })
+      end
     end
     it "should return 404 if requested vocabulary not present" do
       put 'update', params: { format:'json', id: :doesnt_exist, entry: 'test' }
@@ -106,6 +114,18 @@ describe VocabularyController, type: :controller do
     it "should return 422 if update fails" do
       allow(Avalon::ControlledVocabulary).to receive(:vocabulary=).and_return(false)
       put 'update', params: { format:'json', id: :units }
+      expect(response.status).to eq(422)
+      expect(JSON.parse(response.body)["errors"].class).to eq Array
+      expect(JSON.parse(response.body)["errors"].first.class).to eq String
+    end
+    it "should return 422 if update is a key/value when the vocab uses single values" do
+      put 'update', params: { format:'json', id: :units, entry: { key: 'value' } }
+      expect(response.status).to eq(422)
+      expect(JSON.parse(response.body)["errors"].class).to eq Array
+      expect(JSON.parse(response.body)["errors"].first.class).to eq String
+    end
+    it "should return 422 if update is a value when the vocab uses key/value pairs" do
+      put 'update', params: { format:'json', id: :identifier_types, entry: "New Unit" }
       expect(response.status).to eq(422)
       expect(JSON.parse(response.body)["errors"].class).to eq Array
       expect(JSON.parse(response.body)["errors"].first.class).to eq String

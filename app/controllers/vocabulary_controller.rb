@@ -1,11 +1,11 @@
 # Copyright 2011-2022, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
-# 
+#
 # You may obtain a copy of the License at
-# 
+#
 # http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software distributed
 #   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
 #   CONDITIONS OF ANY KIND, either express or implied. See the License for the
@@ -33,7 +33,20 @@ class VocabularyController < ApplicationController
     end
 
     v = Avalon::ControlledVocabulary.vocabulary
-    v[params[:id].to_sym] |= Array(params[:entry])
+    if vocabulary_params[:entry].is_a?(ActionController::Parameters)
+      begin
+        new_entry = vocabulary_params[:entry].to_hash
+        v[params[:id].to_sym].merge!(new_entry)
+      rescue NoMethodError
+        render json: {errors: ["#{params[:id]} entries must not be a key/value pair."]}, status: 422 and return
+      end
+    else
+      begin
+        v[params[:id].to_sym] |= Array(params[:entry])
+      rescue NoMethodError
+        render json: {errors: ["#{params[:id]} entries must be a key/value pair."]}, status: 422 and return
+      end
+    end
     result = Avalon::ControlledVocabulary.vocabulary = v
     if result
       head :ok, content_type: 'application/json'
@@ -50,4 +63,7 @@ class VocabularyController < ApplicationController
     end
   end
 
+  def vocabulary_params
+    params.permit(:entry => {})
+  end
 end
