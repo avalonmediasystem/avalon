@@ -57,7 +57,6 @@ class Ability
 
       if @user_groups.include? "manager"
         can :create, Admin::Collection
-        can :items, Admin::Collection
       end
     end
   end
@@ -80,7 +79,7 @@ class Ability
       cannot :read, Admin::Collection unless (full_login? || is_api_request?)
 
       if full_login? || is_api_request?
-        can :read, Admin::Collection do |collection|
+        can [:read, :items], Admin::Collection do |collection|
           is_member_of?(collection)
         end
 
