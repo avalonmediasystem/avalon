@@ -117,8 +117,8 @@ class CheckoutsController < ApplicationController
     def user_array(checkout)
       [
         view_context.link_to(checkout.media_object.title, main_app.media_object_url(checkout.media_object)),
-        Checkout.date_parser(checkout.checkout_time),
-        Checkout.date_parser(checkout.return_time),
+        checkout.checkout_time.to_s(:long_ordinal_12h),
+        checkout.return_time.to_s(:long_ordinal_12h),
         time_remaining(checkout),
         checkout_actions(checkout)
       ]

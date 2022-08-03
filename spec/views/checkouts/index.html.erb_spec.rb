@@ -3,7 +3,7 @@ require 'rails_helper'
 RSpec.describe "checkouts/index", type: :view do
   let(:user) { FactoryBot.create(:user) }
   let(:ability) { Ability.new(user) }
-  let(:checkouts) { [FactoryBot.create(:checkout), FactoryBot.create(:checkout)] }
+  let(:checkouts) { [FactoryBot.create(:checkout, checkout_time: Time.new(2000, 01, 13, 12, 0, 0)), FactoryBot.create(:checkout)] }
   before(:each) do
     assign(:checkouts, checkouts)
     allow(view).to receive(:current_user).and_return(user)
@@ -49,6 +49,13 @@ RSpec.describe "checkouts/index", type: :view do
     it 'is a link' do
       render
       assert_select "tr>td", html: "<a href=\"#{media_object_url(checkouts.first.media_object_id)}\">#{checkouts.first.media_object.title}</a>"
+    end
+  end
+  describe 'checkout and return time' do
+    it 'renders a human readable string' do
+      render
+      assert_select "tr>td", text: checkouts.first.checkout_time.to_s(:long_ordinal_12h)
+      expect(rendered).to include('January 13th, 2000 12:00 PM')
     end
   end
 end
