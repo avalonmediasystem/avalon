@@ -13,6 +13,10 @@ class Checkout < ApplicationRecord
     MediaObject.find(media_object_id)
   end
 
+  def self.date_parser(date_time)
+    date_time.strftime("%B #{date_time.strftime("%-d").to_i.ordinalize}, %Y %l:%M %p")
+  end
+
   private
 
     def set_checkout_return_times!

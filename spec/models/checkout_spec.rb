@@ -2,6 +2,8 @@ require 'rails_helper'
 require 'cancan/matchers'
 
 RSpec.describe Checkout, type: :model do
+  include ActiveSupport::Testing::TimeHelpers
+
   let(:checkout) { FactoryBot.create(:checkout) }
 
   describe 'validations' do
@@ -86,6 +88,18 @@ RSpec.describe Checkout, type: :model do
 
     it 'returns the checked out MediaObject' do
       expect(checkout.media_object).to eq media_object
+    end
+  end
+
+  describe 'date_parser' do
+    before { Time.stub(:now) { Time.new(2000,01,13,12,00) } }
+    let(:checkout) { FactoryBot.create(:checkout, checkout_time: Time.now, return_time: Time.now + 1.day) }
+    it 'parses DateTime values into strings'do
+      expect(Checkout.date_parser(checkout.checkout_time)).to be_a(String)
+      expect(Checkout.date_parser(checkout.return_time)).to be_a(String)
+    end
+    it 'parses the dates to be human readable' do
+      expect(Checkout.date_parser(checkout.checkout_time)).to eq("January 13th, 2000 12:00 PM")
     end
   end
 end

@@ -117,8 +117,8 @@ class CheckoutsController < ApplicationController
     def user_array(checkout)
       [
         view_context.link_to(checkout.media_object.title, main_app.media_object_url(checkout.media_object)),
-        checkout.checkout_time.to_s(:long_ordinal),
-        checkout.return_time.to_s(:long_ordinal),
+        Checkout.date_parser(checkout.checkout_time),
+        Checkout.date_parser(checkout.return_time),
         time_remaining(checkout),
         checkout_actions(checkout)
       ]
@@ -134,9 +134,9 @@ class CheckoutsController < ApplicationController
 
     def checkout_actions(checkout)
       if checkout.return_time > DateTime.current
-        view_context.link_to('Return', return_checkout_url(checkout), class: 'btn btn-danger btn-xs', method: :patch, data: { confirm: "Are you sure you want to return this item?" })
+        view_context.link_to('Return', return_checkout_url(checkout), class: 'btn btn-outline btn-xs', method: :patch)
       elsif checkout.return_time < DateTime.current && checkout.media_object.lending_status == 'available'
-        view_context.link_to('Checkout', checkouts_url(params: { checkout: { media_object_id: checkout.media_object_id }, format: :json }), class: 'btn btn-primary btn-xs', method: :post)
+        view_context.link_to('Checkout', checkouts_url(params: { checkout: { media_object_id: checkout.media_object_id } }), class: 'btn btn-primary btn-xs', method: :post)
       else
         'Item Unavailable'
       end
