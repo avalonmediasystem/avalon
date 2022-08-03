@@ -1,11 +1,11 @@
 # Copyright 2011-2022, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
-# 
+#
 # You may obtain a copy of the License at
-# 
+#
 # http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software distributed
 #   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
 #   CONDITIONS OF ANY KIND, either express or implied. See the License for the
@@ -264,6 +264,34 @@ describe Admin::CollectionsController, type: :controller do
       #TODO add check that mediaobject is serialized to json properly
     end
 
+    context 'user is a collection manager' do
+      let(:manager) { FactoryBot.create(:manager) }
+      before(:each) do
+        ApiToken.create token: 'manager_token', username: manager.username, email: manager.email
+        request.headers['Avalon-Api-Key'] = 'manager_token'
+      end
+      context 'user does not manage this collection' do
+        it "should return a 401 response code" do
+          get 'items', params: { id: collection.id, format: 'json' }
+          expect(response.status).to eq(401)
+        end
+        it 'should not return json for specific collection\'s media_objects' do
+          get 'items', params: { id: collection.id, format: 'json' }
+          expect(response.body).to be_empty
+        end
+      end
+      context 'user manages this collection' do
+        let!(:collection) { FactoryBot.create(:collection, items: 2, managers: [manager.username]) }
+        it "should not return a 401 response code" do
+          get 'items', params: { id: collection.id, format: 'json' }
+          expect(response.status).not_to eq(401)
+        end
+        it "should return json for specific collection's media objects" do
+          get 'items', params: { id: collection.id, format: 'json' }
+          expect(JSON.parse(response.body)).to include(collection.media_objects[0].id,collection.media_objects[1].id)
+        end
+      end
+    end
   end
 
   describe "#create" do
