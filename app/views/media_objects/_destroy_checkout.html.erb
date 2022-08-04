@@ -14,35 +14,38 @@ Unless required by applicable law or agreed to in writing, software distributed
 ---  END LICENSE_HEADER BLOCK  ---
 %>
 <% if can? :read, @media_object %>
+  <% current_checkout=@media_object.current_checkout(current_user.id) %>
   <div class="cdl-controls" >
-    <% current_checkout=@media_object.current_checkout(current_user.id) %>
     <% if @media_object.lending_status == "checked_out" && !current_checkout.nil? %>
-      <%= button_tag "Return Item", id: "return-btn", rel: "popover", class: "btn btn-danger",
-              data: { checkout_id: current_checkout.id, checkout_returntime: current_checkout.return_time } %>
+      <%= link_to 'Return now', return_checkout_url(current_checkout), class: 'btn btn-danger', method: :patch,
+       id: "return-btn", data: { checkout_returntime: current_checkout.return_time } %>
       <div class="remaining-time">
         <p><small>Time <br />remaining: </small></p>
         <span class="days">0 <br />days</span>
         <span class="time">00:00:00 <br />hh:mm:ss</span>
       </div>
+      <div id="check-out-expired" class="modal fade" role="dialog" data-backdrop="static">
+        <div class="modal-dialog modal-lg">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h4 class='modal-title'>
+                <%= t('media_object.cdl.expire.heading') %>
+              </h4>
+            </div>
+            <div class="modal-body">
+              <p><%= t('media_object.cdl.expire.message') %></p>
+            </div>
+            <div class="modal-footer">
+              <%= link_to 'Return now', return_checkout_url(current_checkout), class: 'btn btn-danger', method: :patch,
+                data: { dismiss: "modal" } %>
+            </div>
+          </div>
+        </div>
+      </div>
     <% end %>
   </div>
 <% end %>
 
-<div id="check-out-expired" class="modal fade" role="dialog" data-backdrop="static">
-  <div class="modal-dialog modal-lg">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h4 class='modal-title'><%= t('media_object.cdl.expire.heading') %></h4>
-      </div>
-      <div class="modal-body">
-        <p><%= t('media_object.cdl.expire.message') %></p>
-      </div>
-      <div class="modal-footer">
-        <a href="#" data-dismiss="modal" aria-hidden="true" onclick="confirm_return()" class="btn btn-danger">Return Item</a>
-      </div>
-    </div>
-  </div>
-</div>
 
 <% content_for :page_scripts do %>
   <script>
@@ -93,45 +96,5 @@ Unless required by applicable law or agreed to in writing, software distributed
         }
       }
     });
-
-    /* Popover dialog for item return */
-    var popover_content = '<p>Are you sure you want to return this item?<p>' +
-      '<div>' +
-      '<button type="submit" onclick="confirm_return()" class="btn btn-danger btn-sm btn-confirm" style="margin-right:5px;">Yes</button>' +
-      '<button type="submit" onclick="cancel_return()" class="btn btn-primary btn-sm btn-confirm">No, Cancel</button>' +
-      '</div>'
-    var popover_template = '<div class="popover" role="tooltip" style="width: 12em;">' +
-      '<div class="arrow"></div>' +
-      '<h3 class="popover-header"></h3>' +
-      '<div class="popover-body"></div>' +
-      '</div>'
-
-    $('#return-btn').popover({
-      trigger: 'click',
-      html: true,
-      sanitize: false,
-      placement: 'bottom',
-      title: 'Are you sure?',
-      template: popover_template,
-      content: popover_content
-    });
-
-    var cancel_return = function (event) {
-      $('#return-btn').popover('hide');
-    }
-
-    var confirm_return = function (event) {
-      $.ajax({
-        url: '/checkouts/' + $('#return-btn').data().checkoutId + '/return.json',
-        type: "POST",
-        data: {
-          _method: 'patch'
-        },
-        complete: function () {
-          $('#return-btn').popover('hide');
-          location.reload();
-        }
-      });
-    }
   </script>
 <% end %>

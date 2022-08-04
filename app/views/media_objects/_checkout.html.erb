@@ -17,5 +17,29 @@ Unless required by applicable law or agreed to in writing, software distributed
 <%= form_for(Checkout.new, html: { style: "display: inline;" }) do |f| %>
   <%= hidden_field_tag "authenticity_token", form_authenticity_token %>
   <%= hidden_field_tag "checkout[media_object_id]", media_object_id %>
-  <%= f.submit "Check Out", class: "btn btn-secondary" %>
+  <%= f.submit "Check Out", class: "btn btn-info check-out-btn", data: { lending_period: @media_object.lending_period } %>
+<% end %>
+
+<% content_for :page_scripts do %>
+  <script>
+    $(".check-out-btn").hover(
+      function() {
+        var lending_period = $(this).data().lendingPeriod;
+        var lending_period_str = '';
+        if(lending_period > 0) {
+          var days = Math.floor(lending_period / (3600 * 24));
+          lending_period -= days * (3600 * 24);
+          if(days > 0) { lending_period_str += `${days} days`};
+
+          var hours = Math.floor((lending_period / (60 * 60)) % 24);
+          lending_period -= hours * (60 * 60);
+          if(hours > 0) { lending_period_str += ` ${hours} hours`};
+
+          $(this).val(`Borrow for ${lending_period_str}`);
+        }
+      }, function() {
+        $(this).val('Check Out');
+      }
+    );
+  </script>
 <% end %>

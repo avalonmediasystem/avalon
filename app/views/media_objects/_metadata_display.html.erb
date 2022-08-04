@@ -73,7 +73,7 @@ Unless required by applicable law or agreed to in writing, software distributed
     </div>
     <div class="card-body">
       <%= @media_object.access_text %> <br />
-      <b>Lending Period:</b> <%= ActiveSupport::Duration.build(@media_object.lending_period).to_day_hour_s %>
+      Lending Period: <%= ActiveSupport::Duration.build(@media_object.lending_period).to_day_hour_s %>
     </div>
   </div>
 

@@ -1204,6 +1204,31 @@ td {
 .checkout {
   background-color: $dark;
   color: $white;
+
+  p {
+    position: relative;
+    text-align: center;
+  }
+
+  form {
+    position: relative;
+    left: 25%;
+  }
+
+  .centered {
+    margin: auto;
+    position: absolute;
+    width: 50%;
+    left: 25%;
+  }
+
+  .centered.video {
+    top: -50%;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 4rem;
+  }
 }
 
 .checkout.audio {
