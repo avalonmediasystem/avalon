@@ -14,6 +14,22 @@ Unless required by applicable law or agreed to in writing, software distributed
 ---  END LICENSE_HEADER BLOCK  ---
 %>
 <% if can? :update, @media_object %>
+  <p>
+    <ul class="unstyled" style="display: none;">
+      <li>
+        <% if @media_object.published? %>
+        <span class="label label-success">Published</span> Authorized users can view the item</li>
+      <% else %>
+      <span class="label label-important">Unpublished</span> Users cannot view the item</li>
+      <% end %>
+      <li>
+        <% unless @media_object.discover_groups.include? "nobody" %>
+        <span class="label label-success">Visible</span> Users can search for the item</li>
+      <% else %>
+      <span class="label label-important">Hidden</span> Users cannot search for the item</li>
+      <% end %>
+    </ul>
+  </p>
   <div id="administrative_options">
     <%= link_to 'Edit', edit_media_object_path(@media_object), class: 'btn btn-primary' %>
 
