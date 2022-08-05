@@ -32,12 +32,12 @@
             <td><%= checkout.user.user_key %></td>
           <% end %>
           <td><%= link_to checkout.media_object.title, main_app.media_object_url(checkout.media_object) %></td>
-          <td><%= checkout.checkout_time.to_s(:long_ordinal) %></td>
-          <td><%= checkout.return_time.to_s(:long_ordinal) %></td>
+          <td><%= checkout.checkout_time.to_s(:long_ordinal_12h) %></td>
+          <td><%= checkout.return_time.to_s(:long_ordinal_12h) %></td>
           <td><%= distance_of_time_in_words(checkout.return_time - DateTime.current) %></td>
           <td>
             <% if checkout.return_time > DateTime.current %>
-              <%= link_to 'Return', return_checkout_url(checkout), class: 'btn btn-danger btn-xs', method: :patch, data: { confirm: "Are you sure you want to return this item?" } %>
+              <%= link_to 'Return', return_checkout_url(checkout), class: 'btn btn-outline btn-xs', method: :patch %>
             <% elsif checkout.return_time < DateTime.current && checkout.media_object.lending_status == 'available' %>
               <%= link_to 'Checkout', checkouts_url(params: { checkout: { media_object_id: checkout.media_object_id } }), class: 'btn btn-primary btn-xs', method: :post %>
             <% else %>
