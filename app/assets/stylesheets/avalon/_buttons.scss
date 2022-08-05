@@ -39,11 +39,6 @@ button.close {
   }
 }
 
-.check-out-btn {
-  // transition: transform 2s;
-  backface-visibility: hidden;
-}
-
 .check-out-btn:hover {
   transform:scale(1.1);
   -webkit-transform:scale(1.1);
