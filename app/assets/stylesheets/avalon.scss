@@ -1171,7 +1171,7 @@ td {
 /* CDL controls on view page styles */
 .cdl-controls {
   display: inline-flex;
-  margin-bottom: 10px;
+  margin-bottom: 1rem;
   height: 2.5rem;
   float: right;
 
@@ -1187,17 +1187,18 @@ td {
 
   .remaining-time p {
     line-height: 1rem;
-    margin-left: 1rem;
+    margin: 0.25rem;
     text-align: left;
   }
 
   .remaining-time span{
     color: #fff;
-    margin-left: 3px;
-    padding: 2px 5px;
-    border-radius: 3px;
+    margin-left: 0.25rem;
+    padding: 0.15rem 0.25rem;
+    border-radius: 0.15rem;
     background: $primary;
-    font-size: x-small;
+    font-size: small;
+    line-height: initial;
   }
 }
 

@@ -20,9 +20,9 @@ Unless required by applicable law or agreed to in writing, software distributed
       <%= link_to 'Return now', return_checkout_url(current_checkout), class: 'btn btn-danger', method: :patch,
        id: "return-btn", data: { checkout_returntime: current_checkout.return_time } %>
       <div class="remaining-time">
-        <p><small>Time <br />remaining: </small></p>
+        <%= t('media_object.cdl.time_remaining').html_safe %>
         <span class="days">0 <br />days</span>
-        <span class="time">00:00:00 <br />hh:mm:ss</span>
+        <span class="time">00:00 <br />hh:mm</span>
       </div>
       <div id="check-out-expired" class="modal fade" role="dialog" data-backdrop="static">
         <div class="modal-dialog modal-lg">
@@ -66,18 +66,18 @@ Unless required by applicable law or agreed to in writing, software distributed
           seconds -= hours * (60 * 60);
 
           var minutes = Math.floor((seconds / 60) % 60);
-          seconds -= minutes * 60;
 
-          seconds = Math.floor(seconds);
-
-          return { days, hours, minutes, seconds };
+          return { days, hours, minutes };
         } else {
           console.log('Check Out Expired.');
           return 'expired';
         }
       }
 
-      var interval = setInterval(setTime, 1000);
+      // Set timer on page load
+      setTime();
+      // Check for remaining time on a minute interval
+      var interval = setInterval(setTime, 60000);
 
       /* Interval update remaining time in the lending period */
       function setTime() {
@@ -87,10 +87,10 @@ Unless required by applicable law or agreed to in writing, software distributed
           clearInterval(interval);
           $('#check-out-expired').modal('show');
         } else {
-          const { days, hours, minutes, seconds } = remainingTime;
+          const { days, hours, minutes } = remainingTime;
           var daysText = `${days}<br />day${days > 1 ? 's': ''}`;
           $('.days').html(daysText);
-          var timeText = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}<br />hh:mm:ss`;
+          var timeText = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}<br />hh:mm`;
           $('.time').html(timeText);
         }
         }

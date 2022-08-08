@@ -25,6 +25,7 @@ en:
     cdl:
       checkout_message: "<p>Borrow this item to access media resources.</p>"
       not_available_message: "<p>This resource is not available to be checked out at the moment. Please check again later.</p>"
+      time_remaining: "<p>Time <br />remaining: </p>"
       expire:
         heading: "Check Out Expired!"
         message: "Your lending period has been expired. Please return the item, and check for availability later."
