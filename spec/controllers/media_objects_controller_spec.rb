@@ -754,7 +754,173 @@ describe MediaObjectsController, type: :controller do
 
     context "Conditional Share partials should be rendered" do
       let!(:media_object) { FactoryBot.create(:published_media_object, :with_master_file, visibility: 'public') }
-      context "With check out" do
+      context 'With cdl enabled' do
+        before { allow(Settings.controlled_digital_lending).to receive(:enable).and_return(true) }
+        context "With check out" do
+          context "Normal login" do
+            it "administrators: should include lti, embed, and share" do
+              login_as(:administrator)
+              FactoryBot.create(:checkout, media_object_id: media_object.id, user_id: controller.current_user.id)
+              get :show, params: { id: media_object.id }
+              expect(response).to render_template(:_share_resource)
+              expect(response).to render_template(:_embed_resource)
+              expect(response).to render_template(:_lti_url)
+            end
+            it "managers: should include lti, embed, and share" do
+              login_user media_object.collection.managers.first
+              FactoryBot.create(:checkout, media_object_id: media_object.id, user_id: controller.current_user.id)
+              get :show, params: { id: media_object.id }
+              expect(response).to render_template(:_share_resource)
+              expect(response).to render_template(:_embed_resource)
+              expect(response).to render_template(:_lti_url)
+            end
+            it "editors: should include lti, embed, and share" do
+              login_user media_object.collection.editors.first
+              FactoryBot.create(:checkout, media_object_id: media_object.id, user_id: controller.current_user.id)
+              get :show, params: { id: media_object.id }
+              expect(response).to render_template(:_share_resource)
+              expect(response).to render_template(:_embed_resource)
+              expect(response).to render_template(:_lti_url)
+            end
+            it "others: should include embed and share and NOT lti" do
+              login_as(:user)
+              FactoryBot.create(:checkout, media_object_id: media_object.id, user_id: controller.current_user.id)
+              get :show, params: { id: media_object.id }
+              expect(response).to render_template(:_share_resource)
+              expect(response).to render_template(:_embed_resource)
+              expect(response).to_not render_template(:_lti_url)
+            end
+          end
+          context "LTI login" do
+            it "administrators/managers/editors: should include lti, embed, and share" do
+              login_lti 'administrator'
+              lti_group = @controller.user_session[:virtual_groups].first
+              FactoryBot.create(:published_media_object, visibility: 'private', read_groups: [lti_group])
+              FactoryBot.create(:checkout, media_object_id: media_object.id, user_id: controller.current_user.id)
+              get :show, params: { id: media_object.id }
+              expect(response).to render_template(:_share_resource)
+              expect(response).to render_template(:_embed_resource)
+              expect(response).to render_template(:_lti_url)
+            end
+            it "others: should include only lti" do
+              login_lti 'student'
+              lti_group = @controller.user_session[:virtual_groups].first
+              FactoryBot.create(:published_media_object, visibility: 'private', read_groups: [lti_group])
+              FactoryBot.create(:checkout, media_object_id: media_object.id, user_id: controller.current_user.id)
+              get :show, params: { id: media_object.id }
+              expect(response).to_not render_template(:_share_resource)
+              expect(response).to_not render_template(:_embed_resource)
+              expect(response).to render_template(:_lti_url)
+            end
+          end
+          context "No share tabs rendered" do
+            before do
+              @original_conditional_partials = controller.class.conditional_partials.deep_dup
+              controller.class.conditional_partials[:share].each {|partial_name, conditions| conditions[:if] = false }
+            end
+            after do
+              controller.class.conditional_partials = @original_conditional_partials
+            end
+            it "should not render Share button" do
+              # allow(@controller).to receive(:evaluate_if_unless_configuration).and_return false
+              # allow(@controller).to receive(:is_editor_or_not_lti).and_return false
+              expect(response).to_not render_template(:_share)
+            end
+          end
+          context "No LTI configuration" do
+            around do |example|
+              providers = Avalon::Authentication::Providers
+              Avalon::Authentication::Providers = Avalon::Authentication::Providers.reject{|p| p[:provider] == :lti}
+              example.run
+              Avalon::Authentication::Providers = providers
+            end
+            it "should not include lti" do
+              login_as(:administrator)
+              FactoryBot.create(:checkout, media_object_id: media_object.id, user_id: controller.current_user.id)
+              get :show, params: { id: media_object.id }
+              expect(response).to render_template(:_share_resource)
+              expect(response).to render_template(:_embed_resource)
+              expect(response).to_not render_template(:_lti_url)
+            end
+          end
+        end
+        context "Without check out" do
+          context "Normal login" do
+            it "administrators: should include lti, embed, and share" do
+              login_as(:administrator)
+              get :show, params: { id: media_object.id }
+              expect(response).not_to render_template(:_share_resource)
+              expect(response).to render_template(:_embed_checkout)
+            end
+            it "managers: should include lti, embed, and share" do
+              login_user media_object.collection.managers.first
+              get :show, params: { id: media_object.id }
+              expect(response).not_to render_template(:_share_resource)
+              expect(response).to render_template(:_embed_checkout)
+            end
+            it "editors: should include lti, embed, and share" do
+              login_user media_object.collection.editors.first
+              get :show, params: { id: media_object.id }
+              expect(response).not_to render_template(:_share_resource)
+              expect(response).to render_template(:_embed_checkout)
+            end
+            it "others: should include embed and share and NOT lti" do
+              login_as(:user)
+              get :show, params: { id: media_object.id }
+              expect(response).not_to render_template(:_share_resource)
+              expect(response).to render_template(:_embed_checkout)
+            end
+          end
+          context "LTI login" do
+            it "administrators/managers/editors: should include lti, embed, and share" do
+              login_lti 'administrator'
+              lti_group = @controller.user_session[:virtual_groups].first
+              FactoryBot.create(:published_media_object, visibility: 'private', read_groups: [lti_group])
+              get :show, params: { id: media_object.id }
+              expect(response).not_to render_template(:_share_resource)
+              expect(response).to render_template(:_embed_checkout)
+            end
+            it "others: should include only lti" do
+              login_lti 'student'
+              lti_group = @controller.user_session[:virtual_groups].first
+              FactoryBot.create(:published_media_object, visibility: 'private', read_groups: [lti_group])
+              get :show, params: { id: media_object.id }
+              expect(response).not_to render_template(:_share_resource)
+              expect(response).to render_template(:_embed_checkout)
+            end
+          end
+          context "No share tabs rendered" do
+            before do
+              @original_conditional_partials = controller.class.conditional_partials.deep_dup
+              controller.class.conditional_partials[:share].each {|partial_name, conditions| conditions[:if] = false }
+            end
+            after do
+              controller.class.conditional_partials = @original_conditional_partials
+            end
+            it "should not render Share button" do
+              # allow(@controller).to receive(:evaluate_if_unless_configuration).and_return false
+              # allow(@controller).to receive(:is_editor_or_not_lti).and_return false
+              expect(response).to_not render_template(:_share)
+            end
+          end
+          context "No LTI configuration" do
+            around do |example|
+              providers = Avalon::Authentication::Providers
+              Avalon::Authentication::Providers = Avalon::Authentication::Providers.reject{|p| p[:provider] == :lti}
+              example.run
+              Avalon::Authentication::Providers = providers
+            end
+            it "should not include lti" do
+              login_as(:administrator)
+              get :show, params: { id: media_object.id }
+              expect(response).not_to render_template(:_share_resource)
+              expect(response).to render_template(:_embed_checkout)
+            end
+          end
+        end
+      end
+      context "With cdl disabled" do
+        before { allow(Settings.controlled_digital_lending).to receive(:enable).and_return(false) }
         context "Normal login" do
           it "administrators: should include lti, embed, and share" do
             login_as(:administrator)
@@ -839,80 +1005,6 @@ describe MediaObjectsController, type: :controller do
             expect(response).to render_template(:_share_resource)
             expect(response).to render_template(:_embed_resource)
             expect(response).to_not render_template(:_lti_url)
-          end
-        end
-      end
-      context "Without check out" do
-        context "Normal login" do
-          it "administrators: should include lti, embed, and share" do
-            login_as(:administrator)
-            get :show, params: { id: media_object.id }
-            expect(response).not_to render_template(:_share_resource)
-            expect(response).to render_template(:_embed_checkout)
-          end
-          it "managers: should include lti, embed, and share" do
-            login_user media_object.collection.managers.first
-            get :show, params: { id: media_object.id }
-            expect(response).not_to render_template(:_share_resource)
-            expect(response).to render_template(:_embed_checkout)
-          end
-          it "editors: should include lti, embed, and share" do
-            login_user media_object.collection.editors.first
-            get :show, params: { id: media_object.id }
-            expect(response).not_to render_template(:_share_resource)
-            expect(response).to render_template(:_embed_checkout)
-          end
-          it "others: should include embed and share and NOT lti" do
-            login_as(:user)
-            get :show, params: { id: media_object.id }
-            expect(response).not_to render_template(:_share_resource)
-            expect(response).to render_template(:_embed_checkout)
-          end
-        end
-        context "LTI login" do
-          it "administrators/managers/editors: should include lti, embed, and share" do
-            login_lti 'administrator'
-            lti_group = @controller.user_session[:virtual_groups].first
-            FactoryBot.create(:published_media_object, visibility: 'private', read_groups: [lti_group])
-            get :show, params: { id: media_object.id }
-            expect(response).not_to render_template(:_share_resource)
-            expect(response).to render_template(:_embed_checkout)
-          end
-          it "others: should include only lti" do
-            login_lti 'student'
-            lti_group = @controller.user_session[:virtual_groups].first
-            FactoryBot.create(:published_media_object, visibility: 'private', read_groups: [lti_group])
-            get :show, params: { id: media_object.id }
-            expect(response).not_to render_template(:_share_resource)
-            expect(response).to render_template(:_embed_checkout)
-          end
-        end
-        context "No share tabs rendered" do
-          before do
-            @original_conditional_partials = controller.class.conditional_partials.deep_dup
-            controller.class.conditional_partials[:share].each {|partial_name, conditions| conditions[:if] = false }
-          end
-          after do
-            controller.class.conditional_partials = @original_conditional_partials
-          end
-          it "should not render Share button" do
-            # allow(@controller).to receive(:evaluate_if_unless_configuration).and_return false
-            # allow(@controller).to receive(:is_editor_or_not_lti).and_return false
-            expect(response).to_not render_template(:_share)
-          end
-        end
-        context "No LTI configuration" do
-          around do |example|
-            providers = Avalon::Authentication::Providers
-            Avalon::Authentication::Providers = Avalon::Authentication::Providers.reject{|p| p[:provider] == :lti}
-            example.run
-            Avalon::Authentication::Providers = providers
-          end
-          it "should not include lti" do
-            login_as(:administrator)
-            get :show, params: { id: media_object.id }
-            expect(response).not_to render_template(:_share_resource)
-            expect(response).to render_template(:_embed_checkout)
           end
         end
       end
@@ -1334,6 +1426,7 @@ describe MediaObjectsController, type: :controller do
       end
 
       context "lending period" do
+        before { allow(Settings.controlled_digital_lending).to receive(:enable).and_return(true) }
         it "sets a custom lending period" do
           expect { put :update, params: { id: media_object.id, step: 'access-control', donot_advance: 'true', add_lending_period_days: 7, add_lending_period_hours: 8 } }.to change { media_object.reload.lending_period }.to(633600)
         end

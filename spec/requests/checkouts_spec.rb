@@ -32,6 +32,8 @@ RSpec.describe "/checkouts", type: :request do
 
   before { sign_in(user) }
 
+  before { allow(Settings.controlled_digital_lending).to receive(:enable).and_return(true) }
+
   describe "GET /index" do
     before { checkout }
 
