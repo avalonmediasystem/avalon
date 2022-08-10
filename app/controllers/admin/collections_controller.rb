@@ -302,7 +302,7 @@ class Admin::CollectionsController < ApplicationController
     lending_period = build_default_lending_period(params[:add_lending_period_days], params[:add_lending_period_hours])
     if lending_period.positive?
       collection.default_lending_period = lending_period
-    elsif lending_period == 0
+    elsif lending_period.zero?
       flash[:error] = "Lending period must be greater than 0."
     else
       flash[:error] = "Lending period days and hours need to be positive integers."
