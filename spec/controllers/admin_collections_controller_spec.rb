@@ -462,7 +462,17 @@ describe Admin::CollectionsController, type: :controller do
       it "returns error if invalid" do
         expect { put 'update', params: { id: collection.id, save_access: "Save Access Settings", add_lending_period_days: -1, add_lending_period_hours: -1 } }.not_to change { collection.reload.default_lending_period }
         expect(response).to redirect_to(admin_collection_path(collection))
-        expect(flash[:notice]).to be_present
+        expect(flash[:error]).to be_present
+        expect { put 'update', params: { id: collection.id, save_access: "Save Access Settings", add_lending_period_days: 0, add_lending_period_hours: 0 } }.not_to change { collection.reload.default_lending_period }
+        expect(response).to redirect_to(admin_collection_path(collection))
+        expect(flash[:error]).to be_present
+      end
+
+      it "accepts 0 as a valid day or hour value" do
+        expect { put 'update', params: { id: collection.id, save_access: "Save Access Settings", add_lending_period_days: 0, add_lending_period_hours: 1 } }.to change { collection.reload.default_lending_period }.to(3600)
+        expect(flash[:error]).not_to be_present
+        expect { put 'update', params: { id: collection.id, save_access: "Save Access Settings", add_lending_period_days: 1, add_lending_period_hours: 0 } }.to change { collection.reload.default_lending_period }.to(86400)
+        expect(flash[:error]).not_to be_present
       end
     end
   end

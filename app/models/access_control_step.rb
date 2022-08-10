@@ -1,11 +1,11 @@
 # Copyright 2011-2022, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
-# 
+#
 # You may obtain a copy of the License at
-# 
+#
 # http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software distributed
 #   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
 #   CONDITIONS OF ANY KIND, either express or implied. See the License for the
@@ -101,6 +101,8 @@ class AccessControlStep < Avalon::Workflow::BasicStep
       lending_period = build_lending_period(context['add_lending_period_days'], context['add_lending_period_hours'])
       if lending_period.positive?
         media_object.lending_period = lending_period
+      elsif
+        context[:error] = "Lending_period must be greater than 0."
       else
         context[:error] = "Lending period days and hours need to be positive integers."
       end
