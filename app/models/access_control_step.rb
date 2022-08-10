@@ -102,7 +102,7 @@ class AccessControlStep < Avalon::Workflow::BasicStep
       if lending_period.positive?
         media_object.lending_period = lending_period
       elsif lending_period.zero?
-        context[:error] = "Lending_period must be greater than 0."
+        context[:error] = "Lending period must be greater than 0."
       else
         context[:error] = "Lending period days and hours need to be positive integers."
       end
