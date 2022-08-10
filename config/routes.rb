@@ -26,7 +26,7 @@ Rails.application.routes.draw do
     end
   end
 
-  resources :checkouts, only: [:index, :create, :show, :update, :destroy], :constraints => lambda { |request| Settings.controlled_digital_lending.enable } do
+  resources :checkouts, only: [:index, :create, :show, :update, :destroy], :constraints => lambda { |request| Avalon::Configuration.controlled_digital_lending_enabled? } do
     collection do
       patch :return_all
     end

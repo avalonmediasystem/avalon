@@ -299,11 +299,9 @@ class Admin::CollectionsController < ApplicationController
 
     collection.default_visibility = params[:visibility] unless params[:visibility].blank?
     collection.default_hidden = params[:hidden] == "1"
-    lending_period = build_default_lending_period(collection)
-    if lending_period.positive?
-      collection.default_lending_period = lending_period
-    elsif lending_period.zero?
-      flash[:error] = "Lending period must be greater than 0."
+    if Avalon::Configuration.controlled_digital_lending_enabled?
+      lending_period = build_default_lending_period(collection)
+      collection.default_lending_period = lending_period if lending_period.positive?
     end
   end
 
