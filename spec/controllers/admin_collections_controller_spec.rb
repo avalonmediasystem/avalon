@@ -463,9 +463,19 @@ describe Admin::CollectionsController, type: :controller do
         expect { put 'update', params: { id: collection.id, save_access: "Save Access Settings", add_lending_period_days: -1, add_lending_period_hours: -1 } }.not_to change { collection.reload.default_lending_period }
         expect(response).to redirect_to(admin_collection_path(collection))
         expect(flash[:error]).to be_present
+        expect(flash[:error]).to eq("Lending period must be greater than 0.")
+        put 'update', params: { id: collection.id, save_access: "Save Access Settings", add_lending_period_days: -1, add_lending_period_hours: 1 }
+        expect(response).to redirect_to(admin_collection_path(collection))
+        expect(flash[:error]).to be_present
+        expect(flash[:error]).to eq("Lending period days needs to be a positive integer.")
+        put 'update', params: { id: collection.id, save_access: "Save Access Settings", add_lending_period_days: 1, add_lending_period_hours: -1 }
+        expect(response).to redirect_to(admin_collection_path(collection))
+        expect(flash[:error]).to be_present
+        expect(flash[:error]).to eq("Lending period hours needs to be a positive integer.")
         expect { put 'update', params: { id: collection.id, save_access: "Save Access Settings", add_lending_period_days: 0, add_lending_period_hours: 0 } }.not_to change { collection.reload.default_lending_period }
         expect(response).to redirect_to(admin_collection_path(collection))
         expect(flash[:error]).to be_present
+        expect(flash[:error]).to eq("Lending period must be greater than 0.")
       end
 
       it "accepts 0 as a valid day or hour value" do

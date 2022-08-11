@@ -98,13 +98,11 @@ class AccessControlStep < Avalon::Workflow::BasicStep
     unless limited_access_submit
       media_object.visibility = context[:visibility] unless context[:visibility].blank?
       media_object.hidden = context[:hidden] == "1"
-      lending_period = build_lending_period(context['add_lending_period_days'], context['add_lending_period_hours'])
+      lending_period = build_lending_period(context)
       if lending_period.positive?
         media_object.lending_period = lending_period
       elsif lending_period.zero?
         context[:error] = "Lending period must be greater than 0."
-      else
-        context[:error] = "Lending period days and hours need to be positive integers."
       end
     end
 
@@ -128,10 +126,15 @@ class AccessControlStep < Avalon::Workflow::BasicStep
 
   private
 
-    def build_lending_period(d, h)
+    def build_lending_period(context)
       lending_period = 0
-      lending_period += d.to_i.days if d.to_i.positive?
-      lending_period += h.to_i.hours if h.to_i.positive?
+      errors = []
+      d = context["add_lending_period_days"].to_i
+      h = context["add_lending_period_hours"].to_i
+      d.negative? ? errors.append("Lending period days needs to be a positive integer.") : lending_period += d.days
+      h.negative? ? errors.append("Lending period hours needs to be a positive integer.") : lending_period += h.hours
+
+      context[:error] = errors.join if errors.present?
       lending_period.to_i
     rescue
       0

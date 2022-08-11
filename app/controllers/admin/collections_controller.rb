@@ -299,20 +299,22 @@ class Admin::CollectionsController < ApplicationController
 
     collection.default_visibility = params[:visibility] unless params[:visibility].blank?
     collection.default_hidden = params[:hidden] == "1"
-    lending_period = build_default_lending_period(params[:add_lending_period_days], params[:add_lending_period_hours])
+    lending_period = build_default_lending_period(collection)
     if lending_period.positive?
       collection.default_lending_period = lending_period
     elsif lending_period.zero?
       flash[:error] = "Lending period must be greater than 0."
-    else
-      flash[:error] = "Lending period days and hours need to be positive integers."
     end
   end
 
-  def build_default_lending_period(d, h)
+  def build_default_lending_period(collection)
     lending_period = 0
-    lending_period += d.to_i.days if d.to_i.positive?
-    lending_period += h.to_i.hours if h.to_i.positive?
+    d = params["add_lending_period_days"].to_i
+    h = params["add_lending_period_hours"].to_i
+    d.negative? ? collection.errors.add(:lending_period, "days needs to be a positive integer.") : lending_period += d.days
+    h.negative? ? collection.errors.add(:lending_period, "hours needs to be a positive integer.") : lending_period += h.hours
+
+    flash[:error] = collection.errors.full_messages.join if collection.errors.present?
     lending_period.to_i
   rescue
     0
