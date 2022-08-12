@@ -455,6 +455,7 @@ describe Admin::CollectionsController, type: :controller do
     end
 
     context "changing lending period" do
+      before { allow(Settings.controlled_digital_lending).to receive(:enable).and_return(true) }
       it "sets a custom lending period" do
         expect { put 'update', params: { id: collection.id, save_access: "Save Access Settings", add_lending_period_days: 7, add_lending_period_hours: 8 } }.to change { collection.reload.default_lending_period }.to(633600)
       end
@@ -483,6 +484,12 @@ describe Admin::CollectionsController, type: :controller do
         expect(flash[:error]).not_to be_present
         expect { put 'update', params: { id: collection.id, save_access: "Save Access Settings", add_lending_period_days: 1, add_lending_period_hours: 0 } }.to change { collection.reload.default_lending_period }.to(86400)
         expect(flash[:error]).not_to be_present
+      end
+
+      it "returns error if both day and hour are 0" do
+        expect { put 'update', params: { id: collection.id, save_access: "Save Access Settings", add_lending_period_days: 0, add_lending_period_hours: 0 } }.not_to change { collection.reload.default_lending_period }
+        expect(response).to redirect_to(admin_collection_path(collection))
+        expect(flash[:error]).to be_present
       end
     end
   end

@@ -172,7 +172,8 @@ en:
       or ffaa:aaff:bbcc:ddee:1122:3344:5566:7777/ffff:ffff:ffff:ffff:ffff:ffff:ffff:ff00
       Start and end dates are not required; if included, access for the specified IP Address(es) will start at the beginning of the start date and end at the beginning of the end date. Otherwise, access will be open ended for the specified IP Address(es).
     lending_period: |
-      Lending Period is the length of time that an item may be checked out for. 
+      Lending Period is the length of time that an item may be checked out for.
+      Day and Hour values must be positive integers.
 
   contact:
     title: 'Contact Us - %{application_name}'

@@ -73,7 +73,9 @@ Unless required by applicable law or agreed to in writing, software distributed
     </div>
     <div class="card-body">
       <%= @media_object.access_text %> <br />
-      Lending Period: <%= ActiveSupport::Duration.build(@media_object.lending_period).to_day_hour_s %>
+      <% if Avalon::Configuration.controlled_digital_lending_enabled? %>
+        Lending Period: <%= ActiveSupport::Duration.build(@media_object.lending_period).to_day_hour_s %>
+      <% end %>
     </div>
   </div>
 

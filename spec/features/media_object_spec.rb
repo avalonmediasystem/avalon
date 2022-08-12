@@ -1,11 +1,11 @@
 # Copyright 2011-2022, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
-# 
+#
 # You may obtain a copy of the License at
-# 
+#
 # http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software distributed
 #   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
 #   CONDITIONS OF ANY KIND, either express or implied. See the License for the
@@ -57,19 +57,32 @@ describe 'MediaObject' do
       visit media_object_path(media_object)
       expect(page.has_content?(summary)).to be_truthy
     end
-    it 'displays the contriburs properly' do
+    it 'displays the contributors properly' do
       contributor = 'Jamie Lannister'
       media_object.contributor = [contributor]
       media_object.save
       visit media_object_path(media_object)
       expect(page.has_content?(contributor)).to be_truthy
     end
-    it 'displays the lending period properly' do
-      lending_period = 90000
-      media_object.lending_period = lending_period
-      media_object.save
-      visit media_object_path(media_object)
-      expect(page.has_content?('1 day 1 hour')).to be_truthy
+    context 'cdl is enabled' do
+      before { allow(Settings.controlled_digital_lending).to receive(:enable).and_return(true) }
+      it 'displays the lending period properly' do
+        lending_period = 90000
+        media_object.lending_period = lending_period
+        media_object.save
+        visit media_object_path(media_object)
+        expect(page.has_content?('1 day 1 hour')).to be_truthy
+      end
+    end
+    context 'cdl is disabled' do
+      before { allow(Settings.controlled_digital_lending).to receive(:enable).and_return(false) }
+      it 'does not display the lending period' do
+        lending_period = 90000
+        media_object.lending_period = lending_period
+        media_object.save
+        visit media_object_path(media_object)
+        expect(page.has_content?('1 day 1 hour')).to be_falsey
+      end
     end
   end
 end

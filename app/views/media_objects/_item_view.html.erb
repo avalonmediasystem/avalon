@@ -26,7 +26,9 @@ Unless required by applicable law or agreed to in writing, software distributed
 <% f_start, f_end = parse_media_fragment params['t'] %>
 <div class="row">
   <div class="col-sm-8" id="left_column">
-    <% if can_stream && @currentStream %>
+    <% if Avalon::Configuration.controlled_digital_lending_enabled? && !can_stream %>
+      <%= render 'embed_checkout' %>
+    <% elsif @currentStream %>
       <%= render partial: "modules/player/section", locals: {section: @currentStream, section_info: @currentStreamInfo, f_start: @f_start, f_end: @f_end} %>
       <%= render file: '_track_scrubber.html.erb' if is_mejs_2? %>
       <%= render file: '_add_to_playlist.html.erb' if current_user.present? && is_mejs_2? %>
@@ -41,8 +43,6 @@ Unless required by applicable law or agreed to in writing, software distributed
           locals: { mediaobject: @media_object,
                   sections: @masterFiles,
                   activeStream: @currentStream } %>
-    <% else %>
-      <%= render 'embed_checkout' %>
     <% end %>
   </div>
   <div class="col-sm-4" id="right-column">
