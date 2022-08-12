@@ -1,11 +1,11 @@
 # Copyright 2011-2022, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
-# 
+#
 # You may obtain a copy of the License at
-# 
+#
 # http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software distributed
 #   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
 #   CONDITIONS OF ANY KIND, either express or implied. See the License for the
@@ -1341,6 +1341,16 @@ describe MediaObjectsController, type: :controller do
         it "returns error if invalid" do
           expect { put :update, params: { id: media_object.id, step: 'access-control', donot_advance: 'true', add_lending_period_days: -1, add_lending_period_hours: -1 } }.not_to change { media_object.reload.lending_period }
           expect(flash[:error]).to be_present
+          expect(flash[:error]).to eq("Lending period must be greater than 0.")
+          put :update, params: { id: media_object.id, step: 'access-control', donot_advance: 'true', add_lending_period_days: 1, add_lending_period_hours: -1 }
+          expect(flash[:error]).to be_present
+          expect(flash[:error]).to eq("Lending period hours needs to be a positive integer.")
+          put :update, params: { id: media_object.id, step: 'access-control', donot_advance: 'true', add_lending_period_days: -1, add_lending_period_hours: 1 }
+          expect(flash[:error]).to be_present
+          expect(flash[:error]).to eq("Lending period days needs to be a positive integer.")
+          expect { put :update, params: { id: media_object.id, step: 'access-control', donot_advance: 'true', add_lending_period_days: 0, add_lending_period_hours: 0 } }.not_to change { media_object.reload.lending_period }
+          expect(flash[:error]).to be_present
+          expect(flash[:error]).to eq("Lending period must be greater than 0.")
         end
       end
     end

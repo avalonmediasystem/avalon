@@ -1,11 +1,11 @@
 # Copyright 2011-2022, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
-# 
+#
 # You may obtain a copy of the License at
-# 
+#
 # http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software distributed
 #   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
 #   CONDITIONS OF ANY KIND, either express or implied. See the License for the
@@ -300,34 +300,24 @@ class Admin::CollectionsController < ApplicationController
     collection.default_visibility = params[:visibility] unless params[:visibility].blank?
     collection.default_hidden = params[:hidden] == "1"
     lending_period = build_default_lending_period(collection)
-    collection.default_lending_period = lending_period if lending_period.positive?
+    if lending_period.positive?
+      collection.default_lending_period = lending_period
+    elsif lending_period.zero?
+      flash[:error] = "Lending period must be greater than 0."
+    end
   end
 
   def build_default_lending_period(collection)
     lending_period = 0
+    d = params["add_lending_period_days"].to_i
+    h = params["add_lending_period_hours"].to_i
+    d.negative? ? collection.errors.add(:lending_period, "days needs to be a positive integer.") : lending_period += d.days
+    h.negative? ? collection.errors.add(:lending_period, "hours needs to be a positive integer.") : lending_period += h.hours
 
-    begin
-      if params["add_lending_period_days"].to_i.positive?
-        lending_period += params["add_lending_period_days"].to_i.days
-      else
-        collection.errors.add(:lending_period, "days needs to be a positive integer.")
-      end
-    rescue
-      collection.errors.add(:lending_period, "days needs to be a positive integer.")
-    end
-
-    begin
-      if params["add_lending_period_hours"].to_i.positive?
-        lending_period += params["add_lending_period_hours"].to_i.hours
-      else
-        collection.errors.add(:lending_period, "hours needs to be a positive integer.")
-      end
-    rescue
-      collection.errors.add(:lending_period, "hours needs to be a positive integer.")
-    end
-
-    flash[:notice] = collection.errors.full_messages.join if collection.errors.present?
+    flash[:error] = collection.errors.full_messages.join if collection.errors.present?
     lending_period.to_i
+  rescue
+    0
   end
 
   def apply_access(collection, params)
