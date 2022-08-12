@@ -489,7 +489,7 @@ describe Admin::CollectionsController, type: :controller do
       it "returns error if both day and hour are 0" do
         expect { put 'update', params: { id: collection.id, save_access: "Save Access Settings", add_lending_period_days: 0, add_lending_period_hours: 0 } }.not_to change { collection.reload.default_lending_period }
         expect(response).to redirect_to(admin_collection_path(collection))
-        expect(flash[:notice]).to be_present
+        expect(flash[:error]).to be_present
       end
     end
   end

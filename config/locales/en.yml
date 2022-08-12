@@ -173,7 +173,6 @@ en:
       Start and end dates are not required; if included, access for the specified IP Address(es) will start at the beginning of the start date and end at the beginning of the end date. Otherwise, access will be open ended for the specified IP Address(es).
     lending_period: |
       Lending Period is the length of time that an item may be checked out for.
-      Lending Period must be greater than 0.
       Day and Hour values must be positive integers.
 
   contact:
