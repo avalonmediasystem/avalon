@@ -72,6 +72,8 @@
   .card-body {
     padding-top: 5px;
     padding-bottom: 0px;
+    padding-right: 1rem;
+    padding-left: 1rem;
   }
 }
 
@@ -80,6 +82,16 @@
 
   .italic {
     font-style: italic;
+  }
+}
+
+.card-text {
+  font-size: 14px;
+
+  dt, dd {
+    width: 100%;
+    padding-right: 8px;
+    padding-left: 8px;
   }
 }
 
