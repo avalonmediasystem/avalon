@@ -8,6 +8,7 @@ class Checkout < ApplicationRecord
   scope :active_for_media_object, ->(media_object_id) { where(media_object_id: media_object_id).where("return_time > now()") }
   scope :active_for_user, ->(user_id) { where(user_id: user_id).where("return_time > now()") }
   scope :returned_for_user, ->(user_id) { where(user_id: user_id).where("return_time < now()") }
+  scope :checked_out_to_user, ->(media_object_id, user_id) { where("media_object_id = ? AND user_id = ? AND return_time > now()", media_object_id, user_id)}
 
   def media_object
     MediaObject.find(media_object_id)

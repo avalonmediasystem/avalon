@@ -1,11 +1,11 @@
 # Copyright 2011-2022, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
-# 
+#
 # You may obtain a copy of the License at
-# 
+#
 # http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software distributed
 #   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
 #   CONDITIONS OF ANY KIND, either express or implied. See the License for the
@@ -468,7 +468,7 @@ class MediaObjectsController < ApplicationController
 
     master_files = master_file_presenters
     canvas_presenters = master_files.collect do |mf|
-      stream_info = secure_streams(mf.stream_details)
+      stream_info = secure_streams(mf.stream_details, @media_object.id)
       IiifCanvasPresenter.new(master_file: mf, stream_info: stream_info)
     end
     presenter = IiifManifestPresenter.new(media_object: @media_object, master_files: canvas_presenters)
@@ -546,7 +546,11 @@ class MediaObjectsController < ApplicationController
   def load_current_stream
     set_active_file
     set_player_token
-    @currentStreamInfo = @currentStream.nil? ? {} : secure_streams(@currentStream.stream_details)
+    if params[:id]
+      @currentStreamInfo = @currentStream.nil? ? {} : secure_streams(@currentStream.stream_details, params[:id])
+    else
+      @currentStreamInfo = @currentStream.nil? ? {} : secure_streams(@currentStream.stream_details, @media_object.id)
+    end
     @currentStreamInfo['t'] = view_context.parse_media_fragment(params[:t]) # add MediaFragment from params
     @currentStreamInfo['lti_share_link'] = view_context.lti_share_url_for(@currentStream)
     @currentStreamInfo['link_back_url'] = view_context.share_link_for(@currentStream)

@@ -27,25 +27,9 @@ class SecurityService
         url
       end
     else
-      begin
-        byebug
-        if Avalon::Configuration.controlled_digital_lending_enabled? && Checkout.where("media_object_id = ? AND user_id = ? AND return_time > ?", MasterFile.find(context[:target]).media_object_id, context[:session].fetch(:"warden.user.user.key")[0][0], DateTime.current).empty?
-          raise StreamToken::Unauthorized, "Unauthorized"
-        else
-          session = context[:session] || { media_token: nil }
-          token = StreamToken.find_or_create_session_token(session, context[:target])
-          "#{url}?token=#{token}"
-        end
-      # rescue NoMethodError
-      #   if context
-      #     session = context[:session] || { media_token: nil }
-      #     token = StreamToken.find_or_create_session_token(session, context[:target])
-      #     "#{url}?token=#{token}"
-        # else
-        #   raise StreamToken::Unauthorized, "Unauthorized"
-        # end
-      rescue StreamToken::Unauthorized
-      end
+      session = context[:session] || { media_token: nil }
+      token = StreamToken.find_or_create_session_token(session, context[:target])
+      "#{url}?token=#{token}"
     end
   end
 
@@ -53,28 +37,21 @@ class SecurityService
     result = {}
     case Settings.streaming.server.to_sym
     when :aws
-      begin
-        if Avalon::Configuration.controlled_digital_lending_enabled? && Checkout.where("media_object_id = ? AND user_id = ? AND return_time > ?", MasterFile.find(context[:target]).media_object_id, context[:session].fetch(:"warden.user.user.key")[0][0], DateTime.current).empty?
-          raise StreamToken::Unauthorized, "Unauthorized"
-        else
-          configure_signer
-          domain = Addressable::URI.parse(Settings.streaming.http_base).host
-          cookie_domain = (context[:request_host].split(/\./) & domain.split(/\./)).join('.')
-          resource = "http*://#{domain}/#{context[:target]}/*"
-          Rails.logger.info "Creating signed policy for resource #{resource}"
-          expiration = Settings.streaming.stream_token_ttl.minutes.from_now
-          params = Aws::CF::Signer.signed_params(resource, expires: expiration, resource: resource)
-          params.each_pair do |param,value|
-            result["CloudFront-#{param}"] = {
-              value: value,
-              path: "/#{context[:target]}",
-              domain: cookie_domain,
-              expires: expiration
-            }
-        end
-      end
-      rescue StreamToken::Unauthorized
-      end
+      configure_signer
+      domain = Addressable::URI.parse(Settings.streaming.http_base).host
+      cookie_domain = (context[:request_host].split(/\./) & domain.split(/\./)).join('.')
+      resource = "http*://#{domain}/#{context[:target]}/*"
+      Rails.logger.info "Creating signed policy for resource #{resource}"
+      expiration = Settings.streaming.stream_token_ttl.minutes.from_now
+      params = Aws::CF::Signer.signed_params(resource, expires: expiration, resource: resource)
+      params.each_pair do |param,value|
+        result["CloudFront-#{param}"] = {
+          value: value,
+          path: "/#{context[:target]}",
+          domain: cookie_domain,
+          expires: expiration
+        }
+    end
     end
     result
   end

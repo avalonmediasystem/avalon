@@ -40,7 +40,6 @@ Lw03eHTNQghS0A==
   describe '.rewrite_url' do
     let(:url) { "http://example.com/streaming/id" }
     let(:context) {{ session: {}, target: 'abcd1234', protocol: :stream_hls }}
-    let(:user) { FactoryBot.create(:user) }
 
     context 'when AWS streaming server' do
       before do
@@ -66,47 +65,18 @@ Lw03eHTNQghS0A==
     end
 
     context 'when non-AWS streaming server' do
-      let(:context) {{ session: { "warden.user.user.key": [[user.id], "token"] }, target: 'abcd1234', protocol: :stream_hls }}
+      let(:context) {{ target: 'abcd1234', protocol: :stream_hls }}
       before do
         allow(Settings.streaming).to receive(:server).and_return("wowza")
-        FactoryBot.create(:master_file, id: context[:target], media_object_id: context[:target])
       end
-      context "controlled digital lending is disabled" do
-        it 'adds a StreamToken param' do
-          allow(Settings.controlled_digital_lending).to receive(:enable).and_return(false)
-          expect(subject.rewrite_url(url, context)).to start_with "http://example.com/streaming/id?token="
-        end
-      end
-      context "controlled digital lending is enabled" do
-        before { allow(Settings.controlled_digital_lending).to receive(:enable).and_return(true) }
-        context "the user has the item checked out" do
-          before { FactoryBot.create(:checkout, user_id: user.id, media_object_id: context[:target]) }
-          it 'adds a StreamToken param' do
-            expect(subject.rewrite_url(url, context)).to start_with "http://example.com/streaming/id?token="
-          end
-        end
-        context "the user does not have the item checked out" do
-          it 'does not add a StreamToken param' do
-            expect(subject.rewrite_url(url, context)).not_to start_with "http://example.com/streaming/id?token="
-          end
-          it 'properly rescues StreamToken::Unauthorized' do
-            expect { subject.rewrite_url(url, context) }.not_to raise_error
-          end
-        end
-        context 'no user, no waveform job' do
-          let(:context) {{ target: 'abcd1234', protocol: :stream_hls }}
-          it 'does not add a StreamToken param' do
-            expect(subject.rewrite_url(url, context)).not_to start_with "http://example.com/streaming/id?token="
-            expect { subject.rewrite_url(url, context) }.to raise_error StreamToken::Unauthorized
-          end
-        end
+      it 'adds a StreamToken param' do
+        expect(subject.rewrite_url(url, context)).to start_with "http://example.com/streaming/id?token="
       end
     end
   end
 
   describe '.create_cookies' do
-    let(:context) {{ session: { "user_return_to": "id", "warden.user.user.key": [[user.id], "token"] }, target: 'abcd1234', request_host: 'localhost' }}
-    let(:user) { FactoryBot.create(:user)}
+    let(:context) {{ target: 'abcd1234', request_host: 'localhost' }}
 
     context 'when AWS streaming server' do
       before do
@@ -116,43 +86,19 @@ Lw03eHTNQghS0A==
         allow(Settings.streaming).to receive(:signing_key_id).and_return("signing_key_id")
         allow(Settings.streaming).to receive(:stream_token_ttl).and_return(20)
         allow(Settings.streaming).to receive(:http_base).and_return("http://localhost:3000/streams")
-        FactoryBot.create(:master_file, id: context[:target], media_object_id: context[:target])
       end
 
-      context 'controlled digital lending is disabled' do
-        it 'returns a hash of cookies' do
-          allow(Settings.controlled_digital_lending).to receive(:enable).and_return(false)
-          cookies = subject.create_cookies(context)
-          expect(cookies.first[0]).to eq "CloudFront-Policy"
-          expect(cookies.first[1][:path]).to eq "/#{context[:target]}"
-          expect(cookies.first[1][:value]).to be_present
-          expect(cookies.first[1][:domain]).to be_present
-          expect(cookies.first[1][:expires]).to be_present
-        end
-      end
-
-      context 'controlled digital lending is enabled' do
-        before { allow(Settings.controlled_digital_lending).to receive(:enable).and_return(true) }
-        context 'the active user has the item checked out' do
-          before { FactoryBot.create(:checkout, user_id: user.id, media_object_id: context[:target]) }
-          it 'returns a hash of cookies' do
-            cookies = subject.create_cookies(context)
-            expect(cookies.first[0]).to eq "CloudFront-Policy"
-            expect(cookies.first[1][:path]).to eq "/#{context[:target]}"
-            expect(cookies.first[1][:value]).to be_present
-            expect(cookies.first[1][:domain]).to be_present
-            expect(cookies.first[1][:expires]).to be_present
-          end
-        end
-        context 'the active user does not have the item checked out' do
-          it 'does nothing' do
-            expect(subject.create_cookies(context)).to eq({})
-          end
-        end
+      it 'returns a hash of cookies' do
+        cookies = subject.create_cookies(context)
+        expect(cookies.first[0]).to eq "CloudFront-Policy"
+        expect(cookies.first[1][:path]).to eq "/#{context[:target]}"
+        expect(cookies.first[1][:value]).to be_present
+        expect(cookies.first[1][:domain]).to be_present
+        expect(cookies.first[1][:expires]).to be_present
       end
     end
 
-    context 'when non-AWS streaming server' do
+    context 'when non-AMS streaming server' do
       before do
         allow(Settings.streaming).to receive(:server).and_return("wowza")
       end
