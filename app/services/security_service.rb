@@ -51,7 +51,7 @@ class SecurityService
           domain: cookie_domain,
           expires: expiration
         }
-    end
+      end
     end
     result
   end

@@ -21,17 +21,15 @@ module SecurityHelper
 
   def secure_streams(stream_info, media_object_id)
     begin
-      unless MediaObject.find(media_object_id).visibility == 'public'
+      if MediaObject.find(media_object_id).visibility == 'public'
+        add_stream_url(stream_info)
+      else
         if Avalon::Configuration.controlled_digital_lending_enabled? && Checkout.checked_out_to_user(media_object_id, current_user.id).empty?
           raise StreamToken::Unauthorized
         else
           add_stream_url(stream_info)
         end
-      else
-        add_stream_url(stream_info)
       end
-    rescue Ldp::BadRequest
-      add_stream_url(stream_info)
     rescue StreamToken::Unauthorized
     end
     stream_info
