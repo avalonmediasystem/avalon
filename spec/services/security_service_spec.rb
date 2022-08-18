@@ -65,7 +65,6 @@ Lw03eHTNQghS0A==
     end
 
     context 'when non-AWS streaming server' do
-      let(:context) {{ target: 'abcd1234', protocol: :stream_hls }}
       before do
         allow(Settings.streaming).to receive(:server).and_return("wowza")
       end
