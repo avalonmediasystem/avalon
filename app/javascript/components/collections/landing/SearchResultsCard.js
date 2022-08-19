@@ -35,8 +35,8 @@ const CardMetaData = ({ doc, fieldLabel, fieldName }) => {
   if (doc.attributes[fieldName]) {
     return (
       <React.Fragment>
-        <dt className='col-sm-5'>{fieldLabel}</dt>
-        <dd className='col-sm-7' dangerouslySetInnerHTML={{ __html: metaData }}></dd>
+        <dt>{fieldLabel}</dt>
+        <dd dangerouslySetInnerHTML={{ __html: metaData }}></dd>
       </React.Fragment>
     );
   }
