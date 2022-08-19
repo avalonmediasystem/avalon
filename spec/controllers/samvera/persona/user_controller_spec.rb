@@ -1,11 +1,11 @@
 # Copyright 2011-2022, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
-# 
+#
 # You may obtain a copy of the License at
-# 
+#
 # http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software distributed
 #   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
 #   CONDITIONS OF ANY KIND, either express or implied. See the License for the
@@ -156,6 +156,8 @@ RSpec.describe Samvera::Persona::UsersController, type: :controller do
 
     describe 'DELETE #destroy' do
       before :each do
+        FactoryBot.create(:checkout, user_id: user.id)
+        FactoryBot.create(:checkout, user_id: user.id, return_time: DateTime.current - 1.day)
         new_hash = {"administrator"=>[user.username], "group_manager"=>[user.username, "alice.archivist@example.edu"], "registered"=>["bob.user@example.edu"]}
         RoleMap.replace_with!(new_hash)
       end
@@ -178,6 +180,10 @@ RSpec.describe Samvera::Persona::UsersController, type: :controller do
       it "doesn't remove other users from groups" do
         expect(RoleMap.all.find_by(entry: 'alice.archivist@example.edu').entry).to eq 'alice.archivist@example.edu'
         expect(RoleMap.all.find_by(entry: 'bob.user@example.edu').entry).to eq 'bob.user@example.edu'
+      end
+
+      it 'deletes the user\'s checkouts' do
+        expect(Checkout.find_by(user_id: user.id)).to be(nil)
       end
     end
   end
