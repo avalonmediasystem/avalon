@@ -156,8 +156,6 @@ RSpec.describe Samvera::Persona::UsersController, type: :controller do
 
     describe 'DELETE #destroy' do
       before :each do
-        FactoryBot.create(:checkout, user_id: user.id)
-        FactoryBot.create(:checkout, user_id: user.id, return_time: DateTime.current - 1.day)
         new_hash = {"administrator"=>[user.username], "group_manager"=>[user.username, "alice.archivist@example.edu"], "registered"=>["bob.user@example.edu"]}
         RoleMap.replace_with!(new_hash)
       end
@@ -180,10 +178,6 @@ RSpec.describe Samvera::Persona::UsersController, type: :controller do
       it "doesn't remove other users from groups" do
         expect(RoleMap.all.find_by(entry: 'alice.archivist@example.edu').entry).to eq 'alice.archivist@example.edu'
         expect(RoleMap.all.find_by(entry: 'bob.user@example.edu').entry).to eq 'bob.user@example.edu'
-      end
-
-      it 'deletes the user\'s checkouts' do
-        expect(Checkout.find_by(user_id: user.id)).to be(nil)
       end
     end
   end
