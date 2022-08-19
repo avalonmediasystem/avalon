@@ -30,6 +30,8 @@ module SecurityHelper
           add_stream_url(stream_info)
         end
       end
+    rescue Ldp::BadRequest
+      add_stream_url(stream_info)
     rescue StreamToken::Unauthorized
     end
     stream_info
