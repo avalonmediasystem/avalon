@@ -70,7 +70,7 @@ gem 'omniauth-lti', git: "https://github.com/avalonmediasystem/omniauth-lti.git"
 gem "omniauth-saml", "~> 2.0"
 
 # Media Access & Transcoding
-gem 'active_encode', '~> 0.8.2'
+gem 'active_encode', '~> 1.0'
 gem 'audio_waveform-ruby', '~> 1.0.7', require: 'audio_waveform'
 gem 'browse-everything', git: "https://github.com/avalonmediasystem/browse-everything.git", branch: 'v1.2-avalon'
 gem 'fastimage'
