@@ -210,6 +210,30 @@ RSpec.describe TimelinesController, type: :controller do
       expect(response).to be_successful
     end
 
+    context 'with token auth' do
+      let(:timeline) { FactoryBot.create(:timeline, :with_access_token) }
+      let(:encoded_manifest_url) do
+        [controller.default_url_options[:protocol],
+        "%3A%2F%2F",
+        controller.default_url_options[:host],
+        "%2Ftimelines%2F",
+        timeline.id,
+        "%2Fmanifest.json%3Ftoken%3D",
+        timeline.access_token].join
+      end
+
+      before do
+        user
+      end
+
+      render_views
+
+      it "correctly encodes tokenized timeline urls" do
+        get :show, params: {id: timeline.to_param, token: timeline.access_token}
+        expect(response.body).to include "resource=#{encoded_manifest_url}"
+      end
+    end
+
     context "with format json" do
       let(:manifest) do
         {

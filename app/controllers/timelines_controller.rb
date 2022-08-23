@@ -101,11 +101,11 @@ class TimelinesController < ApplicationController
       format.html do
         url_fragment = "noHeader=true&noFooter=true&noSourceLink=false"
         if current_user == @timeline.user
-          url_fragment += "&resource=#{Addressable::URI.escape_component(manifest_timeline_url(@timeline, format: :json), '://?=')}"
-          url_fragment += "&callback=#{Addressable::URI.escape_component(manifest_timeline_url(@timeline, format: :json), '://?=')}"
+          url_fragment += "&resource=#{Addressable::URI.escape_component(manifest_timeline_url(@timeline, format: :json), /[:\/?=]/)}"
+          url_fragment += "&callback=#{Addressable::URI.escape_component(manifest_timeline_url(@timeline, format: :json), /[:\/?=]/)}"
         elsif current_user
-          url_fragment += "&resource=#{Addressable::URI.escape_component(manifest_timeline_url(@timeline, format: :json, token: @timeline.access_token), '://?=')}"
-          url_fragment += "&callback=#{Addressable::URI.escape_component(timelines_url, '://?=')}"
+          url_fragment += "&resource=#{Addressable::URI.escape_component(manifest_timeline_url(@timeline, format: :json, token: @timeline.access_token), /[:\/?=]/)}"
+          url_fragment += "&callback=#{Addressable::URI.escape_component(timelines_url, /[:\/?=]/)}"
         end
         @timeliner_iframe_url = timeliner_path + "##{url_fragment}"
       end
