@@ -1170,28 +1170,28 @@ td {
 
 /* CDL controls on view page styles */
 .cdl-controls {
-  display: inline-flex;
-  margin-bottom: 1rem;
-  height: 2.5rem;
-  float: right;
-
   @include media-breakpoint-down(sm) {
-    float: left;
-    margin-top: 0.5rem;
+    margin-top: 1rem;
   }
-
   .remaining-time {
     display: flex;
     text-align: center;
+
+    @include media-breakpoint-down(sm) {
+      margin: 0;
+    }
   }
 
   .remaining-time p {
     line-height: 1rem;
     margin: 0.25rem;
     text-align: left;
+    @include media-breakpoint-between(sm, md) {
+      padding: 0.75rem 0;
+    }
   }
 
-  .remaining-time span{
+  .remaining-time span {
     color: #fff;
     margin-left: 0.25rem;
     padding: 0.15rem 0.25rem;
@@ -1199,6 +1199,16 @@ td {
     background: $primary;
     font-size: small;
     line-height: initial;
+
+    @include media-breakpoint-between(sm, md) {
+      padding: 0.75rem 0.25rem;
+    }
+  }
+
+  #return-btn {
+    @include media-breakpoint-down(sm) {
+      float: right;
+    }
   }
 }
 
@@ -1229,6 +1239,10 @@ td {
     right: 0;
     bottom: 0;
     height: 4rem;
+
+    @include media-breakpoint-down(sm) {
+      top: -25%;
+    }
   }
 }
 
