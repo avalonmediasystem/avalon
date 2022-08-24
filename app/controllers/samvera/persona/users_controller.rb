@@ -98,7 +98,7 @@ module Samvera
               view_context.link_to('Edit', main_app.edit_persona_user_path(presenter))
             end
           become_button = view_context.link_to('Become', main_app.impersonate_persona_user_path(presenter), method: :post)
-          delete_button = view_context.link_to('Delete', main_app.persona_user_path(presenter), method: :delete, class: 'btn btn-danger btn-xs action-delete', data: { confirm: "Are you sure you wish to delete the user '#{presenter.email}'? This action is irreversible." })
+          delete_button = view_context.link_to('Delete', main_app.persona_user_path(presenter), method: :delete, class: 'btn btn-danger btn-sm action-delete', data: { confirm: "Are you sure you wish to delete the user '#{presenter.email}'? This action is irreversible." })
           formatted_roles = format_roles(presenter.groups)
           sign_in = last_sign_in(presenter)
           [

@@ -16,7 +16,7 @@ Unless required by applicable law or agreed to in writing, software distributed
 <%# TODO: Use new Blacklight::DocumentMetadataComponent instead of overriding this view  %>
 <% doc_presenter = document_presenter(document) %> 
 <%# default partial to display solr document fields in catalog index view %>
-<dl class="document-metadata row dl-invert col-md-9">
+<dl class="document-metadata row dl-invert col-md-12 col-lg-8">
   <% doc_presenter.field_presenters.each do |field_presenter| %>
     <% if field_presenter.render_field? %>
       <dt class="blacklight-<%= field_presenter.key %> col-sm-3"><%= field_presenter.label %>:</dt>
