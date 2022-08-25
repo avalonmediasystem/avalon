@@ -20,15 +20,7 @@ module SecurityHelper
   end
 
   def secure_streams(stream_info, media_object_id)
-    begin
-      if Avalon::Configuration.controlled_digital_lending_enabled? && Checkout.checked_out_to_user(media_object_id, current_user.id).empty?
-        raise StreamToken::Unauthorized
-      else
-        add_stream_url(stream_info)
-      end
-    rescue NoMethodError
-    rescue StreamToken::Unauthorized
-    end
+    add_stream_url(stream_info) unless not_checked_out?(media_object_id)
     stream_info
   end
 
@@ -39,5 +31,10 @@ module SecurityHelper
         quality[:url] = SecurityHandler.secure_url(quality[:url], session: session, target: stream_info[:id], protocol: protocol)
       end
     end
+  end
+
+  private
+  def not_checked_out?(media_object_id)
+    Avalon::Configuration.controlled_digital_lending_enabled? && Checkout.checked_out_to_user(media_object_id, current_user&.id).empty?
   end
 end
