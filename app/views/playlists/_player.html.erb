@@ -17,7 +17,7 @@ Unless required by applicable law or agreed to in writing, software distributed
 <% f_start = @current_clip.start_time / 1000.0 %>
 <% f_end = @current_clip.end_time / 1000.0 %>
 <% @currentStream = @current_masterfile %>
-<% @currentStreamInfo = secure_streams(@currentStream.stream_details) %>
+<% @currentStreamInfo = secure_streams(@currentStream.stream_details, @current_masterfile.media_object_id) %>
 <% @currentStreamInfo['t'] = [f_start,f_end] %>
 
 <% if can? :read, @current_masterfile %>

@@ -43,6 +43,8 @@ RSpec.describe Checkout, type: :model do
     let(:user) { FactoryBot.create(:user) }
     let(:media_object) { FactoryBot.create(:media_object) }
     let!(:checkout) { FactoryBot.create(:checkout, user: user, media_object_id: media_object.id) }
+    let!(:user_checkout) { FactoryBot.create(:checkout, user: user) }
+    let!(:other_checkout) { FactoryBot.create(:checkout) }
     let!(:expired_checkout) { FactoryBot.create(:checkout, user: user, media_object_id: media_object.id) }
 
     before do
@@ -57,6 +59,10 @@ RSpec.describe Checkout, type: :model do
       it 'does not return inactive checkouts' do
         expect(Checkout.active_for_media_object(media_object.id)).not_to include(expired_checkout)
       end
+
+      it 'does not return other checkouts' do
+        expect(Checkout.active_for_media_object(media_object.id)).not_to include(other_checkout)
+      end
     end
 
     describe 'active_for_user' do
@@ -67,6 +73,10 @@ RSpec.describe Checkout, type: :model do
       it 'does not return inactive checkouts' do
         expect(Checkout.active_for_user(user.id)).not_to include(expired_checkout)
       end
+
+      it 'does not return other checkouts' do
+        expect(Checkout.active_for_media_object(media_object.id)).not_to include(other_checkout)
+      end
     end
 
     describe 'returned_for_user' do
@@ -76,6 +86,20 @@ RSpec.describe Checkout, type: :model do
 
       it 'does return inactive checkouts' do
         expect(Checkout.returned_for_user(user.id)).to include(expired_checkout)
+      end
+
+      it 'does not return other checkouts' do
+        expect(Checkout.active_for_media_object(media_object.id)).not_to include(other_checkout)
+      end
+    end
+
+    describe 'checked_out_to_user' do
+      it 'returns the specified checkout' do
+        expect(Checkout.checked_out_to_user(media_object.id, user.id)).to include(checkout)
+      end
+
+      it "does not return the user's other checkouts" do
+        expect(Checkout.checked_out_to_user(media_object.id, user.id)).not_to include(user_checkout)
       end
     end
   end
