@@ -52,17 +52,10 @@ module Samvera
       # Filtering
       search_value = params['search']['value']
       @presenter = if search_value.present?
-                     search_role = @presenter.select { |p| p.groups.any? { |g| g.include? search_value } }
-                     search_date = @presenter.select { |p| last_sign_in(p).to_formatted_s(:long_ordinal).include? search_value }
-                     search_status = @presenter.select { |p| user_status(p).downcase.include? search_value.downcase }
                      @presenter.where(%(
                                 username LIKE :search_value OR
-                                email LIKE :search_value OR
-                                provider LIKE :search_value
+                                email LIKE :search_value
                               ), search_value: "%#{search_value}%")
-                               .or(User.where(id: search_role.map(&:id)))
-                               .or(User.where(id: search_date.map(&:id)))
-                               .or(User.where(id: search_status.map(&:id)))
                    else
                      @presenter
                    end
@@ -77,12 +70,6 @@ module Samvera
       if columns[sort_column] != 'entry'
         @presenter = @presenter.order("lower(#{columns[sort_column].downcase}) #{sort_direction}, #{columns[sort_column].downcase} #{sort_direction}")
         @presenter = @presenter.offset(params['start']).limit(params['length'])
-      else
-        user_roles = @presenter.collect { |p| [ p.groups, p ] }
-        user_roles.sort_by! { |r| [-r[0].length, r] }
-        @presenter = user_roles.collect { |p| p[1] }
-        @presenter.reverse! if sort_direction == 'desc'
-        @presenter = @presenter.slice(params['start'].to_i, params['length'].to_i)
       end
 
       # Build json response
