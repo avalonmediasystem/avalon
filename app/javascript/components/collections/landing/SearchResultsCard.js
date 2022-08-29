@@ -74,10 +74,7 @@ const thumbnailSrc = (doc, props) => {
 };
 
 const titleHTML = (doc) => {
-  var title = doc.attributes['title_tesi'] && doc.attributes['title_tesi'].attributes.value.substring(0, 50) || doc['id'];
-  if (doc.attributes['title_tesi'] && doc.attributes['title_tesi'].attributes.value.length >= 50) {
-    title += "<span>...</span>";
-  }
+  var title = doc.attributes['title_tesi'] && doc.attributes['title_tesi'].attributes.value || doc['id'];
   return { __html: title };
 };
 
