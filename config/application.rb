@@ -50,5 +50,7 @@ module Avalon
     end
 
     config.active_storage.service = (Settings&.active_storage&.service.presence || "local").to_sym
+
+    config.action_view.field_error_proc = Proc.new { |html_tag, instance| "<span class='field_with_errors'>#{html_tag}</span>".html_safe }
   end
 end

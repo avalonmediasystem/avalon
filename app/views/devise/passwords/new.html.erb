@@ -15,11 +15,11 @@ Unless required by applicable law or agreed to in writing, software distributed
 %>
 <div class="omniauth-form container">
   <%= form_for(resource, as: resource_name, url: password_path(resource_name), html: { method: :post }) do |f| %>
-    <%= devise_error_messages! %>
+    <% devise_error_messages! %>
 
-    <div class="form-group">
+    <div class="form-group <% if resource.errors[:email].any? %>invalid-feedback<% end %>">
       <%= f.label :email, 'Email:' %><br />
-      <%= f.email_field :email, autofocus: true, autocomplete: "email" %>
+      <%= f.email_field :email, autofocus: true, autocomplete: "email", class: (resource.errors[:email].any? ? 'form-control is-invalid' : 'form-control') %>
     </div>
 
     <div class="actions form-group">

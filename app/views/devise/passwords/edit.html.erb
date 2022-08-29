@@ -17,20 +17,20 @@ Unless required by applicable law or agreed to in writing, software distributed
   <h3 align='center'>Change your password</h3>
 
   <%= form_for(resource, as: resource_name, url: password_path(resource_name), html: { method: :put }) do |f| %>
-    <%= devise_error_messages! %>
+    <% devise_error_messages! %>
     <%= f.hidden_field :reset_password_token %>
 
-    <div class="form-group">
+    <div class="form-group <% if resource.errors[:password].any? %>invalid-feedback<% end %>">
       <%= f.label :password, "New password" %><br />
       <% if @minimum_password_length %>
         <em>(<%= @minimum_password_length %> characters minimum)</em><br />
       <% end %>
-      <%= f.password_field :password, autofocus: true, autocomplete: "off" %>
+      <%= f.password_field :password, autofocus: true, autocomplete: "off", class: (resource.errors[:password].any? ? 'form-control is-invalid' : 'form-control') %>
     </div>
 
-    <div class="form-group">
+    <div class="form-group <% if resource.errors[:password_confirmation].any? %>invalid-feedback<% end %>">
       <%= f.label :password_confirmation, "Confirm new password" %><br />
-      <%= f.password_field :password_confirmation, autocomplete: "off" %>
+      <%= f.password_field :password_confirmation, autocomplete: "off", class: (resource.errors[:password_confirmation].any? ? 'form-control is-invalid' : 'form-control') %>
     </div>
 
     <div class="actions">
