@@ -16,9 +16,9 @@ module DeviseHelper
   def devise_error_messages!
     return "" if resource.errors.empty?
     flash[:error] = simple_format I18n.t("errors.messages.not_saved",
-                                          count: resource.errors.count,
-                                          resource: resource.class.model_name.human.downcase,
-                                          message: error_message(resource)
+                                         count: resource.errors.count,
+                                         resource: resource.class.model_name.human.downcase,
+                                         message: error_message(resource)
                                         )
   end
 
@@ -28,7 +28,7 @@ module DeviseHelper
       message = []
       resource.errors.messages.each do |key, messages|
         m = if key == :email || key == :username
-              "#{key.capitalize} \"#{resource.errors&.details[key]&.first&.[](:value)}\" #{messages&.join(' and ')}"
+              "#{key.capitalize} \"#{resource.errors.details[key]&.first&.[](:value)}\" #{messages.join(' and ')}"
             else
               "#{key.to_s.tr('_', ' ').capitalize} #{messages.join(' and ')}"
             end
