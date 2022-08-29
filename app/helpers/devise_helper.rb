@@ -15,11 +15,11 @@
 module DeviseHelper
   def devise_error_messages!
     return "" if resource.errors.empty?
-    flash[:error] =simple_format I18n.t("errors.messages.not_saved",
-      count: resource.errors.count,
-      resource: resource.class.model_name.human.downcase,
-      message: error_message(resource)
-    )
+    flash[:error] = simple_format I18n.t("errors.messages.not_saved",
+                                          count: resource.errors.count,
+                                          resource: resource.class.model_name.human.downcase,
+                                          message: error_message(resource)
+                                        )
   end
 
   private
@@ -27,11 +27,11 @@ module DeviseHelper
     def error_message(resource)
       message = []
       resource.errors.messages.each do |key, messages|
-        if key == :email || key == :username
-          m = "#{key.capitalize} \"#{resource.errors&.details[key]&.first&.[](:value)}\" #{messages.join(' and ')}"
-        else
-          m = "#{key.to_s.gsub(/_/, ' ').capitalize} #{messages.join(' and ')}"
-        end
+        m = if key == :email || key == :username
+              "#{key.capitalize} \"#{resource.errors&.details[key]&.first&.[](:value)}\" #{messages&.join(' and ')}"
+            else
+              "#{key.to_s.tr('_', ' ').capitalize} #{messages.join(' and ')}"
+            end
         message.append(m)
       end
       message.join("\n- ").prepend("- ")
