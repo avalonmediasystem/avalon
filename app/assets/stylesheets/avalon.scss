@@ -1219,11 +1219,14 @@ td {
   p {
     position: relative;
     text-align: center;
+    @include media-breakpoint-down(md) {
+      margin-bottom: 0;
+    }
   }
 
   form {
-    position: relative;
-    left: 25%;
+    width: fit-content;
+    margin: 0 auto;
   }
 
   .centered {
@@ -1234,15 +1237,10 @@ td {
   }
 
   .centered.video {
-    top: -50%;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    height: 4rem;
-
-    @include media-breakpoint-down(sm) {
-      top: -25%;
-    }
+    top: 50%;
+    position: absolute;
+    margin: 0;
+    transform: translateY(-50%);
   }
 }
 
@@ -1254,5 +1252,6 @@ td {
 .checkout.video {
   padding: 3rem;
   height: 50%;
+  position: relative;
 }
 /* End of CDL controls on view page styles */
