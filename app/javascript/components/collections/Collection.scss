@@ -83,6 +83,17 @@
   .italic {
     font-style: italic;
   }
+
+  // When `line-clamp` is used with `display: -webkit-box`
+  // contains text to a given amount of lines (e.g.: 2)
+  // Reference: https://mgearon.com/css/line-clamp-css-guide/
+  h4 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
 }
 
 .card-text {
