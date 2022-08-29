@@ -22,7 +22,7 @@ Unless required by applicable law or agreed to in writing, software distributed
       <span class="time">00:00 <br />hh:mm</span>
     </div>
     <div class="col-5 col-sm-3 col-md-4">
-      <%= link_to 'Return now', return_checkout_url(current_checkout), class: 'btn btn-danger', method: :patch,
+      <%= link_to 'Return now', return_checkout_url(current_checkout), class: 'btn btn-outline', method: :patch,
         id: "return-btn", data: { checkout_returntime: current_checkout.return_time } %>
     </div>
     <div id="check-out-expired" class="modal fade" role="dialog" data-backdrop="static">
@@ -37,7 +37,7 @@ Unless required by applicable law or agreed to in writing, software distributed
             <p><%= t('media_object.cdl.expire.message') %></p>
           </div>
           <div class="modal-footer">
-            <%= link_to 'Return now', return_checkout_url(current_checkout), class: 'btn btn-danger', method: :patch,
+            <%= link_to 'Return now', return_checkout_url(current_checkout), class: 'btn btn-outline', method: :patch,
               data: { dismiss: "modal" } %>
           </div>
         </div>
