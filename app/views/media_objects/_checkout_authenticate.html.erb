@@ -16,49 +16,7 @@ Unless required by applicable law or agreed to in writing, software distributed
 
 <div class="log-in-out text-muted header-user">
   <center>
-    <%= link_to t('auth.sign_in'), new_user_session_path(:login_popup=>"1"), :onclick=>"openPopup(this);return false;", :class=> "btn btn-info" %>
+    <% session[:previous_url] = request.fullpath unless request.xhr? %>
+    <%= link_to 'Sign in', main_app.new_user_session_path, :class=> "btn btn-info" %>
   </center>
 </div>
-
-<% content_for :page_scripts do %>
-  <script>
-
-    window.onload = function(){
-      window["authterval"] = window.setInterval(function(){
-        if (getCookie("signed_in") != null) {
-          window.clearInterval(authterval);
-          location.reload();
-        }
-      }, 1000)
-    }
-
-    function getCookie(name) {
-      var dc = document.cookie;
-      var prefix = name + "=";
-      var begin = dc.indexOf("; " + prefix);
-      if (begin == -1) {
-        begin = dc.indexOf(prefix);
-        if (begin != 0) return null;
-      } else {
-        begin += 2;
-        var end = document.cookie.indexOf(";", begin);
-        if (end == -1) {
-          end = dc.length;
-        }
-      }
-      return unescape(dc.substring(begin + prefix.length, end));
-    }
-
-    function openPopup(link) {
-      window.clearInterval(authterval);
-      var popup_window = window.open(link.href,'Avalon Login', 'height=600, width=600');
-      var interval = window.setInterval((function() {
-        if (popup_window.closed) {
-          window.clearInterval(interval);
-          location.reload();
-        }
-      }), 1000);
-    }
-
-  </script>
-<% end %>
