@@ -15,9 +15,13 @@ Unless required by applicable law or agreed to in writing, software distributed
 %>
 <% if !@masterFiles.blank? %>
   <% master_file=@media_object.master_files.first %>
-  <div class="checkout <%= master_file.is_video? ? 'video' : 'audio' %> mb-3" style="height: <%= master_file.is_video? ? 400 : 100 %>px">
+  <% h = current_user ? 100 : 120 %>
+  <div class="checkout <%= master_file.is_video? ? 'video' : 'audio' %> mb-3" style="height: <%= master_file.is_video? ? 400 : h %>px">
     <div class="centered <%= 'video' if master_file.is_video? %>">
-      <% if  @media_object.lending_status == "available" %>
+      <% if !current_user %>
+        <%= t('media_object.cdl.unauthenticated_message').html_safe %>
+        <%= render "checkout_authenticate" %>
+      <% elsif @media_object.lending_status == "available" %>
         <%= t('media_object.cdl.checkout_message').html_safe %>
         <%= render "checkout" %>
       <% else %>
