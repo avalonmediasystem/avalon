@@ -13,18 +13,14 @@ Unless required by applicable law or agreed to in writing, software distributed
   specific language governing permissions and limitations under the License.
 ---  END LICENSE_HEADER BLOCK  ---
 %>
+
+<%= render "devise/shared/error_messages", resource: resource %>
+
 <div class="omniauth-form container">
-  <%= form_for(resource, as: resource_name, url: password_path(resource_name), html: { method: :post }) do |f| %>
-    <%= devise_error_messages! %>
+  <%= bootstrap_form_for(resource, as: resource_name, url: password_path(resource_name), html: { method: :post }, inline_errors: false) do |f| %>
+    <%= f.email_field :email, autofocus: true, autocomplete: "email", label: "Email:" %>
 
-    <div class="form-group">
-      <%= f.label :email, 'Email:' %><br />
-      <%= f.email_field :email, autofocus: true, autocomplete: "email" %>
-    </div>
-
-    <div class="actions form-group">
-      <%= f.submit "Send me reset password instructions", class: 'btn btn-primary' %>
-    </div>
+    <%= f.submit "Send me reset password instructions", class: 'btn btn-primary' %>
   <% end %>
   <p align='center' class='devise-links'>
     <%= render "devise/shared/links" %>
