@@ -25,9 +25,6 @@ const CardMetaData = ({ doc, fieldLabel, fieldName }) => {
   let value = doc.attributes[fieldName]?.attributes?.value;
   if (Array.isArray(value) && value.length > 1) {
     metaData = value.join(', ');
-  } else if (typeof value == 'string') {
-    const summary = value.substring(0, 50);
-    metaData = value.length >= 50 ? `${summary}...` : value;
   } else {
     metaData = value;
   }
