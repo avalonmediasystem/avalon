@@ -14,22 +14,9 @@ Unless required by applicable law or agreed to in writing, software distributed
 ---  END LICENSE_HEADER BLOCK  ---
 %>
 <% media_object_id=@media_object.id %>
+<% lending_period=ActiveSupport::Duration.build(@media_object.lending_period).to_day_hour_s%>
 <%= form_for(Checkout.new) do |f| %>
   <%= hidden_field_tag "authenticity_token", form_authenticity_token %>
   <%= hidden_field_tag "checkout[media_object_id]", media_object_id %>
-  <%= f.submit "Check Out", class: "btn btn-info check-out-btn", 
-    data: { lending_period: ActiveSupport::Duration.build(@media_object.lending_period).to_day_hour_s } %>
-<% end %>
-
-<% content_for :page_scripts do %>
-  <script>
-    $(".check-out-btn").hover(
-      function() {
-        var lending_period = $(this).data().lendingPeriod;
-        $(this).val(`Borrow for ${lending_period}`);
-      }, function() {
-        $(this).val('Check Out');
-      }
-    );
-  </script>
+  <%= f.submit "Borrow for #{lending_period}", class: "btn btn-info" %>
 <% end %>

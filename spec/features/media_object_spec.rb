@@ -85,4 +85,31 @@ describe 'MediaObject' do
       end
     end
   end
+  describe 'displays cdl controls' do
+    before { allow(Settings.controlled_digital_lending).to receive(:enable).and_return(true) }
+    let(:available_media_object) { FactoryBot.build(:media_object) }
+    let!(:mf) { FactoryBot.create(:master_file, media_object: available_media_object) }
+
+    context 'displays embedded player' do
+      it 'with proper text when available' do
+        visit media_object_path(available_media_object)
+        expect(page).to have_content('Borrow this item to access media resources.')
+        expect(page).to have_selector(:link_or_button, 'Borrow for 14 days')
+      end
+      it 'with proper text when not available' do
+        # Checkout the available media object with a different user
+        normal_user = FactoryBot.create(:user)
+        FactoryBot.create(:checkout, media_object_id: available_media_object.id, user_id: normal_user.id).save
+
+        visit media_object_path(available_media_object)
+        expect(page.has_content?('This resource is not available to be checked out at the moment. Please check again later.')).to be_truthy
+      end
+    end
+
+    it 'displays countdown timer when checked out' do
+      visit media_object_path(media_object)
+      expect(page.has_content?('Time remaining:')).to be_truthy
+      expect(page).to have_selector(:link_or_button, 'Return now')
+    end
+  end
 end
