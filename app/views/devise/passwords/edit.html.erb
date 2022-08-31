@@ -23,9 +23,9 @@ Unless required by applicable law or agreed to in writing, software distributed
     <%= f.hidden_field :reset_password_token %>
 
     <% if @minimum_password_length %>
-      <%= f.password_field :password, label: "Password <i>(leave blank if you don't want to change it)</i>".html_safe, help: "#{@minimum_password_length} characters minimum", autocomplete: 'off' %>
+      <%= f.password_field :password, label: "New password", help: "#{@minimum_password_length} characters minimum", autocomplete: 'off' %>
     <% else %>
-      <%= f.password_field :password, label: "Password <i>(leave blank if you don't want to change it)</i>".html_safe, autocomplete: 'off' %>
+      <%= f.password_field :password, label: "New password", autocomplete: 'off' %>
     <% end %>
 
     <%= f.password_field :password_confirmation, autocomplete: "off", label: "Confirm new password" %>
