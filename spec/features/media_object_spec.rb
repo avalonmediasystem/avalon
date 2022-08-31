@@ -93,7 +93,7 @@ describe 'MediaObject' do
     context 'displays embedded player' do
       it 'with proper text when available' do
         visit media_object_path(available_media_object)
-        expect(page.has_content?('Borrow this item to access media resources.')).to be_truthy
+        expect(page).to have_content('Borrow this item to access media resources.')
         expect(page).to have_selector(:link_or_button, 'Borrow for 14 days')
       end
       it 'with proper text when not available' do
