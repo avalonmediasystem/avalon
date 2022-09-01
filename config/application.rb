@@ -38,7 +38,7 @@ module Avalon
 
     config.middleware.insert_before 0, Rack::Cors do
       allow do
-        origins '*'
+        origins { |source| true }
         resource '/media_objects/*/manifest*', headers: :any, methods: [:get]
         resource '/master_files/*/thumbnail', headers: :any, methods: [:get]
         resource '/master_files/*/transcript/*/*', headers: :any, methods: [:get]
