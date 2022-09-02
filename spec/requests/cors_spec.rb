@@ -18,7 +18,6 @@ describe 'CORS', type: :request do
   let(:media_object) { FactoryBot.create(:published_media_object) }
   let(:headers) { ['localhost', 'http://example.com', 'https://example.edu'] }
 
-
   it 'echoes the request origin in the CORS headers' do
     headers.each do |header|
       get "/media_objects/#{media_object.id}/manifest", headers: { 'HTTP_ORIGIN': header }
