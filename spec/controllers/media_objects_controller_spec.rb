@@ -634,25 +634,59 @@ describe MediaObjectsController, type: :controller do
 
   describe "#index" do
     let!(:media_object) { FactoryBot.create(:published_media_object, visibility: 'public') }
+    let!(:private_media_object) { FactoryBot.create(:published_media_object, visibility: 'private') }
     subject(:json) { JSON.parse(response.body) }
-    let(:administrator) { FactoryBot.create(:administrator) }
 
-    before(:each) do
-      ApiToken.create token: 'secret_token', username: administrator.username, email: administrator.email
-      request.headers['Avalon-Api-Key'] = 'secret_token'
+    context 'as an administrator' do
+      let(:administrator) { FactoryBot.create(:administrator) }
+
+      before(:each) do
+        ApiToken.create token: 'secret_token', username: administrator.username, email: administrator.email
+        request.headers['Avalon-Api-Key'] = 'secret_token'
+      end
+
+      it "should return list of media_objects" do
+        get 'index', format:'json'
+        expect(json.count).to eq(2)
+        expect(json.first['id']).to eq(media_object.id)
+        expect(json.first['title']).to eq(media_object.title)
+        expect(json.first['collection']).to eq(media_object.collection.name)
+        expect(json.first['main_contributors']).to eq(media_object.creator)
+        expect(json.first['publication_date']).to eq(media_object.date_created)
+        expect(json.first['published_by']).to eq(media_object.avalon_publisher)
+        expect(json.first['published']).to eq(media_object.published?)
+        expect(json.first['summary']).to eq(media_object.abstract)
+        expect(json.second['id']).to eq(private_media_object.id)
+        expect(json.second['title']).to eq(private_media_object.title)
+        expect(json.second['collection']).to eq(private_media_object.collection.name)
+        expect(json.second['main_contributors']).to eq(private_media_object.creator)
+        expect(json.second['publication_date']).to eq(private_media_object.date_created)
+        expect(json.second['published_by']).to eq(private_media_object.avalon_publisher)
+        expect(json.second['published']).to eq(private_media_object.published?)
+        expect(json.second['summary']).to eq(private_media_object.abstract)
+      end
     end
 
-    it "should return list of media_objects" do
-      get 'index', format:'json'
-      expect(json.count).to eq(1)
-      expect(json.first['id']).to eq(media_object.id)
-      expect(json.first['title']).to eq(media_object.title)
-      expect(json.first['collection']).to eq(media_object.collection.name)
-      expect(json.first['main_contributors']).to eq(media_object.creator)
-      expect(json.first['publication_date']).to eq(media_object.date_created)
-      expect(json.first['published_by']).to eq(media_object.avalon_publisher)
-      expect(json.first['published']).to eq(media_object.published?)
-      expect(json.first['summary']).to eq(media_object.abstract)
+    context 'user is not an administrator' do
+      let(:user) { FactoryBot.create(:user) }
+
+      before(:each) do
+        ApiToken.create token: 'user_token', username: user.username, email: user.email
+        request.headers['Avalon-Api-Key'] = 'user_token'
+      end
+
+      it "should return list of media_objects that the user is authorized to view" do
+        get 'index', format: 'json'
+        expect(json.count).to eq(1)
+        expect(json.first['id']).to eq(media_object.id)
+        expect(json.first['title']).to eq(media_object.title)
+        expect(json.first['collection']).to eq(media_object.collection.name)
+        expect(json.first['main_contributors']).to eq(media_object.creator)
+        expect(json.first['publication_date']).to eq(media_object.date_created)
+        expect(json.first['published_by']).to eq(media_object.avalon_publisher)
+        expect(json.first['published']).to eq(media_object.published?)
+        expect(json.first['summary']).to eq(media_object.abstract)
+      end
     end
   end
 
