@@ -65,4 +65,22 @@ Unless required by applicable law or agreed to in writing, software distributed
   <% if @currentStream.present? and @currentStream.derivatives.present? %>
     <%= render partial: "mejs4_player_js", locals: {section: @currentStream, section_info: @currentStreamInfo} %>
   <% end %>
+
+  <script>
+    // When viewing video on smaller devices scroll to page content to fully
+    // display the video player
+    $(document).ready(function () {
+      const isVideo = "<%= @currentStreamInfo[:is_video] %>";
+      if(isVideo) {
+        const screenHeight = screen.height;
+        const playerHeight = document.getElementsByTagName('video')[0].style.height.replace(/[^-\d\.]/g, '');
+        if(screenHeight - playerHeight < 200) {
+          $('html, body').animate({
+              scrollTop: $('#user-util-collapse').offset().top
+          }, 1000);
+        }
+      }
+    });
+  </script>
+
 <% end %>
