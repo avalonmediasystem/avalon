@@ -26,7 +26,9 @@ Unless required by applicable law or agreed to in writing, software distributed
     <h1 class="sr-only">Edit Media Object</h1>
 
     <ol class="breadcrumb">
-      <li class="breadcrumb-item"><%= @media_object.collection.name.present? ? @media_object.collection.name : 'Untitled collection' %></li>
+      <li class="breadcrumb-item">
+        <%= link_to @media_object.collection.name.present? ? @media_object.collection.name : 'Untitled collection', admin_collection_path(@media_object.collection.id) %>
+      </li>
       <li class="breadcrumb-item"><%= @media_object.title.present? ? @media_object.title : 'Untitled item' %></li>
     </ol>
 
