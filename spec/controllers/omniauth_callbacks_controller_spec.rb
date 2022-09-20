@@ -1,11 +1,11 @@
 # Copyright 2011-2022, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
-# 
+#
 # You may obtain a copy of the License at
-# 
+#
 # http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software distributed
 #   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
 #   CONDITIONS OF ANY KIND, either express or implied. See the License for the
@@ -133,6 +133,24 @@ describe Users::OmniauthCallbacksController, type: :controller do
       it 'redirects to root path' do
         post :lti, session: { lti_group: course_group }
         expect(response).to redirect_to(root_path)
+      end
+    end
+
+    context 'when lti has a broken signature' do
+      let(:course_group) { 'M101-Fall2019' }
+      let(:lti_auth_double) { double() }
+      let(:lti_extra_info) { double() }
+
+      before do
+        allow(User).to receive(:find_for_lti).and_return(user)
+        @request.env["omniauth.auth"] = lti_auth_double
+        allow(lti_auth_double).to receive(:extra).and_raise (OAuth::Signature::UnknownSignatureMethod)
+      end
+
+      it 'should rescue the error' do
+        expect { get :lti, session: { lti_group: course_group } }.not_to raise_error
+        expect(response).to redirect_to(root_path)
+        expect(flash[:error]).to be_present
       end
     end
   end
