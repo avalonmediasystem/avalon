@@ -318,7 +318,7 @@ class MediaObjectsController < ApplicationController
   def index
     respond_to do |format|
       format.json {
-        paginate json: MediaObject.all.select { |mo| can? :read, mo }
+        paginate json: current_ability.is_administrator? ? MediaObject.all : MediaObject.accessible_by(current_ability)
       }
     end
   end

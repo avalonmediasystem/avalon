@@ -58,3 +58,19 @@ end
 
 # Clear the role map out of the Rails cache so it initializes from the DB
 Rails.cache.delete("RoleMapHash")
+
+ActiveFedora::QueryMethods.module_eval do
+  extend ActiveSupport::Concern
+
+  def accessible_by(ability, action = :index)
+    permission_types = case action
+      when :index then [:discover, :read, :edit]
+      when :show then [:read, :edit]
+      when :update, :edit, :create, :new, :destroy then [:edit]
+    end
+
+    builder = ::SearchBuilder.new(nil).with_ability(ability)
+    filters = builder.send(:gated_discovery_filters).reject(&:blank?).join(' OR ')
+    spawn.where!(filters)
+  end
+end
