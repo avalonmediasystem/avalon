@@ -121,6 +121,10 @@ describe User do
       allow_any_instance_of(Net::LDAP).to receive(:search).and_return([entry])
       expect(user.send(:ldap_groups)).to eq(['Group1','Group2'])
     end
+    it "should return [] when ldap search returns nil" do
+      allow_any_instance_of(Net::LDAP).to receive(:search).and_return(nil)
+      expect(user.send(:ldap_groups)).to eq([])
+    end
   end
 
   describe "#autocomplete" do
