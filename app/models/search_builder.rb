@@ -26,12 +26,12 @@ class SearchBuilder < Blacklight::SearchBuilder
     solr_parameters[:fq] << 'has_model_ssim:"MediaObject"'
   end
 
-  def only_published_items(solr_parameters)
+  def only_published_items(solr_parameters, ability = current_ability)
     solr_parameters[:fq] ||= []
     solr_parameters[:fq] << [policy_clauses, 'workflow_published_sim:"Published"'].compact.join(" OR ")
   end
 
-  def limit_to_non_hidden_items(solr_parameters)
+  def limit_to_non_hidden_items(solr_parameters, ability = current_ability)
     solr_parameters[:fq] ||= []
     solr_parameters[:fq] << [policy_clauses,"(*:* NOT hidden_bsi:true)"].compact.join(" OR ")
   end
