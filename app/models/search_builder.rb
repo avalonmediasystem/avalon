@@ -18,7 +18,8 @@ class SearchBuilder < Blacklight::SearchBuilder
   include Hydra::AccessControlsEnforcement
   include Hydra::MultiplePolicyAwareAccessControlsEnforcement
 
-  self.solr_access_filters_logic += [:limit_to_policies, :only_published_items, :limit_to_non_hidden_items]
+  class_attribute :avalon_solr_access_filters_logic
+  self.avalon_solr_access_filters_logic = [:only_published_items, :limit_to_non_hidden_items]
   self.default_processor_chain += [:only_wanted_models]
 
   def only_wanted_models(solr_parameters)
@@ -26,23 +27,22 @@ class SearchBuilder < Blacklight::SearchBuilder
     solr_parameters[:fq] << 'has_model_ssim:"MediaObject"'
   end
 
-  def limit_to_policies(permission_types, ability = current_ability)
-    Array(policy_clauses)
+  def only_published_items(permission_types = discovery_permissions, ability = current_ability)
+    [policy_clauses, 'workflow_published_sim:"Published"'].compact.join(" OR ")
   end
 
-  def only_published_items(permission_types, ability = current_ability)
-    ['workflow_published_sim:"Published"']
-  end
-
-  def limit_to_non_hidden_items(solr_parameters, ability = current_ability)
-    ["(*:* NOT hidden_bsi:true)"]
+  def limit_to_non_hidden_items(permission_types = discovery_permissions, ability = current_ability)
+    [policy_clauses,"(*:* NOT hidden_bsi:true)"].compact.join(" OR ")
   end
 
   # Overridden to skip for admin users
   def apply_gated_discovery(solr_parameters)
     if current_ability.cannot? :discover_everything, MediaObject
         solr_parameters[:fq] ||= []
-        solr_parameters[:fq] << gated_discovery_filters.reject(&:blank?).join(' OR ')
+        solr_parameters[:fq] << [gated_discovery_filters.reject(&:blank?).join(' OR ')]
+        avalon_solr_access_filters_logic.each do |filter|
+          solr_parameters[:fq] << send(filter, permission_types, current_ability)
+        end
         Rails.logger.debug("Solr parameters: #{solr_parameters.inspect}")
     end
   end
