@@ -18,6 +18,7 @@ class ApplicationController < ActionController::Base
 
   # Adds a few additional behaviors into the application controller
   include Blacklight::Controller
+  include Blacklight::Searchable
   include Hydra::Controller::ControllerBehavior
   # To deal with a load order issue breaking persona impersonate
   include Samvera::Persona::BecomesBehavior
@@ -33,6 +34,8 @@ class ApplicationController < ActionController::Base
   before_action :rewrite_v4_ids, if: proc{|c| request.method_symbol == :get && [params[:id], params[:content]].compact.any? { |i| i =~ /^[a-z]+:[0-9]+$/}}
   before_action :set_no_cache_headers, if: proc{|c| request.xhr? }
   prepend_before_action :remove_zero_width_chars
+
+  self.search_service_class = SearchService
 
   def set_no_cache_headers
     response.headers["Cache-Control"] = "no-cache, no-store"
