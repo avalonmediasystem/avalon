@@ -18,7 +18,7 @@ class SearchBuilder < Blacklight::SearchBuilder
   include Hydra::AccessControlsEnforcement
   include Hydra::MultiplePolicyAwareAccessControlsEnforcement
 
-  self.solr_access_filters_logic += [:only_published_items, :limit_to_non_hidden_items]
+  self.solr_access_filters_logic += [:limit_to_policies, :only_published_items, :limit_to_non_hidden_items]
   self.default_processor_chain += [:only_wanted_models]
 
   def only_wanted_models(solr_parameters)
@@ -26,14 +26,16 @@ class SearchBuilder < Blacklight::SearchBuilder
     solr_parameters[:fq] << 'has_model_ssim:"MediaObject"'
   end
 
-  def only_published_items(solr_parameters, ability = current_ability)
-    solr_parameters[:fq] ||= []
-    solr_parameters[:fq] << [policy_clauses, 'workflow_published_sim:"Published"'].compact.join(" OR ")
+  def limit_to_policies(permission_types, ability = current_ability)
+    Array(policy_clauses)
+  end
+
+  def only_published_items(permission_types, ability = current_ability)
+    ['workflow_published_sim:"Published"']
   end
 
   def limit_to_non_hidden_items(solr_parameters, ability = current_ability)
-    solr_parameters[:fq] ||= []
-    solr_parameters[:fq] << [policy_clauses,"(*:* NOT hidden_bsi:true)"].compact.join(" OR ")
+    ["(*:* NOT hidden_bsi:true)"]
   end
 
   # Overridden to skip for admin users
