@@ -258,6 +258,14 @@ class Admin::CollectionsController < ApplicationController
     end
   end
 
+  protected
+
+  rescue_from Avalon::NotFound do |exception|
+    support_email = Settings.email.support
+    notice_text = I18n.t('errors.controlled_vocabulary_error') % [exception, support_email, support_email]
+    redirect_to root_path, flash: { error: notice_text.html_safe }
+  end
+
   private
 
   def update_access(collection, params)

@@ -517,6 +517,11 @@ class MediaObjectsController < ApplicationController
   end
 
   protected
+  rescue_from Avalon::NotFound do |exception|
+    support_email = Settings.email.support
+    notice_text = I18n.t('errors.controlled_vocabulary_error') % [exception.message, support_email]
+    redirect_to root_path, flash: { error: notice_text }
+  end
 
   def master_file_presenters
     # NOTE: Defaults are set on returned SpeedyAF::Base objects if field isn't present in the solr doc.
