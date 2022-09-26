@@ -48,6 +48,10 @@ body {
 */
 html {
   font-size: 14px;
+
+  @include media-breakpoint-down(md) {
+    font-size: 12px;
+  }
 }
 
 .alert {
@@ -138,6 +142,12 @@ div.alert-danger {
 .page-title-wrapper {
   h3 {
     margin-top: 0;
+  }
+
+  @include media-breakpoint-down(md) {
+    h1 {
+      font-size: 2rem;
+    }
   }
 }
 
@@ -399,6 +409,12 @@ a[data-trigger='submit'] {
     margin-top: 10px;
     margin-bottom: 10px;
   }
+  
+  @include media-breakpoint-down(sm) {
+    margin-top: 1rem;
+    padding: 0;
+  }
+
 }
 
 .index_title {
