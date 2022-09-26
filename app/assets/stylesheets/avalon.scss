@@ -1111,6 +1111,11 @@ h5.card-title {
   padding-top: 5px;
 }
 
+.form-disabled {
+  pointer-events: none;
+  opacity: 0.4;
+}
+
 .fileinput-close {
   padding-top: 5px;
   float: none;
