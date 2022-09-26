@@ -20,8 +20,7 @@ class SearchBuilder < Blacklight::SearchBuilder
 
   class_attribute :avalon_solr_access_filters_logic
   self.avalon_solr_access_filters_logic = [:only_published_items, :limit_to_non_hidden_items]
-  self.default_processor_chain -= [:add_access_controls_to_solr_params]
-  self.default_processor_chain += [:apply_gated_discovery, :only_wanted_models]
+  self.default_processor_chain += [:only_wanted_models]
 
   def only_wanted_models(solr_parameters)
     solr_parameters[:fq] ||= []

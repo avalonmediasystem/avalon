@@ -68,9 +68,11 @@ ActiveFedora::QueryMethods.module_eval do
       when :show then [:read, :edit]
       when :update, :edit, :create, :new, :destroy then [:edit]
     end
-    byebug
+
     builder = ::SearchBuilder.new(nil).with_ability(ability).with_discovery_permissions(permission_types)
     filters = builder.send(:gated_discovery_filters).join(' OR ')
-    spawn.where!(filters)
+    rel = spawn.where(filters)
+    builder.avalon_solr_access_filters_logic.map {|filter| rel = rel.where(builder.send(filter)) }
+    rel
   end
 end
