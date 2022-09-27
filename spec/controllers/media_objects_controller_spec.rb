@@ -1025,8 +1025,14 @@ describe MediaObjectsController, type: :controller do
     end
 
     context "correctly handle missing controlled vocabulary sections" do
-      it "should redirect to homepage if controlled_vocabulary.yml is incomplete" do
+      before do
+        @temp = ModsDocument::RIGHTS_STATEMENTS
         ModsDocument::RIGHTS_STATEMENTS = nil
+      end
+      after do
+        ModsDocument::RIGHTS_STATEMENTS = @temp
+      end
+      it "should redirect to homepage if controlled_vocabulary.yml is incomplete" do
         get :show, params: { id: media_object.id }
         expect(response).to redirect_to(root_path)
         expect(flash[:error]).to be_present
