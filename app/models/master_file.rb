@@ -512,7 +512,7 @@ class MasterFile < ActiveFedora::Base
 
   def to_solr *args
     super.tap do |solr_doc|
-      solr_doc['file_size_ltsi'] = file_size
+      solr_doc['file_size_ltsi'] = file_size if file_size.present?
       solr_doc['has_captions?_bs'] = has_captions?
       solr_doc['has_waveform?_bs'] = has_waveform?
       solr_doc['has_poster?_bs'] = has_poster?
