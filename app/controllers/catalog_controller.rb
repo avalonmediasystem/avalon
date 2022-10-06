@@ -189,6 +189,7 @@ class CatalogController < ApplicationController
     config.add_sort_field 'date_ssi desc, title_ssort asc', label: 'Date'
     config.add_sort_field 'creator_ssort asc, title_ssort asc', label: 'Main contributor'
     config.add_sort_field 'title_ssort asc, date_ssi desc', label: 'Title'
+    config.add_sort_field 'timestamp desc', label: 'Recently Updated', if: false
 
     # If there are more than this many search results, no spelling ("did you
     # mean") suggestion is offered.
