@@ -17,7 +17,7 @@ en:
     general_auth_error: You are not authorized to access this content.
     general_500_error: There was an error with this request.
     controlled_vocabulary_error: |
-      %s Please contact support to report this error: %s
+      %s Please contact support to report this error: <a href="mailto:%s">%s</a>.
     messages:
       blank: "field is required."
       taken: "is taken."
