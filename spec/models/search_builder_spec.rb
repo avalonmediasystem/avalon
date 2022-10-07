@@ -26,7 +26,7 @@ RSpec.describe SearchBuilder do
     it "should include policy clauses when user is manager" do
       allow(subject).to receive(:current_ability).and_return(ability)
       allow(subject).to receive(:policy_clauses).and_return("test:clause")
-      expect(subject.only_published_items({})).to eq ["test:clause OR workflow_published_sim:\"Published\""]
+      expect(subject.only_published_items({})).to eq "test:clause OR workflow_published_sim:\"Published\""
     end
   end
 end

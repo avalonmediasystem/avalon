@@ -316,7 +316,6 @@ class MediaObjectsController < ApplicationController
   end
 
   def index
-    # byebug
     respond_to do |format|
       format.json {
         paginate json: MediaObject.accessible_by(current_ability, :index)

@@ -63,6 +63,8 @@ ActiveFedora::QueryMethods.module_eval do
   extend ActiveSupport::Concern
 
   def accessible_by(ability, action = :index)
+    return spawn if ability.can?(:discover_everything, MediaObject) # Administrator
+
     permission_types = case action
       when :index then [:discover, :read, :edit]
       when :show then [:read, :edit]
