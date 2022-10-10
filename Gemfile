@@ -37,7 +37,7 @@ gem 'rdf-vocab', '< 3.1.5'
 gem 'blacklight', '~> 7.25'
 gem 'blacklight-access_controls', '>= 6.0.1' # ensure rails 6 support
 gem 'rdf', '~> 3.1'
-gem 'rsolr', '~> 1.0'
+gem 'rsolr', '~> 2.0'
 
 # Rails & Samvera Plugins
 gem 'about_page', git: 'https://github.com/avalonmediasystem/about_page.git', tag: 'avalon-r6.5'
