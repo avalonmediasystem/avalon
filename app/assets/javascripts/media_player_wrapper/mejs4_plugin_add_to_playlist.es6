@@ -349,6 +349,7 @@ Object.assign(MediaElementPlayer.prototype, {
       $(t.addToPlayListObj.playlistEl).slideToggle();
       // Update active (is showing) state
       t.addToPlayListObj.active = !t.addToPlayListObj.active;
+      addToPlayListObj.player.options.enableKeyboard = false;
     },
 
     /**
@@ -417,6 +418,7 @@ Object.assign(MediaElementPlayer.prototype, {
         }
       }
       t.active = false;
+      t.player.options.enableKeyboard = true;
     }
   }
 });
