@@ -14,7 +14,7 @@ Unless required by applicable law or agreed to in writing, software distributed
 ---  END LICENSE_HEADER BLOCK  ---
 %>
 <% unless Avalon::ControlledVocabulary.vocabulary[:units] %>
-  <% raise Avalon::NotFound.new "controlled_vocabulary.yml file is missing required information." %>
+  <% raise Avalon::VocabularyNotFound.new "Units vocabulary not found." %>
 <% end %>
 
 <div id="new_collection" class="modal fade" role="dialog" data-backdrop="true" data-submit_url="<%= 'create' %>">

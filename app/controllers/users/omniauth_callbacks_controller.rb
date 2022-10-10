@@ -89,8 +89,7 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
   end
 
   rescue_from OAuth::Signature::UnknownSignatureMethod do |exception|
-    support_email = Settings.email.support
-    notice_text = I18n.t('errors.general_auth_error') % [support_email, support_email]
-    redirect_to root_path, flash: { error: notice_text.html_safe }
+    notice_text = I18n.t('errors.general_auth_error')
+    redirect_to root_path, flash: { error: notice_text }
   end
 end

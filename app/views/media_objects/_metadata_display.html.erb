@@ -14,8 +14,9 @@ Unless required by applicable law or agreed to in writing, software distributed
 ---  END LICENSE_HEADER BLOCK  ---
 %>
 <% unless ModsDocument::IDENTIFIER_TYPES && ModsDocument::NOTE_TYPES && ModsDocument::RIGHTS_STATEMENTS %>
-  <% raise Avalon::NotFound.new "controlled_vocabulary.yml file is missing required information." %>
+  <% raise Avalon::VocabularyNotFound.new "Rights statements, Identifier types, or Note types vocabulary not found." %>
 <% end %>
+
 <div id="metadata_header">
   <ul class="nav nav-tabs">
     <li class="nav-item"><a href="#details-tab" data-toggle="tab" class="nav-link active">Details</a></li>

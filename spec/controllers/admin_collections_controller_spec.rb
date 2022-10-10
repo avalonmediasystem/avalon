@@ -192,6 +192,7 @@ describe Admin::CollectionsController, type: :controller do
         login_as(:administrator)
         get 'index'
         expect(response).to redirect_to(root_path)
+        expect(flash[:error]).to be_present
       end
     end
   end

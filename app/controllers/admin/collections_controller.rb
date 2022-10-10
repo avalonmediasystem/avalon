@@ -258,7 +258,7 @@ class Admin::CollectionsController < ApplicationController
     end
   end
 
-  rescue_from Avalon::NotFound do |exception|
+  rescue_from Avalon::VocabularyNotFound do |exception|
     support_email = Settings.email.support
     notice_text = I18n.t('errors.controlled_vocabulary_error') % [exception.message, support_email, support_email]
     redirect_to root_path, flash: { error: notice_text.html_safe }

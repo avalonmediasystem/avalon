@@ -44,7 +44,5 @@ class DerivativesController < ApplicationController
     end
   rescue StreamToken::Unauthorized
     return head :forbidden
-  rescue NoMethodError
-    return head :bad_request
   end
 end

@@ -1026,11 +1026,7 @@ describe MediaObjectsController, type: :controller do
 
     context "correctly handle missing controlled vocabulary sections" do
       before do
-        @temp = ModsDocument::RIGHTS_STATEMENTS
-        ModsDocument::RIGHTS_STATEMENTS = nil
-      end
-      after do
-        ModsDocument::RIGHTS_STATEMENTS = @temp
+        stub_const("ModsDocument::RIGHTS_STATEMENTS", nil)
       end
       it "should redirect to homepage if controlled_vocabulary.yml is incomplete" do
         get :show, params: { id: media_object.id }
