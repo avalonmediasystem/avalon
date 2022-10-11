@@ -185,6 +185,16 @@ describe Admin::CollectionsController, type: :controller do
       get 'index', params: { user: 'foobar', format:'json' }
       expect(json.count).to eq(0)
     end
+
+    context 'information is missing from the controlled vocabulary file' do
+      it 'should redirect to the homepage' do
+        allow(Avalon::ControlledVocabulary).to receive(:vocabulary).and_return({})
+        login_as(:administrator)
+        get 'index'
+        expect(response).to redirect_to(root_path)
+        expect(flash[:error]).to be_present
+      end
+    end
   end
 
   describe 'pagination' do

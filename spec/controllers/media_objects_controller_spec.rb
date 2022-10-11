@@ -764,8 +764,8 @@ describe MediaObjectsController, type: :controller do
         expect(media_object.ordered_master_files.to_a.first).to eq(mf2)
         expect(controller.send('set_active_file')).to eq(mf2)
       end
-
     end
+
     context "Test lease access control" do
       let!(:media_object) { FactoryBot.create(:published_media_object, :with_master_file, visibility: 'private') }
       let!(:user) { FactoryBot.create(:user) }
@@ -1055,6 +1055,17 @@ describe MediaObjectsController, type: :controller do
       it "responds with 404 when non-existant section is requested" do
         get 'show', params: { id: mo.id, part: 100 }
         expect(response.code).to eq('404')
+      end
+    end
+
+    context "correctly handle missing controlled vocabulary sections" do
+      before do
+        stub_const("ModsDocument::RIGHTS_STATEMENTS", nil)
+      end
+      it "should redirect to homepage if controlled_vocabulary.yml is incomplete" do
+        get :show, params: { id: media_object.id }
+        expect(response).to redirect_to(root_path)
+        expect(flash[:error]).to be_present
       end
     end
 
