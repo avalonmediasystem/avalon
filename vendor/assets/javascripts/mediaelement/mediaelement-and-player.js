@@ -1785,11 +1785,11 @@ Object.assign(_player2.default.prototype, {
 		t.newTime = 0;
 		t.forcedHandlePause = false;
 		t.setTransformStyle = function (element, value) {
-			element.style.transform = value;
 			element.style.webkitTransform = value;
 			element.style.MozTransform = value;
 			element.style.msTransform = value;
 			element.style.OTransform = value;
+			element.style.transform = value;
 		};
 
 		t.buffer.style.display = 'none';
@@ -2571,19 +2571,22 @@ Object.assign(_player2.default.prototype, {
 	cleartracks: function cleartracks(player) {
 		if (player) {
 			if (player.captions) {
-				player.captions.remove();
+				delete player.captions;
 			}
 			if (player.chapters) {
-				player.chapters.remove();
+				delete player.chapters;
 			}
 			if (player.captionsText) {
-				player.captionsText.remove();
+				delete player.captionsText;
 			}
 			if (player.captionsButton) {
 				player.captionsButton.remove();
 			}
 			if (player.chaptersButton) {
-				player.chaptersButton.remove();
+				delete player.chaptersButton;
+			}
+			if (player.trackToLoad) {
+				delete player.trackToLoad;
 			}
 		}
 	},
@@ -4347,11 +4350,11 @@ var MediaElementPlayer = function () {
 					}
 				});
 
-				t.getElement(t.container).addEventListener('click', function (e) {
+				t.getElement(t.container).addEventListener('mousedown', function (e) {
 					dom.addClass(e.currentTarget, t.options.classPrefix + 'container-keyboard-inactive');
 				});
 
-				t.getElement(t.container).addEventListener('focusin', function (e) {
+				t.getElement(t.container).addEventListener('keydown', function (e) {
 					dom.removeClass(e.currentTarget, t.options.classPrefix + 'container-keyboard-inactive');
 					if (t.isVideo && !_constants.IS_ANDROID && !_constants.IS_IOS && t.controlsEnabled && !t.options.alwaysShowControls) {
 						t.killControlsTimer('enter');
@@ -8539,15 +8542,21 @@ function secondsToTimeCode(time) {
 		if (showFrameCount) {
 			seconds = Math.floor(time % 60);
 		} else {
-			seconds = Math.floor(time % 60).toFixed(secondsDecimalLength);
+			seconds = (time % 60).toFixed(secondsDecimalLength);
 		}
 	}
 	hours = hours <= 0 ? 0 : hours;
 	minutes = minutes <= 0 ? 0 : minutes;
-	seconds = seconds <= 0 ? 0 : seconds;
+	seconds = seconds <= 0 ? Number(0).toFixed(secondsDecimalLength) : seconds;
 
-	seconds = seconds === 60 ? 0 : seconds;
-	minutes = minutes === 60 ? 0 : minutes;
+	if(Number(seconds) === 60) {
+		seconds = 0;
+		minutes++;
+	}
+	if(minutes === 60) {
+		minutes = 0;
+		hours++;
+	}
 
 	var timeFormatFrags = timeFormat.split(':');
 	var timeFormatSettings = {};
