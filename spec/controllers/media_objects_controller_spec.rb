@@ -788,6 +788,20 @@ describe MediaObjectsController, type: :controller do
 
     context "Conditional Share partials should be rendered" do
       let!(:media_object) { FactoryBot.create(:published_media_object, :with_master_file, visibility: 'public') }
+      let(:memory_store) { ActiveSupport::Cache.lookup_store(:memory_store) }
+      let(:cache) { Rails.cache }
+
+      before do
+        allow(Rails).to receive(:cache).and_return(memory_store)
+        Rails.cache.clear
+      end
+
+      it 'should cache .is_editor' do
+        login_user media_object.collection.editors.first
+        get :show, params: { id: media_object.id }
+        expect(Rails.cache.instance_variable_get(:@data)["MediaObjectsController/is_editor"]).not_to be_nil
+      end
+
       context 'With cdl enabled' do
         before { allow(Settings.controlled_digital_lending).to receive(:enable).and_return(true) }
         context "With check out" do

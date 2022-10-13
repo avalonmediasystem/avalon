@@ -245,7 +245,7 @@ class Ability
 
   def is_editor_of?(collection)
      is_administrator? ||
-       @user.in?(collection.managers, collection.editors)
+       @user.in?(collection.editors_and_managers)
   end
 
   def is_member_of_any_collection?
