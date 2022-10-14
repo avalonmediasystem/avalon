@@ -15,8 +15,7 @@ Unless required by applicable law or agreed to in writing, software distributed
 %>
 <% if !@masterFiles.blank? %>
   <% master_file=@media_object.master_files.first %>
-  <% h = current_user ? 100 : 120 %>
-  <div class="checkout <%= master_file.is_video? ? 'video' : 'audio' %> mb-3" style="height: <%= master_file.is_video? ? 400 : h %>px">
+  <div class="checkout <%= master_file.is_video? ? 'video' : 'audio' %> mb-3" style="height: <%= master_file.is_video? ? 400 : 120 %>px">
     <div class="centered <%= 'video' if master_file.is_video? %>">
       <% if !current_user %>
         <%= t('media_object.cdl.unauthenticated_message').html_safe %>
@@ -25,7 +24,7 @@ Unless required by applicable law or agreed to in writing, software distributed
         <%= t('media_object.cdl.checkout_message').html_safe %>
         <%= render "checkout" %>
       <% else %>
-        <%= t('media_object.cdl.not_available_message').html_safe %>
+        <%= t('media_object.cdl.not_available_message', :date => @media_object.return_time.strftime("%m/%d/%Y"), :time => @media_object.return_time.strftime("%I:%M%p")).html_safe %>
       <% end %>
     </div>
   </div>

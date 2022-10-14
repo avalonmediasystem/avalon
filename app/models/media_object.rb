@@ -376,6 +376,11 @@ class MediaObject < ActiveFedora::Base
     Checkout.active_for_media_object(id).any? ? "checked_out" : "available"
   end
 
+  def return_time
+    mo_checkout = Checkout.active_for_media_object(id)
+    mo_checkout.first.return_time if mo_checkout.any?
+  end
+
   alias_method :'_lending_period', :'lending_period'
   def lending_period
     self._lending_period || collection&.default_lending_period
