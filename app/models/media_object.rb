@@ -377,8 +377,7 @@ class MediaObject < ActiveFedora::Base
   end
 
   def return_time
-    mo_checkout = Checkout.active_for_media_object(id)
-    mo_checkout.first.return_time if mo_checkout.any?
+    Checkout.active_for_media_object(id).first&.return_time
   end
 
   alias_method :'_lending_period', :'lending_period'
