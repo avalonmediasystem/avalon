@@ -30,7 +30,7 @@ class MediaObjectsController < ApplicationController
   before_action :load_player_context, only: [:show]
 
   def self.is_editor ctx
-    Rails.cache.fetch([self, :is_editor], expires_in: 5.seconds) do
+    Rails.cache.fetch([ctx.hash, :is_editor], expires_in: 5.seconds) do
       ctx.current_ability.is_editor_of?(ctx.instance_variable_get('@media_object').collection)
     end
   end

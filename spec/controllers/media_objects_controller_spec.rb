@@ -799,7 +799,7 @@ describe MediaObjectsController, type: :controller do
       it 'should cache .is_editor' do
         login_user media_object.collection.editors.first
         get :show, params: { id: media_object.id }
-        expect(Rails.cache.instance_variable_get(:@data)["MediaObjectsController/is_editor"]).not_to be_nil
+        expect(Rails.cache.instance_variable_get(:@data).keys.any?(/\-?\d+\/is_editor/)).to be_truthy
       end
 
       context 'With cdl enabled' do
