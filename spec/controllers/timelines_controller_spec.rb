@@ -81,6 +81,12 @@ RSpec.describe TimelinesController, type: :controller do
           expect(get :show, params: { id: timeline.id }).to be_successful
           expect(get :manifest, params: { id: timeline.id, format: :json }).to be_successful
         end
+        it "should return timeline manifest as id" do
+          expect(get :manifest, params: { id: timeline.id }).to be_successful
+        end
+        it "should return timeline manifest as URI" do
+          expect(get :manifest, params: { id: timeline.id }, format: :json).to be_successful
+        end
       end
       context 'with a private timeline' do
         it "should NOT return the timeline view page" do

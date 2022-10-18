@@ -207,7 +207,7 @@ Rails.application.routes.draw do
     member do
       patch 'regenerate_access_token'
       post 'manifest', to: 'timelines#manifest_update', constraints: { format: 'json' }
-      get 'manifest', constraints: { format: 'json' }
+      get 'manifest'
     end
     collection do
       post 'duplicate'
