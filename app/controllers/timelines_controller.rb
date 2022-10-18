@@ -193,12 +193,12 @@ class TimelinesController < ApplicationController
   end
 
   # GET /timelines/1/manifest.json
+  # GET /timelines/1/manifest
   def manifest
     authorize! :read, @timeline
     respond_to do |format|
-      format.json do
-        render json: @timeline.manifest
-      end
+      format.json { render json: @timeline.manifest }
+      format.html { render json: @timeline.manifest }
     end
   end
 
