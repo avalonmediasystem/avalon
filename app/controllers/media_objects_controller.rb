@@ -538,7 +538,8 @@ class MediaObjectsController < ApplicationController
                                         workflow_id: nil,
                                         comment: [],
                                         supplemental_files_json: nil
-                                      })
+                                      },
+                                      load_reflections: true)
   end
 
   def load_master_files(mode = :rw)

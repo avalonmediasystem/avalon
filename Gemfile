@@ -54,7 +54,7 @@ gem 'rack-cors', require: 'rack/cors'
 gem 'rails_same_site_cookie'
 gem 'recaptcha', require: 'recaptcha/rails'
 gem 'samvera-persona', '~> 0.3'
-gem 'speedy-af', '~> 0.2'
+gem 'speedy-af', '~> 0.3'
 
 # Avalon Components
 gem 'avalon-workflow', git: "https://github.com/avalonmediasystem/avalon-workflow.git", tag: 'avalon-r6.5'
