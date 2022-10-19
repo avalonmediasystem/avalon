@@ -102,7 +102,8 @@ describe 'MediaObject' do
         FactoryBot.create(:checkout, media_object_id: available_media_object.id, user_id: normal_user.id).save
 
         visit media_object_path(available_media_object)
-        expect(page.has_content?('This resource is not available to be checked out at the moment. Please check again later.')).to be_truthy
+        expect(page.has_content?('This resource is currently checked out by another user.')).to be_truthy
+        expect(page.has_content?('This item is due to be returned on')).to be_truthy
       end
     end
 
