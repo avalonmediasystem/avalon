@@ -15,6 +15,8 @@
 require 'rails_helper'
 
 describe StreamToken do
+  include ActiveSupport::Testing::TimeHelpers
+
   let(:target) { '232A9B17-CCA8-4368-9599-117D2AF1D2EC' }
 
   describe 'existing session' do
@@ -78,6 +80,18 @@ describe StreamToken do
     describe "tokens don't exist" do
       it 'should not bomb' do
         expect { StreamToken.logout! session }.not_to change { StreamToken.count }
+      end
+    end
+  end
+
+  describe 'purge_expired!' do
+    let(:session) { { session_id: '00112233445566778899aabbccddeeff' } }
+    let!(:token) { StreamToken.find_or_create_session_token(session, target) }
+
+    it 'removes purged tokens from session' do
+      travel_to StreamToken.find_by(token: token).expires + 1.minute do
+        StreamToken.purge_expired!(session)
+        expect(session[:hash_tokens]).not_to include(token)
       end
     end
   end
