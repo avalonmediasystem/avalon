@@ -24,7 +24,7 @@ class StreamToken < ActiveRecord::Base
   end
 
   def self.find_or_create_session_token(session, target)
-    purge_expired!
+    purge_expired!(session)
     hash_token = Digest::SHA1.new
     hash_token << media_token(session) << target
     result = find_or_create_by!(token: hash_token.to_s, target: target)
@@ -40,8 +40,10 @@ class StreamToken < ActiveRecord::Base
     end unless session[:hash_tokens].nil?
   end
 
-  def self.purge_expired!
-    expired.each(&:delete)
+  def self.purge_expired!(session)
+    purged = expired.each(&:delete)
+    Array(session[:hash_tokens]).reject! { |token| !StreamToken.exists?(token: token) }
+    purged
   end
 
   def self.validate_token(value)
