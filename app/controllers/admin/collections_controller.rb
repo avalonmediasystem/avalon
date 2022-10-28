@@ -305,6 +305,7 @@ class Admin::CollectionsController < ApplicationController
 
     collection.default_visibility = params[:visibility] unless params[:visibility].blank?
     collection.default_hidden = params[:hidden] == "1"
+    collection.default_enable_cdl = params[:cdl] == "1"
     if Avalon::Configuration.controlled_digital_lending_enabled?
       lending_period = build_default_lending_period(collection)
       if lending_period.positive?

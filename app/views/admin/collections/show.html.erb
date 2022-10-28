@@ -129,6 +129,7 @@ Unless required by applicable law or agreed to in writing, software distributed
                                          visibility: @collection.default_visibility,
                                          hidden: @collection.default_hidden,
                                          lending_period: @collection.default_lending_period,
+                                         cdl: @collection.default_enable_cdl,
                                          modal: { partial: "apply_access_control", title: "Apply current Default Access settings to all existing Items" } } %>
 
   <% if can? :update_access_control, @collection %>

@@ -64,7 +64,25 @@ Unless required by applicable law or agreed to in writing, software distributed
   </div>
 </div>
 
-<% if Avalon::Configuration.controlled_digital_lending_enabled? %>
+<% if object.is_a?(Admin::Collection) %>
+  <div class="card enable-cdl">
+    <div class="card-header">
+      <h3 class="card-title">Controlled Digital Lending </h3>
+    </div>
+    <div class="card-body">
+      <div class="form-group">
+        <div class="form-check">
+          <%= label_tag :cdl do %>
+          <%= check_box_tag :cdl, '1', (cdl) %>
+          Enable controlled digital lending for this colleciton
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+<% end %>
+
+<% if Avalon::Configuration.controlled_digital_lending_enabled? || object.is_a?(MediaObject) ? Admin::Collection.find(object.collection_id).default_enable_cdl : object.default_enable_cdl %>
   <div class="card item-lending-period">
     <div class="card-header">
       <h3 class="card-title">Item lending period</h3>

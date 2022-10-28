@@ -462,6 +462,25 @@ describe Admin::CollectionsController, type: :controller do
         collection.reload
         expect(collection.default_visibility).to eq("public")
       end
+
+      context "cdl functionality" do
+        context "cdl disabled for application" do
+          before { allow(Settings.controlled_digital_lending).to receive(:enable).and_return(false) }
+          it "enable cdl for collection" do
+            put 'update', params: { id: collection.id, save_access: "Save Access Settings", cdl: "1" }
+            collection.reload
+            expect(collection.default_enable_cdl).to be true
+          end
+        end
+        context "cdl enable for application" do
+          before { allow(Settings.controlled_digital_lending).to receive(:enable).and_return(true) }
+          it "disable cdl for collection" do
+            put 'update', params: { id: collection.id, save_access: "Save Access Settings", cdl: nil }
+            collection.reload
+            expect(collection.default_enable_cdl).to be false
+          end
+        end
+      end
     end
 
     context "changing lending period" do
