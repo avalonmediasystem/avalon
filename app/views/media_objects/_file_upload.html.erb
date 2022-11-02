@@ -169,98 +169,23 @@ Unless required by applicable law or agreed to in writing, software distributed
       <% end %>
 
       <div class="row">
-        <div class="col-sm-7">
-          <!-- web-upload -->
-          <p class="muted">Upload through the web (files must not exceed <%= number_to_human_size MasterFile::MAXIMUM_UPLOAD_SIZE %>)</p>
-          <fieldset id='uploader'>
-            <%= form_tag(master_files_path, :enctype=>"multipart/form-data", class: upload_form_classes, data: upload_form_data) do -%>
+        <!-- web-upload -->
+        <p class="muted">Upload through the web (files must not exceed <%= number_to_human_size MasterFile::MAXIMUM_UPLOAD_SIZE %>)</p>
+        <fieldset id='uploader'>
+          <%= form_tag(master_files_path, :enctype=>"multipart/form-data", class: upload_form_classes, data: upload_form_data) do -%>
             <input type="hidden" name="container_id" value="<%= @media_object.id %>" />
             <input type="hidden" name="step" value="file_upload" />
 
             <%= hidden_field_tag("container_content_type", container_content_type, :id => "file_upload_content_type") if defined?(container_content_type) %>
-
             <%- field_tag_options = defined?(uploader_options) ? uploader_options : {multiple: true} %>
-
-            <span class="fileinput fileinput-exists"
-              style="background-color: white; padding-top: 8px; padding-bottom: 2px; border: none;">
-              <%= check_box_tag(:workflow, 'skip_transcoding', false, id: 'skip_transcoding')%>
-              <%= label_tag(:skip_transcoding) do %>
-                <div style="font-size: inherit;" class="tooltip-help" data-title="Skip Transcoding"
-                  data-tooltip="#skip-transcoding-tooltip">
-                  Skip transcoding
-                </div>
-              <% end %>
-            </span>
-
-            <div class="fileinput fileinput-new" id="file-upload" data-provides="fileinput"  style="height: 33px">
-              <a href="#" class="fileinput-submit fileinput-exists btn btn-outline btn-file file-upload-buttons"
-                data-trigger="submit" data-toggle="modal" data-target="#uploading">Upload</a>
-              <span class="btn btn-outline btn-file file-upload-buttons">
-                <span class="fileinput-new">Select file</span>
-                <span class="fileinput-exists">Change</span>
-                <input type="file" name="Filedata[]">
-              </span>
-              <span class="fileinput-filename"></span>
-              <a href="#" class="close fileinput-exists fileinput-close" data-dismiss="fileinput">&times;</a>
-            </div>
 
             <%= hidden_field_tag(:new_asset, true, :id => "files_new_asset") if params[:new_asset] %>
             <%= hidden_field_tag("id",params[:id], :id => "file_upload_id") if params[:id] %>
             <%= hidden_field_tag(:original, params[:original], :id => "files_original") %>
-            <% end %>
-          </fieldset>
-
-          <div class="collapse form-tooltip equal-height" id="skip-transcoding-tooltip">
-            <button class="close">&times;</button>
-            <p><%= t("file_upload_tip.skip_transcoding").html_safe %></p>
-          </div>
-
-          <div id="uploading" class="modal fade" role="dialog" data-backdrop="true" data-keyboard="false">
-            <div class="modal-dialog modal-sm">
-              <div class="modal-content">
-                <div class="modal-header">
-                  <p><i class='fa fa-spinner fa-spin'></i> Uploading. Please wait...</p>
-                </div>
-                <div class="modal-body"></div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- dropbox form -->
-        <div class="dropbox-upload col-sm-5">
-          <div class="row">
-            <div class="col-sm-12">
-              <p class="muted">
-                Use the dropbox to import large files.
-                <span class="tooltip-label">
-                  <span class='fa fa-question-circle' type="button" data-toggle="collapse" data-target="#dropbox_tooltip" aria-expanded="false" aria-controls="dropbox_tooltip"></span>
-                </span>
-              </p>
-
-              <span class="form-text tooltip-block collapse" id="dropbox_tooltip">
-                <%= content_tag :span, '', class: 'close fa fa-times' %>
-                <p class="text-muted">
-                  Attach selected files after uploading. Files will begin
-                  processing when you click <strong>"Save and continue"</strong>.
-                </p>
-                <%= render partial: "dropbox_details" %>
-              </span>
-            </div>
-          </div>
-
-          <%= form_tag(master_files_path, id: 'dropbox_form', method: 'post') do %>
-            <%= hidden_field_tag("workflow") %>
-            <input type="hidden" name="container_id" value="<%= @media_object.id %>" />
-            <div class="form-group">
-              <%= button_tag("Open Dropbox", type: 'button', class: 'btn btn-outline', id: "browse-btn",
-              'data-toggle' => 'browse-everything', 'data-route' => browse_everything_engine.root_path,
-              'data-target' => '#dropbox_form', 'data-context' => @media_object.collection.id ) %>
-            </div>
           <% end %>
-        </div>
+        </fieldset>
+        <%= react_component("FileUploadUppy", {}) %>
       </div>
-
     </div>
   </div>
 </div>
