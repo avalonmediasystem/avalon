@@ -280,12 +280,12 @@ class Admin::Collection < ActiveFedora::Base
     self._default_lending_period || ActiveSupport::Duration.parse(Settings.controlled_digital_lending.default_lending_period).to_i
   end
 
-  alias_method :'_default_enable_cdl', :'default_enable_cdl'
+  alias_method :_default_enable_cdl, :default_enable_cdl
   def default_enable_cdl
-    if self._default_enable_cdl.nil?
+    if _default_enable_cdl.nil?
       Settings.controlled_digital_lending.enable
-    elsif self._default_enable_cdl != Settings.controlled_digital_lending.enable
-      self._default_enable_cdl
+    elsif _default_enable_cdl != Settings.controlled_digital_lending.enable
+      _default_enable_cdl
     else
       Settings.controlled_digital_lending.enable
     end
