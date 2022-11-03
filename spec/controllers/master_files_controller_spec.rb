@@ -228,11 +228,8 @@ describe MasterFilesController do
   end
 
   describe "#embed" do
-    let!(:master_file) { FactoryBot.create(:master_file) }
-    let(:media_object) do
-      instance_double('MediaObject', title: 'Media Object', id: 'avalon:1234',
-                                     ordered_master_files: [master_file], master_file_ids: [master_file.id])
-    end
+    let!(:master_file) { FactoryBot.create(:master_file, :with_media_object) }
+    let(:media_object) { master_file.media_object }
 
     render_views
 
@@ -252,6 +249,10 @@ describe MasterFilesController do
 
     context 'with fedora 3 pid' do
       let!(:master_file) { FactoryBot.create(:master_file, identifier: [fedora3_pid]) }
+      let(:media_object) do
+        instance_double('MediaObject', title: 'Media Object', id: 'avalon:1234',
+                                       ordered_master_files: [master_file], master_file_ids: [master_file.id])
+      end
       let(:fedora3_pid) { 'avalon:1234' }
 
       it "redirects" do
