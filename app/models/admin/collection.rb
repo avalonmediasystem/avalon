@@ -286,6 +286,8 @@ class Admin::Collection < ActiveFedora::Base
       Settings.controlled_digital_lending.enable
     elsif self._default_enable_cdl != Settings.controlled_digital_lending.enable
       self._default_enable_cdl
+    else
+      Settings.controlled_digital_lending.enable
     end
   end
 

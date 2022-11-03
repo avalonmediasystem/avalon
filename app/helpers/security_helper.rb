@@ -36,6 +36,6 @@ module SecurityHelper
   private
 
     def not_checked_out?(media_object_id)
-      Avalon::Configuration.controlled_digital_lending_enabled? && Checkout.checked_out_to_user(media_object_id, current_user&.id).empty?
+      MediaObject.find(media_object_id).cdl_enabled && Checkout.checked_out_to_user(media_object_id, current_user&.id).empty?
     end
 end

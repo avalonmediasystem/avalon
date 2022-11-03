@@ -1,11 +1,11 @@
 # Copyright 2011-2022, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
-# 
+#
 # You may obtain a copy of the License at
-# 
+#
 # http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software distributed
 #   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
 #   CONDITIONS OF ANY KIND, either express or implied. See the License for the
@@ -113,6 +113,9 @@ class MediaObject < ActiveFedora::Base
   end
   property :lending_period, predicate: ::RDF::Vocab::SCHEMA.eligibleDuration, multiple: false do |index|
     index.as :stored_sortable
+  end
+  property :cdl_enabled, predicate: ::RDF::Vocab::SCHEMA.property, multiple: false do |index|
+    index.as :symbol
   end
 
   ordered_aggregation :master_files, class_name: 'MasterFile', through: :list_source
@@ -383,6 +386,10 @@ class MediaObject < ActiveFedora::Base
   alias_method :'_lending_period', :'lending_period'
   def lending_period
     self._lending_period || collection&.default_lending_period
+  end
+
+  def cdl_enabled
+    collection&.default_enable_cdl
   end
 
   def current_checkout(user_id)
