@@ -82,7 +82,7 @@ Unless required by applicable law or agreed to in writing, software distributed
   </div>
 <% end %>
 
-<% if Avalon::Configuration.controlled_digital_lending_enabled? || object.is_a?(MediaObject) ? Admin::Collection.find(object.collection_id).default_enable_cdl : object.default_enable_cdl %>
+<% if collection_lending_enabled?(object) %>
   <div class="card item-lending-period">
     <div class="card-header">
       <h3 class="card-title">Item lending period</h3>
@@ -150,7 +150,7 @@ Unless required by applicable law or agreed to in writing, software distributed
   </div>
 </div>
 
-<% if Avalon::Configuration.controlled_digital_lending_enabled? %>
+<% if collection_lending_enabled?(object) %>
   <div class="card item-access">
     <div class="card-header">
       <h3 class="card-title">Item lending period</h3>
