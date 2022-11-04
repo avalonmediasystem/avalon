@@ -470,6 +470,7 @@ describe Admin::CollectionsController, type: :controller do
             put 'update', params: { id: collection.id, save_access: "Save Access Settings", cdl: "1" }
             collection.reload
             expect(collection.default_enable_cdl).to be true
+            expect(flash[:error]).not_to be_present
           end
         end
         context "cdl enable for application" do
