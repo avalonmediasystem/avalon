@@ -61,7 +61,7 @@ RSpec.shared_examples 'a nested controller for' do |object_class|
   let(:master_file) { FactoryBot.create(:master_file, media_object_id: media_object.id, supplemental_files: [supplemental_file]) }
   let(:supplemental_file) { FactoryBot.create(:supplemental_file, :with_attached_file, label: 'label') }
   let(:object) { object_class == MasterFile ? master_file : media_object }
-
+  let(:manager) { media_object.collection.managers.first }
 
   describe 'security' do
     context 'with unauthenticated user' do
@@ -103,7 +103,7 @@ RSpec.shared_examples 'a nested controller for' do |object_class|
     let(:object) { object_class == MasterFile ? master_file : media_object }
 
     before do
-      login_as :administrator
+      login_user manager
     end
 
     context 'json request' do
@@ -203,7 +203,7 @@ RSpec.shared_examples 'a nested controller for' do |object_class|
 
   describe "PUT #update" do
     before do
-      login_as :administrator
+      login_user manager
     end
 
     context 'json request' do
@@ -265,7 +265,7 @@ RSpec.shared_examples 'a nested controller for' do |object_class|
 
   describe "DELETE #destroy" do
     before do
-      login_as :administrator
+      login_user manager
     end
 
     context 'json request' do
