@@ -98,4 +98,3 @@ active_storage:
 controlled_digital_lending:
   enable: false
   default_lending_period: 'P14D' # ISO8601 duration format: P14D == 14.days, PT8H == 8.hours, etc.
-  max_checkouts_per_user: 25
