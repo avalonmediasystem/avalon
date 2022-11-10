@@ -19,7 +19,6 @@ $border-radius-base: 4px !default;
 
 // Form-group input fields
 .form-group .input-group {
-  width: 100.5%;
 
   .form-control {
     border-radius: 0;
@@ -53,7 +52,7 @@ $border-radius-base: 4px !default;
 
 .form-group .input-group.typed-textarea {
   .input-group-prepend:first-of-type {
-    width: 95%;
+    width: 96%;
 
     select {
       width: 100%;
@@ -117,5 +116,11 @@ label {
 #new_comment {
   .form-label {
     font-weight: bold;
+  }
+}
+
+#resource-description {
+  .input-group {
+    flex-wrap: nowrap;
   }
 }

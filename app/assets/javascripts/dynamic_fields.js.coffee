@@ -68,10 +68,10 @@ $ ->
     else
       current_input_group.after(new_input_group)
         
-    $(document).on 'click', '.remove-dynamic-field', (e) ->
-      e.preventDefault()
-      current_input_group = $(this).closest('.input-group')
-      textarea = current_input_group.data('textarea')
-      if typeof(textarea)!="undefined"
-        $(document.getElementById(textarea)).remove()
-      current_input_group.remove()
+  $(document).on 'click', '.remove-dynamic-field', (e) ->
+    e.preventDefault()
+    current_input_group = $(this).closest('.input-group')
+    textarea = current_input_group.data('textarea')
+    if typeof(textarea)!="undefined"
+      $(document.getElementById(textarea)).remove()
+    current_input_group.remove()
