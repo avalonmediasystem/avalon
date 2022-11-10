@@ -13,6 +13,8 @@
 # ---  END LICENSE_HEADER BLOCK  ---
 
 module SecurityHelper
+  include CdlHelper
+  
   def add_stream_cookies(stream_info)
     SecurityHandler.secure_cookies(target: stream_info[:id], request_host: request.server_name).each_pair do |name, value|
       cookies[name] = value
@@ -36,6 +38,6 @@ module SecurityHelper
   private
 
     def not_checked_out?(media_object_id)
-      MediaObject.find(media_object_id).cdl_enabled && Checkout.checked_out_to_user(media_object_id, current_user&.id).empty?
+      lending_enabled?(MediaObject.find(media_object_id)).cdl_enabled && Checkout.checked_out_to_user(media_object_id, current_user&.id).empty?
     end
 end

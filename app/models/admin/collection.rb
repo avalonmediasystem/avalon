@@ -67,7 +67,7 @@ class Admin::Collection < ActiveFedora::Base
   property :default_lending_period, predicate: ::RDF::Vocab::SCHEMA.eligibleDuration, multiple: false do |index|
     index.as :stored_sortable
   end
-  property :default_enable_cdl, predicate: ::RDF::Vocab::SCHEMA.property, multiple: false do |index|
+  property :default_enable_cdl, predicate: Avalon::RDFVocab::Collection.default_enable_cdl, multiple: false do |index|
     index.as :symbol
   end
 

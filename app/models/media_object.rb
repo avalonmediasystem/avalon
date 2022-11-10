@@ -114,7 +114,7 @@ class MediaObject < ActiveFedora::Base
   property :lending_period, predicate: ::RDF::Vocab::SCHEMA.eligibleDuration, multiple: false do |index|
     index.as :stored_sortable
   end
-  property :cdl_enabled, predicate: ::RDF::Vocab::SCHEMA.property, multiple: false do |index|
+  property :cdl_enabled, predicate: Avalon::RDFVocab::MediaObject.cdl_enabled, multiple: false do |index|
     index.as :symbol
   end
 

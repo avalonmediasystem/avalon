@@ -82,7 +82,7 @@ Unless required by applicable law or agreed to in writing, software distributed
   </div>
 <% end %>
 
-<% if collection_lending_enabled?(object) %>
+<% if lending_enabled?(object) %>
   <div class="card item-lending-period">
     <div class="card-header">
       <h3 class="card-title">Item lending period</h3>
@@ -150,7 +150,7 @@ Unless required by applicable law or agreed to in writing, software distributed
   </div>
 </div>
 
-<% if collection_lending_enabled?(object) %>
+<% if lending_enabled?(object) %>
   <div class="card item-access">
     <div class="card-header">
       <h3 class="card-title">Item lending period</h3>
