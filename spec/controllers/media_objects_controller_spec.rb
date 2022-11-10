@@ -812,7 +812,7 @@ describe MediaObjectsController, type: :controller do
               FactoryBot.create(:checkout, media_object_id: media_object.id, user_id: controller.current_user.id)
               get :show, params: { id: media_object.id }
               expect(response).to render_template(:_share_resource)
-              expect(response).to render_template(:_embed_resource)
+              expect(response).not_to render_template(:_embed_resource)
               expect(response).to render_template(:_lti_url)
             end
             it "managers: should include lti, embed, and share" do
@@ -820,7 +820,7 @@ describe MediaObjectsController, type: :controller do
               FactoryBot.create(:checkout, media_object_id: media_object.id, user_id: controller.current_user.id)
               get :show, params: { id: media_object.id }
               expect(response).to render_template(:_share_resource)
-              expect(response).to render_template(:_embed_resource)
+              expect(response).not_to render_template(:_embed_resource)
               expect(response).to render_template(:_lti_url)
             end
             it "editors: should include lti, embed, and share" do
@@ -828,7 +828,7 @@ describe MediaObjectsController, type: :controller do
               FactoryBot.create(:checkout, media_object_id: media_object.id, user_id: controller.current_user.id)
               get :show, params: { id: media_object.id }
               expect(response).to render_template(:_share_resource)
-              expect(response).to render_template(:_embed_resource)
+              expect(response).not_to render_template(:_embed_resource)
               expect(response).to render_template(:_lti_url)
             end
             it "others: should include embed and share and NOT lti" do
@@ -836,7 +836,7 @@ describe MediaObjectsController, type: :controller do
               FactoryBot.create(:checkout, media_object_id: media_object.id, user_id: controller.current_user.id)
               get :show, params: { id: media_object.id }
               expect(response).to render_template(:_share_resource)
-              expect(response).to render_template(:_embed_resource)
+              expect(response).not_to render_template(:_embed_resource)
               expect(response).to_not render_template(:_lti_url)
             end
           end
@@ -848,7 +848,7 @@ describe MediaObjectsController, type: :controller do
               FactoryBot.create(:checkout, media_object_id: media_object.id, user_id: controller.current_user.id)
               get :show, params: { id: media_object.id }
               expect(response).to render_template(:_share_resource)
-              expect(response).to render_template(:_embed_resource)
+              expect(response).not_to render_template(:_embed_resource)
               expect(response).to render_template(:_lti_url)
             end
             it "others: should include only lti" do
@@ -888,7 +888,7 @@ describe MediaObjectsController, type: :controller do
               FactoryBot.create(:checkout, media_object_id: media_object.id, user_id: controller.current_user.id)
               get :show, params: { id: media_object.id }
               expect(response).to render_template(:_share_resource)
-              expect(response).to render_template(:_embed_resource)
+              expect(response).not_to render_template(:_embed_resource)
               expect(response).to_not render_template(:_lti_url)
             end
           end
