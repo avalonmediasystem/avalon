@@ -17,6 +17,7 @@ class FileUploadUppy extends React.Component {
   }  
 
   componentWillMount() {
+    const t = this;
     this.uppy = new Uppy({
       id: "uppy-file-upload",
       // autoProceed: false,
@@ -33,9 +34,14 @@ class FileUploadUppy extends React.Component {
         companionUrl: 'http://localhost:3020'
       })
       .use(AwsS3, {
-        // limit: 2,
-        // timeout: ms('1 minute'),
         companionUrl: 'http://localhost:3020',
+        getUploadParameters() {
+          return Promise.resolve({
+            method: 'POST',
+            url: t.props.uploadData['url'],
+            fields: t.props.uploadData['form-data']
+          });
+        }
       })
       .on("file-removed", (file, c, d) => {
         console.log("---", file, c, d);
@@ -44,10 +50,26 @@ class FileUploadUppy extends React.Component {
         console.log("file added");
       })
       .on("upload-success", () => {
-        console.log("ddd");
+        console.log("upload-success");
       })
-      .on("complete", function() {
-        console.log('complete');
+      .on("complete", function({ failed, successful }) {
+        if(failed.length > 0) {
+          console.error('UPLOAD ERROR');
+        }
+        if(successful.length > 0) {
+          const { uploadURL, name, size } = successful[0];
+          const { container_id, step } = t.props;
+          fetch('http://localhost:3000/master_files', {
+            method: 'POST',
+            headers: { },
+            body: JSON.stringify({
+              container_id: container_id,
+              step: step,
+              authenticity_token: $('input[name=authenticity_token]').val(),
+              selected_files: { '0':  { url: uploadURL, filename: name, filesize: size } }
+            })
+          });
+        }
       });
   }
 

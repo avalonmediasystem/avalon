@@ -171,20 +171,7 @@ Unless required by applicable law or agreed to in writing, software distributed
       <div class="row">
         <!-- web-upload -->
         <p class="muted">Upload through the web (files must not exceed <%= number_to_human_size MasterFile::MAXIMUM_UPLOAD_SIZE %>)</p>
-        <fieldset id='uploader'>
-          <%= form_tag(master_files_path, :enctype=>"multipart/form-data", class: upload_form_classes, data: upload_form_data) do -%>
-            <input type="hidden" name="container_id" value="<%= @media_object.id %>" />
-            <input type="hidden" name="step" value="file_upload" />
-
-            <%= hidden_field_tag("container_content_type", container_content_type, :id => "file_upload_content_type") if defined?(container_content_type) %>
-            <%- field_tag_options = defined?(uploader_options) ? uploader_options : {multiple: true} %>
-
-            <%= hidden_field_tag(:new_asset, true, :id => "files_new_asset") if params[:new_asset] %>
-            <%= hidden_field_tag("id",params[:id], :id => "file_upload_id") if params[:id] %>
-            <%= hidden_field_tag(:original, params[:original], :id => "files_original") %>
-          <% end %>
-        </fieldset>
-        <%= react_component("FileUploadUppy", {}) %>
+        <%= react_component("FileUploadUppy", { uploadData: upload_form_data, container_id: @media_object.id, step: 'file_upload' }) %>
       </div>
     </div>
   </div>
