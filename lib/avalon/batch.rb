@@ -35,13 +35,19 @@ module Avalon
 
       args = files.collect { |p| %("#{p}") }.join(' ')
       Dir.chdir(base_directory) do
+        pid = nil
         begin
           Timeout.timeout(5) do
-            output = `#{lsof} -Fcpan0 #{args}`
-            found_files = extract_files_from_lsof_output(output)
+            IO.popen([lsof, "-Fcpan0", args]) do |io|
+              pid = io.pid
+              io.wait
+              output = io.gets(nil) || ""
+              found_files = extract_files_from_lsof_output(output)
+            end
           end
         rescue Timeout::Error
-          Rails.logger.warn('lsof blocking; continuing without open file checking')
+          Process.kill('KILL', pid) if pid rescue nil
+          Rails.logger.warn('lsof timed out; continuing without open file checking')
         end
       end
       found_files
