@@ -97,4 +97,6 @@ active_storage:
   #bucket: supplementalfiles
 controlled_digital_lending:
   enable: false
+  # Choose whether every collection has CDL enabled or disabled by default
+  collections_enabled: false
   default_lending_period: 'P14D' # ISO8601 duration format: P14D == 14.days, PT8H == 8.hours, etc.

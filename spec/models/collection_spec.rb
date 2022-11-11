@@ -626,32 +626,32 @@ describe Admin::Collection do
     end
   end
 
-  describe 'enable_cdl' do
-    context 'diabled at the application level' do
-      before { allow(Settings.controlled_digital_lending).to receive(:enable).and_return(false) }
-      it 'sets cdl to be disabled by default' do
-        expect(collection.default_enable_cdl).to be false
+  describe 'cdl_enabled' do
+    context 'collections disabled at the application level' do
+      before { allow(Settings.controlled_digital_lending).to receive(:collections_enabled).and_return(false) }
+      it 'sets collection cdl to be disabled by default' do
+        expect(collection.cdl_enabled).to be false
       end
       context 'turned on for collection' do
         let(:collection2) { FactoryBot.create(:collection) }
         it 'does not affect other collections' do
-          collection.default_enable_cdl = true
-          expect(collection.default_enable_cdl).to be true
-          expect(collection2.default_enable_cdl).to be false
+          collection.cdl_enabled = true
+          expect(collection.cdl_enabled).to be true
+          expect(collection2.cdl_enabled).to be false
         end
       end
     end
-    context 'enabled at the application level' do
-      before { allow(Settings.controlled_digital_lending).to receive(:enable).and_return(true) }
-      it 'sets cdl to be enabled by default' do
-        expect(collection.default_enable_cdl).to be true
+    context 'collections enabled at the application level' do
+      before { allow(Settings.controlled_digital_lending).to receive(:collections_enabled).and_return(true) }
+      it 'sets collection cdl to be enabled by default' do
+        expect(collection.cdl_enabled).to be true
       end
       context 'turned off for collection' do
         let(:collection2) { FactoryBot.create(:collection) }
         it 'does not affect other collections' do
-          collection.default_enable_cdl = false
-          expect(collection.default_enable_cdl).to be false
-          expect(collection2.default_enable_cdl).to be true
+          collection.cdl_enabled = false
+          expect(collection.cdl_enabled).to be false
+          expect(collection2.cdl_enabled).to be true
         end
       end
     end

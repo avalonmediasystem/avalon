@@ -64,7 +64,7 @@ Unless required by applicable law or agreed to in writing, software distributed
   </div>
 </div>
 
-<% if object.is_a?(Admin::Collection) %>
+<% if Avalon::Configuration.controlled_digital_lending_enabled? && object.is_a?(Admin::Collection) %>
   <div class="card enable-cdl">
     <div class="card-header">
       <h3 class="card-title">Controlled Digital Lending </h3>

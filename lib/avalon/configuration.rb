@@ -35,6 +35,11 @@ module Avalon
       end
     end
 
+    # To be called as Avalon::Configuration.controlled_digital_lending_enabled?
+    def controlled_digital_lending_enabled?
+      !!Settings.controlled_digital_lending&.enable
+    end
+
     private
     class << self
       def coerce(value, method)

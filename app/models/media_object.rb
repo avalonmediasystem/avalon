@@ -114,9 +114,6 @@ class MediaObject < ActiveFedora::Base
   property :lending_period, predicate: ::RDF::Vocab::SCHEMA.eligibleDuration, multiple: false do |index|
     index.as :stored_sortable
   end
-  property :cdl_enabled, predicate: Avalon::RDFVocab::MediaObject.cdl_enabled, multiple: false do |index|
-    index.as :symbol
-  end
 
   ordered_aggregation :master_files, class_name: 'MasterFile', through: :list_source
   # ordered_aggregation gives you accessors media_obj.master_files and media_obj.ordered_master_files
@@ -388,8 +385,8 @@ class MediaObject < ActiveFedora::Base
     self._lending_period || collection&.default_lending_period
   end
 
-  def cdl_enabled
-    collection&.default_enable_cdl
+  def cdl_enabled?
+    collection&.cdl_enabled
   end
 
   def current_checkout(user_id)

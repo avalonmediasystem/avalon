@@ -804,6 +804,7 @@ describe MediaObjectsController, type: :controller do
 
       context 'With cdl enabled' do
         before { allow(Settings.controlled_digital_lending).to receive(:enable).and_return(true) }
+        before { allow(Settings.controlled_digital_lending).to receive(:collections_enabled).and_return(true) }
         context "With check out" do
           context "Normal login" do
             it "administrators: should include lti, embed, and share" do
@@ -972,7 +973,6 @@ describe MediaObjectsController, type: :controller do
         context "Normal login" do
           it "administrators: should include lti, embed, and share" do
             login_as(:administrator)
-            FactoryBot.create(:checkout, media_object_id: media_object.id, user_id: controller.current_user.id)
             get :show, params: { id: media_object.id }
             expect(response).to render_template(:_share_resource)
             expect(response).to render_template(:_embed_resource)
@@ -980,7 +980,6 @@ describe MediaObjectsController, type: :controller do
           end
           it "managers: should include lti, embed, and share" do
             login_user media_object.collection.managers.first
-            FactoryBot.create(:checkout, media_object_id: media_object.id, user_id: controller.current_user.id)
             get :show, params: { id: media_object.id }
             expect(response).to render_template(:_share_resource)
             expect(response).to render_template(:_embed_resource)
@@ -988,7 +987,6 @@ describe MediaObjectsController, type: :controller do
           end
           it "editors: should include lti, embed, and share" do
             login_user media_object.collection.editors.first
-            FactoryBot.create(:checkout, media_object_id: media_object.id, user_id: controller.current_user.id)
             get :show, params: { id: media_object.id }
             expect(response).to render_template(:_share_resource)
             expect(response).to render_template(:_embed_resource)
@@ -996,7 +994,6 @@ describe MediaObjectsController, type: :controller do
           end
           it "others: should include embed and share and NOT lti" do
             login_as(:user)
-            FactoryBot.create(:checkout, media_object_id: media_object.id, user_id: controller.current_user.id)
             get :show, params: { id: media_object.id }
             expect(response).to render_template(:_share_resource)
             expect(response).to render_template(:_embed_resource)
@@ -1008,7 +1005,6 @@ describe MediaObjectsController, type: :controller do
             login_lti 'administrator'
             lti_group = @controller.user_session[:virtual_groups].first
             FactoryBot.create(:published_media_object, visibility: 'private', read_groups: [lti_group])
-            FactoryBot.create(:checkout, media_object_id: media_object.id, user_id: controller.current_user.id)
             get :show, params: { id: media_object.id }
             expect(response).to render_template(:_share_resource)
             expect(response).to render_template(:_embed_resource)
@@ -1018,7 +1014,6 @@ describe MediaObjectsController, type: :controller do
             login_lti 'student'
             lti_group = @controller.user_session[:virtual_groups].first
             FactoryBot.create(:published_media_object, visibility: 'private', read_groups: [lti_group])
-            FactoryBot.create(:checkout, media_object_id: media_object.id, user_id: controller.current_user.id)
             get :show, params: { id: media_object.id }
             expect(response).to_not render_template(:_share_resource)
             expect(response).to_not render_template(:_embed_resource)
@@ -1048,7 +1043,6 @@ describe MediaObjectsController, type: :controller do
           end
           it "should not include lti" do
             login_as(:administrator)
-            FactoryBot.create(:checkout, media_object_id: media_object.id, user_id: controller.current_user.id)
             get :show, params: { id: media_object.id }
             expect(response).to render_template(:_share_resource)
             expect(response).to render_template(:_embed_resource)

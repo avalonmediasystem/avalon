@@ -32,7 +32,7 @@ Unless required by applicable law or agreed to in writing, software distributed
     <%= link_to 'Timelines', main_app.timelines_path, id:'timelines_nav', class: 'nav-link' %>
   </li>
   <% end %>
-  <% if !!Settings.controlled_digital_lending&.enable || !Checkout.active_for_user(current_user&.id).empty? %>
+  <% if Avalon::Configuration.controlled_digital_lending_enabled? || !Checkout.active_for_user(current_user&.id).empty? %>
     <% if current_ability.can? :create, Checkout %>
     <li class="nav-item <%= active_for_controller('checkouts') %>">
       <%= link_to main_app.checkouts_path, id:'checkouts_nav', class: 'nav-link' do %>

@@ -67,7 +67,7 @@ class Admin::Collection < ActiveFedora::Base
   property :default_lending_period, predicate: ::RDF::Vocab::SCHEMA.eligibleDuration, multiple: false do |index|
     index.as :stored_sortable
   end
-  property :default_enable_cdl, predicate: Avalon::RDFVocab::Collection.default_enable_cdl, multiple: false do |index|
+  property :cdl_enabled, predicate: Avalon::RDFVocab::Collection.cdl_enabled, multiple: false do |index|
     index.as :symbol
   end
 
@@ -280,14 +280,14 @@ class Admin::Collection < ActiveFedora::Base
     self._default_lending_period || ActiveSupport::Duration.parse(Settings.controlled_digital_lending.default_lending_period).to_i
   end
 
-  alias_method :_default_enable_cdl, :default_enable_cdl
-  def default_enable_cdl
-    if _default_enable_cdl.nil?
-      Settings.controlled_digital_lending.enable
-    elsif _default_enable_cdl != Settings.controlled_digital_lending.enable
-      _default_enable_cdl
+  alias_method :_cdl_enabled, :cdl_enabled
+  def cdl_enabled
+    if _cdl_enabled.nil?
+      Settings.controlled_digital_lending.collections_enabled
+    elsif _cdl_enabled != Settings.controlled_digital_lending.collections_enabled
+      _cdl_enabled
     else
-      Settings.controlled_digital_lending.enable
+      Settings.controlled_digital_lending.collections_enabled
     end
   end
 

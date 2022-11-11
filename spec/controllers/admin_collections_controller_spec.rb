@@ -469,16 +469,16 @@ describe Admin::CollectionsController, type: :controller do
           it "enable cdl for collection" do
             put 'update', params: { id: collection.id, save_access: "Save Access Settings", cdl: "1" }
             collection.reload
-            expect(collection.default_enable_cdl).to be true
+            expect(collection.cdl_enabled).to be true
             expect(flash[:error]).not_to be_present
           end
         end
         context "cdl enable for application" do
           before { allow(Settings.controlled_digital_lending).to receive(:enable).and_return(true) }
           it "disable cdl for collection" do
-            put 'update', params: { id: collection.id, save_access: "Save Access Settings", cdl: nil }
+            put 'update', params: { id: collection.id, save_access: "Save Access Settings" }
             collection.reload
-            expect(collection.default_enable_cdl).to be false
+            expect(collection.cdl_enabled).to be false
           end
         end
       end

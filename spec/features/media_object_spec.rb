@@ -116,7 +116,7 @@ describe 'MediaObject' do
     end
 
     context 'when cdl is turned off at collection level' do
-      let(:collection) { FactoryBot.create(:collection, default_enable_cdl: false) }
+      let(:collection) { FactoryBot.create(:collection, cdl_enabled: false) }
       let(:available_media_object) { FactoryBot.create(:media_object, collection_id: collection.id) }
       it 'does not display cdl text' do
         visit media_object_path(available_media_object)
@@ -127,7 +127,7 @@ describe 'MediaObject' do
 
     context 'disabled for application, enabled for collection' do
       before { allow(Settings.controlled_digital_lending).to receive(:enable).and_return(false) }
-      let(:collection) { FactoryBot.create(:collection, default_enable_cdl: true) }
+      let(:collection) { FactoryBot.create(:collection, cdl_enabled: true) }
       let(:available_media_object) { FactoryBot.create(:media_object, collection_id: collection.id) }
       let!(:mf) { FactoryBot.create(:master_file, media_object: available_media_object) }
 
