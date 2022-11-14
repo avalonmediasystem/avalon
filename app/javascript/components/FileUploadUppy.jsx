@@ -20,7 +20,7 @@ class FileUploadUppy extends React.Component {
     const t = this;
     this.uppy = new Uppy({
       id: "uppy-file-upload",
-      // autoProceed: false,
+      autoProceed: true,
       restrictions: {
         allowedFileTypes: [".mp4", ".mp3"]
       },
@@ -44,30 +44,30 @@ class FileUploadUppy extends React.Component {
         }
       })
       .on("file-removed", (file, c, d) => {
-        console.log("---", file, c, d);
+        console.log("File Removed --- ", file, c, d);
       })
       .on("file-added", () => {
-        console.log("file added");
-      })
-      .on("upload-success", () => {
-        console.log("upload-success");
+        console.log("File Added, ", t.props.uploadData);
       })
       .on("complete", function({ failed, successful }) {
         if(failed.length > 0) {
-          console.error('UPLOAD ERROR');
+          console.log("File Upload S3 --- Error");
         }
         if(successful.length > 0) {
+          console.log("File Upload S3 --- Success");
           const { uploadURL, name, size } = successful[0];
           const { container_id, step } = t.props;
+          let formData = new FormData();
+          const newS3URl = uploadURL.replace('http://localhost:9000/', 's3://');
+          console.log(newS3URl);
+          formData.append('selected_files[0][url]', newS3URl);
+          formData.append('container_id', container_id);
+          formData.append('step', step);
+
           fetch('http://localhost:3000/master_files', {
             method: 'POST',
-            headers: { },
-            body: JSON.stringify({
-              container_id: container_id,
-              step: step,
-              authenticity_token: $('input[name=authenticity_token]').val(),
-              selected_files: { '0':  { url: uploadURL, filename: name, filesize: size } }
-            })
+            headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
+            body: formData
           });
         }
       });
@@ -80,21 +80,19 @@ class FileUploadUppy extends React.Component {
   render() {
     return (
       <React.Fragment>
-        <form >
-          <Dashboard
-            uppy={this.uppy}
-            plugins={["GoogleDrive"]}
-            proudlyDisplayPoweredByUppy={false}
-            showProgressDetails={true}
-            hideUploadButton={false}
-            target="body"
-          />
-          <style>
-            {`.uppy-Dashboard-inner {
-                z-index: 0 !important
-            }`}
-          </style>
-        </form>
+        <Dashboard
+          uppy={this.uppy}
+          plugins={["GoogleDrive"]}
+          proudlyDisplayPoweredByUppy={false}
+          showProgressDetails={true}
+          hideUploadButton={false}
+          target="body"
+        />
+        <style>
+          {`.uppy-Dashboard-inner {
+              z-index: 0 !important
+          }`}
+        </style>
       </React.Fragment>
     );
   }

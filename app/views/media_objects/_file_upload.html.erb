@@ -168,7 +168,7 @@ Unless required by applicable law or agreed to in writing, software distributed
       <hr/>
       <% end %>
 
-      <div class="row">
+      <div>
         <!-- web-upload -->
         <p class="muted">Upload through the web (files must not exceed <%= number_to_human_size MasterFile::MAXIMUM_UPLOAD_SIZE %>)</p>
         <%= react_component("FileUploadUppy", { uploadData: upload_form_data, container_id: @media_object.id, step: 'file_upload' }) %>

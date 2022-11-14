@@ -98,12 +98,12 @@ services:
       - COMPANION_AWS_SECRET=minio123
       - COMPANION_AWS_BUCKET=masterfiles
       # - COMPANION_AWS_REGION=us-east-1
-      - COMPANION_AWS_ENDPOINT="http://localhost:9000"
+      # - COMPANION_AWS_ENDPOINT="http://localhost:9000"
       # to enable S3 Transfer Acceleration (default: false)
       - COMPANION_AWS_USE_ACCELERATE_ENDPOINT="false"
       # to set a canned ACL for uploaded objects: https://docs.aws.amazon.com/AmazonS3/latest/dev/acl-overview.html#canned-acl
       - COMPANION_AWS_ACL="private"
-      - COMPANION_S3_ENDPOINT=http://localhost:9000
+      # - COMPANION_S3_ENDPOINT=http://localhost:9000
       # any long set of random characters for the server session
       - COMPANION_SECRET="shh!Issa Secret!"
       # specifying a secret file will override a directly set secret
@@ -210,6 +210,8 @@ services:
     environment:
       MINIO_ACCESS_KEY: minio
       MINIO_SECRET_KEY: minio123
+      # MINIO_SERVER_URL: http://minio:9000
+      # MINIO_BROWSER_REDIRECT_URL: http://minio:9000
     volumes:
       - data:/data
     ports:
