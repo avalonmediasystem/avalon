@@ -1480,6 +1480,7 @@ describe MediaObjectsController, type: :controller do
 
       context "lending period" do
         before { allow(Settings.controlled_digital_lending).to receive(:enable).and_return(true) }
+        before { allow(Settings.controlled_digital_lending).to receive(:collections_enabled).and_return(true) }
         it "sets a custom lending period" do
           expect { put :update, params: { id: media_object.id, step: 'access-control', donot_advance: 'true', add_lending_period_days: 7, add_lending_period_hours: 8 } }.to change { media_object.reload.lending_period }.to(633600)
         end

@@ -66,6 +66,7 @@ describe 'MediaObject' do
     end
     context 'cdl is enabled' do
       before { allow(Settings.controlled_digital_lending).to receive(:enable).and_return(true) }
+      before { allow(Settings.controlled_digital_lending).to receive(:collections_enabled).and_return(true) }
       it 'displays the lending period properly' do
         lending_period = 90000
         media_object.lending_period = lending_period
@@ -88,6 +89,7 @@ describe 'MediaObject' do
   describe 'displays cdl controls' do
     context 'enabled at application level' do
       before { allow(Settings.controlled_digital_lending).to receive(:enable).and_return(true) }
+      before { allow(Settings.controlled_digital_lending).to receive(:collections_enabled).and_return(true) }
       let(:available_media_object) { FactoryBot.build(:media_object) }
       let!(:mf) { FactoryBot.create(:master_file, media_object: available_media_object) }
 
@@ -126,7 +128,8 @@ describe 'MediaObject' do
     end
 
     context 'disabled for application, enabled for collection' do
-      before { allow(Settings.controlled_digital_lending).to receive(:enable).and_return(false) }
+      before { allow(Settings.controlled_digital_lending).to receive(:enable).and_return(true) }
+      before { allow(Settings.controlled_digital_lending).to receive(:collections_enabled).and_return(false) }
       let(:collection) { FactoryBot.create(:collection, cdl_enabled: true) }
       let(:available_media_object) { FactoryBot.create(:media_object, collection_id: collection.id) }
       let!(:mf) { FactoryBot.create(:master_file, media_object: available_media_object) }

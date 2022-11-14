@@ -65,6 +65,7 @@ describe SecurityHelper, type: :helper do
       end
       context 'controlled digital lending is enabled' do
         before { allow(Settings.controlled_digital_lending).to receive(:enable).and_return(true) }
+        before { allow(Settings.controlled_digital_lending).to receive(:collections_enabled).and_return(true) }
         context 'the user has the item checked out' do
           before { FactoryBot.create(:checkout, media_object_id: media_object.id, user_id: user.id)}
           it 'sets secure cookies' do
@@ -125,6 +126,7 @@ describe SecurityHelper, type: :helper do
       end
       context 'controlled digital lending is enabled' do
         before { allow(Settings.controlled_digital_lending).to receive(:enable).and_return(true) }
+        before { allow(Settings.controlled_digital_lending).to receive(:collections_enabled).and_return(true) }
         context 'the user has the item checked out' do
           before { FactoryBot.create(:checkout, media_object_id: media_object.id, user_id: user.id)}
           it 'sets secure cookies' do

@@ -99,6 +99,7 @@ describe BulkActionJobs::ApplyCollectionAccessControl do
 
     context "with cdl enabled" do
       before { allow(Settings.controlled_digital_lending).to receive(:enable).and_return(true) }
+      before { allow(Settings.controlled_digital_lending).to receive(:collections_enabled).and_return(true) }
       it "changes item lending period" do
         BulkActionJobs::ApplyCollectionAccessControl.perform_now co.id, true
         mo.reload
