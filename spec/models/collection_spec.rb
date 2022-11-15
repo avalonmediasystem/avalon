@@ -625,4 +625,35 @@ describe Admin::Collection do
       end
     end
   end
+
+  describe 'cdl_enabled' do
+    context 'collections disabled at the application level' do
+      before { allow(Settings.controlled_digital_lending).to receive(:collections_enabled).and_return(false) }
+      it 'sets collection cdl to be disabled by default' do
+        expect(collection.cdl_enabled?).to be false
+      end
+      context 'turned on for collection' do
+        let(:collection2) { FactoryBot.create(:collection) }
+        it 'does not affect other collections' do
+          collection.cdl_enabled = true
+          expect(collection.cdl_enabled?).to be true
+          expect(collection2.cdl_enabled?).to be false
+        end
+      end
+    end
+    context 'collections enabled at the application level' do
+      before { allow(Settings.controlled_digital_lending).to receive(:collections_enabled).and_return(true) }
+      it 'sets collection cdl to be enabled by default' do
+        expect(collection.cdl_enabled?).to be true
+      end
+      context 'turned off for collection' do
+        let(:collection2) { FactoryBot.create(:collection) }
+        it 'does not affect other collections' do
+          collection.cdl_enabled = false
+          expect(collection.cdl_enabled?).to be false
+          expect(collection2.cdl_enabled?).to be true
+        end
+      end
+    end
+  end
 end

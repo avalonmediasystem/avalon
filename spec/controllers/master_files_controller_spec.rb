@@ -228,17 +228,12 @@ describe MasterFilesController do
   end
 
   describe "#embed" do
-    let!(:master_file) { FactoryBot.create(:master_file) }
-    let(:media_object) do
-      instance_double('MediaObject', title: 'Media Object', id: 'avalon:1234',
-                                     ordered_master_files: [master_file], master_file_ids: [master_file.id])
-    end
+    let!(:master_file) { FactoryBot.create(:master_file, :with_media_object) }
+    let(:media_object) { master_file.media_object }
 
     render_views
 
     before do
-      allow_any_instance_of(MasterFile).to receive(:media_object).and_return(media_object)
-      allow_any_instance_of(MasterFile).to receive(:media_object_id).and_return(media_object.id)
       disableCanCan!
     end
 

@@ -205,7 +205,7 @@ module BulkActionJobs
         media_object = MediaObject.find(id)
         media_object.hidden = collection.default_hidden
         media_object.visibility = collection.default_visibility
-        if Avalon::Configuration.controlled_digital_lending_enabled?
+        if collection.cdl_enabled?
           media_object.lending_period = collection.default_lending_period
         end
 

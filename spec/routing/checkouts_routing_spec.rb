@@ -36,7 +36,6 @@ RSpec.describe CheckoutsController, type: :routing do
         expect(patch: "/checkouts/1/return").to route_to("checkouts#return", id: "1")
       end
     end
-
     context "controlled digital lending is disabled" do
       before { allow(Settings.controlled_digital_lending).to receive(:enable).and_return(false) }
       it "does not route to #index" do
@@ -47,7 +46,7 @@ RSpec.describe CheckoutsController, type: :routing do
         expect(post: "/checkouts").not_to route_to("checkouts#create")
       end
 
-      it "does not route to to #show via GET" do
+      it "does not route to #show via GET" do
         expect(get: "/checkouts/1").not_to route_to("checkouts#show", id: "1")
       end
 

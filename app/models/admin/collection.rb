@@ -67,6 +67,9 @@ class Admin::Collection < ActiveFedora::Base
   property :default_lending_period, predicate: ::RDF::Vocab::SCHEMA.eligibleDuration, multiple: false do |index|
     index.as :stored_sortable
   end
+  property :cdl_enabled, predicate: Avalon::RDFVocab::Collection.cdl_enabled, multiple: false do |index|
+    index.as :symbol
+  end
 
   has_subresource 'poster', class_name: 'IndexedFile'
 
@@ -275,6 +278,16 @@ class Admin::Collection < ActiveFedora::Base
   alias_method :'_default_lending_period', :'default_lending_period'
   def default_lending_period
     self._default_lending_period || ActiveSupport::Duration.parse(Settings.controlled_digital_lending.default_lending_period).to_i
+  end
+
+  def cdl_enabled?
+    if cdl_enabled.nil?
+      Settings.controlled_digital_lending.collections_enabled
+    elsif cdl_enabled != Settings.controlled_digital_lending.collections_enabled
+      cdl_enabled
+    else
+      Settings.controlled_digital_lending.collections_enabled
+    end
   end
 
   private

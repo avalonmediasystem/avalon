@@ -462,42 +462,61 @@ describe Admin::CollectionsController, type: :controller do
         collection.reload
         expect(collection.default_visibility).to eq("public")
       end
+
+      context "cdl functionality" do
+        context "cdl disabled for application" do
+          before { allow(Settings.controlled_digital_lending).to receive(:enable).and_return(false) }
+          it "enable cdl for collection" do
+            put 'update', params: { id: collection.id, save_access: "Save Access Settings", cdl: "1" }
+            collection.reload
+            expect(collection.cdl_enabled).to be true
+            expect(flash[:error]).not_to be_present
+          end
+        end
+        context "cdl enable for application" do
+          before { allow(Settings.controlled_digital_lending).to receive(:enable).and_return(true) }
+          it "disable cdl for collection" do
+            put 'update', params: { id: collection.id, save_access: "Save Access Settings" }
+            collection.reload
+            expect(collection.cdl_enabled).to be false
+          end
+        end
+      end
     end
 
     context "changing lending period" do
-      before { allow(Settings.controlled_digital_lending).to receive(:enable).and_return(true) }
       it "sets a custom lending period" do
-        expect { put 'update', params: { id: collection.id, save_access: "Save Access Settings", add_lending_period_days: 7, add_lending_period_hours: 8 } }.to change { collection.reload.default_lending_period }.to(633600)
+        expect { put 'update', params: { id: collection.id, save_access: "Save Access Settings", cdl: 1, add_lending_period_days: 7, add_lending_period_hours: 8 } }.to change { collection.reload.default_lending_period }.to(633600)
       end
 
       it "returns error if invalid" do
-        expect { put 'update', params: { id: collection.id, save_access: "Save Access Settings", add_lending_period_days: -1, add_lending_period_hours: -1 } }.not_to change { collection.reload.default_lending_period }
+        expect { put 'update', params: { id: collection.id, save_access: "Save Access Settings", cdl: 1, add_lending_period_days: -1, add_lending_period_hours: -1 } }.not_to change { collection.reload.default_lending_period }
         expect(response).to redirect_to(admin_collection_path(collection))
         expect(flash[:error]).to be_present
         expect(flash[:error]).to eq("Lending period must be greater than 0.")
-        put 'update', params: { id: collection.id, save_access: "Save Access Settings", add_lending_period_days: -1, add_lending_period_hours: 1 }
+        put 'update', params: { id: collection.id, save_access: "Save Access Settings", cdl: 1, add_lending_period_days: -1, add_lending_period_hours: 1 }
         expect(response).to redirect_to(admin_collection_path(collection))
         expect(flash[:error]).to be_present
         expect(flash[:error]).to eq("Lending period days needs to be a positive integer.")
-        put 'update', params: { id: collection.id, save_access: "Save Access Settings", add_lending_period_days: 1, add_lending_period_hours: -1 }
+        put 'update', params: { id: collection.id, save_access: "Save Access Settings", cdl: 1, add_lending_period_days: 1, add_lending_period_hours: -1 }
         expect(response).to redirect_to(admin_collection_path(collection))
         expect(flash[:error]).to be_present
         expect(flash[:error]).to eq("Lending period hours needs to be a positive integer.")
-        expect { put 'update', params: { id: collection.id, save_access: "Save Access Settings", add_lending_period_days: 0, add_lending_period_hours: 0 } }.not_to change { collection.reload.default_lending_period }
+        expect { put 'update', params: { id: collection.id, save_access: "Save Access Settings", cdl: 1, add_lending_period_days: 0, add_lending_period_hours: 0 } }.not_to change { collection.reload.default_lending_period }
         expect(response).to redirect_to(admin_collection_path(collection))
         expect(flash[:error]).to be_present
         expect(flash[:error]).to eq("Lending period must be greater than 0.")
       end
 
       it "accepts 0 as a valid day or hour value" do
-        expect { put 'update', params: { id: collection.id, save_access: "Save Access Settings", add_lending_period_days: 0, add_lending_period_hours: 1 } }.to change { collection.reload.default_lending_period }.to(3600)
+        expect { put 'update', params: { id: collection.id, save_access: "Save Access Settings", cdl: 1, add_lending_period_days: 0, add_lending_period_hours: 1 } }.to change { collection.reload.default_lending_period }.to(3600)
         expect(flash[:error]).not_to be_present
-        expect { put 'update', params: { id: collection.id, save_access: "Save Access Settings", add_lending_period_days: 1, add_lending_period_hours: 0 } }.to change { collection.reload.default_lending_period }.to(86400)
+        expect { put 'update', params: { id: collection.id, save_access: "Save Access Settings", cdl: 1, add_lending_period_days: 1, add_lending_period_hours: 0 } }.to change { collection.reload.default_lending_period }.to(86400)
         expect(flash[:error]).not_to be_present
       end
 
       it "returns error if both day and hour are 0" do
-        expect { put 'update', params: { id: collection.id, save_access: "Save Access Settings", add_lending_period_days: 0, add_lending_period_hours: 0 } }.not_to change { collection.reload.default_lending_period }
+        expect { put 'update', params: { id: collection.id, save_access: "Save Access Settings", cdl: 1, add_lending_period_days: 0, add_lending_period_hours: 0 } }.not_to change { collection.reload.default_lending_period }
         expect(response).to redirect_to(admin_collection_path(collection))
         expect(flash[:error]).to be_present
       end
