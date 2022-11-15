@@ -1300,7 +1300,7 @@ Object.assign(_player.config, {
 
 	fullscreenText: null,
 
-	useFakeFullscreen: false
+	useFakeFullscreen: true
 });
 
 Object.assign(_player2.default.prototype, {
@@ -1461,6 +1461,10 @@ Object.assign(_player2.default.prototype, {
 			t.getElement(t.container).style.height = '100%';
 			t.setControlsSize();
 		}, 500);
+
+		if(_constants.IS_ANDROID || _constants.IS_IOS) {
+			t.getElement(t.container).querySelector('.' + t.options.classPrefix + 'overlay-button').style.display = 'none';
+		}
 
 		if (isNative) {
 			t.node.style.width = '100%';
