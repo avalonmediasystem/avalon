@@ -386,7 +386,7 @@ class MediaObject < ActiveFedora::Base
   end
 
   def cdl_enabled?
-    collection&.cdl_enabled
+    collection&.cdl_enabled?
   end
 
   def current_checkout(user_id)
