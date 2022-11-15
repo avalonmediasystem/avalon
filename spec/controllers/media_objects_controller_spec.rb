@@ -807,48 +807,48 @@ describe MediaObjectsController, type: :controller do
         before { allow(Settings.controlled_digital_lending).to receive(:collections_enabled).and_return(true) }
         context "With check out" do
           context "Normal login" do
-            it "administrators: should include lti, embed, and share" do
+            it "administrators: should include lti and share, NOT embed" do
               login_as(:administrator)
               FactoryBot.create(:checkout, media_object_id: media_object.id, user_id: controller.current_user.id)
               get :show, params: { id: media_object.id }
               expect(response).to render_template(:_share_resource)
-              expect(response).to render_template(:_embed_resource)
+              expect(response).not_to render_template(:_embed_resource)
               expect(response).to render_template(:_lti_url)
             end
-            it "managers: should include lti, embed, and share" do
+            it "managers: should include lti and share, NOT embed" do
               login_user media_object.collection.managers.first
               FactoryBot.create(:checkout, media_object_id: media_object.id, user_id: controller.current_user.id)
               get :show, params: { id: media_object.id }
               expect(response).to render_template(:_share_resource)
-              expect(response).to render_template(:_embed_resource)
+              expect(response).not_to render_template(:_embed_resource)
               expect(response).to render_template(:_lti_url)
             end
-            it "editors: should include lti, embed, and share" do
+            it "editors: should include lti and share, NOT embed" do
               login_user media_object.collection.editors.first
               FactoryBot.create(:checkout, media_object_id: media_object.id, user_id: controller.current_user.id)
               get :show, params: { id: media_object.id }
               expect(response).to render_template(:_share_resource)
-              expect(response).to render_template(:_embed_resource)
+              expect(response).not_to render_template(:_embed_resource)
               expect(response).to render_template(:_lti_url)
             end
-            it "others: should include embed and share and NOT lti" do
+            it "others: should include share and NOT embed or lti" do
               login_as(:user)
               FactoryBot.create(:checkout, media_object_id: media_object.id, user_id: controller.current_user.id)
               get :show, params: { id: media_object.id }
               expect(response).to render_template(:_share_resource)
-              expect(response).to render_template(:_embed_resource)
+              expect(response).not_to render_template(:_embed_resource)
               expect(response).to_not render_template(:_lti_url)
             end
           end
           context "LTI login" do
-            it "administrators/managers/editors: should include lti, embed, and share" do
+            it "administrators/managers/editors: should include lti and share, NOT embed" do
               login_lti 'administrator'
               lti_group = @controller.user_session[:virtual_groups].first
               FactoryBot.create(:published_media_object, visibility: 'private', read_groups: [lti_group])
               FactoryBot.create(:checkout, media_object_id: media_object.id, user_id: controller.current_user.id)
               get :show, params: { id: media_object.id }
               expect(response).to render_template(:_share_resource)
-              expect(response).to render_template(:_embed_resource)
+              expect(response).not_to render_template(:_embed_resource)
               expect(response).to render_template(:_lti_url)
             end
             it "others: should include only lti" do
@@ -883,37 +883,37 @@ describe MediaObjectsController, type: :controller do
               example.run
               Avalon::Authentication::Providers = providers
             end
-            it "should not include lti" do
+            it "should not include lti or embed" do
               login_as(:administrator)
               FactoryBot.create(:checkout, media_object_id: media_object.id, user_id: controller.current_user.id)
               get :show, params: { id: media_object.id }
               expect(response).to render_template(:_share_resource)
-              expect(response).to render_template(:_embed_resource)
+              expect(response).not_to render_template(:_embed_resource)
               expect(response).to_not render_template(:_lti_url)
             end
           end
         end
         context "Without check out" do
           context "Normal login" do
-            it "administrators: should include lti, embed, and share" do
+            it "administrators: should render checkout button in player, NOT share" do
               login_as(:administrator)
               get :show, params: { id: media_object.id }
               expect(response).not_to render_template(:_share_resource)
               expect(response).to render_template(:_embed_checkout)
             end
-            it "managers: should include lti, embed, and share" do
+            it "managers: should render checkout button in player, NOT share" do
               login_user media_object.collection.managers.first
               get :show, params: { id: media_object.id }
               expect(response).not_to render_template(:_share_resource)
               expect(response).to render_template(:_embed_checkout)
             end
-            it "editors: should include lti, embed, and share" do
+            it "editors: should render checkout button in player, NOT share" do
               login_user media_object.collection.editors.first
               get :show, params: { id: media_object.id }
               expect(response).not_to render_template(:_share_resource)
               expect(response).to render_template(:_embed_checkout)
             end
-            it "others: should include embed and share and NOT lti" do
+            it "others: should render checkout button in player, NOT share" do
               login_as(:user)
               get :show, params: { id: media_object.id }
               expect(response).not_to render_template(:_share_resource)
@@ -921,7 +921,7 @@ describe MediaObjectsController, type: :controller do
             end
           end
           context "LTI login" do
-            it "administrators/managers/editors: should include lti, embed, and share" do
+            it "administrators/managers/editors: should render checkout button in player, NOT share" do
               login_lti 'administrator'
               lti_group = @controller.user_session[:virtual_groups].first
               FactoryBot.create(:published_media_object, visibility: 'private', read_groups: [lti_group])
@@ -929,7 +929,7 @@ describe MediaObjectsController, type: :controller do
               expect(response).not_to render_template(:_share_resource)
               expect(response).to render_template(:_embed_checkout)
             end
-            it "others: should include only lti" do
+            it "others: should render checkout button in player, NOT share" do
               login_lti 'student'
               lti_group = @controller.user_session[:virtual_groups].first
               FactoryBot.create(:published_media_object, visibility: 'private', read_groups: [lti_group])
@@ -959,7 +959,7 @@ describe MediaObjectsController, type: :controller do
               example.run
               Avalon::Authentication::Providers = providers
             end
-            it "should not include lti" do
+            it "should render checkout button in player, NOT share" do
               login_as(:administrator)
               get :show, params: { id: media_object.id }
               expect(response).not_to render_template(:_share_resource)
