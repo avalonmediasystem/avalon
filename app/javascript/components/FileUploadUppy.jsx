@@ -55,19 +55,23 @@ class FileUploadUppy extends React.Component {
         }
         if(successful.length > 0) {
           console.log("File Upload S3 --- Success");
-          const { uploadURL, name, size } = successful[0];
-          const { container_id, step } = t.props;
+          const { containerID, step } = t.props;
           let formData = new FormData();
-          const newS3URl = uploadURL.replace('http://localhost:9000/', 's3://');
-          console.log(newS3URl);
-          formData.append('selected_files[0][url]', newS3URl);
-          formData.append('container_id', container_id);
+          successful.map((res, index) => {
+            const s3Url = res.uploadURL.replace('http://localhost:9000/', 's3://');
+            formData.append('selected_files[' + index + '][url]', s3Url);
+          })
+          formData.append('container_id', containerID);
           formData.append('step', step);
 
           fetch('http://localhost:3000/master_files', {
             method: 'POST',
             headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
             body: formData
+          })
+            .then(res => { })
+            .catch(error => {
+              console.error('MasterFile create failed, ', error);
           });
         }
       });
@@ -90,7 +94,9 @@ class FileUploadUppy extends React.Component {
         />
         <style>
           {`.uppy-Dashboard-inner {
-              z-index: 0 !important
+              z-index: 0 !important;
+              width: 100% !important;
+              height: 425px !important;
           }`}
         </style>
       </React.Fragment>

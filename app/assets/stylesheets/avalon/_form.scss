@@ -98,17 +98,6 @@ label {
   color: $dark;
 }
 
-.fileinput-submit {
-  background-color: $blue  !important;
-  border-color: $blue  !important;
-
-  &:hover {
-    background-color: darken($blue, 15%) !important;
-  }
-
-  color: $white  !important;
-}
-
 .upload-file-wrapper {
   padding: 5px 5px 0 5px !important;
 }
@@ -116,11 +105,5 @@ label {
 #new_comment {
   .form-label {
     font-weight: bold;
-  }
-}
-
-#resource-description {
-  .input-group {
-    flex-wrap: nowrap;
   }
 }
