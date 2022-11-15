@@ -245,6 +245,22 @@ describe MasterFilesController do
       expect(get(:embed, params: { id: master_file.id })).to render_template('modules/_google_analytics')
     end
 
+    context 'with cdl enabled' do
+      before { allow(Settings.controlled_digital_lending).to receive(:enable).and_return(true) }
+      before { allow(Settings.controlled_digital_lending).to receive(:collections_enabled).and_return(true) }
+      it "renders the cdl_embed partial" do
+        expect(get(:embed, params: { id: master_file.id })).to render_template('master_files/_cdl_embed')
+      end
+    end
+
+    context 'with cdl disabled' do
+      before { allow(Settings.controlled_digital_lending).to receive(:enable).and_return(true) }
+      before { allow(Settings.controlled_digital_lending).to receive(:collections_enabled).and_return(false) }
+      it "renders the authorize partial" do
+        expect(get(:embed, params: { id: master_file.id })).to render_template('master_files/_player')
+      end
+    end
+
     context 'with fedora 3 pid' do
       let!(:master_file) { FactoryBot.create(:master_file, identifier: [fedora3_pid]) }
       let(:fedora3_pid) { 'avalon:1234' }

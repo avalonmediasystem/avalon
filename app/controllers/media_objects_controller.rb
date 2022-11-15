@@ -38,7 +38,7 @@ class MediaObjectsController < ApplicationController
     ctx.user_session.present? && ctx.user_session[:lti_group].present?
   end
   def self.is_cdl_enabled ctx
-    ctx.instance_variable_get('@media_object').cdl_enabled
+    ctx.instance_variable_get('@media_object').cdl_enabled?
   end
 
   is_editor_or_not_lti = proc { |ctx| self.is_editor(ctx) || !self.is_lti_session(ctx) }

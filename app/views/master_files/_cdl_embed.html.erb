@@ -13,10 +13,31 @@ Unless required by applicable law or agreed to in writing, software distributed
   specific language governing permissions and limitations under the License.
 ---  END LICENSE_HEADER BLOCK  ---
 %>
-<% if lending_enabled?(@master_file.media_object) %>
-  <%= render 'cdl_embed' %>
-<% elsif cannot? :read, @master_file %>
-  <%= render 'authorize' %>
-<% else %>
-  <%= render 'player' %>
-<% end %>
+  <style>
+    body {
+      background: rgba(10,10,10,0.95);
+      font-family: Arial,Helvetica,sans-serif;
+      font-size: 14px;
+      text-align: center;
+      color: white
+    }
+    .centered {
+      margin: auto;
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      height: 33px;
+      width: 50%
+    }
+    .centered.video {
+      height: 110px
+    }
+  </style>
+
+  <div>
+    <div class="centered">
+      <p>This item cannot be embedded.</p>
+    </div>
+  </div>
