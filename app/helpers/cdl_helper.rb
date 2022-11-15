@@ -15,8 +15,7 @@
 
 module CdlHelper
   def lending_enabled?(context)
-    if Avalon::Configuration.controlled_digital_lending_enabled?
-      context&.cdl_enabled?
-    end
+    return context&.cdl_enabled? if Avalon::Configuration.controlled_digital_lending_enabled?
+    false
   end
 end
