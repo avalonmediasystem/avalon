@@ -145,6 +145,7 @@ class SupplementalFilesController < ApplicationController
     end
 
     def authorize_object
-      authorize! action_name.to_sym, @object, message: "You do not have sufficient privileges to #{action_name} this supplemental file"
+      action = action_name.to_sym == :show ? :show : :edit
+      authorize! action, @object, message: "You do not have sufficient privileges to #{action_name} this supplemental file"
     end
 end

@@ -14,6 +14,10 @@ en:
       If you are an instructor, you cannot view these items in student mode.
       Please switch back to instructor mode to view. If you are a student and
       receiving this message, please contact us at <a href="mailto:%s">%s</a>.
+    general_auth_error: You are not authorized to access this content.
+    general_500_error: There was an error with this request.
+    controlled_vocabulary_error: |
+      %s Please contact support to report this error: <a href="mailto:%s">%s</a>.
     messages:
       blank: "field is required."
       taken: "is taken."
@@ -22,6 +26,14 @@ en:
     empty_share_link: ""
     empty_share_link_notice: "After processing has started the embedded link will be available."
     empty_share_section_permalink_notice: "After processing has started the section link will be available."
+    cdl:
+      checkout_message: "<p>Borrow this item to access media resources.</p>"
+      not_available_message: "<p>This resource is currently checked out by another user. </br></br> This item is due to be returned on </br> %{date} at %{time}.</p>"
+      time_remaining: "<p>Time <br />remaining: </p>"
+      unauthenticated_message: "<p>You are not signed in. You may be able to borrow this item after signing in.</p>"
+      expire:
+        heading: "Check Out Expired!"
+        message: "Your lending period has been expired. Please return the item, and check for availability later."
   metadata_tip:
     abstract: |
       Summary provides a space for describing the contents of the item. Examples
@@ -135,6 +147,7 @@ en:
     grouplabel: "Avalon Group"
     classlabel: "External Group"
     ipaddresslabel: "IP Address or Range"
+    lending_periodlabel: "Lending Period"
     depositor: |
       Depositors add media to the collection and describe it with metadata.
       They can publish items but not unpublish. They can only modify or
@@ -163,6 +176,9 @@ en:
       or ffaa:aaff:bbcc:ddee:1122:3344:5566:7777
       or ffaa:aaff:bbcc:ddee:1122:3344:5566:7777/ffff:ffff:ffff:ffff:ffff:ffff:ffff:ff00
       Start and end dates are not required; if included, access for the specified IP Address(es) will start at the beginning of the start date and end at the beginning of the end date. Otherwise, access will be open ended for the specified IP Address(es).
+    lending_period: |
+      Lending Period is the length of time that an item may be checked out for.
+      Day and Hour values must be positive integers.
 
   contact:
     title: 'Contact Us - %{application_name}'
@@ -246,7 +262,7 @@ en:
       timeline:
         title: "Title"
         description: "Description"
-      user:  
+      user:
         login: "Username or email"
 
   iiif:

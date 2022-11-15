@@ -64,6 +64,52 @@ Unless required by applicable law or agreed to in writing, software distributed
   </div>
 </div>
 
+<% if Avalon::Configuration.controlled_digital_lending_enabled? && object.is_a?(Admin::Collection) %>
+  <div class="card enable-cdl">
+    <div class="card-header">
+      <h3 class="card-title">Controlled Digital Lending </h3>
+    </div>
+    <div class="card-body">
+      <div class="form-group">
+        <div class="form-check">
+          <%= label_tag :cdl do %>
+          <%= check_box_tag :cdl, '1', (cdl) %>
+          Enable controlled digital lending for this collection
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+<% end %>
+
+<% if lending_enabled?(object) %>
+  <div class="card item-lending-period">
+    <div class="card-header">
+      <h3 class="card-title">Item lending period</h3>
+    </div>
+    <div class="card-body">
+      <div class="form-group">
+        <%=  render partial: "modules/tooltip", locals: { form: vid, field: :lending_period, tooltip: t("access_control.#{:lending_period}"), options: {display_label: (t("access_control.#{:lending_period}label")+'*').html_safe} } %><br />
+        <% d, h = (lending_period/3600).divmod(24) %>
+        <div class='form-row'>
+          <div class="col-1">
+            <label class="col-form-label" for="add_lending_period_days">
+              <span data-title="Days">Days</span>
+            </label>
+            <%= text_field_tag "add_lending_period_days", d ? d : 0, class: 'form-control' %>
+          </div>
+          <div class="col-1">
+            <label class="col-form-label" for="add_lending_period_hours">
+              <span data-title="Hours">Hours</span>
+            </label>
+            <%= text_field_tag "add_lending_period_hours", h ? h : 0, class: 'form-control' %>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+<% end %>
+
 <%= render modal[:partial], modal_title: modal[:title] if defined? modal %>
 
 <% end #form_for %>
@@ -103,6 +149,20 @@ Unless required by applicable law or agreed to in writing, software distributed
     </div>
   </div>
 </div>
+
+<% if lending_enabled?(object) %>
+  <div class="card item-access">
+    <div class="card-header">
+      <h3 class="card-title">Item lending period</h3>
+    </div>
+    <div class="card-body">
+      <div class="form-group">
+        Item is available to be checked out for
+        <%= ActiveSupport::Duration.build(lending_period).to_day_hour_s %>
+      </div>
+    </div>
+  </div>
+<% end %>
 
 <% end #form_for %>
 

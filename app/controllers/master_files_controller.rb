@@ -1,11 +1,11 @@
 # Copyright 2011-2022, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
-# 
+#
 # You may obtain a copy of the License at
-# 
+#
 # http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software distributed
 #   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
 #   CONDITIONS OF ANY KIND, either express or implied. See the License for the
@@ -70,7 +70,7 @@ class MasterFilesController < ApplicationController
 
   def embed
     if can? :read, @master_file
-      @stream_info = secure_streams(@master_file.stream_details)
+      @stream_info = secure_streams(@master_file.stream_details, @master_file.media_object_id)
       @stream_info['t'] = view_context.parse_media_fragment(params[:t]) # add MediaFragment from params
       @stream_info['link_back_url'] = view_context.share_link_for(@master_file)
     end
@@ -411,14 +411,14 @@ protected
   end
 
   def gather_hls_streams(master_file)
-    stream_info = secure_streams(master_file.stream_details)
+    stream_info = secure_streams(master_file.stream_details, master_file.media_object_id)
     hls_streams = stream_info[:stream_hls].reject { |stream| stream[:quality] == 'auto' }
     hls_streams.each { |stream| unnest_wowza_stream(stream) } if Settings.streaming.server == "wowza"
     hls_streams
   end
 
   def hls_stream(master_file, quality)
-    stream_info = secure_streams(master_file.stream_details)
+    stream_info = secure_streams(master_file.stream_details, master_file.media_object_id)
     hls_stream = stream_info[:stream_hls].select { |stream| stream[:quality] == quality }
     unnest_wowza_stream(hls_stream&.first) if Settings.streaming.server == "wowza"
     hls_stream

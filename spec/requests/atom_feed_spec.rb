@@ -38,4 +38,28 @@ describe 'atom feed', type: :request do
       expect(entry.at("link[@type='application/json']/@href").to_s).to eq media_object_url(media_object, format: :json)
     end
   end
+
+  describe 'sort' do
+    let!(:media_object1) { FactoryBot.create(:fully_searchable_media_object) }
+    let!(:media_object2) { FactoryBot.create(:fully_searchable_media_object) }
+    let(:updated_date1) do
+      query = ActiveFedora::SolrQueryBuilder.construct_query(ActiveFedora.id_field => media_object1.id)
+      doc = ActiveFedora::SolrService.get(query)['response']['docs'].first
+      doc["timestamp"]
+    end
+    let(:updated_date2) do
+      query = ActiveFedora::SolrQueryBuilder.construct_query(ActiveFedora.id_field => media_object2.id)
+      doc = ActiveFedora::SolrService.get(query)['response']['docs'].first
+      doc["timestamp"]
+    end
+
+    it 'sorts based upon solr timestamp' do
+      get '/catalog.atom?sort=timestamp+desc'
+      atom = Nokogiri::XML(response.body)
+      atom.remove_namespaces!
+      ids = atom.xpath('//entry/id/text()').map { |url| url.to_s.split('/').last }
+      expect(updated_date2 > updated_date1).to eq true
+      expect(ids).to eq [media_object2.id, media_object1.id]
+    end
+  end
 end

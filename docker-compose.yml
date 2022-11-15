@@ -45,7 +45,7 @@ services:
     image: solr:8-slim
     volumes:
       - ./solr/conf:/opt/solr/avalon_conf
-      - solr:/opt/solr/server/solr/mycores
+      - solr:/var/solr
     command:
       - solr-precreate
       - avalon

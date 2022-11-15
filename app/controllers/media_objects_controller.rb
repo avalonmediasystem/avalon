@@ -1,11 +1,11 @@
 # Copyright 2011-2022, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
-# 
+#
 # You may obtain a copy of the License at
-# 
+#
 # http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software distributed
 #   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
 #   CONDITIONS OF ANY KIND, either express or implied. See the License for the
@@ -30,17 +30,23 @@ class MediaObjectsController < ApplicationController
   before_action :load_player_context, only: [:show]
 
   def self.is_editor ctx
-    ctx.current_ability.is_editor_of?(ctx.instance_variable_get('@media_object').collection)
+    Rails.cache.fetch([ctx.hash, :is_editor], expires_in: 5.seconds) do
+      ctx.current_ability.is_editor_of?(ctx.instance_variable_get('@media_object').collection)
+    end
   end
   def self.is_lti_session ctx
     ctx.user_session.present? && ctx.user_session[:lti_group].present?
   end
+  def self.is_cdl_enabled ctx
+    ctx.instance_variable_get('@media_object').cdl_enabled?
+  end
 
   is_editor_or_not_lti = proc { |ctx| self.is_editor(ctx) || !self.is_lti_session(ctx) }
   is_editor_or_lti = proc { |ctx| (Avalon::Authentication::Providers.any? {|p| p[:provider] == :lti } && self.is_editor(ctx)) || self.is_lti_session(ctx) }
+  is_editor_or_not_lti_and_cdl_disabled = proc { |ctx| !self.is_cdl_enabled(ctx) && (self.is_editor(ctx) || !self.is_lti_session(ctx)) }
 
   add_conditional_partial :share, :share, partial: 'share_resource', if: is_editor_or_not_lti
-  add_conditional_partial :share, :embed, partial: 'embed_resource', if: is_editor_or_not_lti
+  add_conditional_partial :share, :embed, partial: 'embed_resource', if: is_editor_or_not_lti_and_cdl_disabled
   add_conditional_partial :share, :lti_url, partial: 'lti_url',  if: is_editor_or_lti
 
   def can_embed?
@@ -318,7 +324,7 @@ class MediaObjectsController < ApplicationController
   def index
     respond_to do |format|
       format.json {
-        paginate json: MediaObject.all
+        paginate json: MediaObject.accessible_by(current_ability, :index)
       }
     end
   end
@@ -468,7 +474,7 @@ class MediaObjectsController < ApplicationController
 
     master_files = master_file_presenters
     canvas_presenters = master_files.collect do |mf|
-      stream_info = secure_streams(mf.stream_details)
+      stream_info = secure_streams(mf.stream_details, @media_object.id)
       IiifCanvasPresenter.new(master_file: mf, stream_info: stream_info)
     end
     presenter = IiifManifestPresenter.new(media_object: @media_object, master_files: canvas_presenters)
@@ -516,6 +522,12 @@ class MediaObjectsController < ApplicationController
     end
   end
 
+  rescue_from Avalon::VocabularyNotFound do |exception|
+    support_email = Settings.email.support
+    notice_text = I18n.t('errors.controlled_vocabulary_error') % [exception.message, support_email, support_email]
+    redirect_to root_path, flash: { error: notice_text.html_safe }
+  end
+
   protected
 
   def master_file_presenters
@@ -532,7 +544,8 @@ class MediaObjectsController < ApplicationController
                                         workflow_id: nil,
                                         comment: [],
                                         supplemental_files_json: nil
-                                      })
+                                      },
+                                      load_reflections: true)
   end
 
   def load_master_files(mode = :rw)
@@ -546,7 +559,11 @@ class MediaObjectsController < ApplicationController
   def load_current_stream
     set_active_file
     set_player_token
-    @currentStreamInfo = @currentStream.nil? ? {} : secure_streams(@currentStream.stream_details)
+    @currentStreamInfo = if params[:id]
+                           @currentStream.nil? ? {} : secure_streams(@currentStream.stream_details, params[:id])
+                         else
+                           @currentStream.nil? ? {} : secure_streams(@currentStream.stream_details, @media_object.id)
+                         end
     @currentStreamInfo['t'] = view_context.parse_media_fragment(params[:t]) # add MediaFragment from params
     @currentStreamInfo['lti_share_link'] = view_context.lti_share_url_for(@currentStream)
     @currentStreamInfo['link_back_url'] = view_context.share_link_for(@currentStream)

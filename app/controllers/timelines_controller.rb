@@ -99,13 +99,13 @@ class TimelinesController < ApplicationController
     authorize! :read, @timeline
     respond_to do |format|
       format.html do
-        url_fragment = "noHeader=true&noFooter=true&noSourceLink=false"
+        url_fragment = "noHeader=true&noFooter=true&noSourceLink=false&noVideo=false"
         if current_user == @timeline.user
-          url_fragment += "&resource=#{Addressable::URI.escape_component(manifest_timeline_url(@timeline, format: :json), '://?=')}"
-          url_fragment += "&callback=#{Addressable::URI.escape_component(manifest_timeline_url(@timeline, format: :json), '://?=')}"
+          url_fragment += "&resource=#{Addressable::URI.escape_component(manifest_timeline_url(@timeline, format: :json), /[:\/?=]/)}"
+          url_fragment += "&callback=#{Addressable::URI.escape_component(manifest_timeline_url(@timeline, format: :json), /[:\/?=]/)}"
         elsif current_user
-          url_fragment += "&resource=#{Addressable::URI.escape_component(manifest_timeline_url(@timeline, format: :json, token: @timeline.access_token), '://?=')}"
-          url_fragment += "&callback=#{Addressable::URI.escape_component(timelines_url, '://?=')}"
+          url_fragment += "&resource=#{Addressable::URI.escape_component(manifest_timeline_url(@timeline, format: :json, token: @timeline.access_token), /[:\/?=]/)}"
+          url_fragment += "&callback=#{Addressable::URI.escape_component(timelines_url, /[:\/?=]/)}"
         end
         @timeliner_iframe_url = timeliner_path + "##{url_fragment}"
       end
@@ -193,12 +193,12 @@ class TimelinesController < ApplicationController
   end
 
   # GET /timelines/1/manifest.json
+  # GET /timelines/1/manifest
   def manifest
     authorize! :read, @timeline
     respond_to do |format|
-      format.json do
-        render json: @timeline.manifest
-      end
+      format.json { render json: @timeline.manifest }
+      format.html { render json: @timeline.manifest }
     end
   end
 

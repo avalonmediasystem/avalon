@@ -20,7 +20,7 @@ Unless required by applicable law or agreed to in writing, software distributed
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
   <title><%= render_page_title %></title>
-  
+
   <meta property="og:title" content="<%= render_page_title %>" />
   <meta property="og:type" content=<%= @page_type || "website" %> />
   <meta property="og:url" content=<%= request.url %> />
@@ -37,7 +37,7 @@ Unless required by applicable law or agreed to in writing, software distributed
   <%= render "modules/google_analytics" %>
 </head>
 
-<body data-mountpoint="<%=main_app.root_path%>">
+<body data-mountpoint="<%=main_app.root_path%>" <%= request.fullpath.include?('login_popup') ? 'onunload=closePopup()' : nil %> >
   <div class="page-container">
     <div class="content-wrapper">
       <a id="skip-to-content" class="sr-only sr-only-focusable" href="#content">Skip to main content</a>
@@ -67,6 +67,16 @@ Unless required by applicable law or agreed to in writing, software distributed
     </div>
     <%= render 'modules/footer' %>
   </div>
+
+  <% if request.fullpath.include?('login_popup') %>
+    <% content_for :page_scripts do %>
+      <script>
+        function closePopup() {
+          window.close();
+        }
+      </script>
+    <% end %>
+  <% end %>
 
   <!-- With this many Javascript files performance will be much better
          if they are included here. That means the important content will

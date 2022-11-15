@@ -190,7 +190,7 @@ class Timeline < ActiveRecord::Base
                     "motivation": "painting",
                     "body": {
                       "id": source_stream,
-                      "type": "Audio",
+                      "type": master_file.is_video? ? "Video" : "Audio",
                       "duration": duration,
                       "service": [auth_service]
                     },

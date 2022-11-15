@@ -18,7 +18,6 @@ Unless required by applicable law or agreed to in writing, software distributed
 
 <div class="input-group-prepend">
   <% fieldname = "media_object[#{options[:dropdown_field]}]#{fieldarray}" %>
-  <%= hidden_field_tag fieldname, selected_value %>
   <% option_hash = (options[:dropdown_options].values).zip(options[:dropdown_options].keys) %>
   <%= select_tag fieldname.to_s, options_for_select(option_hash, selected_value) %>
 </div>

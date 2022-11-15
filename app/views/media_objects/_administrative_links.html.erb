@@ -14,7 +14,6 @@ Unless required by applicable law or agreed to in writing, software distributed
 ---  END LICENSE_HEADER BLOCK  ---
 %>
 <% if can? :update, @media_object %>
-<div class="row-fluid">
   <p>
     <ul class="unstyled" style="display: none;">
       <li>
@@ -31,9 +30,7 @@ Unless required by applicable law or agreed to in writing, software distributed
       <% end %>
     </ul>
   </p>
-
-  <div id="administrative_options" style="margin-bottom:1em;">
-
+  <div id="administrative_options" class="mb-3">
     <%= link_to 'Edit', edit_media_object_path(@media_object), class: 'btn btn-primary' %>
 
     <% if @media_object.published? %>
@@ -57,5 +54,4 @@ Unless required by applicable law or agreed to in writing, software distributed
     <%= render "intercom_push_modal" %>
     <% end %>
   </div>
-</div>
 <% end %>

@@ -25,9 +25,6 @@ const CardMetaData = ({ doc, fieldLabel, fieldName }) => {
   let value = doc.attributes[fieldName]?.attributes?.value;
   if (Array.isArray(value) && value.length > 1) {
     metaData = value.join(', ');
-  } else if (typeof value == 'string') {
-    const summary = value.substring(0, 50);
-    metaData = value.length >= 50 ? `${summary}...` : value;
   } else {
     metaData = value;
   }
@@ -35,8 +32,8 @@ const CardMetaData = ({ doc, fieldLabel, fieldName }) => {
   if (doc.attributes[fieldName]) {
     return (
       <React.Fragment>
-        <dt className='col-sm-5'>{fieldLabel}</dt>
-        <dd className='col-sm-7' dangerouslySetInnerHTML={{ __html: metaData }}></dd>
+        <dt>{fieldLabel}</dt>
+        <dd dangerouslySetInnerHTML={{ __html: metaData }}></dd>
       </React.Fragment>
     );
   }
@@ -74,10 +71,7 @@ const thumbnailSrc = (doc, props) => {
 };
 
 const titleHTML = (doc) => {
-  var title = doc.attributes['title_tesi'] && doc.attributes['title_tesi'].attributes.value.substring(0, 50) || doc['id'];
-  if (doc.attributes['title_tesi'] && doc.attributes['title_tesi'].attributes.value.length >= 50) {
-    title += "<span>...</span>";
-  }
+  var title = doc.attributes['title_tesi'] && doc.attributes['title_tesi'].attributes.value || doc['id'];
   return { __html: title };
 };
 
