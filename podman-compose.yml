@@ -131,7 +131,7 @@ services:
       - SETTINGS__DROPBOX__PATH=s3://masterfiles/dropbox/
       - SETTINGS__DROPBOX__UPLOAD_URI=s3://masterfiles/dropbox/
       - SETTINGS__MASTER_FILE_MANAGEMENT__PATH=s3://preserves/
-      - SETTINGS__MASTER_FILE_MANAGEMENT__STRATEGY=MOVE
+      - SETTINGS__MASTER_FILE_MANAGEMENT__STRATEGY=move
       - SETTINGS__STREAMING__CONTENT_PATH=/
       - SETTINGS__STREAMING__STREAM_DEFAULT_QUALITY=medium
       - SETTINGS__STREAMING__HTTP_BASE=http://localhost:8880/avalon
@@ -202,7 +202,7 @@ services:
     entrypoint: >
       /bin/sh -c "
       /usr/bin/mc config host add myminio http://minio:9000 minio minio123;
-      /usr/bin/mc mb -p myminio/fcrepo myminio/masterfiles myminio/derivatives myminio/supplementalfiles;
+      /usr/bin/mc mb -p myminio/fcrepo myminio/masterfiles myminio/derivatives myminio/supplementalfiles myminio/preserves;
       /usr/bin/mc policy set download myminio/derivatives;
       /usr/bin/mc policy set download myminio/supplementalfiles;
       exit 0;
