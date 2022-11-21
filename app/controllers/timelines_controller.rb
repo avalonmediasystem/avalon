@@ -60,11 +60,10 @@ class TimelinesController < ApplicationController
     session[:timeline_sort] = [sort_column, sort_direction]
     if columns[sort_column] == 'updated_at'
       @timelines = @timelines.order("#{columns[sort_column].downcase} #{sort_direction}")
-      @timelines = @timelines.offset(params['start']).limit(params['length'])
     else
       @timelines = @timelines.order("lower(#{columns[sort_column].downcase}) #{sort_direction}, #{columns[sort_column].downcase} #{sort_direction}")
-      @timelines = @timelines.offset(params['start']).limit(params['length'])
     end
+    @timelines = @timelines.offset(params['start']).limit(params['length'])
     response = {
       "draw": params['draw'],
       "recordsTotal": records_total,
