@@ -33,7 +33,7 @@ RSpec.describe Samvera::Persona::UsersController, type: :controller do
     before do
       sign_in(user)
       FactoryBot.create(:user, username: 'zzzebra', email: 'zzzebra@example.edu', last_sign_in_at: Time.new(2022,05,26), invitation_token: 'invited')
-      FactoryBot.create_list(:user, 10, last_sign_in_at: Time.new(2022,06,01))
+      FactoryBot.create_list(:user, 10, last_sign_in_at: Time.new(2022,05,24))
     end
 
     context 'paging' do
@@ -58,25 +58,25 @@ RSpec.describe Samvera::Persona::UsersController, type: :controller do
 
     context 'filtering' do
       context 'username' do
-	let(:common_params) { { start: 0, length: 20, order: { '0': { column: 0, dir: 'asc' } } } }
-	it "returns results filtered by username" do
-	  post :paged_index, format: 'json', params: common_params.merge(search: { value: user.username })
-	  parsed_response = JSON.parse(response.body)
-	  expect(parsed_response['recordsFiltered']).to eq(1)
-	  expect(parsed_response['data'].count).to eq(1)
-	  expect(parsed_response['data'][0][0]).to eq("<a href=\"/persona/users/1/edit\">#{user.username}</a>")
-	end
+      	let(:common_params) { { start: 0, length: 20, order: { '0': { column: 0, dir: 'asc' } } } }
+      	it "returns results filtered by username" do
+      	  post :paged_index, format: 'json', params: common_params.merge(search: { value: user.username })
+      	  parsed_response = JSON.parse(response.body)
+      	  expect(parsed_response['recordsFiltered']).to eq(1)
+      	  expect(parsed_response['data'].count).to eq(1)
+      	  expect(parsed_response['data'][0][0]).to eq("<a href=\"/persona/users/1/edit\">#{user.username}</a>")
+      	end
       end
 
       context 'email' do
-	let(:common_params) { { start: 0, length: 20, order: { '0': { column: 'entry', dir: 'asc' } } } }
-	it "returns results filtered by email" do
-	  post :paged_index, format: 'json', params: common_params.merge(search: { value: 'zzzebra@example.edu' })
-	  parsed_response = JSON.parse(response.body)
-	  expect(parsed_response['recordsFiltered']).to eq(1)
-	  expect(parsed_response['data'].count).to eq(1)
-	  expect(parsed_response['data'][0][1]).to eq("<a href=\"/persona/users/2/edit\">zzzebra@example.edu</a>")
-	end
+      	let(:common_params) { { start: 0, length: 20, order: { '0': { column: 'entry', dir: 'asc' } } } }
+      	it "returns results filtered by email" do
+      	  post :paged_index, format: 'json', params: common_params.merge(search: { value: 'zzzebra@example.edu' })
+      	  parsed_response = JSON.parse(response.body)
+      	  expect(parsed_response['recordsFiltered']).to eq(1)
+      	  expect(parsed_response['data'].count).to eq(1)
+      	  expect(parsed_response['data'][0][1]).to eq("<a href=\"/persona/users/2/edit\">zzzebra@example.edu</a>")
+      	end
       end
     end
 
@@ -91,6 +91,19 @@ RSpec.describe Samvera::Persona::UsersController, type: :controller do
 
       it "returns results sorted by username descending" do
         post :paged_index, format: 'json', params: common_params.merge(order: { '0': { column: 0, dir: 'desc' } })
+        parsed_response = JSON.parse(response.body)
+        expect(parsed_response['data'][0][0]).to eq("<a href=\"/persona/users/2/edit\">zzzebra</a>")
+        expect(parsed_response['data'][11][0]).to eq("<a href=\"/persona/users/1/edit\">aardvark</a>")
+      end
+
+      it "returns results sorted by last sign in ascending" do
+        post :paged_index, format: 'json', params: common_params.merge(order: { '0': { column: 3, dir: 'asc' } })
+        parsed_response = JSON.parse(response.body)
+        expect(parsed_response['data'][0][0]).to eq("<a href=\"/persona/users/1/edit\">aardvark</a>")
+        expect(parsed_response['data'][11][0]).to eq("<a href=\"/persona/users/2/edit\">zzzebra</a>")
+      end
+      it "returns results sorted by last sign in descending" do
+        post :paged_index, format: 'json', params: common_params.merge(order: { '0': { column: 3, dir: 'desc' } })
         parsed_response = JSON.parse(response.body)
         expect(parsed_response['data'][0][0]).to eq("<a href=\"/persona/users/2/edit\">zzzebra</a>")
         expect(parsed_response['data'][11][0]).to eq("<a href=\"/persona/users/1/edit\">aardvark</a>")

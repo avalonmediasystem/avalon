@@ -67,7 +67,10 @@ module Samvera
       sort_column = params['order']['0']['column'].to_i rescue 0
       sort_direction = params['order']['0']['dir'] == 'desc' ? 'desc' : 'asc' rescue 'asc'
       session[:presenter_sort] = [sort_column, sort_direction]
-      if columns[sort_column] != 'entry'
+      if columns[sort_column] == 'last_sign_in_at'
+        @presenter = @presenter.order("#{columns[sort_column].downcase} #{sort_direction}")
+        @presenter = @presenter.offset(params['start']).limit(params['length'])
+      elsif columns[sort_column] != 'entry'
         @presenter = @presenter.order("lower(#{columns[sort_column].downcase}) #{sort_direction}, #{columns[sort_column].downcase} #{sort_direction}")
         @presenter = @presenter.offset(params['start']).limit(params['length'])
       end
