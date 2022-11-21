@@ -58,11 +58,11 @@ class TimelinesController < ApplicationController
     sort_direction = params['order']['0']['dir'] rescue 'asc'
 
     session[:timeline_sort] = [sort_column, sort_direction]
-    if columns[sort_column] == 'updated_at'
-      @timelines = @timelines.order("#{columns[sort_column].downcase} #{sort_direction}")
-    else
-      @timelines = @timelines.order("lower(#{columns[sort_column].downcase}) #{sort_direction}, #{columns[sort_column].downcase} #{sort_direction}")
-    end
+    @timelines = if columns[sort_column] == 'updated_at'
+                   @timelines.order("#{columns[sort_column].downcase} #{sort_direction}")
+                 else
+                   @timelines.order("lower(#{columns[sort_column].downcase}) #{sort_direction}, #{columns[sort_column].downcase} #{sort_direction}")
+                 end
     @timelines = @timelines.offset(params['start']).limit(params['length'])
     response = {
       "draw": params['draw'],
