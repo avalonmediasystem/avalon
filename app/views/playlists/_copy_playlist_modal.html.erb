@@ -81,13 +81,15 @@ Unless required by applicable law or agreed to in writing, software distributed
   <script>
     // Enable/disable ME.js keyboard shortcuts when modal is hidden/shown
     // if a player is rendered on the page
-    if(currentPlayer) {
-      $('#copy-playlist-modal').on('show.bs.modal', function (e) {
+    $('#copy-playlist-modal').on('show.bs.modal', function (e) {
+      if(currentPlayer != undefined) {
         currentPlayer.options.enableKeyboard = false;
-      });
-      $('#copy-playlist-modal').on('hidden.bs.modal', function (e) {
+      }
+    });
+    $('#copy-playlist-modal').on('hidden.bs.modal', function (e) {
+      if(currentPlayer != undefined) {
         currentPlayer.options.enableKeyboard = true;
-      });
-    }
+      }
+    });
   </script>
 <% end %>
