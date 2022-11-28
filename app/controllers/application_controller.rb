@@ -58,7 +58,7 @@ class ApplicationController < ActionController::Base
   end
 
   def store_location
-    store_location_for(:user, request.url)
+    store_location_for(:user, request.url) unless request.xhr?
     if request.env["omniauth.params"].present? && request.env["omniauth.params"]["login_popup"].present?
       session[:previous_url] = root_path + "self_closing.html"
     end
@@ -74,7 +74,7 @@ class ApplicationController < ActionController::Base
 
   # Used here and in omniauth_callbacks_controller
   def find_redirect_url(auth_type, lti_group: nil)
-    previous_url = session.delete :previous_url
+    previous_url = session.delete(:previous_url) || session.delete(:user_return_to)
     if params['target_id']
       # Whitelist params that are allowed to be passed through via LTI
       objects_path(params['target_id'], params.permit('t', 'position', 'token'))
