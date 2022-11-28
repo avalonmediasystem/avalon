@@ -57,7 +57,8 @@ $('#playlist_title').on('keyup',
 )
 
 $('#copy-playlist-form').bind('ajax:success',
-  (event, data, status, xhr) ->
+  (event) ->
+    [data, status, xhr] = event.detail
     if (data.errors)
       console.log(data.errors.title[0])
     else
@@ -67,7 +68,8 @@ $('#copy-playlist-form').bind('ajax:success',
         if ( $('#with_refresh').val() )
           location.reload()
 ).bind('ajax:error',
-  (e, xhr, status, error) ->
+  (event) ->
+    [data, status, xhr] = event.detail
     console.log(xhr.responseJSON.errors)
 )
 
