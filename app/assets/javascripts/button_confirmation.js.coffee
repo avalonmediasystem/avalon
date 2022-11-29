@@ -20,11 +20,6 @@ $ ->
   apply_button_confirmation()
 
 @apply_button_confirmation = () ->
-  # Remove popover when clicked outside. Reference: https://jsfiddle.net/guya/fjZja/
-  $('html').on 'click', (e) ->
-    if typeof $(e.target).data('original-title') == 'undefined' and !$(e.target).parents().is('.popover.in')
-      $('[data-original-title]').popover 'hide'
-
   $(document).on 'click', '#special_button_color', ->
     $('.btn-confirmation').popover 'hide'
     true

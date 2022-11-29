@@ -53,6 +53,9 @@ class MEJSMarkersHelper {
 
     // Edit button click
     $markers.find('button[name="edit_marker"]').on('click', e => {
+      // Disable player hotkeys when using edit marker form
+      mejs4AvalonPlayer.player.options.enableKeyboard = false;
+
       const $row = $(e.target).parents('tr');
       const markerId = $row.data('markerId');
       const offset = mejs.Utils.convertSMPTEtoSeconds(
@@ -78,6 +81,9 @@ class MEJSMarkersHelper {
 
       // Remove original marker offset value
       delete originalMarkerValues[markerId];
+      
+      // Enable player hotkeys when closing edit marker form
+      mejs4AvalonPlayer.player.options.enableKeyboard = true;
     });
 
     // Delete button click
@@ -92,11 +98,12 @@ class MEJSMarkersHelper {
 
       // Show popover confirmation
       $button.popover({
-        container: '#popover-container-' + $button[0].dataset.markerId,
+        container: '#popover-container-' + markerId,
         content: content,
         sanitize: false,
         html: true,
-        placement: 'top'
+        placement: 'top',
+        trigger: 'focus',
       });
       $button.popover('show');
 
@@ -144,6 +151,9 @@ class MEJSMarkersHelper {
 
       // Hide old error messages
       $alertError.hide();
+
+      // Enable player hotkeys when closing edit marker form
+      mejs4AvalonPlayer.player.options.enableKeyboard = true;
 
       $.ajax({
         url: '/avalon_marker/' + markerId,
