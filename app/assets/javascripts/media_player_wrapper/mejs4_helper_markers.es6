@@ -103,7 +103,7 @@ class MEJSMarkersHelper {
         sanitize: false,
         html: true,
         placement: 'top',
-        trigger: 'focus',
+        trigger: 'focus'
       });
       $button.popover('show');
 
