@@ -270,7 +270,7 @@ class MasterFile < ActiveFedora::Base
       options[:outputs] = [{ label: 'high', url: input }]
     end
 
-    ActiveEncodeJobs::CreateEncodeJob.perform_now(input, id, options)
+    ActiveEncodeJobs::CreateEncodeJob.perform_later(input, id, options)
   end
 
   def input_path
