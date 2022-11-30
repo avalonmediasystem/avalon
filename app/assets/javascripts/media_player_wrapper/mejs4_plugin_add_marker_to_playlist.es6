@@ -283,9 +283,6 @@ Object.assign(MediaElementPlayer.prototype, {
     handleControlClick: function(e) {
       const t = this;
       let addMarkerObj = t.addMarkerObj;
-      
-      // Disable player hotkeys when using add marker form
-      addMarkerObj.player.options.enableKeyboard = false;
 
       // Exit full screen
       if(addMarkerObj.player.isFullScreen) {
@@ -336,8 +333,6 @@ Object.assign(MediaElementPlayer.prototype, {
         }
       }
       t.active = false;
-      // Enable player hotkeys when closing add marker form
-      t.player.options.enableKeyboard = true;
     }
   }
 });
