@@ -52,10 +52,10 @@ RSpec.describe "checkouts/index", type: :view do
     end
   end
   describe 'checkout and return time' do
-    it 'renders a human readable string' do
+    it 'renders UTC time in a span for JS conversion to local time zone' do
       render
-      assert_select "tr>td", text: checkouts.first.checkout_time.to_s(:long_ordinal_12h)
-      expect(rendered).to include('January 13th, 2000 12:00 PM')
+      assert_select "tr>td>span[data-utc-time=?]", checkouts.first.checkout_time.iso8601
+      assert_select "tr>td>span[data-utc-time=?]", checkouts.first.return_time.iso8601
     end
   end
 end

@@ -7,6 +7,7 @@
     "babel-plugin-transform-react-remove-prop-types": "^0.4.24",
     "cropperjs": "^1.5.5",
     "hls.js": "https://github.com/avalonmediasystem/hls.js#stricter_ts_probing",
+    "moment": "^2.29.4",
     "prop-types": "^15.7.2",
     "react": "^16.8.4",
     "react-bootstrap": "^1.0.0",
