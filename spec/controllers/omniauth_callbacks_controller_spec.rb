@@ -100,6 +100,15 @@ describe Users::OmniauthCallbacksController, type: :controller do
       end
     end
 
+    context 'when user_return_to is in the session' do
+      let(:previous_url) { "http://test.host/a/sub/page?test_param=true" }
+
+      it 'redirects to url' do
+        post :identity, session: { user_return_to: previous_url }
+        expect(response).to redirect_to(previous_url)
+      end
+    end
+
     context 'when lti login with course group' do
       let(:course_group) { 'M101-Fall2019' }
       let(:lti_auth_double) { double() }
