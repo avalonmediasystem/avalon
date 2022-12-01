@@ -39,6 +39,8 @@ RSpec.describe "/checkouts", type: :request do
       it "renders the restricted content page" do
         get checkouts_url
         expect(response).to render_template(:restricted_pid)
+        get checkouts_url, params: { display_returned: true }
+        expect(response).to render_template(:restricted_pid)
       end
     end
 
