@@ -106,7 +106,7 @@ class CheckoutsController < ApplicationController
       @checkouts = if current_ability.is_administrator?
                      Checkout.all.where("return_time > now()")
                    else
-                     Checkout.active_for_user(current_user.id)
+                     Checkout.active_for_user(current_user&.id)
                    end
     end
 
