@@ -137,10 +137,8 @@ class CheckoutsController < ApplicationController
         view_context.link_to('Return', return_checkout_url(checkout), class: 'btn btn-outline btn-xs', method: :patch)
       elsif checkout.return_time < DateTime.current && checkout.media_object.lending_status == 'available'
         view_context.link_to('Checkout', checkouts_url(params: { checkout: { media_object_id: checkout.media_object_id } }), class: 'btn btn-primary btn-xs', method: :post)
-      elsif !Checkout.checked_out_to_user(checkout.media_object_id, current_user.id).empty?
-        ''
       else
-        'Checked out'
+        ''
       end
     end
 
