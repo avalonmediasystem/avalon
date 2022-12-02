@@ -22,9 +22,7 @@ Unless required by applicable law or agreed to in writing, software distributed
                 height="<%= @player_height || 270 %>"
                 data-canvasindex=0
                 poster="<%= section_info[:poster_image] if f_start == 0 %>"
-                preload="auto"
-                playsinline="true"
-                webkit-playsinline="true">
+                preload="auto">
           <% section_info[:stream_hls].each do |hls| %>
             <source src="<%= hls[:url] %>" type="application/x-mpegURL" data-quality="<%= hls[:quality] %>"/>
           <% end %>
