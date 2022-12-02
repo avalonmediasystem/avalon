@@ -133,13 +133,8 @@ class CheckoutsController < ApplicationController
     end
 
     def checkout_actions(checkout)
-      if checkout.return_time > DateTime.current
-        view_context.link_to('Return', return_checkout_url(checkout), class: 'btn btn-outline btn-xs', method: :patch)
-      elsif checkout.return_time < DateTime.current && checkout.media_object.lending_status == 'available'
-        view_context.link_to('Checkout', checkouts_url(params: { checkout: { media_object_id: checkout.media_object_id } }), class: 'btn btn-primary btn-xs', method: :post)
-      else
-        ''
-      end
+      return '' unless checkout.return_time > DateTime.current
+      view_context.link_to('Return', return_checkout_url(checkout), class: 'btn btn-outline btn-xs', method: :patch)
     end
 
     # Only allow a list of trusted parameters through.
