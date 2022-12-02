@@ -133,9 +133,8 @@ class CheckoutsController < ApplicationController
     end
 
     def checkout_actions(checkout)
-      if checkout.return_time > DateTime.current
-        view_context.link_to('Return', return_checkout_url(checkout), class: 'btn btn-outline btn-xs', method: :patch)
-      end
+      return unless checkout.return_time > DateTime.current
+      view_context.link_to('Return', return_checkout_url(checkout), class: 'btn btn-outline btn-xs', method: :patch)
     end
 
     # Only allow a list of trusted parameters through.
