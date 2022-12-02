@@ -138,7 +138,7 @@ class CheckoutsController < ApplicationController
       elsif checkout.return_time < DateTime.current && checkout.media_object.lending_status == 'available'
         view_context.link_to('Checkout', checkouts_url(params: { checkout: { media_object_id: checkout.media_object_id } }), class: 'btn btn-primary btn-xs', method: :post)
       else
-        'Item Unavailable'
+        ''
       end
     end
 
