@@ -28,8 +28,8 @@ Unless required by applicable law or agreed to in writing, software distributed
       left: 0;
       right: 0;
       bottom: 0;
-      height: 33px;
-      width: 50%
+      height: 45px;
+      width: 80%
     }
     .centered.video {
       height: 110px
@@ -38,6 +38,8 @@ Unless required by applicable law or agreed to in writing, software distributed
 
   <div>
     <div class="centered">
-      <p>This item cannot be embedded.</p>
+      <p>This item is no longer able to be embedded.<br/>
+         You may be able to view this item on
+         <%= link_to Settings.name, media_object_path(@master_file.media_object_id), target: :_blank %></p>
     </div>
   </div>

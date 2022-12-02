@@ -1,11 +1,11 @@
 # Copyright 2011-2022, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
-# 
+#
 # You may obtain a copy of the License at
-# 
+#
 # http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software distributed
 #   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
 #   CONDITIONS OF ANY KIND, either express or implied. See the License for the
@@ -150,8 +150,8 @@ RSpec.describe TimelinesController, type: :controller do
     before :each do
       FactoryBot.reload
       FactoryBot.create(:timeline, title: 'aardvark', description: 'Aardvark lorem ipsum.', user: user)
-      FactoryBot.create(:timeline, title: 'zzzebra', description: 'Zzzebra lorem ipsum.', user: user)
       FactoryBot.create_list(:timeline, 9, user: user)
+      FactoryBot.create(:timeline, title: 'zzzebra', description: 'Zzzebra lorem ipsum.', user: user)
     end
 
     context 'paging' do
@@ -198,12 +198,24 @@ RSpec.describe TimelinesController, type: :controller do
         post :paged_index, format: 'json', params: common_params.merge(order: { '0': { column: 0, dir: 'asc' } }), session: valid_session
         parsed_response = JSON.parse(response.body)
         expect(parsed_response['data'][0][0]).to eq("<a title=\"#{Timeline.all[0].description}\" href=\"/timelines/1\">aardvark</a>")
-        expect(parsed_response['data'][10][0]).to eq("<a title=\"#{Timeline.all[1].description}\" href=\"/timelines/2\">zzzebra</a>")
+        expect(parsed_response['data'][10][0]).to eq("<a title=\"#{Timeline.all[10].description}\" href=\"/timelines/11\">zzzebra</a>")
       end
       it "returns results sorted by title descending" do
         post :paged_index, format: 'json', params: common_params.merge(order: { '0': { column: 0, dir: 'desc' } }), session: valid_session
         parsed_response = JSON.parse(response.body)
-        expect(parsed_response['data'][0][0]).to eq("<a title=\"#{Timeline.all[1].description}\" href=\"/timelines/2\">zzzebra</a>")
+        expect(parsed_response['data'][0][0]).to eq("<a title=\"#{Timeline.all[10].description}\" href=\"/timelines/11\">zzzebra</a>")
+        expect(parsed_response['data'][10][0]).to eq("<a title=\"#{Timeline.all[0].description}\" href=\"/timelines/1\">aardvark</a>")
+      end
+      it "returns results sorted by Updated ascending" do
+        post :paged_index, format: 'json', params: common_params.merge(order: { '0': { column: 3, dir: 'asc' } }), session: valid_session
+        parsed_response = JSON.parse(response.body)
+        expect(parsed_response['data'][0][0]).to eq("<a title=\"#{Timeline.all[0].description}\" href=\"/timelines/1\">aardvark</a>")
+        expect(parsed_response['data'][10][0]).to eq("<a title=\"#{Timeline.all[10].description}\" href=\"/timelines/11\">zzzebra</a>")
+      end
+      it "returns results sorted by Updated descending" do
+        post :paged_index, format: 'json', params: common_params.merge(order: { '0': { column: 3, dir: 'desc' } }), session: valid_session
+        parsed_response = JSON.parse(response.body)
+        expect(parsed_response['data'][0][0]).to eq("<a title=\"#{Timeline.all[10].description}\" href=\"/timelines/11\">zzzebra</a>")
         expect(parsed_response['data'][10][0]).to eq("<a title=\"#{Timeline.all[0].description}\" href=\"/timelines/1\">aardvark</a>")
       end
     end

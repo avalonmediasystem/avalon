@@ -1300,7 +1300,7 @@ Object.assign(_player.config, {
 
 	fullscreenText: null,
 
-	useFakeFullscreen: true
+	useFakeFullscreen: false
 });
 
 Object.assign(_player2.default.prototype, {
@@ -1461,10 +1461,6 @@ Object.assign(_player2.default.prototype, {
 			t.getElement(t.container).style.height = '100%';
 			t.setControlsSize();
 		}, 500);
-
-		if(_constants.IS_ANDROID || _constants.IS_IOS) {
-			t.getElement(t.container).querySelector('.' + t.options.classPrefix + 'overlay-button').style.display = 'none';
-		}
 
 		if (isNative) {
 			t.node.style.width = '100%';
@@ -5165,7 +5161,16 @@ var MediaElementPlayer = function () {
 	}, {
 		key: 'onkeydown',
 		value: function onkeydown(player, media, e) {
-			if (player.options.enableKeyboard) {
+			// Get the focused element in the DOM
+			var activeElement = document.activeElement;
+			var inputs = ['input', 'textarea'];
+			/* Unless the focused element is either an input field or a textarea,
+				 bind keyboard inputs for player actions. e.g. key 'm' press => mute the player 
+			*/
+			if (activeElement && inputs.indexOf(activeElement.tagName.toLowerCase()) !== -1) {
+				return;
+			}
+			else if (player.options.enableKeyboard) {
 				for (var i = 0, total = player.options.keyActions.length; i < total; i++) {
 					var keyAction = player.options.keyActions[i];
 

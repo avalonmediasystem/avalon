@@ -283,7 +283,7 @@ Object.assign(MediaElementPlayer.prototype, {
     handleControlClick: function(e) {
       const t = this;
       let addMarkerObj = t.addMarkerObj;
-      
+
       // Exit full screen
       if(addMarkerObj.player.isFullScreen) {
         addMarkerObj.player.exitFullScreen();

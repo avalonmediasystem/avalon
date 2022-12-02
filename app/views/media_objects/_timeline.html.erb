@@ -82,14 +82,7 @@ $(document).ready(function() {
     bodyText += "<input type=\"text\" name=\"customend\" id=\"customend\" size=\"10\" value=\""+ mejs.Utils.secondsToTimeCode(currentPlayer.duration, true)+"\" \>"
     bodyText += "</div>"
     $modalBody.innerHTML = bodyText;
-    // Disable ME.js keyboard shortcuts when timeline modal is shown
-    currentPlayer.options.enableKeyboard = false;
   })
-
-  $('#timelineModal').on('hidden.bs.modal', function(e) {
-    // Enable ME.js keyboard shortcuts when create timeline modal closes
-    currentPlayer.options.enableKeyboard = true;
-  });
 
   $('#timelineModalSave').on('click', function (e) {
     let label, t;

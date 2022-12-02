@@ -149,7 +149,7 @@ Unless required by applicable law or agreed to in writing, software distributed
                       <input type="button" class="btn btn-sm btn-primary" onclick="$('#captions_<%= section.id %> .filedata').click();"
                         value="<%= section.captions.present? ? 'Replace' : 'Upload' %>" />
                       <% if section.captions.present? %>
-                        <%= link_to("Remove", delete_captions_master_file_path(section.id), title: 'Remove', method: :delete, class: "btn btn-danger btn-sm") %>
+                        <%= link_to("Remove", delete_captions_master_file_path(section.id), title: 'Remove', method: :delete, class: "btn btn-danger btn-sm btn-confirmation") %>
                       <% end %>
                     <% end %>
                     <% if section.captions.present? %>

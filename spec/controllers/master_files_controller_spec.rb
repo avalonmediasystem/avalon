@@ -68,12 +68,25 @@ describe MasterFilesController do
       end
     end
 
-    context "cannot upload a file with a non-ascii character in the filename" do
-      it "provides a warning about the invalid filename" do
+    context "can upload a file with a non-ascii character in the filename" do
+      it "does not provide a warning about an invalid filename" do
         request.env["HTTP_REFERER"] = "/"
 
         file = fixture_file_upload('/videoshort.mp4', 'video/mp4')
         allow(file).to receive(:original_filename).and_return("videoshort_é.mp4")
+
+        expect { post :create, params: { Filedata: [file], original: 'any', container_id: media_object.id } }.to change { MasterFile.count }
+
+        expect(flash[:error]).to be_nil
+      end
+    end
+
+    context "does not upload a file with improperly encoded filename" do
+      it "provides a warning about an invalid filename" do
+        request.env["HTTP_REFERER"] = "/"
+
+        file = fixture_file_upload('/videoshort.mp4', 'video/mp4')
+        allow(file).to receive(:original_filename).and_return("videoshort_é.mp4".encode('iso-8859-1'))
 
         expect { post :create, params: { Filedata: [file], original: 'any', container_id: media_object.id } }.not_to change { MasterFile.count }
 
@@ -256,7 +269,7 @@ describe MasterFilesController do
     context 'with cdl disabled' do
       before { allow(Settings.controlled_digital_lending).to receive(:enable).and_return(true) }
       before { allow(Settings.controlled_digital_lending).to receive(:collections_enabled).and_return(false) }
-      it "renders the authorize partial" do
+      it "renders the player" do
         expect(get(:embed, params: { id: master_file.id })).to render_template('master_files/_player')
       end
     end

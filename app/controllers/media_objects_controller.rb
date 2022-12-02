@@ -37,16 +37,12 @@ class MediaObjectsController < ApplicationController
   def self.is_lti_session ctx
     ctx.user_session.present? && ctx.user_session[:lti_group].present?
   end
-  def self.is_cdl_enabled ctx
-    ctx.instance_variable_get('@media_object').cdl_enabled?
-  end
 
   is_editor_or_not_lti = proc { |ctx| self.is_editor(ctx) || !self.is_lti_session(ctx) }
   is_editor_or_lti = proc { |ctx| (Avalon::Authentication::Providers.any? {|p| p[:provider] == :lti } && self.is_editor(ctx)) || self.is_lti_session(ctx) }
-  is_editor_or_not_lti_and_cdl_disabled = proc { |ctx| !self.is_cdl_enabled(ctx) && (self.is_editor(ctx) || !self.is_lti_session(ctx)) }
 
   add_conditional_partial :share, :share, partial: 'share_resource', if: is_editor_or_not_lti
-  add_conditional_partial :share, :embed, partial: 'embed_resource', if: is_editor_or_not_lti_and_cdl_disabled
+  add_conditional_partial :share, :embed, partial: 'embed_resource', if: is_editor_or_not_lti
   add_conditional_partial :share, :lti_url, partial: 'lti_url',  if: is_editor_or_lti
 
   def can_embed?
