@@ -41,6 +41,7 @@
 //= require cropperjs/dist/cropper.min
 //= require url-search-params-polyfill/index.js
 
+//= require moment/min/moment-with-locales.min.js
 //= require hls.js/dist/hls.min.js
 
 // include all of our vendored js
