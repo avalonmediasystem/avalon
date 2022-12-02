@@ -30,14 +30,22 @@ RSpec.describe "/checkouts", type: :request do
     { media_object_id: 'fake-id' }
   }
 
-  before { sign_in(user) }
-
   before { allow(Settings.controlled_digital_lending).to receive(:enable).and_return(true) }
 
   describe "GET /index" do
     before { checkout }
 
+    context "unauthenticated user" do
+      it "renders the restricted content page" do
+        get checkouts_url
+        expect(response).to render_template(:restricted_pid)
+        get checkouts_url, params: { display_returned: true }
+        expect(response).to render_template(:restricted_pid)
+      end
+    end
+
     context "html request" do
+      before { sign_in(user) }
       it "renders a successful response" do
         get checkouts_url
         expect(response).to be_successful
@@ -49,6 +57,7 @@ RSpec.describe "/checkouts", type: :request do
     end
 
     context "json request" do
+      before { sign_in(user) }
       it "renders a successful JSON response" do
         get checkouts_url(format: :json)
         expect(response).to be_successful
@@ -107,6 +116,8 @@ RSpec.describe "/checkouts", type: :request do
   end
 
   describe "GET /show" do
+    before { sign_in(user) }
+
     it "renders a successful response" do
       get checkout_url(checkout, format: :json)
       expect(response).to be_successful
@@ -114,6 +125,8 @@ RSpec.describe "/checkouts", type: :request do
   end
 
   describe "POST /create" do
+    before { sign_in(user) }
+
     context "json request" do
       context "with valid parameters" do
         it "creates a new Checkout" do
@@ -171,6 +184,8 @@ RSpec.describe "/checkouts", type: :request do
   end
 
   describe "PATCH /update" do
+    before { sign_in(user) }
+
     context "with valid parameters" do
       let(:new_return_time) { DateTime.now + 3.weeks }
       let(:new_attributes) {
@@ -200,6 +215,8 @@ RSpec.describe "/checkouts", type: :request do
   end
 
   describe "DELETE /destroy" do
+    before { sign_in(user) }
+
     it "destroys the requested checkout" do
       # Make sure the checkout is created before the expect line below
       checkout
@@ -217,6 +234,8 @@ RSpec.describe "/checkouts", type: :request do
   end
 
   describe "PATCH /return" do
+    before { sign_in(user) }
+
     it "updates the return time of requested checkout" do
       patch return_checkout_url(checkout)
       checkout.reload
@@ -244,6 +263,7 @@ RSpec.describe "/checkouts", type: :request do
 
   describe "PATCH /return_all" do
     before :each do
+      sign_in(user)
       FactoryBot.create_list(:checkout, 2)
       FactoryBot.create(:checkout, user: user)
     end
