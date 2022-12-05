@@ -191,6 +191,7 @@ RSpec.configure do |config|
   config.include Warden::Test::Helpers,type: :feature
   config.include FixtureMacros, type: :controller
   config.include OptionalExample
+  config.include Features::SessionHelpers, type: :feature
 end
 
 FactoryBot::SyntaxRunner.class_eval do
