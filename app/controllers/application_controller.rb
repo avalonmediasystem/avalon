@@ -162,7 +162,7 @@ class ApplicationController < ActionController::Base
     if request.format == :json
       head :unauthorized
     else
-      session[:previous_url] = request.fullpath if should_store_return_url?
+      store_location_for(:user, request.fullpath) if should_store_return_url?
       render '/errors/restricted_pid', status: :unauthorized
     end
   end
@@ -201,7 +201,7 @@ class ApplicationController < ActionController::Base
     if request.format == :json
       head :unauthorized
     else
-      session[:previous_url] = request.fullpath if should_store_return_url?
+      store_location_for(:user, request.fullpath) if should_store_return_url?
       render '/errors/restricted_pid', status: :unauthorized
     end
   end

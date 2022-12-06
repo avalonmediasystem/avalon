@@ -1086,7 +1086,7 @@ describe MediaObjectsController, type: :controller do
       context 'Before sign in' do
         it 'persists the current url on the session' do
           get 'show', params: { id: media_object.id }
-          expect(session[:previous_url]).to eql media_object_path(media_object)
+          expect(session[:user_return_to]).to eql media_object_path(media_object)
         end
       end
 
