@@ -27,6 +27,15 @@ describe 'Login Redirects' do
       sign_in user
       expect(page.current_path).to eq media_object_path(media_object)
     end
+
+    context 'visiting item after accessing restricted page' do
+      it 'redirects to item page' do
+        visit playlists_path
+        visit media_object_path(media_object)
+        sign_in user
+        expect(page.current_path).to eq media_object_path(media_object)
+      end
+    end
   end
 
   describe '/collection/:id' do
