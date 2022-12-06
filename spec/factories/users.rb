@@ -44,6 +44,12 @@ FactoryBot.define do
     end
     factory :user_lti do
     end
+
+    trait :with_identity do
+      after(:create) do |user|
+        Identity.create!(email: user.email, password: user.password)
+      end
+    end
   end
 
   factory :cataloger, class: User  do
