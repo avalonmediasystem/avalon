@@ -58,7 +58,9 @@ class ApplicationController < ActionController::Base
   end
 
   def store_location
-    store_location_for(:user, request.url) unless request.xhr?
+    if should_store_return_url?
+      store_location_for(:user, request.url)
+    end
     if request.env["omniauth.params"].present? && request.env["omniauth.params"]["login_popup"].present?
       session[:previous_url] = root_path + "self_closing.html"
     end
@@ -160,7 +162,7 @@ class ApplicationController < ActionController::Base
     if request.format == :json
       head :unauthorized
     else
-      session[:previous_url] = request.fullpath unless request.xhr?
+      store_location_for(:user, request.fullpath) if should_store_return_url?
       render '/errors/restricted_pid', status: :unauthorized
     end
   end
@@ -199,7 +201,7 @@ class ApplicationController < ActionController::Base
     if request.format == :json
       head :unauthorized
     else
-      session[:previous_url] = request.fullpath unless request.xhr?
+      store_location_for(:user, request.fullpath) if should_store_return_url?
       render '/errors/restricted_pid', status: :unauthorized
     end
   end
@@ -238,5 +240,9 @@ class ApplicationController < ActionController::Base
       else
         obj
       end
+    end
+
+    def should_store_return_url?
+      !(request.xhr? || request.format != "html" || request.path.start_with?("/users/") || request.path.end_with?("poster") || request.path.end_with?("thumbnail"))
     end
 end

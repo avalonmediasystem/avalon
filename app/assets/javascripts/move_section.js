@@ -14,7 +14,7 @@
  * ---  END LICENSE_HEADER BLOCK  ---
 */
 
-$('#show_move_modal').on('click', function(){
+$('.show_move_modal').on('click', function(){
   $('#move_modal').show();
   var id = $(this).data('id');
   // Set the URL for form POST action
