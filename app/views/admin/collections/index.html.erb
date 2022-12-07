@@ -13,6 +13,11 @@ Unless required by applicable law or agreed to in writing, software distributed
   specific language governing permissions and limitations under the License.
 ---  END LICENSE_HEADER BLOCK  ---
 %>
+
+<% unless Avalon::ControlledVocabulary.vocabulary[:units] %>
+  <% raise Avalon::VocabularyNotFound.new "Units vocabulary not found." %>
+<% end %>
+
 <% @page_title = t('collections.title', :application_name => application_name) %>
 
 <% unless @collections.empty? %>
@@ -21,7 +26,7 @@ Unless required by applicable law or agreed to in writing, software distributed
       <h1 class="page-title">My Collections</h1>
     </div>
     <div class="col-xs-6 collection-btn">
-      <%= link_to('<span class="btn btn-primary headline-button">Create Collection</span>'.html_safe, new_admin_collection_path) unless cannot? :create, Admin::Collection %>
+      <%= link_to('<span class="btn btn-primary btn-large">Create Collection</span>'.html_safe, new_admin_collection_path) unless cannot? :create, Admin::Collection %>
     </div>
   </div>
 
@@ -69,7 +74,7 @@ Unless required by applicable law or agreed to in writing, software distributed
     <p>Would you like to create one?</p>
     <div class="whitespace"></div>
     <p>
-      <%= button_tag("Create Collection", class: 'btn btn-primary btn-large', data: {toggle:"modal", target:"#new_collection"}) %>
+      <%= link_to('<span class="btn btn-primary btn-large">Create Collection</span>'.html_safe, new_admin_collection_path) %>
     </p>
     <% else %>
     <p>You'll need to be assigned to one</p>

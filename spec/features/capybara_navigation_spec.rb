@@ -31,12 +31,7 @@ describe 'checks navigation after logging in' do
     expect(page).to have_current_path('/admin/collections')
     expect(page).to have_content('Skip to main content')
     expect(page).to have_link('Selected Items (0)')
-    expect(page).to have_button('Create Collection')
-    expect(page).to have_content('Name')
-    expect(page).to have_content('Description')
-    expect(page).to have_content('Unit')
-    expect(page).to have_content('Default Unit')
-    expect(page).to have_link('Cancel')
+    expect(page).to have_link('Create Collection')
   end
   it 'checks naviagtion to Manage Groups' do
     user = FactoryBot.create(:administrator)

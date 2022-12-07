@@ -102,7 +102,7 @@ class Admin::CollectionsController < ApplicationController
           redirect_to @collection, notice: 'Collection was successfully created.'
         end
         format.json do
-          render json: @collection
+          render json: {id: @collection.id}, status: 200
         end
       end
     else
@@ -110,10 +110,10 @@ class Admin::CollectionsController < ApplicationController
       respond_to do |format|
         format.html do
           flash.now[:error] = @collection.errors.full_messages.to_sentence
+          render action: 'new'
         end
         format.json do
-          flash[:error] = "Failed to create collection #{@collection.name rescue '<unknown>'}: #{@collection.errors.full_messages}"
-          render json: {errors: @collection.errors, flash: flash}
+          render json: { errors: ['Failed to create collection:']+@collection.errors.full_messages}, status: 422
         end
       end
     end
