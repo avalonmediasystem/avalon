@@ -58,3 +58,23 @@ end
 
 # Clear the role map out of the Rails cache so it initializes from the DB
 Rails.cache.delete("RoleMapHash")
+
+ActiveFedora::QueryMethods.module_eval do
+  extend ActiveSupport::Concern
+
+  def accessible_by(ability, action = :index)
+    return spawn if ability.can?(:discover_everything, MediaObject) # Administrator
+
+    permission_types = case action
+      when :index then [:discover, :read, :edit]
+      when :show then [:read, :edit]
+      when :update, :edit, :create, :new, :destroy then [:edit]
+    end
+
+    builder = ::SearchBuilder.new(nil).with_ability(ability).with_discovery_permissions(permission_types)
+    filters = builder.send(:gated_discovery_filters).join(' OR ')
+    rel = spawn.where(filters)
+    builder.avalon_solr_access_filters_logic.map {|filter| rel = rel.where(builder.send(filter)) }
+    rel
+  end
+end

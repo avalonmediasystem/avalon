@@ -8,7 +8,7 @@ require 'resolv-replace'
 Bundler.require(*Rails.groups)
 
 module Avalon
-  VERSION = '7.4.0'
+  VERSION = '7.5.0'
 
   class Application < Rails::Application
     require 'avalon/configuration'
@@ -38,13 +38,13 @@ module Avalon
 
     config.middleware.insert_before 0, Rack::Cors do
       allow do
-        origins '*'
+        origins { |source| true }
         resource '/media_objects/*/manifest*', headers: :any, methods: [:get]
         resource '/master_files/*/thumbnail', headers: :any, methods: [:get]
         resource '/master_files/*/transcript/*/*', headers: :any, methods: [:get]
         resource '/master_files/*/structure.json', headers: :any, methods: [:get, :post, :delete]
         resource '/master_files/*/waveform.json', headers: :any, methods: [:get]
-        resource '/master_files/*/*.m3u8', headers: :any, methods: [:get, :head]
+        resource '/master_files/*/*.m3u8', headers: :any, credentials: true, methods: [:get, :head]
         resource '/timelines/*/manifest.json', headers: :any, methods: [:get, :post]
       end
     end

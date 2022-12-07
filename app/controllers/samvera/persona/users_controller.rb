@@ -1,11 +1,11 @@
 # Copyright 2011-2022, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
-# 
+#
 # You may obtain a copy of the License at
-# 
+#
 # http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software distributed
 #   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
 #   CONDITIONS OF ANY KIND, either express or implied. See the License for the
@@ -52,17 +52,10 @@ module Samvera
       # Filtering
       search_value = params['search']['value']
       @presenter = if search_value.present?
-                     search_role = @presenter.select { |p| p.groups.any? { |g| g.include? search_value } }
-                     search_date = @presenter.select { |p| last_sign_in(p).to_formatted_s(:long_ordinal).include? search_value }
-                     search_status = @presenter.select { |p| user_status(p).downcase.include? search_value.downcase }
                      @presenter.where(%(
                                 username LIKE :search_value OR
-                                email LIKE :search_value OR
-                                provider LIKE :search_value
+                                email LIKE :search_value
                               ), search_value: "%#{search_value}%")
-                               .or(User.where(id: search_role.map(&:id)))
-                               .or(User.where(id: search_date.map(&:id)))
-                               .or(User.where(id: search_status.map(&:id)))
                    else
                      @presenter
                    end
@@ -74,16 +67,12 @@ module Samvera
       sort_column = params['order']['0']['column'].to_i rescue 0
       sort_direction = params['order']['0']['dir'] == 'desc' ? 'desc' : 'asc' rescue 'asc'
       session[:presenter_sort] = [sort_column, sort_direction]
-      if columns[sort_column] != 'entry'
-        @presenter = @presenter.order("lower(#{columns[sort_column].downcase}) #{sort_direction}, #{columns[sort_column].downcase} #{sort_direction}")
-        @presenter = @presenter.offset(params['start']).limit(params['length'])
-      else
-        user_roles = @presenter.collect { |p| [ p.groups, p ] }
-        user_roles.sort_by! { |r| [-r[0].length, r] }
-        @presenter = user_roles.collect { |p| p[1] }
-        @presenter.reverse! if sort_direction == 'desc'
-        @presenter = @presenter.slice(params['start'].to_i, params['length'].to_i)
-      end
+      @presenter = if columns[sort_column] == 'last_sign_in_at'
+                     @presenter.order("#{columns[sort_column].downcase} #{sort_direction}")
+                   elsif columns[sort_column] != 'entry'
+                     @presenter.order("lower(#{columns[sort_column].downcase}) #{sort_direction}, #{columns[sort_column].downcase} #{sort_direction}")
+                   end
+      @presenter = @presenter.offset(params['start']).limit(params['length'])
 
       # Build json response
       response = {
@@ -98,7 +87,7 @@ module Samvera
               view_context.link_to('Edit', main_app.edit_persona_user_path(presenter))
             end
           become_button = view_context.link_to('Become', main_app.impersonate_persona_user_path(presenter), method: :post)
-          delete_button = view_context.link_to('Delete', main_app.persona_user_path(presenter), method: :delete, class: 'btn btn-danger btn-xs action-delete', data: { confirm: "Are you sure you wish to delete the user '#{presenter.email}'? This action is irreversible." })
+          delete_button = view_context.link_to('Delete', main_app.persona_user_path(presenter), method: :delete, class: 'btn btn-danger btn-sm action-delete', data: { confirm: "Are you sure you wish to delete the user '#{presenter.email}'? This action is irreversible." })
           formatted_roles = format_roles(presenter.groups)
           sign_in = last_sign_in(presenter)
           [
@@ -191,7 +180,7 @@ module Samvera
 
     def app_view_path
       my_engine_root = Samvera::Persona::Engine.root.to_s
-      prepend_view_path "#{my_engine_root}/app/views/#{Rails.application.class.parent_name.downcase}"
+      prepend_view_path "#{my_engine_root}/app/views/#{Rails.application.class.module_parent_name.downcase}"
       prepend_view_path Rails.root.join('app', 'views')
     end
 

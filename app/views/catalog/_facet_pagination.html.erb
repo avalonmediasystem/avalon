@@ -14,21 +14,21 @@ Unless required by applicable law or agreed to in writing, software distributed
 ---  END LICENSE_HEADER BLOCK  ---
 %>
 <div class="prev_next_links btn-group">
-  <%= link_to_previous_page @pagination, raw(t('views.pagination.previous')), params: search_state.to_h, param_name: blacklight_config.facet_paginator_class.request_keys[:page], class: 'btn btn-link', data: { ajax_modal: "preserve" } do %>
+  <%= link_to_previous_page @pagination, raw(t('views.pagination.previous')), params: search_state.to_h, param_name: blacklight_config.facet_paginator_class.request_keys[:page], class: 'btn btn-link', data: { blacklight_modal: "preserve" } do %>
     <%= content_tag :span, raw(t('views.pagination.previous')), class: 'disabled btn btn-disabled' %>
   <% end %>
 
-  <%= link_to_next_page @pagination, raw(t('views.pagination.next')), params: search_state.to_h, param_name: blacklight_config.facet_paginator_class.request_keys[:page], class: 'btn btn-link',  data: { ajax_modal: "preserve" } do %>
+  <%= link_to_next_page @pagination, raw(t('views.pagination.next')), params: search_state.to_h, param_name: blacklight_config.facet_paginator_class.request_keys[:page], class: 'btn btn-link',  data: { blacklight_modal: "preserve" } do %>
     <%= content_tag :span, raw(t('views.pagination.next')), class: 'disabled btn btn-disabled' %>
   <% end %>
 </div>
 
 <div class="sort_options btn-group">
   <% if @pagination.sort == 'index' -%>
-    <span class="active az btn btn-outline"><%= t('blacklight.search.facets.sort.index') %></span>
-    <%= link_to(t('blacklight.search.facets.sort.count'), @pagination.params_for_resort_url('count', search_state.to_h), class: "sort_change numeric btn btn-outline", data: { ajax_modal: "preserve" }) %>
+    <span class="active az btn btn-primary"><%= t('blacklight.search.facets.sort.index') %></span>
+    <%= link_to(t('blacklight.search.facets.sort.count'), @pagination.params_for_resort_url('count', search_state.to_h), class: "sort_change numeric btn btn-outline", data: { blacklight_modal: "preserve" }) %>
   <% elsif @pagination.sort == 'count' -%>
-    <%=  link_to(t('blacklight.search.facets.sort.index'), @pagination.params_for_resort_url('index', search_state.to_h), class: "sort_change az btn btn-outline",  data: { ajax_modal: "preserve" }) %>
-    <span class="active numeric btn btn-outline"><%= t('blacklight.search.facets.sort.count') %></span>
+    <%=  link_to(t('blacklight.search.facets.sort.index'), @pagination.params_for_resort_url('index', search_state.to_h), class: "sort_change az btn btn-outline",  data: { blacklight_modal: "preserve" }) %>
+    <span class="active numeric btn btn-primary"><%= t('blacklight.search.facets.sort.count') %></span>
   <% end -%>
 </div>

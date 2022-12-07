@@ -1,11 +1,11 @@
 # Copyright 2011-2022, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
-# 
+#
 # You may obtain a copy of the License at
-# 
+#
 # http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software distributed
 #   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
 #   CONDITIONS OF ANY KIND, either express or implied. See the License for the
@@ -111,6 +111,9 @@ class MediaObject < ActiveFedora::Base
   property :comment, predicate: ::RDF::Vocab::EBUCore.comments, multiple: true do |index|
     index.as :stored_searchable
   end
+  property :lending_period, predicate: ::RDF::Vocab::SCHEMA.eligibleDuration, multiple: false do |index|
+    index.as :stored_sortable
+  end
 
   ordered_aggregation :master_files, class_name: 'MasterFile', through: :list_source
   # ordered_aggregation gives you accessors media_obj.master_files and media_obj.ordered_master_files
@@ -145,6 +148,7 @@ class MediaObject < ActiveFedora::Base
       self.visibility = co.default_visibility
       self.read_users = co.default_read_users.to_a
       self.read_groups = co.default_read_groups.to_a + self.read_groups #Make sure to include any groups added by visibility
+      self.lending_period = co.default_lending_period
     end
   end
 
@@ -279,7 +283,9 @@ class MediaObject < ActiveFedora::Base
       published: published?,
       summary: abstract,
       visibility: visibility,
-      read_groups: read_groups
+      read_groups: read_groups,
+      lending_period: lending_period,
+      lending_status: lending_status,
     }.merge(to_ingest_api_hash(options.fetch(:include_structure, false)))
   end
 
@@ -366,6 +372,28 @@ class MediaObject < ActiveFedora::Base
     "This item is accessible by: #{actors.join(', ')}."
   end
 
+  def lending_status
+    Checkout.active_for_media_object(id).any? ? "checked_out" : "available"
+  end
+
+  def return_time
+    Checkout.active_for_media_object(id).first&.return_time
+  end
+
+  alias_method :'_lending_period', :'lending_period'
+  def lending_period
+    self._lending_period || collection&.default_lending_period
+  end
+
+  def cdl_enabled?
+    collection&.cdl_enabled?
+  end
+
+  def current_checkout(user_id)
+    checkouts = Checkout.active_for_media_object(id)
+    checkouts.select{ |ch| ch.user_id == user_id  }.first
+  end
+
   private
 
     def calculate_duration
@@ -379,5 +407,4 @@ class MediaObject < ActiveFedora::Base
       end
       ips.flatten.compact.uniq || []
     end
-
 end

@@ -26,6 +26,16 @@ Rails.application.routes.draw do
     end
   end
 
+  resources :checkouts, only: [:index, :create, :show, :update, :destroy], :constraints => lambda { |request| Avalon::Configuration.controlled_digital_lending_enabled? } do
+    collection do
+      patch :return_all
+    end
+
+    member do
+      patch :return
+    end
+  end
+
   resources :bookmarks do
     concerns :exportable
 
@@ -197,7 +207,7 @@ Rails.application.routes.draw do
     member do
       patch 'regenerate_access_token'
       post 'manifest', to: 'timelines#manifest_update', constraints: { format: 'json' }
-      get 'manifest', constraints: { format: 'json' }
+      get 'manifest'
     end
     collection do
       post 'duplicate'

@@ -1,11 +1,11 @@
 # Copyright 2011-2022, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
-# 
+#
 # You may obtain a copy of the License at
-# 
+#
 # http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software distributed
 #   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
 #   CONDITIONS OF ANY KIND, either express or implied. See the License for the
@@ -58,7 +58,9 @@ class ApplicationController < ActionController::Base
   end
 
   def store_location
-    store_location_for(:user, request.url)
+    if should_store_return_url?
+      store_location_for(:user, request.url)
+    end
     if request.env["omniauth.params"].present? && request.env["omniauth.params"]["login_popup"].present?
       session[:previous_url] = root_path + "self_closing.html"
     end
@@ -74,7 +76,7 @@ class ApplicationController < ActionController::Base
 
   # Used here and in omniauth_callbacks_controller
   def find_redirect_url(auth_type, lti_group: nil)
-    previous_url = session.delete :previous_url
+    previous_url = session.delete(:previous_url) || session.delete(:user_return_to)
     if params['target_id']
       # Whitelist params that are allowed to be passed through via LTI
       objects_path(params['target_id'], params.permit('t', 'position', 'token'))
@@ -101,6 +103,7 @@ class ApplicationController < ActionController::Base
         sign_in user, event: :authentication
         user_session[:json_api_login] = true
         user_session[:full_login] = false
+        user_session[:virtual_groups] = user.ldap_groups
       else
         render json: {errors: ["Permission denied."]}, status: 403
         return
@@ -159,7 +162,7 @@ class ApplicationController < ActionController::Base
     if request.format == :json
       head :unauthorized
     else
-      session[:previous_url] = request.fullpath unless request.xhr?
+      store_location_for(:user, request.fullpath) if should_store_return_url?
       render '/errors/restricted_pid', status: :unauthorized
     end
   end
@@ -198,7 +201,7 @@ class ApplicationController < ActionController::Base
     if request.format == :json
       head :unauthorized
     else
-      session[:previous_url] = request.fullpath unless request.xhr?
+      store_location_for(:user, request.fullpath) if should_store_return_url?
       render '/errors/restricted_pid', status: :unauthorized
     end
   end
@@ -237,5 +240,9 @@ class ApplicationController < ActionController::Base
       else
         obj
       end
+    end
+
+    def should_store_return_url?
+      !(request.xhr? || request.format != "html" || request.path.start_with?("/users/") || request.path.end_with?("poster") || request.path.end_with?("thumbnail"))
     end
 end

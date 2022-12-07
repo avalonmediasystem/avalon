@@ -1,11 +1,11 @@
 # Copyright 2011-2022, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
-# 
+#
 # You may obtain a copy of the License at
-# 
+#
 # http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software distributed
 #   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
 #   CONDITIONS OF ANY KIND, either express or implied. See the License for the
@@ -58,7 +58,11 @@ class TimelinesController < ApplicationController
     sort_direction = params['order']['0']['dir'] rescue 'asc'
 
     session[:timeline_sort] = [sort_column, sort_direction]
-    @timelines = @timelines.order("lower(#{columns[sort_column].downcase}) #{sort_direction}, #{columns[sort_column].downcase} #{sort_direction}")
+    @timelines = if columns[sort_column] == 'updated_at'
+                   @timelines.order("#{columns[sort_column].downcase} #{sort_direction}")
+                 else
+                   @timelines.order("lower(#{columns[sort_column].downcase}) #{sort_direction}, #{columns[sort_column].downcase} #{sort_direction}")
+                 end
     @timelines = @timelines.offset(params['start']).limit(params['length'])
     response = {
       "draw": params['draw'],
@@ -99,13 +103,13 @@ class TimelinesController < ApplicationController
     authorize! :read, @timeline
     respond_to do |format|
       format.html do
-        url_fragment = "noHeader=true&noFooter=true&noSourceLink=false"
+        url_fragment = "noHeader=true&noFooter=true&noSourceLink=false&noVideo=false"
         if current_user == @timeline.user
-          url_fragment += "&resource=#{Addressable::URI.escape_component(manifest_timeline_url(@timeline, format: :json), '://?=')}"
-          url_fragment += "&callback=#{Addressable::URI.escape_component(manifest_timeline_url(@timeline, format: :json), '://?=')}"
+          url_fragment += "&resource=#{Addressable::URI.escape_component(manifest_timeline_url(@timeline, format: :json), /[:\/?=]/)}"
+          url_fragment += "&callback=#{Addressable::URI.escape_component(manifest_timeline_url(@timeline, format: :json), /[:\/?=]/)}"
         elsif current_user
-          url_fragment += "&resource=#{Addressable::URI.escape_component(manifest_timeline_url(@timeline, format: :json, token: @timeline.access_token), '://?=')}"
-          url_fragment += "&callback=#{Addressable::URI.escape_component(timelines_url, '://?=')}"
+          url_fragment += "&resource=#{Addressable::URI.escape_component(manifest_timeline_url(@timeline, format: :json, token: @timeline.access_token), /[:\/?=]/)}"
+          url_fragment += "&callback=#{Addressable::URI.escape_component(timelines_url, /[:\/?=]/)}"
         end
         @timeliner_iframe_url = timeliner_path + "##{url_fragment}"
       end
@@ -193,12 +197,12 @@ class TimelinesController < ApplicationController
   end
 
   # GET /timelines/1/manifest.json
+  # GET /timelines/1/manifest
   def manifest
     authorize! :read, @timeline
     respond_to do |format|
-      format.json do
-        render json: @timeline.manifest
-      end
+      format.json { render json: @timeline.manifest }
+      format.html { render json: @timeline.manifest }
     end
   end
 

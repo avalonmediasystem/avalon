@@ -92,11 +92,12 @@ class MEJSMarkersHelper {
 
       // Show popover confirmation
       $button.popover({
-        container: '#popover-container-' + $button[0].dataset.markerId,
+        container: '#popover-container-' + markerId,
         content: content,
         sanitize: false,
         html: true,
-        placement: 'top'
+        placement: 'top',
+        trigger: 'focus'
       });
       $button.popover('show');
 

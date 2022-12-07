@@ -1,11 +1,11 @@
 # Copyright 2011-2022, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
-# 
+#
 # You may obtain a copy of the License at
-# 
+#
 # http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software distributed
 #   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
 #   CONDITIONS OF ANY KIND, either express or implied. See the License for the
@@ -62,6 +62,12 @@ class Admin::Collection < ActiveFedora::Base
     index.as ActiveFedora::Indexing::Descriptor.new(:boolean, :stored, :indexed)
   end
   property :identifier, predicate: ::RDF::Vocab::Identifiers.local, multiple: true do |index|
+    index.as :symbol
+  end
+  property :default_lending_period, predicate: ::RDF::Vocab::SCHEMA.eligibleDuration, multiple: false do |index|
+    index.as :stored_sortable
+  end
+  property :cdl_enabled, predicate: Avalon::RDFVocab::Collection.cdl_enabled, multiple: false do |index|
     index.as :symbol
   end
 
@@ -123,6 +129,10 @@ class Admin::Collection < ActiveFedora::Base
     return unless editors.include? user
     self.edit_users -= [user]
     self.inherited_edit_users -= [user]
+  end
+
+  def editors_and_managers
+    edit_users
   end
 
   def depositors
@@ -263,6 +273,21 @@ class Admin::Collection < ActiveFedora::Base
 
   def default_visibility_changed?
     !!@default_visibility_will_change
+  end
+
+  alias_method :'_default_lending_period', :'default_lending_period'
+  def default_lending_period
+    self._default_lending_period || ActiveSupport::Duration.parse(Settings.controlled_digital_lending.default_lending_period).to_i
+  end
+
+  def cdl_enabled?
+    if cdl_enabled.nil?
+      Settings.controlled_digital_lending.collections_enabled
+    elsif cdl_enabled != Settings.controlled_digital_lending.collections_enabled
+      cdl_enabled
+    else
+      Settings.controlled_digital_lending.collections_enabled
+    end
   end
 
   private

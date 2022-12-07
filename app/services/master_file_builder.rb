@@ -1,11 +1,11 @@
 # Copyright 2011-2022, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
-# 
+#
 # You may obtain a copy of the License at
-# 
+#
 # http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software distributed
 #   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
 #   CONDITIONS OF ANY KIND, either express or implied. See the License for the
@@ -34,8 +34,8 @@ module MasterFileBuilder
   def self.from_specs(media_object, specs)
     response = { flash: { error: [] }, master_files: [] }
     specs.each do |spec|
-      unless spec.original_filename.valid_encoding? && spec.original_filename.ascii_only?
-        raise BuildError, 'The file you have uploaded has non-ASCII characters in its name.'
+      unless spec.original_filename.valid_encoding?
+        raise BuildError, 'The file you have uploaded has invalid characters in its name.'
       end
 
       master_file = MasterFile.new()

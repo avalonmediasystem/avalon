@@ -115,7 +115,7 @@ RSpec.configure do |config|
   config.before :suite do
     WebMock.disable_net_connect!(allow: ['localhost', '127.0.0.1', 'fedora', 'fedora-test', 'solr', 'solr-test', 'matterhorn', 'https://chromedriver.storage.googleapis.com'])
     DatabaseCleaner.allow_remote_database_url = true
-    DatabaseCleaner.url_allowlist = ['postgres://postgres:password@db/avalon', 'postgresql://postgres@localhost:5432/postgres']
+    DatabaseCleaner.url_allowlist = ['postgres://postgres:password@db/avalon', 'postgresql://postgres@localhost:5432/postgres', 'postgresql://postgres:password@db-test/avalon']
     DatabaseCleaner.clean_with(:truncation)
     ActiveFedora::Cleaner.clean!
     disable_production_minter!
@@ -187,9 +187,11 @@ RSpec.configure do |config|
   # config.include FactoryBot::Syntax::Methods
   config.include Devise::Test::ControllerHelpers, type: :controller
   config.include ControllerMacros, type: :controller
+  config.include Devise::Test::IntegrationHelpers, type: :request
   config.include Warden::Test::Helpers,type: :feature
   config.include FixtureMacros, type: :controller
   config.include OptionalExample
+  config.include Features::SessionHelpers, type: :feature
 end
 
 FactoryBot::SyntaxRunner.class_eval do

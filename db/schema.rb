@@ -10,14 +10,14 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2022_02_18_184645) do
+ActiveRecord::Schema.define(version: 2022_08_22_170237) do
 
   create_table "active_encode_encode_records", force: :cascade do |t|
     t.string "global_id"
     t.string "state"
     t.string "adapter"
     t.string "title"
-    t.text "raw_object"
+    t.text "raw_object", limit: 16777215
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.text "create_options"
@@ -113,6 +113,16 @@ ActiveRecord::Schema.define(version: 2022_02_18_184645) do
     t.datetime "updated_at", null: false
     t.index ["document_id"], name: "index_bookmarks_on_document_id"
     t.index ["user_id"], name: "index_bookmarks_on_user_id"
+  end
+
+  create_table "checkouts", force: :cascade do |t|
+    t.integer "user_id"
+    t.string "media_object_id"
+    t.datetime "checkout_time"
+    t.datetime "return_time"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["user_id"], name: "index_checkouts_on_user_id"
   end
 
   create_table "courses", force: :cascade do |t|
@@ -269,4 +279,5 @@ ActiveRecord::Schema.define(version: 2022_02_18_184645) do
   end
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "checkouts", "users"
 end

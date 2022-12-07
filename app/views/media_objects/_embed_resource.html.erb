@@ -16,7 +16,9 @@ Unless required by applicable law or agreed to in writing, software distributed
 <% if section=='tab-content' %>
 
     <div class="tab-pane" id="embed-tab">
-      <% if @currentStream.present? %>
+      <% if @media_object.cdl_enabled?%>
+      <p>This item cannot be embedded.</p>
+      <% elsif @currentStream.present? %>
       <p class="muted">Copy the text below to embed this resource</p>
       <textarea class="col-md-12" rows="3" id="embed-part" onClick="this.select();" readonly="readonly"><%= @currentStream.embed_code(MasterFile::EMBED_SIZE[:medium], { urlappend: '/embed' }) %></textarea>
       <% else %>

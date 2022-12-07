@@ -48,6 +48,10 @@ body {
 */
 html {
   font-size: 14px;
+
+  @include media-breakpoint-down(md) {
+    font-size: 12px;
+  }
 }
 
 .alert {
@@ -138,6 +142,12 @@ div.alert-danger {
 .page-title-wrapper {
   h3 {
     margin-top: 0;
+  }
+
+  @include media-breakpoint-down(md) {
+    h1 {
+      font-size: 2rem;
+    }
   }
 }
 
@@ -399,6 +409,12 @@ a[data-trigger='submit'] {
     margin-top: 10px;
     margin-bottom: 10px;
   }
+  
+  @include media-breakpoint-down(sm) {
+    margin-top: 1rem;
+    padding: 0;
+  }
+
 }
 
 .index_title {
@@ -1095,6 +1111,11 @@ h5.card-title {
   padding-top: 5px;
 }
 
+.form-disabled {
+  pointer-events: none;
+  opacity: 0.4;
+}
+
 .fileinput-close {
   padding-top: 5px;
   float: none;
@@ -1167,3 +1188,91 @@ td {
 .irmp--transcript_nav {
   padding: 10px 0 0 0;
 }
+
+/* CDL controls on view page styles */
+.cdl-controls {
+  @include media-breakpoint-down(sm) {
+    margin-top: 1rem;
+  }
+  .remaining-time {
+    display: flex;
+    text-align: center;
+
+    @include media-breakpoint-down(sm) {
+      margin: 0;
+    }
+  }
+
+  .remaining-time p {
+    line-height: 1rem;
+    margin: 0.25rem;
+    text-align: left;
+    @include media-breakpoint-between(sm, md) {
+      padding: 0.75rem 0;
+    }
+  }
+
+  .remaining-time span {
+    color: #fff;
+    margin-left: 0.25rem;
+    padding: 0.15rem 0.25rem;
+    border-radius: 0.15rem;
+    background: $primary;
+    font-size: small;
+    line-height: initial;
+
+    @include media-breakpoint-between(sm, md) {
+      padding: 0.75rem 0.25rem;
+    }
+  }
+
+  #return-btn {
+    @include media-breakpoint-down(sm) {
+      float: right;
+    }
+  }
+}
+
+.checkout {
+  background-color: $dark;
+  color: $white;
+
+  p {
+    position: relative;
+    text-align: center;
+    @include media-breakpoint-down(md) {
+      margin-bottom: 0;
+    }
+  }
+
+  form {
+    width: fit-content;
+    margin: 0 auto;
+  }
+
+  .centered {
+    margin: auto;
+    position: absolute;
+    width: 50%;
+    left: 25%;
+  }
+
+  .centered.video {
+    top: 50%;
+    position: absolute;
+    margin: 0;
+    transform: translateY(-50%);
+  }
+}
+
+.checkout.audio {
+  padding: 1rem;
+  height: 25%;
+}
+
+.checkout.video {
+  padding: 3rem;
+  height: 50%;
+  position: relative;
+}
+/* End of CDL controls on view page styles */

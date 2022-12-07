@@ -7,6 +7,7 @@
     "babel-plugin-transform-react-remove-prop-types": "^0.4.24",
     "cropperjs": "^1.5.5",
     "hls.js": "https://github.com/avalonmediasystem/hls.js#stricter_ts_probing",
+    "moment": "^2.29.4",
     "prop-types": "^15.7.2",
     "react": "^16.8.4",
     "react-bootstrap": "^1.0.0",
@@ -27,21 +28,11 @@
     "webpack-dev-server": "^4.9.1"
   },
   "resolutions": {
-    "elliptic": "^6.5.2",
-    "follow-redirects": "^1.14.9",
-    "fstream": "^1.0.12",
-    "js-yaml": "^3.13.1",
-    "lodash": "^4.17.19",
-    "lodash.template": "^4.5.0",
-    "lodash.mergewith": "^4.6.2",
-    "mixin-deep": "^1.3.2",
-    "node-fetch": "^2.6.7",
-    "serialize-javascript": "^3.1.0",
-    "set-value": "^4.0.1",
-    "tar": "^4.4.19",
-    "acorn": "^6.4.1",
-    "kind-of": "^6.0.3",
-    "dot-prop": "^5.2.0"
+    "glob-parent": "^6.0.2",
+    "unset-value": "^2.0.1",
+    "nth-check": "^2.1.1",
+    "set-value": "^4.1.0",
+    "kind-of": "^6.0.3"
   },
   "scripts": {
     "start-collection-index": "webpack-dev-server --mode development --config config/webpack/collection_index.js --host 0.0.0.0",

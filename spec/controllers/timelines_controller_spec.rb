@@ -1,11 +1,11 @@
 # Copyright 2011-2022, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
-# 
+#
 # You may obtain a copy of the License at
-# 
+#
 # http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software distributed
 #   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
 #   CONDITIONS OF ANY KIND, either express or implied. See the License for the
@@ -81,6 +81,12 @@ RSpec.describe TimelinesController, type: :controller do
           expect(get :show, params: { id: timeline.id }).to be_successful
           expect(get :manifest, params: { id: timeline.id, format: :json }).to be_successful
         end
+        it "should return timeline manifest as id" do
+          expect(get :manifest, params: { id: timeline.id }).to be_successful
+        end
+        it "should return timeline manifest as URI" do
+          expect(get :manifest, params: { id: timeline.id }, format: :json).to be_successful
+        end
       end
       context 'with a private timeline' do
         it "should NOT return the timeline view page" do
@@ -144,8 +150,8 @@ RSpec.describe TimelinesController, type: :controller do
     before :each do
       FactoryBot.reload
       FactoryBot.create(:timeline, title: 'aardvark', description: 'Aardvark lorem ipsum.', user: user)
-      FactoryBot.create(:timeline, title: 'zzzebra', description: 'Zzzebra lorem ipsum.', user: user)
       FactoryBot.create_list(:timeline, 9, user: user)
+      FactoryBot.create(:timeline, title: 'zzzebra', description: 'Zzzebra lorem ipsum.', user: user)
     end
 
     context 'paging' do
@@ -192,12 +198,24 @@ RSpec.describe TimelinesController, type: :controller do
         post :paged_index, format: 'json', params: common_params.merge(order: { '0': { column: 0, dir: 'asc' } }), session: valid_session
         parsed_response = JSON.parse(response.body)
         expect(parsed_response['data'][0][0]).to eq("<a title=\"#{Timeline.all[0].description}\" href=\"/timelines/1\">aardvark</a>")
-        expect(parsed_response['data'][10][0]).to eq("<a title=\"#{Timeline.all[1].description}\" href=\"/timelines/2\">zzzebra</a>")
+        expect(parsed_response['data'][10][0]).to eq("<a title=\"#{Timeline.all[10].description}\" href=\"/timelines/11\">zzzebra</a>")
       end
       it "returns results sorted by title descending" do
         post :paged_index, format: 'json', params: common_params.merge(order: { '0': { column: 0, dir: 'desc' } }), session: valid_session
         parsed_response = JSON.parse(response.body)
-        expect(parsed_response['data'][0][0]).to eq("<a title=\"#{Timeline.all[1].description}\" href=\"/timelines/2\">zzzebra</a>")
+        expect(parsed_response['data'][0][0]).to eq("<a title=\"#{Timeline.all[10].description}\" href=\"/timelines/11\">zzzebra</a>")
+        expect(parsed_response['data'][10][0]).to eq("<a title=\"#{Timeline.all[0].description}\" href=\"/timelines/1\">aardvark</a>")
+      end
+      it "returns results sorted by Updated ascending" do
+        post :paged_index, format: 'json', params: common_params.merge(order: { '0': { column: 3, dir: 'asc' } }), session: valid_session
+        parsed_response = JSON.parse(response.body)
+        expect(parsed_response['data'][0][0]).to eq("<a title=\"#{Timeline.all[0].description}\" href=\"/timelines/1\">aardvark</a>")
+        expect(parsed_response['data'][10][0]).to eq("<a title=\"#{Timeline.all[10].description}\" href=\"/timelines/11\">zzzebra</a>")
+      end
+      it "returns results sorted by Updated descending" do
+        post :paged_index, format: 'json', params: common_params.merge(order: { '0': { column: 3, dir: 'desc' } }), session: valid_session
+        parsed_response = JSON.parse(response.body)
+        expect(parsed_response['data'][0][0]).to eq("<a title=\"#{Timeline.all[10].description}\" href=\"/timelines/11\">zzzebra</a>")
         expect(parsed_response['data'][10][0]).to eq("<a title=\"#{Timeline.all[0].description}\" href=\"/timelines/1\">aardvark</a>")
       end
     end
@@ -208,6 +226,30 @@ RSpec.describe TimelinesController, type: :controller do
       timeline = Timeline.create! valid_attributes
       get :show, params: {id: timeline.to_param}, session: valid_session
       expect(response).to be_successful
+    end
+
+    context 'with token auth' do
+      let(:timeline) { FactoryBot.create(:timeline, :with_access_token) }
+      let(:encoded_manifest_url) do
+        [controller.default_url_options[:protocol],
+        "%3A%2F%2F",
+        controller.default_url_options[:host],
+        "%2Ftimelines%2F",
+        timeline.id,
+        "%2Fmanifest.json%3Ftoken%3D",
+        timeline.access_token].join
+      end
+
+      before do
+        user
+      end
+
+      render_views
+
+      it "correctly encodes tokenized timeline urls" do
+        get :show, params: {id: timeline.to_param, token: timeline.access_token}
+        expect(response.body).to include "resource=#{encoded_manifest_url}"
+      end
     end
 
     context "with format json" do

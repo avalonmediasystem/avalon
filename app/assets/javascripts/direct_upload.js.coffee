@@ -18,6 +18,7 @@ $ ->
     form = $(file_input.parents('form:first'))
     submit_button = form.find('input[type="submit"], *[data-trigger="submit"]')
     submit_button.on 'click', ->
+      form.addClass('form-disabled')
       $('.directupload input:file').fileupload 'send',
         files: $('.directupload input:file').prop('files')
       return false
@@ -37,7 +38,6 @@ $ ->
         progress = parseInt(data.loaded / data.total * 100, 10)
         progress_bar.css('width', "#{progress}%")
       start: (e)->
-        submit_button.prop('disabled', true)
         progress_bar.
           css('background', 'green').
           css('display', 'block').
@@ -45,7 +45,7 @@ $ ->
           css('padding', '7px').
           text("Loading...")
       done: (e, data)->
-        submit_button.prop('disabled', false)
+        form.removeClass('form-disabled')
         progress_bar.text("Uploading done")
 
         # extract key and generate URL from response
@@ -61,7 +61,7 @@ $ ->
         file_input.replaceWith(input)
         form.submit()
       fail: (e, data)->
-        submit_button.prop('disabled', false)
+        form.removeClass('form-disabled')
         progress_bar.
           css("background", "red").
           text("Failed")

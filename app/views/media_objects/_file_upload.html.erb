@@ -73,7 +73,7 @@ Unless required by applicable law or agreed to in writing, software distributed
                           method: :delete %>
                     </span>
                     <span>
-                      <button id="show_move_modal" class="btn btn-sm btn-outline" data-id="<%= section.id %>"
+                      <button class="btn btn-sm btn-outline show_move_modal" data-id="<%= section.id %>"
                         data-toggle="modal" data-target="#move_modal">
                         Move
                       </button>
@@ -149,7 +149,7 @@ Unless required by applicable law or agreed to in writing, software distributed
                       <input type="button" class="btn btn-sm btn-primary" onclick="$('#captions_<%= section.id %> .filedata').click();"
                         value="<%= section.captions.present? ? 'Replace' : 'Upload' %>" />
                       <% if section.captions.present? %>
-                        <%= link_to("Remove", delete_captions_master_file_path(section.id), title: 'Remove', method: :delete, class: "btn btn-danger btn-sm") %>
+                        <%= link_to("Remove", delete_captions_master_file_path(section.id), title: 'Remove', method: :delete, class: "btn btn-danger btn-sm btn-confirmation") %>
                       <% end %>
                     <% end %>
                     <% if section.captions.present? %>

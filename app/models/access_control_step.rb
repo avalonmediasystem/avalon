@@ -1,11 +1,11 @@
 # Copyright 2011-2022, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
-# 
+#
 # You may obtain a copy of the License at
-# 
+#
 # http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software distributed
 #   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
 #   CONDITIONS OF ANY KIND, either express or implied. See the License for the
@@ -94,10 +94,20 @@ class AccessControlStep < Avalon::Workflow::BasicStep
       media_object.governing_policies.delete( lease )
       lease.destroy
     end
+
     unless limited_access_submit
       media_object.visibility = context[:visibility] unless context[:visibility].blank?
       media_object.hidden = context[:hidden] == "1"
+      if media_object.cdl_enabled?
+        lending_period = build_lending_period(context)
+        if lending_period.positive?
+          media_object.lending_period = lending_period
+        elsif lending_period.zero?
+          context[:error] = "Lending period must be greater than 0."
+        end
+      end
     end
+
     media_object.save!
 
     #Setup these values in the context because the edit partial is being rendered without running the controller's #edit (VOV-2978)
@@ -112,6 +122,23 @@ class AccessControlStep < Avalon::Workflow::BasicStep
     context[:ip_leases] = media_object.leases('ip')
     context[:addable_groups] = Admin::Group.non_system_groups.reject { |g| context[:groups].include? g.name }
     context[:addable_courses] = Course.all.reject { |c| context[:virtual_groups].include? c.context_id }
+    context[:lending_period] = media_object.lending_period
     context
   end
+
+  private
+
+    def build_lending_period(context)
+      lending_period = 0
+      errors = []
+      d = context["add_lending_period_days"].to_i
+      h = context["add_lending_period_hours"].to_i
+      d.negative? ? errors.append("Lending period days needs to be a positive integer.") : lending_period += d.days
+      h.negative? ? errors.append("Lending period hours needs to be a positive integer.") : lending_period += h.hours
+
+      context[:error] = errors.join(' ') if errors.present?
+      lending_period.to_i
+    rescue
+      0
+    end
 end

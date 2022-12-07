@@ -270,7 +270,7 @@ class MasterFile < ActiveFedora::Base
       options[:outputs] = [{ label: 'high', url: input }]
     end
 
-    ActiveEncodeJobs::CreateEncodeJob.perform_now(input, id, options)
+    ActiveEncodeJobs::CreateEncodeJob.perform_later(input, id, options)
   end
 
   def input_path
@@ -512,7 +512,7 @@ class MasterFile < ActiveFedora::Base
 
   def to_solr *args
     super.tap do |solr_doc|
-      solr_doc['file_size_ltsi'] = file_size
+      solr_doc['file_size_ltsi'] = file_size if file_size.present?
       solr_doc['has_captions?_bs'] = has_captions?
       solr_doc['has_waveform?_bs'] = has_waveform?
       solr_doc['has_poster?_bs'] = has_poster?
@@ -559,30 +559,33 @@ class MasterFile < ActiveFedora::Base
     options[:offset] ||= 2000
 
     source = FileLocator.new(working_file_path&.first || file_location)
-    options[:master] = true
-    if source.source.nil? or (source.uri.scheme == 's3' and not source.exist?)
+    options[:non_temp_file] = true
+    if source.source.blank? or (source.uri.scheme == 's3' and not source.exist?)
       source = FileLocator.new(self.derivatives.where(quality_ssi: 'high').first.absolute_location)
-      options[:master] = false
+      options[:non_temp_file] = true
     end
     response = { source: source&.location }.merge(options)
     return response if response[:source].to_s =~ %r(^https?://)
 
     unless File.exists?(response[:source])
       Rails.logger.warn("Masterfile `#{file_location}` not found. Extracting via HLS.")
-      begin
-        playlist_url = self.stream_details[:stream_hls].find { |d| d[:quality] == 'high' }[:url]
-        secure_url = SecurityHandler.secure_url(playlist_url, target: self.id)
-        playlist = Avalon::M3U8Reader.read(secure_url)
-        details = playlist.at(options[:offset])
-
-        # Fixes https://github.com/avalonmediasystem/avalon/issues/3474
-        target_location = File.basename(details[:location]).split('?')[0]
-        target = File.join(Dir.tmpdir, target_location)
-        File.open(target,'wb') { |f| open(details[:location]) { |io| f.write(io.read) } }
-        response = { source: target, offset: details[:offset], master: false }
-      end
+      hls_temp_file, new_offset = create_frame_source_hls_temp_file
+      response = { source: hls_temp_file, offset: new_offset, non_temp_file: false }
     end
     return response
+  end
+
+  def create_frame_source_hls_temp_file
+    playlist_url = self.stream_details[:stream_hls].find { |d| d[:quality] == 'high' }[:url]
+    secure_url = SecurityHandler.secure_url(playlist_url, target: self.id)
+    playlist = Avalon::M3U8Reader.read(secure_url)
+    details = playlist.at(options[:offset])
+
+    # Fixes https://github.com/avalonmediasystem/avalon/issues/3474
+    target_location = File.basename(details[:location]).split('?')[0]
+    target = File.join(Dir.tmpdir, target_location)
+    File.open(target,'wb') { |f| open(details[:location]) { |io| f.write(io.read) } }
+    return target, details[:offset]
   end
 
   def extract_frame(options={})
@@ -616,12 +619,12 @@ class MasterFile < ActiveFedora::Base
         File.symlink(frame_source[:source],file_source)
       end
       begin
-        options = ffmpeg_frame_options(file_source, jpeg.path, frame_source[:offset], new_width, new_height, frame_source[:master], headers)
+        options = ffmpeg_frame_options(file_source, jpeg.path, frame_source[:offset], new_width, new_height, frame_source[:non_temp_file], headers)
         Kernel.system(ffmpeg, *options)
         jpeg.rewind
         data = jpeg.read
         Rails.logger.debug("Generated #{data.length} bytes of data")
-        if (!frame_source[:master]) and data.length == 0
+        if (!frame_source[:non_temp_file]) and data.length == 0
           # -ss before -i is faster, but fails on some files.
           Rails.logger.warn("No data received. Swapping -ss and -i options")
           options[0..3] = options.values_at(2,3,0,1)
@@ -633,7 +636,7 @@ class MasterFile < ActiveFedora::Base
         data
       ensure
         File.unlink file_source unless file_source.match? %r{https?://}
-        File.unlink frame_source[:source] unless frame_source[:master] or frame_source[:source].match? %r{https?://}
+        File.unlink frame_source[:source] unless frame_source[:non_temp_file] or frame_source[:source].match? %r{https?://}
         File.unlink jpeg
       end
     end

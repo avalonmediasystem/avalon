@@ -1,11 +1,11 @@
 # Copyright 2011-2022, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
-# 
+#
 # You may obtain a copy of the License at
-# 
+#
 # http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software distributed
 #   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
 #   CONDITIONS OF ANY KIND, either express or implied. See the License for the
@@ -56,6 +56,7 @@ class Admin::CollectionsController < ApplicationController
         @virtual_groups = @collection.default_virtual_read_groups
         @ip_groups = @collection.default_ip_read_groups
         @visibility = @collection.default_visibility
+        @default_lending_period = @collection.default_lending_period
 
         @addable_groups = Admin::Group.non_system_groups.reject { |g| @groups.include? g.name }
         @addable_courses = Course.all.reject { |c| @virtual_groups.include? c.context_id }
@@ -257,6 +258,12 @@ class Admin::CollectionsController < ApplicationController
     end
   end
 
+  rescue_from Avalon::VocabularyNotFound do |exception|
+    support_email = Settings.email.support
+    notice_text = I18n.t('errors.controlled_vocabulary_error') % [exception.message, support_email, support_email]
+    redirect_to root_path, flash: { error: notice_text.html_safe }
+  end
+
   private
 
   def update_access(collection, params)
@@ -298,6 +305,28 @@ class Admin::CollectionsController < ApplicationController
 
     collection.default_visibility = params[:visibility] unless params[:visibility].blank?
     collection.default_hidden = params[:hidden] == "1"
+    collection.cdl_enabled = params[:cdl] == "1"
+    if collection.cdl_enabled?
+      lending_period = build_default_lending_period(collection)
+      if lending_period.positive?
+        collection.default_lending_period = lending_period
+      elsif lending_period.zero? && params["add_lending_period_days"] && params["add_lending_period_hours"]
+        flash[:error] = "Lending period must be greater than 0."
+      end
+    end
+  end
+
+  def build_default_lending_period(collection)
+    lending_period = 0
+    d = params["add_lending_period_days"].to_i
+    h = params["add_lending_period_hours"].to_i
+    d.negative? ? collection.errors.add(:lending_period, "days needs to be a positive integer.") : lending_period += d.days
+    h.negative? ? collection.errors.add(:lending_period, "hours needs to be a positive integer.") : lending_period += h.hours
+
+    flash[:error] = collection.errors.full_messages.join(' ') if collection.errors.present?
+    lending_period.to_i
+  rescue
+    0
   end
 
   def apply_access(collection, params)

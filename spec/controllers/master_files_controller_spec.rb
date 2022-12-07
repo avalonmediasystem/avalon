@@ -1,11 +1,11 @@
 # Copyright 2011-2022, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
-# 
+#
 # You may obtain a copy of the License at
-# 
+#
 # http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software distributed
 #   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
 #   CONDITIONS OF ANY KIND, either express or implied. See the License for the
@@ -68,12 +68,25 @@ describe MasterFilesController do
       end
     end
 
-    context "cannot upload a file with a non-ascii character in the filename" do
-      it "provides a warning about the invalid filename" do
+    context "can upload a file with a non-ascii character in the filename" do
+      it "does not provide a warning about an invalid filename" do
         request.env["HTTP_REFERER"] = "/"
 
         file = fixture_file_upload('/videoshort.mp4', 'video/mp4')
         allow(file).to receive(:original_filename).and_return("videoshort_é.mp4")
+
+        expect { post :create, params: { Filedata: [file], original: 'any', container_id: media_object.id } }.to change { MasterFile.count }
+
+        expect(flash[:error]).to be_nil
+      end
+    end
+
+    context "does not upload a file with improperly encoded filename" do
+      it "provides a warning about an invalid filename" do
+        request.env["HTTP_REFERER"] = "/"
+
+        file = fixture_file_upload('/videoshort.mp4', 'video/mp4')
+        allow(file).to receive(:original_filename).and_return("videoshort_é.mp4".encode('iso-8859-1'))
 
         expect { post :create, params: { Filedata: [file], original: 'any', container_id: media_object.id } }.not_to change { MasterFile.count }
 
@@ -228,17 +241,12 @@ describe MasterFilesController do
   end
 
   describe "#embed" do
-    let!(:master_file) { FactoryBot.create(:master_file) }
-    let(:media_object) do
-      instance_double('MediaObject', title: 'Media Object', id: 'avalon:1234',
-                                     ordered_master_files: [master_file], master_file_ids: [master_file.id])
-    end
+    let!(:master_file) { FactoryBot.create(:master_file, :with_media_object) }
+    let(:media_object) { master_file.media_object }
 
     render_views
 
     before do
-      allow_any_instance_of(MasterFile).to receive(:media_object).and_return(media_object)
-      allow_any_instance_of(MasterFile).to receive(:media_object_id).and_return(media_object.id)
       disableCanCan!
     end
 
@@ -248,6 +256,22 @@ describe MasterFilesController do
 
     it "renders the Google Analytics partial" do
       expect(get(:embed, params: { id: master_file.id })).to render_template('modules/_google_analytics')
+    end
+
+    context 'with cdl enabled' do
+      before { allow(Settings.controlled_digital_lending).to receive(:enable).and_return(true) }
+      before { allow(Settings.controlled_digital_lending).to receive(:collections_enabled).and_return(true) }
+      it "renders the cdl_embed partial" do
+        expect(get(:embed, params: { id: master_file.id })).to render_template('master_files/_cdl_embed')
+      end
+    end
+
+    context 'with cdl disabled' do
+      before { allow(Settings.controlled_digital_lending).to receive(:enable).and_return(true) }
+      before { allow(Settings.controlled_digital_lending).to receive(:collections_enabled).and_return(false) }
+      it "renders the player" do
+        expect(get(:embed, params: { id: master_file.id })).to render_template('master_files/_player')
+      end
     end
 
     context 'with fedora 3 pid' do
@@ -664,10 +688,10 @@ describe MasterFilesController do
 
   describe "#update" do
     let(:master_file) { FactoryBot.create(:master_file, :with_media_object) }
-    subject { put('update', params: { id: master_file.id, 
-                                      master_file: { title: "New label", 
-                                                    poster_offset: "00:00:03", 
-                                                    date_digitized: "2020-08-27", 
+    subject { put('update', params: { id: master_file.id,
+                                      master_file: { title: "New label",
+                                                    poster_offset: "00:00:03",
+                                                    date_digitized: "2020-08-27",
                                                     permalink: "https://perma.link" }})}
 
     before do

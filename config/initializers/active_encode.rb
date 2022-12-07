@@ -3,6 +3,7 @@ Rails.application.config.to_prepare do
   case Settings.encoding.engine_adapter.to_sym
   when :ffmpeg
     MasterFile.default_encoder_class = FfmpegEncode
+    ActiveEncode::EngineAdapters::FfmpegAdapter.completeness_threshold = 95
   when :matterhorn
     Rubyhorn.init
   when :elastic_transcoder

@@ -13,38 +13,24 @@ Unless required by applicable law or agreed to in writing, software distributed
   specific language governing permissions and limitations under the License.
 ---  END LICENSE_HEADER BLOCK  ---
 %>
+
+<%= render "devise/shared/error_messages", resource: resource %>
+
 <div class="omniauth-form container">
   <h3 align='center'>Sign up</h3>
 
-  <%= form_for(resource, as: resource_name, url: registration_path(resource_name)) do |f| %>
-    <%= devise_error_messages! %>
+  <%= bootstrap_form_for(resource, as: resource_name, url: registration_path(resource_name), inline_errors: false) do |f| %>
+    <%= f.text_field :username, label_class: 'font-weight-bold', autofocus: true, autocomplete: 'username' %>
+    <%= f.email_field :email, label_class: 'font-weight-bold', autofocus: true, autocomplete: 'email' %>
 
-    <div class="form-group">
-      <%= f.label :username, class: 'font-weight-bold' %><br />
-      <%= f.text_field :username, autofocus: true, autocomplete: 'username' %>
-    </div>
-
-    <div class="form-group">
-      <%= f.label :email, class: 'font-weight-bold' %><br />
-      <%= f.email_field :email, autofocus: true, autocomplete: "email" %>
-    </div>
-
-    <div class="form-group">
-      <%= f.label :password, class: 'font-weight-bold' %>
-      <% if @minimum_password_length %>
-        <em>(<%= @minimum_password_length %> characters minimum)</em>
-      <% end %><br />
-      <%= f.password_field :password, autocomplete: "off" %>
-    </div>
-
-    <div class="form-group">
-      <%= f.label :password_confirmation, class: 'font-weight-bold' %><br />
-      <%= f.password_field :password_confirmation, autocomplete: "off" %>
-    </div>
-
-    <div class="actions">
-      <%= f.submit "Sign up", class: 'btn btn-primary' %>
-    </div>
+    <% if @minimum_password_length %>
+      <%= f.password_field :password, label_class: 'font-weight-bold', help: "#{@minimum_password_length} characters minimum", autocomplete: 'off' %>
+    <% else %>
+      <%= f.password_field :password, label_class: 'font-weight-bold', autocomplete: 'off' %>
+    <% end %>
+    
+    <%= f.password_field :password_confirmation, label_class: 'font-weight-bold', autocomplete: 'off' %>
+    <%= f.submit "Sign up", class: 'btn btn-primary' %>
   <% end %>
 
   <%= render "devise/shared/links" %>

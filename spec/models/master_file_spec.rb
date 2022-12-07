@@ -615,6 +615,35 @@ describe MasterFile do
     end
   end
 
+  describe 'find_frame_source' do
+    context 'when master_file has been deleted' do
+      subject(:video_master_file) { FactoryBot.create(:master_file, :with_media_object, :with_derivative, display_aspect_ratio: '1', file_location: '') }
+      let(:source) { video_master_file.send(:find_frame_source) }
+
+      context 'when derivatives are accessible' do
+        let(:high_derivative_locator) { FileLocator.new(video_master_file.derivatives.where(quality_ssi: 'high').first.absolute_location) }
+
+        it 'uses high derivative' do
+          expect(File).to receive(:exists?).with(high_derivative_locator.location).and_return(true)
+          expect(source[:source]).to eq high_derivative_locator.location
+          expect(source[:non_temp_file]).to eq true
+        end
+      end
+
+      context 'when derivatives are not accessible' do
+        let(:high_derivative_locator) { FileLocator.new(video_master_file.derivatives.where(quality_ssi: 'high').first.absolute_location) }
+        let(:hls_temp_file) { "/tmp/temp_segment.ts" }
+
+        it 'falls back to HLS' do
+          expect(video_master_file).to receive(:create_frame_source_hls_temp_file).and_return(hls_temp_file)
+          expect(File).to receive(:exists?).with(high_derivative_locator.location).and_return(false)
+          expect(source[:source]).to eq '/tmp/temp_segment.ts'
+          expect(source[:non_temp_file]).to eq false
+        end
+      end
+    end
+  end
+
   describe '#ffmpeg_frame_options' do
     subject { FactoryBot.create(:master_file, :with_media_object, :with_derivative, display_aspect_ratio: '1') }
 

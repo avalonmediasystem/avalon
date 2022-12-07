@@ -13,6 +13,10 @@ Unless required by applicable law or agreed to in writing, software distributed
   specific language governing permissions and limitations under the License.
 ---  END LICENSE_HEADER BLOCK  ---
 %>
+<% unless ModsDocument::IDENTIFIER_TYPES && ModsDocument::NOTE_TYPES && ModsDocument::RIGHTS_STATEMENTS %>
+  <% raise Avalon::VocabularyNotFound.new "Rights statements, Identifier types, or Note types vocabulary not found." %>
+<% end %>
+
 <div id="resource_description_content">
   <p class="text-muted">Fields followed by an asterisk (*) are required.</p>
   <%= form_for @media_object, html: { class: 'form-vertical', id: 'resource-description' } do |form| %>

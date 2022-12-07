@@ -1,11 +1,11 @@
 # Copyright 2011-2022, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
-# 
+#
 # You may obtain a copy of the License at
-# 
+#
 # http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software distributed
 #   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
 #   CONDITIONS OF ANY KIND, either express or implied. See the License for the
@@ -341,6 +341,16 @@ describe Admin::Collection do
         expect(collection.inherited_edit_users).not_to include(user.user_key)
       end
     end
+    describe "#editors_and_managers" do
+      it "should return all collection editors and managers" do
+        collection.edit_users = [user.user_key, "pdinh"]
+        allow(Avalon::RoleControls).to receive("users").with("manager").and_return([user.user_key, "atomical"])
+        allow(Avalon::RoleControls).to receive("users").with("administrator").and_return([])
+        expect(collection.editors_and_managers).to include(collection.editors.first)
+        expect(collection.editors_and_managers).to include(collection.managers.first)
+        expect(collection.editors_and_managers).not_to include("atomical")
+      end
+    end
   end
 
   describe "depositors" do
@@ -587,7 +597,7 @@ describe Admin::Collection do
       Settings.dropbox.path = "s3://#{bucket}/dropbox"
     end
 
-    it "should be able to handle special S3 avoidable characters and create object" do   
+    it "should be able to handle special S3 avoidable characters and create object" do
       remote_object = double(key: corrected_collection_name, bucket_name: bucket, exists?: false)
       allow(Aws::S3::Client).to receive(:new).and_return(my_client)
       allow(Aws::S3::Object).to receive(:new).and_return(remote_object)
@@ -599,6 +609,51 @@ describe Admin::Collection do
 
     after do
       Settings.dropbox.path = old_path
+    end
+  end
+
+  describe 'default_lending_period' do
+    context 'a custom lending period has not been set' do
+      it 'sets the lending period equal to the system default' do
+        expect(collection.default_lending_period).to eq ActiveSupport::Duration.parse(Settings.controlled_digital_lending.default_lending_period).to_i
+      end
+    end
+    context 'a custom lending period has been set' do
+      let(:collection) { FactoryBot.create(:collection, default_lending_period: 86400) }
+      it 'leaves the lending period equal to the custom value' do
+        expect(collection.default_lending_period).to eq 86400
+      end
+    end
+  end
+
+  describe 'cdl_enabled' do
+    context 'collections disabled at the application level' do
+      before { allow(Settings.controlled_digital_lending).to receive(:collections_enabled).and_return(false) }
+      it 'sets collection cdl to be disabled by default' do
+        expect(collection.cdl_enabled?).to be false
+      end
+      context 'turned on for collection' do
+        let(:collection2) { FactoryBot.create(:collection) }
+        it 'does not affect other collections' do
+          collection.cdl_enabled = true
+          expect(collection.cdl_enabled?).to be true
+          expect(collection2.cdl_enabled?).to be false
+        end
+      end
+    end
+    context 'collections enabled at the application level' do
+      before { allow(Settings.controlled_digital_lending).to receive(:collections_enabled).and_return(true) }
+      it 'sets collection cdl to be enabled by default' do
+        expect(collection.cdl_enabled?).to be true
+      end
+      context 'turned off for collection' do
+        let(:collection2) { FactoryBot.create(:collection) }
+        it 'does not affect other collections' do
+          collection.cdl_enabled = false
+          expect(collection.cdl_enabled?).to be false
+          expect(collection2.cdl_enabled?).to be true
+        end
+      end
     end
   end
 end

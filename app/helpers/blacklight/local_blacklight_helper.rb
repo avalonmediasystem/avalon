@@ -86,4 +86,14 @@ module Blacklight::LocalBlacklightHelper
     classes << "row"
     classes.join(' ')
   end
+
+  # Override of blacklight for classes used for main content of Blacklight page
+  def main_content_classes
+    'col-sm-12 col-md-8'
+  end
+
+  # Override of blacklight for classes used for sidebar content of Blacklight page
+  def sidebar_classes
+    'page-sidebar col-sm-12 col-md-4'
+  end
 end

@@ -1,11 +1,11 @@
 # Copyright 2011-2022, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
-# 
+#
 # You may obtain a copy of the License at
-# 
+#
 # http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software distributed
 #   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
 #   CONDITIONS OF ANY KIND, either express or implied. See the License for the
@@ -17,8 +17,12 @@ class Ability
   include Hydra::Ability
   include Hydra::MultiplePolicyAwareAbility
 
-  self.ability_logic += [ :playlist_permissions, :playlist_item_permissions, :marker_permissions, :encode_dashboard_permissions ]
-  self.ability_logic += [ :timeline_permissions ]
+  self.ability_logic += [:playlist_permissions,
+                         :playlist_item_permissions,
+                         :marker_permissions,
+                         :encode_dashboard_permissions,
+                         :timeline_permissions,
+                         :checkout_permissions]
 
   def encode_dashboard_permissions
     can :read, :encode_dashboard if is_administrator?
@@ -75,7 +79,7 @@ class Ability
       cannot :read, Admin::Collection unless (full_login? || is_api_request?)
 
       if full_login? || is_api_request?
-        can :read, Admin::Collection do |collection|
+        can [:read, :items], Admin::Collection do |collection|
           is_member_of?(collection)
         end
 
@@ -217,6 +221,19 @@ class Ability
     end
   end
 
+  def checkout_permissions
+    if @user.id.present?
+      can :create, Checkout do |checkout|
+        checkout.user == @user && can?(:read, checkout.media_object)
+      end
+      can :return, Checkout, user: @user
+      can :return_all, Checkout, user: @user
+      can :read, Checkout, user: @user
+      can :update, Checkout, user: @user
+      can :destroy, Checkout, user: @user
+    end
+  end
+
   def is_administrator?
     @user_groups.include?("administrator")
   end
@@ -228,7 +245,7 @@ class Ability
 
   def is_editor_of?(collection)
      is_administrator? ||
-       @user.in?(collection.managers, collection.editors)
+       @user.in?(collection.editors_and_managers)
   end
 
   def is_member_of_any_collection?
