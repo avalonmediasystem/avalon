@@ -99,15 +99,15 @@ Unless required by applicable law or agreed to in writing, software distributed
 
 <% @masterFiles.each_with_index do |section, index| %>
 <% default_structure="<Item label='#{html_escape(stream_label_for(section))}'></Item>" %>
-<div id="advanced_edit_structure_<%= index %>" class="structure_edit modal fade" data-backdrop="false"
+<div id="advanced_edit_structure_<%= index %>" class="structure_edit modal fade" data-backdrop="static"
   data-submit_url="<%= attach_structure_master_file_path(section.id) %>">
-  <div class="modal-dialog modal-lg">
+  <div class="modal-dialog modal-xl" style="width:65%">
     <div class="modal-content col-md-12">
       <div class="modal-header">
         <h4 class="modal-title">Advanced Edit Structure</h4>
         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
       </div>
-      <div class="modal-body structure_edit col-md-12" style="height:480px">
+      <div class="modal-body structure_edit col-md-12" style="height:40vh">
         <textarea rows=20 class="col-md-12 original_textarea" id="structure_<%= index %>"
           style="visibility:hidden"><%= section.structuralMetadata.valid? ? section.structuralMetadata.to_xml : default_structure %></textarea>
       </div>
