@@ -97,10 +97,25 @@ class Admin::CollectionsController < ApplicationController
           subject: "New collection: #{@collection.name}"
         ).deliver_later
       end
-      render json: {id: @collection.id}, status: 200
+      respond_to do |format|
+        format.html do
+          redirect_to @collection, notice: 'Collection was successfully created.'
+        end
+        format.json do
+          render json: {id: @collection.id}, status: 200
+        end
+      end
     else
       logger.warn "Failed to create collection #{@collection.name rescue '<unknown>'}: #{@collection.errors.full_messages}"
-      render json: {errors: ['Failed to create collection:']+@collection.errors.full_messages}, status: 422
+      respond_to do |format|
+        format.html do
+          flash.now[:error] = @collection.errors.full_messages.to_sentence
+          render action: 'new'
+        end
+        format.json do
+          render json: { errors: ['Failed to create collection:']+@collection.errors.full_messages}, status: 422
+        end
+      end
     end
   end
 
