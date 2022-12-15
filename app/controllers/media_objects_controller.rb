@@ -321,7 +321,7 @@ class MediaObjectsController < ApplicationController
     mos = MediaObject.accessible_by(current_ability, :index)
     respond_to do |format|
       format.json {
-        paginate json: mos.to_a.collect{|mo| mo.as_json(include_structure: params[:include_structure] == "true") }
+        paginate json: mos.to_a.collect { |mo| mo.as_json(include_structure: params[:include_structure] == "true") }
       }
     end
   end
