@@ -57,7 +57,7 @@ class MasterFile < ActiveFedora::Base
   property :title, predicate: ::RDF::Vocab::EBUCore.title, multiple: false do |index|
     index.as :stored_searchable
   end
-  property :file_location, predicate: ::RDF::Vocab::EBUCore.locator, multiple: false do |index|
+  property :file_location, predicate: ::RDF::Vocab::EBUCore.Locator, multiple: false do |index|
     index.as :stored_sortable
   end
   property :file_checksum, predicate: ::RDF::Vocab::NFO.hashValue, multiple: false do |index|
