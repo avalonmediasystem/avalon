@@ -31,7 +31,7 @@ jobs:
     parameters:
       ruby_ver:
         description: 'Ruby version'
-        default: '2.7'
+        default: '3.1'
         type: 'string'
       solr_port:
         type: string
@@ -161,10 +161,10 @@ workflows:
   build_test_report:
     jobs:
       - build:
-          ruby_ver: '2.7'
-          name: 'Ruby2-7'
+          ruby_ver: '3.1'
+          name: 'Ruby3-1'
           parallelism: 4
       - upload-coverage:
           parallelism: 4
           requires:
-            - Ruby2-7
+            - Ruby3-1
