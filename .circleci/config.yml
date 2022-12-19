@@ -5,7 +5,7 @@ jobs:
   build:
     docker:
       # Primary container image where all steps run.
-      - image: avalonmediasystem/avalon:7.3.0-dev
+      - image: avalonmediasystem/avalon:7.5.0-dev-ruby3
         environment:
           - DATABASE_URL=postgresql://postgres@localhost:5432/postgres
           - FEDORA_URL=http://localhost:8080/fcrepo/rest
@@ -46,7 +46,7 @@ jobs:
         type: string
         default: 'hydra-test'
 
-    working_directory: /home/app/avalon
+    working_directory: /home/circleci/project
 
     parallelism: << parameters.parallelism >>
 
@@ -138,9 +138,9 @@ jobs:
         default: 4
     docker:
       # Primary container image where all steps run.
-      - image: avalonmediasystem/avalon:7.3.0-dev
+      - image: avalonmediasystem/avalon:7.5.0-dev-ruby3
 
-    working_directory: /home/app/avalon
+    working_directory: /home/circleci/project
 
     steps:
       - attach_workspace:
