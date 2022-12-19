@@ -627,8 +627,6 @@ GEM
       date
       net-protocol
     net-ldap (0.17.0)
-    net-pop (0.1.2)
-      net-protocol
     net-protocol (0.2.1)
       timeout
     net-scp (3.0.0)
@@ -954,6 +952,7 @@ GEM
     thor (1.2.1)
     thread_safe (0.3.6)
     tilt (2.0.11)
+    timeout (0.3.1)
     trailblazer-option (0.1.2)
     twitter-typeahead-rails (0.11.1.pre.corejavascript)
       actionpack (>= 3.1)
@@ -1092,6 +1091,7 @@ DEPENDENCIES
   mediainfo!
   mysql2
   net-ldap
+  net-smtp
   noid-rails!
   okcomputer
   omniauth (~> 2.0)
