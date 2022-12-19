@@ -88,7 +88,7 @@ class MasterFile < ActiveFedora::Base
   property :physical_description, predicate: ::RDF::Vocab::EBUCore.hasFormat, multiple: false do |index|
     index.as :stored_sortable
   end
-  property :masterFile, predicate: ::RDF::Vocab::EBUCore.filename, multiple: false
+  property :masterFile, predicate: ::RDF::Vocab::EBUCore.resourceFilename, multiple: false
   property :identifier, predicate: ::RDF::Vocab::Identifiers.local, multiple: true do |index|
     index.as :symbol
   end
