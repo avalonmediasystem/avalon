@@ -4,6 +4,7 @@ source 'https://rubygems.org'
 gem 'bootsnap', require: false
 gem 'listen'
 gem 'net-smtp', require: false
+gem 'psych', '< 4'
 gem 'rails', '=6.0.5.1'
 gem 'sprockets', '~>3.7.2'
 #gem 'sprockets-rails', require: 'sprockets/railtie'
