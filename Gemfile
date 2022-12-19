@@ -149,7 +149,7 @@ group :test do
   gem 'shoulda-matchers'
   gem 'simplecov'
   gem 'webdrivers', '~> 3.0'
-  gem 'webmock', '~> 3.5.1'
+  gem 'webmock', '~> 3.5'
 end
 
 group :production do
