@@ -31,6 +31,7 @@ gem 'webpacker'
 gem 'active-fedora', git: "https://github.com/samvera/active_fedora.git", branch: 'ruby3'
 #gem 'active_fedora-datastreams', '~> 0.4'
 gem 'active_fedora-datastreams', git: "https://github.com/samvera-labs/active_fedora-datastreams.git", branch: "ruby3"
+gem 'active-triples', git: 'https://github.com/samvera-labs/activetriples.git', branch: 'merge-gitlab-upstream'
 #gem 'hydra-head', '~> 12.0'
 gem 'hydra-head', git: "https://github.com/samvera/hydra-head.git", branch: 'ruby3'
 gem 'ldp', '~> 1.1.0'

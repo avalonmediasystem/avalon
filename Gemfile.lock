@@ -85,6 +85,17 @@ GIT
       rdf-rdfxml (~> 3.2)
 
 GIT
+  remote: https://github.com/samvera-labs/activetriples.git
+  revision: 22d239ec248f4619f1d9be4f16eedd80879ecf53
+  branch: merge-gitlab-upstream
+  specs:
+    active-triples (1.1.1)
+      activemodel (>= 3.0.0)
+      activesupport (>= 3.0.0)
+      rdf (>= 2.0.2, < 4.0)
+      rdf-vocab (>= 2.0, < 4.0)
+
+GIT
   remote: https://github.com/samvera/active_fedora.git
   revision: 5c00fa3b9e8a5abc803c76a92fe96f8acafc517c
   branch: ruby3
@@ -167,11 +178,6 @@ GEM
       erubi (~> 1.4)
       rails-dom-testing (~> 2.0)
       rails-html-sanitizer (~> 1.1, >= 1.2.0)
-    active-triples (1.1.1)
-      activemodel (>= 3.0.0)
-      activesupport (>= 3.0.0)
-      rdf (>= 2.0.2, < 4.0)
-      rdf-vocab (>= 2.0, < 4.0)
     active_annotations (0.4.0)
       json-ld
       rails (>= 5.2, < 7.1)
@@ -1012,6 +1018,7 @@ PLATFORMS
 DEPENDENCIES
   about_page!
   active-fedora!
+  active-triples!
   active_annotations (~> 0.4)
   active_elastic_job
   active_encode (~> 1.0, >= 1.1.2)
