@@ -274,6 +274,27 @@ describe Admin::CollectionsController, type: :controller do
       #TODO add check that mediaobject is serialized to json properly
     end
 
+    context "with structure" do
+      let!(:mf_1) { FactoryBot.create(:master_file, :with_structure, media_object: collection.media_objects[0]) }
+      let!(:mf_2) { FactoryBot.create(:master_file, :with_structure, media_object: collection.media_objects[1]) }
+      
+      it "should not return structure by default" do
+        get 'items', params: { id: collection.id, format: 'json' }
+        expect(JSON.parse(response.body)[collection.media_objects[0].id]["files"][0]["structure"]).to be_blank
+        expect(JSON.parse(response.body)[collection.media_objects[1].id]["files"][0]["structure"]).to be_blank
+      end
+      it "should return structure if requested" do
+        get 'items', params: { id: collection.id, format: 'json', include_structure: true }
+        expect(JSON.parse(response.body)[collection.media_objects[0].id]["files"][0]["structure"]).to eq mf_1.structuralMetadata.content
+        expect(JSON.parse(response.body)[collection.media_objects[1].id]["files"][0]["structure"]).to eq mf_2.structuralMetadata.content
+      end
+      it "should not return structure if requested" do
+        get 'items', params: { id: collection.id, format: 'json', include_structure: false}
+        expect(JSON.parse(response.body)[collection.media_objects[0].id]["files"][0]["structure"]).not_to eq mf_1.structuralMetadata.content
+        expect(JSON.parse(response.body)[collection.media_objects[1].id]["files"][0]["structure"]).not_to eq mf_2.structuralMetadata.content
+      end
+    end
+
     context 'user is a collection manager' do
       let(:manager) { FactoryBot.create(:manager) }
       before(:each) do
