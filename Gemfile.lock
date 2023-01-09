@@ -72,6 +72,14 @@ GIT
       sidekiq (>= 4.2.1)
 
 GIT
+  remote: https://github.com/cjcolvar/edtf-ruby.git
+  revision: 3097c47a8a527dfc574832570530b592ac5c71bb
+  branch: patch-1
+  specs:
+    edtf (3.1.0)
+      activesupport (>= 3.0, < 8.0)
+
+GIT
   remote: https://github.com/samvera-labs/active_fedora-datastreams.git
   revision: ce646cfa8014f9cee10cd5b957d23c47f1d40777
   branch: ruby3
@@ -436,8 +444,6 @@ GEM
       scanf (~> 1.0)
       sxp (~> 1.2)
       unicode-types (~> 1.7)
-    edtf (3.1.0)
-      activesupport (>= 3.0, < 8.0)
     email_spec (2.2.0)
       htmlentities (~> 4.3.3)
       launchy (~> 2.1)
@@ -1063,7 +1069,7 @@ DEPENDENCIES
   devise (~> 4.8)
   devise_invitable (~> 2.0)
   dotenv-rails
-  edtf
+  edtf!
   email_spec
   equivalent-xml
   factory_bot_rails
