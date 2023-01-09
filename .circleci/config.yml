@@ -46,7 +46,7 @@ jobs:
         type: string
         default: 'hydra-test'
 
-    working_directory: /home/circleci/project
+    working_directory: /home/app/avalon
 
     parallelism: << parameters.parallelism >>
 
@@ -142,7 +142,7 @@ jobs:
       # Primary container image where all steps run.
       - image: avalonmediasystem/avalon:7.5.0-dev-ruby3
 
-    working_directory: /home/circleci/project
+    working_directory: /home/app/avalon
 
     steps:
       - attach_workspace:
