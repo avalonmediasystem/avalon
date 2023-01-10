@@ -569,17 +569,17 @@ class MasterFile < ActiveFedora::Base
 
     unless File.exists?(response[:source])
       Rails.logger.warn("Masterfile `#{file_location}` not found. Extracting via HLS.")
-      hls_temp_file, new_offset = create_frame_source_hls_temp_file
+      hls_temp_file, new_offset = create_frame_source_hls_temp_file(options[:offset])
       response = { source: hls_temp_file, offset: new_offset, non_temp_file: false }
     end
     return response
   end
 
-  def create_frame_source_hls_temp_file
+  def create_frame_source_hls_temp_file(offset)
     playlist_url = self.stream_details[:stream_hls].find { |d| d[:quality] == 'high' }[:url]
     secure_url = SecurityHandler.secure_url(playlist_url, target: self.id)
     playlist = Avalon::M3U8Reader.read(secure_url)
-    details = playlist.at(options[:offset])
+    details = playlist.at(offset)
 
     # Fixes https://github.com/avalonmediasystem/avalon/issues/3474
     target_location = File.basename(details[:location]).split('?')[0]
