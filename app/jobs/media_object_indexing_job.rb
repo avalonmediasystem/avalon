@@ -12,6 +12,8 @@
 #   specific language governing permissions and limitations under the License.
 # ---  END LICENSE_HEADER BLOCK  ---
 class MediaObjectIndexingJob < ApplicationJob
+  queue_as :media_object_indexing
+
   def perform(id)
     mo = MediaObject.find(id)
     SolrService.add(mo.to_solr(include_child_fields: true), softCommit: true)
