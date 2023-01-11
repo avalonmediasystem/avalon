@@ -177,15 +177,15 @@ class MediaObject < ActiveFedora::Base
   end
 
   def set_media_types!
-    mime_types = master_files.reject {|mf| mf.file_location.blank? }.collect { |mf|
-      Rack::Mime.mime_type(File.extname(mf.file_location))
-    }.uniq
+    mime_types = master_file_solr_docs.reject { |mf| mf["file_location_ssi"].blank? }.collect do |mf|
+      Rack::Mime.mime_type(File.extname(mf["file_location_ssi"]))
+    end.uniq
     self.format = mime_types.empty? ? nil : mime_types
   end
 
   def set_resource_types!
-    self.avalon_resource_type = master_files.reject {|mf| mf.file_format.blank? }.collect{ |mf|
-      case mf.file_format
+    self.avalon_resource_type = master_file_solr_docs.reject { |mf| mf["file_format_ssi"].blank? }.collect do |mf|
+      case mf["file_format_ssi"]
       when 'Moving image'
         'moving image'
       when 'Sound'
@@ -411,8 +411,12 @@ class MediaObject < ActiveFedora::Base
 
   private
 
+    def master_file_solr_docs
+      @master_file_docs ||= ActiveFedora::SolrService.query("isPartOf_ssim:#{id}", rows: 1_000_000)
+    end
+
     def calculate_duration
-      self.master_files.map{|mf| mf.duration.to_i }.compact.sum
+      master_file_solr_docs.collect { |h| h['duration_ssi'] }.compact.sum
     end
 
     def collect_ips_for_index ip_strings
