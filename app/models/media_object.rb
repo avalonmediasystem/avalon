@@ -225,6 +225,23 @@ class MediaObject < ActiveFedora::Base
     all_pds.uniq
   end
 
+  # All fields that need to iterate over the master files do in this new method
+  # using a copy of the master file solr doc to avoid having to fetch them all from fedora
+  # this is probably okay since this is just aggregating the values already in the master file solr docs
+
+  def fill_in_solr_fields_that_need_master_files(solr_doc)
+    mf_docs = ActiveFedora::SolrService.query("isPartOf_ssim:#{id}", rows: 1_000_000)
+    solr_doc["other_identifier_sim"] +=  mf_docs.collect { |h| h['identifier_ssim'] }.flatten
+    solr_doc["date_digitized_sim"] = mf_docs.collect { |h| h['date_digitized_ssi'] }.compact.map {|t| Time.parse(t).strftime "%F" }
+
+      #solr_doc["section_label_tesim"] = section_labels
+      #include identifiers for parts
+      #solr_doc["other_identifier_sim"] +=  master_files.collect {|mf| mf.identifier.to_a }.flatten
+      #solr_doc["date_digitized_sim"] = master_files.collect {|mf| mf.date_digitized }.compact.map {|t| Time.parse(t).strftime "%F" }
+      #solr_doc['section_physical_description_ssim'] = section_physical_descriptions
+      #solr_doc['all_comments_sim'] = all_comments
+  end
+
   def to_solr
     super.tap do |solr_doc|
       solr_doc[ActiveFedora.index_field_mapper.solr_name("workflow_published", :facetable, type: :string)] = published? ? 'Published' : 'Unpublished'
@@ -236,17 +253,17 @@ class MediaObject < ActiveFedora::Base
       solr_doc[Hydra.config.permissions.read.group] += solr_doc['read_access_ip_group_ssim']
       solr_doc["title_ssort"] = self.title
       solr_doc["creator_ssort"] = Array(self.creator).join(', ')
-      solr_doc["date_digitized_sim"] = master_files.collect {|mf| mf.date_digitized }.compact.map {|t| Time.parse(t).strftime "%F" }
+      # solr_doc["date_digitized_sim"] = master_files.collect {|mf| mf.date_digitized }.compact.map {|t| Time.parse(t).strftime "%F" }
       solr_doc["date_ingested_sim"] = self.create_date.strftime "%F" if self.create_date.present?
       #include identifiers for parts
-      solr_doc["other_identifier_sim"] +=  master_files.collect {|mf| mf.identifier.to_a }.flatten
+      # solr_doc["other_identifier_sim"] +=  master_files.collect {|mf| mf.identifier.to_a }.flatten
       #include labels for parts and their structural metadata
       solr_doc['section_id_ssim'] = ordered_master_file_ids
-      solr_doc["section_label_tesim"] = section_labels
-      solr_doc['section_physical_description_ssim'] = section_physical_descriptions
+      # solr_doc["section_label_tesim"] = section_labels
+      # solr_doc['section_physical_description_ssim'] = section_physical_descriptions
       solr_doc['avalon_resource_type_ssim'] = self.avalon_resource_type.map(&:titleize)
       solr_doc['identifier_ssim'] = self.identifier.map(&:downcase)
-      solr_doc['all_comments_sim'] = all_comments
+      # solr_doc['all_comments_sim'] = all_comments
       #Add all searchable fields to the all_text_timv field
       all_text_values = []
       all_text_values << solr_doc["title_tesi"]
