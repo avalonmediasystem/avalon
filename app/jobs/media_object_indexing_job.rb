@@ -16,6 +16,6 @@ class MediaObjectIndexingJob < ApplicationJob
 
   def perform(id)
     mo = MediaObject.find(id)
-    SolrService.add(mo.to_solr(include_child_fields: true), softCommit: true)
+    ActiveFedora::SolrService.add(mo.to_solr(include_child_fields: true), softCommit: true)
   end
 end
