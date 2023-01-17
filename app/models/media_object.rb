@@ -254,7 +254,7 @@ class MediaObject < ActiveFedora::Base
       solr_doc['identifier_ssim'] = self.identifier.map(&:downcase)
       if include_child_fields
         fill_in_solr_fields_that_need_master_files(solr_doc)
-      else
+      elsif id.present? # avoid error in test suite
         # Fill in other identifier so these values aren't stripped from the solr doc while waiting for the background job
         mf_docs = ActiveFedora::SolrService.query("isPartOf_ssim:#{id}", rows: 1_000_000)
         solr_doc["other_identifier_sim"] +=  mf_docs.collect { |h| h['identifier_ssim'] }.flatten
