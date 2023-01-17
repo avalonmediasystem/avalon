@@ -21,7 +21,7 @@ Unless required by applicable law or agreed to in writing, software distributed
 
 <% @poster_url = request.base_url + @currentStreamInfo[:poster_image] unless @currentStreamInfo[:poster_image].nil? %>
 <% @page_type = @currentStreamInfo[:is_video] ? 'video' : 'audio' %>
-<% can_stream = lending_enabled?(@media_object) ? current_user && @media_object.current_checkout(current_user.id).present? : current_user %> 
+<% can_stream = lending_enabled?(@media_object) ? current_user && @media_object.current_checkout(current_user.id).present? : true %> 
 
 <% f_start, f_end = parse_media_fragment params['t'] %>
 <div class="row">
