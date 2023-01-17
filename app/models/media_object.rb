@@ -193,7 +193,7 @@ class MediaObject < ActiveFedora::Base
       else
         mf.file_format.downcase
       end
-    }.uniq
+    end.uniq
   end
 
   def update_dependent_properties!
