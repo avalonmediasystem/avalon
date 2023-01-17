@@ -4,6 +4,7 @@ import { Dashboard } from '@uppy/react';
 import ActiveStorageUpload from '@excid3/uppy-activestorage-upload';
 import GoogleDrive from '@uppy/google-drive';
 import AwsS3 from '@uppy/aws-s3';
+import AwsS3Multipart from '@uppy/aws-s3-multipart';
 
 require('@uppy/core/dist/style.css')
 require('@uppy/dashboard/dist/style.css')
@@ -33,7 +34,14 @@ class FileUploadUppy extends React.Component {
       .use(GoogleDrive, {
         companionUrl: 'http://localhost:3020'
       })
+      // .use(AwsS3Multipart, {
+      //   limit: 5,
+      //   timeout: 60*1000, // set to 1min
+      //   companionUrl: '/',
+      // })
       .use(AwsS3, {
+        limit: 5,
+        timeout: 60*1000, // set to 1min
         companionUrl: 'http://localhost:3020',
         getUploadParameters() {
           return Promise.resolve({
@@ -69,9 +77,11 @@ class FileUploadUppy extends React.Component {
             headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
             body: formData
           })
-            .then(res => { })
+            .then(res => { 
+              location.reload();
+            })
             .catch(error => {
-              console.error('MasterFile create failed, ', error);
+              console.error('MasterFile creation failed, ', error);
           });
         }
       });
