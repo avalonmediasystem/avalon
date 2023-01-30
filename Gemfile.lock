@@ -132,7 +132,7 @@ GEM
     active_elastic_job (3.2.0)
       aws-sdk-sqs (~> 1)
       rails (>= 5.2.6, < 7.1)
-    active_encode (1.1.1)
+    active_encode (1.1.2)
       addressable (~> 2.8)
       rails
     active_fedora-datastreams (0.4.0)
@@ -959,7 +959,7 @@ DEPENDENCIES
   active-fedora (~> 13.2, >= 13.2.5)
   active_annotations (~> 0.4)
   active_elastic_job
-  active_encode (~> 1.0)
+  active_encode (~> 1.1.2)
   active_fedora-datastreams (~> 0.4)
   activejob-traffic_control
   activejob-uniqueness
