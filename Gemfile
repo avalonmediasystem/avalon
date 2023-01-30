@@ -33,6 +33,7 @@ gem 'active-fedora', '~> 14.0'
 gem 'active_fedora-datastreams', '~> 0.5'
 gem 'hydra-head', '~> 12.0'
 gem 'ldp', '~> 1.1.0'
+gem 'noid-rails', '~> 3.1'
 gem 'om', git: 'https://github.com/avalonmediasystem/om.git', branch: 'ruby3'
 gem 'rdf-rdfxml'
 
