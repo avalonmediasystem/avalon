@@ -959,7 +959,7 @@ DEPENDENCIES
   active-fedora (~> 13.2, >= 13.2.5)
   active_annotations (~> 0.4)
   active_elastic_job
-  active_encode (~> 1.1.2)
+  active_encode (~> 1.0, >= 1.1.2)
   active_fedora-datastreams (~> 0.4)
   activejob-traffic_control
   activejob-uniqueness
