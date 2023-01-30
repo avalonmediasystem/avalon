@@ -54,6 +54,17 @@ GIT
     mediainfo (0.7.1)
 
 GIT
+  remote: https://github.com/avalonmediasystem/om.git
+  revision: ffde890b4187a7d8be41ae387264cd6eb20b6ba8
+  branch: ruby3
+  specs:
+    om (3.2.0)
+      activemodel (>= 5.1)
+      activesupport
+      nokogiri (>= 1.4.2)
+      solrizer (~> 3.3)
+
+GIT
   remote: https://github.com/avalonmediasystem/omniauth-lti.git
   revision: 7534c44fc5a3c927aec57bbd3a15cbad37feec74
   tag: avalon-r4
@@ -78,74 +89,6 @@ GIT
   specs:
     edtf (3.1.0)
       activesupport (>= 3.0, < 8.0)
-
-GIT
-  remote: https://github.com/samvera-labs/active_fedora-datastreams.git
-  revision: ce646cfa8014f9cee10cd5b957d23c47f1d40777
-  branch: ruby3
-  specs:
-    active_fedora-datastreams (0.4.0)
-      active-fedora (>= 11.0.0.pre, < 14)
-      activemodel (< 6.1)
-      nom-xml (>= 0.5.1)
-      om (~> 3.1)
-      rdf (~> 3.2)
-      rdf-rdfxml (~> 3.2)
-
-GIT
-  remote: https://github.com/samvera-labs/activetriples.git
-  revision: 22d239ec248f4619f1d9be4f16eedd80879ecf53
-  branch: merge-gitlab-upstream
-  specs:
-    active-triples (1.1.1)
-      activemodel (>= 3.0.0)
-      activesupport (>= 3.0.0)
-      rdf (>= 2.0.2, < 4.0)
-      rdf-vocab (>= 2.0, < 4.0)
-
-GIT
-  remote: https://github.com/samvera/active_fedora.git
-  revision: 5c00fa3b9e8a5abc803c76a92fe96f8acafc517c
-  branch: ruby3
-  specs:
-    active-fedora (13.3.0)
-      active-triples (>= 0.11.0, < 2.0.0)
-      activemodel (>= 5.1)
-      activesupport (>= 5.1)
-      deprecation
-      faraday (~> 1.0)
-      faraday-encoding (>= 0.0.5)
-      ldp (>= 0.7.0, < 2)
-      rsolr (>= 1.1.2, < 3)
-      ruby-progressbar (~> 1.0)
-
-GIT
-  remote: https://github.com/samvera/hydra-head.git
-  revision: c824cb6c8de027f0fe6335f75f13da3cad2890d6
-  branch: ruby3
-  specs:
-    hydra-access-controls (12.0.2)
-      active-fedora (>= 10.0.0)
-      activesupport (>= 5.2, < 7)
-      blacklight-access_controls (~> 6.0)
-      cancancan (>= 1.8, < 4)
-      deprecation (~> 1.0)
-    hydra-core (12.0.2)
-      hydra-access-controls (= 12.0.2)
-      railties (>= 5.2, < 7)
-    hydra-head (12.0.2)
-      hydra-access-controls (= 12.0.2)
-      hydra-core (= 12.0.2)
-      rails (>= 5.2, < 7)
-
-GIT
-  remote: https://github.com/samvera/noid-rails.git
-  revision: f6ccd884be506acb69dd7be65991a95133bd45dd
-  branch: cjcolvar-patch-1
-  specs:
-    noid-rails (3.0.3)
-      actionpack (>= 5.0.0, < 7.1)
-      noid (~> 0.9)
 
 GEM
   remote: https://rubygems.org/
@@ -186,6 +129,21 @@ GEM
       erubi (~> 1.4)
       rails-dom-testing (~> 2.0)
       rails-html-sanitizer (~> 1.1, >= 1.2.0)
+    active-fedora (14.0.0)
+      active-triples (>= 0.11.0, < 2.0.0)
+      activemodel (>= 5.1)
+      activesupport (>= 5.1)
+      deprecation
+      faraday (~> 1.0)
+      faraday-encoding (>= 0.0.5)
+      ldp (>= 0.7.0, < 2)
+      rsolr (>= 1.1.2, < 3)
+      ruby-progressbar (~> 1.0)
+    active-triples (1.2.0)
+      activemodel (>= 3.0.0)
+      activesupport (>= 3.0.0)
+      rdf (>= 2.0.2, < 4.0)
+      rdf-vocab (>= 2.0, < 4.0)
     active_annotations (0.4.0)
       json-ld
       rails (>= 5.2, < 7.1)
@@ -196,6 +154,13 @@ GEM
     active_encode (1.1.2)
       addressable (~> 2.8)
       rails
+    active_fedora-datastreams (0.5.0)
+      active-fedora (>= 11.0.0.pre)
+      activemodel (>= 5.2)
+      nom-xml (>= 0.5.1)
+      om (~> 3.1)
+      rdf (~> 3.2)
+      rdf-rdfxml (~> 3.2)
     activejob (6.0.5.1)
       activesupport (= 6.0.5.1)
       globalid (>= 0.3.6)
@@ -288,6 +253,8 @@ GEM
     babel-transpiler (0.7.0)
       babel-source (>= 4.0, < 6)
       execjs (~> 2.0)
+    bcp47 (0.3.3)
+      i18n
     bcrypt (3.1.16)
     bindex (0.8.1)
     bixby (3.0.2)
@@ -296,7 +263,7 @@ GEM
       rubocop-performance
       rubocop-rails
       rubocop-rspec
-    blacklight (7.28.0)
+    blacklight (7.33.0)
       deprecation
       globalid
       hashdiff
@@ -305,7 +272,7 @@ GEM
       kaminari (>= 0.15)
       ostruct (>= 0.3.2)
       rails (>= 5.1, < 7.1)
-      view_component (~> 2.43)
+      view_component (~> 2.66)
     blacklight-access_controls (6.0.1)
       blacklight (> 6.0, < 8)
       cancancan (>= 1.8)
@@ -322,7 +289,7 @@ GEM
       activemodel (>= 5.2)
     builder (3.2.4)
     byebug (11.1.3)
-    cancancan (3.3.0)
+    cancancan (3.4.0)
     capistrano (3.16.0)
       airbrussh (>= 1.0.0)
       i18n
@@ -365,7 +332,7 @@ GEM
       coffee-script-source
       execjs
     coffee-script-source (1.12.2)
-    concurrent-ruby (1.1.10)
+    concurrent-ruby (1.2.0)
     config (4.0.0)
       deep_merge (~> 1.2, >= 1.2.1)
       dry-validation (~> 1.0, >= 1.0.0)
@@ -381,6 +348,7 @@ GEM
       activerecord (>= 5.a)
       database_cleaner-core (~> 2.0.0)
     database_cleaner-core (2.0.1)
+    date (3.3.3)
     declarative (0.0.20)
     deep_merge (1.2.2)
     deprecation (1.1.0)
@@ -450,7 +418,7 @@ GEM
       mail (~> 2.7)
     equivalent-xml (0.6.0)
       nokogiri (>= 1.4.3)
-    erubi (1.11.0)
+    erubi (1.12.0)
     et-orbi (1.2.6)
       tzinfo
     ethon (0.15.0)
@@ -464,7 +432,7 @@ GEM
     fakefs (1.4.1)
     faker (2.19.0)
       i18n (>= 1.6, < 2)
-    faraday (1.10.2)
+    faraday (1.10.3)
       faraday-em_http (~> 1.0)
       faraday-em_synchrony (~> 1.0)
       faraday-excon (~> 1.1)
@@ -501,7 +469,7 @@ GEM
     fugit (1.5.2)
       et-orbi (~> 1.1, >= 1.1.8)
       raabro (~> 1.4)
-    globalid (1.0.0)
+    globalid (1.1.0)
       activesupport (>= 5.0)
     google-analytics-rails (1.1.0)
     google-apis-core (0.7.0)
@@ -525,6 +493,8 @@ GEM
     haml (5.2.2)
       temple (>= 0.8.0)
       tilt
+    hamster (3.0.0)
+      concurrent-ruby (~> 1.0)
     hashdiff (1.0.1)
     hashie (5.0.0)
     hooks (0.4.1)
@@ -541,6 +511,19 @@ GEM
     http-form_data (2.3.0)
     http_logger (0.7.0)
     httpclient (2.8.3)
+    hydra-access-controls (12.1.0)
+      active-fedora (>= 10.0.0)
+      activesupport (>= 5.2, < 7.1)
+      blacklight-access_controls (~> 6.0)
+      cancancan (>= 1.8, < 4)
+      deprecation (~> 1.0)
+    hydra-core (12.1.0)
+      hydra-access-controls (= 12.1.0)
+      railties (>= 5.2, < 7.1)
+    hydra-head (12.1.0)
+      hydra-access-controls (= 12.1.0)
+      hydra-core (= 12.1.0)
+      rails (>= 5.2, < 7.1)
     i18n (1.12.0)
       concurrent-ruby (~> 1.0)
     iconv (1.0.8)
@@ -569,6 +552,9 @@ GEM
       multi_json (~> 1.15)
       rack (~> 2.2)
       rdf (~> 3.2, >= 3.2.9)
+    json-ld-preloaded (3.2.2)
+      json-ld (~> 3.2)
+      rdf (~> 3.2)
     jwt (2.4.1)
     kaminari (1.2.2)
       activesupport (>= 4.1.0)
@@ -584,6 +570,12 @@ GEM
     kaminari-core (1.2.2)
     launchy (2.5.0)
       addressable (~> 2.7)
+    ld-patch (3.2.0)
+      ebnf (~> 2.2)
+      rdf (~> 3.2)
+      rdf-xsd (~> 3.2)
+      sparql (~> 3.2)
+      sxp (~> 1.2)
     ldp (1.1.0)
       deprecation
       faraday (>= 1)
@@ -596,12 +588,41 @@ GEM
       rdf-vocab (>= 0.8)
       slop
     link_header (0.0.8)
+    linkeddata (3.2.1)
+      json-ld (~> 3.2, >= 3.2.3)
+      json-ld-preloaded (~> 3.2)
+      ld-patch (~> 3.2)
+      nokogiri (~> 1.13, >= 1.13.8)
+      rdf (~> 3.2, >= 3.2.9)
+      rdf-aggregate-repo (~> 3.2, >= 3.2.1)
+      rdf-hamster-repo (~> 3.2)
+      rdf-isomorphic (~> 3.2, >= 3.2.1)
+      rdf-json (~> 3.2)
+      rdf-microdata (~> 3.2, >= 3.2.1)
+      rdf-n3 (~> 3.2, >= 3.2.1)
+      rdf-normalize (~> 0.5)
+      rdf-ordered-repo (~> 3.2, >= 3.2.1)
+      rdf-rdfa (~> 3.2)
+      rdf-rdfxml (~> 3.2)
+      rdf-reasoner (~> 0.8)
+      rdf-tabular (~> 3.2, >= 3.2.1)
+      rdf-trig (~> 3.2)
+      rdf-trix (~> 3.2)
+      rdf-turtle (~> 3.2, >= 3.2.1)
+      rdf-vocab (~> 3.2, >= 3.2.1)
+      rdf-xsd (~> 3.2, >= 3.2.1)
+      shacl (~> 0.2, >= 0.2.1)
+      shex (~> 0.7, >= 0.7.1)
+      sparql (~> 3.2, >= 3.2.4)
+      sparql-client (~> 3.2, >= 3.2.1)
+      yaml-ld (~> 0.0)
     listen (3.7.1)
       rb-fsevent (~> 0.10, >= 0.10.3)
       rb-inotify (~> 0.9, >= 0.9.10)
     llhttp-ffi (0.4.0)
       ffi-compiler (~> 1.0)
       rake (~> 13.0)
+    logger (1.5.3)
     lograge (0.11.2)
       actionpack (>= 4)
       activesupport (>= 4)
@@ -610,8 +631,11 @@ GEM
     loofah (2.19.1)
       crass (~> 1.0.2)
       nokogiri (>= 1.5.9)
-    mail (2.7.1)
+    mail (2.8.0.1)
       mini_mime (>= 0.1.1)
+      net-imap
+      net-pop
+      net-smtp
     marc (1.1.1)
       rexml
       scrub_rb (>= 1.0.1, < 2)
@@ -624,14 +648,23 @@ GEM
       mime-types-data (~> 3.2015)
     mime-types-data (3.2022.0105)
     mini_mime (1.1.2)
-    mini_portile2 (2.8.0)
-    minitest (5.16.3)
+    mini_portile2 (2.8.1)
+    minitest (5.17.0)
     msgpack (1.4.5)
     multi_json (1.15.0)
     multi_xml (0.6.0)
-    multipart-post (2.2.3)
+    multipart-post (2.3.0)
+    mustermann (1.1.2)
+      ruby2_keywords (~> 0.0.1)
     mysql2 (0.5.3)
+    net-http-persistent (4.0.1)
+      connection_pool (~> 2.2)
+    net-imap (0.3.4)
+      date
+      net-protocol
     net-ldap (0.17.0)
+    net-pop (0.1.2)
+      net-protocol
     net-protocol (0.2.1)
       timeout
     net-scp (3.0.0)
@@ -641,8 +674,7 @@ GEM
     net-ssh (6.1.0)
     netrc (0.11.0)
     nio4r (2.5.8)
-    noid (0.9.0)
-    nokogiri (1.13.10)
+    nokogiri (1.14.0)
       mini_portile2 (~> 2.8.0)
       racc (~> 1.4)
     nom-xml (1.2.0)
@@ -656,11 +688,6 @@ GEM
       multi_xml (~> 0.5)
       rack (>= 1.2, < 3)
     okcomputer (1.18.4)
-    om (3.2.0)
-      activemodel (>= 5.1, < 7)
-      activesupport
-      nokogiri (>= 1.4.2)
-      solrizer (~> 3.3)
     omniauth (2.0.4)
       hashie (>= 3.4.6)
       rack (>= 1.6.2, < 3)
@@ -696,14 +723,21 @@ GEM
     puma (5.6.4)
       nio4r (~> 2.0)
     raabro (1.4.0)
-    racc (1.6.1)
-    rack (2.2.4)
+    racc (1.6.2)
+    rack (2.2.6.2)
     rack-cors (1.1.1)
       rack (>= 2.0.0)
+    rack-linkeddata (3.2.1)
+      linkeddata (~> 3.2)
+      rack (~> 2.1)
+      rack-rdf (~> 3.2)
     rack-protection (2.2.0)
       rack
     rack-proxy (0.7.2)
       rack
+    rack-rdf (3.2.0)
+      rack (~> 2.2)
+      rdf (~> 3.2)
     rack-test (2.0.2)
       rack (>= 1.3)
     rails (6.0.5.1)
@@ -728,7 +762,7 @@ GEM
     rails-dom-testing (2.0.3)
       activesupport (>= 4.2.0)
       nokogiri (>= 1.6)
-    rails-html-sanitizer (1.4.4)
+    rails-html-sanitizer (1.5.0)
       loofah (~> 2.19, >= 2.19.1)
     rails_same_site_cookie (0.1.9)
       rack (>= 1.5)
@@ -749,11 +783,38 @@ GEM
       link_header (~> 0.0, >= 0.0.8)
     rdf-aggregate-repo (3.2.1)
       rdf (~> 3.2)
+    rdf-hamster-repo (3.2.1)
+      hamster (~> 3.0)
+      rdf (~> 3.2, >= 3.2.1)
     rdf-isomorphic (3.2.1)
       rdf (~> 3.2)
-    rdf-ldp (0.1.0)
-      deprecation
-      rdf
+    rdf-json (3.2.0)
+      rdf (~> 3.2)
+    rdf-ldp (2.1.0)
+      json-ld (~> 3.2)
+      ld-patch (~> 3.2)
+      link_header (~> 0.0, >= 0.0.8)
+      rack (~> 2.2)
+      rack-linkeddata (~> 3.1)
+      rdf (~> 3.2)
+      rdf-turtle (~> 3.2)
+      rdf-vocab (~> 3.2)
+      sinatra (~> 2.1)
+    rdf-microdata (3.2.1)
+      htmlentities (~> 4.3)
+      nokogiri (~> 1.13)
+      rdf (~> 3.2)
+      rdf-rdfa (~> 3.2)
+      rdf-xsd (~> 3.2)
+    rdf-n3 (3.2.1)
+      ebnf (~> 2.2)
+      rdf (~> 3.2)
+      sparql (~> 3.2)
+      sxp (~> 1.2)
+    rdf-normalize (0.5.1)
+      rdf (~> 3.2)
+    rdf-ordered-repo (3.2.1)
+      rdf (~> 3.2, >= 3.2.1)
     rdf-rdfa (3.2.0)
       haml (~> 5.2)
       htmlentities (~> 4.3)
@@ -765,6 +826,23 @@ GEM
       htmlentities (~> 4.3)
       rdf (~> 3.2)
       rdf-rdfa (~> 3.2)
+      rdf-xsd (~> 3.2)
+    rdf-reasoner (0.8.0)
+      rdf (~> 3.2)
+      rdf-xsd (~> 3.2)
+    rdf-tabular (3.2.1)
+      addressable (~> 2.8)
+      bcp47 (~> 0.3, >= 0.3.3)
+      json-ld (~> 3.2)
+      rdf (~> 3.2, >= 3.2.7)
+      rdf-vocab (~> 3.2)
+      rdf-xsd (~> 3.2)
+    rdf-trig (3.2.0)
+      ebnf (~> 2.2)
+      rdf (~> 3.2)
+      rdf-turtle (~> 3.2)
+    rdf-trix (3.2.0)
+      rdf (~> 3.2)
       rdf-xsd (~> 3.2)
     rdf-turtle (3.2.1)
       ebnf (~> 2.3)
@@ -899,6 +977,20 @@ GEM
       childprocess (>= 0.5, < 4.0)
       rubyzip (>= 1.2.2)
     semantic_range (3.0.0)
+    shacl (0.3.0)
+      json-ld (~> 3.2)
+      rdf (~> 3.2, >= 3.2.8)
+      sparql (~> 3.2, >= 3.2.4)
+      sxp (~> 1.2)
+    shex (0.7.1)
+      ebnf (~> 2.2)
+      htmlentities (~> 4.3)
+      json-ld (~> 3.2)
+      json-ld-preloaded (~> 3.2)
+      rdf (~> 3.2)
+      rdf-xsd (~> 3.2)
+      sparql (~> 3.2)
+      sxp (~> 1.2)
     shoulda-matchers (5.1.0)
       activesupport (>= 5.2.0)
     sidekiq (6.4.1)
@@ -916,6 +1008,11 @@ GEM
       simplecov_json_formatter (~> 0.1)
     simplecov-html (0.12.3)
     simplecov_json_formatter (0.1.4)
+    sinatra (2.2.0)
+      mustermann (~> 1.0)
+      rack (~> 2.2)
+      rack-protection (= 2.2.0)
+      tilt (~> 2.0)
     slop (4.9.3)
     solr_wrapper (3.1.2)
       http
@@ -928,6 +1025,18 @@ GEM
       nokogiri
       stomp
       xml-simple
+    sparql (3.2.5)
+      builder (~> 3.2)
+      ebnf (~> 2.2, >= 2.3.1)
+      logger (~> 1.5)
+      rdf (~> 3.2, >= 3.2.8)
+      rdf-aggregate-repo (~> 3.2)
+      rdf-xsd (~> 3.2)
+      sparql-client (~> 3.2, >= 3.2.1)
+      sxp (~> 1.2, >= 1.2.2)
+    sparql-client (3.2.1)
+      net-http-persistent (~> 4.0, >= 4.0.1)
+      rdf (~> 3.2, >= 3.2.6)
     speedy-af (0.3.0)
       active-fedora (>= 11.0.0)
       activesupport (> 5.2)
@@ -954,7 +1063,7 @@ GEM
     sxp (1.2.3)
       matrix (~> 0.4)
       rdf (~> 3.2)
-    temple (0.9.1)
+    temple (0.10.0)
     thor (1.2.1)
     thread_safe (0.3.6)
     tilt (2.0.11)
@@ -966,7 +1075,7 @@ GEM
       railties (>= 3.1)
     typhoeus (1.4.0)
       ethon (>= 0.9.0)
-    tzinfo (1.2.10)
+    tzinfo (1.2.11)
       thread_safe (~> 0.1)
     uber (0.0.15)
     uglifier (4.2.0)
@@ -977,8 +1086,9 @@ GEM
     unicode-display_width (1.8.0)
     unicode-types (1.8.0)
     user_agent_parser (2.9.0)
-    view_component (2.58.0)
-      activesupport (>= 5.0.0, < 8.0)
+    view_component (2.82.0)
+      activesupport (>= 5.2.0, < 8.0)
+      concurrent-ruby (~> 1.0)
       method_source (~> 1.0)
     warden (1.2.9)
       rack (>= 2.0.9)
@@ -1012,10 +1122,15 @@ GEM
       nokogiri (~> 1.8)
     xray-rails (0.3.2)
       rails (>= 3.1.0)
+    yaml-ld (0.0.2)
+      json-ld (~> 3.2, >= 3.2.3)
+      psych (>= 3.3)
+      rdf (~> 3.2, >= 3.2.9)
+      rdf-xsd (~> 3.2)
     zeitwerk (2.6.6)
     zk (1.10.0)
       zookeeper (~> 1.5.0)
-    zookeeper (1.5.1)
+    zookeeper (1.5.5)
     zoom (0.5.0)
 
 PLATFORMS
@@ -1023,12 +1138,11 @@ PLATFORMS
 
 DEPENDENCIES
   about_page!
-  active-fedora!
-  active-triples!
+  active-fedora (~> 14.0)
   active_annotations (~> 0.4)
   active_elastic_job
   active_encode (~> 1.0, >= 1.1.2)
-  active_fedora-datastreams!
+  active_fedora-datastreams (~> 0.5)
   activejob-traffic_control
   activejob-uniqueness
   activerecord-session_store (>= 2.0.0)
@@ -1081,7 +1195,7 @@ DEPENDENCIES
   google-analytics-rails (= 1.1.0)
   hashdiff (>= 1.0)
   hooks
-  hydra-head!
+  hydra-head (~> 12.0)
   iconv (~> 1.0.6)
   iiif_manifest (~> 0.6)
   ims-lti (~> 1.1.13)
@@ -1098,8 +1212,8 @@ DEPENDENCIES
   mysql2
   net-ldap
   net-smtp
-  noid-rails!
   okcomputer
+  om!
   omniauth (~> 2.0)
   omniauth-identity (>= 2.0.0)
   omniauth-lti!
