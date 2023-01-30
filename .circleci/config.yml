@@ -161,10 +161,10 @@ workflows:
   build_test_report:
     jobs:
       - build:
-          ruby_ver: '3.1'
-          name: 'Ruby3-1'
+          ruby_ver: '3.2'
+          name: 'Ruby3-2'
           parallelism: 4
       - upload-coverage:
           parallelism: 4
           requires:
-            - Ruby3-1
+            - Ruby3-2
