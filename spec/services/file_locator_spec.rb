@@ -65,6 +65,14 @@ describe FileLocator, type: :service do
         expect(locator.attachment).to eq file
       end
     end
+
+    context "filename with reserved characters" do
+      let(:path) { "/path/to/file?#.mp4" }
+
+      it "should return the correct location" do
+        expect(locator.location).to eq path
+      end
+    end
   end
 
   describe "s3 file" do

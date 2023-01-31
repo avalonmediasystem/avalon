@@ -74,7 +74,9 @@ class FileLocator
     when 's3'
       S3File.new(uri).object.presigned_url(:get)
     when 'file'
-      Addressable::URI.unencode(uri.path)
+      # In case file name includes ? or # use full uri omitting components before path
+      # instead of using only path which would miss query or fragment components
+      Addressable::URI.unencode(uri.omit(:scheme, :user, :password, :host, :port))
     else
       @uri.to_s
     end
