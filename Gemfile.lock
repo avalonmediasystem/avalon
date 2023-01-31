@@ -82,14 +82,6 @@ GIT
       fugit (~> 1.1)
       sidekiq (>= 4.2.1)
 
-GIT
-  remote: https://github.com/cjcolvar/edtf-ruby.git
-  revision: 3097c47a8a527dfc574832570530b592ac5c71bb
-  branch: patch-1
-  specs:
-    edtf (3.1.0)
-      activesupport (>= 3.0, < 8.0)
-
 GEM
   remote: https://rubygems.org/
   specs:
@@ -412,6 +404,8 @@ GEM
       scanf (~> 1.0)
       sxp (~> 1.2)
       unicode-types (~> 1.7)
+    edtf (3.1.1)
+      activesupport (>= 3.0, < 8.0)
     email_spec (2.2.0)
       htmlentities (~> 4.3.3)
       launchy (~> 2.1)
@@ -674,6 +668,10 @@ GEM
     net-ssh (6.1.0)
     netrc (0.11.0)
     nio4r (2.5.8)
+    noid (0.9.0)
+    noid-rails (3.1.0)
+      actionpack (>= 5.0.0, < 7.1)
+      noid (~> 0.9)
     nokogiri (1.14.0)
       mini_portile2 (~> 2.8.0)
       racc (~> 1.4)
@@ -1183,7 +1181,7 @@ DEPENDENCIES
   devise (~> 4.8)
   devise_invitable (~> 2.0)
   dotenv-rails
-  edtf!
+  edtf (>= 3.1.1)
   email_spec
   equivalent-xml
   factory_bot_rails
@@ -1212,6 +1210,7 @@ DEPENDENCIES
   mysql2
   net-ldap
   net-smtp
+  noid-rails (~> 3.1)
   okcomputer
   om!
   omniauth (~> 2.0)
