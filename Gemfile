@@ -85,7 +85,7 @@ gem 'roo'
 gem 'wavefile', '~> 1.0.1'
 
 # Data Translation & Normalization
-gem 'edtf', git: "https://github.com/cjcolvar/edtf-ruby.git", branch: "patch-1"
+gem 'edtf', '>= 3.1.1'
 gem 'iconv', '~> 1.0.6'
 gem 'marc'
 
