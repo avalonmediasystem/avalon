@@ -3,10 +3,12 @@ source 'https://rubygems.org'
 # Core rails
 gem 'bootsnap', require: false
 gem 'listen'
-gem 'rails', '=6.0.5.1'
+gem 'rails', '=6.0.6.1'
 gem 'sprockets', '~>3.7.2'
 #gem 'sprockets-rails', require: 'sprockets/railtie'
 gem 'sqlite3'
+# Force newer version of mail for compatibility with rails 6.0.6.1
+gem 'mail', '> 2.8.0.1'
 
 # Assets
 gem 'bootstrap', '~> 4.0'
