@@ -608,6 +608,19 @@ describe Admin::CollectionsController, type: :controller do
       end
     end
 
+    context 'with a UTF8 filename' do
+      it 'adds the poster and displays as UTF8' do
+	file = fixture_file_upload('/きた!.png', 'image/png')
+	expect { post :attach_poster, params: { id: collection.id, admin_collection: { poster: file } } }.to change { collection.reload.poster.present? }.from(false).to(true)
+	expect(collection.poster.mime_type).to eq 'image/png'
+	expect(collection.poster.original_name).to eq 'きた!.png'
+	expect(collection.poster.original_name.encoding.name).to eq 'UTF-8'
+	expect(collection.poster.content).not_to be_blank
+	expect(response).to redirect_to(admin_collection_path(collection))
+	expect(flash[:success]).not_to be_empty
+      end
+    end
+
     context 'when saving fails' do
       before do
         allow_any_instance_of(Admin::Collection).to receive(:save).and_return(false)
