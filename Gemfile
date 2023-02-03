@@ -3,10 +3,12 @@ source 'https://rubygems.org'
 # Core rails
 gem 'bootsnap', require: false
 gem 'listen'
-gem 'rails', '=6.0.5.1'
+gem 'rails', '=6.0.6.1'
 gem 'sprockets', '~>3.7.2'
 #gem 'sprockets-rails', require: 'sprockets/railtie'
 gem 'sqlite3'
+# Force newer version of mail for compatibility with rails 6.0.6.1
+gem 'mail', '> 2.8.0.1'
 
 # Assets
 gem 'bootstrap', '~> 4.0'
@@ -70,7 +72,7 @@ gem 'omniauth-lti', git: "https://github.com/avalonmediasystem/omniauth-lti.git"
 gem "omniauth-saml", "~> 2.0"
 
 # Media Access & Transcoding
-gem 'active_encode', '~> 1.0'
+gem 'active_encode', '~> 1.0', '>= 1.1.2'
 gem 'audio_waveform-ruby', '~> 1.0.7', require: 'audio_waveform'
 gem 'browse-everything', git: "https://github.com/avalonmediasystem/browse-everything.git", branch: 'v1.2-avalon'
 gem 'fastimage'

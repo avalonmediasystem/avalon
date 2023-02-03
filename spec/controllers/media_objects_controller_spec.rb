@@ -665,6 +665,22 @@ describe MediaObjectsController, type: :controller do
         expect(json.second['published']).to eq(private_media_object.published?)
         expect(json.second['summary']).to eq(private_media_object.abstract)
       end
+
+      context "with structure" do
+        let!(:master_file) { FactoryBot.create(:master_file, :with_structure, media_object: media_object) }
+        it "should not return structure by default" do
+          get 'index', params: {  format: 'json' }
+          expect(json.first["files"][0]["structure"]).to be_blank
+        end
+        it "should return structure if requested" do
+          get 'index', params: { format: 'json', include_structure: true }
+          expect(json.first["files"][0]["structure"]).to eq master_file.structuralMetadata.content
+        end
+        it "should not return structure if requested" do
+          get 'index', params: { format: 'json', include_structure: false}
+          expect(json.first["files"][0]["structure"]).not_to eq master_file.structuralMetadata.content
+        end
+      end
     end
 
     context 'user is not an administrator' do

@@ -274,6 +274,27 @@ describe Admin::CollectionsController, type: :controller do
       #TODO add check that mediaobject is serialized to json properly
     end
 
+    context "with structure" do
+      let!(:mf_1) { FactoryBot.create(:master_file, :with_structure, media_object: collection.media_objects[0]) }
+      let!(:mf_2) { FactoryBot.create(:master_file, :with_structure, media_object: collection.media_objects[1]) }
+      
+      it "should not return structure by default" do
+        get 'items', params: { id: collection.id, format: 'json' }
+        expect(JSON.parse(response.body)[collection.media_objects[0].id]["files"][0]["structure"]).to be_blank
+        expect(JSON.parse(response.body)[collection.media_objects[1].id]["files"][0]["structure"]).to be_blank
+      end
+      it "should return structure if requested" do
+        get 'items', params: { id: collection.id, format: 'json', include_structure: true }
+        expect(JSON.parse(response.body)[collection.media_objects[0].id]["files"][0]["structure"]).to eq mf_1.structuralMetadata.content
+        expect(JSON.parse(response.body)[collection.media_objects[1].id]["files"][0]["structure"]).to eq mf_2.structuralMetadata.content
+      end
+      it "should not return structure if requested" do
+        get 'items', params: { id: collection.id, format: 'json', include_structure: false}
+        expect(JSON.parse(response.body)[collection.media_objects[0].id]["files"][0]["structure"]).not_to eq mf_1.structuralMetadata.content
+        expect(JSON.parse(response.body)[collection.media_objects[1].id]["files"][0]["structure"]).not_to eq mf_2.structuralMetadata.content
+      end
+    end
+
     context 'user is a collection manager' do
       let(:manager) { FactoryBot.create(:manager) }
       before(:each) do
@@ -584,6 +605,19 @@ describe Admin::CollectionsController, type: :controller do
         expect { post :attach_poster, params: { id: collection.id, admin_collection: { poster: file } } }.not_to change { collection.reload.poster.present? }
         expect(response).to redirect_to(admin_collection_path(collection))
         expect(flash[:error]).not_to be_empty
+      end
+    end
+
+    context 'with a UTF8 filename' do
+      it 'adds the poster and displays as UTF8' do
+	file = fixture_file_upload('/きた!.png', 'image/png')
+	expect { post :attach_poster, params: { id: collection.id, admin_collection: { poster: file } } }.to change { collection.reload.poster.present? }.from(false).to(true)
+	expect(collection.poster.mime_type).to eq 'image/png'
+	expect(collection.poster.original_name).to eq 'きた!.png'
+	expect(collection.poster.original_name.encoding.name).to eq 'UTF-8'
+	expect(collection.poster.content).not_to be_blank
+	expect(response).to redirect_to(admin_collection_path(collection))
+	expect(flash[:success]).not_to be_empty
       end
     end
 

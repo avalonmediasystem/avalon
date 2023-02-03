@@ -451,6 +451,7 @@
 /* XML editor */
 .xml_tab_area {
 	background-color: #ffffff;
+	min-height: 480px;
 }
 
 .text_content {
@@ -462,13 +463,7 @@
 	padding: 5px;
 	white-space: pre-wrap;
 	margin: 5px 0px;
-}
-
-.xml_problems_panel {
-	background-color: #ffeeee;
-	padding: 5px;
-	white-space: pre-wrap;
-	margin: 5px 0px;
+	width: 100%;
 }
 
 @media (max-width: 768px) {
