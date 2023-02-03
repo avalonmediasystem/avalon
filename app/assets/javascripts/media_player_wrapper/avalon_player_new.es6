@@ -396,8 +396,13 @@ class MEJSPlayer {
         : parseFloat(this.segmentsMap[target.id].fragmentbegin);
       this.mediaElement.setCurrentTime(time);
     }
-
     this.mejsUtility.showControlsBriefly(this.player);
+    // Fix for paused seeking halt when using structure navigation
+    // by forcing timeupdate event to fire with a quick and pause
+    if(this.mediaElement.paused) {
+      this.mediaElement.play();
+      this.mediaElement.pause();
+    }
   }
 
   /**
@@ -536,33 +541,6 @@ class MEJSPlayer {
    */
   hasSections() {
     return Object.keys(this.segmentsMap).length > 0;
-  }
-
-  /**
-   * Update section links to reflect active section playing
-   * @function highlightSectionLink
-   * @param  {string} segmentId - HTML node of section link clicked on <a>
-   * @return {void}
-   */
-  highlightSectionLink(segmentId) {
-    const accordionEl = document.getElementById('accordion');
-    const htmlCollection = accordionEl.getElementsByClassName('playable wrap');
-    let segmentLinks = [].slice.call(htmlCollection);
-    let segmentEl = document.getElementById(segmentId);
-
-    // Clear "active" style on all section links
-    segmentLinks.forEach(segmentLink => {
-      segmentLink.classList.remove('current-stream');
-      segmentLink.classList.remove('current-section');
-    });
-    if (segmentEl) {
-      // Add style to clicked segment link
-      segmentEl.classList.add('current-stream');
-      // Add style to section title
-      document
-        .getElementById('section-title-' + segmentEl.dataset.segment)
-        .classList.add('current-section');
-    }
   }
 
   /**
