@@ -409,7 +409,7 @@ a[data-trigger='submit'] {
     margin-top: 10px;
     margin-bottom: 10px;
   }
-  
+
   @include media-breakpoint-down(sm) {
     margin-top: 1rem;
     padding: 0;
@@ -1276,3 +1276,11 @@ td {
   position: relative;
 }
 /* End of CDL controls on view page styles */
+
+/*
+Override default d-flex behavior to display
+media object edit page buttons properly
+*/
+.d-flex {
+  gap: 5px;
+}

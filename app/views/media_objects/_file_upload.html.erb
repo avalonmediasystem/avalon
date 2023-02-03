@@ -48,7 +48,7 @@ Unless required by applicable law or agreed to in writing, software distributed
             <div class="associated-files-block">
               <div class="associated-files-top-row row">
                 <!-- Icon -->
-                <div class="col-xs-8">
+                <div class="col-md-9 col-xs-8">
                   <span>
                     <% case section.file_format
                     when 'Sound' %>
@@ -75,7 +75,7 @@ Unless required by applicable law or agreed to in writing, software distributed
                     </span>
                   <% end %>
                 </div>
-                <div class="col-xs-4 float-right">
+                <div class="col-md-3 col-xs-4 d-flex justify-content-end">
                   <% if can? :edit, @media_object %>
                     <span>
                       <%= link_to 'Delete'.html_safe,
