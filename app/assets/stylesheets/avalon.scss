@@ -842,6 +842,14 @@ h5.card-title {
       float: right;
       width: auto;
     }
+
+    /*
+    Override default d-flex behavior to display
+    media object edit page buttons properly
+    */
+    .d-flex {
+      gap: 5px;
+    }
   }
 
   .file-upload {
@@ -1276,11 +1284,3 @@ td {
   position: relative;
 }
 /* End of CDL controls on view page styles */
-
-/*
-Override default d-flex behavior to display
-media object edit page buttons properly
-*/
-.d-flex {
-  gap: 5px;
-}
