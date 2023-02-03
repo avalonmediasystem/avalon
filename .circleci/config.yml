@@ -55,6 +55,8 @@ jobs:
           name: Clean out existing code
           command: rm -rf .[!.]* *
 
+      - run: git config --global --add safe.directory /home/app/avalon
+
       - samvera/cached_checkout
 
       - run: cp config/controlled_vocabulary.yml.example config/controlled_vocabulary.yml
