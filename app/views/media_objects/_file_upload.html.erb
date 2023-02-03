@@ -48,7 +48,7 @@ Unless required by applicable law or agreed to in writing, software distributed
             <div class="associated-files-block">
               <div class="associated-files-top-row row">
                 <!-- Icon -->
-                <div class="col-xs-8">
+                <div class="col-md-9 col-xs-8">
                   <span>
                     <% case section.file_format
                     when 'Sound' %>
@@ -59,10 +59,23 @@ Unless required by applicable law or agreed to in writing, software distributed
                     <i class="fa fa-question-sign"></i>
                     <% end %>
                   </span>
-                  <span class="mediaobject-filename"><%= section.title || truncate_center(File.basename(section.file_location.to_s), 30, 10) %></span>
+                  <% filename = section.title || File.basename(section.file_location.to_s) %>
+                  <span class="mediaobject-filename" id= <%= "truncated_#{section.id}" %> title=<%= filename %>>
+                    <%= section.title || truncate_center(File.basename(section.file_location.to_s), 30, 10) %>
+                  </span>
+                  <span class="mediaobject-filename" id= <%= "full_#{section.id}" %> style="display: none;" title=<%= filename %>>
+                    <%= filename %>
+                  </span>
                   <span><%= number_to_human_size(section.file_size) %></span>
+                  <% if filename.length > 30 %>
+                    <span>
+                      <button class="btn btn-sm" id=<%= "expand_#{section.id}" %> onclick=<%="expandFilename('#{section.id}')"%>>
+                        (Expand)
+                      </button>
+                    </span>
+                  <% end %>
                 </div>
-                <div class="col-xs-4 float-right">
+                <div class="col-md-3 col-xs-4 d-flex justify-content-end">
                   <% if can? :edit, @media_object %>
                     <span>
                       <%= link_to 'Delete'.html_safe,
@@ -79,7 +92,7 @@ Unless required by applicable law or agreed to in writing, software distributed
                       </button>
                     </span>
                     <span>
-                      <button id="<%="edit_section_#{section.id}"%>" class="btn btn-sm btn-primary" onclick="return false;" data-toggle="collapse" 
+                      <button id="<%="edit_section_#{section.id}"%>" class="btn btn-sm btn-primary" onclick="return false;" data-toggle="collapse"
                               data-target="<%="#collapseExample#{section.id}"%>" data-section-id="<%= section.id %>" aria-expanded="false" aria-controls="collapseExample">
                         Edit
                       </button>
@@ -311,7 +324,7 @@ Unless required by applicable law or agreed to in writing, software distributed
 
 <% content_for :page_scripts do %>
   <script>
-     $('.filedata').change(function (e) {
+    $('.filedata').change(function (e) {
       e.preventDefault();
       $(this).closest('form').submit();
     });
