@@ -84,7 +84,7 @@ GIT
 
 GIT
   remote: https://github.com/samvera-labs/samvera-persona.git
-  revision: 0d8895176f60c28d9731ed65b3a73809b6234691
+  revision: 044973c6f08f36c3cce5ff3014eb9d23938afdc7
   branch: newer_rails
   specs:
     samvera-persona (0.3.0)
@@ -263,7 +263,7 @@ GEM
       execjs (~> 2.0)
     bcp47 (0.3.3)
       i18n
-    bcrypt (3.1.16)
+    bcrypt (3.1.18)
     bindex (0.8.1)
     bixby (3.0.2)
       rubocop (= 0.85.1)
@@ -367,7 +367,7 @@ GEM
       railties (>= 4.1.0)
       responders
       warden (~> 1.2.3)
-    devise_invitable (2.0.6)
+    devise_invitable (2.0.7)
       actionmailer (>= 5.0)
       devise (>= 4.6)
     diff-lcs (1.5.0)
@@ -900,9 +900,9 @@ GEM
       uber (< 0.2.0)
     request_store (1.5.1)
       rack (>= 1.4)
-    responders (3.0.1)
-      actionpack (>= 5.0)
-      railties (>= 5.0)
+    responders (3.1.0)
+      actionpack (>= 5.2)
+      railties (>= 5.2)
     rest-client (2.1.0)
       http-accept (>= 1.7.0, < 2.0)
       http-cookie (>= 1.0.2, < 2.0)
