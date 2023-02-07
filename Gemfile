@@ -5,7 +5,7 @@ gem 'bootsnap', require: false
 gem 'listen'
 gem 'net-smtp', require: false
 gem 'psych', '< 4'
-gem 'rails', '=6.0.5.1'
+gem 'rails', '=6.1.7.2'
 gem 'sprockets', '~>3.7.2'
 #gem 'sprockets-rails', require: 'sprockets/railtie'
 gem 'sqlite3'
@@ -55,7 +55,8 @@ gem 'iiif_manifest', '~> 0.6'
 gem 'rack-cors', require: 'rack/cors'
 gem 'rails_same_site_cookie'
 gem 'recaptcha', require: 'recaptcha/rails'
-gem 'samvera-persona', '~> 0.3'
+#gem 'samvera-persona', '~> 0.3'
+gem 'samvera-persona', git: "https://github.com/samvera-labs/samvera-persona.git", branch: "newer_rails"
 gem 'speedy-af', '~> 0.3'
 
 # Avalon Components
