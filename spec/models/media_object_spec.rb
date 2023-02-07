@@ -577,16 +577,12 @@ describe MediaObject do
     end
     it 'should index identifier for master files' do
       master_file = FactoryBot.create(:master_file, identifier: ['TestOtherID'], media_object: media_object)
-      # Explicitly run indexing job to ensure fields are indexed for structure searching
-      #MediaObjectIndexingJob.perform_now(media_object.id)
       media_object.reload
       solr_doc = media_object.to_solr(include_child_fields: true)
       expect(solr_doc['other_identifier_sim']).to include('TestOtherID')
     end
     it 'should index labels for master files' do
       FactoryBot.create(:master_file, :with_structure, media_object: media_object, title: 'Test Label')
-      # Explicitly run indexing job to ensure fields are indexed for structure searching
-      #MediaObjectIndexingJob.perform_now(media_object.id)
       media_object.reload
       solr_doc = media_object.to_solr(include_child_fields: true)
       expect(solr_doc['section_label_tesim']).to include('CD 1')
@@ -596,8 +592,6 @@ describe MediaObject do
       FactoryBot.create(:master_file, media_object: media_object, title: 'Test Label', comment: ['MF Comment 1', 'MF Comment 2'])
       media_object.comment = ['MO Comment']
       media_object.save!
-      # Explicitly run indexing job to ensure fields are indexed for structure searching
-      #MediaObjectIndexingJob.perform_now(media_object.id)
       media_object.reload
       solr_doc = media_object.to_solr(include_child_fields: true)
       expect(solr_doc['all_comments_sim']).to include('MO Comment')
