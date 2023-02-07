@@ -36,7 +36,7 @@ class LanguageTerm
     end
 
     def load!
-      if File.exists?(Store)
+      if File.exist?(Store)
         YAML.load(File.read(Store))
       else
         harvest!

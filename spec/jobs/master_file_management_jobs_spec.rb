@@ -32,7 +32,7 @@ describe MasterFileManagementJobs do
     describe "delete_masterfile" do
       it "should delete masterfile" do
         MasterFileManagementJobs::Delete.perform_now(master_file.id)
-        expect(File.exists? location).to be false
+        expect(File.exist? location).to be false
         expect(MasterFile.find(master_file.id).file_location).to be_blank
       end
     end
@@ -41,16 +41,16 @@ describe MasterFileManagementJobs do
       it "should move masterfile" do
         newpath = "/path/to/new/file.mp4"
         MasterFileManagementJobs::Move.perform_now(master_file.id, newpath)
-        expect(File.exists? location).to be false
-        expect(File.exists? newpath).to be true
+        expect(File.exist? location).to be false
+        expect(File.exist? newpath).to be true
         expect(newpath).to eq MasterFile.find(master_file.id).file_location
       end
 
       it 'does nothing if masterfile already moved' do
         newpath = master_file.file_location
         MasterFileManagementJobs::Move.perform_now(master_file.id, newpath)
-        expect(File.exists? location).to be true
-        expect(File.exists? newpath).to be true
+        expect(File.exist? location).to be true
+        expect(File.exist? newpath).to be true
         expect(newpath).to eq MasterFile.find(master_file.id).file_location
       end
     end
@@ -60,8 +60,8 @@ describe MasterFileManagementJobs do
       it "should move masterfile with space in filename" do
         newpath = "/path/to/new/file with space.mp4"
         MasterFileManagementJobs::Move.perform_now(master_file.id, newpath)
-        expect(File.exists? location).to be false
-        expect(File.exists? newpath).to be true
+        expect(File.exist? location).to be false
+        expect(File.exist? newpath).to be true
         expect(newpath).to eq MasterFile.find(master_file.id).file_location
       end
     end
