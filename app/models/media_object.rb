@@ -423,7 +423,7 @@ class MediaObject < ActiveFedora::Base
     end
 
     def calculate_duration
-      master_file_solr_docs.collect { |h| h['duration_ssi'] }.compact.sum
+      master_file_solr_docs.collect { |h| h['duration_ssi'].to_i }.compact.sum
     end
 
     def collect_ips_for_index ip_strings

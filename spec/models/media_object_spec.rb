@@ -455,22 +455,39 @@ describe MediaObject do
   end
 
   describe '#calculate_duration' do
-    it 'returns zero if there are zero master files' do
-      expect(media_object.send(:calculate_duration)).to eq(0)
+    let(:master_file1) { FactoryBot.create(:master_file, media_object: media_object, duration: '40') }
+    let(:master_file2) { FactoryBot.create(:master_file, media_object: media_object, duration: '40') }
+    let(:master_file3) { FactoryBot.create(:master_file, media_object: media_object, duration: nil) }
+    let(:master_files) { [] }
+
+    before do
+      master_files
+      # Explicitly run indexing job to ensure fields are indexed for structure searching
+      MediaObjectIndexingJob.perform_now(media_object.id)
     end
-    it 'returns the correct duration with two master files' do
-      media_object.ordered_master_files += [FactoryBot.create(:master_file, duration: '40')]
-      media_object.ordered_master_files += [FactoryBot.create(:master_file, duration: '40')]
-      expect(media_object.send(:calculate_duration)).to eq(80)
+
+    context 'with zero master files' do
+      it 'returns zero' do
+	expect(media_object.send(:calculate_duration)).to eq(0)
+      end
     end
-    it 'returns the correct duration with two master files one nil' do
-      media_object.ordered_master_files += [FactoryBot.create(:master_file, duration: '40')]
-      media_object.ordered_master_files += [FactoryBot.create(:master_file, duration:nil)]
-      expect(media_object.send(:calculate_duration)).to eq(40)
+    context 'with two master files' do
+      let(:master_files) { [master_file1, master_file2] }
+      it 'returns the correct duration' do
+	expect(media_object.send(:calculate_duration)).to eq(80)
+      end
     end
-    it 'returns the correct duration with one master file that is nil' do
-      media_object.ordered_master_files += [FactoryBot.create(:master_file, duration:nil)]
-      expect(media_object.send(:calculate_duration)).to eq(0)
+    context 'with two master files one nil' do
+      let(:master_files) { [master_file1, master_file3] }
+      it 'returns the correct duration' do
+	expect(media_object.send(:calculate_duration)).to eq(40)
+      end
+    end
+    context 'with one master file that is nil' do
+      let(:master_files) { [master_file3] }
+      it 'returns the correct duration' do
+	expect(media_object.send(:calculate_duration)).to eq(0)
+      end
     end
   end
 
@@ -560,14 +577,18 @@ describe MediaObject do
     end
     it 'should index identifier for master files' do
       master_file = FactoryBot.create(:master_file, identifier: ['TestOtherID'], media_object: media_object)
+      # Explicitly run indexing job to ensure fields are indexed for structure searching
+      #MediaObjectIndexingJob.perform_now(media_object.id)
       media_object.reload
-      solr_doc = media_object.to_solr
+      solr_doc = media_object.to_solr(include_child_fields: true)
       expect(solr_doc['other_identifier_sim']).to include('TestOtherID')
     end
     it 'should index labels for master files' do
       FactoryBot.create(:master_file, :with_structure, media_object: media_object, title: 'Test Label')
+      # Explicitly run indexing job to ensure fields are indexed for structure searching
+      #MediaObjectIndexingJob.perform_now(media_object.id)
       media_object.reload
-      solr_doc = media_object.to_solr
+      solr_doc = media_object.to_solr(include_child_fields: true)
       expect(solr_doc['section_label_tesim']).to include('CD 1')
       expect(solr_doc['section_label_tesim']).to include('Test Label')
     end
@@ -575,8 +596,10 @@ describe MediaObject do
       FactoryBot.create(:master_file, media_object: media_object, title: 'Test Label', comment: ['MF Comment 1', 'MF Comment 2'])
       media_object.comment = ['MO Comment']
       media_object.save!
+      # Explicitly run indexing job to ensure fields are indexed for structure searching
+      #MediaObjectIndexingJob.perform_now(media_object.id)
       media_object.reload
-      solr_doc = media_object.to_solr
+      solr_doc = media_object.to_solr(include_child_fields: true)
       expect(solr_doc['all_comments_sim']).to include('MO Comment')
       expect(solr_doc['all_comments_sim']).to include('[Test Label] MF Comment 1')
       expect(solr_doc['all_comments_sim']).to include('[Test Label] MF Comment 2')
