@@ -48,8 +48,8 @@ GIT
 
 GIT
   remote: https://github.com/avalonmediasystem/mediainfo.git
-  revision: 11504137076169863509c1caaf3555ab65a4a64b
-  branch: avalon_fixes
+  revision: 25357312337947af0f4a574fb85fb6778cc0fa2a
+  branch: rails6.1
   specs:
     mediainfo (0.7.1)
 
