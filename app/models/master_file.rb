@@ -567,7 +567,7 @@ class MasterFile < ActiveFedora::Base
     response = { source: source&.location }.merge(options)
     return response if response[:source].to_s =~ %r(^https?://)
 
-    unless File.exists?(response[:source])
+    unless File.exist?(response[:source])
       Rails.logger.warn("Masterfile `#{file_location}` not found. Extracting via HLS.")
       hls_temp_file, new_offset = create_frame_source_hls_temp_file(options[:offset])
       response = { source: hls_temp_file, offset: new_offset, non_temp_file: false }
