@@ -304,10 +304,7 @@ describe MediaObjectsController, type: :controller do
           # fields = media_object.attributes.select {|k,v| descMetadata_fields.include? k.to_sym }
           post 'create', params: { format: 'json', fields: fields, files: [master_file], collection_id: collection.id }
           expect(response.status).to eq(200)
-          new_id = JSON.parse(response.body)['id']
-          # Explicitly run indexing job to ensure fields are indexed for structure searching
-          #MediaObjectIndexingJob.perform_now(new_id)
-          new_media_object = MediaObject.find(new_id)
+          new_media_object = MediaObject.find(JSON.parse(response.body)['id'])
           expect(new_media_object.title).to eq media_object.title
           expect(new_media_object.creator).to eq media_object.creator
           expect(new_media_object.date_issued).to eq media_object.date_issued
