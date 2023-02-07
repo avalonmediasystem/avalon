@@ -304,7 +304,10 @@ describe MediaObjectsController, type: :controller do
           # fields = media_object.attributes.select {|k,v| descMetadata_fields.include? k.to_sym }
           post 'create', params: { format: 'json', fields: fields, files: [master_file], collection_id: collection.id }
           expect(response.status).to eq(200)
-          new_media_object = MediaObject.find(JSON.parse(response.body)['id'])
+          new_id = JSON.parse(response.body)['id']
+          # Explicitly run indexing job to ensure fields are indexed for structure searching
+          #MediaObjectIndexingJob.perform_now(new_id)
+          new_media_object = MediaObject.find(new_id)
           expect(new_media_object.title).to eq media_object.title
           expect(new_media_object.creator).to eq media_object.creator
           expect(new_media_object.date_issued).to eq media_object.date_issued
@@ -1217,7 +1220,7 @@ describe MediaObjectsController, type: :controller do
       delete :destroy, params: { id: media_object.id }
       expect(flash[:notice]).to include("media object deleted")
       expect(MediaObject.exists?(media_object.id)).to be_falsey
-      expect(MasterFile.exists?(media_object.master_files.first.id)).to be_falsey
+      expect(MasterFile.exists?(media_object.master_file_ids.first)).to be_falsey
     end
 
     it "should remove a MediaObject with multiple MasterFiles" do
@@ -1392,10 +1395,9 @@ describe MediaObjectsController, type: :controller do
     end
     it 'sets the MIME type' do
       media_object = FactoryBot.create(:media_object)
-      media_object.ordered_master_files += [FactoryBot.create(:master_file, :with_derivative)]
+      master_file = FactoryBot.create(:master_file, :with_derivative, media_object: media_object)
+      media_object.reload # Reload here to force reloading master file solr docs used in #set_media_types!
       media_object.set_media_types!
-      media_object.save
-      media_object.reload
       expect(media_object.format).to eq(["video/mp4"])
     end
 

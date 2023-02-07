@@ -197,6 +197,7 @@ class MediaObject < ActiveFedora::Base
   end
 
   def update_dependent_properties!
+    @master_file_docs = nil
     self.set_duration!
     self.set_media_types!
     self.set_resource_types!
@@ -407,6 +408,12 @@ class MediaObject < ActiveFedora::Base
   def current_checkout(user_id)
     checkouts = Checkout.active_for_media_object(id)
     checkouts.select{ |ch| ch.user_id == user_id  }.first
+  end
+
+  # Override to reset memoized fields
+  def reload
+    @master_file_docs = nil
+    super
   end
 
   private
