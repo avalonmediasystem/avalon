@@ -48,7 +48,7 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
   end
 
   def find_user(auth_type)
-    auth_type.downcase!
+    auth_type = auth_type.downcase
     find_method = "find_for_#{auth_type}".to_sym
     find_method = :find_for_generic unless User.respond_to?(find_method)
     logger.debug "#{auth_type} :: #{current_user.inspect}"
