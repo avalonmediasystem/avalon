@@ -25,7 +25,7 @@ module Avalon
     # Returns available files in the dropbox
     def all
       FileUtils.mkdir_p @base_directory
-      return nil if @base_directory.blank? or not Dir.exists?(@base_directory)
+      return nil if @base_directory.blank? or not Dir.exist?(@base_directory)
       contents = Dir.entries(@base_directory).reject { |fn| fn.start_with?('.') }
       open_files = find_open_files(contents)
       files = []
@@ -52,7 +52,7 @@ module Avalon
     # Compares id against hash of each file's full path and return the path that matches
     # Pretty horrible, should destroy
     def find(id)
-      return nil if @base_directory.blank? or not Dir.exists?(@base_directory)
+      return nil if @base_directory.blank? or not Dir.exist?(@base_directory)
 
       Dir.entries(@base_directory).each do |path|
         full_path = File.join( @base_directory, path)
