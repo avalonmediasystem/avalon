@@ -22,7 +22,7 @@ describe ActiveEncodeJobs do
 
     describe "perform" do
       it 'creates the active_encode job' do
-        expect(encoder_class).to receive(:create).with(input, master_file_id: master_file.id, preset: master_file.workflow_name).once
+        expect(encoder_class).to receive(:create).with(input, { master_file_id: master_file.id, preset: master_file.workflow_name }).once
         ActiveEncodeJobs::CreateEncodeJob.perform_now(input, master_file.id)
       end
 
