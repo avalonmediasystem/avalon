@@ -195,5 +195,6 @@ RSpec.configure do |config|
 end
 
 FactoryBot::SyntaxRunner.class_eval do
-  include ActionDispatch::TestProcess
+  include ActiveSupport::Testing::FileFixtures
+  include ActionDispatch::TestProcess::FixtureFile
 end
