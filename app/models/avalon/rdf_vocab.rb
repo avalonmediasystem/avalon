@@ -66,5 +66,11 @@ module Avalon
       property :default_hidden,           "rdfs:isDefinedBy" => %(avr-collection:).freeze, type: "rdfs:Class".freeze
       property :cdl_enabled,              "rdfs:isDefinedBy" => %(avr-collection:).freeze, type: "rdfs:Class".freeze
     end
+
+    class EBUCore < RDF::StrictVocabulary("http://www.ebu.ch/metadata/ontologies/ebucore/ebucore#")
+      property :filename,   "rdfs:isDefinedBy" => %(avr-collection:).freeze, type: "rdfs:Class".freeze
+      property :identifier, "rdfs:isDefinedBy" => %(avr-collection:).freeze, type: "rdfs:Class".freeze
+      property :locator,    "rdfs:isDefinedBy" => %(avr-collection:).freeze, type: "rdfs:Class".freeze
+    end
   end
 end
