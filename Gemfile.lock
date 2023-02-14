@@ -87,7 +87,7 @@ GIT
 
 GIT
   remote: https://github.com/samvera/active_fedora.git
-  revision: e2c49c63db267a0f7f8aaa61f59bc9857020df63
+  revision: bf3668b26d312938ad92f2d77fdaf3dc0c19fa3d
   branch: errors_fix
   specs:
     active-fedora (14.0.0)
