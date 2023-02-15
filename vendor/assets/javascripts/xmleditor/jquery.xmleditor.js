@@ -1987,8 +1987,8 @@ MenuBar.prototype.render = function(parentElement) {
 	
 	this.headerMenu = $("<ul/>");
   this.headerMenuRow = $("<div class=\"row\"/>");
-  this.headerCol1 = $("<div class=\"col-8 col-sm-7\"/>");
-  this.headerCol2 = $("<div class=\"col-4 col-sm-5\"/>");
+  this.headerCol1 = $("<div class=\"col-md-8\"/>");
+  this.headerCol2 = $("<div class=\"col-md-4\"/>");
   this.headerMenuRow.append(this.headerCol1);
   this.headerMenuRow.append(this.headerCol2);
 

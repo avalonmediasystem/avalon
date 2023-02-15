@@ -82,7 +82,7 @@ class Admin::CollectionsController < ApplicationController
   # GET /collections/1/items
   def items
     mos = paginate @collection.media_objects
-    render json: mos.to_a.collect{|mo| [mo.id, mo.as_json] }.to_h
+    render json: mos.to_a.collect { |mo| [mo.id, mo.as_json(include_structure: params[:include_structure] == "true")] }.to_h
   end
 
   # POST /collections
@@ -97,10 +97,25 @@ class Admin::CollectionsController < ApplicationController
           subject: "New collection: #{@collection.name}"
         ).deliver_later
       end
-      render json: {id: @collection.id}, status: 200
+      respond_to do |format|
+        format.html do
+          redirect_to @collection, notice: 'Collection was successfully created.'
+        end
+        format.json do
+          render json: {id: @collection.id}, status: 200
+        end
+      end
     else
       logger.warn "Failed to create collection #{@collection.name rescue '<unknown>'}: #{@collection.errors.full_messages}"
-      render json: {errors: ['Failed to create collection:']+@collection.errors.full_messages}, status: 422
+      respond_to do |format|
+        format.html do
+          flash.now[:error] = @collection.errors.full_messages.to_sentence
+          render action: 'new'
+        end
+        format.json do
+          render json: { errors: ['Failed to create collection:']+@collection.errors.full_messages}, status: 422
+        end
+      end
     end
   end
 

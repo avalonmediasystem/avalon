@@ -14,4 +14,9 @@
 
 class IndexedFile < ActiveFedora::File
   include SpeedyAF::IndexedContent
+
+  # Override
+  def original_name
+    super.force_encoding("UTF-8")
+  end
 end
