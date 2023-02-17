@@ -466,7 +466,7 @@ RSpec.describe PlaylistsController, type: :controller do
       before :each do
         FactoryBot.reload
         FactoryBot.create(:playlist, title: "aardvark", user: user)
-        FactoryBot.create_list(:playlist, 9, user: user)
+        FactoryBot.create_list(:playlist, 9, title: 'bbbbb', user: user)
         FactoryBot.create(:playlist, title: "zzzebra", user: user)
       end
 

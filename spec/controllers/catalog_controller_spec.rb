@@ -192,6 +192,8 @@ describe CatalogController do
         @master_file = FactoryBot.create(:master_file, :with_structure, media_object: @media_object, title: 'Test Label')
         @media_object.ordered_master_files += [@master_file]
         @media_object.save!
+        # Explicitly run indexing job to ensure fields are indexed for structure searching
+        MediaObjectIndexingJob.perform_now(@media_object.id)
       end
       it "should find results based upon structure" do
         get 'index', params: { q: 'CD 1' }
