@@ -116,7 +116,6 @@ group :development do
   # Use Bixby instead of rubocop directly
   gem 'bixby', require: false
   gem 'web-console'
-  gem 'xray-rails'
 end
 
 group :development, :test do
