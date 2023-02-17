@@ -30,7 +30,7 @@ gem 'webpacker'
 
 # Core Samvera
 #gem 'active-fedora', '~> 14.0'
-gem 'active-fedora', git: "https://github.com/samvera/active_fedora.git", branch: "errors_fix"
+gem 'active-fedora', git: "https://github.com/samvera/active_fedora.git", branch: "main"
 gem 'active_fedora-datastreams', '~> 0.5'
 gem 'hydra-head', '~> 12.0'
 gem 'ldp', '~> 1.1.0'
