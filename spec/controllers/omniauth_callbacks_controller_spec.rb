@@ -15,8 +15,27 @@
 require 'rails_helper'
 
 describe Users::OmniauthCallbacksController, type: :controller do
+  let(:identity_params) do
+    {
+      on_login: AuthFormsController.action(:render_identity_request_form),
+      on_registration: AuthFormsController.action(:render_identity_registration_form),
+      on_failed_registration: AuthFormsController.action(:render_form_with_errors),
+      fields: [:email]
+    }
+  end
+
   before do
     @request.env["devise.mapping"] = Devise.mappings[:user]
+  end
+
+  around do |example|
+    @old_configs = Devise.omniauth_configs
+    Devise.omniauth(:identity, identity_params)
+    Rails.application.reload_routes!
+
+    example.run
+    Devise.class_variable_set(:@@omniauth_configs, @old_configs)
+    Rails.application.reload_routes!
   end
 
   describe '#find_user' do

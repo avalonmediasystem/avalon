@@ -4,11 +4,6 @@ dropbox:
   upload_uri: smb://test.host/dropbox
 auth:
   configuration:
-    - :name: Avalon Test Auth
-      :provider: :identity
-      :params:
-        :fields:
-          - :email
     - :name: Avalon Lti OAuth
       :provider: :lti
       :hidden: true

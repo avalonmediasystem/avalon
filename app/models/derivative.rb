@@ -22,7 +22,7 @@ class Derivative < ActiveFedora::Base
 
   belongs_to :master_file, class_name: 'MasterFile', predicate: ActiveFedora::RDF::Fcrepo::RelsExt.isDerivationOf
 
-  property :location_url, predicate: ::RDF::Vocab::EBUCore.locator, multiple: false do |index|
+  property :location_url, predicate: Avalon::RDFVocab::EBUCore.locator, multiple: false do |index|
     index.as :stored_sortable
   end
   property :hls_url, predicate: Avalon::RDFVocab::Derivative.hlsURL, multiple: false do |index|
@@ -31,12 +31,12 @@ class Derivative < ActiveFedora::Base
   property :duration, predicate: ::RDF::Vocab::EBUCore.duration, multiple: false do |index|
     index.as :stored_sortable
   end
-  property :track_id, predicate: ::RDF::Vocab::EBUCore.identifier, multiple: false
+  property :track_id, predicate: Avalon::RDFVocab::EBUCore.identifier, multiple: false
   property :hls_track_id, predicate: Avalon::RDFVocab::Derivative.hlsTrackID, multiple: false
   property :managed, predicate: Avalon::RDFVocab::Derivative.isManaged, multiple: false do |index|
     index.as ActiveFedora::Indexing::Descriptor.new(:boolean, :stored, :indexed)
   end
-  property :derivativeFile, predicate: ::RDF::Vocab::EBUCore.filename, multiple: false do |index|
+  property :derivativeFile, predicate: Avalon::RDFVocab::EBUCore.filename, multiple: false do |index|
     index.as :stored_sortable
   end
 

@@ -197,9 +197,9 @@ class MediaObjectsController < ApplicationController
         bib_source = media_object_parameters.dig(:bibliographic_id, :source) || ''
         logger.warn "Failed bib import using bibID #{bib_id}, #{bib_source}"
       ensure
-        if !@media_object.valid?
+        unless @media_object.valid?
           # Fall back to MODS as sent if Bib Import fails
-          @media_object.update_attributes(media_object_parameters.slice(*@media_object.errors.keys)) if params.has_key?(:fields) and params[:fields].respond_to?(:has_key?)
+          @media_object.update_attributes(media_object_parameters.slice(*@media_object.errors.attribute_names)) if params.has_key?(:fields) and params[:fields].respond_to?(:has_key?)
         end
       end
     else
@@ -208,7 +208,7 @@ class MediaObjectsController < ApplicationController
 
     error_messages = []
     unless @media_object.valid?
-      invalid_fields = @media_object.errors.keys
+      invalid_fields = @media_object.errors.attribute_names
       required_fields = [:title, :date_issued]
       unless required_fields.any? { |f| invalid_fields.include? f }
         invalid_fields.each do |field|

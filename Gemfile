@@ -3,7 +3,9 @@ source 'https://rubygems.org'
 # Core rails
 gem 'bootsnap', require: false
 gem 'listen'
-gem 'rails', '=6.0.6.1'
+gem 'net-smtp', require: false
+gem 'psych', '< 4'
+gem 'rails', '=7.0.4.1'
 gem 'sprockets', '~>3.7.2'
 #gem 'sprockets-rails', require: 'sprockets/railtie'
 gem 'sqlite3'
@@ -27,13 +29,14 @@ gem 'uglifier', '>= 1.3.0'
 gem 'webpacker'
 
 # Core Samvera
-gem 'active-fedora', '~> 13.2', '>= 13.2.5'
-gem 'active_fedora-datastreams', '~> 0.4'
+#gem 'active-fedora', '~> 14.0'
+gem 'active-fedora', git: "https://github.com/samvera/active_fedora.git", branch: "main"
+gem 'active_fedora-datastreams', '~> 0.5'
 gem 'hydra-head', '~> 12.0'
-gem 'ldp', '~> 1.0.3'
-gem 'noid-rails', '~> 3.0.1'
+gem 'ldp', '~> 1.1.0'
+gem 'noid-rails', '~> 3.1'
+gem 'om', git: 'https://github.com/avalonmediasystem/om.git', branch: 'ruby3'
 gem 'rdf-rdfxml'
-gem 'rdf-vocab', '< 3.1.5'
 
 # Samvera version pins
 gem 'blacklight', '~> 7.25'
@@ -55,7 +58,8 @@ gem 'iiif_manifest', '~> 0.6'
 gem 'rack-cors', require: 'rack/cors'
 gem 'rails_same_site_cookie'
 gem 'recaptcha', require: 'recaptcha/rails'
-gem 'samvera-persona', '~> 0.3'
+#gem 'samvera-persona', '~> 0.3'
+gem 'samvera-persona', git: "https://github.com/samvera-labs/samvera-persona.git", branch: "newer_rails"
 gem 'speedy-af', '~> 0.3'
 
 # Avalon Components
@@ -77,13 +81,13 @@ gem 'audio_waveform-ruby', '~> 1.0.7', require: 'audio_waveform'
 gem 'browse-everything', git: "https://github.com/avalonmediasystem/browse-everything.git", branch: 'v1.2-avalon'
 gem 'fastimage'
 gem 'media_element_add_to_playlist', git: 'https://github.com/avalonmediasystem/media-element-add-to-playlist.git', tag: 'avalon-r6.5'
-gem 'mediainfo', git: "https://github.com/avalonmediasystem/mediainfo.git", branch: 'avalon_fixes'
+gem 'mediainfo', git: "https://github.com/avalonmediasystem/mediainfo.git", branch: 'rails6.1'
 gem 'rest-client', '~> 2.0'
 gem 'roo'
 gem 'wavefile', '~> 1.0.1'
 
 # Data Translation & Normalization
-gem 'edtf'
+gem 'edtf', '>= 3.1.1'
 gem 'iconv', '~> 1.0.6'
 gem 'marc'
 
@@ -92,7 +96,7 @@ gem 'activejob-traffic_control'
 gem 'activejob-uniqueness'
 gem 'redis-rails'
 gem 'sidekiq', '~> 6.2'
-gem 'sidekiq-cron', '~> 1.2', git: "https://github.com/avalonmediasystem/sidekiq-cron.git", tag: 'v1.2.1-avalon'
+gem 'sidekiq-cron', '~> 1.9'
 
 # Coding Patterns
 gem 'config'
@@ -144,7 +148,7 @@ group :test do
   gem 'shoulda-matchers'
   gem 'simplecov'
   gem 'webdrivers', '~> 3.0'
-  gem 'webmock', '~> 3.5.1'
+  gem 'webmock', '~> 3.5'
 end
 
 group :production do

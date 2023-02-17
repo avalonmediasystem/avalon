@@ -624,7 +624,7 @@ describe MasterFile do
         let(:high_derivative_locator) { FileLocator.new(video_master_file.derivatives.where(quality_ssi: 'high').first.absolute_location) }
 
         it 'uses high derivative' do
-          expect(File).to receive(:exists?).with(high_derivative_locator.location).and_return(true)
+          expect(File).to receive(:exist?).with(high_derivative_locator.location).and_return(true)
           expect(source[:source]).to eq high_derivative_locator.location
           expect(source[:non_temp_file]).to eq true
         end
@@ -636,7 +636,7 @@ describe MasterFile do
 
         it 'falls back to HLS' do
           expect(video_master_file).to receive(:create_frame_source_hls_temp_file).and_return(hls_temp_file)
-          expect(File).to receive(:exists?).with(high_derivative_locator.location).and_return(false)
+          expect(File).to receive(:exist?).with(high_derivative_locator.location).and_return(false)
           expect(source[:source]).to eq '/tmp/temp_segment.ts'
           expect(source[:non_temp_file]).to eq false
         end
