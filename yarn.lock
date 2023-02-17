@@ -1892,11 +1892,6 @@ balanced-match@^1.0.0:
   resolved "https://registry.yarnpkg.com/balanced-match/-/balanced-match-1.0.2.tgz#e83e3a7e3f300b34cb9d87f615fa0cbf357690ee"
   integrity sha512-3oSeUO0TMV67hN1AmbXsK4yaqU7tjiHlbxRDZOpH0KW9+CeX4bRAaX0Anxt0tx2MrpRpWwQaPwIlISEJhYU5Pw==
 
-base-64@^0.1.0:
-  version "0.1.0"
-  resolved "https://registry.yarnpkg.com/base-64/-/base-64-0.1.0.tgz#780a99c84e7d600260361511c4877613bf24f6bb"
-  integrity sha512-Y5gU45svrR5tI2Vt/X9GPd3L0HNIKzGu202EjxrXMpuc2V2CiKgemAbUUsqYmZJvPtCXoUKjNZwBJzsNScUbXA==
-
 base64-js@^1.0.2:
   version "1.5.1"
   resolved "https://registry.yarnpkg.com/base64-js/-/base64-js-1.5.1.tgz#1b1b440160a5bf7ad40b650f095963481903930a"
@@ -6602,9 +6597,9 @@ react-redux@^7.2.6:
     prop-types "^15.7.2"
     react-is "^17.0.2"
 
-"react-structural-metadata-editor@https://github.com/avalonmediasystem/react-structural-metadata-editor#iiif-manifest":
+"react-structural-metadata-editor@https://github.com/avalonmediasystem/react-structural-metadata-editor":
   version "1.1.0"
-  resolved "https://github.com/avalonmediasystem/react-structural-metadata-editor#ec1e1306b9717ff711af4716f75c1aa0c2f8350c"
+  resolved "https://github.com/avalonmediasystem/react-structural-metadata-editor#ca1ed572f3104e6043e4b8fc60bf67f6a75259cd"
   dependencies:
     "@babel/runtime" "^7.4.4"
     "@fortawesome/fontawesome-svg-core" "^1.2.4"
@@ -6613,7 +6608,6 @@ react-redux@^7.2.6:
     "@material-ui/core" "^4.12.0"
     "@material-ui/icons" "4.2.1"
     axios "^0.21.2"
-    base-64 "^0.1.0"
     hls.js "^1.1.2"
     lodash "4.17.21"
     manifesto.js "^4.2.14"
