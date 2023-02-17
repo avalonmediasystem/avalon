@@ -475,6 +475,7 @@ class MediaObjectsController < ApplicationController
     manifest = IIIFManifest::V3::ManifestFactory.new(presenter).to_h
     # TODO: implement thumbnail in iiif_manifest
     manifest["thumbnail"] = [{ "id" => presenter.thumbnail, "type" => 'Image' }] if presenter.thumbnail
+    manifest["rendering"] = presenter.rendering
 
     respond_to do |wants|
       wants.json { render json: manifest.to_json }

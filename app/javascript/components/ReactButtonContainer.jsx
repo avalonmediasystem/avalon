@@ -7,22 +7,27 @@ class ReactButtonContainer extends Component {
   constructor(props) {
     super(props);
 
-    const { audioURL, baseURL, initStructure, masterFileID, streamDuration } = this.props;
+    const {
+      baseURL,
+      initStructure,
+      masterFileID,
+      mediaObjectID,
+      canvasIndex,
+    } = this.props;
     this.state = {
       show: false,
       smeProps: {
         structureURL: baseURL + '/master_files/' + masterFileID + '/structure.json',
-        waveformURL: baseURL + '/master_files/' + masterFileID + '/waveform.json',
+        manifestURL: baseURL + '/media_objects/' + mediaObjectID + '/manifest.json',
+        canvasIndex: canvasIndex,
         initStructure: initStructure,
-        audioURL: audioURL,
-        streamDuration: Number(streamDuration)
       },
       structureSaved: true
     };
   }
 
   handleClose = () => {
-    if(!this.state.structureSaved) {
+    if (!this.state.structureSaved) {
       if (confirm("Unsaved changes will be lost. Are you sure?")) {
         this.setState({
           show: false
@@ -44,10 +49,10 @@ class ReactButtonContainer extends Component {
 
   getStructureStatus = (value) => {
     this.setState({ structureSaved: value });
-  }
+  };
 
   render() {
-    const modalID = `edit_structure_${this.props.sectionIndex}`;
+    const modalID = `edit_structure_${this.props.canvasIndex}`;
     return (
       <div className="ReactButtonContainer">
         <button
@@ -57,7 +62,14 @@ class ReactButtonContainer extends Component {
           Edit Structure
         </button>
 
-        <Modal id={modalID} show={this.state.show} animation={false} onHide={this.handleClose} backdrop="static" className="sme-modal-wrapper" dialogClassName="modal-wrapper-body">
+        <Modal
+          id={modalID}
+          show={this.state.show}
+          animation={false}
+          onHide={this.handleClose}
+          backdrop="static"
+          className="sme-modal-wrapper"
+          dialogClassName="modal-wrapper-body">
           <Modal.Header closeButton>
             <Modal.Title>Edit Structure</Modal.Title>
           </Modal.Header>
