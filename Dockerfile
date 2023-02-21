@@ -19,6 +19,8 @@ COPY        Gemfile.lock ./Gemfile.lock
 RUN         gem install bundler -v "$(grep -A 1 "BUNDLED WITH" Gemfile.lock | tail -n 1)" \
          && bundle config build.nokogiri --use-system-libraries
 
+ENV         RUBY_THREAD_MACHINE_STACK_SIZE 8388608
+
 
 # Build development gems
 FROM        bundle as bundle-dev
