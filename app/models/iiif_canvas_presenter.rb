@@ -37,6 +37,15 @@ class IiifCanvasPresenter
     master_file.is_video? ? video_content : audio_content
   end
 
+  def sequence_rendering
+    [{ 
+      "@id" => "#{@master_file.waveform_master_file_url(@master_file.id)}.json", 
+      "type" => "Dataset", 
+      "label" => { "en" => ["waveform.json"] },
+      "format" => "application/json"
+    }]
+  end
+
   private
 
     def video_content

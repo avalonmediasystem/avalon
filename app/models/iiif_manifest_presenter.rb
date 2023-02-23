@@ -53,15 +53,6 @@ class IiifManifestPresenter
     @thumbnail ||= image_for(media_object.to_solr)
   end
 
-  def rendering
-    media_object.master_files.collect do |mf|
-      { "id" => "#{mf.waveform_master_file_url(mf.id)}.json", "type" => "SpecificResource", 
-        "label" => { "en" => ["waveform.json"] },
-        "format" => "application/json"
-      }
-    end
-  end
-
   def ranges
     [
       IiifManifestRange.new(
