@@ -9,7 +9,6 @@ class ReactButtonContainer extends Component {
 
     const {
       baseURL,
-      initStructure,
       masterFileID,
       mediaObjectID,
       canvasIndex,
@@ -20,7 +19,6 @@ class ReactButtonContainer extends Component {
         structureURL: baseURL + '/master_files/' + masterFileID + '/structure.json',
         manifestURL: baseURL + '/media_objects/' + mediaObjectID + '/manifest.json',
         canvasIndex: canvasIndex,
-        initStructure: initStructure,
       },
       structureSaved: true
     };
