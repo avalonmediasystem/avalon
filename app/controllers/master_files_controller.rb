@@ -325,6 +325,11 @@ class MasterFilesController < ApplicationController
     end
   end
 
+  def caption_manifest
+    return head :unauthorized if cannot?(:read, @master_file)
+    @caption = @master_file.captions
+  end
+
   def structure
     authorize! :read, @master_file, message: "You do not have sufficient privileges"
     render json: @master_file.structuralMetadata.as_json
