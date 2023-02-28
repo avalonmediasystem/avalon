@@ -296,6 +296,13 @@ describe MediaObjectsController, type: :controller do
           expect(JSON.parse(response.body)["errors"].class).to eq Array
           expect(JSON.parse(response.body)["errors"].first.class).to eq String
         end
+        it "should respond with 422 if collection param not present" do
+          post 'create', params: { format: 'json' }
+          expect(response.status).to eq(422)
+          expect(JSON.parse(response.body)).to include('errors')
+          expect(JSON.parse(response.body)["errors"].class).to eq Array
+          expect(JSON.parse(response.body)["errors"].first.class).to eq String
+        end
         it "should create a new media_object" do
           # master_file_obj = FactoryBot.create(:master_file, master_file.slice(:files))
           media_object = FactoryBot.create(:media_object)#, master_files: [master_file_obj])
@@ -446,14 +453,15 @@ describe MediaObjectsController, type: :controller do
     end
     describe "#update" do
       context 'using api' do
-        let(:administrator) { FactoryBot.create(:administrator) }
+        let(:user) { FactoryBot.create(:administrator) }
+        let(:media_object) { FactoryBot.create(:media_object, :with_master_file) }
 
         before(:each) do
-          ApiToken.create token: 'secret_token', username: administrator.username, email: administrator.email
+          ApiToken.create token: 'secret_token', username: user.username, email: user.email
           request.headers['Avalon-Api-Key'] = 'secret_token'
           allow_any_instance_of(MasterFile).to receive(:get_ffmpeg_frame_data).and_return('some data')
         end
-        let!(:media_object) { FactoryBot.create(:media_object, :with_master_file) }
+
         it "should route json format to #json_update" do
           assert_routing({ path: 'media_objects/1.json', method: :put },
              { controller: 'media_objects', action: 'json_update', id: '1', format: 'json' })
@@ -512,6 +520,39 @@ describe MediaObjectsController, type: :controller do
           expect(JSON.parse(response.body)).to include('errors')
           expect(JSON.parse(response.body)["errors"].class).to eq Array
           expect(JSON.parse(response.body)["errors"].first.class).to eq String
+        end
+
+        context "as an authorized non-admin user" do
+          let(:user) { FactoryBot.create(:manager) }
+          let(:collection) { FactoryBot.create(:collection, managers: [user.username]) }
+          let(:media_object) { FactoryBot.create(:media_object, collection: collection) }
+
+          it "updates metadata" do
+	    old_title = media_object.title
+	    put 'json_update', params: { format: 'json', id: media_object.id, fields: {title: old_title+'new'}, collection_id: media_object.collection_id }
+	    expect(JSON.parse(response.body)['id'].class).to eq String
+	    expect(JSON.parse(response.body)).not_to include('errors')
+	    media_object.reload
+	    expect(media_object.title).to eq old_title+'new'
+          end
+        end
+
+        context "collection_id parameter" do
+          it "updates metadata without collection_id" do
+	    old_title = media_object.title
+	    put 'json_update', params: { format: 'json', id: media_object.id, fields: {title: old_title+'new'} }
+	    expect(JSON.parse(response.body)['id'].class).to eq String
+	    expect(JSON.parse(response.body)).not_to include('errors')
+	    media_object.reload
+	    expect(media_object.title).to eq old_title+'new'
+          end
+	  it "should respond with 422 if collection not found" do
+	    put 'json_update', params: { format: 'json', id: media_object.id, collection_id: "doesnt_exist" }
+	    expect(response.status).to eq(422)
+	    expect(JSON.parse(response.body)).to include('errors')
+	    expect(JSON.parse(response.body)["errors"].class).to eq Array
+	    expect(JSON.parse(response.body)["errors"].first.class).to eq String
+	  end
         end
       end
     end
