@@ -173,14 +173,17 @@ class MediaObjectsController < ApplicationController
   end
 
   def update_media_object
-    begin
-      collection = Admin::Collection.find(api_params[:collection_id])
-    rescue ActiveFedora::ObjectNotFoundError
-      render json: { errors: ["Collection not found for #{api_params[:collection_id]}"] }, status: 422
-      return
+    if (api_params[:collection_id].present?)
+      begin
+        collection = Admin::Collection.find(api_params[:collection_id])
+      rescue ActiveFedora::ObjectNotFoundError
+        render json: { errors: ["Collection not found for #{api_params[:collection_id]}"] }, status: 422
+        return
+      end
+      
+      @media_object.collection = collection
     end
 
-    @media_object.collection = collection
     @media_object.avalon_uploader = 'REST API'
 
     populate_from_catalog = (!!api_params[:import_bib_record] && media_object_parameters[:bibliographic_id].present?)

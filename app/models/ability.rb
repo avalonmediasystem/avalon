@@ -165,6 +165,11 @@ class Ability
         # anyone who can edit a media_object can also push it
         can? :edit, media_object
       end
+
+      can :json_update, MediaObject do |media_object|
+        # anyone who can edit a media_object can also update it via the API
+        is_api_request? && can?(:edit, media_object)
+      end
     end
   end
 
