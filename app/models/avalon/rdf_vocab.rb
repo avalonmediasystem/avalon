@@ -72,5 +72,9 @@ module Avalon
       property :identifier, "rdfs:isDefinedBy" => %(avr-collection:).freeze, type: "rdfs:Class".freeze
       property :locator,    "rdfs:isDefinedBy" => %(avr-collection:).freeze, type: "rdfs:Class".freeze
     end
+
+    class Bibframe < RDF::StrictVocabulary("http://bibframe.org/vocab/")
+      property :heldBy,   "rdfs:isDefinedBy" => %(avr-collection:).freeze, type: "rdfs:Class".freeze
+    end
   end
 end

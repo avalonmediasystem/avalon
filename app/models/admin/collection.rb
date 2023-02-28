@@ -34,7 +34,7 @@ class Admin::Collection < ActiveFedora::Base
   property :name, predicate: ::RDF::Vocab::DC.title, multiple: false do |index|
     index.as :stored_sortable
   end
-  property :unit, predicate: ::RDF::Vocab::Bibframe.heldBy, multiple: false do |index|
+  property :unit, predicate: Avalon::RDFVocab::Bibframe.heldBy, multiple: false do |index|
     index.as :stored_sortable
   end
   property :description, predicate: ::RDF::Vocab::DC.description, multiple: false do |index|
