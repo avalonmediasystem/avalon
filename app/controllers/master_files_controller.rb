@@ -327,7 +327,6 @@ class MasterFilesController < ApplicationController
 
   def caption_manifest
     return head :unauthorized if cannot?(:read, @master_file)
-    @caption = @master_file.captions
   end
 
   def structure
