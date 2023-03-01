@@ -85,22 +85,6 @@ GIT
       pretender
       rails (>= 5.2.4.3, < 7.1)
 
-GIT
-  remote: https://github.com/samvera/active_fedora.git
-  revision: a75b5b5038a524bec9bf499e602e0207443ae5df
-  branch: main
-  specs:
-    active-fedora (14.0.0)
-      active-triples (>= 0.11.0, < 2.0.0)
-      activemodel (>= 5.1)
-      activesupport (>= 5.1)
-      deprecation
-      faraday (~> 1.0)
-      faraday-encoding (>= 0.0.5)
-      ldp (>= 0.7.0, < 2)
-      rsolr (>= 1.1.2, < 3)
-      ruby-progressbar (~> 1.0)
-
 GEM
   remote: https://rubygems.org/
   specs:
@@ -149,6 +133,16 @@ GEM
       erubi (~> 1.4)
       rails-dom-testing (~> 2.0)
       rails-html-sanitizer (~> 1.1, >= 1.2.0)
+    active-fedora (14.0.1)
+      active-triples (>= 0.11.0, < 2.0.0)
+      activemodel (>= 5.1)
+      activesupport (>= 5.1)
+      deprecation
+      faraday (>= 1.0)
+      faraday-encoding (>= 0.0.5)
+      ldp (>= 0.7.0, < 2)
+      rsolr (>= 1.1.2, < 3)
+      ruby-progressbar (~> 1.0)
     active-triples (1.2.0)
       activemodel (>= 3.0.0)
       activesupport (>= 3.0.0)
@@ -210,7 +204,6 @@ GEM
       public_suffix (>= 2.0.2, < 6.0)
     airbrussh (1.4.1)
       sshkit (>= 1.6.1, != 1.7.0)
-    amazing_print (1.4.0)
     api-pagination (5.0.0)
     ast (2.4.2)
     audio_waveform-ruby (1.0.7)
@@ -345,7 +338,7 @@ GEM
       coffee-script-source
       execjs
     coffee-script-source (1.12.2)
-    concurrent-ruby (1.2.0)
+    concurrent-ruby (1.2.2)
     config (4.1.0)
       deep_merge (~> 1.2, >= 1.2.1)
       dry-validation (~> 1.0, >= 1.0.0)
@@ -418,13 +411,12 @@ GEM
       dry-initializer (~> 3.0)
       dry-schema (>= 1.12, < 2)
       zeitwerk (~> 2.6)
-    ebnf (2.3.1)
-      amazing_print (~> 1.4)
+    ebnf (2.3.2)
       htmlentities (~> 4.3)
       rdf (~> 3.2)
       scanf (~> 1.0)
       sxp (~> 1.2)
-      unicode-types (~> 1.7)
+      unicode-types (~> 1.8)
     edtf (3.1.1)
       activesupport (>= 3.0, < 8.0)
     email_spec (2.2.1)
@@ -447,31 +439,12 @@ GEM
     fakefs (2.2.0)
     faker (3.1.1)
       i18n (>= 1.8.11, < 2)
-    faraday (1.10.3)
-      faraday-em_http (~> 1.0)
-      faraday-em_synchrony (~> 1.0)
-      faraday-excon (~> 1.1)
-      faraday-httpclient (~> 1.0)
-      faraday-multipart (~> 1.0)
-      faraday-net_http (~> 1.0)
-      faraday-net_http_persistent (~> 1.0)
-      faraday-patron (~> 1.0)
-      faraday-rack (~> 1.0)
-      faraday-retry (~> 1.0)
+    faraday (2.7.4)
+      faraday-net_http (>= 2.0, < 3.1)
       ruby2_keywords (>= 0.0.4)
-    faraday-em_http (1.0.0)
-    faraday-em_synchrony (1.0.0)
     faraday-encoding (0.0.5)
       faraday
-    faraday-excon (1.1.0)
-    faraday-httpclient (1.0.1)
-    faraday-multipart (1.0.4)
-      multipart-post (~> 2)
-    faraday-net_http (1.0.1)
-    faraday-net_http_persistent (1.2.0)
-    faraday-patron (1.0.0)
-    faraday-rack (1.0.0)
-    faraday-retry (1.0.3)
+    faraday-net_http (3.0.2)
     fastimage (2.2.6)
     fcrepo_wrapper (0.9.0)
       ruby-progressbar
@@ -625,7 +598,7 @@ GEM
     mini_mime (1.1.2)
     mini_portile2 (2.8.1)
     minitar (0.9)
-    minitest (5.17.0)
+    minitest (5.18.0)
     msgpack (1.6.0)
     multi_json (1.15.0)
     multi_xml (0.6.0)
@@ -700,7 +673,7 @@ GEM
       nio4r (~> 2.0)
     raabro (1.4.0)
     racc (1.6.2)
-    rack (2.2.6.2)
+    rack (2.2.6.3)
     rack-cors (1.1.1)
       rack (>= 2.0.0)
     rack-protection (3.0.5)
@@ -876,7 +849,7 @@ GEM
       json
       multipart-post
       oauth2
-    ruby-progressbar (1.11.0)
+    ruby-progressbar (1.13.0)
     ruby-saml (1.15.0)
       nokogiri (>= 1.13.10)
       rexml
@@ -917,7 +890,7 @@ GEM
       simplecov_json_formatter (~> 0.1)
     simplecov-html (0.12.3)
     simplecov_json_formatter (0.1.4)
-    slop (4.9.3)
+    slop (4.10.1)
     solr_wrapper (4.0.2)
       http
       minitar
@@ -1023,7 +996,7 @@ PLATFORMS
 
 DEPENDENCIES
   about_page!
-  active-fedora!
+  active-fedora (~> 14.0, >= 14.0.1)
   active_annotations (~> 0.4)
   active_elastic_job
   active_encode (~> 1.0, >= 1.1.2)
