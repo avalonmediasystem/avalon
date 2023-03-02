@@ -1,11 +1,11 @@
 # Copyright 2011-2022, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
-# 
+#
 # You may obtain a copy of the License at
-# 
+#
 # http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software distributed
 #   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
 #   CONDITIONS OF ANY KIND, either express or implied. See the License for the
@@ -38,9 +38,9 @@ class IiifCanvasPresenter
   end
 
   def sequence_rendering
-    [{ 
-      "@id" => "#{@master_file.waveform_master_file_url(@master_file.id)}.json", 
-      "type" => "Dataset", 
+    [{
+      "@id" => "#{@master_file.waveform_master_file_url(@master_file.id)}.json",
+      "type" => "Dataset",
       "label" => { "en" => ["waveform.json"] },
       "format" => "application/json"
     }]
@@ -144,7 +144,11 @@ class IiifCanvasPresenter
       # in which case SyntaxError shall be prompted to the user during file upload.
       # This can be done by defining some XML schema to require that at least one Div/Span child node exists
       # under root or each Div node, otherwise Nokogiri::XML parser will report error, and raise exception here.
-      @structure_ng_xml ||= (s = master_file.structuralMetadata.content).nil? ? Nokogiri::XML(nil) : Nokogiri::XML(s)
+      @structure_ng_xml ||= if master_file.has_structuralMetadata?
+                              Nokogiri::XML(master_file.structuralMetadata.content)
+                            else
+                              Nokogiri::XML(nil)
+                            end
     end
 
     def auth_service(quality)
