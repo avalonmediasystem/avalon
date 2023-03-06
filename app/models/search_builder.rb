@@ -20,11 +20,17 @@ class SearchBuilder < Blacklight::SearchBuilder
 
   class_attribute :avalon_solr_access_filters_logic
   self.avalon_solr_access_filters_logic = [:only_published_items, :limit_to_non_hidden_items]
-  self.default_processor_chain += [:only_wanted_models]
+  self.default_processor_chain += [:only_wanted_models, :strip_extra_colons]
 
   def only_wanted_models(solr_parameters)
     solr_parameters[:fq] ||= []
     solr_parameters[:fq] << 'has_model_ssim:"MediaObject"'
+  end
+
+  # In solr 6.x there is an issue with a q having more than one unquoted colon returning no results
+  # This can be removed when using solr 8
+  def strip_extra_colons(solr_parameters)
+    solr_parameters[:q] = solr_parameters[:q].split(/("[^"]*")/).map {|s| s.match?(/("[^"]*")/) ? s : s.gsub(/:/,'') }.join
   end
 
   def only_published_items(_permission_types = discovery_permissions, _ability = current_ability)

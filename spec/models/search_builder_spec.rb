@@ -29,4 +29,11 @@ RSpec.describe SearchBuilder do
       expect(subject.only_published_items({})).to eq "test:clause OR workflow_published_sim:\"Published\""
     end
   end
+
+  describe "#strip_extra_colons" do
+    it "should remove all unquoted colons" do
+      expect(subject.strip_extra_colons({q: "a : b : c : d"})).to eq "a  b  c  d"
+      expect(subject.strip_extra_colons({q: "\"a : b\" : c : d"})).to eq "\"a : b\"  c  d"
+    end
+  end
 end
