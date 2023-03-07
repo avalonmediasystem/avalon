@@ -57,8 +57,7 @@ gem 'iiif_manifest', '~> 1.3'
 gem 'rack-cors', require: 'rack/cors'
 gem 'rails_same_site_cookie'
 gem 'recaptcha', require: 'recaptcha/rails'
-#gem 'samvera-persona', '~> 0.3'
-gem 'samvera-persona', git: "https://github.com/samvera-labs/samvera-persona.git", branch: "newer_rails"
+gem 'samvera-persona', '~> 0.4', '>= 0.4.1'
 gem 'speedy-af', '~> 0.3'
 
 # Avalon Components
