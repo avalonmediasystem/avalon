@@ -14,7 +14,7 @@ Unless required by applicable law or agreed to in writing, software distributed
 ---  END LICENSE_HEADER BLOCK  ---
 %>
 #EXTM3U
-#EXT-X-MEDIA:TYPE=SUBTITLES,GROUP-ID="subs",LANGUAGE="en",NAME="English",AUTOSELECT=YES,URI="<%= caption_manifest_master_file_path %>"
+#EXT-X-MEDIA:TYPE=SUBTITLES,GROUP-ID="subs",LANGUAGE="<%= Settings.caption_default.language %>",NAME="<%= Settings.caption_default.name %>",AUTOSELECT=YES,URI="<%= caption_manifest_master_file_path %>"
 <% @hls_streams.each do |hls| %>
 #EXT-X-STREAM-INF:BANDWIDTH=<%= hls[:bitrate] %>,SUBTITLES="subs"
 <%= hls[:url] %>
