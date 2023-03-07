@@ -60,10 +60,10 @@ Unless required by applicable law or agreed to in writing, software distributed
                     <% end %>
                   </span>
                   <% filename = section.title || File.basename(section.file_location.to_s) %>
-                  <span class="mediaobject-filename" id= <%= "truncated_#{section.id}" %> title=<%= filename %>>
-                    <%= section.title || truncate_center(File.basename(section.file_location.to_s), 30, 10) %>
+                  <span class="mediaobject-filename" id= <%= "truncated_#{section.id}" %> title="<%= filename %>">
+                    <%= truncate_center(filename, 30, 10) %>
                   </span>
-                  <span class="mediaobject-filename" id= <%= "full_#{section.id}" %> style="display: none;" title=<%= filename %>>
+                  <span class="mediaobject-filename" id= <%= "full_#{section.id}" %> style="display: none;" title="<%= filename %>">
                     <%= filename %>
                   </span>
                   <span><%= number_to_human_size(section.file_size) %></span>
