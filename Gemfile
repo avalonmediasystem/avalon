@@ -29,8 +29,7 @@ gem 'uglifier', '>= 1.3.0'
 gem 'webpacker'
 
 # Core Samvera
-#gem 'active-fedora', '~> 14.0'
-gem 'active-fedora', git: "https://github.com/samvera/active_fedora.git", branch: "main"
+gem 'active-fedora', '~> 14.0', '>= 14.0.1'
 gem 'active_fedora-datastreams', '~> 0.5'
 gem 'hydra-head', '~> 12.0'
 gem 'ldp', '~> 1.1.0'
@@ -58,8 +57,7 @@ gem 'iiif_manifest', '~> 1.3'
 gem 'rack-cors', require: 'rack/cors'
 gem 'rails_same_site_cookie'
 gem 'recaptcha', require: 'recaptcha/rails'
-#gem 'samvera-persona', '~> 0.3'
-gem 'samvera-persona', git: "https://github.com/samvera-labs/samvera-persona.git", branch: "newer_rails"
+gem 'samvera-persona', '~> 0.4', '>= 0.4.1'
 gem 'speedy-af', '~> 0.3'
 
 # Avalon Components
