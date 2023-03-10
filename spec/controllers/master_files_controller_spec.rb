@@ -632,6 +632,37 @@ describe MasterFilesController do
     end
   end
 
+  describe '#caption_manifest' do
+    let(:media_object) { FactoryBot.create(:published_media_object) }
+    let(:master_file) { FactoryBot.create(:master_file, :with_captions, media_object: media_object) }
+    let(:public_media_object) { FactoryBot.create(:published_media_object, visibility: 'public') }
+    let(:public_master_file) { FactoryBot.create(:master_file, :with_captions, media_object: public_media_object) }
+
+    context 'master file has been deleted' do
+      before do
+        allow(MasterFile).to receive(:find).and_raise(Ldp::Gone)
+      end
+
+      it 'returns gone (403)' do
+        expect(get('caption_manifest', params: { id: master_file.id }, xhr: true)).to have_http_status(:gone)
+      end
+    end
+
+    it 'returns unauthorized (401) if cannot read the master file' do
+      expect(get('caption_manifest', params: { id: master_file.id }, xhr: true)).to have_http_status(:unauthorized)
+    end
+
+    it 'returns the caption manifest' do
+      login_as :administrator
+      expect(get('caption_manifest', params: { id: master_file.id }, xhr: true)).to have_http_status(:ok)
+      expect(response.content_type).to eq 'application/x-mpegURL; charset=utf-8'
+    end
+
+    it 'returns a manifest if public' do
+      expect(get('caption_manifest', params: { id: public_master_file.id }, xhr: true)).to have_http_status(:ok)
+    end
+  end
+
   describe '#move' do
     let(:master_file) { FactoryBot.create(:master_file, :with_media_object) }
     let(:target_media_object) { FactoryBot.create(:media_object) }
