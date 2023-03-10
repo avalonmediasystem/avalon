@@ -87,9 +87,6 @@ class Derivative < ActiveFedora::Base
 
   def to_solr
     super.tap do |solr_doc|
-      solr_doc['format_ss'] = self.format
-      solr_doc['mime_type_ss'] = self.mime_type.nil? ? "Nil" : self.mime_type
-      solr_doc['bitrate_is'] = self.bitrate
       solr_doc['stream_path_ssi'] = if location_url&.start_with?("rtmp")
                                       location_url.split(/:/).last
                                     else
