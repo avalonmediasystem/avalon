@@ -165,6 +165,7 @@ class MasterFile < ActiveFedora::Base
   before_destroy :stop_processing!
   before_destroy :update_parent!
   define_hooks :after_transcoding, :after_processing
+  after_update_index { |mf| mf.media_object&.enqueue_long_indexing }
 
   # Generate the waveform after proessing is complete but before master file management
   after_transcoding :generate_waveform

@@ -836,4 +836,19 @@ describe MasterFile do
       end
     end
   end
+
+  describe 'indexing' do
+    let(:master_file) { FactoryBot.build(:master_file, :with_media_object) }
+
+    before do
+      # Force creation of master_file and then clear queue of byproduct jobs
+      master_file
+      ActiveJob::Base.queue_adapter.enqueued_jobs.clear
+    end
+
+    it 'enqueues indexing of parent media object' do
+      master_file.update_index
+      expect(MediaObjectIndexingJob).to have_been_enqueued.with(master_file.media_object.id)
+    end
+  end
 end

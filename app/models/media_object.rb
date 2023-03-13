@@ -37,6 +37,7 @@ class MediaObject < ActiveFedora::Base
   before_save :assign_id!, prepend: true
   after_save :update_dependent_permalinks_job, if: Proc.new { |mo| mo.persisted? && mo.published? }
   after_save :remove_bookmarks
+  after_update_index :enqueue_long_indexing
 
   # Call custom validation methods to ensure that required fields are present and
   # that preferred controlled vocabulary standards are used
@@ -239,6 +240,11 @@ class MediaObject < ActiveFedora::Base
     solr_doc['all_comments_sim'] = all_comments
   end
 
+  # Enqueue background job to do a full indexing including more costly fields that read from children
+  def enqueue_long_indexing
+    MediaObjectIndexingJob.perform_later(id)
+  end
+
   def to_solr(include_child_fields: false)
     descMetadata.to_solr(super).tap do |solr_doc|
       solr_doc[ActiveFedora.index_field_mapper.solr_name("workflow_published", :facetable, type: :string)] = published? ? 'Published' : 'Unpublished'
@@ -259,8 +265,6 @@ class MediaObject < ActiveFedora::Base
         # Fill in other identifier so these values aren't stripped from the solr doc while waiting for the background job
         mf_docs = ActiveFedora::SolrService.query("isPartOf_ssim:#{id}", rows: 1_000_000)
         solr_doc["other_identifier_sim"] +=  mf_docs.collect { |h| h['identifier_ssim'] }.flatten
-        # Enqueue background job to do a full indexing including more costly fields that read from children
-        MediaObjectIndexingJob.perform_later(id)
       end
 
       #Add all searchable fields to the all_text_timv field
