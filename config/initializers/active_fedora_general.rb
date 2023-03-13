@@ -8,6 +8,12 @@ ActiveFedora::Base.translate_id_to_uri = lambda do |id|
                                          end
 ActiveFedora::Base.logger = Rails.logger
 
+# ActiveFedora 14.x+ does not set these by default for some reason so need to set them here
+# Without these set AF::File subclasses like StructuralMetadata will include the btree in their ids
+# (e.g. ab/cd/ef/gh/abcdefghi/structuralMetadata) which messes up SpeedyAF (and probably other things)
+ActiveFedora::File.translate_uri_to_id = ActiveFedora::Base.translate_uri_to_id
+ActiveFedora::File.translate_id_to_uri = ActiveFedora::Base.translate_id_to_uri
+
 # ActiveModel::Dirty's internals were substantially rewritten in Rails 6 making the following monkey-patch potentially unnecessary.
 # We will need to test this throroughly to ensure it is safe to remove.
 #
