@@ -83,10 +83,10 @@ class IiifCanvasPresenter
       end
     end
 
-    def simple_iiif_range
+    def simple_iiif_range(label = stream_info[:embed_title])
       # TODO: embed_title?
       IiifManifestRange.new(
-        label: { "none" => [stream_info[:embed_title]] },
+        label: { "none" => [label] },
         items: [
           IiifCanvasPresenter.new(master_file: master_file, stream_info: stream_info, media_fragment: 't=0,')
         ]
@@ -94,6 +94,14 @@ class IiifCanvasPresenter
     end
 
     def structure_to_iiif_range
+      # Remove all "Div" nodes which do not have a "Span" descendant to ensure a valid manifest.
+      # According the to IIIF presentation 3 spec each Range needs to have a descendant that is a Canvas.
+      # See https://iiif.io/api/presentation/3.0/#34-structural-properties
+      structure_ng_xml.root.xpath("//*[local-name() = 'Div' and not(descendant::*[local-name() = 'Span'])]").map(&:remove)
+
+      # Return default range if nothing valid is left
+      return simple_iiif_range(structure_ng_xml.root.attr('label')) if structure_ng_xml.root.children.all?(&:blank?)
+
       div_to_iiif_range(structure_ng_xml.root)
     end
 
