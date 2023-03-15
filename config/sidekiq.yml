@@ -14,6 +14,7 @@
   - mailers
   - master_file_management_move
   - master_file_management_delete
+  - media_object_indexing
   - reindex
   - s3_split
   - solr_backup

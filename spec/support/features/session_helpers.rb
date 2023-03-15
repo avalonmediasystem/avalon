@@ -6,7 +6,7 @@ module Features
       user = who.is_a?(User) ? who : FactoryBot.build(:user).tap(&:save!)
       visit '/users/sign_in'
       within('div.omniauth-form form') do
-        fill_in 'Login', with: user.email
+        fill_in 'Username or email', with: user.email
         fill_in 'Password', with: user.password
         click_on 'Connect'
       end

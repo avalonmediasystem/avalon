@@ -1,4 +1,4 @@
-# Copyright 2011-2022, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2023, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 # 
@@ -112,7 +112,7 @@ describe Avalon::Batch::Ingest do
       expect { batch_ingest.scan_for_packages }.not_to raise_error
       expect { batch_ingest.scan_for_packages }.not_to change{BatchRegistries.count}
       error_file = File.join(@dropbox_dir,'example_batch_ingest','bad_manifest.xlsx.error')
-      expect(File.exists?(error_file)).to be true
+      expect(File.exist?(error_file)).to be true
       expect(File.read(error_file)).to match(/^Invalid manifest/)
     end
 

@@ -1,11 +1,11 @@
-# Copyright 2011-2022, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2023, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
-#
+# 
 # You may obtain a copy of the License at
-#
+# 
 # http://www.apache.org/licenses/LICENSE-2.0
-#
+# 
 # Unless required by applicable law or agreed to in writing, software distributed
 #   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
 #   CONDITIONS OF ANY KIND, either express or implied. See the License for the
@@ -15,8 +15,27 @@
 require 'rails_helper'
 
 describe Users::OmniauthCallbacksController, type: :controller do
+  let(:identity_params) do
+    {
+      on_login: AuthFormsController.action(:render_identity_request_form),
+      on_registration: AuthFormsController.action(:render_identity_registration_form),
+      on_failed_registration: AuthFormsController.action(:render_form_with_errors),
+      fields: [:email]
+    }
+  end
+
   before do
     @request.env["devise.mapping"] = Devise.mappings[:user]
+  end
+
+  around do |example|
+    @old_configs = Devise.omniauth_configs
+    Devise.omniauth(:identity, identity_params)
+    Rails.application.reload_routes!
+
+    example.run
+    Devise.class_variable_set(:@@omniauth_configs, @old_configs)
+    Rails.application.reload_routes!
   end
 
   describe '#find_user' do

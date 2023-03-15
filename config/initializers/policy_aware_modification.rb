@@ -43,4 +43,19 @@ ActiveFedora::SolrService.instance_eval do
   def self.default_http_method
     ActiveFedora.solr_config.fetch(:http_method, :post).to_sym
   end
+
+  def self.count(query, args = {})
+    args = args.merge(rows: 0)
+    method = args.delete(:method) || default_http_method
+
+    result = case method
+	     when :get
+	       get(query, args)
+	     when :post
+	       post(query, args)
+	     else
+	       raise "Unsupported HTTP method for querying SolrService (#{method.inspect})"
+	     end
+    result['response']['numFound'].to_i
+  end
 end

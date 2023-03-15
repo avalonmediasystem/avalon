@@ -1,4 +1,4 @@
-# Copyright 2011-2022, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2023, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 # 
@@ -35,6 +35,15 @@ class IiifCanvasPresenter
   # @return [IIIFManifest::V3::DisplayContent] the display content required by the manifest builder.
   def display_content
     master_file.is_video? ? video_content : audio_content
+  end
+
+  def sequence_rendering
+    [{
+      "@id" => "#{@master_file.waveform_master_file_url(@master_file.id)}.json",
+      "type" => "Dataset",
+      "label" => { "en" => ["waveform.json"] },
+      "format" => "application/json"
+    }]
   end
 
   private
@@ -74,10 +83,10 @@ class IiifCanvasPresenter
       end
     end
 
-    def simple_iiif_range
+    def simple_iiif_range(label = stream_info[:embed_title])
       # TODO: embed_title?
       IiifManifestRange.new(
-        label: { '@none'.to_sym => [stream_info[:embed_title]] },
+        label: { "none" => [label] },
         items: [
           IiifCanvasPresenter.new(master_file: master_file, stream_info: stream_info, media_fragment: 't=0,')
         ]
@@ -85,6 +94,14 @@ class IiifCanvasPresenter
     end
 
     def structure_to_iiif_range
+      # Remove all "Div" nodes which do not have a "Span" descendant to ensure a valid manifest.
+      # According the to IIIF presentation 3 spec each Range needs to have a descendant that is a Canvas.
+      # See https://iiif.io/api/presentation/3.0/#34-structural-properties
+      structure_ng_xml.root.xpath("//*[local-name() = 'Div' and not(descendant::*[local-name() = 'Span'])]").map(&:remove)
+
+      # Return default range if nothing valid is left
+      return simple_iiif_range(structure_ng_xml.root.attr('label')) if structure_ng_xml.root.children.all?(&:blank?)
+
       div_to_iiif_range(structure_ng_xml.root)
     end
 
@@ -102,7 +119,7 @@ class IiifCanvasPresenter
       raise Nokogiri::XML::SyntaxError, "Empty root or Div node: #{div_node[:label]}" if items.empty?
 
       IiifManifestRange.new(
-        label: { '@none' => [div_node[:label]] },
+        label: { "none" => [div_node[:label]] },
         items: items
       )
     end
@@ -110,7 +127,7 @@ class IiifCanvasPresenter
     def span_to_iiif_range(span_node)
       fragment = "t=#{parse_hour_min_sec(span_node[:begin])},#{parse_hour_min_sec(span_node[:end])}"
       IiifManifestRange.new(
-        label: { '@none' => [span_node[:label]] },
+        label: { "none" => [span_node[:label]] },
         items: [
           IiifCanvasPresenter.new(master_file: master_file, stream_info: stream_info, media_fragment: fragment)
         ]
@@ -135,7 +152,11 @@ class IiifCanvasPresenter
       # in which case SyntaxError shall be prompted to the user during file upload.
       # This can be done by defining some XML schema to require that at least one Div/Span child node exists
       # under root or each Div node, otherwise Nokogiri::XML parser will report error, and raise exception here.
-      @structure_ng_xml ||= (s = master_file.structuralMetadata.content).nil? ? Nokogiri::XML(nil) : Nokogiri::XML(s)
+      @structure_ng_xml ||= if master_file.has_structuralMetadata?
+                              Nokogiri::XML(master_file.structuralMetadata.content)
+                            else
+                              Nokogiri::XML(nil)
+                            end
     end
 
     def auth_service(quality)

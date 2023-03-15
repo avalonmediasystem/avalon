@@ -1,4 +1,4 @@
-# Copyright 2011-2022, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2023, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 # 
@@ -217,6 +217,7 @@ module ApplicationHelper
 
   def truncate_center label, output_label_length, end_length = 0
     end_length = output_label_length / 2 - 3 if end_length == 0
+    end_length = 0 if end_length.negative?
     truncate(label, length: output_label_length,
       omission: "...#{label.last(end_length)}")
   end

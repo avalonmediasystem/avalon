@@ -1,4 +1,4 @@
-# Copyright 2011-2022, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2023, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 # 
@@ -624,7 +624,7 @@ describe MasterFile do
         let(:high_derivative_locator) { FileLocator.new(video_master_file.derivatives.where(quality_ssi: 'high').first.absolute_location) }
 
         it 'uses high derivative' do
-          expect(File).to receive(:exists?).with(high_derivative_locator.location).and_return(true)
+          expect(File).to receive(:exist?).with(high_derivative_locator.location).and_return(true)
           expect(source[:source]).to eq high_derivative_locator.location
           expect(source[:non_temp_file]).to eq true
         end
@@ -636,7 +636,7 @@ describe MasterFile do
 
         it 'falls back to HLS' do
           expect(video_master_file).to receive(:create_frame_source_hls_temp_file).and_return(hls_temp_file)
-          expect(File).to receive(:exists?).with(high_derivative_locator.location).and_return(false)
+          expect(File).to receive(:exist?).with(high_derivative_locator.location).and_return(false)
           expect(source[:source]).to eq '/tmp/temp_segment.ts'
           expect(source[:non_temp_file]).to eq false
         end
@@ -834,6 +834,21 @@ describe MasterFile do
           expect(master_file.has_audio?).to eq false
         end
       end
+    end
+  end
+
+  describe 'indexing' do
+    let(:master_file) { FactoryBot.build(:master_file, :with_media_object) }
+
+    before do
+      # Force creation of master_file and then clear queue of byproduct jobs
+      master_file
+      ActiveJob::Base.queue_adapter.enqueued_jobs.clear
+    end
+
+    it 'enqueues indexing of parent media object' do
+      master_file.update_index
+      expect(MediaObjectIndexingJob).to have_been_enqueued.with(master_file.media_object.id)
     end
   end
 end
