@@ -25,7 +25,7 @@ GIT
 GIT
   remote: https://github.com/avalonmediasystem/browse-everything.git
   revision: 38610d19d36105ca9c311e0a641fdb43697fabea
-  branch: v1.2-avalon
+  tag: v1.2.0-avalon
   specs:
     browse-everything (1.2.0)
       addressable (~> 2.5)
@@ -49,14 +49,14 @@ GIT
 GIT
   remote: https://github.com/avalonmediasystem/mediainfo.git
   revision: bea9479d33328c6b483ee19c008730f939d98266
-  branch: rails6.1
+  tag: v0.7.1-avalon
   specs:
     mediainfo (0.7.1)
 
 GIT
   remote: https://github.com/avalonmediasystem/om.git
   revision: ffde890b4187a7d8be41ae387264cd6eb20b6ba8
-  branch: ruby3
+  tag: v3.2.0-ruby3
   specs:
     om (3.2.0)
       activemodel (>= 5.1)
@@ -457,8 +457,8 @@ GEM
       retriable (>= 2.0, < 4.a)
       rexml
       webrick
-    google-apis-drive_v3 (0.33.0)
-      google-apis-core (>= 0.9.1, < 2.a)
+    google-apis-drive_v3 (0.37.0)
+      google-apis-core (>= 0.11.0, < 2.a)
     googleauth (1.3.0)
       faraday (>= 0.17.3, < 3.a)
       jwt (>= 1.4, < 3.0)
