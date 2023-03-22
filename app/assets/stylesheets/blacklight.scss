@@ -22,6 +22,10 @@
   max-width: 160px;
 }
 
+.no-icon img, img.no-icon {
+  max-height: 90px;
+}
+
 .btn-outline-primary {
   @extend .btn-sm;
   @extend .btn-outline;
