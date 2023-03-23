@@ -399,9 +399,17 @@ class MEJSPlayer {
     this.mejsUtility.showControlsBriefly(this.player);
     // Fix for paused seeking halt when using structure navigation
     // by forcing timeupdate event to fire with a quick and pause
-    if(this.mediaElement.paused) {
-      this.mediaElement.play();
-      this.mediaElement.pause();
+    if(this.mediaElement.paused && this.mediaElement) {
+      /** Reference: https://developer.chrome.com/blog/play-request-was-interrupted/ */
+      let playPromise = this.mediaElement.play();
+      if(playPromise !== undefined) {
+        playPromise.then(_ => {
+          this.mediaElement.pause();
+        })
+        .catch(error => {
+          console.log('Media player error: ', error);
+        })
+      }
     }
   }
 
