@@ -1,11 +1,11 @@
 # Copyright 2011-2023, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
-# 
+#
 # You may obtain a copy of the License at
-# 
+#
 # http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software distributed
 #   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
 #   CONDITIONS OF ANY KIND, either express or implied. See the License for the
@@ -21,6 +21,7 @@ class ApplicationController < ActionController::Base
   include Hydra::Controller::ControllerBehavior
   # To deal with a load order issue breaking persona impersonate
   include Samvera::Persona::BecomesBehavior
+  include Identifier
   layout 'avalon'
 
   # Prevent CSRF attacks by raising an exception.
@@ -183,6 +184,22 @@ class ApplicationController < ActionController::Base
     else
       # m3u8 request
       head 410
+    end
+  end
+
+  rescue_from URI::InvalidURIError do |exception|
+    # Strip all non-alphanumeric characters from passed in NOID
+    noid_id = params[:id]&.gsub(/[^A-Za-z0-9]/, '')
+
+    # If cleaned NOID is valid, redo the request. Otherwise generate an error page.
+    if noid_service.valid?(noid_id)
+      redirect_to(request.parameters.merge(id: noid_id))
+    else
+      if request.format == :json
+        render json: {errors: ["#{params[:id]} not found"]}, status: 404
+      else
+        render '/errors/unknown_pid', status: 404
+      end
     end
   end
 
