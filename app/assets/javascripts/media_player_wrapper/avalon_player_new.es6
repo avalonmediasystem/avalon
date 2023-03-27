@@ -280,7 +280,7 @@ class MEJSPlayer {
     );
 
     // Build playlists button from the new stream when not in playlists
-    if(!playlistItemsT) {
+    if(!playlistItemsT && !this.mejsUtility.isMobile()) {
       this.player.options.playlistItemDefaultTitle = this.currentStreamInfo.embed_title;
       this.player.buildaddToPlaylist(this.player, null, null, null);
     }
@@ -290,11 +290,20 @@ class MEJSPlayer {
       this.player.buildplaylistItems(this.player, null, null, this.mediaElement);
     }
 
-    // Set defaultQuality in player options before building the quality feature
-    this.player.options.defaultQuality = this.localStorage.getItem('quality');
+    // Quality selector is turned off in mobile devices
+    if(!mejs.Features.isAndroid) {
+      // Set defaultQuality in player options before building the quality feature
+      this.player.options.defaultQuality = this.localStorage.getItem('quality');
 
-    // Build quality
-    this.player.buildquality(this.player, null, null, this.mediaElement);
+      // Build quality
+      this.player.buildquality(this.player, null, null, this.mediaElement);
+    } else {
+      // Set current source in absence of the quality selection
+      let currentSource = this.currentStreamInfo.stream_hls
+                        .filter(src => src.quality == this.player.options.defaultQuality)[0];
+     
+      this.player.setSrc(currentSource.url);
+    }
 
     // Set startVolume in options from the current mediaelement instance
     this.player.options.startVolume = this.mediaElement.volume;
@@ -454,7 +463,7 @@ class MEJSPlayer {
    * @return {void}
    */
   handleError(error, mediaElement, originalNode) {
-    console.log('MEJS CREATE ERROR: ' + error);
+    console.log('MEJS ERROR: ' + error);
   }
   /**
    * MediaElement render success callback function
