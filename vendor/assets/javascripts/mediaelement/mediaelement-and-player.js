@@ -1936,7 +1936,15 @@ Object.assign(_player2.default.prototype, {
 			}
 			if (t.forcedHandlePause) {
 				t.slider.focus();
-				t.play();
+				let playPromise = t.play();
+				if(playPromise !== undefined) {
+					playPromise.then(_ => {
+						// Show play UI, and enable controls
+						t.play();
+						t.enableControls();
+					})
+					.catch(error => {	})
+				}
 			}
 			t.forcedHandlePause = false;
 		};
