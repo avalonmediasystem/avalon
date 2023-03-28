@@ -300,7 +300,7 @@ class MEJSPlayer {
     } else {
       // Set current source in absence of the quality selection
       let currentSource = this.currentStreamInfo.stream_hls
-                        .filter(src => src.quality == this.player.options.defaultQuality)[0];
+                        .filter(src => src.quality === this.player.options.defaultQuality)[0];
      
       this.player.setSrc(currentSource.url);
     }
@@ -323,8 +323,15 @@ class MEJSPlayer {
    */
   reInitializeCaptions() {
     if (this.currentStreamInfo.captions_path) {
-      // Place tracks button after volume button when tracks are available
-      this.player.featurePosition.tracks = this.player.featurePosition.volume + 1;
+      // Place tracks button
+      if(this.mejsUtility.isMobile()) {
+        // after trackScrubber button in mobile devices
+        this.player.featurePosition.tracks = this.player.featurePosition.trackScrubber + 1;
+      } else {
+        // after volume button in desktop devices
+        this.player.featurePosition.tracks = this.player.featurePosition.volume + 1;
+      }
+      
       this.player.buildtracks(this.player, null, this.player.layers, this.mediaElement);
       // Turn on captions
       this.toggleCaptions();
