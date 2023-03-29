@@ -784,8 +784,8 @@ describe MediaObjectsController, type: :controller do
       end
 
       it "should return an error if the PID does not exist" do
-        expect(MediaObject).to receive(:find).with('no-such-object') { raise ActiveFedora::ObjectNotFoundError }
         get :show, params: { id: 'no-such-object' }
+        expect(response).to render_template("errors/unknown_pid")
         expect(response.response_code).to eq(404)
       end
 
@@ -1241,14 +1241,14 @@ describe MediaObjectsController, type: :controller do
     end
 
     context 'misformed NOID' do
-      # URI::InvalidURIError handling in ApplicationController
       it 'should redirect to the requested media object if valid' do
         get 'show', params: { id: "#{media_object.id}] !-()" }
         expect(response).to redirect_to(media_object_path(id: media_object.id))
       end
-      it 'should redirect to homepage if invalid' do
+      it 'should redirect to unknown_pid page if invalid' do
         get 'show', params: { id: "nonvalid noid]" }
         expect(response).to render_template("errors/unknown_pid")
+        expect(response.response_code).to eq(404)
       end
     end
   end

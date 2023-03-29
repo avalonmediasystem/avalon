@@ -240,14 +240,14 @@ describe MasterFilesController do
     end
 
     context 'misformed NOID' do
-      # URI::InvalidURIError handling in ApplicationController
       it 'should redirect to the requested master file' do
         get 'show', params: { id: "#{master_file.id}] " }
         expect(response).to redirect_to(master_file_path(id: master_file.id))
       end
-      it 'should redirect to homepage if invalid' do
+      it 'should redirect to unknown_pid page if invalid' do
         get 'show', params: { id: "nonvalid noid]" }
         expect(response).to render_template("errors/unknown_pid")
+        expect(response.response_code).to eq(404)
       end
     end
   end
