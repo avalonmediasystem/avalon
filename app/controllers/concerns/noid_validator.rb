@@ -23,17 +23,14 @@ module NoidValidator
 
   private
 
-  def validate_noid
-    return if noid_service.valid?(params[:id])
+    def validate_noid
+      return if noid_service.valid?(params[:id])
 
-    # Strip all non-alphanumeric characters from passed in NOID
-    noid_id = params[:id]&.gsub(/[^A-Za-z0-9]/, '')
+      # Strip all non-alphanumeric characters from passed in NOID
+      noid_id = params[:id]&.gsub(/[^A-Za-z0-9]/, '')
 
-    # If cleaned NOID is valid, redo the request. Otherwise raise error.
-    if noid_service.valid?(noid_id)
-      redirect_to(request.parameters.merge(id: noid_id))
-    else
-      raise ActiveFedora::ObjectNotFoundError
+      # If cleaned NOID is valid, redo the request. Otherwise raise error.
+      raise ActiveFedora::ObjectNotFoundError if !noid_service.valid?(noid_id)
+      redirect_to(request.parameters.merge(:only_path => true, id: noid_id))
     end
-  end
 end
