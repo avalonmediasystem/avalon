@@ -21,7 +21,6 @@ class ApplicationController < ActionController::Base
   include Hydra::Controller::ControllerBehavior
   # To deal with a load order issue breaking persona impersonate
   include Samvera::Persona::BecomesBehavior
-  include Identifier
   layout 'avalon'
 
   # Prevent CSRF attacks by raising an exception.
@@ -184,22 +183,6 @@ class ApplicationController < ActionController::Base
     else
       # m3u8 request
       head 410
-    end
-  end
-
-  rescue_from URI::InvalidURIError do |exception|
-    # Strip all non-alphanumeric characters from passed in NOID
-    noid_id = params[:id]&.gsub(/[^A-Za-z0-9]/, '')
-
-    # If cleaned NOID is valid, redo the request. Otherwise generate an error page.
-    if noid_service.valid?(noid_id)
-      redirect_to(request.parameters.merge(id: noid_id))
-    else
-      if request.format == :json
-        render json: {errors: ["#{params[:id]} not found"]}, status: 404
-      else
-        render '/errors/unknown_pid', status: 404
-      end
     end
   end
 

@@ -1,11 +1,11 @@
 # Copyright 2011-2023, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
-# 
+#
 # You may obtain a copy of the License at
-# 
+#
 # http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software distributed
 #   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
 #   CONDITIONS OF ANY KIND, either express or implied. See the License for the
@@ -258,6 +258,18 @@ describe Admin::CollectionsController, type: :controller do
         expect(JSON.parse(response.body)["errors"].first.class).to eq String
       end
     end
+
+    context 'misformed NOID' do
+      it 'should redirect to the requested collection' do
+        get 'show', params: { id: "#{collection.id}] " }
+        expect(response).to redirect_to(admin_collection_path(id: collection.id))
+      end
+      it 'should redirect to unknown_pid page if invalid' do
+        get 'show', params: { id: "nonvalid noid]" }
+        expect(response).to render_template("errors/unknown_pid")
+        expect(response.response_code).to eq(404)
+      end
+    end
   end
 
   describe "#items" do
@@ -277,7 +289,7 @@ describe Admin::CollectionsController, type: :controller do
     context "with structure" do
       let!(:mf_1) { FactoryBot.create(:master_file, :with_structure, media_object: collection.media_objects[0]) }
       let!(:mf_2) { FactoryBot.create(:master_file, :with_structure, media_object: collection.media_objects[1]) }
-      
+
       it "should not return structure by default" do
         get 'items', params: { id: collection.id, format: 'json' }
         expect(JSON.parse(response.body)[collection.media_objects[0].id]["files"][0]["structure"]).to be_blank
