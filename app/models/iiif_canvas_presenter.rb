@@ -94,14 +94,6 @@ class IiifCanvasPresenter
     end
 
     def structure_to_iiif_range
-      # Remove all "Div" nodes which do not have a "Span" descendant to ensure a valid manifest.
-      # According the to IIIF presentation 3 spec each Range needs to have a descendant that is a Canvas.
-      # See https://iiif.io/api/presentation/3.0/#34-structural-properties
-      structure_ng_xml.root.xpath("//*[local-name() = 'Div' and not(descendant::*[local-name() = 'Span'])]").map(&:remove)
-
-      # Return default range if nothing valid is left
-      return simple_iiif_range(structure_ng_xml.root.attr('label')) if structure_ng_xml.root.children.all?(&:blank?)
-
       div_to_iiif_range(structure_ng_xml.root)
     end
 
@@ -113,10 +105,6 @@ class IiifCanvasPresenter
           span_to_iiif_range(node)
         end
       end
-
-      # if a non-leaf node has no valid "Div" or "Span" children, then it would become empty range node containing no canvas
-      # raise an exception here as this error shall have been caught and handled by the parser and shall never happen here
-      raise Nokogiri::XML::SyntaxError, "Empty root or Div node: #{div_node[:label]}" if items.empty?
 
       IiifManifestRange.new(
         label: { "none" => [div_node[:label]] },
