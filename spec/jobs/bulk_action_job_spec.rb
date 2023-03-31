@@ -122,6 +122,9 @@ describe BulkActionJobs::ApplyCollectionAccessControl do
         mo.reload
         expect(mo.read_users).to contain_exactly("co_user")
         expect(mo.read_groups).to contain_exactly("co_group", "public")
+        solr_doc = ActiveFedora::SolrService.query("id:#{mo.id}").first
+        expect(solr_doc["read_access_person_ssim"]).to contain_exactly("co_user")
+        expect(solr_doc["read_access_group_ssim"]).to contain_exactly("co_group", "public")
       end
     end
 
@@ -131,6 +134,9 @@ describe BulkActionJobs::ApplyCollectionAccessControl do
         mo.reload
         expect(mo.read_users).to contain_exactly("mo_user", "co_user")
         expect(mo.read_groups).to contain_exactly("mo_group", "co_group", "public")
+        solr_doc = ActiveFedora::SolrService.query("id:#{mo.id}").first
+        expect(solr_doc["read_access_person_ssim"]).to contain_exactly("mo_user", "co_user")
+        expect(solr_doc["read_access_group_ssim"]).to contain_exactly("mo_group", "co_group", "public")
       end
     end
   end

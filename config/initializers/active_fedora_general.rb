@@ -34,3 +34,60 @@ Ldp::Response.class_eval do
     ::RDF::URI.decode(filename) if filename
   end
 end
+
+# Overrides that ensure AccessControl objects are marked dirty when read/edit/discover groups/users are changed and autosave if dirty
+# This fixes a timing bug where AccessControl objects are saved in an after_save callback which runs after normal indexing occurs
+# See https://github.com/avalonmediasystem/avalon/issues/5140
+
+# Override contained_rdf_sources to ensure AccessControl objects get autosaved when dirty
+ActiveFedora::Base.class_eval do
+  private
+    def save_contained_resources
+      contained_resources.changed.each do |_, resource|
+        resource.save
+      end
+      save_access_control_resources
+    end
+
+    def save_access_control_resources
+      access_control_sources.changed.each do |_, resource|
+	resource.save
+      end
+    end
+
+    def access_control_sources
+      @access_control_sources ||= ActiveFedora::AssociationHash.new(self, access_control_reflections)
+    end
+
+    def access_control_reflections
+      self.class.reflect_on_all_associations(:belongs_to).select { |_, reflection| reflection.klass <= Hydra::AccessControl }
+    end
+end
+
+# Enable dirty tracking for the permissions attribute
+Rails.application.config.to_prepare do
+  Hydra::AccessControl.define_attribute_methods :permissions
+end
+
+# Override set_entities to notify ActiveModel::Dirty dirty tracking that the permissions attribute is changing
+Hydra::AccessControls::Permissions.module_eval do
+  private
+      # @param [Symbol] permission either :discover, :read or :edit
+      # @param [Symbol] type either :person or :group
+      # @param [Array<String>] values Values to set
+      # @param [Array<String>] changeable Values we are allowed to change
+      def set_entities(permission, type, values, changeable)
+        (changeable - values).each do |entity|
+          for_destroy = search_by_type_and_mode(type, permission_to_uri(permission)).select { |p| p.agent_name == entity }
+          access_control.permissions_will_change!
+          permissions.delete(for_destroy)
+        end
+
+        values.each do |agent_name|
+          exists = search_by_type_and_mode(type, permission_to_uri(permission)).select { |p| p.agent_name == agent_name }
+          access_control.permissions_will_change!
+          permissions.build(name: agent_name, access: permission.to_s, type: type) unless exists.present?
+        end
+      end
+end
+# End of overrides for AccessControl dirty tracking and autosaving
