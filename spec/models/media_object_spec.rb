@@ -1062,4 +1062,34 @@ describe MediaObject do
       end
     end
   end
+
+  describe 'read_groups=' do
+    let(:solr_doc) { ActiveFedora::SolrService.query("id:#{media_object.id}").first }
+
+    context 'when creating a MediaObject' do
+      let(:media_object) { FactoryBot.build(:media_object) }
+
+      it 'saves and indexes' do
+        expect(media_object.read_groups).to be_empty
+        media_object.read_groups = ["ExternalGroup"]
+        expect(media_object.access_control).to be_changed
+        media_object.save
+        expect(media_object.reload.read_groups).to eq ["ExternalGroup"]
+        expect(solr_doc["read_access_group_ssim"]).to eq ["ExternalGroup"]
+      end
+    end
+
+    context 'when updating a MediaObject' do
+      let(:media_object) { FactoryBot.create(:media_object) }
+
+      it 'saves and indexes' do
+        expect(media_object.read_groups).to be_empty
+        media_object.read_groups = ["ExternalGroup"]
+        expect(media_object.access_control).to be_changed
+        media_object.save
+        expect(media_object.reload.read_groups).to eq ["ExternalGroup"]
+        expect(solr_doc["read_access_group_ssim"]).to eq ["ExternalGroup"]
+      end
+    end
+  end
 end

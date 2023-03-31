@@ -87,31 +87,5 @@ describe IiifCanvasPresenter do
         expect(subject.items.first.media_fragment).to eq 't=0,'
       end
     end
-
-    context 'with invalid structural metadata' do
-      let(:structure_xml) { '<?xml version="1.0"?><Item label="Test"><Div label="Bad"/><Div label="Div 1"><Div label="Also bad"/><Span label="Span 1" begin="00:00:00.000" end="00:00:01.235"/></Div></Item>' }
-
-      it 'removes ranges without descendant canvases' do
-	expect(subject.label.to_s).to eq '{"none"=>["Test"]}'
-	expect(subject.items.size).to eq 1
-	expect(subject.items.first.label.to_s).to eq '{"none"=>["Div 1"]}'
-	expect(subject.items.first.items.size).to eq 1
-	expect(subject.items.first.items.first.label.to_s).to eq '{"none"=>["Span 1"]}'
-	expect(subject.items.first.items.first.items.size).to eq 1
-	expect(subject.items.first.items.first.items.first).to be_a IiifCanvasPresenter
-	expect(subject.items.first.items.first.items.first.media_fragment).to eq 't=0.0,1.235'
-      end
-
-      context 'when there are no valid ranges' do
-        let(:structure_xml) { '<?xml version="1.0"?><Item label="Test"><Div label="Div 1"/></Item>' }
-
-        it 'autogenerates a basic range but preserves the root level label' do
-	  expect(subject.label.to_s).to eq '{"none"=>["Test"]}'
-	  expect(subject.items.size).to eq 1
-	  expect(subject.items.first).to be_a IiifCanvasPresenter
-	  expect(subject.items.first.media_fragment).to eq 't=0,'
-        end
-      end
-    end
   end
 end

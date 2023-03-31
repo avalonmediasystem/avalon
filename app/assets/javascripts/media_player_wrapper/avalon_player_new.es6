@@ -280,7 +280,7 @@ class MEJSPlayer {
     );
 
     // Build playlists button from the new stream when not in playlists
-    if(!playlistItemsT) {
+    if(!playlistItemsT && !this.mejsUtility.isMobile()) {
       this.player.options.playlistItemDefaultTitle = this.currentStreamInfo.embed_title;
       this.player.buildaddToPlaylist(this.player, null, null, null);
     }
@@ -290,11 +290,20 @@ class MEJSPlayer {
       this.player.buildplaylistItems(this.player, null, null, this.mediaElement);
     }
 
-    // Set defaultQuality in player options before building the quality feature
-    this.player.options.defaultQuality = this.localStorage.getItem('quality');
+    // Quality selector is turned off in mobile devices
+    if(!mejs.Features.isAndroid) {
+      // Set defaultQuality in player options before building the quality feature
+      this.player.options.defaultQuality = this.localStorage.getItem('quality');
 
-    // Build quality
-    this.player.buildquality(this.player, null, null, this.mediaElement);
+      // Build quality
+      this.player.buildquality(this.player, null, null, this.mediaElement);
+    } else {
+      // Set current source in absence of the quality selection
+      let currentSource = this.currentStreamInfo.stream_hls
+                        .filter(src => src.quality === this.player.options.defaultQuality)[0];
+     
+      this.player.setSrc(currentSource.url);
+    }
 
     // Set startVolume in options from the current mediaelement instance
     this.player.options.startVolume = this.mediaElement.volume;
@@ -314,8 +323,15 @@ class MEJSPlayer {
    */
   reInitializeCaptions() {
     if (this.currentStreamInfo.captions_path) {
-      // Place tracks button after volume button when tracks are available
-      this.player.featurePosition.tracks = this.player.featurePosition.volume + 1;
+      // Place tracks button
+      if(this.mejsUtility.isMobile()) {
+        // after trackScrubber button in mobile devices
+        this.player.featurePosition.tracks = this.player.featurePosition.trackScrubber + 1;
+      } else {
+        // after volume button in desktop devices
+        this.player.featurePosition.tracks = this.player.featurePosition.volume + 1;
+      }
+      
       this.player.buildtracks(this.player, null, this.player.layers, this.mediaElement);
       // Turn on captions
       this.toggleCaptions();
@@ -399,9 +415,17 @@ class MEJSPlayer {
     this.mejsUtility.showControlsBriefly(this.player);
     // Fix for paused seeking halt when using structure navigation
     // by forcing timeupdate event to fire with a quick and pause
-    if(this.mediaElement.paused) {
-      this.mediaElement.play();
-      this.mediaElement.pause();
+    if(this.mediaElement.paused && this.mediaElement) {
+      /** Reference: https://developer.chrome.com/blog/play-request-was-interrupted/ */
+      let playPromise = this.mediaElement.play();
+      if(playPromise !== undefined) {
+        playPromise.then(_ => {
+          this.mediaElement.pause();
+        })
+        .catch(error => {
+          console.log('Media player error: ', error);
+        })
+      }
     }
   }
 
@@ -446,7 +470,7 @@ class MEJSPlayer {
    * @return {void}
    */
   handleError(error, mediaElement, originalNode) {
-    console.log('MEJS CREATE ERROR: ' + error);
+    console.log('MEJS ERROR: ' + error);
   }
   /**
    * MediaElement render success callback function

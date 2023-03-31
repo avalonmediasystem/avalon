@@ -70,7 +70,7 @@ Unless required by applicable law or agreed to in writing, software distributed
     // When viewing video on smaller devices scroll to page content to fully
     // display the video player
     $(document).ready(function () {
-      const isVideo = "<%= @currentStreamInfo[:is_video] %>";
+      const isVideo = <%= @currentStreamInfo[:is_video] %>;
       if(isVideo) {
         const screenHeight = screen.height;
         const playerHeight = document.getElementsByTagName('video')[0].style.height.replace(/[^-\d\.]/g, '');
