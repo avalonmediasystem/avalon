@@ -75,7 +75,7 @@ GIT
 
 GIT
   remote: https://github.com/samvera-labs/active_fedora-datastreams.git
-  revision: 3fe267ad5facbb2b66c74471ad7ed8732364711b
+  revision: 3e1b54f60e6d6316e114f608ee5c50c85d6598c6
   branch: fedora6_rebase
   specs:
     active_fedora-datastreams (0.5.0)
@@ -89,7 +89,7 @@ GIT
 
 GIT
   remote: https://github.com/samvera/active_fedora.git
-  revision: f242d45eefa5799c74a7dcebc37a7ab46a3b5760
+  revision: 3a8ff7b0384dba852ee70fc337c11c778afd7b58
   branch: fedora6-cjcolvar-rebase
   specs:
     active-fedora (14.0.1)
@@ -737,7 +737,7 @@ GEM
     rdf-turtle (3.2.1)
       ebnf (~> 2.3)
       rdf (~> 3.2)
-    rdf-vocab (3.2.3)
+    rdf-vocab (3.2.4)
       rdf (~> 3.2, >= 3.2.4)
     rdf-xsd (3.2.1)
       rdf (~> 3.2)
@@ -932,8 +932,9 @@ GEM
     sxp (1.2.3)
       matrix (~> 0.4)
       rdf (~> 3.2)
+    temple (0.10.0)
     thor (1.2.2)
-    tilt (2.0.11)
+    tilt (2.1.0)
     timeout (0.3.2)
     trailblazer-option (0.1.2)
     twitter-typeahead-rails (0.11.1.pre.corejavascript)
