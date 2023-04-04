@@ -2777,7 +2777,7 @@ Object.assign(_player2.default.prototype, {
 		}
 	},
 	displayCaptions: function displayCaptions() {
-		if (this.tracks === undefined) {
+		if (this.tracks === undefined || _mejs2.default.Features.isiPhone) {
 			return;
 		}
 
