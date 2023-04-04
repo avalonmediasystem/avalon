@@ -419,7 +419,7 @@ class MediaObjectsController < ApplicationController
       if cannot? :update, media_object
         errors += ["#{media_object&.title} (#{id}) (permission denied)."]
       else
-        unless (media_object.title.present? && media_object.date_issued.present?)
+        unless media_object.title.present? && media_object.date_issued.present?
           errors += ["Validation failed: Title field is required., Date issued field is required."]
           break
         end
