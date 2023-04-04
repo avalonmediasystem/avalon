@@ -210,7 +210,9 @@ class Admin::CollectionsController < ApplicationController
         target_path = admin_collection_path(@target_collection)
         @source_collection.reload
       else
-        flash[:error] = "Collection contains invalid media objects that cannot be moved. Please address these issues before attempting to delete #{@source_collection.name}."
+        mos = @source_collection.media_objects.to_a
+        invalid_mos = mos.collect { |mo| "<li>#{mo.id}</li>" unless mo.valid? }.compact
+        flash[:error] = "Collection contains invalid media objects that cannot be moved. Please address these issues before attempting to delete #{@source_collection.name}.<ul>#{invalid_mos.join('')}</ul>".html_safe
         redirect_to admin_collection_path(@source_collection) and return
       end
     end

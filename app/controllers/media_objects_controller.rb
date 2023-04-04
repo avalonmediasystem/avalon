@@ -418,8 +418,12 @@ class MediaObjectsController < ApplicationController
     Array(params[:id]).each do |id|
       media_object = MediaObject.find(id)
       if cannot? :update, media_object
-        errors += ["#{media_object.title} (#{id}) (permission denied)."]
+        errors += ["#{media_object&.title} (#{id}) (permission denied)."]
       else
+        unless (media_object.title.present? && media_object.date_issued.present?)
+          errors += ["Validation failed: Title field is required., Date issued field is required."]
+          break
+        end
         begin
           case status
           when 'publish'
@@ -432,7 +436,7 @@ class MediaObjectsController < ApplicationController
               media_object.publish!(nil)
               success_count += 1
             else
-              errors += ["#{media_object.title} (#{id}) (permission denied)."]
+              errors += ["#{media_object&.title} (#{id}) (permission denied)."]
             end
           end
         rescue ActiveFedora::RecordInvalid => e
@@ -441,7 +445,7 @@ class MediaObjectsController < ApplicationController
       end
     end
     message = "#{success_count} #{'media object'.pluralize(success_count)} successfully #{status}ed." if success_count.positive?
-    message = "Unable to publish #{'item'.pluralize(errors.count)}: #{ errors.join('<br/> ') }" if errors.count > 0
+    message = "Unable to #{status} #{'item'.pluralize(errors.count)}: #{ errors.join('<br/> ') }" if errors.count > 0
     redirect_back(fallback_location: root_path, flash: {notice: message.html_safe})
   end
 
