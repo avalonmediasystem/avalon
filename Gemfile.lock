@@ -73,6 +73,37 @@ GIT
       ims-lti
       omniauth
 
+GIT
+  remote: https://github.com/samvera-labs/active_fedora-datastreams.git
+  revision: 3fe267ad5facbb2b66c74471ad7ed8732364711b
+  branch: fedora6_rebase
+  specs:
+    active_fedora-datastreams (0.5.0)
+      active-fedora (>= 11.0.0.pre)
+      activemodel (>= 5.2)
+      nom-xml (>= 0.5.1)
+      om (~> 3.1)
+      rdf (~> 3.2)
+      rdf-rdfa (= 3.2.0)
+      rdf-rdfxml (~> 3.2)
+
+GIT
+  remote: https://github.com/samvera/active_fedora.git
+  revision: f242d45eefa5799c74a7dcebc37a7ab46a3b5760
+  branch: fedora6-cjcolvar-rebase
+  specs:
+    active-fedora (14.0.1)
+      active-triples (>= 0.11.0, < 2.0.0)
+      activemodel (>= 5.1)
+      activesupport (>= 5.1)
+      deprecation
+      faraday (>= 2.0)
+      faraday-encoding (>= 0.0.5)
+      faraday-follow_redirects
+      ldp (>= 0.7.0, < 2)
+      rsolr (>= 1.1.2, < 3)
+      ruby-progressbar (~> 1.0)
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -121,16 +152,6 @@ GEM
       erubi (~> 1.4)
       rails-dom-testing (~> 2.0)
       rails-html-sanitizer (~> 1.1, >= 1.2.0)
-    active-fedora (14.0.1)
-      active-triples (>= 0.11.0, < 2.0.0)
-      activemodel (>= 5.1)
-      activesupport (>= 5.1)
-      deprecation
-      faraday (>= 1.0)
-      faraday-encoding (>= 0.0.5)
-      ldp (>= 0.7.0, < 2)
-      rsolr (>= 1.1.2, < 3)
-      ruby-progressbar (~> 1.0)
     active-triples (1.2.0)
       activemodel (>= 3.0.0)
       activesupport (>= 3.0.0)
@@ -146,13 +167,6 @@ GEM
     active_encode (1.1.3)
       addressable (~> 2.8)
       rails
-    active_fedora-datastreams (0.5.0)
-      active-fedora (>= 11.0.0.pre)
-      activemodel (>= 5.2)
-      nom-xml (>= 0.5.1)
-      om (~> 3.1)
-      rdf (~> 3.2)
-      rdf-rdfxml (~> 3.2)
     activejob (7.0.4.3)
       activesupport (= 7.0.4.3)
       globalid (>= 0.3.6)
@@ -432,6 +446,8 @@ GEM
       ruby2_keywords (>= 0.0.4)
     faraday-encoding (0.0.5)
       faraday
+    faraday-follow_redirects (0.3.0)
+      faraday (>= 1, < 3)
     faraday-net_http (3.0.2)
     fastimage (2.2.6)
     fcrepo_wrapper (0.9.0)
@@ -990,11 +1006,11 @@ PLATFORMS
 
 DEPENDENCIES
   about_page!
-  active-fedora (~> 14.0, >= 14.0.1)
+  active-fedora!
   active_annotations (~> 0.4)
   active_elastic_job
   active_encode (~> 1.0, >= 1.1.3)
-  active_fedora-datastreams (~> 0.5)
+  active_fedora-datastreams!
   activejob-traffic_control
   activejob-uniqueness
   activerecord-session_store (>= 2.0.0)

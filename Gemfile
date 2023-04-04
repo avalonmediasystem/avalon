@@ -29,8 +29,10 @@ gem 'uglifier', '>= 1.3.0'
 gem 'webpacker'
 
 # Core Samvera
-gem 'active-fedora', '~> 14.0', '>= 14.0.1'
-gem 'active_fedora-datastreams', '~> 0.5'
+#gem 'active-fedora', '~> 14.0', '>= 14.0.1'
+#gem 'active_fedora-datastreams', '~> 0.5'
+gem 'active-fedora', git: 'https://github.com/samvera/active_fedora.git', branch: 'fedora6-cjcolvar-rebase'
+gem 'active_fedora-datastreams', git: 'https://github.com/samvera-labs/active_fedora-datastreams.git', branch: 'fedora6_rebase'
 gem 'hydra-head', '~> 12.0'
 gem 'ldp', '~> 1.1.0'
 gem 'noid-rails', '~> 3.1'
