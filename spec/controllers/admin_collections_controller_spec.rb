@@ -1,11 +1,11 @@
 # Copyright 2011-2023, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
-# 
+#
 # You may obtain a copy of the License at
-# 
+#
 # http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software distributed
 #   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
 #   CONDITIONS OF ANY KIND, either express or implied. See the License for the
@@ -277,7 +277,7 @@ describe Admin::CollectionsController, type: :controller do
     context "with structure" do
       let!(:mf_1) { FactoryBot.create(:master_file, :with_structure, media_object: collection.media_objects[0]) }
       let!(:mf_2) { FactoryBot.create(:master_file, :with_structure, media_object: collection.media_objects[1]) }
-      
+
       it "should not return structure by default" do
         get 'items', params: { id: collection.id, format: 'json' }
         expect(JSON.parse(response.body)[collection.media_objects[0].id]["files"][0]["structure"]).to be_blank
@@ -578,6 +578,39 @@ describe Admin::CollectionsController, type: :controller do
       login_user collection.managers.first
       expect(controller.current_ability.can? :destroy, collection).to be_truthy
       expect(get :remove, params: { id: collection.id }).to render_template(:remove)
+    end
+  end
+
+  describe "#destroy" do
+    let!(:collection) { FactoryBot.create(:collection, items: 1) }
+    let!(:target) { FactoryBot.create(:collection) }
+    before do
+      login_user collection.managers.first
+    end
+
+    it "moves media objects to target collection" do
+      media_object = collection.media_objects[0]
+      expect { delete :destroy, params: { id: collection.id, target_collection_id: target.id } }.to change { target.media_objects.count }.by(1)
+      expect(target.media_objects).to include(media_object)
+    end
+
+    it "deletes the collection" do
+      expect { delete :destroy, params: { id: collection.id, target_collection_id: target.id } }.to change { Admin::Collection.count }.by(-1)
+      expect(Admin::Collection.all).not_to include(collection)
+    end
+
+    it "redirects to target collection" do
+      delete :destroy, params: { id: collection.id, target_collection_id: target.id }
+      expect(response).to redirect_to(admin_collection_path(target))
+    end
+
+    context "collection with invalid media object" do
+      it "does not delete collection" do
+        allow_any_instance_of(MediaObject).to receive(:valid?).and_return(false)
+        expect { delete :destroy, params: { id: collection.id, target_collection_id: target.id } }.not_to change { Admin::Collection.count }
+        expect(response).to redirect_to(admin_collection_path(collection))
+        expect(flash[:error]).to eq("Collection contains invalid media objects that cannot be moved. Please address these issues before attempting to delete #{collection.name}.<ul><li>#{collection.media_objects[0].id}</li></ul>")
+      end
     end
   end
 

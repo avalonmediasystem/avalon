@@ -1,11 +1,11 @@
 # Copyright 2011-2023, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
-# 
+#
 # You may obtain a copy of the License at
-# 
+#
 # http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software distributed
 #   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
 #   CONDITIONS OF ANY KIND, either express or implied. See the License for the
@@ -1371,6 +1371,18 @@ describe MediaObjectsController, type: :controller do
           media_object.reload
           expect(media_object).not_to be_published
         end
+
+        it "item is invalid and no last_completed_step" do
+          media_object = FactoryBot.create(:media_object, collection: collection)
+          media_object.title = nil
+          media_object.date_issued = nil
+          media_object.workflow.last_completed_step = ''
+          media_object.save!(validate: false)
+          get 'update_status', params: { id: media_object.id, status: 'publish' }
+          expect(flash[:notice]).to eq("Unable to publish item: Validation failed: Title field is required., Date issued field is required.")
+          media_object.reload
+          expect(media_object).not_to be_published
+        end
       end
     end
 
@@ -1382,9 +1394,35 @@ describe MediaObjectsController, type: :controller do
         expect(media_object).not_to be_published
       end
 
-      it "should fail when id doesn't exist" do
-        get 'update_status', params: { id: 'this-id-is-fake', status: 'unpublish' }
-        expect(response.code).to eq '404'
+      context "should fail when" do
+        it "id doesn't exist" do
+          get 'update_status', params: { id: 'this-id-is-fake', status: 'unpublish' }
+          expect(response.code).to eq '404'
+        end
+
+        it "item is invalid" do
+          media_object = FactoryBot.create(:published_media_object, collection: collection)
+          media_object.title = nil
+          media_object.date_issued = nil
+          media_object.workflow.last_completed_step = 'file-upload'
+          media_object.save!(validate: false)
+          get 'update_status', params: { id: media_object.id, status: 'unpublish' }
+          expect(flash[:notice]).to eq("Unable to unpublish item: Validation failed: Title field is required., Date issued field is required.")
+          media_object.reload
+          expect(media_object).to be_published
+        end
+
+        it "item is invalid and no last_completed_step" do
+          media_object = FactoryBot.create(:published_media_object, collection: collection)
+          media_object.title = nil
+          media_object.date_issued = nil
+          media_object.workflow.last_completed_step = ''
+          media_object.save!(validate: false)
+          get 'update_status', params: { id: media_object.id, status: 'unpublish' }
+          expect(flash[:notice]).to eq("Unable to unpublish item: Validation failed: Title field is required., Date issued field is required.")
+          media_object.reload
+          expect(media_object).to be_published
+        end
       end
 
       it "should unpublish multiple items" do

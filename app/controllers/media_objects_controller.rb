@@ -1,11 +1,11 @@
 # Copyright 2011-2023, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
-# 
+#
 # You may obtain a copy of the License at
-# 
+#
 # http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software distributed
 #   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
 #   CONDITIONS OF ANY KIND, either express or implied. See the License for the
@@ -180,7 +180,7 @@ class MediaObjectsController < ApplicationController
         render json: { errors: ["Collection not found for #{api_params[:collection_id]}"] }, status: 422
         return
       end
-      
+
       @media_object.collection = collection
     end
 
@@ -417,8 +417,12 @@ class MediaObjectsController < ApplicationController
     Array(params[:id]).each do |id|
       media_object = MediaObject.find(id)
       if cannot? :update, media_object
-        errors += ["#{media_object.title} (#{id}) (permission denied)."]
+        errors += ["#{media_object&.title} (#{id}) (permission denied)."]
       else
+        unless (media_object.title.present? && media_object.date_issued.present?)
+          errors += ["Validation failed: Title field is required., Date issued field is required."]
+          break
+        end
         begin
           case status
           when 'publish'
@@ -431,7 +435,7 @@ class MediaObjectsController < ApplicationController
               media_object.publish!(nil)
               success_count += 1
             else
-              errors += ["#{media_object.title} (#{id}) (permission denied)."]
+              errors += ["#{media_object&.title} (#{id}) (permission denied)."]
             end
           end
         rescue ActiveFedora::RecordInvalid => e
@@ -440,7 +444,7 @@ class MediaObjectsController < ApplicationController
       end
     end
     message = "#{success_count} #{'media object'.pluralize(success_count)} successfully #{status}ed." if success_count.positive?
-    message = "Unable to publish #{'item'.pluralize(errors.count)}: #{ errors.join('<br/> ') }" if errors.count > 0
+    message = "Unable to #{status} #{'item'.pluralize(errors.count)}: #{ errors.join('<br/> ') }" if errors.count > 0
     redirect_back(fallback_location: root_path, flash: {notice: message.html_safe})
   end
 

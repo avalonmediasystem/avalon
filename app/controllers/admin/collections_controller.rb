@@ -1,11 +1,11 @@
 # Copyright 2011-2023, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
-# 
+#
 # You may obtain a copy of the License at
-# 
+#
 # http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software distributed
 #   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
 #   CONDITIONS OF ANY KIND, either express or implied. See the License for the
@@ -209,7 +209,9 @@ class Admin::CollectionsController < ApplicationController
         target_path = admin_collection_path(@target_collection)
         @source_collection.reload
       else
-        flash[:error] = "Collection contains invalid media objects that cannot be moved. Please address these issues before attempting to delete #{@source_collection.name}."
+        mos = @source_collection.media_objects.to_a
+        invalid_mos = mos.collect { |mo| "<li>#{mo.id}</li>" unless mo.valid? }.compact
+        flash[:error] = "Collection contains invalid media objects that cannot be moved. Please address these issues before attempting to delete #{@source_collection.name}.<ul>#{invalid_mos.join('')}</ul>".html_safe
         redirect_to admin_collection_path(@source_collection) and return
       end
     end
