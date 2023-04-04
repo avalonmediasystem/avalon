@@ -104,3 +104,10 @@ caption_default:
   # Language should be 2 or 3 letter ISO 639 codes
   language: 'en'
   name: 'English'
+recaptcha:
+  site_key: # Setting a site_key will enable recaptcha on the comments form
+  secret_key: # Required along with site_key
+  type: "v2_checkbox" # or "v3"
+  v3:
+    action: "comment"
+    minimum_score: 0.5
