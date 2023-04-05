@@ -1,4 +1,4 @@
-# Copyright 2011-2022, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2023, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 # 
@@ -79,9 +79,9 @@ end
 describe 'Sign in page' do
   it 'validates presence of items on login page' do
     visit '/users/sign_in'
-    expect(page).to have_content('Login:')
-    expect(page).to have_content('Password:')
-    expect(page).to have_link('Create an Identity')
+    expect(page).to have_content('Username or email')
+    expect(page).to have_content('Password')
+    expect(page).to have_link('Sign up')
     expect(page).to have_button('Connect')
   end
   it 'validates presence of items on register page' do

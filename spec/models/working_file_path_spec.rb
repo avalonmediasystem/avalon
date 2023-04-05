@@ -1,4 +1,4 @@
-# Copyright 2011-2022, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2023, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 # 
@@ -94,7 +94,7 @@ describe "MasterFile#working_file_path" do
       it 'sends the working_file_path to active_encode' do
         MasterFileBuilder.build(media_object, params)
         master_file = media_object.reload.master_files.first
-        expect(File.exists? master_file.working_file_path.first).to be true
+        expect(File.exist? master_file.working_file_path.first).to be true
         input = FileLocator.new(master_file.working_file_path.first).uri.to_s
         expect(encoder_class).to have_received(:create).with(input, { headers: nil, master_file_id: master_file.id, preset: workflow })
       end
@@ -105,7 +105,7 @@ describe "MasterFile#working_file_path" do
         it 'sends the working_file_path to active_encode' do
           MasterFileBuilder.build(media_object, params)
           master_file = media_object.reload.master_files.first
-          expect(File.exists? master_file.working_file_path.first).to be true
+          expect(File.exist? master_file.working_file_path.first).to be true
           input_path = FileLocator.new(master_file.working_file_path.first).uri.to_s
           expect(encoder_class).to have_received(:create).with(input_path, master_file_id: master_file.id, outputs: [{ label: "high", url: input_path }], preset: "pass_through")
         end
@@ -120,7 +120,7 @@ describe "MasterFile#working_file_path" do
       it 'sends the working_file_path to active_encode' do
         MasterFileBuilder.build(media_object, params)
         master_file = media_object.reload.master_files.first
-        expect(File.exists? master_file.working_file_path.first).to be true
+        expect(File.exist? master_file.working_file_path.first).to be true
         input = FileLocator.new(master_file.working_file_path.first).uri.to_s
         expect(encoder_class).to have_received(:create).with(input, { headers: nil, master_file_id: master_file.id, preset: workflow })
       end
@@ -131,7 +131,7 @@ describe "MasterFile#working_file_path" do
         it 'sends the working_file_path to active_encode' do
           MasterFileBuilder.build(media_object, params)
           master_file = media_object.reload.master_files.first
-          expect(File.exists? master_file.working_file_path.first).to be true
+          expect(File.exist? master_file.working_file_path.first).to be true
           input_path = FileLocator.new(master_file.working_file_path.first).uri.to_s
           expect(encoder_class).to have_received(:create).with(input_path, master_file_id: master_file.id, outputs: [{ label: "high", url: input_path }], preset: "pass_through")
         end
@@ -153,7 +153,7 @@ describe "MasterFile#working_file_path" do
       it 'sends the working_file_path to active_encode' do
         entry.process!
         master_file = media_object.reload.master_files.first
-        expect(File.exists? master_file.working_file_path.first).to be true
+        expect(File.exist? master_file.working_file_path.first).to be true
         input = FileLocator.new(master_file.working_file_path.first).uri.to_s
         expect(encoder_class).to have_received(:create).with(input, { headers: nil, master_file_id: master_file.id, preset: workflow })
       end
@@ -164,7 +164,7 @@ describe "MasterFile#working_file_path" do
         it 'sends the working_file_path to active_encode' do
           entry.process!
           master_file = media_object.reload.master_files.first
-          expect(File.exists? master_file.working_file_path.first).to be true
+          expect(File.exist? master_file.working_file_path.first).to be true
           input_path = FileLocator.new(master_file.working_file_path.first).uri.to_s
           expect(encoder_class).to have_received(:create).with(input_path, master_file_id: master_file.id, outputs: [{ label: "high", url: input_path }], preset: "pass_through" )
         end
@@ -197,7 +197,7 @@ describe "MasterFile#working_file_path" do
           working_file_path_low = master_file.working_file_path.find { |file| file.include? "low" }
 
           [working_file_path_high, working_file_path_medium, working_file_path_low].each do |file|
-            expect(File.exists? file).to be true
+            expect(File.exist? file).to be true
           end
 
           input_path = FileLocator.new(working_file_path_high).uri.to_s

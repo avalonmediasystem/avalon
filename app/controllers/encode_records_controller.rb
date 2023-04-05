@@ -1,4 +1,4 @@
-# Copyright 2011-2022, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2023, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 # 
@@ -59,7 +59,7 @@ class EncodeRecordsController < ApplicationController
     # Sort
     sort_column = columns[params['order']['0']['column'].to_i]
     sort_direction = params['order']['0']['dir'] == 'desc' ? 'desc' : 'asc'
-    @encode_records = @encode_records.order("lower(CAST(#{sort_column} as char)) #{sort_direction}, #{sort_column} #{sort_direction}")
+    @encode_records = @encode_records.order(Arel.sql("lower(CAST(#{sort_column} as char)) #{sort_direction}, #{sort_column} #{sort_direction}"))
 
     # Paginate
     page_num = (params['start'].to_i / params['length'].to_i).floor + 1

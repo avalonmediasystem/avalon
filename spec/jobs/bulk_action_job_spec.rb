@@ -1,11 +1,11 @@
-# Copyright 2011-2022, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2023, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
-#
+# 
 # You may obtain a copy of the License at
-#
+# 
 # http://www.apache.org/licenses/LICENSE-2.0
-#
+# 
 # Unless required by applicable law or agreed to in writing, software distributed
 #   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
 #   CONDITIONS OF ANY KIND, either express or implied. See the License for the
@@ -122,6 +122,9 @@ describe BulkActionJobs::ApplyCollectionAccessControl do
         mo.reload
         expect(mo.read_users).to contain_exactly("co_user")
         expect(mo.read_groups).to contain_exactly("co_group", "public")
+        solr_doc = ActiveFedora::SolrService.query("id:#{mo.id}").first
+        expect(solr_doc["read_access_person_ssim"]).to contain_exactly("co_user")
+        expect(solr_doc["read_access_group_ssim"]).to contain_exactly("co_group", "public")
       end
     end
 
@@ -131,6 +134,9 @@ describe BulkActionJobs::ApplyCollectionAccessControl do
         mo.reload
         expect(mo.read_users).to contain_exactly("mo_user", "co_user")
         expect(mo.read_groups).to contain_exactly("mo_group", "co_group", "public")
+        solr_doc = ActiveFedora::SolrService.query("id:#{mo.id}").first
+        expect(solr_doc["read_access_person_ssim"]).to contain_exactly("mo_user", "co_user")
+        expect(solr_doc["read_access_group_ssim"]).to contain_exactly("mo_group", "co_group", "public")
       end
     end
   end

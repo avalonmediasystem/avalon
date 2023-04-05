@@ -1,4 +1,4 @@
-# Copyright 2011-2022, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2023, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 # 
@@ -22,7 +22,7 @@ describe ActiveEncodeJobs do
 
     describe "perform" do
       it 'creates the active_encode job' do
-        expect(encoder_class).to receive(:create).with(input, master_file_id: master_file.id, preset: master_file.workflow_name).once
+        expect(encoder_class).to receive(:create).with(input, { master_file_id: master_file.id, preset: master_file.workflow_name }).once
         ActiveEncodeJobs::CreateEncodeJob.perform_now(input, master_file.id)
       end
 

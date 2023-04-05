@@ -1,4 +1,4 @@
-# Copyright 2011-2022, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2023, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 # 
@@ -57,7 +57,7 @@ class MasterFile < ActiveFedora::Base
   property :title, predicate: ::RDF::Vocab::EBUCore.title, multiple: false do |index|
     index.as :stored_searchable
   end
-  property :file_location, predicate: ::RDF::Vocab::EBUCore.locator, multiple: false do |index|
+  property :file_location, predicate: Avalon::RDFVocab::EBUCore.locator, multiple: false do |index|
     index.as :stored_sortable
   end
   property :file_checksum, predicate: ::RDF::Vocab::NFO.hashValue, multiple: false do |index|
@@ -88,7 +88,7 @@ class MasterFile < ActiveFedora::Base
   property :physical_description, predicate: ::RDF::Vocab::EBUCore.hasFormat, multiple: false do |index|
     index.as :stored_sortable
   end
-  property :masterFile, predicate: ::RDF::Vocab::EBUCore.filename, multiple: false
+  property :masterFile, predicate: Avalon::RDFVocab::EBUCore.filename, multiple: false
   property :identifier, predicate: ::RDF::Vocab::Identifiers.local, multiple: true do |index|
     index.as :symbol
   end
@@ -165,6 +165,7 @@ class MasterFile < ActiveFedora::Base
   before_destroy :stop_processing!
   before_destroy :update_parent!
   define_hooks :after_transcoding, :after_processing
+  after_update_index { |mf| mf.media_object&.enqueue_long_indexing }
 
   # Generate the waveform after proessing is complete but before master file management
   after_transcoding :generate_waveform
@@ -567,7 +568,7 @@ class MasterFile < ActiveFedora::Base
     response = { source: source&.location }.merge(options)
     return response if response[:source].to_s =~ %r(^https?://)
 
-    unless File.exists?(response[:source])
+    unless File.exist?(response[:source])
       Rails.logger.warn("Masterfile `#{file_location}` not found. Extracting via HLS.")
       hls_temp_file, new_offset = create_frame_source_hls_temp_file(options[:offset])
       response = { source: hls_temp_file, offset: new_offset, non_temp_file: false }

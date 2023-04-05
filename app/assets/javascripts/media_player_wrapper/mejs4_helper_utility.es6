@@ -30,8 +30,8 @@ class MEJSUtility {
       node = document.createElement('video');
       node.setAttribute('id', 'mejs-avalon-player');
       node.setAttribute('controls', '');
-      node.setAttribute('width', '450');
-      node.setAttribute('height', '309');
+      node.setAttribute('width', '480');
+      node.setAttribute('height', '270');
       node.setAttribute('style', 'width: 100%; height: 100%');
       if (currentStreamInfo.poster_image) {
         node.setAttribute('poster', currentStreamInfo.poster_image);

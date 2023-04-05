@@ -1,11 +1,11 @@
-# Copyright 2011-2022, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2023, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
-#
+# 
 # You may obtain a copy of the License at
-#
+# 
 # http://www.apache.org/licenses/LICENSE-2.0
-#
+# 
 # Unless required by applicable law or agreed to in writing, software distributed
 #   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
 #   CONDITIONS OF ANY KIND, either express or implied. See the License for the
@@ -173,14 +173,17 @@ class MediaObjectsController < ApplicationController
   end
 
   def update_media_object
-    begin
-      collection = Admin::Collection.find(api_params[:collection_id])
-    rescue ActiveFedora::ObjectNotFoundError
-      render json: { errors: ["Collection not found for #{api_params[:collection_id]}"] }, status: 422
-      return
+    if (api_params[:collection_id].present?)
+      begin
+        collection = Admin::Collection.find(api_params[:collection_id])
+      rescue ActiveFedora::ObjectNotFoundError
+        render json: { errors: ["Collection not found for #{api_params[:collection_id]}"] }, status: 422
+        return
+      end
+      
+      @media_object.collection = collection
     end
 
-    @media_object.collection = collection
     @media_object.avalon_uploader = 'REST API'
 
     populate_from_catalog = (!!api_params[:import_bib_record] && media_object_parameters[:bibliographic_id].present?)
@@ -197,9 +200,9 @@ class MediaObjectsController < ApplicationController
         bib_source = media_object_parameters.dig(:bibliographic_id, :source) || ''
         logger.warn "Failed bib import using bibID #{bib_id}, #{bib_source}"
       ensure
-        if !@media_object.valid?
+        unless @media_object.valid?
           # Fall back to MODS as sent if Bib Import fails
-          @media_object.update_attributes(media_object_parameters.slice(*@media_object.errors.keys)) if params.has_key?(:fields) and params[:fields].respond_to?(:has_key?)
+          @media_object.update_attributes(media_object_parameters.slice(*@media_object.errors.attribute_names)) if params.has_key?(:fields) and params[:fields].respond_to?(:has_key?)
         end
       end
     else
@@ -208,7 +211,7 @@ class MediaObjectsController < ApplicationController
 
     error_messages = []
     unless @media_object.valid?
-      invalid_fields = @media_object.errors.keys
+      invalid_fields = @media_object.errors.attribute_names
       required_fields = [:title, :date_issued]
       unless required_fields.any? { |f| invalid_fields.include? f }
         invalid_fields.each do |field|

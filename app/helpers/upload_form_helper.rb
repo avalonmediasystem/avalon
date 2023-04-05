@@ -1,4 +1,4 @@
-# Copyright 2011-2022, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2023, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 # 
@@ -27,13 +27,14 @@ module UploadFormHelper
     if direct_upload?
       bucket = Aws::S3::Bucket.new(name: Settings.encoding.masterfile_bucket)
       direct_post = bucket.presigned_post(key: "uploads/#{SecureRandom.uuid}/${filename}", success_action_status: '201')
+      upload_form_url = direct_post.url
       if Settings.minio.present? && Settings.minio.public_host.present?
-        direct_post.url.sub!(Settings.minio.endpoint, Settings.minio.public_host)
+        upload_form_url = direct_post.url.sub(Settings.minio.endpoint, Settings.minio.public_host)
       end
       {
         'form-data' => (direct_post.fields),
-        'url' => direct_post.url,
-        'host' => Addressable::URI.parse(direct_post.url).host
+        'url' => upload_form_url,
+        'host' => Addressable::URI.parse(upload_form_url).host
       }
     else
       {}
