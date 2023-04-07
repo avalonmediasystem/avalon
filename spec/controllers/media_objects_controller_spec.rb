@@ -1,11 +1,11 @@
 # Copyright 2011-2023, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
-# 
+#
 # You may obtain a copy of the License at
-# 
+#
 # http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software distributed
 #   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
 #   CONDITIONS OF ANY KIND, either express or implied. See the License for the
@@ -784,8 +784,8 @@ describe MediaObjectsController, type: :controller do
       end
 
       it "should return an error if the PID does not exist" do
-        expect(MediaObject).to receive(:find).with('no-such-object') { raise ActiveFedora::ObjectNotFoundError }
         get :show, params: { id: 'no-such-object' }
+        expect(response).to render_template("errors/unknown_pid")
         expect(response.response_code).to eq(404)
       end
 
@@ -1237,6 +1237,18 @@ describe MediaObjectsController, type: :controller do
           get 'show', params: { id: media_object.id, format:'json', include_structure: false }
           expect(json['files'].first['structure']).not_to eq master_file.structuralMetadata.content
         end
+      end
+    end
+
+    context 'misformed NOID' do
+      it 'should redirect to the requested media object if valid' do
+        get 'show', params: { id: "#{media_object.id}] !-()" }
+        expect(response).to redirect_to(media_object_path(id: media_object.id))
+      end
+      it 'should redirect to unknown_pid page if invalid' do
+        get 'show', params: { id: "nonvalid noid]" }
+        expect(response).to render_template("errors/unknown_pid")
+        expect(response.response_code).to eq(404)
       end
     end
   end
