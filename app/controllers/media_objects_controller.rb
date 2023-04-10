@@ -420,8 +420,8 @@ class MediaObjectsController < ApplicationController
         errors += ["#{media_object&.title} (#{id}) (permission denied)."]
       else
         unless media_object.title.present? && media_object.date_issued.present?
-          errors += ["Validation failed: Title field is required., Date issued field is required."]
-          break
+          errors += ["#{media_object&.title} (#{id}) (missing required fields)"]
+          next
         end
         begin
           case status
