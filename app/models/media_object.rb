@@ -156,9 +156,13 @@ class MediaObject < ActiveFedora::Base
   # Sets the publication status. To unpublish an object set it to nil or
   # omit the status which will default to unpublished. This makes the act
   # of publishing _explicit_ instead of an accidental side effect.
-  def publish!(user_key)
+  def publish!(user_key, validate: false)
     self.avalon_publisher = user_key.blank? ? nil : user_key
-    save!
+    if validate
+      save(validate: false) || raise "Save failed"
+    else
+      save!
+    end
   end
 
   def finished_processing?
