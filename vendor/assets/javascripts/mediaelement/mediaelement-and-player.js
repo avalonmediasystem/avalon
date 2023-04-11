@@ -1698,6 +1698,7 @@ Object.assign(_player2.default.prototype, {
 	buildprogress: function buildprogress(player, controls, layers, media) {
 
 		var lastKeyPressTime = 0,
+				lastMouseDownTime = 0,
 		    mouseIsDown = false,
 		    startedPaused = false;
 
@@ -1900,7 +1901,7 @@ Object.assign(_player2.default.prototype, {
 				t.timefloat.style.display = 'block';
 			}
 		},
-		    updateSlider = function updateSlider() {
+		updateSlider = function updateSlider() {
 			var seconds = t.getCurrentTime(),
 			    timeSliderText = _i18n2.default.t('mejs.time-slider'),
 			    time = (0, _time.secondsToTimeCode)(seconds, player.options.alwaysShowHours, player.options.showTimecodeFrameCount, player.options.framesPerSecond, player.options.secondsDecimalLength, player.options.timeFormat),
@@ -1923,12 +1924,12 @@ Object.assign(_player2.default.prototype, {
 				t.slider.removeAttribute('aria-valuetext');
 			}
 		},
-		    restartPlayer = function restartPlayer() {
+		restartPlayer = function restartPlayer() {
 			if (new Date() - lastKeyPressTime >= 1000) {
 				t.play();
 			}
 		},
-		    handleMouseup = function handleMouseup() {
+		handleMouseup = function handleMouseup(e) {
 			if (mouseIsDown && t.getCurrentTime() !== null && t.newTime.toFixed(4) !== t.getCurrentTime().toFixed(4)) {
 				t.setCurrentTime(t.newTime, true);
 				t.setCurrentRailHandle(t.newTime);
@@ -1936,19 +1937,15 @@ Object.assign(_player2.default.prototype, {
 			}
 			if (t.forcedHandlePause) {
 				t.slider.focus();
-				setTimeout(function () {
-					let playPromise = t.play();
-					if(playPromise !== undefined) {
-						playPromise.then(_ => {
-							// Show play UI, and enable controls
-							t.play();
-							t.enableControls();
-						})
-						.catch(error => {	})
+				setTimeout(() => {
+					if (new Date() - lastMouseDownTime >= 1000) {
+						t.play();
+						t.forcedHandlePause = false;
 					}
-				}, 150)
+				}, 1100);
 			}
-			t.forcedHandlePause = false;
+			e.preventDefault();
+			e.stopPropagation();
 		};
 
 		t.slider.addEventListener('focus', function () {
@@ -2052,7 +2049,6 @@ Object.assign(_player2.default.prototype, {
 
 		for (var i = 0, total = events.length; i < total; i++) {
 			t.slider.addEventListener(events[i], function (e) {
-				t.forcedHandlePause = false;
 				if (t.getDuration() !== Infinity) {
 					if (e.which === 1 || e.which === 0) {
 						if (!t.paused) {
@@ -2061,6 +2057,7 @@ Object.assign(_player2.default.prototype, {
 						}
 
 						mouseIsDown = true;
+						lastMouseDownTime = new Date();
 						handleMouseMove(e);
 						var endEvents = ['mouseup', 'touchend'];
 
@@ -2072,8 +2069,8 @@ Object.assign(_player2.default.prototype, {
 								}
 							});
 						}
-						t.globalBind('mouseup.dur touchend.dur', function () {
-							handleMouseup();
+						t.globalBind('mouseup.dur touchend.dur', function (e) {
+							handleMouseup(e);
 							mouseIsDown = false;
 							if (t.timefloat) {
 								t.timefloat.style.display = 'none';
