@@ -1394,34 +1394,31 @@ describe MediaObjectsController, type: :controller do
         expect(media_object).not_to be_published
       end
 
+      it 'unpublishes invalid items' do
+        media_object = FactoryBot.create(:published_media_object, collection: collection)
+        media_object.title = nil
+        media_object.date_issued = nil
+        media_object.save!(validate: false)
+        get 'update_status', params: { id: media_object.id, status: 'unpublish' }
+        media_object.reload
+        expect(media_object).not_to be_published
+      end
+
+      it 'unpublishes invalid items and no last completed step' do
+        media_object = FactoryBot.create(:published_media_object, collection: collection)
+        media_object.title = nil
+        media_object.date_issued = nil
+        media_object.workflow.last_completed_step = ''
+        media_object.save!(validate: false)
+        get 'update_status', params: { id: media_object.id, status: 'unpublish' }
+        media_object.reload
+        expect(media_object).not_to be_published
+      end
+
       context "should fail when" do
         it "id doesn't exist" do
           get 'update_status', params: { id: 'this-id-is-fake', status: 'unpublish' }
           expect(response.code).to eq '404'
-        end
-
-        it "item is invalid" do
-          media_object = FactoryBot.create(:published_media_object, collection: collection)
-          media_object.title = nil
-          media_object.date_issued = nil
-          media_object.workflow.last_completed_step = 'file-upload'
-          media_object.save!(validate: false)
-          get 'update_status', params: { id: media_object.id, status: 'unpublish' }
-          expect(flash[:notice]).to eq("Unable to unpublish item: #{media_object&.title} (#{media_object.id}) (missing required fields)")
-          media_object.reload
-          expect(media_object).to be_published
-        end
-
-        it "item is invalid and no last_completed_step" do
-          media_object = FactoryBot.create(:published_media_object, collection: collection)
-          media_object.title = nil
-          media_object.date_issued = nil
-          media_object.workflow.last_completed_step = ''
-          media_object.save!(validate: false)
-          get 'update_status', params: { id: media_object.id, status: 'unpublish' }
-          expect(flash[:notice]).to eq("Unable to unpublish item: #{media_object&.title} (#{media_object.id}) (missing required fields)")
-          media_object.reload
-          expect(media_object).to be_published
         end
       end
 

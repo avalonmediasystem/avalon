@@ -419,14 +419,14 @@ class MediaObjectsController < ApplicationController
       if cannot? :update, media_object
         errors += ["#{media_object&.title} (#{id}) (permission denied)."]
       else
-        unless media_object.title.present? && media_object.date_issued.present?
-          errors += ["#{media_object&.title} (#{id}) (missing required fields)"]
-          next
-        end
         begin
           case status
           when 'publish'
-            media_object.publish!(user_key)
+            unless media_object.title.present? && media_object.date_issued.present?
+              errors += ["#{media_object&.title} (#{id}) (missing required fields)"]
+              next
+            end
+            media_object.publish!(user_key, validate: true)
             # additional save to set permalink
             media_object.save( validate: false )
             success_count += 1
