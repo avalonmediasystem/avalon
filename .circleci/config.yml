@@ -20,9 +20,7 @@ jobs:
           - POSTGRES_PASSWORD=password
       - image: fcrepo/fcrepo:6.4.0
         environment:
-          JAVA_OPTS: -Dfcrepo.autoversioning.enabled=false -Dfcrepo.external.content.allowed=/fcrepo_allow.txt
-        command: |
-          /bin/bash -c "echo 'http://fedoraAdmin:fedoraAdmin@localhost:8080/' > /fcrepo_allow.txt && catalina.sh run"
+          CATALINA_OPTS: -Dfcrepo.autoversioning.enabled=false
       - image: zookeeper:3.4
       - image: solr:9
         environment:
