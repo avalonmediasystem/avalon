@@ -20,7 +20,7 @@ jobs:
           - POSTGRES_PASSWORD=password
       - image: fcrepo/fcrepo:6.4.0
         environment:
-          CATALINA_OPTS: '-Djava.awt.headless=true -Dfile.encoding=UTF-8 -server -Xms512m -Xmx1024m -XX:NewSize=256m -XX:MaxNewSize=256m -XX:PermSize=256m -XX:MaxPermSize=256m -XX:+DisableExplicitGC'
+          CATALINA_OPTS: -Dfcrepo.autoversioning.enabled=false
       - image: zookeeper:3.9
         environment:
           ZOO_ADMINSERVER_ENABLED: false
