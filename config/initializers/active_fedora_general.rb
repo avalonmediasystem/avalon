@@ -92,6 +92,13 @@ Rails.application.config.to_prepare do
 end
 # End of overrides for AccessControl dirty tracking and autosaving
 
+class UUIDIdentifierService
+  def mint
+    SecureRandom.uuid
+  end
+end
+ActiveFedora::Base.identifier_service_class = UUIDIdentifierService
+
 # Override ActiveFedora::Associations::Builder::Orders::FixFirstLast to remove attempts to set first and last from list_source on saving
 ActiveFedora::Associations::Builder::Orders::FixFirstLast.module_eval do
   def save(*args)
