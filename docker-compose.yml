@@ -28,13 +28,13 @@ services:
     volumes: []
 
   fedora: &fedora
-    image: avalonmediasystem/fedora:4.7.5
+    image: fcrepo/fcrepo:6.4.0
     depends_on:
       - db
     volumes:
       - fedora:/data
     environment:
-      - JAVA_OPTIONS=-Dfcrepo.modeshape.configuration=classpath:/config/file-simple/repository.json -Dfcrepo.home=/data
+      - CATALINA_OPTS=-Dfcrepo.autoversioning.enabled=false
     networks:
       internal:
     ulimits:
@@ -100,7 +100,8 @@ services:
       - DATABASE_URL=postgres://postgres:password@db/avalon
       - DATABASE_CLEANER_ALLOW_REMOTE_DATABASE_URL=true
       - FEDORA_NAMESPACE=avalon
-      - FEDORA_URL=http://fedoraAdmin:fedoraAdmin@fedora:8080/fedora/rest
+      - FEDORA_URL=http://fedoraAdmin:fedoraAdmin@fedora:8080/fcrepo/rest
+      - FEDORA_BASE_PATH=/test
       - RAILS_ENV=development
       - RAILS_ADDITIONAL_HOSTS=avalon
       - SETTINGS__REDIS__HOST=redis

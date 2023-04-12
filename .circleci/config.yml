@@ -141,7 +141,7 @@ jobs:
         default: 4
     docker:
       # Primary container image where all steps run.
-      - image: avalonmediasystem/avalon:7.5.0-dev-ruby3
+      - image: avalonmediasystem/avalon:7.6.0-dev
 
     working_directory: /home/app/avalon
 

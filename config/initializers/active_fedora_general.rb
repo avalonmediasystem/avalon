@@ -91,3 +91,11 @@ Hydra::AccessControls::Permissions.module_eval do
       end
 end
 # End of overrides for AccessControl dirty tracking and autosaving
+
+class UUIDIdentifierService
+  def mint
+    SecureRandom.uuid
+  end
+end
+ActiveFedora::Base.identifier_service_class = UUIDIdentifierService
+
