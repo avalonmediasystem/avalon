@@ -426,13 +426,13 @@ class MediaObjectsController < ApplicationController
               errors += ["#{media_object&.title} (#{id}) (missing required fields)"]
               next
             end
-            media_object.publish!(user_key, validate: true)
+            media_object.publish!(user_key)
             # additional save to set permalink
             media_object.save( validate: false )
             success_count += 1
           when 'unpublish'
             if can? :unpublish, media_object
-              media_object.publish!(nil)
+              media_object.publish!(nil, validate: false)
               success_count += 1
             else
               errors += ["#{media_object&.title} (#{id}) (permission denied)."]

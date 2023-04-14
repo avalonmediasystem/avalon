@@ -109,7 +109,7 @@ module BulkActionJobs
         media_object = MediaObject.find(id)
         case status
         when 'publish'
-          media_object.publish!(user_key, validate: true)
+          media_object.publish!(user_key)
           # additional save to set permalink
           if media_object.save
             successes += [media_object]
@@ -117,7 +117,7 @@ module BulkActionJobs
             errors += [media_object]
           end
         when 'unpublish'
-          if media_object.publish!(nil)
+          if media_object.publish!(nil, validate: false)
             successes += [media_object]
           else
             errors += [media_object]
