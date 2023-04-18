@@ -1,11 +1,11 @@
 # Copyright 2011-2023, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
-# 
+#
 # You may obtain a copy of the License at
-# 
+#
 # http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software distributed
 #   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
 #   CONDITIONS OF ANY KIND, either express or implied. See the License for the
@@ -553,7 +553,7 @@ class MasterFile < ActiveFedora::Base
   protected
 
   def mediainfo
-    Mediainfo.new(FileLocator.new(file_location).location, headers: @auth_header)
+    MediaInfo.from(FileLocator.new(file_location).location)
   end
 
   def find_frame_source(options={})
@@ -724,19 +724,20 @@ class MasterFile < ActiveFedora::Base
                        end
 
     self.duration = begin
-      @mediainfo.duration.to_s
+      @mediainfo.general.duration.to_s
     rescue
       nil
     end
 
-    unless @mediainfo.video.streams.empty?
-      display_aspect_ratio_s = @mediainfo.video.streams.first.display_aspect_ratio
-      if ':'.in? display_aspect_ratio_s
+    if @mediainfo.video?
+      mi_video = @mediainfo.video
+      display_aspect_ratio_s = mi_video.displayaspectratio
+      if ':'.in? display_aspect_ratio_s.to_s
         self.display_aspect_ratio = display_aspect_ratio_s.split(/:/).collect(&:to_f).reduce(:/).to_s
       else
         self.display_aspect_ratio = display_aspect_ratio_s
       end
-      self.original_frame_size = @mediainfo.video.streams.first.frame_size
+      self.original_frame_size = "#{mi_video.width}x#{mi_video.height}" if mi_video.width || mi_video.height
       self.poster_offset = [2000,self.duration.to_i].min
     end
   end

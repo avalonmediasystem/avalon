@@ -47,13 +47,6 @@ GIT
       rails (> 4.0)
 
 GIT
-  remote: https://github.com/avalonmediasystem/mediainfo.git
-  revision: bea9479d33328c6b483ee19c008730f939d98266
-  tag: v0.7.1-avalon
-  specs:
-    mediainfo (0.7.1)
-
-GIT
   remote: https://github.com/avalonmediasystem/om.git
   revision: ffde890b4187a7d8be41ae387264cd6eb20b6ba8
   tag: v3.2.0-ruby3
@@ -578,6 +571,7 @@ GEM
       unf
     marcel (1.0.2)
     matrix (0.4.2)
+    mediainfo (1.5.0)
     memoist (0.16.2)
     method_source (1.0.0)
     mime-types (3.4.1)
@@ -1061,7 +1055,7 @@ DEPENDENCIES
   mail (> 2.8.0.1)
   marc
   media_element_add_to_playlist!
-  mediainfo!
+  mediainfo (~> 1.0)
   mysql2
   net-ldap
   net-smtp
