@@ -39,14 +39,6 @@ GIT
       typhoeus
 
 GIT
-  remote: https://github.com/avalonmediasystem/media-element-add-to-playlist.git
-  revision: dfde0084f6c17ca16fa675086eb025440f99a02d
-  tag: avalon-r6.5
-  specs:
-    media_element_add_to_playlist (0.0.1)
-      rails (> 4.0)
-
-GIT
   remote: https://github.com/avalonmediasystem/mediainfo.git
   revision: bea9479d33328c6b483ee19c008730f939d98266
   tag: v0.7.1-avalon
@@ -1060,7 +1052,6 @@ DEPENDENCIES
   lograge
   mail (> 2.8.0.1)
   marc
-  media_element_add_to_playlist!
   mediainfo!
   mysql2
   net-ldap
