@@ -99,6 +99,21 @@ class UUIDIdentifierService
 end
 ActiveFedora::Base.identifier_service_class = UUIDIdentifierService
 
+ActiveFedora::Persistence.module_eval do
+    # This is only used when creating a new record. If the object doesn't have an id
+    # and assign_id can mint an id for the object, then assign it to the resource.
+    # Otherwise the resource will have the id assigned by the LDP server
+    def assign_rdf_subject
+      @ldp_source = if !id && new_id = assign_id
+		      subject_uri = base_path_for_resource + self.class.id_to_uri(new_id).gsub(ActiveFedora.fedora.base_uri, '') if base_path_for_resource != ActiveFedora.fedora.base_uri
+		      subject_uri ||= self.class.id_to_uri(new_id)
+		      ActiveFedora::LdpResource.new(ActiveFedora.fedora.connection, subject_uri, @resource)
+		    else
+		      ActiveFedora::LdpResource.new(ActiveFedora.fedora.connection, @ldp_source.subject, @resource, base_path_for_resource)
+		    end
+    end
+end
+
 # Override ActiveFedora::Associations::Builder::Orders::FixFirstLast to remove attempts to set first and last from list_source on saving
 ActiveFedora::Associations::Builder::Orders::FixFirstLast.module_eval do
   def save(*args)
