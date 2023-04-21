@@ -5,7 +5,7 @@ add_success = false
 select_element.prepend(new Option(addnew))
 
 getSearchTerm = () ->
-  return $('span.select2-search--dropdown input').val();
+  return $('span.select2-search--dropdown input').val()
 
 matchWithNew = (params, data) ->
   term = params.term || ''
@@ -58,13 +58,13 @@ showNewPlaylistModal = (playlistName) ->
   return true
 
 $('#add-playlist-modal').on('hidden.bs.modal', () ->
-    if (!add_success)
-      op = select_element.children()[1]
-      if (op)
-        newval = op.value
-      else
-        newval = -1
-      select_element.val(newval).trigger('change.select2')
+  if (!add_success)
+    op = select_element.children()[1]
+    if (op)
+      newval = op.value
+    else
+      newval = -1
+    select_element.val(newval).trigger('change.select2')
 )
 
 select_element.select2({
@@ -88,7 +88,8 @@ $('#playlist_form').submit(
       $('#new_playlist_submit').prop("disabled", true)
       return true
     if($('#title_error').length == 0)
-      $('#playlist_title').after('<h5 id="title_error" class="error text-danger">Name is required</h5>')
+      $('#playlist_title')
+        .after('<h5 id="title_error" class="error text-danger">Name is required</h5>')
       $('#playlist_title').parent().addClass('has-error')
     return false
 )
@@ -101,5 +102,7 @@ $("#playlist_form").bind('ajax:success',
       console.log(data.errors.title[0])
     else
       add_success = true
-      select_element.append(new Option(data.title, data.id.toString(), true, true)).trigger('change')
+      select_element
+        .append(new Option(data.title, data.id.toString(), true, true))
+        .trigger('change')
   )
