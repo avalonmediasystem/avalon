@@ -36,7 +36,14 @@ services:
     environment:
       - CATALINA_OPTS=-Dfcrepo.autoversioning.enabled=false
     networks:
+      external:
       internal:
+    ports:
+      - '8080:8080'
+    ulimits:
+      nofile:
+        soft: "65536"
+        hard: "65536"
   fedora-test:
     <<: *fedora
     volumes: []
@@ -52,6 +59,10 @@ services:
       - /opt/solr/avalon_conf
     networks:
       internal:
+    ulimits:
+      nofile:
+        soft: "65536"
+        hard: "65536"
   solr-test:
     <<: *solr
     volumes:
