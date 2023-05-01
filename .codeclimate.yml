@@ -1,11 +1,11 @@
 ---
 prepare:
-  fetch: # Pinned to bixby 2.0.0
-  - url: "https://raw.githubusercontent.com/samvera-labs/bixby/394ba20eac3f3c8146a679b1dc45c3513074848c/bixby_default.yml"
+  fetch:
+  - url: "https://raw.githubusercontent.com/samvera/bixby/v5.0.2/bixby_default.yml"
     path: "bixby_default.yml"
-  - url: "https://raw.githubusercontent.com/samvera-labs/bixby/394ba20eac3f3c8146a679b1dc45c3513074848c/bixby_rails_enabled.yml"
+  - url: "https://raw.githubusercontent.com/samvera/bixby/v5.0.2/bixby_rails_enabled.yml"
     path: "bixby_rails_enabled.yml"
-  - url: "https://raw.githubusercontent.com/samvera-labs/bixby/394ba20eac3f3c8146a679b1dc45c3513074848c/bixby_rspec_enabled.yml"
+  - url: "https://raw.githubusercontent.com/samvera/bixby/v5.0.2/bixby_rspec_enabled.yml"
     path: "bixby_rspec_enabled.yml"
 engines:
   brakeman:
@@ -22,7 +22,7 @@ engines:
     enabled: false
   rubocop:
     enabled: true
-    channel: rubocop-0-50
+    channel: rubocop-1-48-1
     config:
       file: .rubocop.cc.yml
     checks:
