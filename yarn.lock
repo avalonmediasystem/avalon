@@ -894,9 +894,9 @@
     "@babel/plugin-transform-react-pure-annotations" "^7.14.5"
 
 "@babel/runtime@^7.1.2", "@babel/runtime@^7.15.4", "@babel/runtime@^7.2.0", "@babel/runtime@^7.3.1", "@babel/runtime@^7.4.4", "@babel/runtime@^7.8.3", "@babel/runtime@^7.9.2":
-  version "7.21.0"
-  resolved "https://registry.yarnpkg.com/@babel/runtime/-/runtime-7.21.0.tgz#5b55c9d394e5fcf304909a8b00c07dc217b56673"
-  integrity sha512-xwII0//EObnq89Ji5AKYQaRYiW/nZ3llSv29d49IuxPhKbtJoLP+9QUUZ4nVragQVtaVGeZrpB+ZtG/Pdy/POw==
+  version "7.21.5"
+  resolved "https://registry.yarnpkg.com/@babel/runtime/-/runtime-7.21.5.tgz#8492dddda9644ae3bda3b45eabe87382caee7200"
+  integrity sha512-8jI69toZqqcsnqGGqwGS4Qb1VwLOEp4hz+CXPywcvjs60u3B4Pom/U/7rm4W8tMOYEB+E9wgD0mW1l3r8qlI9Q==
   dependencies:
     regenerator-runtime "^0.13.11"
 
@@ -3869,9 +3869,9 @@ hex-color-regex@^1.1.0:
   integrity sha512-l9sfDFsuqtOqKDsQdqrMRk0U85RZc0RtOR9yPI7mRVOa4FsR/BVnZ0shmQRM96Ji99kYZP/7hn1cedc1+ApsTQ==
 
 hls.js@^1.1.2:
-  version "1.3.4"
-  resolved "https://registry.yarnpkg.com/hls.js/-/hls.js-1.3.4.tgz#8212a3f95c3321f64a586f20e67876f3a9d09488"
-  integrity sha512-iFEwVqtEDk6sKotcTwtJ5OMo/nuDTk9PrpB8FI2J2WYf8EriTVfR4FaK0aNyYtwbYeRSWCXJKlz23xeREdlNYg==
+  version "1.4.0"
+  resolved "https://registry.yarnpkg.com/hls.js/-/hls.js-1.4.0.tgz#e73af3e7c8d4310a2bcc92d5ade362dfb781fef7"
+  integrity sha512-VEjg7Rx5FlE9TB3MIn0HPgq3J+vR7EoQnjaqMCk/ISEaCOSZlAFh4g867f1QkSxZiq9kHeUZo+iH16X7VS3jKA==
 
 "hls.js@https://github.com/avalonmediasystem/hls.js#stricter_ts_probing":
   version "0.13.1"
@@ -4147,11 +4147,6 @@ ini@^1.3.4, ini@^1.3.5:
   version "1.3.8"
   resolved "https://registry.yarnpkg.com/ini/-/ini-1.3.8.tgz#a29da425b48806f34767a4efce397269af28432c"
   integrity sha512-JV/yugV2uzW5iMRSiZAyDtQd+nxtUnjeLt0acNdw98kKLrvuRVyB80tsREOE7yvGVgalhZ6RNXCmEHkUKBKxew==
-
-inline-worker@~1.1.0:
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/inline-worker/-/inline-worker-1.1.0.tgz#55e96f54915a642b00872a2daa6fe832b424c98d"
-  integrity sha512-2nlxBGg5Uoop6IRco9wMzlAz62690ylokrUDg3IaCi9bJaq0HykbWlRtRXgvSKiBNmCBGXnOCFBkIFjaSGJocA==
 
 internal-slot@^1.0.3:
   version "1.0.3"
@@ -4653,10 +4648,10 @@ klona@^2.0.4:
   resolved "https://registry.yarnpkg.com/klona/-/klona-2.0.4.tgz#7bb1e3affb0cb8624547ef7e8f6708ea2e39dfc0"
   integrity sha512-ZRbnvdg/NxqzC7L9Uyqzf4psi1OM4Cuc+sJAkQPjO6XkQIJTNbfK2Rsmbw8fx1p2mkZdp2FZYo2+LwXYY/uwIA==
 
-konva@~7.2.5:
-  version "7.2.5"
-  resolved "https://registry.yarnpkg.com/konva/-/konva-7.2.5.tgz#9b4ac3a353e6be66e3e69123bf2a0cbc61efeb26"
-  integrity sha512-yk/li8rUF+09QNlOdkwbEId+QvfATMe/aMGVouWW1oFoUVTYWHsQuIAE6lWy11DK8mLJEJijkNAXC5K+NVlMew==
+konva@^9.0.0:
+  version "9.0.1"
+  resolved "https://registry.yarnpkg.com/konva/-/konva-9.0.1.tgz#92b4171beaa94273b108bd87b08c4d3e51a0da22"
+  integrity sha512-wzpkprJ8idE42TDF9Lu9RNjVVYNXrj0apvTK3pujdHQhX1iNV+MUquSxYN8HqjYSG95QQ51jhFzRLWhnhf44Mw==
 
 last-call-webpack-plugin@^3.0.0:
   version "3.0.0"
@@ -5624,14 +5619,12 @@ pbkdf2@^3.0.3:
     safe-buffer "^5.0.1"
     sha.js "^2.4.8"
 
-peaks.js@^0.26.0:
-  version "0.26.0"
-  resolved "https://registry.yarnpkg.com/peaks.js/-/peaks.js-0.26.0.tgz#0ff00369b19a74522b0fe313f6b967b7c05aa1c1"
-  integrity sha512-kUsVDa+ISqK8V5B3dy4aXgQ1AbtPa7AIEHfJsOpSLIqgkrq1d3EOukbzrMiyNnODeh9qRaGEgHq40KlQEQK90Q==
+peaks.js@^2.1.0:
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/peaks.js/-/peaks.js-2.1.0.tgz#d494c1752e13c0d9a1064d5ec5f408640eec032b"
+  integrity sha512-oWsqrHckPv9w1yXIciX81kVXPZSFifGhETmR1bLFbV7KlqPRCYvLVaTpHc6Nl+Ogps0BMRvCnrQLEYCWBKA0uA==
   dependencies:
     eventemitter3 "~4.0.7"
-    konva "~7.2.5"
-    waveform-data "~4.1.0"
 
 picomatch@^2.0.4, picomatch@^2.2.1:
   version "2.3.0"
@@ -6604,7 +6597,7 @@ react-redux@^7.2.6:
 
 "react-structural-metadata-editor@https://github.com/avalonmediasystem/react-structural-metadata-editor":
   version "1.1.0"
-  resolved "https://github.com/avalonmediasystem/react-structural-metadata-editor#c29229daf1b2efe398f55cb8dfc0c603bdd6441d"
+  resolved "https://github.com/avalonmediasystem/react-structural-metadata-editor#50dbd6d38fde3ccdaf174c2048a7c4f7e3fcbe36"
   dependencies:
     "@babel/runtime" "^7.4.4"
     "@fortawesome/fontawesome-svg-core" "^1.2.4"
@@ -6614,9 +6607,10 @@ react-redux@^7.2.6:
     "@material-ui/icons" "4.2.1"
     axios "^0.21.2"
     hls.js "^1.1.2"
+    konva "^9.0.0"
     lodash "4.17.21"
     manifesto.js "^4.2.14"
-    peaks.js "^0.26.0"
+    peaks.js "^2.1.0"
     prop-types "^15.6.2"
     react-bootstrap "1.6.4"
     react-dnd "^7.0.2"
@@ -6627,6 +6621,7 @@ react-redux@^7.2.6:
     redux-thunk "^2.3.0"
     rxjs "^6.4.0"
     uuid "^3.3.2"
+    waveform-data "^4.3.0"
 
 react-transition-group@2.5.3:
   version "2.5.3"
@@ -8005,12 +8000,10 @@ watchpack@^1.7.4:
     chokidar "^3.4.1"
     watchpack-chokidar2 "^2.0.1"
 
-waveform-data@~4.1.0:
-  version "4.1.1"
-  resolved "https://registry.yarnpkg.com/waveform-data/-/waveform-data-4.1.1.tgz#641e6ae6c190529f9df79176009075618f236946"
-  integrity sha512-OAKQPY0j4e/cn7jv/zHFw8bzL4i93MCGlyfc42LDQxeT6pnvzxynzbNm5TCopPViKAan5zs1/8WrAsC4VxJjlg==
-  dependencies:
-    inline-worker "~1.1.0"
+waveform-data@^4.3.0:
+  version "4.3.0"
+  resolved "https://registry.yarnpkg.com/waveform-data/-/waveform-data-4.3.0.tgz#03fcafa522ec1302f48583cc0c9ffd20737d499d"
+  integrity sha512-gddZgTV1dM8Mfaqn+mCJjwTAc7O/GbX2LgOrijRCHEGC60ZVdd/qTzrgEcCE5MfBoBPgwQ85huy1icSf5IZY5Q==
 
 wbuf@^1.1.0, wbuf@^1.7.3:
   version "1.7.3"
