@@ -26,6 +26,6 @@ class SupplementalFile < ApplicationRecord
   end
 
   def machine_generated?
-    self.tags.include?('machine_generated')
+    tags.include?('machine_generated')
   end
 end

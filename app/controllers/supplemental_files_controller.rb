@@ -137,7 +137,7 @@ class SupplementalFilesController < ApplicationController
     end
 
     def edit_file_information
-      ident = "machine_generated_#{params[:id].to_s}".to_sym
+      ident = "machine_generated_#{params[:id]}".to_sym
 
       if params[ident] && !@supplemental_file.machine_generated?
         @supplemental_file.tags += ['machine_generated']
@@ -153,11 +153,11 @@ class SupplementalFilesController < ApplicationController
       end
     end
 
-    def edit_file_label label
+    def edit_file_label(label)
       label = if label.exclude?('(machine generated)') && File.extname(label).present?
                 label.gsub(File.extname(label), " (machine generated)#{File.extname(label)}")
               elsif label.exclude?('(machine generated)') && File.extname(label).blank?
-                label + (" (machine generated)")
+                label + " (machine generated)"
               else
                 label
               end
