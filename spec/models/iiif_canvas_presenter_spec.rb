@@ -1,11 +1,11 @@
 # Copyright 2011-2023, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
-# 
+#
 # You may obtain a copy of the License at
-# 
+#
 # http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software distributed
 #   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
 #   CONDITIONS OF ANY KIND, either express or implied. See the License for the
@@ -36,6 +36,14 @@ describe IiifCanvasPresenter do
     it 'provides a logout service' do
       logout_service = subject[:service].find { |s| s[:@type] == "AuthLogoutService1"}
       expect(logout_service[:@id]).to eq Rails.application.routes.url_helpers.destroy_user_session_url
+    end
+
+    context 'when public media object' do
+      let(:media_object) { FactoryBot.build(:fully_searchable_media_object) }
+
+      it "does not provide an auth service" do
+        expect(presenter.display_content.first.auth_service).to be_nil
+      end
     end
   end
 
@@ -81,9 +89,9 @@ describe IiifCanvasPresenter do
       let(:structure_xml) { "" }
 
       it 'autogenerates a basic range' do
-	expect(subject.label.to_s).to eq "{\"none\"=>[\"#{master_file.embed_title}\"]}"
-	expect(subject.items.size).to eq 1
-	expect(subject.items.first).to be_a IiifCanvasPresenter
+      	expect(subject.label.to_s).to eq "{\"none\"=>[\"#{master_file.embed_title}\"]}"
+      	expect(subject.items.size).to eq 1
+      	expect(subject.items.first).to be_a IiifCanvasPresenter
         expect(subject.items.first.media_fragment).to eq 't=0,'
       end
     end
