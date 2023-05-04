@@ -126,21 +126,20 @@ class IiifCanvasPresenter
 
     def manifest_attributes(quality, media_type)
       media_hash = {
-                      label: quality,
-                      width: master_file.width.to_i,
-                      height: master_file.height.to_i,
-                      duration: stream_info[:duration],
-                      type: media_type,
-                      format: 'application/x-mpegURL'
-                    }.compact
+                     label: quality,
+                     width: master_file.width.to_i,
+                     height: master_file.height.to_i,
+                     duration: stream_info[:duration],
+                     type: media_type,
+                     format: 'application/x-mpegURL'
+                   }.compact
 
       if master_file.media_object.visibility == 'public'
         media_hash
       else
-        media_hash.merge!({ auth_service: auth_service(quality) })
+        media_hash.merge!(auth_service: auth_service(quality))
       end
     end
-
 
     # Note that the method returns empty Nokogiri Document instead of nil when structure_tesim doesn't exist or is empty.
     def structure_ng_xml
