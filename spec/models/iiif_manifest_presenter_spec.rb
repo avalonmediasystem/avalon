@@ -41,7 +41,7 @@ describe IiifManifestPresenter do
     it 'provides metadata' do
       ['Title', 'Date', 'Main contributor', 'Summary', 'Contributor', 'Publisher', 'Genre', 'Subject', 'Time period',
        'Location', 'Collection', 'Unit', 'Language', 'Rights Statement', 'Terms of Use', 'Physical Description',
-       'Related Item', 'Notes', 'Contents', 'Local Note', 'Other Identifiers'].each do |field|
+       'Related Item', 'Notes', 'Table of Contents', 'Local Note', 'Other Identifiers'].each do |field|
         expect(subject).to include(field)
       end
     end

@@ -105,7 +105,7 @@ class IiifManifestPresenter
   def note_fields(media_object)
     fields = []
     note_types = ModsDocument::NOTE_TYPES.clone
-    note_types['table of contents'] = 'Contents'
+    note_types['table of contents'] = 'Table of Contents'
     note_types['general'] = 'Notes'
     sorted_note_types = note_types.keys.sort
     sorted_note_types.prepend(sorted_note_types.delete('general'))
