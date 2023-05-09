@@ -55,7 +55,7 @@ class IiifCanvasPresenter
 
     def video_display_content(quality)
       IIIFManifest::V3::DisplayContent.new(Rails.application.routes.url_helpers.hls_manifest_master_file_url(master_file.id, quality: quality),
-                                           manifest_attributes(quality, 'Video'))
+                                           **manifest_attributes(quality, 'Video'))
     end
 
     def audio_content
@@ -64,7 +64,7 @@ class IiifCanvasPresenter
 
     def audio_display_content(quality)
       IIIFManifest::V3::DisplayContent.new(Rails.application.routes.url_helpers.hls_manifest_master_file_url(master_file.id, quality: quality),
-                                           manifest_attributes(quality, 'Sound'))
+                                           **manifest_attributes(quality, 'Sound'))
     end
 
     def stream_urls
@@ -126,13 +126,13 @@ class IiifCanvasPresenter
 
     def manifest_attributes(quality, media_type)
       media_hash = {
-                     label: quality,
-                     width: master_file.width.to_i,
-                     height: master_file.height.to_i,
-                     duration: stream_info[:duration],
-                     type: media_type,
-                     format: 'application/x-mpegURL'
-                   }.compact
+        label: quality,
+        width: master_file.width.to_i,
+        height: master_file.height.to_i,
+        duration: stream_info[:duration],
+        type: media_type,
+        format: 'application/x-mpegURL'
+      }.compact
 
       if master_file.media_object.visibility == 'public'
         media_hash
