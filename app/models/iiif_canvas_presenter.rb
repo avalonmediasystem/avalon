@@ -1,11 +1,11 @@
 # Copyright 2011-2023, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
-# 
+#
 # You may obtain a copy of the License at
-# 
+#
 # http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software distributed
 #   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
 #   CONDITIONS OF ANY KIND, either express or implied. See the License for the
@@ -55,13 +55,7 @@ class IiifCanvasPresenter
 
     def video_display_content(quality)
       IIIFManifest::V3::DisplayContent.new(Rails.application.routes.url_helpers.hls_manifest_master_file_url(master_file.id, quality: quality),
-                                           label: quality,
-                                           width: master_file.width.to_i,
-                                           height: master_file.height.to_i,
-                                           duration: stream_info[:duration],
-                                           type: 'Video',
-                                           format: 'application/x-mpegURL',
-                                           auth_service: auth_service(quality))
+                                           **manifest_attributes(quality, 'Video'))
     end
 
     def audio_content
@@ -70,11 +64,7 @@ class IiifCanvasPresenter
 
     def audio_display_content(quality)
       IIIFManifest::V3::DisplayContent.new(Rails.application.routes.url_helpers.hls_manifest_master_file_url(master_file.id, quality: quality),
-                                           label: quality,
-                                           duration: stream_info[:duration],
-                                           type: 'Sound',
-                                           format: 'application/x-mpegURL',
-                                           auth_service: auth_service(quality))
+                                           **manifest_attributes(quality, 'Sound'))
     end
 
     def stream_urls
@@ -132,6 +122,23 @@ class IiifCanvasPresenter
         smh[i] = smh[i] =~ FLOAT_PATTERN ? Float(smh[i]) : 0
       end
       smh[0] + (60 * smh[1]) + (3600 * smh[2])
+    end
+
+    def manifest_attributes(quality, media_type)
+      media_hash = {
+        label: quality,
+        width: master_file.width.to_i,
+        height: master_file.height.to_i,
+        duration: stream_info[:duration],
+        type: media_type,
+        format: 'application/x-mpegURL'
+      }.compact
+
+      if master_file.media_object.visibility == 'public'
+        media_hash
+      else
+        media_hash.merge!(auth_service: auth_service(quality))
+      end
     end
 
     # Note that the method returns empty Nokogiri Document instead of nil when structure_tesim doesn't exist or is empty.
