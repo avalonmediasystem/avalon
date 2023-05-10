@@ -15,7 +15,7 @@
 class IiifManifestPresenter
   # Should <pre> tags be allowed?
   # They aren't listed in the IIIF spec but we use them in our normal view page
-  IIIF_ALLOWED_TAGS = ['a', 'b', 'br', 'i', 'img', 'p', 'pre', 'small', 'span', 'sub', 'sup'].freeze
+  IIIF_ALLOWED_TAGS = ['a', 'b', 'br', 'i', 'img', 'p', 'small', 'span', 'sub', 'sup'].freeze
   IIIF_ALLOWED_ATTRIBUTES = ['href', 'src', 'alt'].freeze
 
   attr_reader :media_object, :master_files
@@ -111,7 +111,7 @@ class IiifManifestPresenter
     sorted_note_types.prepend(sorted_note_types.delete('general'))
     sorted_note_types.each do |note_type|
       notes = note_type == 'table of contents' ? media_object.table_of_contents : gather_notes_of_type(media_object, note_type)
-      fields << metadata_field(note_types[note_type], notes.collect { |note| "<pre>#{note}</pre>" }.join)
+      fields << metadata_field(note_types[note_type], notes.join)
     end
     fields
   end
@@ -145,7 +145,7 @@ class IiifManifestPresenter
 
   def display_summary(media_object)
     return nil unless media_object.abstract.present?
-    "<pre>#{media_object.abstract}</pre>"
+    media_object.abstract
   end
 
   def iiif_metadata_fields
