@@ -45,5 +45,13 @@ describe IiifManifestPresenter do
         expect(subject).to include(field)
       end
     end
+
+    context 'multiple values' do
+      let(:media_object) { FactoryBot.build(:fully_searchable_media_object, note: [{ note: Faker::Lorem.paragraph, type: 'general' }, { note: Faker::Lorem.paragraph, type: 'general' }]) }
+
+      it 'serializes multiple values as an array' do
+        expect(subject['Notes']).to be_a Array
+      end
+    end
   end
 end

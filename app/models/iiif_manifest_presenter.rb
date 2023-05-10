@@ -86,7 +86,7 @@ class IiifManifestPresenter
     return nil if sanitized_values.empty? && default.nil?
     sanitized_values = Array(default) if sanitized_values.empty?
     label = label.pluralize(sanitized_values.size)
-    { 'label' => label, 'value' => sanitized_values.join('; ') }
+    { 'label' => label, 'value' => sanitized_values }
   end
 
   def combined_display_date(media_object)
@@ -111,7 +111,7 @@ class IiifManifestPresenter
     sorted_note_types.prepend(sorted_note_types.delete('general'))
     sorted_note_types.each do |note_type|
       notes = note_type == 'table of contents' ? media_object.table_of_contents : gather_notes_of_type(media_object, note_type)
-      fields << metadata_field(note_types[note_type], notes.join)
+      fields << metadata_field(note_types[note_type], notes)
     end
     fields
   end
