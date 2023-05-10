@@ -883,6 +883,7 @@ describe MasterFile do
       # Force creation of master_file and then clear queue of byproduct jobs
       master_file
       ActiveJob::Base.queue_adapter.enqueued_jobs.clear
+      ActiveJob::Uniqueness.unlock!
     end
 
     it 'enqueues indexing of parent media object' do
