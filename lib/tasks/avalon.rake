@@ -47,7 +47,7 @@ namespace :avalon do
   task local_encode_cleanup: :environment do
     options = {
       older_than: ENV['older_than'], # Default is 2.weeks
-      no_outputs: ENV['no_outputs'].to_a, # Default is ['input_metadata', 'duration_input_metadata', 'error.log', 'exit_status.code', 'progress', 'completed', 'pid', 'output_metadata-*']
+      no_outputs: ENV['no_outputs']&.to_a, # Default is ['input_metadata', 'duration_input_metadata', 'error.log', 'exit_status.code', 'progress', 'completed', 'pid', 'output_metadata-*']
       outputs: ENV['outputs'], # Default is false
       all: ENV['all'] # Default is false
     }.compact
