@@ -249,31 +249,26 @@ RSpec.shared_examples 'a nested controller for' do |object_class|
         let(:machine_param) { "machine_generated_#{supplemental_file.id}".to_sym }
         context "missing machine_generated tag" do
           let(:supplemental_file) { FactoryBot.create(:supplemental_file, :with_transcript_file, :with_transcript_tag, label: 'label') }
-          it "adds machine generated note to label and tags" do
+          it "adds machine generated note to tags" do
             expect {
               put :update, params: { class_id => object.id, id: supplemental_file.id, machine_param => 1, supplemental_file: valid_update_attributes, format: :html }, session: valid_session
-            }.to change { master_file.reload.supplemental_files.first.label }.from('label').to('new label (machine generated)')
-             .and change { master_file.reload.supplemental_files.first.tags }.from(['transcript']).to(['transcript', 'machine_generated'])
+            }.to change { master_file.reload.supplemental_files.first.tags }.from(['transcript']).to(['transcript', 'machine_generated'])
           end
         end
         context "with machine_generated tag" do
           let(:supplemental_file) { FactoryBot.create(:supplemental_file, :with_transcript_file, tags: ['transcript', 'machine_generated'], label: 'label (machine generated)') }
-          let(:valid_update_attributes) { { label: 'label (machine generated)' } }
           it "does not add more instances of machine generated note" do
             expect {
               put :update, params: { class_id => object.id, id: supplemental_file.id, machine_param => 1, supplemental_file: valid_update_attributes, format: :html }, session: valid_session
-            }.to not_change { master_file.reload.supplemental_files.first.label }.from('label (machine generated)')
-             .and not_change { master_file.reload.supplemental_files.first.tags }.from(['transcript', 'machine_generated'])
+            }.to not_change { master_file.reload.supplemental_files.first.tags }.from(['transcript', 'machine_generated'])
           end
         end
         context "removing machine_generated designation" do
           let(:supplemental_file) { FactoryBot.create(:supplemental_file, :with_transcript_file, tags: ['transcript', 'machine_generated'], label: 'label (machine generated)') }
-          let(:valid_update_attributes) { { label: 'label (machine generated)' } }
           it "removes machine generated note from label and tags" do
             expect {
               put :update, params: { class_id => object.id, id: supplemental_file.id, supplemental_file: valid_update_attributes, format: :html }, session: valid_session
-            }.to change { master_file.reload.supplemental_files.first.label }.from('label (machine generated)').to('label')
-             .and change { master_file.reload.supplemental_files.first.tags }.from(['transcript', 'machine_generated']).to(['transcript'])
+            }.to change { master_file.reload.supplemental_files.first.tags }.from(['transcript', 'machine_generated']).to(['transcript'])
           end
         end
       end

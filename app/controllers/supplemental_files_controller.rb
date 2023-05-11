@@ -141,27 +141,10 @@ class SupplementalFilesController < ApplicationController
 
       if params[ident] && !@supplemental_file.machine_generated?
         @supplemental_file.tags += ['machine_generated']
-        edit_file_label supplemental_file_params[:label]
       elsif !params[ident] && @supplemental_file.machine_generated?
         @supplemental_file.tags -= ['machine_generated']
-        label = supplemental_file_params[:label].gsub(" (machine generated)", '')
-        @supplemental_file.label = label
-      elsif params[ident] && @supplemental_file.machine_generated?
-        edit_file_label supplemental_file_params[:label]
-      else
-        @supplemental_file.label = supplemental_file_params[:label]
       end
-    end
-
-    def edit_file_label(label)
-      label = if label.exclude?('(machine generated)') && File.extname(label).present?
-                label.gsub(File.extname(label), " (machine generated)#{File.extname(label)}")
-              elsif label.exclude?('(machine generated)') && File.extname(label).blank?
-                label + " (machine generated)"
-              else
-                label
-              end
-      @supplemental_file.label = label
+      @supplemental_file.label = supplemental_file_params[:label]
     end
 
     def object_supplemental_file_path
