@@ -14,6 +14,6 @@
 
 class ApplicationJob < ActiveJob::Base
   rescue_from Ldp::Gone do |exception|
-    Rails.logger.error exception.message
+    Rails.logger.error(exception.message + '\n' + exception.backtrace.join('\n'))
   end
 end

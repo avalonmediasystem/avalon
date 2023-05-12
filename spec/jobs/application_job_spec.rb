@@ -18,7 +18,8 @@ describe ApplicationJob do
   describe 'exception handling' do
     it 'rescues Ldp::Gone errors' do
       allow_any_instance_of(described_class).to receive(:perform).and_raise(Ldp::Gone)
-      expect(Rails.logger).to receive(:error).with("Ldp::Gone")
+      allow_any_instance_of(Exception).to receive(:backtrace).and_return(["Test trace"])
+      expect(Rails.logger).to receive(:error).with('Ldp::Gone\nTest trace')
       expect { described_class.perform_now }.to_not raise_error
     end
   end
