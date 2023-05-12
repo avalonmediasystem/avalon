@@ -1,11 +1,11 @@
 # Copyright 2011-2023, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
-# 
+#
 # You may obtain a copy of the License at
-# 
+#
 # http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software distributed
 #   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
 #   CONDITIONS OF ANY KIND, either express or implied. See the License for the
@@ -73,14 +73,14 @@ class SupplementalFilesController < ApplicationController
     end
   end
 
-  # Update the label of the supplemental file
+  # Update the label and tags of the supplemental file
   def update
     raise Avalon::NotFound, "Cannot update the supplemental file: #{params[:id]} not found" unless SupplementalFile.exists? params[:id].to_s
     @supplemental_file = SupplementalFile.find(params[:id])
     raise Avalon::NotFound, "Cannot update the supplemental file: #{@supplemental_file.id} not found" unless @object.supplemental_files.any? { |f| f.id == @supplemental_file.id }
     raise Avalon::BadRequest, "Updating file contents not allowed" if supplemental_file_params[:file].present?
 
-    @supplemental_file.label = supplemental_file_params[:label]
+    edit_file_information
     raise Avalon::SaveError, @supplemental_file.errors.full_messages unless @supplemental_file.save
 
     flash[:success] = "Supplemental file successfully updated."
@@ -134,6 +134,17 @@ class SupplementalFilesController < ApplicationController
                           @object.id
                         end
       edit_media_object_path(media_object_id, step: 'file-upload')
+    end
+
+    def edit_file_information
+      ident = "machine_generated_#{params[:id]}".to_sym
+
+      if params[ident] && !@supplemental_file.machine_generated?
+        @supplemental_file.tags += ['machine_generated']
+      elsif !params[ident] && @supplemental_file.machine_generated?
+        @supplemental_file.tags -= ['machine_generated']
+      end
+      @supplemental_file.label = supplemental_file_params[:label]
     end
 
     def object_supplemental_file_path

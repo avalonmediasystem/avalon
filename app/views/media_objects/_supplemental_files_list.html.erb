@@ -36,6 +36,14 @@ Unless required by applicable law or agreed to in writing, software distributed
                               <i class="fa fa-times" title="Cancel"></i> <span class="sm-hidden">Cancel</span>
                             <% end %>
                           </div>
+                          <% if tag == 'transcript' %>
+                          <span class="float-right">
+                            <%= label_tag "machine_generated_#{file.id}" do %>
+                            <%= check_box_tag "machine_generated_#{file.id}", '1', file.machine_generated? %>
+                            Machine Generated
+                            <% end %>
+                          </span>
+                          <% end %>
                         </div>
                     <% end %>
                     <small class="visible-inline" name="flash-message-<%= section.id %>-<%= file.id %>"></small>
