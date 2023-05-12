@@ -15,7 +15,7 @@
 class IiifManifestPresenter
   # Should <pre> tags be allowed?
   # They aren't listed in the IIIF spec but we use them in our normal view page
-  IIIF_ALLOWED_TAGS = ['a', 'b', 'br', 'i', 'img', 'p', 'pre', 'small', 'span', 'sub', 'sup'].freeze
+  IIIF_ALLOWED_TAGS = ['a', 'b', 'br', 'i', 'img', 'p', 'small', 'span', 'sub', 'sup'].freeze
   IIIF_ALLOWED_ATTRIBUTES = ['href', 'src', 'alt'].freeze
 
   attr_reader :media_object, :master_files
@@ -86,7 +86,7 @@ class IiifManifestPresenter
     return nil if sanitized_values.empty? && default.nil?
     sanitized_values = Array(default) if sanitized_values.empty?
     label = label.pluralize(sanitized_values.size)
-    { 'label' => label, 'value' => sanitized_values.join('; ') }
+    { 'label' => label, 'value' => sanitized_values }
   end
 
   def combined_display_date(media_object)
@@ -105,13 +105,13 @@ class IiifManifestPresenter
   def note_fields(media_object)
     fields = []
     note_types = ModsDocument::NOTE_TYPES.clone
-    note_types['table of contents'] = 'Contents'
+    note_types['table of contents'] = 'Table of Contents'
     note_types['general'] = 'Notes'
     sorted_note_types = note_types.keys.sort
     sorted_note_types.prepend(sorted_note_types.delete('general'))
     sorted_note_types.each do |note_type|
       notes = note_type == 'table of contents' ? media_object.table_of_contents : gather_notes_of_type(media_object, note_type)
-      fields << metadata_field(note_types[note_type], notes.collect { |note| "<pre>#{note}</pre>" }.join)
+      fields << metadata_field(note_types[note_type], notes)
     end
     fields
   end
@@ -145,7 +145,7 @@ class IiifManifestPresenter
 
   def display_summary(media_object)
     return nil unless media_object.abstract.present?
-    "<pre>#{media_object.abstract}</pre>"
+    media_object.abstract
   end
 
   def iiif_metadata_fields
