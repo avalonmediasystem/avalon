@@ -66,7 +66,7 @@ class IiifManifestPresenter
   def homepage
     [
       {
-        id: Rails.application.routes.url_helpers.media_object_url(media_object),
+        id: media_object.permalink || Rails.application.routes.url_helpers.media_object_url(media_object),
         type: "Text",
         label: { "none" => [I18n.t('iiif.manifest.homepageLabel')] },
         format: "text/html"

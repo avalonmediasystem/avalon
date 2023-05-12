@@ -22,11 +22,19 @@ describe IiifManifestPresenter do
   context 'homepage' do
     subject { presenter.homepage.first }
 
-    it 'provices a homepage' do
+    it 'provides a homepage' do
       expect(subject[:id]).to eq Rails.application.routes.url_helpers.media_object_url(media_object)
       expect(subject[:type]).to eq "Text"
       expect(subject[:format]).to eq "text/html"
       expect(subject[:label]).to include("none" => ["View in Repository"])
+    end
+
+    context 'with permalink' do
+      let(:media_object) { FactoryBot.build(:media_object, permalink: "https://purl.example.edu/permalink") }
+
+      it 'uses the permalink' do
+        expect(subject[:id]).to eq media_object.permalink
+      end
     end
   end
 
