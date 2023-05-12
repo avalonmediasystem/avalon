@@ -90,6 +90,11 @@ class CatalogController < ApplicationController
     # Hide these facets if not a Collection Manager
     config.add_facet_field 'workflow_published_sim', label: 'Published', limit: 5, if: Proc.new {|context, config, opts| Ability.new(context.current_user, context.user_session).can? :create, MediaObject}, group: "workflow"
     config.add_facet_field 'avalon_uploader_ssi', label: 'Created by', limit: 5, if: Proc.new {|context, config, opts| Ability.new(context.current_user, context.user_session).can? :create, MediaObject}, group: "workflow"
+    config.add_facet_field 'read_access_group_ssim', label: 'Item access', if: Proc.new {|context, config, opts| Ability.new(context.current_user, context.user_session).can? :create, MediaObject}, group: "workflow", query: {
+      public: { label: "Public", fq: "has_model_ssim:MediaObject AND read_access_group_ssim:#{Hydra::AccessControls::AccessRight::PERMISSION_TEXT_VALUE_PUBLIC}" },
+      restricted: { label: "Logged in", fq: "has_model_ssim:MediaObject AND read_access_group_ssim:#{Hydra::AccessControls::AccessRight::PERMISSION_TEXT_VALUE_AUTHENTICATED}" },
+      private: { label: "Private", fq: "has_model_ssim:MediaObject AND NOT read_access_group_ssim:#{Hydra::AccessControls::AccessRight::PERMISSION_TEXT_VALUE_PUBLIC} AND NOT read_access_group_ssim:#{Hydra::AccessControls::AccessRight::PERMISSION_TEXT_VALUE_AUTHENTICATED}" }
+    }
     config.add_facet_field 'read_access_virtual_group_ssim', label: 'External Group', limit: 5, if: Proc.new {|context, config, opts| Ability.new(context.current_user, context.user_session).can? :create, MediaObject}, group: "workflow", helper_method: :vgroup_display
     config.add_facet_field 'date_digitized_sim', label: 'Date Digitized', limit: 5, if: Proc.new {|context, config, opts| Ability.new(context.current_user, context.user_session).can? :create, MediaObject}, group: "workflow"#, partial: 'blacklight/hierarchy/facet_hierarchy'
     config.add_facet_field 'date_ingested_sim', label: 'Date Ingested', limit: 5, if: Proc.new {|context, config, opts| Ability.new(context.current_user, context.user_session).can? :create, MediaObject}, group: "workflow"
