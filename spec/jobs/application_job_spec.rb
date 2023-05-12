@@ -12,8 +12,14 @@
 #   specific language governing permissions and limitations under the License.
 # ---  END LICENSE_HEADER BLOCK  ---
 
-class ApplicationJob < ActiveJob::Base
-  rescue_from Ldp::Gone do |exception|
-    Rails.logger.warn exception.message
+require 'rails_helper'
+
+describe ApplicationJob do
+  describe 'exception handling' do
+    it 'rescues Ldp::Gone errors' do
+      allow_any_instance_of(described_class).to receive(:perform).and_raise(Ldp::Gone)
+      expect(Rails.logger).to receive(:warn).with("Ldp::Gone")
+      expect { described_class.perform_now }.to_not raise_error
+    end
   end
 end
