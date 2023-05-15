@@ -131,6 +131,45 @@ describe MasterFile do
         expect{ master_file.process }.to raise_error(RuntimeError)
       end
     end
+
+    context 'pass through' do
+      let(:master_file) { FactoryBot.create(:master_file, :not_processing, workflow_name: 'pass_through') }
+
+      context 'with multiple files' do
+	let(:low_file) { "spec/fixtures/videoshort.low.mp4" }
+	let(:medium_file) { "spec/fixtures/videoshort.medium.mp4" }
+	let(:high_file) { "spec/fixtures/videoshort.high.mp4" }
+        let(:outputs_hash) do
+          [
+            { label: 'low', url: FileLocator.new(low_file).uri.to_s },
+            { label: 'medium', url: FileLocator.new(medium_file).uri.to_s },
+            { label: 'high', url: FileLocator.new(high_file).uri.to_s }
+          ]
+        end
+        let(:files) do
+          {
+            "quality-low" => FileLocator.new(low_file).attachment,
+            "quality-medium" => FileLocator.new(medium_file).attachment,
+            "quality-high" => FileLocator.new(high_file).attachment
+          }
+        end
+
+        it 'creates an encode' do
+	  expect(master_file.encoder_class).to receive(:create).with("file://" + Rails.root.join(high_file).to_path, { outputs: outputs_hash, master_file_id: master_file.id, preset: master_file.workflow_name })
+	  master_file.process(files)
+        end
+      end
+
+      context 'with single file' do
+        let(:input_url) { FileLocator.new(master_file.file_location).uri.to_s }
+        let(:outputs_hash) { [{ label: 'high', url: input_url }] }
+
+        it 'creates an encode' do
+          expect(master_file.encoder_class).to receive(:create).with(input_url, { outputs: outputs_hash, master_file_id: master_file.id, preset: master_file.workflow_name })
+	  master_file.process
+        end
+      end
+    end
   end
 
   describe "delete" do

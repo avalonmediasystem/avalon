@@ -263,7 +263,7 @@ class MasterFile < ActiveFedora::Base
     input = nil
     # Options hash: { outputs: [{ label: 'low',  url: 'file:///derivatives/low.mp4' }, { label: 'high', url: 'file:///derivatives/high.mp4' }]}
     if file.is_a? Hash
-      input = file.sort_by { |f| QUALITY_ORDER[f[0]] }.last[1].path
+      input = FileLocator.new(file.sort_by { |f| QUALITY_ORDER[f[0]] }.last[1].to_path).uri.to_s
       options[:outputs] = file.collect { |quality, f| { label: quality.remove("quality-"), url: FileLocator.new(f.to_path).uri.to_s } }
     else
       #Build hash for single file skip transcoding
