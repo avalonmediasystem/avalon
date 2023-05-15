@@ -46,6 +46,15 @@ class IiifCanvasPresenter
     }]
   end
 
+  def placeholder_content
+    # height and width from /models/master_file/extract_still method
+    IIIFManifest::V3::DisplayContent.new( @master_file.poster_master_file_url(@master_file.id),
+                                          width: 1280,
+                                          height: 720,
+                                          type: 'Image',
+                                          format: 'image/jpeg')
+  end
+
   private
 
     def video_content
