@@ -96,4 +96,21 @@ describe IiifCanvasPresenter do
       end
     end
   end
+
+  describe '#placeholder_content' do
+    subject { presenter.placeholder_content }
+
+    it 'has format' do
+      expect(subject.format).to eq "image/jpeg"
+    end
+
+    it 'has type' do
+      expect(subject.type).to eq "Image"
+    end
+
+    it 'has height and width' do
+      expect(subject.width).to eq 1280
+      expect(subject.height).to eq 720
+    end
+  end
 end
