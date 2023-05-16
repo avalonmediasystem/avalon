@@ -15,6 +15,11 @@
 class MediaObjectIndexingJob < ApplicationJob
   queue_as :media_object_indexing
 
+  # Only enqueue one indexing job at a time but once one starts running allow others to be enqueued
+  # because the first step of the job is fetching the object from fedora at which point it might
+  # be stale and subsequent jobs might get a newer version of the media object.
+  unique :until_executing, on_conflict: :log
+
   def perform(id)
     mo = MediaObject.find(id)
     ActiveFedora::SolrService.add(mo.to_solr(include_child_fields: true), softCommit: true)
