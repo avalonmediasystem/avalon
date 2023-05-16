@@ -202,7 +202,7 @@ describe "MasterFile#working_file_path" do
 
           input_path = FileLocator.new(working_file_path_high).uri.to_s
           expect(encoder_class).to have_received(:create).with(
-            input_path.remove("file://"), 
+            input_path, 
             master_file_id: master_file.id, 
             outputs: [{ label: "low", url: FileLocator.new(working_file_path_low).uri.to_s }, 
                       { label: "medium", url: FileLocator.new(working_file_path_medium).uri.to_s },
@@ -318,7 +318,7 @@ describe "MasterFile#working_file_path" do
 
           input_path = Addressable::URI.convert_path(File.absolute_path(filename_high)).to_s
           expect(encoder_class).to have_received(:create).with(
-            File.absolute_path(filename_high),
+            FileLocator.new(filename_high).uri.to_s,
             master_file_id: master_file.id,
             outputs: [{ label: "low", url: Addressable::URI.convert_path(File.absolute_path(filename_low)).to_s },
                       { label: "medium", url: Addressable::URI.convert_path(File.absolute_path(filename_medium)).to_s },
