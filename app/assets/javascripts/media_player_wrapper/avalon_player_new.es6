@@ -265,10 +265,10 @@ class MEJSPlayer {
       }" type="application/x-mpegURL" data-quality="${source.quality}"/>`;
     });
 
-    if (this.currentStreamInfo.captions_path) {
-      markup += `<track srclang="en" kind="subtitles" type="${
-        this.currentStreamInfo.captions_format
-      }" src="${this.currentStreamInfo.captions_path}"></track>`;
+    if (this.currentStreamInfo.caption_paths) {
+      for (c in this.currentStreamInfo.caption_paths) {
+        markup += `<track label="${c.label}" srclang="${c.language}" kind="subtitles" type="${c.mime_type}" src="${c.path}"></track>`;
+      }
     }
 
     this.node.innerHTML = markup;
@@ -301,7 +301,7 @@ class MEJSPlayer {
       // Set current source in absence of the quality selection
       let currentSource = this.currentStreamInfo.stream_hls
                         .filter(src => src.quality === this.player.options.defaultQuality)[0];
-     
+
       this.player.setSrc(currentSource.url);
     }
 
@@ -322,7 +322,7 @@ class MEJSPlayer {
    * @function reInitializeCaptions
    */
   reInitializeCaptions() {
-    if (this.currentStreamInfo.captions_path) {
+    if (this.currentStreamInfo.caption_paths) {
       // Place tracks button
       if(this.mejsUtility.isMobile()) {
         // after trackScrubber button in mobile devices
@@ -331,7 +331,7 @@ class MEJSPlayer {
         // after volume button in desktop devices
         this.player.featurePosition.tracks = this.player.featurePosition.volume + 1;
       }
-      
+
       this.player.buildtracks(this.player, null, this.player.layers, this.mediaElement);
       // Turn on captions
       this.toggleCaptions();
@@ -603,12 +603,12 @@ class MEJSPlayer {
    */
   initializePlayer() {
     let currentStreamInfo = this.currentStreamInfo;
-    // Set default quality value in localStorage  
+    // Set default quality value in localStorage
     this.localStorage.setItem('quality', this.defaultQuality);
     // Interval in seconds to jump forward and backward in media
     let jumpInterval = 5;
 
-    // Set default quality value in localStorage  
+    // Set default quality value in localStorage
     this.localStorage.setItem('quality', this.defaultQuality);
 
     // Mediaelement default root level configuration
