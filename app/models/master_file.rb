@@ -1,11 +1,11 @@
 # Copyright 2011-2023, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
-# 
+#
 # You may obtain a copy of the License at
-# 
+#
 # http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software distributed
 #   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
 #   CONDITIONS OF ANY KIND, either express or implied. See the License for the
@@ -477,6 +477,12 @@ class MasterFile < ActiveFedora::Base
     end
   end
 
+  attr_writer :captions
+
+  def supplemental_file_captions
+    self.supplemental_files.select { |sf| sf.tags.include? 'caption' }
+  end
+
   def has_audio?
     # The MasterFile doesn't have an audio track unless the first derivative does
     # This is useful to skip unnecessary waveform generation
@@ -493,10 +499,6 @@ class MasterFile < ActiveFedora::Base
 
   def has_captions?
     !captions.empty?
-  end
-
-  def caption_type
-    has_captions? ? captions.mime_type : nil
   end
 
   def has_waveform?
@@ -519,7 +521,6 @@ class MasterFile < ActiveFedora::Base
       solr_doc['has_poster?_bs'] = has_poster?
       solr_doc['has_thumbnail?_bs'] = has_thumbnail?
       solr_doc['has_structuralMetadata?_bs'] = has_structuralMetadata?
-      solr_doc['caption_type_ss'] = caption_type
       solr_doc['identifier_ssim'] = identifier.map(&:downcase)
 
       solr_doc['percent_complete_ssi'] = percent_complete
