@@ -101,8 +101,8 @@ controlled_digital_lending:
   collections_enabled: false
   default_lending_period: 'P14D' # ISO8601 duration format: P14D == 14.days, PT8H == 8.hours, etc.
 caption_default:
-  # Language should be 2 or 3 letter ISO 639 codes
-  language: 'en'
+  # Language should be 3 letter ISO 639-2 code
+  language: 'eng'
   name: 'English'
 recaptcha:
   site_key: # Setting a site_key will enable recaptcha on the comments form

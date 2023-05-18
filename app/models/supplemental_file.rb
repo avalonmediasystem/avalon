@@ -17,15 +17,17 @@ class SupplementalFile < ApplicationRecord
 
   # TODO: the empty tag should represent a generic supplemental file
   validates :tags, array_inclusion: ['transcript', 'caption', 'machine_generated', '', nil]
+  validates :language, inclusion: { in: LanguageTerm.map.keys }
 
   serialize :tags, Array
 
   def attach_file(new_file)
     file.attach(new_file)
     self.label = file.filename.to_s if label.blank?
+    self.language = tags.include?('caption') ? Settings.caption_default.language : 'eng'
   end
 
-  def machine_generated?
-    tags.include?('machine_generated')
+  def mime_type
+    self.file.content_type
   end
 end
