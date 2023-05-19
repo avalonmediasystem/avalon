@@ -24,11 +24,11 @@ module IiifSupplementalFileBehavior
     case mime
     when 'application/pdf', 'application/msword', 'application/vnd.oasis.opendocument.text', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'text/html', 'text/plain', 'text/vtt'
       'Text'
-    when 'image/bmp', 'image/gif', 'image/jpg', 'image/png', 'image/svg+xml', 'image/tiff', 'image/webp'
+    when /image\/.+/
       'Image'
-    when 'audio/aac', 'audio/midi', 'audio/mpeg', 'audio/ogg', 'audio/wav', 'audio/webm'
+    when /audio\/.+/
       'Audio'
-    when 'video/mp4', 'video/mpeg', 'video/ogg', 'video/webm', 'video/x-msvideo'
+    when /video\/.+/
       'Video'
     else
       'Dataset'
