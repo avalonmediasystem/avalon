@@ -30,4 +30,8 @@ class SupplementalFile < ApplicationRecord
   def mime_type
     self.file.content_type
   end
+
+  def machine_generated?
+    tags.include?('machine_generated')
+  end
 end

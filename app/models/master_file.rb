@@ -477,7 +477,7 @@ class MasterFile < ActiveFedora::Base
     end
   end
 
-  attr_writer :captions
+  attr_writer :supplemental_file_captions
 
   def supplemental_file_captions
     self.supplemental_files.select { |sf| sf.tags.include? 'caption' }
@@ -498,7 +498,7 @@ class MasterFile < ActiveFedora::Base
   end
 
   def has_captions?
-    !captions.empty?
+    !captions.empty? || !supplemental_file_captions.empty?
   end
 
   def has_waveform?

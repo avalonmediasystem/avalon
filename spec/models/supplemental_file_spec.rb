@@ -15,6 +15,8 @@
 require 'rails_helper'
 
 describe SupplementalFile do
+  let(:subject) { FactoryBot.create(:supplemental_file) }
+  
   it "stores no tags by default" do
     expect(subject.tags).to match_array([])
   end
@@ -36,6 +38,20 @@ describe SupplementalFile do
       subject.tags = bad_tags
       expect(subject.save).to be_falsey
       expect(subject.errors.messages[:tags]).to include("unallowed is not an allowed value")
+    end
+  end
+
+  context 'language' do
+    it "can be edited" do
+      subject.language = 'ger'
+      subject.save
+      expect(subject.reload.language).to eq "ger"
+    end
+
+    it "is limited to ISO 639-2 language codes" do
+      subject.language = 'English'
+      subject.save
+      expect(subject).to_not be_valid
     end
   end
 end
