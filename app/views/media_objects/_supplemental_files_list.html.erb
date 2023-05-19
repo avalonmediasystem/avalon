@@ -44,6 +44,11 @@ Unless required by applicable law or agreed to in writing, software distributed
                             <% end %>
                           </span>
                           <% end %>
+                          <% if tag == 'caption' %>
+                          <%= form.text_field :language, id: "supplemental_file_language_#{section.id}_#{file.id}", value: LanguageTerm.find(file.language).text,
+                              class: "typeahead from-model form-control",
+                              data: { model: 'languageTerm', validate: false } %>
+                          <% end %>
                         </div>
                     <% end %>
                     <small class="visible-inline" name="flash-message-<%= section.id %>-<%= file.id %>"></small>
