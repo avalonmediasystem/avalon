@@ -14,7 +14,7 @@ Unless required by applicable law or agreed to in writing, software distributed
 ---  END LICENSE_HEADER BLOCK  ---
 %>
           <% if section.supplemental_files.present? %>
-            <% files=tag.empty? ? supplemental_files.select { |sf| sf.tags.empty? } : supplemental_files.select { |sf| sf.tags.include?(tag) } %>
+            <% files=tag.empty? ? supplemental_files(tag: nil) : supplemental_files(tag: tag) %>
             <div class="file_view">
               <% files.each do |file| %>
                 <div class="supplemental-file-data" data-file-id="<%= file.id %>" data-masterfile-id="<%= section.id %>" >

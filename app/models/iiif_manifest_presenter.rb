@@ -13,6 +13,8 @@
 # ---  END LICENSE_HEADER BLOCK  ---
 
 class IiifManifestPresenter
+  include IiifSupplementalFileBehavior
+
   # Should <pre> tags be allowed?
   # They aren't listed in the IIIF spec but we use them in our normal view page
   IIIF_ALLOWED_TAGS = ['a', 'b', 'br', 'i', 'img', 'p', 'small', 'span', 'sub', 'sup'].freeze
@@ -72,6 +74,10 @@ class IiifManifestPresenter
         format: "text/html"
       }
     ]
+  end
+
+  def sequence_rendering
+    supplemental_files_rendering(media_object)
   end
 
   private

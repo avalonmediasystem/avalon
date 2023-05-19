@@ -62,4 +62,17 @@ describe IiifManifestPresenter do
       end
     end
   end
+
+  describe '#sequence_rendering' do
+    let(:media_object) { FactoryBot.build(:fully_searchable_media_object, supplemental_files_json: supplemental_files_json) }
+    let(:supplemental_file) { FactoryBot.create(:supplemental_file) }
+    let(:supplemental_files) { [supplemental_file] }
+    let(:supplemental_files_json) { supplemental_files.map(&:to_global_id).map(&:to_s).to_s }
+
+    subject { presenter.sequence_rendering }
+
+    it 'includes supplemental files' do
+      expect(subject.any? { |rendering| rendering["@id"] =~ /supplemental_files\/#{supplemental_file.id}/ }).to eq true
+    end
+  end
 end
