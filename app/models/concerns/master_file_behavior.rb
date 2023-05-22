@@ -34,7 +34,7 @@ module MasterFileBehavior
   def stream_details
     flash, hls = [], []
 
-    common, captions_path, captions_format = nil, nil, nil, nil, nil
+    common, caption_paths = nil, nil
 
     derivatives.each do |d|
       common = { quality: d.quality,
@@ -58,11 +58,9 @@ module MasterFileBehavior
     poster_path = Rails.application.routes.url_helpers.poster_master_file_path(self)
     if has_captions?
       caption_paths = []
-      self.supplemental_file_captions.each { |c| caption_paths.append(build_caption_hash(c)) }
+      supplemental_file_captions.each { |c| caption_paths.append(build_caption_hash(c)) }
 
-      if self.captions
-        caption_paths.append(build_caption_hash(self.captions))
-      end
+      caption_paths.append(build_caption_hash(captions)) if captions
 
       caption_paths
     end
@@ -148,16 +146,20 @@ module MasterFileBehavior
   end
 
   def build_caption_hash(caption)
-    path = if caption.kind_of?(IndexedFile)
-             Rails.application.routes.url_helpers.captions_master_file_path(self)
-           elsif caption.kind_of?(SupplementalFile)
-             Rails.application.routes.url_helpers.master_file_supplemental_file_path(master_file_id: self.id, id: caption.id)
-           end
+    if caption.is_a?(IndexedFile)
+      path = Rails.application.routes.url_helpers.captions_master_file_path(self)
+      language = "en"
+      label = nil
+    elsif caption.is_a?(SupplementalFile)
+      path = Rails.application.routes.url_helpers.master_file_supplemental_file_path(master_file_id: self.id, id: caption.id)
+      language = caption.language
+      label = caption.label
+    end
     {
       path: path,
       mime_type: caption.mime_type,
-      language: caption.kind_of?(SupplementalFile) ? caption.language : "en",
-      label: caption.kind_of?(SupplementalFile) ? caption.label : nil
+      language: language,
+      label: label
     }
   end
 end

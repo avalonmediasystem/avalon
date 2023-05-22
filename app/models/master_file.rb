@@ -480,7 +480,7 @@ class MasterFile < ActiveFedora::Base
   attr_writer :supplemental_file_captions
 
   def supplemental_file_captions
-    self.supplemental_files(tag: 'caption')
+    supplemental_files(tag: 'caption')
   end
 
   def has_audio?

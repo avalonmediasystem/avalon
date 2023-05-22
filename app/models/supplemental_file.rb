@@ -28,7 +28,7 @@ class SupplementalFile < ApplicationRecord
   end
 
   def mime_type
-    self.file.content_type
+    file.content_type
   end
 
   def machine_generated?

@@ -145,9 +145,8 @@ class SupplementalFilesController < ApplicationController
         @supplemental_file.tags -= ['machine_generated']
       end
       @supplemental_file.label = supplemental_file_params[:label]
-      if supplemental_file_params[:language]
-        @supplemental_file.language = LanguageTerm.find(supplemental_file_params[:language]).code
-      end
+      return unless supplemental_file_params[:language]
+      @supplemental_file.language = LanguageTerm.find(supplemental_file_params[:language]).code
     end
 
     def object_supplemental_file_path
