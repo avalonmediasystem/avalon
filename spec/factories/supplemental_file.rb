@@ -28,5 +28,9 @@ FactoryBot.define do
     trait :with_transcript_tag do
       tags { ['transcript'] }
     end
+
+    trait :with_caption_tag do
+      tags { ['caption'] }
+    end
   end
 end
