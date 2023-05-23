@@ -1,12 +1,12 @@
-/* 
+/*
  * Copyright 2011-2023, The Trustees of Indiana University and Northwestern
  *   University.  Licensed under the Apache License, Version 2.0 (the "License");
  *   you may not use this file except in compliance with the License.
- * 
+ *
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed
  *   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
  *   CONDITIONS OF ANY KIND, either express or implied. See the License for the
@@ -20,6 +20,13 @@
 $('button[name="edit_label"]').on('click', (e) => {
   const $row = getHTMLInfo(e, '.supplemental-file-data');
   const { masterfileId, fileId } = $row[0].dataset;
+  var captionLabel = document.getElementById("caption-label");
+  var captionLanguage = document.getElementById("caption-language");
+
+  if ($row.parent().hasClass("captions")) {
+    captionLabel.style.display = "";
+    captionLanguage.style.display = "";
+  }
 
   $row.addClass('is-editing');
   $row
@@ -32,7 +39,16 @@ $('button[name="edit_label"]').on('click', (e) => {
 /* Hide form when form is cancelled */
 $('button[name="cancel_edit_label"]').on('click', (e) => {
   const $row = getHTMLInfo(e, '.supplemental-file-data');
+  var captionLabel = document.getElementById("caption-label");
+  var captionLanguage = document.getElementById("caption-language");
+
   $row.removeClass('is-editing');
+  var editing = document.getElementsByClassName("is-editing")
+
+  if (editing.length === 0) {
+    captionLabel.style.display = "none";
+    captionLanguage.style.display = "none";
+  }
 });
 
 /* After editing, close the form and show the new label */

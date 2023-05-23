@@ -33,7 +33,7 @@ module MasterFileIntercom
       file_checksum: file_checksum,
       file_format: file_format,
       other_identifier: (remove_identifiers ? [] : identifier.to_a),
-      captions: captions,
+      captions: captions.content,
       caption_type: captions.mime_type,
       supplemental_file_captions: supplemental_file_captions,
       comment: comment.to_a,

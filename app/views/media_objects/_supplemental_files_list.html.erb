@@ -15,7 +15,15 @@ Unless required by applicable law or agreed to in writing, software distributed
 %>
           <% if section.supplemental_files_json.present? %>
             <% files=tag.empty? ? section.supplemental_files(tag: nil) : section.supplemental_files(tag: tag) %>
-            <div class="file_view">
+            <div class="file_view <% if tag == "caption" %>captions<% end %>">
+              <% if tag == "caption" %>
+              <div class="caption-form-label" id="caption-label" style="display: none;">
+                <label>Label</label>
+              </div>
+              <div class="caption-form-label" id="caption-language" style="display: none;">
+                <label>Language</label>
+              </div>
+              <% end %>
               <% files.each do |file| %>
                 <div class="supplemental-file-data" data-file-id="<%= file.id %>" data-masterfile-id="<%= section.id %>" >
                     <span name="label_<%= section.id + "_" + file.id.to_s %>" class="display-item"><%= file.label %></span>
