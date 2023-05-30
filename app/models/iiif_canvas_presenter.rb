@@ -39,6 +39,10 @@ class IiifCanvasPresenter
     master_file.is_video? ? video_content : audio_content
   end
 
+  def supplementing_content
+    supplemental_captions_transcripts.collect { |file| supplementing_content_data(file) }
+  end
+
   def sequence_rendering
     supplemental_files_rendering(master_file)
   end
@@ -84,10 +88,19 @@ class IiifCanvasPresenter
                                            **manifest_attributes(quality, 'Sound'))
     end
 
+    def supplementing_content_data(file)
+      IIIFManifest::V3::SupplementingContent.new(Rails.application.routes.url_helpers.master_file_supplemental_file_url(master_file.id, file.id),
+                                                 **supplemental_attributes(file))
+    end
+
     def stream_urls
       stream_info[:stream_hls].collect do |d|
         [d[:quality], d[:url]]
       end
+    end
+
+    def supplemental_captions_transcripts
+      master_file.supplemental_files(tag: 'caption') + master_file.supplemental_files(tag: 'transcript')
     end
 
     def simple_iiif_range(label = stream_info[:embed_title])
@@ -156,6 +169,15 @@ class IiifCanvasPresenter
       else
         media_hash.merge!(auth_service: auth_service(quality))
       end
+    end
+
+    def supplemental_attributes(file)
+      supplement_hash = {
+        label: file.label,
+        type: 'Text',
+        format: file.file.content_type,
+        language: file.language
+      }
     end
 
     # Note that the method returns empty Nokogiri Document instead of nil when structure_tesim doesn't exist or is empty.

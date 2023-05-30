@@ -53,7 +53,7 @@ gem 'avalon-about', git: 'https://github.com/avalonmediasystem/avalon-about.git'
 #gem 'bootstrap-sass', '< 3.4.1' # Pin to less than 3.4.1 due to change in behavior with popovers
 gem 'bootstrap-toggle-rails'
 gem 'bootstrap_form'
-gem 'iiif_manifest', git: 'https://github.com/samvera-labs/iiif_manifest.git', branch: 'main'
+gem 'iiif_manifest', git: 'https://github.com/samvera-labs/iiif_manifest.git', branch: 'supplementing_annotations'
 gem 'rack-cors', require: 'rack/cors'
 gem 'rails_same_site_cookie'
 gem 'recaptcha', require: 'recaptcha/rails'
