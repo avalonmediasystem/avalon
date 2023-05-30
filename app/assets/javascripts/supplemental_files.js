@@ -19,15 +19,9 @@
 /* Show form to edit label */
 $('button[name="edit_label"]').on('click', (e) => {
   const $row = getHTMLInfo(e, '.supplemental-file-data');
-  const { masterfileId, fileId } = $row[0].dataset;
-  var captionLabel = document.getElementById("caption-label");
-  var captionLanguage = document.getElementById("caption-language");
+  const { masterfileId, fileId, tag } = $row[0].dataset;
 
-  if ($row.parent().hasClass("captions")) {
-    captionLabel.style.display = "";
-    captionLanguage.style.display = "";
-  }
-
+  if(tag == 'caption') { $('#edit-label-row').addClass('is-editing') };
   $row.addClass('is-editing');
   $row
     .find(
@@ -39,16 +33,9 @@ $('button[name="edit_label"]').on('click', (e) => {
 /* Hide form when form is cancelled */
 $('button[name="cancel_edit_label"]').on('click', (e) => {
   const $row = getHTMLInfo(e, '.supplemental-file-data');
-  var captionLabel = document.getElementById("caption-label");
-  var captionLanguage = document.getElementById("caption-language");
 
+  $('#edit-label-row').removeClass('is-editing');
   $row.removeClass('is-editing');
-  var editing = document.getElementsByClassName("is-editing")
-
-  if (editing.length === 0) {
-    captionLabel.style.display = "none";
-    captionLanguage.style.display = "none";
-  }
 });
 
 /* After editing, close the form and show the new label */
@@ -79,10 +66,10 @@ $('.supplemental-file-form')
     var newLabel = $row
       .find(
         'input[id="supplemental_file_input_' +
-          masterfileId +
-          '_' +
-          fileId +
-          '"]'
+        masterfileId +
+        '_' +
+        fileId +
+        '"]'
       )
       .val();
     $row
