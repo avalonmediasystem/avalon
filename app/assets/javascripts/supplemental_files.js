@@ -33,9 +33,13 @@ $('button[name="edit_label"]').on('click', (e) => {
 /* Hide form when form is cancelled */
 $('button[name="cancel_edit_label"]').on('click', (e) => {
   const $row = getHTMLInfo(e, '.supplemental-file-data');
+  const { tag } = $row[0].dataset;
 
-  $('#edit-label-row').removeClass('is-editing');
   $row.removeClass('is-editing');
+
+  if(document.getElementsByClassName('is-editing').length === 1){
+    $('#edit-label-row').removeClass('is-editing');
+  }
 });
 
 /* After editing, close the form and show the new label */
@@ -44,6 +48,10 @@ $('button[name="save_label"]').on('click', (e) => {
   const { fileId, masterfileId } = getHTMLInfo(e, 'form')[0].dataset;
 
   $row.removeClass('is-editing');
+
+  if(document.getElementsByClassName('is-editing').length === 1){
+    $('#edit-label-row').removeClass('is-editing');
+  }
 
   // Remove feedback message after 5 seconds
   setTimeout(function () {
