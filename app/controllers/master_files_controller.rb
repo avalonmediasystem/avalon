@@ -389,7 +389,7 @@ protected
     if params[:id].blank? || (not MasterFile.exists?(params[:id]))
       flash[:notice] = "MasterFile #{params[:id]} does not exist"
     end
-    @master_file = MasterFile.find(params[:id])
+    @master_file = SpeedyAF::Proxy::MasterFile.find(params[:id])
   end
 
   # return deflated waveform content. deflate only if necessary
