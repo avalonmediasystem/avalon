@@ -1,11 +1,11 @@
 # Copyright 2011-2023, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
-# 
+#
 # You may obtain a copy of the License at
-# 
+#
 # http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software distributed
 #   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
 #   CONDITIONS OF ANY KIND, either express or implied. See the License for the
@@ -170,6 +170,9 @@ class MasterFile < ActiveFedora::Base
   # Generate the waveform after proessing is complete but before master file management
   after_transcoding :generate_waveform
   after_transcoding :update_ingest_batch
+  # Generate and set the poster and thumbnail
+  after_transcoding :set_poster_offset
+  after_transcoding :update_stills_from_offset!
 
   after_processing :post_processing_file_management
 
@@ -290,6 +293,7 @@ class MasterFile < ActiveFedora::Base
     #Set date ingested to now if it wasn't preset (by batch, for example)
     #TODO pull this from the encode
     self.date_digitized ||= Time.now.utc.iso8601
+    self.duration ||= encode.input.duration
 
     outputs = Array(encode.output).collect do |output|
       {
@@ -723,12 +727,6 @@ class MasterFile < ActiveFedora::Base
                          'Unknown'
                        end
 
-    self.duration = begin
-      @mediainfo.duration.to_s
-    rescue
-      nil
-    end
-
     unless @mediainfo.video.streams.empty?
       display_aspect_ratio_s = @mediainfo.video.streams.first.display_aspect_ratio
       if ':'.in? display_aspect_ratio_s
@@ -737,8 +735,11 @@ class MasterFile < ActiveFedora::Base
         self.display_aspect_ratio = display_aspect_ratio_s
       end
       self.original_frame_size = @mediainfo.video.streams.first.frame_size
-      self.poster_offset = [2000,self.duration.to_i].min
     end
+  end
+
+  def set_poster_offset
+    self.poster_offset = [2000,self.duration.to_i].min
   end
 
   def post_processing_file_management
