@@ -727,6 +727,12 @@ class MasterFile < ActiveFedora::Base
                          'Unknown'
                        end
 
+    self.duration = begin
+      @mediainfo.duration.to_s
+    rescue
+      nil
+    end
+
     unless @mediainfo.video.streams.empty?
       display_aspect_ratio_s = @mediainfo.video.streams.first.display_aspect_ratio
       if ':'.in? display_aspect_ratio_s
