@@ -171,7 +171,7 @@ class MasterFile < ActiveFedora::Base
   after_transcoding :generate_waveform
   after_transcoding :update_ingest_batch
   # Generate and set the poster and thumbnail
-  after_transcoding :set_poster_offset
+  after_transcoding :set_default_poster_offset
   after_transcoding :update_stills_from_offset!
 
   after_processing :post_processing_file_management
@@ -293,6 +293,9 @@ class MasterFile < ActiveFedora::Base
     #Set date ingested to now if it wasn't preset (by batch, for example)
     #TODO pull this from the encode
     self.date_digitized ||= Time.now.utc.iso8601
+
+    # Set duration after transcode if mediainfo fails to find.
+    # e.x. WebM files missing technical metadata
     self.duration ||= encode.input.duration
 
     outputs = Array(encode.output).collect do |output|
@@ -744,8 +747,11 @@ class MasterFile < ActiveFedora::Base
     end
   end
 
-  def set_poster_offset
-    self.poster_offset = [2000,self.duration.to_i].min
+  # This should only be getting called by the :after_transcode hook. Ensure that
+  # poster_offset is only set if it has not already been manually set via
+  # BatchEntry or another method.
+  def set_default_poster_offset
+    self.poster_offset = [2000,self.duration.to_i].min if self._poster_offset.nil?
   end
 
   def post_processing_file_management
