@@ -114,7 +114,7 @@ describe IiifCanvasPresenter do
     end
   end
 
-  describe '#sequence_rendering' do
+  describe 'Supplemental file handling' do
     let(:master_file) { FactoryBot.build(:master_file, :with_waveform, supplemental_files_json: supplemental_files_json, media_object: media_object, derivatives: [derivative]) }
     let(:supplemental_file) { FactoryBot.create(:supplemental_file) }
     let(:transcript_file) { FactoryBot.create(:supplemental_file, :with_transcript_tag) }
@@ -122,16 +122,36 @@ describe IiifCanvasPresenter do
     let(:supplemental_files) { [supplemental_file, transcript_file, caption_file] }
     let(:supplemental_files_json) { supplemental_files.map(&:to_global_id).map(&:to_s).to_s }
 
-    subject { presenter.sequence_rendering }
+    describe '#sequence_rendering' do
+      subject { presenter.sequence_rendering }
 
-    it 'includes supplemental files' do
-      expect(subject.any? { |rendering| rendering["@id"] =~ /supplemental_files\/#{supplemental_file.id}/ }).to eq true
+      it 'includes supplemental files' do
+        expect(subject.any? { |rendering| rendering["@id"] =~ /supplemental_files\/#{supplemental_file.id}/ }).to eq true
+      end
+
+      it 'does not include waveform, transcripts, or captions' do
+        expect(subject.any? { |rendering| rendering["label"]["en"] == ["waveform.json"] }).to eq false
+        expect(subject.any? { |rendering| rendering["@id"] =~ /supplemental_files\/#{transcript_file.id}/ }).to eq false
+        expect(subject.any? { |rendering| rendering["@id"] =~ /supplemental_files\/#{caption_file.id}/ }).to eq false
+      end
     end
 
-    it 'does not include waveform, transcripts, or captions' do
-      expect(subject.any? { |rendering| rendering["label"]["en"] == ["waveform.json"] }).to eq false
-      expect(subject.any? { |rendering| rendering["@id"] =~ /supplemental_files\/#{transcript_file.id}/ }).to eq false
-      expect(subject.any? { |rendering| rendering["@id"] =~ /supplemental_files\/#{caption_file.id}/ }).to eq false
+    describe '#supplementing_content' do
+      subject { presenter.supplementing_content }
+
+      it 'converts file metadata into IIIF Manifest SupplementingContent' do
+        expect(subject).to all be_a(IIIFManifest::V3::SupplementingContent)
+      end
+
+      it 'includes transcript and caption files' do
+        expect(subject.any? { |content| content.url =~ /supplemental_files\/#{transcript_file.id}/ }).to eq true
+        expect(subject.any? { |content| content.url =~ /supplemental_files\/#{caption_file.id}/ }).to eq true
+      end
+
+      it 'does not include generic supplemental files or waveform' do
+        expect(subject.any? { |content| content.url =~ /supplemental_files\/#{supplemental_file.id}/ }).to eq false
+        expect(subject.any? { |rendering| rendering["label"]["en"] == ["waveform.json"] }).to eq false
+      end
     end
   end
 

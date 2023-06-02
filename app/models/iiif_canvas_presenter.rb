@@ -176,7 +176,7 @@ class IiifCanvasPresenter
         label: file.label,
         type: 'Text',
         format: file.file.content_type,
-        language: file.language
+        language: file.language || 'en'
       }
     end
 
