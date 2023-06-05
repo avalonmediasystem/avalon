@@ -146,14 +146,14 @@ module MasterFileBehavior
   end
 
   def build_caption_hash(caption)
-    if caption.is_a?(IndexedFile)
-      path = Rails.application.routes.url_helpers.captions_master_file_path(self)
-      language = "en"
-      label = nil
-    elsif caption.is_a?(SupplementalFile)
+    if caption.is_a?(SupplementalFile)
       path = Rails.application.routes.url_helpers.master_file_supplemental_file_path(master_file_id: self.id, id: caption.id)
       language = caption.language
       label = caption.label
+    else
+      path = Rails.application.routes.url_helpers.captions_master_file_path(self)
+      language = "en"
+      label = nil
     end
     {
       path: path,

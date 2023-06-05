@@ -34,7 +34,7 @@ module MasterFileIntercom
       file_format: file_format,
       other_identifier: (remove_identifiers ? [] : identifier.to_a),
       captions: captions.content,
-      caption_type: captions.mime_type,
+      captions_type: captions.mime_type,
       supplemental_file_captions: supplemental_file_captions,
       comment: comment.to_a,
       display_aspect_ratio: display_aspect_ratio,

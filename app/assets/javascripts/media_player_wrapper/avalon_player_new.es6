@@ -267,7 +267,7 @@ class MEJSPlayer {
 
     if (this.currentStreamInfo.caption_paths) {
       for (c in this.currentStreamInfo.caption_paths) {
-        markup += `<track label="${c.label}" srclang="${c.language}" kind="subtitles" type="${c.mime_type}" src="${c.path}"></track>`;
+        markup += `<track ${c.label ? `label="${c.label}"` : '' } srclang="${c.language}" kind="subtitles" type="${c.mime_type}" src="${c.path}"></track>`;
       }
     }
 

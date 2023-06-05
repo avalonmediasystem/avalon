@@ -477,8 +477,6 @@ class MasterFile < ActiveFedora::Base
     end
   end
 
-  attr_writer :supplemental_file_captions
-
   def supplemental_file_captions
     supplemental_files(tag: 'caption')
   end
