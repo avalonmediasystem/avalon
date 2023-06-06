@@ -282,6 +282,12 @@ class MasterFilesController < ApplicationController
 
   def caption_manifest
     return head :unauthorized if cannot?(:read, @master_file)
+    caption_id = params[:c_id]
+    @caption_url = if caption_id == 'IndexedFile'
+                     captions_master_file_path
+                   else
+                     master_file_supplemental_file_path(master_file_id: @master_file.id, id: caption_id)
+                   end
   end
 
   def structure

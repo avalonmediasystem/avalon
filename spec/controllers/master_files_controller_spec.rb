@@ -657,17 +657,17 @@ describe MasterFilesController do
     end
 
     it 'returns unauthorized (401) if cannot read the master file' do
-      expect(get('caption_manifest', params: { id: master_file.id }, xhr: true)).to have_http_status(:unauthorized)
+      expect(get('caption_manifest', params: { id: master_file.id, c_id: 1 }, xhr: true)).to have_http_status(:unauthorized)
     end
 
     it 'returns the caption manifest' do
       login_as :administrator
-      expect(get('caption_manifest', params: { id: master_file.id }, xhr: true)).to have_http_status(:ok)
+      expect(get('caption_manifest', params: { id: master_file.id, c_id: 1 }, xhr: true)).to have_http_status(:ok)
       expect(response.content_type).to eq 'application/x-mpegURL; charset=utf-8'
     end
 
     it 'returns a manifest if public' do
-      expect(get('caption_manifest', params: { id: public_master_file.id }, xhr: true)).to have_http_status(:ok)
+      expect(get('caption_manifest', params: { id: public_master_file.id, c_id: 1 }, xhr: true)).to have_http_status(:ok)
     end
 
     context 'read from solr' do
