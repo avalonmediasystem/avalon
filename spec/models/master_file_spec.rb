@@ -722,7 +722,7 @@ describe MasterFile do
   end
 
   describe 'supplemental_file_captions' do
-    let(:caption_file) { FactoryBot.create(:supplemental_file, :with_caption_tag) }
+    let(:caption_file) { FactoryBot.create(:supplemental_file, :with_caption_file, :with_caption_tag) }
     let(:transcript_file) { FactoryBot.create(:supplemental_file, :with_transcript_tag) }
     let(:master_file) { FactoryBot.create(:master_file, supplemental_files: [caption_file, transcript_file]) }
     it 'has a caption' do
