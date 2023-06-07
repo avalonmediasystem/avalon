@@ -18,8 +18,13 @@ class SupplementalFile < ApplicationRecord
   # TODO: the empty tag should represent a generic supplemental file
   validates :tags, array_inclusion: ['transcript', 'caption', 'machine_generated', '', nil]
   validates :language, inclusion: { in: LanguageTerm.map.keys }
+  validate  :validate_file_type, if: :caption?
 
   serialize :tags, Array
+
+  def validate_file_type
+    errors.add(:file_type, "Uploaded file is not a recognized captions file") unless ['text/vtt', 'text/srt'].include? file.content_type
+  end
 
   def attach_file(new_file)
     file.attach(new_file)
@@ -29,6 +34,10 @@ class SupplementalFile < ApplicationRecord
 
   def mime_type
     file.content_type
+  end
+
+  def caption?
+    tags.include?('caption')
   end
 
   def machine_generated?

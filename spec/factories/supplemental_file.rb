@@ -22,7 +22,11 @@ FactoryBot.define do
     end
 
     trait :with_transcript_file do
-      file { fixture_file_upload(Rails.root.join('spec', 'fixtures', 'captions.vtt'), 'text/vtt')}
+      file { fixture_file_upload(Rails.root.join('spec', 'fixtures', 'captions.vtt'), 'text/vtt') }
+    end
+
+    trait :with_caption_file do
+      file { fixture_file_upload(Rails.root.join('spec', 'fixtures', 'captions.vtt'), 'text/vtt') }
     end
 
     trait :with_transcript_tag do

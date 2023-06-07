@@ -16,12 +16,50 @@ require 'rails_helper'
 
 describe SupplementalFile do
   let(:subject) { FactoryBot.create(:supplemental_file) }
-  
+
+  describe 'validations' do
+    describe 'file type' do
+      context 'non-caption file' do
+        let(:subject) { FactoryBot.create(:supplemental_file, :with_attached_file) }
+        it 'should skip validation' do
+          expect(subject.valid?).to be_truthy
+        end
+      end
+      context 'VTT/SRT caption file' do
+        let(:subject) { FactoryBot.create(:supplemental_file, :with_caption_file, :with_caption_tag) }
+        it 'should validate' do
+          expect(subject.valid?).to be_truthy
+        end
+      end
+      context 'non-VTT/non-SRT caption file' do
+        let(:subject) { FactoryBot.create(:supplemental_file, :with_attached_file) }
+        it 'should not validate' do
+          subject.tags = ['caption']
+          subject.save
+          expect(subject.valid?).to be_falsey
+          expect(subject.errors[:file_type]).not_to be_empty
+        end
+      end
+    end
+
+    describe 'language' do
+      it 'should validate valid language' do
+        subject.language = 'eng'
+        expect(subject.valid?).to be_truthy
+      end
+      it 'should not validate invalid language' do
+        subject.language = 'engl'
+        expect(subject.valid?).to be_falsey
+      end
+    end
+  end
+
   it "stores no tags by default" do
     expect(subject.tags).to match_array([])
   end
 
   context "with valid tags" do
+    let(:subject) { FactoryBot.create(:supplemental_file, :with_caption_file)}
     let(:tags) { ["transcript", "caption", "machine_generated"] }
 
     it "can store tags" do
@@ -46,12 +84,6 @@ describe SupplementalFile do
       subject.language = 'ger'
       subject.save
       expect(subject.reload.language).to eq "ger"
-    end
-
-    it "is limited to ISO 639-2 language codes" do
-      subject.language = 'English'
-      subject.save
-      expect(subject).to_not be_valid
     end
   end
 end

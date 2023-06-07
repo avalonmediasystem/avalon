@@ -18,7 +18,7 @@ class SupplementalFilesController < ApplicationController
   before_action :authorize_object
 
   rescue_from Avalon::SaveError do |exception|
-    message = "An error occurred when saving the supplemental file: #{exception.full_message}"
+    message = "An error occurred when saving the supplemental file: #{exception.message}"
     handle_error(message: message, status: 500)
   end
 
@@ -44,7 +44,7 @@ class SupplementalFilesController < ApplicationController
     # Raise errror if file wasn't attached
     raise Avalon::SaveError, "File could not be attached." unless @supplemental_file.file.attached?
 
-    raise Avalon::SaveError, @supplemental_files.errors.full_messages unless @supplemental_file.save
+    raise Avalon::SaveError, @supplemental_file.errors.full_messages unless @supplemental_file.save
 
     @object.supplemental_files += [@supplemental_file]
     raise Avalon::SaveError, @object.errors[:supplemental_files_json].full_messages unless @object.save
