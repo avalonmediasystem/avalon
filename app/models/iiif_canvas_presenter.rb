@@ -40,7 +40,11 @@ class IiifCanvasPresenter
   end
 
   def sequence_rendering
-    supplemental_files_rendering(master_file) + waveform_rendering
+    supplemental_files_rendering(master_file)
+  end
+
+  def see_also
+    waveform_see_also
   end
 
   def placeholder_content
@@ -79,7 +83,7 @@ class IiifCanvasPresenter
       end
     end
 
-    def waveform_rendering
+    def waveform_see_also
       [
         {
           "@id" => "#{@master_file.waveform_master_file_url(@master_file.id)}.json",
