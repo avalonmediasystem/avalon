@@ -363,6 +363,8 @@ class TimelinesController < ApplicationController
         url_fragment += "&resource=#{Addressable::URI.escape_component(manifest_timeline_url(@timeline, format: :json, token: @timeline.access_token), /[:\/?=]/)}"
         url_fragment += "&callback=#{Addressable::URI.escape_component(timelines_url, /[:\/?=]/)}"
       end
+
+      url_fragment
     end
 
     # Never trust parameters from the scary internet, only allow the white list through.
