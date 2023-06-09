@@ -103,14 +103,7 @@ class TimelinesController < ApplicationController
     authorize! :read, @timeline
     respond_to do |format|
       format.html do
-        url_fragment = "noHeader=true&noFooter=true&noSourceLink=false&noVideo=false"
-        if @timeline.visibility == 'public' || current_user == @timeline.user
-          url_fragment += "&resource=#{Addressable::URI.escape_component(manifest_timeline_url(@timeline, format: :json), /[:\/?=]/)}"
-          url_fragment += "&callback=#{Addressable::URI.escape_component(manifest_timeline_url(@timeline, format: :json), /[:\/?=]/)}"
-        elsif current_user || @timeline.valid_token?(@timeline.access_token)
-          url_fragment += "&resource=#{Addressable::URI.escape_component(manifest_timeline_url(@timeline, format: :json, token: @timeline.access_token), /[:\/?=]/)}"
-          url_fragment += "&callback=#{Addressable::URI.escape_component(timelines_url, /[:\/?=]/)}"
-        end
+        url_fragment = build_url_fragment
         @timeliner_iframe_url = timeliner_path + "##{url_fragment}"
       end
       format.json do
@@ -358,6 +351,18 @@ class TimelinesController < ApplicationController
     def load_timeline_token
       @timeline_token = params[:token]
       current_ability.options[:timeline_token] = @timeline_token
+    end
+
+    def build_url_fragment
+      url_fragment = "noHeader=true&noFooter=true&noSourceLink=false&noVideo=false"
+
+      if @timeline.visibility == 'public' || current_user == @timeline.user
+        url_fragment += "&resource=#{Addressable::URI.escape_component(manifest_timeline_url(@timeline, format: :json), /[:\/?=]/)}"
+        url_fragment += "&callback=#{Addressable::URI.escape_component(manifest_timeline_url(@timeline, format: :json), /[:\/?=]/)}"
+      elsif current_user || @timeline.valid_token?(@timeline.access_token)
+        url_fragment += "&resource=#{Addressable::URI.escape_component(manifest_timeline_url(@timeline, format: :json, token: @timeline.access_token), /[:\/?=]/)}"
+        url_fragment += "&callback=#{Addressable::URI.escape_component(timelines_url, /[:\/?=]/)}"
+      end
     end
 
     # Never trust parameters from the scary internet, only allow the white list through.
