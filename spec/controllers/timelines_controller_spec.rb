@@ -1,11 +1,11 @@
 # Copyright 2011-2023, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
-# 
+#
 # You may obtain a copy of the License at
-# 
+#
 # http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software distributed
 #   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
 #   CONDITIONS OF ANY KIND, either express or implied. See the License for the
@@ -222,11 +222,74 @@ RSpec.describe TimelinesController, type: :controller do
   end
 
   describe "GET #show" do
-    it "renders the timeliner tool" do
-      timeline = Timeline.create! valid_attributes
-      get :show, params: {id: timeline.to_param}, session: valid_session
-      expect(response).to be_successful
+    let(:cataloger) { FactoryBot.create(:cataloger)}
+    let(:timeline) { FactoryBot.create(:timeline, user: cataloger) }
+    let(:encoded_manifest_url) do
+      [controller.default_url_options[:protocol],
+      "%3A%2F%2F",
+      controller.default_url_options[:host],
+      "%2Ftimelines%2F",
+      timeline.id,
+      "%2Fmanifest.json"].join
     end
+
+    context 'private timeline' do
+      context 'unauthenticated user' do
+        it 'redirects to sign-in' do
+          expect(get :show, params: { id: timeline.to_param }, session: valid_session ).to render_template('errors/restricted_pid')
+        end
+      end
+
+      context 'non-owner' do
+        before do
+          login_as :student
+        end
+
+        it 'renders restricted content page' do
+          expect(get :show, params: { id: timeline.to_param }, session: valid_session ).to render_template('errors/restricted_pid')
+        end
+      end
+
+      context 'owner' do
+        before do
+          sign_in cataloger
+        end
+
+        render_views
+
+        it "renders the timeliner tool" do
+          get :show, params: { id: timeline.to_param }, session: valid_session
+          expect(response).to be_successful
+          expect(response.body).to include "resource=#{encoded_manifest_url}"
+        end
+      end
+    end
+
+    context 'public timeline' do
+      let(:timeline) { FactoryBot.create(:timeline, visibility: Timeline::PUBLIC) }
+
+      render_views
+
+      context 'unauthenticated user' do
+        it "renders the timeliner tool" do
+          get :show, params: {id: timeline.to_param}, session: valid_session
+          expect(response).to be_successful
+          expect(response.body).to include "resource=#{encoded_manifest_url}"
+        end
+      end
+
+      context 'authenticated user' do
+        before do
+          login_as :user
+        end
+        it "renders the timeliner tool" do
+          get :show, params: {id: timeline.to_param}, session: valid_session
+          expect(response).to be_successful
+          expect(response.body).to include "resource=#{encoded_manifest_url}"
+        end
+      end
+    end
+
 
     context 'with token auth' do
       let(:timeline) { FactoryBot.create(:timeline, :with_access_token) }
@@ -240,15 +303,30 @@ RSpec.describe TimelinesController, type: :controller do
         timeline.access_token].join
       end
 
-      before do
-        user
-      end
-
       render_views
 
-      it "correctly encodes tokenized timeline urls" do
-        get :show, params: {id: timeline.to_param, token: timeline.access_token}
-        expect(response.body).to include "resource=#{encoded_manifest_url}"
+      context 'unauthenticated user' do
+        it "correctly encodes tokenized timeline urls" do
+          get :show, params: {id: timeline.to_param, token: timeline.access_token}
+          expect(response.body).to include "resource=#{encoded_manifest_url}"
+        end
+      end
+
+      context 'authenticated user' do
+        before do
+          login_as :user
+        end
+
+        it "correctly encodes tokenized timeline urls" do
+          get :show, params: {id: timeline.to_param, token: timeline.access_token}
+          expect(response.body).to include "resource=#{encoded_manifest_url}"
+        end
+      end
+
+      context 'wrong token' do
+        it 'renders restricted content page' do
+          expect(get :show, params: { id: timeline.to_param, token: 'faketoken' }).to render_template('errors/restricted_pid')
+        end
       end
     end
 

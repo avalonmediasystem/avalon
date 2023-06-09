@@ -1,11 +1,11 @@
 # Copyright 2011-2023, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
-# 
+#
 # You may obtain a copy of the License at
-# 
+#
 # http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software distributed
 #   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
 #   CONDITIONS OF ANY KIND, either express or implied. See the License for the
@@ -104,10 +104,10 @@ class TimelinesController < ApplicationController
     respond_to do |format|
       format.html do
         url_fragment = "noHeader=true&noFooter=true&noSourceLink=false&noVideo=false"
-        if current_user == @timeline.user
+        if @timeline.visibility == 'public' || current_user == @timeline.user
           url_fragment += "&resource=#{Addressable::URI.escape_component(manifest_timeline_url(@timeline, format: :json), /[:\/?=]/)}"
           url_fragment += "&callback=#{Addressable::URI.escape_component(manifest_timeline_url(@timeline, format: :json), /[:\/?=]/)}"
-        elsif current_user
+        elsif current_user || @timeline.valid_token?(@timeline.access_token)
           url_fragment += "&resource=#{Addressable::URI.escape_component(manifest_timeline_url(@timeline, format: :json, token: @timeline.access_token), /[:\/?=]/)}"
           url_fragment += "&callback=#{Addressable::URI.escape_component(timelines_url, /[:\/?=]/)}"
         end
