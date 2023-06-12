@@ -32,10 +32,8 @@ describe SupplementalFile do
         end
       end
       context 'non-VTT/non-SRT caption file' do
-        let(:subject) { FactoryBot.create(:supplemental_file, :with_attached_file) }
+        let(:subject) { FactoryBot.build(:supplemental_file, :with_attached_file, :with_caption_tag) }
         it 'should not validate' do
-          subject.tags = ['caption']
-          subject.save
           expect(subject.valid?).to be_falsey
           expect(subject.errors[:file_type]).not_to be_empty
         end
