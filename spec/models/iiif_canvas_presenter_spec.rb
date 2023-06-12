@@ -118,7 +118,7 @@ describe IiifCanvasPresenter do
     let(:master_file) { FactoryBot.create(:master_file, :with_waveform, supplemental_files_json: supplemental_files_json, media_object: media_object, derivatives: [derivative]) }
     let(:supplemental_file) { FactoryBot.create(:supplemental_file) }
     let(:transcript_file) { FactoryBot.create(:supplemental_file, :with_transcript_tag) }
-    let(:caption_file) { FactoryBot.create(:supplemental_file, :with_caption_file, tags: ['caption', 'machine_generated']) }
+    let(:caption_file) { FactoryBot.create(:supplemental_file, :with_caption_file, :with_caption_tag) }
     let(:supplemental_files) { [supplemental_file, transcript_file, caption_file] }
     let(:supplemental_files_json) { supplemental_files.map(&:to_global_id).map(&:to_s).to_s }
 
@@ -153,6 +153,11 @@ describe IiifCanvasPresenter do
         expect(subject.any? { |content| content.url =~ /supplemental_files\/#{caption_file.id}\/captions/ }).to eq true
       end
 
+      it 'does not add " (machine generated)" to label of non-generated files' do
+        expect(subject.any? { |content| content.label =~ /#{transcript_file.label} \(machine generated\)/ }).to eq false
+        expect(subject.any? { |content| content.label =~ /#{caption_file.label} \(machine generated\)/ }).to eq false
+      end
+
       it 'does not include generic supplemental files or waveform' do
         expect(subject.any? { |content| content.url =~ /supplemental_files\/#{supplemental_file.id}/ }).to eq false
         expect(subject.any? { |content| content.label == { "en" => ["waveform.json"] } }).to eq false
@@ -167,6 +172,14 @@ describe IiifCanvasPresenter do
 
         it 'includes the master file captions' do
           expect(subject.any? { |content| content.url =~ /master_files\/#{master_file.id}\/captions/ }).to eq true
+        end
+      end
+
+      context 'machine generated transcript' do
+        let(:transcript_file) { FactoryBot.create(:supplemental_file, tags: ['transcript', 'machine_generated']) }
+
+        it "adds '(machine generated)' to the label" do
+          expect(subject.any? { |content| content.label =~ /#{transcript_file.label} \(machine generated\)/ }).to eq true
         end
       end
     end
