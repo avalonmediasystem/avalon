@@ -24,6 +24,15 @@ class Ability
                          :timeline_permissions,
                          :checkout_permissions]
 
+  # Override to add handling of SpeedyAF proxy objects
+  def read_permissions
+    super
+
+    can :read, SpeedyAF::Base do |obj|
+      test_read(obj.id)
+    end
+  end
+
   def encode_dashboard_permissions
     can :read, :encode_dashboard if is_administrator?
   end
@@ -68,7 +77,15 @@ class Ability
         !(test_read(media_object.id) && media_object.published?) && !test_edit(media_object.id)
       end
 
+      cannot :read, SpeedyAF::Proxy::MediaObject do |media_object|
+        !(test_read(media_object.id) && media_object.published?) && !test_edit(media_object.id)
+      end
+
       can :read, MasterFile do |master_file|
+        can? :read, master_file.media_object
+      end
+
+      can :read, SpeedyAF::Proxy::MasterFile do |master_file|
         can? :read, master_file.media_object
       end
 

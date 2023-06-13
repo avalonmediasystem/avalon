@@ -21,7 +21,8 @@ class MasterFilesController < ApplicationController
   include NoidValidator
 
   before_action :authenticate_user!, :only => [:create]
-  before_action :set_masterfile, except: [:create, :oembed]
+  before_action :set_masterfile_proxy, except: [:create, :oembed, :attach_structure, :attach_captions, :delete_structure, :delete_captions, :destroy, :update]
+  before_action :set_masterfile, only: [:attach_structure, :attach_captions, :delete_structure, :delete_captions, :destroy, :update]
   before_action :ensure_readable_filedata, :only => [:create]
   skip_before_action :verify_authenticity_token, only: [:set_structure, :delete_structure]
 
@@ -387,6 +388,13 @@ class MasterFilesController < ApplicationController
 protected
   def set_masterfile
     if params[:id].blank? || (not MasterFile.exists?(params[:id]))
+      flash[:notice] = "MasterFile #{params[:id]} does not exist"
+    end
+    @master_file = MasterFile.find(params[:id])
+  end
+
+  def set_masterfile_proxy
+    if params[:id].blank? || SpeedyAF::Proxy::MasterFile.find(params[:id]).nil?
       flash[:notice] = "MasterFile #{params[:id]} does not exist"
     end
     @master_file = SpeedyAF::Proxy::MasterFile.find(params[:id])
