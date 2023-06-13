@@ -1,11 +1,11 @@
 # Copyright 2011-2023, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
-# 
+#
 # You may obtain a copy of the License at
-# 
+#
 # http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software distributed
 #   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
 #   CONDITIONS OF ANY KIND, either express or implied. See the License for the
@@ -34,7 +34,8 @@ module MasterFileIntercom
       file_format: file_format,
       other_identifier: (remove_identifiers ? [] : identifier.to_a),
       captions: captions.content,
-      captions_type: caption_type,
+      captions_type: captions.mime_type,
+      supplemental_file_captions: supplemental_file_captions,
       comment: comment.to_a,
       display_aspect_ratio: display_aspect_ratio,
       original_frame_size: original_frame_size,

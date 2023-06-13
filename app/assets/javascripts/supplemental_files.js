@@ -1,12 +1,12 @@
-/* 
+/*
  * Copyright 2011-2023, The Trustees of Indiana University and Northwestern
  *   University.  Licensed under the Apache License, Version 2.0 (the "License");
  *   you may not use this file except in compliance with the License.
- * 
+ *
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed
  *   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
  *   CONDITIONS OF ANY KIND, either express or implied. See the License for the
@@ -19,8 +19,9 @@
 /* Show form to edit label */
 $('button[name="edit_label"]').on('click', (e) => {
   const $row = getHTMLInfo(e, '.supplemental-file-data');
-  const { masterfileId, fileId } = $row[0].dataset;
+  const { masterfileId, fileId, tag } = $row[0].dataset;
 
+  if(tag == 'caption') { $('#edit-label-row').addClass('is-editing') };
   $row.addClass('is-editing');
   $row
     .find(
@@ -32,7 +33,13 @@ $('button[name="edit_label"]').on('click', (e) => {
 /* Hide form when form is cancelled */
 $('button[name="cancel_edit_label"]').on('click', (e) => {
   const $row = getHTMLInfo(e, '.supplemental-file-data');
+  const { tag } = $row[0].dataset;
+
   $row.removeClass('is-editing');
+
+  if(document.getElementsByClassName('is-editing').length === 1){
+    $('#edit-label-row').removeClass('is-editing');
+  }
 });
 
 /* After editing, close the form and show the new label */
@@ -41,6 +48,10 @@ $('button[name="save_label"]').on('click', (e) => {
   const { fileId, masterfileId } = getHTMLInfo(e, 'form')[0].dataset;
 
   $row.removeClass('is-editing');
+
+  if(document.getElementsByClassName('is-editing').length === 1){
+    $('#edit-label-row').removeClass('is-editing');
+  }
 
   // Remove feedback message after 5 seconds
   setTimeout(function () {
@@ -63,10 +74,10 @@ $('.supplemental-file-form')
     var newLabel = $row
       .find(
         'input[id="supplemental_file_input_' +
-          masterfileId +
-          '_' +
-          fileId +
-          '"]'
+        masterfileId +
+        '_' +
+        fileId +
+        '"]'
       )
       .val();
     $row

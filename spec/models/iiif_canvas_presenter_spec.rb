@@ -118,7 +118,7 @@ describe IiifCanvasPresenter do
     let(:master_file) { FactoryBot.build(:master_file, :with_waveform, supplemental_files_json: supplemental_files_json, media_object: media_object, derivatives: [derivative]) }
     let(:supplemental_file) { FactoryBot.create(:supplemental_file) }
     let(:transcript_file) { FactoryBot.create(:supplemental_file, :with_transcript_tag) }
-    let(:caption_file) { FactoryBot.create(:supplemental_file, tags: ['caption', 'machine_generated']) }
+    let(:caption_file) { FactoryBot.create(:supplemental_file, :with_caption_file, tags: ['caption', 'machine_generated']) }
     let(:supplemental_files) { [supplemental_file, transcript_file, caption_file] }
     let(:supplemental_files_json) { supplemental_files.map(&:to_global_id).map(&:to_s).to_s }
 

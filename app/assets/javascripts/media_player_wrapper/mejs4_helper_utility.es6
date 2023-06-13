@@ -46,8 +46,10 @@ class MEJSUtility {
       });
 
       // Add captions
-      if (currentStreamInfo.captions_path) {
-        markup += `<track srclang="en" kind="subtitles" type="${currentStreamInfo.captions_format}" src="${currentStreamInfo.captions_path}"></track>`;
+      if (currentStreamInfo.caption_paths) {
+        for (c in currentStreamInfo.caption_paths) {
+          markup += `<track ${c.label ? `label="${c.label}"` : '' } srclang="${c.language}" kind="subtitles" type="${c.mime_type}" src="${c.path}"></track>`;
+        }
       }
     }
     // Create <audio> markup

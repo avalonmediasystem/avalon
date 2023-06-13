@@ -1,11 +1,11 @@
 # Copyright 2011-2023, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
-# 
+#
 # You may obtain a copy of the License at
-# 
+#
 # http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software distributed
 #   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
 #   CONDITIONS OF ANY KIND, either express or implied. See the License for the
@@ -34,7 +34,7 @@ module MasterFileBehavior
   def stream_details
     flash, hls = [], []
 
-    common, captions_path, captions_format = nil, nil, nil, nil, nil
+    common, caption_paths = nil, nil
 
     derivatives.each do |d|
       common = { quality: d.quality,
@@ -57,8 +57,12 @@ module MasterFileBehavior
 
     poster_path = Rails.application.routes.url_helpers.poster_master_file_path(self)
     if has_captions?
-      captions_path = Rails.application.routes.url_helpers.captions_master_file_path(self)
-      captions_format = self.captions.mime_type
+      caption_paths = []
+      supplemental_file_captions.each { |c| caption_paths.append(build_caption_hash(c)) }
+
+      caption_paths.append(build_caption_hash(captions)) if captions
+
+      caption_paths
     end
 
     # Returns the hash
@@ -71,8 +75,7 @@ module MasterFileBehavior
       stream_flash: flash,
       stream_hls: hls,
       cookie_auth: cookie_auth?,
-      captions_path: captions_path,
-      captions_format: captions_format,
+      caption_paths: caption_paths,
       duration: (duration.to_f / 1000),
       embed_title: embed_title
     })
@@ -140,5 +143,23 @@ module MasterFileBehavior
 
   def sort_streams array
     array.sort { |x, y| QUALITY_ORDER[x[:quality]] <=> QUALITY_ORDER[y[:quality]] }
+  end
+
+  def build_caption_hash(caption)
+    if caption.is_a?(SupplementalFile)
+      path = Rails.application.routes.url_helpers.master_file_supplemental_file_path(master_file_id: self.id, id: caption.id)
+      language = caption.language
+      label = caption.label
+    else
+      path = Rails.application.routes.url_helpers.captions_master_file_path(self)
+      language = "en"
+      label = nil
+    end
+    {
+      path: path,
+      mime_type: caption.mime_type,
+      language: language,
+      label: label
+    }
   end
 end

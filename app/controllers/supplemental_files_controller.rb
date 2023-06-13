@@ -18,7 +18,7 @@ class SupplementalFilesController < ApplicationController
   before_action :authorize_object
 
   rescue_from Avalon::SaveError do |exception|
-    message = "An error occurred when saving the supplemental file: #{exception.full_message}"
+    message = "An error occurred when saving the supplemental file: #{exception.message}"
     handle_error(message: message, status: 500)
   end
 
@@ -44,7 +44,7 @@ class SupplementalFilesController < ApplicationController
     # Raise errror if file wasn't attached
     raise Avalon::SaveError, "File could not be attached." unless @supplemental_file.file.attached?
 
-    raise Avalon::SaveError, @supplemental_files.errors.full_messages unless @supplemental_file.save
+    raise Avalon::SaveError, @supplemental_file.errors.full_messages unless @supplemental_file.save
 
     @object.supplemental_files += [@supplemental_file]
     raise Avalon::SaveError, @object.errors[:supplemental_files_json].full_messages unless @object.save
@@ -115,7 +115,7 @@ class SupplementalFilesController < ApplicationController
 
     def supplemental_file_params
       # TODO: Add parameters for minio and s3
-      params.fetch(:supplemental_file, {}).permit(:label, :file, tags: [])
+      params.fetch(:supplemental_file, {}).permit(:label, :language, :file, tags: [])
     end
 
     def handle_error(message:, status:)
@@ -145,6 +145,8 @@ class SupplementalFilesController < ApplicationController
         @supplemental_file.tags -= ['machine_generated']
       end
       @supplemental_file.label = supplemental_file_params[:label]
+      return unless supplemental_file_params[:language].present?
+      @supplemental_file.language = LanguageTerm.find(supplemental_file_params[:language]).code
     end
 
     def object_supplemental_file_path

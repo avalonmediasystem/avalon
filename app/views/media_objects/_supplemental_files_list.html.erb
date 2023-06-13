@@ -15,19 +15,44 @@ Unless required by applicable law or agreed to in writing, software distributed
 %>
           <% if section.supplemental_files_json.present? %>
             <% files=tag.empty? ? section.supplemental_files(tag: nil) : section.supplemental_files(tag: tag) %>
-            <div class="file_view">
+            <div class="file_view <% if tag == "caption" %>captions<% end %>">
+              <% if tag == "caption" %>
+                <div class="row supplemental-file-data edit-item" id="edit-label-row">
+                  <div class="col-md-3 col">
+                    <label>Label</label>
+                  </div>
+                  <div class="col-md-3 col">
+                    <label>Language</label>
+                  </div>
+                </div>
+              <% end %>
               <% files.each do |file| %>
-                <div class="supplemental-file-data" data-file-id="<%= file.id %>" data-masterfile-id="<%= section.id %>" >
+                <div class="supplemental-file-data" data-file-id="<%= file.id %>" data-masterfile-id="<%= section.id %>" data-tag="<%= tag %>" >
                     <span name="label_<%= section.id + "_" + file.id.to_s %>" class="display-item"><%= file.label %></span>
                     <%= form_for :supplemental_file, url: object_supplemental_file_path(section, file), remote: true,
                           html: { method: "put", class: "supplemental-file-form edit-item", id: "form-#{file.id}" },
                           data: { file_id: file.id, masterfile_id: section.id } do |form| %>
-                        <div class="col-sm-6">
-                          <div class="form-group">
+                        <div class="col-sm-6 col form-row">
+                          <div class="form-group col-md-6 col">
                             <%= form.text_field :label, id: "supplemental_file_input_#{section.id}_#{file.id}", value: file.label %>
                           </div>
+                          <% if tag == 'transcript' %>
+                            <span class="form-group col-md-6 col">
+                              <%= label_tag "machine_generated_#{file.id}", class: "ml-3" do %>
+                                <%= check_box_tag "machine_generated_#{file.id}", '1', file.machine_generated? %>
+                                Machine Generated
+                              <% end %>
+                            </span>
+                          <% end %>
+                          <% if tag == 'caption' %>
+                            <div class="form-group col-md-6 col">
+                              <%= form.text_field :language, id: "supplemental_file_language_#{section.id}_#{file.id}", value: LanguageTerm.find(file.language).text,
+                                  class: "typeahead from-model form-control",
+                                  data: { model: 'languageTerm', validate: false } %>
+                            </div>
+                          <% end %>
                         </div>
-                        <div class="col-sm-6">
+                        <div class="col-sm-6 col">
                           <div class="btn-toolbar">
                             <%= button_tag name: 'save_label', :class => "btn btn-outline btn-sm edit-item" do %>
                               <i class="fa fa-check" title="Save"></i> <span class="sm-hidden">Save</span>
@@ -36,14 +61,6 @@ Unless required by applicable law or agreed to in writing, software distributed
                               <i class="fa fa-times" title="Cancel"></i> <span class="sm-hidden">Cancel</span>
                             <% end %>
                           </div>
-                          <% if tag == 'transcript' %>
-                          <span class="float-right">
-                            <%= label_tag "machine_generated_#{file.id}" do %>
-                            <%= check_box_tag "machine_generated_#{file.id}", '1', file.machine_generated? %>
-                            Machine Generated
-                            <% end %>
-                          </span>
-                          <% end %>
                         </div>
                     <% end %>
                     <small class="visible-inline" name="flash-message-<%= section.id %>-<%= file.id %>"></small>

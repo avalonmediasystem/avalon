@@ -484,6 +484,10 @@ class MasterFile < ActiveFedora::Base
     end
   end
 
+  def supplemental_file_captions
+    supplemental_files(tag: 'caption')
+  end
+
   def has_audio?
     # The MasterFile doesn't have an audio track unless the first derivative does
     # This is useful to skip unnecessary waveform generation
@@ -499,11 +503,7 @@ class MasterFile < ActiveFedora::Base
   end
 
   def has_captions?
-    !captions.empty?
-  end
-
-  def caption_type
-    has_captions? ? captions.mime_type : nil
+    !captions.empty? || !supplemental_file_captions.empty?
   end
 
   def has_waveform?
@@ -526,7 +526,6 @@ class MasterFile < ActiveFedora::Base
       solr_doc['has_poster?_bs'] = has_poster?
       solr_doc['has_thumbnail?_bs'] = has_thumbnail?
       solr_doc['has_structuralMetadata?_bs'] = has_structuralMetadata?
-      solr_doc['caption_type_ss'] = caption_type
       solr_doc['identifier_ssim'] = identifier.map(&:downcase)
 
       solr_doc['percent_complete_ssi'] = percent_complete

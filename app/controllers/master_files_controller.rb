@@ -149,53 +149,6 @@ class MasterFilesController < ApplicationController
     end
   end
 
-  def attach_captions
-    captions = nil
-    if flash.empty?
-      authorize! :edit, @master_file, message: "You do not have sufficient privileges to add files"
-      if params[:master_file].present? && params[:master_file][:captions].present?
-        captions_file = params[:master_file][:captions]
-        captions_ext = File.extname(captions_file.original_filename)
-        content_type = Mime::Type.lookup_by_extension(captions_ext.slice(1..-1)).to_s if captions_ext
-        if ["text/vtt", "text/srt"].include? content_type
-          captions = captions_file.open.read
-        else
-          flash[:error] = "Uploaded file is not a recognized captions file"
-        end
-      end
-      if captions.present?
-        @master_file.captions.content = captions.encode(Encoding.find('UTF-8'), invalid: :replace, undef: :replace, replace: '')
-        @master_file.captions.mime_type = content_type
-        @master_file.captions.original_name = params[:master_file][:captions].original_filename
-        flash[:success] = "Captions file succesfully added."
-      end
-      if flash[:error].blank?
-        unless @master_file.save
-          flash[:success] = nil
-          flash[:error] = "There was a problem storing the file"
-        end
-      end
-    end
-    respond_to do |format|
-      format.html { redirect_to edit_media_object_path(@master_file.media_object_id, step: 'file-upload') }
-      format.json { render json: {captions: captions, flash: flash} }
-    end
-  end
-
-  def delete_captions
-    authorize! :edit, @master_file, message: "You do not have sufficient privileges to remove files"
-
-    @master_file.captions.content = ''
-    @master_file.captions.original_name = ''
-
-    if @master_file.save
-      flash[:success] = "Captions file succesfully removed."
-    else
-      flash[:error] = "There was a problem removing captions file."
-    end
-    redirect_to edit_media_object_path(@master_file.media_object_id, step: 'file-upload')
-  end
-
   # Creates and Saves a File Asset to contain the the Uploaded file
   # If container_id is provided:
   # * the File Asset will use RELS-EXT to assert that it's a part of the specified container
