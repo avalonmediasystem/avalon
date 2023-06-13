@@ -1,11 +1,11 @@
 # Copyright 2011-2023, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
-# 
+#
 # You may obtain a copy of the License at
-# 
+#
 # http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software distributed
 #   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
 #   CONDITIONS OF ANY KIND, either express or implied. See the License for the
@@ -103,14 +103,7 @@ class TimelinesController < ApplicationController
     authorize! :read, @timeline
     respond_to do |format|
       format.html do
-        url_fragment = "noHeader=true&noFooter=true&noSourceLink=false&noVideo=false"
-        if current_user == @timeline.user
-          url_fragment += "&resource=#{Addressable::URI.escape_component(manifest_timeline_url(@timeline, format: :json), /[:\/?=]/)}"
-          url_fragment += "&callback=#{Addressable::URI.escape_component(manifest_timeline_url(@timeline, format: :json), /[:\/?=]/)}"
-        elsif current_user
-          url_fragment += "&resource=#{Addressable::URI.escape_component(manifest_timeline_url(@timeline, format: :json, token: @timeline.access_token), /[:\/?=]/)}"
-          url_fragment += "&callback=#{Addressable::URI.escape_component(timelines_url, /[:\/?=]/)}"
-        end
+        url_fragment = build_url_fragment
         @timeliner_iframe_url = timeliner_path + "##{url_fragment}"
       end
       format.json do
@@ -358,6 +351,28 @@ class TimelinesController < ApplicationController
     def load_timeline_token
       @timeline_token = params[:token]
       current_ability.options[:timeline_token] = @timeline_token
+    end
+
+    def build_url_fragment
+      url_fragment = "noHeader=true&noFooter=true&noSourceLink=false&noVideo=false"
+
+      # Manifest url - include token if present
+      if @timeline_token.present?
+        url_fragment += "&resource=#{Addressable::URI.escape_component(manifest_timeline_url(@timeline, format: :json, token: @timeline_token), /[:\/?=]/)}"
+      else
+        url_fragment += "&resource=#{Addressable::URI.escape_component(manifest_timeline_url(@timeline, format: :json), /[:\/?=]/)}"
+      end
+
+      # Save callback - Owner uses manifest url, logged in users use timeline create url, unauthenticated do not have a callback
+      if current_user == @timeline.user
+        url_fragment += "&callback=#{Addressable::URI.escape_component(manifest_timeline_url(@timeline, format: :json), /[:\/?=]/)}"
+      elsif current_user
+        url_fragment += "&callback=#{Addressable::URI.escape_component(timelines_url, /[:\/?=]/)}"
+      else
+        # no-op
+      end
+
+      url_fragment
     end
 
     # Never trust parameters from the scary internet, only allow the white list through.
