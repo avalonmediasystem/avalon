@@ -232,6 +232,12 @@ RSpec.describe TimelinesController, type: :controller do
       timeline.id,
       "%2Fmanifest.json"].join
     end
+    let(:timeline_create_url) do
+      [controller.default_url_options[:protocol],
+      "%3A%2F%2F",
+      controller.default_url_options[:host],
+      "%2Ftimelines"].join
+    end
 
     context 'private timeline' do
       context 'unauthenticated user' do
@@ -261,39 +267,54 @@ RSpec.describe TimelinesController, type: :controller do
           get :show, params: { id: timeline.to_param }, session: valid_session
           expect(response).to be_successful
           expect(response.body).to include "resource=#{encoded_manifest_url}"
+          expect(response.body).to include "callback=#{encoded_manifest_url}"
         end
       end
     end
 
     context 'public timeline' do
-      let(:timeline) { FactoryBot.create(:timeline, visibility: Timeline::PUBLIC) }
+      let(:timeline) { FactoryBot.create(:timeline, visibility: Timeline::PUBLIC, user: cataloger) }
 
       render_views
 
       context 'unauthenticated user' do
-        it "renders the timeliner tool" do
+        it "renders the timeliner tool without save feature" do
           get :show, params: {id: timeline.to_param}, session: valid_session
           expect(response).to be_successful
           expect(response.body).to include "resource=#{encoded_manifest_url}"
+          expect(response.body).not_to include "callback="
         end
       end
 
-      context 'authenticated user' do
+      context 'non-owner' do
         before do
           login_as :user
         end
-        it "renders the timeliner tool" do
+        it "renders the timeliner tool with save to new timeline" do
           get :show, params: {id: timeline.to_param}, session: valid_session
           expect(response).to be_successful
           expect(response.body).to include "resource=#{encoded_manifest_url}"
+          expect(response.body).to include "callback=#{timeline_create_url}"
+        end
+      end
+
+      context 'owner' do
+        before do
+          sign_in cataloger
+        end
+
+        it "renders the timeliner tool" do
+          get :show, params: { id: timeline.to_param }, session: valid_session
+          expect(response).to be_successful
+          expect(response.body).to include "resource=#{encoded_manifest_url}"
+          expect(response.body).to include "callback=#{encoded_manifest_url}"
         end
       end
     end
 
-
     context 'with token auth' do
-      let(:timeline) { FactoryBot.create(:timeline, :with_access_token) }
-      let(:encoded_manifest_url) do
+      let(:timeline) { FactoryBot.create(:timeline, :with_access_token, user: cataloger) }
+      let(:encoded_manifest_url_with_token) do
         [controller.default_url_options[:protocol],
         "%3A%2F%2F",
         controller.default_url_options[:host],
@@ -306,24 +327,39 @@ RSpec.describe TimelinesController, type: :controller do
       render_views
 
       context 'unauthenticated user' do
-        it "correctly encodes tokenized timeline urls" do
+        it "renders the timeliner tool without save feature" do
           get :show, params: {id: timeline.to_param, token: timeline.access_token}
-          expect(response.body).to include "resource=#{encoded_manifest_url}"
+          expect(response.body).to include "resource=#{encoded_manifest_url_with_token}"
+          expect(response.body).not_to include "callback="
         end
       end
 
-      context 'authenticated user' do
+      context 'non-owner' do
         before do
           login_as :user
         end
 
-        it "correctly encodes tokenized timeline urls" do
+        it "renders the timeliner tool with save to new timeline" do
           get :show, params: {id: timeline.to_param, token: timeline.access_token}
-          expect(response.body).to include "resource=#{encoded_manifest_url}"
+          expect(response.body).to include "resource=#{encoded_manifest_url_with_token}"
+          expect(response.body).to include "callback=#{timeline_create_url}"
         end
       end
 
-      context 'wrong token' do
+      context 'owner' do
+        before do
+          sign_in cataloger
+        end
+
+        it "renders the timeliner tool" do
+          get :show, params: { id: timeline.to_param }, session: valid_session
+          expect(response).to be_successful
+          expect(response.body).to include "resource=#{encoded_manifest_url}"
+          expect(response.body).to include "callback=#{encoded_manifest_url}"
+        end
+      end
+
+      context 'invalid token' do
         it 'renders restricted content page' do
           expect(get :show, params: { id: timeline.to_param, token: 'faketoken' }).to render_template('errors/restricted_pid')
         end

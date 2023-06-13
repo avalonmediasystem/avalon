@@ -356,12 +356,20 @@ class TimelinesController < ApplicationController
     def build_url_fragment
       url_fragment = "noHeader=true&noFooter=true&noSourceLink=false&noVideo=false"
 
-      if @timeline.visibility == 'public' || current_user == @timeline.user
+      # Manifest url - include token if present
+      if @timeline_token.present?
+        url_fragment += "&resource=#{Addressable::URI.escape_component(manifest_timeline_url(@timeline, format: :json, token: @timeline_token), /[:\/?=]/)}"
+      else
         url_fragment += "&resource=#{Addressable::URI.escape_component(manifest_timeline_url(@timeline, format: :json), /[:\/?=]/)}"
+      end
+
+      # Save callback - Owner uses manifest url, logged in users use timeline create url, unauthenticated do not have a callback
+      if current_user == @timeline.user
         url_fragment += "&callback=#{Addressable::URI.escape_component(manifest_timeline_url(@timeline, format: :json), /[:\/?=]/)}"
-      elsif current_user || @timeline.valid_token?(@timeline.access_token)
-        url_fragment += "&resource=#{Addressable::URI.escape_component(manifest_timeline_url(@timeline, format: :json, token: @timeline.access_token), /[:\/?=]/)}"
+      elsif current_user
         url_fragment += "&callback=#{Addressable::URI.escape_component(timelines_url, /[:\/?=]/)}"
+      else
+        # no-op
       end
 
       url_fragment
