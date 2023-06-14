@@ -22,4 +22,28 @@ class SpeedyAF::Proxy::StructuralMetadata < SpeedyAF::Base
   def section_title
     xpath('/Item/@label').text
   end
+
+  def as_json
+    root_node = xpath('//Item')[0]
+    root_node.present? ? node_xml_to_json(root_node) : {}
+  end
+
+  protected
+
+    def node_xml_to_json(node)
+      if node.name.casecmp("div").zero? || node.name.casecmp('item').zero?
+        {
+          type: 'div',
+          label: node.attribute('label').value,
+          items: node.children.reject(&:blank?).collect { |n| node_xml_to_json n }
+        }
+      elsif node.name.casecmp('span').zero?
+        {
+          type: 'span',
+          label: node.attribute('label').value,
+          begin: node.attribute('begin').present? ? node.attribute('begin').value : '0',
+          end: node.attribute('end').present? ? node.attribute('end').value : '0'
+        }
+      end
+    end
 end

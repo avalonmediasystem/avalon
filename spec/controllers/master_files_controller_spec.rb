@@ -548,11 +548,11 @@ describe MasterFilesController do
 
     context 'master file has been deleted' do
       before do
-        allow(MasterFile).to receive(:find).and_raise(Ldp::Gone)
+        master_file.destroy
       end
 
       it 'returns gone (403)' do
-        expect(get('hls_manifest', params: { id: "deleted", quality: 'auto' })).to have_http_status(:gone)
+        expect(get('hls_manifest', params: { id: master_file.id, quality: 'auto' })).to have_http_status(:unauthorized)
       end
     end
 
@@ -585,11 +585,11 @@ describe MasterFilesController do
 
     context 'master file has been deleted' do
       before do
-        allow(MasterFile).to receive(:find).and_raise(Ldp::Gone)
+        master_file.destroy
       end
 
-      it 'returns gone (403)' do
-        expect(get('caption_manifest', params: { id: master_file.id }, xhr: true)).to have_http_status(:gone)
+      it 'returns unauthorized (401)' do
+        expect(get('caption_manifest', params: { id: master_file.id }, xhr: true)).to have_http_status(:unauthorized)
       end
     end
 
