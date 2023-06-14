@@ -44,7 +44,14 @@ class IiifCanvasPresenter
   end
 
   def see_also
-    waveform_see_also
+    [
+      {
+        "@id" => "#{@master_file.waveform_master_file_url(@master_file.id)}.json",
+        "type" => "Dataset",
+        "label" => { "en" => ["waveform.json"] },
+        "format" => "application/json"
+      }
+    ]
   end
 
   def placeholder_content
@@ -81,17 +88,6 @@ class IiifCanvasPresenter
       stream_info[:stream_hls].collect do |d|
         [d[:quality], d[:url]]
       end
-    end
-
-    def waveform_see_also
-      [
-        {
-          "@id" => "#{@master_file.waveform_master_file_url(@master_file.id)}.json",
-          "type" => "Dataset",
-          "label" => { "en" => ["waveform.json"] },
-          "format" => "application/json"
-        }
-      ]
     end
 
     def simple_iiif_range(label = stream_info[:embed_title])
