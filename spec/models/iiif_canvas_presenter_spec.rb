@@ -124,17 +124,35 @@ describe IiifCanvasPresenter do
 
     subject { presenter.sequence_rendering }
 
-    it 'includes waveform' do
-      expect(subject.any? { |rendering| rendering["label"]["en"] == ["waveform.json"] }).to eq true
-    end
-
     it 'includes supplemental files' do
       expect(subject.any? { |rendering| rendering["@id"] =~ /supplemental_files\/#{supplemental_file.id}/ }).to eq true
     end
 
-    it 'does not include transcripts or captions' do
+    it 'does not include waveform, transcripts, or captions' do
+      expect(subject.any? { |rendering| rendering["label"]["en"] == ["waveform.json"] }).to eq false
       expect(subject.any? { |rendering| rendering["@id"] =~ /supplemental_files\/#{transcript_file.id}/ }).to eq false
       expect(subject.any? { |rendering| rendering["@id"] =~ /supplemental_files\/#{caption_file.id}/ }).to eq false
+    end
+  end
+
+  describe '#see_also' do
+    let(:master_file) { FactoryBot.build(:master_file, :with_waveform, supplemental_files_json: supplemental_files_json, media_object: media_object, derivatives: [derivative]) }
+    let(:supplemental_file) { FactoryBot.create(:supplemental_file) }
+    let(:transcript_file) { FactoryBot.create(:supplemental_file, :with_transcript_tag) }
+    let(:caption_file) { FactoryBot.create(:supplemental_file, tags: ['caption', 'machine_generated']) }
+    let(:supplemental_files) { [supplemental_file, transcript_file, caption_file] }
+    let(:supplemental_files_json) { supplemental_files.map(&:to_global_id).map(&:to_s).to_s }
+
+    subject { presenter.see_also }
+
+    it 'includes waveform' do
+      expect(subject.any? { |sa| sa["label"]["en"] == ["waveform.json"] }).to eq true
+    end
+
+    it 'does not include supplemental files, transcripts, or captions' do
+      expect(subject.any? { |sa| sa["@id"] =~ /supplemental_files\/#{supplemental_file.id}/ }).to eq false
+      expect(subject.any? { |sa| sa["@id"] =~ /supplemental_files\/#{transcript_file.id}/ }).to eq false
+      expect(subject.any? { |sa| sa["@id"] =~ /supplemental_files\/#{caption_file.id}/ }).to eq false
     end
   end
 end
