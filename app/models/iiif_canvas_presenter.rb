@@ -89,8 +89,14 @@ class IiifCanvasPresenter
     end
 
     def supplementing_content_data(file)
-      IIIFManifest::V3::SupplementingContent.new(Rails.application.routes.url_helpers.master_file_supplemental_file_url(master_file.id, file.id),
-                                                 **supplemental_attributes(file))
+      url = if file.tags.include?('caption')
+              Rails.application.routes.url_helpers.caption_master_file_supplemental_file_url(master_file.id, file.id)
+            elsif file.tags.include?('transcript')
+              Rails.application.routes.url_helpers.transcript_master_file_supplemental_file_url(master_file.id, file.id)
+            else
+              Rails.application.routes.url_helpers.master_file_supplemental_file_url(master_file.id, file.id)\
+            end
+      IIIFManifest::V3::SupplementingContent.new(url, **supplemental_attributes(file))
     end
 
     def stream_urls

@@ -148,9 +148,14 @@ describe IiifCanvasPresenter do
         expect(subject.any? { |content| content.url =~ /supplemental_files\/#{caption_file.id}/ }).to eq true
       end
 
+      it 'differentiates between transcript and caption files' do
+        expect(subject.any? { |content| content.url =~ /supplemental_files\/#{transcript_file.id}\/transcript/ }).to eq true
+        expect(subject.any? { |content| content.url =~ /supplemental_files\/#{caption_file.id}\/caption/ }).to eq true
+      end
+
       it 'does not include generic supplemental files or waveform' do
         expect(subject.any? { |content| content.url =~ /supplemental_files\/#{supplemental_file.id}/ }).to eq false
-        expect(subject.any? { |rendering| rendering["label"]["en"] == ["waveform.json"] }).to eq false
+        expect(subject.any? { |content| content.label == { "en" => ["waveform.json"] } }).to eq false
       end
     end
   end

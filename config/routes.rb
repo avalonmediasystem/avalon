@@ -165,7 +165,12 @@ Rails.application.routes.draw do
     end
 
     # Supplemental Files
-    resources :supplemental_files, except: [:new, :index, :edit]
+    resources :supplemental_files, except: [:new, :index, :edit] do
+      member do
+        get 'caption', :to => redirect('/master_files/%{master_file_id}/supplemental_files/%{id}')
+        get 'transcript', :to => redirect('/master_files/%{master_file_id}/supplemental_files/%{id}')
+      end
+    end
   end
 
   match "iiif_auth_token/:id", to: 'master_files#iiif_auth_token', via: [:get], as: :iiif_auth_token
