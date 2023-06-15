@@ -178,7 +178,7 @@ class IiifCanvasPresenter
     end
 
     def supplemental_attributes(file)
-      supplement_hash = {
+      {
         label: file.label,
         type: 'Text',
         format: file.file.content_type,
