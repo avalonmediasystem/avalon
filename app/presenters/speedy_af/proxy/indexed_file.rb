@@ -12,38 +12,17 @@
 #   specific language governing permissions and limitations under the License.
 # ---  END LICENSE_HEADER BLOCK  ---
 
-class SpeedyAF::Proxy::MediaObject < SpeedyAF::Base
-  def to_model
-    self
+class SpeedyAF::Proxy::IndexedFile < SpeedyAF::Base
+  # If necessary, decode binary content that is base 64 encoded
+  def content
+    binary_content? ? Base64.decode64(attrs[:content]) : attrs[:content]
   end
 
-  def persisted?
-    id.present?
+  def has_content?
+    attrs[:content].present?
   end
 
-  def model_name
-    ActiveModel::Name.new(MediaObject)
-  end
-
-  def to_param
-    id
-  end
-
-  def published?
-    !avalon_publisher.blank?
-  end
-
-  # @return [SupplementalFile]
-  def supplemental_files(tag: '*')
-    return [] if supplemental_files_json.blank?
-    files = JSON.parse(supplemental_files_json).collect { |file_gid| GlobalID::Locator.locate(file_gid) }
-    case tag
-    when '*'
-      files
-    when nil
-      files.select { |file| file.tags.empty? }
-    else
-      files.select { |file| Array(tag).all? { |t| file.tags.include?(t) } }
-    end
+  def binary_content?
+    has_content? && mime_type !~ /(^text\/)|([\/\+]xml$)/
   end
 end

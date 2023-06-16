@@ -14,9 +14,37 @@
 
 class IndexedFile < ActiveFedora::File
   include SpeedyAF::IndexedContent
+  MAX_CONTENT_SIZE = 32000
 
   # Override
   def original_name
     super&.force_encoding("UTF-8")
+  end
+
+  # Override to add binary content handling
+  def to_solr(solr_doc = {}, opts = {})
+    return solr_doc unless opts[:external_index]
+    solr_doc.tap do |doc|
+      doc[:id] = id
+      doc[:has_model_ssim] = self.class.name
+      doc[:uri_ss] = uri.to_s
+      doc[:mime_type_ss] = mime_type
+      doc[:original_name_ss] = original_name
+      doc[:size_is] = content.present? ? content.size : 0
+      doc[:'empty?_bs'] = content.blank?
+      if index_content?
+        doc[:content_ss] = binary_content? ? Base64.encode64(content) : content
+      end
+    end
+  end
+
+  protected
+
+  def index_content?
+    has_content? && size < MAX_CONTENT_SIZE
+  end
+
+  def binary_content?
+    has_content? && mime_type !~ /(^text\/)|([\/\+]xml$)/
   end
 end
