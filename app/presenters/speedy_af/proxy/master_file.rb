@@ -26,6 +26,11 @@ class SpeedyAF::Proxy::MasterFile < SpeedyAF::Base
     klass if klass&.ancestors&.include?(ActiveEncode::Base)
   end
 
+  # We know that title will be indexed if present so return presence to avoid reifying
+  def title
+    attrs[:title].presence
+  end
+
   def display_title
     mf_title = if has_structuralMetadata?
                  structuralMetadata.section_title
