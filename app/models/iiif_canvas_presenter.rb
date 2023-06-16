@@ -89,12 +89,14 @@ class IiifCanvasPresenter
     end
 
     def supplementing_content_data(file)
-      url = if file.tags.include?('caption')
-              Rails.application.routes.url_helpers.caption_master_file_supplemental_file_url(master_file.id, file.id)
+      url = if !file.is_a?(SupplementalFile)
+              Rails.application.routes.url_helpers.captions_master_file_url(master_file.id)
+            elsif file.tags.include?('caption')
+              Rails.application.routes.url_helpers.captions_master_file_supplemental_file_url(master_file.id, file.id)
             elsif file.tags.include?('transcript')
-              Rails.application.routes.url_helpers.transcript_master_file_supplemental_file_url(master_file.id, file.id)
+              Rails.application.routes.url_helpers.transcripts_master_file_supplemental_file_url(master_file.id, file.id)
             else
-              Rails.application.routes.url_helpers.master_file_supplemental_file_url(master_file.id, file.id)\
+              Rails.application.routes.url_helpers.master_file_supplemental_file_url(master_file.id, file.id)
             end
       IIIFManifest::V3::SupplementingContent.new(url, **supplemental_attributes(file))
     end
@@ -106,7 +108,7 @@ class IiifCanvasPresenter
     end
 
     def supplemental_captions_transcripts
-      master_file.supplemental_files(tag: 'caption') + master_file.supplemental_files(tag: 'transcript')
+      master_file.supplemental_files(tag: 'caption') + master_file.supplemental_files(tag: 'transcript') + [master_file.captions]
     end
 
     def simple_iiif_range(label = stream_info[:embed_title])
@@ -178,11 +180,20 @@ class IiifCanvasPresenter
     end
 
     def supplemental_attributes(file)
+      if file.is_a?(SupplementalFile)
+        label = file.label
+        format = file.file.content_type
+        language = file.language || 'en'
+      else
+        label = 'English'
+        format = file.mime_type
+        language = 'en'
+      end
       {
-        label: file.label,
+        label: label,
         type: 'Text',
-        format: file.file.content_type,
-        language: file.language || 'en'
+        format: format,
+        language: language
       }
     end
 

@@ -149,13 +149,21 @@ describe IiifCanvasPresenter do
       end
 
       it 'differentiates between transcript and caption files' do
-        expect(subject.any? { |content| content.url =~ /supplemental_files\/#{transcript_file.id}\/transcript/ }).to eq true
-        expect(subject.any? { |content| content.url =~ /supplemental_files\/#{caption_file.id}\/caption/ }).to eq true
+        expect(subject.any? { |content| content.url =~ /supplemental_files\/#{transcript_file.id}\/transcripts/ }).to eq true
+        expect(subject.any? { |content| content.url =~ /supplemental_files\/#{caption_file.id}\/captions/ }).to eq true
       end
 
       it 'does not include generic supplemental files or waveform' do
         expect(subject.any? { |content| content.url =~ /supplemental_files\/#{supplemental_file.id}/ }).to eq false
         expect(subject.any? { |content| content.label == { "en" => ["waveform.json"] } }).to eq false
+      end
+
+      context 'legacy master file captions' do
+        let(:master_file) { FactoryBot.build(:master_file, :with_waveform, :with_captions, supplemental_files_json: supplemental_files_json, media_object: media_object, derivatives: [derivative]) }
+
+        it 'includes the master file captions' do
+          expect(subject.any? { |content| content.url =~ /master_file\/#{master_file.id}\/captions/ }).to eq true
+        end
       end
     end
   end
