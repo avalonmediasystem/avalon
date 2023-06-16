@@ -24,6 +24,7 @@ class MediaObjectsController < ApplicationController
   include SecurityHelper
 
   before_action :authenticate_user!, except: [:show, :set_session_quality, :show_stream_details, :manifest]
+  before_action :load_resource, except: [:create, :destroy, :update_status, :set_session_quality, :tree, :deliver_content, :confirm_remove, :show_stream_details, :add_to_playlist_form, :add_to_playlist, :intercom_collections, :manifest, :move_preview]
   load_and_authorize_resource except: [:create, :destroy, :update_status, :set_session_quality, :tree, :deliver_content, :confirm_remove, :show_stream_details, :add_to_playlist_form, :add_to_playlist, :intercom_collections, :manifest, :move_preview]
   authorize_resource only: [:create]
 
@@ -470,7 +471,7 @@ class MediaObjectsController < ApplicationController
   end
 
   def manifest
-    @media_object = MediaObject.find(params[:id])
+    @media_object = SpeedyAF::Proxy::MediaObject.find(params[:id])
     authorize! :read, @media_object
 
     master_files = master_file_presenters
@@ -531,22 +532,13 @@ class MediaObjectsController < ApplicationController
 
   protected
 
+  def load_resource
+    @media_object = SpeedyAF::Proxy::MediaObject.find(params[:id])
+  end
+
   def master_file_presenters
-    # NOTE: Defaults are set on returned SpeedyAF::Base objects if field isn't present in the solr doc.
-    # This is important otherwise speedy_af will reify from fedora when trying to access this field.
-    # When adding a new property to the master file model that will be used in the interface,
-    # add it to the default below to avoid reifying for master files lacking a value for the property.
-    SpeedyAF::Proxy::MasterFile.where("isPartOf_ssim:#{@media_object.id}",
-                                      order: -> { @media_object.indexed_master_file_ids },
-                                      defaults: {
-                                        permalink: nil,
-                                        title: nil,
-                                        encoder_classname: nil,
-                                        workflow_id: nil,
-                                        comment: [],
-                                        supplemental_files_json: nil
-                                      },
-                                      load_reflections: true)
+    # Assume that @media_object is a SpeedyAF::Proxy::MediaObject
+    @media_object.ordered_master_files
   end
 
   def load_master_files(mode = :rw)

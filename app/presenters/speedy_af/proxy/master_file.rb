@@ -13,6 +13,10 @@
 # ---  END LICENSE_HEADER BLOCK  ---
 
 class SpeedyAF::Proxy::MasterFile < SpeedyAF::Base
+  def to_param
+    id
+  end
+
   def encoder_class
     find_encoder_class(encoder_classname) ||
       find_encoder_class("#{workflow_name}_encode".classify) ||

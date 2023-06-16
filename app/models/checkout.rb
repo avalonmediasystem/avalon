@@ -25,7 +25,7 @@ class Checkout < ApplicationRecord
   scope :checked_out_to_user, ->(media_object_id, user_id) { where("media_object_id = ? AND user_id = ? AND return_time > now()", media_object_id, user_id) }
 
   def media_object
-    MediaObject.find(media_object_id)
+    SpeedyAF::Proxy::MediaObject.find(media_object_id)
   end
 
   private

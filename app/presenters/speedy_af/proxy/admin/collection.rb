@@ -28,4 +28,14 @@ class SpeedyAF::Proxy::Admin::Collection < SpeedyAF::Base
   def to_param
     id
   end
+
+  def cdl_enabled?
+    if cdl_enabled.nil?
+      Settings.controlled_digital_lending.collections_enabled
+    elsif cdl_enabled != Settings.controlled_digital_lending.collections_enabled
+      cdl_enabled
+    else
+      Settings.controlled_digital_lending.collections_enabled
+    end
+  end
 end

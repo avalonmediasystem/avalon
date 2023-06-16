@@ -53,7 +53,7 @@ class IiifManifestPresenter
   end
 
   def thumbnail
-    @thumbnail ||= image_for(media_object.to_solr)
+    @thumbnail ||= thumbnail_url
   end
 
   def ranges
@@ -179,11 +179,11 @@ class IiifManifestPresenter
     fields
   end
 
-  def image_for(document)
-    master_file_id = document["section_id_ssim"].try :first
+  def thumbnail_url
+    master_file_id = media_object.ordered_master_file_ids.try :first
 
-    video_count = document["avalon_resource_type_ssim"]&.count { |m| m.start_with?('moving image'.titleize) } || 0
-    audio_count = document["avalon_resource_type_ssim"]&.count { |m| m.start_with?('sound recording'.titleize) } || 0
+    video_count = media_object.avalon_resource_type.map(&:titleize)&.count { |m| m.start_with?('moving image'.titleize) } || 0
+    audio_count = media_object.avalon_resource_type.map(&:titleize)&.count { |m| m.start_with?('sound recording'.titleize) } || 0
 
     if master_file_id
       if video_count > 0

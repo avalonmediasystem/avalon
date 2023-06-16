@@ -38,6 +38,6 @@ module SecurityHelper
   private
 
     def not_checked_out?(media_object_id)
-      lending_enabled?(MediaObject.find(media_object_id)) && Checkout.checked_out_to_user(media_object_id, current_user&.id).empty?
+      lending_enabled?(SpeedyAF::Proxy::MediaObject.find(media_object_id)) && Checkout.checked_out_to_user(media_object_id, current_user&.id).empty?
     end
 end
