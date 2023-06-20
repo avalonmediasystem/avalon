@@ -292,24 +292,6 @@ class MediaObject < ActiveFedora::Base
     end
   end
 
-  def as_json(options={})
-    {
-      id: id,
-      title: title,
-      collection: collection.name,
-      unit: collection.unit,
-      main_contributors: creator,
-      publication_date: date_created,
-      published_by: avalon_publisher,
-      published: published?,
-      summary: abstract,
-      visibility: visibility,
-      read_groups: read_groups,
-      lending_period: lending_period,
-      lending_status: lending_status,
-    }.merge(to_ingest_api_hash(options.fetch(:include_structure, false)))
-  end
-
   # Other validation to consider adding into future iterations is the ability to
   # validate against a known controlled vocabulary. This one will take some thought
   # and research as opposed to being able to just throw something together in an ad hoc

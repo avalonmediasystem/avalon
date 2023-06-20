@@ -11,6 +11,7 @@ Rails.application.config.to_prepare do
                         width: nil,
                         height: nil
                       }
+      include MasterFileIntercom
       include MasterFileBehavior
       include Rails.application.routes.url_helpers
     end
@@ -47,6 +48,7 @@ Rails.application.config.to_prepare do
                         date_issued: nil
                       }
       include VirtualGroups
+      include MediaObjectIntercom
       include MediaObjectBehavior
       include Rails.application.routes.url_helpers
     end

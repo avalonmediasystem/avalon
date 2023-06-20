@@ -13,6 +13,8 @@
 # ---  END LICENSE_HEADER BLOCK  ---
 
 class SpeedyAF::Proxy::MediaObject < SpeedyAF::Base
+  SINGULAR_FIELDS = [:title, :statement_of_responsibility, :date_created, :date_issued, :copyright_date, :abstract, :terms_of_use, :rights_statement]
+
   # Override to handle section_id specially
   def initialize(solr_document, instance_defaults = {})
     instance_defaults ||= {}
@@ -22,10 +24,12 @@ class SpeedyAF::Proxy::MediaObject < SpeedyAF::Base
      attr_name, value = parse_solr_field(k, v)
       @attrs[attr_name.to_sym] = value
     end
-#byebug
     # Handle this case here until a better fix can be found for multiple solr fields which don't have a model property
     @attrs[:section_id] = solr_document["section_id_ssim"]
     # TODO Need to convert hidden_bsi into discover_groups?
+    SINGULAR_FIELDS.each do |field_name|
+      @attrs[field_name] = Array(@attrs[field_name]).first
+    end
   end
 
   def to_model
@@ -91,6 +95,14 @@ class SpeedyAF::Proxy::MediaObject < SpeedyAF::Base
     attrs[:lending_period].presence || collection&.default_lending_period
   end
 
+  def format
+    # TODO figure out how to memoize this
+    mime_types = master_files.reject { |mf| mf.file_location.blank? }.collect do |mf|
+      Rack::Mime.mime_type(File.extname(mf.file_location))
+    end.uniq
+    mime_types.empty? ? nil : mime_types
+  end
+
   # Copied from Hydra-Access-Controls
   def visibility
     if read_groups.include? Hydra::AccessControls::AccessRight::PERMISSION_TEXT_VALUE_PUBLIC
@@ -113,5 +125,31 @@ class SpeedyAF::Proxy::MediaObject < SpeedyAF::Base
 
   def governing_policies
     @governing_policies ||= Array(attrs[:isGovernedBy]).collect { |id| SpeedyAF::Base.find(id) }
+  end
+
+  protected
+
+  # Overrides from SpeedyAF::Base
+  def parse_solr_field(k, v)
+    # :nocov:
+    transforms = {
+      'dt' => ->(m) { Time.parse(m) },
+      'b' => ->(m) { m },
+      'db' => ->(m) { m.to_f },
+      'f' => ->(m) { m.to_f },
+      'i' => ->(m) { m.to_i },
+      'l' => ->(m) { m.to_i },
+      nil => ->(m) { m }
+    }
+    # :nocov:
+    attr_name, type, _stored, _indexed, multi = k.scan(/^(.+)_(.+)(s)(i?)(m?)$/).first
+    return [k, v] if attr_name.nil?
+    value = Array(v).map { |m| transforms.fetch(type, transforms[nil]).call(m) }
+    value = value.first if !multi || (@model.respond_to?(:properties) && singular?(@model.properties[attr_name]))
+    [attr_name, value]
+  end
+
+  def singular?(prop)
+    (prop.present? && prop.respond_to?(:multiple?) && !prop.multiple?) || belongs_to_reflections.values.collect(&:predicate_for_solr)
   end
 end
