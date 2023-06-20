@@ -652,7 +652,7 @@ describe MasterFilesController do
       end
 
       it 'returns unauthorized (401)' do
-        expect(get('caption_manifest', params: { id: master_file.id }, xhr: true)).to have_http_status(:unauthorized)
+        expect(get('caption_manifest', params: { id: master_file.id, c_id: 1 }, xhr: true)).to have_http_status(:unauthorized)
       end
     end
 
