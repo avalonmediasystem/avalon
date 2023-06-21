@@ -22,6 +22,7 @@ class Admin::Collection < ActiveFedora::Base
   include ActiveFedora::Associations
   include Identifier
   include MigrationTarget
+  include AdminCollectionBehavior
 
   has_many :media_objects, class_name: 'MediaObject', predicate: ActiveFedora::RDF::Fcrepo::RelsExt.isMemberOfCollection
 
@@ -86,10 +87,6 @@ class Admin::Collection < ActiveFedora::Base
     @created_at ||= create_date
   end
 
-  def managers
-    edit_users & ( Avalon::RoleControls.users("manager") | (Avalon::RoleControls.users("administrator") || []) )
-  end
-
   def managers= users
     old_managers = managers
     users.each {|u| add_manager u}
@@ -110,10 +107,6 @@ class Admin::Collection < ActiveFedora::Base
     self.inherited_edit_users -= [user]
   end
 
-  def editors
-    edit_users - managers
-  end
-
   def editors= users
     old_editors = editors
     users.each {|u| add_editor u}
@@ -129,14 +122,6 @@ class Admin::Collection < ActiveFedora::Base
     return unless editors.include? user
     self.edit_users -= [user]
     self.inherited_edit_users -= [user]
-  end
-
-  def editors_and_managers
-    edit_users
-  end
-
-  def depositors
-    read_users
   end
 
   def depositors= users

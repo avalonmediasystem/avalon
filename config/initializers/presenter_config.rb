@@ -55,8 +55,11 @@ Rails.application.config.to_prepare do
 
     sp.config Admin::Collection do
       self.defaults = {
-                        cdl_enabled: nil
+                        cdl_enabled: nil,
+                        read_users: [],
+                        edit_users: []
                       }
+      include AdminCollectionBehavior
     end
 
     sp.config Derivative do
