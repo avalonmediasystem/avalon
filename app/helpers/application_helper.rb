@@ -29,7 +29,7 @@ module ApplicationHelper
       obj.permalink
     else
       case obj
-      when MediaObject
+      when MediaObjectBehavior
         if only_path
           media_object_path(obj)
         else
@@ -50,8 +50,8 @@ module ApplicationHelper
       return I18n.t('share.empty_lti_share_url')
     end
     target = case obj
-             when MediaObject then obj.id
-             when MasterFile then obj.id
+             when MediaObjectBehavior then obj.id
+             when MasterFileBehavior then obj.id
              when Playlist then obj.to_gid_param
              when Timeline then obj.to_gid_param
              end
