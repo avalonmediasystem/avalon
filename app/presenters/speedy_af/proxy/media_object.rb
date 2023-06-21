@@ -26,12 +26,22 @@ class SpeedyAF::Proxy::MediaObject < SpeedyAF::Base
     end
     # Handle this case here until a better fix can be found for multiple solr fields which don't have a model property
     @attrs[:section_id] = solr_document["section_id_ssim"]
+    @attrs[:date_issued] = solr_document["date_ssi"]
     # TODO Need to convert hidden_bsi into discover_groups?
     SINGULAR_FIELDS.each do |field_name|
       @attrs[field_name] = Array(@attrs[field_name]).first
     end
     # Convert empty strings to nil
     @attrs.transform_values! { |value| value == "" ? nil : value }
+  end
+
+  # Override to skip clearing attrs when reifying to avoid breaking overridden methods which read from attrs
+  def real_object
+    if @real_object.nil?
+      @real_object = model.find(id)
+      # @attrs.clear
+    end
+    @real_object
   end
 
   def to_model

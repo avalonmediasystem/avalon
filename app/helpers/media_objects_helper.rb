@@ -53,7 +53,7 @@ module MediaObjectsHelper
 
       def combined_display_date media_object
         (issued,created) = case media_object
-        when MediaObject
+        when MediaObject, SpeedyAF::Proxy::MediaObject
           [media_object.date_issued, media_object.date_created]
         when Hash
           [media_object[:document]['date_ssi'], media_object[:document]['date_created_ssi']]
