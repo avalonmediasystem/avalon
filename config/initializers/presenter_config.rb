@@ -9,7 +9,13 @@ Rails.application.config.to_prepare do
                         comment: [],
                         supplemental_files_json: nil,
                         width: nil,
-                        height: nil
+                        height: nil,
+                        physical_description: nil,
+                        file_size: nil,
+                        date_digitized: nil,
+                        file_checksum: nil,
+                        captions: nil,
+                        supplemental_file_captions: nil
                       }
       include MasterFileIntercom
       include MasterFileBehavior
@@ -34,6 +40,7 @@ Rails.application.config.to_prepare do
                         contributor: [],
                         publisher: [],
                         temporal_subject: [],
+                        topical_subject: [],
                         geographic_subject: [],
                         language: [],
                         terms_of_use: nil,
@@ -45,7 +52,14 @@ Rails.application.config.to_prepare do
                         table_of_contents: [],
                         bibliographic_id: nil,
                         comment: [],
-                        date_issued: nil
+                        date_issued: nil,
+                        avalon_uploader: nil,
+                        identifier: [],
+                        alternative_title: [],
+                        translated_title: [],
+                        uniform_title: [],
+                        resource_type: [],
+                        record_identifier: []
                       }
       include VirtualGroups
       include MediaObjectIntercom
@@ -63,6 +77,12 @@ Rails.application.config.to_prepare do
     end
 
     sp.config Derivative do
+      self.defaults = {
+                        track_id: nil,
+                        mime_type: nil,
+                        hls_track_id: nil 
+                      }
+      include DerivativeIntercom
       include DerivativeBehavior
     end
 

@@ -1238,6 +1238,15 @@ describe MediaObjectsController, type: :controller do
           expect(json['files'].first['structure']).not_to eq master_file.structuralMetadata.content
         end
       end
+
+      context 'read from solr' do
+	it 'should not read from fedora' do
+	  perform_enqueued_jobs(only: MediaObjectIndexingJob)
+	  WebMock.reset_executed_requests!
+          get 'show', params: { id: media_object.id, format:'json' }
+	  expect(a_request(:any, /#{ActiveFedora.fedora.base_uri}/)).not_to have_been_made
+	end
+      end
     end
 
     context 'misformed NOID' do
@@ -1249,6 +1258,16 @@ describe MediaObjectsController, type: :controller do
         get 'show', params: { id: "nonvalid noid]" }
         expect(response).to render_template("errors/unknown_pid")
         expect(response.response_code).to eq(404)
+      end
+    end
+
+    context 'read from solr' do
+      let!(:media_object) { FactoryBot.create(:published_media_object, :with_master_file, visibility: 'public') }
+      it 'should not read from fedora' do
+        perform_enqueued_jobs(only: MediaObjectIndexingJob)
+        WebMock.reset_executed_requests!
+        get 'show', params: { id: media_object.id }
+        expect(a_request(:any, /#{ActiveFedora.fedora.base_uri}/)).not_to have_been_made
       end
     end
   end
@@ -1781,6 +1800,18 @@ describe MediaObjectsController, type: :controller do
         get :move_preview, params: { id: media_object.id, format: 'json' }
         expect(response.status).to eq 401
         expect(response.content_type).to eq 'application/json'
+      end
+    end
+  end
+
+  describe '#manifest' do
+    context 'read from solr' do
+      let!(:media_object) { FactoryBot.create(:published_media_object, :with_master_file, visibility: 'public') }
+      it 'should not read from fedora' do
+        perform_enqueued_jobs(only: MediaObjectIndexingJob)
+        WebMock.reset_executed_requests!
+        get 'manifest', params: { id: media_object.id, format: 'json' }
+        expect(a_request(:any, /#{ActiveFedora.fedora.base_uri}/)).not_to have_been_made
       end
     end
   end
