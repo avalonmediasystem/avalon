@@ -26,7 +26,7 @@ Unless required by applicable law or agreed to in writing, software distributed
 					<p>Are you certain you want to delete the following <%= 'resource'.pluralize(params[:id].count) %>?</p>
 					<ul>
 						<% params[:id].each do |id| %>
-							<% @media_object = MediaObject.find(id)  %>
+							<% @media_object = SpeedyAF::Proxy::MediaObject.find(id)  %>
 							<% if can? :destroy, @media_object  %>
 								<li><%= @media_object.title %> (<%= id %>)</li>
 							<% else %>
