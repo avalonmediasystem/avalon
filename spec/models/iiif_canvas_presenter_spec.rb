@@ -162,7 +162,7 @@ describe IiifCanvasPresenter do
         let(:master_file) { FactoryBot.build(:master_file, :with_waveform, :with_captions, supplemental_files_json: supplemental_files_json, media_object: media_object, derivatives: [derivative]) }
 
         it 'includes the master file captions' do
-          expect(subject.any? { |content| content.url =~ /master_file\/#{master_file.id}\/captions/ }).to eq true
+          expect(subject.any? { |content| content.url =~ /master_files\/#{master_file.id}\/captions/ }).to eq true
         end
       end
     end
