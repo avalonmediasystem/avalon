@@ -30,6 +30,8 @@ class SpeedyAF::Proxy::MediaObject < SpeedyAF::Base
     SINGULAR_FIELDS.each do |field_name|
       @attrs[field_name] = Array(@attrs[field_name]).first
     end
+    # Convert empty strings to nil
+    @attrs.transform_values! { |value| value == "" ? nil : value }
   end
 
   def to_model
@@ -145,11 +147,12 @@ class SpeedyAF::Proxy::MediaObject < SpeedyAF::Base
     attr_name, type, _stored, _indexed, multi = k.scan(/^(.+)_(.+)(s)(i?)(m?)$/).first
     return [k, v] if attr_name.nil?
     value = Array(v).map { |m| transforms.fetch(type, transforms[nil]).call(m) }
-    value = value.first if !multi || (@model.respond_to?(:properties) && singular?(@model.properties[attr_name]))
+    value = value.first if multi.blank? || singular?(attr_name)
     [attr_name, value]
   end
 
-  def singular?(prop)
-    (prop.present? && prop.respond_to?(:multiple?) && !prop.multiple?) || belongs_to_reflections.values.collect(&:predicate_for_solr)
+  def singular?(attr_name)
+    prop = @model.properties[attr_name]
+    (prop.present? && prop.respond_to?(:multiple?) && !prop.multiple?) || belongs_to_reflections.values.collect(&:predicate_for_solr).include?(attr_name)
   end
 end
