@@ -14,8 +14,7 @@ Rails.application.config.to_prepare do
                         file_size: nil,
                         date_digitized: nil,
                         file_checksum: nil,
-                        captions: nil,
-                        supplemental_file_captions: nil
+                        supplemental_file_captions: []
                       }
       include MasterFileIntercom
       include MasterFileBehavior
@@ -69,9 +68,7 @@ Rails.application.config.to_prepare do
 
     sp.config Admin::Collection do
       self.defaults = {
-                        cdl_enabled: nil,
-                        read_users: [],
-                        edit_users: []
+                        cdl_enabled: nil
                       }
       include AdminCollectionBehavior
     end
@@ -80,7 +77,11 @@ Rails.application.config.to_prepare do
       self.defaults = {
                         track_id: nil,
                         mime_type: nil,
-                        hls_track_id: nil 
+                        hls_track_id: nil,
+                        video_bitrate: nil,
+                        video_codec: nil,
+                        audio_bitrate: nil,
+                        audio_codec: nil
                       }
       include DerivativeIntercom
       include DerivativeBehavior
@@ -98,6 +99,17 @@ Rails.application.config.to_prepare do
       def xpath(*args)
 	ng_xml.xpath(*args)
       end
+    end
+  end
+
+  SpeedyAF::Base.class_eval do
+    # Override to skip clearing attrs when reifying to avoid breaking overridden methods which read from attrs
+    def real_object
+      if @real_object.nil?
+	@real_object = model.find(id)
+	# @attrs.clear
+      end
+      @real_object
     end
   end
 end

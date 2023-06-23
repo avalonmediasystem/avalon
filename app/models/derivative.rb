@@ -31,8 +31,12 @@ class Derivative < ActiveFedora::Base
   property :duration, predicate: ::RDF::Vocab::EBUCore.duration, multiple: false do |index|
     index.as :stored_sortable
   end
-  property :track_id, predicate: Avalon::RDFVocab::EBUCore.identifier, multiple: false
-  property :hls_track_id, predicate: Avalon::RDFVocab::Derivative.hlsTrackID, multiple: false
+  property :track_id, predicate: Avalon::RDFVocab::EBUCore.identifier, multiple: false do |index|
+    index.as :displayable
+  end
+  property :hls_track_id, predicate: Avalon::RDFVocab::Derivative.hlsTrackID, multiple: false do |index|
+    index.as :displayable
+  end
   property :managed, predicate: Avalon::RDFVocab::Derivative.isManaged, multiple: false do |index|
     index.as ActiveFedora::Indexing::Descriptor.new(:boolean, :stored, :indexed)
   end

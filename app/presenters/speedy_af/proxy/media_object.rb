@@ -21,7 +21,7 @@ class SpeedyAF::Proxy::MediaObject < SpeedyAF::Base
     @model = SpeedyAF::Base.model_for(solr_document)
     @attrs = self.class.defaults.merge(instance_defaults)
     solr_document.each_pair do |k, v|
-     attr_name, value = parse_solr_field(k, v)
+      attr_name, value = parse_solr_field(k, v)
       @attrs[attr_name.to_sym] = value
     end
     # Handle this case here until a better fix can be found for multiple solr fields which don't have a model property
@@ -33,15 +33,6 @@ class SpeedyAF::Proxy::MediaObject < SpeedyAF::Base
     end
     # Convert empty strings to nil
     @attrs.transform_values! { |value| value == "" ? nil : value }
-  end
-
-  # Override to skip clearing attrs when reifying to avoid breaking overridden methods which read from attrs
-  def real_object
-    if @real_object.nil?
-      @real_object = model.find(id)
-      # @attrs.clear
-    end
-    @real_object
   end
 
   def to_model
