@@ -60,4 +60,8 @@ class SpeedyAF::Proxy::MasterFile < SpeedyAF::Base
       files.select { |file| Array(tag).all? { |t| file.tags.include?(t) } }
     end
   end
+
+  def captions
+    load_subresource_content(:captions) rescue nil
+  end
 end
