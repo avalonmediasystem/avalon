@@ -15,8 +15,8 @@ Unless required by applicable law or agreed to in writing, software distributed
 %>
 <% @current_playlist_item = @playlist_item %>
 <% @current_clip = AvalonClip.find(@current_playlist_item.clip_id) %>
-<% @current_masterfile = MasterFile.find(@current_playlist_item.clip.source.split('/').last) %>
-<% @current_mediaobject = MediaObject.find(@current_masterfile.media_object_id) %>
+<% @current_masterfile = SpeedyAF::Proxy::MasterFile.find(@current_playlist_item.clip.source.split('/').last) %>
+<% @current_mediaobject = SpeedyAF::Proxy::MediaObject.find(@current_masterfile.media_object_id) %>
 <% clip_start = @current_clip.start_time / 1000.0 %>
 <% clip_end = @current_clip.end_time / 1000.0 %>
 <% clip_frag = "?t=#{clip_start},#{clip_end}" %>
