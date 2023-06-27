@@ -51,6 +51,10 @@ class SpeedyAF::Proxy::MediaObject < SpeedyAF::Base
     id
   end
 
+  def to_key
+    [id]
+  end
+
   # @return [SupplementalFile]
   def supplemental_files(tag: '*')
     return [] if supplemental_files_json.blank?
