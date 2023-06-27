@@ -15,6 +15,11 @@
 class SpeedyAF::Proxy::IndexedFile < SpeedyAF::Base
   # If necessary, decode binary content that is base 64 encoded
   def content
+    # Reify if content exists but isn't stored in the index
+    if !empty? && attrs[:content].blank?
+      ActiveFedora::Base.logger.warn("Reifying #{model} because content not indexed")
+      return real_object.content
+    end
     binary_content? ? Base64.decode64(attrs[:content]) : attrs[:content]
   end
 
