@@ -461,20 +461,6 @@ class MasterFile < ActiveFedora::Base
     structuralMetadata.xpath('//@label').collect{|a|a.value}
   end
 
-  # Supplies the route to the master_file as an rdf formatted URI
-  # @return [String] the route as a uri
-  # @example uri for a mf on avalon.iu.edu with a id of: avalon:1820
-  #   "my_master_file.rdf_uri" #=> "https://www.avalon.iu.edu/master_files/avalon:1820"
-  def rdf_uri
-    master_file_url(id)
-  end
-
-  # Returns the dctype of the master_file
-  # @return [String] either 'dctypes:MovingImage' or 'dctypes:Sound'
-  def rdf_type
-    is_video? ? 'dctypes:MovingImage' : 'dctypes:Sound'
-  end
-
   def self.post_processing_move_filename(oldpath, options = {})
     prefix = options[:id].tr(':', '_')
     if File.basename(oldpath).start_with?(prefix)

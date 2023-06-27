@@ -1693,6 +1693,16 @@ describe MediaObjectsController, type: :controller do
       get :add_to_playlist_form, params: { id: media_object.id, scope: 'media_object', masterfile_id: media_object.ordered_master_file_ids[0] }
       expect(response.body).to include('Add Item to Playlist')
     end
+
+    context 'read from solr' do
+      it 'should not read from fedora' do
+        media_object
+        perform_enqueued_jobs(only: MediaObjectIndexingJob)
+        WebMock.reset_executed_requests!
+        get :add_to_playlist_form, params: { id: media_object.id, scope: 'media_object', masterfile_id: media_object.ordered_master_file_ids[0] }
+        expect(a_request(:any, /#{ActiveFedora.fedora.base_uri}/)).not_to have_been_made
+      end
+    end
   end
 
   describe "#add_to_playlist" do
@@ -1740,6 +1750,16 @@ describe MediaObjectsController, type: :controller do
       post :add_to_playlist, params: { id: media_object.id, post: { playlist_id: other_playlist.id, masterfile_id: media_object.ordered_master_file_ids[0], playlistitem_scope: 'section' } }
       expect(response).to have_http_status(403)
       expect(JSON.parse(response.body).symbolize_keys).to eq({message: "<p>You are not authorized to update this playlist.</p>", status: 403})
+    end
+
+    context 'read from solr' do
+      it 'should not read from fedora' do
+        media_object
+        perform_enqueued_jobs(only: MediaObjectIndexingJob)
+        WebMock.reset_executed_requests!
+        post :add_to_playlist, params: { id: media_object.id, post: { playlist_id: playlist.id, masterfile_id: media_object.ordered_master_file_ids[0], playlistitem_scope: 'section' } }
+        expect(a_request(:any, /#{ActiveFedora.fedora.base_uri}/)).not_to have_been_made
+      end
     end
   end
 
@@ -1796,7 +1816,7 @@ describe MediaObjectsController, type: :controller do
 
       let(:media_object) { FactoryBot.create(:published_media_object) }
 
-      it 'returns a json preview of the media object' do
+      it 'returns unauthorized' do
         get :move_preview, params: { id: media_object.id, format: 'json' }
         expect(response.status).to eq 401
         expect(response.content_type).to eq 'application/json'
