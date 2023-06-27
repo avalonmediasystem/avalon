@@ -68,9 +68,8 @@ class BookmarksController < CatalogController
     @response, @documents = action_documents
     @valid_user_actions = [:delete, :unpublish, :publish, :merge, :move, :update_access_control, :add_to_playlist]
     @valid_user_actions += [:intercom_push] if Settings.intercom.present?
-    mos = @documents.collect { |doc| MediaObject.find( doc.id ) }
     @documents.each do |doc|
-      mo = MediaObject.find(doc.id)
+      mo = SpeedyAF::Proxy::MediaObject.find(doc.id)
       @valid_user_actions.delete :delete if @valid_user_actions.include? :delete and cannot? :destroy, mo
       @valid_user_actions.delete :unpublish if @valid_user_actions.include? :unpublish and cannot? :unpublish, mo
       @valid_user_actions.delete :publish if @valid_user_actions.include? :publish and cannot? :update, mo
@@ -124,7 +123,7 @@ class BookmarksController < CatalogController
     errors = []
     success_ids = []
     Array(documents.map(&:id)).each do |id|
-      media_object = MediaObject.find(id)
+      media_object = SpeedyAF::Proxy::MediaObject.find(id)
       if cannot? :update_access_control, media_object
         errors += ["#{media_object.title} (#{id}) #{t('blacklight.messages.permission_denied')}."]
       else
@@ -141,7 +140,7 @@ class BookmarksController < CatalogController
   def add_to_playlist_action documents
     playlist = Playlist.find(params[:target_playlist_id])
     Array(documents.map(&:id)).each do |id|
-      media_object = MediaObject.find(id)
+      media_object = SpeedyAF::Proxy::MediaObject.find(id)
       media_object.ordered_master_files.to_a.each do |mf|
         clip = AvalonClip.create(master_file: mf)
         PlaylistItem.create(clip: clip, playlist: playlist)
@@ -152,7 +151,7 @@ class BookmarksController < CatalogController
   def status_action documents
     errors, success_ids = [], [], []
     Array(documents.map(&:id)).each do |id|
-      media_object = MediaObject.find(id)
+      media_object = SpeedyAF::Proxy::MediaObject.find(id)
       if cannot? :update, media_object
         errors += ["#{media_object.title} (#{id}) #{t('blacklight.messages.permission_denied')}."]
       else
@@ -181,7 +180,7 @@ class BookmarksController < CatalogController
     errors = []
     success_ids = []
     Array(documents.map(&:id)).each do |id|
-      media_object = MediaObject.find(id)
+      media_object = SpeedyAF::Proxy::MediaObject.find(id)
       if can? :destroy, media_object
         success_ids << id
       else
@@ -194,14 +193,14 @@ class BookmarksController < CatalogController
   end
 
   def move_action documents
-    collection = Admin::Collection.find( params[:target_collection_id] )
+    collection = SpeedyAF::Proxy::Admin::Collection.find( params[:target_collection_id] )
     if cannot? :read, collection
       flash[:error] =  t("blacklight.move.error", collection_name: collection.name)
     else
       errors = []
       success_ids = []
       Array(documents.map(&:id)).each do |id|
-        media_object = MediaObject.find(id)
+        media_object = SpeedyAF::Proxy::MediaObject.find(id)
         if cannot? :update, media_object
           errors += ["#{media_object.title} (#{id}) #{t('blacklight.messages.permission_denied')}."]
         else
@@ -222,7 +221,7 @@ class BookmarksController < CatalogController
     session[:intercom_collections] = collections
     if intercom.collection_valid?(params[:collection_id])
       Array(documents.map(&:id)).each do |id|
-        media_object = MediaObject.find(id)
+        media_object = SpeedyAF::Proxy::MediaObject.find(id)
         if cannot? :intercom_push, media_object
           errors += ["#{media_object.title} (#{id}) #{t('blacklight.messages.permission_denied')}."]
         else
@@ -242,10 +241,10 @@ class BookmarksController < CatalogController
 
   def merge_action documents
     errors = []
-    target = MediaObject.find params[:media_object]
+    target = SpeedyAF::Proxy::MediaObject.find params[:media_object]
     subject_ids = documents.collect(&:id)
     subject_ids.delete(target.id)
-    subject_ids.map { |id| MediaObject.find id }.each do |media_object|
+    subject_ids.map { |id| SpeedyAF::Proxy::MediaObject.find id }.each do |media_object|
       if cannot? :destroy, media_object
         errors += ["#{media_object.title || id} #{t('blacklight.messages.permission_denied')}."]
       end

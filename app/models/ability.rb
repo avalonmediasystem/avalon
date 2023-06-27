@@ -25,6 +25,14 @@ class Ability
                          :checkout_permissions]
 
   # Override to add handling of SpeedyAF proxy objects
+  def edit_permissions
+    super
+
+    can [:edit, :update, :destroy], SpeedyAF::Base do |obj|
+      test_edit(obj.id)
+    end
+  end
+
   def read_permissions
     super
 
@@ -73,67 +81,59 @@ class Ability
   def custom_permissions(user=nil, session=nil)
 
     unless (full_login? || is_api_request?) and is_administrator?
-      cannot :read, MediaObject do |media_object|
+      cannot :read, [MediaObject, SpeedyAF::Proxy::MediaObject] do |media_object|
         !(test_read(media_object.id) && media_object.published?) && !test_edit(media_object.id)
       end
 
-      cannot :read, SpeedyAF::Proxy::MediaObject do |media_object|
-        !(test_read(media_object.id) && media_object.published?) && !test_edit(media_object.id)
-      end
-
-      can :read, MasterFile do |master_file|
+      can :read, [MasterFile, SpeedyAF::Proxy::MasterFile] do |master_file|
         can? :read, master_file.media_object
       end
 
-      can :read, SpeedyAF::Proxy::MasterFile do |master_file|
-        can? :read, master_file.media_object
-      end
-
-      can :read, Derivative do |derivative|
+      can :read, [Derivative, SpeedyAF::Proxy::Derivative] do |derivative|
         can? :read, derivative.masterfile.media_object
       end
 
-      cannot :read, Admin::Collection unless (full_login? || is_api_request?)
+      cannot :read, [Admin::Collection, SpeedyAF::Proxy::Admin::Collection] unless (full_login? || is_api_request?)
 
       if full_login? || is_api_request?
-        can [:read, :items], Admin::Collection do |collection|
+        can [:read, :items], [Admin::Collection, SpeedyAF::Proxy::Admin::Collection] do |collection|
           is_member_of?(collection)
         end
 
         unless (is_member_of_any_collection? or @user_groups.include? 'manager')
-          cannot :read, Admin::Collection
+          cannot :read, [Admin::Collection, SpeedyAF::Proxy::Admin::Collection]
         end
 
-        can :update_access_control, MediaObject do |media_object|
+        can :update_access_control, [MediaObject, SpeedyAF::Proxy::MediaObject] do |media_object|
           @user.in?(media_object.collection.managers) ||
             (is_editor_of?(media_object.collection) && !media_object.published?)
         end
 
-        can :unpublish, MediaObject do |media_object|
+        can :unpublish, [MediaObject, SpeedyAF::Proxy::MediaObject] do |media_object|
           @user.in?(media_object.collection.managers)
         end
 
-        can :update, Admin::Collection do |collection|
+        can :update, [Admin::Collection, SpeedyAF::Proxy::Admin::Collection] do |collection|
           is_editor_of?(collection)
         end
 
-        can :update_unit, Admin::Collection do |collection|
+        can :update_unit, [Admin::Collection, SpeedyAF::Proxy::Admin::Collection] do |collection|
           @user.in?(collection.managers)
         end
 
-        can :update_access_control, Admin::Collection do |collection|
+        can :update_access_control, [Admin::Collection, SpeedyAF::Proxy::Admin::Collection] do |collection|
           @user.in?(collection.managers)
         end
 
-        can :update_managers, Admin::Collection do |collection|
+        can :update_managers, [Admin::Collection, SpeedyAF::Proxy::Admin::Collection] do |collection|
           @user.in?(collection.managers)
         end
 
-        can :update_editors, Admin::Collection do |collection|
+        can :update_editors, [Admin::Collection, SpeedyAF::Proxy::Admin::Collection] do |collection|
           @user.in?(collection.managers)
         end
 
-        can :update_depositors, Admin::Collection do |collection|
+        can :update_depositors, [Admin::Collection, SpeedyAF::Proxy::Admin::Collection] do |collection|
           is_editor_of?(collection)
         end
 
@@ -141,20 +141,20 @@ class Ability
           @user.in?(collection.managers)
         end
 
-        can :inspect, MediaObject do |media_object|
+        can :inspect, [MediaObject, SpeedyAF::Proxy::MediaObject] do |media_object|
           is_member_of?(media_object.collection)
         end
 
-        can :show_progress, MediaObject do |media_object|
+        can :show_progress, [MediaObject, SpeedyAF::Proxy::MediaObject] do |media_object|
           is_member_of?(media_object.collection)
         end
 
-        can [:edit, :destroy, :update], MasterFile do |master_file|
+        can [:edit, :destroy, :update], [MasterFile, SpeedyAF::Proxy::MasterFile] do |master_file|
           can? :edit, master_file.media_object
         end
 
         # Users logged in through LTI cannot share
-        can :share, MediaObject
+        can :share, [MediaObject, SpeedyAF::Proxy::MediaObject]
       end
 
       # if is_api_request?
@@ -163,27 +163,27 @@ class Ability
       #   can :manage, Avalon::ControlledVocabulary
       # end
 
-      cannot :update, MediaObject do |media_object|
+      cannot :update, [MediaObject, SpeedyAF::Proxy::MediaObject] do |media_object|
         (not (full_login? || is_api_request?)) || (!is_member_of?(media_object.collection)) ||
           ( media_object.published? && !@user.in?(media_object.collection.managers) )
       end
 
-      cannot :destroy, MediaObject do |media_object|
+      cannot :destroy, [MediaObject, SpeedyAF::Proxy::MediaObject] do |media_object|
         # non-managers can only destroy media_object if it's unpublished
         (not (full_login? || is_api_request?)) || (!is_member_of?(media_object.collection)) ||
           ( media_object.published? && !@user.in?(media_object.collection.managers) )
       end
 
-      cannot :destroy, Admin::Collection do |collection, other_user_collections=[]|
+      cannot :destroy, [Admin::Collection, SpeedyAF::Proxy::Admin::Collection] do |collection, other_user_collections=[]|
         (not (full_login? || is_api_request?)) || !@user.in?(collection.managers)
       end
 
-      can :intercom_push, MediaObject do |media_object|
+      can :intercom_push, [MediaObject, SpeedyAF::Proxy::MediaObject] do |media_object|
         # anyone who can edit a media_object can also push it
         can? :edit, media_object
       end
 
-      can :json_update, MediaObject do |media_object|
+      can :json_update, [MediaObject, SpeedyAF::Proxy::MediaObject] do |media_object|
         # anyone who can edit a media_object can also update it via the API
         is_api_request? && can?(:edit, media_object)
       end
