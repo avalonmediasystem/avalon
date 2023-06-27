@@ -109,7 +109,7 @@ class MediaObjectsController < ApplicationController
 
   # POST /media_objects/avalon:1/add_to_playlist_form
   def add_to_playlist_form
-    @media_object = MediaObject.find(params[:id])
+    @media_object = SpeedyAF::Proxy::MediaObject.find(params[:id])
     authorize! :read, @media_object
     respond_to do |format|
       format.html do
@@ -120,7 +120,7 @@ class MediaObjectsController < ApplicationController
 
   # POST /media_objects/avalon:1/add_to_playlist
   def add_to_playlist
-    @media_object = MediaObject.find(params[:id])
+    @media_object = SpeedyAF::Proxy::MediaObject.find(params[:id])
     authorize! :read, @media_object
     masterfile_id = params[:post][:masterfile_id]
     playlist_id = params[:post][:playlist_id]
@@ -132,7 +132,7 @@ class MediaObjectsController < ApplicationController
     # If a single masterfile_id wasn't in the request, then create playlist_items for all masterfiles
     masterfile_ids = masterfile_id.present? ? [masterfile_id] : @media_object.ordered_master_file_ids
     masterfile_ids.each do |mf_id|
-      mf = MasterFile.find(mf_id)
+      mf = SpeedyAF::Proxy::MasterFile.find(mf_id)
       if playlistitem_scope=='structure' && mf.has_structuralMetadata? && mf.structuralMetadata.xpath('//Span').present?
         #create individual items for spans within structure
         mf.structuralMetadata.xpath('//Span').each do |s|
