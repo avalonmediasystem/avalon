@@ -454,7 +454,7 @@ class MediaObjectsController < ApplicationController
   # Sets the published status for the object. If no argument is given then
   # it will just toggle the state.
   def tree
-    @media_object = MediaObject.find(params[:id])
+    @media_object = SpeedyAF::Proxy::MediaObject.find(params[:id])
     authorize! :inspect, @media_object
 
     respond_to do |format|

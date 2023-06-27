@@ -1815,4 +1815,17 @@ describe MediaObjectsController, type: :controller do
       end
     end
   end
+
+  describe '#tree' do
+    context 'read from solr' do
+      let!(:media_object) { FactoryBot.create(:published_media_object, :with_master_file, visibility: 'public') }
+      it 'should not read from fedora' do
+        login_as(:administrator)
+        perform_enqueued_jobs(only: MediaObjectIndexingJob)
+        WebMock.reset_executed_requests!
+        get 'tree', params: { id: media_object.id }
+        expect(a_request(:any, /#{ActiveFedora.fedora.base_uri}/)).not_to have_been_made
+      end
+    end
+  end
 end
