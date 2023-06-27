@@ -33,6 +33,8 @@ require 'rails_helper'
 # that an instance is receiving a specific message.
 
 RSpec.describe PlaylistsController, type: :controller do
+  include ActiveJob::TestHelper
+
   # This should return the minimal set of attributes required to create a valid
   # Playlist. As you add validations to Playlist, be sure to
   # adjust the attributes here as well.
@@ -151,6 +153,23 @@ RSpec.describe PlaylistsController, type: :controller do
       expect(assigns(:playlist)).to eq(playlist)
     end
     # TODO: write tests for public/private playists
+
+    context 'read from solr' do
+      render_views
+
+      let!(:playlist) { FactoryBot.create(:playlist, items: [playlist_item], visibility: Playlist::PUBLIC) }
+      let(:playlist_item) { FactoryBot.create(:playlist_item, clip: clip) }
+      let(:clip) { FactoryBot.create(:avalon_clip, master_file: master_file) }
+      let(:master_file) { FactoryBot.create(:master_file, media_object: media_object) }
+      let(:media_object) { FactoryBot.create(:published_media_object, visibility: 'public') }
+
+      it 'should not read from fedora' do
+        perform_enqueued_jobs(only: MediaObjectIndexingJob)
+        WebMock.reset_executed_requests!
+        get :show, params: { id: playlist.id }
+        expect(a_request(:any, /#{ActiveFedora.fedora.base_uri}/)).not_to have_been_made
+      end
+    end
   end
 
   describe 'GET #new' do

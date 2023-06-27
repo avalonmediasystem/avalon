@@ -179,6 +179,16 @@ RSpec.describe PlaylistItemsController, type: :controller do
       expect(response).to have_http_status(:ok)
       expect(response).to render_template(:_current_item)
     end
+
+    context 'read from solr' do
+      render_views
+      it 'should not read from fedora' do
+        playlist_item
+        WebMock.reset_executed_requests!
+        get :source_details, params: { playlist_id: playlist.to_param, playlist_item_id: playlist_item.id }
+        expect(a_request(:any, /#{ActiveFedora.fedora.base_uri}/)).not_to have_been_made
+      end
+    end
   end
 
   describe 'GET #markers' do
@@ -186,6 +196,16 @@ RSpec.describe PlaylistItemsController, type: :controller do
       get :markers, params: { playlist_id: playlist.to_param, playlist_item_id: playlist_item.id }
       expect(response).to have_http_status(:ok)
       expect(response).to render_template(:_markers)
+    end
+
+    context 'read from solr' do
+      render_views
+      it 'should not read from fedora' do
+        playlist_item
+        WebMock.reset_executed_requests!
+        get :markers, params: { playlist_id: playlist.to_param, playlist_item_id: playlist_item.id }
+        expect(a_request(:any, /#{ActiveFedora.fedora.base_uri}/)).not_to have_been_made
+      end
     end
   end
 
@@ -195,6 +215,17 @@ RSpec.describe PlaylistItemsController, type: :controller do
       get :related_items, params: { playlist_id: playlist.to_param, playlist_item_id: playlist_item.id }
       expect(response).to have_http_status(:ok)
       expect(response).to render_template(:_related_items)
+    end
+
+    context 'read from solr' do
+      render_views
+      it 'should not read from fedora' do
+        playlist_item
+        WebMock.reset_executed_requests!
+        allow_any_instance_of(Playlist).to receive(:related_clips).and_return([clip]);
+        get :related_items, params: { playlist_id: playlist.to_param, playlist_item_id: playlist_item.id }
+        expect(a_request(:any, /#{ActiveFedora.fedora.base_uri}/)).not_to have_been_made
+      end
     end
   end
 end
