@@ -25,6 +25,7 @@ class MediaObject < ActiveFedora::Base
   include SpeedyAF::OrderedAggregationIndex
   include MediaObjectIntercom
   include SupplementalFileBehavior
+  include MediaObjectBehavior
   require 'avalon/controlled_vocabulary'
 
   include Kaminari::ActiveFedoraModelExtension
@@ -123,10 +124,6 @@ class MediaObject < ActiveFedora::Base
   indexed_ordered_aggregation :master_files
 
   accepts_nested_attributes_for :master_files, :allow_destroy => true
-
-  def published?
-    !avalon_publisher.blank?
-  end
 
   def destroy
     # attempt to stop the matterhorn processing job
@@ -295,24 +292,6 @@ class MediaObject < ActiveFedora::Base
     end
   end
 
-  def as_json(options={})
-    {
-      id: id,
-      title: title,
-      collection: collection.name,
-      unit: collection.unit,
-      main_contributors: creator,
-      publication_date: date_created,
-      published_by: avalon_publisher,
-      published: published?,
-      summary: abstract,
-      visibility: visibility,
-      read_groups: read_groups,
-      lending_period: lending_period,
-      lending_status: lending_status,
-    }.merge(to_ingest_api_hash(options.fetch(:include_structure, false)))
-  end
-
   # Other validation to consider adding into future iterations is the ability to
   # validate against a known controlled vocabulary. This one will take some thought
   # and research as opposed to being able to just throw something together in an ad hoc
@@ -376,46 +355,9 @@ class MediaObject < ActiveFedora::Base
     [mergeds, faileds]
   end
 
-  def access_text
-    actors = []
-    if visibility == "public"
-      actors << "the public"
-    else
-      actors << "collection staff" if visibility == "private"
-      actors << "specific users" if read_users.any? || leases('user').any?
-
-      if visibility == "restricted"
-        actors << "logged-in users"
-      elsif virtual_read_groups.any? || local_read_groups.any? || leases('external').any? || leases('local').any?
-        actors << "users in specific groups"
-      end
-
-      actors << "users in specific IP Ranges" if ip_read_groups.any? || leases('ip').any?
-    end
-
-    "This item is accessible by: #{actors.join(', ')}."
-  end
-
-  def lending_status
-    Checkout.active_for_media_object(id).any? ? "checked_out" : "available"
-  end
-
-  def return_time
-    Checkout.active_for_media_object(id).first&.return_time
-  end
-
   alias_method :'_lending_period', :'lending_period'
   def lending_period
     self._lending_period || collection&.default_lending_period
-  end
-
-  def cdl_enabled?
-    collection&.cdl_enabled?
-  end
-
-  def current_checkout(user_id)
-    checkouts = Checkout.active_for_media_object(id)
-    checkouts.select{ |ch| ch.user_id == user_id  }.first
   end
 
   # Override to reset memoized fields

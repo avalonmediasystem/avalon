@@ -33,8 +33,9 @@ module MasterFileIntercom
       file_checksum: file_checksum,
       file_format: file_format,
       other_identifier: (remove_identifiers ? [] : identifier.to_a),
-      captions: captions.content,
-      captions_type: captions.mime_type,
+      captions: captions&.content,
+      # Captions (and all IndexedFile's) will return 'text/plain' when there isn't content including when it isn't persisted yet
+      captions_type: captions.try(:persisted?) ? captions&.mime_type : nil,
       supplemental_file_captions: supplemental_file_captions,
       comment: comment.to_a,
       display_aspect_ratio: display_aspect_ratio,

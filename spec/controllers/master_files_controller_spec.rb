@@ -16,6 +16,7 @@ require 'rails_helper'
 require 'equivalent-xml'
 
 describe MasterFilesController do
+  include ActiveJob::TestHelper
 
   describe "#create" do
     let(:media_object) { FactoryBot.create(:media_object) }
@@ -294,6 +295,15 @@ describe MasterFilesController do
         expect(get(:embed, params: { id: fedora3_pid })).to redirect_to(embed_master_file_url(master_file.id))
       end
     end
+
+    context 'read from solr' do
+      it 'should not read from fedora' do
+        perform_enqueued_jobs(only: MediaObjectIndexingJob)
+        WebMock.reset_executed_requests!
+        get(:embed, params: { id: master_file.id })
+        expect(a_request(:any, /#{ActiveFedora.fedora.base_uri}/)).not_to have_been_made
+      end
+    end
   end
 
   describe "#set_frame" do
@@ -355,6 +365,16 @@ describe MasterFilesController do
         get :get_frame, params: { id: mf.id, type: 'thumbnail', size: 'bar', offset: '1' }
         expect(response.body).to eq('fake image content')
         expect(response.headers['Content-Type']).to eq('image/jpeg')
+      end
+    end
+
+    context 'read from solr' do
+      it 'should not read from fedora' do
+        mf
+        perform_enqueued_jobs(only: MediaObjectIndexingJob)
+        WebMock.reset_executed_requests!
+        get :get_frame, params: { id: mf.id, type: 'thumbnail', size: 'bar' }
+        expect(a_request(:any, /#{ActiveFedora.fedora.base_uri}/)).not_to have_been_made
       end
     end
   end
@@ -425,6 +445,16 @@ describe MasterFilesController do
       expect(JSON.parse(response.body)).to eq(JSON.parse(structure_json))
       expect(response.headers['Content-Type']).to eq('application/json; charset=utf-8')
     end
+
+    context 'read from solr' do
+      it 'should not read from fedora' do
+        master_file
+        perform_enqueued_jobs(only: MediaObjectIndexingJob)
+        WebMock.reset_executed_requests!
+        get 'structure', params: { id: master_file.id }
+        expect(a_request(:any, /#{ActiveFedora.fedora.base_uri}/)).not_to have_been_made
+      end
+    end
   end
 
   describe "#set_structure" do
@@ -471,6 +501,17 @@ describe MasterFilesController do
       login_as :administrator
       expect(get('captions', params: { id: master_file.id })).to have_http_status(:ok)
     end
+
+    context 'read from solr' do
+      it 'should not read from fedora' do
+        master_file
+        perform_enqueued_jobs(only: MediaObjectIndexingJob)
+        WebMock.reset_executed_requests!
+        login_as :administrator
+        get('captions', params: { id: master_file.id })
+        expect(a_request(:any, /#{ActiveFedora.fedora.base_uri}/)).not_to have_been_made
+      end
+    end
   end
 
   describe "#waveform" do
@@ -503,6 +544,17 @@ describe MasterFilesController do
         expect(response).to have_http_status(:ok)
         expect(response.content_type).to eq('application/json')
         expect(response['Content-Disposition']).to eq("attachment; filename=\"empty_waveform.json\"; filename*=UTF-8''empty_waveform.json")
+      end
+    end
+
+    context 'read from solr' do
+      it 'should not read from fedora' do
+        master_file
+        perform_enqueued_jobs(only: MediaObjectIndexingJob)
+        WebMock.reset_executed_requests!
+        login_as :administrator
+        get('waveform', params: { id: master_file.id })
+        expect(a_request(:any, /#{ActiveFedora.fedora.base_uri}/)).not_to have_been_made
       end
     end
   end
@@ -575,6 +627,17 @@ describe MasterFilesController do
     it 'returns a manifest if public' do
       expect(get('hls_manifest', params: { id: public_master_file.id, quality: 'auto' })).to have_http_status(:ok)
     end
+
+    context 'read from solr' do
+      it 'should not read from fedora' do
+        master_file
+        perform_enqueued_jobs(only: MediaObjectIndexingJob)
+        WebMock.reset_executed_requests!
+        login_as :administrator
+        get('hls_manifest', params: { id: master_file.id, quality: 'high' })
+        expect(a_request(:any, /#{ActiveFedora.fedora.base_uri}/)).not_to have_been_made
+      end
+    end
   end
 
   describe '#caption_manifest' do
@@ -605,6 +668,17 @@ describe MasterFilesController do
 
     it 'returns a manifest if public' do
       expect(get('caption_manifest', params: { id: public_master_file.id }, xhr: true)).to have_http_status(:ok)
+    end
+
+    context 'read from solr' do
+      it 'should not read from fedora' do
+        public_master_file
+        perform_enqueued_jobs(only: MediaObjectIndexingJob)
+        WebMock.reset_executed_requests!
+        login_as :administrator
+        get('caption_manifest', params: { id: public_master_file.id }, xhr: true)
+        expect(a_request(:any, /#{ActiveFedora.fedora.base_uri}/)).not_to have_been_made
+      end
     end
   end
 
@@ -698,6 +772,16 @@ describe MasterFilesController do
       expect(response).to have_http_status(:ok)
       expect(response.body.include? "Example captions").to be_truthy
     end
-  end
 
+    context 'read from solr' do
+      it 'should not read from fedora' do
+        master_file
+        perform_enqueued_jobs(only: MediaObjectIndexingJob)
+        WebMock.reset_executed_requests!
+        login_as :administrator
+        get('transcript', params: { use_route: 'master_files/:id/transcript', id: master_file.id, t_id: supplemental_file.id })
+        expect(a_request(:any, /#{ActiveFedora.fedora.base_uri}/)).not_to have_been_made
+      end
+    end
+  end
 end
