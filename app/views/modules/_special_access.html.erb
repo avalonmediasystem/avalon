@@ -1,0 +1,30 @@
+<% can_update = can?( :update_access_control, object) %>
+
+<div class="card special-access">
+  <div class="card-header">
+    <h3 class="card-title">Assign special access</h3>
+  </div>
+  <div class="card-body">
+    <%= render "modules/access_object", object: object,
+          access_object: "user", members: @users, leases: @user_leases,
+          autocomplete_model: 'user',
+          input_disabled: !can_update %>
+    <%= render "modules/access_object", object: object,
+          access_object: "group", members: @groups, leases: @group_leases,
+          dropdown_values: [@addable_groups, 'name', 'name'],
+          input_disabled: !can_update %>
+    <%= render "modules/access_object", object: object,
+          access_object: "class", members: @virtual_groups, leases: @virtual_leases,
+          autocomplete_model: 'externalGroup',
+          display_helper: :vgroup_display,
+          input_disabled: !can_update %>
+    <%= render "modules/access_object", object: object,
+          access_object: "ipaddress", members: @ip_groups, leases: @ip_leases,
+          input_disabled: !can_update %>
+    <% if object.is_a?(Admin::Collection) %>
+    <div class='form-group'>
+      <%= button_tag "Apply to All Existing Items", type: 'button', class: "btn btn-outline", data: { toggle:"modal", target:"#access_control_modal" } %>
+    </div>
+    <% end %>
+  </div>
+</div>
