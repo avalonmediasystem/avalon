@@ -158,5 +158,13 @@ describe CollectionsController, type: :controller do
         expect(response).to be_not_found
       end
     end
+
+    context 'read from solr' do
+      it 'should not read from fedora' do
+        WebMock.reset_executed_requests!
+        get 'poster', params: { id: collection.id }
+        expect(a_request(:any, /#{ActiveFedora.fedora.base_uri}/)).not_to have_been_made
+      end
+    end
   end
 end
