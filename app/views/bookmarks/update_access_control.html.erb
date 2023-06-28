@@ -28,7 +28,7 @@ Unless required by applicable law or agreed to in writing, software distributed
   </div>
 <% else %>
   <%
-   @media_objects = @documents.collect {|doc| MediaObject.find(doc.id)}
+   @media_objects = @documents.collect {|doc| SpeedyAF::Proxy::MediaObject.find(doc.id)}
    visibility = @media_objects.first.visibility
    @visibility = visibility if @media_objects.all? {|mo| mo.visibility == visibility}
    @shown = @media_objects.all? {|doc| doc.hidden? == false}
