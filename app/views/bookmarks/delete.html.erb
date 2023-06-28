@@ -29,7 +29,7 @@ Unless required by applicable law or agreed to in writing, software distributed
           <p><%= t('blacklight.delete.confirm', count: @documents.count) %></p>
           <ul>
             <% @documents.each do |doc| %>
-              <% @mediaobject = MediaObject.find(doc.id)  %>
+              <% @mediaobject = SpeedyAF::Proxy::MediaObject.find(doc.id)  %>
               <% if can? :destroy, @mediaobject  %>
                 <li><%= @mediaobject.title %> (<%= doc.id %>)<%=hidden_field_tag "id[]", doc.id %></li>
               <% else %>

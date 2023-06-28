@@ -27,6 +27,7 @@ class SpeedyAF::Proxy::MediaObject < SpeedyAF::Base
     # Handle this case here until a better fix can be found for multiple solr fields which don't have a model property
     @attrs[:section_id] = solr_document["section_id_ssim"]
     @attrs[:date_issued] = solr_document["date_ssi"]
+    @attrs[:hidden?] = solr_document["hidden_bsi"]
     # TODO Need to convert hidden_bsi into discover_groups?
     SINGULAR_FIELDS.each do |field_name|
       @attrs[field_name] = Array(@attrs[field_name]).first

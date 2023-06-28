@@ -61,6 +61,7 @@ describe BookmarksController, type: :controller do
     context 'read from solr' do
       it 'should not read from fedora', :no_perform_enqueued_jobs do
         WebMock.reset_executed_requests!
+        get :delete
         post :delete
         expect(a_request(:any, /#{ActiveFedora.fedora.base_uri}/)).not_to have_been_made
       end
@@ -176,6 +177,7 @@ describe BookmarksController, type: :controller do
     context 'read from solr', :no_perform_enqueued_jobs do
       it 'should not read from fedora' do
         WebMock.reset_executed_requests!
+        get 'move'
         post 'move', params: { target_collection_id: collection2.id }
         expect(a_request(:any, /#{ActiveFedora.fedora.base_uri}/)).not_to have_been_made
       end
@@ -241,6 +243,7 @@ describe BookmarksController, type: :controller do
     context 'read from solr', :no_perform_enqueued_jobs do
       it 'should not read from fedora' do
         WebMock.reset_executed_requests!
+        get 'intercom_push'
         post 'intercom_push', params: { collection_id: 'cupcake_collection' }
         expect(a_request(:any, /#{ActiveFedora.fedora.base_uri}/)).not_to have_been_made
       end
@@ -467,6 +470,7 @@ describe BookmarksController, type: :controller do
     context 'read from solr' do
       it 'should not read from fedora', :no_perform_enqueued_jobs do
         WebMock.reset_executed_requests!
+        get 'update_access_control'
         post 'update_access_control', params: { hidden: "true" }
         expect(a_request(:any, /#{ActiveFedora.fedora.base_uri}/)).not_to have_been_made
       end
@@ -502,6 +506,7 @@ describe BookmarksController, type: :controller do
     context 'read from solr', :no_perform_enqueued_jobs do
       it 'should not read from fedora' do
         WebMock.reset_executed_requests!
+        get 'merge'
         post 'merge', params: { media_object: target.id }
         expect(a_request(:any, /#{ActiveFedora.fedora.base_uri}/)).not_to have_been_made
       end

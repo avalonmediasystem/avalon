@@ -122,12 +122,12 @@ class ApplicationController < ActionController::Base
     # return all collections to admin, unless specific user is passed in
     if can?(:manage, Admin::Collection)
       if user.blank?
-        Admin::Collection.all
+        SpeedyAF::Proxy::Admin::Collection.where("*:*").to_a
       else
-        Admin::Collection.where("inheritable_edit_access_person_ssim" => user).to_a
+        SpeedyAF::Proxy::Admin::Collection.where("inheritable_edit_access_person_ssim:#{user}").to_a
       end
     else
-      Admin::Collection.where("inheritable_edit_access_person_ssim" => user_key).to_a
+      SpeedyAF::Proxy::Admin::Collection.where("inheritable_edit_access_person_ssim:#{user_key}").to_a
     end
   end
   helper_method :get_user_collections
