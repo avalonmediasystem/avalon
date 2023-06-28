@@ -39,6 +39,10 @@ class IiifCanvasPresenter
     master_file.is_video? ? video_content : audio_content
   end
 
+  def supplementing_content
+    supplemental_captions_transcripts.collect { |file| supplementing_content_data(file) }
+  end
+
   def sequence_rendering
     supplemental_files_rendering(master_file)
   end
@@ -84,10 +88,29 @@ class IiifCanvasPresenter
                                            **manifest_attributes(quality, 'Sound'))
     end
 
+    def supplementing_content_data(file)
+      url = if !file.is_a?(SupplementalFile)
+              Rails.application.routes.url_helpers.captions_master_file_url(master_file.id)
+            elsif file.tags.include?('caption')
+              Rails.application.routes.url_helpers.captions_master_file_supplemental_file_url(master_file.id, file.id)
+            elsif file.tags.include?('transcript')
+              Rails.application.routes.url_helpers.transcripts_master_file_supplemental_file_url(master_file.id, file.id)
+            else
+              Rails.application.routes.url_helpers.master_file_supplemental_file_url(master_file.id, file.id)
+            end
+      IIIFManifest::V3::SupplementingContent.new(url, **supplemental_attributes(file))
+    end
+
     def stream_urls
       stream_info[:stream_hls].collect do |d|
         [d[:quality], d[:url]]
       end
+    end
+
+    def supplemental_captions_transcripts
+      files = master_file.supplemental_files(tag: 'caption') + master_file.supplemental_files(tag: 'transcript')
+      files += [master_file.captions] if master_file.captions.present? && master_file.captions.persisted?
+      files
     end
 
     def simple_iiif_range(label = stream_info[:embed_title])
@@ -156,6 +179,24 @@ class IiifCanvasPresenter
       else
         media_hash.merge!(auth_service: auth_service(quality))
       end
+    end
+
+    def supplemental_attributes(file)
+      if file.is_a?(SupplementalFile)
+        label = file.label
+        format = file.file.content_type
+        language = file.language || 'en'
+      else
+        label = 'English'
+        format = file.mime_type
+        language = 'en'
+      end
+      {
+        label: label,
+        type: 'Text',
+        format: format,
+        language: language
+      }
     end
 
     # Note that the method returns empty Nokogiri Document instead of nil when structure_tesim doesn't exist or is empty.

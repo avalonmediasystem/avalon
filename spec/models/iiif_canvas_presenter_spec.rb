@@ -114,24 +114,61 @@ describe IiifCanvasPresenter do
     end
   end
 
-  describe '#sequence_rendering' do
-    let(:master_file) { FactoryBot.build(:master_file, :with_waveform, supplemental_files_json: supplemental_files_json, media_object: media_object, derivatives: [derivative]) }
+  describe 'Supplemental file handling' do
+    let(:master_file) { FactoryBot.create(:master_file, :with_waveform, supplemental_files_json: supplemental_files_json, media_object: media_object, derivatives: [derivative]) }
     let(:supplemental_file) { FactoryBot.create(:supplemental_file) }
     let(:transcript_file) { FactoryBot.create(:supplemental_file, :with_transcript_tag) }
     let(:caption_file) { FactoryBot.create(:supplemental_file, :with_caption_file, tags: ['caption', 'machine_generated']) }
     let(:supplemental_files) { [supplemental_file, transcript_file, caption_file] }
     let(:supplemental_files_json) { supplemental_files.map(&:to_global_id).map(&:to_s).to_s }
 
-    subject { presenter.sequence_rendering }
+    describe '#sequence_rendering' do
+      subject { presenter.sequence_rendering }
 
-    it 'includes supplemental files' do
-      expect(subject.any? { |rendering| rendering["@id"] =~ /supplemental_files\/#{supplemental_file.id}/ }).to eq true
+      it 'includes supplemental files' do
+        expect(subject.any? { |rendering| rendering["@id"] =~ /supplemental_files\/#{supplemental_file.id}/ }).to eq true
+      end
+
+      it 'does not include waveform, transcripts, or captions' do
+        expect(subject.any? { |rendering| rendering["label"]["en"] == ["waveform.json"] }).to eq false
+        expect(subject.any? { |rendering| rendering["@id"] =~ /supplemental_files\/#{transcript_file.id}/ }).to eq false
+        expect(subject.any? { |rendering| rendering["@id"] =~ /supplemental_files\/#{caption_file.id}/ }).to eq false
+      end
     end
 
-    it 'does not include waveform, transcripts, or captions' do
-      expect(subject.any? { |rendering| rendering["label"]["en"] == ["waveform.json"] }).to eq false
-      expect(subject.any? { |rendering| rendering["@id"] =~ /supplemental_files\/#{transcript_file.id}/ }).to eq false
-      expect(subject.any? { |rendering| rendering["@id"] =~ /supplemental_files\/#{caption_file.id}/ }).to eq false
+    describe '#supplementing_content' do
+      subject { presenter.supplementing_content }
+
+      it 'converts file metadata into IIIF Manifest SupplementingContent' do
+        expect(subject).to all be_a(IIIFManifest::V3::SupplementingContent)
+      end
+
+      it 'includes transcript and caption files' do
+        expect(subject.any? { |content| content.url =~ /supplemental_files\/#{transcript_file.id}/ }).to eq true
+        expect(subject.any? { |content| content.url =~ /supplemental_files\/#{caption_file.id}/ }).to eq true
+      end
+
+      it 'differentiates between transcript and caption files' do
+        expect(subject.any? { |content| content.url =~ /supplemental_files\/#{transcript_file.id}\/transcripts/ }).to eq true
+        expect(subject.any? { |content| content.url =~ /supplemental_files\/#{caption_file.id}\/captions/ }).to eq true
+      end
+
+      it 'does not include generic supplemental files or waveform' do
+        expect(subject.any? { |content| content.url =~ /supplemental_files\/#{supplemental_file.id}/ }).to eq false
+        expect(subject.any? { |content| content.label == { "en" => ["waveform.json"] } }).to eq false
+      end
+
+      it 'does not include master file captions url when legacy captions are not present' do
+        expect(subject.any? { |content| content.url =~ /master_files\/#{master_file.id}\/captions/ }).to eq false
+      end
+
+      context 'legacy master file captions' do
+        let(:master_file) { FactoryBot.create(:master_file, :with_waveform, :with_captions, supplemental_files_json: supplemental_files_json, media_object: media_object, derivatives: [derivative]) }
+
+        it 'includes the master file captions' do
+          expect(subject.any? { |content| content.url =~ /master_files\/#{master_file.id}\/captions/ }).to eq true
+        end
+      end
     end
   end
 

@@ -513,7 +513,6 @@ class MasterFile < ActiveFedora::Base
       solr_doc['has_thumbnail?_bs'] = has_thumbnail?
       solr_doc['has_structuralMetadata?_bs'] = has_structuralMetadata?
       solr_doc['identifier_ssim'] = identifier.map(&:downcase)
-
       solr_doc['percent_complete_ssi'] = percent_complete
       # solr_doc['percent_succeeded_ssi'] =  percent_succeeded
       # solr_doc['percent_failed_ssi'] = percent_failed
