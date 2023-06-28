@@ -24,8 +24,17 @@ namespace :avalon do
     `rails generate active_annotations:install`
   end
 
-  desc "Index MasterFiles and subresources to take advantage of SpeedyAF"
+  desc "Index Admin::Collections and MasterFiles and their subresources to take advantage of SpeedyAF"
   task index_for_speed: :environment do
+    Admin::Collection.find_each do |c|
+      $stderr.print "c["
+      c.update_index;
+      c.declared_attached_files.each_pair do |name, file|
+        $stderr.print name.to_s[0]
+        file.update_external_index if file.respond_to?(:update_external_index)
+      end
+      $stderr.print "]"
+    end
     MasterFile.find_each do |mf|
       $stderr.print "m["
       mf.update_index;

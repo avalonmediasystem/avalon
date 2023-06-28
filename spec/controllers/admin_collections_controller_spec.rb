@@ -686,5 +686,13 @@ describe Admin::CollectionsController, type: :controller do
       expect(response.content_type).to eq "image/png; charset=utf-8"
       expect(response.body).not_to be_blank
     end
+
+    context 'read from solr' do
+      it 'should not read from fedora' do
+        WebMock.reset_executed_requests!
+        get :poster, params: { id: collection.id }
+        expect(a_request(:any, /#{ActiveFedora.fedora.base_uri}/)).not_to have_been_made
+      end
+    end
   end
 end

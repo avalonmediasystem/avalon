@@ -263,11 +263,11 @@ class Admin::CollectionsController < ApplicationController
   end
 
   def poster
-    @collection = Admin::Collection.find(params['id'])
+    @collection = SpeedyAF::Proxy::Admin::Collection.find(params['id'])
     authorize! :show, @collection
 
     file = @collection.poster
-    if file.nil? || file.new_record?
+    if file.nil? || file.empty?
       render plain: 'Collection Poster Not Found', status: :not_found
     else
       render plain: file.content, content_type: file.mime_type

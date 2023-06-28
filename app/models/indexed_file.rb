@@ -14,7 +14,7 @@
 
 class IndexedFile < ActiveFedora::File
   include SpeedyAF::IndexedContent
-  MAX_CONTENT_SIZE = 32000
+  MAX_CONTENT_SIZE = 512000
 
   # Override
   def original_name
