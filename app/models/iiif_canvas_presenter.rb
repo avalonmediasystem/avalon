@@ -108,7 +108,9 @@ class IiifCanvasPresenter
     end
 
     def supplemental_captions_transcripts
-      master_file.supplemental_files(tag: 'caption') + master_file.supplemental_files(tag: 'transcript') + [master_file.captions]
+      files = master_file.supplemental_files(tag: 'caption') + master_file.supplemental_files(tag: 'transcript')
+      files += [master_file.captions] if master_file.captions.present? && master_file.captions.persisted?
+      files
     end
 
     def simple_iiif_range(label = stream_info[:embed_title])

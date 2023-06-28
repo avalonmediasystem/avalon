@@ -115,7 +115,7 @@ describe IiifCanvasPresenter do
   end
 
   describe 'Supplemental file handling' do
-    let(:master_file) { FactoryBot.build(:master_file, :with_waveform, supplemental_files_json: supplemental_files_json, media_object: media_object, derivatives: [derivative]) }
+    let(:master_file) { FactoryBot.create(:master_file, :with_waveform, supplemental_files_json: supplemental_files_json, media_object: media_object, derivatives: [derivative]) }
     let(:supplemental_file) { FactoryBot.create(:supplemental_file) }
     let(:transcript_file) { FactoryBot.create(:supplemental_file, :with_transcript_tag) }
     let(:caption_file) { FactoryBot.create(:supplemental_file, :with_caption_file, tags: ['caption', 'machine_generated']) }
@@ -158,8 +158,12 @@ describe IiifCanvasPresenter do
         expect(subject.any? { |content| content.label == { "en" => ["waveform.json"] } }).to eq false
       end
 
+      it 'does not include master file captions url when legacy captions are not present' do
+        expect(subject.any? { |content| content.url =~ /master_files\/#{master_file.id}\/captions/ }).to eq false
+      end
+
       context 'legacy master file captions' do
-        let(:master_file) { FactoryBot.build(:master_file, :with_waveform, :with_captions, supplemental_files_json: supplemental_files_json, media_object: media_object, derivatives: [derivative]) }
+        let(:master_file) { FactoryBot.create(:master_file, :with_waveform, :with_captions, supplemental_files_json: supplemental_files_json, media_object: media_object, derivatives: [derivative]) }
 
         it 'includes the master file captions' do
           expect(subject.any? { |content| content.url =~ /master_files\/#{master_file.id}\/captions/ }).to eq true
