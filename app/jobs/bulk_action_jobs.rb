@@ -197,15 +197,19 @@ module BulkActionJobs
 
   class ApplyCollectionAccessControl < ActiveJob::Base
     queue_as :bulk_access_control
-    def perform(collection_id, overwrite = true)
+    def perform(collection_id, overwrite = true, save_field = nil)
       errors = []
       successes = []
       collection = Admin::Collection.find collection_id
       collection.media_object_ids.each do |id|
         media_object = MediaObject.find(id)
-        media_object.hidden = collection.default_hidden
-        media_object.visibility = collection.default_visibility
-        if collection.cdl_enabled?
+        if save_field == "discovery"
+          media_object.hidden = collection.default_hidden
+        end
+        if save_field == "visibility"
+          media_object.visibility = collection.default_visibility
+        end
+        if collection.cdl_enabled? && save_field == "lending_period"
           media_object.lending_period = collection.default_lending_period
         end
 

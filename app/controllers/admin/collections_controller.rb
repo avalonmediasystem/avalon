@@ -325,19 +325,19 @@ class Admin::CollectionsController < ApplicationController
   end
 
   def update_access_settings(collection, params)
-    if params[:save_visibility]
+    if params[:save_field] == "save_visibility"
       collection.default_visibility = params[:visibility] unless params[:visibility].blank?
     end
-    if params[:save_discovery]
+    if params[:save_field] == "save_discovery"
       collection.default_hidden = params[:hidden] == "1"
     end
-    if params[:save_cdl]
+    if params[:save_field] == "save_cdl"
       collection.cdl_enabled = params[:cdl] == "1"
     end
   end
 
   def update_default_lending_period(collection, params)
-    if collection.cdl_enabled? && params[:save_lending_period]
+    if collection.cdl_enabled? && params[:save_field] == "lending_period"
       lending_period = build_default_lending_period(collection)
       if lending_period.positive?
         collection.default_lending_period = lending_period
@@ -361,7 +361,7 @@ class Admin::CollectionsController < ApplicationController
   end
 
   def apply_access(collection, params)
-    BulkActionJobs::ApplyCollectionAccessControl.perform_later(collection.id, params[:overwrite] == "true") if params["apply_access"].present?
+    BulkActionJobs::ApplyCollectionAccessControl.perform_later(collection.id, params[:overwrite] == "true", params[:save_field]) if params["apply_to_existing"].present?
   end
 
   def collection_params
