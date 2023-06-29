@@ -1,5 +1,5 @@
 <% if can?(:update_access_control, object) %>
-<%= bootstrap_form_for object, html: { id: "#{object.is_a?(Admin::Collection) ? 'cdl_form' : 'access_control_form'}" }  do |vid| %>
+<%= bootstrap_form_for object, html: { id: 'cdl_form' }  do |vid| %>
 <%= hidden_field_tag :step, @active_step %>
   <% if Avalon::Configuration.controlled_digital_lending_enabled? && object.is_a?(Admin::Collection) %>
     <div class="card enable-cdl">
@@ -19,7 +19,10 @@
       </div>
     </div>
   <% end %>
+<% end %>
 
+<%= bootstrap_form_for object, html: { id: 'lending_form' }  do |vid| %>
+<%= hidden_field_tag :step, @active_step %>
   <% if lending_enabled?(object) %>
     <div class="card item-lending-period">
       <div class="card-header">
@@ -44,8 +47,10 @@
             </div>
           </div>
         </div>
-        <%= submit_tag "Save Lending Period", name: "save_lending_period", class: "btn btn-primary", form: 'cdl_form' %>
-        <%= button_tag "Apply to All Existing Items", type: 'button', class: "btn btn-outline", data: { toggle:"modal", target:"#access_control_modal" } %>
+        <%= hidden_field_tag :save_field, "lending_period" %>
+        <%= hidden_field_tag :overwrite, false %>
+        <%= submit_tag "Save Setting", class: "btn btn-primary", form: 'lending_form' %>
+        <%= submit_tag "Apply to All Existing Items", name: "apply_to_existing", class: "btn btn-outline", data: { confirm: "This action will change #{object.media_objects.count} items. Do you wish to proceed?" }, form: 'lending_form' %>
       </div>
     </div>
   <% end %>

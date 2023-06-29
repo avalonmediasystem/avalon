@@ -16,7 +16,7 @@ Unless required by applicable law or agreed to in writing, software distributed
 <% can_update = can?(:update_access_control, object) %>
 
 <% if can_update %>
-<%= bootstrap_form_for object, html: { id: "#{object.is_a?(Admin::Collection) ? 'discovery_form' : 'access_control_form'}" }  do |vid| %>
+<%= bootstrap_form_for object, html: { id: 'discovery_form' }  do |vid| %>
 <%= hidden_field_tag :step, @active_step %>
 <div class="card item-discovery">
   <div class="card-header">
@@ -30,15 +30,17 @@ Unless required by applicable law or agreed to in writing, software distributed
         Hide this item from search results
         <% end %>
       </div>
-      <%= submit_tag "Save Setting", name: "save_discovery", class: "btn btn-primary", form: 'discovery_form' %>
-      <%= button_tag "Apply to All Existing Items", type: 'button', class: "btn btn-outline", data: { toggle:"modal", target:"#access_control_modal" } %>
+      <%= hidden_field_tag :save_field, "discovery" %>
+      <%= hidden_field_tag :overwrite, false %>
+      <%= submit_tag "Save Setting", class: "btn btn-primary", form: 'discovery_form' %>
+      <%= submit_tag "Apply to All Existing Items", name: "apply_to_existing", class: "btn btn-outline", data: { confirm: "This action will change #{object.media_objects.count} items. Do you wish to proceed?" }, form: 'discovery_form' %>
     </div>
   </div>
 </div>
 
 <% end %>
 
-<%= bootstrap_form_for object, html: { id: "#{object.is_a?(Admin::Collection) ? 'visibility_form' : 'access_control_form'}" }  do |vid| %>
+<%= bootstrap_form_for object, html: { id: 'visibility_form' }  do |vid| %>
 <%= hidden_field_tag :step, @active_step %>
 
 <div class="card item-access">
@@ -65,15 +67,15 @@ Unless required by applicable law or agreed to in writing, software distributed
           Collection staff only
         </label>
       </div>
-      <%= submit_tag "Save Setting", name: "save_visibility", class: "btn btn-primary", form: 'visibility_form' %>
-      <%= button_tag "Apply to All Existing Items", type: 'button', class: "btn btn-outline", data: { toggle:"modal", target:"#access_control_modal" } %>
+      <%= hidden_field_tag :save_field, "visibility" %>
+      <%= hidden_field_tag :overwrite, false %>
+      <%= submit_tag "Save Setting", class: "btn btn-primary", form: 'visibility_form' %>
+      <%= submit_tag "Apply to All Existing Items", name: "apply_to_existing", class: "btn btn-outline", data: { confirm: "This action will change #{object.media_objects.count} items. Do you wish to proceed?" }, form: "visibility_form" %>
     </div>
   </div>
 </div>
 
 <% end %>
-
-<%= render modal[:partial], modal_title: modal[:title] if defined? modal %>
 
 <% else %>
 

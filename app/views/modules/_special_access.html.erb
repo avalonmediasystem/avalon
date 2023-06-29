@@ -28,3 +28,5 @@
     <% end %>
   </div>
 </div>
+
+<%= render modal[:partial], modal_title: modal[:title], affected: object.media_objects.count if defined? modal %>

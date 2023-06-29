@@ -25,6 +25,7 @@ Unless required by applicable law or agreed to in writing, software distributed
           </div>
           <div class="modal-body">
             <p>Would you like to keep all existing Special access entries on items (users, groups, IP addresses), and add the current access control settings?</p>
+            <p>This action will change <%= affected %> items.
             <div class="form-group">
               <div class="form-check">
                 <label>
@@ -42,7 +43,9 @@ Unless required by applicable law or agreed to in writing, software distributed
           </div>
           <div class="modal-footer">
             <a href="#" data-dismiss="modal" aria-hidden="true" class="btn btn-outline">Cancel</a>
-            <%= submit_tag "Apply", name: "apply_access", class: "btn btn-primary", form: 'access_control_form' %>
+            <%# Modal requires an associated form for submit button to work. %>
+            <%# CDL applies to all child items regardless so should be safe to submit here %>
+            <%= submit_tag "Apply", name: "apply_to_existing", class: "btn btn-primary", form: 'cdl_form' %>
           </div>
         </div>
     </div>
