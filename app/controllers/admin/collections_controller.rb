@@ -321,23 +321,23 @@ class Admin::CollectionsController < ApplicationController
 
     update_access_settings(collection, params)
 
-    update_default_lending_period(collection, params)
+    update_default_lending_period(collection, params) if collection.cdl_enabled?
   end
 
   def update_access_settings(collection, params)
-    if params[:save_field] == "save_visibility"
+    if params[:save_field] == "visibility"
       collection.default_visibility = params[:visibility] unless params[:visibility].blank?
     end
-    if params[:save_field] == "save_discovery"
+    if params[:save_field] == "discovery"
       collection.default_hidden = params[:hidden] == "1"
     end
-    if params[:save_field] == "save_cdl"
+    if params[:save_field] == "cdl"
       collection.cdl_enabled = params[:cdl] == "1"
     end
   end
 
   def update_default_lending_period(collection, params)
-    if collection.cdl_enabled? && params[:save_field] == "lending_period"
+    if params[:save_field] == "lending_period"
       lending_period = build_default_lending_period(collection)
       if lending_period.positive?
         collection.default_lending_period = lending_period

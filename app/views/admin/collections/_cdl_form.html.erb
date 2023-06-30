@@ -15,7 +15,8 @@
             <% end %>
           </div>
         </div>
-        <%= submit_tag "Save Setting", name: "save_cdl", class: "btn btn-primary", form: 'cdl_form' %>
+        <%= hidden_field_tag :save_field, "cdl" %>
+        <%= submit_tag "Save Setting", class: "btn btn-primary", form: 'cdl_form' %>
       </div>
     </div>
   <% end %>
