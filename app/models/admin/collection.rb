@@ -69,7 +69,7 @@ class Admin::Collection < ActiveFedora::Base
     index.as :stored_sortable
   end
   property :cdl_enabled, predicate: Avalon::RDFVocab::Collection.cdl_enabled, multiple: false do |index|
-    index.as :symbol
+    index.as ActiveFedora::Indexing::Descriptor.new(:boolean, :stored, :indexed)
   end
 
   has_subresource 'poster', class_name: 'IndexedFile'
