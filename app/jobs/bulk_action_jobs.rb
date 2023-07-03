@@ -214,11 +214,18 @@ module BulkActionJobs
         end
 
         # Special access
-        if overwrite
+        if overwrite && save_field.blank?
           media_object.read_groups = collection.default_read_groups.to_a
           media_object.read_users = collection.default_read_users.to_a
-        else
-          media_object.read_groups += collection.default_read_groups.to_a
+        elsif !overwrite && save_field.blank?
+          # If MediaObject visibility is different than Collection, the collection visibility
+          # is added to the media object read groups. This can result in the media obejct having
+          # both 'public' and 'private' in its read groups. Remove visibility from the default_read_groups
+          # array to protect against this case.
+          collection_read_groups = collection.default_read_groups.to_a - [Hydra::AccessControls::AccessRight::PERMISSION_TEXT_VALUE_AUTHENTICATED,
+                                                                          Hydra::AccessControls::AccessRight::PERMISSION_TEXT_VALUE_PUBLIC,
+                                                                          Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_PRIVATE]
+          media_object.read_groups += collection_read_groups
           media_object.read_groups.uniq!
           media_object.read_users += collection.default_read_users.to_a
           media_object.read_users.uniq!
