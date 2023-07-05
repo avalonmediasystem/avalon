@@ -214,10 +214,10 @@ module BulkActionJobs
         end
 
         # Special access
-        if overwrite && save_field.blank?
+        if overwrite && save_field == "cdl"
           media_object.read_groups = collection.default_read_groups.to_a
           media_object.read_users = collection.default_read_users.to_a
-        elsif !overwrite && save_field.blank?
+        elsif !overwrite && save_field == "cdl"
           # If MediaObject visibility is different than Collection, the collection visibility
           # is added to the media object read groups. This can result in the media obejct having
           # both 'public' and 'private' in its read groups. Remove visibility from the default_read_groups

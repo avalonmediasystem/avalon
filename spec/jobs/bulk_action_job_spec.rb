@@ -139,7 +139,7 @@ describe BulkActionJobs::ApplyCollectionAccessControl do
 
     context "overwrite is true" do
       it "replaces existing Special Access" do
-        BulkActionJobs::ApplyCollectionAccessControl.perform_now co.id, true
+        BulkActionJobs::ApplyCollectionAccessControl.perform_now co.id, true, 'cdl'
         mo.reload
         expect(mo.read_users).to contain_exactly("co_user")
         expect(mo.read_groups).to contain_exactly("co_group", "public")
@@ -151,7 +151,7 @@ describe BulkActionJobs::ApplyCollectionAccessControl do
 
     context "overwrite is false" do
       it "adds to existing Special Access" do
-        BulkActionJobs::ApplyCollectionAccessControl.perform_now co.id, false
+        BulkActionJobs::ApplyCollectionAccessControl.perform_now co.id, false, 'cdl'
         mo.reload
         expect(mo.read_users).to contain_exactly("mo_user", "co_user")
         expect(mo.read_groups).to contain_exactly("mo_group", "co_group", "registered")

@@ -42,7 +42,9 @@ Unless required by applicable law or agreed to in writing, software distributed
           </div>
           <div class="modal-footer">
             <a href="#" data-dismiss="modal" aria-hidden="true" class="btn btn-outline">Cancel</a>
-            <%= submit_tag "Apply", name: "apply_access", class: "btn btn-primary", form: 'access_control_form' %>
+            <%# Submit requires an associated form. CDL applies to entire collection in all circumstances,
+                so should be safe to use for submission of this apply to all. %>
+            <%= submit_tag "Apply", name: "apply_to_existing", class: "btn btn-primary", form: 'cdl_form' %>
           </div>
         </div>
     </div>
