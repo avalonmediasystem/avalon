@@ -652,22 +652,25 @@ describe MasterFilesController do
       end
 
       it 'returns unauthorized (401)' do
-        expect(get('caption_manifest', params: { id: master_file.id }, xhr: true)).to have_http_status(:unauthorized)
+        expect(get('caption_manifest', params: { id: master_file.id, c_id: 1 }, xhr: true)).to have_http_status(:unauthorized)
       end
     end
 
     it 'returns unauthorized (401) if cannot read the master file' do
-      expect(get('caption_manifest', params: { id: master_file.id }, xhr: true)).to have_http_status(:unauthorized)
+      expect(get('caption_manifest', params: { id: master_file.id, c_id: 1 }, xhr: true)).to have_http_status(:unauthorized)
     end
 
     it 'returns the caption manifest' do
       login_as :administrator
-      expect(get('caption_manifest', params: { id: master_file.id }, xhr: true)).to have_http_status(:ok)
+      expect(get('caption_manifest', params: { id: master_file.id, c_id: 1 }, xhr: true)).to have_http_status(:ok)
       expect(response.content_type).to eq 'application/x-mpegURL; charset=utf-8'
     end
 
     it 'returns a manifest if public' do
-      expect(get('caption_manifest', params: { id: public_master_file.id }, xhr: true)).to have_http_status(:ok)
+      expect(get('caption_manifest', params: { id: public_master_file.id, c_id: 1 }, xhr: true)).to have_http_status(:ok)
+      expect(response.content_type).to eq 'application/x-mpegURL; charset=utf-8'
+      expect(get('caption_manifest', params: { id: public_master_file.id, c_id: 'master_file_caption' }, xhr: true)).to have_http_status(:ok)
+      expect(response.content_type).to eq 'application/x-mpegURL; charset=utf-8'
     end
 
     context 'read from solr' do
@@ -676,7 +679,7 @@ describe MasterFilesController do
         perform_enqueued_jobs(only: MediaObjectIndexingJob)
         WebMock.reset_executed_requests!
         login_as :administrator
-        get('caption_manifest', params: { id: public_master_file.id }, xhr: true)
+        get('caption_manifest', params: { id: public_master_file.id, c_id: 1 }, xhr: true)
         expect(a_request(:any, /#{ActiveFedora.fedora.base_uri}/)).not_to have_been_made
       end
     end

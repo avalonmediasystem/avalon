@@ -15,7 +15,12 @@ Unless required by applicable law or agreed to in writing, software distributed
 %>
 #EXTM3U
 <% if @master_file.has_captions? %>
-#EXT-X-MEDIA:TYPE=SUBTITLES,GROUP-ID="subs",LANGUAGE="<%= Settings.caption_default.language %>",NAME="<%= Settings.caption_default.name %>",AUTOSELECT=YES,URI="<%= caption_manifest_master_file_path %>"
+<% @master_file.supplemental_file_captions.append(@master_file.captions).each_with_index do |caption, index| %>
+<% label = caption.is_a?(SupplementalFile) ? caption.label : 'English' %>
+<% language = caption.is_a?(SupplementalFile) ? caption.language : 'en' %>
+<% id = caption.is_a?(SupplementalFile) ? caption.id : 'master_file_caption' %>
+#EXT-X-MEDIA:TYPE=SUBTITLES,GROUP-ID="subs",LANGUAGE="<%= language %>",NAME="<%= label %>",DEFAULT=<%= index == 0 ? "YES" : "NO" %>,AUTOSELECT=YES,URI="<%= caption_manifest_master_file_path(c_id: id) %>"
+<% end %>
 <% @hls_streams.each do |hls| %>
 #EXT-X-STREAM-INF:BANDWIDTH=<%= hls[:bitrate] %>,SUBTITLES="subs"
 <%= hls[:url] %>
