@@ -191,6 +191,8 @@ Rails.application.routes.draw do
       delete 'update_multiple'
       patch 'regenerate_access_token'
       get 'refresh_info'
+      get 'manifest'
+      post 'manifest', to: 'playlists#manifest_update', constraints: { format: 'json' }
     end
     collection do
       post 'duplicate'
