@@ -3869,9 +3869,9 @@ hex-color-regex@^1.1.0:
   integrity sha512-l9sfDFsuqtOqKDsQdqrMRk0U85RZc0RtOR9yPI7mRVOa4FsR/BVnZ0shmQRM96Ji99kYZP/7hn1cedc1+ApsTQ==
 
 hls.js@^1.1.2:
-  version "1.4.5"
-  resolved "https://registry.yarnpkg.com/hls.js/-/hls.js-1.4.5.tgz#33b2d6cbebb4797bd61763c87c2f15c7ef080632"
-  integrity sha512-xb7IiSM9apU3tJWb5rdSStobXPNJJykHTwSy7JnLF5y/kLJXWjoR/fEpNBlwYxkKcDiiSfO9SQI8yFravZJxIg==
+  version "1.4.6"
+  resolved "https://registry.yarnpkg.com/hls.js/-/hls.js-1.4.6.tgz#928752ef7286259aff8f372d4fa179bf932cac78"
+  integrity sha512-lGv9QfjfjfuGQfLa/28vDFlYWb9Myq5QuvM9qWp5DyElp8jTGMNodTdeAjOLzaA/fN4XHeG+HhTkRGzntwuDZw==
 
 "hls.js@https://github.com/avalonmediasystem/hls.js#stricter_ts_probing":
   version "0.13.1"
@@ -6597,7 +6597,7 @@ react-redux@^7.2.6:
 
 "react-structural-metadata-editor@https://github.com/avalonmediasystem/react-structural-metadata-editor":
   version "1.1.0"
-  resolved "https://github.com/avalonmediasystem/react-structural-metadata-editor#ba45fcb5b5198aa83fdb9bf41aee081f2b62baee"
+  resolved "https://github.com/avalonmediasystem/react-structural-metadata-editor#14935f4a2ce8ac5cfd1a234cc7ca9c9026999416"
   dependencies:
     "@babel/runtime" "^7.4.4"
     "@fortawesome/fontawesome-svg-core" "^1.2.4"
