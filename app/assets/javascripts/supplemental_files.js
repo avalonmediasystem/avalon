@@ -37,7 +37,8 @@ $('button[name="cancel_edit_label"]').on('click', (e) => {
 
   $row.removeClass('is-editing');
 
-  if(document.getElementsByClassName('is-editing').length === 1){
+  // Remove form label row
+  if($('.captions').find('.is-editing').length === 1){
     $('#edit-label-row').removeClass('is-editing');
   }
 });
@@ -49,7 +50,8 @@ $('button[name="save_label"]').on('click', (e) => {
 
   $row.removeClass('is-editing');
 
-  if(document.getElementsByClassName('is-editing').length === 1){
+  // Remove form label row
+  if($('.captions').find('.is-editing').length === 1){
     $('#edit-label-row').removeClass('is-editing');
   }
 
@@ -58,7 +60,9 @@ $('button[name="save_label"]').on('click', (e) => {
     var alert = $row.find(
       'small[name="flash-message-' + masterfileId + '-' + fileId + '"]'
     );
-    alert.html('');
+    $row.find('.icon-success').addClass('d-none');
+    $row.find('.icon-error').addClass('d-none');
+    $row.find('.message-content').html();
     alert.removeClass();
     alert.addClass('visible-inline');
   }, 5000);
@@ -85,15 +89,17 @@ $('.supplemental-file-form')
       .text(newLabel);
 
     // Show flash message for success
-    $row.find('.visible-inline').html('Successfully updated.');
+    $row.find('.message-content').html('Successfully updated.');
+    $row.find('.icon-success').removeClass('d-none');
     $row.find('.visible-inline').addClass('alert');
   })
   .on('ajax:error', (event, xhr, status, error) => {
-    var alert = $(event.currentTarget.parentElement).find('.visible-inline');
+    var $row = $(event.currentTarget.parentElement)
 
     // Show flash warning for failed attempt
-    alert.html('Failed to update.');
-    alert.addClass('alert');
+    $row.find('.message-content').html('Failed to update.');
+    $row.find('.icon-error').removeClass('d-none');
+    $row.find('.visible-inline').addClass('alert');
   });
 
 /* Store collapsed section ids in localStorage */
