@@ -179,6 +179,7 @@ en:
     lending_period: |
       Lending Period is the length of time that an item may be checked out for.
       Day and Hour values must be positive integers.
+    apply_to_all_warning: "This action will affect %s items. Do you wish to proceed?"
 
   contact:
     title: 'Contact Us - %{application_name}'

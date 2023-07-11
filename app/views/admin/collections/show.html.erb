@@ -126,16 +126,16 @@ Unless required by applicable law or agreed to in writing, software distributed
 <div class="content-block" style="padding-top: 2rem;">
   <%= render "cdl_form", { object: @collection,
                            lending_period: @collection.default_lending_period,
-                           cdl: @collection.cdl_enabled,
-                           modal: { partial: "apply_special_access",
-                                    title: "Apply current Special Access settings to all existing Items" } } %>
+                           cdl: @collection.cdl_enabled } %>
 
   <h3>Set Default Access Control for New Items</h3>
   <%= render "discovery_visibility_form", { object: @collection,
-                                 visibility: @collection.default_visibility,
-                                 hidden: @collection.default_hidden } %>
+                                            visibility: @collection.default_visibility,
+                                            hidden: @collection.default_hidden } %>
 
-  <%= render "modules/special_access", { object: @collection } %>
+  <%= render "modules/special_access", { object: @collection,
+                                         modal: { partial: "apply_special_access",
+                                                  title: "Apply current Special Access settings to all existing Items" } } %>
 
 </div>
 

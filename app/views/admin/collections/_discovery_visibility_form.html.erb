@@ -17,7 +17,6 @@ Unless required by applicable law or agreed to in writing, software distributed
 
 <% if can_update %>
 <%= bootstrap_form_for object, html: { id: 'discovery_form' }  do |vid| %>
-<%= hidden_field_tag :step, @active_step %>
 <div class="card item-discovery">
   <div class="card-header">
     <h3 class="card-title">Item discovery</h3>
@@ -33,7 +32,7 @@ Unless required by applicable law or agreed to in writing, software distributed
       <%= hidden_field_tag :save_field, "discovery" %>
       <%= hidden_field_tag :overwrite, false %>
       <%= submit_tag "Save Setting", class: "btn btn-primary", form: 'discovery_form' %>
-      <%= submit_tag "Apply to All Existing Items", name: "apply_to_existing", class: "btn btn-outline", data: { confirm: "This action will change #{object.media_objects.count} items. Do you wish to proceed?" }, form: 'discovery_form' %>
+      <%= submit_tag "Apply to All Existing Items", name: "apply_to_existing", class: "btn btn-outline", data: { confirm: I18n.t('access_control.apply_to_all_warning') % [object.media_objects.count] }, form: 'discovery_form' %>
     </div>
   </div>
 </div>
@@ -41,8 +40,6 @@ Unless required by applicable law or agreed to in writing, software distributed
 <% end %>
 
 <%= bootstrap_form_for object, html: { id: 'visibility_form' }  do |vid| %>
-<%= hidden_field_tag :step, @active_step %>
-
 <div class="card item-access">
   <div class="card-header">
     <h3 class="card-title">Item access</h3>
@@ -70,7 +67,7 @@ Unless required by applicable law or agreed to in writing, software distributed
       <%= hidden_field_tag :save_field, "visibility" %>
       <%= hidden_field_tag :overwrite, false %>
       <%= submit_tag "Save Setting", class: "btn btn-primary", form: 'visibility_form' %>
-      <%= submit_tag "Apply to All Existing Items", name: "apply_to_existing", class: "btn btn-outline", data: { confirm: "This action will change #{object.media_objects.count} items. Do you wish to proceed?" }, form: "visibility_form" %>
+      <%= submit_tag "Apply to All Existing Items", name: "apply_to_existing", class: "btn btn-outline", data: { confirm: I18n.t('access_control.apply_to_all_warning') % [object.media_objects.count] }, form: "visibility_form" %>
     </div>
   </div>
 </div>

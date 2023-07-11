@@ -1,6 +1,5 @@
 <% if can?(:update_access_control, object) %>
 <%= bootstrap_form_for object, html: { id: 'cdl_form' }  do |vid| %>
-<%= hidden_field_tag :step, @active_step %>
   <% if Avalon::Configuration.controlled_digital_lending_enabled? && object.is_a?(Admin::Collection) %>
     <div class="card enable-cdl">
       <div class="card-header">
@@ -20,12 +19,9 @@
       </div>
     </div>
   <% end %>
-  
-  <%= render modal[:partial], modal_title: modal[:title], affected: object.media_objects.count if defined? modal %>
 <% end %>
 
 <%= bootstrap_form_for object, html: { id: 'lending_form' }  do |vid| %>
-<%= hidden_field_tag :step, @active_step %>
   <% if lending_enabled?(object) %>
     <div class="card item-lending-period">
       <div class="card-header">
@@ -53,7 +49,7 @@
         <%= hidden_field_tag :save_field, "lending_period" %>
         <%= hidden_field_tag :overwrite, false %>
         <%= submit_tag "Save Setting", class: "btn btn-primary", form: 'lending_form' %>
-        <%= submit_tag "Apply to All Existing Items", name: "apply_to_existing", class: "btn btn-outline", data: { confirm: "This action will change #{object.media_objects.count} items. Do you wish to proceed?" }, form: 'lending_form' %>
+        <%= submit_tag "Apply to All Existing Items", name: "apply_to_existing", class: "btn btn-outline", data: { confirm: I18n.t('access_control.apply_to_all_warning') % [object.media_objects.count] }, form: 'lending_form' %>
       </div>
     </div>
   <% end %>
