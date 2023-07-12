@@ -73,13 +73,12 @@ class IiifPlaylistCanvasPresenter
       end
     end
 
-    # TODO: Fix ranges
     def simple_iiif_range(label = stream_info[:embed_title])
       # TODO: embed_title?
       IiifManifestRange.new(
         label: { "none" => [label] },
         items: [
-          IiifPlaylistCanvasPresenter.new(playlist_item: playlist_item, stream_info: stream_info, media_fragment: "t=#{playlist_item.start_time.to_i},#{playlist_item.end_time.to_i}")
+          IiifPlaylistCanvasPresenter.new(playlist_item: playlist_item, stream_info: stream_info, media_fragment: "t=#{playlist_item.start_time/1000},#{playlist_item.end_time/1000}")
         ]
       )
     end

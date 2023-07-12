@@ -65,6 +65,10 @@ class IiifPlaylistManifestPresenter
     ["auto-advance"]
   end
 
+  def manifest_metadata
+    @manifest_metadata ||= iiif_metadata_fields.compact
+  end
+
   private
 
   def sanitize(value)
@@ -80,5 +84,12 @@ class IiifPlaylistManifestPresenter
     { 'label' => label, 'value' => sanitized_values }
   end
 
-  # TODO: Metadata fields: Description (playlist_item.comment), tags, title, playlist creator(?)
+  # TODO: playlist creator(?)
+  def iiif_metadata_fields
+    fields = [
+      metadata_field('Title', playlist.title + ' [Playlist]'),
+      metadata_field('Description', playlist.comment),
+      metadata_field('Tags', playlist.tags)
+    ]
+  end
 end
