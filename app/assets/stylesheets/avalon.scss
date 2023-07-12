@@ -925,9 +925,8 @@ h5.card-title {
     }
 
     .caption-form-label {
-      display: inline-block;
-      margin-left: 10px;
-      width: 48%;
+      font-style: italic;
+      font-weight: bold;
     }
 
     div.supplemental-file-data {
@@ -951,8 +950,11 @@ h5.card-title {
       margin-top: 0.75rem;
 
       .visible-inline {
-        margin-left: 30px;
         display: none;
+
+        .icon-success, .icon-error {
+          font-size: 1.2rem;
+        }
       }
 
       .alert {
