@@ -197,24 +197,35 @@ module BulkActionJobs
 
   class ApplyCollectionAccessControl < ActiveJob::Base
     queue_as :bulk_access_control
-    def perform(collection_id, overwrite = true)
+    def perform(collection_id, overwrite = true, save_field = nil)
       errors = []
       successes = []
       collection = Admin::Collection.find collection_id
       collection.media_object_ids.each do |id|
         media_object = MediaObject.find(id)
-        media_object.hidden = collection.default_hidden
-        media_object.visibility = collection.default_visibility
-        if collection.cdl_enabled?
+        if save_field == "discovery"
+          media_object.hidden = collection.default_hidden
+        end
+        if save_field == "visibility"
+          media_object.visibility = collection.default_visibility
+        end
+        if collection.cdl_enabled? && save_field == "lending_period"
           media_object.lending_period = collection.default_lending_period
         end
 
         # Special access
-        if overwrite
+        if overwrite && save_field == "special_access"
           media_object.read_groups = collection.default_read_groups.to_a
           media_object.read_users = collection.default_read_users.to_a
-        else
-          media_object.read_groups += collection.default_read_groups.to_a
+        elsif !overwrite && save_field == "special_access"
+          # If MediaObject visibility is different than Collection, the collection visibility
+          # is added to the media object read groups. This can result in the media obejct having
+          # both 'public' and 'private' in its read groups. Remove visibility from the default_read_groups
+          # array to protect against this case.
+          collection_read_groups = collection.default_read_groups.to_a - [Hydra::AccessControls::AccessRight::PERMISSION_TEXT_VALUE_AUTHENTICATED,
+                                                                          Hydra::AccessControls::AccessRight::PERMISSION_TEXT_VALUE_PUBLIC,
+                                                                          Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_PRIVATE]
+          media_object.read_groups += collection_read_groups
           media_object.read_groups.uniq!
           media_object.read_users += collection.default_read_users.to_a
           media_object.read_users.uniq!
