@@ -16,6 +16,10 @@
 
 .react-button-container {
   display: inline-block;
+
+  .modal-content {
+    height: 100vh;
+  }
 }
 
 .modal-open .modal {
