@@ -242,6 +242,7 @@ class PlaylistsController < ApplicationController
     redirect_to playlists_url, notice: 'Playlist was successfully destroyed.'
   end
 
+  # GET /playlists/1/manifest.json
   def manifest
     authorize! :read, @playlist
 

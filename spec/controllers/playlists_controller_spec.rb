@@ -1,11 +1,11 @@
 # Copyright 2011-2023, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
-# 
+#
 # You may obtain a copy of the License at
-# 
+#
 # http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software distributed
 #   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
 #   CONDITIONS OF ANY KIND, either express or implied. See the License for the
@@ -558,6 +558,22 @@ RSpec.describe PlaylistsController, type: :controller do
           expect(parsed_response['data'][0][0]).to eq("<a title=\"#{Playlist.all[10].comment}\" href=\"/playlists/11\">zzzebra</a>")
           expect(parsed_response['data'][10][0]).to eq("<a title=\"#{Playlist.all[0].comment}\" href=\"/playlists/1\">aardvark</a>")
         end
+      end
+    end
+
+    describe "GET #manifest" do
+      let(:playlist) { FactoryBot.create(:playlist, items: [playlist_item], visibility: Playlist::PUBLIC) }
+      let(:playlist_item) { FactoryBot.create(:playlist_item, clip: clip) }
+      let(:clip) { FactoryBot.create(:avalon_clip, master_file: master_file) }
+      let(:master_file) { FactoryBot.create(:master_file, media_object: media_object) }
+      let(:media_object) { FactoryBot.create(:published_media_object, visibility: 'public') }
+
+      it "returns a IIIF manifest" do
+        get :manifest, format: 'json', params: { id: playlist.id }, session: valid_session
+        expect(response).to have_http_status(200)
+        parsed_response = JSON.parse(response.body)
+        expect(parsed_response['@context']).to include "http://iiif.io/api/presentation/3/context.json"
+        expect(parsed_response['type']).to eq 'Manifest'
       end
     end
   end
