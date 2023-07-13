@@ -128,7 +128,7 @@ Unless required by applicable law or agreed to in writing, software distributed
                            lending_period: @collection.default_lending_period,
                            cdl: @collection.cdl_enabled } %>
 
-  <h3>Set Default Access Control for New Items</h3>
+  <h3 style="padding-top: 3rem;">Set Default Access Control for New Items</h3>
   <%= render "discovery_visibility_form", { object: @collection,
                                             visibility: @collection.default_visibility,
                                             hidden: @collection.default_hidden } %>
