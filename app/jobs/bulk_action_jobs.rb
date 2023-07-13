@@ -213,18 +213,30 @@ module BulkActionJobs
           media_object.lending_period = collection.default_lending_period
         end
 
+        # If MediaObject visibility is different than Collection, the collection visibility
+        # overwrites, or is added to, the media object read groups. This can result in the media object
+        # read groups containing the wrong visibilty or multiple visibilities.
+        # Remove visibility from the default_read_groups array to protect against this.
+        collection_read_groups = collection.default_read_groups.to_a - [Hydra::AccessControls::AccessRight::PERMISSION_TEXT_VALUE_AUTHENTICATED,
+                                                                        Hydra::AccessControls::AccessRight::PERMISSION_TEXT_VALUE_PUBLIC,
+                                                                        Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_PRIVATE]
+
+        # When overwriting the read group, we have to add the media object visibility back into the array,
+        # otherwise the media object will default to private.
+        media_object_visibility_group = if media_object.visibility == Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_PUBLIC
+                                          [Hydra::AccessControls::AccessRight::PERMISSION_TEXT_VALUE_PUBLIC]
+                                        elsif media_object.visibility == Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_AUTHENTICATED
+                                          [Hydra::AccessControls::AccessRight::PERMISSION_TEXT_VALUE_AUTHENTICATED]
+                                        else
+                                          [Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_PRIVATE]
+                                        end
+
         # Special access
         if overwrite && save_field == "special_access"
-          media_object.read_groups = collection.default_read_groups.to_a
+          media_object.read_groups = collection_read_groups
+          media_object.read_groups += media_object_visibility_group
           media_object.read_users = collection.default_read_users.to_a
         elsif !overwrite && save_field == "special_access"
-          # If MediaObject visibility is different than Collection, the collection visibility
-          # is added to the media object read groups. This can result in the media obejct having
-          # both 'public' and 'private' in its read groups. Remove visibility from the default_read_groups
-          # array to protect against this case.
-          collection_read_groups = collection.default_read_groups.to_a - [Hydra::AccessControls::AccessRight::PERMISSION_TEXT_VALUE_AUTHENTICATED,
-                                                                          Hydra::AccessControls::AccessRight::PERMISSION_TEXT_VALUE_PUBLIC,
-                                                                          Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_PRIVATE]
           media_object.read_groups += collection_read_groups
           media_object.read_groups.uniq!
           media_object.read_users += collection.default_read_users.to_a
