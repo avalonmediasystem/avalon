@@ -200,11 +200,10 @@ describe Admin::Collection do
     let!(:collection) {Admin::Collection.new}
 
     describe "#managers" do
-      it "should return the intersection of edit_users and managers role" do
+      it "should return the intersection of edit_users and collection_managers property" do
         collection.edit_users = [user.user_key, "pdinh"]
-        expect(Avalon::RoleControls).to receive("users").with("manager").and_return([user.user_key, "atomical"])
-        expect(Avalon::RoleControls).to receive("users").with("administrator").and_return([])
-        expect(collection.managers).to eq([user.user_key])  #collection.edit_users & RoleControls.users("manager")
+        collection.collection_managers = [user.user_key]
+        expect(collection.managers).to eq([user.user_key])
       end
     end
     describe "#managers=" do
@@ -286,7 +285,9 @@ describe Admin::Collection do
 
     describe "#editors" do
       it "should not return managers" do
-        collection.edit_users = [user.user_key, FactoryBot.create(:manager).user_key]
+        manager = FactoryBot.create(:manager)
+        collection.edit_users = [user.user_key, manager.user_key]
+        collection.collection_managers = [manager.user_key]
         expect(collection.editors).to eq([user.user_key])
       end
     end
@@ -314,6 +315,18 @@ describe Admin::Collection do
         expect(collection).to receive("remove_editor").with(user.user_key)
         collection.editors = [FactoryBot.create(:user).user_key]
       end
+      it "can add users who belong to manager group" do
+        manager = FactoryBot.create(:manager)
+        collection.editors = [manager.user_key]
+        expect(collection.editors).to include(manager.user_key)
+        expect(collection.managers).not_to include(manager.user_key)
+      end
+      it "can add users who belong to administrator group" do
+        admin = FactoryBot.create(:administrator)
+        collection.editors = [admin.user_key]
+        expect(collection.editors).to include(admin.user_key)
+        expect(collection.managers).not_to include(admin.user_key)
+      end
     end
     describe "#add_editor" do
       it "should give edit access to the collection" do
@@ -334,6 +347,7 @@ describe Admin::Collection do
       end
       it "should not remove users who do not have the editor role" do
         not_editor = FactoryBot.create(:manager)
+        collection.collection_managers = [not_editor.user_key]
         collection.edit_users = [not_editor.user_key]
         collection.inherited_edit_users = [not_editor.user_key]
         collection.remove_editor(not_editor.user_key)
@@ -344,11 +358,9 @@ describe Admin::Collection do
     describe "#editors_and_managers" do
       it "should return all collection editors and managers" do
         collection.edit_users = [user.user_key, "pdinh"]
-        allow(Avalon::RoleControls).to receive("users").with("manager").and_return([user.user_key, "atomical"])
-        allow(Avalon::RoleControls).to receive("users").with("administrator").and_return([])
+        collection.collection_managers = [user.user_key]
         expect(collection.editors_and_managers).to include(collection.editors.first)
         expect(collection.editors_and_managers).to include(collection.managers.first)
-        expect(collection.editors_and_managers).not_to include("atomical")
       end
     end
   end

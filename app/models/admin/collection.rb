@@ -71,6 +71,9 @@ class Admin::Collection < ActiveFedora::Base
   property :cdl_enabled, predicate: Avalon::RDFVocab::Collection.cdl_enabled, multiple: false do |index|
     index.as ActiveFedora::Indexing::Descriptor.new(:boolean, :stored, :indexed)
   end
+  property :collection_managers, predicate: Avalon::RDFVocab::Collection.collection_managers, multiple: true do |index|
+    index.as :symbol
+  end
 
   has_subresource 'poster', class_name: 'IndexedFile'
 
@@ -95,6 +98,7 @@ class Admin::Collection < ActiveFedora::Base
 
   def add_manager user
     raise ArgumentError, "User #{user} does not belong to the manager group." unless (Avalon::RoleControls.users("manager") + (Avalon::RoleControls.users("administrator") || []) ).include?(user)
+    self.collection_managers += [user]
     self.edit_users += [user]
     self.inherited_edit_users += [user]
   end
@@ -103,6 +107,7 @@ class Admin::Collection < ActiveFedora::Base
     return unless managers.include? user
     raise ArgumentError, "At least one manager is required." if self.managers.size == 1
 
+    self.collection_managers = self.collection_managers.to_a - [user]
     self.edit_users -= [user]
     self.inherited_edit_users -= [user]
   end

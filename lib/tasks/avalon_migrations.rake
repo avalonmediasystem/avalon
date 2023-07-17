@@ -12,21 +12,16 @@
 #   specific language governing permissions and limitations under the License.
 # ---  END LICENSE_HEADER BLOCK  ---
 
-# This module contains methods which transform stored values for use either on Admin::Collection or the SpeedyAF presenter
-module AdminCollectionBehavior
-  def managers
-    edit_users & collection_managers.to_a
-  end
-
-  def editors
-    edit_users - managers
-  end
-
-  def editors_and_managers
-    edit_users
-  end
-
-  def depositors
-    read_users
+namespace :avalon do
+  namespace :migrate do
+    desc "Set new collection managers property on collection model as part of bugfix allowing users that belong to the manager group to be given the editor role"
+    task collection_managers: :environment do
+      Admin::Collection.all.each do |collection|
+        next unless collection.collection_managers.blank?
+        # initialize to old behavior
+        collection.collection_managers = edit_users & ( Avalon::RoleControls.users("manager") | (Avalon::RoleControls.users("administrator") || []) )
+        collection.save!
+      end
+    end
   end
 end
