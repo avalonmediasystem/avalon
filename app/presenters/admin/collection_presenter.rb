@@ -43,7 +43,7 @@ class Admin::CollectionPresenter
   end
 
   def managers
-    @managers ||= document["edit_access_person_ssim"] & (Avalon::RoleControls.users("manager") | (Avalon::RoleControls.users("administrator") || []))
+    @managers ||= document["edit_access_person_ssim"] & (document["collection_managers_ssim"] || [])
   end
 
   def editors

@@ -21,7 +21,7 @@ describe Admin::CollectionPresenter do
   let(:unit) { "Default Unit" }
   let(:description) { "The long form description of this collection." }
   let(:managers) { [manager.to_s] }
-  let(:editors) { [editor.to_s] }
+  let(:editors) { [editor.to_s, FactoryBot.create(:manager)] }
   let(:depositors) { [depositor.to_s] }
   let(:manager) { FactoryBot.create(:manager) }
   let(:editor) { FactoryBot.create(:user) }
@@ -33,7 +33,8 @@ describe Admin::CollectionPresenter do
       "unit_ssi": unit,
       "description_tesim": [description],
       "edit_access_person_ssim": managers + editors,
-      "read_access_person_ssim": depositors
+      "read_access_person_ssim": depositors,
+      "collection_managers_ssim": managers
     )
   end
   subject(:presenter) { described_class.new(solr_doc) }

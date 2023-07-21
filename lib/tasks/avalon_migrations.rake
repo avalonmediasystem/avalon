@@ -19,7 +19,7 @@ namespace :avalon do
       Admin::Collection.all.each do |collection|
         next unless collection.collection_managers.blank?
         # initialize to old behavior
-        collection.collection_managers = edit_users & ( Avalon::RoleControls.users("manager") | (Avalon::RoleControls.users("administrator") || []) )
+        collection.collection_managers = collection.edit_users & ( Avalon::RoleControls.users("manager") | (Avalon::RoleControls.users("administrator") || []) )
         collection.save!
       end
     end
