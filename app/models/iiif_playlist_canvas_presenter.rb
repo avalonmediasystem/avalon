@@ -30,9 +30,13 @@ class IiifPlaylistCanvasPresenter
     playlist_item.title
   end
 
+  def master_file
+    playlist_item.clip.master_file
+  end
+
   def part_of
     [{
-      "@id" => "#{Rails.application.routes.url_helpers.manifest_media_object_url(playlist_item.master_file.media_object_id)}",
+      "@id" => "#{Rails.application.routes.url_helpers.manifest_media_object_url(master_file.media_object_id)}",
       "type" => "manifest"
     }]
   end
@@ -43,7 +47,11 @@ class IiifPlaylistCanvasPresenter
 
   # @return [IIIFManifest::V3::DisplayContent] the display content required by the manifest builder.
   def display_content
-    playlist_item.master_file.is_video? ? video_content : audio_content
+    master_file.is_video? ? video_content : audio_content
+  end
+
+  def annotation_content
+    playlist_item.marker.collect { |m| marker_content(m) }
   end
 
   private
@@ -54,7 +62,7 @@ class IiifPlaylistCanvasPresenter
     end
 
     def video_display_content(quality)
-      IIIFManifest::V3::DisplayContent.new(Rails.application.routes.url_helpers.hls_manifest_master_file_url(playlist_item.master_file.id, quality: quality),
+      IIIFManifest::V3::DisplayContent.new(CGI::unescape(Rails.application.routes.url_helpers.hls_manifest_master_file_url(master_file.id, quality: quality, t: "#{playlist_item.start_time/1000},#{playlist_item.end_time/1000}")),
                                            **manifest_attributes(quality, 'Video'))
     end
 
@@ -63,8 +71,14 @@ class IiifPlaylistCanvasPresenter
     end
 
     def audio_display_content(quality)
-      IIIFManifest::V3::DisplayContent.new(Rails.application.routes.url_helpers.hls_manifest_master_file_url(playlist_item.master_file.id, quality: quality),
+      IIIFManifest::V3::DisplayContent.new(CGI::unescape(Rails.application.routes.url_helpers.hls_manifest_master_file_url(master_file.id, quality: quality, t: "#{playlist_item.start_time/1000},#{playlist_item.end_time/1000}")),
                                            **manifest_attributes(quality, 'Sound'))
+    end
+
+    def marker_content(marker)
+      url = Rails.application.routes.url_helpers.avalon_marker_url(marker.id)
+
+      IIIFManifest::V3::AnnotationContent.new(url, **marker_attributes(marker))
     end
 
     def stream_urls
@@ -78,7 +92,7 @@ class IiifPlaylistCanvasPresenter
       IiifManifestRange.new(
         label: { "none" => [label] },
         items: [
-          IiifPlaylistCanvasPresenter.new(playlist_item: playlist_item, stream_info: stream_info, media_fragment: "t=#{playlist_item.start_time/1000},#{playlist_item.end_time/1000}")
+          IiifPlaylistCanvasPresenter.new(playlist_item: playlist_item, stream_info: stream_info, media_fragment: "t=0," )
         ]
       )
     end
@@ -86,18 +100,29 @@ class IiifPlaylistCanvasPresenter
     def manifest_attributes(quality, media_type)
       media_hash = {
         label: quality,
-        width: playlist_item.master_file.width.to_i,
-        height: playlist_item.master_file.height.to_i,
+        width: master_file.width.to_i,
+        height: master_file.height.to_i,
         duration: stream_info[:duration],
         type: media_type,
         format: 'application/x-mpegURL'
       }.compact
 
-      if playlist_item.master_file.media_object.visibility == 'public'
+      if master_file.media_object.visibility == 'public'
+        byebug
         media_hash
       else
         media_hash.merge!(auth_service: auth_service(quality))
       end
+    end
+
+    def marker_attributes(marker)
+      {
+        motivation: 'highlighting',
+        type: 'TextualBody',
+        value: marker.title,
+        format: 'text/html',
+        media_fragment: "t=#{marker.start_time/1000}"
+      }
     end
 
     def auth_service(quality)
@@ -114,12 +139,12 @@ class IiifPlaylistCanvasPresenter
         "profile": "http://iiif.io/api/auth/1/login",
         "service": [
           {
-            "@id": Rails.application.routes.url_helpers.hls_manifest_master_file_url(playlist_item.master_file.id, quality: quality),
+            "@id": Rails.application.routes.url_helpers.hls_manifest_master_file_url(master_file.id, quality: quality),
             "@type": "AuthProbeService1",
             "profile": "http://iiif.io/api/auth/1/probe"
           },
           {
-            "@id": Rails.application.routes.url_helpers.iiif_auth_token_url(id: playlist_item.master_file.id),
+            "@id": Rails.application.routes.url_helpers.iiif_auth_token_url(id: master_file.id),
             "@type": "AuthTokenService1",
             "profile": "http://iiif.io/api/auth/1/token"
           },

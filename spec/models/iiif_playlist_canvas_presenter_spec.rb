@@ -21,7 +21,7 @@ describe IiifPlaylistCanvasPresenter do
   let(:playlist_item) { FactoryBot.build(:playlist_item, clip: playlist_clip) }
   let(:playlist_clip) { FactoryBot.build(:avalon_clip, master_file: master_file) }
   let(:stream_info) { master_file.stream_details }
-  let(:presenter) { described_class.new(playlist_item: playlist_item.clip, stream_info: stream_info) }
+  let(:presenter) { described_class.new(playlist_item: playlist_item, stream_info: stream_info) }
 
   context 'auth_service' do
     subject { presenter.display_content.first.auth_service }
@@ -67,6 +67,28 @@ describe IiifPlaylistCanvasPresenter do
     end
   end
 
+  describe '#annotation_content' do
+    let(:marker) { FactoryBot.create(:avalon_marker) }
+    let(:playlist_item) { FactoryBot.create(:playlist_item, marker: [marker]) }
+    subject { presenter.annotation_content }
+
+    it "serializes playlist markers as iiif annotations" do
+      expect(subject).to all be_a(IIIFManifest::V3::AnnotationContent)
+    end
+
+    it "includes marker label" do
+      expect(subject.first.value).to eq marker.title
+    end
+
+    it "includes marker start_time" do
+      expect(subject.first.media_fragment).to eq "t=#{marker.start_time}"
+    end
+
+    it "includes 'highlighting' motivation" do
+      expect(subject.first.motivation).to eq 'highlighting'
+    end
+  end
+
   describe '#range' do
     subject { presenter.range }
 
@@ -74,7 +96,6 @@ describe IiifPlaylistCanvasPresenter do
     	expect(subject.label.to_s).to eq "{\"none\"=>[\"#{master_file.embed_title}\"]}"
     	expect(subject.items.size).to eq 1
     	expect(subject.items.first).to be_a IiifPlaylistCanvasPresenter
-      expect(subject.items.first.media_fragment).to eq "t=#{playlist_clip.start_time/1000},#{playlist_clip.end_time/1000}"
     end
   end
 

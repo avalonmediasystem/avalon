@@ -136,11 +136,15 @@ describe IiifCanvasPresenter do
       end
     end
 
-    describe '#supplementing_content' do
-      subject { presenter.supplementing_content }
+    describe '#annotation_content' do
+      subject { presenter.annotation_content }
 
       it 'converts file metadata into IIIF Manifest SupplementingContent' do
-        expect(subject).to all be_a(IIIFManifest::V3::SupplementingContent)
+        expect(subject).to all be_a(IIIFManifest::V3::AnnotationContent)
+      end
+
+      it "includes 'supplementing' motivation" do
+        expect(subject.first.motivation).to eq 'supplementing'
       end
 
       it 'includes transcript and caption files' do

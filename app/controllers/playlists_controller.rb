@@ -250,7 +250,7 @@ class PlaylistsController < ApplicationController
       next if item.clip.master_file.nil?
       @master_file = item.clip.master_file
       stream_info = secure_streams(@master_file.stream_details, @master_file.media_object_id)
-      IiifPlaylistCanvasPresenter.new(playlist_item: item.clip, stream_info: stream_info)
+      IiifPlaylistCanvasPresenter.new(playlist_item: item, stream_info: stream_info)
     end
     presenter = IiifPlaylistManifestPresenter.new(playlist: @playlist, items: canvas_presenters)
 
