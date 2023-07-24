@@ -28,6 +28,11 @@ class SpeedyAF::Proxy::MediaObject < SpeedyAF::Base
     @attrs[:section_id] = solr_document["section_id_ssim"]
     @attrs[:date_issued] = solr_document["date_ssi"]
     @attrs[:hidden?] = solr_document["hidden_bsi"]
+    @attrs[:read_groups] = solr_document["read_access_group_ssim"] || []
+    @attrs[:edit_groups] = solr_document["edit_access_group_ssim"] || []
+    @attrs[:read_users] = solr_document["read_access_person_ssim"] || []
+    @attrs[:edit_users] = solr_document["edit_access_person_ssim"] || []
+
     # TODO Need to convert hidden_bsi into discover_groups?
     SINGULAR_FIELDS.each do |field_name|
       @attrs[field_name] = Array(@attrs[field_name]).first
