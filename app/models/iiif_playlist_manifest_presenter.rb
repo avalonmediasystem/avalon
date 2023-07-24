@@ -13,7 +13,6 @@
 # ---  END LICENSE_HEADER BLOCK  ---
 
 class IiifPlaylistManifestPresenter
-
   IIIF_ALLOWED_TAGS = ['a', 'b', 'br', 'i', 'img', 'p', 'small', 'span', 'sub', 'sup'].freeze
   IIIF_ALLOWED_ATTRIBUTES = ['href', 'src', 'alt'].freeze
 
@@ -26,7 +25,7 @@ class IiifPlaylistManifestPresenter
 
   def file_set_presenters
     # Only return master files that have derivatives to avoid oddities in the manifest and failures in iiif_manifest
-    items.select { |item| item.playlist_item.master_file.derivative_ids.size > 0 }
+    items.select { |item| item.playlist_item.master_file.derivative_ids.size.positive? }
   end
 
   def work_presenters
@@ -71,25 +70,25 @@ class IiifPlaylistManifestPresenter
 
   private
 
-  def sanitize(value)
-    Rails::Html::Sanitizer.safe_list_sanitizer.new.sanitize(value, tags: IIIF_ALLOWED_TAGS, attributes: IIIF_ALLOWED_ATTRIBUTES)
-  end
+    def sanitize(value)
+      Rails::Html::Sanitizer.safe_list_sanitizer.new.sanitize(value, tags: IIIF_ALLOWED_TAGS, attributes: IIIF_ALLOWED_ATTRIBUTES)
+    end
 
-  # Following methods adapted from ApplicationHelper and MediaObjectHelper
-  def metadata_field(label, value, default = nil)
-    sanitized_values = Array(value).collect { |v| sanitize(v.to_s.strip) }.delete_if(&:empty?)
-    return nil if sanitized_values.empty? && default.nil?
-    sanitized_values = Array(default) if sanitized_values.empty?
-    label = label.pluralize(sanitized_values.size)
-    { 'label' => label, 'value' => sanitized_values }
-  end
+    # Following methods adapted from ApplicationHelper and MediaObjectHelper
+    def metadata_field(label, value, default = nil)
+      sanitized_values = Array(value).collect { |v| sanitize(v.to_s.strip) }.delete_if(&:empty?)
+      return nil if sanitized_values.empty? && default.nil?
+      sanitized_values = Array(default) if sanitized_values.empty?
+      label = label.pluralize(sanitized_values.size)
+      { 'label' => label, 'value' => sanitized_values }
+    end
 
-  # TODO: playlist creator(?)
-  def iiif_metadata_fields
-    fields = [
-      metadata_field('Title', playlist.title + ' [Playlist]'),
-      metadata_field('Description', playlist.comment),
-      metadata_field('Tags', playlist.tags)
-    ]
-  end
+    # TODO: playlist creator(?)
+    def iiif_metadata_fields
+      [
+        metadata_field('Title', playlist.title + ' [Playlist]'),
+        metadata_field('Description', playlist.comment),
+        metadata_field('Tags', playlist.tags)
+      ]
+    end
 end
