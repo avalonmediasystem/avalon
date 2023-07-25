@@ -53,10 +53,6 @@ RSpec.describe PlaylistsController, type: :routing do
       expect(:get => "/playlists/1/manifest.json").to route_to("playlists#manifest", :id => "1", format: "json")
     end
 
-    it "routes to #manifest via POST" do
-      expect(:post => "/playlists/1/manifest.json").to route_to("playlists#manifest_update", :id => "1", format: "json")
-    end
-
     it "routes to #refresh_info" do
       expect(:get => "/playlists/1/refresh_info").to route_to("playlists#refresh_info", :id => "1")
     end

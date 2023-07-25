@@ -565,7 +565,7 @@ RSpec.describe PlaylistsController, type: :controller do
       let(:playlist) { FactoryBot.create(:playlist, items: [playlist_item], visibility: Playlist::PUBLIC) }
       let(:playlist_item) { FactoryBot.create(:playlist_item, clip: clip) }
       let(:clip) { FactoryBot.create(:avalon_clip, master_file: master_file) }
-      let(:master_file) { FactoryBot.create(:master_file, media_object: media_object) }
+      let(:master_file) { FactoryBot.create(:master_file, :with_derivative, media_object: media_object) }
       let(:media_object) { FactoryBot.create(:published_media_object, visibility: 'public') }
 
       it "returns a IIIF manifest" do
@@ -574,6 +574,7 @@ RSpec.describe PlaylistsController, type: :controller do
         parsed_response = JSON.parse(response.body)
         expect(parsed_response['@context']).to include "http://iiif.io/api/presentation/3/context.json"
         expect(parsed_response['type']).to eq 'Manifest'
+        expect(parsed_response['items']).not_to be_empty
       end
     end
   end

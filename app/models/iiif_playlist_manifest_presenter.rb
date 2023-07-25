@@ -25,7 +25,7 @@ class IiifPlaylistManifestPresenter
 
   def file_set_presenters
     # Only return master files that have derivatives to avoid oddities in the manifest and failures in iiif_manifest
-    items.select { |item| item.playlist_item.master_file.derivative_ids.size.positive? }
+    items.select { |item| item.master_file.derivative_ids.size.positive? }
   end
 
   def work_presenters
