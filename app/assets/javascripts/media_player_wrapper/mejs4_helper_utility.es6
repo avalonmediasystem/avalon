@@ -47,7 +47,7 @@ class MEJSUtility {
 
       // Add captions
       if (currentStreamInfo.caption_paths) {
-        for (c in currentStreamInfo.caption_paths) {
+        for (let c of currentStreamInfo.caption_paths) {
           markup += `<track ${c.label ? `label="${c.label}"` : '' } srclang="${c.language}" kind="subtitles" type="${c.mime_type}" src="${c.path}"></track>`;
         }
       }

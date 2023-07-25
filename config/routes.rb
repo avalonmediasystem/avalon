@@ -191,6 +191,7 @@ Rails.application.routes.draw do
       delete 'update_multiple'
       patch 'regenerate_access_token'
       get 'refresh_info'
+      get 'manifest'
     end
     collection do
       post 'duplicate'

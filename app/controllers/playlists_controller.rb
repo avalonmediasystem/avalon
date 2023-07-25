@@ -1,11 +1,11 @@
 # Copyright 2011-2023, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
-# 
+#
 # You may obtain a copy of the License at
-# 
+#
 # http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software distributed
 #   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
 #   CONDITIONS OF ANY KIND, either express or implied. See the License for the
@@ -16,10 +16,11 @@ require 'avalon/variations_playlist_importer'
 
 class PlaylistsController < ApplicationController
   include ConditionalPartials
+  include SecurityHelper
 
-  before_action :authenticate_user!, except: [:show, :refresh_info]
-  load_and_authorize_resource except: [:import_variations_playlist, :refresh_info, :duplicate, :show, :index]
-  load_resource only: [:show, :refresh_info]
+  before_action :authenticate_user!, except: [:show, :refresh_info, :manifest]
+  load_and_authorize_resource except: [:import_variations_playlist, :refresh_info, :duplicate, :show, :index, :manifest]
+  load_resource only: [:show, :refresh_info, :manifest]
   authorize_resource only: [:index]
   before_action :get_user_playlists, only: [:index, :paged_index]
   before_action :get_all_other_playlists, only: [:edit]
@@ -239,6 +240,26 @@ class PlaylistsController < ApplicationController
   def destroy
     @playlist.destroy
     redirect_to playlists_url, notice: 'Playlist was successfully destroyed.'
+  end
+
+  # GET /playlists/1/manifest.json
+  def manifest
+    authorize! :read, @playlist
+
+    canvas_presenters = @playlist.items.collect do |item|
+      next if item.clip.master_file.nil?
+      @master_file = item.clip.master_file
+      stream_info = secure_streams(@master_file.stream_details, @master_file.media_object_id)
+      IiifPlaylistCanvasPresenter.new(playlist_item: item, stream_info: stream_info)
+    end
+    presenter = IiifPlaylistManifestPresenter.new(playlist: @playlist, items: canvas_presenters)
+
+    manifest = IIIFManifest::V3::ManifestFactory.new(presenter).to_h
+
+    respond_to do |wants|
+      wants.json { render json: manifest.to_json }
+      wants.html { render json: manifest.to_json }
+    end
   end
 
   def access_token_url(playlist)
