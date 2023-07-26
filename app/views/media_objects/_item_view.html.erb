@@ -45,20 +45,11 @@ Unless required by applicable law or agreed to in writing, software distributed
     <div id="metadata_container" class="col-sm-12">
       <section id="metadata"><%= render "metadata_display" %></section>
     </div>
-
-    <% if can_stream && @currentStream %>
-      <% supplemental_files = @masterFiles.map { |mf| {"id" => mf.id, "transcripts" => mf.supplemental_files(tag: 'transcript') } }.flatten(1) %>
-      <%= react_component("ReactIIIFTranscript", {base_url: request.protocol+request.host_with_port, transcripts: supplemental_files }) %>
-    <% end %>
   </div>
 
 </div>
 
 <% content_for :page_scripts do %>
-  <% if @currentStream.present? and @currentStream.derivatives.present? %>
-    <%= render partial: "mejs4_player_js", locals: {section: @currentStream, section_info: @currentStreamInfo} %>
-  <% end %>
-
   <script>
     // When viewing video on smaller devices scroll to page content to fully
     // display the video player
