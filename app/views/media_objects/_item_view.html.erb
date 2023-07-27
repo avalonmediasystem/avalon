@@ -33,8 +33,7 @@ Unless required by applicable law or agreed to in writing, software distributed
       <%= render partial: 'timeline' if current_ability.can? :create, Timeline %>
       <%= render 'share' if will_partial_list_render? :share %>
       <% if can_stream && @currentStream %>
-        <% supplemental_files = @masterFiles.map { |mf| {"id" => mf.id, "transcripts" => mf.supplemental_files.select { |sf| sf.tags.include?('transcript')} } }.flatten(1) %>
-        <%= react_component("Ramp", {base_url: request.protocol+request.host_with_port, transcripts: supplemental_files, mo_id: @media_object.id }) %>
+        <%= react_component("Ramp", { base_url: request.protocol+request.host_with_port, mo_id: @media_object.id, canvas_count: @media_object.master_files.size }) %>
       <% end %>
     <% end %>
   </div>

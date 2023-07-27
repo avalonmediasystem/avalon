@@ -2,54 +2,43 @@ import React from 'react';
 import { Transcript, IIIFPlayer, MediaPlayer, StructuredNavigation } from "@samvera/ramp";
 import 'video.js/dist/video-js.css';
 import "@samvera/ramp/dist/ramp.css";
+import { Col, Row } from 'react-bootstrap';
 import './Ramp.scss';
 
-const Ramp = ({ base_url, transcripts, mo_id }) => {
+const Ramp = ({ base_url, mo_id, canvas_count }) => {
   const [transcriptsProp, setTrancsriptProp] = React.useState([]);
-  // Check for at least one masterfile in the mediaobject has a transcript file
-  const [hasTranscript, setHasTranscript] = React.useState(false);
   const [manifestUrl, setManifestUrl] = React.useState('');
 
   React.useEffect(() => {
-    buildTranscriptUrls();
     setManifestUrl(`${base_url}/media_objects/${mo_id}/manifest.json`);
+    buildTranscripts();
   }, []);
 
-  const buildTranscriptUrls = () => {
+  const buildTranscripts = () => {
     let trProps = [];
-    transcripts.forEach((tr, i) => {
-      let transcriptItems = tr.transcripts;
+    for(let i = 0; i < canvas_count; i++) {
       let canvasTrs = { canvasId: i, items: [] };
-
-      // construct URLs as expected within the transcript component
-      if (transcriptItems.length > 0) {
-        setHasTranscript(true);
-        canvasTrs.items = transcriptItems.map(
-          t => (
-            {
-              title: t.label,
-              url: `${base_url}/master_files/${tr.id}/transcript/${t.id}`
-            }
-          )
-        );
-      }
+      canvasTrs.items = { title: '', url: manifestUrl }
       trProps.push(canvasTrs);
-    });
+    }
     setTrancsriptProp(trProps);
+    console.log(trProps)
   };
 
-  // Render the transcript component if at least one masterfile (canvas in manifest)
-  // has a transcript file
   return (
     <IIIFPlayer manifestUrl={manifestUrl}>
       <MediaPlayer enableFileDownload={false} />
-      <StructuredNavigation />
-      {hasTranscript &&
-        (<Transcript
-          playerID="iiif-media-player"
-          transcripts={transcriptsProp}
-        />)
-      }
+      <Row>
+        <Col>
+          <StructuredNavigation />
+        </Col>
+        <Col>
+          <Transcript
+            playerID="iiif-media-player"
+            transcripts={transcriptsProp}
+          />
+        </Col>
+      </Row>
     </IIIFPlayer>
   );
 };

@@ -1203,10 +1203,9 @@
     manifesto.js "^4.1.0"
     videojs-markers-plugin "^1.0.2"
 
-"@samvera/ramp@^2.1.0-beta.0":
-  version "2.1.0-beta.0"
-  resolved "https://registry.yarnpkg.com/@samvera/ramp/-/ramp-2.1.0-beta.0.tgz#d20cf3de7d855553b09b02c1f5bfd34662a75384"
-  integrity sha512-OS3WxJmpJUCe/arfoVkHBVlUaw1NRmdk1yp7ELl9iFs5/j7D8N2vAU4/TdI+TyLhirlX6Oe7MpLAzo6pinZn4g==
+"@samvera/ramp@https://github.com/samvera-labs/ramp.git":
+  version "2.0.0"
+  resolved "https://github.com/samvera-labs/ramp.git#4153c1cedbd2f8e1a6790185c1e09ac94f543006"
   dependencies:
     "@silvermine/videojs-quality-selector" "^1.2.4"
     mammoth "^1.4.19"
