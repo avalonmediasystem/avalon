@@ -129,7 +129,7 @@ module Samvera
       end
 
       respond_to do |format|
-        if @user.update_attributes(user_params)
+        if @user.update(user_params)
           @user.save
 
           format.html { redirect_to main_app.persona_users_path, notice: 'User was successfully updated.' }#move to locales
