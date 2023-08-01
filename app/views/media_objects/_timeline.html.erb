@@ -49,14 +49,17 @@ Unless required by applicable law or agreed to in writing, software distributed
 
 <script>
 $(document).ready(function() {
-  let timelineBtn = $('#timeline-btn');
   // Enable create timeline button after derivative is loaded
   timeCheck = setInterval(enableTimelineBtn, 500);
-
   function enableTimelineBtn() {
-    if(currentPlayer && currentPlayer.duration > 0) {
-      timelineBtn[0].disabled = false;
-      clearInterval(timeCheck);
+    let player = document.getElementById('iiif-media-player');
+
+    if(player) {
+      player.player.on('loadedmetadata', () => {
+        let timelineBtn = document.getElementById('timeline-btn');
+        timelineBtn.disabled = false;
+        clearInterval(timeCheck);
+      })
     }
   }
   $('#timelineModal').on('show.bs.modal', function (e) {

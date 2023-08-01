@@ -11,3 +11,16 @@
     margin-top: 20px;
   }
 }
+
+.ramp--rails-content {
+  display: flex;
+
+  .share-tabs {
+    flex-grow: 2;
+  }
+  
+  #share-list {
+    margin-left: -9.25rem;
+  }
+  
+}

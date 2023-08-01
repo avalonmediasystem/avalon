@@ -30,10 +30,16 @@ Unless required by applicable law or agreed to in writing, software distributed
       <%= render 'embed_checkout' %>
     <% elsif @currentStream %>
       <%= render 'workflow_progress' %>
-      <%= render partial: 'timeline' if current_ability.can? :create, Timeline %>
-      <%= render 'share' if will_partial_list_render? :share %>
       <% if can_stream && @currentStream %>
-        <%= react_component("Ramp", { base_url: request.protocol+request.host_with_port, mo_id: @media_object.id, canvas_count: @media_object.master_files.size }) %>
+        <%= react_component("Ramp", 
+          {
+            base_url: request.protocol+request.host_with_port, 
+            mo_id: @media_object.id, 
+            canvas_count: @media_object.master_files.size, 
+            share: render('share'),
+            timeline: render('timeline') 
+          }
+        ) %>
       <% end %>
     <% end %>
   </div>
