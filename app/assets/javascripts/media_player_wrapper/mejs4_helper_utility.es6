@@ -185,62 +185,62 @@ class MEJSUtility {
     }
   }
 
-  /**
-   * Get new timeline scopes for active section playing
-   * @function timelineScopes
-   * @param  {player} player - reference to currentPlayer
-   * @return {[{string, int, string}]} [{label, tracks, t}] = scope label, number of tracks, mediafragment
-   */
-  timelineScopes(player) {
-    let duration = player.duration;
-    let scopes = new Array();
-    let trackCount = 1;
-    const currentStream = $('#accordion li a.current-stream');
+  //  /**
+  //  * Get new timeline scopes for active section playing
+  //  * @function timelineScopes
+  //  * @param  {player} player - reference to currentPlayer
+  //  * @return {[{string, int, string}]} [{label, tracks, t}] = scope label, number of tracks, mediafragment
+  //  */
+  //  timelineScopes(player) {
+  //   let duration = player.duration;
+  //   let scopes = new Array();
+  //   let trackCount = 1;
+  //   const currentStream = $('#accordion li a.current-stream');
 
-    if (
-      currentStream.length > 0 &&
-      !currentStream.closest('div').hasClass('card-header')
-    ) {
-      let $firstCurrentStream = $(currentStream[0]);
-      let re1 = /^\s*\d\.\s*/; // index number in front of section title '1. '
-      let re2 = /\s*\(.*\)$/; // duration notation at end of section title ' (2:00)'
-      let label = $firstCurrentStream
-        .text()
-        .replace(re1, '')
-        .replace(re2, '')
-        .trim();
-      let begin =
-        parseFloat($firstCurrentStream[0].dataset['fragmentbegin']) || 0;
-      let end =
-        parseFloat($firstCurrentStream[0].dataset['fragmentend']) || duration;
+  //   if (
+  //     currentStream.length > 0 &&
+  //     !currentStream.closest('div').hasClass('card-header')
+  //   ) {
+  //     let $firstCurrentStream = $(currentStream[0]);
+  //     let re1 = /^\s*\d\.\s*/; // index number in front of section title '1. '
+  //     let re2 = /\s*\(.*\)$/; // duration notation at end of section title ' (2:00)'
+  //     let label = $firstCurrentStream
+  //       .text()
+  //       .replace(re1, '')
+  //       .replace(re2, '')
+  //       .trim();
+  //     let begin =
+  //       parseFloat($firstCurrentStream[0].dataset['fragmentbegin']) || 0;
+  //     let end =
+  //       parseFloat($firstCurrentStream[0].dataset['fragmentend']) || duration;
 
-      scopes.push({
-        label: label,
-        tracks: trackCount,
-        t: 't=' + begin + ',' + end
-      });
+  //     scopes.push({
+  //       label: label,
+  //       tracks: trackCount,
+  //       t: 't=' + begin + ',' + end
+  //     });
 
-      let parent = $firstCurrentStream.closest('ul').closest('li');
+  //     let parent = $firstCurrentStream.closest('ul').closest('li');
 
-      while (parent.length > 0) {
-        let tracks = parent.find('li a');
-        trackCount = tracks.length;
-        begin = parseFloat(tracks[0].dataset['fragmentbegin']) || 0;
-        end = parseFloat(tracks[trackCount - 1].dataset['fragmentend']) || '';
-        scopes.push({
-          label: parent.prev().text().trim(),
-          tracks: trackCount,
-          t: 't=' + begin + ',' + end
-        });
-        parent = parent.closest('ul').closest('li');
-      }
-    }
-    trackCount = currentStream.closest('div').find('li a').length;
-    scopes.push({
-      label: player.avalonWrapper.currentStreamInfo.embed_title,
-      tracks: trackCount,
-      t: 't=0,'
-    });
-    return scopes.reverse();
-  }
+  //     while (parent.length > 0) {
+  //       let tracks = parent.find('li a');
+  //       trackCount = tracks.length;
+  //       begin = parseFloat(tracks[0].dataset['fragmentbegin']) || 0;
+  //       end = parseFloat(tracks[trackCount - 1].dataset['fragmentend']) || '';
+  //       scopes.push({
+  //         label: parent.prev().text().trim(),
+  //         tracks: trackCount,
+  //         t: 't=' + begin + ',' + end
+  //       });
+  //       parent = parent.closest('ul').closest('li');
+  //     }
+  //   }
+  //   trackCount = currentStream.closest('div').find('li a').length;
+  //   scopes.push({
+  //     label: player.avalonWrapper.currentStreamInfo.embed_title,
+  //     tracks: trackCount,
+  //     t: 't=0,'
+  //   });
+  //   return scopes.reverse();
+  // }
 }

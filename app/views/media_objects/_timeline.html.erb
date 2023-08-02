@@ -20,7 +20,7 @@ Unless required by applicable law or agreed to in writing, software distributed
   </button>
 </div>
 
-<div class="modal fade" id="timelineModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" style="display: none;">
+<div class="modal fade" id="timelineModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" style="display: none;" data-title="<%= @media_object.title %>">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
@@ -50,76 +50,85 @@ Unless required by applicable law or agreed to in writing, software distributed
 <script>
 $(document).ready(function() {
   // Enable create timeline button after derivative is loaded
-  timeCheck = setInterval(enableTimelineBtn, 500);
-  function enableTimelineBtn() {
+  timeCheck = setInterval(enableCreateTimeline, 500);
+  function enableCreateTimeline() {
     let player = document.getElementById('iiif-media-player');
-
+    let scopes = [];
+    let title, streamId;
     if(player) {
       player.player.on('loadedmetadata', () => {
         let timelineBtn = document.getElementById('timeline-btn');
         timelineBtn.disabled = false;
         clearInterval(timeCheck);
-      })
+      });
     }
-  }
-  $('#timelineModal').on('show.bs.modal', function (e) {
-    let $modalBody = $('#timelineModal').find('div#new-timeline-inputs')[0]
-    let bodyText = "<p>Choose scope for new timeline:</p>";
-    scopes = currentPlayer.avalonWrapper.mejsUtility.timelineScopes(currentPlayer)
-    for (let index = 0; index < scopes.length; index++) {
-      scope = scopes[index];
-      label = scope.label
-      if (scope.tracks > 1) {
-        label += " ("+scope.tracks+" tracks)"
-      }
-      checked = (index == scopes.length-1) ? 'checked' : ''
-      bodyText += "<div class=\"form-check\">"
-      bodyText += "<input class=\"form-check-input\" type=\"radio\" name=\"scope\" id=\"timelinescope"+index+"\" "+checked+">"
-      bodyText += "<label class=\"form-check-label\" for=\"timelinescope"+index+"\" style=\"margin-left: 5px;\"> "+label+"</label>"
-      bodyText += "</div>"
-    }
-    bodyText += "<div class=\"form-check\">"
-    bodyText += "<input class=\"form-check-input\" type=\"radio\" name=\"scope\" id=\"timelinescope_custom\">"
-    bodyText += "<label class=\"form-check-label\" for=\"timelinescope_custom\" style=\"margin-left: 5px; margin-right: 5px\"> Custom</label>"
-    bodyText += "<input type=\"text\" name=\"custombegin\" id=\"custombegin\" size=\"10\" value=\""+ mejs.Utils.secondsToTimeCode(currentPlayer.currentTime, true)+"\" \> to "
-    bodyText += "<input type=\"text\" name=\"customend\" id=\"customend\" size=\"10\" value=\""+ mejs.Utils.secondsToTimeCode(currentPlayer.duration, true)+"\" \>"
-    bodyText += "</div>"
-    $modalBody.innerHTML = bodyText;
-  })
 
-  $('#timelineModalSave').on('click', function (e) {
-    let label, t;
-    if ($('#timelinescope_custom')[0].checked) {
-      let pattern = /^(\d+:){0,2}\d+(\.\d+)?$/;
-      let beginval = $('#custombegin')[0].value;
-      let endval = $('#customend')[0].value
-      if (pattern.test(beginval) && pattern.test(endval)) {
-        label = 'custom scope';
-        t = 't='+mejs.Utils.timeCodeToSeconds($('#custombegin')[0].value)+','+mejs.Utils.timeCodeToSeconds($('#customend')[0].value)
-      } else {
-        $('#custombegin').css('color', (pattern.test(beginval) ? 'black' : 'red'))
-        $('#customend').css('color', (pattern.test(endval) ? 'black' : 'red'))
-        return;
-      }
-    } else {
-      scopes = currentPlayer.avalonWrapper.mejsUtility.timelineScopes(currentPlayer)
-      let selectedIndex = -1;
+    $('#timelineModal').on('shown.bs.modal', function (e) {
+      let $modalBody = $('#timelineModal').find('div#new-timeline-inputs')[0]
+      let bodyText = "<p>Choose scope for new timeline:</p>";
+
+      title = this.dataset.title;
+      let timelineScopes = getTimelineScopes(title);
+      scopes = timelineScopes.scopes;
+      streamId = timelineScopes.streamId;
+      let currentPlayer = document.getElementById('iiif-media-player').player;
+ 
       for (let index = 0; index < scopes.length; index++) {
-        if ($('#timelinescope'+index)[0].checked) {
-          selectedIndex = index;
-          break;
+        scope = scopes[index];
+        label = scope.label
+        if (scope.tracks > 1) {
+          label += " (" + scope.tracks + " tracks)"
         }
+        checked = (index == scopes.length-1) ? 'checked' : ''
+        bodyText += "<div class=\"form-check\">"
+        bodyText += "<input class=\"form-check-input\" type=\"radio\" name=\"scope\" id=\"timelinescope"+index+"\" " + checked + ">"
+        bodyText += "<label class=\"form-check-label\" for=\"timelinescope"+index+"\" style=\"margin-left: 5px;\"> " + label + "</label>"
+        bodyText += "</div>"
       }
-      if (selectedIndex === -1) return;
-      scope = scopes[selectedIndex];
-      label = scope.label;
-      t = scope.t
-    }
-    $('#new-timeline-title')[0].value = label;
-    $('#new-timeline-source')[0].value = '/master_files/'+currentPlayer.avalonWrapper.currentStreamInfo.id+'?'+t;
-    $('#new-timeline-form')[0].submit();
-  })
-})
+      bodyText += "<div class=\"form-check\">"
+      bodyText += "<input class=\"form-check-input\" type=\"radio\" name=\"scope\" id=\"timelinescope_custom\" data-id=\"" + streamId + "\">"
+      bodyText += "<label class=\"form-check-label\" for=\"timelinescope_custom\" style=\"margin-left: 5px; margin-right: 5px\"> Custom</label>"
+      bodyText += "<input type=\"text\" name=\"custombegin\" id=\"custombegin\" size=\"10\" value=\"" + createTimestamp(currentPlayer.currentTime(), true) +"\" \> to "
+      bodyText += "<input type=\"text\" name=\"customend\" id=\"customend\" size=\"10\" value=\"" + createTimestamp(currentPlayer.duration(), true) + "\" \>"
+      bodyText += "</div>"
+      $modalBody.innerHTML = bodyText;
+    });
+
+    $('#timelineModalSave').on('click', function (e) {
+      let label, t, id;
+      if ($('#timelinescope_custom')[0].checked) {
+        let pattern = /^(\d+:){0,2}\d+(\.\d+)?$/;
+        let beginval = $('#custombegin')[0].value;
+        let endval = $('#customend')[0].value
+        id = this.dataset.id;
+        if (pattern.test(beginval) && pattern.test(endval)) {
+          label = 'custom scope';
+          t = 't='+ createTimestamp($('#custombegin')[0].value, false)+','+ createTimestamp($('#customend')[0].value, false)
+        } else {
+          $('#custombegin').css('color', (pattern.test(beginval) ? 'black' : 'red'))
+          $('#customend').css('color', (pattern.test(endval) ? 'black' : 'red'))
+          return;
+        }
+      } else {
+        let selectedIndex = -1;
+        for (let index = 0; index < scopes.length; index++) {
+          if ($('#timelinescope'+index)[0].checked) {
+            selectedIndex = index;
+            break;
+          }
+        }
+        if (selectedIndex === -1) return;
+        scope = scopes[selectedIndex];
+        label = scope.label;
+        t = scope.t
+        id = streamId;
+      }
+      $('#new-timeline-title')[0].value = label;
+      $('#new-timeline-source')[0].value = '/master_files/'+ id + '?' + t;
+      $('#new-timeline-form')[0].submit();
+    });
+  }  
+});
 </script>
 
 <% end %>

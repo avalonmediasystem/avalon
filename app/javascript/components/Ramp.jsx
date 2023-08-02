@@ -29,8 +29,8 @@ const Ramp = ({ base_url, mo_id, canvas_count, share, timeline }) => {
     <IIIFPlayer manifestUrl={manifestUrl}>
       <MediaPlayer enableFileDownload={false} />
       <div className="ramp--rails-content">
-        <div className="mr-1" dangerouslySetInnerHTML={{ __html: timeline }} />
-        <div className="share-tabs" dangerouslySetInnerHTML={{ __html: share }} />
+        { timeline.canCreate && <div className="mr-1" dangerouslySetInnerHTML={{ __html: timeline.content }} /> }
+        { share.canShare && <div className="share-tabs" dangerouslySetInnerHTML={{ __html: share.content }} /> }
       </div>
       <Row>
         <Col>
