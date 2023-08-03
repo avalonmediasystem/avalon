@@ -37,7 +37,7 @@ Unless required by applicable law or agreed to in writing, software distributed
             mo_id: @media_object.id, 
             canvas_count: @media_object.master_files.size, 
             share: { canShare: (will_partial_list_render? :share), content: render('share') },
-            timeline: { canCreate: (current_ability.can? :create, Timeline), content: render('timeline')  }
+            timeline: { canCreate: (current_ability.can? :create, Timeline), content: render('timeline') }
           }
         ) %>
       <% end %>
@@ -60,15 +60,15 @@ Unless required by applicable law or agreed to in writing, software distributed
     // display the video player
     $(document).ready(function () {
       const isVideo = <%= @currentStreamInfo[:is_video] %>;
-      if(isVideo) {
-        const screenHeight = screen.height;
-        const playerHeight = document.getElementsByTagName('video')[0].style.height.replace(/[^-\d\.]/g, '');
-        if(screenHeight - playerHeight < 200) {
-          $('html, body').animate({
-              scrollTop: $('#user-util-collapse').offset().top
-          }, 1000);
-        }
-      }
+      // if(isVideo) {
+      //   const screenHeight = screen.height;
+      //   const playerHeight = document.getElementsByTagName('video')[0].style.height.replace(/[^-\d\.]/g, '');
+      //   if(screenHeight - playerHeight < 200) {
+      //     $('html, body').animate({
+      //         scrollTop: $('#user-util-collapse').offset().top
+      //     }, 1000);
+      //   }
+      // }
     });
   </script>
 

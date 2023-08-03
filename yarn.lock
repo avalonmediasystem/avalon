@@ -1205,7 +1205,7 @@
 
 "@samvera/ramp@https://github.com/samvera-labs/ramp.git":
   version "2.0.0"
-  resolved "https://github.com/samvera-labs/ramp.git#4153c1cedbd2f8e1a6790185c1e09ac94f543006"
+  resolved "https://github.com/samvera-labs/ramp.git#332db5facac22204589991d5e3056c837cad7b83"
   dependencies:
     "@silvermine/videojs-quality-selector" "^1.2.4"
     mammoth "^1.4.19"

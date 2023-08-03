@@ -76,3 +76,21 @@ function createTimestamp(secTime, showHrs) {
   }
   return timeStr;
 }
+
+/**
+ * Update section and lti section share links and embed code when switching sections
+ * @function updateShareLinks
+ * @return {void}
+ */
+function updateShareLinks (e) {
+  const sectionShareLink = e.detail.link_back_url;
+  const ltiShareLink = e.detail.lti_share_link;
+  const embedCode = e.detail.embed_code;
+  $('#share-link-section')
+    .val(sectionShareLink)
+    .attr('placeholder', sectionShareLink);
+  $('#ltilink-section')
+    .val(ltiShareLink)
+    .attr('placeholder', ltiShareLink);
+  $('#embed-part').val(embedCode);
+}

@@ -19,7 +19,7 @@ const Ramp = ({ base_url, mo_id, canvas_count, share, timeline }) => {
     let trProps = [];
     for(let i = 0; i < canvas_count; i++) {
       let canvasTrs = { canvasId: i, items: [] };
-      canvasTrs.items = { title: '', url }
+      canvasTrs.items = [{ title: '', url }];
       trProps.push(canvasTrs);
     }
     setTrancsriptProp(trProps);

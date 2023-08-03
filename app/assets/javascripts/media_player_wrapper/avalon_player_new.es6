@@ -157,7 +157,6 @@ class MEJSPlayer {
           this.setContextVars(response, playlistItemsT);
           this.createNewPlayer();
         }
-        this.updateShareLinks();
       })
       .fail(error => {
         console.log('error', error);
@@ -310,8 +309,8 @@ class MEJSPlayer {
 
     this.reInitializeCaptions();
 
-    // // Build time rail highlight based on structure
-    // this.buildTimeRailHighlight();
+    // Build time rail highlight based on structure
+    this.buildTimeRailHighlight();
 
     this.player.load();
     this.player.play();
@@ -342,24 +341,24 @@ class MEJSPlayer {
     }
   }
 
-  // /**
-  //  * Build time rail highlight when intializing the player instance
-  //  * and advancing to the next section/playlist item
-  //  */
-  // buildTimeRailHighlight() {
-  //   if (this.highlightRail) {
-  //     const t = this.mejsTimeRailHelper.calculateSegmentT(
-  //       this.segmentsMap[this.activeSegmentId],
-  //       this.currentStreamInfo
-  //     );
+  /**
+   * Build time rail highlight when intializing the player instance
+   * and advancing to the next section/playlist item
+   */
+  buildTimeRailHighlight() {
+    if (this.highlightRail) {
+      const t = this.mejsTimeRailHelper.calculateSegmentT(
+        this.segmentsMap[this.activeSegmentId],
+        this.currentStreamInfo
+      );
 
-  //     // Create our custom time rail highlighter element
-  //     this.highlightSpanEl = this.mejsTimeRailHelper.createTimeHighlightEl(
-  //       document.getElementById('content')
-  //     );
-  //     this.highlightTimeRail(t, this.activeSegmentId);
-  //   }
-  // }
+      // Create our custom time rail highlighter element
+      this.highlightSpanEl = this.mejsTimeRailHelper.createTimeHighlightEl(
+        document.getElementById('content')
+      );
+      this.highlightTimeRail(t, this.activeSegmentId);
+    }
+  }
 
   /**
    * Toggle captions on if toggleable and previously on
@@ -429,38 +428,38 @@ class MEJSPlayer {
     }
   }
 
-  // /**
-  //  * Show/display a highlighted segment region in MEJS's UI time rail
-  //  * @function handleSectionHighlighting
-  //  * @param {string} activeId - current active segment id - the id of section playing
-  //  * @param {number} currentTime - current player time value in seconds
-  //  * @return {void}
-  //  */
-  // handleSectionHighlighting(activeId, currentTime) {
-  //   // There is no segments map, which means we don't want to hightlight any segment
-  //   if (!this.hasSections()) {
-  //     return;
-  //   }
+  /**
+   * Show/display a highlighted segment region in MEJS's UI time rail
+   * @function handleSectionHighlighting
+   * @param {string} activeId - current active segment id - the id of section playing
+   * @param {number} currentTime - current player time value in seconds
+   * @return {void}
+   */
+  handleSectionHighlighting(activeId, currentTime) {
+    // There is no segments map, which means we don't want to hightlight any segment
+    if (!this.hasSections()) {
+      return;
+    }
 
-  //   const t = this.mejsTimeRailHelper.calculateSegmentT(
-  //     this.segmentsMap[activeId],
-  //     this.currentStreamInfo
-  //   );
+    const t = this.mejsTimeRailHelper.calculateSegmentT(
+      this.segmentsMap[activeId],
+      this.currentStreamInfo
+    );
 
-  //   // A new section is now active
-  //   if (activeId && activeId !== this.activeSegmentId) {
-  //     this.activeSegmentId = activeId;
-  //     // Need to update time rail highlighting
-  //     this.highlightTimeRail(t, this.activeSegmentId);
-  //     this.mejsUtility.highlightSectionLink(this.activeSegmentId);
-  //   } else if (!activeId) {
-  //     // No current segment, so remove highlighting
-  //     this.activeSegmentId = '';
-  //     // Need to update time rail highlighting
-  //     this.highlightTimeRail(t);
-  //     this.mejsUtility.highlightSectionLink();
-  //   }
-  // }
+    // A new section is now active
+    if (activeId && activeId !== this.activeSegmentId) {
+      this.activeSegmentId = activeId;
+      // Need to update time rail highlighting
+      this.highlightTimeRail(t, this.activeSegmentId);
+      this.mejsUtility.highlightSectionLink(this.activeSegmentId);
+    } else if (!activeId) {
+      // No current segment, so remove highlighting
+      this.activeSegmentId = '';
+      // Need to update time rail highlighting
+      this.highlightTimeRail(t);
+      this.mejsUtility.highlightSectionLink();
+    }
+  }
   /**
    * MediaElement render error callback function
    * @function handleError
@@ -526,8 +525,8 @@ class MEJSPlayer {
       this.handleEnded.bind(this)
     );
 
-    // // Show highlighted time in time rail
-    // this.buildTimeRailHighlight();
+    // Show highlighted time in time rail
+    this.buildTimeRailHighlight();
 
     // Filter playlist item player from handling MEJS's time update event
     if (Object.keys(this.playlistItem).length === 0) {
@@ -554,8 +553,8 @@ class MEJSPlayer {
       currentTime
     );
 
-    // // Handle section highlighting
-    // this.handleSectionHighlighting(activeId, currentTime);
+    // Handle section highlighting
+    this.handleSectionHighlighting(activeId, currentTime);
   }
 
   /**
@@ -567,34 +566,34 @@ class MEJSPlayer {
     return Object.keys(this.segmentsMap).length > 0;
   }
 
-  // /**
-  //  * Highlight a range of the Mediaelement player's time rail
-  //  * @function highlightTimeRail
-  //  * @param {Array} t Start end time array
-  //  * @param {string} activeSegmentId
-  //  * @return {void}
-  //  */
-  // highlightTimeRail(t, activeSegmentId) {
-  //   this.highlightSpanEl.setAttribute(
-  //     'style',
-  //     this.mejsTimeRailHelper.createTimeRailStyles(t, this.currentStreamInfo)
-  //   );
+  /**
+   * Highlight a range of the Mediaelement player's time rail
+   * @function highlightTimeRail
+   * @param {Array} t Start end time array
+   * @param {string} activeSegmentId
+   * @return {void}
+   */
+  highlightTimeRail(t, activeSegmentId) {
+    this.highlightSpanEl.setAttribute(
+      'style',
+      this.mejsTimeRailHelper.createTimeRailStyles(t, this.currentStreamInfo)
+    );
 
-  //   // This is a way to piggyback updating the track scrubber based on Sections highlighting
-  //   // calculations.
-  //   if (this.player.trackScrubberObj) {
-  //     let updatedStartEndTimes = this.mejsTimeRailHelper.getUpdatedRangeTimes(
-  //       t,
-  //       activeSegmentId,
-  //       this.currentStreamInfo
-  //     );
+    // This is a way to piggyback updating the track scrubber based on Sections highlighting
+    // calculations.
+    if (this.player.trackScrubberObj) {
+      let updatedStartEndTimes = this.mejsTimeRailHelper.getUpdatedRangeTimes(
+        t,
+        activeSegmentId,
+        this.currentStreamInfo
+      );
 
-  //     this.player.trackScrubberObj.initializeTrackScrubber(
-  //       ...updatedStartEndTimes,
-  //       this.currentStreamInfo
-  //     );
-  //   }
-  // }
+      this.player.trackScrubberObj.initializeTrackScrubber(
+        ...updatedStartEndTimes,
+        this.currentStreamInfo
+      );
+    }
+  }
 
   /**
    * Configure and create the MediaElement instance
@@ -784,23 +783,5 @@ class MEJSPlayer {
     );
     const currentIdIndex = [...sectionsIdArray].indexOf(currentStreamInfo.id);
     this.canvasIndex = currentIdIndex;
-  }
-
-  /**
-   * Update section and lti section share links and embed code when switching sections
-   * @function updateShareLinks
-   * @return {void}
-   */
-  updateShareLinks() {
-    const sectionShareLink = this.currentStreamInfo.link_back_url;
-    const ltiShareLink = this.currentStreamInfo.lti_share_link;
-    const embedCode = this.currentStreamInfo.embed_code;
-    $('#share-link-section')
-      .val(sectionShareLink)
-      .attr('placeholder', sectionShareLink);
-    $('#ltilink-section')
-      .val(ltiShareLink)
-      .attr('placeholder', ltiShareLink);
-    $('#embed-part').val(embedCode);
   }
 }
