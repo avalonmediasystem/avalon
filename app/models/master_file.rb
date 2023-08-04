@@ -585,7 +585,7 @@ class MasterFile < ActiveFedora::Base
     # Fixes https://github.com/avalonmediasystem/avalon/issues/3474
     target_location = File.basename(details[:location]).split('?')[0]
     target = File.join(Dir.tmpdir, target_location)
-    File.open(target,'wb') { |f| open(details[:location]) { |io| f.write(io.read) } }
+    File.open(target,'wb') { |f| URI.open(details[:location]) { |io| f.write(io.read) } }
     return target, details[:offset]
   end
 

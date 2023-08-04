@@ -37,7 +37,7 @@ module Avalon
       @base = base
       @playlist = { files: [], playlists: [] }
       tags = {}
-      playlist.each do |l|
+      playlist.each_line do |l|
         line = l.chomp
         if line =~ /^#EXTM3U/
           # ignore
