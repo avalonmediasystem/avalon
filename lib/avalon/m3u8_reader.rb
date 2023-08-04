@@ -12,9 +12,6 @@
 #   specific language governing permissions and limitations under the License.
 # ---  END LICENSE_HEADER BLOCK  ---
 
-require 'open-uri'
-require 'uri'
-
 module Avalon
   class M3U8Reader
     attr_reader :playlist
@@ -24,7 +21,8 @@ module Avalon
         new(io.read, recursive: recursive)
       elsif io.is_a?(String)
         if io =~ /^https?:/
-          open(io, "Referer" => Rails.application.routes.url_helpers.root_url) { |resp| new(resp, Addressable::URI.parse(io), recursive: recursive) }
+          resp = Faraday.get(io, {}, { "Referer" => Rails.application.routes.url_helpers.root_url })
+          new(resp.body, Addressable::URI.parse(io), recursive: recursive)
         elsif io =~ /\.m3u8?$/i
           new(File.read(io), io, recursive: recursive)
         else

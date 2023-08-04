@@ -14,7 +14,6 @@
 
 require 'fileutils'
 require 'hooks'
-require 'open-uri'
 require 'avalon/file_resolver'
 require 'avalon/m3u8_reader'
 
@@ -576,7 +575,10 @@ class MasterFile < ActiveFedora::Base
     # Fixes https://github.com/avalonmediasystem/avalon/issues/3474
     target_location = File.basename(details[:location]).split('?')[0]
     target = File.join(Dir.tmpdir, target_location)
-    File.open(target,'wb') { |f| open(details[:location]) { |io| f.write(io.read) } }
+    File.open(target,'wb') do |f|
+      resp = Faraday.get(details[:location])
+      f.write(resp.body)
+    end
     return target, details[:offset]
   end
 
