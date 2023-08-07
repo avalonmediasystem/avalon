@@ -40,4 +40,12 @@ module UploadFormHelper
       {}
     end
   end
+
+  # def multipart_upload_data
+  #   if direct_upload?
+  #     bucket = Aws::S3::Bucket.new(name: Settings.encoding.masterfile_bucket)
+  #     multipart_upload = Aws::S3::Client.new.create_multipart_upload(bucket: bucket.name, key: 'lo')
+  #     { 'upload_id' => multipart_upload[:upload_id] }
+  #   end
+  # end
 end

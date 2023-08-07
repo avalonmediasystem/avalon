@@ -75,6 +75,49 @@ services:
   redis-test:
     <<: *redis
 
+  uppy:
+    image: transloadit/companion
+    # build:
+    #   context: .
+    #   dockerfile: Dockerfile
+    # volumes:
+    #   - /app/node_modules
+    #   - /mnt/uppy-server-data:/mnt/uppy-server-data
+    ports:
+      - "3020:3020"
+    networks:
+      internal:
+      external:
+    environment:
+      - COMPANION_S3_KEY=minio
+      - COMPANION_S3_SECRET=minio123
+      - COMPANION_S3_BUCKET=masterfiles
+      # - COMPANION_S3_REGION=us-east-1
+      # AWS config
+      - COMPANION_AWS_KEY=minio
+      - COMPANION_AWS_SECRET=minio123
+      - COMPANION_AWS_BUCKET=masterfiles
+      # - COMPANION_AWS_REGION=us-east-1
+      # - COMPANION_AWS_ENDPOINT="http://localhost:9000"
+      # to enable S3 Transfer Acceleration (default: false)
+      - COMPANION_AWS_USE_ACCELERATE_ENDPOINT="false"
+      # to set a canned ACL for uploaded objects: https://docs.aws.amazon.com/AmazonS3/latest/dev/acl-overview.html#canned-acl
+      - COMPANION_AWS_ACL="private"
+      # - COMPANION_S3_ENDPOINT=http://localhost:9000
+      # any long set of random characters for the server session
+      - COMPANION_SECRET="shh!Issa Secret!"
+      # specifying a secret file will override a directly set secret
+      # - COMPANION_SECRET_FILE="PATH/TO/COMPANION/SECRET/FILE"
+      # corresponds to the server.host option
+      - COMPANION_DOMAIN="localhost"
+      - COMPANION_PROTOCOL="http"
+      # corresponds to the filePath option
+      - COMPANION_DATADIR=/tmp
+      # to enable Google Drive
+      - COMPANION_GOOGLE_KEY='826510525745-v1p7b4nlv4h5o1k3qde7r526o5l3un4s.apps.googleusercontent.com'
+      - COMPANION_GOOGLE_SECRET='xoK-_Di1Ijt6wsY1yvilpa2B'
+
+
   avalon: &avalon
     image: avalonmediasystem/avalon:7.4.0-dev
     build:
@@ -88,6 +131,7 @@ services:
       - redis
       - hls
       - minio
+      - uppy
     environment:
       - APP_NAME=avalon
       - BUNDLE_FLAGS=--with development postgres --without production test
@@ -166,6 +210,8 @@ services:
     environment:
       MINIO_ACCESS_KEY: minio
       MINIO_SECRET_KEY: minio123
+      # MINIO_SERVER_URL: http://minio:9000
+      # MINIO_BROWSER_REDIRECT_URL: http://minio:9000
     volumes:
       - data:/data
     ports:

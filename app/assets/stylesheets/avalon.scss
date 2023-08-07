@@ -367,16 +367,6 @@ span.constraints-label {
   white-space: nowrap;
 }
 
-.fileinput {
-  max-width: 500px;
-
-  .form-control {
-    max-width: 500px;
-    white-space: nowrap;
-    overflow-x: hidden;
-  }
-}
-
 a[data-trigger='submit'] {
   text-decoration: none;
   color: $dark;
@@ -990,12 +980,6 @@ h5.card-title {
   word-break: break-all;
 }
 
-// Fixes the input displaying over the dropdown datepicker calendar
-.fileinput {
-  position: relative;
-  z-index: 1;
-}
-
 .is-invalid {
   border-color: $danger;
 }
@@ -1109,37 +1093,6 @@ h5.card-title {
       padding: 1px 10px 2px;
     }
   }
-}
-
-/* File upload step */
-.file-upload-buttons {
-  display: block;
-  padding-top: 5px;
-  min-width: 75px;
-  margin-right: 5px;
-  height: 30px;
-}
-
-.fileinput-filename {
-  width: auto;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  padding-top: 5px;
-}
-
-.form-disabled {
-  pointer-events: none;
-  opacity: 0.4;
-}
-
-.fileinput-close {
-  padding-top: 5px;
-  float: none;
-}
-
-#file-upload {
-  display: flex;
 }
 
 /* DataTables in Playlists, Timelines, Persona Users, and Encode Dashboard */
