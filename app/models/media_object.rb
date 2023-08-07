@@ -116,6 +116,9 @@ class MediaObject < ActiveFedora::Base
   property :lending_period, predicate: ::RDF::Vocab::SCHEMA.eligibleDuration, multiple: false do |index|
     index.as :stored_sortable
   end
+  property :series, predicate: ::RDF::Vocab::SCHEMA.Series, multiple: true do |index|
+    index.as :stored_sortable
+  end
 
   ordered_aggregation :master_files, class_name: 'MasterFile', through: :list_source
   # ordered_aggregation gives you accessors media_obj.master_files and media_obj.ordered_master_files
@@ -260,6 +263,7 @@ class MediaObject < ActiveFedora::Base
       solr_doc["date_ingested_sim"] = self.create_date.strftime "%F" if self.create_date.present?
       solr_doc['avalon_resource_type_ssim'] = self.avalon_resource_type.map(&:titleize)
       solr_doc['identifier_ssim'] = self.identifier.map(&:downcase)
+      solr_doc['series_ssim'] = self.series
       if include_child_fields
         fill_in_solr_fields_that_need_master_files(solr_doc)
       elsif id.present? # avoid error in test suite
@@ -296,6 +300,21 @@ class MediaObject < ActiveFedora::Base
   # validate against a known controlled vocabulary. This one will take some thought
   # and research as opposed to being able to just throw something together in an ad hoc
   # manner
+
+  def self.autocomplete(query, id)
+    collection_unit = SpeedyAF::Proxy::MediaObject.find(id).collection.unit
+    # To take advantage of solr automagically escaping characters the query has to be in single quotes.
+    # This runs counter to ruby's string interpolation which requires the string to be in double quotes.
+    # We can get around this by using the format_string construction.
+    solr_query = 'unit_ssim:"%{collection_unit}" AND series_ssim:*%{query}*' % {collection_unit: collection_unit, query: query}
+    param = { q: solr_query, fl: ["series_ssim"], rows: 1_000_000 }
+    # This solr search returns an array of hashes: [{ series_ssim => [values] }].
+    # Plucking series_ssim converts it to an array of arrays: [[values]].
+    # Flatten converts the array of arrays to a single array: [values].
+    # It is possible for an empty string to be returned. Reject blank values to prevent blank options being returned in typeahead.
+    search_array = ActiveFedora::SolrService.instance.conn.get('select', params: param)["response"]["docs"].pluck("series_ssim").flatten.sort.uniq.reject(&:blank?)
+    search_array.map { |value| { display: value } }
+  end
 
   def assign_id!
     self.id = assign_id if self.id.blank?

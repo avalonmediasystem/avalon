@@ -15,8 +15,8 @@ Unless required by applicable law or agreed to in writing, software distributed
 %>
 <% display_value = (value.present? && options[:autocomplete_display_key].present?) ? value[options[:autocomplete_display_key]] : value %>
 <% id_value = (value.present? && options[:autocomplete_id_key].present?) ? value[options[:autocomplete_id_key]] : value %>
-<%= text_field_tag "display_#{fieldname}", display_value || '', 
-    class: "typeahead from-model form-control", 
-    data: { model: options[:autocomplete_model], target: sanitize_to_id(fieldname), validate: options[:autocomplete_validate] },
+<%= text_field_tag "display_#{fieldname}", display_value || '',
+    class: "typeahead from-model form-control",
+    data: { model: options[:autocomplete_model], target: sanitize_to_id(fieldname), validate: options[:autocomplete_validate], media_object_id: @media_object.id },
     disabled: !can?( :update, @media_object) %>
 <%= hidden_field_tag fieldname, id_value || '' %>
