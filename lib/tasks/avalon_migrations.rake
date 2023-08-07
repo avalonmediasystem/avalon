@@ -20,7 +20,7 @@ namespace :avalon do
         next unless collection.collection_managers.blank?
         # initialize to old behavior
         collection.collection_managers = collection.edit_users & ( Avalon::RoleControls.users("manager") | (Avalon::RoleControls.users("administrator") || []) )
-        collection.save!
+        collection.save!(validate: false)
       end
     end
   end
