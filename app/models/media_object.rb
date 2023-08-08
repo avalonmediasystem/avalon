@@ -301,21 +301,6 @@ class MediaObject < ActiveFedora::Base
   # and research as opposed to being able to just throw something together in an ad hoc
   # manner
 
-  def self.autocomplete(query, id)
-    collection_unit = SpeedyAF::Proxy::MediaObject.find(id).collection.unit
-    # To take advantage of solr automagically escaping characters the query has to be in single quotes.
-    # This runs counter to ruby's string interpolation which requires the string to be in double quotes.
-    # We can get around this by using the format_string construction.
-    solr_query = 'unit_ssim:"%{collection_unit}" AND series_ssim:*%{query}*' % {collection_unit: collection_unit, query: query}
-    param = { q: solr_query, fl: ["series_ssim"], rows: 1_000_000 }
-    # This solr search returns an array of hashes: [{ series_ssim => [values] }].
-    # Plucking series_ssim converts it to an array of arrays: [[values]].
-    # Flatten converts the array of arrays to a single array: [values].
-    # It is possible for an empty string to be returned. Reject blank values to prevent blank options being returned in typeahead.
-    search_array = ActiveFedora::SolrService.instance.conn.get('select', params: param)["response"]["docs"].pluck("series_ssim").flatten.sort.uniq.reject(&:blank?)
-    search_array.map { |value| { display: value } }
-  end
-
   def assign_id!
     self.id = assign_id if self.id.blank?
   end
@@ -383,6 +368,33 @@ class MediaObject < ActiveFedora::Base
   def reload
     @master_file_docs = nil
     super
+  end
+
+  def self.autocomplete(query, id)
+    return if id.blank?
+    collection_unit = SpeedyAF::Proxy::MediaObject.find(id).collection.unit
+    # To take advantage of solr automagically escaping characters the query has to be in single quotes.
+    # This runs counter to ruby's string interpolation which requires the string to be in double quotes.
+    # We can get around this by using the format_string construction.
+    solr_query = { q: 'unit_ssim:"%{collection_unit}"' % { collection_unit: collection_unit } }
+    query_params = {
+      fl: ["series_ssim"],
+      facet: "on",
+      "facet.field" => "series_ssim",
+      "facet.contains" => "#{query}",
+      "facet.contains.ignoreCase" => "true",
+      "facet.exists" => "true",
+      "facet.limit" => "-1",
+      rows: 0
+    }
+    param = solr_query.merge(query_params)
+
+    # The search results are returned as an array alternating the returned facet and the count of that facet,
+    # e.g. ['Series', 1, 'Test', 1]. We safely retrieve the facet by converting the array to a hash of key = facet,
+    # value = count and then only looking at the keys.
+    search_array = ActiveFedora::SolrService.instance.conn.get('select', params: param).dig("facet_counts", "facet_fields", "series_ssim").each_slice(2).to_h.keys
+
+    search_array.map { |value| { display: value } }
   end
 
   private
