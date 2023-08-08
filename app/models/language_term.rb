@@ -30,7 +30,7 @@ class LanguageTerm
     end
     alias_method :[], :find
 
-    def autocomplete(query, id)
+    def autocomplete(query, _id = nil)
       map = query.present? ? self.map.select{ |k,v| /#{query}/i.match(v[:text]) if v } : self.map
       map.to_a.uniq.map{ |e| {id: e[1][:code], display: e[1][:text] }}.sort{ |x,y| x[:display]<=>y[:display] }
     end

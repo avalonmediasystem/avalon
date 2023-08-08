@@ -32,7 +32,7 @@ class ExternalGroup
     self.ldap_lookup("#{query}*", size: 10)
   end
 
-  def self.autocomplete(query, id = nil)
+  def self.autocomplete(query, _id = nil)
     Course.autocomplete(query) + self.ldap_autocomplete(query)
   end
 end

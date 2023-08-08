@@ -381,7 +381,7 @@ class MediaObject < ActiveFedora::Base
       fl: ["series_ssim"],
       facet: "on",
       "facet.field" => "series_ssim",
-      "facet.contains" => "#{query}",
+      "facet.contains" => query.to_s,
       "facet.contains.ignoreCase" => "true",
       "facet.exists" => "true",
       "facet.limit" => "-1",
