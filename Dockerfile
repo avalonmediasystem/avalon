@@ -111,7 +111,7 @@ RUN         bundle config set --local without 'development test' \
 
 
 # Install node modules
-FROM        node:12-bullseye-slim as node-modules
+FROM        node:14-bullseye-slim as node-modules
 LABEL       stage=build
 LABEL       project=avalon
 RUN         apt-get update && apt-get install -y --no-install-recommends git ca-certificates
