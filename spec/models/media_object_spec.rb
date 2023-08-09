@@ -1108,25 +1108,25 @@ describe MediaObject do
   end
 
   describe ".autocomplete" do
-    let(:mo1) { FactoryBot.create(:media_object, collection: collection1) }
-    let(:mo2) { FactoryBot.create(:media_object, collection: collection1) }
-    let(:mo3) { FactoryBot.create(:media_object, collection: collection2) }
+    before :each do
+      allow(Admin::Collection).to receive(:units).and_return(['Default', 'Test'])
+    end
+    let!(:mo1) { FactoryBot.create(:media_object, collection: collection1, series: ['Test 1', 'Alpha']) }
+    let!(:mo2) { FactoryBot.create(:media_object, collection: collection1, series: ['Test 1', 'Test 2']) }
+    let!(:mo3) { FactoryBot.create(:media_object, collection: collection2, series: ['Test 3']) }
     let(:collection1) { FactoryBot.create(:collection, unit: 'Default') }
     let(:collection2) { FactoryBot.create(:collection, unit: 'Test') }
 
-    before :each do
-      allow(Admin::Collection).to receive(:units).and_return(['Default', 'Test'])
-      mo1.series = ['Test 1', 'Alpha']
-      mo2.series = ['Test 1', 'Test 2']
-      mo3.series = ['Test 3']
-      mo1.save & mo2.save & mo3.save
-    end
 
     it "should return all series within the parent collection's unit that include the query string" do
       expect(MediaObject.autocomplete('Test', mo1.id)).to include({ display: 'Test 1' })
       expect(MediaObject.autocomplete('Test', mo1.id)).to include({ display: 'Test 2' })
       expect(MediaObject.autocomplete('Test', mo1.id)).not_to include({ display: 'Alpha'})
       expect(MediaObject.autocomplete('Test', mo1.id)).not_to include({ display: 'Test 3' })
+    end
+
+    it 'should return results without duplicates' do
+      expect(MediaObject.autocomplete('Test', mo1.id).count({ display: 'Test 1' })).to eq 1
     end
 
     it "should wildcard match" do

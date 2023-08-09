@@ -117,7 +117,7 @@ class MediaObject < ActiveFedora::Base
     index.as :stored_sortable
   end
   property :series, predicate: ::RDF::Vocab::SCHEMA.Series, multiple: true do |index|
-    index.as :stored_sortable
+    index.as :symbol
   end
 
   ordered_aggregation :master_files, class_name: 'MasterFile', through: :list_source
@@ -263,7 +263,6 @@ class MediaObject < ActiveFedora::Base
       solr_doc["date_ingested_sim"] = self.create_date.strftime "%F" if self.create_date.present?
       solr_doc['avalon_resource_type_ssim'] = self.avalon_resource_type.map(&:titleize)
       solr_doc['identifier_ssim'] = self.identifier.map(&:downcase)
-      solr_doc['series_ssim'] = self.series
       if include_child_fields
         fill_in_solr_fields_that_need_master_files(solr_doc)
       elsif id.present? # avoid error in test suite
