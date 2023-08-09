@@ -1126,7 +1126,7 @@ describe MediaObject do
       expect(MediaObject.autocomplete('Test', mo1.id)).to include({ display: 'Test 1' })
       expect(MediaObject.autocomplete('Test', mo1.id)).to include({ display: 'Test 2' })
       expect(MediaObject.autocomplete('Test', mo1.id)).not_to include({ display: 'Alpha'})
-      expect(MediaObject.autocomplete('Test', mo1.id)).not_to include({ diaplay: 'Test 3' })
+      expect(MediaObject.autocomplete('Test', mo1.id)).not_to include({ display: 'Test 3' })
     end
 
     it "should wildcard match" do
