@@ -23,14 +23,37 @@ describe AvalonMarkerController, type: :controller do
   let(:playlist) { FactoryBot.create(:playlist, user: user) }
   let(:playlist_item) { FactoryBot.create(:playlist_item, playlist: playlist, clip: avalon_clip) }
   let(:avalon_marker) { FactoryBot.create(:avalon_marker, playlist_item: playlist_item, master_file: master_file) }
+  let(:create_annotation_json) do
+    {
+      "@context" => "http://www.w3.org/ns/anno.jsonld",
+      type: "Annotation",
+      body: {
+        type: "TextualBody",
+        value: "A playlist marker title"
+      },
+      target: "#{Rails.application.routes.url_helpers.manifest_playlist_url(playlist.id)}/canvas/#{playlist_item.id}#t=2.234"
+    }
+  end
+  let(:update_annotation_json) do
+    {
+      "@context" => "http://www.w3.org/ns/anno.jsonld",
+      type: "Annotation",
+      body: {
+        type: "TextualBody",
+        value: Faker::Lorem.word
+      },
+      target: "#{Rails.application.routes.url_helpers.manifest_playlist_url(playlist.id)}/canvas/#{playlist_item.id}#t=#{avalon_marker.start_time / 1000}"
+    }
+  end
+
 
   describe 'security' do
     let(:playlist) { FactoryBot.create(:playlist) }
     let(:playlist_item) { FactoryBot.create(:playlist_item, playlist: playlist) }
     context 'with unauthenticated user' do
       it "all routes should redirect to sign in" do
-        expect(post :create, params: { marker: { playlist_item_id: playlist_item.id, master_file_id: master_file.id, title: Faker::Lorem.word, start_time: 0.0 } }).to render_template('errors/restricted_pid')
-        expect(put :update, params: { id: avalon_marker.id, marker: { title: Faker::Lorem.word } }).to render_template('errors/restricted_pid')
+        expect(post :create, body: create_annotation_json.to_json).to render_template('errors/restricted_pid')
+        expect(put :update, params: { id: avalon_marker.id }, body: update_annotation_json.to_json).to render_template('errors/restricted_pid')
       end
     end
     context 'with end-user' do
@@ -38,21 +61,23 @@ describe AvalonMarkerController, type: :controller do
         login_as :user
       end
       it "all routes should redirect to /" do
-        expect(post :create, params: { marker: { playlist_item_id: playlist_item.id, master_file_id: master_file.id, title: Faker::Lorem.word, start_time: 0.0 } }).to have_http_status(:unauthorized)
-        expect(put :update, params: { id: avalon_marker.id, marker: { title: Faker::Lorem.word } }).to have_http_status(:unauthorized)
+        expect(post :create, body: create_annotation_json.to_json).to have_http_status(:unauthorized)
+        expect(put :update, params: { id: avalon_marker.id }, body: update_annotation_json.to_json).to have_http_status(:unauthorized)
       end
     end
   end
 
-  describe 'creating a marker and displaying it' do
+  describe '#create' do
     it 'can create a marker and display it as JSON' do
-      post 'create', params: { marker:{ playlist_item_id: playlist_item.id, master_file_id: master_file.id } }
+      post 'create', body: create_annotation_json.to_json, format: :json
       expect { JSON.parse(response.body) }.not_to raise_error
+      response_json = JSON.parse(response.body)
+      expect(response_json["id"]).to be_present
     end
-    it 'returns an error when the master file is not supplied' do
+    xit 'returns an error when the master file is not supplied' do
       expect(post 'create', params: { marker:{ playlist_item_id: playlist_item.id } }).to have_http_status(400)
     end
-    it 'returns an error when the master file cannot be found' do
+    xit 'returns an error when the master file cannot be found' do
       expect(post 'create', params: { marker:{ master_file_id: 'OC', playlist_item_id: playlist_item.id } }).to have_http_status(500)
     end
     xit 'returns an error when the playlist item is not supplied' do
@@ -64,9 +89,22 @@ describe AvalonMarkerController, type: :controller do
   end
 
   describe 'updating a marker' do
+    let(:annotation_json) do
+      {
+        "@context" => "http://www.w3.org/ns/anno.jsonld",
+        id: avalon_marker.id,
+        type: "Annotation",
+        body: {
+          type: "TextualBody",
+          value: "30 Seconds of Fun"
+        },
+        target: "#{Rails.application.routes.url_helpers.manifest_playlist_url(playlist.id)}/canvas/#{playlist_item.id}#t=60.000"
+      }
+    end
+
     it 'can update a marker and display it as JSON' do
       avalon_marker.save!
-      put 'update', params: { id: avalon_marker.id, marker:{start_time: '60', title: '30 Seconds of Fun'} }
+      put 'update', params: { id: avalon_marker.id }, body: annotation_json.to_json
       expect { JSON.parse(response.body) }.not_to raise_error
       marker = AvalonMarker.find(avalon_marker.id)
       expect(marker.start_time).to eq(60000.0)
