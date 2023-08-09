@@ -24,7 +24,10 @@ class AvalonMarkerController < ApplicationController
   # @example Rails Console Call To Show Marker that is resolved by AvalonMarker.where(uuid: '56')[0]
   #    app.get('/avalon_marker/56')
   def show
-    render json: @marker.to_json
+    unless can? :read, @marker
+      render json: { message: 'You are not authorized to perform this action.' }, status: 401 and return
+    end
+    render json: annotation_response_json(@marker)
   end
 
   # Creates a marker and renders it as JSON

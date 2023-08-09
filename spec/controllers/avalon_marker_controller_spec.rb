@@ -17,7 +17,8 @@ require 'rails_helper'
 describe AvalonMarkerController, type: :controller do
 
   let(:valid_session) { {} }
-  let(:master_file) { FactoryBot.create(:master_file, :with_media_object, :with_derivative, duration: "200000") }
+  let(:master_file) { FactoryBot.create(:master_file, :with_derivative, media_object: media_object, duration: "200000") }
+  let(:media_object) { FactoryBot.create(:published_media_object, read_users: [user]) }
   let(:avalon_clip) { FactoryBot.create(:avalon_clip, master_file: master_file) }
   let(:user) { login_as :user }
   let(:playlist) { FactoryBot.create(:playlist, user: user) }
@@ -50,10 +51,13 @@ describe AvalonMarkerController, type: :controller do
   describe 'security' do
     let(:playlist) { FactoryBot.create(:playlist) }
     let(:playlist_item) { FactoryBot.create(:playlist_item, playlist: playlist) }
+    let(:media_object) { FactoryBot.create(:published_media_object) }
     context 'with unauthenticated user' do
       it "all routes should redirect to sign in" do
+        expect(get :show, params: { id: avalon_marker.id }).to render_template('errors/restricted_pid')
         expect(post :create, body: create_annotation_json.to_json).to render_template('errors/restricted_pid')
         expect(put :update, params: { id: avalon_marker.id }, body: update_annotation_json.to_json).to render_template('errors/restricted_pid')
+        expect(delete :destroy, params: { id: avalon_marker.id }).to render_template('errors/restricted_pid')
       end
     end
     context 'with end-user' do
@@ -61,9 +65,22 @@ describe AvalonMarkerController, type: :controller do
         login_as :user
       end
       it "all routes should redirect to /" do
+        expect(get :show, params: { id: avalon_marker.id }).to have_http_status(:unauthorized)
         expect(post :create, body: create_annotation_json.to_json).to have_http_status(:unauthorized)
         expect(put :update, params: { id: avalon_marker.id }, body: update_annotation_json.to_json).to have_http_status(:unauthorized)
+        expect(delete :destroy, params: { id: avalon_marker.id }).to have_http_status(:unauthorized)
       end
+    end
+  end
+
+  describe '#show' do
+    it 'returns a web annotation json object' do
+      get :show, params: { id: avalon_marker.id }
+      expect { JSON.parse(response.body) }.not_to raise_error
+      response_json = JSON.parse(response.body)
+      expect(response_json["id"]).to include avalon_marker.id.to_s
+      expect(response_json["body"]["value"]).to eq avalon_marker.title
+      expect(response_json["target"]).to eq "#{Rails.application.routes.url_helpers.manifest_playlist_url(playlist.id)}/canvas/#{playlist_item.id}#t=#{avalon_marker.start_time / 1000}"
     end
   end
 
