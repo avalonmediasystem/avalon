@@ -70,7 +70,7 @@ describe IiifPlaylistCanvasPresenter do
       end
 
       it 'handles item start and end time' do
-        expect(subject.url).to include("t=#{playlist_item.start_time / 1000},#{playlist_item.end_time / 1000}")
+        expect(subject.url).to include("#t=#{playlist_item.start_time / 1000},#{playlist_item.end_time / 1000}")
       end
     end
   end
@@ -101,7 +101,7 @@ describe IiifPlaylistCanvasPresenter do
     subject { presenter.range }
 
     it 'generates the clip range' do
-    	expect(subject.label.to_s).to eq "{\"none\"=>[\"#{master_file.embed_title}\"]}"
+    	expect(subject.label.to_s).to eq "{\"none\"=>[\"#{playlist_item.title}\"]}"
     	expect(subject.items.size).to eq 1
     	expect(subject.items.first).to be_a IiifPlaylistCanvasPresenter
     end

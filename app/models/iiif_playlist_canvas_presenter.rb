@@ -40,7 +40,7 @@ class IiifPlaylistCanvasPresenter
   end
 
   def range
-    simple_iiif_range
+    simple_iiif_range(playlist_item.title)
   end
 
   # @return [IIIFManifest::V3::DisplayContent] the display content required by the manifest builder.
@@ -60,7 +60,7 @@ class IiifPlaylistCanvasPresenter
     end
 
     def video_display_content(quality)
-      IIIFManifest::V3::DisplayContent.new(CGI.unescape(Rails.application.routes.url_helpers.hls_manifest_master_file_url(master_file.id, quality: quality, t: "#{playlist_item.start_time / 1000},#{playlist_item.end_time / 1000}")),
+      IIIFManifest::V3::DisplayContent.new(CGI.unescape(Rails.application.routes.url_helpers.hls_manifest_master_file_url(master_file.id, quality: quality, anchor: fragment_identifier)),
                                            **manifest_attributes(quality, 'Video'))
     end
 
@@ -69,7 +69,7 @@ class IiifPlaylistCanvasPresenter
     end
 
     def audio_display_content(quality)
-      IIIFManifest::V3::DisplayContent.new(CGI.unescape(Rails.application.routes.url_helpers.hls_manifest_master_file_url(master_file.id, quality: quality, t: "#{playlist_item.start_time / 1000},#{playlist_item.end_time / 1000}")),
+      IIIFManifest::V3::DisplayContent.new(CGI.unescape(Rails.application.routes.url_helpers.hls_manifest_master_file_url(master_file.id, quality: quality, anchor: fragment_identifier)),
                                            **manifest_attributes(quality, 'Sound'))
     end
 
@@ -83,6 +83,10 @@ class IiifPlaylistCanvasPresenter
       stream_info[:stream_hls].collect do |d|
         [d[:quality], d[:url]]
       end
+    end
+
+    def fragment_identifier
+      "t=#{playlist_item.start_time / 1000},#{playlist_item.end_time / 1000}"
     end
 
     def simple_iiif_range(label = stream_info[:embed_title])
