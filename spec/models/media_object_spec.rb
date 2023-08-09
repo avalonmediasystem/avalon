@@ -1106,4 +1106,36 @@ describe MediaObject do
       end
     end
   end
+
+  describe ".autocomplete" do
+    before :each do
+      allow(Admin::Collection).to receive(:units).and_return(['Default', 'Test'])
+    end
+    let!(:mo1) { FactoryBot.create(:media_object, collection: collection1, series: ['Test 1', 'Alpha']) }
+    let!(:mo2) { FactoryBot.create(:media_object, collection: collection1, series: ['Test 1', 'Test 2']) }
+    let!(:mo3) { FactoryBot.create(:media_object, collection: collection2, series: ['Test 3']) }
+    let(:collection1) { FactoryBot.create(:collection, unit: 'Default') }
+    let(:collection2) { FactoryBot.create(:collection, unit: 'Test') }
+
+
+    it "should return all series within the parent collection's unit that include the query string" do
+      expect(MediaObject.autocomplete('Test', mo1.id)).to include({ display: 'Test 1' })
+      expect(MediaObject.autocomplete('Test', mo1.id)).to include({ display: 'Test 2' })
+      expect(MediaObject.autocomplete('Test', mo1.id)).not_to include({ display: 'Alpha'})
+      expect(MediaObject.autocomplete('Test', mo1.id)).not_to include({ display: 'Test 3' })
+    end
+
+    it 'should return results without duplicates' do
+      expect(MediaObject.autocomplete('Test', mo1.id).count({ display: 'Test 1' })).to eq 1
+    end
+
+    it "should wildcard match" do
+      expect(MediaObject.autocomplete('ph', mo1.id)).to include({ display: 'Alpha' })
+    end
+
+    it "should be case insensitive" do
+      expect(MediaObject.autocomplete('tes', mo1.id)).to include({ display: 'Test 1' })
+      expect(MediaObject.autocomplete('te', mo1.id)).to include({ display: 'Test 2' })
+    end
+  end
 end

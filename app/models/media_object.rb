@@ -116,6 +116,9 @@ class MediaObject < ActiveFedora::Base
   property :lending_period, predicate: ::RDF::Vocab::SCHEMA.eligibleDuration, multiple: false do |index|
     index.as :stored_sortable
   end
+  property :series, predicate: ::RDF::Vocab::SCHEMA.Series, multiple: true do |index|
+    index.as :symbol
+  end
 
   ordered_aggregation :master_files, class_name: 'MasterFile', through: :list_source
   # ordered_aggregation gives you accessors media_obj.master_files and media_obj.ordered_master_files
@@ -364,6 +367,33 @@ class MediaObject < ActiveFedora::Base
   def reload
     @master_file_docs = nil
     super
+  end
+
+  def self.autocomplete(query, id)
+    return if id.blank?
+    collection_unit = SpeedyAF::Proxy::MediaObject.find(id).collection.unit
+    # To take advantage of solr automagically escaping characters the query has to be in single quotes.
+    # This runs counter to ruby's string interpolation which requires the string to be in double quotes.
+    # We can get around this by using the format_string construction.
+    solr_query = { q: 'unit_ssim:"%{collection_unit}"' % { collection_unit: collection_unit } }
+    query_params = {
+      fl: ["series_ssim"],
+      facet: "on",
+      "facet.field" => "series_ssim",
+      "facet.contains" => query.to_s,
+      "facet.contains.ignoreCase" => "true",
+      "facet.exists" => "true",
+      "facet.limit" => "-1",
+      rows: 0
+    }
+    param = solr_query.merge(query_params)
+
+    # The search results are returned as an array alternating the returned facet and the count of that facet,
+    # e.g. ['Series', 1, 'Test', 1]. We safely retrieve the facet by converting the array to a hash of key = facet,
+    # value = count and then only looking at the keys.
+    search_array = ActiveFedora::SolrService.instance.conn.get('select', params: param).dig("facet_counts", "facet_fields", "series_ssim").each_slice(2).to_h.keys
+
+    search_array.map { |value| { display: value } }
   end
 
   private

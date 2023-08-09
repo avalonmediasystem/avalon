@@ -132,7 +132,7 @@ class User < ActiveRecord::Base
     find_or_create_by_username_or_email(auth_hash.uid, auth_hash.info.email, 'lti')
   end
 
-  def self.autocomplete(query)
+  def self.autocomplete(query, _id = nil)
     self.where("username LIKE :q OR email LIKE :q", q: "%#{query}%").collect { |user|
       { id: user.user_key, display: user.user_key }
     }
