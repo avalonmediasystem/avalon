@@ -79,6 +79,7 @@ describe AvalonMarkerController, type: :controller do
       expect { JSON.parse(response.body) }.not_to raise_error
       response_json = JSON.parse(response.body)
       expect(response_json["id"]).to include avalon_marker.id.to_s
+      expect(response_json["motivation"]).to eq "highlighting"
       expect(response_json["body"]["value"]).to eq avalon_marker.title
       expect(response_json["target"]).to eq "#{Rails.application.routes.url_helpers.manifest_playlist_url(playlist.id)}/canvas/#{playlist_item.id}#t=#{avalon_marker.start_time / 1000}"
     end

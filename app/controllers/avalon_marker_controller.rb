@@ -116,7 +116,9 @@ class AvalonMarkerController < ApplicationController
       "@context" => "http://www.w3.org/ns/anno.jsonld",
        id: Rails.application.routes.url_helpers.avalon_marker_url(marker.id),
        type: "Annotation",
+       motivation: "highlighting",
        body: {
+         id: Rails.application.routes.url_helpers.avalon_marker_url(marker.id),
          type: "TextualBody",
          value: marker.title
        },
