@@ -53,7 +53,7 @@ RUN         echo "deb     http://ftp.us.debian.org/debian/    bullseye main cont
          && echo "deb-src http://ftp.us.debian.org/debian/    bullseye main contrib non-free"  >> /etc/apt/sources.list.d/bullseye.list \
          && cat /etc/apt/sources.list.d/bullseye.list \
          && apt-get update && apt-get install -y --no-install-recommends curl gnupg2 ffmpeg \
-         && curl -sL http://deb.nodesource.com/setup_14.x | bash - \
+         && curl -sL http://deb.nodesource.com/setup_20.x | bash - \
          && curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add - \
          && echo "deb http://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list \
          && cat /etc/apt/sources.list.d/nodesource.list \
@@ -111,7 +111,7 @@ RUN         bundle config set --local without 'development test' \
 
 
 # Install node modules
-FROM        node:14-bullseye-slim as node-modules
+FROM        node:20-bullseye-slim as node-modules
 LABEL       stage=build
 LABEL       project=avalon
 RUN         apt-get update && apt-get install -y --no-install-recommends git ca-certificates
