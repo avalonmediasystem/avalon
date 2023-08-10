@@ -59,16 +59,22 @@ Unless required by applicable law or agreed to in writing, software distributed
     // When viewing video on smaller devices scroll to page content to fully
     // display the video player
     $(document).ready(function () {
-      const isVideo = <%= @currentStreamInfo[:is_video] %>;
-      // if(isVideo) {
-      //   const screenHeight = screen.height;
-      //   const playerHeight = document.getElementsByTagName('video')[0].style.height.replace(/[^-\d\.]/g, '');
-      //   if(screenHeight - playerHeight < 200) {
-      //     $('html, body').animate({
-      //         scrollTop: $('#user-util-collapse').offset().top
-      //     }, 1000);
-      //   }
-      // }
+      let scrollInterval = setInterval(autoScroll, 500);
+
+      function autoScroll () {
+        const isVideo = <%= @currentStreamInfo[:is_video] %>;
+        const player = document.getElementsByTagName('video');
+        if(isVideo && player?.length > 0) {
+          const screenHeight = screen.height;
+          const playerHeight = player[0].style.height.replace(/[^-\d\.]/g, '');
+          if(screenHeight - playerHeight < 200) {
+            $('html, body').animate({
+                scrollTop: $('#user-util-collapse').offset().top
+            }, 1000);
+          }
+          clearInterval(scrollInterval);
+        }
+      }
     });
   </script>
 

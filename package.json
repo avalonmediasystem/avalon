@@ -3,7 +3,6 @@
     "@babel/core": "^7.0.0",
     "@babel/preset-react": "^7.0.0",
     "@rails/webpacker": "^5.2.2",
-    "@samvera/iiif-react-media-player": "1.2.1",
     "@samvera/ramp": "https://github.com/samvera-labs/ramp.git",
     "babel-plugin-transform-react-remove-prop-types": "^0.4.24",
     "cropperjs": "^1.5.5",

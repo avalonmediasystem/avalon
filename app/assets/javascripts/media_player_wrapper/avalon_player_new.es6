@@ -29,7 +29,6 @@ class MEJSPlayer {
     this.mejsUtility = new MEJSUtility();
     this.mejsTimeRailHelper = new MEJSTimeRailHelper();
     this.mejsMarkersHelper = new MEJSMarkersHelper();
-    // this.mejsQualityHelper = new MEJSQualityHelper();
     this.localStorage = window.localStorage;
     this.canvasIndex = 0;
 

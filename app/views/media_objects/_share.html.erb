@@ -32,7 +32,6 @@ Unless required by applicable law or agreed to in writing, software distributed
 <% content_for :page_scripts do %>
 
 <script>
-  let interval;
   let canvasIndex = 0;
   $(document).ready(function() {
     const mediaObject = <%= @media_object.to_json.html_safe %>;
@@ -69,7 +68,7 @@ Unless required by applicable law or agreed to in writing, software distributed
         $('.tab-content .tab-pane').first().toggleClass('active');
       }
     }
-    interval = setInterval(canvasIndexListener, 500);
+    setInterval(canvasIndexListener, 500);
   });
 </script>
 

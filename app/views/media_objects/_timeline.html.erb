@@ -50,7 +50,7 @@ Unless required by applicable law or agreed to in writing, software distributed
 <script>
 $(document).ready(function() {
   // Enable create timeline button after derivative is loaded
-  timeCheck = setInterval(enableCreateTimeline, 500);
+  let timeCheck = setInterval(enableCreateTimeline, 500);
   function enableCreateTimeline() {
     let player = document.getElementById('iiif-media-player');
     let scopes = [];

@@ -1193,16 +1193,6 @@
   dependencies:
     dequal "^2.0.2"
 
-"@samvera/iiif-react-media-player@1.2.1":
-  version "1.2.1"
-  resolved "https://registry.yarnpkg.com/@samvera/iiif-react-media-player/-/iiif-react-media-player-1.2.1.tgz#1124732203d06ce7892e46fce75de3112f8cb8b5"
-  integrity sha512-VrCMj5whoXJc9CSYSy7FZlwDl6D+Qn/Z3HiXWAGrSrwVZBiBPYpPigZ4vk/rAhWu4or3rxQnlH/rAt6MOT+Y1w==
-  dependencies:
-    "@silvermine/videojs-quality-selector" "^1.2.4"
-    mammoth "^1.4.19"
-    manifesto.js "^4.1.0"
-    videojs-markers-plugin "^1.0.2"
-
 "@samvera/ramp@https://github.com/samvera-labs/ramp.git":
   version "2.0.0"
   resolved "https://github.com/samvera-labs/ramp.git#332db5facac22204589991d5e3056c837cad7b83"
