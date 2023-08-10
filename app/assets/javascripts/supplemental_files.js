@@ -102,8 +102,12 @@ $('.supplemental-file-form')
     $row.find('.visible-inline').addClass('alert');
   });
 
-/* Store collapsed section ids in localStorage */
+/* Store collapsed section ids in localStorage if available */
 $('button[id^=edit_section').on('click', (e) => {
+  if (typeof window.localStorage === "undefined") {
+    return;
+  }
+
   // Active sections
   var activeSections = JSON.parse(localStorage.getItem('activeSections')) || [];
 
@@ -123,6 +127,10 @@ $('button[id^=edit_section').on('click', (e) => {
 
 /* On page reload; collapse sections which were collapsed previously */
 $(document).ready(function () {
+  if (typeof window.localStorage === "undefined") {
+    return;
+  }
+
   var activeSections = JSON.parse(localStorage.getItem('activeSections')) || [];
 
   // Collapse active sections on page
