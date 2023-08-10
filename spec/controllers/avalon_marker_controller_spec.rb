@@ -38,6 +38,7 @@ describe AvalonMarkerController, type: :controller do
   let(:update_annotation_json) do
     {
       "@context" => "http://www.w3.org/ns/anno.jsonld",
+      id: Rails.application.routes.url_helpers.avalon_marker_url(avalon_marker.id),
       type: "Annotation",
       body: {
         type: "TextualBody",
@@ -110,7 +111,7 @@ describe AvalonMarkerController, type: :controller do
     let(:annotation_json) do
       {
         "@context" => "http://www.w3.org/ns/anno.jsonld",
-        id: avalon_marker.id,
+        id: Rails.application.routes.url_helpers.avalon_marker_url(avalon_marker.id),
         type: "Annotation",
         body: {
           type: "TextualBody",
@@ -146,5 +147,4 @@ describe AvalonMarkerController, type: :controller do
       expect(delete 'destroy', params: { id: 'OC' }).to have_http_status(500)
     end
   end
-
 end
