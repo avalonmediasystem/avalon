@@ -32,6 +32,8 @@ class MEJSPlayer {
     this.mejsQualityHelper = new MEJSQualityHelper();
     if (typeof window.localStorage !== "undefined") {
       this.localStorage = window.localStorage;
+    } else {
+        this.localStorage = false;
     }
     this.canvasIndex = 0;
 
@@ -188,9 +190,7 @@ class MEJSPlayer {
    * @return {void}
    */
   handleVolumeChange() {
-    if (typeof window.localStorage === "undefined") {
-      return;
-    }
+    if (!this.localStorage) return;
 
     this.localStorage.setItem('startVolume', this.mediaElement.volume)
   }
@@ -202,9 +202,7 @@ class MEJSPlayer {
    * @return {void}
    */
   handleCaptionsChange() {
-    if (typeof window.localStorage === "undefined") {
-      return;
-    }
+    if (!this.localStorage) return;
 
     let srclang = currentPlayer.selectedTrack === null ? '' : currentPlayer.selectedTrack.srclang;
     this.localStorage.setItem('captions', srclang)
@@ -303,7 +301,7 @@ class MEJSPlayer {
     // Quality selector is turned off in mobile devices
     if(!mejs.Features.isAndroid) {
       // Set defaultQuality in player options before building the quality feature
-      if (typeof window.localStorage !== "undefined") {
+      if (!this.localStorage) {
         this.player.options.defaultQuality = this.localStorage.getItem('quality');
       }
 
@@ -379,9 +377,7 @@ class MEJSPlayer {
    * @returns {void}
    */
   toggleCaptions() {
-    if (typeof window.localStorage === "undefined") {
-      return;
-    }
+    if (!this.localStorage) return;
 
     if (this.mediaType==="video" && this.player.options.toggleCaptionsButtonWhenOnlyOne) {
       if (this.localStorage.getItem('captions') !== '' && this.player.tracks && this.player.tracks.length===1) {
@@ -619,25 +615,16 @@ class MEJSPlayer {
    */
   initializePlayer() {
     let currentStreamInfo = this.currentStreamInfo;
-    // Set default quality value in localStorage
-    if (typeof window.localStorage !== "undefined") {
-      this.localStorage.setItem('quality', this.defaultQuality);
-    }
+
     // Interval in seconds to jump forward and backward in media
     let jumpInterval = 5;
-
-    // Set default quality value in localStorage
-    if (typeof window.localStorage !== "undefined") {
-      this.localStorage.setItem('quality', this.defaultQuality);
-    }
-
     let startVolume = 1.0;
-    if (typeof window.localStorage !== "undefined") {
-      startVolume = this.localStorage.getItem('startVolume') || 1.0;
-    }
     let startLanguage = '';
-    if (typeof window.localStorage !== "undefined") {
+    if (!this.localStorage) {
+      startVolume = this.localStorage.getItem('startVolume') || 1.0;
       startLanguage = this.localStorage.getItem('captions') || '';
+      // Set default quality value in localStorage
+      this.localStorage.setItem('quality', this.defaultQuality);
     }
 
     // Mediaelement default root level configuration
