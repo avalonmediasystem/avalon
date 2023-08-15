@@ -160,54 +160,52 @@ describe 'MediaObject' do
     end
   end
 
-  # TODO: Configure Capybara to render React components to test OR use Cypress for testing
-  # describe 'with transcript file' do
-  #   let(:supplemental_file) { FactoryBot.create(:supplemental_file) }
-  #   let(:master_file) { FactoryBot.create(:master_file, supplemental_files: [supplemental_file], media_object: media_object) }
-  #   let(:supplemental_file) { FactoryBot.create(:supplemental_file, :with_transcript_file, :with_transcript_tag, label: 'transcript') }
+  describe 'with transcript file' do
+    let(:supplemental_file) { FactoryBot.create(:supplemental_file) }
+    let(:master_file) { FactoryBot.create(:master_file, supplemental_files: [supplemental_file], media_object: media_object) }
+    let(:supplemental_file) { FactoryBot.create(:supplemental_file, :with_transcript_file, :with_transcript_tag, label: 'transcript') }
 
-  #   context 'when CDL is disabled at application level' do
-  #     before { allow(Settings.controlled_digital_lending).to receive(:enable).and_return(false) }
+    context 'when CDL is disabled at application level' do
+      before { allow(Settings.controlled_digital_lending).to receive(:enable).and_return(false) }
 
-  #     it 'renders the transcript viewer' do
-  #       media_object.save
-  #       visit media_object_path(media_object)
-  #       byebug
-  #       expect(page.has_css?('div[class="ramp--transcript_nav"]')).to be_truthy
-  #     end
-  #   end
+      it 'renders the transcript viewer' do
+        media_object.save
+        visit media_object_path(media_object)
+        expect(page.has_css?('div[data-react-class="Ramp"]')).to be_truthy
+      end
+    end
 
-  #   context 'when CDL is disabled at collection level' do
-  #     before { allow(Settings.controlled_digital_lending).to receive(:enable).and_return(true) }
-  #     before { allow(Settings.controlled_digital_lending).to receive(:collections_enabled).and_return(false) }
+    context 'when CDL is disabled at collection level' do
+      before { allow(Settings.controlled_digital_lending).to receive(:enable).and_return(true) }
+      before { allow(Settings.controlled_digital_lending).to receive(:collections_enabled).and_return(false) }
 
-  #     it 'renders the transcript viewer' do
-  #       media_object.save
-  #       visit media_object_path(media_object)
-  #       expect(page.has_css?('div[class="ramp--transcript_nav"]')).to be_truthy
-  #     end
-  #   end
+      it 'renders the transcript viewer' do
+        media_object.save
+        visit media_object_path(media_object)
+        expect(page.has_css?('div[data-react-class="Ramp"]')).to be_truthy
+      end
+    end
 
-  #   context 'when CDL is enabled' do
-  #     before { allow(Settings.controlled_digital_lending).to receive(:enable).and_return(true) }
-  #     before { allow(Settings.controlled_digital_lending).to receive(:collections_enabled).and_return(true) }
+    context 'when CDL is enabled' do
+      before { allow(Settings.controlled_digital_lending).to receive(:enable).and_return(true) }
+      before { allow(Settings.controlled_digital_lending).to receive(:collections_enabled).and_return(true) }
 
-  #     context 'unchecked out item' do
-  #       it 'does not render the transcript viewer' do
-  #         media_object.save
-  #         visit media_object_path(media_object)
-  #         expect(page.has_css?('div[class="ramp--transcript_nav"]')).to be_falsey
-  #       end
-  #     end
-  #     context 'checked out item' do
-  #       before { FactoryBot.create(:checkout, media_object_id: media_object.id, user_id: @user.id).save }
+      context 'unchecked out item' do
+        it 'does not render the transcript viewer' do
+          media_object.save
+          visit media_object_path(media_object)
+          expect(page.has_css?('div[data-react-class="Ramp"]')).to be_falsey
+        end
+      end
+      context 'checked out item' do
+        before { FactoryBot.create(:checkout, media_object_id: media_object.id, user_id: @user.id).save }
 
-  #       it 'renders the transcript viewer' do
-  #         media_object.save
-  #         visit media_object_path(media_object)
-  #         expect(page.has_css?('div[class="ramp--transcript_nav"]')).to be_truthy
-  #       end
-  #     end
-  #   end
-  # end
+        it 'renders the transcript viewer' do
+          media_object.save
+          visit media_object_path(media_object)
+          expect(page.has_css?('div[data-react-class="Ramp"]')).to be_truthy
+        end
+      end
+    end
+  end
 end
