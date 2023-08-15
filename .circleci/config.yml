@@ -5,7 +5,7 @@ jobs:
   build:
     docker:
       # Primary container image where all steps run.
-      - image: avalonmediasystem/avalon:7.5.0-dev-ruby3
+      - image: avalonmediasystem/avalon:develop
         environment:
           - DATABASE_URL=postgresql://postgres@localhost:5432/postgres
           - FEDORA_URL=http://localhost:8080/fcrepo/rest
@@ -21,7 +21,7 @@ jobs:
         environment:
           CATALINA_OPTS: '-Djava.awt.headless=true -Dfile.encoding=UTF-8 -server -Xms512m -Xmx1024m -XX:NewSize=256m -XX:MaxNewSize=256m -XX:PermSize=256m -XX:MaxPermSize=256m -XX:+DisableExplicitGC'
       - image: zookeeper:3.4
-      - image: solr:8-slim
+      - image: solr:9
         environment:
           VERBOSE: yes
           SECURITY_JSON: '{"authentication":{"blockUnknown": false, "class":"solr.BasicAuthPlugin", "credentials":{"solr":"IV0EHq1OnNrj6gvRCwvFwTrZ1+z1oBbnQdiVC3otuq0= Ndd7LKvVBAaZIF0QAVi1ekCfAJXr1GGfLtRUXhgrF8c="}, "realm":"My Solr users", "forwardCredentials": false}, "authorization":{ "class":"solr.RuleBasedAuthorizationPlugin", "permissions":[{"name":"security-edit", "role":"admin"}], "user-role":{"solr":"admin"}}}'
@@ -100,7 +100,7 @@ jobs:
             fi
             zip -1 -r solr_conf.zip ./*
             curl -H "Content-type:application/octet-stream" --data-binary @solr_conf.zip "http://solr:SolrRocks@127.0.0.1:<< parameters.solr_port >>/solr/admin/configs?action=UPLOAD&name=solrconfig"
-            curl -H 'Content-type: application/json' http://solr:SolrRocks@127.0.0.1:<< parameters.solr_port >>/api/collections/ -d '{create: {name: << parameters.core_name >>, config: solrconfig, numShards: 1}}'
+            curl "http://solr:SolrRocks@127.0.0.1:<< parameters.solr_port >>/solr/admin/collections?action=CREATE&name=hydra-test&numShards=1&collection.configName=solrconfig"
 
       - run:
           command: |
