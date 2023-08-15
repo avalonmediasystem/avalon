@@ -52,7 +52,8 @@
     "unset-value": "^2.0.1",
     "nth-check": "^2.1.1",
     "set-value": "^4.1.0",
-    "kind-of": "^6.0.3"
+    "kind-of": "^6.0.3",
+    "htmlparser2": "7.0.0"
   },
   "scripts": {
     "start-collection-index": "webpack-dev-server --mode development --config config/webpack/collection_index.js --host 0.0.0.0",
