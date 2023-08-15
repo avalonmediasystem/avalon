@@ -29,20 +29,16 @@ Unless required by applicable law or agreed to in writing, software distributed
     <% if lending_enabled?(@media_object) && !can_stream %>
       <%= render 'embed_checkout' %>
     <% elsif @currentStream %>
-      <%= render partial: "modules/player/section", locals: {section: @currentStream, section_info: @currentStreamInfo, f_start: @f_start, f_end: @f_end} %>
-      <%= render file: '_track_scrubber.html.erb' if is_mejs_2? %>
-      <%= render file: '_add_to_playlist.html.erb' if current_user.present? && is_mejs_2? %>
-      <%# Partial view for MEJS4 Add To Playlist plugin %>
-      <%= render partial: 'mejs4_add_to_playlist' if current_user.present? && is_mejs_4? %>
       <%= render 'workflow_progress' %>
-      <%= render partial: 'timeline' if current_ability.can? :create, Timeline %>
-      <%= render 'share' if will_partial_list_render? :share %>
-
-      <!-- Sections -->
-      <%= render partial: 'sections',
-          locals: { mediaobject: @media_object,
-                  sections: @masterFiles,
-                  activeStream: @currentStream } %>
+      <%= react_component("Ramp", 
+        {
+          base_url: request.protocol+request.host_with_port, 
+          mo_id: @media_object.id, 
+          canvas_count: @media_object.master_files.size, 
+          share: { canShare: (will_partial_list_render? :share), content: render('share') },
+          timeline: { canCreate: (current_ability.can? :create, Timeline), content: render('timeline') }
+        }
+      ) %>
     <% end %>
   </div>
   <div class="col-sm-4" id="right-column">
@@ -52,32 +48,29 @@ Unless required by applicable law or agreed to in writing, software distributed
     <div id="metadata_container" class="col-sm-12">
       <section id="metadata"><%= render "metadata_display" %></section>
     </div>
-
-    <% if can_stream && @currentStream %>
-      <% supplemental_files = @masterFiles.map { |mf| {"id" => mf.id, "transcripts" => mf.supplemental_files(tag: 'transcript') } }.flatten(1) %>
-      <%= react_component("ReactIIIFTranscript", {base_url: request.protocol+request.host_with_port, transcripts: supplemental_files }) %>
-    <% end %>
   </div>
 
 </div>
 
 <% content_for :page_scripts do %>
-  <% if @currentStream.present? and @currentStream.derivatives.present? %>
-    <%= render partial: "mejs4_player_js", locals: {section: @currentStream, section_info: @currentStreamInfo} %>
-  <% end %>
-
   <script>
     // When viewing video on smaller devices scroll to page content to fully
     // display the video player
     $(document).ready(function () {
-      const isVideo = <%= @currentStreamInfo[:is_video] %>;
-      if(isVideo) {
-        const screenHeight = screen.height;
-        const playerHeight = document.getElementsByTagName('video')[0].style.height.replace(/[^-\d\.]/g, '');
-        if(screenHeight - playerHeight < 200) {
-          $('html, body').animate({
-              scrollTop: $('#user-util-collapse').offset().top
-          }, 1000);
+      let scrollInterval = setInterval(autoScroll, 500);
+
+      function autoScroll () {
+        const isVideo = <%= @currentStreamInfo[:is_video] %>;
+        const player = document.getElementsByTagName('video');
+        if(isVideo && player?.length > 0) {
+          const screenHeight = screen.height;
+          const playerHeight = player[0].style.height.replace(/[^-\d\.]/g, '');
+          if(screenHeight - playerHeight < 200) {
+            $('html, body').animate({
+                scrollTop: $('#user-util-collapse').offset().top
+            }, 1000);
+          }
+          clearInterval(scrollInterval);
         }
       }
     });

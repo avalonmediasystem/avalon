@@ -1,0 +1,26 @@
+.iiif-player {
+  .ramp--structured-nav {
+    float: left;
+    width: 40%;
+    margin-top: 20px;
+  }
+  .ramp--transcript_nav {
+    float: right;
+    width: 60%;
+    margin-left: -20px;
+    margin-top: 20px;
+  }
+}
+
+.ramp--rails-content {
+  display: flex;
+
+  .share-tabs {
+    flex-grow: 2;
+  }
+  
+  #share-list {
+    margin-left: -9.25rem;
+  }
+  
+}

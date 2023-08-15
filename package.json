@@ -3,19 +3,19 @@
     "@babel/core": "^7.0.0",
     "@babel/preset-react": "^7.0.0",
     "@rails/webpacker": "^5.2.2",
-    "@samvera/iiif-react-media-player": "1.2.1",
+    "@samvera/ramp": "https://github.com/samvera-labs/ramp.git",
     "babel-plugin-transform-react-remove-prop-types": "^0.4.24",
     "cropperjs": "^1.5.5",
     "hls.js": "https://github.com/avalonmediasystem/hls.js#stricter_ts_probing",
     "moment": "^2.29.4",
     "prop-types": "^15.7.2",
-    "react": "^16.8.4",
+    "react": "^17.0.1",
     "react-bootstrap": "^1.0.0",
-    "react-dom": "^16.8.4",
+    "react-dom": "^17.0.1",
     "react-structural-metadata-editor": "https://github.com/avalonmediasystem/react-structural-metadata-editor",
     "react_ujs": "^2.4.4",
     "url-search-params-polyfill": "^7.0.1",
-    "video.js": "^7.15.4",
+    "video.js": "7.21.4",
     "videojs-hotkeys": "^0.2.27"
   },
   "devDependencies": {
@@ -32,7 +32,8 @@
     "unset-value": "^2.0.1",
     "nth-check": "^2.1.1",
     "set-value": "^4.1.0",
-    "kind-of": "^6.0.3"
+    "kind-of": "^6.0.3",
+    "htmlparser2": "7.0.0"
   },
   "scripts": {
     "start-collection-index": "webpack-dev-server --mode development --config config/webpack/collection_index.js --host 0.0.0.0",
