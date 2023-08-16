@@ -29,7 +29,11 @@ class MEJSPlayer {
     this.mejsUtility = new MEJSUtility();
     this.mejsTimeRailHelper = new MEJSTimeRailHelper();
     this.mejsMarkersHelper = new MEJSMarkersHelper();
-    this.localStorage = window.localStorage;
+    if (typeof window.localStorage !== "undefined") {
+      this.localStorage = window.localStorage;
+    } else {
+        this.localStorage = false;
+    }
     this.canvasIndex = 0;
 
     // Unpack player configuration object for the new player.
@@ -184,6 +188,8 @@ class MEJSPlayer {
    * @return {void}
    */
   handleVolumeChange() {
+    if (!this.localStorage) return;
+
     this.localStorage.setItem('startVolume', this.mediaElement.volume)
   }
 
@@ -194,6 +200,8 @@ class MEJSPlayer {
    * @return {void}
    */
   handleCaptionsChange() {
+    if (!this.localStorage) return;
+
     let srclang = currentPlayer.selectedTrack === null ? '' : currentPlayer.selectedTrack.srclang;
     this.localStorage.setItem('captions', srclang)
   }
@@ -291,7 +299,9 @@ class MEJSPlayer {
     // Quality selector is turned off in mobile devices
     if(!mejs.Features.isAndroid) {
       // Set defaultQuality in player options before building the quality feature
-      this.player.options.defaultQuality = this.localStorage.getItem('quality');
+      if (!this.localStorage) {
+        this.player.options.defaultQuality = this.localStorage.getItem('quality');
+      }
 
       // Build quality
       this.player.buildquality(this.player, null, null, this.mediaElement);
@@ -365,6 +375,8 @@ class MEJSPlayer {
    * @returns {void}
    */
   toggleCaptions() {
+    if (!this.localStorage) return;
+
     if (this.mediaType==="video" && this.player.options.toggleCaptionsButtonWhenOnlyOne) {
       if (this.localStorage.getItem('captions') !== '' && this.player.tracks && this.player.tracks.length===1) {
         this.player.setTrack(this.player.tracks[0].trackId, (typeof keyboard !== 'undefined'));
@@ -601,13 +613,17 @@ class MEJSPlayer {
    */
   initializePlayer() {
     let currentStreamInfo = this.currentStreamInfo;
-    // Set default quality value in localStorage
-    this.localStorage.setItem('quality', this.defaultQuality);
+
     // Interval in seconds to jump forward and backward in media
     let jumpInterval = 5;
-
-    // Set default quality value in localStorage
-    this.localStorage.setItem('quality', this.defaultQuality);
+    let startVolume = 1.0;
+    let startLanguage = '';
+    if (!this.localStorage) {
+      startVolume = this.localStorage.getItem('startVolume') || 1.0;
+      startLanguage = this.localStorage.getItem('captions') || '';
+      // Set default quality value in localStorage
+      this.localStorage.setItem('quality', this.defaultQuality);
+    }
 
     // Mediaelement default root level configuration
     let defaults = {
@@ -621,8 +637,8 @@ class MEJSPlayer {
       qualityText: 'Stream Quality',
       defaultQuality: this.defaultQuality,
       toggleCaptionsButtonWhenOnlyOne: true,
-      startVolume: this.localStorage.getItem('startVolume') || 1.0,
-      startLanguage: this.localStorage.getItem('captions') || '',
+      startVolume: startVolume,
+      startLanguage: startLanguage,
       // jump forward and backward when player is not focused
       defaultSeekBackwardInterval: function() { return jumpInterval },
       defaultSeekForwardInterval: function() { return jumpInterval }
