@@ -1,0 +1,69 @@
+# Builds image and stores in ghcr.io then sends webhook to deploy new image
+name: Podman Image CI
+
+on:
+  push:
+    branches: [ "main", "staging", "develop", "sandbox" ]
+
+env:
+  GHCR_USER: ${{ github.actor }}
+  GHCR_PASSWORD: ${{ github.token }}
+  GHCR_IMAGE_REGISTRY: ghcr.io/avalonmediasystem
+  DOCKERHUB_IMAGE_REGISTRY: docker.io/avalonmediasystem
+  DOCKERHUB_USER: ${{ secrets.dockerhub_user }}
+  DOCKERHUB_PASSWORD: ${{ secrets.dockerhub_password }}
+  IMAGE_TAG: ${{ fromJSON('{"refs/heads/main":"production","refs/heads/develop":"develop","refs/heads/staging":"staging","refs/heads/sandbox":"sandbox"}')[github.ref] }}
+  BRANCH: ${{ fromJSON('{"refs/heads/main":"main","refs/heads/develop":"develop","refs/heads/staging":"staging","refs/heads/sandbox":"sandbox"}')[github.ref] }}
+  BUILD_TARGET: ${{ fromJSON('{"refs/heads/main":"prod","refs/heads/develop":"dev","refs/heads/staging":"prod","refs/heads/sandbox":"prod"}')[github.ref] }}
+
+jobs:
+
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Determine DockerHub image tags
+      id: determine_dockerhub_tags
+      run: |
+        AVALON_VERSION=`script/avalon_image_tags.rb -t`
+        echo "AVALON_VERSION=${AVALON_VERSION}" >> "$GITHUB_OUTPUT"
+        if [ $IMAGE_TAG = 'develop' ]; then
+          AVALON_TAGS=`script/avalon_image_tags.rb --branch ${BRANCH} -a ${AVALON_VERSION}-dev | awk 'gsub(","," ")'`
+        elif [ $IMAGE_TAG = 'production' ]; then
+          AVALON_TAGS=`script/avalon_image_tags.rb -s -t -a latest | awk 'gsub(","," ")'`
+        else
+          AVALON_TAGS=""
+        fi
+        echo "tags=${AVALON_TAGS}" >> "$GITHUB_OUTPUT"
+        echo "Will pushing to DockerHub with tags: ${AVALON_TAGS}"
+    - name: Build Image
+      id: build_image
+      uses: redhat-actions/buildah-build@v2
+      with:
+        image: avalon
+        tags: ${{ env.IMAGE_TAG }} ${{ github.sha }} ${{ steps.determine_dockerhub_tags.outputs.tags }}
+        containerfiles: ./Dockerfile
+        oci: true
+        extra-args: --target ${{ env.BUILD_TARGET }}
+    - name: Push To GHCR
+      uses: redhat-actions/push-to-registry@v2
+      with:
+        image: ${{ steps.build_image.outputs.image }}
+        tags: ${{ env.IMAGE_TAG }} ${{ github.sha }}
+        registry: ${{ env.GHCR_IMAGE_REGISTRY }}
+        username: ${{ env.GHCR_USER }}
+        password: ${{ env.GHCR_PASSWORD }}
+        extra-args: |
+          --disable-content-trust
+    - name: Push To Dockerhub
+      if: ${{ steps.determine_dockerhub_tags.outputs.tags != '' }}
+      uses: redhat-actions/push-to-registry@v2
+      with:
+        image: ${{ steps.build_image.outputs.image }}
+        tags: ${{ steps.determine_dockerhub_tags.outputs.tags }}
+        registry: ${{ env.DOCKERHUB_IMAGE_REGISTRY }}
+        username: ${{ env.DOCKERHUB_USER }}
+        password: ${{ env.DOCKERHUB_PASSWORD }}
+        extra-args: |
+          --disable-content-trust

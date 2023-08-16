@@ -171,7 +171,7 @@ describe 'MediaObject' do
       it 'renders the transcript viewer' do
         media_object.save
         visit media_object_path(media_object)
-        expect(page.has_css?('div[data-react-class="ReactIIIFTranscript"]')).to be_truthy
+        expect(page.has_css?('div[data-react-class="Ramp"]')).to be_truthy
       end
     end
 
@@ -182,7 +182,7 @@ describe 'MediaObject' do
       it 'renders the transcript viewer' do
         media_object.save
         visit media_object_path(media_object)
-        expect(page.has_css?('div[data-react-class="ReactIIIFTranscript"]')).to be_truthy
+        expect(page.has_css?('div[data-react-class="Ramp"]')).to be_truthy
       end
     end
 
@@ -194,7 +194,7 @@ describe 'MediaObject' do
         it 'does not render the transcript viewer' do
           media_object.save
           visit media_object_path(media_object)
-          expect(page.has_css?('div[data-react-class="ReactIIIFTranscript"]')).to be_falsey
+          expect(page.has_css?('div[data-react-class="Ramp"]')).to be_falsey
         end
       end
       context 'checked out item' do
@@ -203,7 +203,7 @@ describe 'MediaObject' do
         it 'renders the transcript viewer' do
           media_object.save
           visit media_object_path(media_object)
-          expect(page.has_css?('div[data-react-class="ReactIIIFTranscript"]')).to be_truthy
+          expect(page.has_css?('div[data-react-class="Ramp"]')).to be_truthy
         end
       end
     end

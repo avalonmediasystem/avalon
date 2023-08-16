@@ -29,7 +29,6 @@ class MEJSPlayer {
     this.mejsUtility = new MEJSUtility();
     this.mejsTimeRailHelper = new MEJSTimeRailHelper();
     this.mejsMarkersHelper = new MEJSMarkersHelper();
-    this.mejsQualityHelper = new MEJSQualityHelper();
     if (typeof window.localStorage !== "undefined") {
       this.localStorage = window.localStorage;
     } else {
@@ -161,7 +160,6 @@ class MEJSPlayer {
           this.setContextVars(response, playlistItemsT);
           this.createNewPlayer();
         }
-        this.updateShareLinks();
       })
       .fail(error => {
         console.log('error', error);
@@ -800,23 +798,5 @@ class MEJSPlayer {
     );
     const currentIdIndex = [...sectionsIdArray].indexOf(currentStreamInfo.id);
     this.canvasIndex = currentIdIndex;
-  }
-
-  /**
-   * Update section and lti section share links and embed code when switching sections
-   * @function updateShareLinks
-   * @return {void}
-   */
-  updateShareLinks() {
-    const sectionShareLink = this.currentStreamInfo.link_back_url;
-    const ltiShareLink = this.currentStreamInfo.lti_share_link;
-    const embedCode = this.currentStreamInfo.embed_code;
-    $('#share-link-section')
-      .val(sectionShareLink)
-      .attr('placeholder', sectionShareLink);
-    $('#ltilink-section')
-      .val(ltiShareLink)
-      .attr('placeholder', ltiShareLink);
-    $('#embed-part').val(embedCode);
   }
 }

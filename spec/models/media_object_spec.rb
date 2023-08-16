@@ -23,6 +23,17 @@ describe MediaObject do
     expect { media_object.assign_id! }.to change { media_object.id }.from(nil).to(String)
   end
 
+  describe 'find' do
+    it 'returns an object' do
+      expect(MediaObject.find(media_object.id)).to eq media_object
+    end
+    context 'with trailing slash' do
+      it 'returns an object' do
+        expect(MediaObject.find(media_object.id + '/')).to eq media_object
+      end
+    end
+  end
+
   describe 'validations' do
     # Force the validations to run by being on the resource-description workflow step
     let(:media_object) { FactoryBot.build(:media_object).tap {|mo| mo.workflow.last_completed_step = "resource-description"} }
