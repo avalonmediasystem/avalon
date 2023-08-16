@@ -29,10 +29,7 @@ describe IiifPlaylistCanvasPresenter do
     end
 
     context 'when a user does not have access to a restricted item' do
-      let(:owner) { FactoryBot.create(:user) }
-      let(:user) { FactoryBot.create(:user) }
-      let(:media_object) { FactoryBot.create(:media_object, creator: owner, visibility: 'private') }
-      let(:presenter) { described_class.new(playlist_item: playlist_item, stream_info: stream_info, user: user) }
+      let(:presenter) { described_class.new(playlist_item: playlist_item, stream_info: stream_info, cannot_read_item: true) }
 
       it 'return "Restricted item"' do
         expect(presenter.to_s).to eq "Restricted item"
@@ -101,10 +98,7 @@ describe IiifPlaylistCanvasPresenter do
     end
 
     context 'when a user does not have access to a restricted item' do
-      let(:owner) { FactoryBot.create(:user) }
-      let(:user) { FactoryBot.create(:user) }
-      let(:media_object) { FactoryBot.create(:media_object, creator: owner, visibility: 'private') }
-      let(:presenter) { described_class.new(playlist_item: playlist_item, stream_info: stream_info, user: user) }
+      let(:presenter) { described_class.new(playlist_item: playlist_item, stream_info: stream_info, cannot_read_item: true) }
 
       it 'does not serialize the content' do
         expect(presenter.display_content).to be_nil
@@ -143,10 +137,7 @@ describe IiifPlaylistCanvasPresenter do
     end
 
     context 'when a user does not have access to a restricted item' do
-      let(:owner) { FactoryBot.create(:user) }
-      let(:user) { FactoryBot.create(:user) }
-      let(:media_object) { FactoryBot.create(:media_object, creator: owner, visibility: 'private') }
-      let(:presenter) { described_class.new(playlist_item: playlist_item, stream_info: stream_info, user: user) }
+      let(:presenter) { described_class.new(playlist_item: playlist_item, stream_info: stream_info, cannot_read_item: true) }
 
       it 'does not serialize the content' do
         expect(presenter.annotation_content).to be_nil
@@ -190,10 +181,7 @@ describe IiifPlaylistCanvasPresenter do
     end
 
     context 'when a user does not have access to a restricted item' do
-      let(:owner) { FactoryBot.create(:user) }
-      let(:user) { FactoryBot.create(:user) }
-      let(:media_object) { FactoryBot.create(:media_object, creator: owner, visibility: 'private') }
-      let(:presenter) { described_class.new(playlist_item: playlist_item, stream_info: stream_info, user: user) }
+      let(:presenter) { described_class.new(playlist_item: playlist_item, stream_info: stream_info, cannot_read_item: true) }
 
       it 'generates placeholder canvas' do
         expect(subject).to be_present

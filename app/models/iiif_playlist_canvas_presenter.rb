@@ -13,20 +13,20 @@
 # ---  END LICENSE_HEADER BLOCK  ---
 
 class IiifPlaylistCanvasPresenter
-  attr_reader :playlist_item, :stream_info, :user
+  attr_reader :playlist_item, :stream_info, :cannot_read_item
   attr_accessor :media_fragment
 
-  def initialize(playlist_item:, stream_info:, user: nil, media_fragment: nil)
+  def initialize(playlist_item:, stream_info:, cannot_read_item: nil, media_fragment: nil)
     @playlist_item = playlist_item
     @stream_info = stream_info
-    @user = user
+    @cannot_read_item = cannot_read_item
     @media_fragment = media_fragment
   end
 
   delegate :id, to: :playlist_item
 
   def to_s
-    if restricted?
+    if cannot_read_item
       "Restricted item"
     elsif master_file.nil?
       "Deleted item"
@@ -52,17 +52,17 @@ class IiifPlaylistCanvasPresenter
 
   # @return [IIIFManifest::V3::DisplayContent] the display content required by the manifest builder.
   def display_content
-    return if restricted? || master_file.nil?
+    return if cannot_read_item || master_file.nil?
     master_file.is_video? ? video_content : audio_content
   end
 
   def annotation_content
-    return if restricted? || master_file.nil?
+    return if cannot_read_item || master_file.nil?
     playlist_item.marker.collect { |m| marker_content(m) }
   end
 
   def placeholder_content
-    if restricted?
+    if cannot_read_item
       IIIFManifest::V3::DisplayContent.new(nil,
                                            label: 'You do not have permission to playback this item.',
                                            type: 'Text',
@@ -76,12 +76,7 @@ class IiifPlaylistCanvasPresenter
   end
 
   private
-
-    def restricted?
-      return unless user.present?
-      Ability.new(User.find(user.id)).cannot? :read, master_file
-    end
-
+  
     def video_content
       # @see https://github.com/samvera-labs/iiif_manifest
       stream_urls.collect { |quality, _url| video_display_content(quality) }
