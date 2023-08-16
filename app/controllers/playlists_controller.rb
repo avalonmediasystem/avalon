@@ -247,10 +247,13 @@ class PlaylistsController < ApplicationController
     authorize! :read, @playlist
 
     canvas_presenters = @playlist.items.collect do |item|
-      next if item.clip.master_file.nil?
       @master_file = item.clip.master_file
-      stream_info = secure_streams(@master_file.stream_details, @master_file.media_object_id)
-      IiifPlaylistCanvasPresenter.new(playlist_item: item, stream_info: stream_info)
+      if @master_file.nil?
+        stream_info = nil
+      else
+        stream_info = secure_streams(@master_file.stream_details, @master_file.media_object_id)
+      end
+      IiifPlaylistCanvasPresenter.new(playlist_item: item, stream_info: stream_info, user: current_user)
     end
     presenter = IiifPlaylistManifestPresenter.new(playlist: @playlist, items: canvas_presenters)
 

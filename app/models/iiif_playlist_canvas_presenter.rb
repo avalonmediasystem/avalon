@@ -13,19 +13,26 @@
 # ---  END LICENSE_HEADER BLOCK  ---
 
 class IiifPlaylistCanvasPresenter
-  attr_reader :playlist_item, :stream_info
+  attr_reader :playlist_item, :stream_info, :user
   attr_accessor :media_fragment
 
-  def initialize(playlist_item:, stream_info:, media_fragment: nil)
+  def initialize(playlist_item:, stream_info:, user: nil, media_fragment: nil)
     @playlist_item = playlist_item
     @stream_info = stream_info
+    @user = user
     @media_fragment = media_fragment
   end
 
   delegate :id, to: :playlist_item
 
   def to_s
-    playlist_item.title
+    if restricted?
+      "Restricted item"
+    elsif master_file.nil?
+      "Deleted item"
+    else
+      playlist_item.title
+    end
   end
 
   def master_file
@@ -45,14 +52,36 @@ class IiifPlaylistCanvasPresenter
 
   # @return [IIIFManifest::V3::DisplayContent] the display content required by the manifest builder.
   def display_content
+    return if restricted? || master_file.nil?
     master_file.is_video? ? video_content : audio_content
   end
 
   def annotation_content
+    return if restricted? || master_file.nil?
     playlist_item.marker.collect { |m| marker_content(m) }
   end
 
+  def placeholder_content
+    if restricted?
+      IIIFManifest::V3::DisplayContent.new( nil,
+                                            label: 'You do not have permission to playback this item.',
+                                            type: 'Text',
+                                            format: 'text/plain')
+    elsif master_file.nil?
+      IIIFManifest::V3::DisplayContent.new( nil,
+                                            label: 'The source for this playlist item has been deleted.',
+                                            type: 'Text',
+                                            format: 'text/plain')
+    end
+  end
+
   private
+
+    def restricted?
+      if user.present?
+        Ability.new( User.find user.id ).cannot? :read, master_file
+      end
+    end
 
     def video_content
       # @see https://github.com/samvera-labs/iiif_manifest

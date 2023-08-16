@@ -23,7 +23,33 @@ describe IiifPlaylistCanvasPresenter do
   let(:stream_info) { master_file.stream_details }
   let(:presenter) { described_class.new(playlist_item: playlist_item, stream_info: stream_info) }
 
-  context 'auth_service' do
+  describe '#to_s' do
+    it 'returns the playlist_item label' do
+      expect(presenter.to_s).to eq playlist_item.title
+    end
+
+    context 'when a user does not have access to a restricted item' do
+      let(:owner) { FactoryBot.create(:user) }
+      let(:user) { FactoryBot.create(:user) }
+      let(:media_object) { FactoryBot.create(:media_object, creator: owner, visibility: 'private') }
+      let(:presenter) { described_class.new(playlist_item: playlist_item, stream_info: stream_info, user: user) }
+
+      it 'return "Restricted item"' do
+        expect(presenter.to_s).to eq "Restricted item"
+      end
+    end
+
+    context 'when an item has been deleted' do
+      let(:master_file) { nil }
+      let(:stream_info) { nil }
+
+      it 'returns "Deleted item"' do
+        expect(presenter.to_s).to eq "Deleted item"
+      end
+    end
+  end
+
+  describe '#auth_service' do
     subject { presenter.display_content.first.auth_service }
 
     it 'provides a cookie auth service' do
@@ -73,11 +99,31 @@ describe IiifPlaylistCanvasPresenter do
         expect(subject.url).to include("#t=#{playlist_item.start_time / 1000},#{playlist_item.end_time / 1000}")
       end
     end
+
+    context 'when a user does not have access to a restricted item' do
+      let(:owner) { FactoryBot.create(:user) }
+      let(:user) { FactoryBot.create(:user) }
+      let(:media_object) { FactoryBot.create(:media_object, creator: owner, visibility: 'private') }
+      let(:presenter) { described_class.new(playlist_item: playlist_item, stream_info: stream_info, user: user) }
+
+      it 'does not serialize the content' do
+        expect(presenter.display_content).to be_nil
+      end
+    end
+
+    context 'when an item has been deleted' do
+      let(:master_file) { nil }
+      let(:stream_info) { nil }
+
+      it 'does not serialize the content' do
+        expect(presenter.display_content).to be_nil
+      end
+    end
   end
 
   describe '#annotation_content' do
     let(:marker) { FactoryBot.create(:avalon_marker) }
-    let(:playlist_item) { FactoryBot.create(:playlist_item, marker: [marker]) }
+    let(:playlist_item) { FactoryBot.build(:playlist_item, clip: playlist_clip, marker: [marker]) }
     subject { presenter.annotation_content }
 
     it "serializes playlist markers as iiif annotations" do
@@ -94,6 +140,26 @@ describe IiifPlaylistCanvasPresenter do
 
     it "includes 'highlighting' motivation" do
       expect(subject.first.motivation).to eq 'highlighting'
+    end
+
+    context 'when a user does not have access to a restricted item' do
+      let(:owner) { FactoryBot.create(:user) }
+      let(:user) { FactoryBot.create(:user) }
+      let(:media_object) { FactoryBot.create(:media_object, creator: owner, visibility: 'private') }
+      let(:presenter) { described_class.new(playlist_item: playlist_item, stream_info: stream_info, user: user) }
+
+      it 'does not serialize the content' do
+        expect(presenter.annotation_content).to be_nil
+      end
+    end
+
+    context 'when an item has been deleted' do
+      let(:master_file) { nil }
+      let(:stream_info) { nil }
+
+      it 'does not serialize the content' do
+        expect(presenter.annotation_content).to be_nil
+      end
     end
   end
 
@@ -113,6 +179,58 @@ describe IiifPlaylistCanvasPresenter do
     it 'references the parent media object manifest' do
       expect(subject.first['type']).to eq 'manifest'
       expect(subject.any? { |po| po["@id"] =~ /media_objects\/#{media_object.id}\/manifest/ }).to eq true
+    end
+  end
+
+  describe '#placeholder_contetnt' do
+    subject { presenter.placeholder_content }
+
+    it 'does not generate a placeholder for non-restricted items' do
+      expect(subject).to be_nil
+    end
+
+    context 'when a user does not have access to a restricted item' do
+      let(:owner) { FactoryBot.create(:user) }
+      let(:user) { FactoryBot.create(:user) }
+      let(:media_object) { FactoryBot.create(:media_object, creator: owner, visibility: 'private') }
+      let(:presenter) { described_class.new(playlist_item: playlist_item, stream_info: stream_info, user: user) }
+
+      it 'generates placeholder canvas' do
+        expect(subject).to be_present
+      end
+
+      it 'has format' do
+        expect(subject.format).to eq "text/plain"
+      end
+
+      it 'has type' do
+        expect(subject.type).to eq "Text"
+      end
+
+      it 'has label' do
+        expect(subject.label).to eq "You do not have permission to playback this item."
+      end
+    end
+
+    context 'when an item has been deleted' do
+      let(:master_file) { nil }
+      let(:stream_info) { nil }
+
+      it 'generated placeholder canvas' do
+        expect(subject).to be_present
+      end
+
+      it 'has format' do
+        expect(subject.format).to eq "text/plain"
+      end
+
+      it 'has type' do
+        expect(subject.type).to eq "Text"
+      end
+
+      it 'has label' do
+        expect(subject.label).to eq "The source for this playlist item has been deleted."
+      end
     end
   end
 end
