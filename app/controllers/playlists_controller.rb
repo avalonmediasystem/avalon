@@ -248,11 +248,11 @@ class PlaylistsController < ApplicationController
 
     canvas_presenters = @playlist.items.collect do |item|
       @master_file = item.clip.master_file
-      if @master_file.nil?
-        stream_info = nil
-      else
-        stream_info = secure_streams(@master_file.stream_details, @master_file.media_object_id)
-      end
+      stream_info = if @master_file.nil?
+                      nil
+                    else
+                      secure_streams(@master_file.stream_details, @master_file.media_object_id)
+                    end
       IiifPlaylistCanvasPresenter.new(playlist_item: item, stream_info: stream_info, user: current_user)
     end
     presenter = IiifPlaylistManifestPresenter.new(playlist: @playlist, items: canvas_presenters)

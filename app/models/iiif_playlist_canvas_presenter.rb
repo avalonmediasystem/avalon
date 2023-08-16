@@ -63,24 +63,23 @@ class IiifPlaylistCanvasPresenter
 
   def placeholder_content
     if restricted?
-      IIIFManifest::V3::DisplayContent.new( nil,
-                                            label: 'You do not have permission to playback this item.',
-                                            type: 'Text',
-                                            format: 'text/plain')
+      IIIFManifest::V3::DisplayContent.new(nil,
+                                           label: 'You do not have permission to playback this item.',
+                                           type: 'Text',
+                                           format: 'text/plain')
     elsif master_file.nil?
-      IIIFManifest::V3::DisplayContent.new( nil,
-                                            label: 'The source for this playlist item has been deleted.',
-                                            type: 'Text',
-                                            format: 'text/plain')
+      IIIFManifest::V3::DisplayContent.new(nil,
+                                           label: 'The source for this playlist item has been deleted.',
+                                           type: 'Text',
+                                           format: 'text/plain')
     end
   end
 
   private
 
     def restricted?
-      if user.present?
-        Ability.new( User.find user.id ).cannot? :read, master_file
-      end
+      return unless user.present?
+      Ability.new(User.find(user.id)).cannot? :read, master_file
     end
 
     def video_content
