@@ -23,33 +23,18 @@ Unless required by applicable law or agreed to in writing, software distributed
 <% @page_type = @currentStreamInfo[:is_video] ? 'video' : 'audio' %>
 <% can_stream = lending_enabled?(@media_object) ? current_user && @media_object.current_checkout(current_user.id).present? : true %> 
 
-<% f_start, f_end = parse_media_fragment params['t'] %>
-<div class="row">
-  <div class="col-sm-8" id="left_column">
-    <% if lending_enabled?(@media_object) && !can_stream %>
-      <%= render 'embed_checkout' %>
-    <% elsif @currentStream %>
-      <%= render 'workflow_progress' %>
-      <%= react_component("Ramp", 
-        {
-          base_url: request.protocol+request.host_with_port, 
-          mo_id: @media_object.id, 
-          canvas_count: @media_object.master_files.size, 
-          share: { canShare: (will_partial_list_render? :share), content: render('share') },
-          timeline: { canCreate: (current_ability.can? :create, Timeline), content: render('timeline') }
-        }
-      ) %>
-    <% end %>
-  </div>
-  <div class="col-sm-4" id="right-column">
-    <% if lending_enabled?(@media_object) %>
-      <%= render 'destroy_checkout' %>
-    <% end %>
-    <div id="metadata_container" class="col-sm-12">
-      <section id="metadata"><%= render "metadata_display" %></section>
-    </div>
-  </div>
-
+<div>
+  <%= react_component("Ramp", 
+    {
+      base_url: request.protocol+request.host_with_port, 
+      mo_id: @media_object.id, 
+      canvas_count: @media_object.master_files.size, 
+      share: { canShare: (will_partial_list_render? :share), content: render('share') },
+      timeline: { canCreate: (current_ability.can? :create, Timeline), content: render('timeline') },
+      cdl: { enabled: lending_enabled?(@media_object), canStream: can_stream, embed: render('embed_checkout'), destroyCDL: render('destroy_checkout') },
+      progress: render('workflow_progress')
+    }
+  ) %>
 </div>
 
 <% content_for :page_scripts do %>
