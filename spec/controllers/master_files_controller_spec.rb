@@ -477,6 +477,13 @@ describe MasterFilesController do
       expect(master_file.structuralMetadata.content).not_to include('<b>')
       expect(master_file.structuralMetadata.content).not_to include('<i>')
     end
+
+    context "updating existing structure" do
+      it "persists updates" do
+        structure_json["label"] = "Different label"
+        expect { patch 'set_structure', params: { id: master_file.id, json: structure_json } }.to change { master_file.reload.structuralMetadata.content }
+      end
+    end
   end
 
   describe "#delete_structure" do

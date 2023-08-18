@@ -21,8 +21,8 @@ class MasterFilesController < ApplicationController
   include NoidValidator
 
   before_action :authenticate_user!, :only => [:create]
-  before_action :set_masterfile_proxy, except: [:create, :oembed, :attach_structure, :attach_captions, :delete_structure, :delete_captions, :destroy, :update]
-  before_action :set_masterfile, only: [:attach_structure, :attach_captions, :delete_structure, :delete_captions, :destroy, :update]
+  before_action :set_masterfile_proxy, except: [:create, :oembed, :attach_structure, :attach_captions, :delete_structure, :delete_captions, :destroy, :update, :set_structure]
+  before_action :set_masterfile, only: [:attach_structure, :attach_captions, :delete_structure, :delete_captions, :destroy, :update, :set_structure]
   before_action :ensure_readable_filedata, :only => [:create]
   skip_before_action :verify_authenticity_token, only: [:set_structure, :delete_structure]
 
