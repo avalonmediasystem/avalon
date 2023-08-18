@@ -46,6 +46,14 @@ class IiifPlaylistCanvasPresenter
     }]
   end
 
+  def item_metadata
+    [
+      { 'label' => { 'en' => ['Title'] }, 'value' => { 'en' => [master_file.media_object.title] } },
+      { 'label' => { 'en' => ['Date'] }, 'value' => { 'en' => [master_file.media_object.date_created] } },
+      { 'label' => { 'en' => ['Main Contributor'] }, 'value' => { 'en' => [master_file.media_object.creator] } }
+    ]
+   end
+
   def range
     simple_iiif_range(playlist_item.title)
   end
@@ -76,7 +84,7 @@ class IiifPlaylistCanvasPresenter
   end
 
   private
-  
+
     def video_content
       # @see https://github.com/samvera-labs/iiif_manifest
       stream_urls.collect { |quality, _url| video_display_content(quality) }

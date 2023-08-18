@@ -185,17 +185,8 @@ describe IiifPlaylistCanvasPresenter do
 
       it 'generates placeholder canvas' do
         expect(subject).to be_present
-      end
-
-      it 'has format' do
         expect(subject.format).to eq "text/plain"
-      end
-
-      it 'has type' do
         expect(subject.type).to eq "Text"
-      end
-
-      it 'has label' do
         expect(subject.label).to eq "You do not have permission to playback this item."
       end
     end
@@ -204,21 +195,25 @@ describe IiifPlaylistCanvasPresenter do
       let(:master_file) { nil }
       let(:stream_info) { nil }
 
-      it 'generated placeholder canvas' do
+      it 'generates placeholder canvas' do
         expect(subject).to be_present
-      end
-
-      it 'has format' do
         expect(subject.format).to eq "text/plain"
-      end
-
-      it 'has type' do
         expect(subject.type).to eq "Text"
-      end
-
-      it 'has label' do
         expect(subject.label).to eq "The source for this playlist item has been deleted."
       end
+    end
+  end
+
+  describe "#item_metadata" do
+    subject { presenter.item_metadata }
+
+    it 'returns the title, date, and main contributor of the parent item' do
+      expect(subject.first['label']).to eq({ 'en' => ['Title'] })
+      expect(subject.first['value']).to eq({ 'en' => [media_object.title] })
+      expect(subject.second['label']).to eq({ 'en' => ['Date'] })
+      expect(subject.second['value']).to eq({ 'en' => [media_object.date_created] })
+      expect(subject.last['label']).to eq({ 'en' => ['Main Contributor'] })
+      expect(subject.last['value']).to eq({ 'en' => [media_object.creator] })
     end
   end
 end
