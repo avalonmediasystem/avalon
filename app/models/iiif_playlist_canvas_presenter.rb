@@ -76,7 +76,7 @@ class IiifPlaylistCanvasPresenter
     def marker_content(marker)
       url = Rails.application.routes.url_helpers.avalon_marker_url(marker.id)
 
-      IIIFManifest::V3::AnnotationContent.new(url, **marker_attributes(marker))
+      IIIFManifest::V3::AnnotationContent.new(annotation_id: url, **marker_attributes(marker))
     end
 
     def stream_urls

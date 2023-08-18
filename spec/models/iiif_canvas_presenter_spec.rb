@@ -148,13 +148,13 @@ describe IiifCanvasPresenter do
       end
 
       it 'includes transcript and caption files' do
-        expect(subject.any? { |content| content.url =~ /supplemental_files\/#{transcript_file.id}/ }).to eq true
-        expect(subject.any? { |content| content.url =~ /supplemental_files\/#{caption_file.id}/ }).to eq true
+        expect(subject.any? { |content| content.body_id =~ /supplemental_files\/#{transcript_file.id}/ }).to eq true
+        expect(subject.any? { |content| content.body_id =~ /supplemental_files\/#{caption_file.id}/ }).to eq true
       end
 
       it 'differentiates between transcript and caption files' do
-        expect(subject.any? { |content| content.url =~ /supplemental_files\/#{transcript_file.id}\/transcripts/ }).to eq true
-        expect(subject.any? { |content| content.url =~ /supplemental_files\/#{caption_file.id}\/captions/ }).to eq true
+        expect(subject.any? { |content| content.body_id =~ /supplemental_files\/#{transcript_file.id}\/transcripts/ }).to eq true
+        expect(subject.any? { |content| content.body_id =~ /supplemental_files\/#{caption_file.id}\/captions/ }).to eq true
       end
 
       it 'does not add " (machine generated)" to label of non-generated files' do
@@ -163,19 +163,19 @@ describe IiifCanvasPresenter do
       end
 
       it 'does not include generic supplemental files or waveform' do
-        expect(subject.any? { |content| content.url =~ /supplemental_files\/#{supplemental_file.id}/ }).to eq false
+        expect(subject.any? { |content| content.body_id =~ /supplemental_files\/#{supplemental_file.id}/ }).to eq false
         expect(subject.any? { |content| content.label == { "en" => ["waveform.json"] } }).to eq false
       end
 
       it 'does not include master file captions url when legacy captions are not present' do
-        expect(subject.any? { |content| content.url =~ /master_files\/#{master_file.id}\/captions/ }).to eq false
+        expect(subject.any? { |content| content.body_id =~ /master_files\/#{master_file.id}\/captions/ }).to eq false
       end
 
       context 'legacy master file captions' do
         let(:master_file) { FactoryBot.create(:master_file, :with_waveform, :with_captions, supplemental_files_json: supplemental_files_json, media_object: media_object, derivatives: [derivative]) }
 
         it 'includes the master file captions' do
-          expect(subject.any? { |content| content.url =~ /master_files\/#{master_file.id}\/captions/ }).to eq true
+          expect(subject.any? { |content| content.body_id =~ /master_files\/#{master_file.id}\/captions/ }).to eq true
         end
       end
 
