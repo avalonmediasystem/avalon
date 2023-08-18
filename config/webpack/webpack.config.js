@@ -1,8 +1,9 @@
 // See the shakacode/shakapacker README and docs directory for advice on customizing your webpackConfig.
-const { generateWebpackConfig } = require('shakapacker')
+const { generateWebpackConfig } = require('shakapacker');
 const { merge } = require('webpack-merge');
+const webpack = require('webpack');
 
-const webpackConfig = generateWebpackConfig()
+const webpackConfig = generateWebpackConfig();
 
 const options = {
   resolve: {
@@ -13,7 +14,12 @@ const options = {
       "stream": require.resolve("stream-browserify"),
       "util": require.resolve("util/")
     }
-  }
-}
+  },
+  plugins: [
+    new webpack.ProvidePlugin({
+      process: 'process/browser',
+    }),
+  ],
+};
 
-module.exports = merge({}, webpackConfig, options)
+module.exports = merge({}, webpackConfig, options);
