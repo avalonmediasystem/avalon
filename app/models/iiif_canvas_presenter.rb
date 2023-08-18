@@ -98,7 +98,7 @@ class IiifCanvasPresenter
             else
               Rails.application.routes.url_helpers.master_file_supplemental_file_url(master_file.id, file.id)
             end
-      IIIFManifest::V3::AnnotationContent.new(url, **supplemental_attributes(file))
+      IIIFManifest::V3::AnnotationContent.new(body_id: url, **supplemental_attributes(file))
     end
 
     def stream_urls
