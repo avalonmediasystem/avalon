@@ -16,7 +16,7 @@ class IiifPlaylistCanvasPresenter
   attr_reader :playlist_item, :stream_info, :cannot_read_item
   attr_accessor :media_fragment
 
-  def initialize(playlist_item:, stream_info:, cannot_read_item: nil, media_fragment: nil)
+  def initialize(playlist_item:, stream_info:, cannot_read_item: false, media_fragment: nil)
     @playlist_item = playlist_item
     @stream_info = stream_info
     @cannot_read_item = cannot_read_item
