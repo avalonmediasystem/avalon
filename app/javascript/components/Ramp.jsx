@@ -29,30 +29,36 @@ const Ramp = ({ base_url, mo_id, canvas_count, share, timeline, cdl, progress })
   return (
     <IIIFPlayer manifestUrl={manifestUrl}>
       <Row>
-        <Col>
-          { (enabled && !canStream) && (<div dangerouslySetInnerHTML={{ __html: embed }} />) }
-          <React.Fragment>
-            <div dangerouslySetInnerHTML={{ __html: progress }} />
-            <MediaPlayer enableFileDownload={false} />
-            <div className="ramp--rails-content">
-              { timeline.canCreate && <div className="mr-1" dangerouslySetInnerHTML={{ __html: timeline.content }} /> }
-              { share.canShare && <div className="share-tabs" dangerouslySetInnerHTML={{ __html: share.content }} /> }
-            </div>
-            <StructuredNavigation />
-          </React.Fragment>
+        <Col sm={8}>
+          { (enabled && !canStream) 
+            ? (<div dangerouslySetInnerHTML={{ __html: embed }} />)
+            : (
+              <React.Fragment>
+                <div dangerouslySetInnerHTML={{ __html: progress }} />
+                <MediaPlayer enableFileDownload={false} />
+                <div className="ramp--rails-content">
+                  { timeline.canCreate && <div className="mr-1" dangerouslySetInnerHTML={{ __html: timeline.content }} /> }
+                  { share.canShare && <div className="share-tabs" dangerouslySetInnerHTML={{ __html: share.content }} /> }
+                </div>
+                <StructuredNavigation />
+              </React.Fragment>
+            )
+          }
         </Col>
-        <Col>
+        <Col sm={4}>
           { enabled && <div dangerouslySetInnerHTML={{ __html: destroyCDL }}/> }
           <Tabs>
             <Tab eventKey="details" title="Details">
               <MetadataDisplay showHeading={false} displayTitle={false}/>
             </Tab>
-            <Tab eventKey="transcripts" title="Transcripts">
-              <Transcript
-                playerID="iiif-media-player"
-                transcripts={transcriptsProp}
-              />
-            </Tab>
+            { canStream && 
+              <Tab eventKey="transcripts" title="Transcripts">
+                <Transcript
+                  playerID="iiif-media-player"
+                  transcripts={transcriptsProp}
+                />
+              </Tab>
+            }
             <Tab eventKey="files" title="Files">
               <SupplmentalFiles showHeading={false} />
             </Tab>

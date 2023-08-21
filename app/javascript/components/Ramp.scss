@@ -22,5 +22,16 @@
   #share-list {
     margin-left: -9.25rem;
   }
-  
+}
+
+.ramp--supplemental-files {
+  .ramp--supplemental-files-display-content {
+    padding-left: 0;
+  }
+
+  h4 {
+    border-bottom: 0.1rem solid #ddd;
+    padding-bottom: 0.75rem;
+    font-size: 1.25rem;
+  }
 }
