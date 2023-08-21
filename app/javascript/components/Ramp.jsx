@@ -1,5 +1,5 @@
 import React from 'react';
-import { Transcript, IIIFPlayer, MediaPlayer, StructuredNavigation } from "@samvera/ramp";
+import { Transcript, IIIFPlayer, MediaPlayer, StructuredNavigation, AutoAdvanceToggle } from "@samvera/ramp";
 import 'video.js/dist/video-js.css';
 import "@samvera/ramp/dist/ramp.css";
 import { Col, Row } from 'react-bootstrap';
@@ -13,6 +13,7 @@ const Ramp = ({ base_url, mo_id, canvas_count, share, timeline }) => {
     let url = `${base_url}/media_objects/${mo_id}/manifest.json`;
     setManifestUrl(url);
     buildTranscripts(url);
+    $('input[name="ramp--auto-advance-toggle"]').bootstrapToggle();
   }, []);
 
   const buildTranscripts = (url) => {
@@ -31,6 +32,7 @@ const Ramp = ({ base_url, mo_id, canvas_count, share, timeline }) => {
       <div className="ramp--rails-content">
         { timeline.canCreate && <div className="mr-1" dangerouslySetInnerHTML={{ __html: timeline.content }} /> }
         { share.canShare && <div className="share-tabs" dangerouslySetInnerHTML={{ __html: share.content }} /> }
+        <AutoAdvanceToggle />
       </div>
       <Row>
         <Col>
