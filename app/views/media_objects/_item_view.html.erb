@@ -23,17 +23,25 @@ Unless required by applicable law or agreed to in writing, software distributed
 <% @page_type = @currentStreamInfo[:is_video] ? 'video' : 'audio' %>
 <% can_stream = lending_enabled?(@media_object) ? current_user && @media_object.current_checkout(current_user.id).present? : true %> 
 
-  <%= react_component("Ramp", 
-    {
-      base_url: request.protocol+request.host_with_port, 
-      mo_id: @media_object.id, 
-      canvas_count: @media_object.master_files.size, 
-      share: { canShare: (will_partial_list_render? :share), content: render('share') },
-      timeline: { canCreate: (current_ability.can? :create, Timeline), content: render('timeline') },
-      cdl: { enabled: lending_enabled?(@media_object), canStream: can_stream, embed: render('embed_checkout'), destroyCDL: render('destroy_checkout') },
-      progress: render('workflow_progress')
-    }
-  ) %>
+<% in_progress = show_progress?(@masterFiles) %>
+<div class="row">
+  <div class="col-sm-8">
+    <%= render 'workflow_progress' %>
+  </div>
+  <div class="<%= in_progress || !@currentStream ? 'col-sm-4' : 'col-sm-12' %>">
+    <%= react_component("Ramp", 
+      {
+        base_url: request.protocol+request.host_with_port, 
+        mo_id: @media_object.id, 
+        master_files_count: @media_object.master_files.size,
+        share: { canShare: (will_partial_list_render? :share), content: render('share') },
+        timeline: { canCreate: (current_ability.can? :create, Timeline), content: render('timeline') },
+        in_progress: in_progress,
+        cdl: { enabled: lending_enabled?(@media_object), can_stream: can_stream, embed: render('embed_checkout'), destroy_CDL: render('destroy_checkout') }
+      }
+    ) %>
+  </div>
+</div>
 
 <% content_for :page_scripts do %>
   <script>
@@ -43,7 +51,7 @@ Unless required by applicable law or agreed to in writing, software distributed
       let scrollInterval = setInterval(autoScroll, 500);
 
       function autoScroll () {
-        const isVideo = <%= @currentStreamInfo[:is_video] %>;
+        const isVideo = <%= @currentStreamInfo ? @currentStreamInfo[:is_video] : false %>;
         const player = document.getElementsByTagName('video');
         if(isVideo && player?.length > 0) {
           const screenHeight = screen.height;
@@ -57,6 +65,5 @@ Unless required by applicable law or agreed to in writing, software distributed
         }
       }
     });
-  </script>
-
+</script>
 <% end %>
