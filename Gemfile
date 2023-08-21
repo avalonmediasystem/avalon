@@ -26,7 +26,7 @@ gem 'sass', '3.4.22'
 gem 'sprockets-es6'
 gem 'twitter-typeahead-rails', '0.11.1.pre.corejavascript'
 gem 'uglifier', '>= 1.3.0'
-gem 'webpacker'
+gem 'shakapacker'
 
 # Core Samvera
 gem 'active-fedora', '~> 14.0', '>= 14.0.1'
