@@ -277,7 +277,6 @@ GEM
       autoprefixer-rails (>= 9.1.0)
       popper_js (>= 1.16.1, < 2)
       sassc-rails (>= 2.0.0)
-    bootstrap-toggle-rails (2.2.1.0)
     bootstrap_form (5.2.3)
       actionpack (>= 6.0)
       activemodel (>= 6.0)
@@ -1003,7 +1002,6 @@ DEPENDENCIES
   blacklight-access_controls (>= 6.0.1)
   bootsnap
   bootstrap (~> 4.0)
-  bootstrap-toggle-rails
   bootstrap_form
   browse-everything!
   byebug

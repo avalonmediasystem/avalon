@@ -8,6 +8,7 @@
     "@samvera/ramp": "https://github.com/samvera-labs/ramp.git",
     "babel-plugin-macros": "^3.1.0",
     "babel-plugin-transform-react-remove-prop-types": "^0.4.24",
+    "bootstrap-toggle": "^2.2.2",
     "buffer": "^6.0.3",
     "compression-webpack-plugin": "9",
     "cropperjs": "^1.5.5",

@@ -33,6 +33,7 @@
 //= require popper
 //= require twitter/typeahead
 //= require bootstrap
+//= require bootstrap-toggle/js/bootstrap-toggle.min
 //= require jquery-ui
 //= require blacklight/blacklight
 //= require browse_everything
