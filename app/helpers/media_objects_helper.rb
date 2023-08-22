@@ -1,11 +1,11 @@
 # Copyright 2011-2023, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
-# 
+#
 # You may obtain a copy of the License at
-# 
+#
 # http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software distributed
 #   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
 #   CONDITIONS OF ANY KIND, either express or implied. See the License for the
@@ -104,6 +104,10 @@ module MediaObjectsHelper
 
       def display_related_item media_object
         media_object.related_item_url.collect{ |r| link_to( r[:label], r[:url]) }
+      end
+
+      def display_series media_object
+        media_object.series.collect { |s| link_to(s, blacklight_path({ "f[collection_ssim][]" => media_object.collection.name, "f[series_ssim][]" => s }))}
       end
 
       def display_rights_statement media_object
