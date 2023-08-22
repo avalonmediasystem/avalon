@@ -393,7 +393,7 @@ class MediaObject < ActiveFedora::Base
     # value = count and then only looking at the keys.
     search_array = ActiveFedora::SolrService.instance.conn.get('select', params: param).dig("facet_counts", "facet_fields", "series_ssim").each_slice(2).to_h.keys
 
-    search_array.map { |value| { display: value } }
+    search_array.map { |value| { id: value, display: value } }
   end
 
   private

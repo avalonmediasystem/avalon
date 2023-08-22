@@ -74,7 +74,8 @@ Unless required by applicable law or agreed to in writing, software distributed
 
   <%= render partial: 'text_field',
              locals: {form: form, field: :series,
-                      options: {multivalued: true,
+                      options: {display_label: "Series",
+                                multivalued: true,
                                 autocomplete_model: 'mediaObject',
                                 autocomplete_validate: false}} %>
 
