@@ -1130,23 +1130,23 @@ describe MediaObject do
 
 
     it "should return all series within the parent collection's unit that include the query string" do
-      expect(MediaObject.autocomplete('Test', mo1.id)).to include({ display: 'Test 1' })
-      expect(MediaObject.autocomplete('Test', mo1.id)).to include({ display: 'Test 2' })
-      expect(MediaObject.autocomplete('Test', mo1.id)).not_to include({ display: 'Alpha'})
-      expect(MediaObject.autocomplete('Test', mo1.id)).not_to include({ display: 'Test 3' })
+      expect(MediaObject.autocomplete('Test', mo1.id)).to include({ id: 'Test 1', display: 'Test 1' })
+      expect(MediaObject.autocomplete('Test', mo1.id)).to include({ id: 'Test 2', display: 'Test 2' })
+      expect(MediaObject.autocomplete('Test', mo1.id)).not_to include({ id: 'Alpha', display: 'Alpha'})
+      expect(MediaObject.autocomplete('Test', mo1.id)).not_to include({ id: 'Test 3', display: 'Test 3' })
     end
 
     it 'should return results without duplicates' do
-      expect(MediaObject.autocomplete('Test', mo1.id).count({ display: 'Test 1' })).to eq 1
+      expect(MediaObject.autocomplete('Test', mo1.id).count({ id: 'Test 1', display: 'Test 1' })).to eq 1
     end
 
     it "should wildcard match" do
-      expect(MediaObject.autocomplete('ph', mo1.id)).to include({ display: 'Alpha' })
+      expect(MediaObject.autocomplete('ph', mo1.id)).to include({ id: 'Alpha', display: 'Alpha' })
     end
 
     it "should be case insensitive" do
-      expect(MediaObject.autocomplete('tes', mo1.id)).to include({ display: 'Test 1' })
-      expect(MediaObject.autocomplete('te', mo1.id)).to include({ display: 'Test 2' })
+      expect(MediaObject.autocomplete('tes', mo1.id)).to include({ id: 'Test 1', display: 'Test 1' })
+      expect(MediaObject.autocomplete('te', mo1.id)).to include({ id: 'Test 2', display: 'Test 2' })
     end
   end
 end
