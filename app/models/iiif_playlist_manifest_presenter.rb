@@ -16,11 +16,12 @@ class IiifPlaylistManifestPresenter
   IIIF_ALLOWED_TAGS = ['a', 'b', 'br', 'i', 'img', 'p', 'small', 'span', 'sub', 'sup'].freeze
   IIIF_ALLOWED_ATTRIBUTES = ['href', 'src', 'alt'].freeze
 
-  attr_reader :playlist, :items
+  attr_reader :playlist, :items, :can_edit_playlist
 
-  def initialize(playlist:, items:)
+  def initialize(playlist:, items:, can_edit_playlist: false)
     @playlist = playlist
     @items = items
+    @can_edit_playlist = can_edit_playlist
   end
 
   def file_set_presenters
@@ -66,6 +67,16 @@ class IiifPlaylistManifestPresenter
 
   def manifest_metadata
     @manifest_metadata ||= iiif_metadata_fields.compact
+  end
+
+  def service
+    return nil unless can_edit_playlist
+    [
+      {
+        id: Rails.application.routes.url_helpers.avalon_marker_index_url,
+        type: "AnnotationService0"
+      }
+    ]
   end
 
   private
