@@ -22,7 +22,6 @@ const Ramp = ({
   cdl 
 }) => {
   const [manifestUrl, setManifestUrl] = React.useState('');
-  const { enabled, can_stream, embed, destroy_CDL } = cdl;
 
   React.useEffect(() => {
     let url = `${base_url}/media_objects/${mo_id}/manifest.json`;
@@ -34,8 +33,8 @@ const Ramp = ({
       <Row>
         {!in_progress &&
           <Col sm={8}>
-            { (enabled && !can_stream) 
-              ? (<div dangerouslySetInnerHTML={{ __html: embed }} />)
+            { (cdl.enabled && !cdl.can_stream) 
+              ? (<div dangerouslySetInnerHTML={{ __html: cdl.embed }} />)
               : ( <React.Fragment>
                     { master_files_count > 0 && 
                       <React.Fragment>
@@ -53,12 +52,12 @@ const Ramp = ({
           </Col>
         }
         <Col sm={ (in_progress || master_files_count == 0) ? 12 : 4}>
-          { enabled && <div dangerouslySetInnerHTML={{ __html: destroy_CDL }}/> }
+          { cdl.enabled && <div dangerouslySetInnerHTML={{ __html: cdl.destroy }}/> }
           <Tabs>
             <Tab eventKey="details" title="Details">
               <MetadataDisplay showHeading={false} displayTitle={false}/>
             </Tab>
-            { (can_stream && master_files_count != 0 && !in_progress) && 
+            { (cdl.can_stream && master_files_count != 0 && !in_progress) && 
               <Tab eventKey="transcripts" title="Transcripts">
                 <Transcript
                   playerID="iiif-media-player"
