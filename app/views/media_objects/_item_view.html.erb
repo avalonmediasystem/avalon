@@ -34,8 +34,8 @@ Unless required by applicable law or agreed to in writing, software distributed
         base_url: request.protocol+request.host_with_port, 
         mo_id: @media_object.id, 
         master_files_count: @media_object.master_files.size,
-        share: { canShare: (will_partial_list_render? :share), content: render('share') },
-        timeline: { canCreate: (current_ability.can? :create, Timeline), content: render('timeline') },
+        share: { canShare: (will_partial_list_render? :share), content: lending_enabled?(@media_object) ? (render('share') if can_stream) : render('share') },
+        timeline: { canCreate: (current_ability.can? :create, Timeline), content: lending_enabled?(@media_object) ? (render('timeline') if can_stream) : render('timeline') },
         in_progress: in_progress,
         cdl: { enabled: lending_enabled?(@media_object), can_stream: can_stream, embed: render('embed_checkout'), destroy_CDL: render('destroy_checkout') }
       }
