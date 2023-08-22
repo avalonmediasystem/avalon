@@ -113,11 +113,11 @@ jobs:
 
       # Pull in the parallel_rspec step and modify it to ensure that test results get stored
       # - samvera/parallel_rspec
+      - run: mkdir /tmp/test-results
       - run:
           name: Run rspec in parallel
           command: |
-            mkdir /tmp/test-results
-            bundle exec rspec --format progress --format RspecJunitFormatter -o /tmp/test-results/rspec.xml $(circleci tests glob "spec/**/*_spec.rb" | circleci tests split --split-by=timings)
+            circleci tests glob "spec/**/*_spec.rb" | circleci tests run --command="xargs bundle exec rspec --format progress --format RspecJunitFormatter -o /tmp/test-results/rspec.xml" --verbose --split-by=timings
       # collect reports
       - store_test_results:
           path: /tmp/test-results
