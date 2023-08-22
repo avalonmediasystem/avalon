@@ -36,7 +36,7 @@
     limit: 10
   ).on("typeahead:selected typeahead:autocompleted", (event, suggestion, dataset) ->
     target = $("##{$t.data('target')}")
-    target.val suggestion["id"]
+    target.val suggestion["id"] || suggestion["display"]
     $t.data('matched_val',suggestion["display"])
     return
   ).on("keypress", (e) ->
