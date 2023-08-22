@@ -51,7 +51,7 @@ Unless required by applicable law or agreed to in writing, software distributed
       let scrollInterval = setInterval(autoScroll, 500);
 
       function autoScroll () {
-        const isVideo = <%= @currentStreamInfo ? @currentStreamInfo[:is_video] : false %>;
+        const isVideo = <%= @currentStream ? @currentStreamInfo[:is_video] : false %>;
         const player = document.getElementsByTagName('video');
         if(isVideo && player?.length > 0) {
           const screenHeight = screen.height;

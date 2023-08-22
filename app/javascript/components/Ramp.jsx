@@ -1,30 +1,33 @@
 import React from 'react';
-import { Transcript, IIIFPlayer, MediaPlayer, StructuredNavigation, MetadataDisplay, SupplmentalFiles } from "@samvera/ramp";
+import { 
+  Transcript, 
+  IIIFPlayer, 
+  MediaPlayer, 
+  StructuredNavigation, 
+  MetadataDisplay, 
+  SupplmentalFiles 
+} from "@samvera/ramp";
 import 'video.js/dist/video-js.css';
 import "@samvera/ramp/dist/ramp.css";
 import { Col, Row, Tab, Tabs } from 'react-bootstrap';
 import './Ramp.scss';
 
-const Ramp = ({ base_url, mo_id, master_files_count, share, timeline, in_progress, cdl }) => {
-  const [transcriptsProp, setTrancsriptProp] = React.useState([]);
+const Ramp = ({ 
+  base_url, 
+  mo_id, 
+  master_files_count, 
+  share, 
+  timeline, 
+  in_progress, 
+  cdl 
+}) => {
   const [manifestUrl, setManifestUrl] = React.useState('');
-
   const { enabled, can_stream, embed, destroy_CDL } = cdl;
+
   React.useEffect(() => {
     let url = `${base_url}/media_objects/${mo_id}/manifest.json`;
     setManifestUrl(url);
-    buildTranscripts(url); 
   }, []);
-
-  const buildTranscripts = (url) => {
-    let trProps = [];
-    for(let i = 0; i < master_files_count; i++) {
-      let canvasTrs = { canvasId: i, items: [] };
-      canvasTrs.items = [{ title: '', url }];
-      trProps.push(canvasTrs);
-    }
-    setTrancsriptProp(trProps);
-  };
 
   return (
     <IIIFPlayer manifestUrl={manifestUrl}>
@@ -59,7 +62,7 @@ const Ramp = ({ base_url, mo_id, master_files_count, share, timeline, in_progres
               <Tab eventKey="transcripts" title="Transcripts">
                 <Transcript
                   playerID="iiif-media-player"
-                  transcripts={transcriptsProp}
+                  manifestUrl={manifestUrl}
                 />
               </Tab>
             }
