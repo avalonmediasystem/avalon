@@ -256,8 +256,9 @@ class PlaylistsController < ApplicationController
                     end
       IiifPlaylistCanvasPresenter.new(playlist_item: item, stream_info: stream_info, cannot_read_item: cannot_read_item)
     end
-    presenter = IiifPlaylistManifestPresenter.new(playlist: @playlist, items: canvas_presenters)
 
+    can_edit_playlist = can? :edit, @playlist
+    presenter = IiifPlaylistManifestPresenter.new(playlist: @playlist, items: canvas_presenters, can_edit_playlist: can_edit_playlist)
     manifest = IIIFManifest::V3::ManifestFactory.new(presenter).to_h
 
     respond_to do |wants|

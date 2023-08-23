@@ -576,5 +576,25 @@ RSpec.describe PlaylistsController, type: :controller do
         expect(parsed_response['type']).to eq 'Manifest'
         expect(parsed_response['items']).not_to be_empty
       end
+
+      context "when playlist owner" do
+        before do
+          login_user playlist.user.user_key
+        end
+
+        it "includes the marker annotation service definition" do
+          get :manifest, format: 'json', params: { id: playlist.id }, session: valid_session
+          parsed_response = JSON.parse(response.body)
+          expect(parsed_response["service"]).to be_present
+        end
+      end
+
+      context "when not playlist owner" do
+        it "does not include the marker annotation service definition" do
+          get :manifest, format: 'json', params: { id: playlist.id }, session: valid_session
+          parsed_response = JSON.parse(response.body)
+          expect(parsed_response["service"]).not_to be_present
+        end
+      end
     end
   end
