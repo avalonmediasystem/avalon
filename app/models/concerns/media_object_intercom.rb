@@ -45,6 +45,7 @@ module MediaObjectIntercom
           terms_of_use: terms_of_use,
           table_of_contents: table_of_contents,
           physical_description: physical_description,
+          series: series.to_a,
           record_identifier: record_identifier,
           comment: comment.to_a,
           bibliographic_id: (bibliographic_id.present? ? bibliographic_id[:id] : nil),
@@ -54,7 +55,6 @@ module MediaObjectIntercom
           language: (language.present? ? language.collect { |n| n[:code] } : nil),
           related_item_url: (related_item_url.present? ? related_item_url.collect { |n| n[:url] } : nil),
           related_item_label: (related_item_url.present? ? related_item_url.collect { |n| n[:label] } : nil),
-          series: (series.present? ? series : nil),
           other_identifier: (other_identifier.present? ? other_identifier.collect { |n| n[:id] } : nil),
           other_identifier_type: (other_identifier.present? ? other_identifier.collect { |n| n[:source] } : nil),
           rights_statement: rights_statement

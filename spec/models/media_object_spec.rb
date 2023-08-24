@@ -354,6 +354,7 @@ describe MediaObject do
         'contributor' => [''],
         'publisher' => [''],
         'subject' => [''],
+        'series' => [''],
         'related_item_url' => [{label:'',url:''}],
         'geographic_subject' => [''],
         'temporal_subject' => [''],
@@ -374,6 +375,7 @@ describe MediaObject do
       expect(media_object.contributor).to eq([])
       expect(media_object.publisher).to eq([])
       expect(media_object.subject).to eq([])
+      expect(media_object.series).to eq([])
       expect(media_object.related_item_url).to eq([])
       expect(media_object.geographic_subject).to eq([])
       expect(media_object.temporal_subject).to eq([])

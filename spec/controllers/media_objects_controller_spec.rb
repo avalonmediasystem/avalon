@@ -277,7 +277,8 @@ describe MediaObjectsController, type: :controller do
       :table_of_contents,
       :physical_description,
       :other_identifier,
-      :rights_statement
+      :rights_statement,
+      :series
     ]}
 
     describe "#create" do
@@ -374,6 +375,7 @@ describe MediaObjectsController, type: :controller do
           fields[:date_created] = '???'
           fields[:copyright_date] = '???'
           fields[:rights_statement] = '???'
+          fields[:series] = ['???']
           post 'create', params: { format: 'json', fields: fields, files: [master_file], collection_id: collection.id }
           expect(response.status).to eq(200)
           new_media_object = MediaObject.find(JSON.parse(response.body)['id'])
@@ -384,6 +386,7 @@ describe MediaObjectsController, type: :controller do
           expect(new_media_object.date_created).to eq nil
           expect(new_media_object.copyright_date).to eq nil
           expect(new_media_object.rights_statement).to eq nil
+          expect(new_media_object.series).to eq nil
         end
         it "should merge supplied other identifiers after bib import" do
           stub_request(:get, sru_url).to_return(body: sru_response)
@@ -426,6 +429,7 @@ describe MediaObjectsController, type: :controller do
           expect(new_media_object.related_item_url).to eq media_object.related_item_url
           expect(new_media_object.other_identifier).to eq media_object.other_identifier
           expect(new_media_object.rights_statement).to eq media_object.rights_statement
+          expect(new_media_object.series).to eq media_object.series
           expect(new_media_object.avalon_resource_type).to eq media_object.avalon_resource_type
           expect(new_media_object.master_files.first.date_digitized).to eq(media_object.master_files.first.date_digitized)
           expect(new_media_object.master_files.first.identifier).to eq(media_object.master_files.first.identifier)
@@ -1241,12 +1245,12 @@ describe MediaObjectsController, type: :controller do
       end
 
       context 'read from solr' do
-	it 'should not read from fedora' do
-	  perform_enqueued_jobs(only: MediaObjectIndexingJob)
-	  WebMock.reset_executed_requests!
+      	it 'should not read from fedora' do
+      	  perform_enqueued_jobs(only: MediaObjectIndexingJob)
+      	  WebMock.reset_executed_requests!
           get 'show', params: { id: media_object.id, format:'json' }
-	  expect(a_request(:any, /#{ActiveFedora.fedora.base_uri}/)).not_to have_been_made
-	end
+      	  expect(a_request(:any, /#{ActiveFedora.fedora.base_uri}/)).not_to have_been_made
+      	end
       end
     end
 
