@@ -1126,16 +1126,17 @@ describe MediaObjectsController, type: :controller do
       end
     end
 
-    context "correctly handle missing controlled vocabulary sections" do
-      before do
-        stub_const("ModsDocument::RIGHTS_STATEMENTS", nil)
-      end
-      it "should redirect to homepage if controlled_vocabulary.yml is incomplete" do
-        get :show, params: { id: media_object.id }
-        expect(response).to redirect_to(root_path)
-        expect(flash[:error]).to be_present
-      end
-    end
+    ## NOTE: Test for MODS XML on page, which has been decided to be moved with item page re-design
+    # context "correctly handle missing controlled vocabulary sections" do
+    #   before do
+    #     stub_const("ModsDocument::RIGHTS_STATEMENTS", nil)
+    #   end
+    #   it "should redirect to homepage if controlled_vocabulary.yml is incomplete" do
+    #     get :show, params: { id: media_object.id }
+    #     expect(response).to redirect_to(root_path)
+    #     expect(flash[:error]).to be_present
+    #   end
+    # end
 
     describe 'Redirect back to media object after sign in' do
       let(:media_object){ FactoryBot.create(:media_object, visibility: 'private') }
