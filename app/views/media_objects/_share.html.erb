@@ -38,7 +38,7 @@ Unless required by applicable law or agreed to in writing, software distributed
     const event = new CustomEvent('canvasswitch', { detail: { lti_share_link: '', link_back_url: '', embed_code: '' } })
     function canvasIndexListener() {
       let player = document.getElementById('iiif-media-player');
-      if (player) {
+      if (player && player != undefined) {
         player.player.on("loadedmetadata", () => {
           if (player.dataset.canvasindex != canvasIndex) {
             canvasIndex = parseInt(player.dataset.canvasindex);
@@ -65,7 +65,7 @@ Unless required by applicable law or agreed to in writing, software distributed
       }
       if(!$('.share-tabs li').first().hasClass('active')) {
         $('.share-tabs li').first().toggleClass('active');
-        $('.tab-content .tab-pane').first().toggleClass('active');
+        $('#share-list .tab-content .tab-pane').first().toggleClass('active');
       }
     }
     setInterval(canvasIndexListener, 500);

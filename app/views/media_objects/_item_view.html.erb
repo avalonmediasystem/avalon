@@ -23,33 +23,24 @@ Unless required by applicable law or agreed to in writing, software distributed
 <% @page_type = @currentStreamInfo[:is_video] ? 'video' : 'audio' %>
 <% can_stream = lending_enabled?(@media_object) ? current_user && @media_object.current_checkout(current_user.id).present? : true %> 
 
-<% f_start, f_end = parse_media_fragment params['t'] %>
+<% in_progress = show_progress?(@masterFiles) %>
 <div class="row">
-  <div class="col-sm-8" id="left_column">
-    <% if lending_enabled?(@media_object) && !can_stream %>
-      <%= render 'embed_checkout' %>
-    <% elsif @currentStream %>
-      <%= render 'workflow_progress' %>
-      <%= react_component("Ramp", 
-        {
-          base_url: request.protocol+request.host_with_port, 
-          mo_id: @media_object.id, 
-          canvas_count: @media_object.master_files.size, 
-          share: { canShare: (will_partial_list_render? :share), content: render('share') },
-          timeline: { canCreate: (current_ability.can? :create, Timeline), content: render('timeline') }
-        }
-      ) %>
-    <% end %>
+  <div class="col-sm-8">
+    <%= render 'workflow_progress' %>
   </div>
-  <div class="col-sm-4" id="right-column">
-    <% if lending_enabled?(@media_object) %>
-      <%= render 'destroy_checkout' %>
-    <% end %>
-    <div id="metadata_container" class="col-sm-12">
-      <section id="metadata"><%= render "metadata_display" %></section>
-    </div>
+  <div class="<%= in_progress || !@currentStream ? 'col-sm-4' : 'col-sm-12' %>">
+    <%= react_component("Ramp", 
+      {
+        base_url: request.protocol+request.host_with_port, 
+        mo_id: @media_object.id, 
+        master_files_count: @media_object.master_files.size,
+        share: { canShare: (will_partial_list_render? :share), content: lending_enabled?(@media_object) ? (render('share') if can_stream) : render('share') },
+        timeline: { canCreate: (current_ability.can? :create, Timeline), content: lending_enabled?(@media_object) ? (render('timeline') if can_stream) : render('timeline') },
+        in_progress: in_progress,
+        cdl: { enabled: lending_enabled?(@media_object), can_stream: can_stream, embed: render('embed_checkout'), destroy: render('destroy_checkout') }
+      }
+    ) %>
   </div>
-
 </div>
 
 <% content_for :page_scripts do %>
@@ -60,7 +51,7 @@ Unless required by applicable law or agreed to in writing, software distributed
       let scrollInterval = setInterval(autoScroll, 500);
 
       function autoScroll () {
-        const isVideo = <%= @currentStreamInfo[:is_video] %>;
+        const isVideo = <%= @currentStream ? @currentStreamInfo[:is_video] : false %>;
         const player = document.getElementsByTagName('video');
         if(isVideo && player?.length > 0) {
           const screenHeight = screen.height;
@@ -74,6 +65,5 @@ Unless required by applicable law or agreed to in writing, software distributed
         }
       }
     });
-  </script>
-
+</script>
 <% end %>
