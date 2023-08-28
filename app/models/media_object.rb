@@ -364,6 +364,17 @@ class MediaObject < ActiveFedora::Base
     self._lending_period || collection&.default_lending_period
   end
 
+  # These series methods should be removed if/when series is moved into MODS document
+  alias_method :'_series', :'series'
+  def series
+    self._series.to_a
+  end
+
+  alias_method :'_series=', :'series='
+  def series=(val)
+    _series = val.reject(&:blank?)
+  end
+
   # Override to reset memoized fields
   def reload
     @master_file_docs = nil

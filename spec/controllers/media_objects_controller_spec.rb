@@ -386,7 +386,7 @@ describe MediaObjectsController, type: :controller do
           expect(new_media_object.date_created).to eq nil
           expect(new_media_object.copyright_date).to eq nil
           expect(new_media_object.rights_statement).to eq nil
-          expect(new_media_object.series).to eq nil
+          expect(new_media_object.series).to eq []
         end
         it "should merge supplied other identifiers after bib import" do
           stub_request(:get, sru_url).to_return(body: sru_response)
