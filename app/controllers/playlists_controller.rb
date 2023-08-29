@@ -247,8 +247,8 @@ class PlaylistsController < ApplicationController
     authorize! :read, @playlist
 
     canvas_presenters = @playlist.items.collect do |item|
-      cannot_read_item = cannot? :read, @master_file
       @master_file = item.clip.master_file
+      cannot_read_item = cannot? :read, @master_file
       stream_info = if @master_file.nil?
                       nil
                     else

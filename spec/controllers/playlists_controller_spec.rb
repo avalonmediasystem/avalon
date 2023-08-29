@@ -596,5 +596,21 @@ RSpec.describe PlaylistsController, type: :controller do
           expect(parsed_response["service"]).not_to be_present
         end
       end
+
+      context "playlist item auth" do
+        let(:playlist) { FactoryBot.create(:playlist, items: [playlist_item, playlist_item_2], visibility: Playlist::PUBLIC) }
+        let(:playlist_item_2) { FactoryBot.create(:playlist_item, clip: clip_2) }
+        let(:clip_2) { FactoryBot.create(:avalon_clip, master_file: master_file_2) }
+        let(:master_file_2) { FactoryBot.create(:master_file, :with_derivative, media_object: media_object_2) }
+        let(:media_object_2) { FactoryBot.create(:published_media_object, visibility: 'restricted') }
+
+        it "returns populated canvas for public item and blank canvas for restricted item" do
+          get :manifest, format: 'json', params: { id: playlist.id }, session: valid_session
+          parsed_response = JSON.parse(response.body)
+          expect(parsed_response['items'].length).to eq 2
+          expect(parsed_response['items'][0]['items'][0].keys).to include 'items'
+          expect(parsed_response['items'][1]['items'][0].keys).to_not include 'items'
+        end
+      end
     end
   end
