@@ -208,7 +208,6 @@ class MediaObjectsController < ApplicationController
         end
       end
     else
-      # byebug
       @media_object.update_attributes(media_object_parameters) if params.has_key?(:fields) and params[:fields].respond_to?(:has_key?)
     end
 

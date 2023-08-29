@@ -372,7 +372,7 @@ class MediaObject < ActiveFedora::Base
 
   alias_method :'_series=', :'series='
   def series=(val)
-    _series = val.reject(&:blank?)
+    self._series = val.reject(&:blank?)
   end
 
   # Override to reset memoized fields
