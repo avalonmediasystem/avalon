@@ -143,7 +143,7 @@ class IiifManifestPresenter
   end
 
   def display_series(media_object)
-    media_object.series.collect { |s| "<a href='#{Rails.application.routes.url_helpers.blacklight_url({ "f[collection_ssim][]" => media_object.collection.name, "f[series_ssim][]" => s })}'" }
+    media_object.series.collect { |s| "<a href='#{series_url(s)}'>#{s}</a>" }
   end
 
   def display_rights_statement(media_object)
@@ -156,6 +156,10 @@ class IiifManifestPresenter
   def display_summary(media_object)
     return nil unless media_object.abstract.present?
     media_object.abstract
+  end
+
+  def series_url(series)
+    Rails.application.routes.url_helpers.blacklight_url({ "f[collection_ssim][]" => media_object.collection.name, "f[series_ssim][]" => series })
   end
 
   def iiif_metadata_fields
