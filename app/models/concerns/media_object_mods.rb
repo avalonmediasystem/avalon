@@ -336,6 +336,14 @@ module MediaObjectMods
     descMetadata.table_of_contents = Array(value).reject(&:blank?) if value.present?
   end
 
+  def series
+    descMetadata.series
+  end
+  def series=(values)
+    delete_all_values(:series)
+    Array(values).each { |val| descMetadata.add_series(val) if val.present? }
+  end
+
   # has_attributes :physical_description, datastream: :descMetadata, at: [:physical_description], multiple: true
   def physical_description
     descMetadata.physical_description
@@ -355,16 +363,6 @@ module MediaObjectMods
     delete_all_values(:related_item_label)
     Array(value_hashes).each { |val| descMetadata.add_related_item_url(val[:url], val[:label]) if val[:url].present? and val[:label].present? }
   end
-
-  # # has_attributes :series, datastream: descMetadata, at: [:tbd], multiple: true
-  # def series
-  #   descMetadata.tbd
-  # end
-  #
-  # def series=(value)
-  #   delete_all_values(:series)
-  #   Array(value).each { |val| descMetadata.add_series(val) if val.present? }
-  # end
 
   # has_attributes :other_identifier, datastream: :descMetadata, at: [:other_identifier], multiple: true
   def other_identifier

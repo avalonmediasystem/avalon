@@ -227,6 +227,20 @@ module ModsTemplates
         }
       end
 
+      define_template :series do |xml,series_name|
+        xml.relatedItem(:type => 'series') {
+          xml.titleInfo {
+            xml.title {
+              xml.text(series_name)
+            }
+          }
+        }
+      end
+
+      def add_series(series_term)
+        add_child_node(ng_xml.root, :series, series_term)
+      end
+
       define_template :place do |xml,place_term|
         xml.place {
           xml.placeTerm {
@@ -278,7 +292,6 @@ module ModsTemplates
         add_child_node(get_record_info, :_record_identifier, content, source)
       end
 
-      #TODO: Add series to MODS template
     end
   end
 
