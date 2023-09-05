@@ -116,9 +116,6 @@ class MediaObject < ActiveFedora::Base
   property :lending_period, predicate: ::RDF::Vocab::SCHEMA.eligibleDuration, multiple: false do |index|
     index.as :stored_sortable
   end
-  property :series, predicate: ::RDF::Vocab::SCHEMA.Series, multiple: true do |index|
-    index.as :symbol
-  end
 
   ordered_aggregation :master_files, class_name: 'MasterFile', through: :list_source
   # ordered_aggregation gives you accessors media_obj.master_files and media_obj.ordered_master_files
@@ -362,17 +359,6 @@ class MediaObject < ActiveFedora::Base
   alias_method :'_lending_period', :'lending_period'
   def lending_period
     self._lending_period || collection&.default_lending_period
-  end
-
-  # These series methods should be removed if/when series is moved into MODS document
-  alias_method :'_series', :'series'
-  def series
-    self._series.to_a
-  end
-
-  alias_method :'_series=', :'series='
-  def series=(val)
-    self._series = val.reject(&:blank?)
   end
 
   # Override to reset memoized fields

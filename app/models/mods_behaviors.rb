@@ -50,6 +50,7 @@ module ModsBehaviors
     solr_doc['table_of_contents_sim'] = gather_terms(self.find_by_terms(:table_of_contents))
     solr_doc['access_sim'] = gather_terms(self.find_by_terms(:usage))
 #    solr_doc['collection_sim'] = gather_terms(self.find_by_terms(:archival_collection))
+    solr_doc['series_ssim'] = gather_terms(self.find_by_terms(:series))
     #filter formats based upon whitelist
     solr_doc['format_sim'] = (gather_terms(self.find_by_terms(:resource_type)) & ['moving image', 'sound recording' ]).map(&:titleize)
     solr_doc['location_sim'] = gather_terms(self.find_by_terms(:geographic_subject))

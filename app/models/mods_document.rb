@@ -146,6 +146,11 @@ class ModsDocument < ActiveFedora::OmDatastream
     t.related_item_label(:proxy => [:related_item, :displayLabel])
     t.collection(:proxy => [:related_item, :title_info, :title], :path => 'relatedItem[@type="host"]/oxns:titleInfo/oxns:title')
 
+    t.series_related_item(:path => 'relatedItem', :attributes => { :type => 'series'}) do
+      t.title_info(:ref => :title_info)
+    end
+    t.series(:proxy => [:series_related_item, :title_info, :title])
+
     t.location do
       t.url(:attributes => { :access => nil })
       t.url_with_context(:path => 'url', :attributes => { :access => 'object in context' })
