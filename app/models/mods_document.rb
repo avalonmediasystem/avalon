@@ -229,7 +229,7 @@ class ModsDocument < ActiveFedora::OmDatastream
         # de-dupe imported values
         [:genre, :topical_subject, :geographic_subject, :temporal_subject,
          :occupation_subject, :person_subject, :corporate_subject, :family_subject,
-         :title_subject].each do |field|
+         :title_subject, :series].each do |field|
            self.send("#{field}=".to_sym, self.send(field).uniq)
         end
         # restore old media_type and resource_type
