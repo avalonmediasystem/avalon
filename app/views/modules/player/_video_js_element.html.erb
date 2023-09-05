@@ -1,0 +1,235 @@
+<%#
+Copyright 2011-2023, The Trustees of Indiana University and Northwestern
+  University.  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+
+You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+  under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+  CONDITIONS OF ANY KIND, either express or implied. See the License for the
+  specific language governing permissions and limitations under the License.
+---  END LICENSE_HEADER BLOCK  ---
+%>
+
+<style>
+  .video-container {
+    position: absolute;
+  }
+
+  .video-js {
+    position: relative;
+    z-index: 0;
+  }
+
+  .video-title {
+    position: absolute;
+    z-index: 1;
+    top: 5px;
+    left: 8px;
+  }
+
+  .video-title .video-link {
+    color: white;
+    font-size:150%;
+  }
+
+  .video-js.vjs-playing + .video-title {
+    display: none;
+  }
+
+  // @silvermine/videojs-quality-selector
+  .vjs-menu {
+    li {
+      font-size: 1em;
+    }
+
+    li.vjs-selected {
+      background-color: $primaryGreen;
+
+      &:hover {
+        background-color: $primary;
+      }
+    }
+  }
+
+  .video-js .vjs-control-bar {
+    /* Audio: Make the controlbar visible by default */
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -ms-flexbox;
+    display: flex;
+    /* Increase the control-bar icons/text size */
+    font-size: 120%;
+  }
+
+  /* Make player height minimum to the controls height so when we hide
+  video/poster area the controls are displayed correctly. */
+  .video-js.vjs-audio {
+    min-height: 3.7em;
+  }
+
+  .video-js .vjs-progress-control:hover .vjs-play-progress:after {
+    display: none;
+  }
+
+  /* Show poster image when playback ends */
+  .video-js.vjs-ended .vjs-poster {
+    display: block;
+  }
+
+  .video-js .vjs-current-time {
+    display: block;
+  }
+
+  /* Put playhead on top of markers */
+  .video-js .vjs-play-progress:before {
+    z-index: 101;
+  }
+
+  /* time-control elements */
+  .video-js .vjs-time-control {
+    min-width: 0.5rem;
+    padding: 0 0.25rem;
+  }
+
+  .vjs-time-divider {
+    display: block;
+  }
+
+  .vjs-duration {
+    display: block !important;
+  }
+
+  /* big-play button */
+  .video-js .vjs-big-play-button {
+    margin-left: auto;
+    margin-right: auto;
+    height: 2.5rem;
+    width: 2.5rem;
+    line-height: 2.5rem;
+    border-radius: 50%;
+    scale: 2;
+    border: 0.1rem solid #fff;
+  }
+
+  /* captions button selection */
+  .captions-on {
+    border-bottom: 0.45rem ridge $primaryGreen;
+  }
+
+  .vjs-custom-external-link .vjs-icon-placeholder {
+    font-size: 120%;
+  }
+</style>
+
+<%= master_file_meta_properties(section) do %>
+  <% control_bar_options = if section_info[:is_video]
+                             {
+                               "children": [
+                                 'playToggle',
+                                 'volumePanel',
+                                 'progressControl',
+                                 'currentTimeDisplay',
+                                 'timeDivider',
+                                 'durationDisplay',
+                                 'subsCapsButton',
+                                 'qualitySelector'
+                               ],
+                               fullscreenToggle: section_info[:is_video] ? true : false
+                             }
+                           else
+                             {
+                               "children": [
+                                 'playToggle',
+                                 'volumePanel',
+                                 'progressControl',
+                                 'currentTimeDisplay',
+                                 'timeDivider',
+                                 'durationDisplay'
+                               ]
+                             }
+                           end %>
+
+  <% @videojs_options = {"aspectRatio": section_info[:is_video] ? '16:9' : '1:0',
+                         "autoplay": false,
+                         "width": @player_width || 480,
+                         "height": @player_height || 270,
+                         "bigPlayButton": section_info[:is_video] ? true : false,
+                         "poster": section_info[:is_video] ?  section_info[:poster_image] : false,
+                         "fluid": true,
+                         "responsive": true,
+                         "preload": "auto",
+                         "controlBar": control_bar_options,
+                         "userActions": {
+                           hotkeys: true
+                         }
+                       }.compact.to_json %>
+
+  <div class='video-container' style="width:100%; height:100%;">
+    <video-js id="video-js-embed-<%= @master_file.id %>"
+            class="vjs-big-play-centered"
+            controls
+            style="width:100%; height:100%;"
+            data-setup='<%= @videojs_options %>'>
+      <% section_info[:stream_hls].each do |hls| %>
+        <source src="<%= hls[:url] %>" type="application/x-mpegURL" data-quality="<%= hls[:quality] %>" label="<%= hls[:quality] %>"/>
+      <% end %>
+      <% if section_info[:caption_paths].present? %>
+        <% section_info[:caption_paths].each do |c| %>
+          <track <% if c[:label] %>label="<%= c[:label] %>" <% end %> srclang="<%= c[:language] %>" kind="subtitles" type="<%= c[:mime_type] %>" src="<%= c[:path] %>"></track>
+        <% end %>
+      <% end %>
+    </video-js>
+    <% if section_info[:is_video] %>
+      <label class='video-title' id='video-title-<%= @master_file.id %>'>
+        <a class='video-link' id='video-link-<%= @master_file.id %>' href="<%= master_file_url(@master_file.id) %>" target="_blank" rel="noreferrer noopener"><%= @master_file.title || @master_file.media_object.title %></a>
+      </label>
+    <% end %>
+  </div>
+<% end %>
+
+<% # These script tags are for pulling in videojs and the quality selector plug-in from their CDNs.
+   # May be worth considering pulling them into our local asset pipeline. %>
+<script src="https://vjs.zencdn.net/7.10.2/video.min.js"></script>
+<script src="https://unpkg.com/@silvermine/videojs-quality-selector/dist/js/silvermine-videojs-quality-selector.min.js"></script>
+
+<% content_for :page_scripts do %>
+  <script>
+    var player = videojs(document.querySelector('#video-js-embed-<%= @master_file.id %>'));
+    var ButtonComponent = videojs.getComponent('Button');
+    var viewInRepoButton = new ButtonComponent(player, {
+      clickHandler: function(event) {
+        window.open('<%= master_file_url(@master_file.id) %>', '_blank').focus();
+      }
+    });
+
+    viewInRepoButton.addClass('vjs-custom-external-link');
+    let newButton = player.controlBar.addChild(viewInRepoButton, {}, <%= section_info[:is_video] ? 8 : 6 %>);
+    newButton.controlText('View in Repository');
+
+    document.querySelector('.vjs-custom-external-link .vjs-icon-placeholder').innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 512 512"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. --><style>svg{fill:#ffffff}</style><path d="M320 0c-17.7 0-32 14.3-32 32s14.3 32 32 32h82.7L201.4 265.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L448 109.3V192c0 17.7 14.3 32 32 32s32-14.3 32-32V32c0-17.7-14.3-32-32-32H320zM80 32C35.8 32 0 67.8 0 112V432c0 44.2 35.8 80 80 80H400c44.2 0 80-35.8 80-80V320c0-17.7-14.3-32-32-32s-32 14.3-32 32V432c0 8.8-7.2 16-16 16H80c-8.8 0-16-7.2-16-16V112c0-8.8 7.2-16 16-16H192c17.7 0 32-14.3 32-32s-14.3-32-32-32H80z"/></svg>'
+
+    player.currentTime(<%= @stream_info['t'][0] %>);
+
+    function handleTimeUpdate(curTime) {
+      var start = <%= @stream_info['t'] ? @stream_info['t'][0] : 0 %>;
+      var end = <%= @stream_info['t'][1] || @stream_info[:duration] %>;
+
+      if (curTime < start) {
+        player.currentTime(start);
+      }
+      if (curTime >= end) {
+        player.trigger('ended');
+        player.pause();
+        player.currentTime(start);
+      }
+    };
+
+    player.on('timeupdate', () => {
+      handleTimeUpdate(player.currentTime());
+    });
+  </script>
+<% end %>

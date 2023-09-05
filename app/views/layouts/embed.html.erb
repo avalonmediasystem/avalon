@@ -24,6 +24,12 @@ Unless required by applicable law or agreed to in writing, software distributed
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     <title><%= render_page_title %></title>
 
+    <% # These link tags are necessary to initialize videojs and the quality selector plug-in using CDN.
+       # May be worth considering pulling the code into the local asset pipeline.
+       # VideoJS is held at the same version as is being used in Ramp. %>
+    <link href="https://vjs.zencdn.net/7.10.2/video-js.css" rel="stylesheet"/>
+    <link href="https://unpkg.com/@silvermine/videojs-quality-selector/dist/css/quality-selector.css" rel="stylesheet"/>
+
    <%= csrf_meta_tags %>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <%= favicon_link_tag %>
