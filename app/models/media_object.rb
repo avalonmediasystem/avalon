@@ -125,6 +125,19 @@ class MediaObject < ActiveFedora::Base
 
   accepts_nested_attributes_for :master_files, :allow_destroy => true
 
+  def published?
+    !avalon_publisher.blank?
+  end
+
+  alias_method :'_master_files=', :'master_files='
+  define_attribute_methods :master_files
+
+  def master_files=(mfs)
+    master_files_will_change!
+    self.ldp_source.graph.set_value(::RDF::Vocab::DC.hasPart, mfs.map(&:id))
+    self._master_files = mfs
+  end
+
   def destroy
     # attempt to stop the matterhorn processing job
     self.master_files.each(&:destroy)

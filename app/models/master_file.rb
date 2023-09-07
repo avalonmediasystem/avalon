@@ -249,6 +249,7 @@ class MasterFile < ActiveFedora::Base
     self._media_object=(mo)
     unless self.media_object.nil?
       self.media_object.ordered_master_files += [self]
+      self.media_object.master_files = self.media_object.ordered_master_files.to_a
       self.media_object.save
     end
   end
