@@ -137,6 +137,8 @@ ActiveFedora::ChangeSet.class_eval do
         if object.association(key.to_sym).is_a? ActiveFedora::Associations::Association
           # ActiveFedora::Reflection::RDFPropertyReflection
           predicate = object.association(key.to_sym).reflection.predicate
+          # ActiveFedora::Reflection::IndirectlyContainsReflection for ordered_aggregation
+          predicate ||= object.association(key.to_sym).reflection&.options[:has_member_relation]
           values = graph.query({ subject: object.rdf_subject, predicate: predicate })
           result[predicate] = values if predicate.present?
         elsif object.class.properties.keys.include?(key)
