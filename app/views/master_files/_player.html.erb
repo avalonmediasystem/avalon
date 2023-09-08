@@ -14,11 +14,9 @@ Unless required by applicable law or agreed to in writing, software distributed
 ---  END LICENSE_HEADER BLOCK  ---
 %>
 
-    <%= render partial: 'modules/player/section', locals: {section: @master_file, section_info: @stream_info, f_start: @f_start, f_end: @f_end} %>
+<%= render partial: 'modules/player/section', locals: {section: @master_file, section_info: @stream_info, f_start: @f_start, f_end: @f_end} %>
 
 <% content_for :page_scripts do %>
-
-  <%= render partial: "mejs4_player_js", locals: {section: @master_file, section_info: @stream_info} %>
 
   <script>
     <%# Add an offscreen button to allow for proper keyboard navigation through player controls %>
@@ -36,7 +34,7 @@ Unless required by applicable law or agreed to in writing, software distributed
   </script>
 
   <style>
-a { text-decoration: none; }
-a:hover { text-decoration: underline }
+    a { text-decoration: none; }
+    a:hover { text-decoration: underline }
   </style>
 <% end %>

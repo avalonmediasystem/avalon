@@ -1,12 +1,12 @@
-/* 
+/*
  * Copyright 2011-2023, The Trustees of Indiana University and Northwestern
  *   University.  Licensed under the Apache License, Version 2.0 (the "License");
  *   you may not use this file except in compliance with the License.
- * 
+ *
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed
  *   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
  *   CONDITIONS OF ANY KIND, either express or implied. See the License for the
@@ -14,29 +14,103 @@
  * ---  END LICENSE_HEADER BLOCK  ---
 */
 
-body {
-  background-color: #000000;
-  width: 100%;
-  height: 100%;
-  margin: 0;
-  overflow: hidden;
+.video-container {
   position: absolute;
 }
 
-.container-fluid {
-  padding: 0;
+.video-js {
+  position: relative;
+  z-index: 0;
 }
 
-.mejs-layers {
-    pointer-events: none !important;
-}
-
-#content, #content > div {
-  height: 100%;
-  max-width: none;
-}
-
-.mejs__audio {
+.video-title {
   position: absolute;
-  bottom: 0;
+  z-index: 1;
+  top: 5px;
+  left: 8px;
+}
+
+.video-title .video-link {
+  color: white;
+  font-size:150%;
+}
+
+.video-js.vjs-playing + .video-title {
+  display: none;
+}
+
+// @silvermine/videojs-quality-selector
+.vjs-menu {
+  li {
+    font-size: 1em;
+  }
+}
+
+.video-js .vjs-control-bar {
+  /* Audio: Make the controlbar visible by default */
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  /* Increase the control-bar icons/text size */
+  font-size: 120%;
+}
+
+/* Make player height minimum to the controls height so when we hide
+video/poster area the controls are displayed correctly. */
+.video-js.vjs-audio {
+  min-height: 3.7em;
+}
+
+.video-js .vjs-progress-control:hover .vjs-play-progress:after {
+  display: none;
+}
+
+/* Show poster image when playback ends */
+.video-js.vjs-ended .vjs-poster {
+  display: block;
+}
+
+.video-js .vjs-current-time {
+  display: block;
+}
+
+/* Put playhead on top of markers */
+.video-js .vjs-play-progress:before {
+  z-index: 101;
+}
+
+/* time-control elements */
+.video-js .vjs-time-control {
+  min-width: 0.5rem;
+  padding: 0 0.25rem;
+}
+
+.vjs-time-divider {
+  display: block;
+}
+
+.vjs-duration {
+  display: block !important;
+}
+
+/* big-play button */
+.video-js .vjs-big-play-button {
+  margin-left: auto;
+  margin-right: auto;
+  height: 2.5rem;
+  width: 2.5rem;
+  line-height: 2.5rem;
+  border-radius: 50%;
+  scale: 2;
+  border: 0.1rem solid #fff;
+}
+
+/* captions button selection */
+.captions-on {
+  border-bottom: 0.45rem ridge;
+}
+
+.vjs-custom-external-link .vjs-icon-placeholder {
+  font-size: 120%;
 }
