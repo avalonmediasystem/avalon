@@ -47,10 +47,25 @@ describe IiifManifestPresenter do
     end
 
     it 'provides metadata' do
+      allow_any_instance_of(IiifManifestPresenter).to receive(:lending_enabled).and_return(false)
+
       ['Title', 'Date', 'Main contributor', 'Summary', 'Contributor', 'Publisher', 'Genre', 'Subject', 'Time period',
        'Location', 'Collection', 'Unit', 'Language', 'Rights Statement', 'Terms of Use', 'Physical Description',
-       'Series', 'Related Item', 'Notes', 'Table of Contents', 'Local Note', 'Other Identifiers'].each do |field|
+       'Series', 'Related Item', 'Notes', 'Table of Contents', 'Local Note', 'Other Identifiers', 'Access Restrictions'].each do |field|
         expect(subject).to include(field)
+      end
+      expect(subject).to_not include('Lending Period')
+    end
+
+    context 'when controlled digital lending is enabled' do
+      it 'provides metadata' do
+        allow_any_instance_of(IiifManifestPresenter).to receive(:lending_enabled).and_return(true)
+
+        ['Title', 'Date', 'Main contributor', 'Summary', 'Contributor', 'Publisher', 'Genre', 'Subject', 'Time period',
+         'Location', 'Collection', 'Unit', 'Language', 'Rights Statement', 'Terms of Use', 'Physical Description',
+         'Series', 'Related Item', 'Notes', 'Table of Contents', 'Local Note', 'Other Identifiers', 'Access Restrictions', 'Lending Period'].each do |field|
+          expect(subject).to include(field)
+        end
       end
     end
 

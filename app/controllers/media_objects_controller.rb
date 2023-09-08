@@ -480,7 +480,7 @@ class MediaObjectsController < ApplicationController
       stream_info = secure_streams(mf.stream_details, @media_object.id)
       IiifCanvasPresenter.new(master_file: mf, stream_info: stream_info)
     end
-    presenter = IiifManifestPresenter.new(media_object: @media_object, master_files: canvas_presenters)
+    presenter = IiifManifestPresenter.new(media_object: @media_object, master_files: canvas_presenters, lending_enabled: lending_enabled?(@media_object))
 
     manifest = IIIFManifest::V3::ManifestFactory.new(presenter).to_h
     # TODO: implement thumbnail in iiif_manifest
