@@ -80,11 +80,6 @@ Unless required by applicable law or agreed to in writing, software distributed
   </div>
 <% end %>
 
-<% # These script tags are for pulling in videojs and the quality selector plug-in from their CDNs.
-   # May be worth considering pulling them into our local asset pipeline. %>
-<script src="https://vjs.zencdn.net/7.10.2/video.min.js"></script>
-<script src="https://unpkg.com/@silvermine/videojs-quality-selector/dist/js/silvermine-videojs-quality-selector.min.js"></script>
-
 <% content_for :page_scripts do %>
   <script>
     var player = videojs(document.querySelector('#video-js-embed-<%= @master_file.id %>'));
