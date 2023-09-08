@@ -119,7 +119,7 @@ ActiveFedora::ChangeSet.class_eval do
     # @return [Hash<RDF::URI, RDF::Queryable::Enumerator>] hash of predicate uris to statements
     def changes
       @changes ||= changed_attributes.each_with_object({}) do |key, result|
-        if object.association(key.to_sym).present?
+        if object.association(key.to_sym).is_a? ActiveFedora::Associations::Association
           # ActiveFedora::Reflection::RDFPropertyReflection
           predicate = object.association(key.to_sym).reflection.predicate
           # ActiveFedora::Reflection::IndirectlyContainsReflection for ordered_aggregation
