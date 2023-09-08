@@ -20,11 +20,12 @@ class IiifManifestPresenter
   IIIF_ALLOWED_TAGS = ['a', 'b', 'br', 'i', 'img', 'p', 'small', 'span', 'sub', 'sup'].freeze
   IIIF_ALLOWED_ATTRIBUTES = ['href', 'src', 'alt'].freeze
 
-  attr_reader :media_object, :master_files
+  attr_reader :media_object, :master_files, :lending_enabled
 
-  def initialize(media_object:, master_files:)
+  def initialize(media_object:, master_files:, lending_enabled: false)
     @media_object = media_object
     @master_files = master_files
+    @lending_enabled = lending_enabled
   end
 
   def file_set_presenters
@@ -154,6 +155,11 @@ class IiifManifestPresenter
     media_object.abstract
   end
 
+  def display_lending_period(media_object)
+    return nil unless lending_enabled
+    ActiveSupport::Duration.build(media_object.lending_period).to_day_hour_s
+  end
+
   def iiif_metadata_fields
     fields = [
       metadata_field('Title', media_object.title),
@@ -172,7 +178,9 @@ class IiifManifestPresenter
       metadata_field('Rights Statement', display_rights_statement(media_object)),
       metadata_field('Terms of Use', media_object.terms_of_use),
       metadata_field('Physical Description', media_object.physical_description),
-      metadata_field('Related Item', display_related_item(media_object))
+      metadata_field('Related Item', display_related_item(media_object)),
+      metadata_field('Access Restrictions', media_object.access_text),
+      metadata_field('Lending Period', display_lending_period(media_object))
     ]
     fields += note_fields(media_object)
     fields += [metadata_field('Other Identifier', display_other_identifiers(media_object))]
