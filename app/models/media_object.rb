@@ -140,8 +140,8 @@ class MediaObject < ActiveFedora::Base
 
   def destroy
     # attempt to stop the matterhorn processing job
-    self.master_files.each(&:destroy)
-    self.master_files.clear
+    self.master_files.each(&:stop_processing!)
+    self.master_files.each(&:delete)
     Bookmark.where(document_id: self.id).destroy_all
     super
   end

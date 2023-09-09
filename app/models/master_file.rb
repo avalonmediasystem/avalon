@@ -543,6 +543,11 @@ class MasterFile < ActiveFedora::Base
     end
   end
 
+  def stop_processing!
+    # Stops all processing
+    ActiveEncodeJobs::CancelEncodeJob.perform_later(workflow_id, id) if workflow_id.present? && !finished_processing?
+  end
+
   protected
 
   def mediainfo
@@ -763,15 +768,10 @@ class MasterFile < ActiveFedora::Base
     klass if klass&.ancestors&.include?(ActiveEncode::Base)
   end
 
-  def stop_processing!
-    # Stops all processing
-    ActiveEncodeJobs::CancelEncodeJob.perform_later(workflow_id, id) if workflow_id.present? && finished_processing?
-  end
-
   def update_parent!
     return unless media_object.present?
-    media_object.master_files.delete(self)
     media_object.ordered_master_files.delete(self)
+    media_object.master_files = media_object.ordered_master_files.to_a
     media_object.set_media_types!
     media_object.set_duration!
     if !media_object.save

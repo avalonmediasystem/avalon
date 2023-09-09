@@ -241,12 +241,11 @@ class MediaObjectsController < ApplicationController
         master_file.date_digitized = DateTime.parse(file_spec[:date_digitized]).to_time.utc.iso8601 if file_spec[:date_digitized].present?
         master_file.identifier += Array(params[:files][index][:other_identifier])
         master_file.comment += Array(params[:files][index][:comment])
-        master_file._media_object = @media_object
+        master_file.media_object = @media_object
         if file_spec[:files].present?
           if master_file.update_derivatives(file_spec[:files], false)
             master_file.update_stills_from_offset!
             WaveformJob.perform_later(master_file.id)
-            @media_object.ordered_master_files += [master_file]
           else
             file_location = file_spec.dig(:file_location) || '<unknown>'
             message = "Problem saving MasterFile for #{file_location}:"
@@ -260,10 +259,7 @@ class MediaObjectsController < ApplicationController
       if error_messages.empty?
         if api_params[:replace_masterfiles]
           old_ordered_master_files.each do |mf|
-            p = MasterFile.find(mf)
-            @media_object.master_files.delete(p)
-            @media_object.ordered_master_files.delete(p)
-            p.destroy
+            MasterFile.find(mf).destroy
           end
         end
 
