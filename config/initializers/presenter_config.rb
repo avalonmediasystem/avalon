@@ -98,6 +98,10 @@ Rails.application.config.to_prepare do
 	ng_xml.xpath(*args)
       end
     end
+
+    sp.config IndexedFile do
+      self.defaults = { original_name: nil }
+    end
   end
 
   SpeedyAF::Base.class_eval do
