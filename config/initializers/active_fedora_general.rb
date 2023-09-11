@@ -114,6 +114,12 @@ ActiveFedora::Persistence.module_eval do
     end
 end
 
+ActiveFedora::Reflection::IndirectlyContainsReflection.class_eval do
+  def predicate
+    options[:has_member_relation] || ::RDF::Vocab::LDP.contains
+  end
+end
+
 # Override to add handling of :master_files relations since the predicate is stored in a different place
 ActiveFedora::ChangeSet.class_eval do
     # @return [Hash<RDF::URI, RDF::Queryable::Enumerator>] hash of predicate uris to statements
@@ -122,8 +128,6 @@ ActiveFedora::ChangeSet.class_eval do
         if object.association(key.to_sym).is_a? ActiveFedora::Associations::Association
           # ActiveFedora::Reflection::RDFPropertyReflection
           predicate = object.association(key.to_sym).reflection.predicate
-          # ActiveFedora::Reflection::IndirectlyContainsReflection for ordered_aggregation
-          predicate ||= object.association(key.to_sym).reflection&.options[:has_member_relation]
           values = graph.query({ subject: object.rdf_subject, predicate: predicate })
           result[predicate] = values if predicate.present?
         elsif object.class.properties.keys.include?(key)
