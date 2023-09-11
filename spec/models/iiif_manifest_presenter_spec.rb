@@ -51,7 +51,7 @@ describe IiifManifestPresenter do
 
       ['Title', 'Date', 'Main contributor', 'Summary', 'Contributor', 'Publisher', 'Genre', 'Subject', 'Time period',
        'Location', 'Collection', 'Unit', 'Language', 'Rights Statement', 'Terms of Use', 'Physical Description',
-       'Related Item', 'Notes', 'Table of Contents', 'Local Note', 'Other Identifiers', 'Access Restrictions'].each do |field|
+       'Series', 'Related Item', 'Notes', 'Table of Contents', 'Local Note', 'Other Identifiers', 'Access Restrictions'].each do |field|
         expect(subject).to include(field)
       end
       expect(subject).to_not include('Lending Period')
@@ -63,7 +63,7 @@ describe IiifManifestPresenter do
 
         ['Title', 'Date', 'Main contributor', 'Summary', 'Contributor', 'Publisher', 'Genre', 'Subject', 'Time period',
          'Location', 'Collection', 'Unit', 'Language', 'Rights Statement', 'Terms of Use', 'Physical Description',
-         'Related Item', 'Notes', 'Table of Contents', 'Local Note', 'Other Identifiers', 'Access Restrictions', 'Lending Period'].each do |field|
+         'Series', 'Related Item', 'Notes', 'Table of Contents', 'Local Note', 'Other Identifiers', 'Access Restrictions', 'Lending Period'].each do |field|
           expect(subject).to include(field)
         end
       end

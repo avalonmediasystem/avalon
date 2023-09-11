@@ -1,7 +1,7 @@
 Rails.application.config.to_prepare do
   SpeedyAF::Base.tap do |sp|
     sp.config MasterFile do
-      self.defaults = { 
+      self.defaults = {
                         permalink: nil,
                         title: nil,
                         encoder_classname: nil,
@@ -54,7 +54,8 @@ Rails.application.config.to_prepare do
                         translated_title: [],
                         uniform_title: [],
                         resource_type: [],
-                        record_identifier: []
+                        record_identifier: [],
+                        series: []
                       }
       include VirtualGroups
       include MediaObjectIntercom

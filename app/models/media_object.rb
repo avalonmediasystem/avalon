@@ -116,9 +116,6 @@ class MediaObject < ActiveFedora::Base
   property :lending_period, predicate: ::RDF::Vocab::SCHEMA.eligibleDuration, multiple: false do |index|
     index.as :stored_sortable
   end
-  property :series, predicate: ::RDF::Vocab::SCHEMA.Series, multiple: true do |index|
-    index.as :symbol
-  end
 
   ordered_aggregation :master_files, class_name: 'MasterFile', through: :list_source
   # ordered_aggregation gives you accessors media_obj.master_files and media_obj.ordered_master_files
@@ -286,6 +283,7 @@ class MediaObject < ActiveFedora::Base
       all_text_values << solr_doc["genre_sim"]
       all_text_values << solr_doc["language_sim"]
       all_text_values << solr_doc["physical_description_sim"]
+      all_text_values << solr_doc["series_ssim"]
       all_text_values << solr_doc["date_sim"]
       all_text_values << solr_doc["notes_sim"]
       all_text_values << solr_doc["table_of_contents_sim"]

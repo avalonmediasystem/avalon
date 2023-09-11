@@ -1,11 +1,11 @@
 # Copyright 2011-2023, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
-# 
+#
 # You may obtain a copy of the License at
-# 
+#
 # http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software distributed
 #   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
 #   CONDITIONS OF ANY KIND, either express or implied. See the License for the
@@ -334,6 +334,14 @@ module MediaObjectMods
   def table_of_contents=(value)
     delete_all_values(:table_of_contents)
     descMetadata.table_of_contents = Array(value).reject(&:blank?) if value.present?
+  end
+
+  def series
+    descMetadata.series
+  end
+  def series=(values)
+    delete_all_values(:series)
+    Array(values).each { |val| descMetadata.add_series(val) if val.present? }
   end
 
   # has_attributes :physical_description, datastream: :descMetadata, at: [:physical_description], multiple: true

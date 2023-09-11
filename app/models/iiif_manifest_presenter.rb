@@ -143,6 +143,10 @@ class IiifManifestPresenter
     media_object.related_item_url.collect { |r| "<a href='#{r[:url]}'>#{r[:label]}</a>" }
   end
 
+  def display_series(media_object)
+    media_object.series.collect { |s| "<a href='#{series_url(s)}'>#{s}</a>" }
+  end
+
   def display_rights_statement(media_object)
     return nil unless media_object.rights_statement.present?
     label = ModsDocument::RIGHTS_STATEMENTS[media_object.rights_statement]
@@ -155,6 +159,10 @@ class IiifManifestPresenter
     media_object.abstract
   end
 
+  def series_url(series)
+    Rails.application.routes.url_helpers.blacklight_url({ "f[collection_ssim][]" => media_object.collection.name, "f[series_ssim][]" => series })
+  end
+  
   def display_lending_period(media_object)
     return nil unless lending_enabled
     ActiveSupport::Duration.build(media_object.lending_period).to_day_hour_s
@@ -178,6 +186,7 @@ class IiifManifestPresenter
       metadata_field('Rights Statement', display_rights_statement(media_object)),
       metadata_field('Terms of Use', media_object.terms_of_use),
       metadata_field('Physical Description', media_object.physical_description),
+      metadata_field('Series', display_series(media_object)),
       metadata_field('Related Item', display_related_item(media_object)),
       metadata_field('Access Restrictions', media_object.access_text),
       metadata_field('Lending Period', display_lending_period(media_object))

@@ -277,7 +277,8 @@ describe MediaObjectsController, type: :controller do
       :table_of_contents,
       :physical_description,
       :other_identifier,
-      :rights_statement
+      :rights_statement,
+      :series
     ]}
 
     describe "#create" do
@@ -426,6 +427,7 @@ describe MediaObjectsController, type: :controller do
           expect(new_media_object.related_item_url).to eq media_object.related_item_url
           expect(new_media_object.other_identifier).to eq media_object.other_identifier
           expect(new_media_object.rights_statement).to eq media_object.rights_statement
+          expect(new_media_object.series).to eq media_object.series
           expect(new_media_object.avalon_resource_type).to eq media_object.avalon_resource_type
           expect(new_media_object.master_files.first.date_digitized).to eq(media_object.master_files.first.date_digitized)
           expect(new_media_object.master_files.first.identifier).to eq(media_object.master_files.first.identifier)
@@ -1241,12 +1243,12 @@ describe MediaObjectsController, type: :controller do
       end
 
       context 'read from solr' do
-	it 'should not read from fedora' do
-	  perform_enqueued_jobs(only: MediaObjectIndexingJob)
-	  WebMock.reset_executed_requests!
+      	it 'should not read from fedora' do
+      	  perform_enqueued_jobs(only: MediaObjectIndexingJob)
+      	  WebMock.reset_executed_requests!
           get 'show', params: { id: media_object.id, format:'json' }
-	  expect(a_request(:any, /#{ActiveFedora.fedora.base_uri}/)).not_to have_been_made
-	end
+      	  expect(a_request(:any, /#{ActiveFedora.fedora.base_uri}/)).not_to have_been_made
+      	end
       end
     end
 
