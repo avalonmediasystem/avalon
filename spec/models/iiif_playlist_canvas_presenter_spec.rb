@@ -211,9 +211,9 @@ describe IiifPlaylistCanvasPresenter do
       expect(subject.first['label']).to eq({ 'en' => ['Title'] })
       expect(subject.first['value']).to eq({ 'en' => [media_object.title] })
       expect(subject.second['label']).to eq({ 'en' => ['Date'] })
-      expect(subject.second['value']).to eq({ 'en' => [media_object.date_created] })
+      expect(subject.second['value']).to eq({ 'en' => [media_object.date_issued] })
       expect(subject.last['label']).to eq({ 'en' => ['Main Contributor'] })
-      expect(subject.last['value']).to eq({ 'en' => [media_object.creator] })
+      expect(subject.last['value']).to eq({ 'en' => media_object.creator })
     end
   end
 end

@@ -577,6 +577,12 @@ RSpec.describe PlaylistsController, type: :controller do
         expect(parsed_response['items']).not_to be_empty
       end
 
+      it "contains metadata about the playlist item's parent media obejct" do
+        get :manifest, format: 'json', params: { id: playlist.id}, session: valid_session
+        parsed_response = JSON.parse(response.body)
+        expect(parsed_response['items'][0]['metadata']).to be_present
+      end
+
       context "when playlist owner" do
         before do
           login_user playlist.user.user_key

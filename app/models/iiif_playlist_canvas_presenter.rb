@@ -48,11 +48,11 @@ class IiifPlaylistCanvasPresenter
 
   def item_metadata
     [
-      { 'label' => { 'en' => ['Title'] }, 'value' => { 'en' => [master_file.media_object.title] } },
-      { 'label' => { 'en' => ['Date'] }, 'value' => { 'en' => [master_file.media_object.date_created] } },
-      { 'label' => { 'en' => ['Main Contributor'] }, 'value' => { 'en' => [master_file.media_object.creator] } }
-    ]
-   end
+      metadata_field('Title', master_file.media_object.title),
+      metadata_field('Date', master_file.media_object.date_issued),
+      metadata_field('Main Contributor', master_file.media_object.creator)
+    ].compact
+  end
 
   def range
     simple_iiif_range(playlist_item.title)
@@ -84,6 +84,15 @@ class IiifPlaylistCanvasPresenter
   end
 
   private
+
+    # Following methods adapted from ApplicationHelper and MediaObjectHelper
+    def metadata_field(label, value, default = nil)
+      sanitized_values = Array(value).delete_if(&:empty?)
+      return nil if sanitized_values.empty? && default.nil?
+      sanitized_values = Array(default) if sanitized_values.empty?
+      label = label.pluralize(sanitized_values.size)
+      { 'label' => { 'en' => [label] }, 'value' => { 'en' => sanitized_values } }
+    end
 
     def video_content
       # @see https://github.com/samvera-labs/iiif_manifest
