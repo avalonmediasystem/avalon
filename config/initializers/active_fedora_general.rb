@@ -167,30 +167,32 @@ ActiveFedora::Reflection::IndirectlyContainsReflection.class_eval do
 end
 
 ActiveFedora::Associations::IndirectlyContainsAssociation.class_eval do
-      def insert_record(record, force = true, validate = true)
-        container.save!
-        if force
-          record.save!
-        else
-          return false unless record.save(validate: validate)
-        end
+  def insert_record(record, force = true, validate = true)
+    container.save!
+    if force
+      record.save!
+    else
+      return false unless record.save(validate: validate)
+    end
 
-        save_through_record(record)
+    save_through_record(record)
 
-        owner.send(:attribute_will_change!, reflection.name)
-        owner.resource << ::RDF::Statement(owner.resource, reflection.predicate, record.id)
-        owner.save
+    # Add triples to the parent object
+    owner.send(:attribute_will_change!, reflection.name)
+    owner.resource << ::RDF::Statement(owner.resource, reflection.predicate, record.id)
+    owner.save
 
-        true
-      end
+    true
+  end
 
   private
 
-        def delete_record(record)
-          record_proxy_finder.find(record).delete
+    def delete_record(record)
+      record_proxy_finder.find(record).delete
 
-          owner.send(:attribute_will_change!, reflection.name)
-          owner.resource.delete({ predicate: reflection.predicate, object: record.id})
-          owner.save
-        end
+      # Remove triples from the parent object
+      owner.send(:attribute_will_change!, reflection.name)
+      owner.resource.delete({ predicate: reflection.predicate, object: record.id})
+      owner.save
+    end
 end
