@@ -30,9 +30,4 @@ class SpeedyAF::Proxy::IndexedFile < SpeedyAF::Base
   def binary_content?
     has_content? && mime_type !~ /(^text\/)|([\/\+]xml$)/
   end
-
-  # This method copied from activerecord/lib/active_record/persistence.rb
-  def persisted?
-    !(@new_record || @destroyed)
-  end
 end
