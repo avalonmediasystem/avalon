@@ -1249,6 +1249,28 @@ describe MediaObjectsController, type: :controller do
           get 'show', params: { id: media_object.id, format:'json' }
       	  expect(a_request(:any, /#{ActiveFedora.fedora.base_uri}/)).not_to have_been_made
       	end
+
+        context 'MO with identifier-less master file' do
+          let!(:media_object) { FactoryBot.create(:published_media_object, visibility: 'public') }
+          let!(:master_file) { FactoryBot.create(:master_file, :with_derivative, media_object: media_object, identifier: nil) }
+          it 'should not read from fedora' do
+            perform_enqueued_jobs(only: MediaObjectIndexingJob)
+            WebMock.reset_executed_requests!
+            get 'show', params: { id: media_object.id, format: 'json' }
+            expect(a_request(:any, /#{ActiveFedora.fedora.base_uri}/)).not_to have_been_made
+          end
+        end
+
+        context 'MO with master file containing IndexedFiles' do
+          let!(:media_object) { FactoryBot.create(:published_media_object, visibility: 'public') }
+          let!(:master_file) { FactoryBot.create(:master_file, :with_derivative, :with_thumbnail, :with_poster, :with_waveform, :with_captions, media_object: media_object, identifier: nil) }
+          it 'should not read from fedora' do
+            perform_enqueued_jobs(only: MediaObjectIndexingJob)
+            WebMock.reset_executed_requests!
+            get 'show', params: { id: media_object.id, format: 'json' }
+            expect(a_request(:any, /#{ActiveFedora.fedora.base_uri}/)).not_to have_been_made
+          end
+        end
       end
     end
 
@@ -1271,6 +1293,28 @@ describe MediaObjectsController, type: :controller do
         WebMock.reset_executed_requests!
         get 'show', params: { id: media_object.id }
         expect(a_request(:any, /#{ActiveFedora.fedora.base_uri}/)).not_to have_been_made
+      end
+
+      context 'media object with identifier-less master file' do
+        let!(:media_object) { FactoryBot.create(:published_media_object, visibility: 'public') }
+        let!(:master_file) { FactoryBot.create(:master_file, :with_derivative, media_object: media_object, identifier: nil) }
+        it 'should not read from fedora' do
+          perform_enqueued_jobs(only: MediaObjectIndexingJob)
+          WebMock.reset_executed_requests!
+          get 'show', params: { id: media_object.id }
+          expect(a_request(:any, /#{ActiveFedora.fedora.base_uri}/)).not_to have_been_made
+        end
+      end
+
+      context 'media object with master file containing IndexedFiles' do
+        let!(:media_object) { FactoryBot.create(:published_media_object, visibility: 'public') }
+        let!(:master_file) { FactoryBot.create(:master_file, :with_derivative, :with_thumbnail, :with_poster, :with_waveform, :with_captions, media_object: media_object, identifier: nil) }
+        it 'should not read from fedora' do
+          perform_enqueued_jobs(only: MediaObjectIndexingJob)
+          WebMock.reset_executed_requests!
+          get 'show', params: { id: media_object.id }
+          expect(a_request(:any, /#{ActiveFedora.fedora.base_uri}/)).not_to have_been_made
+        end
       end
     end
   end
