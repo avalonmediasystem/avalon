@@ -23,6 +23,10 @@ class SpeedyAF::Proxy::IndexedFile < SpeedyAF::Base
     binary_content? ? Base64.decode64(attrs[:content]) : attrs[:content]
   end
 
+  def persisted?
+    id.present?
+  end
+
   def has_content?
     attrs[:content].present?
   end
