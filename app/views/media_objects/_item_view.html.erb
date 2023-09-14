@@ -21,7 +21,7 @@ Unless required by applicable law or agreed to in writing, software distributed
 
 <% @poster_url = request.base_url + @currentStreamInfo[:poster_image] unless @currentStreamInfo[:poster_image].nil? %>
 <% @page_type = @currentStreamInfo[:is_video] ? 'video' : 'audio' %>
-<% can_stream = lending_enabled?(@media_object) ? current_user && @media_object.current_checkout(current_user.id).present? : true %> 
+<% can_stream = lending_enabled?(@media_object) ? current_user && @media_object.current_checkout(current_user.id).present? : true %>
 
 <% in_progress = show_progress?(@masterFiles) %>
 <div class="row">
@@ -29,13 +29,14 @@ Unless required by applicable law or agreed to in writing, software distributed
     <%= render 'workflow_progress' %>
   </div>
   <div class="<%= in_progress || !@currentStream ? 'col-sm-4' : 'col-sm-12' %>">
-    <%= react_component("Ramp", 
+    <%= react_component("Ramp",
       {
-        base_url: request.protocol+request.host_with_port, 
-        mo_id: @media_object.id, 
+        base_url: request.protocol+request.host_with_port,
+        mo_id: @media_object.id,
         master_files_count: @media_object.master_files.size,
         share: { canShare: (will_partial_list_render? :share), content: lending_enabled?(@media_object) ? (render('share') if can_stream) : render('share') },
         timeline: { canCreate: (current_ability.can? :create, Timeline), content: lending_enabled?(@media_object) ? (render('timeline') if can_stream) : render('timeline') },
+        thumbnail: { canCreate: (current_ability.can? :edit, @media_object), content: lending_enabled?(@media_object) ? (render('thumbnail') if can_stream) : render('thumbnail') },
         in_progress: in_progress,
         cdl: { enabled: lending_enabled?(@media_object), can_stream: can_stream, embed: render('embed_checkout'), destroy: render('destroy_checkout') }
       }

@@ -54,7 +54,6 @@
 //= stub mediaelement/plugins/quality-i18n
 //= stub media_player_wrapper/mejs4_plugin_add_to_playlist
 //= stub media_player_wrapper/mejs4_plugin_add_marker_to_playlist
-//= stub media_player_wrapper/mejs4_plugin_create_thumbnail
 //= stub media_player_wrapper/mejs4_plugin_track_scrubber
 //= stub media_player_wrapper/mejs4_link_back
 //= stub media_player_wrapper/mejs4_plugin_playlist_items
