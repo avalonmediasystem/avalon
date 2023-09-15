@@ -95,6 +95,32 @@ describe IiifCanvasPresenter do
         expect(subject.items.first.media_fragment).to eq 't=0,'
       end
     end
+
+    context 'with childless div' do
+      let(:structure_xml) { '<?xml version="1.0"?><Item label="Test"><Div label="Div 1"/></Item>'}
+
+      it 'autogenerates a basic range' do
+        expect(subject.label.to_s).to eq '{"none"=>["Test"]}'
+      	expect(subject.items.size).to eq 1
+        expect(subject.items.first.label.to_s).to eq '{"none"=>["Div 1"]}'
+        expect(subject.items.first.items.size).to eq 1
+      	expect(subject.items.first.items.first).to be_a IiifCanvasPresenter
+        expect(subject.items.first.items.first.media_fragment).to eq 't=0,'
+        expect { subject.items.first.items.first.items }.to raise_error(NoMethodError)
+      end
+    end
+
+    context 'with childless item' do
+      let(:structure_xml) { '<?xml version="1.0"?><Item label="Test"/>'}
+
+      it 'autogenerates a basic range' do
+        expect(subject.label.to_s).to eq '{"none"=>["Test"]}'
+      	expect(subject.items.size).to eq 1
+      	expect(subject.items.first).to be_a IiifCanvasPresenter
+        expect(subject.items.first.media_fragment).to eq 't=0,'
+        expect { subject.items.first.items }.to raise_error(NoMethodError)
+      end
+    end
   end
 
   describe '#placeholder_content' do

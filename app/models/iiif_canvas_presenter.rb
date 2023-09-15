@@ -128,6 +128,8 @@ class IiifCanvasPresenter
     end
 
     def div_to_iiif_range(div_node)
+      return simple_iiif_range(div_node[:label]) unless div_node.children.present?
+      
       items = div_node.children.select(&:element?).collect do |node|
         if node.name == "Div"
           div_to_iiif_range(node)
