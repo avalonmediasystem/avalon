@@ -108,6 +108,22 @@ describe IiifCanvasPresenter do
         expect(subject.items.first.items.first.media_fragment).to eq 't=0,'
         expect { subject.items.first.items.first.items }.to raise_error(NoMethodError)
       end
+
+      context 'with sibling spans' do
+        let(:structure_xml) { '<?xml version="1.0"?><Item label="Test"><Div label="Div 1"/><Span label="Span 1" begin="00:00:00.000" end="00:00:01.235"/></Item>'}
+
+        it 'generates a range for the span' do
+          expect(subject.label.to_s).to eq '{"none"=>["Test"]}'
+        	expect(subject.items.size).to eq 2
+          expect(subject.items.first.label.to_s).to eq '{"none"=>["Div 1"]}'
+          expect(subject.items.first.items.size).to eq 1
+          expect { subject.items.first.items.first.items }.to raise_error(NoMethodError)
+          expect(subject.items.second.label.to_s).to eq '{"none"=>["Span 1"]}'
+          expect(subject.items.second.items.size).to eq 1
+          expect(subject.items.second.items.first).to be_a IiifCanvasPresenter
+          expect(subject.items.second.items.first.media_fragment).to eq 't=0.0,1.235'
+        end
+      end
     end
 
     context 'with childless item' do
