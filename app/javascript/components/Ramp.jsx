@@ -1,12 +1,12 @@
-/* 
+/*
  * Copyright 2011-2023, The Trustees of Indiana University and Northwestern
  *   University.  Licensed under the Apache License, Version 2.0 (the "License");
  *   you may not use this file except in compliance with the License.
- * 
+ *
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed
  *   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
  *   CONDITIONS OF ANY KIND, either express or implied. See the License for the
@@ -15,27 +15,28 @@
 */
 
 import React from 'react';
-import { 
-  Transcript, 
-  IIIFPlayer, 
-  MediaPlayer, 
-  StructuredNavigation, 
-  MetadataDisplay, 
-  SupplmentalFiles 
+import {
+  Transcript,
+  IIIFPlayer,
+  MediaPlayer,
+  StructuredNavigation,
+  MetadataDisplay,
+  SupplmentalFiles
 } from "@samvera/ramp";
 import 'video.js/dist/video-js.css';
 import "@samvera/ramp/dist/ramp.css";
 import { Col, Row, Tab, Tabs } from 'react-bootstrap';
 import './Ramp.scss';
 
-const Ramp = ({ 
-  base_url, 
-  mo_id, 
-  master_files_count, 
-  share, 
-  timeline, 
-  in_progress, 
-  cdl 
+const Ramp = ({
+  base_url,
+  mo_id,
+  master_files_count,
+  share,
+  timeline,
+  thumbnail,
+  in_progress,
+  cdl
 }) => {
   const [manifestUrl, setManifestUrl] = React.useState('');
 
@@ -49,15 +50,16 @@ const Ramp = ({
       <Row>
         {!in_progress &&
           <Col sm={8}>
-            { (cdl.enabled && !cdl.can_stream) 
+            { (cdl.enabled && !cdl.can_stream)
               ? (<div dangerouslySetInnerHTML={{ __html: cdl.embed }} />)
               : ( <React.Fragment>
-                    { master_files_count > 0 && 
+                    { master_files_count > 0 &&
                       <React.Fragment>
                         <MediaPlayer enableFileDownload={false} />
                         <div className="ramp--rails-content">
                           { timeline.canCreate && <div className="mr-1" dangerouslySetInnerHTML={{ __html: timeline.content }} /> }
                           { share.canShare && <div className="share-tabs" dangerouslySetInnerHTML={{ __html: share.content }} /> }
+                          { thumbnail.canCreate && <div className="mr-1" dangerouslySetInnerHTML={{ __html: thumbnail.content }} /> }
                         </div>
                         <StructuredNavigation />
                       </React.Fragment>
@@ -73,7 +75,7 @@ const Ramp = ({
             <Tab eventKey="details" title="Details">
               <MetadataDisplay showHeading={false} displayTitle={false}/>
             </Tab>
-            { (cdl.can_stream && master_files_count != 0 && !in_progress) && 
+            { (cdl.can_stream && master_files_count != 0 && !in_progress) &&
               <Tab eventKey="transcripts" title="Transcripts">
                 <Transcript
                   playerID="iiif-media-player"

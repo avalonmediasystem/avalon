@@ -232,7 +232,7 @@ class MasterFilesController < ApplicationController
         unless @master_file.save
           flash[:notice] = @master_file.errors.to_a.join('<br/>')
         end
-        redirect_to edit_media_object_path(@master_file.media_object_id, step: "file-upload")
+        redirect_back(fallback_location: edit_media_object_path(@master_file.media_object_id, step: "file-upload"))
       end
     end
   end
