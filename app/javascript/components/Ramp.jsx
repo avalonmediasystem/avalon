@@ -32,8 +32,11 @@ const Ramp = ({
   base_url,
   mo_id,
   master_files_count,
+  title,
+  admin_links,
   share,
   timeline,
+  playlist,
   thumbnail,
   in_progress,
   cdl
@@ -56,9 +59,14 @@ const Ramp = ({
                     { master_files_count > 0 &&
                       <React.Fragment>
                         <MediaPlayer enableFileDownload={false} />
+                        <div className="ramp--rails-title">
+                          { <div className="object-title" dangerouslySetInnerHTML={{ __html: title.content }} /> }
+                        </div>
                         <div className="ramp--rails-content">
                           { timeline.canCreate && <div className="mr-1" dangerouslySetInnerHTML={{ __html: timeline.content }} /> }
+                          { playlist.canCreate && <div className="mr-1" dangerouslySetInnerHTML={{ __html: playlist.content }} />}
                           { share.canShare && <div className="share-tabs" dangerouslySetInnerHTML={{ __html: share.content }} /> }
+                          { admin_links.canUpdate && <div className="mr-1" dangerouslySetInnerHTML={{ __html: admin_links.content }} /> }
                           { thumbnail.canCreate && <div className="mr-1" dangerouslySetInnerHTML={{ __html: thumbnail.content }} /> }
                         </div>
                         <StructuredNavigation />
@@ -73,18 +81,24 @@ const Ramp = ({
           { cdl.enabled && <div dangerouslySetInnerHTML={{ __html: cdl.destroy }}/> }
           <Tabs>
             <Tab eventKey="details" title="Details">
+            <div class='scrolling-div'>
               <MetadataDisplay showHeading={false} displayTitle={false}/>
+            </div>
             </Tab>
             { (cdl.can_stream && master_files_count != 0 && !in_progress) &&
               <Tab eventKey="transcripts" title="Transcripts">
+              <div class='scrolling-div'>
                 <Transcript
                   playerID="iiif-media-player"
                   manifestUrl={manifestUrl}
                 />
+              </div>
               </Tab>
             }
             <Tab eventKey="files" title="Files">
+            <div class='scrolling-div'>
               <SupplmentalFiles showHeading={false} />
+            </div>
             </Tab>
           </Tabs>
         </Col>
