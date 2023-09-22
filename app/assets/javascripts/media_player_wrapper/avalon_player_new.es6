@@ -29,7 +29,7 @@ class MEJSPlayer {
     this.mejsUtility = new MEJSUtility();
     this.mejsTimeRailHelper = new MEJSTimeRailHelper();
     this.mejsMarkersHelper = new MEJSMarkersHelper();
-    if (typeof window.localStorage !== "undefined") {
+    if (Modernizr.localStorage) {
       this.localStorage = window.localStorage;
     } else {
         this.localStorage = false;

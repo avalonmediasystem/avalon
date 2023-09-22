@@ -104,7 +104,7 @@ $('.supplemental-file-form')
 
 /* Store collapsed section ids in localStorage if available */
 $('button[id^=edit_section').on('click', (e) => {
-  if (typeof window.localStorage === "undefined") {
+  if (!Modernizr.localStorage) {
     return;
   }
 
@@ -127,7 +127,7 @@ $('button[id^=edit_section').on('click', (e) => {
 
 /* On page reload; collapse sections which were collapsed previously */
 $(document).ready(function () {
-  if (typeof window.localStorage === "undefined") {
+  if (!Modernizr.localStorage) {
     return;
   }
 
