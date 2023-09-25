@@ -33,6 +33,7 @@ const Ramp = ({
   mo_id,
   master_files_count,
   title,
+  expand_structure,
   admin_links,
   share,
   timeline,
@@ -68,6 +69,9 @@ const Ramp = ({
                           { share.canShare && <div className="share-tabs" dangerouslySetInnerHTML={{ __html: share.content }} /> }
                           { admin_links.canUpdate && <div className="mr-1" dangerouslySetInnerHTML={{ __html: admin_links.content }} /> }
                           { thumbnail.canCreate && <div className="mr-1" dangerouslySetInnerHTML={{ __html: thumbnail.content }} /> }
+                        </div>
+                        <div className="ramp--rails-expand-structure">
+                          { <div className="mr-1" dangerouslySetInnerHTML={{ __html: expand_structure.content }} /> }
                         </div>
                         <StructuredNavigation />
                       </React.Fragment>

@@ -174,3 +174,18 @@
 .tab-pane:focus:not(:focus-visible) {
   outline:none;
 }
+
+#expand_all_sections {
+  display: flex !important;
+  justify-content: flex-end;
+  padding-bottom: .5rem !important;
+}
+
+.accordion-toggle-icon {
+  align-items: center;
+  color: #4c5a69;
+}
+
+.icn-expand-all {
+  width: 20px;
+}

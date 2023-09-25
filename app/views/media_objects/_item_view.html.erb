@@ -35,6 +35,7 @@ Unless required by applicable law or agreed to in writing, software distributed
         mo_id: @media_object.id,
         master_files_count: @media_object.master_files.size,
         title: { content: render('title') },
+        expand_structure: { content: render('expand_structure') }, 
         admin_links: { canUpdate: (current_ability.can? :update, @media_object), content: render('administrative_links') },
         share: { canShare: (will_partial_list_render? :share), content: lending_enabled?(@media_object) ? (render('share') if can_stream) : render('share') },
         timeline: { canCreate: (current_ability.can? :create, Timeline), content: lending_enabled?(@media_object) ? (render('timeline') if can_stream) : render('timeline') },
