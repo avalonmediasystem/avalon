@@ -92,7 +92,7 @@ describe IiifCanvasPresenter do
       	expect(subject.label.to_s).to eq "{\"none\"=>[\"#{master_file.embed_title}\"]}"
       	expect(subject.items.size).to eq 1
       	expect(subject.items.first).to be_a IiifCanvasPresenter
-        expect(subject.items.first.media_fragment).to eq 't=0,'
+        expect(subject.items.first.media_fragment).to eq "t=0,#{(master_file.duration.to_f)/1000}"
       end
     end
   end
