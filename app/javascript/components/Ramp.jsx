@@ -85,24 +85,18 @@ const Ramp = ({
           { cdl.enabled && <div dangerouslySetInnerHTML={{ __html: cdl.destroy }}/> }
           <Tabs>
             <Tab eventKey="details" title="Details">
-            <div class='scrolling-div'>
               <MetadataDisplay showHeading={false} displayTitle={false}/>
-            </div>
             </Tab>
             { (cdl.can_stream && master_files_count != 0 && !in_progress) &&
               <Tab eventKey="transcripts" title="Transcripts">
-              <div class='scrolling-div'>
                 <Transcript
                   playerID="iiif-media-player"
                   manifestUrl={manifestUrl}
                 />
-              </div>
               </Tab>
             }
             <Tab eventKey="files" title="Files">
-            <div class='scrolling-div'>
               <SupplmentalFiles showHeading={false} />
-            </div>
             </Tab>
           </Tabs>
         </Col>
