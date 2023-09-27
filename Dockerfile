@@ -28,7 +28,7 @@ FROM        bundle as bundle-dev
 LABEL       stage=build
 LABEL       project=avalon
 RUN         bundle config set --local without 'production' \
-         && bundle config set --local with 'aws development test postgres' \
+         && bundle config set --local with 'aws development test postgres mysql' \
          && bundle install
 
 
@@ -106,7 +106,7 @@ FROM        bundle as bundle-prod
 LABEL       stage=build
 LABEL       project=avalon
 RUN         bundle config set --local without 'development test' \
-         && bundle config set --local with 'aws production postgres' \
+         && bundle config set --local with 'aws production postgres mysql' \
          && bundle install
 
 
