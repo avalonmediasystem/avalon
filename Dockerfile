@@ -71,6 +71,7 @@ RUN         apt-get update && \
             libxml2-dev \
             libxslt-dev \
             libpq-dev \
+            libmariadb-dev \
             openssh-client \
             zip \
             dumb-init \
