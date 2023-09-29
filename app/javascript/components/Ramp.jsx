@@ -32,8 +32,12 @@ const Ramp = ({
   base_url,
   mo_id,
   master_files_count,
+  title,
+  expand_structure,
+  admin_links,
   share,
   timeline,
+  playlist,
   thumbnail,
   in_progress,
   cdl
@@ -56,10 +60,18 @@ const Ramp = ({
                     { master_files_count > 0 &&
                       <React.Fragment>
                         <MediaPlayer enableFileDownload={false} />
+                        <div className="ramp--rails-title">
+                          { <div className="object-title" dangerouslySetInnerHTML={{ __html: title.content }} /> }
+                        </div>
                         <div className="ramp--rails-content">
                           { timeline.canCreate && <div className="mr-1" dangerouslySetInnerHTML={{ __html: timeline.content }} /> }
+                          { playlist.canCreate && <div className="mr-1" dangerouslySetInnerHTML={{ __html: playlist.content }} />}
                           { share.canShare && <div className="share-tabs" dangerouslySetInnerHTML={{ __html: share.content }} /> }
+                          { admin_links.canUpdate && <div className="mr-1" dangerouslySetInnerHTML={{ __html: admin_links.content }} /> }
                           { thumbnail.canCreate && <div className="mr-1" dangerouslySetInnerHTML={{ __html: thumbnail.content }} /> }
+                        </div>
+                        <div className="ramp--rails-expand-structure">
+                          { <div className="mr-1" dangerouslySetInnerHTML={{ __html: expand_structure.content }} /> }
                         </div>
                         <StructuredNavigation />
                       </React.Fragment>

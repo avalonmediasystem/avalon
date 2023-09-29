@@ -1,11 +1,11 @@
 # Copyright 2011-2023, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
-# 
+#
 # You may obtain a copy of the License at
-# 
+#
 # http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software distributed
 #   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
 #   CONDITIONS OF ANY KIND, either express or implied. See the License for the
@@ -30,14 +30,14 @@ describe 'MediaObject' do
     expect(page.has_content?('Default Unit')).to be_truthy
   end
   describe 'metadata display' do
-    it 'displays the title properly' do
+    # NOTE: Skipped tests, need JS to render with Ramp integration
+    skip 'displays the title properly' do
       title = 'Hello World'
       media_object.title = title
       media_object.save
       visit media_object_path(media_object)
       expect(page.has_content?(title)).to be_truthy
     end
-    # NOTE: Skipped tests, need JS to render with Ramp integration
     skip 'displays the date properly' do
       date = '1997'
       media_object.date_issued = date

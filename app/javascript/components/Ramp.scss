@@ -1,12 +1,12 @@
-/* 
+/*
  * Copyright 2011-2023, The Trustees of Indiana University and Northwestern
  *   University.  Licensed under the Apache License, Version 2.0 (the "License");
  *   you may not use this file except in compliance with the License.
- * 
+ *
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed
  *   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
  *   CONDITIONS OF ANY KIND, either express or implied. See the License for the
@@ -28,15 +28,50 @@
   }
 }
 
+.ramp--rails-title {
+  font-size: 2rem !important;
+  margin-top: 1rem !important;
+}
+
 .ramp--rails-content {
   display: flex;
+
+  #administrative_options {
+    text-align: right !important;
+  }
+
+  .btn-sm {
+    padding: 0 0;
+  }
 
   .share-tabs {
     flex-grow: 2;
   }
-  
+
   #share-list {
     margin-left: -9.25rem;
+  }
+
+  .svg-add-to-playlist {
+    width: 35px;
+    margin: 0;
+  }
+
+  .bgColor {
+    fill: white;
+  }
+
+  #add-to-playlist-btn:hover {
+    .bgColor {
+      fill: #f2f2f2;
+    }
+  }
+
+  .foregroundColor {
+    fill: none;
+    stroke: #2a5459;
+    stroke-width: 2;
+    stroke-miterlimit: 10;
   }
 }
 
@@ -50,4 +85,96 @@
     padding-bottom: 0.75rem;
     font-size: 1.25rem;
   }
+}
+
+.nav.nav-tabs {
+  background-color:#fff;
+  border:1px solid #e2e7e9;
+  border-top-left-radius:.5rem;
+  border-top-right-radius:.5rem;
+  display:-ms-flexbox;
+  display:flex;
+  -ms-flex-wrap:wrap;
+  flex-wrap:wrap;
+
+  .nav-item {
+    border:none;
+    background-color:transparent;
+    border-bottom:1px solid #e2e7e9;
+    color:#243142;
+    cursor:pointer;
+    -ms-flex-positive:1;
+    flex-grow:1;
+    line-height:1;
+    padding:1rem;
+    position:relative;
+    z-index:100;
+  }
+  .nav-item:not(:first-child) {
+    border-left:1px solid #e2e7e9;
+    margin-left:-1px;
+  }
+  .nav-item:hover {
+    background-color:#f8f9fa;
+    color:#0e1825;
+  }
+  .nav-item:hover:after {
+    background-color:#e2e7e9;
+    bottom:0;
+    content:"";
+    display:block;
+    height:.25rem;
+    left:0;
+    position:absolute;
+    width:100%;
+  }
+  .nav-item:focus {
+    outline:.125rem solid #328bb8;
+    outline-offset:.125rem;
+    background-color:#edfafd;
+  }
+  .nav-item:focus:not(:focus-visible) {
+    outline:none;
+  }
+  .nav-item[aria-selected=true] {
+    background-color:#f8f9fa;
+  }
+  .nav-item[aria-selected=true]:after {
+    bottom:0;
+    background-color:#2a5459;
+    content:"";
+    display:block;
+    height:.25rem;
+    left:0;
+    position:absolute;
+    width:100%;
+  }
+}
+
+.tab-pane {
+  padding:1rem;
+  border-bottom-left-radius:.5rem;
+  border-bottom-right-radius:.5rem;
+}
+.tab-pane:focus {
+  outline:.125rem solid #006298;
+  outline-offset:-.125rem;
+}
+.tab-pane:focus:not(:focus-visible) {
+  outline:none;
+}
+
+#expand_all_sections {
+  display: flex !important;
+  justify-content: flex-end;
+  padding-bottom: .5rem !important;
+}
+
+.accordion-toggle-icon {
+  align-items: center;
+  color: #4c5a69;
+}
+
+.icn-expand-all {
+  width: 20px;
 }
