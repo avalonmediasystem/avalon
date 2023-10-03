@@ -21,7 +21,7 @@ Unless required by applicable law or agreed to in writing, software distributed
   <script>
     window.addEventListener('message', function(event) {
       var command = event.data.command;
-      let embeddedPlayer = videojs(document.getElementById('video-js-embed-<%= @master_file.id %>_html5_api'))
+      let embeddedPlayer = videojs.getPlayer('video-js-embed-<%= @master_file.id %>_html5_api');
 
       if (command=='play') embeddedPlayer.play();
       else if (command=='pause') embeddedPlayer.pause();
