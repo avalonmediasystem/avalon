@@ -51,7 +51,7 @@ const Ramp = ({
 
   return (
     <IIIFPlayer manifestUrl={manifestUrl}>
-      <Row>
+      <Row className="ramp--all-components">
         {!in_progress &&
           <Col sm={8}>
             { (cdl.enabled && !cdl.can_stream)
