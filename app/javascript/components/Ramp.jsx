@@ -21,7 +21,7 @@ import {
   MediaPlayer,
   StructuredNavigation,
   MetadataDisplay,
-  SupplmentalFiles
+  SupplementalFiles
 } from "@samvera/ramp";
 import 'video.js/dist/video-js.css';
 import "@samvera/ramp/dist/ramp.css";
@@ -96,7 +96,7 @@ const Ramp = ({
               </Tab>
             }
             <Tab eventKey="files" title="Files">
-              <SupplmentalFiles showHeading={false} />
+              <SupplementalFiles showHeading={false} />
             </Tab>
           </Tabs>
         </Col>
