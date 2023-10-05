@@ -33,46 +33,50 @@
       margin-top: 20px;
     }
   }
-  
+
   .ramp--rails-title {
     font-size: 2rem !important;
     margin-top: 1rem !important;
+
+    h2 {
+      font-family: Arial, Helvetica, sans-serif;
+    }
   }
-  
+
   .ramp--rails-content {
     display: flex;
-  
+
     #administrative_options {
       text-align: right !important;
     }
-  
+
     .btn-sm {
       padding: 0 0;
     }
-  
+
     .share-tabs {
       flex-grow: 2;
     }
-  
+
     #share-list {
       margin-left: -9.25rem;
     }
-  
+
     .svg-add-to-playlist {
       width: 35px;
       margin: 0;
     }
-  
+
     .bgColor {
       fill: white;
     }
-  
+
     #add-to-playlist-btn:hover {
       .bgColor {
         fill: #f2f2f2;
       }
     }
-  
+
     .foregroundColor {
       fill: none;
       stroke: #2a5459;
@@ -80,19 +84,19 @@
       stroke-miterlimit: 10;
     }
   }
-  
+
   .ramp--supplemental-files {
     .ramp--supplemental-files-display-content {
       padding-left: 0;
     }
-  
+
     h4 {
       border-bottom: 0.1rem solid #ddd;
       padding-bottom: 0.75rem;
       font-size: 1.25rem;
     }
   }
-  
+
   .nav.nav-tabs {
     background-color:#fff;
     border:1px solid #e2e7e9;
@@ -102,7 +106,7 @@
     display:flex;
     -ms-flex-wrap:wrap;
     flex-wrap:wrap;
-  
+
     .nav-item {
       border:none;
       background-color:transparent;
@@ -156,7 +160,7 @@
       width:100%;
     }
   }
-  
+
   .tab-pane {
     padding:1rem;
     border-bottom-left-radius:.5rem;
@@ -171,26 +175,26 @@
   .tab-pane:focus:not(:focus-visible) {
     outline:none;
   }
-  
+
   #expand_all_sections {
     display: flex !important;
     justify-content: flex-end;
     padding-bottom: .5rem !important;
   }
-  
+
   .accordion-toggle-icon {
     align-items: center;
     color: #4c5a69;
   }
-  
+
   .icn-expand-all {
     width: 20px;
   }
-  
+
   /* Override Ramp styling */
   .ramp--metadata-display {
     min-width: fit-content !important;
-  
+
     .ramp--metadata-display-content {
       padding: 0;
       max-height: inherit;
