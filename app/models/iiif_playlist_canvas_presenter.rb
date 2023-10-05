@@ -134,7 +134,7 @@ class IiifPlaylistCanvasPresenter
       IiifManifestRange.new(
         label: { "none" => [label] },
         items: [
-          IiifPlaylistCanvasPresenter.new(playlist_item: playlist_item, stream_info: stream_info, media_fragment: "t=0,#{stream_info[:duration]}")
+          IiifPlaylistCanvasPresenter.new(playlist_item: playlist_item, stream_info: stream_info, media_fragment: fragment_identifier)
         ]
       )
     end
