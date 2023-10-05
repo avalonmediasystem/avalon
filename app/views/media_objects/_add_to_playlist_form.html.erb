@@ -14,54 +14,127 @@ Unless required by applicable law or agreed to in writing, software distributed
 ---  END LICENSE_HEADER BLOCK  ---
 %>
 <!-- contents for add_to_playlist modal form ---->
-<div class="modal-dialog" role="document">
-  <div class="modal-content">
-    <div class="modal-header">
-      <h4 class="modal-title">Add <%= scope=='master_file'? 'Section' : 'Item'%> to Playlist</h4>
-      <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-        <span aria-hidden="true">&times;</span>
-        </button>
-    </div>
-    <div class="modal-body">
-      <form id="add_to_playlist_form" action="<%= add_to_playlist_media_object_path(@media_object) %>"
-        accept-charset="UTF-8" data-remote="true" method="post">
-        <input type="hidden" name="post[masterfile_id]" value="<%= masterfile_id %>" />
-        <div class="form-group">
-          <label for="playlist">Playlist</label>
-          <% @add_playlist_item_playlists = Playlist.where(user: current_user).sort_by(&:title) %>
-          <%= collection_select(:post, :playlist_id, @add_playlist_item_playlists, :id, :title, {}, {id: 'add-to-playlist-playlist-id', class: "form-control form-model", style: 'width:100%;'}) %>
-        </div>
-        <div class="form-group">
-          <label>Playlist Item Scope</label>
 
+<form id="add_to_playlist_form" action="<%= add_to_playlist_media_object_path(@media_object) %>" 
+  accept-charset="UTF-8" data-remote="true" method="post" data-title="<%= @media_object.title %>">
+  <div class="form-group row">
+    <div class="col">
+      <h4 for="playlist">Add to Playlist</h4>
+    </div>
+    <div class="col">
+      <% @add_playlist_item_playlists = Playlist.where(user: current_user).sort_by(&:title) %>
+      <%= collection_select(:post, :playlist_id, @add_playlist_item_playlists, :id, :title, {}, {id: 'add-to-playlist-playlist-id', class: "form-control form-model", style: 'width:100%;'}) %>
+    </div>
+  </div>
+
+  <div class="form-group" id="add-to-playlist-form-group"></div>
+  <div class="row">
+    <div class="col-12">
+      <div class="collapse multi-collapse" id="multiItemCheck">
+        <div class="card card-body">
           <div class="form-check">
-            <label>
-              <input type="radio" value="section" name="post[playlistitem_scope]" id="playlistitem_scope_section"
-                checked="true">
-              Create single item for
-              <%= 'each ' if scope != 'master_file' %>section<%= " (#{stream_label_for(MasterFile.find(masterfile_id))})" if scope == 'master_file' %>
+            <label class="form-check-label">
+              <input type="checkbox" value="structure" name="post[playlistitem_scope]" id="playlistitem_scope_structure">
+              Create playlist items for each track/subsection
             </label>
           </div>
-          <div class="form-check">
-            <label>
-              <input type="radio" value="structure" name="post[playlistitem_scope]" id="playlistitem_scope_structure">
-              Create multiple items from subsections, if available
-            </label>
-          </div>
-
         </div>
-      </form>
+      </div>
     </div>
-    <div class="modal-footer">
-      <button type="button" class="btn btn-outline" data-dismiss="modal">Close</button>
-      <input type="submit" form="add_to_playlist_form" name="commit" value="Add to Playlist" class="btn btn-primary"
-        id="playlistitem_submit">
+    <div class="col-12">
+      <div class="collapse multi-collapse" id="moreDetails">
+        <div class="card card-body">
+          <div class="form-group">
+            <label for="playlist_item_title">Title</label>
+            <input type="text" name="playlist_item_title" id="playlist_item_title" class="form-control form-model">
+          </div>
+          <div class="form-group">
+            <label for="playlist_item_description">Description</label>
+            <textarea name="playlist_item_description" id="playlist_item_description" class="form-control form-model"></textarea>
+          </div>
+        </div>
+      </div>
     </div>
-  </div><!-- /.modal-content -->
-</div><!-- /.modal-dialog -->
+  </div>
+  <button type="button" class="btn btn-outline" data-dismiss="modal">Close</button>
+  <input type="submit" form="add_to_playlist_form" name="commit" value="Add to Playlist" class="btn btn-primary"
+    id="addToPlaylistSave" />
+</form>
 
-<script type="text/javascript">
-  $('#add-to-playlist-playlist-id').select2({
-    dropdownParent: $('#add-to-playlist-modal')
-  });
-</script>
+
+<% content_for :page_scripts do %>
+  <script>
+    $('#add-to-playlist-playlist-id').select2({
+      dropdownParent: $('#add-to-playlist-modal')
+    });
+
+    $(document).ready(function() {
+      // Enable create timeline button after derivative is loaded
+      let timeCheck = setInterval(enableAddToPlaylist, 500);
+      function enableAddToPlaylist() {
+        let player = document.getElementById('iiif-media-player');
+        let scopes = [];
+        let title, streamId;
+        if(player) {
+          player.player.on('loadedmetadata', () => {
+            let addToPlaylistBtn = document.getElementById('addToPlaylistBtn');
+            addToPlaylistBtn.disabled = false;
+            clearInterval(timeCheck);
+          });
+        }
+
+        $('#addToPlaylistPanel').on('show.bs.collapse', function (e) {
+          let playlistForm = $('#add_to_playlist_form')[0]
+          let title = playlistForm.dataset.title;
+          let timelineScopes = getTimelineScopes(title);
+          scopes = timelineScopes.scopes;
+          streamId = timelineScopes.streamId;
+          let currentPlayer = document.getElementById('iiif-media-player').player;
+          let $formGroup = $('#add-to-playlist-form-group')[0];
+
+          let start, end = 0;
+          if(currentPlayer) {
+            start = currentPlayer.currentTime();
+            end = currentPlayer.duration();
+          }
+          let playlistItemOptions = '';
+          let scopesLength = scopes.length;
+          if(scopes?.length > 0) {
+            let trackInfo = scopes.filter(s => s.tag === 'current-track');
+            if(trackInfo.length > 0) {
+              let currentTrack = trackInfo[0];
+              playlistItemOptions += "<div class=\"form-check\"><label class=\"form-check-label\">"
+              playlistItemOptions += "<input type=\"radio\" onclick=\"collapseMoreDetails(\"" + streamId + "\")\" value=\"structure\" name=\"post[playlistitem_scope]\" id=\"playlistitem_scope_section\">"
+              // playlistItemOptions += "data-toggle=\"collapse\" data-target=\"#moreDetails\" aria-expanded=\"false\" aria-controls=\"moreDetails\">"
+              playlistItemOptions += " Current Track (" + currentTrack.label + ")</label></div>"
+              start = currentTrack.times.begin;
+              end = currentTrack.times.end;
+            }
+
+            playlistItemOptions += "<div class=\"form-check\"><label class=\"form-check-label\">"
+            playlistItemOptions += "<input type=\"radio\" onclick=\"collapseMoreDetails(\"" + streamId + "\")\" name=\"post[playlistitem_scope]\" id=\"playlistitem_scope\">"
+            // playlistItemOptions += "data-toggle=\"collapse\" data-target=\"#moreDetails\" aria-expanded=\"false\" aria-controls=\"moreDetails\">"
+            playlistItemOptions += " Time Selection</label>"
+            playlistItemOptions += "<input type=\"text\" name=\"playlist_item_start\" id=\"playlist_item_start\" value=\"" + createTimestamp(start, true) + "\" \> to "
+            playlistItemOptions += "<input type=\"text\" name=\"playlist_item_end\" id=\"playlist_item_end\" value=\"" + createTimestamp(end, true) + "\" \>"
+            playlistItemOptions += "</div>"
+
+            let sectionInfo = scopes[0];
+            playlistItemOptions += "<div class=\"form-check\"><label class=\"form-check-label\">"
+            playlistItemOptions += "<input type=\"radio\" onclick=\"collapseMultiItemCheck(\"" + streamId + "\")\" value=\"section\" name=\"post[playlistitem_scope]\" id=\"playlistitem_scope_section\">"
+            // playlistItemOptions += "data-toggle=\"collapse\" data-target=\"#multiItemCheck\" aria-expanded=\"false\" aria-controls=\"multiItemCheck\">"
+            playlistItemOptions += " Current Section (" + sectionInfo.label + ")</label></div>"
+
+            playlistItemOptions += "<div class=\"form-check\"><label class=\"form-check-label\">"
+            playlistItemOptions += "<input type=\"radio\" onclick=\"collapseMultiItemCheck('')\" value=\"structure\" name=\"post[playlistitem_scope]\" id=\"playlistitem_scope_structure\">"
+            // playlistItemOptions += "data-toggle=\"collapse\" data-target=\"#multiItemCheck\" aria-expanded=\"false\" aria-controls=\"multiItemCheck\">"
+            playlistItemOptions += " All Sections</label></div>"
+
+            playlistItemOptions += "<input type=\"hidden\" name=\"post[masterfile_id]\" id=\"playlistitem_masterfile_id\" value=\"\" />"
+            $formGroup.innerHTML = playlistItemOptions;
+          }
+        });
+      }  
+    });
+  </script>
+<% end %>

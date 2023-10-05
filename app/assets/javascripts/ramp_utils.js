@@ -36,7 +36,8 @@ function getTimelineScopes(title) {
   scopes.push({
     label: label,
     tracks: trackCount,
-    t: `t=${begin},${end}`,
+    times: {begin, end },
+    tag: 'current-track',
   });
 
   let parent = currentStructureItem.closest('ul').closest('li');
@@ -51,7 +52,7 @@ function getTimelineScopes(title) {
     scopes.push({
       label: next.length == 0 ? `${title} - ${label}` : label,
       tracks: trackCount,
-      t: `t=${begin},${end}`,
+      times: { begin, end },
     });
     parent = next;
   }
@@ -95,4 +96,16 @@ function updateShareLinks (e) {
     .val(ltiShareLink)
     .attr('placeholder', ltiShareLink);
   $('#embed-part').val(embedCode);
+}
+
+function collapseMultiItemCheck(masterfile_id) {
+  $('#playlistitem_masterfile_id').val(masterfile_id);
+  $('#multiItemCheck').collapse('show');
+  $('#moreDetails').collapse('hide');
+}
+
+function collapseMoreDetails(masterfile_id) {
+  $('#playlistitem_masterfile_id').val(masterfile_id);
+  $('#multiItemCheck').collapse('hide');
+  $('#moreDetails').collapse('show');
 }
