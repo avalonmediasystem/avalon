@@ -32,7 +32,7 @@ Unless required by applicable law or agreed to in writing, software distributed
     const event = new CustomEvent('canvasswitch', { detail: { lti_share_link: '', link_back_url: '', embed_code: '' } })
     function canvasIndexListener() {
       let player = document.getElementById('iiif-media-player');
-      if (player && player != undefined) {
+      if (player) {
         player.player.on("loadedmetadata", () => {
           if (player.dataset.canvasindex != canvasIndex) {
             canvasIndex = parseInt(player.dataset.canvasindex);

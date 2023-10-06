@@ -98,14 +98,36 @@ function updateShareLinks (e) {
   $('#embed-part').val(embedCode);
 }
 
-function collapseMultiItemCheck(masterfile_id) {
-  $('#playlistitem_masterfile_id').val(masterfile_id);
+var collapseMultiItemCheck = function () {
+  // console.log(masterfile_id)
+  // $('#playlistitem_masterfile_id').val(masterfile_id);
   $('#multiItemCheck').collapse('show');
   $('#moreDetails').collapse('hide');
 }
 
-function collapseMoreDetails(masterfile_id) {
-  $('#playlistitem_masterfile_id').val(masterfile_id);
-  $('#multiItemCheck').collapse('hide');
+var collapseMoreDetails = function() {
   $('#moreDetails').collapse('show');
+  $('#multiItemCheck').collapse('hide');
+  // $('#playlist_item_title').val('Current Track name');
+}
+
+function addPlaylistItem (playlistId, masterfileId) {
+  const t = this;
+  const p = $('#post_playlist_id').val();
+
+  $.ajax({
+    url: '/playlists/' + playlistId + '/items',
+    type: 'POST',
+    data: {
+      playlist_item: {
+        master_file_id: masterfileId,
+        title: $('#playlist_item_title').val(),
+        comment: $('#playlist_item_description').val(),
+        start_time: $('#playlist_item_start').val(),
+        end_time: $('#playlist_item_end').val()
+      }
+    }
+  })
+    .done((res) => console.log('SUCCESS: ', res))
+    .fail((err) => console.log('ERROR: ', err));
 }

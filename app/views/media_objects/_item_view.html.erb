@@ -40,7 +40,7 @@ Unless required by applicable law or agreed to in writing, software distributed
         share: { canShare: (will_partial_list_render? :share), content: lending_enabled?(@media_object) ? (render('share') if can_stream) : render('share') },
         timeline: { canCreate: (current_ability.can? :create, Timeline), content: lending_enabled?(@media_object) ? (render('timeline') if can_stream) : render('timeline') },
         thumbnail: { canCreate: (current_ability.can? :edit, @media_object), content: lending_enabled?(@media_object) ? (render('thumbnail') if can_stream) : render('thumbnail') },
-        playlist: { canCreate: (current_ability.can? :create, Playlist), content: lending_enabled?(@media_object) ? (render('playlist') if can_stream) : render('playlist'), tab: render('add_to_playlist_form') },
+        playlist: { canCreate: (current_ability.can? :create, Playlist), tab: render('add_to_playlist') },
         in_progress: in_progress,
         cdl: { enabled: lending_enabled?(@media_object), can_stream: can_stream, embed: render('embed_checkout'), destroy: render('destroy_checkout') }
       }
