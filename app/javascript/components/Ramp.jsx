@@ -73,6 +73,7 @@ const Ramp = ({
                                 data-target="#addToPlaylistPanel"
                                 aria-expanded="false"
                                 aria-controls="addToPlaylistPanel"
+                                disabled={true}
                               >
                                 Add to Playlist
                               </button>

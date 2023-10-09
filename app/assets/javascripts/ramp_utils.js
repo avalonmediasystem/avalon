@@ -99,8 +99,6 @@ function updateShareLinks (e) {
 }
 
 var collapseMultiItemCheck = function () {
-  // console.log(masterfile_id)
-  // $('#playlistitem_masterfile_id').val(masterfile_id);
   $('#multiItemCheck').collapse('show');
   $('#moreDetails').collapse('hide');
 }
@@ -108,13 +106,11 @@ var collapseMultiItemCheck = function () {
 var collapseMoreDetails = function() {
   $('#moreDetails').collapse('show');
   $('#multiItemCheck').collapse('hide');
-  // $('#playlist_item_title').val('Current Track name');
+  let currentTrackName = $('#current-track-name').text();
+  $('#playlist_item_title').val(currentTrackName);
 }
 
 function addPlaylistItem (playlistId, masterfileId) {
-  const t = this;
-  const p = $('#post_playlist_id').val();
-
   $.ajax({
     url: '/playlists/' + playlistId + '/items',
     type: 'POST',
@@ -128,6 +124,59 @@ function addPlaylistItem (playlistId, masterfileId) {
       }
     }
   })
-    .done((res) => console.log('SUCCESS: ', res))
-    .fail((err) => console.log('ERROR: ', err));
+  .done((res) => handleAddSuccess(res))
+  .fail((err) => handleAddError(err));
+}
+
+function handleAddSuccess(response) {
+  let alertEl = $('#add_to_playlist_alert');
+
+  alertEl.removeClass('alert-danger');
+  alertEl.addClass('alert-success');
+  alertEl.find('.add_to_playlist_result_message').html(response.message);
+
+  $('#add_to_playlist_form_group').collapse('hide');
+  alertEl.collapse('show');
+  resetAddToPlaylistForm();
+}
+
+function handleAddError(error) {
+  let alertEl = $('#add_to_playlist_alert');
+  let message = error.statusText || 'There was an error adding to playlist';
+
+  if (error.responseJSON && error.responseJSON.message) {
+    message = error.responseJSON.message.join('<br/>');
+  }
+
+  alertEl.removeClass('alert-success');
+  alertEl.addClass('alert-danger add_to_playlist_alert_error');
+  alertEl.find('.add_to_playlist_result_message').html('ERROR: ' + message);
+  
+  $('#add_to_playlist_form_group').collapse('hide');
+  alertEl.collapse('show');
+  resetAddToPlaylistForm();
+}
+
+function addToPlaylist(playlistId, scope, masterfileId, moId) {
+  $.ajax({
+    url: '/media_objects/' + moId + '/add_to_playlist',
+    type: 'POST',
+    data: {
+      post: {
+        masterfile_id: masterfileId,
+        playlist_id: playlistId,
+        playlistitem_scope: scope
+      }
+    }
+  })
+  .done((res) => handleAddSuccess(res))
+  .fail((err) => handleAddError(err));
+}
+
+function resetAddToPlaylistForm() {
+  $('#playlist_item_start')[0].value = '';
+  $('#playlist_item_end')[0].value = '';
+  $('#playlist_item_description').value = '';
+  $('#playlist_item_title').value = '';
+  $('input[name="post[playlistitem_scope]"]').prop('checked', false);
 }
