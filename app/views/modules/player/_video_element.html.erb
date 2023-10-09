@@ -26,8 +26,10 @@ Unless required by applicable law or agreed to in writing, software distributed
           <% section_info[:stream_hls].each do |hls| %>
             <source src="<%= hls[:url] %>" type="application/x-mpegURL" data-quality="<%= hls[:quality] %>"/>
           <% end %>
-          <% if section_info[:captions_path].present? %>
-            <track srclang="en" kind="subtitles" type="<%= section_info[:captions_format] %>" src="<%= section_info[:captions_path] %>"></track>
+          <% if section_info[:caption_paths].present? %>
+            <% section_info[:caption_paths].each do |c| %>
+              <track <% if c[:label] %>label="<%= c[:label] %>" <% end %> srclang="<%= c[:language] %>" kind="subtitles" type="<%= c[:mime_type] %>" src="<%= c[:path] %>"></track>
+            <% end %>
           <% end %>
         </video>
       <% end %>

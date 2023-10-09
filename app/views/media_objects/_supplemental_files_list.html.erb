@@ -13,21 +13,46 @@ Unless required by applicable law or agreed to in writing, software distributed
   specific language governing permissions and limitations under the License.
 ---  END LICENSE_HEADER BLOCK  ---
 %>
-          <% if section.supplemental_files.present? %>
-            <% files=tag.empty? ? supplemental_files.select { |sf| sf.tags.empty? } : supplemental_files.select { |sf| sf.tags.include?(tag) } %>
-            <div class="file_view">
+          <% if section.supplemental_files_json.present? %>
+            <% files=tag.empty? ? section.supplemental_files(tag: nil) : section.supplemental_files(tag: tag) %>
+            <div class="file_view <% if tag == "caption" %>captions<% end %>">
+              <% if tag == "caption" %>
+                <div class="row supplemental-file-data edit-item" id="edit-label-row">
+                  <div class="col-md-4 col-4">
+                    <label class="caption-form-label">Label</label>
+                  </div>
+                  <div class="col-md-4 col-4">
+                    <label class="caption-form-label">Language</label>
+                  </div>
+                </div>
+              <% end %>
               <% files.each do |file| %>
-                <div class="supplemental-file-data" data-file-id="<%= file.id %>" data-masterfile-id="<%= section.id %>" >
+                <div class="supplemental-file-data" data-file-id="<%= file.id %>" data-masterfile-id="<%= section.id %>" data-tag="<%= tag %>" >
                     <span name="label_<%= section.id + "_" + file.id.to_s %>" class="display-item"><%= file.label %></span>
                     <%= form_for :supplemental_file, url: object_supplemental_file_path(section, file), remote: true,
                           html: { method: "put", class: "supplemental-file-form edit-item", id: "form-#{file.id}" },
                           data: { file_id: file.id, masterfile_id: section.id } do |form| %>
-                        <div class="col-sm-6">
-                          <div class="form-group">
+                        <div class="col-sm-9 col-md-8 col-9 form-row p-0">
+                          <div class="form-group col-md-6 col-sm-6 col-6">
                             <%= form.text_field :label, id: "supplemental_file_input_#{section.id}_#{file.id}", value: file.label %>
                           </div>
+                          <% if tag == 'transcript' %>
+                            <span class="form-group col-md-6 col-sm-6 col-6 p-0">
+                              <%= label_tag "machine_generated_#{file.id}", class: "ml-3" do %>
+                                <%= check_box_tag "machine_generated_#{file.id}", '1', file.machine_generated? %>
+                                Machine Generated
+                              <% end %>
+                            </span>
+                          <% end %>
+                          <% if tag == 'caption' %>
+                            <div class="form-group col-md-6 col p-0">
+                              <%= form.text_field :language, id: "supplemental_file_language_#{section.id}_#{file.id}", value: LanguageTerm.find(file.language).text,
+                                  class: "typeahead from-model form-control",
+                                  data: { model: 'languageTerm', validate: false } %>
+                            </div>
+                          <% end %>
                         </div>
-                        <div class="col-sm-6">
+                        <div class="col-sm-3 col-md-4 col-3 p-0">
                           <div class="btn-toolbar">
                             <%= button_tag name: 'save_label', :class => "btn btn-outline btn-sm edit-item" do %>
                               <i class="fa fa-check" title="Save"></i> <span class="sm-hidden">Save</span>
@@ -38,13 +63,19 @@ Unless required by applicable law or agreed to in writing, software distributed
                           </div>
                         </div>
                     <% end %>
-                    <small class="visible-inline" name="flash-message-<%= section.id %>-<%= file.id %>"></small>
+                    <small class="visible-inline" name="flash-message-<%= section.id %>-<%= file.id %>">
+                      <i class="fa fa-check-circle icon-success d-none" title="Success"></i>
+                      <i class="fa fa-times-circle icon-error d-none" title="Error"></i>
+                      <span class="sm-hidden message-content"></span>
+                    </small>
                     <div class="btn-toolbar float-right">
                       <%# Update button %>
                       <%= button_tag name: 'edit_label', class:'btn btn-outline btn-sm edit_label display-item', type: 'button' do %>
                         <i class="fa fa-edit" title="Edit"></i> <span class="sm-hidden">Edit</span>
                       <% end %>
-                      <%= link_to("Remove", object_supplemental_file_path(section, file), title: 'Remove', method: :delete, class: "btn btn-danger btn-sm file-remove btn-confirmation") %>
+                      <%= link_to(object_supplemental_file_path(section, file), title: 'Remove', method: :delete, class: "btn btn-danger btn-sm file-remove btn-confirmation") do %>
+                        <i class="fa fa-trash" title="Delete"></i> <span class="sm-hidden">Delete</span>
+                      <% end %>
                     </div>
                 </div>
               <% end %>

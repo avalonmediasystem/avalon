@@ -1,11 +1,11 @@
 # Copyright 2011-2023, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
-# 
+#
 # You may obtain a copy of the License at
-# 
+#
 # http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software distributed
 #   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
 #   CONDITIONS OF ANY KIND, either express or implied. See the License for the
@@ -53,7 +53,7 @@ module MediaObjectsHelper
 
       def combined_display_date media_object
         (issued,created) = case media_object
-        when MediaObject
+        when MediaObject, SpeedyAF::Proxy::MediaObject
           [media_object.date_issued, media_object.date_created]
         when Hash
           [media_object[:document]['date_ssi'], media_object[:document]['date_created_ssi']]
@@ -106,6 +106,10 @@ module MediaObjectsHelper
         media_object.related_item_url.collect{ |r| link_to( r[:label], r[:url]) }
       end
 
+      def display_series media_object
+        media_object.series.collect { |s| link_to(s, blacklight_path({ "f[collection_ssim][]" => media_object.collection.name, "f[series_ssim][]" => s }))}
+      end
+
       def display_rights_statement media_object
         return nil unless media_object.rights_statement.present?
         label = ModsDocument::RIGHTS_STATEMENTS[media_object.rights_statement]
@@ -136,77 +140,6 @@ module MediaObjectsHelper
       def any_failed?(sections)
         encode_gids = sections.collect { |mf| "gid://ActiveEncode/#{mf.encoder_class}/#{mf.workflow_id}" }
         ActiveEncode::EncodeRecord.where(global_id: encode_gids).any? { |encode| encode.state.to_s.upcase == 'FAILED' }
-      end
-
-      def hide_sections? sections
-        sections.blank? or (sections.length == 1 and !sections.first.has_structuralMetadata?)
-      end
-
-      def structure_html section, index, show_progress
-        current = is_current_section? section
-        progress_div = show_progress ? '<div class="status-detail alert" style="display: none"></div>' : ''
-        playlist_btn = current_ability.can?(:create, Playlist) ? "<button type=\"button\" title=\"Add section to playlist\" aria-label=\"Add section to playlist\" class=\"structure_add_to_playlist btn btn-primary\" data-scope=\"master_file\" data-masterfile-id=\"#{section.id}\"></button>" : ''
-
-        headeropen = <<EOF
-       <div class="card-header" role="tab" id="heading#{index}" data-media-object-id="#{section.media_object_id}" data-section-id="#{section.id}">
-       <h5 class="card-title #{ 'progress-indented' if progress_div.present? }">
-       #{playlist_btn}
-EOF
-        headerclose = <<EOF
-       #{progress_div}
-       </h5>
-       </div>
-EOF
-
-        data = {
-          segment: section.id,
-          is_video: section.file_format != 'Sound',
-          share_link: share_link_for(section),
-          native_url: id_section_media_object_path(@media_object, section.id)
-        }
-        data[:lti_share_link] = user_omniauth_callback_lti_url(target_id: section) if Avalon::Authentication::Providers.any? {|p| p[:provider] == :lti }
-        duration = section.duration.blank? ? '' : " (#{milliseconds_to_formatted_time(section.duration.to_i, false)})"
-
-        # If there is no structural metadata associated with this master_file return the stream info
-        unless section.has_structuralMetadata?
-          label = "#{index+1}. #{stream_label_for(section)} #{duration}".html_safe
-          link = link_to label, share_link_for( section ), id: 'section-title-' + section.id, data: data, class: 'playable wrap' + (current ? ' current-stream current-section' : '')
-          return "#{headeropen}<ul><li class='stream-li'>#{link}</li></ul>#{headerclose}"
-        end
-
-        sectionnode = section.structuralMetadata.xpath('//Item')
-
-        # If there are subsections within structure, build a collapsible panel with the contents
-        if sectionnode.children.present?
-          tracknumber = 0
-          label = "#{index+1}. #{sectionnode.attribute('label').value} #{duration}".html_safe
-          link = link_to label, share_link_for(section, only_path: true),
-                         id: 'section-title-' + section.id, data: data,
-                         class: 'playable wrap' + (current ? ' current-stream current-section' : '')
-          wrapperopen = <<EOF
-          #{headeropen}
-          <button class="fa fa-minus-square #{current ? '' : 'no-show'}" data-toggle="collapse" data-target="#section#{index}" aria-expanded="#{current ? 'true' : 'false' }" aria-controls="collapse#{index}"></button>
-          <button class="fa fa-plus-square #{current ? 'no-show' : ''}" data-toggle="collapse" data-target="#section#{index}" aria-expanded="#{current ? 'true' : 'false' }" aria-controls="collapse#{index}"></button>
-          <ul><li>#{link}</li></ul>
-          #{headerclose}
-
-    <div id="section#{index}" class="panel-collapse collapse #{current ? 'show' : ''}" role="tabpanel" aria-labelledby="heading#{index}">
-      <div class="card-body">
-        <ul>
-EOF
-          wrapperclose = <<EOF
-        </ul>
-      </div>
-    </div>
-EOF
-        # If there are no subsections within the structure, return just the header with the single section
-        else
-          tracknumber = index
-          wrapperopen = "#{headeropen}<ul>"
-          wrapperclose = "</ul>#{headerclose}"
-        end
-        contents, tracknumber = parse_section section, sectionnode.first, tracknumber
-        "#{wrapperopen}#{contents}#{wrapperclose}"
       end
 
       def parse_section section, node, index

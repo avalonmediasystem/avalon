@@ -1,11 +1,11 @@
 # Copyright 2011-2023, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
-# 
+#
 # You may obtain a copy of the License at
-# 
+#
 # http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software distributed
 #   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
 #   CONDITIONS OF ANY KIND, either express or implied. See the License for the
@@ -18,9 +18,11 @@ include SecurityHelper
 
 class MasterFilesController < ApplicationController
   # include Avalon::Controller::ControllerBehavior
+  include NoidValidator
 
   before_action :authenticate_user!, :only => [:create]
-  before_action :set_masterfile, except: [:create, :oembed]
+  before_action :set_masterfile_proxy, except: [:create, :oembed, :attach_structure, :attach_captions, :delete_structure, :delete_captions, :destroy, :update, :set_structure]
+  before_action :set_masterfile, only: [:attach_structure, :attach_captions, :delete_structure, :delete_captions, :destroy, :update, :set_structure]
   before_action :ensure_readable_filedata, :only => [:create]
   skip_before_action :verify_authenticity_token, only: [:set_structure, :delete_structure]
 
@@ -148,53 +150,6 @@ class MasterFilesController < ApplicationController
     end
   end
 
-  def attach_captions
-    captions = nil
-    if flash.empty?
-      authorize! :edit, @master_file, message: "You do not have sufficient privileges to add files"
-      if params[:master_file].present? && params[:master_file][:captions].present?
-        captions_file = params[:master_file][:captions]
-        captions_ext = File.extname(captions_file.original_filename)
-        content_type = Mime::Type.lookup_by_extension(captions_ext.slice(1..-1)).to_s if captions_ext
-        if ["text/vtt", "text/srt"].include? content_type
-          captions = captions_file.open.read
-        else
-          flash[:error] = "Uploaded file is not a recognized captions file"
-        end
-      end
-      if captions.present?
-        @master_file.captions.content = captions.encode(Encoding.find('UTF-8'), invalid: :replace, undef: :replace, replace: '')
-        @master_file.captions.mime_type = content_type
-        @master_file.captions.original_name = params[:master_file][:captions].original_filename
-        flash[:success] = "Captions file succesfully added."
-      end
-      if flash[:error].blank?
-        unless @master_file.save
-          flash[:success] = nil
-          flash[:error] = "There was a problem storing the file"
-        end
-      end
-    end
-    respond_to do |format|
-      format.html { redirect_to edit_media_object_path(@master_file.media_object_id, step: 'file-upload') }
-      format.json { render json: {captions: captions, flash: flash} }
-    end
-  end
-
-  def delete_captions
-    authorize! :edit, @master_file, message: "You do not have sufficient privileges to remove files"
-
-    @master_file.captions.content = ''
-    @master_file.captions.original_name = ''
-
-    if @master_file.save
-      flash[:success] = "Captions file succesfully removed."
-    else
-      flash[:error] = "There was a problem removing captions file."
-    end
-    redirect_to edit_media_object_path(@master_file.media_object_id, step: 'file-upload')
-  end
-
   # Creates and Saves a File Asset to contain the the Uploaded file
   # If container_id is provided:
   # * the File Asset will use RELS-EXT to assert that it's a part of the specified container
@@ -277,7 +232,7 @@ class MasterFilesController < ApplicationController
         unless @master_file.save
           flash[:notice] = @master_file.errors.to_a.join('<br/>')
         end
-        redirect_to edit_media_object_path(@master_file.media_object_id, step: "file-upload")
+        redirect_back(fallback_location: edit_media_object_path(@master_file.media_object_id, step: "file-upload"))
       end
     end
   end
@@ -327,6 +282,12 @@ class MasterFilesController < ApplicationController
 
   def caption_manifest
     return head :unauthorized if cannot?(:read, @master_file)
+    caption_id = params[:c_id]
+    @caption_url = if caption_id == 'master_file_caption'
+                     captions_master_file_path
+                   else
+                     master_file_supplemental_file_path(master_file_id: @master_file.id, id: caption_id)
+                   end
   end
 
   def structure
@@ -389,6 +350,13 @@ protected
       flash[:notice] = "MasterFile #{params[:id]} does not exist"
     end
     @master_file = MasterFile.find(params[:id])
+  end
+
+  def set_masterfile_proxy
+    if params[:id].blank? || SpeedyAF::Proxy::MasterFile.find(params[:id]).nil?
+      flash[:notice] = "MasterFile #{params[:id]} does not exist"
+    end
+    @master_file = SpeedyAF::Proxy::MasterFile.find(params[:id])
   end
 
   # return deflated waveform content. deflate only if necessary

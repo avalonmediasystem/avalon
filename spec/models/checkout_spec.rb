@@ -123,7 +123,7 @@ RSpec.describe Checkout, type: :model do
     let(:checkout) { FactoryBot.create(:checkout, media_object_id: media_object.id) }
 
     it 'returns the checked out MediaObject' do
-      expect(checkout.media_object).to eq media_object
+      expect(checkout.media_object.id).to eq media_object.id
     end
   end
 end

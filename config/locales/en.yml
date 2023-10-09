@@ -86,6 +86,11 @@ en:
       target="_blank">Getty Thesaurus of Geographic Names</a>.
     publisher: |
       Publisher of the content of the item.
+    series: |
+      The Series field is used to associate a related grouping or series of items;
+      for example, a television series which comprises multiple episodes.
+      When Series metadata is entered and saved to the record, it will be stored
+      in the search index and each Series value will be shown in the list of facets on the catalog search page.
     temporal_subject: |
       Time period should be used for the temporal subject of the content (for example,
       years or year ranges). Enter date information in a format consistent with the
@@ -179,6 +184,7 @@ en:
     lending_period: |
       Lending Period is the length of time that an item may be checked out for.
       Day and Hour values must be positive integers.
+    apply_to_all_warning: "This action will affect %s items. Do you wish to proceed?"
 
   contact:
     title: 'Contact Us - %{application_name}'

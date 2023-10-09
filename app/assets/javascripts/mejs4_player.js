@@ -1,12 +1,12 @@
-/* 
+/*
  * Copyright 2011-2023, The Trustees of Indiana University and Northwestern
  *   University.  Licensed under the Apache License, Version 2.0 (the "License");
  *   you may not use this file except in compliance with the License.
- * 
+ *
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed
  *   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
  *   CONDITIONS OF ANY KIND, either express or implied. See the License for the
@@ -20,7 +20,6 @@
 //= require mediaelement/plugins/quality-i18n
 //= require media_player_wrapper/mejs4_plugin_add_to_playlist
 //= require media_player_wrapper/mejs4_plugin_add_marker_to_playlist
-//= require media_player_wrapper/mejs4_plugin_create_thumbnail
 //= require media_player_wrapper/mejs4_plugin_track_scrubber
 //= require media_player_wrapper/mejs4_link_back
 //= require media_player_wrapper/mejs4_plugin_playlist_items

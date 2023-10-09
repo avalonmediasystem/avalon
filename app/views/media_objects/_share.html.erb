@@ -32,21 +32,44 @@ Unless required by applicable law or agreed to in writing, software distributed
 <% content_for :page_scripts do %>
 
 <script>
+  let canvasIndex = 0;
   $(document).ready(function() {
-    $(document).on('streamswitch', function(e, stream_info){
-      $('#ltilink-section').val($('a.current-section').data('lti-share-link'));
-      $('#share-link-section').val($('a.current-section').data('share-link'));
-      if (stream_info != null) {
-        $('#embed-part').text(stream_info.embed_code);
+    const mediaObject = <%= @media_object.to_json.html_safe %>;
+    const event = new CustomEvent('canvasswitch', { detail: { lti_share_link: '', link_back_url: '', embed_code: '' } })
+    function canvasIndexListener() {
+      let player = document.getElementById('iiif-media-player');
+      if (player && player != undefined) {
+        player.player.on("loadedmetadata", () => {
+          if (player.dataset.canvasindex != canvasIndex) {
+            canvasIndex = parseInt(player.dataset.canvasindex);
+            const sectionId = mediaObject.files[canvasIndex].id;
+            $.ajax({
+              url: '/media_objects/' + mediaObject.id + '/section/' + sectionId + '/stream',
+              type: 'GET',
+              success: function(data) {
+                event.detail.lti_share_link = data.lti_share_link;
+                event.detail.link_back_url = data.link_back_url;
+                event.detail.embed_code = data.embed_code;
+                player.dispatchEvent(event);
+              },
+              error: function(err) {
+                console.log(err);
+              }
+            });
+          }
+        });
+
+        player.addEventListener("canvasswitch", (e) => {
+          updateShareLinks(e);
+        });
       }
-    });
-    $('.share-tabs a').click(function (e) {
-      e.preventDefault();
-      $(this).tab('show');
-    });
-    $('.share-tabs li').first().toggleClass('active')
-    $('.tab-content .tab-pane').first().toggleClass('active')
-  })
+      if(!$('.share-tabs li').first().hasClass('active')) {
+        $('.share-tabs li').first().toggleClass('active');
+        $('#share-list .tab-content .tab-pane').first().toggleClass('active');
+      }
+    }
+    setInterval(canvasIndexListener, 500);
+  });
 </script>
 
 <% end %>

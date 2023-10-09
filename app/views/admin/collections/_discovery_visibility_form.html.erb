@@ -1,0 +1,110 @@
+<%#
+Copyright 2011-2023, The Trustees of Indiana University and Northwestern
+  University.  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+
+You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+  under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+  CONDITIONS OF ANY KIND, either express or implied. See the License for the
+  specific language governing permissions and limitations under the License.
+---  END LICENSE_HEADER BLOCK  ---
+%>
+<% can_update = can?(:update_access_control, object) %>
+
+<% if can_update %>
+<%= bootstrap_form_for object, html: { id: 'discovery_form' }  do |vid| %>
+<div class="card item-discovery">
+  <div class="card-header">
+    <h3 class="card-title">Item discovery</h3>
+  </div>
+  <div class="card-body">
+    <div class="form-group">
+      <div class="form-check">
+        <%= label_tag :hidden do %>
+        <%= check_box_tag :hidden, '1', (hidden) %>
+        Hide this item from search results
+        <% end %>
+      </div>
+      <%= hidden_field_tag :save_field, "discovery" %>
+      <%= hidden_field_tag :overwrite, false %>
+      <%= submit_tag "Save Setting", class: "btn btn-primary", form: 'discovery_form' %>
+      <%= submit_tag "Apply to All Existing Items", name: "apply_to_existing", class: "btn btn-outline", data: { confirm: I18n.t('access_control.apply_to_all_warning') % [object.media_objects.count] }, form: 'discovery_form' %>
+    </div>
+  </div>
+</div>
+
+<% end %>
+
+<%= bootstrap_form_for object, html: { id: 'visibility_form' }  do |vid| %>
+<div class="card item-access">
+  <div class="card-header">
+    <h3 class="card-title">Item access</h3>
+  </div>
+  <div class="card-body">
+    <div class="form-group">
+      <div class="form-check">
+        <label>
+          <%= radio_button_tag :visibility, 'public', (@visibility == 'public') %>
+          Available to the general public
+        </label>
+      </div>
+      <div class="form-check">
+        <label>
+          <%= radio_button_tag :visibility, 'restricted', (@visibility == 'restricted') %>
+          Logged in users only
+        </label>
+      </div>
+      <div class="form-check">
+        <label>
+          <%= radio_button_tag :visibility, 'private', (@visibility == 'private') %>
+          Collection staff only
+        </label>
+      </div>
+      <%= hidden_field_tag :save_field, "visibility" %>
+      <%= hidden_field_tag :overwrite, false %>
+      <%= submit_tag "Save Setting", class: "btn btn-primary", form: 'visibility_form' %>
+      <%= submit_tag "Apply to All Existing Items", name: "apply_to_existing", class: "btn btn-outline", data: { confirm: I18n.t('access_control.apply_to_all_warning') % [object.media_objects.count] }, form: "visibility_form" %>
+    </div>
+  </div>
+</div>
+
+<% end %>
+
+<% else %>
+
+<div class="card item-discovery">
+  <div class="card-header">
+    <h3 class="card-title">Item discovery</h3>
+  </div>
+  <div class="card-body">
+    <div class="form-group">
+      <%= hidden ? "Item is hidden from search results" :
+        "Item is not hidden from search results" %>
+    </div>
+  </div>
+</div>
+
+<div class="card item-access">
+  <div class="card-header">
+    <h3 class="card-title">Item access</h3>
+  </div>
+  <div class="card-body">
+    <div class="form-group">
+      Item is viewable by
+      <%= case @visibility
+          when "public"
+            "the general public"
+          when "restricted"
+            "logged in users only"
+          when "private"
+            "collection staff only"
+          end %>
+    </div>
+  </div>
+</div>
+
+<% end %>

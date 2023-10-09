@@ -1,11 +1,11 @@
 # Copyright 2011-2023, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
-# 
+#
 # You may obtain a copy of the License at
-# 
+#
 # http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software distributed
 #   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
 #   CONDITIONS OF ANY KIND, either express or implied. See the License for the
@@ -13,6 +13,8 @@
 # ---  END LICENSE_HEADER BLOCK  ---
 
 class IiifCanvasPresenter
+  include IiifSupplementalFileBehavior
+
   attr_reader :master_file, :stream_info
   attr_accessor :media_fragment
 
@@ -37,13 +39,32 @@ class IiifCanvasPresenter
     master_file.is_video? ? video_content : audio_content
   end
 
+  def annotation_content
+    supplemental_captions_transcripts.collect { |file| supplementing_content_data(file) }
+  end
+
   def sequence_rendering
-    [{
-      "@id" => "#{@master_file.waveform_master_file_url(@master_file.id)}.json",
-      "type" => "Dataset",
-      "label" => { "en" => ["waveform.json"] },
-      "format" => "application/json"
-    }]
+    supplemental_files_rendering(master_file)
+  end
+
+  def see_also
+    [
+      {
+        "@id" => "#{@master_file.waveform_master_file_url(@master_file.id)}.json",
+        "type" => "Dataset",
+        "label" => { "en" => ["waveform.json"] },
+        "format" => "application/json"
+      }
+    ]
+  end
+
+  def placeholder_content
+    # height and width from /models/master_file/extract_still method
+    IIIFManifest::V3::DisplayContent.new( @master_file.poster_master_file_url(@master_file.id),
+                                          width: 1280,
+                                          height: 720,
+                                          type: 'Image',
+                                          format: 'image/jpeg')
   end
 
   private
@@ -55,13 +76,7 @@ class IiifCanvasPresenter
 
     def video_display_content(quality)
       IIIFManifest::V3::DisplayContent.new(Rails.application.routes.url_helpers.hls_manifest_master_file_url(master_file.id, quality: quality),
-                                           label: quality,
-                                           width: master_file.width.to_i,
-                                           height: master_file.height.to_i,
-                                           duration: stream_info[:duration],
-                                           type: 'Video',
-                                           format: 'application/x-mpegURL',
-                                           auth_service: auth_service(quality))
+                                           **manifest_attributes(quality, 'Video'))
     end
 
     def audio_content
@@ -70,11 +85,20 @@ class IiifCanvasPresenter
 
     def audio_display_content(quality)
       IIIFManifest::V3::DisplayContent.new(Rails.application.routes.url_helpers.hls_manifest_master_file_url(master_file.id, quality: quality),
-                                           label: quality,
-                                           duration: stream_info[:duration],
-                                           type: 'Sound',
-                                           format: 'application/x-mpegURL',
-                                           auth_service: auth_service(quality))
+                                           **manifest_attributes(quality, 'Sound'))
+    end
+
+    def supplementing_content_data(file)
+      url = if !file.is_a?(SupplementalFile)
+              Rails.application.routes.url_helpers.captions_master_file_url(master_file.id)
+            elsif file.tags.include?('caption')
+              Rails.application.routes.url_helpers.captions_master_file_supplemental_file_url(master_file.id, file.id)
+            elsif file.tags.include?('transcript')
+              Rails.application.routes.url_helpers.transcripts_master_file_supplemental_file_url(master_file.id, file.id)
+            else
+              Rails.application.routes.url_helpers.master_file_supplemental_file_url(master_file.id, file.id)
+            end
+      IIIFManifest::V3::AnnotationContent.new(body_id: url, **supplemental_attributes(file))
     end
 
     def stream_urls
@@ -83,12 +107,18 @@ class IiifCanvasPresenter
       end
     end
 
+    def supplemental_captions_transcripts
+      files = master_file.supplemental_files(tag: 'caption') + master_file.supplemental_files(tag: 'transcript')
+      files += [master_file.captions] if master_file.captions.present? && master_file.captions.persisted?
+      files
+    end
+
     def simple_iiif_range(label = stream_info[:embed_title])
       # TODO: embed_title?
       IiifManifestRange.new(
         label: { "none" => [label] },
         items: [
-          IiifCanvasPresenter.new(master_file: master_file, stream_info: stream_info, media_fragment: 't=0,')
+          IiifCanvasPresenter.new(master_file: master_file, stream_info: stream_info, media_fragment: "t=0,#{stream_info[:duration]}")
         ]
       )
     end
@@ -132,6 +162,42 @@ class IiifCanvasPresenter
         smh[i] = smh[i] =~ FLOAT_PATTERN ? Float(smh[i]) : 0
       end
       smh[0] + (60 * smh[1]) + (3600 * smh[2])
+    end
+
+    def manifest_attributes(quality, media_type)
+      media_hash = {
+        label: quality,
+        width: master_file.width.to_i,
+        height: master_file.height.to_i,
+        duration: stream_info[:duration],
+        type: media_type,
+        format: 'application/x-mpegURL'
+      }.compact
+
+      if master_file.media_object.visibility == 'public'
+        media_hash
+      else
+        media_hash.merge!(auth_service: auth_service(quality))
+      end
+    end
+
+    def supplemental_attributes(file)
+      if file.is_a?(SupplementalFile)
+        label = file.tags.include?('machine_generated') ? file.label + ' (machine generated)' : file.label
+        format = file.file.content_type
+        language = file.language || 'en'
+      else
+        label = 'English'
+        format = file.mime_type
+        language = 'en'
+      end
+      {
+        motivation: 'supplementing',
+        label: label,
+        type: 'Text',
+        format: format,
+        language: language
+      }
     end
 
     # Note that the method returns empty Nokogiri Document instead of nil when structure_tesim doesn't exist or is empty.

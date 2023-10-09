@@ -29,8 +29,11 @@ class MEJSPlayer {
     this.mejsUtility = new MEJSUtility();
     this.mejsTimeRailHelper = new MEJSTimeRailHelper();
     this.mejsMarkersHelper = new MEJSMarkersHelper();
-    this.mejsQualityHelper = new MEJSQualityHelper();
-    this.localStorage = window.localStorage;
+    if (Modernizr.localStorage) {
+      this.localStorage = window.localStorage;
+    } else {
+        this.localStorage = false;
+    }
     this.canvasIndex = 0;
 
     // Unpack player configuration object for the new player.
@@ -157,7 +160,6 @@ class MEJSPlayer {
           this.setContextVars(response, playlistItemsT);
           this.createNewPlayer();
         }
-        this.updateShareLinks();
       })
       .fail(error => {
         console.log('error', error);
@@ -186,6 +188,8 @@ class MEJSPlayer {
    * @return {void}
    */
   handleVolumeChange() {
+    if (!this.localStorage) return;
+
     this.localStorage.setItem('startVolume', this.mediaElement.volume)
   }
 
@@ -196,6 +200,8 @@ class MEJSPlayer {
    * @return {void}
    */
   handleCaptionsChange() {
+    if (!this.localStorage) return;
+
     let srclang = currentPlayer.selectedTrack === null ? '' : currentPlayer.selectedTrack.srclang;
     this.localStorage.setItem('captions', srclang)
   }
@@ -265,10 +271,10 @@ class MEJSPlayer {
       }" type="application/x-mpegURL" data-quality="${source.quality}"/>`;
     });
 
-    if (this.currentStreamInfo.captions_path) {
-      markup += `<track srclang="en" kind="subtitles" type="${
-        this.currentStreamInfo.captions_format
-      }" src="${this.currentStreamInfo.captions_path}"></track>`;
+    if (this.currentStreamInfo.caption_paths) {
+      for (c in this.currentStreamInfo.caption_paths) {
+        markup += `<track ${c.label ? `label="${c.label}"` : '' } srclang="${c.language}" kind="subtitles" type="${c.mime_type}" src="${c.path}"></track>`;
+      }
     }
 
     this.node.innerHTML = markup;
@@ -293,7 +299,9 @@ class MEJSPlayer {
     // Quality selector is turned off in mobile devices
     if(!mejs.Features.isAndroid) {
       // Set defaultQuality in player options before building the quality feature
-      this.player.options.defaultQuality = this.localStorage.getItem('quality');
+      if (!this.localStorage) {
+        this.player.options.defaultQuality = this.localStorage.getItem('quality');
+      }
 
       // Build quality
       this.player.buildquality(this.player, null, null, this.mediaElement);
@@ -301,7 +309,7 @@ class MEJSPlayer {
       // Set current source in absence of the quality selection
       let currentSource = this.currentStreamInfo.stream_hls
                         .filter(src => src.quality === this.player.options.defaultQuality)[0];
-     
+
       this.player.setSrc(currentSource.url);
     }
 
@@ -322,7 +330,7 @@ class MEJSPlayer {
    * @function reInitializeCaptions
    */
   reInitializeCaptions() {
-    if (this.currentStreamInfo.captions_path) {
+    if (this.currentStreamInfo.caption_paths) {
       // Place tracks button
       if(this.mejsUtility.isMobile()) {
         // after trackScrubber button in mobile devices
@@ -331,7 +339,7 @@ class MEJSPlayer {
         // after volume button in desktop devices
         this.player.featurePosition.tracks = this.player.featurePosition.volume + 1;
       }
-      
+
       this.player.buildtracks(this.player, null, this.player.layers, this.mediaElement);
       // Turn on captions
       this.toggleCaptions();
@@ -367,6 +375,8 @@ class MEJSPlayer {
    * @returns {void}
    */
   toggleCaptions() {
+    if (!this.localStorage) return;
+
     if (this.mediaType==="video" && this.player.options.toggleCaptionsButtonWhenOnlyOne) {
       if (this.localStorage.getItem('captions') !== '' && this.player.tracks && this.player.tracks.length===1) {
         this.player.setTrack(this.player.tracks[0].trackId, (typeof keyboard !== 'undefined'));
@@ -603,13 +613,17 @@ class MEJSPlayer {
    */
   initializePlayer() {
     let currentStreamInfo = this.currentStreamInfo;
-    // Set default quality value in localStorage  
-    this.localStorage.setItem('quality', this.defaultQuality);
+
     // Interval in seconds to jump forward and backward in media
     let jumpInterval = 5;
-
-    // Set default quality value in localStorage  
-    this.localStorage.setItem('quality', this.defaultQuality);
+    let startVolume = 1.0;
+    let startLanguage = '';
+    if (!this.localStorage) {
+      startVolume = this.localStorage.getItem('startVolume') || 1.0;
+      startLanguage = this.localStorage.getItem('captions') || '';
+      // Set default quality value in localStorage
+      this.localStorage.setItem('quality', this.defaultQuality);
+    }
 
     // Mediaelement default root level configuration
     let defaults = {
@@ -623,8 +637,8 @@ class MEJSPlayer {
       qualityText: 'Stream Quality',
       defaultQuality: this.defaultQuality,
       toggleCaptionsButtonWhenOnlyOne: true,
-      startVolume: this.localStorage.getItem('startVolume') || 1.0,
-      startLanguage: this.localStorage.getItem('captions') || '',
+      startVolume: startVolume,
+      startLanguage: startLanguage,
       // jump forward and backward when player is not focused
       defaultSeekBackwardInterval: function() { return jumpInterval },
       defaultSeekForwardInterval: function() { return jumpInterval }
@@ -784,23 +798,5 @@ class MEJSPlayer {
     );
     const currentIdIndex = [...sectionsIdArray].indexOf(currentStreamInfo.id);
     this.canvasIndex = currentIdIndex;
-  }
-
-  /**
-   * Update section and lti section share links and embed code when switching sections
-   * @function updateShareLinks
-   * @return {void}
-   */
-  updateShareLinks() {
-    const sectionShareLink = this.currentStreamInfo.link_back_url;
-    const ltiShareLink = this.currentStreamInfo.lti_share_link;
-    const embedCode = this.currentStreamInfo.embed_code;
-    $('#share-link-section')
-      .val(sectionShareLink)
-      .attr('placeholder', sectionShareLink);
-    $('#ltilink-section')
-      .val(ltiShareLink)
-      .attr('placeholder', ltiShareLink);
-    $('#embed-part').val(embedCode);
   }
 }

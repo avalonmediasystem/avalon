@@ -1,11 +1,11 @@
 # Copyright 2011-2023, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
-# 
+#
 # You may obtain a copy of the License at
-# 
+#
 # http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software distributed
 #   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
 #   CONDITIONS OF ANY KIND, either express or implied. See the License for the
@@ -24,8 +24,17 @@ namespace :avalon do
     `rails generate active_annotations:install`
   end
 
-  desc "Index MasterFiles and subresources to take advantage of SpeedyAF"
+  desc "Index Admin::Collections and MasterFiles and their subresources to take advantage of SpeedyAF"
   task index_for_speed: :environment do
+    Admin::Collection.find_each do |c|
+      $stderr.print "c["
+      c.update_index;
+      c.declared_attached_files.each_pair do |name, file|
+        $stderr.print name.to_s[0]
+        file.update_external_index if file.respond_to?(:update_external_index)
+      end
+      $stderr.print "]"
+    end
     MasterFile.find_each do |mf|
       $stderr.print "m["
       mf.update_index;
@@ -41,6 +50,18 @@ namespace :avalon do
   desc 'clean out user sessions that have not been updated for 7 days'
   task session_cleanup: :environment do
     CleanupSessionJob.perform_now
+  end
+
+  desc 'clean out old ffmpeg and pass_through encode files'
+  task local_encode_cleanup: :environment do
+    options = {
+      older_than: ENV['older_than'], # Default is 2.weeks
+      no_outputs: ENV['no_outputs']&.to_a, # Default is ['input_metadata', 'duration_input_metadata', 'error.log', 'exit_status.code', 'progress', 'completed', 'pid', 'output_metadata-*']
+      outputs: ENV['outputs'], # Default is false
+      all: ENV['all'] # Default is false
+    }.compact
+
+    ActiveEncode::EngineAdapters::FfmpegAdapter.remove_old_files!(options)
   end
 
   namespace :services do

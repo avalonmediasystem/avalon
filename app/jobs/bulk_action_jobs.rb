@@ -1,11 +1,11 @@
 # Copyright 2011-2023, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
-# 
+#
 # You may obtain a copy of the License at
-# 
+#
 # http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software distributed
 #   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
 #   CONDITIONS OF ANY KIND, either express or implied. See the License for the
@@ -117,7 +117,7 @@ module BulkActionJobs
             errors += [media_object]
           end
         when 'unpublish'
-          if media_object.publish!(nil)
+          if media_object.publish!(nil, validate: false)
             successes += [media_object]
           else
             errors += [media_object]
@@ -197,27 +197,53 @@ module BulkActionJobs
 
   class ApplyCollectionAccessControl < ActiveJob::Base
     queue_as :bulk_access_control
-    def perform(collection_id, overwrite = true)
+    def perform(collection_id, overwrite = true, save_field = nil)
       errors = []
       successes = []
       collection = Admin::Collection.find collection_id
       collection.media_object_ids.each do |id|
         media_object = MediaObject.find(id)
-        media_object.hidden = collection.default_hidden
-        media_object.visibility = collection.default_visibility
-        if collection.cdl_enabled?
+        if save_field == "discovery"
+          media_object.hidden = collection.default_hidden
+        end
+        if save_field == "visibility"
+          media_object.visibility = collection.default_visibility
+        end
+        if collection.cdl_enabled? && save_field == "lending_period"
           media_object.lending_period = collection.default_lending_period
         end
 
-        # Special access
-        if overwrite
-          media_object.read_groups = collection.default_read_groups.to_a
-          media_object.read_users = collection.default_read_users.to_a
-        else
-          media_object.read_groups += collection.default_read_groups.to_a
-          media_object.read_groups.uniq!
-          media_object.read_users += collection.default_read_users.to_a
-          media_object.read_users.uniq!
+
+        if save_field == "special_access"
+          # If MediaObject visibility is different than Collection, the collection visibility
+          # overwrites, or is added to, the media object read groups. This can result in the media object
+          # read groups containing the wrong visibilty or multiple visibilities.
+          # Remove visibility from the default_read_groups array to protect against this.
+          collection_read_groups = collection.default_read_groups.to_a - [Hydra::AccessControls::AccessRight::PERMISSION_TEXT_VALUE_AUTHENTICATED,
+                                                                          Hydra::AccessControls::AccessRight::PERMISSION_TEXT_VALUE_PUBLIC,
+                                                                          Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_PRIVATE]
+
+          # When overwriting the read group, we have to add the media object visibility back into the array,
+          # otherwise the media object will default to private.
+          media_object_visibility_group = if media_object.visibility == Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_PUBLIC
+                                            [Hydra::AccessControls::AccessRight::PERMISSION_TEXT_VALUE_PUBLIC]
+                                          elsif media_object.visibility == Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_AUTHENTICATED
+                                            [Hydra::AccessControls::AccessRight::PERMISSION_TEXT_VALUE_AUTHENTICATED]
+                                          else
+                                            [Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_PRIVATE]
+                                          end
+
+          # Special access
+          if overwrite
+            media_object.read_groups = collection_read_groups
+            media_object.read_groups += media_object_visibility_group
+            media_object.read_users = collection.default_read_users.to_a
+          else
+            media_object.read_groups += collection_read_groups
+            media_object.read_groups.uniq!
+            media_object.read_users += collection.default_read_users.to_a
+            media_object.read_users.uniq!
+          end
         end
 
         if media_object.save

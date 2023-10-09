@@ -13,6 +13,10 @@
 # ---  END LICENSE_HEADER BLOCK  ---
 
 class SpeedyAF::Proxy::MasterFile < SpeedyAF::Base
+  def to_param
+    id
+  end
+
   def encoder_class
     find_encoder_class(encoder_classname) ||
       find_encoder_class("#{workflow_name}_encode".classify) ||
@@ -24,6 +28,11 @@ class SpeedyAF::Proxy::MasterFile < SpeedyAF::Base
   def find_encoder_class(klass_name)
     klass = klass_name&.safe_constantize
     klass if klass&.ancestors&.include?(ActiveEncode::Base)
+  end
+
+  # We know that title will be indexed if present so return presence to avoid reifying
+  def title
+    attrs[:title].presence
   end
 
   def display_title
@@ -39,8 +48,20 @@ class SpeedyAF::Proxy::MasterFile < SpeedyAF::Base
   end
 
   # @return [SupplementalFile]
-  def supplemental_files
+  def supplemental_files(tag: '*')
     return [] if supplemental_files_json.blank?
-    JSON.parse(supplemental_files_json).collect { |file_gid| GlobalID::Locator.locate(file_gid) }
+    files = JSON.parse(supplemental_files_json).collect { |file_gid| GlobalID::Locator.locate(file_gid) }
+    case tag
+    when '*'
+      files
+    when nil
+      files.select { |file| file.tags.empty? }
+    else
+      files.select { |file| Array(tag).all? { |t| file.tags.include?(t) } }
+    end
+  end
+
+  def captions
+    load_subresource_content(:captions) rescue nil
   end
 end

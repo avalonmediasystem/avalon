@@ -73,6 +73,13 @@ Unless required by applicable law or agreed to in writing, software distributed
                                 multivalued: true}} %>
 
   <%= render partial: 'text_field',
+             locals: {form: form, field: :series,
+                      options: {display_label: "Series",
+                                multivalued: true,
+                                autocomplete_model: 'mediaObject',
+                                autocomplete_validate: false}} %>
+
+  <%= render partial: 'text_field',
              locals: {form: form, field: :related_item_url,
                       options: {display_label: 'Related Item(s)',
                                 multivalued: true,

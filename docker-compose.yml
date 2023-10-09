@@ -37,12 +37,16 @@ services:
       - JAVA_OPTIONS=-Dfcrepo.modeshape.configuration=classpath:/config/file-simple/repository.json -Dfcrepo.home=/data
     networks:
       internal:
+    ulimits:
+      nofile:
+        soft: 65536
+        hard: 65536
   fedora-test:
     <<: *fedora
     volumes: []
 
   solr: &solr
-    image: solr:8-slim
+    image: solr:9
     volumes:
       - ./solr/conf:/opt/solr/avalon_conf
       - solr:/var/solr
@@ -76,7 +80,7 @@ services:
     <<: *redis
 
   avalon: &avalon
-    image: avalonmediasystem/avalon:7.4.0-dev
+    image: avalonmediasystem/avalon:develop
     build:
       context: .
       target: dev

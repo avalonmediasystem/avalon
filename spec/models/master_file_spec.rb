@@ -1,11 +1,11 @@
 # Copyright 2011-2023, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
-# 
+#
 # You may obtain a copy of the License at
-# 
+#
 # http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software distributed
 #   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
 #   CONDITIONS OF ANY KIND, either express or implied. See the License for the
@@ -129,6 +129,45 @@ describe MasterFile do
       it 'should not start an ActiveEncode workflow' do
         expect(master_file.encoder_class).not_to receive(:create)
         expect{ master_file.process }.to raise_error(RuntimeError)
+      end
+    end
+
+    context 'pass through' do
+      let(:master_file) { FactoryBot.create(:master_file, :not_processing, workflow_name: 'pass_through') }
+
+      context 'with multiple files' do
+	let(:low_file) { "spec/fixtures/videoshort.low.mp4" }
+	let(:medium_file) { "spec/fixtures/videoshort.medium.mp4" }
+	let(:high_file) { "spec/fixtures/videoshort.high.mp4" }
+        let(:outputs_hash) do
+          [
+            { label: 'low', url: FileLocator.new(low_file).uri.to_s },
+            { label: 'medium', url: FileLocator.new(medium_file).uri.to_s },
+            { label: 'high', url: FileLocator.new(high_file).uri.to_s }
+          ]
+        end
+        let(:files) do
+          {
+            "quality-low" => FileLocator.new(low_file).attachment,
+            "quality-medium" => FileLocator.new(medium_file).attachment,
+            "quality-high" => FileLocator.new(high_file).attachment
+          }
+        end
+
+        it 'creates an encode' do
+	  expect(master_file.encoder_class).to receive(:create).with("file://" + Rails.root.join(high_file).to_path, { outputs: outputs_hash, master_file_id: master_file.id, preset: master_file.workflow_name })
+	  master_file.process(files)
+        end
+      end
+
+      context 'with single file' do
+        let(:input_url) { FileLocator.new(master_file.file_location).uri.to_s }
+        let(:outputs_hash) { [{ label: 'high', url: input_url }] }
+
+        it 'creates an encode' do
+          expect(master_file.encoder_class).to receive(:create).with(input_url, { outputs: outputs_hash, master_file_id: master_file.id, preset: master_file.workflow_name })
+	  master_file.process
+        end
       end
     end
   end
@@ -632,13 +671,24 @@ describe MasterFile do
 
       context 'when derivatives are not accessible' do
         let(:high_derivative_locator) { FileLocator.new(video_master_file.derivatives.where(quality_ssi: 'high').first.absolute_location) }
-        let(:hls_temp_file) { "/tmp/temp_segment.ts" }
+        let(:hls_file) { "temp_segment.ts" }
+        let(:hls_url) { "http://streaming.server.com/path/#{hls_file}" }
+        let(:reader) { double(Avalon::M3U8Reader) }
+        let(:m3u8) { "HLSDATA" }
+
+        before do
+          stub_request(:get, hls_url).to_return(body: m3u8)
+          allow(Avalon::M3U8Reader).to receive(:read).and_return(reader)
+          allow(reader).to receive(:at).and_return({ location: hls_url, filename: hls_file, offset: 0 })
+        end
 
         it 'falls back to HLS' do
-          expect(video_master_file).to receive(:create_frame_source_hls_temp_file).and_return(hls_temp_file)
-          expect(File).to receive(:exist?).with(high_derivative_locator.location).and_return(false)
+          #expect(video_master_file).to receive(:create_frame_source_hls_temp_file).and_return(hls_temp_file)
+          allow(File).to receive(:exist?).and_call_original
+          allow(File).to receive(:exist?).with(high_derivative_locator.location).and_return(false)
           expect(source[:source]).to eq '/tmp/temp_segment.ts'
           expect(source[:non_temp_file]).to eq false
+          expect(File.read(source[:source])).to eq m3u8
         end
       end
     end
@@ -679,6 +729,18 @@ describe MasterFile do
     let(:master_file) { FactoryBot.create(:master_file) }
     it 'has a caption' do
       expect(master_file.captions).to be_kind_of IndexedFile
+    end
+  end
+
+  describe 'supplemental_file_captions' do
+    let(:caption_file) { FactoryBot.create(:supplemental_file, :with_caption_file, :with_caption_tag) }
+    let(:transcript_file) { FactoryBot.create(:supplemental_file, :with_transcript_tag) }
+    let(:master_file) { FactoryBot.create(:master_file, supplemental_files: [caption_file, transcript_file]) }
+    it 'has a caption' do
+      expect(master_file.supplemental_file_captions).to_not be_empty
+      expect(master_file.supplemental_file_captions).to all(be_kind_of(SupplementalFile))
+      expect(master_file.supplemental_file_captions).to_not include(transcript_file)
+      expect(master_file.supplemental_file_captions).to include(caption_file)
     end
   end
 
@@ -844,6 +906,7 @@ describe MasterFile do
       # Force creation of master_file and then clear queue of byproduct jobs
       master_file
       ActiveJob::Base.queue_adapter.enqueued_jobs.clear
+      ActiveJob::Uniqueness.unlock!
     end
 
     it 'enqueues indexing of parent media object' do

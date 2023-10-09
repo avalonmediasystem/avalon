@@ -1,11 +1,11 @@
 # Copyright 2011-2023, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
-# 
+#
 # You may obtain a copy of the License at
-# 
+#
 # http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software distributed
 #   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
 #   CONDITIONS OF ANY KIND, either express or implied. See the License for the
@@ -33,6 +33,8 @@ require 'rails_helper'
 # that an instance is receiving a specific message.
 
 RSpec.describe PlaylistsController, type: :controller do
+  include ActiveJob::TestHelper
+
   # This should return the minimal set of attributes required to create a valid
   # Playlist. As you add validations to Playlist, be sure to
   # adjust the attributes here as well.
@@ -151,6 +153,23 @@ RSpec.describe PlaylistsController, type: :controller do
       expect(assigns(:playlist)).to eq(playlist)
     end
     # TODO: write tests for public/private playists
+
+    context 'read from solr' do
+      render_views
+
+      let!(:playlist) { FactoryBot.create(:playlist, items: [playlist_item], visibility: Playlist::PUBLIC) }
+      let(:playlist_item) { FactoryBot.create(:playlist_item, clip: clip) }
+      let(:clip) { FactoryBot.create(:avalon_clip, master_file: master_file) }
+      let(:master_file) { FactoryBot.create(:master_file, media_object: media_object) }
+      let(:media_object) { FactoryBot.create(:published_media_object, visibility: 'public') }
+
+      it 'should not read from fedora' do
+        perform_enqueued_jobs(only: MediaObjectIndexingJob)
+        WebMock.reset_executed_requests!
+        get :show, params: { id: playlist.id }
+        expect(a_request(:any, /#{ActiveFedora.fedora.base_uri}/)).not_to have_been_made
+      end
+    end
   end
 
   describe 'GET #new' do
@@ -538,6 +557,65 @@ RSpec.describe PlaylistsController, type: :controller do
           parsed_response = JSON.parse(response.body)
           expect(parsed_response['data'][0][0]).to eq("<a title=\"#{Playlist.all[10].comment}\" href=\"/playlists/11\">zzzebra</a>")
           expect(parsed_response['data'][10][0]).to eq("<a title=\"#{Playlist.all[0].comment}\" href=\"/playlists/1\">aardvark</a>")
+        end
+      end
+    end
+
+    describe "GET #manifest" do
+      let(:playlist) { FactoryBot.create(:playlist, items: [playlist_item], visibility: Playlist::PUBLIC) }
+      let(:playlist_item) { FactoryBot.create(:playlist_item, clip: clip) }
+      let(:clip) { FactoryBot.create(:avalon_clip, master_file: master_file) }
+      let(:master_file) { FactoryBot.create(:master_file, :with_derivative, media_object: media_object) }
+      let(:media_object) { FactoryBot.create(:published_media_object, visibility: 'public') }
+
+      it "returns a IIIF manifest" do
+        get :manifest, format: 'json', params: { id: playlist.id }, session: valid_session
+        expect(response).to have_http_status(200)
+        parsed_response = JSON.parse(response.body)
+        expect(parsed_response['@context']).to include "http://iiif.io/api/presentation/3/context.json"
+        expect(parsed_response['type']).to eq 'Manifest'
+        expect(parsed_response['items']).not_to be_empty
+      end
+
+      it "contains metadata about the playlist item's parent media obejct" do
+        get :manifest, format: 'json', params: { id: playlist.id}, session: valid_session
+        parsed_response = JSON.parse(response.body)
+        expect(parsed_response['items'][0]['metadata']).to be_present
+      end
+
+      context "when playlist owner" do
+        before do
+          login_user playlist.user.user_key
+        end
+
+        it "includes the marker annotation service definition" do
+          get :manifest, format: 'json', params: { id: playlist.id }, session: valid_session
+          parsed_response = JSON.parse(response.body)
+          expect(parsed_response["service"]).to be_present
+        end
+      end
+
+      context "when not playlist owner" do
+        it "does not include the marker annotation service definition" do
+          get :manifest, format: 'json', params: { id: playlist.id }, session: valid_session
+          parsed_response = JSON.parse(response.body)
+          expect(parsed_response["service"]).not_to be_present
+        end
+      end
+
+      context "playlist item auth" do
+        let(:playlist) { FactoryBot.create(:playlist, items: [playlist_item, playlist_item_2], visibility: Playlist::PUBLIC) }
+        let(:playlist_item_2) { FactoryBot.create(:playlist_item, clip: clip_2) }
+        let(:clip_2) { FactoryBot.create(:avalon_clip, master_file: master_file_2) }
+        let(:master_file_2) { FactoryBot.create(:master_file, :with_derivative, media_object: media_object_2) }
+        let(:media_object_2) { FactoryBot.create(:published_media_object, visibility: 'restricted') }
+
+        it "returns populated canvas for public item and blank canvas for restricted item" do
+          get :manifest, format: 'json', params: { id: playlist.id }, session: valid_session
+          parsed_response = JSON.parse(response.body)
+          expect(parsed_response['items'].length).to eq 2
+          expect(parsed_response['items'][0]['items'][0].keys).to include 'items'
+          expect(parsed_response['items'][1]['items'][0].keys).to_not include 'items'
         end
       end
     end

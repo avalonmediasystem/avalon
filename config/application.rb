@@ -41,14 +41,17 @@ module Avalon
     config.middleware.insert_before 0, Rack::Cors do
       allow do
         origins { |source| true }
+        resource '/avalon_marker/*', headers: :any, credentials: true, methods: [:get, :post, :put, :delete]
         resource '/media_objects/*/manifest*', headers: :any, methods: [:get]
         resource '/master_files/*/thumbnail', headers: :any, methods: [:get]
         resource '/master_files/*/transcript/*/*', headers: :any, methods: [:get]
         resource '/master_files/*/structure.json', headers: :any, methods: [:get, :post, :delete]
         resource '/master_files/*/waveform.json', headers: :any, methods: [:get]
         resource '/master_files/*/*.m3u8', headers: :any, credentials: true, methods: [:get, :head]
-        resource '/master_files/*/caption_manifest', headers: :any, methods: [:get]
+        resource '/master_files/*/caption_manifest/*', headers: :any, methods: [:get]
         resource '/master_files/*/captions', headers: :any, methods: [:get]
+        resource '/master_files/*/supplemental_files/*', headers: :any, methods: [:get]
+        resource '/playlists/*/manifest.json', headers: :any, credentials: true, methods: [:get]
         resource '/timelines/*/manifest.json', headers: :any, methods: [:get, :post]
       end
     end

@@ -21,66 +21,54 @@ Unless required by applicable law or agreed to in writing, software distributed
 
 <% @poster_url = request.base_url + @currentStreamInfo[:poster_image] unless @currentStreamInfo[:poster_image].nil? %>
 <% @page_type = @currentStreamInfo[:is_video] ? 'video' : 'audio' %>
-<% can_stream = lending_enabled?(@media_object) ? current_user && @media_object.current_checkout(current_user.id).present? : true %> 
+<% can_stream = lending_enabled?(@media_object) ? current_user && @media_object.current_checkout(current_user.id).present? : true %>
 
-<% f_start, f_end = parse_media_fragment params['t'] %>
+<% in_progress = show_progress?(@masterFiles) %>
 <div class="row">
-  <div class="col-sm-8" id="left_column">
-    <% if lending_enabled?(@media_object) && !can_stream %>
-      <%= render 'embed_checkout' %>
-    <% elsif @currentStream %>
-      <%= render partial: "modules/player/section", locals: {section: @currentStream, section_info: @currentStreamInfo, f_start: @f_start, f_end: @f_end} %>
-      <%= render file: '_track_scrubber.html.erb' if is_mejs_2? %>
-      <%= render file: '_add_to_playlist.html.erb' if current_user.present? && is_mejs_2? %>
-      <%# Partial view for MEJS4 Add To Playlist plugin %>
-      <%= render partial: 'mejs4_add_to_playlist' if current_user.present? && is_mejs_4? %>
-      <%= render 'workflow_progress' %>
-      <%= render partial: 'timeline' if current_ability.can? :create, Timeline %>
-      <%= render 'share' if will_partial_list_render? :share %>
-
-      <!-- Sections -->
-      <%= render partial: 'sections',
-          locals: { mediaobject: @media_object,
-                  sections: @masterFiles,
-                  activeStream: @currentStream } %>
-    <% end %>
+  <div class="col-sm-8">
+    <%= render 'workflow_progress' %>
   </div>
-  <div class="col-sm-4" id="right-column">
-    <% if lending_enabled?(@media_object) %>
-      <%= render 'destroy_checkout' %>
-    <% end %>
-    <div id="metadata_container" class="col-sm-12">
-      <section id="metadata"><%= render "metadata_display" %></section>
-    </div>
-
-    <% if can_stream && @currentStream %>
-      <% supplemental_files = @masterFiles.map { |mf| {"id" => mf.id, "transcripts" => mf.supplemental_files.select { |sf| sf.tags.include?('transcript')} } }.flatten(1) %>
-      <%= react_component("ReactIIIFTranscript", {base_url: request.protocol+request.host_with_port, transcripts: supplemental_files }) %>
-    <% end %>
+  <div class="<%= in_progress || !@currentStream ? 'col-sm-4' : 'col-sm-12' %>">
+    <%= react_component("Ramp",
+      {
+        base_url: request.protocol+request.host_with_port,
+        mo_id: @media_object.id,
+        master_files_count: @media_object.master_files.size,
+        title: { content: render('title') },
+        expand_structure: { content: render('expand_structure') }, 
+        admin_links: { canUpdate: (current_ability.can? :update, @media_object), content: render('administrative_links') },
+        share: { canShare: (will_partial_list_render? :share), content: lending_enabled?(@media_object) ? (render('share') if can_stream) : render('share') },
+        timeline: { canCreate: (current_ability.can? :create, Timeline), content: lending_enabled?(@media_object) ? (render('timeline') if can_stream) : render('timeline') },
+        thumbnail: { canCreate: (current_ability.can? :edit, @media_object), content: lending_enabled?(@media_object) ? (render('thumbnail') if can_stream) : render('thumbnail') },
+        playlist: { canCreate: (current_ability.can? :create, Playlist), content: lending_enabled?(@media_object) ? (render('playlist') if can_stream) : render('playlist') },
+        in_progress: in_progress,
+        cdl: { enabled: lending_enabled?(@media_object), can_stream: can_stream, embed: render('embed_checkout'), destroy: render('destroy_checkout') }
+      }
+    ) %>
   </div>
-
 </div>
 
 <% content_for :page_scripts do %>
-  <% if @currentStream.present? and @currentStream.derivatives.present? %>
-    <%= render partial: "mejs4_player_js", locals: {section: @currentStream, section_info: @currentStreamInfo} %>
-  <% end %>
-
   <script>
     // When viewing video on smaller devices scroll to page content to fully
     // display the video player
     $(document).ready(function () {
-      const isVideo = <%= @currentStreamInfo[:is_video] %>;
-      if(isVideo) {
-        const screenHeight = screen.height;
-        const playerHeight = document.getElementsByTagName('video')[0].style.height.replace(/[^-\d\.]/g, '');
-        if(screenHeight - playerHeight < 200) {
-          $('html, body').animate({
-              scrollTop: $('#user-util-collapse').offset().top
-          }, 1000);
+      let scrollInterval = setInterval(autoScroll, 500);
+
+      function autoScroll () {
+        const isVideo = <%= @currentStream ? @currentStreamInfo[:is_video] : false %>;
+        const player = document.getElementsByTagName('video');
+        if(isVideo && player?.length > 0) {
+          const screenHeight = screen.height;
+          const playerHeight = player[0].style.height.replace(/[^-\d\.]/g, '');
+          if(screenHeight - playerHeight < 200) {
+            $('html, body').animate({
+                scrollTop: $('#user-util-collapse').offset().top
+            }, 1000);
+          }
+          clearInterval(scrollInterval);
         }
       }
     });
-  </script>
-
+</script>
 <% end %>

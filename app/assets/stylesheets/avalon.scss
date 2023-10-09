@@ -1,12 +1,12 @@
-/* 
+/*
  * Copyright 2011-2023, The Trustees of Indiana University and Northwestern
  *   University.  Licensed under the Apache License, Version 2.0 (the "License");
  *   you may not use this file except in compliance with the License.
- * 
+ *
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed
  *   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
  *   CONDITIONS OF ANY KIND, either express or implied. See the License for the
@@ -801,6 +801,7 @@ h5.card-title {
 
 .twitter-typeahead {
   z-index: auto !important;
+  background-color: $white;
 }
 
 /**
@@ -923,6 +924,11 @@ h5.card-title {
       }
     }
 
+    .caption-form-label {
+      font-style: italic;
+      font-weight: bold;
+    }
+
     div.supplemental-file-data {
       height: 1.5rem;
 
@@ -944,8 +950,11 @@ h5.card-title {
       margin-top: 0.75rem;
 
       .visible-inline {
-        margin-left: 30px;
         display: none;
+
+        .icon-success, .icon-error {
+          font-size: 1.2rem;
+        }
       }
 
       .alert {
@@ -1191,9 +1200,9 @@ td {
 
 /*
   Override CSS for transcript component imported
-  from @samvera/iiif-react-media-player
+  from @samvera/ramp
 */
-.irmp--transcript_nav {
+.ramp--transcript_nav {
   padding: 10px 0 0 0;
 }
 

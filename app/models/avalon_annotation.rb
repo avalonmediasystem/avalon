@@ -58,7 +58,7 @@ class AvalonAnnotation < ActiveAnnotations::Annotation
 
   # Sets the class variable @master_file by finding the master referenced in the source uri
   def master_file
-    @master_file ||= MasterFile.find(CGI::unescape(self.source.split('/').last)) rescue nil if self.source
+    @master_file ||= SpeedyAF::Proxy::MasterFile.find(CGI::unescape(self.source.split('/').last)) if self.source
   end
 
   def master_file=(value)

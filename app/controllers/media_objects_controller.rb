@@ -1,11 +1,11 @@
 # Copyright 2011-2023, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
-# 
+#
 # You may obtain a copy of the License at
-# 
+#
 # http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software distributed
 #   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
 #   CONDITIONS OF ANY KIND, either express or implied. See the License for the
@@ -20,10 +20,12 @@ class MediaObjectsController < ApplicationController
   include Avalon::Workflow::WorkflowControllerBehavior
   include Avalon::Controller::ControllerBehavior
   include ConditionalPartials
+  include NoidValidator
   include SecurityHelper
 
   before_action :authenticate_user!, except: [:show, :set_session_quality, :show_stream_details, :manifest]
-  load_and_authorize_resource except: [:create, :destroy, :update_status, :set_session_quality, :tree, :deliver_content, :confirm_remove, :show_stream_details, :add_to_playlist_form, :add_to_playlist, :intercom_collections, :manifest, :move_preview]
+  before_action :load_resource, except: [:create, :destroy, :update_status, :set_session_quality, :tree, :deliver_content, :confirm_remove, :show_stream_details, :add_to_playlist_form, :add_to_playlist, :intercom_collections, :manifest, :move_preview, :edit, :update, :json_update]
+  load_and_authorize_resource except: [:create, :destroy, :update_status, :set_session_quality, :tree, :deliver_content, :confirm_remove, :show_stream_details, :add_to_playlist_form, :add_to_playlist, :intercom_collections, :manifest, :move_preview, :show_progress]
   authorize_resource only: [:create]
 
   before_action :inject_workflow_steps, only: [:edit, :update], unless: proc { request.format.json? }
@@ -107,7 +109,7 @@ class MediaObjectsController < ApplicationController
 
   # POST /media_objects/avalon:1/add_to_playlist_form
   def add_to_playlist_form
-    @media_object = MediaObject.find(params[:id])
+    @media_object = SpeedyAF::Proxy::MediaObject.find(params[:id])
     authorize! :read, @media_object
     respond_to do |format|
       format.html do
@@ -118,7 +120,7 @@ class MediaObjectsController < ApplicationController
 
   # POST /media_objects/avalon:1/add_to_playlist
   def add_to_playlist
-    @media_object = MediaObject.find(params[:id])
+    @media_object = SpeedyAF::Proxy::MediaObject.find(params[:id])
     authorize! :read, @media_object
     masterfile_id = params[:post][:masterfile_id]
     playlist_id = params[:post][:playlist_id]
@@ -130,7 +132,7 @@ class MediaObjectsController < ApplicationController
     # If a single masterfile_id wasn't in the request, then create playlist_items for all masterfiles
     masterfile_ids = masterfile_id.present? ? [masterfile_id] : @media_object.ordered_master_file_ids
     masterfile_ids.each do |mf_id|
-      mf = MasterFile.find(mf_id)
+      mf = SpeedyAF::Proxy::MasterFile.find(mf_id)
       if playlistitem_scope=='structure' && mf.has_structuralMetadata? && mf.structuralMetadata.xpath('//Span').present?
         #create individual items for spans within structure
         mf.structuralMetadata.xpath('//Span').each do |s|
@@ -180,7 +182,7 @@ class MediaObjectsController < ApplicationController
         render json: { errors: ["Collection not found for #{api_params[:collection_id]}"] }, status: 422
         return
       end
-      
+
       @media_object.collection = collection
     end
 
@@ -349,6 +351,7 @@ class MediaObjectsController < ApplicationController
   end
 
   def show_progress
+    authorize! :read, @media_object
     overall = { :success => 0, :error => 0 }
     encode_gids = master_file_presenters.collect { |mf| "gid://ActiveEncode/#{mf.encoder_class}/#{mf.workflow_id}" }
     result = Hash[
@@ -417,21 +420,25 @@ class MediaObjectsController < ApplicationController
     Array(params[:id]).each do |id|
       media_object = MediaObject.find(id)
       if cannot? :update, media_object
-        errors += ["#{media_object.title} (#{id}) (permission denied)."]
+        errors += ["#{media_object&.title} (#{id}) (permission denied)."]
       else
         begin
           case status
           when 'publish'
+            unless media_object.title.present? && media_object.date_issued.present?
+              errors += ["#{media_object&.title} (#{id}) (missing required fields)"]
+              next
+            end
             media_object.publish!(user_key)
             # additional save to set permalink
             media_object.save( validate: false )
             success_count += 1
           when 'unpublish'
             if can? :unpublish, media_object
-              media_object.publish!(nil)
+              media_object.publish!(nil, validate: false)
               success_count += 1
             else
-              errors += ["#{media_object.title} (#{id}) (permission denied)."]
+              errors += ["#{media_object&.title} (#{id}) (permission denied)."]
             end
           end
         rescue ActiveFedora::RecordInvalid => e
@@ -440,14 +447,14 @@ class MediaObjectsController < ApplicationController
       end
     end
     message = "#{success_count} #{'media object'.pluralize(success_count)} successfully #{status}ed." if success_count.positive?
-    message = "Unable to publish #{'item'.pluralize(errors.count)}: #{ errors.join('<br/> ') }" if errors.count > 0
+    message = "Unable to #{status} #{'item'.pluralize(errors.count)}: #{ errors.join('<br/> ') }" if errors.count > 0
     redirect_back(fallback_location: root_path, flash: {notice: message.html_safe})
   end
 
   # Sets the published status for the object. If no argument is given then
   # it will just toggle the state.
   def tree
-    @media_object = MediaObject.find(params[:id])
+    @media_object = SpeedyAF::Proxy::MediaObject.find(params[:id])
     authorize! :inspect, @media_object
 
     respond_to do |format|
@@ -465,7 +472,7 @@ class MediaObjectsController < ApplicationController
   end
 
   def manifest
-    @media_object = MediaObject.find(params[:id])
+    @media_object = SpeedyAF::Proxy::MediaObject.find(params[:id])
     authorize! :read, @media_object
 
     master_files = master_file_presenters
@@ -473,7 +480,7 @@ class MediaObjectsController < ApplicationController
       stream_info = secure_streams(mf.stream_details, @media_object.id)
       IiifCanvasPresenter.new(master_file: mf, stream_info: stream_info)
     end
-    presenter = IiifManifestPresenter.new(media_object: @media_object, master_files: canvas_presenters)
+    presenter = IiifManifestPresenter.new(media_object: @media_object, master_files: canvas_presenters, lending_enabled: lending_enabled?(@media_object))
 
     manifest = IIIFManifest::V3::ManifestFactory.new(presenter).to_h
     # TODO: implement thumbnail in iiif_manifest
@@ -526,22 +533,13 @@ class MediaObjectsController < ApplicationController
 
   protected
 
+  def load_resource
+    @media_object = SpeedyAF::Proxy::MediaObject.find(params[:id])
+  end
+
   def master_file_presenters
-    # NOTE: Defaults are set on returned SpeedyAF::Base objects if field isn't present in the solr doc.
-    # This is important otherwise speedy_af will reify from fedora when trying to access this field.
-    # When adding a new property to the master file model that will be used in the interface,
-    # add it to the default below to avoid reifying for master files lacking a value for the property.
-    SpeedyAF::Proxy::MasterFile.where("isPartOf_ssim:#{@media_object.id}",
-                                      order: -> { @media_object.indexed_master_file_ids },
-                                      defaults: {
-                                        permalink: nil,
-                                        title: nil,
-                                        encoder_classname: nil,
-                                        workflow_id: nil,
-                                        comment: [],
-                                        supplemental_files_json: nil
-                                      },
-                                      load_reflections: true)
+    # Assume that @media_object is a SpeedyAF::Proxy::MediaObject
+    @media_object.ordered_master_files
   end
 
   def load_master_files(mode = :rw)

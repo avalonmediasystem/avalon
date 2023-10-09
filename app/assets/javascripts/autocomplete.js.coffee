@@ -1,11 +1,11 @@
 # Copyright 2011-2023, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
-# 
+#
 # You may obtain a copy of the License at
-# 
+#
 # http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software distributed
 #   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
 #   CONDITIONS OF ANY KIND, either express or implied. See the License for the
@@ -19,7 +19,7 @@
     datumTokenizer: Bloodhound.tokenizers.whitespace('display')
     queryTokenizer: Bloodhound.tokenizers.whitespace
     remote:
-      url: "#{$('body').data('mountpoint')}autocomplete?q=%QUERY&t=#{$t.data('model')}"
+      url: "#{$('body').data('mountpoint')}autocomplete?q=%QUERY&t=#{$t.data('model')}&id=#{$t.data('media-object-id')}"
       wildcard: '%QUERY'
   )
   mySource.initialize()
@@ -36,7 +36,7 @@
     limit: 10
   ).on("typeahead:selected typeahead:autocompleted", (event, suggestion, dataset) ->
     target = $("##{$t.data('target')}")
-    target.val suggestion["id"]
+    target.val suggestion["id"] || suggestion["display"]
     $t.data('matched_val',suggestion["display"])
     return
   ).on("keypress", (e) ->
