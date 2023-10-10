@@ -78,6 +78,14 @@ describe IiifManifestPresenter do
     end
   end
 
+  context 'viewing_hint' do
+    subject { presenter.viewing_hint }
+
+    it 'includes auto-advance' do
+      expect(subject).to include 'auto-advance'
+    end
+  end
+
   describe '#sequence_rendering' do
     let(:media_object) { FactoryBot.build(:fully_searchable_media_object, supplemental_files_json: supplemental_files_json) }
     let(:supplemental_file) { FactoryBot.create(:supplemental_file) }
