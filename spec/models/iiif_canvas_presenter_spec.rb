@@ -97,23 +97,40 @@ describe IiifCanvasPresenter do
     end
 
     context 'with childless divs' do
-      let(:structure_xml) { '<?xml version="1.0"?><Item label="Test"><Div label="Div 1"><Div label="Div 2"><Div label="Div 3"/></Div><Span label="Span 1" begin="00:00:00.000" end="00:00:01.235"/></Div></Item>' }
+      context 'without spans' do
+        let(:structure_xml) { '<?xml version="1.0"?><Item label="Test"><Div label="Div 1"><Div label="Div 2"><Div label="Div 3"/></Div></Div></Item>' }
 
-      it 'generates a canvas reference in the root range' do
-        expect(subject.label.to_s).to eq '{"none"=>["Test"]}'
-        expect(subject.items.size).to eq 2
-        expect(subject.items.first).to be_a IiifCanvasPresenter
-        expect(subject.items.first.media_fragment).to eq "t=0,#{master_file.duration.to_f/1000}"
-        expect(subject.items.second.label.to_s).to eq '{"none"=>["Div 1"]}'
-        expect(subject.items.second.items.size).to eq 2
-        expect(subject.items.second.items.first.label.to_s).to eq '{"none"=>["Div 2"]}'
-        expect(subject.items.second.items.first.items.size).to eq 1
-        expect(subject.items.second.items.first.items.first.label.to_s).to eq '{"none"=>["Div 3"]}'
-        expect(subject.items.second.items.first.items.first.items.size).to eq 0
-        expect(subject.items.second.items.second.label.to_s).to eq '{"none"=>["Span 1"]}'
-        expect(subject.items.second.items.second.items.size).to eq 1
-        expect(subject.items.second.items.second.items.first).to be_a IiifCanvasPresenter
-        expect(subject.items.second.items.second.items.first.media_fragment).to eq 't=0.0,1.235'
+        it 'generates a canvas reference in the root range' do
+          expect(subject.label.to_s).to eq '{"none"=>["Test"]}'
+          expect(subject.items.size).to eq 2
+          expect(subject.items.first).to be_a IiifCanvasPresenter
+          expect(subject.items.first.media_fragment).to eq "t=0,#{master_file.duration.to_f/1000}"
+          expect(subject.items.second.label.to_s).to eq '{"none"=>["Div 1"]}'
+          expect(subject.items.second.items.size).to eq 1
+          expect(subject.items.second.items.first.label.to_s).to eq '{"none"=>["Div 2"]}'
+          expect(subject.items.second.items.first.items.size).to eq 1
+          expect(subject.items.second.items.first.items.first.label.to_s).to eq '{"none"=>["Div 3"]}'
+          expect(subject.items.second.items.first.items.first.items.size).to eq 0
+        end
+      end
+
+      context 'with spans' do
+        let(:structure_xml) { '<?xml version="1.0"?><Item label="Test"><Div label="Div 1"><Div label="Div 2"><Div label="Div 3"/></Div><Span label="Span 1" begin="00:00:00.000" end="00:00:01.235"/></Div></Item>' }
+
+        it 'does not generate a canvas reference in the root range' do
+          expect(subject.label.to_s).to eq '{"none"=>["Test"]}'
+          expect(subject.items.size).to eq 1
+          expect(subject.items.first.label.to_s).to eq '{"none"=>["Div 1"]}'
+          expect(subject.items.first.items.size).to eq 2
+          expect(subject.items.first.items.first.label.to_s).to eq '{"none"=>["Div 2"]}'
+          expect(subject.items.first.items.first.items.size).to eq 1
+          expect(subject.items.first.items.first.items.first.label.to_s).to eq '{"none"=>["Div 3"]}'
+          expect(subject.items.first.items.first.items.first.items.size).to eq 0
+          expect(subject.items.first.items.second.label.to_s).to eq '{"none"=>["Span 1"]}'
+          expect(subject.items.first.items.second.items.size).to eq 1
+          expect(subject.items.first.items.second.items.first).to be_a IiifCanvasPresenter
+          expect(subject.items.first.items.second.items.first.media_fragment).to eq 't=0.0,1.235'
+        end
       end
     end
   end

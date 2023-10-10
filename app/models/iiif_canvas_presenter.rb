@@ -130,7 +130,7 @@ class IiifCanvasPresenter
     def root_to_iiif_range(root_node)
       range = div_to_iiif_range(root_node)
 
-      if empty_descendants?(root_node)
+      if only_empty_descendants?(root_node)
         range.items.prepend(IiifCanvasPresenter.new(master_file: master_file, stream_info: stream_info, media_fragment: "t=0,#{stream_info[:duration]}"))
       end
 
@@ -162,8 +162,8 @@ class IiifCanvasPresenter
       )
     end
 
-    def empty_descendants?(node)
-      node.xpath('.//Div[not(node())]').present?
+    def only_empty_descendants?(node)
+      node.xpath('.//Span').empty?
     end
 
     FLOAT_PATTERN = Regexp.new(/^\d+([.]\d*)?$/).freeze
