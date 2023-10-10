@@ -77,6 +77,10 @@ class IiifManifestPresenter
     ]
   end
 
+  def viewing_hint
+    ["auto-advance"]
+  end
+
   def sequence_rendering
     supplemental_files_rendering(media_object)
   end
@@ -162,7 +166,7 @@ class IiifManifestPresenter
   def series_url(series)
     Rails.application.routes.url_helpers.blacklight_url({ "f[collection_ssim][]" => media_object.collection.name, "f[series_ssim][]" => series })
   end
-  
+
   def display_lending_period(media_object)
     return nil unless lending_enabled
     ActiveSupport::Duration.build(media_object.lending_period).to_day_hour_s
