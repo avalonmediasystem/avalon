@@ -1,10 +1,38 @@
+# Copyright 2011-2023, The Trustees of Indiana University and Northwestern
+#   University.  Licensed under the Apache License, Version 2.0 (the "License");
+#   you may not use this file except in compliance with the License.
+# 
+# You may obtain a copy of the License at
+# 
+# http://www.apache.org/licenses/LICENSE-2.0
+# 
+# Unless required by applicable law or agreed to in writing, software distributed
+#   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+#   CONDITIONS OF ANY KIND, either express or implied. See the License for the
+#   specific language governing permissions and limitations under the License.
+# ---  END LICENSE_HEADER BLOCK  ---
+
+# This script will enable support for the html5 form attribute
+# This should only be needed for IE but is currently applied wholesale
+# to all disjointed submit elements as is needed in some of the workflow steps
+
+$ ->
+  add_new_playlist_option()
 
 @add_new_playlist_option = () ->
   addnew = 'Add new playlist'
   select_element = $('#post_playlist_id')
+  select_options = $('#post_playlist_id > option')
   add_success = false
+  has_new_opt = false
 
-  select_element.prepend(new Option(addnew))
+  # Prepend 'Add new playlist' option only when not present
+  select_options.each ->
+    if @value == addnew
+      has_new_opt = true
+  
+  if !has_new_opt
+    select_element.prepend(new Option(addnew))
 
   getSearchTerm = () ->
     return $('span.select2-search--dropdown input').val()

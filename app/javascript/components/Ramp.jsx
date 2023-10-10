@@ -64,36 +64,40 @@ const Ramp = ({
                           { <div className="object-title" dangerouslySetInnerHTML={{ __html: title.content }} /> }
                         </div>
                           <div  className="ramp--rails-content">
-                            { timeline.canCreate && <div className="mr-1" dangerouslySetInnerHTML={{ __html: timeline.content }} /> }
-                            { playlist.canCreate && 
-                              <button className="btn btn-outline"
-                                id="addToPlaylistBtn"
-                                type="button"
-                                data-toggle="collapse"
-                                data-target="#addToPlaylistPanel"
-                                aria-expanded="false"
-                                aria-controls="addToPlaylistPanel"
-                                disabled={true}
-                              >
-                                Add to Playlist
-                              </button>
-                            }
-                            { share.canShare && 
-                              <button 
-                                className="btn btn-outline"
-                                type="button"
-                                data-toggle="collapse"
-                                data-target="#shareResourcePanel"
-                                aria-expanded="false"
-                                aria-controls="shareResourcePanel"
-                                id="shareBtn"
-                              >
-                                <i className="fa fa-share-alt"></i>
-                                  Share
-                              </button>
-                            }
-                            { admin_links.canUpdate && <div className="mr-1" dangerouslySetInnerHTML={{ __html: admin_links.content }} /> }
-                            { thumbnail.canCreate && <div className="mr-1" dangerouslySetInnerHTML={{ __html: thumbnail.content }} /> }
+                            <Col className="ramp-button-group-1">
+                              { timeline.canCreate && <div className="mr-1" dangerouslySetInnerHTML={{ __html: timeline.content }} /> }
+                              { playlist.canCreate && 
+                                <button className="btn btn-outline mr-1"
+                                  id="addToPlaylistBtn"
+                                  type="button"
+                                  data-toggle="collapse"
+                                  data-target="#addToPlaylistPanel"
+                                  aria-expanded="false"
+                                  aria-controls="addToPlaylistPanel"
+                                  disabled={true}
+                                >
+                                  Add to Playlist
+                                </button>
+                              }
+                              { share.canShare && 
+                                <button 
+                                  className="btn btn-outline"
+                                  type="button"
+                                  data-toggle="collapse"
+                                  data-target="#shareResourcePanel"
+                                  aria-expanded="false"
+                                  aria-controls="shareResourcePanel"
+                                  id="shareBtn"
+                                >
+                                  <i className="fa fa-share-alt"></i>
+                                    Share
+                                </button>
+                              }
+                            </Col>
+                            <Col className="ramp-button-group-2">
+                              { admin_links.canUpdate && <div className="mr-1" dangerouslySetInnerHTML={{ __html: admin_links.content }} /> }
+                              { thumbnail.canCreate && <div className="mr-1" dangerouslySetInnerHTML={{ __html: thumbnail.content }} /> }
+                            </Col>
                           </div>
                           <Row>
                             <Col md={12} lg={12} sm={12}>

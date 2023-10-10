@@ -17,14 +17,14 @@ Unless required by applicable law or agreed to in writing, software distributed
 
 <% @add_playlist_item_playlists = Playlist.where(user: current_user).sort_by(&:title) %>
 
-<div id="add_to_playlist">
+<div id="add_to_playlist_panel">
   <div class="accordion" id="add-to-playlist">
     <div id="add_to_playlist_alert" class="collapse" data-parent="#add-to-playlist">
       <button type="button" class="close" data-dismiss="alert">×</button>
       <p id="add_to_playlist_result_message"></p>
     </div>
     <div class="collapse show" id="add_to_playlist_form_group">
-      <form id="add_to_playlist_form" accept-charset="UTF-8" data-remote="true" data-title="<%= @media_object.title %>" data-moid="<%= @media_object.id %>">
+      <form id="add_to_playlist" accept-charset="UTF-8" data-title="<%= @media_object.title %>" data-moid="<%= @media_object.id %>">
         <div class="row">
           <div class="col">
             <h4 for="playlist">Add to Playlist</h4>
@@ -91,8 +91,7 @@ Unless required by applicable law or agreed to in writing, software distributed
           </div>
         </div>
         <button type="button" class="btn btn-outline" data-toggle="collapse" data-target="#addToPlaylistPanel">Close</button>
-        <input type="submit" form="add_to_playlist_form" name="commit" value="Add to Playlist" class="btn btn-primary"
-          id="addToPlaylistSave" />
+        <input type="submit" name="commit" value="Add to Playlist" class="btn btn-primary" id="addToPlaylistSave" />
       </form>
     </div>
   </div>
@@ -140,7 +139,9 @@ Unless required by applicable law or agreed to in writing, software distributed
 <% content_for :page_scripts do %>
   <script>
     $(document).ready(function() {
-      // Enable create timeline button after derivative is loaded
+      let mediaObjectId, streamId;
+      let listenersAdded = false;
+      // Enable add to playlist button after derivative is loaded
       let timeCheck = setInterval(enableAddToPlaylist, 500);
       function enableAddToPlaylist() {
         let player = document.getElementById('iiif-media-player');
@@ -149,16 +150,20 @@ Unless required by applicable law or agreed to in writing, software distributed
           player.player.on('loadedmetadata', () => {
             let addToPlaylistBtn = document.getElementById('addToPlaylistBtn');
             addToPlaylistBtn.disabled = false;
+            if(!listenersAdded) {
+              addListeners();
+            }
             clearInterval(timeCheck);
           });
         }
+      }
 
-        let mediaObjectId, streamId;
+      function addListeners() {
         $('#addToPlaylistPanel').on('show.bs.collapse', function (e) {
           $('#add_to_playlist_alert').collapse('hide');
           $('#add_to_playlist_form_group').collapse('show');
           
-          let playlistForm = $('#add_to_playlist_form')[0]
+          let playlistForm = $('#add_to_playlist')[0]
           let title = playlistForm.dataset.title;
           mediaObjectId = playlistForm.dataset.moid;
           let timelineScopes = getTimelineScopes(title);
@@ -170,10 +175,7 @@ Unless required by applicable law or agreed to in writing, software distributed
             start = currentPlayer.currentTime();
             end = currentPlayer.duration();
           }
-          let selectEl = $('#post_playlist_id');
-          if(selectEl) {
-            window.add_new_playlist_option();
-          }
+          window.add_new_playlist_option();
           if(scopes?.length > 0) {
             let trackInfo = scopes.filter(s => s.tag === 'current-track');
             if(trackInfo.length > 0) {
@@ -190,11 +192,11 @@ Unless required by applicable law or agreed to in writing, software distributed
           }
         });
 
-        $('#addToPlaylistSave').one('click', function (e) {
+        $('#addToPlaylistSave').on('click', function (e) {
           e.preventDefault();
           let playlistId = $('#post_playlist_id').val();
           let label, t, id;
-          if ($('#playlistitem_timeselection')[0].checked) {
+          if ($('#playlistitem_timeselection')[0].checked || $('#playlistitem_scope_track')[0].checked) {
             let pattern = /^(\d+:){0,2}\d+(\.\d+)?$/;
             let beginval = $('#playlist_item_start')[0].value;
             let endval = $('#playlist_item_end')[0].value;
@@ -211,8 +213,19 @@ Unless required by applicable law or agreed to in writing, software distributed
             addToPlaylist(playlistId, scope, '', mediaObjectId);
           } 
         });
+        listenersAdded = true;
       }
 
+      const event = new CustomEvent('canvasswitch');
+      function canvasIndexListener() {
+        let player = document.getElementById('iiif-media-player');
+        if(player) {
+          player.addEventListener("canvasswitch", (e) => {
+            $('#addToPlaylistPanel').collapse('hide');
+          });
+        }
+      }
+      setInterval(canvasIndexListener, 500);
     });
   </script>
 <% end %>
