@@ -124,7 +124,17 @@ class IiifCanvasPresenter
     end
 
     def structure_to_iiif_range
-      div_to_iiif_range(structure_ng_xml.root)
+      root_to_iiif_range(structure_ng_xml.root)
+    end
+
+    def root_to_iiif_range(root_node)
+      range = div_to_iiif_range(root_node)
+
+      if only_empty_descendants?(root_node)
+        range.items.prepend(IiifCanvasPresenter.new(master_file: master_file, stream_info: stream_info, media_fragment: "t=0,#{stream_info[:duration]}"))
+      end
+
+      return range
     end
 
     def div_to_iiif_range(div_node)
@@ -150,6 +160,10 @@ class IiifCanvasPresenter
           IiifCanvasPresenter.new(master_file: master_file, stream_info: stream_info, media_fragment: fragment)
         ]
       )
+    end
+
+    def only_empty_descendants?(node)
+      node.xpath('.//Span').empty?
     end
 
     FLOAT_PATTERN = Regexp.new(/^\d+([.]\d*)?$/).freeze
