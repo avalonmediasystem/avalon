@@ -18,82 +18,81 @@ Unless required by applicable law or agreed to in writing, software distributed
 <% @add_playlist_item_playlists = Playlist.where(user: current_user).sort_by(&:title) %>
 
 <div id="add_to_playlist_panel">
-  <div class="accordion" id="add-to-playlist">
-    <div id="add_to_playlist_alert" class="collapse" data-parent="#add-to-playlist">
-      <button type="button" class="close" data-dismiss="alert">×</button>
-      <p id="add_to_playlist_result_message"></p>
-    </div>
-    <div class="collapse show" id="add_to_playlist_form_group">
-      <form id="add_to_playlist" accept-charset="UTF-8" data-title="<%= @media_object.title %>" data-moid="<%= @media_object.id %>">
-        <div class="row">
-          <div class="col">
-            <h4 for="playlist">Add to Playlist</h4>
-          </div>
-          <div class="col">
-            <div class="form-group">
-              <%= collection_select(:post, :playlist_id, @add_playlist_item_playlists, :id, :title, {}, {class: "form-control form-model", style: 'width:100%;'}) %>
-            </div>
+  <div id="add_to_playlist_alert" class="alert">
+    <p id="add_to_playlist_result_message"></p>
+  </div>
+  <div id="add_to_playlist_form_group">
+    <form id="add_to_playlist" accept-charset="UTF-8" data-title="<%= @media_object.title %>" data-moid="<%= @media_object.id %>">
+      <div class="row">
+        <div class="col">
+          <h4 for="playlist">Add to Playlist</h4>
+        </div>
+        <div class="col">
+          <div class="form-group">
+            <%= collection_select(:post, :playlist_id, @add_playlist_item_playlists, :id, :title, {}, {class: "form-control form-model", style: 'width:100%;'}) %>
           </div>
         </div>
+      </div>
 
-        <div id="add-to-playlist-form-group">
-          <div class="form-check" onclick="collapseMoreDetails()">
-            <label class="form-check-label">
-              <input type="radio" name="post[playlistitem_scope]" id="playlistitem_scope_track">
-                Current Track (<span id="current-track-name">)
-            </label>
-          </div>
-          <div class="form-check" onclick="collapseMoreDetails()">
-            <label class="form-check-label">
-              <input type="radio" name="post[playlistitem_scope]" id="playlistitem_timeselection">
-              Time Selection
-              <input type="text" name="playlist_item_start" id="playlist_item_start" value="">
-                to 
-              <input type="text" name="playlist_item_end" id="playlist_item_end" value="">
-            </label>
-          </div>
-          <div class="form-check" onclick="collapseMultiItemCheck()">
-            <label class="form-check-label">
-              <input type="radio" name="post[playlistitem_scope]" id="playlistitem_scope_section">
-              Current Section (<span id="current-section-name">)
-            </label>
-          </div>
-          <div class="form-check" onclick="collapseMultiItemCheck()">
-            <label class="form-check-label">
-              <input type="radio" name="post[playlistitem_scope]" id="playlistitem_scope_item">
-              All Sections
-            </label>
-          </div>
-          <input type="hidden" name="post[masterfile_id]" id="playlistitem_masterfile_id" value="">
+      <div id="add-to-playlist-form-group" class="mb-4">
+        <div class="form-check" onclick="collapseMoreDetails()">
+          <label class="form-check-label">
+            <input type="radio" name="post[playlistitem_scope]" id="playlistitem_scope_track">
+              Current Track (
+                <span id="current-track-name">
+              )
+          </label>
         </div>
-        <div class="row" id="moreInfo">
-          <div class="col-12">
-            <div class="collapse m-3" id="multiItemCheck" data-parent="#moreInfo">
-              <div class="form-check">
-                <label class="form-check-label">
-                  <input type="checkbox" id="playlistitem_scope_structure">
-                  Create playlist items for each track/subsection
-                </label>
-              </div>
-            </div>
-          </div>
-          <div class="col-12">
-            <div class="collapse m-3" id="moreDetails" data-parent="#moreInfo">
-              <div class="form-group">
-                <label for="playlist_item_title">Title</label>
-                <input type="text" name="playlist_item_title" id="playlist_item_title" class="form-control form-model" required>
-              </div>
-              <div class="form-group">
-                <label for="playlist_item_description">Description</label>
-                <textarea name="playlist_item_description" id="playlist_item_description" class="form-control form-model"></textarea>
-              </div>
+        <div class="form-check" onclick="collapseMoreDetails()">
+          <label class="form-check-label">
+            <input type="radio" name="post[playlistitem_scope]" id="playlistitem_timeselection">
+            Time Selection
+            <input type="text" name="playlist_item_start" id="playlist_item_start" value="" aria-label="start-time">
+              to 
+            <input type="text" name="playlist_item_end" id="playlist_item_end" value="" aria-label="end-time">
+          </label>
+        </div>
+        <div class="form-check" onclick="collapseMultiItemCheck()">
+          <label class="form-check-label">
+            <input type="radio" name="post[playlistitem_scope]" id="playlistitem_scope_section">
+            Current Section (<span id="current-section-name">)
+          </label>
+        </div>
+        <div class="form-check" onclick="collapseMultiItemCheck()">
+          <label class="form-check-label">
+            <input type="radio" name="post[playlistitem_scope]" id="playlistitem_scope_item">
+            All Sections
+          </label>
+        </div>
+        <input type="hidden" name="post[masterfile_id]" id="playlistitem_masterfile_id" value="">
+      </div>
+      <div class="row" id="moreInfo">
+        <div class="col-12">
+          <div class="collapse mb-4" id="multiItemCheck" data-parent="#moreInfo">
+            <div class="form-check">
+              <label class="form-check-label">
+                <input type="checkbox" id="playlistitem_scope_structure">
+                Create playlist items for each track/subsection
+              </label>
             </div>
           </div>
         </div>
-        <button type="button" class="btn btn-outline" data-toggle="collapse" data-target="#addToPlaylistPanel">Close</button>
-        <input type="submit" name="commit" value="Add to Playlist" class="btn btn-primary" id="addToPlaylistSave" />
-      </form>
-    </div>
+        <div class="col-12">
+          <div class="collapse mb-4" id="moreDetails" data-parent="#moreInfo">
+            <div class="form-group">
+              <label for="playlist_item_title">Title</label>
+              <input type="text" name="playlist_item_title" id="playlist_item_title" class="form-control form-model" required>
+            </div>
+            <div class="form-group">
+              <label for="playlist_item_description">Description</label>
+              <textarea name="playlist_item_description" id="playlist_item_description" class="form-control form-model"></textarea>
+            </div>
+          </div>
+        </div>
+      </div>
+      <button type="button" class="btn btn-outline" data-toggle="collapse" data-target="#addToPlaylistPanel">Close</button>
+      <input type="submit" name="commit" value="Add to Playlist" class="btn btn-primary" id="addToPlaylistSave" />
+    </form>
   </div>
 </div>
 
@@ -155,14 +154,36 @@ Unless required by applicable law or agreed to in writing, software distributed
             }
             clearInterval(timeCheck);
           });
+          player.player.on('timeupdate', () => {
+            let starttimeInput = $('#playlist_item_start');
+            let endtimeInput = $('#playlist_item_end');
+            if(starttimeInput && endtimeInput) {
+               let duration = player.player.duration();
+              let currentStructureItem = $('li[class="ramp--structured-nav__list-item active"]');
+              
+              if(currentStructureItem.length > 0) {
+                let item = currentStructureItem[0].childNodes[1];
+                let times = item.hash.split('#t=').reverse()[0];
+                let begin = parseFloat(times.split(',')[0]) || 0;
+                let end = parseFloat(times.split(',')[1]) || duration;
+                starttimeInput.val(createTimestamp(begin, true));
+                endtimeInput.val(createTimestamp(end, true));
+                $('#playlist_item_title').val(item.text);
+              }
+            }
+          });
         }
       }
 
       function addListeners() {
         $('#addToPlaylistPanel').on('show.bs.collapse', function (e) {
-          $('#add_to_playlist_alert').collapse('hide');
-          $('#add_to_playlist_form_group').collapse('show');
-          
+          // Hide add to playlist alert on panel collapse
+          $('#add_to_playlist_alert').slideUp();
+          // Show add to playlist form on collapse
+          $('#add_to_playlist_form_group').slideDown();
+          // Hide share resource panel on add to playlist panel collapse
+          $('#shareResourcePanel').collapse('hide');
+
           let playlistForm = $('#add_to_playlist')[0]
           let title = playlistForm.dataset.title;
           mediaObjectId = playlistForm.dataset.moid;
@@ -175,6 +196,7 @@ Unless required by applicable law or agreed to in writing, software distributed
             start = currentPlayer.currentTime();
             end = currentPlayer.duration();
           }
+          // Add 'Add new playlist' option to dropdown
           window.add_new_playlist_option();
           if(scopes?.length > 0) {
             let trackInfo = scopes.filter(s => s.tag === 'current-track');
@@ -215,17 +237,6 @@ Unless required by applicable law or agreed to in writing, software distributed
         });
         listenersAdded = true;
       }
-
-      const event = new CustomEvent('canvasswitch');
-      function canvasIndexListener() {
-        let player = document.getElementById('iiif-media-player');
-        if(player) {
-          player.addEventListener("canvasswitch", (e) => {
-            $('#addToPlaylistPanel').collapse('hide');
-          });
-        }
-      }
-      setInterval(canvasIndexListener, 500);
     });
   </script>
 <% end %>

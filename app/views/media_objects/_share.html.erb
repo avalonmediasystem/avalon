@@ -54,7 +54,12 @@ Unless required by applicable law or agreed to in writing, software distributed
         });
 
         player.addEventListener("canvasswitch", (e) => {
-          updateShareLinks(e);
+          canvasSwitch(e);
+        });
+
+        // Hide add to playlist panel when share resource panel is collapsed
+        $('#shareResourcePanel').on('show.bs.collapse', function (e) {
+          $('#addToPlaylistPanel').collapse('hide');
         });
       }
       if(!$('.share-tabs li').first().hasClass('active')) {

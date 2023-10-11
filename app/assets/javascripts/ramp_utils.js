@@ -26,7 +26,6 @@ function getTimelineScopes(title) {
   let currentPlayer = document.getElementById('iiif-media-player');
   let duration = currentPlayer.player.duration();
   let currentStructureItem = $('li[class="ramp--structured-nav__list-item active"]');
-  
   let item = currentStructureItem[0].childNodes[1]
   let label = item.text;
   let times = item.hash.split('#t=').reverse()[0];
@@ -98,18 +97,25 @@ function updateShareLinks (e) {
   $('#embed-part').val(embedCode);
 }
 
-var collapseMultiItemCheck = function () {
+/** Collapse multi item check for creating a playlist item for each structure item of
+ * the selected scope
+ */
+function collapseMultiItemCheck () {
   $('#multiItemCheck').collapse('show');
   $('#moreDetails').collapse('hide');
 }
 
-var collapseMoreDetails = function() {
+/** Collapse title and description forms */
+function collapseMoreDetails() {
   $('#moreDetails').collapse('show');
   $('#multiItemCheck').collapse('hide');
   let currentTrackName = $('#current-track-name').text();
   $('#playlist_item_title').val(currentTrackName);
 }
 
+/** AJAX request for add to playlist for submission for playlist item for 
+ * a selected clip
+ */
 function addPlaylistItem (playlistId, masterfileId) {
   $.ajax({
     url: '/playlists/' + playlistId + '/items',
@@ -122,41 +128,19 @@ function addPlaylistItem (playlistId, masterfileId) {
         start_time: $('#playlist_item_start').val(),
         end_time: $('#playlist_item_end').val()
       }
+    },
+    success: function(res) {
+      handleAddSuccess(res);
+    },
+    error: function(err) {
+      handleAddError(err)
     }
-  })
-  .done((res) => handleAddSuccess(res))
-  .fail((err) => handleAddError(err));
+  });
 }
 
-function handleAddSuccess(response) {
-  let alertEl = $('#add_to_playlist_alert');
-
-  alertEl.removeClass('alert-danger');
-  alertEl.addClass('alert-success');
-  alertEl.find('.add_to_playlist_result_message').html(response.message);
-
-  $('#add_to_playlist_form_group').collapse('hide');
-  alertEl.collapse('show');
-  resetAddToPlaylistForm();
-}
-
-function handleAddError(error) {
-  let alertEl = $('#add_to_playlist_alert');
-  let message = error.statusText || 'There was an error adding to playlist';
-
-  if (error.responseJSON && error.responseJSON.message) {
-    message = error.responseJSON.message.join('<br/>');
-  }
-
-  alertEl.removeClass('alert-success');
-  alertEl.addClass('alert-danger add_to_playlist_alert_error');
-  alertEl.find('.add_to_playlist_result_message').html('ERROR: ' + message);
-  
-  $('#add_to_playlist_form_group').collapse('hide');
-  alertEl.collapse('show');
-  resetAddToPlaylistForm();
-}
-
+/** AJAX request for add to playlist for submission for playlist items for 
+ * section(s)
+ */
 function addToPlaylist(playlistId, scope, masterfileId, moId) {
   $.ajax({
     url: '/media_objects/' + moId + '/add_to_playlist',
@@ -167,16 +151,60 @@ function addToPlaylist(playlistId, scope, masterfileId, moId) {
         playlist_id: playlistId,
         playlistitem_scope: scope
       }
+    },
+    success: function(res) {
+      handleAddSuccess(res);
+    },
+    error: function(err) {
+      handleAddError(err)
     }
-  })
-  .done((res) => handleAddSuccess(res))
-  .fail((err) => handleAddError(err));
+  });
 }
 
+/** Show success message for add to playlist */
+function handleAddSuccess(response) {
+  let alertEl = $('#add_to_playlist_alert');
+
+  alertEl.removeClass('alert-danger');
+  alertEl.addClass('alert-success');
+  alertEl.find('#add_to_playlist_result_message').html(response.message);
+
+  alertEl.slideDown();
+  $('#add_to_playlist_form_group').slideUp();
+  resetAddToPlaylistForm();
+}
+
+/** Show error message for add to playlist */
+function handleAddError(error) {
+  let alertEl = $('#add_to_playlist_alert');
+  let message = error.statusText || 'There was an error adding to playlist';
+
+  if (error.responseJSON && error.responseJSON.message) {
+    message = error.responseJSON.message.join('<br/>');
+  }
+
+  alertEl.removeClass('alert-success');
+  alertEl.addClass('alert-danger add_to_playlist_alert_error');
+  alertEl.find('#add_to_playlist_result_message').html('ERROR: ' + message);
+
+  alertEl.slideDown();
+  $('#add_to_playlist_form_group').slideUp();
+  resetAddToPlaylistForm();
+}
+
+/** Reset add to playlist form */
 function resetAddToPlaylistForm() {
   $('#playlist_item_start')[0].value = '';
   $('#playlist_item_end')[0].value = '';
   $('#playlist_item_description').value = '';
   $('#playlist_item_title').value = '';
   $('input[name="post[playlistitem_scope]"]').prop('checked', false);
+  $('#moreDetails').collapse('hide');
+  $('#multiItemCheck').collapse('hide');
+}
+
+/** Update UI when canvas is switched */
+function canvasSwitch(e) {
+  $('#addToPlaylistPanel').collapse('hide');
+  updateShareLinks(e);
 }

@@ -160,3 +160,14 @@
 .icn-expand-all {
   width: 20px;
 }
+
+#add_to_playlist_alert {
+  a {
+    font-weight: bold;
+    text-decoration: underline;
+  }
+
+  p {
+    margin: 0;
+  }
+}
