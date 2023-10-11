@@ -30,7 +30,7 @@ class IiifManifestPresenter
 
   def file_set_presenters
     # Only return master files that have derivatives to avoid oddities in the manifest and failures in iiif_manifest
-    master_files.select { |mf| mf.derivative_ids.size > 0 }
+    master_files
   end
 
   def work_presenters
