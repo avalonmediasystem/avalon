@@ -138,17 +138,35 @@ describe IiifCanvasPresenter do
   describe '#placeholder_content' do
     subject { presenter.placeholder_content }
 
-    it 'has format' do
-      expect(subject.format).to eq "image/jpeg"
+    context 'when master file has derivatives' do
+      it 'has format' do
+        expect(subject.format).to eq "image/jpeg"
+      end
+
+      it 'has type' do
+        expect(subject.type).to eq "Image"
+      end
+
+      it 'has height and width' do
+        expect(subject.width).to eq 1280
+        expect(subject.height).to eq 720
+      end
     end
 
-    it 'has type' do
-      expect(subject.type).to eq "Image"
-    end
+    context 'when master file does not have derivatives' do
+      let(:master_file) { FactoryBot.build(:master_file, media_object: media_object) }
 
-    it 'has height and width' do
-      expect(subject.width).to eq 1280
-      expect(subject.height).to eq 720
+      it 'has format' do
+        expect(subject.format).to eq "text/plain"
+      end
+
+      it 'has type' do
+        expect(subject.type).to eq "Text"
+      end
+
+      it 'has label' do
+        expect(subject.label).to eq I18n.t('errors.missing_derivatives_error') % [Settings.email.support, Settings.email.support]
+      end
     end
   end
 

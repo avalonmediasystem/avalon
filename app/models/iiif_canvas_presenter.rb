@@ -36,6 +36,7 @@ class IiifCanvasPresenter
 
   # @return [IIIFManifest::V3::DisplayContent] the display content required by the manifest builder.
   def display_content
+    return if master_file.derivative_ids.empty?
     master_file.is_video? ? video_content : audio_content
   end
 
@@ -59,12 +60,20 @@ class IiifCanvasPresenter
   end
 
   def placeholder_content
-    # height and width from /models/master_file/extract_still method
-    IIIFManifest::V3::DisplayContent.new( @master_file.poster_master_file_url(@master_file.id),
-                                          width: 1280,
-                                          height: 720,
-                                          type: 'Image',
-                                          format: 'image/jpeg')
+    if @master_file.derivative_ids.size > 0
+      # height and width from /models/master_file/extract_still method
+      IIIFManifest::V3::DisplayContent.new( @master_file.poster_master_file_url(@master_file.id),
+                                            width: 1280,
+                                            height: 720,
+                                            type: 'Image',
+                                            format: 'image/jpeg')
+    else
+      support_email = Settings.email.support
+      IIIFManifest::V3::DisplayContent.new(nil,
+                                           label: I18n.t('errors.missing_derivatives_error') % [support_email, support_email],
+                                           type: 'Text',
+                                           format: 'text/plain')
+    end
   end
 
   private

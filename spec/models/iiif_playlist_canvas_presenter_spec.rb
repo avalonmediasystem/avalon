@@ -188,7 +188,7 @@ describe IiifPlaylistCanvasPresenter do
         expect(subject).to be_present
         expect(subject.format).to eq "text/plain"
         expect(subject.type).to eq "Text"
-        expect(subject.label).to eq "You do not have permission to playback this item."
+        expect(subject.label).to eq I18n.t('playlist.restrictedText')
       end
     end
 
@@ -200,7 +200,18 @@ describe IiifPlaylistCanvasPresenter do
         expect(subject).to be_present
         expect(subject.format).to eq "text/plain"
         expect(subject.type).to eq "Text"
-        expect(subject.label).to eq "The source for this playlist item has been deleted."
+        expect(subject.label).to eq I18n.t('playlist.deletedText')
+      end
+    end
+
+    context 'when an item has no derivatives' do
+      let(:master_file) { FactoryBot.build(:master_file, media_object: media_object) }
+
+      it 'generates placeholder canvas' do
+        expect(subject).to be_present
+        expect(subject.format).to eq "text/plain"
+        expect(subject.type).to eq "Text"
+        expect(subject.label).to eq I18n.t('errors.missing_derivatives_error') % [Settings.email.support, Settings.email.support]
       end
     end
   end

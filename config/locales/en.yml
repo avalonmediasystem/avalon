@@ -16,6 +16,9 @@ en:
       receiving this message, please contact us at <a href="mailto:%s">%s</a>.
     general_auth_error: You are not authorized to access this content.
     general_500_error: There was an error with this request.
+    missing_derivatives_error: |
+      This item is unable to be played because of missing streaming derivatives.
+      Please contact support to report this error: <a href="mailto:%s">%s</a>.
     controlled_vocabulary_error: |
       %s Please contact support to report this error: <a href="mailto:%s">%s</a>.
     messages:
@@ -232,6 +235,9 @@ en:
       action: "Save Changes"
     tags:
       label: "Tags"
+
+    restrictedText: "You do not have permission to playback this item."
+    deletedText: "The source for this playlist item has been deleted."
 
   timeline:
     ago: "%{time} ago"
