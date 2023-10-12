@@ -58,7 +58,9 @@ $(document).ready(function() {
     if(player) {
       player.player.on('loadedmetadata', () => {
         let timelineBtn = document.getElementById('timeline-btn');
-        timelineBtn.disabled = false;
+        if(timelineBtn) {
+          timelineBtn.disabled = false;
+        }
         clearInterval(timeCheck);
       });
     }

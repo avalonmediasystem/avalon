@@ -54,7 +54,9 @@ Unless required by applicable law or agreed to in writing, software distributed
       if(player) {
         player.player.on('loadedmetadata', () => {
           let thumbnailBtn = document.getElementById('create-thumbnail-btn');
-          thumbnailBtn.disabled = false;
+          if(thumbnailBtn) {
+            thumbnailBtn.disabled = false;
+          }
           clearInterval(timeCheck);
         });
       }
