@@ -72,12 +72,18 @@ class IiifPlaylistCanvasPresenter
   def placeholder_content
     if cannot_read_item
       IIIFManifest::V3::DisplayContent.new(nil,
-                                           label: 'You do not have permission to playback this item.',
+                                           label: I18n.t('playlist.restrictedText'),
                                            type: 'Text',
                                            format: 'text/plain')
     elsif master_file.nil?
       IIIFManifest::V3::DisplayContent.new(nil,
-                                           label: 'The source for this playlist item has been deleted.',
+                                           label: I18n.t('playlist.deletedText'),
+                                           type: 'Text',
+                                           format: 'text/plain')
+    elsif master_file.derivative_ids.empty?
+      support_email = Settings.email.support
+      IIIFManifest::V3::DisplayContent.new(nil,
+                                           label: I18n.t('errors.missing_derivatives_error') % [support_email, support_email],
                                            type: 'Text',
                                            format: 'text/plain')
     end
@@ -134,7 +140,7 @@ class IiifPlaylistCanvasPresenter
       IiifManifestRange.new(
         label: { "none" => [label] },
         items: [
-          IiifPlaylistCanvasPresenter.new(playlist_item: playlist_item, stream_info: stream_info, media_fragment: "t=0,#{stream_info[:duration]}")
+          IiifPlaylistCanvasPresenter.new(playlist_item: playlist_item, stream_info: stream_info, media_fragment: fragment_identifier)
         ]
       )
     end

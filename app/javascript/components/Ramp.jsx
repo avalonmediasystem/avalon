@@ -21,7 +21,7 @@ import {
   MediaPlayer,
   StructuredNavigation,
   MetadataDisplay,
-  SupplmentalFiles
+  SupplementalFiles
 } from "@samvera/ramp";
 import 'video.js/dist/video-js.css';
 import "@samvera/ramp/dist/ramp.css";
@@ -51,7 +51,7 @@ const Ramp = ({
 
   return (
     <IIIFPlayer manifestUrl={manifestUrl}>
-      <Row>
+      <Row className="ramp--all-components">
         {!in_progress &&
           <Col sm={8}>
             { (cdl.enabled && !cdl.can_stream)
@@ -137,7 +137,7 @@ const Ramp = ({
               </Tab>
             }
             <Tab eventKey="files" title="Files">
-              <SupplmentalFiles showHeading={false} />
+              <SupplementalFiles showHeading={false} />
             </Tab>
           </Tabs>
         </Col>

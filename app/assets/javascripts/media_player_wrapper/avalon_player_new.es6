@@ -618,7 +618,7 @@ class MEJSPlayer {
     let jumpInterval = 5;
     let startVolume = 1.0;
     let startLanguage = '';
-    if (!this.localStorage) {
+    if (this.localStorage) {
       startVolume = this.localStorage.getItem('startVolume') || 1.0;
       startLanguage = this.localStorage.getItem('captions') || '';
       // Set default quality value in localStorage
