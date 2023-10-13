@@ -37,3 +37,8 @@ button.close {
     text-decoration: none;
   }
 }
+
+.add-to-playlist-form-buttons {
+  display: flex;
+  justify-content: flex-end;
+}

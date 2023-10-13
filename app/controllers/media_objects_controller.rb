@@ -24,8 +24,8 @@ class MediaObjectsController < ApplicationController
   include SecurityHelper
 
   before_action :authenticate_user!, except: [:show, :set_session_quality, :show_stream_details, :manifest]
-  before_action :load_resource, except: [:create, :destroy, :update_status, :set_session_quality, :tree, :deliver_content, :confirm_remove, :show_stream_details, :add_to_playlist_form, :add_to_playlist, :intercom_collections, :manifest, :move_preview, :edit, :update, :json_update]
-  load_and_authorize_resource except: [:create, :destroy, :update_status, :set_session_quality, :tree, :deliver_content, :confirm_remove, :show_stream_details, :add_to_playlist_form, :add_to_playlist, :intercom_collections, :manifest, :move_preview, :show_progress]
+  before_action :load_resource, except: [:create, :destroy, :update_status, :set_session_quality, :tree, :deliver_content, :confirm_remove, :show_stream_details, :add_to_playlist, :intercom_collections, :manifest, :move_preview, :edit, :update, :json_update]
+  load_and_authorize_resource except: [:create, :destroy, :update_status, :set_session_quality, :tree, :deliver_content, :confirm_remove, :show_stream_details, :add_to_playlist, :intercom_collections, :manifest, :move_preview, :show_progress]
   authorize_resource only: [:create]
 
   before_action :inject_workflow_steps, only: [:edit, :update], unless: proc { request.format.json? }
@@ -105,17 +105,6 @@ class MediaObjectsController < ApplicationController
     @media_object.save(:validate => false)
 
     redirect_to edit_media_object_path(@media_object)
-  end
-
-  # POST /media_objects/avalon:1/add_to_playlist_form
-  def add_to_playlist_form
-    @media_object = SpeedyAF::Proxy::MediaObject.find(params[:id])
-    authorize! :read, @media_object
-    respond_to do |format|
-      format.html do
-        render partial: 'add_to_playlist_form', locals: { scope: params[:scope], masterfile_id: params[:masterfile_id] }
-      end
-    end
   end
 
   # POST /media_objects/avalon:1/add_to_playlist

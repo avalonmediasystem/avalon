@@ -32,7 +32,7 @@ Unless required by applicable law or agreed to in writing, software distributed
     const event = new CustomEvent('canvasswitch', { detail: { lti_share_link: '', link_back_url: '', embed_code: '' } })
     function canvasIndexListener() {
       let player = document.getElementById('iiif-media-player');
-      if (player) {
+      if (player && player.player != undefined) {
         player.player.on("loadedmetadata", () => {
           if (player.dataset.canvasindex != canvasIndex) {
             canvasIndex = parseInt(player.dataset.canvasindex);
@@ -54,7 +54,7 @@ Unless required by applicable law or agreed to in writing, software distributed
         });
 
         player.addEventListener("canvasswitch", (e) => {
-          canvasSwitch(e);
+          updateShareLinks(e);
         });
 
         // Hide add to playlist panel when share resource panel is collapsed

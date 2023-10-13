@@ -19,6 +19,7 @@ Unless required by applicable law or agreed to in writing, software distributed
 
 <div id="add_to_playlist_panel">
   <div id="add_to_playlist_alert" class="alert">
+    <button type="button" class="close" onclick="closeAlert()">&times;</button>
     <p id="add_to_playlist_result_message"></p>
   </div>
   <div id="add_to_playlist_form_group">
@@ -88,8 +89,8 @@ Unless required by applicable law or agreed to in writing, software distributed
             </div>
           </div>
         </div>
-        <div class="col offset-md-10">
-          <input type="submit" name="commit" value="Add" class="btn btn-primary" id="addToPlaylistSave" />
+        <div class="add-to-playlist-form-buttons">
+          <input type="submit" name="commit" value="Add" class="btn btn-primary mr-2" id="addToPlaylistSave" />
           <button type="button" class="btn btn-outline" data-toggle="collapse" data-target="#addToPlaylistPanel">Cancel</button>
         </div>
       </form>
@@ -142,61 +143,66 @@ Unless required by applicable law or agreed to in writing, software distributed
 <% content_for :page_scripts do %>
   <script>
     $(document).ready(function() {
-      let mediaObjectId, streamId;
+      let mediaObjectId, streamId, mediaObjectTitle;
       let listenersAdded = false;
       // Enable add to playlist button after derivative is loaded
-      let timeCheck = setInterval(enableAddToPlaylist, 500);
-      function enableAddToPlaylist() {
+      let timeCheck = setInterval(initAddToPlaylist, 500);
+      function initAddToPlaylist() {
         let player = document.getElementById('iiif-media-player');
         let scopes = [];
         if(player) {
-          player.player.on('loadedmetadata', () => {
-            let addToPlaylistBtn = document.getElementById('addToPlaylistBtn');
-            if(addToPlaylistBtn) {
-              addToPlaylistBtn.disabled = false;
-            }
-            if(!listenersAdded) {
-              addListeners();
-            }
+          addPlayerEventListeners(player.player, () => {
             clearInterval(timeCheck);
           });
-          player.player.on('timeupdate', () => {
-            let starttimeInput = $('#playlist_item_start');
-            let endtimeInput = $('#playlist_item_end');
-            if(starttimeInput && endtimeInput) {
-               let duration = player.player.duration();
-              let currentStructureItem = $('li[class="ramp--structured-nav__list-item active"]');
-              
-              if(currentStructureItem.length > 0) {
-                let item = currentStructureItem[0].childNodes[1];
-                let times = item.hash.split('#t=').reverse()[0];
-                let begin = parseFloat(times.split(',')[0]) || 0;
-                let end = parseFloat(times.split(',')[1]) || duration;
-                starttimeInput.val(createTimestamp(begin, true));
-                endtimeInput.val(createTimestamp(end, true));
-                $('#playlist_item_title').val(item.text);
-              }
-            }
-          });
+        }
+      }
+
+      function addPlayerEventListeners(player) {
+        player.on('loadedmetadata', () => {
+          enableAddToPlaylist();
+        });
+        player.on('timeupdate', () => {
+          if(getActiveItem() != undefined) {
+            let { label, times, streamId } = getActiveItem();
+            $('#playlist_item_start').val(createTimestamp(times.begin, true));
+            $('#playlist_item_end').val(createTimestamp(times.end, true));
+            $('#playlist_item_title').val(`${mediaObjectTitle} - ${label}`);
+            $('#current-track-name').text(`${mediaObjectTitle} - ${label}`);
+          }
+        });
+        player.on('dispose', () => {
+          $('#addToPlaylistPanel').collapse('hide');
+          resetAddToPlaylistForm();
+          addToPlaylistBtn.disabled = true;
+        });
+      }
+
+      function enableAddToPlaylist() {
+        let addToPlaylistBtn = document.getElementById('addToPlaylistBtn');
+        if(addToPlaylistBtn) {
+          addToPlaylistBtn.disabled = false;
+        }
+        if(!listenersAdded) {
+          addListeners();
         }
       }
 
       function addListeners() {
         $('#addToPlaylistPanel').on('show.bs.collapse', function (e) {
-          // Hide add to playlist alert on panel collapse
-          $('#add_to_playlist_alert').slideUp();
-          // Show add to playlist form on collapse
-          $('#add_to_playlist_form_group').slideDown();
           // Hide share resource panel on add to playlist panel collapse
           $('#shareResourcePanel').collapse('hide');
+          // Hide add to playlist alert on panel collapse
+          $('#add_to_playlist_alert').slideUp(100);
+          // Show add to playlist form on collapse and reset initially
+          $('#add_to_playlist_form_group').slideDown();
 
           let playlistForm = $('#add_to_playlist')[0];
           if(!playlistForm) {
             return;
           }
-          let title = playlistForm.dataset.title;
+          mediaObjectTitle = playlistForm.dataset.title;
           mediaObjectId = playlistForm.dataset.moid;
-          let timelineScopes = getTimelineScopes(title);
+          let timelineScopes = getTimelineScopes(mediaObjectTitle);
           scopes = timelineScopes.scopes;
           streamId = timelineScopes.streamId;
           let currentPlayer = document.getElementById('iiif-media-player').player;
@@ -211,7 +217,8 @@ Unless required by applicable law or agreed to in writing, software distributed
             let trackInfo = scopes.filter(s => s.tag === 'current-track');
             if(trackInfo.length > 0) {
               let currentTrack = trackInfo[0];
-              $('#current-track-name').text(currentTrack.label || streamId);
+              let trackName = `${mediaObjectTitle} - ${currentTrack.label || streamId}`
+              $('#current-track-name').text(trackName);
               start = currentTrack.times.begin;
               end = currentTrack.times.end;
             }
@@ -219,7 +226,7 @@ Unless required by applicable law or agreed to in writing, software distributed
             $('#playlist_item_end').val(createTimestamp(end, true))
 
             let sectionInfo = scopes[0];
-            $('#current-section-name').text(sectionInfo.label || streamId)
+            $('#current-section-name').text(sectionInfo.label || mediaObjectId);
           }
         });
 

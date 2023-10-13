@@ -123,7 +123,6 @@ Rails.application.routes.draw do
       get 'section/:content/embed', :to => redirect('/master_files/%{content}/embed')
       get 'tree', :action => :tree, :as => :tree
       get :confirm_remove
-      get :add_to_playlist_form
       post :add_to_playlist
       patch :intercom_push
       get :manifest

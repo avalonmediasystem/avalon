@@ -23,19 +23,14 @@
 function getTimelineScopes(title) {
   let scopes = new Array();
   let trackCount = 1;
-  let currentPlayer = document.getElementById('iiif-media-player');
-  let duration = currentPlayer.player.duration();
   let currentStructureItem = $('li[class="ramp--structured-nav__list-item active"]');
-  let item = currentStructureItem[0].childNodes[1]
-  let label = item.text;
-  let times = item.hash.split('#t=').reverse()[0];
-  let begin = parseFloat(times.split(',')[0]) || 0;
-  let end = parseFloat(times.split(',')[1]) || duration;
-  let streamId = item.pathname.split('/').reverse()[0];
+  let activeItem = getActiveItem();
+  let streamId = activeItem.streamId;
+
   scopes.push({
-    label: label,
+    label: activeItem.label,
     tracks: trackCount,
-    times: {begin, end },
+    times: activeItem.times,
     tag: 'current-track',
   });
 
@@ -44,10 +39,13 @@ function getTimelineScopes(title) {
     let next = parent.closest('ul').closest('li');
     let tracks = parent.find('li a');
     trackCount = tracks.length;
-    begin = parseFloat(tracks[0].hash.split('#t=').reverse()[0].split(',')[0]) || 0;
-    end = parseFloat(tracks[trackCount - 1].hash.split('#t=').reverse()[0].split(',')[1]) || '';
+    let begin = parseFloat(tracks[0].hash.split('#t=').reverse()[0].split(',')[0]) || 0;
+    let end = parseFloat(tracks[trackCount - 1].hash.split('#t=').reverse()[0].split(',')[1]) || '';
     streamId = tracks[0].pathname.split('/').reverse()[0];
-    label = parent[0].childNodes[0].textContent;
+    let label = cleanLabel(
+      parent[0].childNodes[0].textContent, 
+      parent.find('.ramp--structured-nav__section-duration')
+    );
     scopes.push({
       label: next.length == 0 ? `${title} - ${label}` : label,
       tracks: trackCount,
@@ -58,6 +56,28 @@ function getTimelineScopes(title) {
   return { scopes: scopes.reverse(), streamId };
 }
 
+/**
+ * Clean label text from structured navigation
+ * @param {String} label full label text of active item
+ * @param {Object} timestamp HTML span element with duration for section items
+ * @returns {String} label without index numbers and duration information
+ */
+function cleanLabel(label, timestamp) {
+  let labelWoIndex = label.replace(/^[0-9]+./, '');
+  if(timestamp?.length > 0) {
+    let time = timestamp[0].textContent;
+    return labelWoIndex.replace(time, '');
+  } else {
+    return labelWoIndex.split(' (')[0];
+  }
+}
+
+/**
+ * Parse time in seconds to hh:mm:ss.ms format
+ * @param {Number} secTime time in seconds
+ * @param {Boolean} showHrs flag indicating for showing hours
+ * @returns 
+ */
 function createTimestamp(secTime, showHrs) {
   let hours = Math.floor(secTime / 3600);
   let minutes = Math.floor((secTime % 3600) / 60);
@@ -199,12 +219,32 @@ function resetAddToPlaylistForm() {
   $('#playlist_item_description').value = '';
   $('#playlist_item_title').value = '';
   $('input[name="post[playlistitem_scope]"]').prop('checked', false);
+  $('#playlistitem_scope_structure').prop('checked', false);
   $('#moreDetails').collapse('hide');
   $('#multiItemCheck').collapse('hide');
 }
 
-/** Update UI when canvas is switched */
-function canvasSwitch(e) {
-  $('#addToPlaylistPanel').collapse('hide');
-  updateShareLinks(e);
+/** Reset add to playlist panel when alert is closed */
+function closeAlert() {
+  $('#add_to_playlist_alert').slideUp();
+  $('#add_to_playlist_form_group').slideDown();
+}
+
+/** Get the current active structure item from DOM */
+function getActiveItem() {
+  let currentPlayer = document.getElementById('iiif-media-player');
+  let duration = currentPlayer.player.duration();
+  let currentStructureItem = $('li[class="ramp--structured-nav__list-item active"]');
+  if(currentStructureItem.find('a').length > 0) {
+    let item = currentStructureItem.find('a')[0];
+    let label = cleanLabel(item.text, 
+      currentStructureItem.find('.ramp--structured-nav__section-duration'));
+    let timeHash = item.hash.split('#t=').reverse()[0];
+    let times = {
+      begin: parseFloat(timeHash.split(',')[0]) || 0,
+      end: parseFloat(timeHash.split(',')[1]) || duration
+    }
+    let streamId = item.pathname.split('/').reverse()[0];
+    return { label, times, streamId };
+  }
 }
