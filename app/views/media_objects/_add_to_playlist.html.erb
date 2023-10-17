@@ -189,11 +189,11 @@ Unless required by applicable law or agreed to in writing, software distributed
 
       function addListeners() {
         $('#addToPlaylistPanel').on('show.bs.collapse', function (e) {
-          // Hide share resource panel on add to playlist panel collapse
+          // Hide share resource panel on add to playlist panel show
           $('#shareResourcePanel').collapse('hide');
-          // Hide add to playlist alert on panel collapse
+          // Hide add to playlist alert on panel show
           $('#add_to_playlist_alert').slideUp(100);
-          // Show add to playlist form on collapse and reset initially
+          // Show add to playlist form on show and reset initially
           $('#add_to_playlist_form_group').slideDown();
 
           let playlistForm = $('#add_to_playlist')[0];
