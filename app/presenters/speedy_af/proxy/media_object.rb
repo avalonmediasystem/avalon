@@ -1,11 +1,11 @@
 # Copyright 2011-2023, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
-# 
+#
 # You may obtain a copy of the License at
-# 
+#
 # http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software distributed
 #   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
 #   CONDITIONS OF ANY KIND, either express or implied. See the License for the
@@ -138,6 +138,22 @@ class SpeedyAF::Proxy::MediaObject < SpeedyAF::Base
 
   def governing_policies
     @governing_policies ||= Array(attrs[:isGovernedBy]).collect { |id| SpeedyAF::Base.find(id) }
+  end
+
+  def language
+    attrs[:language_code].map { |code| { code: code, text: LanguageTerm.find(code).text } } if attrs[:language_code].present?
+  end
+
+  def note
+    attrs[:note].map.with_index { |n, i| { note: n, type: attrs[:note_type][i] } } if attrs[:note].present?
+  end
+
+  def other_identifier
+    attrs[:other_identifier].map.with_index { |oi, i| { id: oi, source: attrs[:other_identifier_type][i] } } if attrs[:other_identifier].present?
+  end
+
+  def related_item_url
+    attrs[:related_item_url].map.with_index { |url, i| { url: url, label: attrs[:related_item_label][i] } } if attrs[:related_item_url].present?
   end
 
   protected

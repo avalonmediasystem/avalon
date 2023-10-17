@@ -593,20 +593,20 @@ describe MediaObject do
     end
     it 'should not index any unknown resource types' do
       media_object.resource_type = 'notated music'
-      expect(media_object.to_solr['format_sim']).not_to include 'Notated Music'
+      expect(media_object.to_solr['resource_type_ssim']).not_to include 'Notated Music'
     end
     it 'should index separate identifiers as separate values' do
       media_object.descMetadata.add_other_identifier('12345678','lccn')
       media_object.descMetadata.add_other_identifier('8675309 testing','local')
       solr_doc = media_object.to_solr
-      expect(solr_doc['other_identifier_sim']).to include('12345678','8675309 testing')
-      expect(solr_doc['other_identifier_sim']).not_to include('123456788675309 testing')
+      expect(solr_doc['other_identifier_ssim']).to include('12345678','8675309 testing')
+      expect(solr_doc['other_identifier_ssim']).not_to include('123456788675309 testing')
     end
     it 'should index identifier for master files' do
       master_file = FactoryBot.create(:master_file, identifier: ['TestOtherID'], media_object: media_object)
       media_object.reload
       solr_doc = media_object.to_solr(include_child_fields: true)
-      expect(solr_doc['other_identifier_sim']).to include('TestOtherID')
+      expect(solr_doc['other_identifier_ssim']).to include('TestOtherID')
     end
     it 'should index labels for master files' do
       FactoryBot.create(:master_file, :with_structure, media_object: media_object, title: 'Test Label')
@@ -621,9 +621,9 @@ describe MediaObject do
       media_object.save!
       media_object.reload
       solr_doc = media_object.to_solr(include_child_fields: true)
-      expect(solr_doc['all_comments_sim']).to include('MO Comment')
-      expect(solr_doc['all_comments_sim']).to include('[Test Label] MF Comment 1')
-      expect(solr_doc['all_comments_sim']).to include('[Test Label] MF Comment 2')
+      expect(solr_doc['all_comments_ssim']).to include('MO Comment')
+      expect(solr_doc['all_comments_ssim']).to include('[Test Label] MF Comment 1')
+      expect(solr_doc['all_comments_ssim']).to include('[Test Label] MF Comment 2')
     end
     it 'includes virtual group leases in external group facet' do
       media_object.governing_policies += [FactoryBot.create(:lease, inherited_read_groups: ['TestGroup'])]
@@ -932,7 +932,7 @@ describe MediaObject do
 
     it 'is indexed' do
       media_object.terms_of_use = terms_of_use_value
-      expect(media_object.to_solr["terms_of_use_si"]).to eq terms_of_use_value
+      expect(media_object.to_solr["terms_of_use_ssi"]).to eq terms_of_use_value
     end
 
     it 'roundtrips' do
