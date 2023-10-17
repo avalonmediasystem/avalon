@@ -149,7 +149,7 @@ class SpeedyAF::Proxy::MediaObject < SpeedyAF::Base
   end
 
   def other_identifier
-    attrs[:other_identifier].map.with_index { |oi, i| { id: oi, source: attrs[:other_identifier_type][i] } } if attrs[:other_identifier].present?
+    attrs[:other_identifier].map.with_index { |oi, i| { id: oi, source: attrs[:other_identifier_type][i] } if attrs[:other_identifier_type][i].present? }.compact if attrs[:other_identifier].present?
   end
 
   def related_item_url

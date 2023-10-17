@@ -39,7 +39,7 @@ describe SpeedyAF::Proxy::MediaObject do
   end
 
   context "fully searchable media object proxy" do
-    let(:media_object) { FactoryBot.create(:fully_searchable_media_object) }
+    let(:media_object) { FactoryBot.create(:fully_searchable_media_object, :with_master_file) }
     it "should include all metadata fields" do
       expect(presenter.title).to eq media_object.title
       expect(presenter.date_created).to eq media_object.date_created
