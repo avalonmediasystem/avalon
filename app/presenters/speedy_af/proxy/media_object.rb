@@ -141,19 +141,19 @@ class SpeedyAF::Proxy::MediaObject < SpeedyAF::Base
   end
 
   def language
-    attrs[:language_code].map { |code| { code: code, text: LanguageTerm.find(code).text } } if attrs[:language_code].present?
+    attrs[:language_code].present? ? attrs[:language_code].map { |code| { code: code, text: LanguageTerm.find(code).text } } : []
   end
 
   def note
-    attrs[:note].map.with_index { |n, i| { note: n, type: attrs[:note_type][i] } } if attrs[:note].present?
+    attrs[:note].present? ? attrs[:note].map.with_index { |n, i| { note: n, type: attrs[:note_type][i] } } : []
   end
 
   def other_identifier
-    attrs[:other_identifier].map.with_index { |oi, i| { id: oi, source: attrs[:other_identifier_type][i] } if attrs[:other_identifier_type][i].present? }.compact if attrs[:other_identifier].present?
+    attrs[:other_identifier].present? ? attrs[:other_identifier].map.with_index { |oi, i| { id: oi, source: attrs[:other_identifier_type][i] } if attrs[:other_identifier_type][i].present? }.compact : []
   end
 
   def related_item_url
-    attrs[:related_item_url].map.with_index { |url, i| { url: url, label: attrs[:related_item_label][i] } } if attrs[:related_item_url].present?
+    attrs[:related_item_url].present? ? attrs[:related_item_url].map.with_index { |url, i| { url: url, label: attrs[:related_item_label][i] } } : []
   end
 
   protected
