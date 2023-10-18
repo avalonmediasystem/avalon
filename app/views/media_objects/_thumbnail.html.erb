@@ -15,7 +15,7 @@ Unless required by applicable law or agreed to in writing, software distributed
 %>
 
 <div id="thumbnail-button" style="display: inline-block;">
-  <button type="button" class="btn btn-outline" id="create-thumbnail-btn" data-toggle="modal" data-target="#thumbnailModal" style="margin-top: 10px;" disabled>
+  <button type="button" class="btn btn-outline" id="create-thumbnail-btn" data-toggle="modal" data-target="#thumbnailModal" disabled>
     Create Thumbnail
   </button>
 </div>
@@ -54,7 +54,9 @@ Unless required by applicable law or agreed to in writing, software distributed
       if(player) {
         player.player.on('loadedmetadata', () => {
           let thumbnailBtn = document.getElementById('create-thumbnail-btn');
-          thumbnailBtn.disabled = false;
+          if(thumbnailBtn) {
+            thumbnailBtn.disabled = false;
+          }
           clearInterval(timeCheck);
         });
       }

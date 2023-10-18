@@ -23,20 +23,15 @@
 function getTimelineScopes(title) {
   let scopes = new Array();
   let trackCount = 1;
-  let currentPlayer = document.getElementById('iiif-media-player');
-  let duration = currentPlayer.player.duration();
   let currentStructureItem = $('li[class="ramp--structured-nav__list-item active"]');
-  
-  let item = currentStructureItem[0].childNodes[1]
-  let label = item.text;
-  let times = item.hash.split('#t=').reverse()[0];
-  let begin = parseFloat(times.split(',')[0]) || 0;
-  let end = parseFloat(times.split(',')[1]) || duration;
-  let streamId = item.pathname.split('/').reverse()[0];
+  let activeItem = getActiveItem();
+  let streamId = activeItem.streamId;
+
   scopes.push({
-    label: label,
+    label: activeItem.label,
     tracks: trackCount,
-    t: `t=${begin},${end}`,
+    times: activeItem.times,
+    tag: 'current-track',
   });
 
   let parent = currentStructureItem.closest('ul').closest('li');
@@ -44,20 +39,45 @@ function getTimelineScopes(title) {
     let next = parent.closest('ul').closest('li');
     let tracks = parent.find('li a');
     trackCount = tracks.length;
-    begin = parseFloat(tracks[0].hash.split('#t=').reverse()[0].split(',')[0]) || 0;
-    end = parseFloat(tracks[trackCount - 1].hash.split('#t=').reverse()[0].split(',')[1]) || '';
+    let begin = parseFloat(tracks[0].hash.split('#t=').reverse()[0].split(',')[0]) || 0;
+    let end = parseFloat(tracks[trackCount - 1].hash.split('#t=').reverse()[0].split(',')[1]) || '';
     streamId = tracks[0].pathname.split('/').reverse()[0];
-    label = parent[0].childNodes[0].textContent;
+    let label = cleanLabel(
+      parent[0].childNodes[0].textContent, 
+      parent.find('.ramp--structured-nav__section-duration')
+    );
     scopes.push({
       label: next.length == 0 ? `${title} - ${label}` : label,
       tracks: trackCount,
-      t: `t=${begin},${end}`,
+      times: { begin, end },
     });
     parent = next;
   }
   return { scopes: scopes.reverse(), streamId };
 }
 
+/**
+ * Clean label text from structured navigation
+ * @param {String} label full label text of active item
+ * @param {Object} timestamp HTML span element with duration for section items
+ * @returns {String} label without index numbers and duration information
+ */
+function cleanLabel(label, timestamp) {
+  let labelWoIndex = label.replace(/^[0-9]+./, '');
+  if(timestamp?.length > 0) {
+    let time = timestamp[0].textContent;
+    return labelWoIndex.replace(time, '');
+  } else {
+    return labelWoIndex.split(' (')[0];
+  }
+}
+
+/**
+ * Parse time in seconds to hh:mm:ss.ms format
+ * @param {Number} secTime time in seconds
+ * @param {Boolean} showHrs flag indicating for showing hours
+ * @returns 
+ */
 function createTimestamp(secTime, showHrs) {
   let hours = Math.floor(secTime / 3600);
   let minutes = Math.floor((secTime % 3600) / 60);
@@ -95,4 +115,136 @@ function updateShareLinks (e) {
     .val(ltiShareLink)
     .attr('placeholder', ltiShareLink);
   $('#embed-part').val(embedCode);
+}
+
+/** Collapse multi item check for creating a playlist item for each structure item of
+ * the selected scope
+ */
+function collapseMultiItemCheck () {
+  $('#multiItemCheck').collapse('show');
+  $('#moreDetails').collapse('hide');
+}
+
+/** Collapse title and description forms */
+function collapseMoreDetails() {
+  $('#moreDetails').collapse('show');
+  $('#multiItemCheck').collapse('hide');
+  let currentTrackName = $('#current-track-name').text();
+  $('#playlist_item_title').val(currentTrackName);
+}
+
+/** AJAX request for add to playlist for submission for playlist item for 
+ * a selected clip
+ */
+function addPlaylistItem (playlistId, masterfileId) {
+  $.ajax({
+    url: '/playlists/' + playlistId + '/items',
+    type: 'POST',
+    data: {
+      playlist_item: {
+        master_file_id: masterfileId,
+        title: $('#playlist_item_title').val(),
+        comment: $('#playlist_item_description').val(),
+        start_time: $('#playlist_item_start').val(),
+        end_time: $('#playlist_item_end').val()
+      }
+    },
+    success: function(res) {
+      handleAddSuccess(res);
+    },
+    error: function(err) {
+      handleAddError(err)
+    }
+  });
+}
+
+/** AJAX request for add to playlist for submission for playlist items for 
+ * section(s)
+ */
+function addToPlaylist(playlistId, scope, masterfileId, moId) {
+  $.ajax({
+    url: '/media_objects/' + moId + '/add_to_playlist',
+    type: 'POST',
+    data: {
+      post: {
+        masterfile_id: masterfileId,
+        playlist_id: playlistId,
+        playlistitem_scope: scope
+      }
+    },
+    success: function(res) {
+      handleAddSuccess(res);
+    },
+    error: function(err) {
+      handleAddError(err)
+    }
+  });
+}
+
+/** Show success message for add to playlist */
+function handleAddSuccess(response) {
+  let alertEl = $('#add_to_playlist_alert');
+
+  alertEl.removeClass('alert-danger');
+  alertEl.addClass('alert-success');
+  alertEl.find('#add_to_playlist_result_message').html(response.message);
+
+  alertEl.slideDown();
+  $('#add_to_playlist_form_group').slideUp();
+  resetAddToPlaylistForm();
+}
+
+/** Show error message for add to playlist */
+function handleAddError(error) {
+  let alertEl = $('#add_to_playlist_alert');
+  let message = error.statusText || 'There was an error adding to playlist';
+
+  if (error.responseJSON && error.responseJSON.message) {
+    message = error.responseJSON.message.join('<br/>');
+  }
+
+  alertEl.removeClass('alert-success');
+  alertEl.addClass('alert-danger add_to_playlist_alert_error');
+  alertEl.find('#add_to_playlist_result_message').html('ERROR: ' + message);
+
+  alertEl.slideDown();
+  $('#add_to_playlist_form_group').slideUp();
+  resetAddToPlaylistForm();
+}
+
+/** Reset add to playlist form */
+function resetAddToPlaylistForm() {
+  $('#playlist_item_start')[0].value = '';
+  $('#playlist_item_end')[0].value = '';
+  $('#playlist_item_description').value = '';
+  $('#playlist_item_title').value = '';
+  $('input[name="post[playlistitem_scope]"]').prop('checked', false);
+  $('#playlistitem_scope_structure').prop('checked', false);
+  $('#moreDetails').collapse('hide');
+  $('#multiItemCheck').collapse('hide');
+}
+
+/** Reset add to playlist panel when alert is closed */
+function closeAlert() {
+  $('#add_to_playlist_alert').slideUp();
+  $('#add_to_playlist_form_group').slideDown();
+}
+
+/** Get the current active structure item from DOM */
+function getActiveItem() {
+  let currentPlayer = document.getElementById('iiif-media-player');
+  let duration = currentPlayer.player.duration();
+  let currentStructureItem = $('li[class="ramp--structured-nav__list-item active"]');
+  if(currentStructureItem.find('a').length > 0) {
+    let item = currentStructureItem.find('a')[0];
+    let label = cleanLabel(item.text, 
+      currentStructureItem.find('.ramp--structured-nav__section-duration'));
+    let timeHash = item.hash.split('#t=').reverse()[0];
+    let times = {
+      begin: parseFloat(timeHash.split(',')[0]) || 0,
+      end: parseFloat(timeHash.split(',')[1]) || duration
+    }
+    let streamId = item.pathname.split('/').reverse()[0];
+    return { label, times, streamId };
+  }
 }

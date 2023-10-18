@@ -14,8 +14,8 @@ Unless required by applicable law or agreed to in writing, software distributed
 ---  END LICENSE_HEADER BLOCK  ---
 %>
 
-<div id="timeline-button" style="display: inline-block;">
-  <button type="button" class="btn btn-outline" id="timeline-btn" data-toggle="modal" data-target="#timelineModal" style="margin-top: 10px;" disabled >
+<div id="timeline-button">
+  <button type="button" class="btn btn-outline" id="timeline-btn" data-toggle="modal" data-target="#timelineModal" disabled >
     Create Timeline
   </button>
 </div>
@@ -58,7 +58,9 @@ $(document).ready(function() {
     if(player) {
       player.player.on('loadedmetadata', () => {
         let timelineBtn = document.getElementById('timeline-btn');
-        timelineBtn.disabled = false;
+        if(timelineBtn) {
+          timelineBtn.disabled = false;
+        }
         clearInterval(timeCheck);
       });
     }
@@ -120,7 +122,8 @@ $(document).ready(function() {
         if (selectedIndex === -1) return;
         scope = scopes[selectedIndex];
         label = scope.label;
-        t = scope.t
+        let { begin, end } = scope.times;
+        t = `t=${begin},${end}`;
         id = streamId;
       }
       $('#new-timeline-title')[0].value = label;

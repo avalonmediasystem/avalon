@@ -1,0 +1,258 @@
+<%#
+Copyright 2011-2023, The Trustees of Indiana University and Northwestern
+  University.  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+
+You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+  under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+  CONDITIONS OF ANY KIND, either express or implied. See the License for the
+  specific language governing permissions and limitations under the License.
+---  END LICENSE_HEADER BLOCK  ---
+%>
+<!-- contents for add_to_playlist form ---->
+
+<% @add_playlist_item_playlists = Playlist.where(user: current_user).sort_by(&:title) %>
+
+<div id="add_to_playlist_panel">
+  <div id="add_to_playlist_alert" class="alert">
+    <button type="button" class="close" onclick="closeAlert()">&times;</button>
+    <p id="add_to_playlist_result_message"></p>
+  </div>
+  <div id="add_to_playlist_form_group">
+    <% unless @add_playlist_item_playlists.empty? %>
+      <form id="add_to_playlist" accept-charset="UTF-8" data-title="<%= @media_object.title %>" data-moid="<%= @media_object.id %>">
+        <div class="row">
+          <div class="col">
+            <h4 for="playlist">Add to Playlist</h4>
+          </div>
+          <div class="col">
+            <div class="form-group">
+              <%= collection_select(:post, :playlist_id, @add_playlist_item_playlists, :id, :title, {}, {class: "form-control form-model", style: 'width:100%;'}) %>
+            </div>
+          </div>
+        </div>
+
+        <div id="add-to-playlist-form-group" class="mb-4">
+          <div class="form-check" onclick="collapseMoreDetails()">
+            <label class="form-check-label">
+              <input type="radio" name="post[playlistitem_scope]" id="playlistitem_scope_track" aria-label="playlist item current track">
+                Current Track (<span id="current-track-name"></span>)
+            </label>
+          </div>
+          <div class="form-check" onclick="collapseMoreDetails()">
+            <label class="form-check-label">
+              <input type="radio" name="post[playlistitem_scope]" id="playlistitem_timeselection" aria-label="playlist item time selection">
+              Time Selection
+              <input type="text" name="playlist_item_start" id="playlist_item_start" value="" aria-label="start time">
+                to 
+              <input type="text" name="playlist_item_end" id="playlist_item_end" value="" aria-label="end time">
+            </label>
+          </div>
+          <div class="form-check" onclick="collapseMultiItemCheck()" >
+            <label class="form-check-label">
+              <input type="radio" name="post[playlistitem_scope]" id="playlistitem_scope_section" aria-label="playlist item current section">
+              Current Section (<span id="current-section-name"></span>)
+            </label>
+          </div>
+          <div class="form-check" onclick="collapseMultiItemCheck()">
+            <label class="form-check-label">
+              <input type="radio" name="post[playlistitem_scope]" id="playlistitem_scope_item" aria-label="playlist item current item">
+              All Sections
+            </label>
+          </div>
+        </div>
+        <div class="row" id="moreInfo">
+          <div class="col-12">
+            <div class="collapse mb-4" id="multiItemCheck" data-parent="#moreInfo">
+              <div class="form-check">
+                <label class="form-check-label">
+                  <input type="checkbox" id="playlistitem_scope_structure">
+                  Create playlist items for each track/subsection
+                </label>
+              </div>
+            </div>
+          </div>
+          <div class="col-12">
+            <div class="collapse mx-4" id="moreDetails" data-parent="#moreInfo">
+              <div class="form-group">
+                <label for="playlist_item_title">Title</label>
+                <input type="text" name="playlist_item_title" id="playlist_item_title" class="form-control form-model" required>
+              </div>
+              <div class="form-group">
+                <label for="playlist_item_description">Description</label>
+                <textarea name="playlist_item_description" id="playlist_item_description" class="form-control form-model"></textarea>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="add-to-playlist-form-buttons">
+          <input type="submit" name="commit" value="Add" class="btn btn-primary mr-2" id="addToPlaylistSave" />
+          <button type="button" class="btn btn-outline" data-toggle="collapse" data-target="#addToPlaylistPanel">Cancel</button>
+        </div>
+      </form>
+    <% end %>
+    <% if @add_playlist_item_playlists.empty? %>
+      <span class='add_playlist_item_playlists_no_playlists_message'>You have no playlists, <%= link_to('create a playlist.', new_playlist_path) %></span>
+    <% end %>
+  </div>
+</div>
+
+<!-- new playlist modal form --->
+<div class="modal fade" id="add-playlist-modal" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">Create Playlist</h4>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+      </div>
+      <div class="modal-body">
+        <%= form_for(Playlist.new, remote: true, format: 'json', html: { id: 'playlist_form', class: 'playlist_actions' }) do |f| %>
+          <div class="form-group">
+            <%= f.label "Name" %>
+            <%= f.text_field :title, class: 'form-control' %>
+          </div>
+          <div class="form-group">
+            <%= f.label :comment, 'Description' %>
+            <%= f.text_area :comment, class: 'form-control' %>
+          </div>
+          <div class="form-group playlist-visibility-form-group">
+            <%= label_tag nil, t("playlist.visibility") %>
+            <label>
+              <%= f.radio_button(:visibility, Playlist::PUBLIC) %>
+              <%= human_friendly_visibility Playlist::PUBLIC %>
+            </label>
+            <label class="ml-2">
+              <%= f.radio_button(:visibility, Playlist::PRIVATE) %>
+              <%= human_friendly_visibility Playlist::PRIVATE %>
+            </label>
+          </div>
+          <div class="form-group text-right">
+            <%= f.submit id: 'new_playlist_submit', class: 'btn btn-primary', value: t("playlist.create.action") %>
+          </div>
+        </div><!-- /.modal-body -->
+      <% end # form_for playlist_form%>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+
+<% content_for :page_scripts do %>
+  <script>
+    $(document).ready(function() {
+      let mediaObjectId, streamId, mediaObjectTitle;
+      let listenersAdded = false;
+      // Enable add to playlist button after derivative is loaded
+      let timeCheck = setInterval(initAddToPlaylist, 500);
+      function initAddToPlaylist() {
+        let player = document.getElementById('iiif-media-player');
+        let scopes = [];
+        if(player) {
+          addPlayerEventListeners(player.player, () => {
+            clearInterval(timeCheck);
+          });
+        }
+      }
+
+      function addPlayerEventListeners(player) {
+        player.on('loadedmetadata', () => {
+          enableAddToPlaylist();
+        });
+        player.on('timeupdate', () => {
+          if(getActiveItem() != undefined) {
+            let { label, times, streamId } = getActiveItem();
+            $('#playlist_item_start').val(createTimestamp(times.begin, true));
+            $('#playlist_item_end').val(createTimestamp(times.end, true));
+            $('#playlist_item_title').val(`${mediaObjectTitle} - ${label}`);
+            $('#current-track-name').text(`${mediaObjectTitle} - ${label}`);
+          }
+        });
+        player.on('dispose', () => {
+          $('#addToPlaylistPanel').collapse('hide');
+          resetAddToPlaylistForm();
+          addToPlaylistBtn.disabled = true;
+        });
+      }
+
+      function enableAddToPlaylist() {
+        let addToPlaylistBtn = document.getElementById('addToPlaylistBtn');
+        if(addToPlaylistBtn) {
+          addToPlaylistBtn.disabled = false;
+        }
+        if(!listenersAdded) {
+          addListeners();
+        }
+      }
+
+      function addListeners() {
+        $('#addToPlaylistPanel').on('show.bs.collapse', function (e) {
+          // Hide share resource panel on add to playlist panel show
+          $('#shareResourcePanel').collapse('hide');
+          // Hide add to playlist alert on panel show
+          $('#add_to_playlist_alert').slideUp(100);
+
+          let playlistForm = $('#add_to_playlist')[0];
+          if(!playlistForm) {
+            return;
+          }
+          mediaObjectTitle = playlistForm.dataset.title;
+          mediaObjectId = playlistForm.dataset.moid;
+          let timelineScopes = getTimelineScopes(mediaObjectTitle);
+          scopes = timelineScopes.scopes;
+          streamId = timelineScopes.streamId;
+          let currentPlayer = document.getElementById('iiif-media-player').player;
+          let start, end = 0;
+          if(currentPlayer) {
+            start = currentPlayer.currentTime();
+            end = currentPlayer.duration();
+          }
+          // Add 'Add new playlist' option to dropdown
+          window.add_new_playlist_option();
+          if(scopes?.length > 0) {
+            let trackInfo = scopes.filter(s => s.tag === 'current-track');
+            if(trackInfo.length > 0) {
+              let currentTrack = trackInfo[0];
+              let trackName = `${mediaObjectTitle} - ${currentTrack.label || streamId}`
+              $('#current-track-name').text(trackName);
+              start = currentTrack.times.begin;
+              end = currentTrack.times.end;
+            }
+            $('#playlist_item_start').val(createTimestamp(start, true))
+            $('#playlist_item_end').val(createTimestamp(end, true))
+
+            let sectionInfo = scopes[0];
+            $('#current-section-name').text(sectionInfo.label || mediaObjectId);
+          }
+        });
+
+        $('#addToPlaylistSave').on('click', function (e) {
+          e.preventDefault();
+          let playlistId = $('#post_playlist_id').val();
+          let label, t, id;
+          if ($('#playlistitem_timeselection')[0].checked || $('#playlistitem_scope_track')[0].checked) {
+            let pattern = /^(\d+:){0,2}\d+(\.\d+)?$/;
+            let beginval = $('#playlist_item_start')[0].value;
+            let endval = $('#playlist_item_end')[0].value;
+            $('#playlist_item_start').css('color', (pattern.test(beginval) ? 'black' : 'red'))
+            $('#playlist_item_end').css('color', (pattern.test(endval) ? 'black' : 'red'))
+            addPlaylistItem(playlistId, streamId);
+          } else if ($('#playlistitem_scope_section')[0].checked) {
+            let multiItemCheck = $('#playlistitem_scope_structure')[0].checked;
+            let scope = multiItemCheck ? 'structure' : 'section';
+            addToPlaylist(playlistId, scope, streamId, mediaObjectId);
+          } else if ($('#playlistitem_scope_item')[0].checked) {
+            let multiItemCheck = $('#playlistitem_scope_structure')[0].checked;
+            let scope = multiItemCheck ? 'structure' : 'section';
+            addToPlaylist(playlistId, scope, '', mediaObjectId);
+          } 
+        });
+        // Show add to playlist form on show and reset initially
+        $('#add_to_playlist_form_group').slideDown();
+        listenersAdded = true;
+      }
+    });
+  </script>
+<% end %>

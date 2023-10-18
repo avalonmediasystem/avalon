@@ -44,44 +44,25 @@
   }
 
   .ramp--rails-content {
+    margin: 14px 0;
     display: flex;
+    justify-content: space-between;
 
-    #administrative_options {
-      text-align: right !important;
-    }
-
-    .btn-sm {
-      padding: 0 0;
-    }
-
-    .share-tabs {
-      flex-grow: 2;
-    }
-
-    #share-list {
-      margin-left: -9.25rem;
-    }
-
-    .svg-add-to-playlist {
-      width: 35px;
-      margin: 0;
-    }
-
-    .bgColor {
-      fill: white;
-    }
-
-    #add-to-playlist-btn:hover {
-      .bgColor {
-        fill: #f2f2f2;
+    #shareBtn{
+      i {
+        margin-right: 0.2rem;
+        color: #2a5459;
       }
     }
 
-    .foregroundColor {
-      fill: none;
-      stroke: #2a5459;
-      stroke-width: 2;
-      stroke-miterlimit: 10;
+    .ramp-button-group-1 {
+      display: flex;
+      justify-content: flex-start;
+    }
+
+    .ramp-button-group-2 {
+      display: flex;
+      justify-content: flex-end;
     }
   }
 
@@ -209,5 +190,16 @@
 
   .ramp--transcript_nav div.transcript_content {
     height: fit-content !important;
+  }
+}
+
+#add_to_playlist_alert {
+  a {
+    font-weight: bold;
+    text-decoration: underline;
+  }
+
+  p {
+    margin: 0;
   }
 }

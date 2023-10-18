@@ -28,7 +28,6 @@ button.close {
 
 #share-button {
   text-align: right;
-  margin-top: 10px;
   margin-bottom: 0;
 
   a:link,
@@ -37,4 +36,9 @@ button.close {
   a:active {
     text-decoration: none;
   }
+}
+
+.add-to-playlist-form-buttons {
+  display: flex;
+  justify-content: flex-end;
 }
