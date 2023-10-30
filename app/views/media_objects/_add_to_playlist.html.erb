@@ -212,19 +212,20 @@ Unless required by applicable law or agreed to in writing, software distributed
           // Add 'Add new playlist' option to dropdown
           window.add_new_playlist_option();
           if(scopes?.length > 0) {
+            let sectionInfo = scopes[0];
+            $('#current-section-name').text(sectionInfo.label || mediaObjectId);
+
             let trackInfo = scopes.filter(s => s.tag === 'current-track');
             if(trackInfo.length > 0) {
               let currentTrack = trackInfo[0];
-              let trackName = `${mediaObjectTitle} - ${currentTrack.label || streamId}`
+              let trackName = `${sectionInfo.label || mediaObjectTitle} - ${currentTrack.label || streamId}`;
+              console.log(sectionInfo.label, ' | ', mediaObjectTitle, ' | ', currentTrack.label, ' | ', streamId)
               $('#current-track-name').text(trackName);
               start = currentTrack.times.begin;
               end = currentTrack.times.end;
             }
-            $('#playlist_item_start').val(createTimestamp(start, true))
-            $('#playlist_item_end').val(createTimestamp(end, true))
-
-            let sectionInfo = scopes[0];
-            $('#current-section-name').text(sectionInfo.label || mediaObjectId);
+            $('#playlist_item_start').val(createTimestamp(start, true));
+            $('#playlist_item_end').val(createTimestamp(end, true));
           }
         });
 

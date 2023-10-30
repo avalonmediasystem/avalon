@@ -14,8 +14,46 @@
  * ---  END LICENSE_HEADER BLOCK  ---
 */
 
+/** Get the current active structure item from DOM */
+function getActiveItem() {
+  let currentPlayer = document.getElementById('iiif-media-player');
+  let duration = currentPlayer.player.duration();
+  let currentStructureItem = $('li[class="ramp--structured-nav__list-item active"]');
+  let currentSection = $('div[class="ramp--structured-nav__section active"]');
+
+  if(currentStructureItem?.length > 0) {
+    let label = currentStructureItem[0].dataset.label;
+    let activeCanvasOnly = currentSection.parent().is(currentStructureItem);
+    // When canvas item is the only structure item, add it as an option
+    if(activeCanvasOnly) {
+      let { mediafrag, label } = currentSection[0].dataset;
+      let [ itemId, timeHash ] = mediafrag.split('#t=');
+      return { 
+        label, 
+        times: {
+          begin: parseFloat(timeHash.split(',')[0]) || 0,
+          end: parseFloat(timeHash.split(',')[1]) || duration
+        },
+        streamId: itemId.split('/').reverse()[0]
+      }
+    }
+  
+    // When structure has timespan children
+    if(currentStructureItem.find('a').length > 0) {
+      let item = currentStructureItem.find('a')[0];
+      let timeHash = item.hash.split('#t=').reverse()[0];
+      let times = {
+        begin: parseFloat(timeHash.split(',')[0]) || 0,
+        end: parseFloat(timeHash.split(',')[1]) || duration
+      }
+      let streamId = item.pathname.split('/').reverse()[0];
+      return { label, times, streamId };
+    }
+  }
+}
+
 /**
- * Get new timeline scopes for active section playing
+ * Get new timeline scopes for active section
  * @function getTimelineScopes
  * @param title title of the mediaobject
  * @return { [{string, int, string}], string } { [{label, tracks, t}], streamId } = [scope label, number of tracks, mediafragment], masterfile id
@@ -23,16 +61,20 @@
 function getTimelineScopes(title) {
   let scopes = new Array();
   let trackCount = 1;
-  let currentStructureItem = $('li[class="ramp--structured-nav__list-item active"]');
+  let currentStructureItem = $('li[class="ramp--structured-nav__list-item active"]') ||
+  $('div[class="ramp--structured-nav__section active"]');
   let activeItem = getActiveItem();
-  let streamId = activeItem.streamId;
+  let streamId = '';
 
-  scopes.push({
-    label: activeItem.label,
-    tracks: trackCount,
-    times: activeItem.times,
-    tag: 'current-track',
-  });
+  if(activeItem != undefined) {
+    streamId = activeItem.streamId;
+    scopes.push({
+      label: activeItem.label,
+      tracks: trackCount,
+      times: activeItem.times,
+      tag: 'current-track',
+    });
+  }
 
   let parent = currentStructureItem.closest('ul').closest('li');
   while (parent.length > 0) {
@@ -42,10 +84,7 @@ function getTimelineScopes(title) {
     let begin = parseFloat(tracks[0].hash.split('#t=').reverse()[0].split(',')[0]) || 0;
     let end = parseFloat(tracks[trackCount - 1].hash.split('#t=').reverse()[0].split(',')[1]) || '';
     streamId = tracks[0].pathname.split('/').reverse()[0];
-    let label = cleanLabel(
-      parent[0].childNodes[0].textContent, 
-      parent.find('.ramp--structured-nav__section-duration')
-    );
+    let label = parent[0].dataset.label;
     scopes.push({
       label: next.length == 0 ? `${title} - ${label}` : label,
       tracks: trackCount,
@@ -54,22 +93,6 @@ function getTimelineScopes(title) {
     parent = next;
   }
   return { scopes: scopes.reverse(), streamId };
-}
-
-/**
- * Clean label text from structured navigation
- * @param {String} label full label text of active item
- * @param {Object} timestamp HTML span element with duration for section items
- * @returns {String} label without index numbers and duration information
- */
-function cleanLabel(label, timestamp) {
-  let labelWoIndex = label.replace(/^[0-9]+./, '');
-  if(timestamp?.length > 0) {
-    let time = timestamp[0].textContent;
-    return labelWoIndex.replace(time, '');
-  } else {
-    return labelWoIndex.split(' (')[0];
-  }
 }
 
 /**
@@ -230,21 +253,3 @@ function closeAlert() {
   $('#add_to_playlist_form_group').slideDown();
 }
 
-/** Get the current active structure item from DOM */
-function getActiveItem() {
-  let currentPlayer = document.getElementById('iiif-media-player');
-  let duration = currentPlayer.player.duration();
-  let currentStructureItem = $('li[class="ramp--structured-nav__list-item active"]');
-  if(currentStructureItem.find('a').length > 0) {
-    let item = currentStructureItem.find('a')[0];
-    let label = cleanLabel(item.text, 
-      currentStructureItem.find('.ramp--structured-nav__section-duration'));
-    let timeHash = item.hash.split('#t=').reverse()[0];
-    let times = {
-      begin: parseFloat(timeHash.split(',')[0]) || 0,
-      end: parseFloat(timeHash.split(',')[1]) || duration
-    }
-    let streamId = item.pathname.split('/').reverse()[0];
-    return { label, times, streamId };
-  }
-}
