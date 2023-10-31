@@ -70,7 +70,7 @@ $(document).ready(function() {
       let bodyText = "<p>Choose scope for new timeline:</p>";
 
       title = this.dataset.title;
-      let timelineScopes = getTimelineScopes(title);
+      let timelineScopes = getTimelineScopes();
       scopes = timelineScopes.scopes;
       streamId = timelineScopes.streamId;
       let currentPlayer = document.getElementById('iiif-media-player').player;
@@ -78,6 +78,10 @@ $(document).ready(function() {
       for (let index = 0; index < scopes.length; index++) {
         scope = scopes[index];
         label = scope.label
+        // Add mediaobject title for the option representing the current section
+        if(scope.tag === 'current-section') {
+          label = `${title} - ${label}`
+        }
         if (scope.tracks > 1) {
           label += " (" + scope.tracks + " tracks)"
         }

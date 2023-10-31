@@ -124,3 +124,30 @@ label {
     flex-wrap: nowrap;
   }
 }
+
+/* Add to playlist form on item-view page */
+#add-to-playlist-form-group {
+  .form-check {
+    padding-bottom: 0.1rem;
+  }
+
+  #playlist_item_end, #playlist_item_start {
+    border-radius: 0.25rem;
+    border: 1px solid $gray;
+    padding: 0 0.5rem;
+  }
+
+  #playlist_item_end:invalid:focus,
+  #playlist_item_start:invalid:focus {
+    color: $danger;
+    box-shadow: 0 0 10px $danger;
+    border: 1px solid $danger;
+  }
+
+  #playlist_item_end:valid:focus,
+  #playlist_item_start:valid:focus {
+    color: $dark;
+    box-shadow: none;
+    border: 1px solid $gray;
+  }
+}

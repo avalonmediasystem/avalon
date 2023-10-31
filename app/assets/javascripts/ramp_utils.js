@@ -55,10 +55,10 @@ function getActiveItem() {
 /**
  * Get new timeline scopes for active section
  * @function getTimelineScopes
- * @param title title of the mediaobject
- * @return { [{string, int, string}], string } { [{label, tracks, t}], streamId } = [scope label, number of tracks, mediafragment], masterfile id
+ * @returns {object} { [{label: string, tracks: int, times: { begin: float, end: float }, tag: string }], streamId: string }
+ * {[{ scope label, number of tracks, { start, end times of the mediafragment }, tag }], masterfile id }
  */
-function getTimelineScopes(title) {
+function getTimelineScopes() {
   let scopes = new Array();
   let trackCount = 1;
   let currentStructureItem = $('li[class="ramp--structured-nav__list-item active"]') ||
@@ -86,9 +86,10 @@ function getTimelineScopes(title) {
     streamId = tracks[0].pathname.split('/').reverse()[0];
     let label = parent[0].dataset.label;
     scopes.push({
-      label: next.length == 0 ? `${title} - ${label}` : label,
+      label: label,
       tracks: trackCount,
       times: { begin, end },
+      tag: next.length == 0 ? 'current-section' : '', // mark the outermost item representing the current section
     });
     parent = next;
   }
@@ -237,8 +238,6 @@ function handleAddError(error) {
 
 /** Reset add to playlist form */
 function resetAddToPlaylistForm() {
-  $('#playlist_item_start')[0].value = '';
-  $('#playlist_item_end')[0].value = '';
   $('#playlist_item_description').value = '';
   $('#playlist_item_title').value = '';
   $('input[name="post[playlistitem_scope]"]').prop('checked', false);
@@ -252,4 +251,3 @@ function closeAlert() {
   $('#add_to_playlist_alert').slideUp();
   $('#add_to_playlist_form_group').slideDown();
 }
-
