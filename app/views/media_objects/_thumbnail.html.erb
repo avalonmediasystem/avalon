@@ -45,7 +45,7 @@ Unless required by applicable law or agreed to in writing, software distributed
 <% content_for :page_scripts do %>
 <script>
   $(document).ready(function() {
-    const mediaObject = <%= @media_object.to_json.html_safe %>;
+    const sectionIds = <%= @media_object.ordered_master_file_ids.to_json.html_safe %>;
     let baseUrl = ''
     let offset = ''
     let timeCheck = setInterval(enableCreateThumbnail, 500);
@@ -69,7 +69,7 @@ Unless required by applicable law or agreed to in writing, software distributed
         offset = currentPlayer.player.currentTime();
 
         canvasIndex = parseInt(currentPlayer.dataset.canvasindex);
-        const sectionId = mediaObject.files[canvasIndex].id;
+        const sectionId = sectionIds[canvasIndex];
         baseUrl = '/master_files/' + sectionId;
 
         if ($imgPolaroid) {
