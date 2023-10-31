@@ -618,5 +618,17 @@ RSpec.describe PlaylistsController, type: :controller do
           expect(parsed_response['items'][1]['items'][0].keys).to_not include 'items'
         end
       end
+
+      context "playlist item with deleted source" do
+        before do
+          master_file.delete
+        end
+
+        it "returns a blank canvas" do
+          get :manifest, format: 'json', params: { id: playlist.id }, session: valid_session
+          parsed_response = JSON.parse(response.body)
+          expect(parsed_response['items'][0]['items'][0].keys).to_not include 'items'
+        end
+      end
     end
   end

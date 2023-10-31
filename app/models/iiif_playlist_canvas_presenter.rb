@@ -40,6 +40,7 @@ class IiifPlaylistCanvasPresenter
   end
 
   def part_of
+    return if master_file.nil?
     [{
       "@id" => Rails.application.routes.url_helpers.manifest_media_object_url(master_file.media_object_id).to_s,
       "type" => "manifest"
@@ -47,6 +48,7 @@ class IiifPlaylistCanvasPresenter
   end
 
   def item_metadata
+    return if master_file.nil?
     [
       metadata_field('Title', master_file.media_object.title),
       metadata_field('Date', master_file.media_object.date_issued),
