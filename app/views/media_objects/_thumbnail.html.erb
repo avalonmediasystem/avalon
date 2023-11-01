@@ -45,16 +45,18 @@ Unless required by applicable law or agreed to in writing, software distributed
 <% content_for :page_scripts do %>
 <script>
   $(document).ready(function() {
+    const sectionIds = <%= @media_object.ordered_master_file_ids.to_json.html_safe %>;
+    let baseUrl = ''
+    let offset = ''
     let timeCheck = setInterval(enableCreateThumbnail, 500);
+
     function enableCreateThumbnail() {
       let player = document.getElementById('iiif-media-player');
-      // Grab environmental variables
-      let baseUrl = '/master_files/' + "<%= @currentStreamInfo[:id] %>";
 
-      if(player) {
+      if (player && player.player != undefined) {
         player.player.on('loadedmetadata', () => {
           let thumbnailBtn = document.getElementById('create-thumbnail-btn');
-          if(thumbnailBtn) {
+          if (thumbnailBtn) {
             thumbnailBtn.disabled = false;
           }
           clearInterval(timeCheck);
@@ -62,12 +64,13 @@ Unless required by applicable law or agreed to in writing, software distributed
       }
 
       $('#thumbnailModal').on('show.bs.modal', function(e) {
-        if (player.player.isFullScreen) {
-          player.player.exitFullScreen();
-        }
-
+        let currentPlayer = document.getElementById('iiif-media-player');
         let $imgPolaroid = document.getElementById('img-polaroid');
-        let offset = player.player.currentTime();
+        offset = currentPlayer.player.currentTime();
+
+        canvasIndex = parseInt(currentPlayer.dataset.canvasindex);
+        const sectionId = sectionIds[canvasIndex];
+        baseUrl = '/master_files/' + sectionId;
 
         if ($imgPolaroid) {
           let src = baseUrl + '/poster?offset=' + offset + '&preview=true';
@@ -90,7 +93,7 @@ Unless required by applicable law or agreed to in writing, software distributed
           url: baseUrl + '/still',
           type: 'POST',
           data: {
-            offset: player.player.currentTime()
+            offset: offset
           }
         })
           .done(response => {
