@@ -66,8 +66,8 @@ const Ramp = ({
                           <div  className="ramp--rails-content">
                             <Col className="ramp-button-group-1">
                               { timeline.canCreate && <div className="mr-1" dangerouslySetInnerHTML={{ __html: timeline.content }} /> }
-                              { playlist.canCreate && 
-                                <button className="btn btn-outline mr-1"
+                              { playlist.canCreate &&
+                                <button className="btn btn-outline mr-1 text-nowrap"
                                   id="addToPlaylistBtn"
                                   type="button"
                                   data-toggle="collapse"
@@ -79,9 +79,9 @@ const Ramp = ({
                                   Add to Playlist
                                 </button>
                               }
-                              { share.canShare && 
-                                <button 
-                                  className="btn btn-outline"
+                              { share.canShare &&
+                                <button
+                                  className="btn btn-outline text-nowrap"
                                   type="button"
                                   data-toggle="collapse"
                                   data-target="#shareResourcePanel"
