@@ -40,7 +40,7 @@ function getActiveItem() {
           end: parseFloat(timeHash.split(',')[1]) || duration
         },
         tags: ['current-track', 'current-section'],
-        streamId: itemId.split('/').reverse()[0]
+        streamId: itemId.split('/').pop()
       }
     }
   
