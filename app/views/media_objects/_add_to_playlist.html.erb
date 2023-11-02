@@ -43,14 +43,14 @@ Unless required by applicable law or agreed to in writing, software distributed
                 Current Track (<span id="current-track-name"></span>)
             </label>
           </div>
-          <div class="form-check" onclick="collapseMoreDetails()">
-            <label class="form-check-label">
+          <div class="form-check">
+            <label class="form-check-label" onclick="collapseMoreDetails()">
               <input type="radio" name="post[playlistitem_scope]" id="playlistitem_timeselection" aria-label="playlist item time selection">
               Time Selection
-              <input type="text" name="playlist_item_start" id="playlist_item_start" value="" aria-label="start time">
-                to 
-              <input type="text" name="playlist_item_end" id="playlist_item_end" value="" aria-label="end time">
             </label>
+            <input type="text" name="playlist_item_start" id="playlist_item_start" pattern="(\d+:){0,2}\d+(\.\d+)?" value="" aria-label="start time">
+              to 
+            <input type="text" name="playlist_item_end" id="playlist_item_end" pattern="(\d+:){0,2}\d+(\.\d+)?" value="" aria-label="end time">
           </div>
           <div class="form-check" onclick="collapseMultiItemCheck()" >
             <label class="form-check-label">
@@ -143,8 +143,10 @@ Unless required by applicable law or agreed to in writing, software distributed
 <% content_for :page_scripts do %>
   <script>
     $(document).ready(function() {
+      const sectionIds = <%= @media_object.ordered_master_file_ids.to_json.html_safe %>;
       let mediaObjectId, streamId, mediaObjectTitle;
       let listenersAdded = false;
+      let activeTrack = null;
       // Enable add to playlist button after derivative is loaded
       let timeCheck = setInterval(initAddToPlaylist, 500);
       function initAddToPlaylist() {
@@ -164,10 +166,19 @@ Unless required by applicable law or agreed to in writing, software distributed
         player.on('timeupdate', () => {
           if(getActiveItem() != undefined) {
             let { label, times, streamId } = getActiveItem();
-            $('#playlist_item_start').val(createTimestamp(times.begin, true));
+            let starttime = player.currentTime() || times.begin;
+            $('#playlist_item_start').val(createTimestamp(starttime, true));
             $('#playlist_item_end').val(createTimestamp(times.end, true));
             $('#playlist_item_title').val(`${mediaObjectTitle} - ${label}`);
             $('#current-track-name').text(`${mediaObjectTitle} - ${label}`);
+            // When player's currentTime equals the active item's begin, then
+            // playhead is not encompassed within an active track. When this happens
+            // disable the current track option
+            if(times.begin === starttime) {
+              $('#playlistitem_scope_track')[0].disabled = true;
+            } else {
+              $('#playlistitem_scope_track')[0].disabled = false;
+            }
           }
         });
         player.on('dispose', () => {
@@ -187,45 +198,63 @@ Unless required by applicable law or agreed to in writing, software distributed
         }
       }
 
-      function addListeners() {
+      function addListeners() {        
         $('#addToPlaylistPanel').on('show.bs.collapse', function (e) {
+          // Hide add to playlist alert on panel show
+          $('#add_to_playlist_alert').slideUp(0);
           // Hide share resource panel on add to playlist panel show
           $('#shareResourcePanel').collapse('hide');
-          // Hide add to playlist alert on panel show
-          $('#add_to_playlist_alert').slideUp(100);
 
           let playlistForm = $('#add_to_playlist')[0];
           if(!playlistForm) {
             return;
           }
-          mediaObjectTitle = playlistForm.dataset.title;
-          mediaObjectId = playlistForm.dataset.moid;
-          let timelineScopes = getTimelineScopes(mediaObjectTitle);
-          scopes = timelineScopes.scopes;
-          streamId = timelineScopes.streamId;
-          let currentPlayer = document.getElementById('iiif-media-player').player;
+          
+          // For custom scope set start, end times as current time and media duration respectively
+          let currentPlayer = document.getElementById('iiif-media-player');
           let start, end = 0;
-          if(currentPlayer) {
-            start = currentPlayer.currentTime();
-            end = currentPlayer.duration();
+          if(currentPlayer && currentPlayer.player) {
+            start = currentPlayer.player.currentTime();
+            end = currentPlayer.player.duration();
           }
           // Add 'Add new playlist' option to dropdown
           window.add_new_playlist_option();
-          if(scopes?.length > 0) {
-            let trackInfo = scopes.filter(s => s.tag === 'current-track');
-            if(trackInfo.length > 0) {
-              let currentTrack = trackInfo[0];
-              let trackName = `${mediaObjectTitle} - ${currentTrack.label || streamId}`
-              $('#current-track-name').text(trackName);
-              start = currentTrack.times.begin;
-              end = currentTrack.times.end;
-            }
-            $('#playlist_item_start').val(createTimestamp(start, true))
-            $('#playlist_item_end').val(createTimestamp(end, true))
 
-            let sectionInfo = scopes[0];
-            $('#current-section-name').text(sectionInfo.label || mediaObjectId);
+          let canvasIndex = parseInt(currentPlayer.dataset.canvasindex);
+          mediaObjectTitle = playlistForm.dataset.title;
+          mediaObjectId = playlistForm.dataset.moid;
+          let timelineScopes = getTimelineScopes();
+          scopes = timelineScopes.scopes;
+          streamId = timelineScopes.streamId || sectionIds[canvasIndex];
+
+          // Fill in the current track and section titles and custom scope times
+          if(scopes?.length > 0) {
+            let sectionInfo = scopes.filter(s => s.tags.includes('current-section'));
+            let currentSectionLabel = mediaObjectTitle;
+            if(sectionInfo?.length > 0) {
+              currentSectionLabel = sectionInfo[0].label || currentSectionLabel;
+              $('#current-section-name').text(currentSectionLabel);
+            }
+
+            let trackInfo = scopes.filter(s => s.tags.includes('current-track'));
+            if(trackInfo.length > 0) {
+              activeTrack = trackInfo[0];
+              let trackName = `${currentSectionLabel} - ${activeTrack.label || streamId}`;
+              $('#current-track-name').text(trackName);
+              // Update start, end times for custom scope from the active timespan 
+              start = activeTrack.times.begin;
+              end = activeTrack.times.end;
+              $('#playlistitem_scope_track')[0].disabled = false;
+            } else {
+              activeTrack = null;
+              $('#playlistitem_scope_track')[0].disabled = true;
+            }
           }
+          $('#playlist_item_start').val(createTimestamp(start, true));
+          $('#playlist_item_end').val(createTimestamp(end, true));
+
+          // Show add to playlist form on show and reset initially
+          $('#add_to_playlist_form_group').slideDown();
         });
 
         $('#addToPlaylistSave').on('click', function (e) {
@@ -233,12 +262,13 @@ Unless required by applicable law or agreed to in writing, software distributed
           let playlistId = $('#post_playlist_id').val();
           let label, t, id;
           if ($('#playlistitem_timeselection')[0].checked || $('#playlistitem_scope_track')[0].checked) {
-            let pattern = /^(\d+:){0,2}\d+(\.\d+)?$/;
-            let beginval = $('#playlist_item_start')[0].value;
-            let endval = $('#playlist_item_end')[0].value;
-            $('#playlist_item_start').css('color', (pattern.test(beginval) ? 'black' : 'red'))
-            $('#playlist_item_end').css('color', (pattern.test(endval) ? 'black' : 'red'))
-            addPlaylistItem(playlistId, streamId);
+            let starttime = $('#playlist_item_start').val();
+            let endtime = $('#playlist_item_end').val();
+            if(activeTrack) {
+              starttime = createTimestamp(activeTrack.times.begin, true);
+              endtime = createTimestamp(activeTrack.times.end, true);
+            }
+            addPlaylistItem(playlistId, streamId, starttime, endtime);
           } else if ($('#playlistitem_scope_section')[0].checked) {
             let multiItemCheck = $('#playlistitem_scope_structure')[0].checked;
             let scope = multiItemCheck ? 'structure' : 'section';
@@ -247,10 +277,10 @@ Unless required by applicable law or agreed to in writing, software distributed
             let multiItemCheck = $('#playlistitem_scope_structure')[0].checked;
             let scope = multiItemCheck ? 'structure' : 'section';
             addToPlaylist(playlistId, scope, '', mediaObjectId);
-          } 
+          } else {
+            handleAddError({ responseJSON: { message: ['Please select a playlist option'] }})
+          }
         });
-        // Show add to playlist form on show and reset initially
-        $('#add_to_playlist_form_group').slideDown();
         listenersAdded = true;
       }
     });
