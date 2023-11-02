@@ -79,7 +79,7 @@ $(document).ready(function() {
         scope = scopes[index];
         label = scope.label
         // Add mediaobject title for the option representing the current section
-        if(scope.tag === 'current-section') {
+        if(scope.tags.includes('current-section')) {
           label = `${title} - ${label}`
         }
         if (scope.tracks > 1) {
