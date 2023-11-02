@@ -47,7 +47,7 @@ function getActiveItem() {
     // When structure has an active timespan child
     if(currentStructureItem.find('a').length > 0) {
       let item = currentStructureItem.find('a')[0];
-      let timeHash = item.hash.split('#t=').reverse()[0];
+      let timeHash = item.hash.split('#t=').pop();
       let times = {
         begin: parseFloat(timeHash.split(',')[0]) || 0,
         end: parseFloat(timeHash.split(',')[1]) || duration
