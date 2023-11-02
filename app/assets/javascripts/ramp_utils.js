@@ -52,7 +52,7 @@ function getActiveItem() {
         begin: parseFloat(timeHash.split(',')[0]) || 0,
         end: parseFloat(timeHash.split(',')[1]) || duration
       }
-      let streamId = item.pathname.split('/').reverse()[0];
+      let streamId = item.pathname.split('/').pop();
       return { label, times, tags: ['current-track'], streamId };
     }
   } else if (currentSection?.length > 0) {
