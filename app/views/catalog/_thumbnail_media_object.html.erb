@@ -16,10 +16,10 @@ Unless required by applicable law or agreed to in writing, software distributed
 
 <div class="col-md-12 col-lg-4 row">
   <% if image_url = image_for(document) %>
-    <%= link_to(media_object_path(document[:id]), {class: 'result-thumbnail'}) do %>
-      <%= image_tag( image_url ) %>
+    <%= link_to(media_object_path(document[:id]), aria: { hidden: 'true'}, tabindex: -1, class: 'result-thumbnail') do %>
+      <%= image_tag( image_url, alt: "" ) %>
     <% end %>
   <% else %>
-    <%= image_tag 'no_icon.png', class: 'result-thumbnail no-icon' %>
+    <%= image_tag 'no_icon.png', alt: "", class: 'result-thumbnail no-icon' %>
   <% end %>
 </div>
