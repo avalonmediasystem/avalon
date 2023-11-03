@@ -14,7 +14,7 @@ Unless required by applicable law or agreed to in writing, software distributed
 ---  END LICENSE_HEADER BLOCK  ---
 %>
 <% if can? :update, @media_object %>
-  <div id="administrative_options" style="display: inline-block">
+  <div id="administrative_options" class="d-inline-block">
     <%= link_to 'Edit', edit_media_object_path(@media_object), class: 'btn btn-primary' %>
 
     <% if @media_object.published? %>

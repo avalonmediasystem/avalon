@@ -28,7 +28,7 @@ Unless required by applicable law or agreed to in writing, software distributed
   <div class="col-sm-12">
     <%= render 'workflow_progress' %>
   </div>
-  <div class="col-sm-12" style="margin-bottom: 0.5rem">
+  <div class="col-sm-12 mb-2">
     <%= render 'administrative_links' %>
     <% if current_ability.can? :edit, @media_object %>
       <% if lending_enabled?(@media_object) %>
