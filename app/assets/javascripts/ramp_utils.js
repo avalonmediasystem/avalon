@@ -14,25 +14,87 @@
  * ---  END LICENSE_HEADER BLOCK  ---
 */
 
+/** Get the current active structure item from DOM */
+function getActiveItem() {
+  let currentPlayer = document.getElementById('iiif-media-player');
+  let duration = currentPlayer.player.duration();
+  let currentStructureItem = $('li[class="ramp--structured-nav__list-item active"]');
+  let currentSection = $('div[class="ramp--structured-nav__section active"]');
+
+  if(currentStructureItem?.length > 0) {
+    /**
+     * When there's an active timespan in the structured navigation
+     * use its details to populate the create timeline and add to
+     * playlist optioins
+     */
+    let label = currentStructureItem[0].dataset.label;
+    let activeCanvasOnly = currentSection.parent().is(currentStructureItem);
+    // When canvas item is the only active structure item, add it as an option
+    if(activeCanvasOnly) {
+      let { mediafrag, label } = currentSection[0].dataset;
+      let [ itemId, timeHash ] = mediafrag.split('#t=');
+      return { 
+        label, 
+        times: {
+          begin: parseFloat(timeHash.split(',')[0]) || 0,
+          end: parseFloat(timeHash.split(',')[1]) || duration
+        },
+        tags: ['current-track', 'current-section'],
+        streamId: itemId.split('/').pop()
+      }
+    }
+  
+    // When structure has an active timespan child
+    if(currentStructureItem.find('a').length > 0) {
+      let item = currentStructureItem.find('a')[0];
+      let timeHash = item.hash.split('#t=').pop();
+      let times = {
+        begin: parseFloat(timeHash.split(',')[0]) || 0,
+        end: parseFloat(timeHash.split(',')[1]) || duration
+      }
+      let streamId = item.pathname.split('/').pop();
+      return { label, times, tags: ['current-track'], streamId };
+    }
+  } else if (currentSection?.length > 0) {
+    /** When the structured navigation doesn't have an active timespan
+     * get the current active section to populate the timeline and add
+     * to playlist options */
+    let label = currentSection[0].dataset.label;
+    return {
+      label,
+      times: {
+        begin: currentPlayer.player.currentTime(),
+        end: duration,
+      },
+      tags: ['current-section'],
+      streamId: '',
+    }
+  }
+}
+
 /**
- * Get new timeline scopes for active section playing
+ * Get new timeline scopes for active section
  * @function getTimelineScopes
- * @param title title of the mediaobject
- * @return { [{string, int, string}], string } { [{label, tracks, t}], streamId } = [scope label, number of tracks, mediafragment], masterfile id
+ * @returns {object} { [{label: string, tracks: int, times: { begin: float, end: float }, tag: string }], streamId: string }
+ * {[{ scope label, number of tracks, { start, end times of the mediafragment }, tag }], masterfile id }
  */
-function getTimelineScopes(title) {
+function getTimelineScopes() {
   let scopes = new Array();
   let trackCount = 1;
-  let currentStructureItem = $('li[class="ramp--structured-nav__list-item active"]');
+  let currentStructureItem = $('li[class="ramp--structured-nav__list-item active"]') ||
+  $('div[class="ramp--structured-nav__section active"]');
   let activeItem = getActiveItem();
-  let streamId = activeItem.streamId;
+  let streamId = '';
 
-  scopes.push({
-    label: activeItem.label,
-    tracks: trackCount,
-    times: activeItem.times,
-    tag: 'current-track',
-  });
+  if(activeItem != undefined) {
+    streamId = activeItem.streamId;
+    scopes.push({
+      label: activeItem.label,
+      tracks: trackCount,
+      times: activeItem.times,
+      tags: activeItem.tags,
+    });
+  }
 
   let parent = currentStructureItem.closest('ul').closest('li');
   while (parent.length > 0) {
@@ -42,34 +104,16 @@ function getTimelineScopes(title) {
     let begin = parseFloat(tracks[0].hash.split('#t=').reverse()[0].split(',')[0]) || 0;
     let end = parseFloat(tracks[trackCount - 1].hash.split('#t=').reverse()[0].split(',')[1]) || '';
     streamId = tracks[0].pathname.split('/').reverse()[0];
-    let label = cleanLabel(
-      parent[0].childNodes[0].textContent, 
-      parent.find('.ramp--structured-nav__section-duration')
-    );
+    let label = parent[0].dataset.label;
     scopes.push({
-      label: next.length == 0 ? `${title} - ${label}` : label,
+      label: label,
       tracks: trackCount,
       times: { begin, end },
+      tags: next.length == 0 ? ['current-section'] : [], // mark the outermost item representing the current section
     });
     parent = next;
   }
   return { scopes: scopes.reverse(), streamId };
-}
-
-/**
- * Clean label text from structured navigation
- * @param {String} label full label text of active item
- * @param {Object} timestamp HTML span element with duration for section items
- * @returns {String} label without index numbers and duration information
- */
-function cleanLabel(label, timestamp) {
-  let labelWoIndex = label.replace(/^[0-9]+./, '');
-  if(timestamp?.length > 0) {
-    let time = timestamp[0].textContent;
-    return labelWoIndex.replace(time, '');
-  } else {
-    return labelWoIndex.split(' (')[0];
-  }
 }
 
 /**
@@ -136,7 +180,7 @@ function collapseMoreDetails() {
 /** AJAX request for add to playlist for submission for playlist item for 
  * a selected clip
  */
-function addPlaylistItem (playlistId, masterfileId) {
+function addPlaylistItem (playlistId, masterfileId, starttime, endtime) {
   $.ajax({
     url: '/playlists/' + playlistId + '/items',
     type: 'POST',
@@ -145,8 +189,8 @@ function addPlaylistItem (playlistId, masterfileId) {
         master_file_id: masterfileId,
         title: $('#playlist_item_title').val(),
         comment: $('#playlist_item_description').val(),
-        start_time: $('#playlist_item_start').val(),
-        end_time: $('#playlist_item_end').val()
+        start_time: starttime,
+        end_time: endtime,
       }
     },
     success: function(res) {
@@ -214,8 +258,6 @@ function handleAddError(error) {
 
 /** Reset add to playlist form */
 function resetAddToPlaylistForm() {
-  $('#playlist_item_start')[0].value = '';
-  $('#playlist_item_end')[0].value = '';
   $('#playlist_item_description').value = '';
   $('#playlist_item_title').value = '';
   $('input[name="post[playlistitem_scope]"]').prop('checked', false);
@@ -228,23 +270,4 @@ function resetAddToPlaylistForm() {
 function closeAlert() {
   $('#add_to_playlist_alert').slideUp();
   $('#add_to_playlist_form_group').slideDown();
-}
-
-/** Get the current active structure item from DOM */
-function getActiveItem() {
-  let currentPlayer = document.getElementById('iiif-media-player');
-  let duration = currentPlayer.player.duration();
-  let currentStructureItem = $('li[class="ramp--structured-nav__list-item active"]');
-  if(currentStructureItem.find('a').length > 0) {
-    let item = currentStructureItem.find('a')[0];
-    let label = cleanLabel(item.text, 
-      currentStructureItem.find('.ramp--structured-nav__section-duration'));
-    let timeHash = item.hash.split('#t=').reverse()[0];
-    let times = {
-      begin: parseFloat(timeHash.split(',')[0]) || 0,
-      end: parseFloat(timeHash.split(',')[1]) || duration
-    }
-    let streamId = item.pathname.split('/').reverse()[0];
-    return { label, times, streamId };
-  }
 }

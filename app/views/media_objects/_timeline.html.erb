@@ -15,7 +15,7 @@ Unless required by applicable law or agreed to in writing, software distributed
 %>
 
 <div id="timeline-button">
-  <button type="button" class="btn btn-outline" id="timeline-btn" data-toggle="modal" data-target="#timelineModal" disabled >
+  <button type="button" class="btn btn-outline text-nowrap" id="timeline-btn" data-toggle="modal" data-target="#timelineModal" disabled >
     Create Timeline
   </button>
 </div>
@@ -70,14 +70,18 @@ $(document).ready(function() {
       let bodyText = "<p>Choose scope for new timeline:</p>";
 
       title = this.dataset.title;
-      let timelineScopes = getTimelineScopes(title);
+      let timelineScopes = getTimelineScopes();
       scopes = timelineScopes.scopes;
       streamId = timelineScopes.streamId;
       let currentPlayer = document.getElementById('iiif-media-player').player;
- 
+
       for (let index = 0; index < scopes.length; index++) {
         scope = scopes[index];
         label = scope.label
+        // Add mediaobject title for the option representing the current section
+        if(scope.tags.includes('current-section')) {
+          label = `${title} - ${label}`
+        }
         if (scope.tracks > 1) {
           label += " (" + scope.tracks + " tracks)"
         }
@@ -130,7 +134,7 @@ $(document).ready(function() {
       $('#new-timeline-source')[0].value = '/master_files/'+ id + '?' + t;
       $('#new-timeline-form')[0].submit();
     });
-  }  
+  }
 });
 </script>
 

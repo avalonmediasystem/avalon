@@ -64,8 +64,8 @@ const Ramp = ({
                           <div  className="ramp--rails-content">
                             <Col className="ramp-button-group-1">
                               { timeline.canCreate && <div className="mr-1" dangerouslySetInnerHTML={{ __html: timeline.content }} /> }
-                              { playlist.canCreate && 
-                                <button className="btn btn-outline mr-1"
+                              { playlist.canCreate &&
+                                <button className="btn btn-outline mr-1 text-nowrap"
                                   id="addToPlaylistBtn"
                                   type="button"
                                   data-toggle="collapse"
@@ -77,9 +77,9 @@ const Ramp = ({
                                   Add to Playlist
                                 </button>
                               }
-                              { share.canShare && 
-                                <button 
-                                  className="btn btn-outline"
+                              { share.canShare &&
+                                <button
+                                  className="btn btn-outline text-nowrap"
                                   type="button"
                                   data-toggle="collapse"
                                   data-target="#shareResourcePanel"
@@ -95,12 +95,12 @@ const Ramp = ({
                           </div>
                           <Row className="mx-0">
                             <Col md={12} lg={12} sm={12}>
-                              <div className="collapse multi-collapse" id="addToPlaylistPanel">
+                              <div className="collapse" id="addToPlaylistPanel">
                                 <div className="card card-body" dangerouslySetInnerHTML={{ __html: playlist.tab }} />
                               </div>
                             </Col>
                             <Col md={12} lg={12} sm={12}>
-                              <div className="collapse multi-collapse" id="shareResourcePanel">
+                              <div className="collapse" id="shareResourcePanel">
                                 <div className="card card-body share-tabs" dangerouslySetInnerHTML={{ __html: share.content }} />
                               </div>
                             </Col>
