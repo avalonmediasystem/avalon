@@ -34,11 +34,9 @@ const Ramp = ({
   master_files_count,
   title,
   expand_structure,
-  admin_links,
   share,
   timeline,
   playlist,
-  thumbnail,
   in_progress,
   cdl
 }) => {
@@ -93,10 +91,6 @@ const Ramp = ({
                                     Share
                                 </button>
                               }
-                            </Col>
-                            <Col className="ramp-button-group-2">
-                              { admin_links.canUpdate && <div className="mr-1" dangerouslySetInnerHTML={{ __html: admin_links.content }} /> }
-                              { thumbnail.canCreate && <div className="mr-1" dangerouslySetInnerHTML={{ __html: thumbnail.content }} /> }
                             </Col>
                           </div>
                           <Row className="mx-0">
