@@ -14,6 +14,7 @@
 
 class SpeedyAF::Proxy::MediaObject < SpeedyAF::Base
   SINGULAR_FIELDS = [:title, :statement_of_responsibility, :date_created, :date_issued, :copyright_date, :abstract, :terms_of_use, :rights_statement]
+  HASH_FIELDS = [:note, :other_identifier, :related_item_url]
 
   # Override to handle section_id specially
   def initialize(solr_document, instance_defaults = {})
@@ -36,6 +37,10 @@ class SpeedyAF::Proxy::MediaObject < SpeedyAF::Base
     # TODO Need to convert hidden_bsi into discover_groups?
     SINGULAR_FIELDS.each do |field_name|
       @attrs[field_name] = Array(@attrs[field_name]).first
+    end
+
+    HASH_FIELDS.each do |field_name|
+      @attrs[field_name].collect! { |hf| JSON.parse(hf, :symbolize_names => true) }
     end
     # Convert empty strings to nil
     @attrs.transform_values! { |value| value == "" ? nil : value }
@@ -142,18 +147,6 @@ class SpeedyAF::Proxy::MediaObject < SpeedyAF::Base
 
   def language
     attrs[:language_code].present? ? attrs[:language_code].map { |code| { code: code, text: LanguageTerm.find(code).text } } : []
-  end
-
-  def note
-    attrs[:note].present? ? attrs[:note].map.with_index { |n, i| { note: n, type: attrs[:note_type][i] } } : []
-  end
-
-  def other_identifier
-    attrs[:other_identifier].present? ? attrs[:other_identifier].map.with_index { |oi, i| { id: oi, source: attrs[:other_identifier_type][i] } if attrs[:other_identifier_type][i].present? }.compact : []
-  end
-
-  def related_item_url
-    attrs[:related_item_url].present? ? attrs[:related_item_url].map.with_index { |url, i| { url: url, label: attrs[:related_item_label][i] } } : []
   end
 
   protected

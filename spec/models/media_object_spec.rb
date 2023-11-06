@@ -599,14 +599,14 @@ describe MediaObject do
       media_object.descMetadata.add_other_identifier('12345678','lccn')
       media_object.descMetadata.add_other_identifier('8675309 testing','local')
       solr_doc = media_object.to_solr
-      expect(solr_doc['other_identifier_ssim']).to include('12345678','8675309 testing')
-      expect(solr_doc['other_identifier_ssim']).not_to include('123456788675309 testing')
+      expect(solr_doc['other_identifier_sim']).to include('12345678','8675309 testing')
+      expect(solr_doc['other_identifier_sim']).not_to include('123456788675309 testing')
     end
     it 'should index identifier for master files' do
       master_file = FactoryBot.create(:master_file, identifier: ['TestOtherID'], media_object: media_object)
       media_object.reload
       solr_doc = media_object.to_solr(include_child_fields: true)
-      expect(solr_doc['other_identifier_ssim']).to include('TestOtherID')
+      expect(solr_doc['other_identifier_sim']).to include('TestOtherID')
     end
     it 'should index labels for master files' do
       FactoryBot.create(:master_file, :with_structure, media_object: media_object, title: 'Test Label')

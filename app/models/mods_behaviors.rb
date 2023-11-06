@@ -46,8 +46,7 @@ module ModsBehaviors
     solr_doc['genre_ssim'] = gather_terms(self.find_by_terms(:genre))
 #    solr_doc['physical_dtl_sim'] = gather_terms(self.find_by_terms(:format))
 #    solr_doc['contents_sim'] = gather_terms(self.find_by_terms(:parts_list))
-    solr_doc['note_ssim'] = gather_terms(self.find_by_terms(:note))
-    solr_doc['note_type_ssm'] = gather_attribute(self.find_by_terms(:note), 'type')
+    solr_doc['notes_sim'] = gather_terms(self.find_by_terms(:note))
     solr_doc['table_of_contents_ssim'] = gather_terms(self.find_by_terms(:table_of_contents))
     solr_doc['usage_ssim'] = gather_terms(self.find_by_terms(:usage))
 #    solr_doc['collection_sim'] = gather_terms(self.find_by_terms(:archival_collection))
@@ -74,12 +73,11 @@ module ModsBehaviors
     solr_doc['language_ssim'] = gather_terms(self.find_by_terms(:language_text))
     solr_doc['language_code_ssim'] = gather_terms(self.find_by_terms(:language_code))
     solr_doc['physical_description_ssim'] = gather_terms(self.find_by_terms(:physical_description))
-    solr_doc['related_item_url_ssim'] = gather_terms(self.find_by_terms(:related_item_url))
-    solr_doc['related_item_label_ssim'] = gather_terms(self.find_by_terms(:related_item_label))
+    solr_doc['related_item_url_sim'] = gather_terms(self.find_by_terms(:related_item_url))
+    solr_doc['related_item_label_sim'] = gather_terms(self.find_by_terms(:related_item_label))
     solr_doc['terms_of_use_ssi'] = (self.find_by_terms(:terms_of_use) - self.find_by_terms(:rights_statement)).text
     solr_doc['rights_statement_ssi'] = self.find_by_terms(:rights_statement).text
-    solr_doc['other_identifier_ssim'] = gather_terms(self.find_by_terms(:other_identifier))
-    solr_doc['other_identifier_type_ssm'] = gather_attribute(self.find_by_terms(:other_identifier), 'type')
+    solr_doc['other_identifier_sim'] = gather_terms(self.find_by_terms(:other_identifier))
 
     # Extract 4-digit year for creation date facet in Hydra and pub_date facet in Blacklight
     solr_doc['date_ssi'] = self.find_by_terms(:date_issued).text

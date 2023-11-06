@@ -172,7 +172,7 @@ describe CatalogController do
 
     describe "search fields" do
       let(:media_object) { FactoryBot.create(:fully_searchable_media_object) }
-      ["title_tesi", "creator_ssim", "contributor_ssim", "unit_ssim", "collection_ssim", "abstract_ssi", "publisher_ssim", "topical_subject_ssim", "geographic_subject_ssim", "temporal_subject_ssim", "genre_ssim", "physical_description_ssim", "language_ssim", "date_ssim", "note_ssim", "table_of_contents_ssim", "other_identifier_ssim", "series_ssim" ].each do |field|
+      ["title_tesi", "creator_ssim", "contributor_ssim", "unit_ssim", "collection_ssim", "abstract_ssi", "publisher_ssim", "topical_subject_ssim", "geographic_subject_ssim", "temporal_subject_ssim", "genre_ssim", "physical_description_ssim", "language_ssim", "date_ssim", "notes_sim", "table_of_contents_ssim", "other_identifier_sim", "series_ssim" ].each do |field|
         it "should find results based upon #{field}" do
           query = Array(media_object.to_solr[field]).first
           #split on ' ' and only search on the first word of a multiword field value

@@ -234,7 +234,7 @@ class MediaObject < ActiveFedora::Base
 
   def fill_in_solr_fields_that_need_master_files(solr_doc)
     solr_doc['section_id_ssim'] = ordered_master_file_ids
-    solr_doc["other_identifier_ssim"] +=  master_files.collect {|mf| mf.identifier.to_a }.flatten
+    solr_doc["other_identifier_sim"] +=  master_files.collect {|mf| mf.identifier.to_a }.flatten
     solr_doc["date_digitized_ssim"] = master_files.collect {|mf| mf.date_digitized }.compact.map {|t| Time.parse(t).strftime "%F" }
     solr_doc["section_label_tesim"] = section_labels
     solr_doc['section_physical_description_ssim'] = section_physical_descriptions
@@ -260,12 +260,15 @@ class MediaObject < ActiveFedora::Base
       solr_doc["date_ingested_ssim"] = self.create_date.strftime "%F" if self.create_date.present?
       solr_doc['avalon_resource_type_ssim'] = self.avalon_resource_type.map(&:titleize)
       solr_doc['identifier_ssim'] = self.identifier.map(&:downcase)
+      solr_doc['note_ssm'] = self.note.collect { |n| n.to_json }
+      solr_doc['other_identifier_ssm'] = self.other_identifier.collect { |oi| oi.to_json }
+      solr_doc['related_item_url_ssm'] = self.related_item_url.collect { |r| r.to_json }
       if include_child_fields
         fill_in_solr_fields_that_need_master_files(solr_doc)
       elsif id.present? # avoid error in test suite
         # Fill in other identifier so these values aren't stripped from the solr doc while waiting for the background job
         mf_docs = ActiveFedora::SolrService.query("isPartOf_ssim:#{id}", rows: 1_000_000)
-        solr_doc["other_identifier_ssim"] +=  mf_docs.collect { |h| h['identifier_ssim'] }.flatten
+        solr_doc["other_identifier_sim"] +=  mf_docs.collect { |h| h['identifier_ssim'] }.flatten
       end
 
       #Add all searchable fields to the all_text_timv field
@@ -285,9 +288,9 @@ class MediaObject < ActiveFedora::Base
       all_text_values << solr_doc["physical_description_ssim"]
       all_text_values << solr_doc["series_ssim"]
       all_text_values << solr_doc["date_ssim"]
-      all_text_values << solr_doc["note_ssim"]
+      all_text_values << solr_doc["note_ssm"]
       all_text_values << solr_doc["table_of_contents_ssim"]
-      all_text_values << solr_doc["other_identifier_ssim"]
+      all_text_values << solr_doc["other_identifier_ssm"]
       solr_doc["all_text_timv"] = all_text_values.flatten
       solr_doc.each_pair { |k,v| solr_doc[k] = v.is_a?(Array) ? v.select { |e| e =~ /\S/ } : v }
     end
