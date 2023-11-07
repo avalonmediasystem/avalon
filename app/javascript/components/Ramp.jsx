@@ -28,12 +28,22 @@ import "@samvera/ramp/dist/ramp.css";
 import { Col, Row, Tab, Tabs } from 'react-bootstrap';
 import './Ramp.scss';
 
+const ExpandCollapseArrow = () => {
+  return (
+  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" className="expand-collapse-svg" fill="currentColor" viewBox="0 0 16 16">
+    <path 
+      fillRule="evenodd" 
+      d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z">
+    </path>
+  </svg>);
+};
+
 const Ramp = ({
   base_url,
   mo_id,
   master_files_count,
+  has_structure,
   title,
-  expand_structure,
   share,
   timeline,
   playlist,
@@ -41,11 +51,71 @@ const Ramp = ({
   cdl
 }) => {
   const [manifestUrl, setManifestUrl] = React.useState('');
+  const [isClosed, setIsClosed] = React.useState(false);
+
+  let expandCollapseBtnRef = React.useRef();
+  let interval;
 
   React.useEffect(() => {
     let url = `${base_url}/media_objects/${mo_id}/manifest.json`;
     setManifestUrl(url);
+
+    // Attach player event listeners when there's structure
+    if(has_structure) {
+      interval = setInterval(addPlayerEventListeners, 500);
+    }
+    
+    // Clear interval upon component unmounting
+    return () => clearInterval(interval);
   }, []);
+
+  /**
+   * Listen to player's events to update the structure navigation
+   * UI
+   */
+  const addPlayerEventListeners = () => {
+    let player = document.getElementById('iiif-media-player');
+    if(player && player.player != undefined && !player.player.isDisposed()) {
+      let playerInst = player.player;
+      playerInst.on('loadedmetadata', () => {
+        playerInst.on('timeupdate', () => {
+          setIsClosed(false);
+        });
+      });
+      // Expand sections when a new Canvas is loaded into the player
+      playerInst.on('ready', () => {
+        setIsClosed(false);
+      });
+    }
+  }
+
+  React.useEffect(() => {
+    expandCollapseSections(isClosed);
+  }, [isClosed]);
+
+  const handleCollapseExpand = () => {
+    setIsClosed(isClosed => !isClosed);
+  }
+
+  const expandCollapseSections = (isClosing) => {
+    const allSections = $('div[class*="ramp--structured-nav__section"]');
+    allSections.each(function(index, section) {
+      let sectionUl = section.nextSibling;
+      if(sectionUl) {
+        if(isClosing) {
+          sectionUl.classList.remove('expanded');
+          sectionUl.classList.add('closed');
+          expandCollapseBtnRef.current.classList.remove('expanded');
+          expandCollapseBtnRef.current.classList.add('closed');
+        } else {
+          sectionUl.classList.remove('closed');
+          sectionUl.classList.add('expanded');
+          expandCollapseBtnRef.current.classList.remove('closed');
+          expandCollapseBtnRef.current.classList.add('expanded');
+        }
+      }
+    });
+  }
 
   return (
     <IIIFPlayer manifestUrl={manifestUrl}>
@@ -92,6 +162,19 @@ const Ramp = ({
                                 </button>
                               }
                             </Col>
+                            { has_structure && 
+                              <Col className="ramp-button-group-2">
+                                <button 
+                                  className="btn btn-outline expand-collapse-toggle-button expanded"
+                                  id="expand_all_btn" 
+                                  onClick={handleCollapseExpand} 
+                                  ref={expandCollapseBtnRef}
+                                >
+                                  <ExpandCollapseArrow />
+                                  {isClosed ? ' Expand' : ' Close'} {master_files_count > 1 ? `${master_files_count} Sections` : 'Section'}
+                                </button>
+                              </Col>
+                            }
                           </div>
                           <Row className="mx-0">
                             <Col md={12} lg={12} sm={12}>
@@ -105,9 +188,6 @@ const Ramp = ({
                               </div>
                             </Col>
                           </Row>
-                        <div className="ramp--rails-expand-structure">
-                          { <div className="mr-1" dangerouslySetInnerHTML={{ __html: expand_structure.content }} /> }
-                        </div>
                         <StructuredNavigation />
                       </React.Fragment>
                     }
