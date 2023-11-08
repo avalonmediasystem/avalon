@@ -19,7 +19,6 @@
 }
 
 .ramp--all-components {
-
   .iiif-player {
     .ramp--structured-nav {
       float: left;
@@ -76,6 +75,24 @@
       padding-bottom: 0.75rem;
       font-size: 1.25rem;
     }
+  }
+
+  .ramp--structured-nav__list.expanded {
+    display: block;
+  }
+
+  .ramp--structured-nav__list.closed {
+    display: none;
+  }
+
+  .expand-collapse-toggle-button.expanded>svg {
+    transform: rotate(-180deg);
+    transition: transform 0.35s ease;
+  }
+
+  .expand-collapse-toggle-button.closed>svg {
+    transform: rotate(0deg);
+    transition: transform 0.35s ease;
   }
 
   .nav.nav-tabs {
@@ -155,21 +172,6 @@
   }
   .tab-pane:focus:not(:focus-visible) {
     outline:none;
-  }
-
-  #expand_all_sections {
-    display: flex !important;
-    justify-content: flex-end;
-    padding-bottom: .5rem !important;
-  }
-
-  .accordion-toggle-icon {
-    align-items: center;
-    color: #4c5a69;
-  }
-
-  .icn-expand-all {
-    width: 20px;
   }
 
   /* Override Ramp styling */
