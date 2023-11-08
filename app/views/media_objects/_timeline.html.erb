@@ -13,13 +13,6 @@ Unless required by applicable law or agreed to in writing, software distributed
   specific language governing permissions and limitations under the License.
 ---  END LICENSE_HEADER BLOCK  ---
 %>
-
-<div id="timeline-button">
-  <button type="button" class="btn btn-outline text-nowrap" id="timeline-btn" data-toggle="modal" data-target="#timelineModal" disabled >
-    Create Timeline
-  </button>
-</div>
-
 <div class="modal fade" id="timelineModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" style="display: none;" data-title="<%= @media_object.title %>">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
@@ -57,7 +50,7 @@ $(document).ready(function() {
     let title, streamId;
     if(player) {
       player.player.on('loadedmetadata', () => {
-        let timelineBtn = document.getElementById('timeline-btn');
+        let timelineBtn = document.getElementById('timelineBtn');
         if(timelineBtn) {
           timelineBtn.disabled = false;
         }
