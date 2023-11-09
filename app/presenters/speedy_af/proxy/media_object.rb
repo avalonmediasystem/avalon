@@ -27,7 +27,6 @@ class SpeedyAF::Proxy::MediaObject < SpeedyAF::Base
     end
     # Handle this case here until a better fix can be found for multiple solr fields which don't have a model property
     @attrs[:section_id] = solr_document["section_id_ssim"]
-    @attrs[:date_issued] = solr_document["date_ssi"]
     @attrs[:hidden?] = solr_document["hidden_bsi"]
     @attrs[:read_groups] = solr_document["read_access_group_ssim"] || []
     @attrs[:edit_groups] = solr_document["edit_access_group_ssim"] || []

@@ -22,13 +22,16 @@ describe 'item catalog' do
     before :each do
       media_object.read_groups += ['ldap_group']
       media_object.save!
+      # Perform indexing job so master file specific fields are added to the Media Object solr_doc
+      MediaObjectIndexingJob.perform_now(media_object.id)
     end
 
     it 'verifies presence of all facet fields' do
       visit '/catalog'
-      ['avalon_resource_type', 'creator', 'date', 'genre', 'series', 'collection', 'unit', 'language'].each do |field|
+      ['avalon_resource_type', 'creator', 'genre', 'series', 'collection', 'unit', 'language'].each do |field|
         expect(page).to have_selector(:id, "facet-#{field}_ssim-header")
       end
+      expect(page).to have_selector(:id, "facet-date_sim-header")
       ['workflow_published_sim', 'avalon_uploader_ssi', 'read_access_group_ssim', 'read_access_virtual_group_ssim', 'date_digitized_ssim', 'date_ingested_ssim'].each do |field|
         expect(page).to_not have_selector(:id, "facet-#{field}-header")
       end
@@ -41,15 +44,17 @@ describe 'item catalog' do
     before :each do
       media_object.read_groups += ['ldap_group']
       media_object.save!
+      MediaObjectIndexingJob.perform_now(media_object.id)
       @user = FactoryBot.create(:user)
       login_as @user, scope: :user
     end
 
     it 'verifies presence of all facet fields' do
       visit '/catalog'
-      ['avalon_resource_type', 'creator', 'date', 'genre', 'series', 'collection', 'unit', 'language'].each do |field|
+      ['avalon_resource_type', 'creator', 'genre', 'series', 'collection', 'unit', 'language'].each do |field|
         expect(page).to have_selector(:id, "facet-#{field}_ssim-header")
       end
+      expect(page).to have_selector(:id, "facet-date_sim-header")
       ['workflow_published_sim', 'avalon_uploader_ssi', 'read_access_group_ssim', 'read_access_virtual_group_ssim', 'date_digitized_ssim', 'date_ingested_ssim'].each do |field|
         expect(page).to_not have_selector(:id, "facet-#{field}-header")
       end
@@ -64,15 +69,17 @@ describe 'item catalog' do
     before :each do
       media_object.read_groups += ['ldap_group']
       media_object.save!
+      MediaObjectIndexingJob.perform_now(media_object.id)
       login_as manager, scope: :user
     end
 
     it 'verifies presence of all facet fields' do
       visit '/catalog'
-      ['avalon_resource_type', 'creator', 'date', 'genre', 'series', 'collection', 'unit', 'language'].each do |field|
+      ['avalon_resource_type', 'creator', 'genre', 'series', 'collection', 'unit', 'language'].each do |field|
         expect(page).to have_selector(:id, "facet-#{field}_ssim-header")
       end
-      ['workflow_published_sim', 'avalon_uploader_ssi', 'read_access_group_ssim', 'read_access_virtual_group_ssim', 'date_ingested_ssim'].each do |field|
+      expect(page).to have_selector(:id, "facet-date_sim-header")
+      ['workflow_published_sim', 'avalon_uploader_ssi', 'read_access_group_ssim', 'read_access_virtual_group_ssim', 'date_digitized_ssim', 'date_ingested_ssim'].each do |field|
         expect(page).to have_selector(:id, "facet-#{field}-header")
       end
     end
@@ -84,16 +91,18 @@ describe 'item catalog' do
     before :each do
       media_object.read_groups += ['ldap_group']
       media_object.save!
+      MediaObjectIndexingJob.perform_now(media_object.id)
       @user = FactoryBot.create(:administrator)
       login_as @user, scope: :user
     end
 
     it 'verifies presence of all facet fields' do
       visit '/catalog'
-      ['avalon_resource_type', 'creator', 'date', 'genre', 'series', 'collection', 'unit', 'language'].each do |field|
+      ['avalon_resource_type', 'creator', 'genre', 'series', 'collection', 'unit', 'language'].each do |field|
         expect(page).to have_selector(:id, "facet-#{field}_ssim-header")
       end
-      ['workflow_published_sim', 'avalon_uploader_ssi', 'read_access_group_ssim', 'read_access_virtual_group_ssim', 'date_ingested_ssim'].each do |field|
+      expect(page).to have_selector(:id, "facet-date_sim-header")
+      ['workflow_published_sim', 'avalon_uploader_ssi', 'read_access_group_ssim', 'read_access_virtual_group_ssim', 'date_digitized_ssim', 'date_ingested_ssim'].each do |field|
         expect(page).to have_selector(:id, "facet-#{field}-header")
       end
     end

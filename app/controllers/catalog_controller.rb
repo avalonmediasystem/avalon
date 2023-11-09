@@ -82,7 +82,7 @@ class CatalogController < ApplicationController
     # facet bar
     config.add_facet_field 'avalon_resource_type_ssim', label: 'Format', limit: 5, collapse: false
     config.add_facet_field 'creator_ssim', label: 'Main contributor', limit: 5
-    config.add_facet_field 'date_ssim', label: 'Date', limit: 5
+    config.add_facet_field 'date_sim', label: 'Date', limit: 5
     config.add_facet_field 'genre_ssim', label: 'Genres', limit: 5
     config.add_facet_field 'series_ssim', label: 'Series', limit: 5
     config.add_facet_field 'collection_ssim', label: 'Collection', limit: 5
@@ -111,7 +111,7 @@ class CatalogController < ApplicationController
     # solr fields to be displayed in the index (search results) view
     #   The ordering of the field names is the order of the display
     config.add_index_field 'title_tesi', label: 'Title', if: Proc.new {|context, _field_config, _document| context.request.format == :json }
-    config.add_index_field 'date_ssi', label: 'Date', helper_method: :combined_display_date
+    config.add_index_field 'date_issued_ssi', label: 'Date', helper_method: :combined_display_date
     config.add_index_field 'creator_ssim', label: 'Main contributors', helper_method: :contributor_index_display
     config.add_index_field 'abstract_ssi', label: 'Summary', helper_method: :description_index_display
     config.add_index_field 'duration_ssi', label: 'Duration', if: Proc.new {|context, _field_config, _document| context.request.format == :json }
@@ -120,18 +120,15 @@ class CatalogController < ApplicationController
     # solr fields to be displayed in the show (single result) view
     #   The ordering of the field names is the order of the display
     config.add_show_field 'title_tesi', label: 'Title'
-    config.add_show_field 'format_ssim', label: 'Format'
-    config.add_show_field 'creator_ssim', label: 'Creator'
+    config.add_show_field 'resource_type_ssim', label: 'Format'
+    config.add_show_field 'creator_ssim', label: 'Main Contributors'
     config.add_show_field 'language_ssim', label: 'Language'
-    config.add_show_field 'date_ssi', label: 'Date'
+    config.add_show_field 'date_issued_ssi', label: 'Date'
     config.add_show_field 'abstract_ssim', label: 'Abstract'
     config.add_show_field 'location_ssim', label: 'Locations'
-    config.add_show_field 'time_period_sim', label: 'Time periods'
     config.add_show_field 'contributor_ssim', label: 'Contributors'
     config.add_show_field 'publisher_ssim', label: 'Publisher'
     config.add_show_field 'genre_ssim', label: 'Genre'
-    config.add_show_field 'publication_location_ssim', label: 'Place of publication'
-    config.add_show_field 'terms_ssim', label: 'Terms'
 
     # "fielded" search configuration. Used by pulldown among other places.
     # For supported keys in hash, see rdoc for Blacklight::SearchFields
@@ -191,10 +188,10 @@ class CatalogController < ApplicationController
     # label in pulldown is followed by the name of the SOLR field to sort by and
     # whether the sort is ascending or descending (it must be asc or desc
     # except in the relevancy case).
-    config.add_sort_field 'score desc, title_ssort asc, date_ssi desc', label: 'Relevance'
-    config.add_sort_field 'date_ssi desc, title_ssort asc', label: 'Date'
+    config.add_sort_field 'score desc, title_ssort asc, date_issued_ssi desc', label: 'Relevance'
+    config.add_sort_field 'date_issued_ssi desc, title_ssort asc', label: 'Date'
     config.add_sort_field 'creator_ssort asc, title_ssort asc', label: 'Main contributor'
-    config.add_sort_field 'title_ssort asc, date_ssi desc', label: 'Title'
+    config.add_sort_field 'title_ssort asc, date_issued_ssi desc', label: 'Title'
     config.add_sort_field 'timestamp desc', label: 'Recently Updated', if: false
 
     # If there are more than this many search results, no spelling ("did you
