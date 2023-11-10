@@ -133,23 +133,23 @@ const Ramp = ({
                         </div>
                           <div  className="ramp--rails-content">
                             <Col className="ramp-button-group-1">
-                              { timeline.canCreate && <div className="mr-1" dangerouslySetInnerHTML={{ __html: timeline.content }} /> }
-                              { playlist.canCreate &&
-                                <button className="btn btn-outline mr-1 text-nowrap"
-                                  id="addToPlaylistBtn"
+                              { timeline.canCreate &&
+                                <button
+                                  id="timelineBtn"
+                                  className="btn btn-outline mr-1 text-nowrap"
                                   type="button"
-                                  data-toggle="collapse"
-                                  data-target="#addToPlaylistPanel"
+                                  data-toggle="modal"
+                                  data-target="#timelineModal"
                                   aria-expanded="false"
-                                  aria-controls="addToPlaylistPanel"
+                                  aria-controls="timelineModal"
                                   disabled={true}
                                 >
-                                  Add to Playlist
+                                  Create Timeline
                                 </button>
                               }
                               { share.canShare &&
                                 <button
-                                  className="btn btn-outline text-nowrap"
+                                  className="btn btn-outline mr-1 text-nowrap"
                                   type="button"
                                   data-toggle="collapse"
                                   data-target="#shareResourcePanel"
@@ -159,6 +159,24 @@ const Ramp = ({
                                 >
                                   <i className="fa fa-share-alt"></i>
                                     Share
+                                </button>
+                              }
+                              { playlist.canCreate &&
+                                <button className="btn btn-outline text-nowrap mr-1"
+                                  id="addToPlaylistBtn"
+                                  type="button"
+                                  data-toggle="collapse"
+                                  data-target="#addToPlaylistPanel"
+                                  aria-expanded="false"
+                                  aria-controls="addToPlaylistPanel"
+                                  disabled={true}
+                                >
+                                  {/* Static SVG image in /app/assets/images/add_to_playlist_icon.svg */}
+                                  <svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+                                     viewBox="-293 386 24 24" xmlSpace="preserve">
+                                     <path className="st1" fill="currentColor" d="M-279,395h-12v2h12V395z M-279,391h-12v2h12V391z M-275,399v-4h-2v4h-4v2h4v4h2v-4h4v-2H-275z M-291,401h8v-2h-8V401z"/>
+                                  </svg>
+                                  Add to Playlist
                                 </button>
                               }
                             </Col>
@@ -177,6 +195,9 @@ const Ramp = ({
                             }
                           </div>
                           <Row className="mx-0">
+                            <Col>
+                              <div dangerouslySetInnerHTML={{ __html: timeline.content}} />
+                            </Col>
                             <Col md={12} lg={12} sm={12}>
                               <div className="collapse" id="addToPlaylistPanel">
                                 <div className="card card-body" dangerouslySetInnerHTML={{ __html: playlist.tab }} />
