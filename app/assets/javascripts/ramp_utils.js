@@ -14,8 +14,12 @@
  * ---  END LICENSE_HEADER BLOCK  ---
 */
 
-/** Get the current active structure item from DOM */
-function getActiveItem() {
+/**
+ * Get the current active structure item(s) from DOM
+ * @param {Boolean} checkSection flag to indicate current section as active
+ * @returns {Object} active track information
+ */
+function getActiveItem(checkSection = true) {
   let currentPlayer = document.getElementById('iiif-media-player');
   let duration = currentPlayer.player.duration();
   let currentStructureItem = $('li[class="ramp--structured-nav__list-item active"]');
@@ -55,7 +59,7 @@ function getActiveItem() {
       let streamId = item.pathname.split('/').pop();
       return { label, times, tags: ['current-track'], streamId };
     }
-  } else if (currentSection?.length > 0) {
+  } else if (currentSection?.length > 0 && checkSection) {
     /** When the structured navigation doesn't have an active timespan
      * get the current active section to populate the timeline and add
      * to playlist options */
@@ -171,10 +175,57 @@ function collapseMultiItemCheck () {
 
 /** Collapse title and description forms */
 function collapseMoreDetails() {
-  $('#moreDetails').collapse('show');
-  $('#multiItemCheck').collapse('hide');
-  let currentTrackName = $('#current-track-name').text();
-  $('#playlist_item_title').val(currentTrackName);
+  if(!$('#moreDetails').hasClass('show')) {
+    $('#moreDetails').collapse('show');
+    $('#multiItemCheck').collapse('hide');
+    // When the title field is empty fill it with either 
+    // current track or current section name
+    if($('#playlist_item_title').val() == '') {
+      $('#playlist_item_title').val(
+        $('#current-track-name').text() || $('#current-section-name').text()
+      );
+    }
+  }
+}
+
+/**
+ * Enable or disable the 'Current Track' option based on the current time of
+ * the player. When the current time is not included within an active timespan
+ * disable the option otherwise enable it.
+ * @param {String} mediaObjectTitle 
+ * @param {Object} activeTrack JSON object for the active timespans
+ * @param {Number} currentTime player's playhead position
+ * @param {Boolean} isSeeked flag to indicate player 'seeked' event happened/not
+ */
+function disableEnableCurrentTrack(mediaObjectTitle, activeTrack, currentTime, isSeeked) {
+  if(activeTrack != undefined) {
+    streamId = activeTrack.streamId;
+    let { label, times } = activeTrack;
+    let starttime = currentTime || times.begin;
+    $('#playlist_item_start').val(createTimestamp(starttime, true));
+    $('#playlist_item_end').val(createTimestamp(times.end, true));
+    // Only change the title when user actively seeked to a different timestamp,
+    // persisting the user changes to the field unless the active track is changed
+    if(isSeeked && mediaObjectTitle != undefined) {
+      $('#playlist_item_title').val(`${mediaObjectTitle} - ${label}`);
+    }
+    $('#current-track-name').text(`${mediaObjectTitle} - ${label}`);
+    // When player's currentTime is in between the activeTrack's begin and
+    // end times, enable the current track option
+    if(times.begin <= starttime && starttime <= times.end) {
+      $('#playlistitem_scope_track')[0].disabled = false;
+      $('#current-track-text').removeClass('disabled-option');
+    }
+  } else {
+    // Whena ctiveTrack is undefined disable the current track option
+    $('#playlistitem_scope_track')[0].disabled = true;
+    $('#current-track-name').text('');
+    $('#current-track-text').addClass('disabled-option');
+    if($('#playlistitem_scope_track')[0].checked) {
+      $('#moreDetails').collapse('hide');
+      $('#playlistitem_scope_track').prop('checked', false);
+    }
+  }
 }
 
 /** AJAX request for add to playlist for submission for playlist item for 
