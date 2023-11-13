@@ -411,4 +411,8 @@ class MediaObject < ActiveFedora::Base
       end
       ips.flatten.compact.uniq || []
     end
+
+    def sections_with_files(tag: '*')
+      ordered_master_file_ids.select { |m| SpeedyAF::Proxy::MasterFile.find(m).supplemental_files(tag: tag).present? }
+    end
 end
