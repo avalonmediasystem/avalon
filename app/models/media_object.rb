@@ -290,7 +290,7 @@ class MediaObject < ActiveFedora::Base
       all_text_values << solr_doc["date_sim"]
       all_text_values << solr_doc["notes_sim"]
       all_text_values << solr_doc["table_of_contents_ssim"]
-      all_text_values << solr_doc["other_identifier_ssm"]
+      all_text_values << solr_doc["other_identifier_sim"]
       solr_doc["all_text_timv"] = all_text_values.flatten
       solr_doc.each_pair { |k,v| solr_doc[k] = v.is_a?(Array) ? v.select { |e| e =~ /\S/ } : v }
     end
