@@ -19,7 +19,7 @@ Unless required by applicable law or agreed to in writing, software distributed
 <% end %>
 
 <% if defined? flash and !flash.empty? %>
-  <div class="container-fluid" id="alerts">
+  <div class="container-fluid px-0" id="alerts">
   <% [:success, :notice, :error, :alert].each do |type| %>
     <%- alert_class = case type
       when :success then "alert-success"

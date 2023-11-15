@@ -19,18 +19,15 @@
 }
 
 .ramp--all-components {
-  .iiif-player {
-    .ramp--structured-nav {
-      float: left;
-      width: 40%;
-      margin-top: 20px;
-    }
-    .ramp--transcript_nav {
-      float: right;
-      width: 60%;
-      margin-left: -20px;
-      margin-top: 20px;
-    }
+  .ramp--structured-nav {
+    margin-top: 20px;
+    max-width: initial;
+  }
+
+  // Left align the structure navigation component
+  .ramp--structured-nav>.ramp--structured-nav__list,
+  .ramp--structured-nav>.ramp--structured-nav__list>.ramp--structured-nav__list-item {
+    padding: 0;
   }
 
   .ramp--rails-title {
@@ -57,11 +54,13 @@
     .ramp-button-group-1 {
       display: flex;
       justify-content: flex-start;
+      padding: 0;
     }
 
     .ramp-button-group-2 {
       display: flex;
       justify-content: flex-end;
+      padding: 0;
     }
   }
 
@@ -96,82 +95,83 @@
   }
 
   .nav.nav-tabs {
-    background-color:#fff;
-    border:1px solid #e2e7e9;
-    border-top-left-radius:.5rem;
-    border-top-right-radius:.5rem;
-    display:-ms-flexbox;
-    display:flex;
-    -ms-flex-wrap:wrap;
-    flex-wrap:wrap;
+    background-color: #fff;
+    border: 1px solid #e2e7e9;
+    border-top-left-radius: 0.25rem;
+    border-top-right-radius: 0.25rem;
+    display: -ms-flexbox;
+    display: flex;
+    -ms-flex-wrap: wrap;
+    flex-wrap: wrap;
 
     .nav-item {
-      border:none;
-      background-color:transparent;
-      border-bottom:1px solid #e2e7e9;
-      color:#243142;
-      cursor:pointer;
-      -ms-flex-positive:1;
-      flex-grow:1;
-      line-height:1;
-      padding:1rem;
-      position:relative;
-      z-index:100;
+      border: none;
+      background-color: transparent;
+      border-bottom: 1px solid #e2e7e9;
+      color: #243142;
+      cursor: pointer;
+      -ms-flex-positive: 1;
+      flex-grow: 1;
+      line-height: 1;
+      padding: 1rem;
+      position: relative;
+      z-index: 100;
     }
     .nav-item:not(:first-child) {
-      border-left:1px solid #e2e7e9;
-      margin-left:-1px;
+      border-left: 1px solid #e2e7e9;
+      margin-left: -1px;
+      border-radius: 0;
     }
     .nav-item:hover {
-      background-color:#f8f9fa;
-      color:#0e1825;
+      background-color: #f8f9fa;
+      color: #0e1825;
     }
     .nav-item:hover:after {
-      background-color:#e2e7e9;
-      bottom:0;
-      content:"";
-      display:block;
-      height:.25rem;
-      left:0;
-      position:absolute;
-      width:100%;
+      background-color: #e2e7e9;
+      bottom: 0;
+      content: "";
+      display: block;
+      height: 0.25rem;
+      left: 0;
+      position: absolute;
+      width: 100%;
     }
     .nav-item:focus {
-      outline:.125rem solid #328bb8;
-      outline-offset:.125rem;
-      background-color:#edfafd;
+      outline:.125rem solid #80a590;
+      outline-offset: 0.125rem;
+      background-color: rgba(128, 165, 144, .3);
     }
     .nav-item:focus:not(:focus-visible) {
-      outline:none;
+      outline: none;
     }
     .nav-item[aria-selected=true] {
-      background-color:#f8f9fa;
+      background-color: #f8f9fa;
     }
     .nav-item[aria-selected=true]:after {
-      bottom:0;
-      background-color:#2a5459;
-      content:"";
-      display:block;
-      height:.25rem;
-      left:0;
-      position:absolute;
-      width:100%;
+      bottom: 0;
+      background-color: #2a5459;
+      content: "";
+      display: block;
+      height: 0.25rem;
+      left: 0;
+      position: absolute;
+      width: 100%;
     }
   }
 
   .tab-pane {
     padding:1rem;
-    border-bottom-left-radius:.5rem;
-    border-bottom-right-radius:.5rem;
+    border-bottom-left-radius: 0.25rem;
+    border-bottom-right-radius: 0.25rem;
     max-height: 75vh;
     overflow: auto;
   }
   .tab-pane:focus {
-    outline:.125rem solid #006298;
-    outline-offset:-.125rem;
+    outline: 0.125rem solid #006298;
+    outline-offset: -0.125rem;
   }
   .tab-pane:focus:not(:focus-visible) {
-    outline:none;
+    outline: none;
   }
 
   /* Override Ramp styling */
@@ -188,6 +188,7 @@
     max-height: 72vh;
     display: flex;
     flex-direction: column;
+    padding: 0;
   }
 
   .ramp--transcript_nav div.transcript_content {

@@ -131,7 +131,7 @@ const Ramp = ({
                         <div className="ramp--rails-title">
                           { <div className="object-title" dangerouslySetInnerHTML={{ __html: title.content }} /> }
                         </div>
-                          <div  className="ramp--rails-content">
+                          <div className="ramp--rails-content">
                             <Col className="ramp-button-group-1">
                               { timeline.canCreate &&
                                 <button
@@ -198,14 +198,14 @@ const Ramp = ({
                             <Col>
                               <div dangerouslySetInnerHTML={{ __html: timeline.content}} />
                             </Col>
-                            <Col md={12} lg={12} sm={12}>
+                            <Col md={12} lg={12} sm={12} className="px-0">
                               <div className="collapse" id="addToPlaylistPanel">
                                 <div className="card card-body" dangerouslySetInnerHTML={{ __html: playlist.tab }} />
                               </div>
                             </Col>
-                            <Col md={12} lg={12} sm={12}>
+                            <Col md={12} lg={12} sm={12} className="px-0">
                               <div className="collapse" id="shareResourcePanel">
-                                <div className="card card-body share-tabs" dangerouslySetInnerHTML={{ __html: share.content }} />
+                                <div className="share-tabs" dangerouslySetInnerHTML={{ __html: share.content }} />
                               </div>
                             </Col>
                           </Row>
