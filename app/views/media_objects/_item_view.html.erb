@@ -50,7 +50,9 @@ Unless required by applicable law or agreed to in writing, software distributed
         timeline: { canCreate: (current_ability.can? :create, Timeline), content: lending_enabled?(@media_object) ? (render('timeline') if can_stream) : render('timeline') },
         playlist: { canCreate: (current_ability.can? :create, Playlist), tab: render('add_to_playlist') },
         in_progress: in_progress,
-        cdl: { enabled: lending_enabled?(@media_object), can_stream: can_stream, embed: render('embed_checkout'), destroy: render('destroy_checkout') }
+        cdl: { enabled: lending_enabled?(@media_object), can_stream: can_stream, embed: render('embed_checkout'), destroy: render('destroy_checkout') },
+        has_files: @media_object.supplemental_files.present? || @media_object.sections_with_files.present?,
+        has_transcripts: @media_object.sections_with_files(tag: 'transcript').present?
       }
     ) %>
   </div>
@@ -61,7 +63,10 @@ Unless required by applicable law or agreed to in writing, software distributed
     // When viewing video on smaller devices scroll to page content to fully
     // display the video player
     $(document).ready(function () {
+      const sectionIds = <%= @media_object.ordered_master_file_ids.to_json.html_safe %>;
+      const transcriptSections = <%= @media_object.sections_with_files(tag: 'transcript').to_json.html_safe %>;
       let scrollInterval = setInterval(autoScroll, 500);
+      let timeCheck = setInterval(initTranscriptCheck, 500);
 
       function autoScroll () {
         const isVideo = <%= @currentStream ? @currentStreamInfo[:is_video] : false %>;
@@ -75,6 +80,36 @@ Unless required by applicable law or agreed to in writing, software distributed
             }, 1000);
           }
           clearInterval(scrollInterval);
+        }
+      }
+
+      function initTranscriptCheck() {
+        let player = document.getElementById('iiif-media-player');
+        if(player) {
+          addPlayerEventListeners(player.player, () => {
+            clearInterval(timeCheck);
+          });
+        }
+      }
+
+      function addPlayerEventListeners(player) {
+        player.on('loadedmetadata', () => {
+          transcriptCheck();
+        });
+      }
+
+      function transcriptCheck() {
+        let sectionId = sectionIds[canvasIndex];
+        let transcriptTab = document.evaluate('//a[text()="Transcripts"]', document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+        let detailTab = document.evaluate('//a[text()="Details"]', document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+
+        if(!transcriptSections.includes(sectionId)) {
+          // If transcript tab is the active tab when it is hidden, the tab goes away but the box still displays
+          // the missing transcript file message. Force change over to a different tab to avoid this case.
+          if (transcriptTab.getAttribute('aria-selected') === "true") { detailTab.click(); }
+          transcriptTab.style.display = 'none';
+        } else if (transcriptSections.includes(sectionId) && transcriptTab.style.display === 'none') {
+          transcriptTab.style.display = '';
         }
       }
     });
