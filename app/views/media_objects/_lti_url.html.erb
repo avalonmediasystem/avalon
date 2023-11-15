@@ -14,27 +14,23 @@ Unless required by applicable law or agreed to in writing, software distributed
 ---  END LICENSE_HEADER BLOCK  ---
 %>
 <% if section=='tab-content' %>
-
-    <div class="tab-pane" id="lti-tab">
-      <p class="muted">Copy the link below to share this resource via LTI</p>
-      <form role="form">
-        <div class="form-group">
-          <label for="ltilink-object">Item</label>
-          <input type="text" class="col-md-5 form-control" id="ltilink-object" value="<%= lti_share_url_for(@media_object) %>" onClick="this.select();" readonly="readonly">
-        </div>
-        <div class="form-group">
-          <label for="ltilink-section">Section</label>
-          <% if @currentStream.present? %>
-          <input type="text" class="col-md-5 form-control" id="ltilink-section" value="<%= lti_share_url_for(@currentStream) %>" onClick="this.select();" readonly="readonly">
-          <% else %>
-          <p class="muted"> <%= I18n.t('media_object.empty_share_section_permalink_notice') %> </p>
-          <% end %>
-        </div>
-      </form>
-    </div>
-
+  <div class="tab-pane" id="lti-tab">
+    <p class="muted">Copy the link below to share this resource via LTI</p>
+    <form role="form">
+      <div class="form-group">
+        <label for="ltilink-object">Item</label>
+        <input type="text" class="col-md-5 form-control" id="ltilink-object" value="<%= lti_share_url_for(@media_object) %>" onClick="this.select();" readonly="readonly">
+      </div>
+      <div class="form-group">
+        <label for="ltilink-section">Section</label>
+        <% if @currentStream.present? %>
+        <input type="text" class="col-md-5 form-control" id="ltilink-section" value="<%= lti_share_url_for(@currentStream) %>" onClick="this.select();" readonly="readonly">
+        <% else %>
+        <p class="muted"> <%= I18n.t('media_object.empty_share_section_permalink_notice') %> </p>
+        <% end %>
+      </div>
+    </form>
+  </div>
 <% elsif section=='share-tabs' %>
-
-    <li><a class="nav-link" href="#lti-tab" data-toggle="tab">LTI URL</a></li>
-
+  <a class="nav-link nav-item" href="#lti-tab" data-toggle="tab">LTI URL</a>
 <% end %>

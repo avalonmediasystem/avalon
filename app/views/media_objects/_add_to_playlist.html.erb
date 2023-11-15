@@ -36,7 +36,7 @@ Unless required by applicable law or agreed to in writing, software distributed
           </div>
         </div>
 
-        <div id="add-to-playlist-form-group" class="mb-4">
+        <div id="add-to-playlist-form-group">
           <div class="form-check">
             <label class="form-check-label" onclick="collapseMoreDetails()">
               <input type="radio" name="post[playlistitem_scope]" id="playlistitem_scope_track" aria-label="playlist item current track">
@@ -67,7 +67,7 @@ Unless required by applicable law or agreed to in writing, software distributed
         </div>
         <div class="row" id="moreInfo">
           <div class="col-12">
-            <div class="collapse mb-4" id="multiItemCheck" data-parent="#moreInfo">
+            <div class="collapse mb-4 mt-4" id="multiItemCheck" data-parent="#moreInfo">
               <div class="form-check">
                 <label class="form-check-label">
                   <input type="checkbox" id="playlistitem_scope_structure">
@@ -77,7 +77,7 @@ Unless required by applicable law or agreed to in writing, software distributed
             </div>
           </div>
           <div class="col-12">
-            <div class="collapse mx-4" id="moreDetails" data-parent="#moreInfo">
+            <div class="collapse mx-4 mt-4" id="moreDetails" data-parent="#moreInfo">
               <div class="form-group">
                 <label for="playlist_item_title">Title</label>
                 <input type="text" name="playlist_item_title" id="playlist_item_title" class="form-control form-model" required>
