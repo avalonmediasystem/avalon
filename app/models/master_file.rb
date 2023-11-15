@@ -241,9 +241,10 @@ class MasterFile < ActiveFedora::Base
   def media_object=(mo)
     # Removes existing association
     if self.media_object.present?
-      self.media_object.master_files = self.media_object.master_files.to_a.reject { |mf| mf.id == self.id }
-      self.media_object.ordered_master_files = self.media_object.ordered_master_files.to_a.reject { |mf| mf.id == self.id }
-      self.media_object.save
+      old_mo = self.media_object
+      old_mo.master_files = old_mo.master_files.to_a.reject { |mf| mf.id == self.id }
+      old_mo.ordered_master_files = old_mo.ordered_master_files.to_a.reject { |mf| mf.id == self.id }
+      old_mo.save
     end
 
     self._media_object=(mo)
@@ -541,6 +542,11 @@ class MasterFile < ActiveFedora::Base
     end
   end
 
+  def stop_processing!
+    # Stops all processing
+    ActiveEncodeJobs::CancelEncodeJob.perform_later(workflow_id, id) if workflow_id.present? && !finished_processing?
+  end
+
   protected
 
   def mediainfo
@@ -759,11 +765,6 @@ class MasterFile < ActiveFedora::Base
   def find_encoder_class(klass_name)
     klass = klass_name&.safe_constantize
     klass if klass&.ancestors&.include?(ActiveEncode::Base)
-  end
-
-  def stop_processing!
-    # Stops all processing
-    ActiveEncodeJobs::CancelEncodeJob.perform_later(workflow_id, id) if workflow_id.present? && finished_processing?
   end
 
   def update_parent!

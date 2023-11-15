@@ -125,10 +125,14 @@ class MediaObject < ActiveFedora::Base
 
   accepts_nested_attributes_for :master_files, :allow_destroy => true
 
+  def published?
+    !avalon_publisher.blank?
+  end
+
   def destroy
     # attempt to stop the matterhorn processing job
-    self.master_files.each(&:destroy)
-    self.master_files.clear
+    self.master_files.each(&:stop_processing!)
+    self.master_files.each(&:delete)
     Bookmark.where(document_id: self.id).destroy_all
     super
   end

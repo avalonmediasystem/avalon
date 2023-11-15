@@ -91,3 +91,93 @@ Hydra::AccessControls::Permissions.module_eval do
       end
 end
 # End of overrides for AccessControl dirty tracking and autosaving
+
+class UUIDIdentifierService
+  def mint
+    SecureRandom.uuid
+  end
+end
+ActiveFedora::Base.identifier_service_class = UUIDIdentifierService
+
+ActiveFedora::Persistence.module_eval do
+    # This is only used when creating a new record. If the object doesn't have an id
+    # and assign_id can mint an id for the object, then assign it to the resource.
+    # Otherwise the resource will have the id assigned by the LDP server
+    def assign_rdf_subject
+      @ldp_source = if !id && new_id = assign_id
+		      subject_uri = base_path_for_resource + self.class.id_to_uri(new_id).gsub(ActiveFedora.fedora.base_uri, '') if base_path_for_resource != ActiveFedora.fedora.base_uri
+		      subject_uri ||= self.class.id_to_uri(new_id)
+		      ActiveFedora::LdpResource.new(ActiveFedora.fedora.connection, subject_uri, @resource)
+		    else
+		      ActiveFedora::LdpResource.new(ActiveFedora.fedora.connection, @ldp_source.subject, @resource, base_path_for_resource)
+		    end
+    end
+end
+
+ActiveFedora::Reflection::IndirectlyContainsReflection.class_eval do
+  def predicate
+    options[:has_member_relation] || ::RDF::Vocab::LDP.contains
+  end
+end
+
+# Override to add handling of :master_files relations since the predicate is stored in a different place
+ActiveFedora::ChangeSet.class_eval do
+    # @return [Hash<RDF::URI, RDF::Queryable::Enumerator>] hash of predicate uris to statements
+    def changes
+      @changes ||= changed_attributes.each_with_object({}) do |key, result|
+        if object.association(key.to_sym).is_a? ActiveFedora::Associations::Association
+          # ActiveFedora::Reflection::RDFPropertyReflection
+          predicate = object.association(key.to_sym).reflection.predicate
+          values = graph.query({ subject: object.rdf_subject, predicate: predicate })
+          result[predicate] = values if predicate.present?
+        elsif object.class.properties.keys.include?(key)
+          predicate = graph.reflections.reflect_on_property(key).predicate
+          results = graph.query({ subject: object.rdf_subject, predicate: predicate })
+          new_graph = child_graphs(results.map(&:object))
+          results.each do |res|
+            new_graph << res
+          end
+          result[predicate] = new_graph
+        elsif key == 'type'.freeze
+          # working around https://github.com/ActiveTriples/ActiveTriples/issues/122
+          predicate = ::RDF.type
+          result[predicate] = graph.query({ subject: object.rdf_subject, predicate: predicate }).select do |statement|
+            !statement.object.to_s.start_with?("http://fedora.info/definitions/v4/repository#", "http://www.w3.org/ns/ldp#")
+          end
+        elsif object.local_attributes.include?(key)
+          raise "Unable to find a graph predicate corresponding to the attribute: \"#{key}\""
+        end
+      end
+    end
+end
+
+ActiveFedora::Associations::IndirectlyContainsAssociation.class_eval do
+  def insert_record(record, force = true, validate = true)
+    container.save!
+    if force
+      record.save!
+    else
+      return false unless record.save(validate: validate)
+    end
+
+    save_through_record(record)
+
+    # Add triples to the parent object
+    owner.send(:attribute_will_change!, reflection.name)
+    owner.resource << ::RDF::Statement(owner.resource, reflection.predicate, record.id)
+    owner.save
+
+    true
+  end
+
+  private
+
+    def delete_record(record)
+      record_proxy_finder.find(record).delete
+
+      # Remove triples from the parent object
+      owner.send(:attribute_will_change!, reflection.name)
+      owner.resource.delete({ predicate: reflection.predicate, object: record.id})
+      owner.save
+    end
+end
