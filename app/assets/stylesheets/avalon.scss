@@ -1195,6 +1195,16 @@ td {
   }
 }
 
+.ramp--rails-content {
+  #addToPlaylistBtn {
+    svg {
+      color: $blue;
+      height: 1.5rem;
+      margin-right: 0.2rem;
+    }
+  }
+}
+
 /*
   Override CSS for transcript component imported
   from @samvera/ramp

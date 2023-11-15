@@ -148,6 +148,10 @@ class SpeedyAF::Proxy::MediaObject < SpeedyAF::Base
     attrs[:language_code].present? ? attrs[:language_code].map { |code| { code: code, text: LanguageTerm.find(code).text } } : []
   end
 
+  def sections_with_files(tag: '*')
+    ordered_master_file_ids.select { |m| SpeedyAF::Proxy::MasterFile.find(m).supplemental_files(tag: tag).present? }
+  end
+
   protected
 
   # Overrides from SpeedyAF::Base

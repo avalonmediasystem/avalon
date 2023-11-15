@@ -37,10 +37,10 @@ Unless required by applicable law or agreed to in writing, software distributed
         </div>
 
         <div id="add-to-playlist-form-group" class="mb-4">
-          <div class="form-check" onclick="collapseMoreDetails()">
-            <label class="form-check-label">
+          <div class="form-check">
+            <label class="form-check-label" onclick="collapseMoreDetails()">
               <input type="radio" name="post[playlistitem_scope]" id="playlistitem_scope_track" aria-label="playlist item current track">
-                Current Track (<span id="current-track-name"></span>)
+                <span id="current-track-text">Current Track (<span id="current-track-name"></span>)</span>
             </label>
           </div>
           <div class="form-check">
@@ -52,14 +52,14 @@ Unless required by applicable law or agreed to in writing, software distributed
               to 
             <input type="text" name="playlist_item_end" id="playlist_item_end" pattern="(\d+:){0,2}\d+(\.\d+)?" value="" aria-label="end time">
           </div>
-          <div class="form-check" onclick="collapseMultiItemCheck()" >
-            <label class="form-check-label">
+          <div class="form-check">
+            <label class="form-check-label" onclick="collapseMultiItemCheck()">
               <input type="radio" name="post[playlistitem_scope]" id="playlistitem_scope_section" aria-label="playlist item current section">
               Current Section (<span id="current-section-name"></span>)
             </label>
           </div>
-          <div class="form-check" onclick="collapseMultiItemCheck()">
-            <label class="form-check-label">
+          <div class="form-check">
+            <label class="form-check-label" onclick="collapseMultiItemCheck()">
               <input type="radio" name="post[playlistitem_scope]" id="playlistitem_scope_item" aria-label="playlist item current item">
               All Sections
             </label>
@@ -147,11 +147,11 @@ Unless required by applicable law or agreed to in writing, software distributed
       let mediaObjectId, streamId, mediaObjectTitle;
       let listenersAdded = false;
       let activeTrack = null;
+      let currentSectionLabel = undefined;
       // Enable add to playlist button after derivative is loaded
       let timeCheck = setInterval(initAddToPlaylist, 500);
       function initAddToPlaylist() {
         let player = document.getElementById('iiif-media-player');
-        let scopes = [];
         if(player) {
           addPlayerEventListeners(player.player, () => {
             clearInterval(timeCheck);
@@ -163,25 +163,17 @@ Unless required by applicable law or agreed to in writing, software distributed
         player.on('loadedmetadata', () => {
           enableAddToPlaylist();
         });
-        player.on('timeupdate', () => {
+        player.on('seeked', () => {
           if(getActiveItem() != undefined) {
-            let { label, times, streamId } = getActiveItem();
-            let starttime = player.currentTime() || times.begin;
-            $('#playlist_item_start').val(createTimestamp(starttime, true));
-            $('#playlist_item_end').val(createTimestamp(times.end, true));
-            $('#playlist_item_title').val(`${mediaObjectTitle} - ${label}`);
-            $('#current-track-name').text(`${mediaObjectTitle} - ${label}`);
-            // When player's currentTime equals the active item's begin, then
-            // playhead is not encompassed within an active track. When this happens
-            // disable the current track option
-            if(times.begin === starttime) {
-              $('#playlistitem_scope_track')[0].disabled = true;
-            } else {
-              $('#playlistitem_scope_track')[0].disabled = false;
+            activeTrack = getActiveItem(false);
+            if(activeTrack != undefined) {
+              streamId = activeTrack.streamId;
             }
+            disableEnableCurrentTrack(activeTrack, player.currentTime(), true, currentSectionLabel);
           }
         });
         player.on('dispose', () => {
+          currentSectionLabel = undefined;
           $('#addToPlaylistPanel').collapse('hide');
           resetAddToPlaylistForm();
           addToPlaylistBtn.disabled = true;
@@ -198,7 +190,7 @@ Unless required by applicable law or agreed to in writing, software distributed
         }
       }
 
-      function addListeners() {        
+      function addListeners() {
         $('#addToPlaylistPanel').on('show.bs.collapse', function (e) {
           // Hide add to playlist alert on panel show
           $('#add_to_playlist_alert').slideUp(0);
@@ -212,10 +204,10 @@ Unless required by applicable law or agreed to in writing, software distributed
           
           // For custom scope set start, end times as current time and media duration respectively
           let currentPlayer = document.getElementById('iiif-media-player');
-          let start, end = 0;
+          let start, end, currentTime, duration = 0;
           if(currentPlayer && currentPlayer.player) {
-            start = currentPlayer.player.currentTime();
-            end = currentPlayer.player.duration();
+            currentTime = currentPlayer.player.currentTime();
+            duration = currentPlayer.player.duration();
           }
           // Add 'Add new playlist' option to dropdown
           window.add_new_playlist_option();
@@ -224,34 +216,41 @@ Unless required by applicable law or agreed to in writing, software distributed
           mediaObjectTitle = playlistForm.dataset.title;
           mediaObjectId = playlistForm.dataset.moid;
           let timelineScopes = getTimelineScopes();
-          scopes = timelineScopes.scopes;
+          let scopes = timelineScopes.scopes;
           streamId = timelineScopes.streamId || sectionIds[canvasIndex];
+          currentSectionLabel = `${mediaObjectTitle || mediaObjectId} - ${streamId}`;
 
           // Fill in the current track and section titles and custom scope times
           if(scopes?.length > 0) {
             let sectionInfo = scopes.filter(s => s.tags.includes('current-section'));
-            let currentSectionLabel = mediaObjectTitle;
             if(sectionInfo?.length > 0) {
               currentSectionLabel = sectionInfo[0].label || currentSectionLabel;
-              $('#current-section-name').text(currentSectionLabel);
             }
 
             let trackInfo = scopes.filter(s => s.tags.includes('current-track'));
             if(trackInfo.length > 0) {
               activeTrack = trackInfo[0];
-              let trackName = `${currentSectionLabel} - ${activeTrack.label || streamId}`;
+              let trackName = activeTrack.tags.includes('current-section')
+                ? activeTrack.label || streamId
+                : `${currentSectionLabel} - ${activeTrack.label || streamId}`;
               $('#current-track-name').text(trackName);
               // Update start, end times for custom scope from the active timespan 
               start = activeTrack.times.begin;
               end = activeTrack.times.end;
-              $('#playlistitem_scope_track')[0].disabled = false;
             } else {
-              activeTrack = null;
-              $('#playlistitem_scope_track')[0].disabled = true;
+              activeTrack = undefined;
             }
           }
-          $('#playlist_item_start').val(createTimestamp(start, true));
-          $('#playlist_item_end').val(createTimestamp(end, true));
+
+          disableEnableCurrentTrack(
+            activeTrack,
+            currentTime,
+            false,
+            $('#playlist_item_title').val() || currentSectionLabel // Preserve user edits for the title when available
+          );
+          $('#current-section-name').text(currentSectionLabel);
+          $('#playlist_item_start').val(createTimestamp(start || currentTime, true));
+          $('#playlist_item_end').val(createTimestamp(duration || end, true));
 
           // Show add to playlist form on show and reset initially
           $('#add_to_playlist_form_group').slideDown();
@@ -261,13 +260,13 @@ Unless required by applicable law or agreed to in writing, software distributed
           e.preventDefault();
           let playlistId = $('#post_playlist_id').val();
           let label, t, id;
-          if ($('#playlistitem_timeselection')[0].checked || $('#playlistitem_scope_track')[0].checked) {
+          if($('#playlistitem_scope_track')[0].checked) {
+            let starttime = createTimestamp(activeTrack.times.begin, true);
+            let endtime = createTimestamp(activeTrack.times.end, true);
+            addPlaylistItem(playlistId, streamId, starttime, endtime);
+          } else if ($('#playlistitem_timeselection')[0].checked) {
             let starttime = $('#playlist_item_start').val();
             let endtime = $('#playlist_item_end').val();
-            if(activeTrack) {
-              starttime = createTimestamp(activeTrack.times.begin, true);
-              endtime = createTimestamp(activeTrack.times.end, true);
-            }
             addPlaylistItem(playlistId, streamId, starttime, endtime);
           } else if ($('#playlistitem_scope_section')[0].checked) {
             let multiItemCheck = $('#playlistitem_scope_structure')[0].checked;
