@@ -14,8 +14,12 @@
  * ---  END LICENSE_HEADER BLOCK  ---
 */
 
-/** Get the current active structure item from DOM */
-function getActiveItem() {
+/**
+ * Get the current active structure item(s) from DOM
+ * @param {Boolean} checkSection flag to indicate current section as active
+ * @returns {Object} active track information
+ */
+function getActiveItem(checkSection = true) {
   let currentPlayer = document.getElementById('iiif-media-player');
   let duration = currentPlayer.player.duration();
   let currentStructureItem = $('li[class="ramp--structured-nav__list-item active"]');
@@ -40,7 +44,8 @@ function getActiveItem() {
           end: parseFloat(timeHash.split(',')[1]) || duration
         },
         tags: ['current-track', 'current-section'],
-        streamId: itemId.split('/').pop()
+        streamId: itemId.split('/').pop(),
+        sectionLabel: label,
       }
     }
   
@@ -53,9 +58,15 @@ function getActiveItem() {
         end: parseFloat(timeHash.split(',')[1]) || duration
       }
       let streamId = item.pathname.split('/').pop();
-      return { label, times, tags: ['current-track'], streamId };
+      return { 
+        label,
+        times,
+        tags: ['current-track'],
+        streamId,
+        sectionLabel: currentSection[0].dataset.label,
+      };
     }
-  } else if (currentSection?.length > 0) {
+  } else if (currentSection?.length > 0 && checkSection) {
     /** When the structured navigation doesn't have an active timespan
      * get the current active section to populate the timeline and add
      * to playlist options */
@@ -68,6 +79,7 @@ function getActiveItem() {
       },
       tags: ['current-section'],
       streamId: '',
+      sectionLabel: label,
     }
   }
 }
@@ -89,10 +101,8 @@ function getTimelineScopes() {
   if(activeItem != undefined) {
     streamId = activeItem.streamId;
     scopes.push({
-      label: activeItem.label,
+      ...activeItem,
       tracks: trackCount,
-      times: activeItem.times,
-      tags: activeItem.tags,
     });
   }
 
@@ -171,10 +181,59 @@ function collapseMultiItemCheck () {
 
 /** Collapse title and description forms */
 function collapseMoreDetails() {
-  $('#moreDetails').collapse('show');
-  $('#multiItemCheck').collapse('hide');
-  let currentTrackName = $('#current-track-name').text();
-  $('#playlist_item_title').val(currentTrackName);
+  if(!$('#moreDetails').hasClass('show')) {
+    $('#moreDetails').collapse('show');
+    $('#multiItemCheck').collapse('hide');
+    // When the title field is empty fill it with either 
+    // current track or current section name
+    if($('#playlist_item_title').val() == '') {
+      $('#playlist_item_title').val(
+        $('#current-track-name').text() || $('#current-section-name').text()
+      );
+    }
+  }
+}
+
+/**
+ * Enable or disable the 'Current Track' option based on the current time of
+ * the player. When the current time is not included within an active timespan
+ * disable the option otherwise enable it.
+ * @param {Object} activeTrack JSON object for the active timespans
+ * @param {Number} currentTime player's playhead position
+ * @param {Boolean} isSeeked flag to indicate player 'seeked' event happened/not
+ * @param {String} sectionTitle name of the current section 
+ */
+function disableEnableCurrentTrack(activeTrack, currentTime, isSeeked, sectionTitle) {
+  let title = sectionTitle;
+  if(activeTrack != undefined) {
+    streamId = activeTrack.streamId;
+    let { label, times, sectionLabel } = activeTrack;
+    let starttime = currentTime || times.begin;
+    $('#playlist_item_start').val(createTimestamp(starttime, true));
+    $('#playlist_item_end').val(createTimestamp(times.end, true));
+    title = `${sectionLabel} - ${label}`;
+    $('#current-track-name').text(title);
+    // When player's currentTime is in between the activeTrack's begin and
+    // end times, enable the current track option
+    if(times.begin <= starttime && starttime <= times.end) {
+      $('#playlistitem_scope_track')[0].disabled = false;
+      $('#current-track-text').removeClass('disabled-option');
+    }
+  } else {
+    // Whena activeTrack is undefined, disable the current track option
+    $('#playlistitem_scope_track')[0].disabled = true;
+    $('#current-track-name').text('');
+    $('#current-track-text').addClass('disabled-option');
+    if($('#playlistitem_scope_track')[0].checked) {
+      $('#moreDetails').collapse('hide');
+      $('#playlistitem_scope_track').prop('checked', false);
+    }
+  }
+  // Only change the title when user actively seeked to a different timestamp,
+  // persisting the user changes to the field unless the active track is changed
+  if(isSeeked && sectionTitle != undefined) {
+    $('#playlist_item_title').val(title);
+  }
 }
 
 /** AJAX request for add to playlist for submission for playlist item for 
@@ -258,8 +317,8 @@ function handleAddError(error) {
 
 /** Reset add to playlist form */
 function resetAddToPlaylistForm() {
-  $('#playlist_item_description').value = '';
-  $('#playlist_item_title').value = '';
+  $('#playlist_item_description').val('');
+  $('#playlist_item_title').val('');
   $('input[name="post[playlistitem_scope]"]').prop('checked', false);
   $('#playlistitem_scope_structure').prop('checked', false);
   $('#moreDetails').collapse('hide');
