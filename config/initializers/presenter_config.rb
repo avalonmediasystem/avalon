@@ -14,7 +14,6 @@ Rails.application.config.to_prepare do
                         file_size: nil,
                         date_digitized: nil,
                         file_checksum: nil,
-                        supplemental_file_captions: [],
                         identifier: []
                       }
       include MasterFileIntercom

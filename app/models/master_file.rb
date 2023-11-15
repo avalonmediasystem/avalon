@@ -470,10 +470,6 @@ class MasterFile < ActiveFedora::Base
     end
   end
 
-  def supplemental_file_captions
-    supplemental_files(tag: 'caption')
-  end
-
   def has_audio?
     # The MasterFile doesn't have an audio track unless the first derivative does
     # This is useful to skip unnecessary waveform generation

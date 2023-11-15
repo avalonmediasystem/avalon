@@ -67,4 +67,20 @@ describe SpeedyAF::Proxy::MediaObject do
       expect(presenter.visibility).to eq media_object.visibility
     end
   end
+
+  describe 'attributes' do
+    let(:media_object) { FactoryBot.create(:fully_searchable_media_object, :with_master_file, permalink: 'http://permalink', supplemental_files_json: '[]', duration: 10, avalon_uploader: 'user1', identifier: ['abc123'], lending_period: 12000) }
+
+    it 'returns all attributes' do
+      expect(presenter.permalink).to be_present
+      expect(presenter.supplemental_files_json).to be_present
+      expect(presenter.duration).to be_present
+      expect(presenter.avalon_resource_type).to be_present
+      expect(presenter.avalon_publisher).to be_present
+      expect(presenter.avalon_uploader).to be_present
+      expect(presenter.identifier).to be_present
+      expect(presenter.comment).to be_present
+      expect(presenter.lending_period).to be_present
+    end
+  end
 end
