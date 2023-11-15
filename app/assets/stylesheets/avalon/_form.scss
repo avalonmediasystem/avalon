@@ -131,6 +131,15 @@ label {
     padding-bottom: 0.1rem;
   }
 
+  .form-check-label {
+    cursor: pointer;
+
+    .disabled-option {
+      cursor: not-allowed;
+      color: $gray;
+    }
+  }
+
   #playlist_item_end, #playlist_item_start {
     border-radius: 0.25rem;
     border: 1px solid $gray;

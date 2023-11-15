@@ -1,11 +1,11 @@
 # Copyright 2011-2023, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
-# 
+#
 # You may obtain a copy of the License at
-# 
+#
 # http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software distributed
 #   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
 #   CONDITIONS OF ANY KIND, either express or implied. See the License for the
@@ -14,6 +14,7 @@
 
 class SpeedyAF::Proxy::MediaObject < SpeedyAF::Base
   SINGULAR_FIELDS = [:title, :statement_of_responsibility, :date_created, :date_issued, :copyright_date, :abstract, :terms_of_use, :rights_statement]
+  HASH_FIELDS = [:note, :other_identifier, :related_item_url]
 
   # Override to handle section_id specially
   def initialize(solr_document, instance_defaults = {})
@@ -26,7 +27,6 @@ class SpeedyAF::Proxy::MediaObject < SpeedyAF::Base
     end
     # Handle this case here until a better fix can be found for multiple solr fields which don't have a model property
     @attrs[:section_id] = solr_document["section_id_ssim"]
-    @attrs[:date_issued] = solr_document["date_ssi"]
     @attrs[:hidden?] = solr_document["hidden_bsi"]
     @attrs[:read_groups] = solr_document["read_access_group_ssim"] || []
     @attrs[:edit_groups] = solr_document["edit_access_group_ssim"] || []
@@ -36,6 +36,10 @@ class SpeedyAF::Proxy::MediaObject < SpeedyAF::Base
     # TODO Need to convert hidden_bsi into discover_groups?
     SINGULAR_FIELDS.each do |field_name|
       @attrs[field_name] = Array(@attrs[field_name]).first
+    end
+
+    HASH_FIELDS.each do |field_name|
+      @attrs[field_name].collect! { |hf| JSON.parse(hf, :symbolize_names => true) }
     end
     # Convert empty strings to nil
     @attrs.transform_values! { |value| value == "" ? nil : value }
@@ -138,6 +142,14 @@ class SpeedyAF::Proxy::MediaObject < SpeedyAF::Base
 
   def governing_policies
     @governing_policies ||= Array(attrs[:isGovernedBy]).collect { |id| SpeedyAF::Base.find(id) }
+  end
+
+  def language
+    attrs[:language_code].present? ? attrs[:language_code].map { |code| { code: code, text: LanguageTerm.find(code).text } } : []
+  end
+
+  def sections_with_files(tag: '*')
+    ordered_master_file_ids.select { |m| SpeedyAF::Proxy::MasterFile.find(m).supplemental_files(tag: tag).present? }
   end
 
   protected

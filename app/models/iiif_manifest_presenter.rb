@@ -139,10 +139,12 @@ class IiifManifestPresenter
   end
 
   def display_language(media_object)
+    return nil unless media_object.language.present?
     media_object.language.collect { |l| l[:text] }.uniq
   end
 
   def display_related_item(media_object)
+    return nil unless media_object.related_item_url.present?
     media_object.related_item_url.collect { |r| "<a href='#{r[:url]}'>#{r[:label]}</a>" }
   end
 
@@ -180,7 +182,7 @@ class IiifManifestPresenter
       metadata_field('Contributor', media_object.contributor),
       metadata_field('Publisher', media_object.publisher),
       metadata_field('Genre', media_object.genre),
-      metadata_field('Subject', media_object.subject),
+      metadata_field('Subject', media_object.topical_subject),
       metadata_field('Time period', media_object.temporal_subject),
       metadata_field('Location', media_object.geographic_subject),
       metadata_field('Collection', display_collection(media_object)),

@@ -31,8 +31,8 @@ import './Ramp.scss';
 const ExpandCollapseArrow = () => {
   return (
   <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" className="expand-collapse-svg" fill="currentColor" viewBox="0 0 16 16">
-    <path 
-      fillRule="evenodd" 
+    <path
+      fillRule="evenodd"
       d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z">
     </path>
   </svg>);
@@ -48,7 +48,9 @@ const Ramp = ({
   timeline,
   playlist,
   in_progress,
-  cdl
+  cdl,
+  has_files,
+  has_transcripts
 }) => {
   const [manifestUrl, setManifestUrl] = React.useState('');
   const [isClosed, setIsClosed] = React.useState(false);
@@ -64,7 +66,7 @@ const Ramp = ({
     if(has_structure) {
       interval = setInterval(addPlayerEventListeners, 500);
     }
-    
+
     // Clear interval upon component unmounting
     return () => clearInterval(interval);
   }, []);
@@ -180,12 +182,12 @@ const Ramp = ({
                                 </button>
                               }
                             </Col>
-                            { has_structure && 
+                            { has_structure &&
                               <Col className="ramp-button-group-2">
-                                <button 
+                                <button
                                   className="btn btn-outline expand-collapse-toggle-button expanded"
-                                  id="expand_all_btn" 
-                                  onClick={handleCollapseExpand} 
+                                  id="expand_all_btn"
+                                  onClick={handleCollapseExpand}
                                   ref={expandCollapseBtnRef}
                                 >
                                   <ExpandCollapseArrow />
@@ -223,7 +225,7 @@ const Ramp = ({
             <Tab eventKey="details" title="Details">
               <MetadataDisplay showHeading={false} displayTitle={false}/>
             </Tab>
-            { (cdl.can_stream && master_files_count != 0 && !in_progress) &&
+            { (cdl.can_stream && master_files_count != 0 && !in_progress && has_transcripts) &&
               <Tab eventKey="transcripts" title="Transcripts">
                 <Transcript
                   playerID="iiif-media-player"
@@ -231,9 +233,11 @@ const Ramp = ({
                 />
               </Tab>
             }
-            <Tab eventKey="files" title="Files">
-              <SupplementalFiles showHeading={false} />
-            </Tab>
+            { (has_files) &&
+              <Tab eventKey="files" title="Files">
+                <SupplementalFiles showHeading={false} />
+              </Tab>
+            }
           </Tabs>
         </Col>
       </Row>

@@ -39,6 +39,7 @@ Rails.application.config.to_prepare do
                         topical_subject: [],
                         geographic_subject: [],
                         language: [],
+                        language_code: [],
                         terms_of_use: nil,
                         physical_description: [],
                         related_item_url: [],
