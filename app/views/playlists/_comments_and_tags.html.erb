@@ -13,29 +13,16 @@ Unless required by applicable law or agreed to in writing, software distributed
   specific language governing permissions and limitations under the License.
 ---  END LICENSE_HEADER BLOCK  ---
 %>
-<div id="share-list">
-    <ul class="nav nav-tabs share-tabs">
-      <%= render_conditional_partials :share, section:'share-tabs' %>
-    </ul>
+<% if @playlist.comment.present? %>
+<h4>Comments</h4>
+<%= @playlist.comment %>
+<% end %>
 
-    <div class="tab-content">
-      <%= render_conditional_partials :share, section:'tab-content' %>
-    </div>
-  </div>
-
-<% content_for :page_scripts do %>
-
-<script>
-  $(document).ready(function() {
-    setInterval(shareResourceListener, 500);
-
-    function shareResourceListener() {
-      if(!$('.share-tabs li').first().hasClass('active')) {
-        $('.share-tabs li').first().toggleClass('active');
-        $('#share-list .tab-content .tab-pane').first().toggleClass('active');
-      }
-    }
-  })
-</script>
-
+<% if @playlist.tags.present? %>
+<h4>Tags</h4>
+<div class="tag-button-wrapper">
+  <% @playlist.tags.each do |tag| %>
+  <span class="btn btn-sm btn-info"><%=tag%></span>
+  <% end %>
+</div>
 <% end %>
