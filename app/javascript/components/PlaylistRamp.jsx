@@ -44,10 +44,14 @@ const Ramp = ({
 
   return (
     <IIIFPlayer manifestUrl={manifestUrl}>
-      <Row className="ramp--all-components">
+      <Row className="ramp--all-components ramp--playlist">
         <Col sm={8}>
           <MediaPlayer enableFileDownload={false} />
-          <MarkersDisplay />
+          <div id="accordion" className="card-group" role="tablist" aria-multiselectable="true">
+            <div className="card card-default">
+              <MarkersDisplay />
+            </div>
+          </div>
         </Col>
         <Col sm={4}>
           <div dangerouslySetInnerHTML={{ __html: action_buttons.content }} />
