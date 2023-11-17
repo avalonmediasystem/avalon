@@ -14,7 +14,11 @@ Rails.application.config.to_prepare do
                         file_size: nil,
                         date_digitized: nil,
                         file_checksum: nil,
-                        identifier: []
+                        identifier: [],
+                        percent_complete: nil,
+                        status_code: nil,
+                        operation: nil,
+                        error: nil
                       }
       include MasterFileIntercom
       include MasterFileBehavior
