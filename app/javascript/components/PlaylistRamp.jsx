@@ -20,8 +20,7 @@ import {
   MediaPlayer,
   StructuredNavigation,
   AutoAdvanceToggle,
-  MarkersDisplay,
-  MetadataDisplay
+  MarkersDisplay
 } from "@samvera/ramp";
 import 'video.js/dist/video-js.css';
 import "@samvera/ramp/dist/ramp.css";

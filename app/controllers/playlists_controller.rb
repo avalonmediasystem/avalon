@@ -18,13 +18,13 @@ class PlaylistsController < ApplicationController
   include ConditionalPartials
   include SecurityHelper
 
-  before_action :authenticate_user!, except: [:show, :refresh_info, :manifest]
-  load_and_authorize_resource except: [:import_variations_playlist, :refresh_info, :duplicate, :show, :index, :manifest]
-  load_resource only: [:show, :refresh_info, :manifest]
+  before_action :authenticate_user!, except: [:show, :manifest]
+  load_and_authorize_resource except: [:import_variations_playlist, :duplicate, :show, :index, :manifest]
+  load_resource only: [:show, :manifest]
   authorize_resource only: [:index]
   before_action :get_user_playlists, only: [:index, :paged_index]
   before_action :get_all_other_playlists, only: [:edit]
-  before_action :load_playlist_token, only: [:show, :refresh_info, :duplicate]
+  before_action :load_playlist_token, only: [:show, :duplicate]
 
   helper_method :access_token_url
 
@@ -288,13 +288,6 @@ class PlaylistsController < ApplicationController
     end
   rescue StandardError => e
     redirect_to playlists_url, flash: { error: "Import failed: #{e.message}" }
-  end
-
-  def refresh_info
-    @position = params[:position]
-    @playlist_item = @playlist.items.where(position: @position.to_i).first
-    authorize! :read, @playlist_item
-    render formats: :js
   end
 
   private
