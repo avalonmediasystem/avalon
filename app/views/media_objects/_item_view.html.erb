@@ -38,7 +38,7 @@ Unless required by applicable law or agreed to in writing, software distributed
       <% end %>
     <% end %>
   </div>
-  <div class="<%= in_progress || !@currentStream ? 'col-sm-4' : 'col-sm-12' %>">
+  <div class="col-sm-12">
     <%= react_component("Ramp",
       {
         base_url: request.protocol+request.host_with_port,
@@ -49,7 +49,6 @@ Unless required by applicable law or agreed to in writing, software distributed
         share: { canShare: (will_partial_list_render? :share), content: lending_enabled?(@media_object) ? (render('share') if can_stream) : render('share') },
         timeline: { canCreate: (current_ability.can? :create, Timeline), content: lending_enabled?(@media_object) ? (render('timeline') if can_stream) : render('timeline') },
         playlist: { canCreate: (current_ability.can? :create, Playlist), tab: render('add_to_playlist') },
-        in_progress: in_progress,
         cdl: { enabled: lending_enabled?(@media_object), can_stream: can_stream, embed: render('embed_checkout'), destroy: render('destroy_checkout') },
         has_files: @media_object.supplemental_files.present? || @media_object.sections_with_files.present?,
         has_transcripts: @media_object.sections_with_files(tag: 'transcript').present?
