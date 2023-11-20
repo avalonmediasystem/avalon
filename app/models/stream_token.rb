@@ -41,8 +41,8 @@ class StreamToken < ActiveRecord::Base
   end
 
   def self.purge_expired!(session)
-    purged = expired.each(&:delete)
-    Array(session[:hash_tokens]).reject! { |token| !StreamToken.exists?(token: token) }
+    purged = expired.delete_all
+    session[:hash_tokens] = StreamToken.where(token: Array(session[:hash_tokens])).pluck(:token)
     purged
   end
 
