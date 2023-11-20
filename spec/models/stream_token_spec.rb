@@ -37,6 +37,33 @@ describe StreamToken do
       expect(token).to eq token2
       expect(session[:hash_tokens].count(token)).to eq 1
     end
+
+    context '#get_session_tokens_for' do
+      let(:targets) { ['D1452CB7-4DC2-4A26-AC2C-FBCE943C164C', target] }
+
+      it 'should create the tokens' do
+        expect(StreamToken.get_session_tokens_for(session: session, targets: targets)).to match_array([be_instance_of(StreamToken), be_instance_of(StreamToken)])
+      end
+
+      it 'stores the tokens in the session' do
+        tokens = StreamToken.get_session_tokens_for(session: session, targets: targets)
+        expect(session[:hash_tokens]).to include *tokens.pluck(:token)
+      end
+
+      it 'stores the tokens once in the session' do
+        tokens = StreamToken.get_session_tokens_for(session: session, targets: targets)
+        tokens2 = StreamToken.get_session_tokens_for(session: session, targets: targets)
+        expect(tokens).to eq tokens2
+        expect(session[:hash_tokens].count(tokens.first.token)).to eq 1
+        expect(session[:hash_tokens].count(tokens.second.token)).to eq 1
+      end
+
+      it 'updates expires' do
+        StreamToken.get_session_tokens_for(session: session, targets: targets)
+        expect { StreamToken.get_session_tokens_for(session: session, targets: targets) }.not_to change { StreamToken.count }
+        expect { StreamToken.get_session_tokens_for(session: session, targets: targets) }.to change { StreamToken.pluck(:expires) }
+      end
+    end
   end
 
   describe 'valid_token?' do

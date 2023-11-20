@@ -34,6 +34,26 @@ class StreamToken < ActiveRecord::Base
     result.token
   end
 
+  def self.get_session_tokens_for(session: {}, targets: [])
+    purge_expired!(session)
+
+    token_attributes = targets.collect do |target|
+      hash_token = Digest::SHA1.new
+      hash_token << media_token(session) << target
+      {target: target, token: hash_token.to_s, expires: (Time.now.utc + Settings.streaming.stream_token_ttl.minutes)}
+    end
+    existing_token_hash = StreamToken.where(token: token_attributes.pluck(:token)).pluck(:token, :id).to_h
+    token_attributes.each do |attrs|
+      attrs[:id] = existing_token_hash[attrs[:token]] if existing_token_hash[attrs[:token]].present?
+    end
+    result = StreamToken.upsert_all(token_attributes)
+
+    tokens = StreamToken.where(id: result.to_a.pluck("id"))
+    session[:hash_tokens] += tokens.pluck(:token)
+    session[:hash_tokens].uniq! # Avoid duplicate entry
+    tokens.to_a
+  end
+
   def self.logout!(session)
     session[:hash_tokens].each do |sha|
       where(token: sha).find_each(&:delete)
