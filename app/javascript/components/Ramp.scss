@@ -267,4 +267,40 @@
       margin-bottom: 0px;
     }
   }
+
+  .ramp--playlist-accordion {
+    .accordion .card {
+      border: none;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.125);
+      display: flex;
+      flex-direction: column-reverse;
+      cursor: pointer;
+    }
+
+    .card-body {
+      padding: 0;
+    }
+
+    .card-header .accordion-arrow {
+      transition: all 0.3s ease;
+      -o-transition: all 0.3s ease;
+      -moz-transition: all 0.3s ease;
+      -webkit-transition: all 0.3s ease;
+      transform: rotate(270deg);
+      -o-transform: rotate(270deg);
+      -ms-transform: rotate(270deg);
+      -webkit-transform: rotate(270deg);
+    }
+
+    div[class~="show"] + .card-header .accordion-arrow {
+      transform: rotate(360deg);
+      -o-transform: rotate(360deg);
+      -ms-transform: rotate(360deg);
+      -webkit-transform: rotate(360deg);
+    }
+
+    .ramp--markers-display__markers-empty {
+      font-size: inherit;
+    }
+  }
 }

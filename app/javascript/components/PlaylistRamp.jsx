@@ -24,8 +24,18 @@ import {
 } from "@samvera/ramp";
 import 'video.js/dist/video-js.css';
 import "@samvera/ramp/dist/ramp.css";
-import { Col, Row, Tab, Tabs } from 'react-bootstrap';
+import { Accordion, Card, Col, Row } from 'react-bootstrap';
 import './Ramp.scss';
+
+const ExpandCollapseArrow = () => {
+  return (
+  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" className="accordion-arrow" fill="currentColor" viewBox="0 0 16 16">
+    <path
+      fillRule="evenodd"
+      d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z">
+    </path>
+  </svg>);
+};
 
 const Ramp = ({
   base_url,
@@ -35,22 +45,71 @@ const Ramp = ({
   action_buttons
 }) => {
   const [manifestUrl, setManifestUrl] = React.useState('');
+  const [activeItemTitle, setActiveItemTitle] = React.useState();
+
+  let interval;
 
   React.useEffect(() => {
     let url = `${base_url}/playlists/${playlist_id}/manifest.json`;
     setManifestUrl(url);
+  
+    interval = setInterval(addPlayerEventListeners, 500);
+
+    // Clear interval upon component unmounting
+    return () => clearInterval(interval);
   }, []);
+
+  /**
+   * Listen to player's events to update the structure navigation
+   * UI
+   */
+  const addPlayerEventListeners = () => {
+    let player = document.getElementById('iiif-media-player');
+    if(player && player.player != undefined && !player.player.isDisposed()) {
+      let playerInst = player.player;
+      playerInst.on('loadedmetadata', () => {
+        let activeElements = document.getElementsByClassName('ramp--structured-nav__list-item');
+        if(activeElements != undefined && activeElements?.length > 0) {
+          setActiveItemTitle(activeElements[0].textContent);
+        }
+      });
+    }
+  }
 
   return (
     <IIIFPlayer manifestUrl={manifestUrl}>
       <Row className="ramp--all-components ramp--playlist">
         <Col sm={8}>
           <MediaPlayer enableFileDownload={false} />
-          <div id="accordion" className="card-group" role="tablist" aria-multiselectable="true">
-            <div className="card card-default">
-              <MarkersDisplay />
-            </div>
-          </div>
+          <Card className="ramp--playlist-accordion">
+              <Card.Header>
+                <h4>{activeItemTitle}</h4>
+              </Card.Header>
+              <Card.Body>
+                <Accordion>
+                  <Card>
+                    <Accordion.Collapse eventKey="0" id="markers">
+                      <Card.Body>
+                        <MarkersDisplay showHeading={false} />
+                      </Card.Body>
+                    </Accordion.Collapse>
+                    <Accordion.Toggle as={Card.Header} variant="link" eventKey="0" className="ramp--playlist-accordion-header">
+                      <ExpandCollapseArrow /> Markers
+                    </Accordion.Toggle>
+                  </Card>
+                  <Card>
+                    <Accordion.Collapse eventKey="1">
+                      <Card.Body>
+                        
+                      </Card.Body>
+                    </Accordion.Collapse>
+                    <Accordion.Toggle as={Card.Header} variant="link" eventKey="1" className="ramp--playlist-accordion-header">
+                      <ExpandCollapseArrow /> Source Item Details
+                    </Accordion.Toggle>
+                  </Card>
+                </Accordion>
+              </Card.Body>
+          </Card>
         </Col>
         <Col sm={4}>
           <div dangerouslySetInnerHTML={{ __html: action_buttons.content }} />
@@ -76,14 +135,14 @@ const Ramp = ({
             </Col>
           </Row>
           <Row className="mx-0">
-            <Col md={12} lg={12} sm={12}>
+            <Col md={12} lg={12} sm={12} className="px-0">
               <div className="collapse" id="shareList">
                 <div dangerouslySetInnerHTML={{ __html: share.content }} />
               </div>
             </Col>
           </Row>
           <div dangerouslySetInnerHTML={{ __html: comment_tag.content }} />
-          <h4>Playlist Items</h4>
+          <h4 className="mt-3">Playlist Items</h4>
           <StructuredNavigation />
         </Col>
       </Row>
