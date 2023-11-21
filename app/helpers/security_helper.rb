@@ -26,11 +26,34 @@ module SecurityHelper
     stream_info
   end
 
-  def add_stream_url(stream_info)
+  # Batch version of secure_streams
+  # media_object CDL check only happens once
+  # session tokens retrieved in batch then passed into add_stream_url
+  # Returns Hash[MasterFile.id, stream_info]
+  def secure_stream_infos(master_files, media_object_id)
+    stream_info_hash = {}
+    if not_checked_out?(media_object_id)
+      master_files.each { |mf| stream_info_hash[mf.id] = mf.stream_details }
+    else
+      stream_tokens = StreamToken.get_session_tokens_for(session: session, targets: master_files.map(&:id))
+      stream_token_hash = stream_tokens.pluck(:target, :token).to_h
+      master_files.each { |mf| stream_info_hash[mf.id] = secure_stream_info(mf.stream_details, stream_token_hash[mf.id]) }
+    end
+    stream_info_hash
+  end
+
+  # Same as secure_streams except without CDL checking
+  def secure_stream_info(stream_info, token)
+    add_stream_url(stream_info, token: token)
+    stream_info
+  end
+
+  # Optional token kwarg used if passed in
+  def add_stream_url(stream_info, token: nil)
     add_stream_cookies(id: stream_info[:id])
     [:stream_hls].each do |protocol|
       stream_info[protocol].each do |quality|
-        quality[:url] = SecurityHandler.secure_url(quality[:url], session: session, target: stream_info[:id], protocol: protocol)
+        quality[:url] = SecurityHandler.secure_url(quality[:url], session: session, target: stream_info[:id], protocol: protocol, token: token)
       end
     end
   end

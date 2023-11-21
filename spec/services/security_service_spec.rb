@@ -71,6 +71,14 @@ Lw03eHTNQghS0A==
       it 'adds a StreamToken param' do
         expect(subject.rewrite_url(url, context)).to start_with "http://example.com/streaming/id?token="
       end
+
+      context 'when token provided' do
+        let(:context) {{ session: {}, target: 'abcd1234', protocol: :stream_hls, token: 'dcba-4321' }}
+
+        it 'adds token param' do
+          expect(subject.rewrite_url(url, context)).to eq "http://example.com/streaming/id?token=dcba-4321"
+        end
+      end
     end
   end
 

@@ -1840,7 +1840,8 @@ describe MediaObjectsController, type: :controller do
 
   describe '#manifest' do
     context 'read from solr' do
-      let!(:media_object) { FactoryBot.create(:published_media_object, :with_master_file, visibility: 'public') }
+      let!(:master_file) { FactoryBot.create(:master_file, :with_derivative, media_object: media_object) }
+      let!(:media_object) { FactoryBot.create(:published_media_object, visibility: 'public') }
       it 'should not read from fedora' do
         perform_enqueued_jobs(only: MediaObjectIndexingJob)
         WebMock.reset_executed_requests!
