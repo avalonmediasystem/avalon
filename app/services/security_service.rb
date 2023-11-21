@@ -28,7 +28,7 @@ class SecurityService
       end
     else
       session = context[:session] || { media_token: nil }
-      token = StreamToken.find_or_create_session_token(session, context[:target])
+      token = context[:token] || StreamToken.find_or_create_session_token(session, context[:target])
       "#{url}?token=#{token}"
     end
   end
