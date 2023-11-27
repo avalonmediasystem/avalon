@@ -18,6 +18,29 @@ describe SpeedyAF::Proxy::Admin::Collection do
   let(:collection) { FactoryBot.create(:collection) }
   let(:presenter) { described_class.find(collection.id) }
 
+  describe 'attributes' do
+    let(:collection) { FactoryBot.create(:collection, dropbox_directory_name: "dir", identifier: ["1234"], default_lending_period: 10000, cdl_enabled: true, default_read_users: ['user1'], default_read_groups: ['group1'], default_hidden: true) }
+
+    it 'returns all attributes' do
+      expect(presenter.name).to be_present
+      expect(presenter.unit).to be_present
+      expect(presenter.description).to be_present
+      expect(presenter.contact_email).to be_present
+      expect(presenter.website_label).to be_present
+      expect(presenter.website_url).to be_present
+      expect(presenter.dropbox_directory_name).to be_present
+      expect(presenter.default_read_groups).to be_present
+      expect(presenter.default_read_users).to be_present
+      expect(presenter.default_hidden).not_to be_nil
+      expect(presenter.identifier).to be_present
+      expect(presenter.default_lending_period).to be_present
+      expect(presenter.cdl_enabled).not_to be_nil
+      expect(presenter.collection_managers).to be_present
+      expect(presenter.edit_users).to be_present
+      expect(presenter.read_users).to be_present
+    end
+  end
+
   describe 'cdl_enabled' do
     context 'collections disabled at the application level' do
       before { allow(Settings.controlled_digital_lending).to receive(:collections_enabled).and_return(false) }

@@ -163,6 +163,10 @@ module MasterFileBehavior
     }
   end
 
+  def supplemental_file_captions
+    supplemental_files(tag: 'caption')
+  end
+
   # Supplies the route to the master_file as an rdf formatted URI
   # @return [String] the route as a uri
   # @example uri for a mf on avalon.iu.edu with a id of: avalon:1820
