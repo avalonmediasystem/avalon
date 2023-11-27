@@ -158,7 +158,7 @@ describe IiifCanvasPresenter do
     end
 
     context 'when master file does not have derivatives' do
-      let(:master_file) { FactoryBot.build(:master_file, media_object: media_object) }
+      let(:master_file) { FactoryBot.build(:master_file, :completed_processing, media_object: media_object) }
 
       it 'has format' do
         expect(subject.format).to eq "text/plain"
@@ -170,6 +170,22 @@ describe IiifCanvasPresenter do
 
       it 'has label' do
         expect(subject.label).to eq I18n.t('errors.missing_derivatives_error') % [Settings.email.support, Settings.email.support]
+      end
+    end
+
+    context 'when master file is processing' do
+      let(:master_file) { FactoryBot.build(:master_file, media_object: media_object) }
+
+      it 'has format' do
+        expect(subject.format).to eq "text/plain"
+      end
+
+      it 'has type' do
+        expect(subject.type).to eq "Text"
+      end
+
+      it 'has label' do
+        expect(subject.label).to eq I18n.t('media_object.conversion_msg')
       end
     end
   end

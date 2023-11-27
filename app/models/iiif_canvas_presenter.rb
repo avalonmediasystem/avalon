@@ -67,6 +67,11 @@ class IiifCanvasPresenter
                                             height: 720,
                                             type: 'Image',
                                             format: 'image/jpeg')
+    elsif section_processing?(@master_file)
+      IIIFManifest::V3::DisplayContent.new(nil,
+                                           label: I18n.t('media_object.conversion_msg'),
+                                           type: 'Text',
+                                           format: 'text/plain')
     else
       support_email = Settings.email.support
       IIIFManifest::V3::DisplayContent.new(nil,
@@ -114,6 +119,11 @@ class IiifCanvasPresenter
       stream_info[:stream_hls].collect do |d|
         [d[:quality], d[:url]]
       end
+    end
+
+    def section_processing?(master_file)
+      encode_gid = "gid://ActiveEncode/#{master_file.encoder_class}/#{master_file.workflow_id}"
+      ActiveEncode::EncodeRecord.find_by(global_id: encode_gid).state.to_s.upcase != 'COMPLETED'
     end
 
     def supplemental_captions_transcripts
