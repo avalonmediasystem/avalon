@@ -43,11 +43,23 @@ class StreamToken < ActiveRecord::Base
       {target: target, token: hash_token.to_s, expires: (Time.now.utc + Settings.streaming.stream_token_ttl.minutes)}
     end
     existing_token_hash = StreamToken.where(token: token_attributes.pluck(:token)).pluck(:token, :id).to_h
+
+    # Create new records first
+    insert_attributes = token_attributes.reject { |attrs| existing_token_hash[attrs[:token]].present? }
+    if insert_attributes.present?
+      StreamToken.insert_all(insert_attributes)
+      # Refetch so we have the ids of all tokens
+      existing_token_hash = StreamToken.where(token: token_attributes.pluck(:token)).pluck(:token, :id).to_h
+    end
+
+    # Add StreamToken ids into upsert attributes so there is a unique attribute and a unique index isn't needed on token
     token_attributes.each do |attrs|
+      # all attributes must be present for all items in upsert array
       attrs[:id] = existing_token_hash[attrs[:token]] if existing_token_hash[attrs[:token]].present?
     end
     result = StreamToken.upsert_all(token_attributes)
 
+    # Fetch StreamToken fresh so they can be put into session and returned
     tokens = StreamToken.where(id: result.to_a.pluck("id"))
     session[:hash_tokens] += tokens.pluck(:token)
     session[:hash_tokens].uniq! # Avoid duplicate entry
