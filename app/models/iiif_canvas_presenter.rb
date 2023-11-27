@@ -122,8 +122,7 @@ class IiifCanvasPresenter
     end
 
     def section_processing?(master_file)
-      encode_gid = "gid://ActiveEncode/#{master_file.encoder_class}/#{master_file.workflow_id}"
-      ActiveEncode::EncodeRecord.find_by(global_id: encode_gid).state.to_s.upcase != 'COMPLETED'
+      !master_file.succeeded?
     end
 
     def supplemental_captions_transcripts
