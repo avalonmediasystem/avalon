@@ -52,7 +52,7 @@ const Ramp = ({
   React.useEffect(() => {
     let url = `${base_url}/playlists/${playlist_id}/manifest.json`;
     setManifestUrl(url);
-  
+
     interval = setInterval(addPlayerEventListeners, 500);
 
     // Clear interval upon component unmounting
@@ -67,10 +67,11 @@ const Ramp = ({
     let player = document.getElementById('iiif-media-player');
     if(player && player.player != undefined && !player.player.isDisposed()) {
       let playerInst = player.player;
+      let canvasIndex = parseInt(player.dataset.canvasindex);
       playerInst.on('loadedmetadata', () => {
         let activeElements = document.getElementsByClassName('ramp--structured-nav__list-item');
         if(activeElements != undefined && activeElements?.length > 0) {
-          setActiveItemTitle(activeElements[0].textContent);
+          setActiveItemTitle(activeElements[canvasIndex].textContent);
         }
       });
     }
@@ -100,7 +101,7 @@ const Ramp = ({
                   <Card>
                     <Accordion.Collapse eventKey="1">
                       <Card.Body>
-                        
+
                       </Card.Body>
                     </Accordion.Collapse>
                     <Accordion.Toggle as={Card.Header} variant="link" eventKey="1" className="ramp--playlist-accordion-header">
