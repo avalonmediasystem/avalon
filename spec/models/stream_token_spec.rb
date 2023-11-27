@@ -63,6 +63,16 @@ describe StreamToken do
         expect { StreamToken.get_session_tokens_for(session: session, targets: targets) }.not_to change { StreamToken.count }
         expect { StreamToken.get_session_tokens_for(session: session, targets: targets) }.to change { StreamToken.pluck(:expires) }
       end
+
+      context 'with a mix of existing and new tokens' do
+        before { StreamToken.get_session_tokens_for(session: session, targets: [target]) }
+
+        it 'creates and stores the token' do
+          tokens = StreamToken.get_session_tokens_for(session: session, targets: targets)
+          expect(tokens).to match_array([be_instance_of(StreamToken), be_instance_of(StreamToken)])
+          expect(session[:hash_tokens]).to include *tokens.pluck(:token)
+        end
+      end
     end
   end
 
