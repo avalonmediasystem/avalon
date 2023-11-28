@@ -13,21 +13,16 @@ Unless required by applicable law or agreed to in writing, software distributed
   specific language governing permissions and limitations under the License.
 ---  END LICENSE_HEADER BLOCK  ---
 %>
-<% content_for :page_styles do %>
-<%= stylesheet_link_tag 'mejs4_player' %>
-<% end %>
-<% content_for :page_scripts do %>
-<%= javascript_include_tag "mejs4_player" %>
+<% if @playlist.comment.present? %>
+<h4>Comments</h4>
+<%= @playlist.comment %>
 <% end %>
 
-<script>
-var playlistItem = <%= current_playlist_item.to_json.html_safe %>;
-
-var mejs4AvalonPlayer = new MEJSPlayer({
-  currentStreamInfo: <%= section_info.to_json.html_safe %>,
-  features: ['playpause', 'current', 'progress', 'duration', 'trackScrubber', 'volume', 'tracks', 'quality', 'markers', 'addMarkerToPlaylist', 'fullscreen', 'playlistItems'],
-  highlightRail: true,
-  playlistItem: playlistItem,
-  defaultQuality: '<%= current_quality(section_info) %>'
-});
-</script>
+<% if @playlist.tags.present? %>
+<h4>Tags</h4>
+<div class="tag-button-wrapper">
+  <% @playlist.tags.each do |tag| %>
+  <span class="btn btn-sm btn-info"><%=tag%></span>
+  <% end %>
+</div>
+<% end %>
