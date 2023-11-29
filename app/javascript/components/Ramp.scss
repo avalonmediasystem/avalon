@@ -170,6 +170,12 @@
     max-height: 75vh;
     overflow: auto;
   }
+
+  // Remove double scroll-bar for transcripts tab
+  .ramp-transcripts-tab {
+    overflow: hidden;
+  }
+
   .tab-pane:focus {
     outline: 0.125rem solid #006298;
     outline-offset: -0.125rem;
