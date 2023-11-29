@@ -47,15 +47,6 @@
 // include all of our vendored js
 //= require_tree ../../../vendor/assets/javascripts/.
 
-// Exclude MediaElement 4 JS files in /vendor, as ME4 collides with the ME2 gem
-//= stub mediaelement/mediaelement-and-player
-//= stub mediaelement/plugins/markers
-//= stub mediaelement/plugins/quality-avalon
-//= stub mediaelement/plugins/quality-i18n
-//= stub media_player_wrapper/mejs4_plugin_track_scrubber
-//= stub media_player_wrapper/mejs4_link_back
-//= stub media_player_wrapper/mejs4_plugin_playlist_items
-
 // Require VideoJS and VideoJS quality selector for embedded player
 //= require video.js/dist/video.min.js
 //= require @silvermine/videojs-quality-selector/dist/js/silvermine-videojs-quality-selector.min.js

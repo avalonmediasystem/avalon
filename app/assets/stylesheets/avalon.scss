@@ -24,7 +24,6 @@
 @import 'avalon/form';
 @import 'avalon/header';
 @import 'avalon/homepage';
-@import 'avalon/mediaelement';
 @import 'avalon/modals';
 @import 'avalon/nav';
 @import 'avalon/playlists';
@@ -341,15 +340,6 @@ span.constraints-label {
 
 .dl-horizontal dl {
   margin-bottom: 0px;
-}
-
-.mejs-poster {
-  overflow: hidden;
-
-  img {
-    width: 100%;
-    height: 100%;
-  }
 }
 
 .role-popover-help *,

@@ -16,11 +16,5 @@ Unless required by applicable law or agreed to in writing, software distributed
 <section id="content" style="width: 100%;" tabIndex="-1">
   <% if section.present? && section.derivatives.present? && @master_file.present?  %>
     <%= render partial: 'modules/player/video_js_element', locals: {section: section, section_info: section_info, f_start: @f_start, f_end: @f_end} %>
-  <% elsif section.present? && section.derivatives.present? && @playlist.present? %>
-    <% if section_info[:is_video] %>
-      <%= render partial: 'modules/player/video_element', locals: {section: section, section_info: section_info, f_start: @f_start, f_end: @f_end} %>
-    <% else %>
-      <%= render partial: 'modules/player/audio_element', locals: {section: section, section_info: section_info, f_start: @f_start, f_end: @f_end} %>
-    <% end %>
   <% end %>
 </section>

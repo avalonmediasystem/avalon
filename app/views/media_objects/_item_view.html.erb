@@ -105,8 +105,10 @@ Unless required by applicable law or agreed to in writing, software distributed
         if(!transcriptSections.includes(sectionId)) {
           // If transcript tab is the active tab when it is hidden, the tab goes away but the box still displays
           // the missing transcript file message. Force change over to a different tab to avoid this case.
-          if (transcriptTab.getAttribute('aria-selected') === "true") { detailTab.click(); }
-          transcriptTab.style.display = 'none';
+          if(transcriptTab) {
+            if (transcriptTab.getAttribute('aria-selected') === "true") { detailTab.click(); }
+            transcriptTab.style.display = 'none';
+          }
         } else if (transcriptSections.includes(sectionId) && transcriptTab.style.display === 'none') {
           transcriptTab.style.display = '';
         }

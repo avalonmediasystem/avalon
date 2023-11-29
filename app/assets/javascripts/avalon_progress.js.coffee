@@ -68,12 +68,6 @@ class AvalonProgress
 
       return info.success + info.error < 100
 
-  click_section: (section_id) ->
-    data = @data[section_id]
-    if data.status != 'COMPLETED' or data.complete < 100
-      window.currentPlayer = null
-      $('.avalon-player').html('<div id="nojs"></div>')
-
 $(document).ready ->
   if $('.progress-bar').length == 0
     return
@@ -90,6 +84,3 @@ $(document).ready ->
   progress_controller.retrieve(true)
   $('.progress-inline').click ->
     $(this).nextAll('.status-detail').slideToggle()
-
-  $('a[data-segment]').bind 'streamswitch', ->
-    progress_controller.click_section($(this).data('segment'))

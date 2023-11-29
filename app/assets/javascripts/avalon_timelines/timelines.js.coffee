@@ -88,9 +88,3 @@ $('input[name="timeline[visibility]"]').on('click', () ->
   else
     $('#timeline_lti_share').show()
 )
-
-# Hide instead of delete Bootstrap's dismissable alerts
-$('.mejs-form-alert').on('close.bs.alert', (e) ->
-  e.preventDefault()
-  $(this).slideUp()
-)

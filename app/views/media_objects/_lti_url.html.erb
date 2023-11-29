@@ -19,12 +19,12 @@ Unless required by applicable law or agreed to in writing, software distributed
     <form role="form">
       <div class="form-group">
         <label for="ltilink-object">Item</label>
-        <input type="text" class="col-md-5 form-control" id="ltilink-object" value="<%= lti_share_url_for(@media_object) %>" onClick="this.select();" readonly="readonly">
+        <input type="text" class="col-md-12 form-control" id="ltilink-object" value="<%= lti_share_url_for(@media_object) %>" onClick="this.select();" readonly="readonly">
       </div>
       <div class="form-group">
         <label for="ltilink-section">Section</label>
         <% if @currentStream.present? %>
-        <input type="text" class="col-md-5 form-control" id="ltilink-section" value="<%= lti_share_url_for(@currentStream) %>" onClick="this.select();" readonly="readonly">
+        <input type="text" class="col-md-12 form-control" id="ltilink-section" value="<%= lti_share_url_for(@currentStream) %>" onClick="this.select();" readonly="readonly">
         <% else %>
         <p class="muted"> <%= I18n.t('media_object.empty_share_section_permalink_notice') %> </p>
         <% end %>
