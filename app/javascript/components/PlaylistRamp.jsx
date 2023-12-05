@@ -74,10 +74,6 @@ const Ramp = ({
           setActiveItemTitle(activeElements[canvasIndex].textContent);
         }
       });
-
-      playerInst.on('ended', () => {
-        setActiveItemTitle("Inaccesible Item")
-      });
     }
   }
 
