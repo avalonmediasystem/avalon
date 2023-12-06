@@ -238,7 +238,7 @@ class ModsDocument < ActiveFedora::OmDatastream
         end
         self.send("resource_type=", old_resource_type)
         # let template remove languages that aren't in the controlled vocabulary, and de-dupe
-        languages = self.language.collect &:strip
+        languages = self.language_code.collect &:strip
         self.language = nil
         languages.uniq.each { |lang| self.add_language(lang) }
         # add new other identifiers and restore old other identifiers and remove the old bibliographic id

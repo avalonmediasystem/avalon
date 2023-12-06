@@ -750,6 +750,17 @@ describe MediaObject do
       it 'should override the title' do
         expect { media_object.descMetadata.populate_from_catalog!(bib_id, 'local') }.to change { media_object.title }.to "245 A : B F G K N P S"
       end
+      it 'should override langauge' do
+        expect { media_object.descMetadata.populate_from_catalog!(bib_id, 'local') }.to change { media_object.language }.to [{:code=>"eng", :text=>"English"}, {:code=>"fre", :text=>"French"}, {:code=>"ger", :text=>"German"}]
+      end
+
+      context 'with lanugage text' do
+        let(:mods) { File.read(File.expand_path("../../fixtures/#{bib_id}.lang_text.mods",__FILE__)) }
+
+        it 'should override langauge' do
+          expect { media_object.descMetadata.populate_from_catalog!(bib_id, 'local') }.to change { media_object.language }.to [{:code=>"eng", :text=>"English"}, {:code=>"fre", :text=>"French"}, {:code=>"ger", :text=>"German"}]
+        end
+      end
     end
     describe 'should strip whitespace from bib_id parameter' do
       let(:sru_url) { "http://zgate.example.edu:9000/db?version=1.1&operation=searchRetrieve&maximumRecords=1&recordSchema=marcxml&query=rec.id=#{bib_id}" }
