@@ -16,9 +16,15 @@ Unless required by applicable law or agreed to in writing, software distributed
 <% @page_title = t('media_objects.show.title', :media_object_title => @playlist.title, :application_name => application_name) %>
 
 <div class="playlist-view-wrapper row">
-  <div class="page-title-wrapper playlist-title">
-    <%= icon_only_visibility @playlist.visibility %>
-    <h1 class="page-title"><%= @playlist.title %></h1>
+  <div class="page-title-wrapper playlist-title col-sm-12">
+    <div class="col-sm-8">
+      <%= icon_only_visibility @playlist.visibility %>
+      <h1 class="page-title"><%= @playlist.title %></h1>
+    </div>
+
+    <div class="playlist-action-button-row col-sm-4">
+      <%= render partial: 'action_buttons' %>
+    </div>
   </div>
 
   <div class="col-sm-12">
@@ -27,8 +33,7 @@ Unless required by applicable law or agreed to in writing, software distributed
         base_url: request.protocol+request.host_with_port,
         playlist_id: @playlist.id,
         share: { canShare: (will_partial_list_render? :share), content: render('share') },
-        comment_tag: { content: render('comments_and_tags') },
-        action_buttons: { content: render('action_buttons') }
+        comment_tag: { content: render('comments_and_tags') }
       }
     ) %>
   </div>

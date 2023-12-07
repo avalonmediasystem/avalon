@@ -41,8 +41,7 @@ const Ramp = ({
   base_url,
   playlist_id,
   share,
-  comment_tag,
-  action_buttons
+  comment_tag
 }) => {
   const [manifestUrl, setManifestUrl] = React.useState('');
   const [activeItemTitle, setActiveItemTitle] = React.useState();
@@ -117,7 +116,6 @@ const Ramp = ({
           </Card>
         </Col>
         <Col sm={4}>
-          <div dangerouslySetInnerHTML={{ __html: action_buttons.content }} />
           <Row>
             <Col sm={6}>
               <AutoAdvanceToggle />
