@@ -16,7 +16,7 @@ Unless required by applicable law or agreed to in writing, software distributed
 #EXTM3U
 <% if @master_file.has_captions? %>
 <% captions_list = @master_file.supplemental_file_captions %>
-<% captions_list.append(@master_file.captions) if @master_file.captions.content %>
+<% captions_list.append(@master_file.captions) if @master_file.captions&.content %>
 <% captions_list.each_with_index do |caption, index| %>
 <% label = caption.is_a?(SupplementalFile) ? caption.label : 'English' %>
 <% language = caption.is_a?(SupplementalFile) ? caption.language : 'en' %>
