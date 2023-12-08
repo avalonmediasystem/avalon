@@ -218,12 +218,14 @@ function disableEnableCurrentTrack(activeTrack, currentTime, isSeeked, sectionTi
     if(times.begin <= starttime && starttime <= times.end) {
       $('#playlistitem_scope_track')[0].disabled = false;
       $('#current-track-text').removeClass('disabled-option');
+      $('#playlistitem_scope_track').closest('label').css('cursor', 'pointer');
     }
   } else {
     // Whena activeTrack is undefined, disable the current track option
     $('#playlistitem_scope_track')[0].disabled = true;
     $('#current-track-name').text('');
     $('#current-track-text').addClass('disabled-option');
+    $('#playlistitem_scope_track').closest('label').css('cursor', 'not-allowed');
     if($('#playlistitem_scope_track')[0].checked) {
       $('#moreDetails').collapse('hide');
       $('#playlistitem_scope_track').prop('checked', false);
