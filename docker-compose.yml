@@ -62,10 +62,12 @@ services:
       - ./solr/conf:/opt/solr/avalon_conf
 
   hls:
-    image: avalonmediasystem/nginx:minio
+    image: avalonmediasystem/nginx:minio-jammy
     environment:
       - AVALON_DOMAIN=http://avalon:3000
       - AVALON_STREAMING_BUCKET_URL=http://minio:9000/derivatives/
+    volumes:
+      - ./log/nginx:/var/log/nginx
     ports:
       - '8880:80'
     networks:
@@ -165,8 +167,8 @@ services:
     ports: []
 
   minio:
-    image: minio/minio:RELEASE.2019-10-12T01-39-57Z
-    command: minio server /data
+    image: minio/minio:RELEASE.2023-12-07T04-16-00Z
+    command: minio server /data --console-address ":9090"
     environment:
       MINIO_ACCESS_KEY: minio
       MINIO_SECRET_KEY: minio123
@@ -174,6 +176,7 @@ services:
       - data:/data
     ports:
       - 9000:9000
+      - 9090:9090
     networks:
       internal:
       external:
@@ -191,8 +194,8 @@ services:
       /bin/sh -c "
       /usr/bin/mc config host add myminio http://minio:9000 minio minio123;
       /usr/bin/mc mb -p myminio/fcrepo myminio/masterfiles myminio/derivatives myminio/supplementalfiles myminio/preserves;
-      /usr/bin/mc policy set download myminio/derivatives;
-      /usr/bin/mc policy set download myminio/supplementalfiles;
+      /usr/bin/mc anonymous set download myminio/derivatives;
+      /usr/bin/mc anonymous set download myminio/supplementalfiles;
       exit 0;
       "
     networks:
