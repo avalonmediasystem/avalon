@@ -97,15 +97,15 @@ class SpeedyAF::Proxy::MediaObject < SpeedyAF::Base
     # This is important otherwise speedy_af will reify from fedora when trying to access this field.
     # When adding a new property to the master file model that will be used in the interface,
     # add it to the default below to avoid reifying for master files lacking a value for the property.
-    SpeedyAF::Proxy::MasterFile.where("isPartOf_ssim:#{id}",
-                                      order: -> { master_file_ids },
-                                      load_reflections: true)
+    @master_files ||= SpeedyAF::Proxy::MasterFile.where("isPartOf_ssim:#{id}",
+                                                        order: -> { master_file_ids },
+                                                        load_reflections: true)
   end
   alias_method :indexed_master_files, :master_files
   alias_method :ordered_master_files, :master_files
 
   def collection
-    SpeedyAF::Proxy::Admin::Collection.find(collection_id)
+    @collection ||= SpeedyAF::Proxy::Admin::Collection.find(collection_id)
   end
 
   def lending_period
@@ -149,7 +149,7 @@ class SpeedyAF::Proxy::MediaObject < SpeedyAF::Base
   end
 
   def sections_with_files(tag: '*')
-    ordered_master_file_ids.select { |m| SpeedyAF::Proxy::MasterFile.find(m).supplemental_files(tag: tag).present? }
+    master_files.select { |master_file| master_file.supplemental_files(tag: tag).present? }
   end
 
   protected
