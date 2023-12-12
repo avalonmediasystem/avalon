@@ -28,7 +28,8 @@ Unless required by applicable law or agreed to in writing, software distributed
 <script>
   let canvasIndex = 0;
   $(document).ready(function() {
-    const mediaObject = <%= @media_object.to_json.html_safe %>;
+    const mediaObjectId = <% @media_object.id %>
+    const sectionIds = <%= @media_object.ordered_master_file_ids.to_json.html_safe %>;
     const event = new CustomEvent('canvasswitch', { detail: { lti_share_link: '', link_back_url: '', embed_code: '' } })
     function canvasIndexListener() {
       let player = document.getElementById('iiif-media-player');
@@ -36,9 +37,9 @@ Unless required by applicable law or agreed to in writing, software distributed
         player.player.on("loadedmetadata", () => {
           if (player.dataset.canvasindex != canvasIndex) {
             canvasIndex = parseInt(player.dataset.canvasindex);
-            const sectionId = mediaObject.files[canvasIndex].id;
+            const sectionId = sectionIds[canvasIndex];
             $.ajax({
-              url: '/media_objects/' + mediaObject.id + '/section/' + sectionId + '/stream',
+              url: '/media_objects/' + mediaObjectId + '/section/' + sectionId + '/stream',
               type: 'GET',
               success: function(data) {
                 event.detail.lti_share_link = data.lti_share_link;
