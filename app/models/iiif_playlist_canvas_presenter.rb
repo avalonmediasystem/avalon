@@ -68,7 +68,8 @@ class IiifPlaylistCanvasPresenter
 
   def annotation_content
     return if cannot_read_item || master_file.nil?
-    playlist_item.marker.collect { |m| marker_content(m) }
+    annotations = supplemental_captions.collect { |file| supplemental_captions_data(file) }
+    annotations += playlist_item.marker.collect { |marker| marker_content(marker) }
   end
 
   def placeholder_content
@@ -125,6 +126,40 @@ class IiifPlaylistCanvasPresenter
       url = Rails.application.routes.url_helpers.avalon_marker_url(marker.id)
 
       IIIFManifest::V3::AnnotationContent.new(annotation_id: url, **marker_attributes(marker))
+    end
+
+    def supplemental_captions
+      files = master_file.supplemental_files(tag: 'caption')
+      files += [master_file.captions] if master_file.captions.present? && master_file.captions.persisted?
+      files
+    end
+
+    def supplemental_captions_data(file)
+      url = if !file.is_a?(SupplementalFile)
+              Rails.application.routes.url_helpers.captions_master_file_url(master_file.id)
+            elsif file.tags.include?('caption')
+              Rails.application.routes.url_helpers.captions_master_file_supplemental_file_url(master_file.id, file.id)
+            end
+      IIIFManifest::V3::AnnotationContent.new(body_id: url, **supplemental_attributes(file))
+    end
+
+    def supplemental_attributes(file)
+      if file.is_a?(SupplementalFile)
+        label = file.tags.include?('machine_generated') ? file.label + ' (machine generated)' : file.label
+        format = file.file.content_type
+        language = file.language || 'en'
+      else
+        label = 'English'
+        format = file.mime_type
+        language = 'en'
+      end
+      {
+        motivation: 'supplementing',
+        label: label,
+        type: 'Text',
+        format: format,
+        language: language
+      }
     end
 
     def stream_urls
