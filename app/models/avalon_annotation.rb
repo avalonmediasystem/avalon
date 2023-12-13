@@ -56,9 +56,13 @@ class AvalonAnnotation < ActiveAnnotations::Annotation
     self.title = master_file.embed_title if self.title.nil? && master_file.present?
   end
 
+  def master_file_id
+    @master_file_id ||= CGI::unescape(self.source.split('/').last) if self.source
+  end
+
   # Sets the class variable @master_file by finding the master referenced in the source uri
   def master_file
-    @master_file ||= SpeedyAF::Proxy::MasterFile.find(CGI::unescape(self.source.split('/').last)) if self.source
+    @master_file ||= SpeedyAF::Proxy::MasterFile.find(master_file_id) if master_file_id
   end
 
   def master_file=(value)
@@ -74,5 +78,4 @@ class AvalonAnnotation < ActiveAnnotations::Annotation
   rescue
     "#{master_file&.rdf_uri}?t=#{start_time},#{end_time}"
   end
-
 end

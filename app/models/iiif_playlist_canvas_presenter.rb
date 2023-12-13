@@ -16,11 +16,12 @@ class IiifPlaylistCanvasPresenter
   attr_reader :playlist_item, :stream_info, :cannot_read_item
   attr_accessor :media_fragment
 
-  def initialize(playlist_item:, stream_info:, cannot_read_item: false, media_fragment: nil)
+  def initialize(playlist_item:, stream_info:, cannot_read_item: false, media_fragment: nil, master_file: nil)
     @playlist_item = playlist_item
     @stream_info = stream_info
     @cannot_read_item = cannot_read_item
     @media_fragment = media_fragment
+    @master_file = master_file
   end
 
   delegate :id, to: :playlist_item
@@ -36,7 +37,7 @@ class IiifPlaylistCanvasPresenter
   end
 
   def master_file
-    playlist_item.clip.master_file
+    @master_file ||= playlist_item.clip.master_file
   end
 
   def part_of
@@ -142,7 +143,7 @@ class IiifPlaylistCanvasPresenter
       IiifManifestRange.new(
         label: { "none" => [label] },
         items: [
-          IiifPlaylistCanvasPresenter.new(playlist_item: playlist_item, stream_info: stream_info, media_fragment: fragment_identifier)
+          IiifPlaylistCanvasPresenter.new(playlist_item: playlist_item, stream_info: stream_info, media_fragment: fragment_identifier, master_file: master_file)
         ]
       )
     end
