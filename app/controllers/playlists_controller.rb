@@ -249,18 +249,15 @@ class PlaylistsController < ApplicationController
     # Fetch all master files related to the playlist items in a single SpeedyAF::Base.where
     master_file_ids = @playlist.items.collect { |item| item.clip.master_file_id }
     master_files = SpeedyAF::Proxy::MasterFile.where("id:#{master_file_ids.join(' id:')}", load_reflections: true)
+    media_objects = master_files.collect(&:media_object)
 
-    # TODO: condense secure_streams into single call using master_files
+    # Condense secure_streams into single call using master_files
+    stream_info_hash = secure_stream_infos(master_files, media_objects)
 
     canvas_presenters = @playlist.items.collect do |item|
       master_file = master_files.find { |mf| mf.id == item.clip.master_file_id }
       cannot_read_item = cannot? :read, master_file
-      stream_info = if master_file.nil?
-                      nil
-                    else
-                      secure_streams(master_file.stream_details, master_file.media_object_id)
-                    end
-      IiifPlaylistCanvasPresenter.new(playlist_item: item, stream_info: stream_info, cannot_read_item: cannot_read_item, master_file: master_file)
+      IiifPlaylistCanvasPresenter.new(playlist_item: item, stream_info: stream_info_hash[master_file.id], cannot_read_item: cannot_read_item, master_file: master_file)
     end
 
     can_edit_playlist = can? :edit, @playlist

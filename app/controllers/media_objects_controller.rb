@@ -464,7 +464,7 @@ class MediaObjectsController < ApplicationController
     @media_object = SpeedyAF::Proxy::MediaObject.find(params[:id])
     authorize! :read, @media_object
 
-    stream_info_hash = secure_stream_infos(master_file_presenters, @media_object.id)
+    stream_info_hash = secure_stream_infos(master_file_presenters, [@media_object])
     canvas_presenters = master_file_presenters.collect { |mf| IiifCanvasPresenter.new(master_file: mf, stream_info: stream_info_hash[mf.id]) }
     presenter = IiifManifestPresenter.new(media_object: @media_object, master_files: canvas_presenters, lending_enabled: lending_enabled?(@media_object))
 

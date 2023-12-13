@@ -30,15 +30,21 @@ module SecurityHelper
   # media_object CDL check only happens once
   # session tokens retrieved in batch then passed into add_stream_url
   # Returns Hash[MasterFile.id, stream_info]
-  def secure_stream_infos(master_files, media_object_id)
+  def secure_stream_infos(master_files, media_objects)
     stream_info_hash = {}
-    if not_checked_out?(media_object_id)
-      master_files.each { |mf| stream_info_hash[mf.id] = mf.stream_details }
-    else
-      stream_tokens = StreamToken.get_session_tokens_for(session: session, targets: master_files.map(&:id))
-      stream_token_hash = stream_tokens.pluck(:target, :token).to_h
-      master_files.each { |mf| stream_info_hash[mf.id] = secure_stream_info(mf.stream_details, stream_token_hash[mf.id]) }
-    end
+
+    not_checked_out_hash = {}
+    mo_ids = master_files.collect(&:media_object_id)
+    mo_ids.each { |mo_id| not_checked_out_hash[mo_id] ||= not_checked_out?(mo_id, media_object: media_objects.find {|mo| mo.id == mo_id}) }
+    not_checked_out_master_files = master_files.select { |mf| not_checked_out_hash[mf.media_object_id] }
+    checked_out_master_files = master_files - not_checked_out_master_files
+
+    not_checked_out_master_files.each { |mf| stream_info_hash[mf.id] = mf.stream_details }
+
+    stream_tokens = StreamToken.get_session_tokens_for(session: session, targets: checked_out_master_files.map(&:id))
+    stream_token_hash = stream_tokens.pluck(:target, :token).to_h
+    checked_out_master_files.each { |mf| stream_info_hash[mf.id] = secure_stream_info(mf.stream_details, stream_token_hash[mf.id]) }
+
     stream_info_hash
   end
 
@@ -60,7 +66,7 @@ module SecurityHelper
 
   private
 
-    def not_checked_out?(media_object_id)
-      lending_enabled?(SpeedyAF::Proxy::MediaObject.find(media_object_id)) && Checkout.checked_out_to_user(media_object_id, current_user&.id).empty?
+    def not_checked_out?(media_object_id, media_object: nil)
+      lending_enabled?(media_object || SpeedyAF::Proxy::MediaObject.find(media_object_id)) && Checkout.checked_out_to_user(media_object_id, current_user&.id).empty?
     end
 end
