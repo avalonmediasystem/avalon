@@ -77,7 +77,7 @@ const Ramp = ({
   }
 
   return (
-    <IIIFPlayer manifestUrl={manifestUrl}>
+    <IIIFPlayer manifestUrl={manifestUrl} customErrorMessage='This playlist is empty.'>
       <Row className="ramp--all-components ramp--playlist">
         <Col sm={8}>
           <MediaPlayer enableFileDownload={false} />
