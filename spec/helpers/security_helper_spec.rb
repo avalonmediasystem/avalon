@@ -172,7 +172,7 @@ describe SecurityHelper, type: :helper do
         before { allow(Settings.controlled_digital_lending).to receive(:enable).and_return(false) }
 
         it 'rewrites urls in the stream_infos' do
-          stream_info_hash = helper.secure_stream_infos([master_file], media_object.id)
+          stream_info_hash = helper.secure_stream_infos([master_file], [media_object])
           stream_info = stream_info_hash[master_file.id]
           [:stream_hls].each do |protocol|
             stream_info[protocol].each do |quality|
@@ -190,7 +190,7 @@ describe SecurityHelper, type: :helper do
           before { FactoryBot.create(:checkout, media_object_id: media_object.id, user_id: user.id)}
 
           it 'rewrites urls in the stream_infos' do
-            stream_info_hash = helper.secure_stream_infos([master_file], media_object.id)
+            stream_info_hash = helper.secure_stream_infos([master_file], [media_object])
             stream_info = stream_info_hash[master_file.id]
             [:stream_hls].each do |protocol|
               stream_info[protocol].each do |quality|
@@ -202,7 +202,7 @@ describe SecurityHelper, type: :helper do
 
         context 'the user does not have the item checked out' do
           it 'does not rewrite urls in the stream_info' do
-            stream_info_hash = helper.secure_stream_infos([master_file], media_object.id)
+            stream_info_hash = helper.secure_stream_infos([master_file], [media_object])
             stream_info = stream_info_hash[master_file.id]
             [:stream_hls].each do |protocol|
               stream_info[protocol].each do |quality|

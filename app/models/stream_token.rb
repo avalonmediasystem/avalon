@@ -57,7 +57,8 @@ class StreamToken < ActiveRecord::Base
       # all attributes must be present for all items in upsert array
       attrs[:id] = existing_token_hash[attrs[:token]] if existing_token_hash[attrs[:token]].present?
     end
-    result = StreamToken.upsert_all(token_attributes)
+
+    result = token_attributes.present? ? StreamToken.upsert_all(token_attributes) : []
 
     # Fetch StreamToken fresh so they can be put into session and returned
     tokens = StreamToken.where(id: result.to_a.pluck("id"))
