@@ -23,7 +23,7 @@ class SpeedyAF::Proxy::StructuralMetadata < SpeedyAF::Base
     xpath('/Item/@label').text
   end
 
-  def as_json
+  def as_json(_options = {})
     root_node = xpath('//Item')[0]
     root_node.present? ? node_xml_to_json(root_node) : {}
   end
