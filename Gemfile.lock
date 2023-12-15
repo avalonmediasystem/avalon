@@ -67,7 +67,7 @@ GIT
 
 GIT
   remote: https://github.com/samvera-labs/iiif_manifest.git
-  revision: c7467b4ae32934f161bd2cabdd741ec9293cefe6
+  revision: 6a027ff84d2b1ca65765dea0c83c820643cebe01
   branch: main
   specs:
     iiif_manifest (1.3.1)
@@ -581,7 +581,7 @@ GEM
     mini_mime (1.1.2)
     mini_portile2 (2.8.4)
     minitar (0.9)
-    minitest (5.19.0)
+    minitest (5.20.0)
     msgpack (1.6.0)
     multi_json (1.15.0)
     multi_xml (0.6.0)
