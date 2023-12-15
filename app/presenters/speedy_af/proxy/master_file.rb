@@ -64,4 +64,12 @@ class SpeedyAF::Proxy::MasterFile < SpeedyAF::Base
   def captions
     load_subresource_content(:captions) rescue nil
   end
+
+  def permalink_with_query(query_vars = {})
+    val = permalink
+    if val && query_vars.present?
+      val = "#{val}?#{query_vars.to_query}"
+    end
+    val ? val.to_s : nil
+  end
 end
