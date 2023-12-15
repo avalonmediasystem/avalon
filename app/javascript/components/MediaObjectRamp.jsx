@@ -119,7 +119,8 @@ const Ramp = ({
   }
 
   return (
-    <IIIFPlayer manifestUrl={manifestUrl}>
+    <IIIFPlayer manifestUrl={manifestUrl} 
+      customErrorMessage='This page encountered an error. Please refresh or contact an administrator.'>
       <Row className="ramp--all-components">
         <Col sm={8}>
           { (cdl.enabled && !cdl.can_stream)
