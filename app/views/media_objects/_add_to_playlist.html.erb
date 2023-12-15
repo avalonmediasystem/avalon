@@ -46,10 +46,10 @@ Unless required by applicable law or agreed to in writing, software distributed
           <div class="form-check">
             <label class="form-check-label">
               <input type="radio" onclick="collapseMoreDetails()" name="post[playlistitem_scope]" id="playlistitem_timeselection" aria-label="playlist item time selection">
-              Time Selection
+              Custom Timespan
             </label>
             <input type="text" name="playlist_item_start" id="playlist_item_start" pattern="(\d+:){0,2}\d+(\.\d+)?" value="" aria-label="start time">
-              to 
+              to
             <input type="text" name="playlist_item_end" id="playlist_item_end" pattern="(\d+:){0,2}\d+(\.\d+)?" value="" aria-label="end time">
           </div>
           <div class="form-check">
@@ -152,10 +152,19 @@ Unless required by applicable law or agreed to in writing, software distributed
       let timeCheck = setInterval(initAddToPlaylist, 500);
       function initAddToPlaylist() {
         let player = document.getElementById('iiif-media-player');
+        let playlistSection = $('#playlistitem_scope_section');
+        let playlistTrack = $('#playlistitem_scope_track');
+        let multiItemExpanded = $('#multiItemCheck.show').val();
+        let moreDetailsExpanded = $('#moreDetails.show').val();
         if(player) {
           addPlayerEventListeners(player.player, () => {
             clearInterval(timeCheck);
           });
+          if (playlistSection.attr("checked") && multiItemExpanded === undefined && moreDetailsExpanded === undefined) {
+            collapseMultiItemCheck();
+          } else if (playlistTrack.attr("checked") && multiItemExpanded === undefined && moreDetailsExpanded === undefined) {
+            collapseMoreDetails();
+          }
         }
       }
 
@@ -201,7 +210,7 @@ Unless required by applicable law or agreed to in writing, software distributed
           if(!playlistForm) {
             return;
           }
-          
+
           // For custom scope set start, end times as current time and media duration respectively
           let currentPlayer = document.getElementById('iiif-media-player');
           let start, end, currentTime, duration = 0;
@@ -223,18 +232,24 @@ Unless required by applicable law or agreed to in writing, software distributed
           // Fill in the current track and section titles and custom scope times
           if(scopes?.length > 0) {
             let sectionInfo = scopes.filter(s => s.tags.includes('current-section'));
+            let trackInfo = scopes.filter(s => s.tags.includes('current-track'));
+
             if(sectionInfo?.length > 0) {
               currentSectionLabel = sectionInfo[0].label || currentSectionLabel;
+
+              if(trackInfo.length === 0) {
+                $('#playlistitem_scope_section').attr("checked", "checked");
+              }
             }
 
-            let trackInfo = scopes.filter(s => s.tags.includes('current-track'));
             if(trackInfo.length > 0) {
               activeTrack = trackInfo[0];
               let trackName = activeTrack.tags.includes('current-section')
                 ? activeTrack.label || streamId
                 : `${currentSectionLabel} - ${activeTrack.label || streamId}`;
               $('#current-track-name').text(trackName);
-              // Update start, end times for custom scope from the active timespan 
+              $('#playlistitem_scope_track').attr("checked", "checked");
+              // Update start, end times for custom scope from the active timespan
               start = activeTrack.times.begin;
               end = activeTrack.times.end;
             } else {
