@@ -38,14 +38,14 @@ Unless required by applicable law or agreed to in writing, software distributed
 
         <div id="add-to-playlist-form-group">
           <div class="form-check">
-            <label class="form-check-label">
-              <input type="radio" onclick="collapseMoreDetails()" name="post[playlistitem_scope]" id="playlistitem_scope_track" aria-label="playlist item current track">
+            <label class="form-check-label" onclick="collapseMoreDetails()">
+              <input type="radio" name="post[playlistitem_scope]" id="playlistitem_scope_track" aria-label="playlist item current track">
                 <span id="current-track-text">Current Track (<span id="current-track-name"></span>)</span>
             </label>
           </div>
           <div class="form-check">
-            <label class="form-check-label">
-              <input type="radio" onclick="collapseMoreDetails()" name="post[playlistitem_scope]" id="playlistitem_timeselection" aria-label="playlist item time selection">
+            <label class="form-check-label" onclick="collapseMoreDetails()">
+              <input type="radio" name="post[playlistitem_scope]" id="playlistitem_timeselection" aria-label="playlist item time selection">
               Custom Timespan
             </label>
             <input type="text" name="playlist_item_start" id="playlist_item_start" pattern="(\d+:){0,2}\d+(\.\d+)?" value="" aria-label="start time">
@@ -91,7 +91,7 @@ Unless required by applicable law or agreed to in writing, software distributed
         </div>
         <div class="add-to-playlist-form-buttons">
           <input type="submit" name="commit" value="Add" class="btn btn-primary mr-2" id="addToPlaylistSave" />
-          <button type="button" class="btn btn-outline" data-toggle="collapse" data-target="#addToPlaylistPanel">Cancel</button>
+          <button type="button" class="btn btn-outline" onclick="resetAddToPlaylistForm()" data-toggle="collapse" data-target="#addToPlaylistPanel">Cancel</button>
         </div>
       </form>
     <% end %>
@@ -160,9 +160,9 @@ Unless required by applicable law or agreed to in writing, software distributed
           addPlayerEventListeners(player.player, () => {
             clearInterval(timeCheck);
           });
-          if (playlistSection.attr("checked") && multiItemExpanded === undefined && moreDetailsExpanded === undefined) {
+          if (playlistSection.prop("checked") && multiItemExpanded === undefined && moreDetailsExpanded === undefined) {
             collapseMultiItemCheck();
-          } else if (playlistTrack.attr("checked") && multiItemExpanded === undefined && moreDetailsExpanded === undefined) {
+          } else if (playlistTrack.prop("checked") && multiItemExpanded === undefined && moreDetailsExpanded === undefined) {
             collapseMoreDetails();
           }
         }
@@ -237,8 +237,8 @@ Unless required by applicable law or agreed to in writing, software distributed
             if(sectionInfo?.length > 0) {
               currentSectionLabel = sectionInfo[0].label || currentSectionLabel;
 
-              if(trackInfo.length === 0) {
-                $('#playlistitem_scope_section').attr("checked", "checked");
+              if(trackInfo.length === 0 && event?.target.id === "addToPlaylistBtn") {
+                $('#playlistitem_scope_section').prop('checked', true);
               }
             }
 
@@ -248,7 +248,9 @@ Unless required by applicable law or agreed to in writing, software distributed
                 ? activeTrack.label || streamId
                 : `${currentSectionLabel} - ${activeTrack.label || streamId}`;
               $('#current-track-name').text(trackName);
-              $('#playlistitem_scope_track').attr("checked", "checked");
+              if (event?.target.id === "addToPlaylistBtn") {
+                $('#playlistitem_scope_track').prop('checked', true);
+              }
               // Update start, end times for custom scope from the active timespan
               start = activeTrack.times.begin;
               end = activeTrack.times.end;
@@ -295,6 +297,11 @@ Unless required by applicable law or agreed to in writing, software distributed
             handleAddError({ responseJSON: { message: ['Please select a playlist option'] }})
           }
         });
+
+        $('#addToPlaylistBtn').on('click', function (e) {
+          resetAddToPlaylistForm();
+        });
+
         listenersAdded = true;
       }
     });
