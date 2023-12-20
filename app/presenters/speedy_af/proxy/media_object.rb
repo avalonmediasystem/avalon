@@ -152,6 +152,14 @@ class SpeedyAF::Proxy::MediaObject < SpeedyAF::Base
     master_files.select { |master_file| master_file.supplemental_files(tag: tag).present? }
   end
 
+  def permalink_with_query(query_vars = {})
+    val = permalink
+    if val && query_vars.present?
+      val = "#{val}?#{query_vars.to_query}"
+    end
+    val ? val.to_s : nil
+  end
+
   protected
 
   # Overrides from SpeedyAF::Base
