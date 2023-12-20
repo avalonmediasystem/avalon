@@ -575,6 +575,19 @@ RSpec.describe PlaylistsController, type: :controller do
         expect(parsed_response['items'][0]['metadata']).to be_present
       end
 
+      context "when playlist is empty" do
+        let(:playlist) { FactoryBot.create(:playlist, items: [], visibility: Playlist::PUBLIC) }
+
+        it "returns a IIIF manifest" do
+          get :manifest, format: 'json', params: { id: playlist.id }, session: valid_session
+          expect(response).to have_http_status(200)
+          parsed_response = JSON.parse(response.body)
+          expect(parsed_response['@context']).to include "http://iiif.io/api/presentation/3/context.json"
+          expect(parsed_response['type']).to eq 'Manifest'
+          expect(parsed_response['items']).to be_empty
+        end
+      end
+
       context "when playlist owner" do
         before do
           login_user playlist.user.user_key
