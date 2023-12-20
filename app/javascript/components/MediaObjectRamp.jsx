@@ -217,7 +217,7 @@ const Ramp = ({
               )
           }
         </Col>
-        <Col sm={ (master_files_count == 0) ? 12 : 4}>
+        <Col sm={ (master_files_count == 0) ? 12 : 4} className="ramp--tabs-panel">
           { cdl.enabled && <div dangerouslySetInnerHTML={{ __html: cdl.destroy }}/> }
           <Tabs>
             <Tab eventKey="details" title="Details">
