@@ -94,6 +94,11 @@ Unless required by applicable law or agreed to in writing, software distributed
       function addPlayerEventListeners(player) {
         player.on('loadedmetadata', () => {
           transcriptCheck();
+
+          // Remove focus from player so that tab order is correct
+          if (document.activeElement.id == player.id_) {
+            document.activeElement.blur();
+          }
         });
       }
 
@@ -102,7 +107,7 @@ Unless required by applicable law or agreed to in writing, software distributed
         let transcriptTab = document.evaluate('//a[text()="Transcripts"]', document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
         let detailTab = document.evaluate('//a[text()="Details"]', document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
 
-        if(!transcriptSections.includes(sectionId)) {
+        if(transcriptTab && !transcriptSections.includes(sectionId)) {
           // If transcript tab is the active tab when it is hidden, the tab goes away but the box still displays
           // the missing transcript file message. Force change over to a different tab to avoid this case.
           if (transcriptTab.getAttribute('aria-selected') === "true") { detailTab.click(); }
@@ -111,6 +116,10 @@ Unless required by applicable law or agreed to in writing, software distributed
           transcriptTab.style.display = '';
         }
       }
+
+      document.addEventListener("keydown", function() {
+        rampHotKeys();
+      });
     });
 </script>
 <% end %>

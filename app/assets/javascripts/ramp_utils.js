@@ -1,12 +1,12 @@
-/* 
+/*
  * Copyright 2011-2023, The Trustees of Indiana University and Northwestern
  *   University.  Licensed under the Apache License, Version 2.0 (the "License");
  *   you may not use this file except in compliance with the License.
- * 
+ *
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed
  *   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
  *   CONDITIONS OF ANY KIND, either express or implied. See the License for the
@@ -37,8 +37,8 @@ function getActiveItem(checkSection = true) {
     if(activeCanvasOnly) {
       let { mediafrag, label } = currentSection[0].dataset;
       let [ itemId, timeHash ] = mediafrag.split('#t=');
-      return { 
-        label, 
+      return {
+        label,
         times: {
           begin: parseFloat(timeHash.split(',')[0]) || 0,
           end: parseFloat(timeHash.split(',')[1]) || duration
@@ -48,7 +48,7 @@ function getActiveItem(checkSection = true) {
         sectionLabel: label,
       }
     }
-  
+
     // When structure has an active timespan child
     if(currentStructureItem.find('a').length > 0) {
       let item = currentStructureItem.find('a')[0];
@@ -58,7 +58,7 @@ function getActiveItem(checkSection = true) {
         end: parseFloat(timeHash.split(',')[1]) || duration
       }
       let streamId = item.pathname.split('/').pop();
-      return { 
+      return {
         label,
         times,
         tags: ['current-track'],
@@ -130,7 +130,7 @@ function getTimelineScopes() {
  * Parse time in seconds to hh:mm:ss.ms format
  * @param {Number} secTime time in seconds
  * @param {Boolean} showHrs flag indicating for showing hours
- * @returns 
+ * @returns
  */
 function createTimestamp(secTime, showHrs) {
   let hours = Math.floor(secTime / 3600);
@@ -184,7 +184,7 @@ function collapseMoreDetails() {
   if(!$('#moreDetails').hasClass('show')) {
     $('#moreDetails').collapse('show');
     $('#multiItemCheck').collapse('hide');
-    // When the title field is empty fill it with either 
+    // When the title field is empty fill it with either
     // current track or current section name
     if($('#playlist_item_title').val() == '') {
       $('#playlist_item_title').val(
@@ -201,7 +201,7 @@ function collapseMoreDetails() {
  * @param {Object} activeTrack JSON object for the active timespans
  * @param {Number} currentTime player's playhead position
  * @param {Boolean} isSeeked flag to indicate player 'seeked' event happened/not
- * @param {String} sectionTitle name of the current section 
+ * @param {String} sectionTitle name of the current section
  */
 function disableEnableCurrentTrack(activeTrack, currentTime, isSeeked, sectionTitle) {
   let title = sectionTitle;
@@ -238,7 +238,7 @@ function disableEnableCurrentTrack(activeTrack, currentTime, isSeeked, sectionTi
   }
 }
 
-/** AJAX request for add to playlist for submission for playlist item for 
+/** AJAX request for add to playlist for submission for playlist item for
  * a selected clip
  */
 function addPlaylistItem (playlistId, masterfileId, starttime, endtime) {
@@ -263,7 +263,7 @@ function addPlaylistItem (playlistId, masterfileId, starttime, endtime) {
   });
 }
 
-/** AJAX request for add to playlist for submission for playlist items for 
+/** AJAX request for add to playlist for submission for playlist items for
  * section(s)
  */
 function addToPlaylist(playlistId, scope, masterfileId, moId) {
@@ -331,4 +331,87 @@ function resetAddToPlaylistForm() {
 function closeAlert() {
   $('#add_to_playlist_alert').slideUp();
   $('#add_to_playlist_form_group').slideDown();
+}
+
+/** Trigger player hotkeys when focus is not on an input or textarea */
+function rampHotKeys() {
+  let player = document.getElementById('iiif-media-player');
+  let playerInst = player.player;
+  var inputs = ['input', 'textarea', 'audio', 'video'];
+  var activeElement = document.activeElement;
+
+  if(activeElement && inputs.indexOf(activeElement.tagName.toLowerCase()) !== -1) {
+    return;
+  } else {
+    // Copied from https://github.com/samvera-labs/ramp/blob/029fae38cbfc74faa2d001f76cf8178f7ce6a021/src/components/MediaPlayer/MediaPlayer.js#L323-L392
+    // Space and k toggle play/pause
+    if (event.which === 32 || event.which === 75) {
+      // Prevent default browser actions so that page does not react when hotkeys are used.
+      // e.g. pressing space will pause/play without scrolling the page down.
+      event.preventDefault();
+
+      if (playerInst.paused()) {
+        playerInst.play();
+      } else {
+        playerInst.pause();
+      }
+    }
+
+    // Adapted from https://github.com/videojs/video.js/blob/bad086dad68d3ff16dbe12e434c15e1ee7ac2875/src/js/control-bar/mute-toggle.js#L56
+    // m toggles mute
+    if (event.which === 77) {
+      event.preventDefault();
+
+      const vol = playerInst.volume();
+      const lastVolume = playerInst.lastVolume_();
+
+      if (vol === 0) {
+        const volumeToSet = lastVolume < 0.1 ? 0.1 : lastVolume;
+
+        playerInst.volume(volumeToSet);
+        playerInst.muted(false);
+      } else {
+        playerInst.muted(playerInst.muted() ? false : true);
+      }
+    }
+
+    // f toggles fullscreen
+    // Fullscreen should only be available for videos
+    if (event.which === 70 && !playerInst.isAudio()) {
+      event.preventDefault();
+
+      if (!playerInst.isFullscreen()) {
+        playerInst.requestFullscreen();
+      } else {
+        playerInst.exitFullscreen();
+      }
+    }
+
+    // Right arrow seeks 5 seconds ahead
+    if (event.which === 39) {
+      event.preventDefault();
+      playerInst.currentTime(playerInst.currentTime() + 5);
+    }
+
+    // Left arrow seeks 5 seconds back
+    if (event.which === 37) {
+      event.preventDefault();
+      playerInst.currentTime(playerInst.currentTime() - 5);
+    }
+
+    // Up arrow raises volume by 0.1
+    if (event.which === 38) {
+      event.preventDefault();
+      if (playerInst.muted()) {
+        playerInst.muted(false)
+      }
+      playerInst.volume(playerInst.volume() + 0.1);
+    }
+
+    // Down arrow lowers volume by 0.1
+    if (event.which === 40) {
+      event.preventDefault();
+      playerInst.volume(playerInst.volume() - 0.1);
+    }
+  }
 }

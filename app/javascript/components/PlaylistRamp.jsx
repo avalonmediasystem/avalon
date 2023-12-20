@@ -72,6 +72,10 @@ const Ramp = ({
         if(activeElements != undefined && activeElements?.length > 0) {
           setActiveItemTitle(activeElements[canvasIndex].textContent);
         }
+        // Remove focus from player so that tab order is correct
+        if (document.activeElement == player) {
+          document.activeElement.blur();
+        }
       });
     }
   }

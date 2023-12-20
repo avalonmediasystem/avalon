@@ -38,3 +38,13 @@ Unless required by applicable law or agreed to in writing, software distributed
     ) %>
   </div>
 </div>
+
+<% content_for :page_scripts do %>
+<script>
+  $(document).ready(function() {
+    document.addEventListener("keydown", function() {
+      rampHotKeys();
+    });
+  });
+</script>
+<% end %>
