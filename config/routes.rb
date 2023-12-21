@@ -181,8 +181,6 @@ Rails.application.routes.draw do
 
   resources :playlists do
     resources :playlist_items, path: 'items', only: [:create, :update, :show] do
-      get 'markers'
-      get 'source_details'
       get 'related_items'
     end
     member do

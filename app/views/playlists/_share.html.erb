@@ -14,9 +14,9 @@ Unless required by applicable law or agreed to in writing, software distributed
 ---  END LICENSE_HEADER BLOCK  ---
 %>
 <div id="share-list">
-    <ul class="nav nav-tabs share-tabs">
+    <nav class="nav nav-tabs share-tabs">
       <%= render_conditional_partials :share, section:'share-tabs' %>
-    </ul>
+    </nav>
 
     <div class="tab-content">
       <%= render_conditional_partials :share, section:'tab-content' %>
@@ -30,10 +30,18 @@ Unless required by applicable law or agreed to in writing, software distributed
     setInterval(shareResourceListener, 500);
 
     function shareResourceListener() {
-      if(!$('.share-tabs li').first().hasClass('active')) {
-        $('.share-tabs li').first().toggleClass('active');
+      if(!$('nav.share-tabs').first().hasClass('active')) {
+        $('nav.share-tabs').first().toggleClass('active');
+        $('.share-tabs a').first().attr('aria-selected', true);
         $('#share-list .tab-content .tab-pane').first().toggleClass('active');
       }
+
+      $('.share-tabs a').click(function (e) {
+        e.preventDefault();
+        $(this).tab('show');
+        $('.share-tabs a').attr('aria-selected', false);
+        $(this).attr('aria-selected', true);
+      });
     }
   })
 </script>

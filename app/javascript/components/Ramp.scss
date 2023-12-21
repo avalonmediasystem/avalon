@@ -24,12 +24,6 @@
     max-width: initial;
   }
 
-  // Left align the structure navigation component
-  .ramp--structured-nav>.ramp--structured-nav__list,
-  .ramp--structured-nav>.ramp--structured-nav__list>.ramp--structured-nav__list-item {
-    padding: 0;
-  }
-
   .ramp--rails-title {
     font-size: 2rem !important;
     margin-top: 1rem !important;
@@ -206,6 +200,14 @@
   }
 }
 
+// Left align the structure navigation component in item view
+.ramp--all-components.ramp--itemview {
+  .ramp--structured-nav>.ramp--structured-nav__list,
+  .ramp--structured-nav>.ramp--structured-nav__list>.ramp--structured-nav__list-item {
+    padding: 0;
+  }
+}
+
 #add_to_playlist_alert {
   a {
     font-weight: bold;
@@ -220,17 +222,7 @@
 .ramp--all-components.ramp--playlist {
   .ramp--structured-nav {
     margin-top: 0px;
-  }
-
-  .nav.nav-tabs {
-    border: none;
-    border-bottom: 1px solid #e2e7e9;
-
-    .nav-item.active {
-      flex-grow: 0;
-      padding: 0px;
-      border-bottom: none;
-    }
+    min-width: inherit;
   }
 
   .tab-pane {

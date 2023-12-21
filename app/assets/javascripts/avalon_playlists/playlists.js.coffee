@@ -78,9 +78,3 @@ $('input[name="playlist[visibility]"]').on('click', () ->
   new_text = $('.human_friendly_visibility_'+new_val).attr('title')
   $('.visibility-help-text').text(new_text)
 )
-
-# Hide instead of delete Bootstrap's dismissable alerts
-$('.mejs-form-alert').on('close.bs.alert', (e) ->
-  e.preventDefault()
-  $(this).slideUp()
-)

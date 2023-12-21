@@ -72,11 +72,6 @@ $(document).ready(function () {
     false
   );
 
-  $('#content').focus(function () {
-    $('.mejs-controls').css('visibility', 'visible');
-    $('.mejs-controls button:first').focus();
-  });
-
   // Set CSS to push the page content above footer
   $('.content-wrapper').css('padding-bottom', $('#footer').css('height'));
 
