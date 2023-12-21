@@ -298,8 +298,15 @@ Unless required by applicable law or agreed to in writing, software distributed
           }
         });
 
+        // In testing, this action did not function properly using `hide.bs.collapse`
+        // or `hidden.bs.collapse`. Triggering on click and limiting via if-statement
+        // was consistent.
         $('#addToPlaylistBtn').on('click', function (e) {
-          resetAddToPlaylistForm();
+          // Only reset the form when the panel is closing to mitigate risk
+          // of conflicting actions when populating panel.
+          if ($('#addToPlaylistPanel.show').length > 0) {
+            resetAddToPlaylistForm();
+          }
         });
 
         listenersAdded = true;
