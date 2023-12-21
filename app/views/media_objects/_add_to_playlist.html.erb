@@ -38,18 +38,18 @@ Unless required by applicable law or agreed to in writing, software distributed
 
         <div id="add-to-playlist-form-group">
           <div class="form-check">
-            <label class="form-check-label">
-              <input type="radio" onclick="collapseMoreDetails()" name="post[playlistitem_scope]" id="playlistitem_scope_track" aria-label="playlist item current track">
+            <label class="form-check-label" onclick="collapseMoreDetails()">
+              <input type="radio" name="post[playlistitem_scope]" id="playlistitem_scope_track" aria-label="playlist item current track">
                 <span id="current-track-text">Current Track (<span id="current-track-name"></span>)</span>
             </label>
           </div>
           <div class="form-check">
-            <label class="form-check-label">
-              <input type="radio" onclick="collapseMoreDetails()" name="post[playlistitem_scope]" id="playlistitem_timeselection" aria-label="playlist item time selection">
-              Time Selection
+            <label class="form-check-label" onclick="collapseMoreDetails()">
+              <input type="radio" name="post[playlistitem_scope]" id="playlistitem_timeselection" aria-label="playlist item time selection">
+              Custom Timespan
             </label>
             <input type="text" name="playlist_item_start" id="playlist_item_start" pattern="(\d+:){0,2}\d+(\.\d+)?" value="" aria-label="start time">
-              to 
+              to
             <input type="text" name="playlist_item_end" id="playlist_item_end" pattern="(\d+:){0,2}\d+(\.\d+)?" value="" aria-label="end time">
           </div>
           <div class="form-check">
@@ -91,7 +91,7 @@ Unless required by applicable law or agreed to in writing, software distributed
         </div>
         <div class="add-to-playlist-form-buttons">
           <input type="submit" name="commit" value="Add" class="btn btn-primary mr-2" id="addToPlaylistSave" />
-          <button type="button" class="btn btn-outline" data-toggle="collapse" data-target="#addToPlaylistPanel">Cancel</button>
+          <button type="button" class="btn btn-outline" onclick="resetAddToPlaylistForm()" data-toggle="collapse" data-target="#addToPlaylistPanel">Cancel</button>
         </div>
       </form>
     <% end %>
@@ -152,10 +152,19 @@ Unless required by applicable law or agreed to in writing, software distributed
       let timeCheck = setInterval(initAddToPlaylist, 500);
       function initAddToPlaylist() {
         let player = document.getElementById('iiif-media-player');
+        let playlistSection = $('#playlistitem_scope_section');
+        let playlistTrack = $('#playlistitem_scope_track');
+        let multiItemExpanded = $('#multiItemCheck.show').val();
+        let moreDetailsExpanded = $('#moreDetails.show').val();
         if(player) {
           addPlayerEventListeners(player.player, () => {
             clearInterval(timeCheck);
           });
+          if (playlistSection.prop("checked") && multiItemExpanded === undefined && moreDetailsExpanded === undefined) {
+            collapseMultiItemCheck();
+          } else if (playlistTrack.prop("checked") && multiItemExpanded === undefined && moreDetailsExpanded === undefined) {
+            collapseMoreDetails();
+          }
         }
       }
 
@@ -201,7 +210,7 @@ Unless required by applicable law or agreed to in writing, software distributed
           if(!playlistForm) {
             return;
           }
-          
+
           // For custom scope set start, end times as current time and media duration respectively
           let currentPlayer = document.getElementById('iiif-media-player');
           let start, end, currentTime, duration = 0;
@@ -223,18 +232,26 @@ Unless required by applicable law or agreed to in writing, software distributed
           // Fill in the current track and section titles and custom scope times
           if(scopes?.length > 0) {
             let sectionInfo = scopes.filter(s => s.tags.includes('current-section'));
+            let trackInfo = scopes.filter(s => s.tags.includes('current-track'));
+
             if(sectionInfo?.length > 0) {
               currentSectionLabel = sectionInfo[0].label || currentSectionLabel;
+
+              if(trackInfo.length === 0 && event?.target.id === "addToPlaylistBtn") {
+                $('#playlistitem_scope_section').prop('checked', true);
+              }
             }
 
-            let trackInfo = scopes.filter(s => s.tags.includes('current-track'));
             if(trackInfo.length > 0) {
               activeTrack = trackInfo[0];
               let trackName = activeTrack.tags.includes('current-section')
                 ? activeTrack.label || streamId
                 : `${currentSectionLabel} - ${activeTrack.label || streamId}`;
               $('#current-track-name').text(trackName);
-              // Update start, end times for custom scope from the active timespan 
+              if (event?.target.id === "addToPlaylistBtn") {
+                $('#playlistitem_scope_track').prop('checked', true);
+              }
+              // Update start, end times for custom scope from the active timespan
               start = activeTrack.times.begin;
               end = activeTrack.times.end;
             } else {
@@ -280,6 +297,18 @@ Unless required by applicable law or agreed to in writing, software distributed
             handleAddError({ responseJSON: { message: ['Please select a playlist option'] }})
           }
         });
+
+        // In testing, this action did not function properly using `hide.bs.collapse`
+        // or `hidden.bs.collapse`. Triggering on click and limiting via if-statement
+        // was consistent.
+        $('#addToPlaylistBtn').on('click', function (e) {
+          // Only reset the form when the panel is closing to mitigate risk
+          // of conflicting actions when populating panel.
+          if ($('#addToPlaylistPanel.show').length > 0) {
+            resetAddToPlaylistForm();
+          }
+        });
+
         listenersAdded = true;
       }
     });
