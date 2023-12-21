@@ -41,8 +41,7 @@ Unless required by applicable law or agreed to in writing, software distributed
   <div class="col-sm-12">
     <%= react_component("MediaObjectRamp",
       {
-        base_url: request.protocol+request.host_with_port,
-        mo_id: @media_object.id,
+        urls: { base_url: request.protocol + request.host_with_port, fullpath_url: request.fullpath },
         master_files_count: @media_object.master_files.size,
         has_structure: @media_object.master_files.any?{ |mf| mf.has_structuralMetadata? },
         title: { content: render('title') },
@@ -85,20 +84,21 @@ Unless required by applicable law or agreed to in writing, software distributed
       function initTranscriptCheck() {
         let player = document.getElementById('iiif-media-player');
         if(player) {
-          addPlayerEventListeners(player.player, () => {
+          addPlayerEventListeners(player, () => {
             clearInterval(timeCheck);
           });
         }
       }
 
       function addPlayerEventListeners(player) {
-        player.on('loadedmetadata', () => {
-          transcriptCheck();
+        player.player.on('loadedmetadata', () => {
+          let canvasindex = player.dataset['canvasindex'];
+          transcriptCheck(canvasindex);
         });
       }
 
-      function transcriptCheck() {
-        let sectionId = sectionIds[canvasIndex];
+      function transcriptCheck(canvasindex) {
+        let sectionId = sectionIds[canvasindex];
         let transcriptTab = document.evaluate('//a[text()="Transcripts"]', document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
         let detailTab = document.evaluate('//a[text()="Details"]', document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
 

@@ -221,7 +221,7 @@ function disableEnableCurrentTrack(activeTrack, currentTime, isSeeked, sectionTi
       $('#playlistitem_scope_track').closest('label').css('cursor', 'pointer');
     }
   } else {
-    // Whena activeTrack is undefined, disable the current track option
+    // When activeTrack is undefined, disable the current track option
     $('#playlistitem_scope_track')[0].disabled = true;
     $('#current-track-name').text('');
     $('#current-track-text').addClass('disabled-option');
