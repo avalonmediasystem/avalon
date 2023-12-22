@@ -157,12 +157,24 @@
     }
   }
 
-  .tab-pane {
-    padding:1rem;
-    border-bottom-left-radius: 0.25rem;
-    border-bottom-right-radius: 0.25rem;
-    max-height: 75vh;
-    overflow: auto;
+  .ramp--tabs-panel {
+    display: flex;
+    flex-direction: column;
+
+    .tab-content {
+      display: flex;
+      flex: 1;
+      height: 100%;
+    }
+  
+    .tab-pane {
+      flex: 1;
+      padding:1rem;
+      border-bottom-left-radius: 0.25rem;
+      border-bottom-right-radius: 0.25rem;
+      max-height: inherit;
+      overflow: auto;
+    }
   }
 
   // Remove double scroll-bar for transcripts tab
@@ -181,15 +193,16 @@
   /* Override Ramp styling */
   .ramp--metadata-display {
     min-width: fit-content !important;
+    height: 100%;
 
     .ramp--metadata-display-content {
       padding: 0;
-      max-height: inherit;
+      max-height: 50rem;
     }
   }
 
   .ramp--transcript_nav {
-    max-height: 72vh;
+    max-height: 50rem;
     display: flex;
     flex-direction: column;
     padding: 0;
