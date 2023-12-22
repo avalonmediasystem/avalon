@@ -19,6 +19,7 @@ import {
   IIIFPlayer,
   MediaPlayer,
   StructuredNavigation,
+  MetadataDisplay,
   AutoAdvanceToggle,
   MarkersDisplay
 } from "@samvera/ramp";
@@ -99,8 +100,8 @@ const Ramp = ({
                   </Card>
                   <Card>
                     <Accordion.Collapse eventKey="1">
-                      <Card.Body>
-
+                      <Card.Body className="p-3">
+                        <MetadataDisplay displayOnlyCanvasMetadata={true} showHeading={false} />
                       </Card.Body>
                     </Accordion.Collapse>
                     <Accordion.Toggle as={Card.Header} variant="link" eventKey="1" className="ramp--playlist-accordion-header">
