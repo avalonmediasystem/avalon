@@ -39,8 +39,7 @@ const ExpandCollapseArrow = () => {
 };
 
 const Ramp = ({
-  base_url,
-  mo_id,
+  urls,
   master_files_count,
   has_structure,
   title,
@@ -52,13 +51,33 @@ const Ramp = ({
   has_transcripts
 }) => {
   const [manifestUrl, setManifestUrl] = React.useState('');
+  const [startCanvasId, setStartCanvasId] = React.useState();
+  const [startCanvasTime, setStartCanvasTime] = React.useState();
   const [isClosed, setIsClosed] = React.useState(false);
 
   let expandCollapseBtnRef = React.useRef();
   let interval;
 
   React.useEffect(() => {
+    const { base_url, fullpath_url } = urls;
+    // Split the current path from the time fragment in the format .../:id?t=time
+    let [ fullpath, start_time ] = fullpath_url.split('?t=');
+    // Split the current path in the format /media_objects/:mo_id/section/:mf_id
+    let [ _, __, mo_id, ___, start_canvas ] = fullpath.split('/');
+    // Build the manifest URL
     let url = `${base_url}/media_objects/${mo_id}/manifest.json`;
+    
+    // Set start Canvas ID and start time in the state for Ramp
+    setStartCanvasId(
+      start_canvas && start_canvas != undefined
+      ? `${base_url}/media_objects/${mo_id}/manifest/canvas/${start_canvas}` 
+      : undefined
+      );
+    setStartCanvasTime(
+      start_time && start_time != undefined
+      ? parseFloat(start_time)
+      : undefined
+    )
     setManifestUrl(url);
 
     // Attach player event listeners when there's structure
@@ -120,7 +139,9 @@ const Ramp = ({
 
   return (
     <IIIFPlayer manifestUrl={manifestUrl} 
-      customErrorMessage='This page encountered an error. Please refresh or contact an administrator.'>
+      customErrorMessage='This page encountered an error. Please refresh or contact an administrator.'
+      startCanvasId={startCanvasId}
+      startCanvasTime={startCanvasTime}>
       <Row className="ramp--all-components ramp--itemview">
         <Col sm={8}>
           { (cdl.enabled && !cdl.can_stream)

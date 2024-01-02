@@ -48,7 +48,7 @@ $(document).ready(function() {
     let player = document.getElementById('iiif-media-player');
     let scopes = [];
     let title, streamId;
-    if(player) {
+    if(player && player != undefined) {
       player.player.on('loadedmetadata', () => {
         let timelineBtn = document.getElementById('timelineBtn');
         if(timelineBtn) {
