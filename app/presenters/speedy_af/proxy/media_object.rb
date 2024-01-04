@@ -149,7 +149,7 @@ class SpeedyAF::Proxy::MediaObject < SpeedyAF::Base
   end
 
   def sections_with_files(tag: '*')
-    master_files.select { |master_file| master_file.supplemental_files(tag: tag).present? }
+    master_file_ids.select { |m| SpeedyAF::Proxy::MasterFile.find(m).supplemental_files(tag: tag).present? }
   end
 
   def permalink_with_query(query_vars = {})
