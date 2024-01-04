@@ -56,7 +56,7 @@ module MediaObjectsHelper
         when MediaObject, SpeedyAF::Proxy::MediaObject
           [media_object.date_issued, media_object.date_created]
         when Hash
-          [media_object[:document]['date_ssi'], media_object[:document]['date_created_ssi']]
+          [media_object[:document]['date_issued_ssi'], media_object[:document]['date_created_ssi']]
         end
         result = issued
         result += " (Creation date: #{created})" if created.present?
