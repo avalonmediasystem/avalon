@@ -182,10 +182,13 @@ Unless required by applicable law or agreed to in writing, software distributed
           }
         });
         player.on('dispose', () => {
+          let addToPlaylistBtn = document.getElementById('addToPlaylistBtn');
           currentSectionLabel = undefined;
           $('#addToPlaylistPanel').collapse('hide');
           resetAddToPlaylistForm();
-          addToPlaylistBtn.disabled = true;
+          if (addToPlaylistBtn) {
+            addToPlaylistBtn.disabled = true;
+          }
         });
       }
 
