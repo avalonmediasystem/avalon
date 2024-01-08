@@ -38,14 +38,14 @@ Unless required by applicable law or agreed to in writing, software distributed
 
         <div id="add-to-playlist-form-group">
           <div class="form-check">
-            <label class="form-check-label" onclick="collapseMoreDetails()">
-              <input type="radio" name="post[playlistitem_scope]" id="playlistitem_scope_track" aria-label="playlist item current track">
+            <label class="form-check-label">
+              <input type="radio" onclick="collapseMoreDetails()" name="post[playlistitem_scope]" id="playlistitem_scope_track" aria-label="playlist item current track">
                 <span id="current-track-text">Current Track (<span id="current-track-name"></span>)</span>
             </label>
           </div>
           <div class="form-check">
-            <label class="form-check-label" onclick="collapseMoreDetails()">
-              <input type="radio" name="post[playlistitem_scope]" id="playlistitem_timeselection" aria-label="playlist item time selection">
+            <label class="form-check-label">
+              <input type="radio" onclick="collapseMoreDetails()" name="post[playlistitem_scope]" id="playlistitem_timeselection" aria-label="playlist item time selection">
               Custom Timespan
             </label>
             <input type="text" name="playlist_item_start" id="playlist_item_start" pattern="(\d+:){0,2}\d+(\.\d+)?" value="" aria-label="start time">
@@ -169,27 +169,29 @@ Unless required by applicable law or agreed to in writing, software distributed
       }
 
       function addPlayerEventListeners(player) {
-        player.on('loadedmetadata', () => {
-          enableAddToPlaylist();
-        });
-        player.on('seeked', () => {
-          if(getActiveItem() != undefined) {
-            activeTrack = getActiveItem(false);
-            if(activeTrack != undefined) {
-              streamId = activeTrack.streamId;
+        if (player && player != undefined) {
+          player.on('loadedmetadata', () => {
+            enableAddToPlaylist();
+          });
+          player.on('seeked', () => {
+            if(getActiveItem() != undefined) {
+              activeTrack = getActiveItem(false);
+              if(activeTrack != undefined) {
+                streamId = activeTrack.streamId;
+              }
+              disableEnableCurrentTrack(activeTrack, player.currentTime(), true, currentSectionLabel);
             }
-            disableEnableCurrentTrack(activeTrack, player.currentTime(), true, currentSectionLabel);
-          }
-        });
-        player.on('dispose', () => {
-          let addToPlaylistBtn = document.getElementById('addToPlaylistBtn');
-          currentSectionLabel = undefined;
-          $('#addToPlaylistPanel').collapse('hide');
-          resetAddToPlaylistForm();
-          if (addToPlaylistBtn) {
-            addToPlaylistBtn.disabled = true;
-          }
-        });
+          });
+          player.on('dispose', () => {
+            let addToPlaylistBtn = document.getElementById('addToPlaylistBtn');
+            currentSectionLabel = undefined;
+            $('#addToPlaylistPanel').collapse('hide');
+            resetAddToPlaylistForm();
+            if (addToPlaylistBtn) {
+              addToPlaylistBtn.disabled = true;
+            }
+          });
+        }
       }
 
       function enableAddToPlaylist() {
