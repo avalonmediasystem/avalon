@@ -91,10 +91,12 @@ Unless required by applicable law or agreed to in writing, software distributed
       }
 
       function addPlayerEventListeners(player) {
-        player.player.on('loadedmetadata', () => {
-          let canvasindex = player.dataset['canvasindex'];
-          transcriptCheck(canvasindex);
-        });
+        if (player && player.player != undefined) {
+          player.player.ready(() => {
+            let canvasindex = player.dataset['canvasindex'];
+            transcriptCheck(canvasindex);
+          });
+        }
       }
 
       function transcriptCheck(canvasindex) {
