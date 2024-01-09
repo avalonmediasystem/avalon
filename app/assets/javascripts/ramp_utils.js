@@ -204,11 +204,12 @@ function collapseMoreDetails() {
  * @param {String} sectionTitle name of the current section 
  */
 function disableEnableCurrentTrack(activeTrack, currentTime, isSeeked, sectionTitle) {
-  let title = sectionTitle;
-  // Return when add to playlist panel is not expanded
-  if($('#addToPlaylistPanel.show').length === 0) {
+   // Return when add to playlist form is not visible
+  let playlistForm = $('#add_to_playlist')[0];
+  if(!playlistForm) {
     return;
   }
+  let title = sectionTitle;
   if(activeTrack != undefined) {
     streamId = activeTrack.streamId;
     let { label, times, sectionLabel } = activeTrack;
