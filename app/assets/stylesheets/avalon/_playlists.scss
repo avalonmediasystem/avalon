@@ -25,7 +25,6 @@
 }
 
 .playlist-title {
-  margin: 20px 0 10px;
   display: flex;
   align-items: center;
 
@@ -36,8 +35,13 @@
   // Assuming this span is an icon
   span {
     font-size: 2rem;
-    padding: 0 1rem;
+    padding: 0 1rem 0 0;
   }
+}
+
+.playlist-title-wrapper {
+  width: 100%;
+  margin: 20px 0 10px;
 }
 
 .playlist-action-button-row.col-sm-4 {

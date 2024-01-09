@@ -16,8 +16,8 @@ Unless required by applicable law or agreed to in writing, software distributed
 <% @page_title = t('media_objects.show.title', :media_object_title => @playlist.title, :application_name => application_name) %>
 
 <div class="playlist-view-wrapper row">
-  <div class="page-title-wrapper playlist-title col-sm-12">
-    <div class="col-sm-8">
+  <div class="page-title-wrapper playlist-title-wrapper row">
+    <div class=" playlist-title col-sm-8 pl-0">
       <%= icon_only_visibility @playlist.visibility %>
       <h1 class="page-title"><%= @playlist.title %></h1>
     </div>
@@ -27,7 +27,7 @@ Unless required by applicable law or agreed to in writing, software distributed
     </div>
   </div>
 
-  <div class="col-sm-12">
+  <div class="col-sm-12 px-0">
     <%= react_component("PlaylistRamp",
       {
         base_url: request.protocol+request.host_with_port,
