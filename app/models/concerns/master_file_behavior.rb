@@ -112,7 +112,7 @@ module MasterFileBehavior
                elsif file_location.present? && (media_object.master_file_ids.size > 1)
                  file_location.split("/").last
                end
-    mf_title.blank? ? nil : mf_title
+    mf_title.blank? ? media_object.title : mf_title
   end
 
   def embed_title
