@@ -86,6 +86,14 @@ describe CollectionPresenter do
         expect(presenter.website_link).to be_nil
       end
     end
+
+    context 'with a blank website url' do
+      let(:website_url) { '' }
+
+      it 'returns null' do
+        expect(presenter.website_link).to be_nil
+      end
+    end
   end
 
   describe '#as_json' do
