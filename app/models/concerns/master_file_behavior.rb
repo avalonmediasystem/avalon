@@ -68,7 +68,7 @@ module MasterFileBehavior
     # Returns the hash
     return({
       id: self.id,
-      label: title,
+      label: structure_title,
       is_video: is_video?,
       poster_image: poster_path,
       embed_code: embed_code(EMBED_SIZE[:medium], {urlappend: '/embed'}),
@@ -117,6 +117,10 @@ module MasterFileBehavior
 
   def embed_title
     [media_object.title, display_title].compact.join(" - ")
+  end
+
+  def structure_title
+    display_title.present? ? display_title : media_object.title
   end
 
   def embed_code(width, permalink_opts = {})
