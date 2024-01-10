@@ -68,7 +68,7 @@ module MasterFileBehavior
     # Returns the hash
     return({
       id: self.id,
-      label: title,
+      label: display_title,
       is_video: is_video?,
       poster_image: poster_path,
       embed_code: embed_code(EMBED_SIZE[:medium], {urlappend: '/embed'}),

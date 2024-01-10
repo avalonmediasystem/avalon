@@ -88,13 +88,27 @@ describe IiifCanvasPresenter do
     end
 
     context 'with no structural metadata' do
-      let(:structure_xml) { "" }
+      context 'master file with title' do
+        let(:structure_xml) { "" }
+        let(:master_file) { FactoryBot.create(:master_file, title: "video.mp4", media_object: media_object, derivatives: [derivative]) }
 
-      it 'autogenerates a basic range' do
-      	expect(subject.label.to_s).to eq "{\"none\"=>[\"#{master_file.embed_title}\"]}"
-      	expect(subject.items.size).to eq 1
-      	expect(subject.items.first).to be_a IiifCanvasPresenter
-        expect(subject.items.first.media_fragment).to eq "t=0,#{master_file.duration.to_f/1000}"
+        it 'autogenerates a basic range with display_title label' do
+        	expect(subject.label.to_s).to eq "{\"none\"=>[\"#{master_file.display_title}\"]}"
+        	expect(subject.items.size).to eq 1
+        	expect(subject.items.first).to be_a IiifCanvasPresenter
+          expect(subject.items.first.media_fragment).to eq "t=0,#{master_file.duration.to_f/1000}"
+        end
+      end
+
+      context 'master file without title' do
+        let(:structure_xml) { "" }
+
+        it 'autogenerates a basic range with nil label' do
+        	expect(subject.label.to_s).to eq "{\"none\"=>[nil]}"
+        	expect(subject.items.size).to eq 1
+        	expect(subject.items.first).to be_a IiifCanvasPresenter
+          expect(subject.items.first.media_fragment).to eq "t=0,#{master_file.duration.to_f/1000}"
+        end
       end
     end
 

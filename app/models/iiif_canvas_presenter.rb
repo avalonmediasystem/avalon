@@ -131,8 +131,7 @@ class IiifCanvasPresenter
       files
     end
 
-    def simple_iiif_range(label = stream_info[:embed_title])
-      # TODO: embed_title?
+    def simple_iiif_range(label = stream_info[:label])
       IiifManifestRange.new(
         label: { "none" => [label] },
         items: [
