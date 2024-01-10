@@ -68,13 +68,13 @@ describe 'Search' do
   it 'is able to enter keyword and perform search' do
     visit '/'
     fill_in('Search', with: 'Video', match: :first)
-    click_button('global-search-submit', match: :first)
+    find('button.global-search-submit').click
     expect(page).to have_current_path('/catalog?utf8=%E2%9C%93&search_field=all_fields&q=Video')
   end
   it 'gives appropriate error when keyword returns no results' do
     visit '/'
     fill_in('Search', with: 'Video', match: :first)
-    click_button('global-search-submit', match: :first)
+    find('button.global-search-submit').click
     expect(page).to have_content('No results found for your search')
     expect(page).to have_content('No entries found')
     expect(page).to have_content('Use fewer keywords to start, then refine your search using the links on the left')
