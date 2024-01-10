@@ -211,6 +211,18 @@
   .ramp--transcript_nav div.transcript_content {
     height: fit-content !important;
   }
+
+  .vjs-track-scrubber-container {
+    width: 100%;
+
+    .vjs-time {
+      margin: 0 !important;
+    }
+    
+    .tooltiptext {
+      bottom: 3em;
+    }
+  }
 }
 
 // Left align the structure navigation component in item view
