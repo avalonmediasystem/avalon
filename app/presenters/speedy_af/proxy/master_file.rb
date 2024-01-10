@@ -35,7 +35,7 @@ class SpeedyAF::Proxy::MasterFile < SpeedyAF::Base
     attrs[:title].presence
   end
 
-  def structure_title
+  def display_title
     mf_title = if has_structuralMetadata?
                  structuralMetadata.section_title
                elsif title.present?

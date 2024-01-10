@@ -68,7 +68,7 @@ module MasterFileBehavior
     # Returns the hash
     return({
       id: self.id,
-      label: display_title,
+      label: structure_title,
       is_video: is_video?,
       poster_image: poster_path,
       embed_code: embed_code(EMBED_SIZE[:medium], {urlappend: '/embed'}),
@@ -103,7 +103,7 @@ module MasterFileBehavior
     sort_streams hls
   end
 
-  def structure_title
+  def display_title
     mf_title = if has_structuralMetadata?
                  structuralMetadata.section_title
                elsif title.present?
@@ -116,11 +116,11 @@ module MasterFileBehavior
   end
 
   def embed_title
-    [media_object.title, structure_title].compact.join(" - ")
+    [media_object.title, display_title].compact.join(" - ")
   end
 
-  def display_title
-    structure_title.present? ? structure_title : media_object.title
+  def structure_title
+    display_title.present? ? display_title : media_object.title
   end
 
   def embed_code(width, permalink_opts = {})
