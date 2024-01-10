@@ -103,7 +103,7 @@ module MasterFileBehavior
     sort_streams hls
   end
 
-  def display_title
+  def structure_title
     mf_title = if has_structuralMetadata?
                  structuralMetadata.section_title
                elsif title.present?
@@ -112,11 +112,15 @@ module MasterFileBehavior
                elsif file_location.present? && (media_object.master_file_ids.size > 1)
                  file_location.split("/").last
                end
-    mf_title.blank? ? media_object.title : mf_title
+    mf_title.blank? ? nil : mf_title
   end
 
   def embed_title
-    [media_object.title, display_title].compact.join(" - ")
+    [media_object.title, structure_title].compact.join(" - ")
+  end
+
+  def display_title
+    structure_title.present? ? structure_title : media_object.title
   end
 
   def embed_code(width, permalink_opts = {})

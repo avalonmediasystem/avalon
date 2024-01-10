@@ -35,7 +35,7 @@ class SpeedyAF::Proxy::MasterFile < SpeedyAF::Base
     attrs[:title].presence
   end
 
-  def display_title
+  def structure_title
     mf_title = if has_structuralMetadata?
                  structuralMetadata.section_title
                elsif title.present?
@@ -44,7 +44,7 @@ class SpeedyAF::Proxy::MasterFile < SpeedyAF::Base
                elsif file_location.present? && (media_object.master_file_ids.size > 1)
                  file_location.split("/").last
                end
-    mf_title.blank? ? media_object.title : mf_title
+    mf_title.blank? ? nil : mf_title
   end
 
   # @return [SupplementalFile]
