@@ -21,7 +21,7 @@ Unless required by applicable law or agreed to in writing, software distributed
            current_or_guest_user.bookmarks.where({ document_id: d.id }).exists?
          end %>
       <%= check_box_tag('bookmarks_selectall', '', all_selected) %>
-      <%= label_tag 'selectall', t('blacklight.bookmarks.addall.button'), class: 'font-weight-bold' %>
+      <%= label_tag 'bookmarks_selectall', t('blacklight.bookmarks.addall.button'), class: 'font-weight-bold' %>
   </div>
 <% end %>
 
