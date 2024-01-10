@@ -173,6 +173,15 @@ Unless required by applicable law or agreed to in writing, software distributed
           player.on('loadedmetadata', () => {
             enableAddToPlaylist();
           });
+          // On MacOS, sometimes browsers miss the loadedmetadata event resulting not enabling the add to playlist button.
+          // This event listener gets fired right after the first segment loads into the player, and checks the button's
+          // state to enable it if the loadedmetadata event misses.
+          player.on('timeupdate', () => {
+            let addToPlaylistBtn = document.getElementById('addToPlaylistBtn');
+            if (addToPlaylistBtn && addToPlaylistBtn.disabled) {
+              addToPlaylistBtn.disabled = false;
+            }
+          })
           player.on('seeked', () => {
             if(getActiveItem() != undefined) {
               activeTrack = getActiveItem(false);
