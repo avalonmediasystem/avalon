@@ -67,11 +67,10 @@ const Ramp = ({
     let player = document.getElementById('iiif-media-player');
     if(player && player.player != undefined && !player.player.isDisposed()) {
       let playerInst = player.player;
-      let canvasIndex = parseInt(player.dataset.canvasindex);
-      playerInst.on('loadedmetadata', () => {
-        let activeElements = document.getElementsByClassName('ramp--structured-nav__list-item');
-        if(activeElements != undefined && activeElements?.length > 0) {
-          setActiveItemTitle(activeElements[canvasIndex].textContent);
+      playerInst.ready(() => {
+        let activeElement = document.getElementsByClassName('ramp--structured-nav__list-item active');
+        if(activeElement != undefined && activeElement?.length > 0) {
+          setActiveItemTitle(activeElement[0].textContent);
         }
       });
     }
