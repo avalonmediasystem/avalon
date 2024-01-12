@@ -65,17 +65,19 @@ $('#copy-timeline-form').submit(
 )
 
 $('#copy-timeline-form').bind('ajax:success',
-  (event, data, status, xhr) ->
-    if (data?.errors)
+  (event) ->
+    [data, status, xhr] = event.detail
+    if (data.errors)
       console.log(data.errors.title[0])
     else
       if (submit_edit)
-        window.location.href = event.detail[0].path
+        window.location.href = data.path
       else
         if ( $('#with_refresh').val() )
           location.reload()
 ).bind('ajax:error',
-  (e, xhr, status, error) ->
+  (event) ->
+    [data, status, xhr] = event.detail
     console.log(xhr.responseJSON.errors)
 )
 
