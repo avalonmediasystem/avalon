@@ -1,12 +1,12 @@
-/* 
+/*
  * Copyright 2011-2023, The Trustees of Indiana University and Northwestern
  *   University.  Licensed under the Apache License, Version 2.0 (the "License");
  *   you may not use this file except in compliance with the License.
- * 
+ *
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed
  *   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
  *   CONDITIONS OF ANY KIND, either express or implied. See the License for the
@@ -37,8 +37,8 @@ function getActiveItem(checkSection = true) {
     if(activeCanvasOnly) {
       let { mediafrag, label } = currentSection[0].dataset;
       let [ itemId, timeHash ] = mediafrag.split('#t=');
-      return { 
-        label, 
+      return {
+        label,
         times: {
           begin: parseFloat(timeHash.split(',')[0]) || 0,
           end: parseFloat(timeHash.split(',')[1]) || duration
@@ -48,7 +48,7 @@ function getActiveItem(checkSection = true) {
         sectionLabel: label,
       }
     }
-  
+
     // When structure has an active timespan child
     if(currentStructureItem.find('a').length > 0) {
       let item = currentStructureItem.find('a')[0];
@@ -58,7 +58,7 @@ function getActiveItem(checkSection = true) {
         end: parseFloat(timeHash.split(',')[1]) || duration
       }
       let streamId = item.pathname.split('/').pop();
-      return { 
+      return {
         label,
         times,
         tags: ['current-track'],
@@ -70,7 +70,8 @@ function getActiveItem(checkSection = true) {
     /** When the structured navigation doesn't have an active timespan
      * get the current active section to populate the timeline and add
      * to playlist options */
-    let label = currentSection[0].dataset.label;
+     let { mediafrag, label } = currentSection[0].dataset;
+     let [ itemId, timeHash ] = mediafrag.split('#t=');
     return {
       label,
       times: {
@@ -78,7 +79,7 @@ function getActiveItem(checkSection = true) {
         end: duration,
       },
       tags: ['current-section'],
-      streamId: '',
+      streamId: itemId.split('/').pop(),
       sectionLabel: label,
     }
   }
@@ -130,7 +131,7 @@ function getTimelineScopes() {
  * Parse time in seconds to hh:mm:ss.ms format
  * @param {Number} secTime time in seconds
  * @param {Boolean} showHrs flag indicating for showing hours
- * @returns 
+ * @returns
  */
 function createTimestamp(secTime, showHrs) {
   let hours = Math.floor(secTime / 3600);
@@ -151,6 +152,22 @@ function createTimestamp(secTime, showHrs) {
     timeStr = `${hourStr}:${timeStr}`;
   }
   return timeStr;
+}
+
+/**
+ * Convert time from hh:mm:ss.ms/mm:ss.ms string format to int
+ * @param {String} time convert time from string to int
+ */
+function timeToS(time) {
+  var time_split = time.split(':').reverse(),
+    seconds = time_split[0],
+    minutes = time_split[1],
+    hours = time_split[2];
+  var hoursInS = hours != undefined ? parseInt(hours) * 3600 : 0;
+  var minutesInS = minutes != undefined ? parseInt(minutes) * 60 : 0;
+  var secondsNum = seconds === '' ? 0.0 : parseFloat(seconds);
+  var timeSeconds = hoursInS + minutesInS + secondsNum;
+  return timeSeconds;
 }
 
 /**
@@ -184,7 +201,7 @@ function collapseMoreDetails() {
   if(!$('#moreDetails').hasClass('show')) {
     $('#moreDetails').collapse('show');
     $('#multiItemCheck').collapse('hide');
-    // When the title field is empty fill it with either 
+    // When the title field is empty fill it with either
     // current track or current section name
     if($('#playlist_item_title').val() == '') {
       $('#playlist_item_title').val(
@@ -201,7 +218,7 @@ function collapseMoreDetails() {
  * @param {Object} activeTrack JSON object for the active timespans
  * @param {Number} currentTime player's playhead position
  * @param {Boolean} isSeeked flag to indicate player 'seeked' event happened/not
- * @param {String} sectionTitle name of the current section 
+ * @param {String} sectionTitle name of the current section
  */
 function disableEnableCurrentTrack(activeTrack, currentTime, isSeeked, sectionTitle) {
    // Return when add to playlist form is not visible
@@ -243,7 +260,7 @@ function disableEnableCurrentTrack(activeTrack, currentTime, isSeeked, sectionTi
   }
 }
 
-/** AJAX request for add to playlist for submission for playlist item for 
+/** AJAX request for add to playlist for submission for playlist item for
  * a selected clip
  */
 function addPlaylistItem (playlistId, masterfileId, starttime, endtime) {
@@ -268,7 +285,7 @@ function addPlaylistItem (playlistId, masterfileId, starttime, endtime) {
   });
 }
 
-/** AJAX request for add to playlist for submission for playlist items for 
+/** AJAX request for add to playlist for submission for playlist items for
  * section(s)
  */
 function addToPlaylist(playlistId, scope, masterfileId, moId) {
