@@ -110,9 +110,11 @@ Unless required by applicable law or agreed to in writing, software distributed
           if(transcriptTab) {
             if (transcriptTab.getAttribute('aria-selected') === "true") { detailTab.click(); }
             transcriptTab.style.display = 'none';
+            transcriptTab.classList.add("disabled");
           }
         } else if (transcriptSections.includes(sectionId) && transcriptTab.style.display === 'none') {
           transcriptTab.style.display = '';
+          transcriptTab.classList.remove("disabled");
         }
       }
     });
