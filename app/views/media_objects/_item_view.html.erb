@@ -115,7 +115,9 @@ Unless required by applicable law or agreed to in writing, software distributed
             activeTab[0].style.height = 'unset';
           }
         } else {
-          if (activeTab[0].scrollHeight > activeTab[0].clientHeight) {
+          // Use a 10 point margin when checking for overflowing content as the interval
+          // can set the height back and forth between 'unset' and 'fit-content'
+          if (activeTab[0].scrollHeight > activeTab[0].clientHeight + 10) {
             activeTab[0].style.height = 'unset';
           } else {
             activeTab[0].style.height = 'fit-content';
