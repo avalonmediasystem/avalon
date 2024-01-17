@@ -82,27 +82,15 @@ private
     factor = max_peak.zero? ? 1 : res / max_peak.to_f
     peaks.map { |peak| peak.collect { |num| (num * factor).to_i } }
   ensure
-    if wave_io.is_a? Tempfile
-      wave_io.close
-      wave_io.unlink
-    else
-      Process.wait(wave_io.pid) if wave_io&.pid
-    end
+    Process.wait(wave_io.pid) if wave_io&.pid
   end
 
   def get_wave_io(uri)
     headers = "-headers $'Referer: #{Rails.application.routes.url_helpers.root_url}\r\n'" if uri.starts_with? "http"
     normalized_uri = uri.starts_with?("file") ? Addressable::URI.unencode(uri) : uri
     timeout = 60000000 # Must be in microseconds. Current value = 1 minute.
-    tmpfile = Tempfile.new if uri.starts_with?("http")
-    cmd = "#{Settings.ffmpeg.path} #{headers} -rw_timeout #{timeout} -i '#{normalized_uri}' -f wav -ar 44100 #{tmpfile&.path || "-"} 2> /dev/null"
-    Rails.logger.debug("Getting wav file for waveform generation using ffmpeg command: #{cmd}")
-    if tmpfile
-      Kernel.system(cmd)
-      tmpfile
-    else
-      IO.popen(cmd)
-    end
+    cmd = "#{Settings.ffmpeg.path} #{headers} -rw_timeout #{timeout} -i '#{normalized_uri}' -f wav -ar 44100 - 2> /dev/null"
+    IO.popen(cmd)
   end
 
   def gather_peaks(wav_file)
