@@ -245,7 +245,7 @@ const Ramp = ({
               <MetadataDisplay showHeading={false} displayTitle={false}/>
             </Tab>
             { (cdl.can_stream && master_files_count != 0 && has_transcripts) &&
-              <Tab eventKey="transcripts" title="Transcripts" className="ramp-transcripts-tab">
+              <Tab eventKey="transcripts" title="Transcripts" className="ramp--transcripts_tab">
                 <Transcript
                   playerID="iiif-media-player"
                   manifestUrl={manifestUrl}

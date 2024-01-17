@@ -160,25 +160,25 @@
   .ramp--tabs-panel {
     display: flex;
     flex-direction: column;
+    flex-basis: auto;
 
     .tab-content {
       display: flex;
-      flex: 1;
-      height: 100%;
+      flex-grow: 1;
+      height: 70vh;
     }
   
     .tab-pane {
-      flex: 1;
+      flex-grow: 1;
       padding:1rem;
       border-bottom-left-radius: 0.25rem;
       border-bottom-right-radius: 0.25rem;
-      max-height: inherit;
       overflow: auto;
     }
   }
 
   // Remove double scroll-bar for transcripts tab
-  .ramp-transcripts-tab {
+  .ramp--transcripts_tab {
     overflow: hidden;
   }
 
@@ -193,23 +193,22 @@
   /* Override Ramp styling */
   .ramp--metadata-display {
     min-width: fit-content !important;
-    height: 100%;
 
     .ramp--metadata-display-content {
       padding: 0;
-      max-height: 50rem;
+      max-height: 100%;
     }
   }
 
   .ramp--transcript_nav {
-    max-height: 50rem;
+    max-height: 100%;
     display: flex;
     flex-direction: column;
     padding: 0;
   }
 
   .ramp--transcript_nav div.transcript_content {
-    height: fit-content !important;
+    height: fit-content;
   }
 
   .vjs-track-scrubber-container {

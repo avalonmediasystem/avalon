@@ -95,7 +95,31 @@ Unless required by applicable law or agreed to in writing, software distributed
           player.player.ready(() => {
             let canvasindex = player.dataset['canvasindex'];
             transcriptCheck(canvasindex);
+            setColumnHeights();
           });
+        }
+      }
+
+      /*
+        Set tabbed nav column height based on the content
+      */
+      function setColumnHeights() {
+        let activeTab = $('.tab-pane.active.show');
+        // When the active tab is transcripts, check the transcript content height to
+        // check there is overflowing content to set the column height. This is handled
+        // seperately because the height check in the else block doesn't identify this since
+        // since this content is set dynamically based on user selection in dropdown menu. 
+        if(activeTab.hasClass('ramp--transcripts_tab')) {
+          let transcriptContent = $('.transcript_content');
+          if(transcriptContent[0].scrollHeight > transcriptContent[0].clientHeight) {
+            activeTab[0].style.height = 'unset';
+          }
+        } else {
+          if (activeTab[0].scrollHeight > activeTab[0].clientHeight) {
+            activeTab[0].style.height = 'unset';
+          } else {
+            activeTab[0].style.height = 'fit-content';
+          }
         }
       }
 
