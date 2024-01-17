@@ -67,7 +67,7 @@ describe WaveformService, type: :service do
 
     context "http file" do
       let(:uri) { "http://domain/to/video.mp4" }
-      let(:cmd) {"#{Settings.ffmpeg.path} -headers $'Referer: http://test.host/\r\n' -rw_timeout 60000000 -i '#{uri}' -f wav -ar 44100 -y /tmp"}
+      let(:cmd) {"#{Settings.ffmpeg.path} -headers $'Referer: http://test.host/\r\n' -rw_timeout 60000000 -i '#{uri}' -f wav -ar 44100 /tmp"}
 
       before do
         allow(Kernel).to receive(:system).and_return(nil)
@@ -82,7 +82,7 @@ describe WaveformService, type: :service do
 
     context "local file" do
       let(:uri) { "file:///path/to/video.mp4" }
-      let(:cmd) {"#{Settings.ffmpeg.path}  -rw_timeout 60000000 -i '#{uri}' -f wav -ar 44100 -y - 2> /dev/null"}
+      let(:cmd) {"#{Settings.ffmpeg.path}  -rw_timeout 60000000 -i '#{uri}' -f wav -ar 44100 - 2> /dev/null"}
 
       it "should call ffmpeg without headers" do
         service.send(:get_wave_io, uri)
@@ -92,7 +92,7 @@ describe WaveformService, type: :service do
       context 'with spaces in filename' do
         let(:uri) { 'file:///path/to/special%20video%20file.mp4' }
         let(:unencoded_uri) { 'file:///path/to/special video file.mp4' }
-        let(:cmd) {"#{Settings.ffmpeg.path}  -rw_timeout 60000000 -i '#{unencoded_uri}' -f wav -ar 44100 -y - 2> /dev/null"}
+        let(:cmd) {"#{Settings.ffmpeg.path}  -rw_timeout 60000000 -i '#{unencoded_uri}' -f wav -ar 44100 - 2> /dev/null"}
 
         it "should call ffmpeg without url encoding" do
           service.send(:get_wave_io, uri)
