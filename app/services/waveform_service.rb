@@ -95,7 +95,7 @@ private
     normalized_uri = uri.starts_with?("file") ? Addressable::URI.unencode(uri) : uri
     timeout = 60000000 # Must be in microseconds. Current value = 1 minute.
     tmpfile = Tempfile.new if uri.starts_with?("http")
-    cmd = "#{Settings.ffmpeg.path} #{headers} -rw_timeout #{timeout} -i '#{normalized_uri}' -f wav -ar 44100 -y #{tmpfile&.path || "-"} 2> /dev/null"
+    cmd = "#{Settings.ffmpeg.path} #{headers} -rw_timeout #{timeout} -i '#{normalized_uri}' -f wav -ar 44100 #{tmpfile&.path || "-"} 2> /dev/null"
     Rails.logger.debug("Getting wav file for waveform generation using ffmpeg command: #{cmd}")
     if tmpfile
       Kernel.system(cmd)
