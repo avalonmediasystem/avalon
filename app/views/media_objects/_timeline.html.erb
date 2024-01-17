@@ -98,11 +98,10 @@ $(document).ready(function() {
       if ($('#timelinescope_custom')[0].checked) {
         let pattern = /^(\d+:){0,2}\d+(\.\d+)?$/;
         let beginval = $('#custombegin')[0].value;
-        let endval = $('#customend')[0].value
-        id = this.dataset.id;
+        let endval = $('#customend')[0].value;
         if (pattern.test(beginval) && pattern.test(endval)) {
           label = 'custom scope';
-          t = 't='+ createTimestamp($('#custombegin')[0].value, false)+','+ createTimestamp($('#customend')[0].value, false)
+          t = 't='+ timeToS($('#custombegin')[0].value)+','+ timeToS($('#customend')[0].value)
         } else {
           $('#custombegin').css('color', (pattern.test(beginval) ? 'black' : 'red'))
           $('#customend').css('color', (pattern.test(endval) ? 'black' : 'red'))
@@ -121,8 +120,8 @@ $(document).ready(function() {
         label = scope.label;
         let { begin, end } = scope.times;
         t = `t=${begin},${end}`;
-        id = streamId;
       }
+      id = streamId;
       $('#new-timeline-title')[0].value = label;
       $('#new-timeline-source')[0].value = '/master_files/'+ id + '?' + t;
       $('#new-timeline-form')[0].submit();
