@@ -67,8 +67,8 @@ GIT
 
 GIT
   remote: https://github.com/samvera-labs/iiif_manifest.git
-  revision: 6a027ff84d2b1ca65765dea0c83c820643cebe01
-  branch: main
+  revision: 32087c9cae7987db70f5c76639af9d1b87b8eff9
+  branch: canvas_summary
   specs:
     iiif_manifest (1.3.1)
       activesupport (>= 4)
