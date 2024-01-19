@@ -277,7 +277,7 @@ describe IiifPlaylistCanvasPresenter do
 
     it 'returns the title, date, and main contributor of the parent item' do
       expect(subject.first['label']).to eq({ 'en' => ['Title'] })
-      expect(subject.first['value']).to eq({ 'en' => [media_object.title] })
+      expect(subject.first['value']).to eq({ 'en' => ["<a href='#{Rails.application.routes.url_helpers.media_object_url(media_object)}'>#{media_object.title}</a>"] })
       expect(subject.second['label']).to eq({ 'en' => ['Date'] })
       expect(subject.second['value']).to eq({ 'en' => [media_object.date_issued] })
       expect(subject.last['label']).to eq({ 'en' => ['Main Contributor'] })
