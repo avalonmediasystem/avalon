@@ -211,14 +211,16 @@ class IiifCanvasPresenter
         label = file.tags.include?('machine_generated') ? file.label + ' (machine generated)' : file.label
         format = file.file.content_type
         language = file.language || 'en'
+        filename = file.file.filename.to_s
       else
         label = 'English'
         format = file.mime_type
         language = 'en'
+        filename = file.original_name.to_s
       end
       {
         motivation: 'supplementing',
-        label: label,
+        label: { language => [label], 'none' => [filename] },
         type: 'Text',
         format: format,
         language: language

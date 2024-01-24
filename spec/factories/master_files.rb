@@ -80,6 +80,7 @@ FactoryBot.define do
     trait :with_captions do
       after(:create) do |mf|
         mf.captions.content = File.read('spec/fixtures/captions.vtt')
+        mf.captions.original_name = 'captions.vtt'
         mf.save
       end
     end
