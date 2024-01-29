@@ -331,13 +331,12 @@
     display: flex;
     flex-direction: column;
     flex-basis: auto;
+    height: 70vh;
 
     .ramp--structured-nav__border {
-      display: flex;
-      flex-grow: 1;
-      flex-direction: column;
-      height: 40vh;
       margin-top: 0;
+      overflow: auto;
+      max-height: inherit;
     }
   }
 }
