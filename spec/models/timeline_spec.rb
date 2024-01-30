@@ -157,8 +157,7 @@ RSpec.describe Timeline, type: :model do
       let(:timeline3) { FactoryBot.create(:timeline, title: 'Favorites') }
       let(:title_filter) { 'moose' }
       it 'returns timelines with matching titles' do
-        # Commented out since case insensitivity is default for mysql but not postgres
-        # expect(Timeline.title_like(title_filter)).to include(timeline1)
+        expect(Timeline.title_like(title_filter)).to include(timeline1)
         expect(Timeline.title_like(title_filter)).to include(timeline2)
       end
       it 'does not return timelines without matching titles' do
@@ -171,8 +170,7 @@ RSpec.describe Timeline, type: :model do
       let(:timeline3) { FactoryBot.create(:timeline, description: 'Favorites') }
       let(:desc_filter) { 'moose' }
       it 'returns timelines with matching descriptions' do
-        # Commented out since case insensitivity is default for mysql but not postgres
-        # expect(Timeline.desc_like(desc_filter)).to include(timeline1)
+        expect(Timeline.desc_like(desc_filter)).to include(timeline1)
         expect(Timeline.desc_like(desc_filter)).to include(timeline2)
       end
       it 'does not return timelines without matching descriptions' do
@@ -185,15 +183,14 @@ RSpec.describe Timeline, type: :model do
       let(:timeline3) { FactoryBot.create(:timeline, tags: ['smoose', 'Goose']) }
       let(:timeline4) { FactoryBot.create(:timeline, tags: ['Goose']) }
       let(:tag_filter) { 'moose' }
-      it 'returns timelines with exact matching tags' do
-        # Commented out since case insensitivity is default for mysql but not postgres
-        # expect(Timeline.with_tag(tag_filter)).to include(timeline1)
+      it 'returns timelines with matching tags' do
+        expect(Timeline.with_tag(tag_filter)).to include(timeline1)
         expect(Timeline.with_tag(tag_filter)).to include(timeline2)
       end
       it 'does not return timelines with partial matching tag' do
         expect(Timeline.with_tag(tag_filter)).not_to include(timeline3)
       end
-      it 'does not return timelines with without the tag' do
+      it 'does not return timelines without the tag' do
         expect(Timeline.with_tag(tag_filter)).not_to include(timeline4)
       end
     end
