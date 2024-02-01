@@ -344,7 +344,7 @@ function resetAddToPlaylistForm() {
   $('#playlist_item_description').val('');
   $('#playlist_item_title').val('');
   $('input[name="post[playlistitem_scope]"]').prop('checked', false);
-  $('#playlistitem_scope_structure').prop('checked', false);
+  $('#playlistitem_scope_structure').prop('checked', true);
   $('#moreDetails').collapse('hide');
   $('#multiItemCheck').collapse('hide');
 }
