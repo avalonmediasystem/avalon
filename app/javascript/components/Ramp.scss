@@ -19,8 +19,18 @@
 }
 
 .ramp--all-components {
+  .ramp--media_player {
+    .video-js .vjs-big-play-button {
+      left: 55% !important;
+    }
+    @media (max-width: 585px) {
+      .video-js .vjs-big-play-button {
+        scale: 1.5;
+      }
+    }
+  }
+
   .ramp--structured-nav {
-    margin-top: 20px;
     max-width: initial;
   }
 
@@ -61,6 +71,7 @@
   .ramp--supplemental-files {
     .ramp--supplemental-files-display-content {
       padding-left: 0;
+      max-height: inherit;
     }
 
     h4 {
@@ -174,6 +185,12 @@
       border-bottom-left-radius: 0.25rem;
       border-bottom-right-radius: 0.25rem;
       overflow: auto;
+    }
+  }
+
+  @media (max-width: 585px) {
+    .ramp--tabs-panel {
+      padding-top: 1rem;
     }
   }
 

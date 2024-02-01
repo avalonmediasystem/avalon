@@ -105,6 +105,7 @@ Unless required by applicable law or agreed to in writing, software distributed
       */
       function setColumnHeights() {
         let activeTab = $('.tab-pane.active.show');
+        let tabsPanel = $('.ramp--tabs-panel');
         // When the active tab is transcripts, check the transcript content height to
         // check there is overflowing content to set the column height. This is handled
         // seperately because the height check in the else block doesn't identify this since
@@ -115,9 +116,9 @@ Unless required by applicable law or agreed to in writing, software distributed
             activeTab[0].style.height = 'unset';
           }
         } else {
-          // Use a 10 point margin when checking for overflowing content as the interval
-          // can set the height back and forth between 'unset' and 'fit-content'
-          if (activeTab[0].scrollHeight > activeTab[0].clientHeight + 10) {
+          // Compare the active tab's scrollHeight and tab panel's height to identify overflowing content.
+          // And set tab height to either 'unset' or 'fit-content' accordingly.
+          if (activeTab[0].scrollHeight > tabsPanel[0].clientHeight) {
             activeTab[0].style.height = 'unset';
           } else {
             activeTab[0].style.height = 'fit-content';
