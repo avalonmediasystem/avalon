@@ -93,6 +93,10 @@ class IiifPlaylistCanvasPresenter
     end
   end
 
+  def description
+    playlist_item.comment
+  end
+
   private
 
     # Following methods adapted from ApplicationHelper and MediaObjectHelper

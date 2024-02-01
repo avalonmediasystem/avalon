@@ -284,4 +284,12 @@ describe IiifPlaylistCanvasPresenter do
       expect(subject.last['value']).to eq({ 'en' => media_object.creator })
     end
   end
+
+  describe "#description" do
+    subject { presenter.description }
+
+    it 'returns the description of the playlist item' do
+      expect(subject).to eq playlist_item.comment
+    end
+  end
 end
