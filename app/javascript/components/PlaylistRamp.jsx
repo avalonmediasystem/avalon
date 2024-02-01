@@ -30,12 +30,12 @@ import './Ramp.scss';
 
 const ExpandCollapseArrow = () => {
   return (
-  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" className="accordion-arrow" fill="currentColor" viewBox="0 0 16 16">
-    <path
-      fillRule="evenodd"
-      d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z">
-    </path>
-  </svg>);
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" className="accordion-arrow" fill="currentColor" viewBox="0 0 16 16">
+      <path
+        fillRule="evenodd"
+        d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z">
+      </path>
+    </svg>);
 };
 
 const Ramp = ({
@@ -66,17 +66,17 @@ const Ramp = ({
    */
   const addPlayerEventListeners = () => {
     let player = document.getElementById('iiif-media-player');
-    if(player && player.player != undefined && !player.player.isDisposed()) {
+    if (player && player.player != undefined && !player.player.isDisposed()) {
       let playerInst = player.player;
       playerInst.ready(() => {
         let activeElement = document.getElementsByClassName('ramp--structured-nav__list-item active');
-        if(activeElement != undefined && activeElement?.length > 0) {
+        if (activeElement != undefined && activeElement?.length > 0) {
           setActiveItemTitle(activeElement[0].dataset.label);
           setActiveItemSummary(activeElement[0].dataset.summary);
         }
       });
     }
-  }
+  };
 
   return (
     <IIIFPlayer manifestUrl={manifestUrl} customErrorMessage='This playlist is empty.'>
@@ -84,43 +84,43 @@ const Ramp = ({
         <Col sm={8}>
           <MediaPlayer enableFileDownload={false} />
           <Card className="ramp--playlist-accordion">
-              <Card.Header>
-                <h4>{activeItemTitle}</h4>
-                { activeItemSummary && <div>{activeItemSummary}</div> }
-              </Card.Header>
-              <Card.Body>
-                <Accordion>
-                  <Card>
-                    <Accordion.Collapse eventKey="0" id="markers">
-                      <Card.Body>
-                        <MarkersDisplay showHeading={false} />
-                      </Card.Body>
-                    </Accordion.Collapse>
-                    <Accordion.Toggle as={Card.Header} variant="link" eventKey="0" className="ramp--playlist-accordion-header">
-                      <ExpandCollapseArrow /> Markers
-                    </Accordion.Toggle>
-                  </Card>
-                  <Card>
-                    <Accordion.Collapse eventKey="1">
-                      <Card.Body className="p-3">
-                        <MetadataDisplay displayOnlyCanvasMetadata={true} showHeading={false} />
-                      </Card.Body>
-                    </Accordion.Collapse>
-                    <Accordion.Toggle as={Card.Header} variant="link" eventKey="1" className="ramp--playlist-accordion-header">
-                      <ExpandCollapseArrow /> Source Item Details
-                    </Accordion.Toggle>
-                  </Card>
-                </Accordion>
-              </Card.Body>
+            <Card.Header>
+              <h4>{activeItemTitle}</h4>
+              { activeItemSummary && <div>{activeItemSummary}</div> }
+            </Card.Header>
+            <Card.Body>
+              <Accordion>
+                <Card>
+                  <Accordion.Collapse eventKey="0" id="markers">
+                    <Card.Body>
+                      <MarkersDisplay showHeading={false} />
+                    </Card.Body>
+                  </Accordion.Collapse>
+                  <Accordion.Toggle as={Card.Header} variant="link" eventKey="0" className="ramp--playlist-accordion-header">
+                    <ExpandCollapseArrow /> Markers
+                  </Accordion.Toggle>
+                </Card>
+                <Card>
+                  <Accordion.Collapse eventKey="1">
+                    <Card.Body className="p-3">
+                      <MetadataDisplay displayOnlyCanvasMetadata={true} showHeading={false} />
+                    </Card.Body>
+                  </Accordion.Collapse>
+                  <Accordion.Toggle as={Card.Header} variant="link" eventKey="1" className="ramp--playlist-accordion-header">
+                    <ExpandCollapseArrow /> Source Item Details
+                  </Accordion.Toggle>
+                </Card>
+              </Accordion>
+            </Card.Body>
           </Card>
         </Col>
-        <Col sm={4}>
+        <Col sm={4} className="ramp--playlist-items-column">
           <Row>
             <Col sm={6}>
               <AutoAdvanceToggle />
             </Col>
             <Col sm={6}>
-              { share.canShare &&
+              {share.canShare &&
                 <button
                   className="btn btn-outline text-nowrap float-right"
                   type="button"
@@ -131,7 +131,7 @@ const Ramp = ({
                   id="share-button"
                 >
                   <i className="fa fa-share-alt"></i>
-                    Share
+                  Share
                 </button>
               }
             </Col>
