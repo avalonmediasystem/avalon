@@ -356,4 +356,11 @@
       max-height: inherit;
     }
   }
+
+  /* CSS for playlist items column height in landscape mode for mobile devices */
+  @media(orientation: landscape) {
+    .ramp--playlist-items-column.mobile-view {
+      height: 109vh !important;
+    }
+  }
 }
