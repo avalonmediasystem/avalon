@@ -51,7 +51,7 @@ class IiifPlaylistCanvasPresenter
   def item_metadata
     return if master_file.nil?
     [
-      metadata_field('Title', master_file.media_object.title),
+      metadata_field('Title', playlist_source_link),
       metadata_field('Date', master_file.media_object.date_issued),
       metadata_field('Main Contributor', master_file.media_object.creator)
     ].compact
@@ -93,7 +93,16 @@ class IiifPlaylistCanvasPresenter
     end
   end
 
+  def description
+    playlist_item.comment
+  end
+
   private
+
+    def playlist_source_link
+      link_target = master_file.media_object.permalink.presence || Rails.application.routes.url_helpers.media_object_url(master_file.media_object_id)
+      "<a href='#{link_target}'>#{master_file.media_object.title}</a>"
+    end
 
     # Following methods adapted from ApplicationHelper and MediaObjectHelper
     def metadata_field(label, value, default = nil)

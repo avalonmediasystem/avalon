@@ -46,6 +46,7 @@ const Ramp = ({
 }) => {
   const [manifestUrl, setManifestUrl] = React.useState('');
   const [activeItemTitle, setActiveItemTitle] = React.useState();
+  const [activeItemSummary, setActiveItemSummary] = React.useState();
 
   let interval;
 
@@ -70,7 +71,8 @@ const Ramp = ({
       playerInst.ready(() => {
         let activeElement = document.getElementsByClassName('ramp--structured-nav__list-item active');
         if (activeElement != undefined && activeElement?.length > 0) {
-          setActiveItemTitle(activeElement[0].textContent);
+          setActiveItemTitle(activeElement[0].dataset.label);
+          setActiveItemSummary(activeElement[0].dataset.summary);
         }
       });
     }
@@ -84,6 +86,7 @@ const Ramp = ({
           <Card className="ramp--playlist-accordion">
             <Card.Header>
               <h4>{activeItemTitle}</h4>
+              { activeItemSummary && <div>{activeItemSummary}</div> }
             </Card.Header>
             <Card.Body>
               <Accordion>

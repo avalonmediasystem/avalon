@@ -75,7 +75,7 @@ GIT
 
 GIT
   remote: https://github.com/samvera-labs/iiif_manifest.git
-  revision: 6a027ff84d2b1ca65765dea0c83c820643cebe01
+  revision: 1ede49aec4fc01582df8132e000121edbdcfac4a
   branch: main
   specs:
     iiif_manifest (1.3.1)
@@ -331,7 +331,7 @@ GEM
       coffee-script-source
       execjs
     coffee-script-source (1.12.2)
-    concurrent-ruby (1.2.2)
+    concurrent-ruby (1.2.3)
     config (4.2.1)
       deep_merge (~> 1.2, >= 1.2.1)
       dry-validation (~> 1.0, >= 1.0.0)
@@ -586,7 +586,7 @@ GEM
     mini_mime (1.1.2)
     mini_portile2 (2.8.4)
     minitar (0.9)
-    minitest (5.20.0)
+    minitest (5.21.2)
     msgpack (1.6.0)
     multi_json (1.15.0)
     multi_xml (0.6.0)
