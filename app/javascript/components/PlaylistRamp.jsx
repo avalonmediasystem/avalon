@@ -50,6 +50,9 @@ const Ramp = ({
 
   let interval;
 
+  const USER_AGENT = window.navigator.userAgent;
+  const IS_MOBILE = (/Mobi/i).test(USER_AGENT);
+
   React.useEffect(() => {
     let url = `${base_url}/playlists/${playlist_id}/manifest.json`;
     setManifestUrl(url);
@@ -86,7 +89,7 @@ const Ramp = ({
           <Card className="ramp--playlist-accordion">
             <Card.Header>
               <h4>{activeItemTitle}</h4>
-              { activeItemSummary && <div>{activeItemSummary}</div> }
+              {activeItemSummary && <div>{activeItemSummary}</div>}
             </Card.Header>
             <Card.Body>
               <Accordion>
@@ -114,7 +117,7 @@ const Ramp = ({
             </Card.Body>
           </Card>
         </Col>
-        <Col sm={4} className="ramp--playlist-items-column">
+        <Col sm={4} className={`ramp--playlist-items-column ${IS_MOBILE ? 'mobile-view' : ''}`}>
           <Row>
             <Col sm={6}>
               <AutoAdvanceToggle />
