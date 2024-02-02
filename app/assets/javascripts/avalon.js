@@ -75,6 +75,14 @@ $(document).ready(function () {
   // Set CSS to push the page content above footer
   $('.content-wrapper').css('padding-bottom', $('#footer').css('height'));
 
+  // Re-set the space between content-wrapper and footer on window resize.
+  // With this the main content height is adjusted when orientation changes when
+  // using mobile devices, avoiding main content bleeding into the footer.
+  window.addEventListener("resize", () => {
+    $('.content-wrapper').css('padding-bottom', $('#footer').css('height'));
+  }, true);
+
+
   /* Toggle CSS classes for global search form */
   const $searchWrapper = $('.global-search-wrapper');
   const $searchSubmit = $('.global-search-submit');
