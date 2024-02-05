@@ -23,3 +23,17 @@ function localize_times() {
 
 $(document).ready(localize_times);
 $(document).on('draw.dt', localize_times);
+// This interval is necessary to make sure CDL return time is calculated
+// and displayed on pages that have a Ramp player. The message renders in Ramp so 
+// we need to wait until it is initialized to run localize_times.
+$(document).ready(function () {
+  let timeCheck = setInterval(initLocalizeTimes, 500);
+  function initLocalizeTimes() {
+    console.log(document.readyState);
+    // Check readyState to avoid constant interval polling on non-Ramp pages.
+    if (document.readyState === 'complete') {
+      clearInterval(timeCheck);
+      localize_times();
+    }
+  }
+});
