@@ -29,7 +29,6 @@ $(document).on('draw.dt', localize_times);
 $(document).ready(function () {
   let timeCheck = setInterval(initLocalizeTimes, 500);
   function initLocalizeTimes() {
-    console.log(document.readyState);
     // Check readyState to avoid constant interval polling on non-Ramp pages.
     if (document.readyState === 'complete') {
       clearInterval(timeCheck);
