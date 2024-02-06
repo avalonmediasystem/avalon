@@ -163,6 +163,14 @@ RSpec.describe Timeline, type: :model do
       it 'does not return timelines without matching titles' do
         expect(Timeline.title_like(title_filter)).not_to include(timeline3)
       end
+      it 'searches on multiple terms' do
+        expect(Timeline.title_like('Fav Moose')).to include(timeline2)
+        expect(Timeline.title_like('Fav Moose')).not_to include(timeline1)
+        expect(Timeline.title_like('Fav Moose')).not_to include(timeline3)
+        expect(Timeline.title_like('Moose Fav')).to include(timeline2)
+        expect(Timeline.title_like('Moose Fav')).not_to include(timeline1)
+        expect(Timeline.title_like('Moose Fav')).not_to include(timeline3)
+      end
     end
     describe 'desc_like' do
       let(:timeline1) { FactoryBot.create(:timeline, description: 'Moose tunes') }
@@ -175,6 +183,14 @@ RSpec.describe Timeline, type: :model do
       end
       it 'does not return timelines without matching descriptions' do
         expect(Timeline.desc_like(desc_filter)).not_to include(timeline3)
+      end
+      it 'searches on multiple terms' do
+        expect(Timeline.desc_like('Fav Moose')).to include(timeline2)
+        expect(Timeline.desc_like('Fav Moose')).not_to include(timeline1)
+        expect(Timeline.desc_like('Fav Moose')).not_to include(timeline3)
+        expect(Timeline.desc_like('Moose Fav')).to include(timeline2)
+        expect(Timeline.desc_like('Moose Fav')).not_to include(timeline1)
+        expect(Timeline.desc_like('Moose Fav')).not_to include(timeline3)
       end
     end
     describe 'with_tag' do

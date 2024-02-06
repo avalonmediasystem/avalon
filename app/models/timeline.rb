@@ -16,8 +16,16 @@ class Timeline < ActiveRecord::Base
   belongs_to :user
   scope :by_user, ->(user) { where(user_id: user.id) }
   # Explicitly cast everything to lowercase for DB agnostic case-insentive search.
-  scope :title_like, ->(title_filter) { where("LOWER(title) LIKE ?", "%#{title_filter.downcase}%") }
-  scope :desc_like, ->(desc_filter) { where("LOWER(description) LIKE ?", "%#{desc_filter.downcase}%") }
+  scope :title_like, ->(title_filter) do
+    term_array = title_filter.split.map { |term| "%#{sanitize_sql_like(term).downcase}%" }
+    query = Array.new(term_array.size, "LOWER(title) LIKE ?").join(" AND ")
+    where(query, *term_array)
+  end
+  scope :desc_like, ->(desc_filter) do
+    term_array = desc_filter.split.map { |term| "%#{sanitize_sql_like(term).downcase}%" }
+    query = Array.new(term_array.size, "LOWER(description) LIKE ?").join(" AND ")
+    where(query, *term_array)
+  end
   scope :with_tag, ->(tag_filter) { where("LOWER(tags) LIKE ?", "%\n- #{tag_filter.downcase}\n%") }
 
   validates :user, presence: true
