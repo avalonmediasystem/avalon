@@ -24,7 +24,7 @@ class PlaylistsController < ApplicationController
   authorize_resource only: [:index]
   before_action :get_user_playlists, only: [:index, :paged_index]
   before_action :get_all_other_playlists, only: [:edit]
-  before_action :load_playlist_token, only: [:show, :duplicate]
+  before_action :load_playlist_token, only: [:show, :duplicate, :manifest]
 
   helper_method :access_token_url
 

@@ -32,6 +32,7 @@ Unless required by applicable law or agreed to in writing, software distributed
       {
         base_url: request.protocol+request.host_with_port,
         playlist_id: @playlist.id,
+        token: @playlist_token,
         share: { canShare: (will_partial_list_render? :share), content: render('share') },
         comment_tag: { content: render('comments_and_tags') }
       }
