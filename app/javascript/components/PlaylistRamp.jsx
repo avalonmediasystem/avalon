@@ -41,6 +41,7 @@ const ExpandCollapseArrow = () => {
 const Ramp = ({
   base_url,
   playlist_id,
+  token,
   share,
   comment_tag
 }) => {
@@ -55,6 +56,7 @@ const Ramp = ({
 
   React.useEffect(() => {
     let url = `${base_url}/playlists/${playlist_id}/manifest.json`;
+    if (token) url += `?token=${token}`;
     setManifestUrl(url);
 
     interval = setInterval(addPlayerEventListeners, 500);
