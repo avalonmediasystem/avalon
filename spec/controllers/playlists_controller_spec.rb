@@ -123,7 +123,7 @@ RSpec.describe PlaylistsController, type: :controller do
       end
       context 'with a private playlist and token' do
         let(:playlist) { FactoryBot.create(:playlist, :with_access_token, items: [playlist_item]) }
-        it "should return the playlist view page" do
+        it "should return the playlist view page and manifest" do
           expect(get :show, params: { id: playlist.id, token: playlist.access_token }).not_to redirect_to(root_path)
           expect(get :show, params: { id: playlist.id, token: playlist.access_token }).to be_successful
           expect(get :manifest, params: { id: playlist.id, token: playlist.access_token }).not_to redirect_to(root_path)
