@@ -145,7 +145,13 @@ const Ramp = ({
       <Row className="ramp--all-components ramp--itemview">
         <Col sm={8}>
           {(cdl.enabled && !cdl.can_stream)
-            ? (<div dangerouslySetInnerHTML={{ __html: cdl.embed }} />)
+            ? (<React.Fragment>
+                <div dangerouslySetInnerHTML={{ __html: cdl.embed }} />
+                <div className="ramp--rails-title">
+                  {<div className="object-title" dangerouslySetInnerHTML={{ __html: title.content }} />}
+                </div>
+              </React.Fragment>
+              )
             : (<React.Fragment>
               {master_files_count > 0 &&
                 <React.Fragment>
