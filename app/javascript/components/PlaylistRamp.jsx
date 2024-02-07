@@ -76,8 +76,8 @@ const Ramp = ({
       playerInst.ready(() => {
         let activeElement = document.getElementsByClassName('ramp--structured-nav__list-item active');
         if (activeElement != undefined && activeElement?.length > 0) {
-          setActiveItemTitle(activeElement[0].dataset.label);
-          setActiveItemSummary(activeElement[0].dataset.summary);
+          setActiveItemTitle(activeElement[0]?.dataset.label);
+          setActiveItemSummary(activeElement[0]?.dataset.summary);
         }
       });
     }
