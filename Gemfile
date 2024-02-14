@@ -25,7 +25,7 @@ gem 'react-rails'
 gem 'sass', '3.4.22'
 gem 'sprockets-es6'
 gem 'twitter-typeahead-rails', '0.11.1.pre.corejavascript'
-gem 'uglifier', '>= 1.3.0'
+gem 'terser'
 gem 'shakapacker'
 
 # Core Samvera
