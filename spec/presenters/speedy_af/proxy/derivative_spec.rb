@@ -1,4 +1,4 @@
-# Copyright 2011-2023, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2024, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 # 
@@ -16,15 +16,37 @@ require 'rails_helper'
 
 describe SpeedyAF::Proxy::Derivative do
   let(:derivative) { FactoryBot.create(:derivative) }
-  before(:each) do
-    derivative.video_codec = nil
-    derivative.video_bitrate = nil
-    derivative.mime_type = nil
-    derivative.save
-  end
   subject(:presenter) { described_class.find(derivative.id) }
 
+  describe 'attributes' do
+    let(:derivative) { FactoryBot.create(:derivative, mime_type: 'video/mp4') }
+
+    it 'returns all attributes' do
+      expect(presenter.location_url).to be_present #also stored as stream_path_ssi?
+      expect(presenter.hls_url).to be_present
+      expect(presenter.duration).to be_present
+      expect(presenter.track_id).to be_present
+      expect(presenter.hls_track_id).to be_present
+      expect(presenter.managed).not_to be_nil
+      expect(presenter.derivativeFile).to be_present
+      expect(presenter.quality).to be_present
+      expect(presenter.mime_type).to be_present
+      expect(presenter.audio_bitrate).to be_present
+      expect(presenter.audio_codec).to be_present
+      expect(presenter.video_bitrate).to be_present
+      expect(presenter.video_codec).to be_present
+      expect(presenter.resolution).to be_present
+    end
+  end
+
   describe "#defaults" do
+    before(:each) do
+      derivative.video_codec = nil
+      derivative.video_bitrate = nil
+      derivative.mime_type = nil
+      derivative.save
+    end
+
     it "sets video_bitrate to nil" do
       expect(subject.inspect).to include("video_bitrate")
       expect(subject.video_bitrate).to be_nil

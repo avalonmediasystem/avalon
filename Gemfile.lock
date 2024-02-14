@@ -8,8 +8,8 @@ GIT
 
 GIT
   remote: https://github.com/avalonmediasystem/avalon-about.git
-  revision: 8ae33197219cb6cb8b6fee1f616950c29f2b94ce
-  tag: avalon-r6.4
+  revision: cc8d816b9751d6a04750399d9ef828a33e7ac7eb
+  tag: avalon-r7.7
   specs:
     avalon-about (0.1.0)
       about_page
@@ -64,14 +64,6 @@ GIT
     omniauth-lti (0.0.2)
       ims-lti
       omniauth
-
-GIT
-  remote: https://github.com/samvera-labs/iiif_manifest.git
-  revision: c8ca0c6e54517446419c20221260eaf3dcf46d4e
-  branch: main
-  specs:
-    iiif_manifest (1.3.1)
-      activesupport (>= 4)
 
 GEM
   remote: https://rubygems.org/
@@ -143,7 +135,7 @@ GEM
     active_elastic_job (3.2.0)
       aws-sdk-sqs (~> 1)
       rails (>= 5.2.6, < 7.1)
-    active_encode (1.2.1)
+    active_encode (1.2.2)
       addressable (~> 2.8)
       rails
     active_fedora-datastreams (0.5.0)
@@ -326,7 +318,7 @@ GEM
       coffee-script-source
       execjs
     coffee-script-source (1.12.2)
-    concurrent-ruby (1.2.2)
+    concurrent-ruby (1.2.3)
     config (4.2.1)
       deep_merge (~> 1.2, >= 1.2.1)
       dry-validation (~> 1.0, >= 1.0.0)
@@ -498,6 +490,8 @@ GEM
     i18n (1.14.1)
       concurrent-ruby (~> 1.0)
     iconv (1.0.8)
+    iiif_manifest (1.4.0)
+      activesupport (>= 4)
     ims-lti (1.1.13)
       builder
       oauth (>= 0.4.5, < 0.6)
@@ -581,7 +575,7 @@ GEM
     mini_mime (1.1.2)
     mini_portile2 (2.8.4)
     minitar (0.9)
-    minitest (5.19.0)
+    minitest (5.21.2)
     msgpack (1.6.0)
     multi_json (1.15.0)
     multi_xml (0.6.0)
@@ -980,7 +974,7 @@ DEPENDENCIES
   active-fedora (~> 14.0, >= 14.0.1)
   active_annotations (~> 0.4)
   active_elastic_job
-  active_encode (~> 1.2)
+  active_encode (>= 1.2.2)
   active_fedora-datastreams (~> 0.5)
   activejob-traffic_control
   activejob-uniqueness
@@ -1036,7 +1030,7 @@ DEPENDENCIES
   hooks
   hydra-head (~> 12.0)
   iconv (~> 1.0.6)
-  iiif_manifest!
+  iiif_manifest (>= 1.4.0)
   ims-lti (~> 1.1.13)
   jbuilder (~> 2.0)
   jquery-datatables

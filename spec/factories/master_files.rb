@@ -1,4 +1,4 @@
-# Copyright 2011-2023, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2024, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 # 
@@ -24,6 +24,7 @@ FactoryBot.define do
     original_frame_size { '1024X768' }
     width { '1024' }
     height { '768' }
+    date_digitized { Time.now.utc.iso8601 }
 
     sequence(:workflow_id)
 
@@ -79,6 +80,7 @@ FactoryBot.define do
     trait :with_captions do
       after(:create) do |mf|
         mf.captions.content = File.read('spec/fixtures/captions.vtt')
+        mf.captions.original_name = 'captions.vtt'
         mf.save
       end
     end

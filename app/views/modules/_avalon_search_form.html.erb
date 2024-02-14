@@ -1,5 +1,5 @@
 <%#
-Copyright 2011-2023, The Trustees of Indiana University and Northwestern
+Copyright 2011-2024, The Trustees of Indiana University and Northwestern
   University.  Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
 
@@ -13,18 +13,19 @@ Unless required by applicable law or agreed to in writing, software distributed
   specific language governing permissions and limitations under the License.
 ---  END LICENSE_HEADER BLOCK  ---
 %>
+<% form_id = SecureRandom.base36 %>
 <form accept-charset="UTF-8" action="/catalog" class="avalon-search-query-form avalon-form-search" method="get">
   <div style="margin:0;padding:0;display:inline">
     <input name="utf8" type="hidden" value="✓">
   </div>
-  <input id="search_field" name="search_field" type="hidden" value="all_fields">
+  <input name="search_field" type="hidden" value="all_fields">
   <div>
-    <label class="sr-only" for="searchField">Search</label>
+    <label class="sr-only" for=<%= "searchField-#{form_id}"%>>Search</label>
     <div class="input-group input-group-lg global-search-wrapper">
-      <input class="search-query q form-control global-search-input" id="searchField" name="q"
+      <input class="search-query q form-control global-search-input" id=<%= "searchField-#{form_id}"%> name="q"
         placeholder="Search this site" type="text" value="">
       <span class="input-group-append">
-        <button id="global-search-submit" type="submit" class="btn btn-primary global-search-submit">
+        <button type="submit" class="btn btn-primary global-search-submit" aria-label="Submit search">
           <i class="fa fa-search icon-white"></i>
         </button>
       </span>

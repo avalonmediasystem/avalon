@@ -1,4 +1,4 @@
-# Copyright 2011-2023, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2024, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 # 
@@ -50,8 +50,6 @@ RSpec.describe PlaylistItemsController, type: :controller do
         expect(post :create, params: { playlist_id: playlist.to_param, playlist_item: valid_attributes }).to have_http_status(:unauthorized)
         expect(put :update, params: { playlist_id: playlist.to_param, id: playlist_item.id }).to have_http_status(:unauthorized)
         expect(get :show, params: { playlist_id: playlist.to_param, id: playlist_item.id }, xhr: true).to have_http_status(:unauthorized)
-        expect(get :source_details, params: { playlist_id: playlist.to_param, playlist_item_id: playlist_item.id }).to have_http_status(:unauthorized)
-        expect(get :markers, params: { playlist_id: playlist.to_param, playlist_item_id: playlist_item.id }).to have_http_status(:unauthorized)
         expect(get :related_items, params: { playlist_id: playlist.to_param, playlist_item_id: playlist_item.id }).to have_http_status(:unauthorized)
       end
       context 'with a public playlist' do
@@ -59,9 +57,7 @@ RSpec.describe PlaylistItemsController, type: :controller do
 
         it "returns the playlist item info snippets" do
           expect(get :show, params: { playlist_id: playlist.to_param, id: playlist_item.id }, xhr: true).to be_successful
-          expect(get :source_details, params: { playlist_id: playlist.to_param, playlist_item_id: playlist_item.id }).to be_successful
-          expect(get :markers, params: { playlist_id: playlist.to_param, playlist_item_id: playlist_item.id }).to be_successful
-          expect(get :related_items, params: { playlist_id: playlist.to_param, playlist_item_id: playlist_item.id }).to be_successful
+         expect(get :related_items, params: { playlist_id: playlist.to_param, playlist_item_id: playlist_item.id }).to be_successful
         end
       end
       context 'with a private playlist and token' do
@@ -69,8 +65,6 @@ RSpec.describe PlaylistItemsController, type: :controller do
 
         it "returns the playlist item info page snippets" do
           expect(get :show, params: { playlist_id: playlist.to_param, id: playlist_item.id, token: playlist.access_token }, xhr: true).to be_successful
-          expect(get :source_details, params: { playlist_id: playlist.to_param, playlist_item_id: playlist_item.id, token: playlist.access_token }).to be_successful
-          expect(get :markers, params: { playlist_id: playlist.to_param, playlist_item_id: playlist_item.id, token: playlist.access_token }).to be_successful
           expect(get :related_items, params: { playlist_id: playlist.to_param, playlist_item_id: playlist_item.id, token: playlist.access_token }).to be_successful
         end
       end
@@ -83,8 +77,6 @@ RSpec.describe PlaylistItemsController, type: :controller do
         expect(post :create, params: { playlist_id: playlist.to_param, playlist_item: valid_attributes }).to have_http_status(:unauthorized)
         expect(put :update, params: { playlist_id: playlist.to_param, id: playlist_item.id }).to have_http_status(:unauthorized)
         expect(get :show, params: { playlist_id: playlist.to_param, id: playlist_item.id }, xhr: true).to have_http_status(:unauthorized)
-        expect(get :source_details, params: { playlist_id: playlist.to_param, playlist_item_id: playlist_item.id }).to have_http_status(:unauthorized)
-        expect(get :markers, params: { playlist_id: playlist.to_param, playlist_item_id: playlist_item.id }).to have_http_status(:unauthorized)
         expect(get :related_items, params: { playlist_id: playlist.to_param, playlist_item_id: playlist_item.id }).to have_http_status(:unauthorized)
       end
       context 'with a public playlist' do
@@ -92,8 +84,6 @@ RSpec.describe PlaylistItemsController, type: :controller do
 
         it "returns the playlist item info snippets" do
           expect(get :show, params: { playlist_id: playlist.to_param, id: playlist_item.id }, xhr: true).to be_successful
-          expect(get :source_details, params: { playlist_id: playlist.to_param, playlist_item_id: playlist_item.id }).to be_successful
-          expect(get :markers, params: { playlist_id: playlist.to_param, playlist_item_id: playlist_item.id }).to be_successful
           expect(get :related_items, params: { playlist_id: playlist.to_param, playlist_item_id: playlist_item.id }).to be_successful
         end
       end
@@ -102,8 +92,6 @@ RSpec.describe PlaylistItemsController, type: :controller do
 
         it "returns the playlist item info page snippets" do
           expect(get :show, params: { playlist_id: playlist.to_param, id: playlist_item.id, token: playlist.access_token }, xhr: true).to be_successful
-          expect(get :source_details, params: { playlist_id: playlist.to_param, playlist_item_id: playlist_item.id, token: playlist.access_token }).to be_successful
-          expect(get :markers, params: { playlist_id: playlist.to_param, playlist_item_id: playlist_item.id, token: playlist.access_token }).to be_successful
           expect(get :related_items, params: { playlist_id: playlist.to_param, playlist_item_id: playlist_item.id, token: playlist.access_token }).to be_successful
         end
       end
@@ -169,42 +157,6 @@ RSpec.describe PlaylistItemsController, type: :controller do
         expect do
           patch :update, params: { playlist_id: playlist.id, id: playlist_item.id, playlist_item: { title: Faker::Lorem.word, start_time:'00:20', end_time:'not-a-time' } }, session: valid_session
         end.not_to change{ playlist_item.reload.title }
-      end
-    end
-  end
-
-  describe 'GET #source_details' do
-    it 'returns HTML' do
-      get :source_details, params: { playlist_id: playlist.to_param, playlist_item_id: playlist_item.id }
-      expect(response).to have_http_status(:ok)
-      expect(response).to render_template(:_current_item)
-    end
-
-    context 'read from solr' do
-      render_views
-      it 'should not read from fedora' do
-        playlist_item
-        WebMock.reset_executed_requests!
-        get :source_details, params: { playlist_id: playlist.to_param, playlist_item_id: playlist_item.id }
-        expect(a_request(:any, /#{ActiveFedora.fedora.base_uri}/)).not_to have_been_made
-      end
-    end
-  end
-
-  describe 'GET #markers' do
-    it 'returns HTML' do
-      get :markers, params: { playlist_id: playlist.to_param, playlist_item_id: playlist_item.id }
-      expect(response).to have_http_status(:ok)
-      expect(response).to render_template(:_markers)
-    end
-
-    context 'read from solr' do
-      render_views
-      it 'should not read from fedora' do
-        playlist_item
-        WebMock.reset_executed_requests!
-        get :markers, params: { playlist_id: playlist.to_param, playlist_item_id: playlist_item.id }
-        expect(a_request(:any, /#{ActiveFedora.fedora.base_uri}/)).not_to have_been_made
       end
     end
   end

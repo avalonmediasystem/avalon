@@ -1,4 +1,4 @@
-# Copyright 2011-2023, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2024, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 # 
@@ -13,9 +13,9 @@
 # ---  END LICENSE_HEADER BLOCK  ---
 
 class PlaylistItemsController < ApplicationController
-  before_action :set_playlist, only: [:create, :update, :show, :markers, :related_items]
-  before_action :load_playlist_token, only: [:show, :markers, :related_items, :source_details]
-  load_resource only: [:show, :update, :markers]
+  before_action :set_playlist, only: [:create, :update, :show, :related_items]
+  before_action :load_playlist_token, only: [:show, :related_items]
+  load_resource only: [:show, :update]
 
   # POST /playlists/1/items
   def create
@@ -61,35 +61,6 @@ class PlaylistItemsController < ApplicationController
     end
   rescue StandardError => error
     render json: { message: "Item was not updated: #{error.message}" }, status: 500 and return
-  end
-
-  # GET /playlists/1/items/2/markers
-  def markers
-    @playlist_item = PlaylistItem.find(params['playlist_item_id'])
-    @markers = @playlist_item.marker
-    respond_to do |format|
-      format.html do
-        if can? :read, @playlist_item
-          render partial: 'markers'
-        else
-          head :unauthorized, content_type: "text/html"
-        end
-      end
-    end
-  end
-
-  # GET /playlists/1/items/2/source_details
-  def source_details
-    @playlist_item = PlaylistItem.find(params['playlist_item_id'])
-    respond_to do |format|
-      format.html do
-        if can? :read, @playlist_item
-          render partial: 'current_item'
-        else
-          head :unauthorized, content_type: "text/html"
-        end
-      end
-    end
   end
 
   # GET /playlists/1/items/2/related_items

@@ -1,4 +1,4 @@
-# Copyright 2011-2023, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2024, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 # 
@@ -77,10 +77,4 @@ $('input[name="playlist[visibility]"]').on('click', () ->
   new_val = $(this).val()
   new_text = $('.human_friendly_visibility_'+new_val).attr('title')
   $('.visibility-help-text').text(new_text)
-)
-
-# Hide instead of delete Bootstrap's dismissable alerts
-$('.mejs-form-alert').on('close.bs.alert', (e) ->
-  e.preventDefault()
-  $(this).slideUp()
 )

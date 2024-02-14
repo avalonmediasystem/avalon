@@ -1,4 +1,4 @@
-# Copyright 2011-2023, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2024, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 # 
@@ -26,18 +26,47 @@ module SecurityHelper
     stream_info
   end
 
-  def add_stream_url(stream_info)
+  # Batch version of secure_streams
+  # media_object CDL check only happens once
+  # session tokens retrieved in batch then passed into add_stream_url
+  # Returns Hash[MasterFile.id, stream_info]
+  def secure_stream_infos(master_files, media_objects)
+    stream_info_hash = {}
+
+    not_checked_out_hash = {}
+    mo_ids = master_files.collect(&:media_object_id)
+    mo_ids.each { |mo_id| not_checked_out_hash[mo_id] ||= not_checked_out?(mo_id, media_object: media_objects.find {|mo| mo.id == mo_id}) }
+    not_checked_out_master_files = master_files.select { |mf| not_checked_out_hash[mf.media_object_id] }
+    checked_out_master_files = master_files - not_checked_out_master_files
+
+    not_checked_out_master_files.each { |mf| stream_info_hash[mf.id] = mf.stream_details }
+
+    stream_tokens = StreamToken.get_session_tokens_for(session: session, targets: checked_out_master_files.map(&:id))
+    stream_token_hash = stream_tokens.pluck(:target, :token).to_h
+    checked_out_master_files.each { |mf| stream_info_hash[mf.id] = secure_stream_info(mf.stream_details, stream_token_hash[mf.id]) }
+
+    stream_info_hash
+  end
+
+  # Same as secure_streams except without CDL checking
+  def secure_stream_info(stream_info, token)
+    add_stream_url(stream_info, token: token)
+    stream_info
+  end
+
+  # Optional token kwarg used if passed in
+  def add_stream_url(stream_info, token: nil)
     add_stream_cookies(id: stream_info[:id])
     [:stream_hls].each do |protocol|
       stream_info[protocol].each do |quality|
-        quality[:url] = SecurityHandler.secure_url(quality[:url], session: session, target: stream_info[:id], protocol: protocol)
+        quality[:url] = SecurityHandler.secure_url(quality[:url], session: session, target: stream_info[:id], protocol: protocol, token: token)
       end
     end
   end
 
   private
 
-    def not_checked_out?(media_object_id)
-      lending_enabled?(SpeedyAF::Proxy::MediaObject.find(media_object_id)) && Checkout.checked_out_to_user(media_object_id, current_user&.id).empty?
+    def not_checked_out?(media_object_id, media_object: nil)
+      lending_enabled?(media_object || SpeedyAF::Proxy::MediaObject.find(media_object_id)) && Checkout.checked_out_to_user(media_object_id, current_user&.id).empty?
     end
 end

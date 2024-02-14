@@ -1,4 +1,4 @@
-# Copyright 2011-2023, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2024, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 # 
@@ -17,6 +17,36 @@ require 'rails_helper'
 describe SpeedyAF::Proxy::MasterFile do
   let(:master_file) { FactoryBot.create(:master_file) }
   subject(:presenter) { described_class.find(master_file.id) }
+
+  describe 'attributes' do
+    let(:master_file) { FactoryBot.create(:master_file, :with_comments, permalink: 'http://permalink', supplemental_files_json: '[]', title: 'Castle', file_checksum: 'abcd1234', file_size: 10, physical_description: 'LP', encoder_classname: 'ActiveEncode::Base', working_file_path: ['path/to/file']) }
+
+    it 'returns all attributes' do
+      expect(presenter.permalink).to be_present
+      expect(presenter.supplemental_files_json).to be_present
+      expect(presenter.title).to be_present
+      expect(presenter.file_location).to be_present
+      expect(presenter.file_checksum).to be_present
+      expect(presenter.file_size).to be_present
+      expect(presenter.duration).to be_present
+      expect(presenter.display_aspect_ratio).to be_present
+      expect(presenter.width).to be_present
+      expect(presenter.height).to be_present
+      expect(presenter.original_frame_size).to be_present
+      expect(presenter.file_format).to be_present
+      expect(presenter.poster_offset).to be_present
+      expect(presenter.thumbnail_offset).to be_present
+      expect(presenter.date_digitized).to be_present
+      expect(presenter.physical_description).to be_present
+      expect(presenter.masterFile).to be_present
+      expect(presenter.identifier).to be_present
+      expect(presenter.comment).to be_present
+      expect(presenter.workflow_id).to be_present
+      expect(presenter.encoder_classname).to be_present
+      expect(presenter.workflow_name).to be_present
+      expect(presenter.working_file_path).to be_present
+    end
+  end
 
   describe "#encoder_class" do
       it "should default to WatchedEncode" do

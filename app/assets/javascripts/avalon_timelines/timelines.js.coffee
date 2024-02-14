@@ -1,4 +1,4 @@
-# Copyright 2011-2023, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2024, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 # 
@@ -65,7 +65,8 @@ $('#copy-timeline-form').submit(
 )
 
 $('#copy-timeline-form').bind('ajax:success',
-  (event, data, status, xhr) ->
+  (event) ->
+    [data, status, xhr] = event.detail
     if (data.errors)
       console.log(data.errors.title[0])
     else
@@ -75,7 +76,8 @@ $('#copy-timeline-form').bind('ajax:success',
         if ( $('#with_refresh').val() )
           location.reload()
 ).bind('ajax:error',
-  (e, xhr, status, error) ->
+  (event) ->
+    [data, status, xhr] = event.detail
     console.log(xhr.responseJSON.errors)
 )
 
@@ -87,10 +89,4 @@ $('input[name="timeline[visibility]"]').on('click', () ->
     $('#timeline_lti_share').hide()
   else
     $('#timeline_lti_share').show()
-)
-
-# Hide instead of delete Bootstrap's dismissable alerts
-$('.mejs-form-alert').on('close.bs.alert', (e) ->
-  e.preventDefault()
-  $(this).slideUp()
 )

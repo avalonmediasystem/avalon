@@ -1,4 +1,4 @@
-# Copyright 2011-2023, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2024, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 # 
@@ -39,51 +39,51 @@ module ModsBehaviors
     solr_doc['creator_ssim'] = gather_terms(self.find_by_terms(:creator))
 #    solr_doc['creator_ssi'] = self.find_by_terms(:creator).text
     # Individual fields
-    solr_doc['summary_ssi'] = self.find_by_terms(:abstract).text
-    solr_doc['publisher_sim'] = gather_terms(self.find_by_terms(:publisher))
-    solr_doc['contributor_sim'] = gather_terms(self.find_by_terms(:contributor))
-    solr_doc['subject_sim'] = gather_terms(self.find_by_terms(:subject))
-    solr_doc['genre_sim'] = gather_terms(self.find_by_terms(:genre))
+    solr_doc['abstract_ssi'] = self.find_by_terms(:abstract).text
+    solr_doc['publisher_ssim'] = gather_terms(self.find_by_terms(:publisher))
+    solr_doc['contributor_ssim'] = gather_terms(self.find_by_terms(:contributor))
+    solr_doc['subject_ssim'] = gather_terms(self.find_by_terms(:subject))
+    solr_doc['genre_ssim'] = gather_terms(self.find_by_terms(:genre))
 #    solr_doc['physical_dtl_sim'] = gather_terms(self.find_by_terms(:format))
 #    solr_doc['contents_sim'] = gather_terms(self.find_by_terms(:parts_list))
     solr_doc['notes_sim'] = gather_terms(self.find_by_terms(:note))
-    solr_doc['table_of_contents_sim'] = gather_terms(self.find_by_terms(:table_of_contents))
-    solr_doc['access_sim'] = gather_terms(self.find_by_terms(:usage))
+    solr_doc['table_of_contents_ssim'] = gather_terms(self.find_by_terms(:table_of_contents))
+    solr_doc['usage_ssim'] = gather_terms(self.find_by_terms(:usage))
 #    solr_doc['collection_sim'] = gather_terms(self.find_by_terms(:archival_collection))
     solr_doc['series_ssim'] = gather_terms(self.find_by_terms(:series))
     #filter formats based upon whitelist
-    solr_doc['format_sim'] = (gather_terms(self.find_by_terms(:resource_type)) & ['moving image', 'sound recording' ]).map(&:titleize)
-    solr_doc['location_sim'] = gather_terms(self.find_by_terms(:geographic_subject))
+    solr_doc['resource_type_ssim'] = (gather_terms(self.find_by_terms(:resource_type)) & ['moving image', 'sound recording' ]).map(&:titleize)
+    solr_doc['location_ssim'] = gather_terms(self.find_by_terms(:geographic_subject))
 
     # Blacklight facets - these are the same facet fields used in our Blacklight app
     # for consistency and so they'll show up when we export records from Hydra into BL:
-    solr_doc['material_sim'] = "Digital"
-    solr_doc['subject_topic_sim'] = gather_terms(self.find_by_terms(:topical_subject))
-    solr_doc['subject_geographic_sim'] = gather_terms(self.find_by_terms(:geographic_subject))
-    solr_doc['subject_temporal_sim'] = gather_terms(self.find_by_terms(:temporal_subject))
-    solr_doc['subject_occupation_sim'] = gather_terms(self.find_by_terms(:occupation_subject))
-    solr_doc['subject_person_sim'] = gather_terms(self.find_by_terms(:person_subject))
-    solr_doc['subject_corporate_sim'] = gather_terms(self.find_by_terms(:corporate_subject))
-    solr_doc['subject_family_sim'] = gather_terms(self.find_by_terms(:family_subject))
-    solr_doc['subject_title_sim'] = gather_terms(self.find_by_terms(:title_subject))
-    solr_doc['time_sim'] = gather_terms(self.find_by_terms(:temporal_subject))
+    solr_doc['material_ssim'] = "Digital"
+    solr_doc['topical_subject_ssim'] = gather_terms(self.find_by_terms(:topical_subject))
+    solr_doc['geographic_subject_ssim'] = gather_terms(self.find_by_terms(:geographic_subject))
+    solr_doc['temporal_subject_ssim'] = gather_terms(self.find_by_terms(:temporal_subject))
+    solr_doc['occupation_subject_ssim'] = gather_terms(self.find_by_terms(:occupation_subject))
+    solr_doc['person_subject_ssim'] = gather_terms(self.find_by_terms(:person_subject))
+    solr_doc['corporate_subject_ssim'] = gather_terms(self.find_by_terms(:corporate_subject))
+    solr_doc['family_subject_ssim'] = gather_terms(self.find_by_terms(:family_subject))
+    solr_doc['title_subject_ssim'] = gather_terms(self.find_by_terms(:title_subject))
+    solr_doc['time_ssim'] = gather_terms(self.find_by_terms(:temporal_subject))
 
     # TODO: map PBcore's three-letter language codes to full language names
     # Right now, everything's English.
-    solr_doc['language_sim'] = gather_terms(self.find_by_terms(:language_text))
-    solr_doc['language_code_sim'] = gather_terms(self.find_by_terms(:language_code))
-    solr_doc['physical_description_sim'] = gather_terms(self.find_by_terms(:physical_description))
+    solr_doc['language_ssim'] = gather_terms(self.find_by_terms(:language_text))
+    solr_doc['language_code_ssim'] = gather_terms(self.find_by_terms(:language_code))
+    solr_doc['physical_description_ssim'] = gather_terms(self.find_by_terms(:physical_description))
     solr_doc['related_item_url_sim'] = gather_terms(self.find_by_terms(:related_item_url))
     solr_doc['related_item_label_sim'] = gather_terms(self.find_by_terms(:related_item_label))
-    solr_doc['terms_of_use_si'] = (self.find_by_terms(:terms_of_use) - self.find_by_terms(:rights_statement)).text
+    solr_doc['terms_of_use_ssi'] = (self.find_by_terms(:terms_of_use) - self.find_by_terms(:rights_statement)).text
     solr_doc['rights_statement_ssi'] = self.find_by_terms(:rights_statement).text
     solr_doc['other_identifier_sim'] = gather_terms(self.find_by_terms(:other_identifier))
 
     # Extract 4-digit year for creation date facet in Hydra and pub_date facet in Blacklight
-    solr_doc['date_ssi'] = self.find_by_terms(:date_issued).text
+    solr_doc['date_issued_ssi'] = self.find_by_terms(:date_issued).text
     solr_doc['date_created_ssi'] = self.find_by_terms(:date_created).text
     # Put both publication date and creation date into the date facet
-    solr_doc['date_sim'] = gather_years(solr_doc['date_ssi'])
+    solr_doc['date_sim'] = gather_years(solr_doc['date_issued_ssi'])
     solr_doc['date_sim'] += gather_years(solr_doc['date_created_ssi']) if solr_doc['date_created_ssi'].present?
 
     # For full text, we stuff it into the mods_tesim field which is already configured for Mods doucments
@@ -183,6 +183,10 @@ module ModsBehaviors
 
   def gather_terms(terms)
     terms.collect { |r| r.text }.compact.uniq
+  end
+
+  def gather_attribute(terms, attribute)
+    terms.collect { |t| t.attribute(attribute).value }
   end
 
   def gather_years(date)

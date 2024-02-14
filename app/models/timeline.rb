@@ -1,4 +1,4 @@
-# Copyright 2011-2023, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2024, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 # 
@@ -15,9 +15,18 @@
 class Timeline < ActiveRecord::Base
   belongs_to :user
   scope :by_user, ->(user) { where(user_id: user.id) }
-  scope :title_like, ->(title_filter) { where("title LIKE ?", "%#{title_filter}%") }
-  scope :desc_like, ->(desc_filter) { where("description LIKE ?", "%#{desc_filter}%") }
-  scope :with_tag, ->(tag_filter) { where("tags LIKE ?", "%\n- #{tag_filter}\n%") }
+  # Explicitly cast everything to lowercase for DB agnostic case-insentive search.
+  scope :title_like, ->(title_filter) do
+    term_array = title_filter.split.map { |term| "%#{sanitize_sql_like(term).downcase}%" }
+    query = Array.new(term_array.size, "LOWER(title) LIKE ?").join(" AND ")
+    where(query, *term_array)
+  end
+  scope :desc_like, ->(desc_filter) do
+    term_array = desc_filter.split.map { |term| "%#{sanitize_sql_like(term).downcase}%" }
+    query = Array.new(term_array.size, "LOWER(description) LIKE ?").join(" AND ")
+    where(query, *term_array)
+  end
+  scope :with_tag, ->(tag_filter) { where("LOWER(tags) LIKE ?", "%\n- #{tag_filter.downcase}\n%") }
 
   validates :user, presence: true
   validates :title, presence: true

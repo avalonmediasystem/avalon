@@ -1,11 +1,11 @@
-# Copyright 2011-2023, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2024, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
-#
+# 
 # You may obtain a copy of the License at
-#
+# 
 # http://www.apache.org/licenses/LICENSE-2.0
-#
+# 
 # Unless required by applicable law or agreed to in writing, software distributed
 #   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
 #   CONDITIONS OF ANY KIND, either express or implied. See the License for the
@@ -24,8 +24,8 @@ class MediaObjectsController < ApplicationController
   include SecurityHelper
 
   before_action :authenticate_user!, except: [:show, :set_session_quality, :show_stream_details, :manifest]
-  before_action :load_resource, except: [:create, :destroy, :update_status, :set_session_quality, :tree, :deliver_content, :confirm_remove, :show_stream_details, :add_to_playlist_form, :add_to_playlist, :intercom_collections, :manifest, :move_preview, :edit, :update, :json_update]
-  load_and_authorize_resource except: [:create, :destroy, :update_status, :set_session_quality, :tree, :deliver_content, :confirm_remove, :show_stream_details, :add_to_playlist_form, :add_to_playlist, :intercom_collections, :manifest, :move_preview, :show_progress]
+  before_action :load_resource, except: [:create, :destroy, :update_status, :set_session_quality, :tree, :deliver_content, :confirm_remove, :show_stream_details, :add_to_playlist, :intercom_collections, :manifest, :move_preview, :edit, :update, :json_update]
+  load_and_authorize_resource except: [:create, :destroy, :update_status, :set_session_quality, :tree, :deliver_content, :confirm_remove, :show_stream_details, :add_to_playlist, :intercom_collections, :manifest, :move_preview, :show_progress]
   authorize_resource only: [:create]
 
   before_action :inject_workflow_steps, only: [:edit, :update], unless: proc { request.format.json? }
@@ -105,17 +105,6 @@ class MediaObjectsController < ApplicationController
     @media_object.save(:validate => false)
 
     redirect_to edit_media_object_path(@media_object)
-  end
-
-  # POST /media_objects/avalon:1/add_to_playlist_form
-  def add_to_playlist_form
-    @media_object = SpeedyAF::Proxy::MediaObject.find(params[:id])
-    authorize! :read, @media_object
-    respond_to do |format|
-      format.html do
-        render partial: 'add_to_playlist_form', locals: { scope: params[:scope], masterfile_id: params[:masterfile_id] }
-      end
-    end
   end
 
   # POST /media_objects/avalon:1/add_to_playlist
@@ -475,11 +464,8 @@ class MediaObjectsController < ApplicationController
     @media_object = SpeedyAF::Proxy::MediaObject.find(params[:id])
     authorize! :read, @media_object
 
-    master_files = master_file_presenters
-    canvas_presenters = master_files.collect do |mf|
-      stream_info = secure_streams(mf.stream_details, @media_object.id)
-      IiifCanvasPresenter.new(master_file: mf, stream_info: stream_info)
-    end
+    stream_info_hash = secure_stream_infos(master_file_presenters, [@media_object])
+    canvas_presenters = master_file_presenters.collect { |mf| IiifCanvasPresenter.new(master_file: mf, stream_info: stream_info_hash[mf.id]) }
     presenter = IiifManifestPresenter.new(media_object: @media_object, master_files: canvas_presenters, lending_enabled: lending_enabled?(@media_object))
 
     manifest = IIIFManifest::V3::ManifestFactory.new(presenter).to_h

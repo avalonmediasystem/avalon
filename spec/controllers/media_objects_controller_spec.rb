@@ -1,11 +1,11 @@
-# Copyright 2011-2023, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2024, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
-#
+# 
 # You may obtain a copy of the License at
-#
+# 
 # http://www.apache.org/licenses/LICENSE-2.0
-#
+# 
 # Unless required by applicable law or agreed to in writing, software distributed
 #   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
 #   CONDITIONS OF ANY KIND, either express or implied. See the License for the
@@ -75,7 +75,6 @@ describe MediaObjectsController, type: :controller do
           expect(get :tree, params: { id: media_object.id }).to render_template('errors/restricted_pid')
           expect(get :deliver_content, params: { id: media_object.id, file: 'descMetadata' }).to render_template('errors/restricted_pid')
           expect(delete :destroy, params: { id: media_object.id }).to render_template('errors/restricted_pid')
-          expect(get :add_to_playlist_form, params: { id: media_object.id }).to render_template('errors/restricted_pid')
           expect(post :add_to_playlist, params: { id: media_object.id }).to render_template('errors/restricted_pid')
         end
         it "json routes should return 401" do
@@ -103,7 +102,6 @@ describe MediaObjectsController, type: :controller do
           expect(put :update, params: { id: media_object.id }).to render_template('errors/restricted_pid')
           expect(get :tree, params: { id: media_object.id }).to render_template('errors/restricted_pid')
           expect(get :deliver_content, params: { id: media_object.id, file: 'descMetadata' }).to render_template('errors/restricted_pid')
-          expect(get :add_to_playlist_form, params: { id: media_object.id }).to render_template('errors/restricted_pid')
           expect(post :add_to_playlist, params: { id: media_object.id }).to render_template('errors/restricted_pid')
         end
         it "json routes should return 401" do
@@ -1721,37 +1719,6 @@ describe MediaObjectsController, type: :controller do
     end
   end
 
-  describe "#add_to_playlist_form" do
-    let(:media_object) { FactoryBot.create(:fully_searchable_media_object, :with_master_file) }
-
-    before do
-      login_as :user
-    end
-    it "should render add_to_playlist_form with correct masterfile_id" do
-      get :add_to_playlist_form, params: { id: media_object.id, scope: 'master_file', masterfile_id: media_object.ordered_master_file_ids[0] }
-      expect(response).to render_template(:_add_to_playlist_form)
-      expect(response.body).to include(media_object.ordered_master_file_ids[0])
-    end
-    it "should render the correct label for scope=master_file" do
-      get :add_to_playlist_form, params: { id: media_object.id, scope: 'master_file', masterfile_id: media_object.ordered_master_file_ids[0] }
-      expect(response.body).to include('Add Section to Playlist')
-    end
-    it "should render the correct label for scope=media_object" do
-      get :add_to_playlist_form, params: { id: media_object.id, scope: 'media_object', masterfile_id: media_object.ordered_master_file_ids[0] }
-      expect(response.body).to include('Add Item to Playlist')
-    end
-
-    context 'read from solr' do
-      it 'should not read from fedora' do
-        media_object
-        perform_enqueued_jobs(only: MediaObjectIndexingJob)
-        WebMock.reset_executed_requests!
-        get :add_to_playlist_form, params: { id: media_object.id, scope: 'media_object', masterfile_id: media_object.ordered_master_file_ids[0] }
-        expect(a_request(:any, /#{ActiveFedora.fedora.base_uri}/)).not_to have_been_made
-      end
-    end
-  end
-
   describe "#add_to_playlist" do
     let(:media_object) { FactoryBot.create(:fully_searchable_media_object, title: 'Test Item') }
     let(:master_file) { FactoryBot.create(:master_file, media_object: media_object, title: 'Test Section') }
@@ -1873,7 +1840,8 @@ describe MediaObjectsController, type: :controller do
 
   describe '#manifest' do
     context 'read from solr' do
-      let!(:media_object) { FactoryBot.create(:published_media_object, :with_master_file, visibility: 'public') }
+      let!(:master_file) { FactoryBot.create(:master_file, :with_derivative, media_object: media_object) }
+      let!(:media_object) { FactoryBot.create(:published_media_object, visibility: 'public') }
       it 'should not read from fedora' do
         perform_enqueued_jobs(only: MediaObjectIndexingJob)
         WebMock.reset_executed_requests!

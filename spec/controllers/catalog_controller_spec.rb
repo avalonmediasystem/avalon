@@ -1,11 +1,11 @@
-# Copyright 2011-2023, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2024, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
-#
+# 
 # You may obtain a copy of the License at
-#
+# 
 # http://www.apache.org/licenses/LICENSE-2.0
-#
+# 
 # Unless required by applicable law or agreed to in writing, software distributed
 #   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
 #   CONDITIONS OF ANY KIND, either express or implied. See the License for the
@@ -172,7 +172,7 @@ describe CatalogController do
 
     describe "search fields" do
       let(:media_object) { FactoryBot.create(:fully_searchable_media_object) }
-      ["title_tesi", "creator_ssim", "contributor_sim", "unit_ssim", "collection_ssim", "summary_ssi", "publisher_sim", "subject_topic_sim", "subject_geographic_sim", "subject_temporal_sim", "genre_sim", "physical_description_sim", "language_sim", "date_sim", "notes_sim", "table_of_contents_sim", "other_identifier_sim", "series_ssim" ].each do |field|
+      ["title_tesi", "creator_ssim", "contributor_ssim", "unit_ssim", "collection_ssim", "abstract_ssi", "publisher_ssim", "topical_subject_ssim", "geographic_subject_ssim", "temporal_subject_ssim", "genre_ssim", "physical_description_ssim", "language_ssim", "date_sim", "notes_sim", "table_of_contents_ssim", "other_identifier_sim", "series_ssim" ].each do |field|
         it "should find results based upon #{field}" do
           query = Array(media_object.to_solr[field]).first
           #split on ' ' and only search on the first word of a multiword field value
@@ -219,11 +219,11 @@ describe CatalogController do
       let!(:m3) { FactoryBot.create(:published_media_object, title: 'Doo', date_issued: '1980', creator: ['Wilma'], visibility: 'public') }
 
       it "should sort correctly by title" do
-        get :index, params: { :sort => 'title_ssort asc, date_ssi desc' }
+        get :index, params: { :sort => 'title_ssort asc, date_issued_ssi desc' }
         expect(assigns(:response).documents.map(&:id)).to eq [m2.id, m3.id, m1.id]
       end
       it "should sort correctly by date" do
-        get :index, params: { :sort => 'date_ssi desc, title_ssort asc' }
+        get :index, params: { :sort => 'date_issued_ssi desc, title_ssort asc' }
         expect(assigns(:response).documents.map(&:id)).to eq [m3.id, m2.id, m1.id]
       end
       it "should sort correctly by creator" do

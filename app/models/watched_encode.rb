@@ -1,4 +1,4 @@
-# Copyright 2011-2023, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2024, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 # 
@@ -60,8 +60,8 @@ class WatchedEncode < ActiveEncode::Base
   end
 
   def persistence_model_attributes(encode, create_options = nil)
-    display_title = encode.input.url.to_s.split('/').last
-    options_hash = { display_title: display_title }
+    display_title = parse_filename(encode.input.url)
+    options_hash = { title: display_title, display_title: display_title }
     if create_options.present? && create_options[:master_file_id].present?
       master_file = MasterFile.find(create_options[:master_file_id])
       options_hash[:master_file_id] = create_options[:master_file_id]
@@ -74,5 +74,14 @@ class WatchedEncode < ActiveEncode::Base
 
     def localize_s3_file(url)
       FileLocator.new(url).local_location
+    end
+
+    def parse_filename(url)
+      escaped_url = Addressable::URI.escape(url)
+      uri = URI.parse(escaped_url)
+      escaped_filename = uri.path.split('/').last
+      Addressable::URI.unescape(escaped_filename)
+    rescue URI::InvalidURIError
+      url
     end
 end

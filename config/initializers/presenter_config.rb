@@ -14,8 +14,11 @@ Rails.application.config.to_prepare do
                         file_size: nil,
                         date_digitized: nil,
                         file_checksum: nil,
-                        supplemental_file_captions: [],
-                        identifier: []
+                        identifier: [],
+                        percent_complete: nil,
+                        status_code: nil,
+                        operation: nil,
+                        error: nil
                       }
       include MasterFileIntercom
       include MasterFileBehavior
@@ -39,6 +42,7 @@ Rails.application.config.to_prepare do
                         topical_subject: [],
                         geographic_subject: [],
                         language: [],
+                        language_code: [],
                         terms_of_use: nil,
                         physical_description: [],
                         related_item_url: [],

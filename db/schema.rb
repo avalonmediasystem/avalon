@@ -2,24 +2,26 @@
 # of editing this file, please use the migrations feature of Active Record to
 # incrementally modify your database, and then regenerate this schema definition.
 #
-# This file is the source Rails uses to define your schema when running `rails
-# db:schema:load`. When creating a new database, `rails db:schema:load` tends to
+# This file is the source Rails uses to define your schema when running `bin/rails
+# db:schema:load`. When creating a new database, `bin/rails db:schema:load` tends to
 # be faster and is potentially less error prone than running all of your
 # migrations from scratch. Old migrations may fail to apply correctly if those
 # migrations use external dependencies or application code.
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2022_08_22_170237) do
+ActiveRecord::Schema[7.0].define(version: 2023_05_16_142233) do
+  # These are extensions that must be enabled in order to support this database
+  enable_extension "plpgsql"
 
-  create_table "active_encode_encode_records", force: :cascade do |t|
+  create_table "active_encode_encode_records", id: :serial, force: :cascade do |t|
     t.string "global_id"
     t.string "state"
     t.string "adapter"
     t.string "title"
-    t.text "raw_object", limit: 16777215
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.text "raw_object"
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
     t.text "create_options"
     t.float "progress"
     t.string "display_title"
@@ -33,9 +35,9 @@ ActiveRecord::Schema.define(version: 2022_08_22_170237) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
-    t.integer "record_id", null: false
-    t.integer "blob_id", null: false
-    t.datetime "created_at", null: false
+    t.bigint "record_id", null: false
+    t.bigint "blob_id", null: false
+    t.datetime "created_at", precision: nil, null: false
     t.index ["blob_id"], name: "index_active_storage_attachments_on_blob_id"
     t.index ["record_type", "record_id", "name", "blob_id"], name: "index_active_storage_attachments_uniqueness", unique: true
   end
@@ -47,14 +49,21 @@ ActiveRecord::Schema.define(version: 2022_08_22_170237) do
     t.text "metadata"
     t.bigint "byte_size", null: false
     t.string "checksum", null: false
-    t.datetime "created_at", null: false
+    t.datetime "created_at", precision: nil, null: false
+    t.string "service_name", null: false
     t.index ["key"], name: "index_active_storage_blobs_on_key", unique: true
+  end
+
+  create_table "active_storage_variant_records", force: :cascade do |t|
+    t.bigint "blob_id", null: false
+    t.string "variation_digest", null: false
+    t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
   end
 
   create_table "annotations", force: :cascade do |t|
     t.string "uuid"
     t.string "source_uri"
-    t.integer "playlist_item_id"
+    t.bigint "playlist_item_id"
     t.text "annotation"
     t.string "type"
     t.index ["playlist_item_id"], name: "index_annotations_on_playlist_item_id"
@@ -65,23 +74,23 @@ ActiveRecord::Schema.define(version: 2022_08_22_170237) do
     t.string "token", null: false
     t.string "username", null: false
     t.string "email", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
     t.index ["token"], name: "index_api_tokens_on_token", unique: true
     t.index ["username"], name: "index_api_tokens_on_username"
   end
 
   create_table "batch_entries", force: :cascade do |t|
-    t.integer "batch_registries_id"
-    t.text "payload", limit: 1073741823
+    t.bigint "batch_registries_id"
+    t.text "payload"
     t.boolean "complete", default: false, null: false
     t.boolean "error", default: false, null: false
     t.string "current_status"
-    t.text "error_message", limit: 65535
+    t.text "error_message"
     t.string "media_object_pid"
     t.integer "position"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
     t.index ["batch_registries_id"], name: "index_batch_entries_on_batch_registries_id"
     t.index ["position"], name: "index_batch_entries_on_position"
   end
@@ -99,8 +108,8 @@ ActiveRecord::Schema.define(version: 2022_08_22_170237) do
     t.text "error_message"
     t.boolean "error_email_sent", default: false, null: false
     t.boolean "locked", default: false, null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
   end
 
   create_table "bookmarks", force: :cascade do |t|
@@ -109,19 +118,19 @@ ActiveRecord::Schema.define(version: 2022_08_22_170237) do
     t.string "document_id"
     t.string "document_type"
     t.string "title"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
     t.index ["document_id"], name: "index_bookmarks_on_document_id"
     t.index ["user_id"], name: "index_bookmarks_on_user_id"
   end
 
   create_table "checkouts", force: :cascade do |t|
-    t.integer "user_id"
+    t.bigint "user_id"
     t.string "media_object_id"
-    t.datetime "checkout_time"
-    t.datetime "return_time"
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
+    t.datetime "checkout_time", precision: nil
+    t.datetime "return_time", precision: nil
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
     t.index ["user_id"], name: "index_checkouts_on_user_id"
   end
 
@@ -129,15 +138,15 @@ ActiveRecord::Schema.define(version: 2022_08_22_170237) do
     t.string "context_id"
     t.string "title"
     t.text "label"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
   end
 
   create_table "identities", force: :cascade do |t|
     t.string "email"
     t.string "password_digest"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
   end
 
   create_table "ingest_batches", force: :cascade do |t|
@@ -146,8 +155,8 @@ ActiveRecord::Schema.define(version: 2022_08_22_170237) do
     t.text "media_object_ids"
     t.boolean "finished", default: false
     t.boolean "email_sent", default: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
   end
 
   create_table "migration_statuses", force: :cascade do |t|
@@ -158,8 +167,8 @@ ActiveRecord::Schema.define(version: 2022_08_22_170237) do
     t.string "checksum"
     t.string "status"
     t.text "log"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
     t.index ["source_class", "f3_pid", "datastream"], name: "index_migration_statuses"
   end
 
@@ -167,30 +176,30 @@ ActiveRecord::Schema.define(version: 2022_08_22_170237) do
     t.string "namespace", default: "default", null: false
     t.string "template", null: false
     t.text "counters"
-    t.integer "seq", default: 0
+    t.bigint "seq", default: 0
     t.binary "rand"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
     t.index ["namespace"], name: "index_minter_states_on_namespace", unique: true
   end
 
   create_table "playlist_items", force: :cascade do |t|
-    t.integer "playlist_id", null: false
-    t.integer "clip_id", null: false
+    t.bigint "playlist_id", null: false
+    t.bigint "clip_id", null: false
     t.integer "position"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
     t.index ["clip_id"], name: "index_playlist_items_on_clip_id"
     t.index ["playlist_id"], name: "index_playlist_items_on_playlist_id"
   end
 
   create_table "playlists", force: :cascade do |t|
     t.string "title"
-    t.integer "user_id", null: false
+    t.bigint "user_id", null: false
     t.string "comment"
     t.string "visibility"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
     t.string "access_token"
     t.string "tags"
     t.index ["user_id"], name: "index_playlists_on_user_id"
@@ -205,16 +214,16 @@ ActiveRecord::Schema.define(version: 2022_08_22_170237) do
     t.text "query_params"
     t.integer "user_id"
     t.string "user_type"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
     t.index ["user_id"], name: "index_searches_on_user_id"
   end
 
   create_table "sessions", force: :cascade do |t|
     t.string "session_id", null: false
     t.text "data"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
     t.index ["session_id"], name: "index_sessions_on_session_id"
     t.index ["updated_at"], name: "index_sessions_on_updated_at"
   end
@@ -222,55 +231,56 @@ ActiveRecord::Schema.define(version: 2022_08_22_170237) do
   create_table "stream_tokens", force: :cascade do |t|
     t.string "token"
     t.string "target"
-    t.datetime "expires"
+    t.datetime "expires", precision: nil
   end
 
   create_table "supplemental_files", force: :cascade do |t|
     t.string "label"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
     t.string "tags"
+    t.string "language"
   end
 
   create_table "timelines", force: :cascade do |t|
     t.string "title"
-    t.integer "user_id"
+    t.bigint "user_id"
     t.string "visibility"
     t.text "description"
     t.string "access_token"
     t.string "tags"
     t.string "source"
-    t.text "manifest", limit: 16777215
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.text "manifest"
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
     t.index ["user_id"], name: "index_timelines_on_user_id"
   end
 
   create_table "users", force: :cascade do |t|
     t.string "username", null: false
     t.string "email", null: false
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at", precision: nil
+    t.datetime "updated_at", precision: nil
     t.string "provider"
     t.string "uid"
     t.string "guest"
     t.string "encrypted_password", default: "", null: false
     t.string "reset_password_token"
-    t.datetime "reset_password_sent_at"
-    t.datetime "remember_created_at"
+    t.datetime "reset_password_sent_at", precision: nil
+    t.datetime "remember_created_at", precision: nil
     t.integer "sign_in_count", default: 0, null: false
-    t.datetime "current_sign_in_at"
-    t.datetime "last_sign_in_at"
+    t.datetime "current_sign_in_at", precision: nil
+    t.datetime "last_sign_in_at", precision: nil
     t.string "current_sign_in_ip"
     t.string "last_sign_in_ip"
     t.string "invitation_token"
-    t.datetime "invitation_created_at"
-    t.datetime "invitation_sent_at"
-    t.datetime "invitation_accepted_at"
+    t.datetime "invitation_created_at", precision: nil
+    t.datetime "invitation_sent_at", precision: nil
+    t.datetime "invitation_accepted_at", precision: nil
     t.integer "invitation_limit"
     t.integer "invited_by_id"
     t.string "invited_by_type"
-    t.datetime "deleted_at"
+    t.datetime "deleted_at", precision: nil
     t.index ["deleted_at"], name: "index_users_on_deleted_at"
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["invitation_token"], name: "index_users_on_invitation_token", unique: true
@@ -279,5 +289,7 @@ ActiveRecord::Schema.define(version: 2022_08_22_170237) do
   end
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "checkouts", "users"
+  add_foreign_key "timelines", "users"
 end

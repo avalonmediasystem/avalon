@@ -1,5 +1,5 @@
 <%#
-Copyright 2011-2023, The Trustees of Indiana University and Northwestern
+Copyright 2011-2024, The Trustees of Indiana University and Northwestern
   University.  Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
 
@@ -14,8 +14,8 @@ Unless required by applicable law or agreed to in writing, software distributed
 ---  END LICENSE_HEADER BLOCK  ---
 %>
 
-<div id="thumbnail-button" style="display: inline-block;">
-  <button type="button" class="btn btn-outline" id="create-thumbnail-btn" data-toggle="modal" data-target="#thumbnailModal" style="margin-top: 10px;" disabled>
+<div id="thumbnail-button" class="d-inline-block">
+  <button type="button" class="btn btn-outline text-nowrap" id="create-thumbnail-btn" data-toggle="modal" data-target="#thumbnailModal" disabled>
     Create Thumbnail
   </button>
 </div>
@@ -45,27 +45,32 @@ Unless required by applicable law or agreed to in writing, software distributed
 <% content_for :page_scripts do %>
 <script>
   $(document).ready(function() {
+    const sectionIds = <%= @media_object.ordered_master_file_ids.to_json.html_safe %>;
+    let baseUrl = ''
+    let offset = ''
     let timeCheck = setInterval(enableCreateThumbnail, 500);
+
     function enableCreateThumbnail() {
       let player = document.getElementById('iiif-media-player');
-      // Grab environmental variables
-      let baseUrl = '/master_files/' + "<%= @currentStreamInfo[:id] %>";
 
-      if(player) {
+      if (player && player.player != undefined) {
         player.player.on('loadedmetadata', () => {
           let thumbnailBtn = document.getElementById('create-thumbnail-btn');
-          thumbnailBtn.disabled = false;
+          if (thumbnailBtn) {
+            thumbnailBtn.disabled = false;
+          }
           clearInterval(timeCheck);
         });
       }
 
       $('#thumbnailModal').on('show.bs.modal', function(e) {
-        if (player.player.isFullScreen) {
-          player.player.exitFullScreen();
-        }
-
+        let currentPlayer = document.getElementById('iiif-media-player');
         let $imgPolaroid = document.getElementById('img-polaroid');
-        let offset = player.player.currentTime();
+        offset = currentPlayer.player.currentTime();
+
+        canvasIndex = parseInt(currentPlayer.dataset.canvasindex);
+        const sectionId = sectionIds[canvasIndex];
+        baseUrl = '/master_files/' + sectionId;
 
         if ($imgPolaroid) {
           let src = baseUrl + '/poster?offset=' + offset + '&preview=true';
@@ -88,7 +93,7 @@ Unless required by applicable law or agreed to in writing, software distributed
           url: baseUrl + '/still',
           type: 'POST',
           data: {
-            offset: player.player.currentTime()
+            offset: offset
           }
         })
           .done(response => {

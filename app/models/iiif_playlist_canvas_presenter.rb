@@ -1,11 +1,11 @@
-# Copyright 2011-2023, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2024, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
-#
+# 
 # You may obtain a copy of the License at
-#
+# 
 # http://www.apache.org/licenses/LICENSE-2.0
-#
+# 
 # Unless required by applicable law or agreed to in writing, software distributed
 #   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
 #   CONDITIONS OF ANY KIND, either express or implied. See the License for the
@@ -16,11 +16,12 @@ class IiifPlaylistCanvasPresenter
   attr_reader :playlist_item, :stream_info, :cannot_read_item
   attr_accessor :media_fragment
 
-  def initialize(playlist_item:, stream_info:, cannot_read_item: false, media_fragment: nil)
+  def initialize(playlist_item:, stream_info:, cannot_read_item: false, media_fragment: nil, master_file: nil)
     @playlist_item = playlist_item
     @stream_info = stream_info
     @cannot_read_item = cannot_read_item
     @media_fragment = media_fragment
+    @master_file = master_file
   end
 
   delegate :id, to: :playlist_item
@@ -36,10 +37,11 @@ class IiifPlaylistCanvasPresenter
   end
 
   def master_file
-    playlist_item.clip.master_file
+    @master_file ||= playlist_item.clip.master_file
   end
 
   def part_of
+    return if master_file.nil?
     [{
       "@id" => Rails.application.routes.url_helpers.manifest_media_object_url(master_file.media_object_id).to_s,
       "type" => "manifest"
@@ -47,8 +49,9 @@ class IiifPlaylistCanvasPresenter
   end
 
   def item_metadata
+    return if master_file.nil?
     [
-      metadata_field('Title', master_file.media_object.title),
+      metadata_field('Title', playlist_source_link),
       metadata_field('Date', master_file.media_object.date_issued),
       metadata_field('Main Contributor', master_file.media_object.creator)
     ].compact
@@ -66,24 +69,40 @@ class IiifPlaylistCanvasPresenter
 
   def annotation_content
     return if cannot_read_item || master_file.nil?
-    playlist_item.marker.collect { |m| marker_content(m) }
+    annotations = supplemental_captions.collect { |file| supplemental_captions_data(file) }
+    annotations += playlist_item.marker.collect { |marker| marker_content(marker) }
   end
 
   def placeholder_content
     if cannot_read_item
       IIIFManifest::V3::DisplayContent.new(nil,
-                                           label: 'You do not have permission to playback this item.',
+                                           label: I18n.t('playlist.restrictedText'),
                                            type: 'Text',
                                            format: 'text/plain')
     elsif master_file.nil?
       IIIFManifest::V3::DisplayContent.new(nil,
-                                           label: 'The source for this playlist item has been deleted.',
+                                           label: I18n.t('playlist.deletedText'),
+                                           type: 'Text',
+                                           format: 'text/plain')
+    elsif master_file.derivative_ids.empty?
+      support_email = Settings.email.support
+      IIIFManifest::V3::DisplayContent.new(nil,
+                                           label: I18n.t('errors.missing_derivatives_error') % [support_email, support_email],
                                            type: 'Text',
                                            format: 'text/plain')
     end
   end
 
+  def description
+    playlist_item.comment
+  end
+
   private
+
+    def playlist_source_link
+      link_target = master_file.media_object.permalink.presence || Rails.application.routes.url_helpers.media_object_url(master_file.media_object_id)
+      "<a href='#{link_target}'>#{master_file.media_object.title}</a>"
+    end
 
     # Following methods adapted from ApplicationHelper and MediaObjectHelper
     def metadata_field(label, value, default = nil)
@@ -119,6 +138,40 @@ class IiifPlaylistCanvasPresenter
       IIIFManifest::V3::AnnotationContent.new(annotation_id: url, **marker_attributes(marker))
     end
 
+    def supplemental_captions
+      files = master_file.supplemental_files(tag: 'caption')
+      files += [master_file.captions] if master_file.captions.present? && master_file.captions.persisted?
+      files
+    end
+
+    def supplemental_captions_data(file)
+      url = if !file.is_a?(SupplementalFile)
+              Rails.application.routes.url_helpers.captions_master_file_url(master_file.id)
+            elsif file.tags.include?('caption')
+              Rails.application.routes.url_helpers.captions_master_file_supplemental_file_url(master_file.id, file.id)
+            end
+      IIIFManifest::V3::AnnotationContent.new(body_id: url, **supplemental_attributes(file))
+    end
+
+    def supplemental_attributes(file)
+      if file.is_a?(SupplementalFile)
+        label = file.tags.include?('machine_generated') ? file.label + ' (machine generated)' : file.label
+        format = file.file.content_type
+        language = file.language || 'en'
+      else
+        label = 'English'
+        format = file.mime_type
+        language = 'en'
+      end
+      {
+        motivation: 'supplementing',
+        label: label,
+        type: 'Text',
+        format: format,
+        language: language
+      }
+    end
+
     def stream_urls
       stream_info[:stream_hls].collect do |d|
         [d[:quality], d[:url]]
@@ -134,7 +187,7 @@ class IiifPlaylistCanvasPresenter
       IiifManifestRange.new(
         label: { "none" => [label] },
         items: [
-          IiifPlaylistCanvasPresenter.new(playlist_item: playlist_item, stream_info: stream_info, media_fragment: fragment_identifier)
+          IiifPlaylistCanvasPresenter.new(playlist_item: playlist_item, stream_info: stream_info, media_fragment: fragment_identifier, master_file: master_file)
         ]
       )
     end

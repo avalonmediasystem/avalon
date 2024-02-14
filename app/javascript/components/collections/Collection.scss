@@ -1,5 +1,5 @@
 /* 
- * Copyright 2011-2023, The Trustees of Indiana University and Northwestern
+ * Copyright 2011-2024, The Trustees of Indiana University and Northwestern
  *   University.  Licensed under the Apache License, Version 2.0 (the "License");
  *   you may not use this file except in compliance with the License.
  * 
@@ -184,17 +184,14 @@
   margin-top: 7px;
 }
 
-.mb-3 {
-  margin-bottom: 8px;
-  margin-top: 8px;
-}
-
 .mr-2 {
   margin-right: 2px;
 }
 
 .facet-badges {
   margin-left: 16px;
+  margin-bottom: 8px;
+  margin-top: 8px;
 }
 
 @media (max-width: 24em) {

@@ -1,11 +1,11 @@
-# Copyright 2011-2023, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2024, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
-#
+# 
 # You may obtain a copy of the License at
-#
+# 
 # http://www.apache.org/licenses/LICENSE-2.0
-#
+# 
 # Unless required by applicable law or agreed to in writing, software distributed
 #   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
 #   CONDITIONS OF ANY KIND, either express or implied. See the License for the
@@ -74,25 +74,81 @@ describe IiifCanvasPresenter do
       master_file.structuralMetadata.content = structure_xml
     end
 
-    it 'converts stored xml into IIIF ranges' do
+    it 'converts stored xml into IIIF ranges with canvas reference in root range' do
       expect(subject.label.to_s).to eq '{"none"=>["Test"]}'
-      expect(subject.items.size).to eq 1
-      expect(subject.items.first.label.to_s).to eq '{"none"=>["Div 1"]}'
-      expect(subject.items.first.items.size).to eq 1
-      expect(subject.items.first.items.first.label.to_s).to eq '{"none"=>["Span 1"]}'
-      expect(subject.items.first.items.first.items.size).to eq 1
-      expect(subject.items.first.items.first.items.first).to be_a IiifCanvasPresenter
-      expect(subject.items.first.items.first.items.first.media_fragment).to eq 't=0.0,1.235'
+      expect(subject.items.size).to eq 2
+      expect(subject.items.first).to be_a IiifCanvasPresenter
+      expect(subject.items.first.media_fragment).to eq "t=0,#{master_file.duration.to_f/1000}"
+      expect(subject.items.second.label.to_s).to eq '{"none"=>["Div 1"]}'
+      expect(subject.items.second.items.size).to eq 1
+      expect(subject.items.second.items.first.label.to_s).to eq '{"none"=>["Span 1"]}'
+      expect(subject.items.second.items.first.items.size).to eq 1
+      expect(subject.items.second.items.first.items.first).to be_a IiifCanvasPresenter
+      expect(subject.items.second.items.first.items.first.media_fragment).to eq 't=0.0,1.235'
     end
 
     context 'with no structural metadata' do
-      let(:structure_xml) { "" }
+      context 'master file with title' do
+        let(:structure_xml) { "" }
+        let(:master_file) { FactoryBot.create(:master_file, title: "video.mp4", media_object: media_object, derivatives: [derivative]) }
 
-      it 'autogenerates a basic range' do
-      	expect(subject.label.to_s).to eq "{\"none\"=>[\"#{master_file.embed_title}\"]}"
-      	expect(subject.items.size).to eq 1
-      	expect(subject.items.first).to be_a IiifCanvasPresenter
-        expect(subject.items.first.media_fragment).to eq "t=0,#{(master_file.duration.to_f)/1000}"
+        it 'autogenerates a basic range with structure_title as label' do
+        	expect(subject.label.to_s).to eq "{\"none\"=>[\"#{master_file.structure_title}\"]}"
+        	expect(subject.items.size).to eq 1
+        	expect(subject.items.first).to be_a IiifCanvasPresenter
+          expect(subject.items.first.media_fragment).to eq "t=0,#{master_file.duration.to_f/1000}"
+        end
+      end
+
+      context 'master file without title' do
+        let(:structure_xml) { "" }
+
+        it 'autogenerates a basic range with media_object.title as label' do
+        	expect(subject.label.to_s).to eq "{\"none\"=>[\"#{media_object.title}\"]}"
+        	expect(subject.items.size).to eq 1
+        	expect(subject.items.first).to be_a IiifCanvasPresenter
+          expect(subject.items.first.media_fragment).to eq "t=0,#{master_file.duration.to_f/1000}"
+        end
+      end
+    end
+
+    context 'with childless divs' do
+      context 'without spans' do
+        let(:structure_xml) { '<?xml version="1.0"?><Item label="Test"><Div label="Div 1"><Div label="Div 2"><Div label="Div 3"/></Div></Div></Item>' }
+
+        it 'generates a canvas reference in the root range' do
+          expect(subject.label.to_s).to eq '{"none"=>["Test"]}'
+          expect(subject.items.size).to eq 2
+          expect(subject.items.first).to be_a IiifCanvasPresenter
+          expect(subject.items.first.media_fragment).to eq "t=0,#{master_file.duration.to_f/1000}"
+          expect(subject.items.second.label.to_s).to eq '{"none"=>["Div 1"]}'
+          expect(subject.items.second.items.size).to eq 1
+          expect(subject.items.second.items.first.label.to_s).to eq '{"none"=>["Div 2"]}'
+          expect(subject.items.second.items.first.items.size).to eq 1
+          expect(subject.items.second.items.first.items.first.label.to_s).to eq '{"none"=>["Div 3"]}'
+          expect(subject.items.second.items.first.items.first.items.size).to eq 0
+        end
+      end
+
+      context 'with spans' do
+        let(:structure_xml) { '<?xml version="1.0"?><Item label="Test"><Div label="Div 1"><Div label="Div 2"><Div label="Div 3"/></Div><Span label="Span 1" begin="00:00:00.000" end="00:00:01.235"/></Div></Item>' }
+
+        it 'generates a canvas reference in the root range' do
+          expect(subject.label.to_s).to eq '{"none"=>["Test"]}'
+          expect(subject.items.size).to eq 2
+          expect(subject.items.first).to be_a IiifCanvasPresenter
+          expect(subject.items.first.media_fragment).to eq "t=0,#{master_file.duration.to_f/1000}"
+          expect(subject.items.second.label.to_s).to eq '{"none"=>["Div 1"]}'
+          expect(subject.items.second.items.size).to eq 2
+          expect(subject.items.second.items.first.label.to_s).to eq '{"none"=>["Div 2"]}'
+          expect(subject.items.second.items.first.items.size).to eq 1
+          expect(subject.items.second.items.first.items.first.label.to_s).to eq '{"none"=>["Div 3"]}'
+          expect(subject.items.second.items.first.items.first.items.size).to eq 0
+          expect(subject.items.second.items.second.label.to_s).to eq '{"none"=>["Span 1"]}'
+          expect(subject.items.second.items.second.items.size).to eq 1
+          expect(subject.items.second.items.second.items.first).to be_a IiifCanvasPresenter
+          expect(subject.items.second.items.second.items.first.media_fragment).to eq 't=0.0,1.235'
+        end
       end
     end
   end
@@ -100,17 +156,51 @@ describe IiifCanvasPresenter do
   describe '#placeholder_content' do
     subject { presenter.placeholder_content }
 
-    it 'has format' do
-      expect(subject.format).to eq "image/jpeg"
+    context 'when master file has derivatives' do
+      it 'has format' do
+        expect(subject.format).to eq "image/jpeg"
+      end
+
+      it 'has type' do
+        expect(subject.type).to eq "Image"
+      end
+
+      it 'has height and width' do
+        expect(subject.width).to eq 1280
+        expect(subject.height).to eq 720
+      end
     end
 
-    it 'has type' do
-      expect(subject.type).to eq "Image"
+    context 'when master file does not have derivatives' do
+      let(:master_file) { FactoryBot.build(:master_file, :completed_processing, media_object: media_object) }
+
+      it 'has format' do
+        expect(subject.format).to eq "text/plain"
+      end
+
+      it 'has type' do
+        expect(subject.type).to eq "Text"
+      end
+
+      it 'has label' do
+        expect(subject.label).to eq I18n.t('errors.missing_derivatives_error') % [Settings.email.support, Settings.email.support]
+      end
     end
 
-    it 'has height and width' do
-      expect(subject.width).to eq 1280
-      expect(subject.height).to eq 720
+    context 'when master file is processing' do
+      let(:master_file) { FactoryBot.build(:master_file, media_object: media_object) }
+
+      it 'has format' do
+        expect(subject.format).to eq "text/plain"
+      end
+
+      it 'has type' do
+        expect(subject.type).to eq "Text"
+      end
+
+      it 'has label' do
+        expect(subject.label).to eq I18n.t('media_object.conversion_msg')
+      end
     end
   end
 
@@ -152,14 +242,22 @@ describe IiifCanvasPresenter do
         expect(subject.any? { |content| content.body_id =~ /supplemental_files\/#{caption_file.id}/ }).to eq true
       end
 
+      it 'includes original filenames' do
+        expect(subject.any? { |content| content.label['none'] == [caption_file.file.filename.to_s] }).to eq true
+      end
+
+      it 'includes label' do
+        expect(subject.any? { |content| content.label['eng'] == [caption_file.label] }).to eq true
+      end
+
       it 'differentiates between transcript and caption files' do
         expect(subject.any? { |content| content.body_id =~ /supplemental_files\/#{transcript_file.id}\/transcripts/ }).to eq true
         expect(subject.any? { |content| content.body_id =~ /supplemental_files\/#{caption_file.id}\/captions/ }).to eq true
       end
 
       it 'does not add " (machine generated)" to label of non-generated files' do
-        expect(subject.any? { |content| content.label =~ /#{transcript_file.label} \(machine generated\)/ }).to eq false
-        expect(subject.any? { |content| content.label =~ /#{caption_file.label} \(machine generated\)/ }).to eq false
+        expect(subject.any? { |content| content.label['eng'][0] =~ /#{transcript_file.label} \(machine generated\)/ }).to eq false
+        expect(subject.any? { |content| content.label['eng'][0] =~ /#{caption_file.label} \(machine generated\)/ }).to eq false
       end
 
       it 'does not include generic supplemental files or waveform' do
@@ -177,13 +275,17 @@ describe IiifCanvasPresenter do
         it 'includes the master file captions' do
           expect(subject.any? { |content| content.body_id =~ /master_files\/#{master_file.id}\/captions/ }).to eq true
         end
+
+        it 'includes the original filename' do
+          expect(subject.any? { |content| content.label['none'] == [master_file.captions.original_name] }).to eq true
+        end
       end
 
       context 'machine generated transcript' do
         let(:transcript_file) { FactoryBot.create(:supplemental_file, tags: ['transcript', 'machine_generated']) }
 
         it "adds '(machine generated)' to the label" do
-          expect(subject.any? { |content| content.label =~ /#{transcript_file.label} \(machine generated\)/ }).to eq true
+          expect(subject.any? { |content| content.label['eng'][0] =~ /#{transcript_file.label} \(machine generated\)/ }).to eq true
         end
       end
     end

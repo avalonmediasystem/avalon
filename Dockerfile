@@ -52,8 +52,10 @@ LABEL       project=avalon
 RUN         echo "deb     http://ftp.us.debian.org/debian/    bullseye main contrib non-free"  >  /etc/apt/sources.list.d/bullseye.list \
          && echo "deb-src http://ftp.us.debian.org/debian/    bullseye main contrib non-free"  >> /etc/apt/sources.list.d/bullseye.list \
          && cat /etc/apt/sources.list.d/bullseye.list \
-         && apt-get update && apt-get install -y --no-install-recommends curl gnupg2 ffmpeg \
-         && curl -sL http://deb.nodesource.com/setup_20.x | bash - \
+         && mkdir -p /etc/apt/keyrings \
+         && apt-get update && apt-get install -y --no-install-recommends curl ca-certificates gnupg2 ffmpeg \
+         && curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg \
+         && echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_20.x nodistro main" > /etc/apt/sources.list.d/nodesource.list \
          && curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add - \
          && echo "deb http://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list \
          && cat /etc/apt/sources.list.d/nodesource.list \

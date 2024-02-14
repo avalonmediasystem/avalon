@@ -1,5 +1,5 @@
 /* 
- * Copyright 2011-2023, The Trustees of Indiana University and Northwestern
+ * Copyright 2011-2024, The Trustees of Indiana University and Northwestern
  *   University.  Licensed under the Apache License, Version 2.0 (the "License");
  *   you may not use this file except in compliance with the License.
  * 
@@ -28,8 +28,8 @@ const CollectionCard = ({ attributes, showUnit }) => {
     <CollectionCardShell>
       <CollectionCardThumbnail>
         {attributes.poster_url && (
-          <a href={attributes.url}>
-            <img src={attributes.poster_url} alt="Collection thumbnail"></img>
+          <a href={attributes.url} aria-hidden="true" tabindex="-1">
+            <img src={attributes.poster_url} alt=""></img>
           </a>
         )}
       </CollectionCardThumbnail>

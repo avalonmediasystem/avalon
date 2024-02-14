@@ -1,11 +1,11 @@
-# Copyright 2011-2023, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2024, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
-#
+# 
 # You may obtain a copy of the License at
-#
+# 
 # http://www.apache.org/licenses/LICENSE-2.0
-#
+# 
 # Unless required by applicable law or agreed to in writing, software distributed
 #   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
 #   CONDITIONS OF ANY KIND, either express or implied. See the License for the
@@ -29,8 +29,7 @@ class IiifManifestPresenter
   end
 
   def file_set_presenters
-    # Only return master files that have derivatives to avoid oddities in the manifest and failures in iiif_manifest
-    master_files.select { |mf| mf.derivative_ids.size > 0 }
+    master_files
   end
 
   def work_presenters
@@ -75,6 +74,10 @@ class IiifManifestPresenter
         format: "text/html"
       }
     ]
+  end
+
+  def viewing_hint
+    ["auto-advance"]
   end
 
   def sequence_rendering
@@ -136,10 +139,12 @@ class IiifManifestPresenter
   end
 
   def display_language(media_object)
+    return nil unless media_object.language.present?
     media_object.language.collect { |l| l[:text] }.uniq
   end
 
   def display_related_item(media_object)
+    return nil unless media_object.related_item_url.present?
     media_object.related_item_url.collect { |r| "<a href='#{r[:url]}'>#{r[:label]}</a>" }
   end
 
@@ -162,7 +167,7 @@ class IiifManifestPresenter
   def series_url(series)
     Rails.application.routes.url_helpers.blacklight_url({ "f[collection_ssim][]" => media_object.collection.name, "f[series_ssim][]" => series })
   end
-  
+
   def display_lending_period(media_object)
     return nil unless lending_enabled
     ActiveSupport::Duration.build(media_object.lending_period).to_day_hour_s
@@ -177,7 +182,7 @@ class IiifManifestPresenter
       metadata_field('Contributor', media_object.contributor),
       metadata_field('Publisher', media_object.publisher),
       metadata_field('Genre', media_object.genre),
-      metadata_field('Subject', media_object.subject),
+      metadata_field('Subject', media_object.topical_subject),
       metadata_field('Time period', media_object.temporal_subject),
       metadata_field('Location', media_object.geographic_subject),
       metadata_field('Collection', display_collection(media_object)),

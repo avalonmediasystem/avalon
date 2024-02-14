@@ -1,5 +1,5 @@
 /* 
- * Copyright 2011-2023, The Trustees of Indiana University and Northwestern
+ * Copyright 2011-2024, The Trustees of Indiana University and Northwestern
  *   University.  Licensed under the Apache License, Version 2.0 (the "License");
  *   you may not use this file except in compliance with the License.
  * 
@@ -122,5 +122,41 @@ label {
 #resource-description {
   .input-group {
     flex-wrap: nowrap;
+  }
+}
+
+/* Add to playlist form on item-view page */
+#add-to-playlist-form-group {
+  .form-check {
+    padding-bottom: 0.1rem;
+  }
+
+  .form-check-label {
+    cursor: pointer;
+
+    .disabled-option {
+      cursor: not-allowed;
+      color: $gray;
+    }
+  }
+
+  #playlist_item_end, #playlist_item_start {
+    border-radius: 0.25rem;
+    border: 1px solid $gray;
+    padding: 0 0.5rem;
+  }
+
+  #playlist_item_end:invalid:focus,
+  #playlist_item_start:invalid:focus {
+    color: $danger;
+    box-shadow: 0 0 10px $danger;
+    border: 1px solid $danger;
+  }
+
+  #playlist_item_end:valid:focus,
+  #playlist_item_start:valid:focus {
+    color: $dark;
+    box-shadow: none;
+    border: 1px solid $gray;
   }
 }

@@ -1,5 +1,5 @@
 <%#
-Copyright 2011-2023, The Trustees of Indiana University and Northwestern
+Copyright 2011-2024, The Trustees of Indiana University and Northwestern
   University.  Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
 
@@ -40,7 +40,7 @@ Unless required by applicable law or agreed to in writing, software distributed
 <body data-mountpoint="<%=main_app.root_path%>" <%= request.fullpath.include?('login_popup') ? 'onunload=closePopup()' : nil %> >
   <div class="page-container">
     <div class="content-wrapper">
-      <a id="skip-to-content" class="sr-only sr-only-focusable" href="#content">Skip to main content</a>
+      <a id="skip-to-content" class="sr-only sr-only-focusable" href="#iiif-media-player">Skip to main content</a>
       <%= render partial: 'shared/modal' %>
       <% if defined?(Samvera::Persona) %>
       <%= render partial: 'modules/become_message' %>

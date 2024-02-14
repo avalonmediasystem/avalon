@@ -1,11 +1,11 @@
-# Copyright 2011-2023, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2024, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
-#
+# 
 # You may obtain a copy of the License at
-#
+# 
 # http://www.apache.org/licenses/LICENSE-2.0
-#
+# 
 # Unless required by applicable law or agreed to in writing, software distributed
 #   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
 #   CONDITIONS OF ANY KIND, either express or implied. See the License for the
@@ -75,6 +75,14 @@ describe IiifManifestPresenter do
       it 'serializes multiple values as an array' do
         expect(subject['Notes']).to be_a Array
       end
+    end
+  end
+
+  context 'viewing_hint' do
+    subject { presenter.viewing_hint }
+
+    it 'includes auto-advance' do
+      expect(subject).to include 'auto-advance'
     end
   end
 

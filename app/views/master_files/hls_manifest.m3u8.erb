@@ -1,5 +1,5 @@
 <%#
-Copyright 2011-2023, The Trustees of Indiana University and Northwestern
+Copyright 2011-2024, The Trustees of Indiana University and Northwestern
   University.  Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
 
@@ -15,7 +15,9 @@ Unless required by applicable law or agreed to in writing, software distributed
 %>
 #EXTM3U
 <% if @master_file.has_captions? %>
-<% @master_file.supplemental_file_captions.append(@master_file.captions).each_with_index do |caption, index| %>
+<% captions_list = @master_file.supplemental_file_captions %>
+<% captions_list.append(@master_file.captions) if @master_file.captions&.content %>
+<% captions_list.each_with_index do |caption, index| %>
 <% label = caption.is_a?(SupplementalFile) ? caption.label : 'English' %>
 <% language = caption.is_a?(SupplementalFile) ? caption.language : 'en' %>
 <% id = caption.is_a?(SupplementalFile) ? caption.id : 'master_file_caption' %>

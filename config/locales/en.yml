@@ -16,6 +16,9 @@ en:
       receiving this message, please contact us at <a href="mailto:%s">%s</a>.
     general_auth_error: You are not authorized to access this content.
     general_500_error: There was an error with this request.
+    missing_derivatives_error: |
+      This item is unable to be played because of missing streaming derivatives.
+      Please contact support to report this error: <a href="mailto:%s">%s</a>.
     controlled_vocabulary_error: |
       %s Please contact support to report this error: <a href="mailto:%s">%s</a>.
     messages:
@@ -26,6 +29,7 @@ en:
     empty_share_link: ""
     empty_share_link_notice: "After processing has started the embedded link will be available."
     empty_share_section_permalink_notice: "After processing has started the section link will be available."
+    conversion_msg: "This item is still processing. Please check back later."
     cdl:
       checkout_message: "<p>Borrow this item to access media resources.</p>"
       not_available_message: "<p>This resource is currently checked out by another user. </br></br> This item is due to be returned on </br><span data-utc-time='%{time}' />.</p>"
@@ -232,6 +236,9 @@ en:
       action: "Save Changes"
     tags:
       label: "Tags"
+
+    restrictedText: "You do not have permission to playback this item."
+    deletedText: "The source for this playlist item has been deleted."
 
   timeline:
     ago: "%{time} ago"

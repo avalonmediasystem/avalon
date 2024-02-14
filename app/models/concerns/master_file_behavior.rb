@@ -1,11 +1,11 @@
-# Copyright 2011-2023, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2024, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
-#
+# 
 # You may obtain a copy of the License at
-#
+# 
 # http://www.apache.org/licenses/LICENSE-2.0
-#
+# 
 # Unless required by applicable law or agreed to in writing, software distributed
 #   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
 #   CONDITIONS OF ANY KIND, either express or implied. See the License for the
@@ -68,7 +68,7 @@ module MasterFileBehavior
     # Returns the hash
     return({
       id: self.id,
-      label: title,
+      label: structure_title,
       is_video: is_video?,
       poster_image: poster_path,
       embed_code: embed_code(EMBED_SIZE[:medium], {urlappend: '/embed'}),
@@ -119,6 +119,10 @@ module MasterFileBehavior
     [media_object.title, display_title].compact.join(" - ")
   end
 
+  def structure_title
+    display_title.present? ? display_title : media_object.title
+  end
+
   def embed_code(width, permalink_opts = {})
     begin
       url = if self.permalink.present?
@@ -161,6 +165,10 @@ module MasterFileBehavior
       language: language,
       label: label
     }
+  end
+
+  def supplemental_file_captions
+    supplemental_files(tag: 'caption')
   end
 
   # Supplies the route to the master_file as an rdf formatted URI

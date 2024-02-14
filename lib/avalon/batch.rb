@@ -1,4 +1,4 @@
-# Copyright 2011-2023, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2024, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 # 
@@ -33,7 +33,7 @@ module Avalon
         return found_files
       end
 
-      args = files.collect { |p| %("#{p}") }.join(' ')
+      args = files.collect(&:to_json).join(' ')
       Dir.chdir(base_directory) do
         begin
           Timeout.timeout(5) do
@@ -42,6 +42,8 @@ module Avalon
           end
         rescue Timeout::Error
           Rails.logger.warn('lsof blocking; continuing without open file checking')
+        rescue Errno::E2BIG
+          Rails.logger.warn('too many files; continuing without open file checking')
         end
       end
       found_files

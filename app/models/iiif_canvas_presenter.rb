@@ -1,11 +1,11 @@
-# Copyright 2011-2023, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2024, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
-#
+# 
 # You may obtain a copy of the License at
-#
+# 
 # http://www.apache.org/licenses/LICENSE-2.0
-#
+# 
 # Unless required by applicable law or agreed to in writing, software distributed
 #   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
 #   CONDITIONS OF ANY KIND, either express or implied. See the License for the
@@ -36,6 +36,7 @@ class IiifCanvasPresenter
 
   # @return [IIIFManifest::V3::DisplayContent] the display content required by the manifest builder.
   def display_content
+    return if master_file.derivative_ids.empty?
     master_file.is_video? ? video_content : audio_content
   end
 
@@ -59,12 +60,25 @@ class IiifCanvasPresenter
   end
 
   def placeholder_content
-    # height and width from /models/master_file/extract_still method
-    IIIFManifest::V3::DisplayContent.new( @master_file.poster_master_file_url(@master_file.id),
-                                          width: 1280,
-                                          height: 720,
-                                          type: 'Image',
-                                          format: 'image/jpeg')
+    if @master_file.derivative_ids.size > 0
+      # height and width from /models/master_file/extract_still method
+      IIIFManifest::V3::DisplayContent.new( @master_file.poster_master_file_url(@master_file.id),
+                                            width: 1280,
+                                            height: 720,
+                                            type: 'Image',
+                                            format: 'image/jpeg')
+    elsif section_processing?(@master_file)
+      IIIFManifest::V3::DisplayContent.new(nil,
+                                           label: I18n.t('media_object.conversion_msg'),
+                                           type: 'Text',
+                                           format: 'text/plain')
+    else
+      support_email = Settings.email.support
+      IIIFManifest::V3::DisplayContent.new(nil,
+                                           label: I18n.t('errors.missing_derivatives_error') % [support_email, support_email],
+                                           type: 'Text',
+                                           format: 'text/plain')
+    end
   end
 
   private
@@ -107,14 +121,17 @@ class IiifCanvasPresenter
       end
     end
 
+    def section_processing?(master_file)
+      !master_file.succeeded?
+    end
+
     def supplemental_captions_transcripts
       files = master_file.supplemental_files(tag: 'caption') + master_file.supplemental_files(tag: 'transcript')
       files += [master_file.captions] if master_file.captions.present? && master_file.captions.persisted?
       files
     end
 
-    def simple_iiif_range(label = stream_info[:embed_title])
-      # TODO: embed_title?
+    def simple_iiif_range(label = stream_info[:label])
       IiifManifestRange.new(
         label: { "none" => [label] },
         items: [
@@ -124,7 +141,15 @@ class IiifCanvasPresenter
     end
 
     def structure_to_iiif_range
-      div_to_iiif_range(structure_ng_xml.root)
+      root_to_iiif_range(structure_ng_xml.root)
+    end
+
+    def root_to_iiif_range(root_node)
+      range = div_to_iiif_range(root_node)
+
+      range.items.prepend(IiifCanvasPresenter.new(master_file: master_file, stream_info: stream_info, media_fragment: "t=0,#{stream_info[:duration]}"))
+
+      return range
     end
 
     def div_to_iiif_range(div_node)
@@ -186,14 +211,16 @@ class IiifCanvasPresenter
         label = file.tags.include?('machine_generated') ? file.label + ' (machine generated)' : file.label
         format = file.file.content_type
         language = file.language || 'en'
+        filename = file.file.filename.to_s
       else
         label = 'English'
         format = file.mime_type
         language = 'en'
+        filename = file.original_name.to_s
       end
       {
         motivation: 'supplementing',
-        label: label,
+        label: { language => [label], 'none' => [filename] },
         type: 'Text',
         format: format,
         language: language

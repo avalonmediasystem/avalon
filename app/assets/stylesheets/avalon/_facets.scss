@@ -1,5 +1,5 @@
 /* 
- * Copyright 2011-2023, The Trustees of Indiana University and Northwestern
+ * Copyright 2011-2024, The Trustees of Indiana University and Northwestern
  *   University.  Licensed under the Apache License, Version 2.0 (the "License");
  *   you may not use this file except in compliance with the License.
  * 
@@ -67,7 +67,7 @@
     color: $primary;
     border: 1px solid $gray;
     background-color: $white;
-    
+
     &:hover {
       background-color: $lightgray;
     }
@@ -100,6 +100,11 @@ div[id*='facet-panel-'] {
   hyphens: auto;
   word-wrap: break-word;
   white-space: pre-line;
+}
+
+.facet-values li .facet-label .selected,
+.facet-values li .facet-count.selected {
+  color: #333333 !important;
 }
 
 .facet-values .facet-label {

@@ -1,11 +1,11 @@
-# Copyright 2011-2023, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2024, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
-#
+# 
 # You may obtain a copy of the License at
-#
+# 
 # http://www.apache.org/licenses/LICENSE-2.0
-#
+# 
 # Unless required by applicable law or agreed to in writing, software distributed
 #   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
 #   CONDITIONS OF ANY KIND, either express or implied. See the License for the
@@ -68,7 +68,6 @@ RSpec.describe PlaylistsController, type: :controller do
       # Show is isolated because it does not require authorization before the action
       it "playlist view page should redirect to restricted content page" do
         expect(get :show, params: { id: playlist.id }).to render_template('errors/restricted_pid')
-        expect(get :refresh_info, params: { id: playlist.id, position: 1 }, xhr: true).to render_template('errors/restricted_pid')
       end
       it "all routes should redirect to sign in" do
         expect(get :index).to render_template('errors/restricted_pid')
@@ -83,21 +82,20 @@ RSpec.describe PlaylistsController, type: :controller do
         it "should return the playlist view page" do
           expect(get :show, params: { id: playlist.id }).not_to redirect_to(new_user_session_path)
           expect(get :show, params: { id: playlist.id }).to be_successful
-          expect(get :refresh_info, params: { id: playlist.id, position: 1 }, xhr: true).to be_successful
         end
       end
       context 'with a private playlist' do
         it "should NOT return the playlist view page" do
           expect(get :show, params: { id: playlist.id }).to render_template('errors/restricted_pid')
-          expect(get :refresh_info, params: { id: playlist.id, position: 1 }, xhr: true).to render_template('errors/restricted_pid')
         end
       end
       context 'with a private playlist and token' do
         let(:playlist) { FactoryBot.create(:playlist, :with_access_token, items: [playlist_item]) }
-        it "should return the playlist view page" do
+        it "should return the playlist view page and manifest" do
           expect(get :show, params: { id: playlist.id, token: playlist.access_token }).not_to redirect_to(root_path)
           expect(get :show, params: { id: playlist.id, token: playlist.access_token }).to be_successful
-          expect(get :refresh_info, params: { id: playlist.id, position: 1, token: playlist.access_token }, xhr: true).to be_successful
+          expect(get :manifest, params: { id: playlist.id, token: playlist.access_token }).not_to redirect_to(root_path)
+          expect(get :manifest, params: { id: playlist.id, token: playlist.access_token }).to be_successful
         end
       end
     end
@@ -110,28 +108,26 @@ RSpec.describe PlaylistsController, type: :controller do
         expect(put :update, params: { id: playlist.id }).to render_template('errors/restricted_pid')
         expect(put :update_multiple, params: { id: playlist.id }).to render_template('errors/restricted_pid')
         expect(delete :destroy, params: { id: playlist.id }).to render_template('errors/restricted_pid')
-        expect(get :refresh_info, params: { id: playlist.id, position: 1 }, xhr: true).to render_template('errors/restricted_pid')
       end
       context 'with a public playlist' do
         let(:playlist) { FactoryBot.create(:playlist, visibility: Playlist::PUBLIC, items: [playlist_item]) }
         it "should return the playlist view page" do
           expect(get :show, params: { id: playlist.id }).not_to redirect_to(root_path)
           expect(get :show, params: { id: playlist.id }).to be_successful
-          expect(get :refresh_info, params: { id: playlist.id, position: 1 }, xhr: true).to be_successful
         end
       end
       context 'with a private playlist' do
         it "should NOT return the pdfslaylist view page" do
           expect(get :show, params: { id: playlist.id }).to render_template('errors/restricted_pid')
-          expect(get :refresh_info, params: { id: playlist.id, position: 1 }, xhr: true).to render_template('errors/restricted_pid')
         end
       end
       context 'with a private playlist and token' do
         let(:playlist) { FactoryBot.create(:playlist, :with_access_token, items: [playlist_item]) }
-        it "should return the playlist view page" do
+        it "should return the playlist view page and manifest" do
           expect(get :show, params: { id: playlist.id, token: playlist.access_token }).not_to redirect_to(root_path)
           expect(get :show, params: { id: playlist.id, token: playlist.access_token }).to be_successful
-          expect(get :refresh_info, params: { id: playlist.id, position: 1, token: playlist.access_token }, xhr: true).to be_successful
+          expect(get :manifest, params: { id: playlist.id, token: playlist.access_token }).not_to redirect_to(root_path)
+          expect(get :manifest, params: { id: playlist.id, token: playlist.access_token }).to be_successful
         end
       end
     end
@@ -583,6 +579,19 @@ RSpec.describe PlaylistsController, type: :controller do
         expect(parsed_response['items'][0]['metadata']).to be_present
       end
 
+      context "when playlist is empty" do
+        let(:playlist) { FactoryBot.create(:playlist, items: [], visibility: Playlist::PUBLIC) }
+
+        it "returns a IIIF manifest" do
+          get :manifest, format: 'json', params: { id: playlist.id }, session: valid_session
+          expect(response).to have_http_status(200)
+          parsed_response = JSON.parse(response.body)
+          expect(parsed_response['@context']).to include "http://iiif.io/api/presentation/3/context.json"
+          expect(parsed_response['type']).to eq 'Manifest'
+          expect(parsed_response['items']).to be_empty
+        end
+      end
+
       context "when playlist owner" do
         before do
           login_user playlist.user.user_key
@@ -616,6 +625,18 @@ RSpec.describe PlaylistsController, type: :controller do
           expect(parsed_response['items'].length).to eq 2
           expect(parsed_response['items'][0]['items'][0].keys).to include 'items'
           expect(parsed_response['items'][1]['items'][0].keys).to_not include 'items'
+        end
+      end
+
+      context "playlist item with deleted source" do
+        before do
+          master_file.delete
+        end
+
+        it "returns a blank canvas" do
+          get :manifest, format: 'json', params: { id: playlist.id }, session: valid_session
+          parsed_response = JSON.parse(response.body)
+          expect(parsed_response['items'][0]['items'][0].keys).to_not include 'items'
         end
       end
     end

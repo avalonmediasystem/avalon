@@ -1,11 +1,11 @@
-# Copyright 2011-2023, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2024, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
-#
+# 
 # You may obtain a copy of the License at
-#
+# 
 # http://www.apache.org/licenses/LICENSE-2.0
-#
+# 
 # Unless required by applicable law or agreed to in writing, software distributed
 #   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
 #   CONDITIONS OF ANY KIND, either express or implied. See the License for the
@@ -593,7 +593,7 @@ describe MediaObject do
     end
     it 'should not index any unknown resource types' do
       media_object.resource_type = 'notated music'
-      expect(media_object.to_solr['format_sim']).not_to include 'Notated Music'
+      expect(media_object.to_solr['resource_type_ssim']).not_to include 'Notated Music'
     end
     it 'should index separate identifiers as separate values' do
       media_object.descMetadata.add_other_identifier('12345678','lccn')
@@ -621,9 +621,9 @@ describe MediaObject do
       media_object.save!
       media_object.reload
       solr_doc = media_object.to_solr(include_child_fields: true)
-      expect(solr_doc['all_comments_sim']).to include('MO Comment')
-      expect(solr_doc['all_comments_sim']).to include('[Test Label] MF Comment 1')
-      expect(solr_doc['all_comments_sim']).to include('[Test Label] MF Comment 2')
+      expect(solr_doc['all_comments_ssim']).to include('MO Comment')
+      expect(solr_doc['all_comments_ssim']).to include('[Test Label] MF Comment 1')
+      expect(solr_doc['all_comments_ssim']).to include('[Test Label] MF Comment 2')
     end
     it 'includes virtual group leases in external group facet' do
       media_object.governing_policies += [FactoryBot.create(:lease, inherited_read_groups: ['TestGroup'])]
@@ -749,6 +749,17 @@ describe MediaObject do
       end
       it 'should override the title' do
         expect { media_object.descMetadata.populate_from_catalog!(bib_id, 'local') }.to change { media_object.title }.to "245 A : B F G K N P S"
+      end
+      it 'should override langauge' do
+        expect { media_object.descMetadata.populate_from_catalog!(bib_id, 'local') }.to change { media_object.language }.to [{:code=>"eng", :text=>"English"}, {:code=>"fre", :text=>"French"}, {:code=>"ger", :text=>"German"}]
+      end
+
+      context 'with lanugage text' do
+        let(:mods) { File.read(File.expand_path("../../fixtures/#{bib_id}.lang_text.mods",__FILE__)) }
+
+        it 'should override langauge' do
+          expect { media_object.descMetadata.populate_from_catalog!(bib_id, 'local') }.to change { media_object.language }.to [{:code=>"eng", :text=>"English"}, {:code=>"fre", :text=>"French"}, {:code=>"ger", :text=>"German"}]
+        end
       end
     end
     describe 'should strip whitespace from bib_id parameter' do
@@ -932,7 +943,7 @@ describe MediaObject do
 
     it 'is indexed' do
       media_object.terms_of_use = terms_of_use_value
-      expect(media_object.to_solr["terms_of_use_si"]).to eq terms_of_use_value
+      expect(media_object.to_solr["terms_of_use_ssi"]).to eq terms_of_use_value
     end
 
     it 'roundtrips' do

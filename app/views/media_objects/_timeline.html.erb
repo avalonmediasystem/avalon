@@ -1,5 +1,5 @@
 <%#
-Copyright 2011-2023, The Trustees of Indiana University and Northwestern
+Copyright 2011-2024, The Trustees of Indiana University and Northwestern
   University.  Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
 
@@ -13,13 +13,6 @@ Unless required by applicable law or agreed to in writing, software distributed
   specific language governing permissions and limitations under the License.
 ---  END LICENSE_HEADER BLOCK  ---
 %>
-
-<div id="timeline-button" style="display: inline-block;">
-  <button type="button" class="btn btn-outline" id="timeline-btn" data-toggle="modal" data-target="#timelineModal" style="margin-top: 10px;" disabled >
-    Create Timeline
-  </button>
-</div>
-
 <div class="modal fade" id="timelineModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" style="display: none;" data-title="<%= @media_object.title %>">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
@@ -55,10 +48,12 @@ $(document).ready(function() {
     let player = document.getElementById('iiif-media-player');
     let scopes = [];
     let title, streamId;
-    if(player) {
+    if(player && player != undefined) {
       player.player.on('loadedmetadata', () => {
-        let timelineBtn = document.getElementById('timeline-btn');
-        timelineBtn.disabled = false;
+        let timelineBtn = document.getElementById('timelineBtn');
+        if(timelineBtn) {
+          timelineBtn.disabled = false;
+        }
         clearInterval(timeCheck);
       });
     }
@@ -68,14 +63,18 @@ $(document).ready(function() {
       let bodyText = "<p>Choose scope for new timeline:</p>";
 
       title = this.dataset.title;
-      let timelineScopes = getTimelineScopes(title);
+      let timelineScopes = getTimelineScopes();
       scopes = timelineScopes.scopes;
       streamId = timelineScopes.streamId;
       let currentPlayer = document.getElementById('iiif-media-player').player;
- 
+
       for (let index = 0; index < scopes.length; index++) {
         scope = scopes[index];
         label = scope.label
+        // Add mediaobject title for the option representing the current section
+        if(scope.tags.includes('current-section')) {
+          label = `${title} - ${label}`
+        }
         if (scope.tracks > 1) {
           label += " (" + scope.tracks + " tracks)"
         }
@@ -99,11 +98,10 @@ $(document).ready(function() {
       if ($('#timelinescope_custom')[0].checked) {
         let pattern = /^(\d+:){0,2}\d+(\.\d+)?$/;
         let beginval = $('#custombegin')[0].value;
-        let endval = $('#customend')[0].value
-        id = this.dataset.id;
+        let endval = $('#customend')[0].value;
         if (pattern.test(beginval) && pattern.test(endval)) {
           label = 'custom scope';
-          t = 't='+ createTimestamp($('#custombegin')[0].value, false)+','+ createTimestamp($('#customend')[0].value, false)
+          t = 't='+ timeToS($('#custombegin')[0].value)+','+ timeToS($('#customend')[0].value)
         } else {
           $('#custombegin').css('color', (pattern.test(beginval) ? 'black' : 'red'))
           $('#customend').css('color', (pattern.test(endval) ? 'black' : 'red'))
@@ -120,14 +118,15 @@ $(document).ready(function() {
         if (selectedIndex === -1) return;
         scope = scopes[selectedIndex];
         label = scope.label;
-        t = scope.t
-        id = streamId;
+        let { begin, end } = scope.times;
+        t = `t=${begin},${end}`;
       }
+      id = streamId;
       $('#new-timeline-title')[0].value = label;
       $('#new-timeline-source')[0].value = '/master_files/'+ id + '?' + t;
       $('#new-timeline-form')[0].submit();
     });
-  }  
+  }
 });
 </script>
 

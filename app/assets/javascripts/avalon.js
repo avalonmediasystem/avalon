@@ -1,5 +1,5 @@
 /* 
- * Copyright 2011-2023, The Trustees of Indiana University and Northwestern
+ * Copyright 2011-2024, The Trustees of Indiana University and Northwestern
  *   University.  Licensed under the Apache License, Version 2.0 (the "License");
  *   you may not use this file except in compliance with the License.
  * 
@@ -72,13 +72,16 @@ $(document).ready(function () {
     false
   );
 
-  $('#content').focus(function () {
-    $('.mejs-controls').css('visibility', 'visible');
-    $('.mejs-controls button:first').focus();
-  });
-
   // Set CSS to push the page content above footer
   $('.content-wrapper').css('padding-bottom', $('#footer').css('height'));
+
+  // Re-set the space between content-wrapper and footer on window resize.
+  // With this the main content height is adjusted when orientation changes when
+  // using mobile devices, avoiding main content bleeding into the footer.
+  window.addEventListener("resize", () => {
+    $('.content-wrapper').css('padding-bottom', $('#footer').css('height'));
+  }, true);
+
 
   /* Toggle CSS classes for global search form */
   const $searchWrapper = $('.global-search-wrapper');

@@ -1,5 +1,5 @@
 <%#
-Copyright 2011-2023, The Trustees of Indiana University and Northwestern
+Copyright 2011-2024, The Trustees of Indiana University and Northwestern
   University.  Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
 
@@ -14,16 +14,10 @@ Unless required by applicable law or agreed to in writing, software distributed
 ---  END LICENSE_HEADER BLOCK  ---
 %>
 
-<a id="share-button" class="btn btn-outline" data-toggle="collapse" href="#share-list" aria-expanded="false" aria-controls="collapseExample">
-  <i class="fa fa-share-alt" style="color: #2a5459"></i>
-  Share
-  <br class="clear"/>
-</a>
-
-<div id="share-list" class="collapse" style="margin-top: 10px">
-  <ul class="nav nav-tabs share-tabs">
+<div id="share-list">
+  <nav class="nav nav-tabs share-tabs">
     <%= render_conditional_partials :share, section:'share-tabs' %>
-  </ul>
+  </nav>
 
   <div class="tab-content">
     <%= render_conditional_partials :share, section:'tab-content' %>
@@ -34,17 +28,18 @@ Unless required by applicable law or agreed to in writing, software distributed
 <script>
   let canvasIndex = 0;
   $(document).ready(function() {
-    const mediaObject = <%= @media_object.to_json.html_safe %>;
+    const mediaObjectId = <%= @media_object.id.to_json.html_safe %>;
+    const sectionIds = <%= @media_object.ordered_master_file_ids.to_json.html_safe %>;
     const event = new CustomEvent('canvasswitch', { detail: { lti_share_link: '', link_back_url: '', embed_code: '' } })
     function canvasIndexListener() {
       let player = document.getElementById('iiif-media-player');
-      if (player && player != undefined) {
+      if (player && player.player != undefined) {
         player.player.on("loadedmetadata", () => {
           if (player.dataset.canvasindex != canvasIndex) {
             canvasIndex = parseInt(player.dataset.canvasindex);
-            const sectionId = mediaObject.files[canvasIndex].id;
+            const sectionId = sectionIds[canvasIndex];
             $.ajax({
-              url: '/media_objects/' + mediaObject.id + '/section/' + sectionId + '/stream',
+              url: '/media_objects/' + mediaObjectId + '/section/' + sectionId + '/stream',
               type: 'GET',
               success: function(data) {
                 event.detail.lti_share_link = data.lti_share_link;
@@ -62,11 +57,25 @@ Unless required by applicable law or agreed to in writing, software distributed
         player.addEventListener("canvasswitch", (e) => {
           updateShareLinks(e);
         });
-      }
-      if(!$('.share-tabs li').first().hasClass('active')) {
-        $('.share-tabs li').first().toggleClass('active');
-        $('#share-list .tab-content .tab-pane').first().toggleClass('active');
-      }
+
+        // Hide add to playlist panel when share resource panel is collapsed
+        $('#shareResourcePanel').on('show.bs.collapse', function (e) {
+          $('#addToPlaylistPanel').collapse('hide');
+        });
+
+        if(!$('nav.share-tabs').first().hasClass('active')) {
+          $('nav.share-tabs').first().toggleClass('active');
+          $('.share-tabs a').first().attr('aria-selected', true);
+          $('#share-list .tab-content .tab-pane').first().toggleClass('active');
+        }
+
+        $('.share-tabs a').click(function (e) {
+          e.preventDefault();
+          $(this).tab('show');
+          $('.share-tabs a').attr('aria-selected', false);
+          $(this).attr('aria-selected', true);
+        });
+      }      
     }
     setInterval(canvasIndexListener, 500);
   });

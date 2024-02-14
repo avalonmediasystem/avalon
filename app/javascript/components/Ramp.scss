@@ -1,12 +1,12 @@
-/*
- * Copyright 2011-2023, The Trustees of Indiana University and Northwestern
+/* 
+ * Copyright 2011-2024, The Trustees of Indiana University and Northwestern
  *   University.  Licensed under the Apache License, Version 2.0 (the "License");
  *   you may not use this file except in compliance with the License.
- *
+ * 
  * You may obtain a copy of the License at
- *
+ * 
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software distributed
  *   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
  *   CONDITIONS OF ANY KIND, either express or implied. See the License for the
@@ -19,19 +19,19 @@
 }
 
 .ramp--all-components {
+  .ramp--media_player {
+    .video-js .vjs-big-play-button {
+      left: 55% !important;
+    }
+    @media (max-width: 585px) {
+      .video-js .vjs-big-play-button {
+        scale: 1.5;
+      }
+    }
+  }
 
-  .iiif-player {
-    .ramp--structured-nav {
-      float: left;
-      width: 40%;
-      margin-top: 20px;
-    }
-    .ramp--transcript_nav {
-      float: right;
-      width: 60%;
-      margin-left: -20px;
-      margin-top: 20px;
-    }
+  .ramp--structured-nav {
+    max-width: initial;
   }
 
   .ramp--rails-title {
@@ -44,50 +44,34 @@
   }
 
   .ramp--rails-content {
+    margin: 14px 0;
     display: flex;
+    justify-content: space-between;
 
-    #administrative_options {
-      text-align: right !important;
-    }
-
-    .btn-sm {
-      padding: 0 0;
-    }
-
-    .share-tabs {
-      flex-grow: 2;
-    }
-
-    #share-list {
-      margin-left: -9.25rem;
-    }
-
-    .svg-add-to-playlist {
-      width: 35px;
-      margin: 0;
-    }
-
-    .bgColor {
-      fill: white;
-    }
-
-    #add-to-playlist-btn:hover {
-      .bgColor {
-        fill: #f2f2f2;
+    #shareBtn {
+      i {
+        margin-right: 0.2rem;
+        color: #2a5459;
       }
     }
 
-    .foregroundColor {
-      fill: none;
-      stroke: #2a5459;
-      stroke-width: 2;
-      stroke-miterlimit: 10;
+    .ramp-button-group-1 {
+      display: flex;
+      justify-content: flex-start;
+      padding: 0;
+    }
+
+    .ramp-button-group-2 {
+      display: flex;
+      justify-content: flex-end;
+      padding: 0;
     }
   }
 
   .ramp--supplemental-files {
     .ramp--supplemental-files-display-content {
       padding-left: 0;
+      max-height: inherit;
     }
 
     h4 {
@@ -97,98 +81,130 @@
     }
   }
 
+  .ramp--structured-nav__list.expanded {
+    display: block;
+  }
+
+  .ramp--structured-nav__list.closed {
+    display: none;
+  }
+
+  .expand-collapse-toggle-button.expanded>svg {
+    transform: rotate(-180deg);
+    transition: transform 0.35s ease;
+  }
+
+  .expand-collapse-toggle-button.closed>svg {
+    transform: rotate(0deg);
+    transition: transform 0.35s ease;
+  }
+
+  #shareList {
+    margin-top: 0.5rem;
+  }
+
   .nav.nav-tabs {
-    background-color:#fff;
-    border:1px solid #e2e7e9;
-    border-top-left-radius:.5rem;
-    border-top-right-radius:.5rem;
-    display:-ms-flexbox;
-    display:flex;
-    -ms-flex-wrap:wrap;
-    flex-wrap:wrap;
+    background-color: #fff;
+    border: 1px solid #e2e7e9;
+    border-top-left-radius: 0.25rem;
+    border-top-right-radius: 0.25rem;
+    display: -ms-flexbox;
+    display: flex;
+    -ms-flex-wrap: wrap;
+    flex-wrap: wrap;
 
     .nav-item {
-      border:none;
-      background-color:transparent;
-      border-bottom:1px solid #e2e7e9;
-      color:#243142;
-      cursor:pointer;
-      -ms-flex-positive:1;
-      flex-grow:1;
-      line-height:1;
-      padding:1rem;
-      position:relative;
-      z-index:100;
+      border: none;
+      background-color: transparent;
+      border-bottom: 1px solid #e2e7e9;
+      color: #243142;
+      cursor: pointer;
+      -ms-flex-positive: 1;
+      flex-grow: 1;
+      line-height: 1;
+      padding: 1rem;
+      position: relative;
+      z-index: 100;
     }
     .nav-item:not(:first-child) {
-      border-left:1px solid #e2e7e9;
-      margin-left:-1px;
+      border-left: 1px solid #e2e7e9;
+      margin-left: -1px;
+      border-radius: 0;
     }
     .nav-item:hover {
-      background-color:#f8f9fa;
-      color:#0e1825;
+      background-color: #f8f9fa;
+      color: #0e1825;
     }
     .nav-item:hover:after {
-      background-color:#e2e7e9;
-      bottom:0;
-      content:"";
-      display:block;
-      height:.25rem;
-      left:0;
-      position:absolute;
-      width:100%;
+      background-color: #e2e7e9;
+      bottom: 0;
+      content: "";
+      display: block;
+      height: 0.25rem;
+      left: 0;
+      position: absolute;
+      width: 100%;
     }
     .nav-item:focus {
-      outline:.125rem solid #328bb8;
-      outline-offset:.125rem;
-      background-color:#edfafd;
+      outline: .125rem solid #80a590;
+      outline-offset: 0.125rem;
+      background-color: rgba(128, 165, 144, .3);
     }
     .nav-item:focus:not(:focus-visible) {
-      outline:none;
+      outline: none;
     }
     .nav-item[aria-selected=true] {
-      background-color:#f8f9fa;
+      background-color: #f8f9fa;
     }
     .nav-item[aria-selected=true]:after {
-      bottom:0;
-      background-color:#2a5459;
-      content:"";
-      display:block;
-      height:.25rem;
-      left:0;
-      position:absolute;
-      width:100%;
+      bottom: 0;
+      background-color: #2a5459;
+      content: "";
+      display: block;
+      height: 0.25rem;
+      left: 0;
+      position: absolute;
+      width: 100%;
     }
   }
 
-  .tab-pane {
-    padding:1rem;
-    border-bottom-left-radius:.5rem;
-    border-bottom-right-radius:.5rem;
-    max-height: 75vh;
-    overflow: auto;
+  .ramp--tabs-panel {
+    display: flex;
+    flex-direction: column;
+    flex-basis: auto;
+
+    .tab-content {
+      display: flex;
+      flex-grow: 1;
+      height: 70vh;
+    }
+
+    .tab-pane {
+      flex-grow: 1;
+      padding: 1rem;
+      border-bottom-left-radius: 0.25rem;
+      border-bottom-right-radius: 0.25rem;
+      overflow: auto;
+    }
   }
+
+  @media (max-width: 585px) {
+    .ramp--tabs-panel {
+      padding-top: 1rem;
+    }
+  }
+
+  // Remove double scroll-bar for transcripts tab
+  .ramp--transcripts_tab {
+    overflow: hidden;
+  }
+
   .tab-pane:focus {
-    outline:.125rem solid #006298;
-    outline-offset:-.125rem;
+    outline: 0.125rem solid #006298;
+    outline-offset: -0.125rem;
   }
   .tab-pane:focus:not(:focus-visible) {
-    outline:none;
-  }
-
-  #expand_all_sections {
-    display: flex !important;
-    justify-content: flex-end;
-    padding-bottom: .5rem !important;
-  }
-
-  .accordion-toggle-icon {
-    align-items: center;
-    color: #4c5a69;
-  }
-
-  .icn-expand-all {
-    width: 20px;
+    outline: none;
   }
 
   /* Override Ramp styling */
@@ -197,17 +213,154 @@
 
     .ramp--metadata-display-content {
       padding: 0;
-      max-height: inherit;
+      max-height: 100%;
     }
   }
 
   .ramp--transcript_nav {
-    max-height: 72vh;
+    max-height: 100%;
     display: flex;
     flex-direction: column;
+    padding: 0;
   }
 
   .ramp--transcript_nav div.transcript_content {
-    height: fit-content !important;
+    height: fit-content;
+  }
+
+  .vjs-track-scrubber-container {
+    width: 100%;
+
+    .vjs-time {
+      margin: 0 !important;
+    }
+
+    .tooltiptext {
+      bottom: 3em;
+    }
+  }
+}
+
+// Left align the structure navigation component in item view
+.ramp--all-components.ramp--itemview {
+  .ramp--structured-nav>.ramp--structured-nav__list,
+  .ramp--structured-nav>.ramp--structured-nav__list>.ramp--structured-nav__list-item {
+    padding: 0;
+  }
+}
+
+#add_to_playlist_alert {
+  a {
+    font-weight: bold;
+    text-decoration: underline;
+  }
+
+  p {
+    margin: 0;
+  }
+}
+
+.ramp--all-components.ramp--playlist {
+  .ramp--structured-nav {
+    margin-top: 0px;
+    min-width: inherit;
+    max-height: inherit;
+  }
+
+  .tab-pane {
+    border-top-right-radius: 0.25rem;
+  }
+
+  .fa {
+    padding-right: 0.25rem;
+  }
+
+  .ramp--auto-advance {
+    height: fit-content;
+    max-height: 33.5px;
+    align-items: center;
+
+    .ramp--auto-advance-label {
+      font-weight: bold;
+      padding: 0px;
+    }
+
+    .ramp--auto-advance-toggle {
+      width: 2.5rem;
+      height: 1.45rem;
+
+      .slider:before {
+        height: 1.1rem;
+        width: 1rem;
+        left: 0.16rem;
+        bottom: 0.16rem;
+      }
+
+      input:checked+.slider:before {
+        -webkit-transform: translateX(1.1rem);
+        -ms-transform: translateX(1.1rem);
+        transform: translateX(1.1rem);
+      }
+    }
+
+    label.ramp--auto-advance-toggle {
+      margin-bottom: 0px;
+    }
+  }
+
+  .ramp--playlist-accordion {
+    .accordion .card {
+      border: none;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.125);
+      display: flex;
+      flex-direction: column-reverse;
+      cursor: pointer;
+    }
+
+    .card-body {
+      padding: 0;
+    }
+
+    .card-header .accordion-arrow {
+      transition: all 0.3s ease;
+      -o-transition: all 0.3s ease;
+      -moz-transition: all 0.3s ease;
+      -webkit-transition: all 0.3s ease;
+      transform: rotate(270deg);
+      -o-transform: rotate(270deg);
+      -ms-transform: rotate(270deg);
+      -webkit-transform: rotate(270deg);
+    }
+
+    div[class~="show"]+.card-header .accordion-arrow {
+      transform: rotate(360deg);
+      -o-transform: rotate(360deg);
+      -ms-transform: rotate(360deg);
+      -webkit-transform: rotate(360deg);
+    }
+
+    .ramp--markers-display__markers-empty {
+      font-size: inherit;
+    }
+  }
+
+  .ramp--playlist-items-column {
+    display: flex;
+    flex-direction: column;
+    flex-basis: auto;
+    height: 70vh;
+
+    .ramp--structured-nav__border {
+      margin-top: 0;
+      overflow: auto;
+      max-height: inherit;
+    }
+  }
+
+  /* CSS for playlist items column height in landscape mode for mobile devices */
+  @media(orientation: landscape) {
+    .ramp--playlist-items-column.mobile-view {
+      height: 109vh !important;
+    }
   }
 }

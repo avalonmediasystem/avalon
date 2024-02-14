@@ -1,4 +1,4 @@
-# Copyright 2011-2023, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2024, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 # 
@@ -63,5 +63,13 @@ class SpeedyAF::Proxy::MasterFile < SpeedyAF::Base
 
   def captions
     load_subresource_content(:captions) rescue nil
+  end
+
+  def permalink_with_query(query_vars = {})
+    val = permalink
+    if val && query_vars.present?
+      val = "#{val}?#{query_vars.to_query}"
+    end
+    val ? val.to_s : nil
   end
 end
