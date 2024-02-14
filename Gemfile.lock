@@ -65,22 +65,6 @@ GIT
       ims-lti
       omniauth
 
-GIT
-  remote: https://github.com/samvera-labs/active_encode.git
-  revision: cad5ced9ca18f11c4003e839ae836e815eeec6df
-  specs:
-    active_encode (1.2.1)
-      addressable (~> 2.8)
-      rails
-
-GIT
-  remote: https://github.com/samvera-labs/iiif_manifest.git
-  revision: 1ede49aec4fc01582df8132e000121edbdcfac4a
-  branch: main
-  specs:
-    iiif_manifest (1.3.1)
-      activesupport (>= 4)
-
 GEM
   remote: https://rubygems.org/
   specs:
@@ -151,6 +135,9 @@ GEM
     active_elastic_job (3.2.0)
       aws-sdk-sqs (~> 1)
       rails (>= 5.2.6, < 7.1)
+    active_encode (1.2.2)
+      addressable (~> 2.8)
+      rails
     active_fedora-datastreams (0.5.0)
       active-fedora (>= 11.0.0.pre)
       activemodel (>= 5.2)
@@ -503,6 +490,8 @@ GEM
     i18n (1.14.1)
       concurrent-ruby (~> 1.0)
     iconv (1.0.8)
+    iiif_manifest (1.4.0)
+      activesupport (>= 4)
     ims-lti (1.1.13)
       builder
       oauth (>= 0.4.5, < 0.6)
@@ -985,7 +974,7 @@ DEPENDENCIES
   active-fedora (~> 14.0, >= 14.0.1)
   active_annotations (~> 0.4)
   active_elastic_job
-  active_encode!
+  active_encode (>= 1.2.2)
   active_fedora-datastreams (~> 0.5)
   activejob-traffic_control
   activejob-uniqueness
@@ -1041,7 +1030,7 @@ DEPENDENCIES
   hooks
   hydra-head (~> 12.0)
   iconv (~> 1.0.6)
-  iiif_manifest!
+  iiif_manifest (>= 1.4.0)
   ims-lti (~> 1.1.13)
   jbuilder (~> 2.0)
   jquery-datatables

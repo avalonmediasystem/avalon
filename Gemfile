@@ -53,7 +53,7 @@ gem 'avalon-about', git: 'https://github.com/avalonmediasystem/avalon-about.git'
 #gem 'bootstrap-sass', '< 3.4.1' # Pin to less than 3.4.1 due to change in behavior with popovers
 gem 'bootstrap-toggle-rails'
 gem 'bootstrap_form'
-gem 'iiif_manifest', git: 'https://github.com/samvera-labs/iiif_manifest.git', branch: 'main'
+gem 'iiif_manifest', '>= 1.4.0'
 gem 'rack-cors', require: 'rack/cors'
 gem 'rails_same_site_cookie'
 gem 'recaptcha', require: 'recaptcha/rails'
@@ -74,7 +74,7 @@ gem 'omniauth-lti', git: "https://github.com/avalonmediasystem/omniauth-lti.git"
 gem "omniauth-saml", "~> 2.0"
 
 # Media Access & Transcoding
-gem 'active_encode', git: "https://github.com/samvera-labs/active_encode.git"
+gem 'active_encode', '>= 1.2.2'
 gem 'audio_waveform-ruby', '~> 1.0.7', require: 'audio_waveform'
 gem 'browse-everything', git: "https://github.com/avalonmediasystem/browse-everything.git", branch: 'v1.2-avalon'
 gem 'fastimage'
