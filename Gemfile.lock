@@ -460,7 +460,6 @@ GEM
       signet (>= 0.16, < 2.a)
     hashdiff (1.0.1)
     hashie (5.0.0)
-    highline (3.0.1)
     hooks (0.4.1)
       uber (~> 0.0.14)
     htmlentities (4.3.4)
@@ -542,8 +541,6 @@ GEM
       rdf-turtle
       rdf-vocab (>= 0.8)
       slop
-    license_header (0.0.4)
-      highline
     link_header (0.0.8)
     listen (3.8.0)
       rb-fsevent (~> 0.10, >= 0.10.3)
@@ -1040,7 +1037,6 @@ DEPENDENCIES
   jquery-rails
   jquery-ui-rails
   ldp (~> 1.1.0)
-  license_header
   listen
   lograge
   mail (> 2.8.0.1)

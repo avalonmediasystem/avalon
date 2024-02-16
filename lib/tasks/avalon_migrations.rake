@@ -23,5 +23,38 @@ namespace :avalon do
         collection.save!(validate: false)
       end
     end
+    desc "Migrate legacy IndexedFile captions to ActiveStorage as part of supporting upload of multiple captions files"
+    task caption_files: :environment do
+      count = 0
+      MasterFile.all.each do |master_file|
+        next unless master_file.captions.present?
+        # Retrieve original file metadata from IndexedFile
+        filename = master_file.captions.original_name
+        content_type = master_file.captions.mime_type
+        # Legacy captions were not stored as an attached file.
+        # Write the plaintext content into a Tempfile to load into ActiveStorage.
+        file = Tempfile.new(filename)
+        file.write(master_file.captions.content)
+        file.close
+        # Create new SupplementalFile record
+        supplemental_file = SupplementalFile.new(label: filename, tags: ['caption'], language: 'eng')
+        # Attach file to SupplementalFile using original metadata
+        supplemental_file.file.attach(io: File.open(file.path), filename: filename, content_type: content_type, identify: false)
+        supplemental_file.save
+        # Delete tempfile
+        file.unlink
+        # Link new SupplementalFile to the MasterFile
+        master_file.supplemental_files += [supplemental_file]
+        # Delete legacy caption file
+        master_file.captions.content = ''
+        master_file.captions.original_name = ''
+        # Save record
+        master_file.save
+
+        count += 1
+      end
+
+      puts "Successfully updated #{count} records"
+    end
   end
 end
