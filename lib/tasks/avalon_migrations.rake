@@ -31,7 +31,7 @@ namespace :avalon do
         # Retrieve parent master file
         master_file_id = caption_file.id.split('/').first
         master_file = MasterFile.find(master_file_id) rescue nil
-        next unless master_file
+        next unless master_file && caption_file.present?
         # Grab original file metadata from IndexedFile
         filename = caption_file.original_name
         content_type = caption_file.mime_type
@@ -49,7 +49,7 @@ namespace :avalon do
         count += 1
       end
 
-      puts "Successfully updated #{count} records"
+      count > 0 ? puts("Successfully updated #{count} records") : puts("All files are already up to date. No records updated.")
     end
   end
 end
