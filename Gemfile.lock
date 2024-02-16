@@ -242,6 +242,7 @@ GEM
       babel-source (>= 4.0, < 6)
       execjs (~> 2.0)
     bcrypt (3.1.18)
+    bigdecimal (3.1.6)
     bindex (0.8.1)
     bixby (5.0.2)
       rubocop (= 1.28.2)
@@ -464,6 +465,7 @@ GEM
     hooks (0.4.1)
       uber (~> 0.0.14)
     htmlentities (4.3.4)
+    http-2-next (1.0.3)
     http (5.1.1)
       addressable (~> 2.8)
       http-cookie (~> 1.0)
@@ -475,6 +477,8 @@ GEM
     http-form_data (2.3.0)
     http_logger (0.7.0)
     httpclient (2.8.3)
+    httpx (1.2.2)
+      http-2-next (>= 1.0.3)
     hydra-access-controls (12.1.0)
       active-fedora (>= 10.0.0)
       activesupport (>= 5.2, < 7.1)
@@ -848,6 +852,8 @@ GEM
       childprocess (>= 0.5, < 4.0)
       rubyzip (>= 1.2.2)
     semantic_range (3.0.0)
+    sequel (5.77.0)
+      bigdecimal
     shakapacker (7.0.2)
       activesupport (>= 5.2)
       rack-proxy (>= 0.6.1)
@@ -1031,6 +1037,7 @@ DEPENDENCIES
   google-analytics-rails (= 1.1.0)
   hashdiff (>= 1.0)
   hooks
+  httpx
   hydra-head (~> 12.0)
   iconv (~> 1.0.6)
   iiif_manifest (>= 1.4.0)
@@ -1082,6 +1089,7 @@ DEPENDENCIES
   samvera-persona (~> 0.4, >= 0.4.1)
   sass (= 3.4.22)
   selenium-webdriver
+  sequel
   shakapacker
   shoulda-matchers
   sidekiq (~> 6.2)
