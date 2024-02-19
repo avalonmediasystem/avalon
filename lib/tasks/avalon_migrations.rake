@@ -23,5 +23,33 @@ namespace :avalon do
         collection.save!(validate: false)
       end
     end
+    desc "Migrate legacy IndexedFile captions to ActiveStorage as part of supporting upload of multiple captions files"
+    task caption_files: :environment do
+      count = 0
+      # Iterate through all caption IndexedFiles
+      IndexedFile.where("id: */captions").each do |caption_file|
+        # Retrieve parent master file
+        master_file_id = caption_file.id.split('/').first
+        master_file = MasterFile.find(master_file_id) rescue nil
+        next unless master_file && caption_file.present?
+        # Grab original file metadata from IndexedFile
+        filename = caption_file.original_name
+        content_type = caption_file.mime_type
+        # Create and populate new SupplementalFile record using original metadata
+        supplemental_file = SupplementalFile.new(label: filename, tags: ['caption'], language: 'eng')
+        supplemental_file.file.attach(io: ActiveFedora::FileIO.new(caption_file), filename: filename, content_type: content_type, identify: false)
+        supplemental_file.save
+        # Link new SupplementalFile to the MasterFile
+        master_file.supplemental_files += [supplemental_file]
+        # Delete legacy caption file
+        master_file.captions.content = ''
+        master_file.captions.original_name = ''
+        master_file.save
+
+        count += 1
+      end
+
+      count > 0 ? puts("Successfully updated #{count} records") : puts("All files are already up to date. No records updated.")
+    end
   end
 end
