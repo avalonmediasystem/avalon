@@ -1337,9 +1337,10 @@
     estree-walker "^2.0.2"
     picomatch "^2.3.1"
 
-"@samvera/ramp@https://github.com/samvera-labs/ramp.git":
-  version "2.0.0"
-  resolved "https://github.com/samvera-labs/ramp.git#66a4245be7c5dfc0abde3f5eaa23baf40d976d1d"
+"@samvera/ramp@^3.0.0":
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/@samvera/ramp/-/ramp-3.0.0.tgz#41251e0fb30ceb86d5d3905d27d9fa8089c193fe"
+  integrity sha512-Hapi2XJhNUHdye0XyRryBU8DlA51jvE7uDUy+cRflnjxDKMZuO6AqgqrZG0SRraS1ziXa1o5t2awAqzEzRi/KQ==
   dependencies:
     "@rollup/plugin-json" "^6.0.1"
     "@silvermine/videojs-quality-selector" "^1.2.4"
@@ -3954,9 +3955,9 @@ make-dir@^3.0.2, make-dir@^3.1.0:
     semver "^6.0.0"
 
 mammoth@^1.4.19:
-  version "1.6.0"
-  resolved "https://registry.yarnpkg.com/mammoth/-/mammoth-1.6.0.tgz#3a80e016b3d1374c9404eb841048c70295276532"
-  integrity sha512-jOwbj6BwJzxCf6jr2l1zmSemniIkLnchvELXnDJCANlJawhzyIKObIq48B8kWEPLgUUh57k7FtEO3DHFQMnjMg==
+  version "1.7.0"
+  resolved "https://registry.yarnpkg.com/mammoth/-/mammoth-1.7.0.tgz#e59b2d89a4907595906429c9d3313729d67afca7"
+  integrity sha512-ptFhft61dqieLffpdpHD7PUS0cX9YvHQIO3n3ejRhj1bi5Na+RL5wovtNHHXAK6Oj554XfGrVcyTuxgegN6umw==
   dependencies:
     "@xmldom/xmldom" "^0.8.6"
     argparse "~1.0.3"
@@ -5806,11 +5807,6 @@ videojs-font@3.2.0:
   version "3.2.0"
   resolved "https://registry.yarnpkg.com/videojs-font/-/videojs-font-3.2.0.tgz#212c9d3f4e4ec3fa7345167d64316add35e92232"
   integrity sha512-g8vHMKK2/JGorSfqAZQUmYYNnXmfec4MLhwtEFS+mMs2IDY398GLysy6BH6K+aS1KMNu/xWZ8Sue/X/mdQPliA==
-
-videojs-hotkeys@^0.2.27:
-  version "0.2.27"
-  resolved "https://registry.yarnpkg.com/videojs-hotkeys/-/videojs-hotkeys-0.2.27.tgz#0df97952b9dff0e6cc1cf8a439fed7eac9c73f01"
-  integrity sha512-pwtm1QocRmzJy1PWQsmFVHyeldYHHpLdeATK3FsFHVMmNpz6CROkAn8TFy2UILr8Ghgq134K8jEKNue8HWpudQ==
 
 videojs-markers-plugin@^1.0.2:
   version "1.0.2"
