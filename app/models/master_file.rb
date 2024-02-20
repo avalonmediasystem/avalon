@@ -1,4 +1,4 @@
-# Copyright 2011-2023, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2024, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 # 
@@ -170,6 +170,9 @@ class MasterFile < ActiveFedora::Base
   # Generate the waveform after proessing is complete but before master file management
   after_transcoding :generate_waveform
   after_transcoding :update_ingest_batch
+  # Generate and set the poster and thumbnail
+  after_transcoding :set_default_poster_offset
+  after_transcoding :update_stills_from_offset!
 
   after_processing :post_processing_file_management
 
@@ -263,7 +266,7 @@ class MasterFile < ActiveFedora::Base
     input = nil
     # Options hash: { outputs: [{ label: 'low',  url: 'file:///derivatives/low.mp4' }, { label: 'high', url: 'file:///derivatives/high.mp4' }]}
     if file.is_a? Hash
-      input = file.sort_by { |f| QUALITY_ORDER[f[0]] }.last[1].path
+      input = FileLocator.new(file.sort_by { |f| QUALITY_ORDER[f[0]] }.last[1].to_path).uri.to_s
       options[:outputs] = file.collect { |quality, f| { label: quality.remove("quality-"), url: FileLocator.new(f.to_path).uri.to_s } }
     else
       #Build hash for single file skip transcoding
@@ -290,6 +293,10 @@ class MasterFile < ActiveFedora::Base
     #Set date ingested to now if it wasn't preset (by batch, for example)
     #TODO pull this from the encode
     self.date_digitized ||= Time.now.utc.iso8601
+
+    # Set duration after transcode if mediainfo fails to find.
+    # e.x. WebM files missing technical metadata
+    self.duration ||= encode.input.duration
 
     outputs = Array(encode.output).collect do |output|
       {
@@ -454,20 +461,6 @@ class MasterFile < ActiveFedora::Base
     structuralMetadata.xpath('//@label').collect{|a|a.value}
   end
 
-  # Supplies the route to the master_file as an rdf formatted URI
-  # @return [String] the route as a uri
-  # @example uri for a mf on avalon.iu.edu with a id of: avalon:1820
-  #   "my_master_file.rdf_uri" #=> "https://www.avalon.iu.edu/master_files/avalon:1820"
-  def rdf_uri
-    master_file_url(id)
-  end
-
-  # Returns the dctype of the master_file
-  # @return [String] either 'dctypes:MovingImage' or 'dctypes:Sound'
-  def rdf_type
-    is_video? ? 'dctypes:MovingImage' : 'dctypes:Sound'
-  end
-
   def self.post_processing_move_filename(oldpath, options = {})
     prefix = options[:id].tr(':', '_')
     if File.basename(oldpath).start_with?(prefix)
@@ -492,11 +485,7 @@ class MasterFile < ActiveFedora::Base
   end
 
   def has_captions?
-    !captions.empty?
-  end
-
-  def caption_type
-    has_captions? ? captions.mime_type : nil
+    !captions.empty? || !supplemental_file_captions.empty?
   end
 
   def has_waveform?
@@ -519,9 +508,7 @@ class MasterFile < ActiveFedora::Base
       solr_doc['has_poster?_bs'] = has_poster?
       solr_doc['has_thumbnail?_bs'] = has_thumbnail?
       solr_doc['has_structuralMetadata?_bs'] = has_structuralMetadata?
-      solr_doc['caption_type_ss'] = caption_type
       solr_doc['identifier_ssim'] = identifier.map(&:downcase)
-
       solr_doc['percent_complete_ssi'] = percent_complete
       # solr_doc['percent_succeeded_ssi'] =  percent_succeeded
       # solr_doc['percent_failed_ssi'] = percent_failed
@@ -585,7 +572,7 @@ class MasterFile < ActiveFedora::Base
     # Fixes https://github.com/avalonmediasystem/avalon/issues/3474
     target_location = File.basename(details[:location]).split('?')[0]
     target = File.join(Dir.tmpdir, target_location)
-    File.open(target,'wb') { |f| open(details[:location]) { |io| f.write(io.read) } }
+    File.open(target,'wb') { |f| URI.open(details[:location]) { |io| f.write(io.read) } }
     return target, details[:offset]
   end
 
@@ -737,8 +724,14 @@ class MasterFile < ActiveFedora::Base
         self.display_aspect_ratio = display_aspect_ratio_s
       end
       self.original_frame_size = @mediainfo.video.streams.first.frame_size
-      self.poster_offset = [2000,self.duration.to_i].min
     end
+  end
+
+  # This should only be getting called by the :after_transcode hook. Ensure that
+  # poster_offset is only set if it has not already been manually set via
+  # BatchEntry or another method.
+  def set_default_poster_offset
+    self.poster_offset = [2000,self.duration.to_i].min if self._poster_offset.nil?
   end
 
   def post_processing_file_management

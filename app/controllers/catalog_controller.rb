@@ -1,4 +1,4 @@
-# Copyright 2011-2023, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2024, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 # 
@@ -83,16 +83,22 @@ class CatalogController < ApplicationController
     config.add_facet_field 'avalon_resource_type_ssim', label: 'Format', limit: 5, collapse: false
     config.add_facet_field 'creator_ssim', label: 'Main contributor', limit: 5
     config.add_facet_field 'date_sim', label: 'Date', limit: 5
-    config.add_facet_field 'genre_sim', label: 'Genres', limit: 5
+    config.add_facet_field 'genre_ssim', label: 'Genres', limit: 5
+    config.add_facet_field 'series_ssim', label: 'Series', limit: 5
     config.add_facet_field 'collection_ssim', label: 'Collection', limit: 5
     config.add_facet_field 'unit_ssim', label: 'Unit', limit: 5
-    config.add_facet_field 'language_sim', label: 'Language', limit: 5
+    config.add_facet_field 'language_ssim', label: 'Language', limit: 5
     # Hide these facets if not a Collection Manager
     config.add_facet_field 'workflow_published_sim', label: 'Published', limit: 5, if: Proc.new {|context, config, opts| Ability.new(context.current_user, context.user_session).can? :create, MediaObject}, group: "workflow"
     config.add_facet_field 'avalon_uploader_ssi', label: 'Created by', limit: 5, if: Proc.new {|context, config, opts| Ability.new(context.current_user, context.user_session).can? :create, MediaObject}, group: "workflow"
+    config.add_facet_field 'read_access_group_ssim', label: 'Item access', if: Proc.new {|context, config, opts| Ability.new(context.current_user, context.user_session).can? :create, MediaObject}, group: "workflow", query: {
+      public: { label: "Public", fq: "has_model_ssim:MediaObject AND read_access_group_ssim:#{Hydra::AccessControls::AccessRight::PERMISSION_TEXT_VALUE_PUBLIC}" },
+      restricted: { label: "Authenticated", fq: "has_model_ssim:MediaObject AND read_access_group_ssim:#{Hydra::AccessControls::AccessRight::PERMISSION_TEXT_VALUE_AUTHENTICATED}" },
+      private: { label: "Private", fq: "has_model_ssim:MediaObject AND NOT read_access_group_ssim:#{Hydra::AccessControls::AccessRight::PERMISSION_TEXT_VALUE_PUBLIC} AND NOT read_access_group_ssim:#{Hydra::AccessControls::AccessRight::PERMISSION_TEXT_VALUE_AUTHENTICATED}" }
+    }
     config.add_facet_field 'read_access_virtual_group_ssim', label: 'External Group', limit: 5, if: Proc.new {|context, config, opts| Ability.new(context.current_user, context.user_session).can? :create, MediaObject}, group: "workflow", helper_method: :vgroup_display
-    config.add_facet_field 'date_digitized_sim', label: 'Date Digitized', limit: 5, if: Proc.new {|context, config, opts| Ability.new(context.current_user, context.user_session).can? :create, MediaObject}, group: "workflow"#, partial: 'blacklight/hierarchy/facet_hierarchy'
-    config.add_facet_field 'date_ingested_sim', label: 'Date Ingested', limit: 5, if: Proc.new {|context, config, opts| Ability.new(context.current_user, context.user_session).can? :create, MediaObject}, group: "workflow"
+    config.add_facet_field 'date_digitized_ssim', label: 'Date Digitized', limit: 5, if: Proc.new {|context, config, opts| Ability.new(context.current_user, context.user_session).can? :create, MediaObject}, group: "workflow"#, partial: 'blacklight/hierarchy/facet_hierarchy'
+    config.add_facet_field 'date_ingested_ssim', label: 'Date Ingested', limit: 5, if: Proc.new {|context, config, opts| Ability.new(context.current_user, context.user_session).can? :create, MediaObject}, group: "workflow"
 
     # Have BL send all facet field names to Solr, which has been the default
     # previously. Simply remove these lines if you'd rather use Solr request
@@ -105,27 +111,24 @@ class CatalogController < ApplicationController
     # solr fields to be displayed in the index (search results) view
     #   The ordering of the field names is the order of the display
     config.add_index_field 'title_tesi', label: 'Title', if: Proc.new {|context, _field_config, _document| context.request.format == :json }
-    config.add_index_field 'date_ssi', label: 'Date', helper_method: :combined_display_date
+    config.add_index_field 'date_issued_ssi', label: 'Date', helper_method: :combined_display_date
     config.add_index_field 'creator_ssim', label: 'Main contributors', helper_method: :contributor_index_display
-    config.add_index_field 'summary_ssi', label: 'Summary', helper_method: :description_index_display
+    config.add_index_field 'abstract_ssi', label: 'Summary', helper_method: :description_index_display
     config.add_index_field 'duration_ssi', label: 'Duration', if: Proc.new {|context, _field_config, _document| context.request.format == :json }
     config.add_index_field 'section_id_ssim', label: 'Sections', if: Proc.new {|context, _field_config, _document| context.request.format == :json }, helper_method: :section_id_json_index_display
 
     # solr fields to be displayed in the show (single result) view
     #   The ordering of the field names is the order of the display
     config.add_show_field 'title_tesi', label: 'Title'
-    config.add_show_field 'format_sim', label: 'Format'
-    config.add_show_field 'creator_sim', label: 'Creator'
-    config.add_show_field 'language_sim', label: 'Language'
-    config.add_show_field 'date_ssi', label: 'Date'
-    config.add_show_field 'abstract_sim', label: 'Abstract'
-    config.add_show_field 'location_sim', label: 'Locations'
-    config.add_show_field 'time_period_sim', label: 'Time periods'
-    config.add_show_field 'contributor_sim', label: 'Contributors'
-    config.add_show_field 'publisher_sim', label: 'Publisher'
-    config.add_show_field 'genre_sim', label: 'Genre'
-    config.add_show_field 'publication_location_sim', label: 'Place of publication'
-    config.add_show_field 'terms_sim', label: 'Terms'
+    config.add_show_field 'resource_type_ssim', label: 'Format'
+    config.add_show_field 'creator_ssim', label: 'Main Contributors'
+    config.add_show_field 'language_ssim', label: 'Language'
+    config.add_show_field 'date_issued_ssi', label: 'Date'
+    config.add_show_field 'abstract_ssim', label: 'Abstract'
+    config.add_show_field 'location_ssim', label: 'Locations'
+    config.add_show_field 'contributor_ssim', label: 'Contributors'
+    config.add_show_field 'publisher_ssim', label: 'Publisher'
+    config.add_show_field 'genre_ssim', label: 'Genre'
 
     # "fielded" search configuration. Used by pulldown among other places.
     # For supported keys in hash, see rdoc for Blacklight::SearchFields
@@ -185,10 +188,10 @@ class CatalogController < ApplicationController
     # label in pulldown is followed by the name of the SOLR field to sort by and
     # whether the sort is ascending or descending (it must be asc or desc
     # except in the relevancy case).
-    config.add_sort_field 'score desc, title_ssort asc, date_ssi desc', label: 'Relevance'
-    config.add_sort_field 'date_ssi desc, title_ssort asc', label: 'Date'
+    config.add_sort_field 'score desc, title_ssort asc, date_issued_ssi desc', label: 'Relevance'
+    config.add_sort_field 'date_issued_ssi desc, title_ssort asc', label: 'Date'
     config.add_sort_field 'creator_ssort asc, title_ssort asc', label: 'Main contributor'
-    config.add_sort_field 'title_ssort asc, date_ssi desc', label: 'Title'
+    config.add_sort_field 'title_ssort asc, date_issued_ssi desc', label: 'Title'
     config.add_sort_field 'timestamp desc', label: 'Recently Updated', if: false
 
     # If there are more than this many search results, no spelling ("did you

@@ -1,5 +1,5 @@
 /* 
- * Copyright 2011-2023, The Trustees of Indiana University and Northwestern
+ * Copyright 2011-2024, The Trustees of Indiana University and Northwestern
  *   University.  Licensed under the Apache License, Version 2.0 (the "License");
  *   you may not use this file except in compliance with the License.
  * 
@@ -24,7 +24,6 @@
 @import 'avalon/form';
 @import 'avalon/header';
 @import 'avalon/homepage';
-@import 'avalon/mediaelement';
 @import 'avalon/modals';
 @import 'avalon/nav';
 @import 'avalon/playlists';
@@ -178,7 +177,7 @@ div.alert-danger {
   font-family: $museoSlab;
 }
 .sub-headline {
-  color: $secondary;
+  color: $blueGreen;
   font-family: $museoSlab;
 }
 
@@ -343,15 +342,6 @@ span.constraints-label {
   margin-bottom: 0px;
 }
 
-.mejs-poster {
-  overflow: hidden;
-
-  img {
-    width: 100%;
-    height: 100%;
-  }
-}
-
 .role-popover-help *,
 .popover-help * {
   cursor: pointer;
@@ -486,9 +476,6 @@ a[data-trigger='submit'] {
   margin-bottom: 0;
 }
 
-#share-list .tab-content {
-  margin-bottom: 20px;
-}
 
 .ready-to-play {
   .structure.current-stream:before {
@@ -801,6 +788,7 @@ h5.card-title {
 
 .twitter-typeahead {
   z-index: auto !important;
+  background-color: $white;
 }
 
 /**
@@ -923,6 +911,11 @@ h5.card-title {
       }
     }
 
+    .caption-form-label {
+      font-style: italic;
+      font-weight: bold;
+    }
+
     div.supplemental-file-data {
       height: 1.5rem;
 
@@ -944,8 +937,11 @@ h5.card-title {
       margin-top: 0.75rem;
 
       .visible-inline {
-        margin-left: 30px;
         display: none;
+
+        .icon-success, .icon-error {
+          font-size: 1.2rem;
+        }
       }
 
       .alert {
@@ -1189,11 +1185,21 @@ td {
   }
 }
 
+.ramp--rails-content {
+  #addToPlaylistBtn {
+    svg {
+      color: $blue;
+      height: 1.3rem;
+      margin-right: 0.2rem;
+    }
+  }
+}
+
 /*
   Override CSS for transcript component imported
-  from @samvera/iiif-react-media-player
+  from @samvera/ramp
 */
-.irmp--transcript_nav {
+.ramp--transcript_nav {
   padding: 10px 0 0 0;
 }
 

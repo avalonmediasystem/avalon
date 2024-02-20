@@ -1,4 +1,4 @@
-# Copyright 2011-2023, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2024, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 # 
@@ -57,6 +57,15 @@ describe BookmarksController, type: :controller do
       expect(flash[:success]).to eq(I18n.t("blacklight.delete.success", count: 11))
       media_objects.each {|mo| expect(MediaObject.exists?(mo.id)).to be_falsey }
     end
+
+    context 'read from solr' do
+      it 'should not read from fedora', :no_perform_enqueued_jobs do
+        WebMock.reset_executed_requests!
+        get :delete
+        post :delete
+        expect(a_request(:any, /#{ActiveFedora.fedora.base_uri}/)).not_to have_been_made
+      end
+    end
   end
 
   describe "#update_status" do
@@ -104,6 +113,14 @@ describe BookmarksController, type: :controller do
         end
       end
     end
+
+    context 'read from solr' do
+      it 'should not read from fedora', :no_perform_enqueued_jobs do
+        WebMock.reset_executed_requests!
+        post 'publish'
+        expect(a_request(:any, /#{ActiveFedora.fedora.base_uri}/)).not_to have_been_made
+      end
+    end
   end
 
   describe "index" do
@@ -123,6 +140,14 @@ describe BookmarksController, type: :controller do
         expect(response.body).not_to have_css('#publishLink')
         expect(response.body).not_to have_css('#unpublishLink')
         expect(response.body).not_to have_css('#deleteLink')
+      end
+    end
+
+    context 'read from solr' do
+      it 'should not read from fedora' do
+        WebMock.reset_executed_requests!
+        get 'index'
+        expect(a_request(:any, /#{ActiveFedora.fedora.base_uri}/)).not_to have_been_made
       end
     end
   end
@@ -146,6 +171,15 @@ describe BookmarksController, type: :controller do
           mo.reload
           expect(mo.collection).to eq(collection2)
         end
+      end
+    end
+
+    context 'read from solr', :no_perform_enqueued_jobs do
+      it 'should not read from fedora' do
+        WebMock.reset_executed_requests!
+        get 'move'
+        post 'move', params: { target_collection_id: collection2.id }
+        expect(a_request(:any, /#{ActiveFedora.fedora.base_uri}/)).not_to have_been_made
       end
     end
   end
@@ -203,6 +237,15 @@ describe BookmarksController, type: :controller do
         expect_any_instance_of(Avalon::Intercom).to receive(:push_media_object).exactly(3).times.and_call_original
         post 'intercom_push', params: { collection_id: 'cupcake_collection' }
         expect(flash[:success]).to eq('Sucessfully started push of 3 media objects.')
+      end
+    end
+
+    context 'read from solr', :no_perform_enqueued_jobs do
+      it 'should not read from fedora' do
+        WebMock.reset_executed_requests!
+        get 'intercom_push'
+        post 'intercom_push', params: { collection_id: 'cupcake_collection' }
+        expect(a_request(:any, /#{ActiveFedora.fedora.base_uri}/)).not_to have_been_made
       end
     end
   end
@@ -423,6 +466,15 @@ describe BookmarksController, type: :controller do
         end
       end
     end
+
+    context 'read from solr' do
+      it 'should not read from fedora', :no_perform_enqueued_jobs do
+        WebMock.reset_executed_requests!
+        get 'update_access_control'
+        post 'update_access_control', params: { hidden: "true" }
+        expect(a_request(:any, /#{ActiveFedora.fedora.base_uri}/)).not_to have_been_made
+      end
+    end
   end
 
   describe "#merge", :no_perform_enqueued_jobs do
@@ -448,6 +500,15 @@ describe BookmarksController, type: :controller do
         subject_ids = media_objects.collect(&:id) - [target.id]
         expect { post 'merge', params: { media_object: target.id } }.to have_enqueued_job(BulkActionJobs::Merge).with(target.id, subject_ids.sort)
         expect(flash[:success]).to start_with("Merging 2 items into")
+      end
+    end
+
+    context 'read from solr', :no_perform_enqueued_jobs do
+      it 'should not read from fedora' do
+        WebMock.reset_executed_requests!
+        get 'merge'
+        post 'merge', params: { media_object: target.id }
+        expect(a_request(:any, /#{ActiveFedora.fedora.base_uri}/)).not_to have_been_made
       end
     end
   end

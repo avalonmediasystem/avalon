@@ -1,5 +1,5 @@
 <%#
-Copyright 2011-2023, The Trustees of Indiana University and Northwestern
+Copyright 2011-2024, The Trustees of Indiana University and Northwestern
   University.  Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
 
@@ -15,8 +15,8 @@ Unless required by applicable law or agreed to in writing, software distributed
 %>
 <% @current_playlist_item = @playlist_item %>
 <% @current_clip = AvalonClip.find(@current_playlist_item.clip_id) %>
-<% @current_masterfile = MasterFile.find(@current_playlist_item.clip.source.split('/').last) %>
-<% @current_mediaobject = MediaObject.find(@current_masterfile.media_object_id) %>
+<% @current_masterfile = SpeedyAF::Proxy::MasterFile.find(@current_playlist_item.clip.source.split('/').last) %>
+<% @current_mediaobject = SpeedyAF::Proxy::MediaObject.find(@current_masterfile.media_object_id) %>
 <div id="metadata_header">
   <h3>
     <%= link_to master_file_path(@current_masterfile.id) do %>

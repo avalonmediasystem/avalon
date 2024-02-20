@@ -1,4 +1,4 @@
-# Copyright 2011-2023, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2024, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 # 
@@ -206,6 +206,19 @@ RSpec.describe Samvera::Persona::UsersController, type: :controller do
           expect { post :stop_impersonating, params: { id: current_user.id }}.to change { @controller.user_session[:virtual_groups] }.from(old_ldap_groups).to([])
         end
       end
+    end
+  end
+
+  describe "#update" do
+    let(:user) { FactoryBot.create(:user) }
+    let(:admin) { FactoryBot.create(:admin) }
+
+    before do
+      sign_in(admin)
+    end
+
+    it 'updates email' do
+      expect { put :update, params: { id: user.id, user: { username: user.username, email: "new_email@example.com" } } }.to change { user.reload.email }.to("new_email@example.com")
     end
   end
 end

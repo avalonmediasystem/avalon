@@ -1,4 +1,4 @@
-# Copyright 2011-2023, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2024, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 # 
@@ -14,6 +14,11 @@
 
 class MediaObjectIndexingJob < ApplicationJob
   queue_as :media_object_indexing
+
+  # Only enqueue one indexing job at a time but once one starts running allow others to be enqueued
+  # because the first step of the job is fetching the object from fedora at which point it might
+  # be stale and subsequent jobs might get a newer version of the media object.
+  unique :until_executing, on_conflict: :log
 
   def perform(id)
     mo = MediaObject.find(id)

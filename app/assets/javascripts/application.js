@@ -1,5 +1,5 @@
 /* 
- * Copyright 2011-2023, The Trustees of Indiana University and Northwestern
+ * Copyright 2011-2024, The Trustees of Indiana University and Northwestern
  *   University.  Licensed under the Apache License, Version 2.0 (the "License");
  *   you may not use this file except in compliance with the License.
  * 
@@ -47,16 +47,8 @@
 // include all of our vendored js
 //= require_tree ../../../vendor/assets/javascripts/.
 
-// Exclude MediaElement 4 JS files in /vendor, as ME4 collides with the ME2 gem
-//= stub mediaelement/mediaelement-and-player
-//= stub mediaelement/plugins/markers
-//= stub mediaelement/plugins/quality-avalon
-//= stub mediaelement/plugins/quality-i18n
-//= stub media_player_wrapper/mejs4_plugin_add_to_playlist
-//= stub media_player_wrapper/mejs4_plugin_add_marker_to_playlist
-//= stub media_player_wrapper/mejs4_plugin_create_thumbnail
-//= stub media_player_wrapper/mejs4_plugin_track_scrubber
-//= stub media_player_wrapper/mejs4_link_back
-//= stub media_player_wrapper/mejs4_plugin_playlist_items
+// Require VideoJS and VideoJS quality selector for embedded player
+//= require video.js/dist/video.min.js
+//= require @silvermine/videojs-quality-selector/dist/js/silvermine-videojs-quality-selector.min.js
 
 //= require_tree .

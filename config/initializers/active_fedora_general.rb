@@ -4,7 +4,7 @@ ActiveFedora::Base.translate_uri_to_id = lambda do |uri|
                                            uri.to_s.sub(baseurl, '').split('/', baseparts).last
                                          end
 ActiveFedora::Base.translate_id_to_uri = lambda do |id|
-                                           "#{baseurl}/#{Noid::Rails.treeify(id)}"
+                                           "#{baseurl}/#{Noid::Rails.treeify(id).sub(/\/+$/, '')}"
                                          end
 ActiveFedora::Base.logger = Rails.logger
 

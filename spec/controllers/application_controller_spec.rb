@@ -1,4 +1,4 @@
-# Copyright 2011-2023, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2024, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 # 
@@ -47,18 +47,18 @@ describe ApplicationController do
   end
 
   describe '#get_user_collections' do
-    let(:collection1) { FactoryBot.create(:collection) }
-    let(:collection2) { FactoryBot.create(:collection) }
+    let!(:collection1) { FactoryBot.create(:collection) }
+    let!(:collection2) { FactoryBot.create(:collection) }
 
     it 'returns all collections for an administrator' do
       login_as :administrator
-      expect(controller.get_user_collections).to include(collection1)
-      expect(controller.get_user_collections).to include(collection2)
+      expect(controller.get_user_collections).to include(have_attributes(id: collection1.id))
+      expect(controller.get_user_collections).to include(have_attributes(id: collection2.id))
     end
     it 'returns only relevant collections for a manager' do
       login_user collection1.managers.first
-      expect(controller.get_user_collections).to include(collection1)
-      expect(controller.get_user_collections).not_to include(collection2)
+      expect(controller.get_user_collections).to include(have_attributes(id: collection1.id))
+      expect(controller.get_user_collections).not_to include(have_attributes(id: collection2.id))
     end
     it 'returns no collections for an end-user' do
       login_as :user
@@ -70,8 +70,8 @@ describe ApplicationController do
     end
     it 'returns requested user\'s collections for an administrator' do
       login_as :administrator
-      expect(controller.get_user_collections collection1.managers.first).to include(collection1)
-      expect(controller.get_user_collections collection1.managers.first).not_to include(collection2)
+      expect(controller.get_user_collections collection1.managers.first).to include(have_attributes(id: collection1.id))
+      expect(controller.get_user_collections collection1.managers.first).not_to include(have_attributes(id: collection2.id))
     end
   end
 

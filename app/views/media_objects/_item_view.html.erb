@@ -1,5 +1,5 @@
 <%#
-Copyright 2011-2023, The Trustees of Indiana University and Northwestern
+Copyright 2011-2024, The Trustees of Indiana University and Northwestern
   University.  Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
 
@@ -21,66 +21,129 @@ Unless required by applicable law or agreed to in writing, software distributed
 
 <% @poster_url = request.base_url + @currentStreamInfo[:poster_image] unless @currentStreamInfo[:poster_image].nil? %>
 <% @page_type = @currentStreamInfo[:is_video] ? 'video' : 'audio' %>
-<% can_stream = lending_enabled?(@media_object) ? current_user && @media_object.current_checkout(current_user.id).present? : true %> 
+<% can_stream = lending_enabled?(@media_object) ? current_user && @media_object.current_checkout(current_user.id).present? : true %>
 
-<% f_start, f_end = parse_media_fragment params['t'] %>
+<% in_progress = show_progress?(@masterFiles) %>
 <div class="row">
-  <div class="col-sm-8" id="left_column">
-    <% if lending_enabled?(@media_object) && !can_stream %>
-      <%= render 'embed_checkout' %>
-    <% elsif @currentStream %>
-      <%= render partial: "modules/player/section", locals: {section: @currentStream, section_info: @currentStreamInfo, f_start: @f_start, f_end: @f_end} %>
-      <%= render file: '_track_scrubber.html.erb' if is_mejs_2? %>
-      <%= render file: '_add_to_playlist.html.erb' if current_user.present? && is_mejs_2? %>
-      <%# Partial view for MEJS4 Add To Playlist plugin %>
-      <%= render partial: 'mejs4_add_to_playlist' if current_user.present? && is_mejs_4? %>
-      <%= render 'workflow_progress' %>
-      <%= render partial: 'timeline' if current_ability.can? :create, Timeline %>
-      <%= render 'share' if will_partial_list_render? :share %>
-
-      <!-- Sections -->
-      <%= render partial: 'sections',
-          locals: { mediaobject: @media_object,
-                  sections: @masterFiles,
-                  activeStream: @currentStream } %>
+  <div class="col-sm-12">
+    <%= render 'workflow_progress' %>
+  </div>
+  <div class="col-sm-12 mb-2">
+    <%= render 'administrative_links' %>
+    <% if current_ability.can? :edit, @media_object %>
+      <% if lending_enabled?(@media_object) %>
+        <%= render 'thumbnail' if can_stream %>
+      <% else %>
+        <%= render 'thumbnail' %>
+      <% end %>
     <% end %>
   </div>
-  <div class="col-sm-4" id="right-column">
-    <% if lending_enabled?(@media_object) %>
-      <%= render 'destroy_checkout' %>
-    <% end %>
-    <div id="metadata_container" class="col-sm-12">
-      <section id="metadata"><%= render "metadata_display" %></section>
-    </div>
-
-    <% if can_stream && @currentStream %>
-      <% supplemental_files = @masterFiles.map { |mf| {"id" => mf.id, "transcripts" => mf.supplemental_files.select { |sf| sf.tags.include?('transcript')} } }.flatten(1) %>
-      <%= react_component("ReactIIIFTranscript", {base_url: request.protocol+request.host_with_port, transcripts: supplemental_files }) %>
-    <% end %>
+  <div class="col-sm-12">
+    <%= react_component("MediaObjectRamp",
+      {
+        urls: { base_url: request.protocol + request.host_with_port, fullpath_url: request.fullpath },
+        master_files_count: @media_object.master_files.size,
+        has_structure: @media_object.master_files.any?{ |mf| mf.has_structuralMetadata? },
+        title: { content: render('title') },
+        share: { canShare: (will_partial_list_render? :share), content: lending_enabled?(@media_object) ? (render('share') if can_stream) : render('share') },
+        timeline: { canCreate: (current_ability.can? :create, Timeline), content: lending_enabled?(@media_object) ? (render('timeline') if can_stream) : render('timeline') },
+        playlist: { canCreate: (current_ability.can? :create, Playlist), tab: render('add_to_playlist') },
+        cdl: { enabled: lending_enabled?(@media_object), can_stream: can_stream, embed: render('embed_checkout'), destroy: render('destroy_checkout') },
+        has_files: @media_object.supplemental_files.present? || @media_object.sections_with_files.present?,
+        has_transcripts: @media_object.sections_with_files(tag: 'transcript').present?
+      }
+    ) %>
   </div>
-
 </div>
 
 <% content_for :page_scripts do %>
-  <% if @currentStream.present? and @currentStream.derivatives.present? %>
-    <%= render partial: "mejs4_player_js", locals: {section: @currentStream, section_info: @currentStreamInfo} %>
-  <% end %>
-
   <script>
     // When viewing video on smaller devices scroll to page content to fully
     // display the video player
     $(document).ready(function () {
-      const isVideo = <%= @currentStreamInfo[:is_video] %>;
-      if(isVideo) {
-        const screenHeight = screen.height;
-        const playerHeight = document.getElementsByTagName('video')[0].style.height.replace(/[^-\d\.]/g, '');
-        if(screenHeight - playerHeight < 200) {
-          $('html, body').animate({
-              scrollTop: $('#user-util-collapse').offset().top
-          }, 1000);
+      const sectionIds = <%= @media_object.ordered_master_file_ids.to_json.html_safe %>;
+      const transcriptSections = <%= @media_object.sections_with_files(tag: 'transcript').to_json.html_safe %>;
+      let scrollInterval = setInterval(autoScroll, 500);
+      let timeCheck = setInterval(initTranscriptCheck, 500);
+
+      function autoScroll () {
+        const isVideo = <%= @currentStream ? @currentStreamInfo[:is_video] : false %>;
+        const player = document.getElementsByTagName('video');
+        if(isVideo && player?.length > 0) {
+          const screenHeight = screen.height;
+          const playerHeight = player[0].style.height.replace(/[^-\d\.]/g, '');
+          if(screenHeight - playerHeight < 200) {
+            $('html, body').animate({
+                scrollTop: $('#user-util-collapse').offset().top
+            }, 1000);
+          }
+          clearInterval(scrollInterval);
+        }
+      }
+
+      function initTranscriptCheck() {
+        let player = document.getElementById('iiif-media-player');
+        if(player) {
+          addPlayerEventListeners(player, () => {
+            clearInterval(timeCheck);
+          });
+        }
+      }
+
+      function addPlayerEventListeners(player) {
+        if (player && player.player != undefined) {
+          player.player.ready(() => {
+            let canvasindex = player.dataset['canvasindex'];
+            transcriptCheck(canvasindex);
+            setColumnHeights();
+          });
+        }
+      }
+
+      /*
+        Set tabbed nav column height based on the content
+      */
+      function setColumnHeights() {
+        let activeTab = $('.tab-pane.active.show');
+        let tabsPanel = $('.ramp--tabs-panel');
+        // When the active tab is transcripts, check the transcript content height to
+        // check there is overflowing content to set the column height. This is handled
+        // seperately because the height check in the else block doesn't identify this since
+        // since this content is set dynamically based on user selection in dropdown menu. 
+        if(activeTab.hasClass('ramp--transcripts_tab')) {
+          let transcriptContent = $('.transcript_content');
+          if(transcriptContent[0].scrollHeight > transcriptContent[0].clientHeight) {
+            activeTab[0].style.height = 'unset';
+          }
+        } else {
+          // Compare the active tab's scrollHeight and tab panel's height to identify overflowing content.
+          // And set tab height to either 'unset' or 'fit-content' accordingly.
+          if (activeTab[0].scrollHeight > tabsPanel[0].clientHeight) {
+            activeTab[0].style.height = 'unset';
+          } else {
+            activeTab[0].style.height = 'fit-content';
+          }
+        }
+      }
+
+      function transcriptCheck(canvasindex) {
+        let sectionId = sectionIds[canvasindex];
+        let transcriptTab = document.evaluate('//a[text()="Transcripts"]', document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+        let detailTab = document.evaluate('//a[text()="Details"]', document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+
+        if(!transcriptSections.includes(sectionId)) {
+          // If transcript tab is the active tab when it is hidden, the tab goes away but the box still displays
+          // the missing transcript file message. Force change over to a different tab to avoid this case.
+          if(transcriptTab) {
+            if (transcriptTab.getAttribute('aria-selected') === "true") { detailTab.click(); }
+            transcriptTab.style.display = 'none';
+            transcriptTab.classList.add("disabled");
+          }
+        } else if (transcriptSections.includes(sectionId) && transcriptTab.style.display === 'none') {
+          transcriptTab.style.display = '';
+          transcriptTab.classList.remove("disabled");
         }
       }
     });
-  </script>
-
+</script>
 <% end %>

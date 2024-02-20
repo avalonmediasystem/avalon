@@ -1,4 +1,4 @@
-# Copyright 2011-2023, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2024, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 # 
@@ -21,7 +21,7 @@ class LanguageTerm
     def map
       @@map ||= self.load!
     end
-    
+
     def find(value)
       result = self.map[value.downcase]
       result = self.map.select{ |k,v| v[:text]==value }.values.first if result.nil?
@@ -30,7 +30,7 @@ class LanguageTerm
     end
     alias_method :[], :find
 
-    def autocomplete(query)
+    def autocomplete(query, _id = nil)
       map = query.present? ? self.map.select{ |k,v| /#{query}/i.match(v[:text]) if v } : self.map
       map.to_a.uniq.map{ |e| {id: e[1][:code], display: e[1][:text] }}.sort{ |x,y| x[:display]<=>y[:display] }
     end
@@ -42,7 +42,7 @@ class LanguageTerm
         harvest!
       end
     end
-    
+
     def harvest!
       language_map = {}
       doc = RestClient.get('http://id.loc.gov/vocabulary/languages.tsv').split(/\n/).collect{ |l| l.split(/\t/) }
@@ -52,19 +52,19 @@ class LanguageTerm
         File.open(Store,'w') { |f| f.write(YAML.dump(language_map)) }
       rescue
         # Don't care if we can't cache it
-      end      
+      end
       language_map
     end
   end
-  
+
   def initialize(term)
     @term = term
   end
-  
+
   def code
     @term[:code]
   end
-  
+
   def text
     @term[:text]
   end

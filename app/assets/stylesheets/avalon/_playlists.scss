@@ -1,5 +1,5 @@
 /* 
- * Copyright 2011-2023, The Trustees of Indiana University and Northwestern
+ * Copyright 2011-2024, The Trustees of Indiana University and Northwestern
  *   University.  Licensed under the Apache License, Version 2.0 (the "License");
  *   you may not use this file except in compliance with the License.
  * 
@@ -25,7 +25,6 @@
 }
 
 .playlist-title {
-  margin: 20px 0 10px;
   display: flex;
   align-items: center;
 
@@ -36,12 +35,18 @@
   // Assuming this span is an icon
   span {
     font-size: 2rem;
-    padding: 0 1rem;
+    padding: 0 1rem 0 0;
   }
 }
 
-.playlist-action-button-row {
-  margin-bottom: 2rem;
+.playlist-title-wrapper {
+  width: 100%;
+  margin: 20px 0 10px;
+}
+
+.playlist-action-button-row.col-sm-4 {
+  padding-left: 0.75rem;
+  padding-right:0px;
 }
 
 .playlist-autoplay-wrapper {

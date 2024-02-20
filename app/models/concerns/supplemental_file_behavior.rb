@@ -1,4 +1,4 @@
-# Copyright 2011-2023, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2024, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 # 
@@ -27,9 +27,17 @@ module SupplementalFileBehavior
   # SupplementalFile = Struct.new(:id, :label, :absolute_path, keyword_init: true)
 
   # @return [SupplementalFile]
-  def supplemental_files
+  def supplemental_files(tag: '*')
     return [] if supplemental_files_json.blank?
-    JSON.parse(supplemental_files_json).collect { |file_gid| GlobalID::Locator.locate(file_gid) }
+    files = JSON.parse(supplemental_files_json).collect { |file_gid| GlobalID::Locator.locate(file_gid) }
+    case tag
+    when '*'
+      files
+    when nil
+      files.select { |file| file.tags.empty? }
+    else
+      files.select { |file| Array(tag).all? { |t| file.tags.include?(t) } }
+    end
   end
 
   # @param files [SupplementalFile]

@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.loc.gov/mods/v3" version="3.5" xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-5.xsd">
+  <titleInfo usage="primary">
+    <title>245 A : B F G K N P S</title>
+  </titleInfo>
+  <titleInfo type="alternative">
+    <title>246</title>
+  </titleInfo>
+  <name type="conference">
+    <namePart>111 A C D E F G K L N P Q T</namePart>
+    <role>
+      <roleTerm type="text">Creator</roleTerm>
+    </role>
+  </name>
+  <name type="personal">
+    <namePart>700 A B C D F G K L M N O P Q R S T</namePart>
+    <role>
+      <roleTerm type="text">Contributor</roleTerm>
+    </role>
+  </name>
+  <name type="corporate">
+    <namePart>710 A B B C D F G K L N P T</namePart>
+    <role>
+      <roleTerm type="text">Contributor</roleTerm>
+    </role>
+  </name>
+  <name type="conference">
+    <namePart>711 A C D E F G K L N P Q S T</namePart>
+    <role>
+      <roleTerm type="text">Contributor</roleTerm>
+    </role>
+  </name>
+  <genre authority="">655 A</genre>
+  <originInfo>
+    <place>
+      <placeTerm type="code" authority="marccountry">ilu</placeTerm>
+    </place>
+    <place>
+      <placeTerm type="text">260 A</placeTerm>
+    </place>
+    <place>
+      <placeTerm type="text">260 A</placeTerm>
+    </place>
+    <publisher>260 B</publisher>
+    <publisher>260 B</publisher>
+    <dateCreated encoding="edtf">1990</dateCreated>
+    <dateIssued encoding="edtf">1999</dateIssued>
+    <issuance>monographic</issuance>
+  </originInfo>
+  <language>
+    <languageTerm authority="iso639-2b" type="code">eng</languageTerm>
+    <languageTerm type="text">English</languageTerm>
+  </language>
+  <language objectPart="sung or spoken text">
+    <languageTerm authority="iso639-2b" type="code">fre</languageTerm>
+  </language>
+  <language objectPart="">
+    <languageTerm authority="iso639-2b" type="code">ger</languageTerm>
+  </language>
+  <relatedItem type="original">
+    <physicalDescription>
+      <form authority="marccategory">map</form>
+      <form authority="marcsmd">map</form>
+      <extent>300 A  : 300 B ; 300 C.</extent>
+    </physicalDescription>
+  </relatedItem>
+  <abstract type="Summary">520</abstract>
+  <accessCondition type="use and reproduction">540</accessCondition>
+  <note type="statement of responsibility" altRepGroup="00">C.</note>
+  <note type="general">500</note>
+  <note type="additional physical form">530</note>
+  <subject authority="lcsh">
+    <topic>600 (100) A B C D F G K L N P Q T</topic>
+  </subject>
+  <subject authority="lcsh">
+    <topic>600 A B C D F G K L M N O P Q R S T</topic>
+  </subject>
+  <subject authority="lcsh">
+    <topic>600 X</topic>
+  </subject>
+  <subject authority="lcsh">
+    <temporal>600 Y</temporal>
+  </subject>
+  <subject authority="lcsh">
+    <geographic>600 Z</geographic>
+  </subject>
+  <subject authority="lcsh">
+    <topic>610 (110) A B B C D F G K L N P T</topic>
+  </subject>
+  <subject authority="lcsh">
+    <topic>610 A B B C D F G K L N P T</topic>
+  </subject>
+  <subject authority="lcsh">
+    <topic>610 X</topic>
+  </subject>
+  <subject authority="lcsh">
+    <temporal>610 Y</temporal>
+  </subject>
+  <subject authority="lcsh">
+    <geographic>610 Z</geographic>
+  </subject>
+  <subject authority="lcsh">
+    <topic>611 (111) A C D E F G K L N P Q T</topic>
+  </subject>
+  <subject authority="lcsh">
+    <topic>611 A C D E F G K L N P Q S T</topic>
+  </subject>
+  <subject authority="lcsh">
+    <topic>611 X</topic>
+  </subject>
+  <subject authority="lcsh">
+    <temporal>611 Y</temporal>
+  </subject>
+  <subject authority="lcsh">
+    <geographic>611 Z</geographic>
+  </subject>
+  <subject authority="lcsh">
+    <topic>630 A D F H K L O R</topic>
+  </subject>
+  <subject authority="lcsh">
+    <topic>630 X</topic>
+  </subject>
+  <subject authority="lcsh">
+    <temporal>630 Y</temporal>
+  </subject>
+  <subject authority="lcsh">
+    <geographic>630 Z</geographic>
+  </subject>
+  <subject authority="lcsh.">
+    <temporal>648</temporal>
+  </subject>
+  <subject authority="lcsh">
+    <temporal>648</temporal>
+  </subject>
+  <subject authority="lcsh">
+    <topic>650 A</topic>
+  </subject>
+  <subject authority="lcsh">
+    <topic>650 X</topic>
+  </subject>
+  <subject authority="lcsh">
+    <temporal>650 Y</temporal>
+  </subject>
+  <subject authority="lcsh">
+    <geographic>650 Z</geographic>
+  </subject>
+  <subject authority="lcsh">
+    <geographic>651 A</geographic>
+  </subject>
+  <subject authority="lcsh">
+    <topic>651 X</topic>
+  </subject>
+  <subject authority="lcsh">
+    <temporal>651 Y</temporal>
+  </subject>
+  <subject authority="lcsh">
+    <geographic>651 Z</geographic>
+  </subject>
+  <subject>
+    <topic>653 A</topic>
+  </subject>
+  <subject>
+    <topic>653 A</topic>
+  </subject>
+  <subject>
+    <hierarchicalGeographic>
+      <country>752 A</country>
+      <state>752 B</state>
+      <county>752 C</county>
+      <city>752 D</city>
+    </hierarchicalGeographic>
+  </subject>
+  <relatedItem>
+    <titleInfo>
+      <title>F K L M O R S T</title>
+      <partNumber>N O R</partNumber>
+      <partName>P R</partName>
+    </titleInfo>
+    <name type="personal">
+      <namePart>700 A G Q</namePart>
+      <namePart type="termsOfAddress">B C</namePart>
+      <namePart type="date">D</namePart>
+    </name>
+  </relatedItem>
+  <relatedItem>
+    <titleInfo>
+      <title>F K L T</title>
+      <partNumber>G P T</partNumber>
+      <partName>P</partName>
+    </titleInfo>
+    <name type="corporate">
+      <namePart>710 A</namePart>
+      <namePart>B</namePart>
+      <namePart>B</namePart>
+      <namePart>C D G N</namePart>
+    </name>
+  </relatedItem>
+  <relatedItem>
+    <titleInfo>
+      <title>F K L S T</title>
+      <partNumber>G P S T</partNumber>
+      <partName>P</partName>
+    </titleInfo>
+    <name type="conference">
+      <namePart>711 A C D G N Q</namePart>
+    </name>
+  </relatedItem>
+  <recordInfo>
+    <descriptionStandard>aacr</descriptionStandard>
+    <recordContentSource authority="marcorg">IEN</recordContentSource>
+    <recordCreationDate encoding="edtf">150127</recordCreationDate>
+    <recordChangeDate encoding="iso8601">20150127160330.0</recordChangeDate>
+    <recordIdentifier source="local">7763100</recordIdentifier>
+    <recordOrigin>Converted from MARCXML to MODS version 3.5 using MARC21slim2MODS3-5.xsl (Revision 1.106
+      2014/12/19), customized for the Avalon Media System (last revised 2014/12/26)</recordOrigin>
+  </recordInfo>
+</mods>

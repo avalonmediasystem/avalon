@@ -1,5 +1,5 @@
 <%#
-Copyright 2011-2023, The Trustees of Indiana University and Northwestern
+Copyright 2011-2024, The Trustees of Indiana University and Northwestern
   University.  Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
 
@@ -74,25 +74,29 @@ Unless required by applicable law or agreed to in writing, software distributed
         }
       }
 
-      // Set timer on page load
-      setTime();
-      // Check for remaining time on a minute interval
-      var interval = setInterval(setTime, 60000);
+      // Set timer on page load with a delay for React to render
+      // the return button on page
+      setTimeout(() => {
+        setTime();
+
+        // Check for remaining time on a minute interval
+        var interval = setInterval(setTime, 60000);
+      }, 5000);
 
       /* Interval update remaining time in the lending period */
       function setTime() {
         if($('#return-btn').length > 0) {
-        let remainingTime = calcRemainingTime();
-        if(remainingTime == 'expired') {
-          clearInterval(interval);
-          $('#check-out-expired').modal('show');
-        } else {
-          const { days, hours, minutes } = remainingTime;
-          var daysText = `${days}<br />day${days > 1 ? 's': ''}`;
-          $('.days').html(daysText);
-          var timeText = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}<br />hh:mm`;
-          $('.time').html(timeText);
-        }
+          let remainingTime = calcRemainingTime();
+          if(remainingTime == 'expired') {
+            clearInterval(interval);
+            $('#check-out-expired').modal('show');
+          } else {
+            const { days, hours, minutes } = remainingTime;
+            var daysText = `${days}<br />day${days > 1 ? 's': ''}`;
+            $('.days').html(daysText);
+            var timeText = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}<br />hh:mm`;
+            $('.time').html(timeText);
+          }
         }
       }
     });

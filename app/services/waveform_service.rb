@@ -1,4 +1,4 @@
-# Copyright 2011-2023, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2024, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 # 
@@ -88,7 +88,7 @@ private
   def get_wave_io(uri)
     headers = "-headers $'Referer: #{Rails.application.routes.url_helpers.root_url}\r\n'" if uri.starts_with? "http"
     normalized_uri = uri.starts_with?("file") ? Addressable::URI.unencode(uri) : uri
-    timeout = 3600000000 # Must be in microseconds. Current value = 1 hour.
+    timeout = 60000000 # Must be in microseconds. Current value = 1 minute.
     cmd = "#{Settings.ffmpeg.path} #{headers} -rw_timeout #{timeout} -i '#{normalized_uri}' -f wav -ar 44100 - 2> /dev/null"
     IO.popen(cmd)
   end

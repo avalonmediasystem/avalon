@@ -1,4 +1,4 @@
-# Copyright 2011-2023, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2024, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 # 
@@ -27,6 +27,14 @@ RSpec.describe MasterFilesController, type: :routing do
     end
     it "routes to #update" do
       expect(:put => "/master_files/abc1234/supplemental_files/edf567").to route_to("supplemental_files#update", master_file_id: 'abc1234', id: 'edf567')
+    end
+    # Redirects are not testable from the routing spec out of the box.
+    # Forcing the tests to `type: :request` to keep routing tests in one place.
+    it "redirects to supplemental_files#show", type: :request do
+      get "/master_files/abc1234/supplemental_files/edf567/captions"
+      expect(response).to redirect_to("/master_files/abc1234/supplemental_files/edf567")
+      get "/master_files/abc1234/supplemental_files/edf567/transcripts"
+      expect(response).to redirect_to("/master_files/abc1234/supplemental_files/edf567")
     end
   end
 end

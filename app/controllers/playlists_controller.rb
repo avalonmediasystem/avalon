@@ -1,4 +1,4 @@
-# Copyright 2011-2023, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2024, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 # 
@@ -16,14 +16,15 @@ require 'avalon/variations_playlist_importer'
 
 class PlaylistsController < ApplicationController
   include ConditionalPartials
+  include SecurityHelper
 
-  before_action :authenticate_user!, except: [:show, :refresh_info]
-  load_and_authorize_resource except: [:import_variations_playlist, :refresh_info, :duplicate, :show, :index]
-  load_resource only: [:show, :refresh_info]
+  before_action :authenticate_user!, except: [:show, :manifest]
+  load_and_authorize_resource except: [:import_variations_playlist, :duplicate, :show, :index, :manifest]
+  load_resource only: [:show, :manifest]
   authorize_resource only: [:index]
   before_action :get_user_playlists, only: [:index, :paged_index]
   before_action :get_all_other_playlists, only: [:edit]
-  before_action :load_playlist_token, only: [:show, :refresh_info, :duplicate]
+  before_action :load_playlist_token, only: [:show, :duplicate, :manifest]
 
   helper_method :access_token_url
 
@@ -241,6 +242,40 @@ class PlaylistsController < ApplicationController
     redirect_to playlists_url, notice: 'Playlist was successfully destroyed.'
   end
 
+  # GET /playlists/1/manifest.json
+  def manifest
+    authorize! :read, @playlist
+
+    # Fetch all master files related to the playlist items in a single SpeedyAF::Base.where
+    master_file_ids = @playlist.items.collect { |item| item.clip.master_file_id }
+    master_files = []
+    master_files = SpeedyAF::Proxy::MasterFile.where("id:#{master_file_ids.join(' id:')}", load_reflections: true) if master_file_ids.present?
+    media_objects = master_files.collect(&:media_object).uniq(&:id)
+
+    # This small optimization relies on the assumption that can? :read, master_file is the same as can? :read, master_file.media_object
+    # This only optimizes the case where multiple playlist items come from the same media object
+    cannot_read_hash = {}
+    media_objects.each { |mo| cannot_read_hash[mo.id] = cannot?(:read, mo) }
+
+    # Condense secure_streams into single call using master_files
+    stream_info_hash = secure_stream_infos(master_files, media_objects)
+
+    canvas_presenters = @playlist.items.collect do |item|
+      master_file = master_files.find { |mf| mf.id == item.clip.master_file_id }
+      cannot_read_item = master_file.nil? || cannot_read_hash[master_file.media_object_id]
+      IiifPlaylistCanvasPresenter.new(playlist_item: item, stream_info: stream_info_hash[master_file&.id], cannot_read_item: cannot_read_item, master_file: master_file)
+    end
+
+    can_edit_playlist = can? :edit, @playlist
+    presenter = IiifPlaylistManifestPresenter.new(playlist: @playlist, items: canvas_presenters, can_edit_playlist: can_edit_playlist)
+    manifest = IIIFManifest::V3::ManifestFactory.new(presenter).to_h
+
+    respond_to do |wants|
+      wants.json { render json: manifest.to_json }
+      wants.html { render json: manifest.to_json }
+    end
+  end
+
   def access_token_url(playlist)
     playlist_url(playlist, token: playlist.access_token)
   end
@@ -262,13 +297,6 @@ class PlaylistsController < ApplicationController
     end
   rescue StandardError => e
     redirect_to playlists_url, flash: { error: "Import failed: #{e.message}" }
-  end
-
-  def refresh_info
-    @position = params[:position]
-    @playlist_item = @playlist.items.where(position: @position.to_i).first
-    authorize! :read, @playlist_item
-    render formats: :js
   end
 
   private

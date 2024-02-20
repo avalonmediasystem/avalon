@@ -1,4 +1,4 @@
-# Copyright 2011-2023, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2024, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 # 
@@ -28,7 +28,7 @@ class SecurityService
       end
     else
       session = context[:session] || { media_token: nil }
-      token = StreamToken.find_or_create_session_token(session, context[:target])
+      token = context[:token] || StreamToken.find_or_create_session_token(session, context[:target])
       "#{url}?token=#{token}"
     end
   end

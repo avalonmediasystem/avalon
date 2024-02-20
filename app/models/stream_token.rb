@@ -1,4 +1,4 @@
-# Copyright 2011-2023, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2024, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 # 
@@ -34,6 +34,39 @@ class StreamToken < ActiveRecord::Base
     result.token
   end
 
+  def self.get_session_tokens_for(session: {}, targets: [])
+    purge_expired!(session)
+
+    token_attributes = targets.collect do |target|
+      hash_token = Digest::SHA1.new
+      hash_token << media_token(session) << target
+      {target: target, token: hash_token.to_s, expires: (Time.now.utc + Settings.streaming.stream_token_ttl.minutes)}
+    end
+    existing_token_hash = StreamToken.where(token: token_attributes.pluck(:token)).pluck(:token, :id).to_h
+
+    # Create new records first
+    insert_attributes = token_attributes.reject { |attrs| existing_token_hash[attrs[:token]].present? }
+    if insert_attributes.present?
+      StreamToken.insert_all(insert_attributes)
+      # Refetch so we have the ids of all tokens
+      existing_token_hash = StreamToken.where(token: token_attributes.pluck(:token)).pluck(:token, :id).to_h
+    end
+
+    # Add StreamToken ids into upsert attributes so there is a unique attribute and a unique index isn't needed on token
+    token_attributes.each do |attrs|
+      # all attributes must be present for all items in upsert array
+      attrs[:id] = existing_token_hash[attrs[:token]] if existing_token_hash[attrs[:token]].present?
+    end
+
+    result = token_attributes.present? ? StreamToken.upsert_all(token_attributes) : []
+
+    # Fetch StreamToken fresh so they can be put into session and returned
+    tokens = StreamToken.where(id: result.to_a.pluck("id"))
+    session[:hash_tokens] += tokens.pluck(:token)
+    session[:hash_tokens].uniq! # Avoid duplicate entry
+    tokens.to_a
+  end
+
   def self.logout!(session)
     session[:hash_tokens].each do |sha|
       where(token: sha).find_each(&:delete)
@@ -41,8 +74,8 @@ class StreamToken < ActiveRecord::Base
   end
 
   def self.purge_expired!(session)
-    purged = expired.each(&:delete)
-    Array(session[:hash_tokens]).reject! { |token| !StreamToken.exists?(token: token) }
+    purged = expired.delete_all
+    session[:hash_tokens] = StreamToken.where(token: Array(session[:hash_tokens])).pluck(:token)
     purged
   end
 

@@ -1,4 +1,4 @@
-# Copyright 2011-2023, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2024, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 # 
@@ -123,7 +123,7 @@ RSpec.describe Checkout, type: :model do
     let(:checkout) { FactoryBot.create(:checkout, media_object_id: media_object.id) }
 
     it 'returns the checked out MediaObject' do
-      expect(checkout.media_object).to eq media_object
+      expect(checkout.media_object.id).to eq media_object.id
     end
   end
 end

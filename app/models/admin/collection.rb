@@ -1,4 +1,4 @@
-# Copyright 2011-2023, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2024, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 # 
@@ -22,6 +22,7 @@ class Admin::Collection < ActiveFedora::Base
   include ActiveFedora::Associations
   include Identifier
   include MigrationTarget
+  include AdminCollectionBehavior
 
   has_many :media_objects, class_name: 'MediaObject', predicate: ActiveFedora::RDF::Fcrepo::RelsExt.isMemberOfCollection
 
@@ -68,6 +69,9 @@ class Admin::Collection < ActiveFedora::Base
     index.as :stored_sortable
   end
   property :cdl_enabled, predicate: Avalon::RDFVocab::Collection.cdl_enabled, multiple: false do |index|
+    index.as ActiveFedora::Indexing::Descriptor.new(:boolean, :stored, :indexed)
+  end
+  property :collection_managers, predicate: Avalon::RDFVocab::Collection.collection_managers, multiple: true do |index|
     index.as :symbol
   end
 
@@ -86,10 +90,6 @@ class Admin::Collection < ActiveFedora::Base
     @created_at ||= create_date
   end
 
-  def managers
-    edit_users & ( Avalon::RoleControls.users("manager") | (Avalon::RoleControls.users("administrator") || []) )
-  end
-
   def managers= users
     old_managers = managers
     users.each {|u| add_manager u}
@@ -98,6 +98,7 @@ class Admin::Collection < ActiveFedora::Base
 
   def add_manager user
     raise ArgumentError, "User #{user} does not belong to the manager group." unless (Avalon::RoleControls.users("manager") + (Avalon::RoleControls.users("administrator") || []) ).include?(user)
+    self.collection_managers += [user]
     self.edit_users += [user]
     self.inherited_edit_users += [user]
   end
@@ -106,12 +107,9 @@ class Admin::Collection < ActiveFedora::Base
     return unless managers.include? user
     raise ArgumentError, "At least one manager is required." if self.managers.size == 1
 
+    self.collection_managers = self.collection_managers.to_a - [user]
     self.edit_users -= [user]
     self.inherited_edit_users -= [user]
-  end
-
-  def editors
-    edit_users - managers
   end
 
   def editors= users
@@ -129,14 +127,6 @@ class Admin::Collection < ActiveFedora::Base
     return unless editors.include? user
     self.edit_users -= [user]
     self.inherited_edit_users -= [user]
-  end
-
-  def editors_and_managers
-    edit_users
-  end
-
-  def depositors
-    read_users
   end
 
   def depositors= users

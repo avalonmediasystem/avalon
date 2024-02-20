@@ -1,4 +1,4 @@
-# Copyright 2011-2023, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2024, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 # 
@@ -29,7 +29,7 @@ class CommentsController < ApplicationController
     @comment.subject = params[:comment][:subject]
     @comment.comment = params[:comment][:comment]
 
-    if @comment.valid? && (Settings.recaptcha.blank? || verify_recaptcha(model: @comment))
+    if @comment.valid? && recaptcha_valid?
       begin
         CommentsMailer.contact_email(@comment.to_h).deliver_later
       rescue Errno::ECONNRESET => e
@@ -46,5 +46,16 @@ class CommentsController < ApplicationController
   protected
   def set_subjects
     @subjects = Comment::SUBJECTS
+  end
+
+  def recaptcha_valid?
+    return true unless Settings.recaptcha.site_key.present?
+    options = case Settings.recaptcha.type
+              when "v2_checkbox"
+                { model: @comment }
+              when "v3"
+                { action: Settings.recaptcha.v3.action, minimum_score: Settings.recaptcha.v3.minimum_score }
+              end
+    verify_recaptcha(options)
   end
 end

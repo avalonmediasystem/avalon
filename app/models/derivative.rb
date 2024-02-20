@@ -1,4 +1,4 @@
-# Copyright 2011-2023, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2024, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 # 
@@ -31,8 +31,12 @@ class Derivative < ActiveFedora::Base
   property :duration, predicate: ::RDF::Vocab::EBUCore.duration, multiple: false do |index|
     index.as :stored_sortable
   end
-  property :track_id, predicate: Avalon::RDFVocab::EBUCore.identifier, multiple: false
-  property :hls_track_id, predicate: Avalon::RDFVocab::Derivative.hlsTrackID, multiple: false
+  property :track_id, predicate: Avalon::RDFVocab::EBUCore.identifier, multiple: false do |index|
+    index.as :displayable
+  end
+  property :hls_track_id, predicate: Avalon::RDFVocab::Derivative.hlsTrackID, multiple: false do |index|
+    index.as :displayable
+  end
   property :managed, predicate: Avalon::RDFVocab::Derivative.isManaged, multiple: false do |index|
     index.as ActiveFedora::Indexing::Descriptor.new(:boolean, :stored, :indexed)
   end

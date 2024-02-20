@@ -1,4 +1,4 @@
-# Copyright 2011-2023, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2024, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 # 
@@ -13,6 +13,7 @@
 # ---  END LICENSE_HEADER BLOCK  ---
 
 class Admin::CollectionsController < ApplicationController
+  include NoidValidator
   include Rails::Pagination
 
   before_action :authenticate_user!
@@ -262,11 +263,11 @@ class Admin::CollectionsController < ApplicationController
   end
 
   def poster
-    @collection = Admin::Collection.find(params['id'])
+    @collection = SpeedyAF::Proxy::Admin::Collection.find(params['id'])
     authorize! :show, @collection
 
     file = @collection.poster
-    if file.nil? || file.new_record?
+    if file.nil? || file.empty?
       render plain: 'Collection Poster Not Found', status: :not_found
     else
       render plain: file.content, content_type: file.mime_type
@@ -318,10 +319,25 @@ class Admin::CollectionsController < ApplicationController
       end
     end
 
-    collection.default_visibility = params[:visibility] unless params[:visibility].blank?
-    collection.default_hidden = params[:hidden] == "1"
-    collection.cdl_enabled = params[:cdl] == "1"
-    if collection.cdl_enabled?
+    update_access_settings(collection, params)
+
+    update_default_lending_period(collection, params) if collection.cdl_enabled?
+  end
+
+  def update_access_settings(collection, params)
+    if params[:save_field] == "visibility"
+      collection.default_visibility = params[:visibility] unless params[:visibility].blank?
+    end
+    if params[:save_field] == "discovery"
+      collection.default_hidden = params[:hidden] == "1"
+    end
+    if params[:save_field] == "cdl"
+      collection.cdl_enabled = params[:cdl] == "1"
+    end
+  end
+
+  def update_default_lending_period(collection, params)
+    if params[:save_field] == "lending_period"
       lending_period = build_default_lending_period(collection)
       if lending_period.positive?
         collection.default_lending_period = lending_period
@@ -345,7 +361,7 @@ class Admin::CollectionsController < ApplicationController
   end
 
   def apply_access(collection, params)
-    BulkActionJobs::ApplyCollectionAccessControl.perform_later(collection.id, params[:overwrite] == "true") if params["apply_access"].present?
+    BulkActionJobs::ApplyCollectionAccessControl.perform_later(collection.id, params[:overwrite] == "true", params[:save_field]) if params["apply_to_existing"].present?
   end
 
   def collection_params

@@ -1,4 +1,4 @@
-# Copyright 2011-2023, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2024, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 # 
@@ -146,6 +146,11 @@ class ModsDocument < ActiveFedora::OmDatastream
     t.related_item_label(:proxy => [:related_item, :displayLabel])
     t.collection(:proxy => [:related_item, :title_info, :title], :path => 'relatedItem[@type="host"]/oxns:titleInfo/oxns:title')
 
+    t.series_related_item(:path => 'relatedItem', :attributes => { :type => 'series'}) do
+      t.title_info(:ref => :title_info)
+    end
+    t.series(:proxy => [:series_related_item, :title_info, :title])
+
     t.location do
       t.url(:attributes => { :access => nil })
       t.url_with_context(:path => 'url', :attributes => { :access => 'object in context' })
@@ -224,7 +229,7 @@ class ModsDocument < ActiveFedora::OmDatastream
         # de-dupe imported values
         [:genre, :topical_subject, :geographic_subject, :temporal_subject,
          :occupation_subject, :person_subject, :corporate_subject, :family_subject,
-         :title_subject].each do |field|
+         :title_subject, :series].each do |field|
            self.send("#{field}=".to_sym, self.send(field).uniq)
         end
         # restore old media_type and resource_type
@@ -233,7 +238,7 @@ class ModsDocument < ActiveFedora::OmDatastream
         end
         self.send("resource_type=", old_resource_type)
         # let template remove languages that aren't in the controlled vocabulary, and de-dupe
-        languages = self.language.collect &:strip
+        languages = self.language_code.collect &:strip
         self.language = nil
         languages.uniq.each { |lang| self.add_language(lang) }
         # add new other identifiers and restore old other identifiers and remove the old bibliographic id

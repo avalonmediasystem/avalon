@@ -1,4 +1,4 @@
-# Copyright 2011-2023, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2024, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 # 
@@ -21,6 +21,17 @@ describe MediaObject do
   it 'assigns a noid id' do
     media_object = MediaObject.new
     expect { media_object.assign_id! }.to change { media_object.id }.from(nil).to(String)
+  end
+
+  describe 'find' do
+    it 'returns an object' do
+      expect(MediaObject.find(media_object.id)).to eq media_object
+    end
+    context 'with trailing slash' do
+      it 'returns an object' do
+        expect(MediaObject.find(media_object.id + '/')).to eq media_object
+      end
+    end
   end
 
   describe 'validations' do
@@ -343,6 +354,7 @@ describe MediaObject do
         'contributor' => [''],
         'publisher' => [''],
         'subject' => [''],
+        'series' => [''],
         'related_item_url' => [{label:'',url:''}],
         'geographic_subject' => [''],
         'temporal_subject' => [''],
@@ -363,6 +375,7 @@ describe MediaObject do
       expect(media_object.contributor).to eq([])
       expect(media_object.publisher).to eq([])
       expect(media_object.subject).to eq([])
+      expect(media_object.series).to eq([])
       expect(media_object.related_item_url).to eq([])
       expect(media_object.geographic_subject).to eq([])
       expect(media_object.temporal_subject).to eq([])
@@ -557,6 +570,20 @@ describe MediaObject do
         media_object.publish!(nil)
         expect(media_object.to_solr["workflow_published_sim"]).to eq('Unpublished')
       end
+      context 'validate: false' do
+        it 'publishes' do
+          media_object.publish!('adam@adam.com', validate: false)
+          expect(media_object.to_solr["workflow_published_sim"]).to eq('Published')
+        end
+        it 'unpublishes' do
+          media_object.publish!(nil, validate: false)
+          expect(media_object.to_solr["workflow_published_sim"]).to eq('Unpublished')
+        end
+        it 'raises runtime error if save fails' do
+          allow_any_instance_of(MediaObject).to receive(:save).and_return(false)
+          expect { media_object.publish!(nil, validate: false) }.to raise_error(RuntimeError)
+        end
+      end
     end
   end
 
@@ -566,7 +593,7 @@ describe MediaObject do
     end
     it 'should not index any unknown resource types' do
       media_object.resource_type = 'notated music'
-      expect(media_object.to_solr['format_sim']).not_to include 'Notated Music'
+      expect(media_object.to_solr['resource_type_ssim']).not_to include 'Notated Music'
     end
     it 'should index separate identifiers as separate values' do
       media_object.descMetadata.add_other_identifier('12345678','lccn')
@@ -594,9 +621,9 @@ describe MediaObject do
       media_object.save!
       media_object.reload
       solr_doc = media_object.to_solr(include_child_fields: true)
-      expect(solr_doc['all_comments_sim']).to include('MO Comment')
-      expect(solr_doc['all_comments_sim']).to include('[Test Label] MF Comment 1')
-      expect(solr_doc['all_comments_sim']).to include('[Test Label] MF Comment 2')
+      expect(solr_doc['all_comments_ssim']).to include('MO Comment')
+      expect(solr_doc['all_comments_ssim']).to include('[Test Label] MF Comment 1')
+      expect(solr_doc['all_comments_ssim']).to include('[Test Label] MF Comment 2')
     end
     it 'includes virtual group leases in external group facet' do
       media_object.governing_policies += [FactoryBot.create(:lease, inherited_read_groups: ['TestGroup'])]
@@ -722,6 +749,17 @@ describe MediaObject do
       end
       it 'should override the title' do
         expect { media_object.descMetadata.populate_from_catalog!(bib_id, 'local') }.to change { media_object.title }.to "245 A : B F G K N P S"
+      end
+      it 'should override langauge' do
+        expect { media_object.descMetadata.populate_from_catalog!(bib_id, 'local') }.to change { media_object.language }.to [{:code=>"eng", :text=>"English"}, {:code=>"fre", :text=>"French"}, {:code=>"ger", :text=>"German"}]
+      end
+
+      context 'with lanugage text' do
+        let(:mods) { File.read(File.expand_path("../../fixtures/#{bib_id}.lang_text.mods",__FILE__)) }
+
+        it 'should override langauge' do
+          expect { media_object.descMetadata.populate_from_catalog!(bib_id, 'local') }.to change { media_object.language }.to [{:code=>"eng", :text=>"English"}, {:code=>"fre", :text=>"French"}, {:code=>"ger", :text=>"German"}]
+        end
       end
     end
     describe 'should strip whitespace from bib_id parameter' do
@@ -905,7 +943,7 @@ describe MediaObject do
 
     it 'is indexed' do
       media_object.terms_of_use = terms_of_use_value
-      expect(media_object.to_solr["terms_of_use_si"]).to eq terms_of_use_value
+      expect(media_object.to_solr["terms_of_use_ssi"]).to eq terms_of_use_value
     end
 
     it 'roundtrips' do
@@ -1090,6 +1128,38 @@ describe MediaObject do
         expect(media_object.reload.read_groups).to eq ["ExternalGroup"]
         expect(solr_doc["read_access_group_ssim"]).to eq ["ExternalGroup"]
       end
+    end
+  end
+
+  describe ".autocomplete" do
+    before :each do
+      allow(Admin::Collection).to receive(:units).and_return(['Default', 'Test'])
+    end
+    let!(:mo1) { FactoryBot.create(:media_object, collection: collection1, series: ['Test 1', 'Alpha']) }
+    let!(:mo2) { FactoryBot.create(:media_object, collection: collection1, series: ['Test 1', 'Test 2']) }
+    let!(:mo3) { FactoryBot.create(:media_object, collection: collection2, series: ['Test 3']) }
+    let(:collection1) { FactoryBot.create(:collection, unit: 'Default') }
+    let(:collection2) { FactoryBot.create(:collection, unit: 'Test') }
+
+
+    it "should return all series within the parent collection's unit that include the query string" do
+      expect(MediaObject.autocomplete('Test', mo1.id)).to include({ id: 'Test 1', display: 'Test 1' })
+      expect(MediaObject.autocomplete('Test', mo1.id)).to include({ id: 'Test 2', display: 'Test 2' })
+      expect(MediaObject.autocomplete('Test', mo1.id)).not_to include({ id: 'Alpha', display: 'Alpha'})
+      expect(MediaObject.autocomplete('Test', mo1.id)).not_to include({ id: 'Test 3', display: 'Test 3' })
+    end
+
+    it 'should return results without duplicates' do
+      expect(MediaObject.autocomplete('Test', mo1.id).count({ id: 'Test 1', display: 'Test 1' })).to eq 1
+    end
+
+    it "should wildcard match" do
+      expect(MediaObject.autocomplete('ph', mo1.id)).to include({ id: 'Alpha', display: 'Alpha' })
+    end
+
+    it "should be case insensitive" do
+      expect(MediaObject.autocomplete('tes', mo1.id)).to include({ id: 'Test 1', display: 'Test 1' })
+      expect(MediaObject.autocomplete('te', mo1.id)).to include({ id: 'Test 2', display: 'Test 2' })
     end
   end
 end

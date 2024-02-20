@@ -1,4 +1,4 @@
-# Copyright 2011-2023, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2024, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 # 
@@ -51,10 +51,10 @@ class CollectionsController < CatalogController
     # Only go on if params[:id] is in @response.documents
     raise CanCan::AccessDenied unless document
 
-    @collection = Admin::Collection.find(params['id'])
+    @collection = SpeedyAF::Proxy::Admin::Collection.find(params['id'])
 
     file = @collection.poster
-    if file.nil? || file.new_record?
+    if file.nil? || file.empty?
       render plain: 'Collection Poster Not Found', status: :not_found
     else
       render plain: file.content, content_type: file.mime_type

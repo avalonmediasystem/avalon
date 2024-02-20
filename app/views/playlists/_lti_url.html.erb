@@ -1,5 +1,5 @@
 <%#
-Copyright 2011-2023, The Trustees of Indiana University and Northwestern
+Copyright 2011-2024, The Trustees of Indiana University and Northwestern
   University.  Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
 
@@ -14,29 +14,25 @@ Unless required by applicable law or agreed to in writing, software distributed
 ---  END LICENSE_HEADER BLOCK  ---
 %>
 <% if section=='tab-content' %>
-
-    <div class="tab-pane text-left" id="lti-tab">
-      <% if @playlist.visibility == Playlist::PUBLIC %>
-      <p class="muted">Copy the link below to share this playlist via LTI</p>
-      <form role="form">
-        <div class="form-group">
-          <input type="text" class="col-md-5 form-control" id="ltilink-object" value="<%= lti_share_url_for(@playlist) %>" onClick="this.select();" readonly="readonly">
-        </div>
-      </form>
-      <% elsif @playlist.visibility == Playlist::PRIVATE_WITH_TOKEN %>
-      <p class="muted">Copy the link below to share this playlist via LTI.  It can only be seen and shared by people with this link.</p>
-      <form role="form">
-        <div class="form-group">
-          <input type="text" class="col-md-5 form-control" id="ltilink-object" value="<%= lti_share_url_for(@playlist, token: @playlist.access_token) %>" onClick="this.select();" readonly="readonly">
-        </div>
-      </form>
-      <% else %>
-      <p class="muted">This playlist is private.  To enable sharing, change the visibility setting within the <%= link_to "Edit Playlist", edit_playlist_url(@playlist) %> page.</p>
-      <% end %>
-    </div>
-
+  <div class="tab-pane text-left" id="lti-tab">
+    <% if @playlist.visibility == Playlist::PUBLIC %>
+    <p class="muted">Copy the link below to share this playlist via LTI</p>
+    <form role="form">
+      <div class="form-group">
+        <input type="text" class="col-md-5 form-control" id="ltilink-object" value="<%= lti_share_url_for(@playlist) %>" onClick="this.select();" readonly="readonly">
+      </div>
+    </form>
+    <% elsif @playlist.visibility == Playlist::PRIVATE_WITH_TOKEN %>
+    <p class="muted">Copy the link below to share this playlist via LTI.  It can only be seen and shared by people with this link.</p>
+    <form role="form">
+      <div class="form-group">
+        <input type="text" class="col-md-5 form-control" id="ltilink-object" value="<%= lti_share_url_for(@playlist, token: @playlist.access_token) %>" onClick="this.select();" readonly="readonly">
+      </div>
+    </form>
+    <% else %>
+    <p class="muted">This playlist is private.  To enable sharing, change the visibility setting within the <%= link_to "Edit Playlist", edit_playlist_url(@playlist) %> page.</p>
+    <% end %>
+  </div>
 <% elsif section=='share-tabs' %>
-
-    <li><a href="#lti-tab" data-toggle="tab">LTI URL</a></li>
-
+  <a class="nav-link nav-item" href="#lti-tab" data-toggle="tab">LTI URL</a>
 <% end %>

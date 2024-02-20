@@ -1,4 +1,4 @@
-# Copyright 2011-2023, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2024, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 # 
@@ -75,7 +75,6 @@ describe MediaObjectsController, type: :controller do
           expect(get :tree, params: { id: media_object.id }).to render_template('errors/restricted_pid')
           expect(get :deliver_content, params: { id: media_object.id, file: 'descMetadata' }).to render_template('errors/restricted_pid')
           expect(delete :destroy, params: { id: media_object.id }).to render_template('errors/restricted_pid')
-          expect(get :add_to_playlist_form, params: { id: media_object.id }).to render_template('errors/restricted_pid')
           expect(post :add_to_playlist, params: { id: media_object.id }).to render_template('errors/restricted_pid')
         end
         it "json routes should return 401" do
@@ -103,7 +102,6 @@ describe MediaObjectsController, type: :controller do
           expect(put :update, params: { id: media_object.id }).to render_template('errors/restricted_pid')
           expect(get :tree, params: { id: media_object.id }).to render_template('errors/restricted_pid')
           expect(get :deliver_content, params: { id: media_object.id, file: 'descMetadata' }).to render_template('errors/restricted_pid')
-          expect(get :add_to_playlist_form, params: { id: media_object.id }).to render_template('errors/restricted_pid')
           expect(post :add_to_playlist, params: { id: media_object.id }).to render_template('errors/restricted_pid')
         end
         it "json routes should return 401" do
@@ -277,7 +275,8 @@ describe MediaObjectsController, type: :controller do
       :table_of_contents,
       :physical_description,
       :other_identifier,
-      :rights_statement
+      :rights_statement,
+      :series
     ]}
 
     describe "#create" do
@@ -426,6 +425,7 @@ describe MediaObjectsController, type: :controller do
           expect(new_media_object.related_item_url).to eq media_object.related_item_url
           expect(new_media_object.other_identifier).to eq media_object.other_identifier
           expect(new_media_object.rights_statement).to eq media_object.rights_statement
+          expect(new_media_object.series).to eq media_object.series
           expect(new_media_object.avalon_resource_type).to eq media_object.avalon_resource_type
           expect(new_media_object.master_files.first.date_digitized).to eq(media_object.master_files.first.date_digitized)
           expect(new_media_object.master_files.first.identifier).to eq(media_object.master_files.first.identifier)
@@ -784,8 +784,8 @@ describe MediaObjectsController, type: :controller do
       end
 
       it "should return an error if the PID does not exist" do
-        expect(MediaObject).to receive(:find).with('no-such-object') { raise ActiveFedora::ObjectNotFoundError }
         get :show, params: { id: 'no-such-object' }
+        expect(response).to render_template("errors/unknown_pid")
         expect(response.response_code).to eq(404)
       end
 
@@ -1126,16 +1126,17 @@ describe MediaObjectsController, type: :controller do
       end
     end
 
-    context "correctly handle missing controlled vocabulary sections" do
-      before do
-        stub_const("ModsDocument::RIGHTS_STATEMENTS", nil)
-      end
-      it "should redirect to homepage if controlled_vocabulary.yml is incomplete" do
-        get :show, params: { id: media_object.id }
-        expect(response).to redirect_to(root_path)
-        expect(flash[:error]).to be_present
-      end
-    end
+    ## NOTE: Test for MODS XML on page, which has been decided to be moved with item page re-design
+    # context "correctly handle missing controlled vocabulary sections" do
+    #   before do
+    #     stub_const("ModsDocument::RIGHTS_STATEMENTS", nil)
+    #   end
+    #   it "should redirect to homepage if controlled_vocabulary.yml is incomplete" do
+    #     get :show, params: { id: media_object.id }
+    #     expect(response).to redirect_to(root_path)
+    #     expect(flash[:error]).to be_present
+    #   end
+    # end
 
     describe 'Redirect back to media object after sign in' do
       let(:media_object){ FactoryBot.create(:media_object, visibility: 'private') }
@@ -1236,6 +1237,81 @@ describe MediaObjectsController, type: :controller do
         it "should not return structure inline if requested not to" do
           get 'show', params: { id: media_object.id, format:'json', include_structure: false }
           expect(json['files'].first['structure']).not_to eq master_file.structuralMetadata.content
+        end
+      end
+
+      context 'read from solr' do
+      	it 'should not read from fedora' do
+      	  perform_enqueued_jobs(only: MediaObjectIndexingJob)
+      	  WebMock.reset_executed_requests!
+          get 'show', params: { id: media_object.id, format:'json' }
+      	  expect(a_request(:any, /#{ActiveFedora.fedora.base_uri}/)).not_to have_been_made
+      	end
+
+        context 'MO with identifier-less master file' do
+          let!(:media_object) { FactoryBot.create(:published_media_object, visibility: 'public') }
+          let!(:master_file) { FactoryBot.create(:master_file, :with_derivative, media_object: media_object, identifier: nil) }
+          it 'should not read from fedora' do
+            perform_enqueued_jobs(only: MediaObjectIndexingJob)
+            WebMock.reset_executed_requests!
+            get 'show', params: { id: media_object.id, format: 'json' }
+            expect(a_request(:any, /#{ActiveFedora.fedora.base_uri}/)).not_to have_been_made
+          end
+        end
+
+        context 'MO with master file containing IndexedFiles' do
+          let!(:media_object) { FactoryBot.create(:published_media_object, visibility: 'public') }
+          let!(:master_file) { FactoryBot.create(:master_file, :with_derivative, :with_thumbnail, :with_poster, :with_waveform, :with_captions, media_object: media_object, identifier: nil) }
+          it 'should not read from fedora' do
+            perform_enqueued_jobs(only: MediaObjectIndexingJob)
+            WebMock.reset_executed_requests!
+            get 'show', params: { id: media_object.id, format: 'json' }
+            expect(a_request(:any, /#{ActiveFedora.fedora.base_uri}/)).not_to have_been_made
+          end
+        end
+      end
+    end
+
+    context 'misformed NOID' do
+      it 'should redirect to the requested media object if valid' do
+        get 'show', params: { id: "#{media_object.id}] !-()" }
+        expect(response).to redirect_to(media_object_path(id: media_object.id))
+      end
+      it 'should redirect to unknown_pid page if invalid' do
+        get 'show', params: { id: "nonvalid noid]" }
+        expect(response).to render_template("errors/unknown_pid")
+        expect(response.response_code).to eq(404)
+      end
+    end
+
+    context 'read from solr' do
+      let!(:media_object) { FactoryBot.create(:published_media_object, :with_master_file, visibility: 'public') }
+      it 'should not read from fedora' do
+        perform_enqueued_jobs(only: MediaObjectIndexingJob)
+        WebMock.reset_executed_requests!
+        get 'show', params: { id: media_object.id }
+        expect(a_request(:any, /#{ActiveFedora.fedora.base_uri}/)).not_to have_been_made
+      end
+
+      context 'media object with identifier-less master file' do
+        let!(:media_object) { FactoryBot.create(:published_media_object, visibility: 'public') }
+        let!(:master_file) { FactoryBot.create(:master_file, :with_derivative, media_object: media_object, identifier: nil) }
+        it 'should not read from fedora' do
+          perform_enqueued_jobs(only: MediaObjectIndexingJob)
+          WebMock.reset_executed_requests!
+          get 'show', params: { id: media_object.id }
+          expect(a_request(:any, /#{ActiveFedora.fedora.base_uri}/)).not_to have_been_made
+        end
+      end
+
+      context 'media object with master file containing IndexedFiles' do
+        let!(:media_object) { FactoryBot.create(:published_media_object, visibility: 'public') }
+        let!(:master_file) { FactoryBot.create(:master_file, :with_derivative, :with_thumbnail, :with_poster, :with_waveform, :with_captions, media_object: media_object, identifier: nil) }
+        it 'should not read from fedora' do
+          perform_enqueued_jobs(only: MediaObjectIndexingJob)
+          WebMock.reset_executed_requests!
+          get 'show', params: { id: media_object.id }
+          expect(a_request(:any, /#{ActiveFedora.fedora.base_uri}/)).not_to have_been_made
         end
       end
     end
@@ -1367,7 +1443,19 @@ describe MediaObjectsController, type: :controller do
           media_object.workflow.last_completed_step = 'file-upload'
           media_object.save!(validate: false)
           get 'update_status', params: { id: media_object.id, status: 'publish' }
-          expect(flash[:notice]).to eq("Unable to publish item: Validation failed: Title field is required., Date issued field is required.")
+          expect(flash[:notice]).to eq("Unable to publish item: #{media_object&.title} (#{media_object.id}) (missing required fields)")
+          media_object.reload
+          expect(media_object).not_to be_published
+        end
+
+        it "item is invalid and no last_completed_step" do
+          media_object = FactoryBot.create(:media_object, collection: collection)
+          media_object.title = nil
+          media_object.date_issued = nil
+          media_object.workflow.last_completed_step = ''
+          media_object.save!(validate: false)
+          get 'update_status', params: { id: media_object.id, status: 'publish' }
+          expect(flash[:notice]).to eq("Unable to publish item: #{media_object&.title} (#{media_object.id}) (missing required fields)")
           media_object.reload
           expect(media_object).not_to be_published
         end
@@ -1382,9 +1470,32 @@ describe MediaObjectsController, type: :controller do
         expect(media_object).not_to be_published
       end
 
-      it "should fail when id doesn't exist" do
-        get 'update_status', params: { id: 'this-id-is-fake', status: 'unpublish' }
-        expect(response.code).to eq '404'
+      it 'unpublishes invalid items' do
+        media_object = FactoryBot.create(:published_media_object, collection: collection)
+        media_object.title = nil
+        media_object.date_issued = nil
+        media_object.save!(validate: false)
+        get 'update_status', params: { id: media_object.id, status: 'unpublish' }
+        media_object.reload
+        expect(media_object).not_to be_published
+      end
+
+      it 'unpublishes invalid items and no last completed step' do
+        media_object = FactoryBot.create(:published_media_object, collection: collection)
+        media_object.title = nil
+        media_object.date_issued = nil
+        media_object.workflow.last_completed_step = ''
+        media_object.save!(validate: false)
+        get 'update_status', params: { id: media_object.id, status: 'unpublish' }
+        media_object.reload
+        expect(media_object).not_to be_published
+      end
+
+      context "should fail when" do
+        it "id doesn't exist" do
+          get 'update_status', params: { id: 'this-id-is-fake', status: 'unpublish' }
+          expect(response.code).to eq '404'
+        end
       end
 
       it "should unpublish multiple items" do
@@ -1608,27 +1719,6 @@ describe MediaObjectsController, type: :controller do
     end
   end
 
-  describe "#add_to_playlist_form" do
-    let(:media_object) { FactoryBot.create(:fully_searchable_media_object, :with_master_file) }
-
-    before do
-      login_as :user
-    end
-    it "should render add_to_playlist_form with correct masterfile_id" do
-      get :add_to_playlist_form, params: { id: media_object.id, scope: 'master_file', masterfile_id: media_object.ordered_master_file_ids[0] }
-      expect(response).to render_template(:_add_to_playlist_form)
-      expect(response.body).to include(media_object.ordered_master_file_ids[0])
-    end
-    it "should render the correct label for scope=master_file" do
-      get :add_to_playlist_form, params: { id: media_object.id, scope: 'master_file', masterfile_id: media_object.ordered_master_file_ids[0] }
-      expect(response.body).to include('Add Section to Playlist')
-    end
-    it "should render the correct label for scope=media_object" do
-      get :add_to_playlist_form, params: { id: media_object.id, scope: 'media_object', masterfile_id: media_object.ordered_master_file_ids[0] }
-      expect(response.body).to include('Add Item to Playlist')
-    end
-  end
-
   describe "#add_to_playlist" do
     let(:media_object) { FactoryBot.create(:fully_searchable_media_object, title: 'Test Item') }
     let(:master_file) { FactoryBot.create(:master_file, media_object: media_object, title: 'Test Section') }
@@ -1674,6 +1764,16 @@ describe MediaObjectsController, type: :controller do
       post :add_to_playlist, params: { id: media_object.id, post: { playlist_id: other_playlist.id, masterfile_id: media_object.ordered_master_file_ids[0], playlistitem_scope: 'section' } }
       expect(response).to have_http_status(403)
       expect(JSON.parse(response.body).symbolize_keys).to eq({message: "<p>You are not authorized to update this playlist.</p>", status: 403})
+    end
+
+    context 'read from solr' do
+      it 'should not read from fedora' do
+        media_object
+        perform_enqueued_jobs(only: MediaObjectIndexingJob)
+        WebMock.reset_executed_requests!
+        post :add_to_playlist, params: { id: media_object.id, post: { playlist_id: playlist.id, masterfile_id: media_object.ordered_master_file_ids[0], playlistitem_scope: 'section' } }
+        expect(a_request(:any, /#{ActiveFedora.fedora.base_uri}/)).not_to have_been_made
+      end
     end
   end
 
@@ -1730,10 +1830,36 @@ describe MediaObjectsController, type: :controller do
 
       let(:media_object) { FactoryBot.create(:published_media_object) }
 
-      it 'returns a json preview of the media object' do
+      it 'returns unauthorized' do
         get :move_preview, params: { id: media_object.id, format: 'json' }
         expect(response.status).to eq 401
         expect(response.content_type).to eq 'application/json'
+      end
+    end
+  end
+
+  describe '#manifest' do
+    context 'read from solr' do
+      let!(:master_file) { FactoryBot.create(:master_file, :with_derivative, media_object: media_object) }
+      let!(:media_object) { FactoryBot.create(:published_media_object, visibility: 'public') }
+      it 'should not read from fedora' do
+        perform_enqueued_jobs(only: MediaObjectIndexingJob)
+        WebMock.reset_executed_requests!
+        get 'manifest', params: { id: media_object.id, format: 'json' }
+        expect(a_request(:any, /#{ActiveFedora.fedora.base_uri}/)).not_to have_been_made
+      end
+    end
+  end
+
+  describe '#tree' do
+    context 'read from solr' do
+      let!(:media_object) { FactoryBot.create(:published_media_object, :with_master_file, visibility: 'public') }
+      it 'should not read from fedora' do
+        login_as(:administrator)
+        perform_enqueued_jobs(only: MediaObjectIndexingJob)
+        WebMock.reset_executed_requests!
+        get 'tree', params: { id: media_object.id }
+        expect(a_request(:any, /#{ActiveFedora.fedora.base_uri}/)).not_to have_been_made
       end
     end
   end

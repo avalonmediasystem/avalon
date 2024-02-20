@@ -1,4 +1,4 @@
-# Copyright 2011-2023, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2024, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 # 
@@ -53,11 +53,18 @@ describe WatchedEncode do
       encode.create!
       expect(master_file.reload.workflow_id).to eq encode.id.to_s
     end
+
+    it 'creates an encode record' do
+      encode.create!
+      encode_record = ActiveEncode::EncodeRecord.last
+      expect(encode_record.title).to eq 'sample.mp4'
+      expect(encode_record.display_title).to eq 'sample.mp4'
+    end
   end
 
   describe 'polling update' do
     around(:example) do |example|
-      # In Rails 5.1+ this can be restricted to whitelist jobs allowed to be performed
+      # In Rails 5.1+ this can be restricted to allow listed jobs to be performed
       perform_enqueued_jobs { example.run }
     end
 
@@ -73,6 +80,9 @@ describe WatchedEncode do
     end
 
     context 'using Minio and ffmpeg adapter' do
+      let(:encode) { described_class.new(minio_url, master_file_id: master_file.id) }
+      let(:minio_url) { "http://minio:9000/masterfiles/uploads/c0b216da-bb53-4afd-8d4c-c4761a78e230/#{fixture_file}?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=minio%2F20231101%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20231101T202236Z&X-Amz-Expires=900&X-Amz-SignedHeaders=host&X-Amz-Signature=982ffe02232c053ee38f470f4ec4844c3302ceb35afd4f3f8564731c51b5a044" }
+
       before do
         Settings.minio = double("minio", endpoint: "http://minio:9000", public_host: "http://domain:9000")
         allow(Settings).to receive(:encoding).and_return(double(engine_adapter: "ffmpeg", derivative_bucket: "derivs"))
@@ -82,6 +92,13 @@ describe WatchedEncode do
       it 'uploads to Minio' do
         encode.create!
         expect(master_file).to have_received(:update_progress_on_success!)
+      end
+
+      it 'creates an encode record' do
+        encode.create!
+        encode_record = ActiveEncode::EncodeRecord.last
+        expect(encode_record.title).to eq fixture_file
+        expect(encode_record.display_title).to eq fixture_file
       end
 
       after do
@@ -95,6 +112,13 @@ describe WatchedEncode do
           encode.create!
           expect(master_file).to have_received(:update_progress_on_success!)
         end
+
+        it 'creates an encode record' do
+          encode.create!
+          encode_record = ActiveEncode::EncodeRecord.last
+          expect(encode_record.title).to eq fixture_file
+          expect(encode_record.display_title).to eq fixture_file
+        end
       end
 
       context 'with filename with escaped spaces' do
@@ -103,6 +127,13 @@ describe WatchedEncode do
         it 'uploads to Minio' do
           encode.create!
           expect(master_file).to have_received(:update_progress_on_success!)
+        end
+
+        it 'creates an encode record' do
+          encode.create!
+          encode_record = ActiveEncode::EncodeRecord.last
+          expect(encode_record.title).to eq fixture_file
+          expect(encode_record.display_title).to eq fixture_file
         end
       end
     end

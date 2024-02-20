@@ -1,0 +1,50 @@
+<%#
+Copyright 2011-2024, The Trustees of Indiana University and Northwestern
+  University.  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+
+You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+  under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+  CONDITIONS OF ANY KIND, either express or implied. See the License for the
+  specific language governing permissions and limitations under the License.
+---  END LICENSE_HEADER BLOCK  ---
+%>
+<% can_update = can?( :update_access_control, object) %>
+
+<div class="card special-access">
+  <div class="card-header">
+    <h3 class="card-title">Assign special access</h3>
+  </div>
+  <div class="card-body">
+    <%= render "modules/access_object", object: object,
+          access_object: "user", members: @users, leases: @user_leases,
+          autocomplete_model: 'user',
+          input_disabled: !can_update %>
+    <%= render "modules/access_object", object: object,
+          access_object: "group", members: @groups, leases: @group_leases,
+          dropdown_values: [@addable_groups, 'name', 'name'],
+          input_disabled: !can_update %>
+    <%= render "modules/access_object", object: object,
+          access_object: "class", members: @virtual_groups, leases: @virtual_leases,
+          autocomplete_model: 'externalGroup',
+          display_helper: :vgroup_display,
+          input_disabled: !can_update %>
+    <%= render "modules/access_object", object: object,
+          access_object: "ipaddress", members: @ip_groups, leases: @ip_leases,
+          input_disabled: !can_update %>
+    <% if object.is_a?(Admin::Collection) %>
+    <%= bootstrap_form_for object, html: { id: 'special_access_form' }  do |vid| %>
+    <%= hidden_field_tag :save_field, 'special_access' %>
+      <div class='form-group'>
+        <%= button_tag "Apply to All Existing Items", type: 'button', class: "btn btn-outline", data: { toggle:"modal", target:"#access_control_modal" } %>
+      </div>
+
+      <%= render modal[:partial], modal_title: modal[:title], affected: object.media_objects.count if defined? modal %>
+      <% end %>
+    <% end %>
+  </div>
+</div>

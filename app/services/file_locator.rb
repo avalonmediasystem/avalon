@@ -1,4 +1,4 @@
-# Copyright 2011-2023, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2024, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 # 
@@ -33,7 +33,7 @@ class FileLocator
 
     def local_file
       @local_file ||= Tempfile.new(File.basename(key))
-      object.download_file(@local_file.path) if File.zero?(@local_file)
+      object.download_file(@local_file.path, mode: 'single_request') if File.zero?(@local_file)
       @local_file
     ensure
       @local_file.close

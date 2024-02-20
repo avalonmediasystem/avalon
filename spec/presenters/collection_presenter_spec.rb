@@ -1,4 +1,4 @@
-# Copyright 2011-2023, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2024, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 # 
@@ -81,6 +81,14 @@ describe CollectionPresenter do
 
     context 'without a website url' do
       let(:website_url) { nil }
+
+      it 'returns null' do
+        expect(presenter.website_link).to be_nil
+      end
+    end
+
+    context 'with a blank website url' do
+      let(:website_url) { '' }
 
       it 'returns null' do
         expect(presenter.website_link).to be_nil

@@ -1,0 +1,126 @@
+<%#
+Copyright 2011-2024, The Trustees of Indiana University and Northwestern
+  University.  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+
+You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+  under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+  CONDITIONS OF ANY KIND, either express or implied. See the License for the
+  specific language governing permissions and limitations under the License.
+---  END LICENSE_HEADER BLOCK  ---
+%>
+
+<div id="thumbnail-button" class="d-inline-block">
+  <button type="button" class="btn btn-outline text-nowrap" id="create-thumbnail-btn" data-toggle="modal" data-target="#thumbnailModal" disabled>
+    Create Thumbnail
+  </button>
+</div>
+
+<div class="modal fade" id="thumbnailModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" style="display: none;" data-title="<%= @media_object.title %>">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">Update Poster Image</h4>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+      </div>
+      <div class="modal-body text-center">
+        <p><img class="img-polaroid img-fluid" id="img-polaroid"></p>
+        <div class="alert alert-warning alert-dismissible" role="alert">
+          <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          This will update the poster and thumbnail images for this video.
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button data-dismiss="modal" class="btn btn-outline">Cancel</button>
+        <button id="create-thumbnail-submit-button" class="btn btn-primary">Update Poster Image</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<% content_for :page_scripts do %>
+<script>
+  $(document).ready(function() {
+    const sectionIds = <%= @media_object.ordered_master_file_ids.to_json.html_safe %>;
+    let baseUrl = ''
+    let offset = ''
+    let timeCheck = setInterval(enableCreateThumbnail, 500);
+
+    function enableCreateThumbnail() {
+      let player = document.getElementById('iiif-media-player');
+
+      if (player && player.player != undefined) {
+        player.player.on('loadedmetadata', () => {
+          let thumbnailBtn = document.getElementById('create-thumbnail-btn');
+          if (thumbnailBtn) {
+            thumbnailBtn.disabled = false;
+          }
+          clearInterval(timeCheck);
+        });
+        /*
+          Browsers on MacOS sometimes miss the 'loadedmetadata' event resulting in a disabled add to playlist button indefinitely.
+          This timeout enables the add to playlist button, when this happens. It checks the button's state and enables it as needed.
+        */
+        setTimeout(() => {
+          let thumbnailBtn = document.getElementById('create-thumbnail-btn');
+          if (thumbnailBtn && thumbnailBtn.disabled) {
+            thumbnailBtn.disabled = false;
+          }
+          clearInterval(timeCheck);
+        }, 500);
+      }
+
+      $('#thumbnailModal').on('show.bs.modal', function(e) {
+        let currentPlayer = document.getElementById('iiif-media-player');
+        let $imgPolaroid = document.getElementById('img-polaroid');
+        offset = currentPlayer.player.currentTime();
+
+        canvasIndex = parseInt(currentPlayer.dataset.canvasindex);
+        const sectionId = sectionIds[canvasIndex];
+        baseUrl = '/master_files/' + sectionId;
+
+        if ($imgPolaroid) {
+          let src = baseUrl + '/poster?offset=' + offset + '&preview=true';
+
+          // Display a preview of thumbnail to user
+          $imgPolaroid.setAttribute('src', src);
+          $($imgPolaroid).fadeIn('slow');
+        }
+      });
+
+      $('#create-thumbnail-submit-button').on('click', function(e) {
+        const modalBody = document.getElementsByClassName('modal-body')[0];
+        // Put in a loading spinner and disable buttons to prevent double clicks
+        modalBody.classList.add('spinner');
+        $('#thumbnailModal')
+          .find('button')
+          .attr({ disabled: true });
+
+        $.ajax({
+          url: baseUrl + '/still',
+          type: 'POST',
+          data: {
+            offset: offset
+          }
+        })
+          .done(response => {
+            $('#thumbnailModal').modal('hide');
+          })
+          .fail(error => {
+            console.log(error);
+          })
+          .always(() => {
+            modalBody.classList.remove('spinner');
+            $('#thumbnailModal')
+              .find('button')
+              .attr({ disabled: false });
+          });
+      });
+    };
+  });
+</script>
+<% end %>

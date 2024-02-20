@@ -1,4 +1,4 @@
-# Copyright 2011-2023, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2024, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 # 
@@ -34,7 +34,7 @@ module MasterFileBehavior
   def stream_details
     flash, hls = [], []
 
-    common, captions_path, captions_format = nil, nil, nil, nil, nil
+    common, caption_paths = nil, nil
 
     derivatives.each do |d|
       common = { quality: d.quality,
@@ -57,22 +57,25 @@ module MasterFileBehavior
 
     poster_path = Rails.application.routes.url_helpers.poster_master_file_path(self)
     if has_captions?
-      captions_path = Rails.application.routes.url_helpers.captions_master_file_path(self)
-      captions_format = self.captions.mime_type
+      caption_paths = []
+      supplemental_file_captions.each { |c| caption_paths.append(build_caption_hash(c)) }
+
+      caption_paths.append(build_caption_hash(captions)) if captions.present?
+
+      caption_paths
     end
 
     # Returns the hash
     return({
       id: self.id,
-      label: title,
+      label: structure_title,
       is_video: is_video?,
       poster_image: poster_path,
       embed_code: embed_code(EMBED_SIZE[:medium], {urlappend: '/embed'}),
       stream_flash: flash,
       stream_hls: hls,
       cookie_auth: cookie_auth?,
-      captions_path: captions_path,
-      captions_format: captions_format,
+      caption_paths: caption_paths,
       duration: (duration.to_f / 1000),
       embed_title: embed_title
     })
@@ -116,12 +119,16 @@ module MasterFileBehavior
     [media_object.title, display_title].compact.join(" - ")
   end
 
+  def structure_title
+    display_title.present? ? display_title : media_object.title
+  end
+
   def embed_code(width, permalink_opts = {})
     begin
       url = if self.permalink.present?
         self.permalink_with_query(permalink_opts)
       else
-        embed_master_file_url(self.id, only_path: false, protocol: '//')
+        embed_master_file_url(self.id)
       end
       height = is_video? ? (width/display_aspect_ratio.to_f).floor : AUDIO_HEIGHT
       "<iframe title=\"#{HTMLEntities.new.encode(embed_title)}\" src=\"#{url}\" width=\"#{width}\" height=\"#{height}\" frameborder=\"0\" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>"
@@ -140,5 +147,41 @@ module MasterFileBehavior
 
   def sort_streams array
     array.sort { |x, y| QUALITY_ORDER[x[:quality]] <=> QUALITY_ORDER[y[:quality]] }
+  end
+
+  def build_caption_hash(caption)
+    if caption.is_a?(SupplementalFile)
+      path = Rails.application.routes.url_helpers.master_file_supplemental_file_path(master_file_id: self.id, id: caption.id)
+      language = caption.language
+      label = caption.label
+    else
+      path = Rails.application.routes.url_helpers.captions_master_file_path(self)
+      language = "en"
+      label = nil
+    end
+    {
+      path: path,
+      mime_type: caption.mime_type,
+      language: language,
+      label: label
+    }
+  end
+
+  def supplemental_file_captions
+    supplemental_files(tag: 'caption')
+  end
+
+  # Supplies the route to the master_file as an rdf formatted URI
+  # @return [String] the route as a uri
+  # @example uri for a mf on avalon.iu.edu with a id of: avalon:1820
+  #   "my_master_file.rdf_uri" #=> "https://www.avalon.iu.edu/master_files/avalon:1820"
+  def rdf_uri
+    master_file_url(id)
+  end
+
+  # Returns the dctype of the master_file
+  # @return [String] either 'dctypes:MovingImage' or 'dctypes:Sound'
+  def rdf_type
+    is_video? ? 'dctypes:MovingImage' : 'dctypes:Sound'
   end
 end

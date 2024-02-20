@@ -1,5 +1,5 @@
 <%#
-Copyright 2011-2023, The Trustees of Indiana University and Northwestern
+Copyright 2011-2024, The Trustees of Indiana University and Northwestern
   University.  Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
 
@@ -29,10 +29,16 @@ Unless required by applicable law or agreed to in writing, software distributed
       <%= comment.email_field :email_confirmation, label: 'Confirm email address' %>
       <%= comment.select :subject, options_for_select(@subjects), { :prompt => 'Select one' }, { :control_class => 'form-control' } %>
       <%= comment.text_area :comment, rows: 10 %>
-      <% if Settings.recaptcha.present?%>
-        <div class="form-group">
-          <%= recaptcha_tags %>
-        </div>
+      <% if Settings.recaptcha.site_key.present?%>
+        <% if Settings.recaptcha.type == "v2_checkbox" %>
+	  <div class="form-group">
+	    <%= recaptcha_tags %>
+	  </div>
+        <% elsif Settings.recaptcha.type == "v3" %>
+	  <div class="form-group">
+	    <%= recaptcha_v3(action: Settings.recaptcha.v3.action) %>
+	  </div>
+        <% end %>
       <% end %>
       <%= comment.primary "Submit comments" %>
     </fieldset>

@@ -1,4 +1,4 @@
-# Copyright 2011-2023, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2024, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 # 
@@ -103,7 +103,7 @@ describe SecurityHelper, type: :helper do
 
   context 'when using non-AWS streaming server' do
     describe '#add_stream_cookies' do
-      it 'adds security tokens to cookies' do
+      it 'does not add security tokens to cookies' do
         expect { helper.add_stream_cookies(stream_info) }.not_to change { controller.cookies.sum {|k,v| 1} }
       end
     end
@@ -149,6 +149,61 @@ describe SecurityHelper, type: :helper do
 
           it 'does not rewrite urls in the stream_info' do
             expect { helper.secure_streams(stream_info, media_object.id) }.not_to change { stream_info.slice(:stream_flash, :stream_hls).values.flatten.collect {|v| v[:url]} }
+            [:stream_hls].each do |protocol|
+              stream_info[protocol].each do |quality|
+                expect(quality[:url]).not_to eq secure_url
+              end
+            end
+          end
+        end
+      end
+    end
+
+    describe '#secure_stream_infos' do
+      let(:master_file) { FactoryBot.create(:master_file, :with_derivative, media_object: media_object) }
+      let(:token) { 'dcba-4321' }
+      let(:secure_url_with_token) { secure_url + "?token=#{token}" }
+
+      before do
+        allow(SecurityHandler).to receive(:secure_url).with(String, token: token).and_return(secure_url_with_token)
+      end
+
+      context 'controlled digital lending is disabled' do
+        before { allow(Settings.controlled_digital_lending).to receive(:enable).and_return(false) }
+
+        it 'rewrites urls in the stream_infos' do
+          stream_info_hash = helper.secure_stream_infos([master_file], [media_object])
+          stream_info = stream_info_hash[master_file.id]
+          [:stream_hls].each do |protocol|
+            stream_info[protocol].each do |quality|
+              expect(quality[:url]).to eq secure_url
+            end
+          end
+        end
+      end
+
+      context 'controlled digital lending is enabled' do
+        before { allow(Settings.controlled_digital_lending).to receive(:enable).and_return(true) }
+        before { allow(Settings.controlled_digital_lending).to receive(:collections_enabled).and_return(true) }
+
+        context 'the user has the item checked out' do
+          before { FactoryBot.create(:checkout, media_object_id: media_object.id, user_id: user.id)}
+
+          it 'rewrites urls in the stream_infos' do
+            stream_info_hash = helper.secure_stream_infos([master_file], [media_object])
+            stream_info = stream_info_hash[master_file.id]
+            [:stream_hls].each do |protocol|
+              stream_info[protocol].each do |quality|
+                expect(quality[:url]).to eq secure_url
+              end
+            end
+          end
+        end
+
+        context 'the user does not have the item checked out' do
+          it 'does not rewrite urls in the stream_info' do
+            stream_info_hash = helper.secure_stream_infos([master_file], [media_object])
+            stream_info = stream_info_hash[master_file.id]
             [:stream_hls].each do |protocol|
               stream_info[protocol].each do |quality|
                 expect(quality[:url]).not_to eq secure_url

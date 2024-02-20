@@ -1,4 +1,4 @@
-# Copyright 2011-2023, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2024, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 # 
@@ -15,17 +15,26 @@
 FactoryBot.define do
   factory :supplemental_file do
     label { Faker::Lorem.word }
+    language { "eng" }
 
     trait :with_attached_file do
       file { fixture_file_upload(Rails.root.join('spec', 'fixtures', 'collection_poster.png'), 'image/png') }
     end
 
     trait :with_transcript_file do
-      file { fixture_file_upload(Rails.root.join('spec', 'fixtures', 'captions.vtt'), 'text/vtt')}
+      file { fixture_file_upload(Rails.root.join('spec', 'fixtures', 'captions.vtt'), 'text/vtt') }
+    end
+
+    trait :with_caption_file do
+      file { fixture_file_upload(Rails.root.join('spec', 'fixtures', 'captions.vtt'), 'text/vtt') }
     end
 
     trait :with_transcript_tag do
       tags { ['transcript'] }
     end
+
+    trait :with_caption_tag do
+      tags { ['caption'] }
+    end
   end
-end 
+end

@@ -1,4 +1,4 @@
-# Copyright 2011-2023, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2024, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 # 
@@ -14,6 +14,8 @@
 
 class User < ActiveRecord::Base
   has_many :checkouts, dependent: :destroy
+  has_many :playlists, dependent: :destroy
+  has_many :timelines, dependent: :destroy
   attr_writer :login
   # Connects this user object to Hydra behaviors.
   include Hydra::User
@@ -130,7 +132,7 @@ class User < ActiveRecord::Base
     find_or_create_by_username_or_email(auth_hash.uid, auth_hash.info.email, 'lti')
   end
 
-  def self.autocomplete(query)
+  def self.autocomplete(query, _id = nil)
     self.where("username LIKE :q OR email LIKE :q", q: "%#{query}%").collect { |user|
       { id: user.user_key, display: user.user_key }
     }

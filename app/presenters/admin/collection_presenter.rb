@@ -1,4 +1,4 @@
-# Copyright 2011-2023, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2024, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 # 
@@ -43,7 +43,7 @@ class Admin::CollectionPresenter
   end
 
   def managers
-    @managers ||= document["edit_access_person_ssim"] & (Avalon::RoleControls.users("manager") | (Avalon::RoleControls.users("administrator") || []))
+    @managers ||= document["edit_access_person_ssim"] & (document["collection_managers_ssim"] || [])
   end
 
   def editors

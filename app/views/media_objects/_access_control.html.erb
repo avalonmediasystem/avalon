@@ -1,5 +1,5 @@
 <%#
-Copyright 2011-2023, The Trustees of Indiana University and Northwestern
+Copyright 2011-2024, The Trustees of Indiana University and Northwestern
   University.  Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
 
@@ -13,9 +13,82 @@ Unless required by applicable law or agreed to in writing, software distributed
   specific language governing permissions and limitations under the License.
 ---  END LICENSE_HEADER BLOCK  ---
 %>
+<%= bootstrap_form_for @media_object, html: { id: 'access_control_form' }  do |vid| %>
+<%= hidden_field_tag :step, @active_step %>
+<% if lending_enabled?(@media_object) %>
+  <div class="card item-lending-period">
+    <div class="card-header">
+      <h3 class="card-title">Item lending period</h3>
+    </div>
+    <div class="card-body">
+      <div class="form-group">
+        <%=  render partial: "modules/tooltip", locals: { form: vid, field: :lending_period, tooltip: t("access_control.#{:lending_period}"), options: {display_label: (t("access_control.#{:lending_period}label")+'*').html_safe} } %><br />
+        <% d, h = (@media_object.lending_period/3600).divmod(24) %>
+        <div class='form-row'>
+          <div class="col-1">
+            <label class="col-form-label" for="add_lending_period_days">
+              <span data-title="Days">Days</span>
+            </label>
+            <%= text_field_tag "add_lending_period_days", d ? d : 0, class: 'form-control' %>
+          </div>
+          <div class="col-1">
+            <label class="col-form-label" for="add_lending_period_hours">
+              <span data-title="Hours">Hours</span>
+            </label>
+            <%= text_field_tag "add_lending_period_hours", h ? h : 0, class: 'form-control' %>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+<% end %>
 
-  <%= render 'modules/access_control', {object: @media_object,
-                                        visibility: @media_object.visibility,
-                                        hidden: @media_object.hidden?,
-                                        lending_period: @media_object.lending_period} %>
-  <%= render 'workflow_buttons', form: 'access_control_form' %>
+<div class="card item-discovery">
+  <div class="card-header">
+    <h3 class="card-title">Item discovery</h3>
+  </div>
+  <div class="card-body">
+    <div class="form-group">
+      <div class="form-check">
+        <%= label_tag :hidden do %>
+        <%= check_box_tag :hidden, '1', (@media_object.hidden?) %>
+        Hide this item from search results
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="card item-access">
+  <div class="card-header">
+    <h3 class="card-title">Item access</h3>
+  </div>
+  <div class="card-body">
+    <div class="form-group">
+      <div class="form-check">
+        <label>
+          <%= radio_button_tag :visibility, 'public', (@visibility == 'public') %>
+          Available to the general public
+        </label>
+      </div>
+      <div class="form-check">
+        <label>
+          <%= radio_button_tag :visibility, 'restricted', (@visibility == 'restricted') %>
+          Logged in users only
+        </label>
+      </div>
+      <div class="form-check">
+        <label>
+          <%= radio_button_tag :visibility, 'private', (@visibility == 'private') %>
+          Collection staff only
+        </label>
+      </div>
+    </div>
+  </div>
+</div>
+
+<% end %>
+
+<%= render 'modules/special_access', { object: @media_object } %>
+
+<%= render 'workflow_buttons', form: 'access_control_form' %>

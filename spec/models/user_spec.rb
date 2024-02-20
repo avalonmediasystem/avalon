@@ -1,4 +1,4 @@
-# Copyright 2011-2023, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2024, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 # 
@@ -145,6 +145,16 @@ describe User do
       active_checkout = FactoryBot.create(:checkout, user_id: user.id)
       returned_checkout = FactoryBot.create(:checkout, user_id: user.id, return_time: DateTime.current - 1.day)
       expect { user.destroy }.to change { Checkout.all.count }.from(2).to(0)
+    end
+    it 'removes playlists for user' do
+      user = FactoryBot.create(:public)
+      playlist = FactoryBot.create(:playlist, user_id: user.id)
+      expect { user.destroy }.to change { Playlist.exists? playlist.id }.from( true ).to( false )
+    end
+    it 'removes timelines for user' do
+      user = FactoryBot.create(:public)
+      timeline = FactoryBot.create(:timeline, user_id: user.id)
+      expect { user.destroy }.to change { Timeline.exists? timeline.id }.from( true ).to( false )
     end
   end
 

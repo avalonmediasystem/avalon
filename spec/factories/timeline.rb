@@ -1,4 +1,4 @@
-# Copyright 2011-2023, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2024, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 # 
@@ -17,13 +17,13 @@ FactoryBot.define do
     user { FactoryBot.create(:user) }
     title { "Timeline: #{Faker::Lorem.word}" }
     description { Faker::Lorem.sentence }
-    visibility { Playlist::PRIVATE }
+    visibility { Timeline::PRIVATE }
     manifest { }
     source { }
     tags { [Faker::Lorem.word, Faker::Lorem.word] }
 
     trait :with_access_token do
-      visibility { Playlist::PRIVATE_WITH_TOKEN }
+      visibility { Timeline::PRIVATE_WITH_TOKEN }
       access_token { Faker::Lorem.characters(number: 10) }
     end
   end

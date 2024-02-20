@@ -1,4 +1,4 @@
-# Copyright 2011-2023, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2024, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 # 
@@ -25,7 +25,9 @@ class Checkout < ApplicationRecord
   scope :checked_out_to_user, ->(media_object_id, user_id) { where("media_object_id = ? AND user_id = ? AND return_time > now()", media_object_id, user_id) }
 
   def media_object
-    MediaObject.find(media_object_id)
+    @media_object ||= SpeedyAF::Proxy::MediaObject.find(media_object_id)
+    raise ActiveFedora::ObjectNotFoundError if @media_object.nil?
+    @media_object
   end
 
   private

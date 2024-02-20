@@ -1,4 +1,4 @@
-# Copyright 2011-2023, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2024, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 # 
@@ -156,6 +156,14 @@ describe CollectionsController, type: :controller do
       it 'returns 404' do
         get 'poster', params: { id: collection.id }
         expect(response).to be_not_found
+      end
+    end
+
+    context 'read from solr' do
+      it 'should not read from fedora' do
+        WebMock.reset_executed_requests!
+        get 'poster', params: { id: collection.id }
+        expect(a_request(:any, /#{ActiveFedora.fedora.base_uri}/)).not_to have_been_made
       end
     end
   end

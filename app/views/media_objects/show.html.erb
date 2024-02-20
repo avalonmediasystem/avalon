@@ -1,5 +1,5 @@
 <%#
-Copyright 2011-2023, The Trustees of Indiana University and Northwestern
+Copyright 2011-2024, The Trustees of Indiana University and Northwestern
   University.  Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
 
@@ -16,15 +16,4 @@ Unless required by applicable law or agreed to in writing, software distributed
 
 <% @page_title = t('media_objects.show.title', :media_object_title => (@media_object.title || @media_object.id), :application_name => application_name) %>
 
-<div class="page-title-wrapper">
-  <h1>
-    <% unless @media_object.title.blank? %>
-    <%= @media_object.title %><%= " / #{@media_object.statement_of_responsibility}" if @media_object.statement_of_responsibility.present? %>
-    <% else %>
-    <%= @media_object.id %>
-    <% end %>
-  </h1>
-</div>
-
-<%= render 'administrative_links' %>
 <%= render 'item_view' %>

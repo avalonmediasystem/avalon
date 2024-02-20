@@ -1,4 +1,4 @@
-# Copyright 2011-2023, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2024, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 # 
@@ -24,7 +24,10 @@ class AvalonMarkerController < ApplicationController
   # @example Rails Console Call To Show Marker that is resolved by AvalonMarker.where(uuid: '56')[0]
   #    app.get('/avalon_marker/56')
   def show
-    render json: @marker.to_json
+    unless can? :read, @marker
+      render json: { message: 'You are not authorized to perform this action.' }, status: 401 and return
+    end
+    render json: annotation_response_json(@marker)
   end
 
   # Creates a marker and renders it as JSON
@@ -42,7 +45,7 @@ class AvalonMarkerController < ApplicationController
     end
     @marker = AvalonMarker.create(@marker_params)
     if @marker.persisted?
-      render json: @marker.to_json.merge(message: 'Add marker to playlist item was successful.'), status: 201 and return
+      render json: annotation_response_json(@marker), status: 201 and return
     else
       render json: { message: @marker.errors.full_messages }, status: 400 and return
     end
@@ -61,8 +64,9 @@ class AvalonMarkerController < ApplicationController
     unless can? :update, @marker
       render json: { message: 'You are not authorized to perform this action.' }, status: 401 and return
     end
+
     if @marker.update(marker_params)
-      render json: @marker.to_json, status: 201 and return
+      render json: annotation_response_json(@marker), status: 201 and return
     else
       render json: { message: "Marker was not updated", errors: @marker.errors.full_messages }, status: :unprocessable_entity
     end
@@ -95,11 +99,29 @@ class AvalonMarkerController < ApplicationController
   end
 
   def marker_params
-    @marker_params = params.require(:marker).permit(:master_file_id, :playlist_item_id, :title, :start_time)
-    @marker_params[:start_time] = time_str_to_milliseconds @marker_params[:start_time] if @marker_params[:start_time].present?
-    @marker_params[:playlist_item] = PlaylistItem.find(@marker_params.delete(:playlist_item_id)) if @marker_params[:playlist_item_id].present?
-    @marker_params[:master_file] = MasterFile.find(@marker_params.delete(:master_file_id)) if @marker_params[:master_file_id].present?
+    @marker_params = {}
+    request_json = JSON.parse(request.body.read)
+    @marker_params[:title] = request_json["body"]["value"]
+
+    playlist_item_id, start_time = request_json["target"].match(/\/([^\/]+)#t=(.*)$/)&.captures
+
+    @marker_params[:start_time] = time_str_to_milliseconds start_time if start_time.present?
+    @marker_params[:playlist_item] = PlaylistItem.find(playlist_item_id) if playlist_item_id.present?
+    @marker_params[:master_file] = @marker_params[:playlist_item].master_file if @marker_params[:playlist_item].present?
     @marker_params
   end
 
+  def annotation_response_json(marker)
+    {
+      "@context" => "http://www.w3.org/ns/anno.jsonld",
+       id: Rails.application.routes.url_helpers.avalon_marker_url(marker.id),
+       type: "Annotation",
+       motivation: "highlighting",
+       body: {
+         type: "TextualBody",
+         value: marker.title
+       },
+       target: "#{Rails.application.routes.url_helpers.manifest_playlist_url(marker.playlist_item.playlist.id)}/canvas/#{marker.playlist_item.id}#t=#{marker.start_time / 1000}"
+    }.to_json
+  end
 end

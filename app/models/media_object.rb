@@ -1,4 +1,4 @@
-# Copyright 2011-2023, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2024, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 # 
@@ -25,6 +25,7 @@ class MediaObject < ActiveFedora::Base
   include SpeedyAF::OrderedAggregationIndex
   include MediaObjectIntercom
   include SupplementalFileBehavior
+  include MediaObjectBehavior
   require 'avalon/controlled_vocabulary'
 
   include Kaminari::ActiveFedoraModelExtension
@@ -124,10 +125,6 @@ class MediaObject < ActiveFedora::Base
 
   accepts_nested_attributes_for :master_files, :allow_destroy => true
 
-  def published?
-    !avalon_publisher.blank?
-  end
-
   def destroy
     # attempt to stop the matterhorn processing job
     self.master_files.each(&:destroy)
@@ -156,9 +153,13 @@ class MediaObject < ActiveFedora::Base
   # Sets the publication status. To unpublish an object set it to nil or
   # omit the status which will default to unpublished. This makes the act
   # of publishing _explicit_ instead of an accidental side effect.
-  def publish!(user_key)
+  def publish!(user_key, validate: true)
     self.avalon_publisher = user_key.blank? ? nil : user_key
-    save!
+    if validate
+      save!
+    else
+      raise "Save failed" unless save(validate: false)
+    end
   end
 
   def finished_processing?
@@ -234,10 +235,10 @@ class MediaObject < ActiveFedora::Base
   def fill_in_solr_fields_that_need_master_files(solr_doc)
     solr_doc['section_id_ssim'] = ordered_master_file_ids
     solr_doc["other_identifier_sim"] +=  master_files.collect {|mf| mf.identifier.to_a }.flatten
-    solr_doc["date_digitized_sim"] = master_files.collect {|mf| mf.date_digitized }.compact.map {|t| Time.parse(t).strftime "%F" }
+    solr_doc["date_digitized_ssim"] = master_files.collect {|mf| mf.date_digitized }.compact.map {|t| Time.parse(t).strftime "%F" }
     solr_doc["section_label_tesim"] = section_labels
     solr_doc['section_physical_description_ssim'] = section_physical_descriptions
-    solr_doc['all_comments_sim'] = all_comments
+    solr_doc['all_comments_ssim'] = all_comments
   end
 
   # Enqueue background job to do a full indexing including more costly fields that read from children
@@ -256,9 +257,12 @@ class MediaObject < ActiveFedora::Base
       solr_doc[Hydra.config.permissions.read.group] += solr_doc['read_access_ip_group_ssim']
       solr_doc["title_ssort"] = self.title
       solr_doc["creator_ssort"] = Array(self.creator).join(', ')
-      solr_doc["date_ingested_sim"] = self.create_date.strftime "%F" if self.create_date.present?
+      solr_doc["date_ingested_ssim"] = self.create_date.strftime "%F" if self.create_date.present?
       solr_doc['avalon_resource_type_ssim'] = self.avalon_resource_type.map(&:titleize)
       solr_doc['identifier_ssim'] = self.identifier.map(&:downcase)
+      solr_doc['note_ssm'] = self.note.collect { |n| n.to_json }
+      solr_doc['other_identifier_ssm'] = self.other_identifier.collect { |oi| oi.to_json }
+      solr_doc['related_item_url_ssm'] = self.related_item_url.collect { |r| r.to_json }
       if include_child_fields
         fill_in_solr_fields_that_need_master_files(solr_doc)
       elsif id.present? # avoid error in test suite
@@ -271,42 +275,25 @@ class MediaObject < ActiveFedora::Base
       all_text_values = []
       all_text_values << solr_doc["title_tesi"]
       all_text_values << solr_doc["creator_ssim"]
-      all_text_values << solr_doc["contributor_sim"]
+      all_text_values << solr_doc["contributor_ssim"]
       all_text_values << solr_doc["unit_ssim"]
       all_text_values << solr_doc["collection_ssim"]
-      all_text_values << solr_doc["summary_ssi"]
-      all_text_values << solr_doc["publisher_sim"]
-      all_text_values << solr_doc["subject_topic_sim"]
-      all_text_values << solr_doc["subject_geographic_sim"]
-      all_text_values << solr_doc["subject_temporal_sim"]
-      all_text_values << solr_doc["genre_sim"]
-      all_text_values << solr_doc["language_sim"]
-      all_text_values << solr_doc["physical_description_sim"]
+      all_text_values << solr_doc["abstract_ssi"]
+      all_text_values << solr_doc["publisher_ssim"]
+      all_text_values << solr_doc["topical_subject_ssim"]
+      all_text_values << solr_doc["geographic_subject_ssim"]
+      all_text_values << solr_doc["temporal_subject_ssim"]
+      all_text_values << solr_doc["genre_ssim"]
+      all_text_values << solr_doc["language_ssim"]
+      all_text_values << solr_doc["physical_description_ssim"]
+      all_text_values << solr_doc["series_ssim"]
       all_text_values << solr_doc["date_sim"]
       all_text_values << solr_doc["notes_sim"]
-      all_text_values << solr_doc["table_of_contents_sim"]
+      all_text_values << solr_doc["table_of_contents_ssim"]
       all_text_values << solr_doc["other_identifier_sim"]
       solr_doc["all_text_timv"] = all_text_values.flatten
       solr_doc.each_pair { |k,v| solr_doc[k] = v.is_a?(Array) ? v.select { |e| e =~ /\S/ } : v }
     end
-  end
-
-  def as_json(options={})
-    {
-      id: id,
-      title: title,
-      collection: collection.name,
-      unit: collection.unit,
-      main_contributors: creator,
-      publication_date: date_created,
-      published_by: avalon_publisher,
-      published: published?,
-      summary: abstract,
-      visibility: visibility,
-      read_groups: read_groups,
-      lending_period: lending_period,
-      lending_status: lending_status,
-    }.merge(to_ingest_api_hash(options.fetch(:include_structure, false)))
   end
 
   # Other validation to consider adding into future iterations is the ability to
@@ -372,52 +359,42 @@ class MediaObject < ActiveFedora::Base
     [mergeds, faileds]
   end
 
-  def access_text
-    actors = []
-    if visibility == "public"
-      actors << "the public"
-    else
-      actors << "collection staff" if visibility == "private"
-      actors << "specific users" if read_users.any? || leases('user').any?
-
-      if visibility == "restricted"
-        actors << "logged-in users"
-      elsif virtual_read_groups.any? || local_read_groups.any? || leases('external').any? || leases('local').any?
-        actors << "users in specific groups"
-      end
-
-      actors << "users in specific IP Ranges" if ip_read_groups.any? || leases('ip').any?
-    end
-
-    "This item is accessible by: #{actors.join(', ')}."
-  end
-
-  def lending_status
-    Checkout.active_for_media_object(id).any? ? "checked_out" : "available"
-  end
-
-  def return_time
-    Checkout.active_for_media_object(id).first&.return_time
-  end
-
   alias_method :'_lending_period', :'lending_period'
   def lending_period
     self._lending_period || collection&.default_lending_period
-  end
-
-  def cdl_enabled?
-    collection&.cdl_enabled?
-  end
-
-  def current_checkout(user_id)
-    checkouts = Checkout.active_for_media_object(id)
-    checkouts.select{ |ch| ch.user_id == user_id  }.first
   end
 
   # Override to reset memoized fields
   def reload
     @master_file_docs = nil
     super
+  end
+
+  def self.autocomplete(query, id)
+    return if id.blank?
+    collection_unit = SpeedyAF::Proxy::MediaObject.find(id).collection.unit
+    # To take advantage of solr automagically escaping characters the query has to be in single quotes.
+    # This runs counter to ruby's string interpolation which requires the string to be in double quotes.
+    # We can get around this by using the format_string construction.
+    solr_query = { q: 'unit_ssim:"%{collection_unit}"' % { collection_unit: collection_unit } }
+    query_params = {
+      fl: ["series_ssim"],
+      facet: "on",
+      "facet.field" => "series_ssim",
+      "facet.contains" => query.to_s,
+      "facet.contains.ignoreCase" => "true",
+      "facet.exists" => "true",
+      "facet.limit" => "-1",
+      rows: 0
+    }
+    param = solr_query.merge(query_params)
+
+    # The search results are returned as an array alternating the returned facet and the count of that facet,
+    # e.g. ['Series', 1, 'Test', 1]. We safely retrieve the facet by converting the array to a hash of key = facet,
+    # value = count and then only looking at the keys.
+    search_array = ActiveFedora::SolrService.instance.conn.get('select', params: param).dig("facet_counts", "facet_fields", "series_ssim").each_slice(2).to_h.keys
+
+    search_array.map { |value| { id: value, display: value } }
   end
 
   private
@@ -436,5 +413,9 @@ class MediaObject < ActiveFedora::Base
         addr.to_range.map(&:to_s)
       end
       ips.flatten.compact.uniq || []
+    end
+
+    def sections_with_files(tag: '*')
+      ordered_master_file_ids.select { |m| SpeedyAF::Proxy::MasterFile.find(m).supplemental_files(tag: tag).present? }
     end
 end

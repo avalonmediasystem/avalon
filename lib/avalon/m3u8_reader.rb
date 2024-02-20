@@ -1,4 +1,4 @@
-# Copyright 2011-2023, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2024, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 # 
@@ -24,7 +24,7 @@ module Avalon
         new(io.read, recursive: recursive)
       elsif io.is_a?(String)
         if io =~ /^https?:/
-          open(io, "Referer" => Rails.application.routes.url_helpers.root_url) { |resp| new(resp, Addressable::URI.parse(io), recursive: recursive) }
+          URI.open(io, "Referer" => Rails.application.routes.url_helpers.root_url) { |resp| new(resp, Addressable::URI.parse(io), recursive: recursive) }
         elsif io =~ /\.m3u8?$/i
           new(File.read(io), io, recursive: recursive)
         else
@@ -37,7 +37,7 @@ module Avalon
       @base = base
       @playlist = { files: [], playlists: [] }
       tags = {}
-      playlist.lines.each do |l|
+      playlist.each_line do |l|
         line = l.chomp
         if line =~ /^#EXTM3U/
           # ignore

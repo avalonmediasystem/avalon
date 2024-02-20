@@ -1,5 +1,5 @@
 <%#
-Copyright 2011-2023, The Trustees of Indiana University and Northwestern
+Copyright 2011-2024, The Trustees of Indiana University and Northwestern
   University.  Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
 
@@ -15,42 +15,27 @@ Unless required by applicable law or agreed to in writing, software distributed
 %>
 <% @page_title = t('media_objects.show.title', :media_object_title => @playlist.title, :application_name => application_name) %>
 
-<% position = params.has_key?(:position)? params[:position].to_i : 1 %>
-
-<%# Try to find next playable item, if none look from the beginning of the playlist %>
-<% first_playable_item = @playlist.items.find {|i| (i.position >= position) && i.clip.master_file.present? } %>
-<% first_playable_item = @playlist.items.find {|i| i.clip.master_file.present? } if first_playable_item.nil? %>
-
 <div class="playlist-view-wrapper row">
-  <div class="col-sm-8" id="left_column">
-    <div class="page-title-wrapper playlist-title">
+  <div class="page-title-wrapper playlist-title-wrapper row">
+    <div class=" playlist-title col-sm-8 pl-0">
       <%= icon_only_visibility @playlist.visibility %>
       <h1 class="page-title"><%= @playlist.title %></h1>
     </div>
 
-    <% if first_playable_item.nil? %>
-    <%= image_tag "media-placeholder.png", :class => "img-fluid" %>
-    <% else %>
-    <% position = first_playable_item.position %>
-    <% @current_playlist_item = first_playable_item %>
-    <% @current_clip = @current_playlist_item.clip %>
-    <% @current_masterfile = @current_playlist_item.clip.master_file %>
-    <% @current_mediaobject = @current_masterfile.media_object %>
-
-    <%= render 'player' %>
-    <%# MediaElement 2 %>
-    <%= render file: '_add_to_playlist.html.erb' if current_user.present? && is_mejs_2? %>
-    <%# MediaElement 4 %>
-    <%= render partial: 'mejs4_add_marker_to_playlist' if current_user.present? && is_mejs_4? %>
-    <%= render 'info' %>
-    <% end %>
-  </div>
-  <div class="col-sm-4" id="right-column">
-    <%= render 'item_list' %>
-    <% if first_playable_item.nil? %>
-    <div class="alert alert-info" role="alert">This playlist currently has no playable items.</div>
-    <% end %>
+    <div class="playlist-action-button-row col-sm-4">
+      <%= render partial: 'action_buttons' %>
+    </div>
   </div>
 
-
+  <div class="col-sm-12 px-0">
+    <%= react_component("PlaylistRamp",
+      {
+        base_url: request.protocol+request.host_with_port,
+        playlist_id: @playlist.id,
+        token: @playlist_token,
+        share: { canShare: (will_partial_list_render? :share), content: render('share') },
+        comment_tag: { content: render('comments_and_tags') }
+      }
+    ) %>
+  </div>
 </div>

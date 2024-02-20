@@ -1,5 +1,5 @@
 <%#
-Copyright 2011-2023, The Trustees of Indiana University and Northwestern
+Copyright 2011-2024, The Trustees of Indiana University and Northwestern
   University.  Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
 
@@ -14,29 +14,28 @@ Unless required by applicable law or agreed to in writing, software distributed
 ---  END LICENSE_HEADER BLOCK  ---
 %>
 
-    <%= render partial: 'modules/player/section', locals: {section: @master_file, section_info: @stream_info, f_start: @f_start, f_end: @f_end} %>
+<%= render partial: 'modules/player/section', locals: {section: @master_file, section_info: @stream_info, f_start: @f_start, f_end: @f_end} %>
 
 <% content_for :page_scripts do %>
 
-  <%= render partial: "mejs4_player_js", locals: {section: @master_file, section_info: @stream_info} %>
-
   <script>
-    <%# Add an offscreen button to allow for proper keyboard navigation through player controls %>
-    $('#content').append('<button id="after-player" style="position:absolute;top:-1000px"></button>')
-
     window.addEventListener('message', function(event) {
       var command = event.data.command;
-      if (command=='play') currentPlayer.play();
-      else if (command=='pause') currentPlayer.pause();
-      else if (command=='toggle_loop') currentPlayer.loop = !currentPlayer.loop;
-      else if (command=='set_offset') currentPlayer.setCurrentTime(event.data.offset); // time is in seconds
-      else if (command=='get_offset') event.source.postMessage({'command':'currentTime','currentTime':currentPlayer.getCurrentTime()}, event.origin);
-    });
+      let embeddedPlayer = videojs.getPlayer('video-js-embed-<%= @master_file.id %>_html5_api');
 
+      if (command=='play') embeddedPlayer.play();
+      else if (command=='pause') embeddedPlayer.pause();
+      else if (command=='toggle_loop') {
+        embeddedPlayer.loop() ? embeddedPlayer.loop(false): embeddedPlayer.loop(true);
+        embeddedPlayer.autoplay() ? embeddedPlayer.autoplay(false) : embeddedPlayer.autoplay(true);
+      }
+      else if (command=='set_offset') embeddedPlayer.currentTime(event.data.offset); // time is in seconds
+      else if (command=='get_offset') event.source.postMessage({'command':'currentTime','currentTime':embeddedPlayer.currentTime()}, event.origin);
+    });
   </script>
 
   <style>
-a { text-decoration: none; }
-a:hover { text-decoration: underline }
+    a { text-decoration: none; }
+    a:hover { text-decoration: underline }
   </style>
 <% end %>

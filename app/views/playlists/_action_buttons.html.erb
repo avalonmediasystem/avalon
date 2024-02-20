@@ -1,0 +1,46 @@
+<%#
+Copyright 2011-2024, The Trustees of Indiana University and Northwestern
+  University.  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+
+You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+  under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+  CONDITIONS OF ANY KIND, either express or implied. See the License for the
+  specific language governing permissions and limitations under the License.
+---  END LICENSE_HEADER BLOCK  ---
+%>
+
+<div class="row playlist-action-buttons">
+  <div class="col-sm-6">
+    <% if current_ability.can? :edit, @playlist %>
+    <div id="edit-playlist-button">
+      <%= link_to edit_playlist_path(@playlist), class: "btn btn-primary btn-block text-nowrap" do %>
+      <i class="fa fa-edit" aria-hidden="true"></i> Edit Playlist
+      <% end %>
+    </div>
+    <% end %>
+  </div>
+  <div class="col-sm-6">
+    <% if current_ability.can? :duplicate, @playlist %>
+    <%= button_tag( type: 'button', data: { playlist: @playlist }, class: 'copy-playlist-button btn btn-outline btn-block text-nowrap') do %>
+    <i class="fa fa-clone" aria-hidden="true"></i> Copy Playlist
+    <% end %>
+    <% end %>
+  </div>
+</div>
+
+<% if current_ability.can? :duplicate, @playlist %>
+<%= render partial: 'copy_playlist_modal', locals: { with_refresh: false } %>
+<% end %>
+
+<% content_for :page_scripts do %>
+<script>
+  $(document).ready(function () {
+    window.add_copy_playlist_button_event()
+  });
+</script>
+<% end %>

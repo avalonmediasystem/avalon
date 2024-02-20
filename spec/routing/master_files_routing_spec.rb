@@ -1,4 +1,4 @@
-# Copyright 2011-2023, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2024, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 # 
@@ -20,7 +20,7 @@ RSpec.describe MasterFilesController, type: :routing do
       expect(:post => "/master_files/abc1234/move").to route_to("master_files#move", id: 'abc1234')
     end
     it "routes to #caption_manifest" do
-      expect(:get => "/master_files/abc1234/caption_manifest").to route_to("master_files#caption_manifest", id: 'abc1234')
+      expect(:get => "/master_files/abc1234/caption_manifest/def5678").to route_to("master_files#caption_manifest", id: 'abc1234', c_id: 'def5678')
     end
   end
 end

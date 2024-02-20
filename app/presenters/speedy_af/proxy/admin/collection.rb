@@ -1,4 +1,4 @@
-# Copyright 2011-2023, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2024, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 # 
@@ -13,6 +13,20 @@
 # ---  END LICENSE_HEADER BLOCK  ---
 
 class SpeedyAF::Proxy::Admin::Collection < SpeedyAF::Base
+  # Override to handle section_id specially
+  def initialize(solr_document, instance_defaults = {})
+    instance_defaults ||= {}
+    @model = SpeedyAF::Base.model_for(solr_document)
+    @attrs = self.class.defaults.merge(instance_defaults)
+    solr_document.each_pair do |k, v|
+      attr_name, value = parse_solr_field(k, v)
+      @attrs[attr_name.to_sym] = value
+    end
+    # Handle this case here until a better fix can be found for multiple solr fields which don't have a model property
+    @attrs[:read_users] = solr_document["read_access_person_ssim"] || []
+    @attrs[:edit_users] = solr_document["edit_access_person_ssim"] || []
+  end
+
   def to_model
     self
   end
@@ -27,5 +41,15 @@ class SpeedyAF::Proxy::Admin::Collection < SpeedyAF::Base
 
   def to_param
     id
+  end
+
+  def cdl_enabled?
+    if cdl_enabled.nil?
+      Settings.controlled_digital_lending.collections_enabled
+    elsif cdl_enabled != Settings.controlled_digital_lending.collections_enabled
+      cdl_enabled
+    else
+      Settings.controlled_digital_lending.collections_enabled
+    end
   end
 end
