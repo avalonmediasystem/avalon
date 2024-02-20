@@ -60,7 +60,7 @@ module MasterFileBehavior
       caption_paths = []
       supplemental_file_captions.each { |c| caption_paths.append(build_caption_hash(c)) }
 
-      caption_paths.append(build_caption_hash(captions)) if captions
+      caption_paths.append(build_caption_hash(captions)) if captions.present?
 
       caption_paths
     end
