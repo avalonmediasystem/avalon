@@ -43,16 +43,16 @@ Unless required by applicable law or agreed to in writing, software distributed
                            end %>
 
   <% @videojs_options = {
-                         "autoplay": false,
-                         "width": @player_width || 480,
-                         "height": @player_height || 270,
-                         "bigPlayButton": section_info[:is_video] ? true : false,
-                         "poster": section_info[:is_video] ?  section_info[:poster_image] : false,
-                         "preload": "auto",
-                         "controlBar": control_bar_options,
-                         "userActions": {
-                           hotkeys: true
-                         }
+                          "autoplay": false,
+                          "width": @player_width || 480,
+                          "height": @player_height || 270,
+                          "bigPlayButton": section_info[:is_video] ? true : false,
+                          "poster": section_info[:is_video] ?  section_info[:poster_image] : false,
+                          "preload": "auto",
+                          "controlBar": control_bar_options,
+                          "userActions": {
+                            hotkeys: true
+                          }
                         }.compact.to_json %>
 
   <div class='video-container' style="width:100%; height:100%;">
@@ -69,7 +69,7 @@ Unless required by applicable law or agreed to in writing, software distributed
       <% skip_captions = true %>
       <% if section_info[:caption_paths].present? && !skip_captions %>
         <% section_info[:caption_paths].each do |c| %>
-         <track <% if c[:label] %>label="<%= c[:label] %>" <% end %> srclang="<%= c[:language] %>" kind="subtitles" type="<%= c[:mime_type] %>" src="<%= c[:path] %>"></track>
+          <track <% if c[:label] %>label="<%= c[:label] %>" <% end %> srclang="<%= c[:language] %>" kind="subtitles" type="<%= c[:mime_type] %>" src="<%= c[:path] %>"></track>
         <% end %>
       <% end %>
     </video-js>
