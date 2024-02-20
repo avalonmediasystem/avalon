@@ -61,6 +61,17 @@ Unless required by applicable law or agreed to in writing, software distributed
           }
           clearInterval(timeCheck);
         });
+        /*
+          Browsers on MacOS sometimes miss the 'loadedmetadata' event resulting in a disabled add to playlist button indefinitely.
+          This timeout enables the add to playlist button, when this happens. It checks the button's state and enables it as needed.
+        */
+        setTimeout(() => {
+          let thumbnailBtn = document.getElementById('create-thumbnail-btn');
+          if (thumbnailBtn && thumbnailBtn.disabled) {
+            thumbnailBtn.disabled = false;
+          }
+          clearInterval(timeCheck);
+        }, 500);
       }
 
       $('#thumbnailModal').on('show.bs.modal', function(e) {
