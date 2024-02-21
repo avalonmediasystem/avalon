@@ -21,7 +21,7 @@ describe IiifPlaylistCanvasPresenter do
   let(:playlist_item) { FactoryBot.build(:playlist_item, clip: playlist_clip) }
   let(:playlist_clip) { FactoryBot.build(:avalon_clip, master_file: master_file) }
   let(:stream_info) { master_file.stream_details }
-  let(:presenter) { described_class.new(playlist_item: playlist_item, stream_info: stream_info) }
+  let(:presenter) { described_class.new(playlist_item: playlist_item, stream_info: stream_info, position: 1) }
 
   describe '#to_s' do
     it 'returns the playlist_item label' do
@@ -290,6 +290,18 @@ describe IiifPlaylistCanvasPresenter do
 
     it 'returns the description of the playlist item' do
       expect(subject).to eq playlist_item.comment
+    end
+  end
+
+  describe "#homepage" do
+    subject { presenter.homepage }
+    let(:playlist_item) { FactoryBot.create(:playlist_item, clip: playlist_clip) }
+    let(:playlist_clip) { FactoryBot.create(:avalon_clip, master_file: master_file) }
+
+    it "it references the item's position within the playlist" do
+      expect(subject.first['@id']).to eq "#{Rails.application.routes.url_helpers.playlist_url(playlist_item.playlist_id)}?position=1"
+      expect(subject.first['label']).to be_present
+      expect(subject.first['type']).to be_present
     end
   end
 end
