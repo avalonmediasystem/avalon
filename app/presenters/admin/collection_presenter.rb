@@ -43,15 +43,15 @@ class Admin::CollectionPresenter
   end
 
   def managers
-    @managers ||= document["edit_access_person_ssim"] & (document["collection_managers_ssim"] || [])
+    @managers ||= Array(document["edit_access_person_ssim"]) & Array(document["collection_managers_ssim"])
   end
 
   def editors
-    @editors ||= document["edit_access_person_ssim"] - managers
+    @editors ||= Array(document["edit_access_person_ssim"]) - managers
   end
 
   def depositors
-    document["read_access_person_ssim"]
+    Array(document["read_access_person_ssim"])
   end
 
   def manager_count
