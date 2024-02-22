@@ -205,6 +205,9 @@ Unless required by applicable law or agreed to in writing, software distributed
           addToPlaylistBtn.disabled = false;
         }
         if(!listenersAdded) {
+          // Add 'Add new playlist' option to dropdown
+          window.add_new_playlist_option();
+
           addListeners();
         }
       }
@@ -228,8 +231,6 @@ Unless required by applicable law or agreed to in writing, software distributed
             currentTime = currentPlayer.player.currentTime();
             duration = currentPlayer.player.duration();
           }
-          // Add 'Add new playlist' option to dropdown
-          window.add_new_playlist_option();
 
           let canvasIndex = parseInt(currentPlayer.dataset.canvasindex);
           mediaObjectTitle = playlistForm.dataset.title;
