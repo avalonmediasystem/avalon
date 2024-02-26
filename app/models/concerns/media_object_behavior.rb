@@ -19,6 +19,7 @@ module MediaObjectBehavior
       id: id,
       title: title,
       collection: collection.name,
+      collection_id: collection.id,
       unit: collection.unit,
       main_contributors: creator,
       publication_date: date_created,

@@ -1193,6 +1193,7 @@ describe MediaObjectsController, type: :controller do
         expect(json['id']).to eq(media_object.id)
         expect(json['title']).to eq(media_object.title)
         expect(json['collection']).to eq(media_object.collection.name)
+        expect(json['collection_id']).to eq(media_object.collection.id)
         expect(json['main_contributors']).to eq(media_object.creator)
         expect(json['publication_date']).to eq(media_object.date_created)
         expect(json['published_by']).to eq(media_object.avalon_publisher)
