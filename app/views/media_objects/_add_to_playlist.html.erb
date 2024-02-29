@@ -177,7 +177,7 @@ Unless required by applicable law or agreed to in writing, software distributed
           // This timeout enables the add to playlist button, when this happens. It checks the button's state and enables it as needed.
           setTimeout(() => {
             enableAddToPlaylist();
-          }, 500);
+          }, 100);
           player.on('seeked', () => {
             if(getActiveItem() != undefined) {
               activeTrack = getActiveItem(false);
@@ -200,8 +200,9 @@ Unless required by applicable law or agreed to in writing, software distributed
       }
 
       function enableAddToPlaylist() {
+        let player = document.getElementById('iiif-media-player');
         let addToPlaylistBtn = document.getElementById('addToPlaylistBtn');
-        if(addToPlaylistBtn && addToPlaylistBtn.disabled) {
+        if(addToPlaylistBtn && addToPlaylistBtn.disabled && player?.player.readyState() === 4) {
           addToPlaylistBtn.disabled = false;
         }
         if(!listenersAdded) {

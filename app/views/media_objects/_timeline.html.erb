@@ -54,19 +54,29 @@ $(document).ready(function() {
         if (timelineBtn) {
           timelineBtn.disabled = false;
         }
-        clearInterval(timeCheck);
       });
       /*
         Browsers on MacOS sometimes miss the 'loadedmetadata' event resulting in a disabled add to playlist button indefinitely.
         This timeout enables the add to playlist button, when this happens. It checks the button's state and enables it as needed.
+        Additional check for player's readyState ensures the button is enabled only when player is ready after the timeout.
       */
       setTimeout(() => {
         let timelineBtn = document.getElementById('timelineBtn');
-        if (timelineBtn && timelineBtn.disabled) {
+        if (timelineBtn && timelineBtn.disabled && player.player?.readyState() === 4) {
           timelineBtn.disabled = false;
         }
-        clearInterval(timeCheck);
-      }, 500);
+      }, 100);
+
+      /* 
+        Disable 'Create Timeline' button on player dispose, so that it can be enabled again or keep disabled on the next section load
+        based on the player status.      
+      */
+      player.player.on('dispose', () => {
+        let timelineBtn = document.getElementById('timelineBtn');
+        if (timelineBtn) {
+          timelineBtn.disabled = true;
+        }
+      });
     }
 
     $('#timelineModal').on('shown.bs.modal', function (e) {
