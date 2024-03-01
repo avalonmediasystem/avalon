@@ -66,8 +66,8 @@
 # already processed minus one day.  This should run quickly (< 1 hour).
 #
 # This script was written for migrating from solr 6 to solr 8/9 with the following process in mind:
-# 1. Reindex from solr 6 into new solr 8 instance
-# 2. Configure avalon to use new solr 8 instance and restart
+# 1. Reindex from solr 6 into new solr 9 instance
+# 2. Configure avalon to use new solr 9 instance and restart
 # 3. Run reindex delta to read from solr 6 and catch any items that have changed since step 1
 
 
@@ -114,15 +114,27 @@ OptionParser.new do |parser|
   end
 
   parser.on("--reindex-limit REINDEX_LIMIT", "Limit reindexing to a set number of items") do |rl|
-    options[:reindex_limit] = rl
+    options[:reindex_limit] = rl.to_i
   end
 
   parser.on("--parallel-indexing", "Reindex using paralellism") do |p|
     options[:parallel_indexing] = p
   end
 
-  parser.on("--batch-size", "Size of batches for indexing (default: 50)") do |bs|
-    options[:batch_size] = bs
+  parser.on("--parallel-threads THREADS", "Number of parallel threads to use for reindexing") do |pt|
+    options[:parallel_threads] = pt.to_i
+  end
+
+  parser.on("--batch-size SIZE", "Size of batches for indexing (default: 50)") do |bs|
+    options[:batch_size] = bs.to_i
+  end
+
+  parser.on("--only-models MODELS", "Only index certain models in the order specified by comma-separated list") do |om|
+    options[:only_models] = om.split(',').map(&:strip)
+  end
+
+  parser.on("--file-fedora-url URL", "Replace fedora url in IndexedFile uri_ss fields (This is not validated so be careful!)") do |ffu|
+    options[:file_fedora_url] = ffu
   end
 
   parser.on("--delta", "Only find changes since last reindexing") do |d|
@@ -273,27 +285,28 @@ end
 # Re-index
 unless options[:skip_reindexing]
   reindex_limit = options[:reindex_limit] || nil
-  if reindex_limit
-    puts "#{DateTime.now} Attempting reindex of #{reindex_limit} nodes out of #{items.where(state:"waiting reindex").count}." if options[:verbose]
-  else
-    puts "#{DateTime.now} Attempting reindex of #{items.where(state:"waiting reindex").count} nodes." if options[:verbose]
-  end
-
   batch_size = options[:batch_size] || 50
   softCommit = true
   uris_to_skip = [/\/poster$/, /\/thumbnail$/, /\/waveform$/, /\/captions$/, /\/structuralMetadata$/]
 
   models_for_all = DB[:reindexing_nodes].map(:model).uniq - ["Hydra::AccessControl", "Hydra::AccessControls::Permission", "Admin::Collection"]
-  model_prioritization = ["Hydra::AccessControl", "Hydra::AccessControls::Permission", "Admin::Collection", models_for_all]
+  model_prioritization = options[:only_models] ||  ["Hydra::AccessControl", "Hydra::AccessControls::Permission", "Admin::Collection", models_for_all]
 
   model_prioritization.each do |model|
     items_for_reindexing_relation = items.where(state: "waiting reindex", model: model).limit(reindex_limit).map(:uri)
+
+    if reindex_limit
+      puts "#{DateTime.now} Attempting reindex of #{reindex_limit} #{model} nodes out of #{items.where(state:"waiting reindex", model: model).count}." if options[:verbose]
+      reindex_limit = reindex_limit - items_for_reindexing_relation.count
+    else
+      puts "#{DateTime.now} Attempting reindex of #{items.where(state:"waiting reindex", model: model).count} #{model} nodes." if options[:verbose]
+    end
 
     if options[:parallel_indexing]
       require 'parallel'
       require 'ruby-progressbar'
 
-      Parallel.each(items_for_reindexing_relation.each_slice(batch_size), in_threads: 10, progress: "Reindexing") do |uris|
+      Parallel.each(items_for_reindexing_relation.each_slice(batch_size), in_threads: options[:parallel_threads] || 10, progress: "Reindexing") do |uris|
         batch = []
         batch_uris = []
 
@@ -309,13 +322,17 @@ unless options[:skip_reindexing]
             # Handle speedy_af indexing
             if obj.is_a?(MasterFile) || obj.is_a?(Admin::Collection)
               obj.declared_attached_files.each_pair do |name, file|
-                batch << file.to_solr({}, external_index: true) if file.present? && file.respond_to?(:update_external_index)
+                next unless file.present?
+                file_doc = file.to_solr({}, external_index: true) if file.respond_to?(:update_external_index)
+                file_doc[:uri_ss] = file_doc[:uri_ss].sub(ActiveFedora.fedora_config.credentials[:url], options[:file_fedora_url]) if options[:file_fedora_url].present? && file.is_a?(IndexedFile)
+                batch << file_doc
               end
             end
           rescue Exception => e
             puts "#{DateTime.now} Error adding #{uri} to batch: #{e.message}"
             puts e.backtrace if options[:verbose]
             batch_uris -= [uri]
+            batch.compact!
             batch.delete_if { |doc| ActiveFedora::Base.uri_to_id(uri) == doc[:id] }
             # Need to worry about removing masterfile attached files from the batch as well?
             items.where(uri: uri, state: "waiting reindex").update(state: "errored", state_changed_at: DateTime.now)
@@ -343,13 +360,17 @@ unless options[:skip_reindexing]
           # Handle speedy_af indexing
           if obj.is_a?(MasterFile) || obj.is_a?(Admin::Collection)
             obj.declared_attached_files.each_pair do |name, file|
-              batch << file.to_solr({}, external_index: true) if file.present? && file.respond_to?(:update_external_index)
+              next unless file.present?
+              file_doc = file.to_solr({}, external_index: true) if file.respond_to?(:update_external_index)
+              file_doc[:uri_ss] = file_doc[:uri_ss].sub(ActiveFedora.fedora_config.credentials[:url], options[:file_fedora_url]) if options[:file_fedora_url].present? && file.is_a?(IndexedFile)
+              batch << file_doc
             end
           end
         rescue Exception => e
           puts "#{DateTime.now} Error adding #{uri} to batch: #{e.message}"
           puts e.backtrace if options[:verbose]
           batch_uris -= [uri]
+          batch.compact!
           batch.delete_if { |doc| ActiveFedora::Base.uri_to_id(uri) == doc[:id] }
           # Need to worry about removing masterfile attached files from the batch as well?
           items.where(uri: uri, state: "waiting reindex").update(state: "errored", state_changed_at: DateTime.now)
