@@ -22,6 +22,7 @@ module Avalon
 
       EXTENSIONS = ['csv','xls','xlsx','ods']
       FILE_FIELDS = [:file,:label,:offset,:skip_transcoding,:absolute_location,:date_digitized]
+      CAPTION_FIELDS = [:caption_file, :caption_label, :caption_language]
       SKIP_FIELDS = [:collection]
 
       def_delegators :@entries, :each
@@ -117,11 +118,22 @@ module Avalon
           content=[]
 
           fields = Hash.new { |h,k| h[k] = [] }
+          caption_count = 0
           @field_names.each_with_index do |f,i|
             unless f.blank? || SKIP_FIELDS.include?(f) || values[i].blank?
               if FILE_FIELDS.include?(f)
                 content << {} if f == :file
                 content.last[f] = f == :skip_transcoding ? true?(values[i]) : values[i]
+              elsif CAPTION_FIELDS.include?(f)
+                if f.to_s.include?('file')
+                  caption_count += 1
+                  @caption_key = "caption_#{caption_count}".to_sym
+                  fields[@caption_key] = {}
+                  # Set file path to caption file
+                  fields[@caption_key][f] = path_to(values[i])
+                end
+                # Set caption metadata fields
+                fields[@caption_key][f] ||= values[i]
               else
                 fields[f] << values[i]
               end
@@ -140,7 +152,6 @@ module Avalon
           entries << Entry.new(fields.select { |f| !FILE_FIELDS.include?(f) }, files, opts, index, self)
         end
       end
-
     end
   end
 end

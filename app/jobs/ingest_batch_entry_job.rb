@@ -69,6 +69,7 @@ class IngestBatchEntryJob < ActiveJob::Base
       old_media_object_id = batch_entry.media_object_pid
       batch_entry.media_object_pid = entry.media_object.id
       batch_entry.complete = true
+      batch_entry.current_status = 'Completed'
       batch_entry.save!
       # Delete pre-existing media object
       MediaObject.find(old_media_object_id).destroy if old_media_object_id.present? && MediaObject.exists?(old_media_object_id)

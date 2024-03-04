@@ -176,20 +176,46 @@ describe Avalon::Batch::Entry do
       expect(master_file.absolute_location).to eq(Avalon::FileResolver.new.path_to(master_file.file_location))
       expect(master_file.date_digitized).to eq('2015-10-30T00:00:00Z')
     end
+
+    context 'with caption files' do
+      let(:caption_file) { File.join(Rails.root, 'spec/fixtures/dropbox/example_batch_ingest/assets/sheephead_mountain.mov.vtt')}
+      let(:caption) {{ :caption_file => caption_file, :caption_label => 'Sheephead Captions', :caption_language => 'English' }}
+      let(:entry_fields) {{ title: Faker::Lorem.sentence, date_issued: "#{DateTime.now.strftime('%F')}", caption_1: caption }}
+
+      it 'adds captions to masterfile' do
+        expect(master_file.supplemental_file_captions).to be_present
+      end
+    end
   end
 
   describe '#attach_datastreams_to_master_file' do
-    let(:master_file) { FactoryBot.build(:master_file) }
+    let(:master_file) { FactoryBot.create(:master_file) }
     let(:filename) { File.join(Rails.root, 'spec/fixtures/dropbox/example_batch_ingest/assets/sheephead_mountain.mov') }
+    let(:caption_file) { File.join(Rails.root, 'spec/fixtures/dropbox/example_batch_ingest/assets/sheephead_mountain.mov.vtt')}
+    let(:caption) { [{ :caption_file => caption_file, :caption_label => 'Sheephead Captions', :caption_language => 'English' }] }
+
     before do
-      Avalon::Batch::Entry.attach_datastreams_to_master_file(master_file, filename)
+      Avalon::Batch::Entry.attach_datastreams_to_master_file(master_file, filename, caption)
     end
 
     it 'should attach structural metadata' do
       expect(master_file.structuralMetadata.has_content?).to be_truthy
     end
     it 'should attach captions' do
-      expect(master_file.captions.has_content?).to be_truthy
+      expect(master_file.supplemental_file_captions).to be_present
+    end
+
+    context 'with multiple captions' do
+      let(:caption) { [{ :caption_file => caption_file, :caption_label => 'Sheephead Captions', :caption_language => 'english' },
+                      { :caption_file => caption_file, :caption_label => 'Second Caption', :caption_language => 'fre' }] }
+      it 'should attach all captions to master file' do
+        expect(master_file.supplemental_file_captions).to be_present
+        expect(master_file.supplemental_file_captions.count).to eq 2
+        expect(master_file.supplemental_file_captions[0].label).to eq 'Sheephead Captions'
+        expect(master_file.supplemental_file_captions[1].label).to eq 'Second Caption'
+        expect(master_file.supplemental_file_captions[0].language).to eq 'eng'
+        expect(master_file.supplemental_file_captions[1].language).to eq 'fre'
+      end
     end
   end
 

@@ -71,7 +71,7 @@ module Avalon
         json_hash = JSON.parse(json)
         opts = json_hash.except("fields", "files", "position")
         opts[:collection] = Admin::Collection.find(json_hash["collection"])
-        self.new(json_hash["fields"].symbolize_keys, json_hash["files"].map(&:symbolize_keys!), opts.symbolize_keys, json_hash["position"], nil)
+        self.new(json_hash["fields"].deep_symbolize_keys, json_hash["files"].map(&:symbolize_keys!), opts.symbolize_keys, json_hash["position"], nil)
       end
 
       def user_key
@@ -102,7 +102,10 @@ module Avalon
         note_type = mo_parameters.delete(:note_type)
         mo_parameters[:note] = note.zip(note_type).map{|a|{note: a[0],type: a[1]}} if note.present?
 
-        mo_parameters
+        # These fields are validated against the media object model.
+        # Because captions are stored on the master file, we need to
+        # remove them here to prevent an invalid manifest error.
+        mo_parameters.except(*gather_captions.keys)
       end
 
       def valid?
@@ -176,17 +179,23 @@ module Avalon
         true
       end
 
-      def self.attach_datastreams_to_master_file( master_file, filename )
+      def self.attach_datastreams_to_master_file( master_file, filename, captions )
         structural_file = "#{filename}.structure.xml"
         if FileLocator.new(structural_file).exist?
           master_file.structuralMetadata.content=FileLocator.new(structural_file).reader
           master_file.structuralMetadata.original_name = structural_file
         end
-        captions_file = "#{filename}.vtt"
-        if FileLocator.new(captions_file).exist?
-          master_file.captions.content=FileLocator.new(captions_file).reader
-          master_file.captions.mime_type='text/vtt'
-          master_file.captions.original_name = captions_file
+        captions.each do |c|
+          return unless c.present?
+          if c[:caption_file].present? && FileLocator.new(c[:caption_file]).exist?
+            filename = c[:caption_file].split('/').last
+            label = c[:caption_label].presence || filename
+            language = c[:caption_language].present? ? caption_language(c[:caption_language]) : Settings.caption_default.language
+            supplemental_file = SupplementalFile.new(label: label, tags: ['caption'], language: language)
+            supplemental_file.file.attach(io: FileLocator.new(c[:caption_file]).reader, filename: filename, content_type: 'text/vtt', identify: false)
+            supplemental_file.save
+            master_file.supplemental_files += [supplemental_file]
+          end
         end
       end
 
@@ -198,7 +207,8 @@ module Avalon
           # master_file.save(validate: false) #required: need id before setting media_object
           # master_file.media_object = media_object
           files = self.class.gatherFiles(file_spec[:file])
-          self.class.attach_datastreams_to_master_file(master_file, file_spec[:file])
+          captions = gather_captions.values
+          self.class.attach_datastreams_to_master_file(master_file, file_spec[:file], captions)
           master_file.setContent(files, dropbox_dir: media_object.collection.dropbox_absolute_path)
 
           # Overwrite files hash with working file paths to pass to matterhorn
@@ -263,10 +273,24 @@ module Avalon
         filename.dup.insert(filename.rindex('.'), ".#{quality}")
       end
 
+      def self.caption_language(language)
+        begin
+          LanguageTerm.find(language.capitalize).code
+        rescue LanguageTerm::LookupError
+          Settings.caption_default.language
+        end
+      end
+      private_class_method :caption_language
+
       private
 
         def hidden
           !!opts[:hidden]
+        end
+
+        def gather_captions
+          [] unless @fields.keys.any? { |k| k.to_s.include?('caption') }
+          @fields.select { |f| f.to_s.include?('caption') }
         end
     end
   end
