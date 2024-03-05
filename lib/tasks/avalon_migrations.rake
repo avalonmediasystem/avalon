@@ -26,6 +26,8 @@ namespace :avalon do
     desc "Migrate legacy IndexedFile captions to ActiveStorage as part of supporting upload of multiple captions files"
     task caption_files: :environment do
       count = 0
+      error = []
+      logger = Logger.new(File.join(Rails.root, 'log/caption_type_errors.log'))
       # Iterate through all caption IndexedFiles
       IndexedFile.where("id: */captions").each do |caption_file|
         # Retrieve parent master file
@@ -38,7 +40,14 @@ namespace :avalon do
         # Create and populate new SupplementalFile record using original metadata
         supplemental_file = SupplementalFile.new(label: filename, tags: ['caption'], language: 'eng')
         supplemental_file.file.attach(io: ActiveFedora::FileIO.new(caption_file), filename: filename, content_type: content_type, identify: false)
-        supplemental_file.save
+        # Skip validation so that incorrect mimetypes do not bomb the entire task
+        supplemental_file.save(validate: false)
+        # Log when a file has an incorrect mimetype for later manual remediation
+        if !['text/vtt', 'text/srt'].include?(content_type)
+          message = "File with unsupported mime type: #{supplemental_file.id}"
+          puts(message)
+          error += [supplemental_file.id]
+        end
         # Link new SupplementalFile to the MasterFile
         master_file.supplemental_files += [supplemental_file]
         # Delete legacy caption file
@@ -50,6 +59,10 @@ namespace :avalon do
       end
 
       count > 0 ? puts("Successfully updated #{count} records") : puts("All files are already up to date. No records updated.")
+      if error.present?
+        logger.info("Files with unsupported mime types: #{error}")
+        puts("#{error.length} files migrated with unsupported mime types. Refer to caption_type_errors.log for full list of SupplementalFile IDs.")
+      end
     end
   end
 end
