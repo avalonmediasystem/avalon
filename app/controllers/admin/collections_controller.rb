@@ -36,7 +36,18 @@ class Admin::CollectionsController < ApplicationController
       builder.user = user
     end
     response = repository.search(builder)
-    @collections = response.documents.collect { |doc| ::Admin::CollectionPresenter.new(doc) }.sort_by { |c| c.name.downcase }
+
+    # Query solr for facet values for collection media object counts and pass into presenter to avoid making 2 solr queries per collection
+    count_query = "has_model_ssim:MediaObject"
+    count_response = ActiveFedora::SolrService.get(count_query, { rows: 0, facet: true, 'facet.field': "isMemberOfCollection_ssim", 'facet.limit': -1 })
+    counts_array = count_response["facet_counts"]["facet_fields"]["isMemberOfCollection_ssim"] rescue []
+    counts = counts_array.blank? ? {} : [counts_array].to_h
+    unpublished_query = count_query + " AND workflow_published_sim:Unpublished"
+    unpublished_count_response = ActiveFedora::SolrService.get(unpublished_query, { rows: 0, facet: true, 'facet.field': "isMemberOfCollection_ssim", 'facet.limit': -1 })
+    unpublished_counts_array = unpublished_count_response["facet_counts"]["facet_fields"]["isMemberOfCollection_ssim"] rescue []
+    unpublished_counts = unpublished_counts_array.blank? ? {} : [unpublished_counts_array].to_h
+
+    @collections = response.documents.collect { |doc| ::Admin::CollectionPresenter.new(doc, media_object_count: counts[doc.id], unpublished_media_object_count: unpublished_counts[doc.id]) }.sort_by { |c| c.name.downcase }
   end
 
   # GET /collections
