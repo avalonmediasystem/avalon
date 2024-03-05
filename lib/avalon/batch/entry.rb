@@ -71,7 +71,7 @@ module Avalon
         json_hash = JSON.parse(json)
         opts = json_hash.except("fields", "files", "position")
         opts[:collection] = Admin::Collection.find(json_hash["collection"])
-        self.new(json_hash["fields"].deep_symbolize_keys, json_hash["files"].map(&:symbolize_keys!), opts.symbolize_keys, json_hash["position"], nil)
+        self.new(json_hash["fields"].symbolize_keys, json_hash["files"].map(&:deep_symbolize_keys!), opts.symbolize_keys, json_hash["position"], nil)
       end
 
       def user_key
@@ -102,10 +102,7 @@ module Avalon
         note_type = mo_parameters.delete(:note_type)
         mo_parameters[:note] = note.zip(note_type).map{|a|{note: a[0],type: a[1]}} if note.present?
 
-        # These fields are validated against the media object model.
-        # Because captions are stored on the master file, we need to
-        # remove them here to prevent an invalid manifest error.
-        mo_parameters.except(*gather_captions.keys)
+        mo_parameters
       end
 
       def valid?
@@ -192,7 +189,7 @@ module Avalon
             label = c[:caption_label].presence || filename
             language = c[:caption_language].present? ? caption_language(c[:caption_language]) : Settings.caption_default.language
             supplemental_file = SupplementalFile.new(label: label, tags: ['caption'], language: language)
-            supplemental_file.file.attach(io: FileLocator.new(c[:caption_file]).reader, filename: filename, content_type: 'text/vtt', identify: false)
+            supplemental_file.file.attach(io: FileLocator.new(c[:caption_file]).reader, filename: filename)
             supplemental_file.save
             master_file.supplemental_files += [supplemental_file]
           end
@@ -207,7 +204,7 @@ module Avalon
           # master_file.save(validate: false) #required: need id before setting media_object
           # master_file.media_object = media_object
           files = self.class.gatherFiles(file_spec[:file])
-          captions = gather_captions.values
+          captions = gather_captions(file_spec).values
           self.class.attach_datastreams_to_master_file(master_file, file_spec[:file], captions)
           master_file.setContent(files, dropbox_dir: media_object.collection.dropbox_absolute_path)
 
@@ -288,9 +285,9 @@ module Avalon
           !!opts[:hidden]
         end
 
-        def gather_captions
-          [] unless @fields.keys.any? { |k| k.to_s.include?('caption') }
-          @fields.select { |f| f.to_s.include?('caption') }
+        def gather_captions(file)
+          [] unless file.keys.any? { |k| k.to_s.include?('caption') }
+          file.select { |f| f.to_s.include?('caption') }
         end
     end
   end
