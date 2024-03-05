@@ -30,8 +30,9 @@ Unless required by applicable law or agreed to in writing, software distributed
   <div class="col-sm-12 px-0">
     <%= react_component("PlaylistRamp",
       {
-        base_url: request.protocol+request.host_with_port,
+        urls: { base_url: request.protocol+request.host_with_port, fullpath_url: request.fullpath },
         playlist_id: @playlist.id,
+        playlist_item_ids: @playlist.item_ids,
         token: @playlist_token,
         share: { canShare: (will_partial_list_render? :share), content: render('share') },
         comment_tag: { content: render('comments_and_tags') }
