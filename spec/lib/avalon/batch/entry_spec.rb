@@ -180,7 +180,7 @@ describe Avalon::Batch::Entry do
     context 'with caption files' do
       let(:caption_file) { File.join(Rails.root, 'spec/fixtures/dropbox/example_batch_ingest/assets/sheephead_mountain.mov.vtt')}
       let(:caption) {{ :caption_file => caption_file, :caption_label => 'Sheephead Captions', :caption_language => 'English' }}
-      let(:entry_fields) {{ title: Faker::Lorem.sentence, date_issued: "#{DateTime.now.strftime('%F')}", caption_1: caption }}
+      let(:entry_files) { [{ file: File.join(testdir, filename), offset: '00:00:00.500', label: 'Quis quo', date_digitized: '2015-10-30', skip_transcoding: false, caption_1: caption }] }
 
       it 'adds captions to masterfile' do
         expect(master_file.supplemental_file_captions).to be_present
