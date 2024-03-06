@@ -102,4 +102,29 @@ describe MediaObjectsHelper do
       end
     end
   end
+
+  describe '#show_progress?' do
+    context 'with completed section' do
+      let(:section) { FactoryBot.create(:master_file, :completed_processing) }
+      it 'returns false' do
+        expect(helper.show_progress?([section])).to eq false
+      end
+    end
+
+    context 'with encoding section' do
+      let(:section) { FactoryBot.create(:master_file, status_code: :running) }
+      it 'returns true' do
+        expect(helper.show_progress?([section])).to eq true
+      end
+    end
+    context 'without encode record' do
+      let(:section) { FactoryBot.create(:master_file, :not_processing) }
+      it 'returns false' do
+        expect(helper.show_progress?([section])).to eq false
+      end
+    end
+  end
+
+  describe '#any_failed?' do
+  end
 end
