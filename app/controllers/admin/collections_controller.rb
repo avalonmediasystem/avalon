@@ -47,7 +47,11 @@ class Admin::CollectionsController < ApplicationController
     unpublished_counts_array = unpublished_count_response["facet_counts"]["facet_fields"]["isMemberOfCollection_ssim"] rescue []
     unpublished_counts = unpublished_counts_array.each_slice(2).to_h
 
-    @collections = response.documents.collect { |doc| ::Admin::CollectionPresenter.new(doc, media_object_count: counts[doc.id], unpublished_media_object_count: unpublished_counts[doc.id]) }.sort_by { |c| c.name.downcase }
+    @collections = response.documents.collect do |doc| 
+                     ::Admin::CollectionPresenter.new(doc, 
+                                                      media_object_count: (counts[doc.id] || 0),
+                                                      unpublished_media_object_count: (unpublished_counts[doc.id] || 0))
+                   end.sort_by { |c| c.name.downcase }
   end
 
   # GET /collections
