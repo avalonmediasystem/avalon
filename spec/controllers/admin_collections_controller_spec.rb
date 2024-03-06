@@ -154,7 +154,8 @@ describe Admin::CollectionsController, type: :controller do
   end
 
   describe "#index" do
-    let!(:collection) { FactoryBot.create(:collection) }
+    let!(:collection) { FactoryBot.create(:collection, items: 1) }
+    let!(:collection2) { FactoryBot.create(:collection, items: 1) }
     subject(:json) { JSON.parse(response.body) }
 
     let(:administrator) { FactoryBot.create(:administrator) }
@@ -165,7 +166,7 @@ describe Admin::CollectionsController, type: :controller do
     end
     it "should return list of collections" do
       get 'index', params: { format:'json' }
-      expect(json.count).to eq(1)
+      expect(json.count).to eq(2)
       expect(json.first['id']).to eq(collection.id)
       expect(json.first['name']).to eq(collection.name)
       expect(json.first['unit']).to eq(collection.unit)
