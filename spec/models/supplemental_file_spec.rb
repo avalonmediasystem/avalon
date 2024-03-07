@@ -25,8 +25,14 @@ describe SupplementalFile do
           expect(subject.valid?).to be_truthy
         end
       end
-      context 'VTT/SRT caption file' do
+      context 'VTT caption file' do
         let(:subject) { FactoryBot.create(:supplemental_file, :with_caption_file, :with_caption_tag) }
+        it 'should validate' do
+          expect(subject.valid?).to be_truthy
+        end
+      end
+      context 'SRT caption file' do
+        let(:subject) { FactoryBot.create(:supplemental_file, :with_caption_srt_file, :with_caption_tag) }
         it 'should validate' do
           expect(subject.valid?).to be_truthy
         end

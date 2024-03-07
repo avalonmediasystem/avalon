@@ -134,6 +134,25 @@ RSpec.shared_examples 'a nested controller for' do |object_class|
           expect(object.supplemental_files.first.tags).to eq tags
           expect(object.supplemental_files.first.file).to be_attached
         end
+
+        context 'with mime type that does not match extension' do
+          let(:tags) { ['caption'] }
+          let(:extension) { 'srt' }
+          let(:uploaded_file) { fixture_file_upload(Rails.root.join('spec', 'fixtures', 'captions.srt'), 'text/plain') }
+          it "creates a SupplementalFile with correct content_type" do
+            expect{
+              post :create, params: { class_id => object.id, supplemental_file: valid_create_attributes_with_tags, format: :json}, session: valid_session
+            }.to change { object.reload.supplemental_files.size }.by(1)
+            expect(response).to have_http_status(:created)
+            expect(response.location).to eq "/#{object_class.model_name.plural}/#{object.id}/supplemental_files/#{assigns(:supplemental_file).id}"
+
+            expect(object.supplemental_files.first.id).to eq 1
+            expect(object.supplemental_files.first.label).to eq 'label'
+            expect(object.supplemental_files.first.tags).to eq tags
+            expect(object.supplemental_files.first.file).to be_attached
+            expect(object.supplemental_files.first.file.content_type).to eq Mime::Type.lookup_by_extension(extension)
+          end
+        end
       end
 
       context "with invalid params" do
