@@ -286,7 +286,7 @@ class MasterFilesController < ApplicationController
     @caption_url = if caption_id == 'master_file_caption'
                      captions_master_file_path
                    else
-                     master_file_supplemental_file_path(master_file_id: @master_file.id, id: caption_id)
+                     captions_master_file_supplemental_file_path(master_file_id: @master_file.id, id: caption_id)
                    end
   end
 
