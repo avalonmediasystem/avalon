@@ -28,11 +28,12 @@ RSpec.describe MasterFilesController, type: :routing do
     it "routes to #update" do
       expect(:put => "/master_files/abc1234/supplemental_files/edf567").to route_to("supplemental_files#update", master_file_id: 'abc1234', id: 'edf567')
     end
+    it "routes to #captions" do
+      expect(:get => "/master_files/abc1234/supplemental_files/edf567/captions").to route_to("supplemental_files#captions", master_file_id: 'abc1234', id: 'edf567')
+    end
     # Redirects are not testable from the routing spec out of the box.
     # Forcing the tests to `type: :request` to keep routing tests in one place.
     it "redirects to supplemental_files#show", type: :request do
-      get "/master_files/abc1234/supplemental_files/edf567/captions"
-      expect(response).to redirect_to("/master_files/abc1234/supplemental_files/edf567")
       get "/master_files/abc1234/supplemental_files/edf567/transcripts"
       expect(response).to redirect_to("/master_files/abc1234/supplemental_files/edf567")
     end
