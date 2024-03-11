@@ -36,7 +36,7 @@ module IiifSupplementalFileBehavior
 
   def determine_rendering_type(mime)
     case mime
-    when 'application/pdf', 'application/msword', 'application/vnd.oasis.opendocument.text', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'text/html', 'text/plain', 'text/vtt'
+    when 'application/pdf', 'application/msword', 'application/vnd.oasis.opendocument.text', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'text/html', 'text/plain', 'text/srt', 'text/vtt'
       'Text'
     when /image\/.+/
       'Image'

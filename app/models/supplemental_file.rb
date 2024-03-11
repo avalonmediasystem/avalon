@@ -45,4 +45,20 @@ class SupplementalFile < ApplicationRecord
   def machine_generated?
     tags.include?('machine_generated')
   end
+
+  # Adapted from https://github.com/opencoconut/webvtt-ruby/blob/e07d59220260fce33ba5a0c3b355e3ae88b99457/lib/webvtt/parser.rb#L11-L30
+  def self.convert_from_srt(srt)
+    # normalize timestamps in srt
+    # This Regex looks for malformed time stamp pieces such as '00:1:00,000', '0:01:00,000', etc.
+    # When it finds a match it prepends a 0 to the capture group so both of the above examples 
+    # would return '00:01:00,000'
+    conversion = srt.gsub(/(:|^)(\d)(,|:)/, '\10\2\3')
+    # convert timestamps and save the file
+    # VTT uses '.' as its decimal separator, SRT uses ',' so we convert the punctuation
+    conversion.gsub!(/([0-9]{2}:[0-9]{2}:[0-9]{2})([,])([0-9]{3})/, '\1.\3')
+    # normalize new line character
+    conversion.gsub!("\r\n", "\n")
+
+    "WEBVTT\n\n#{conversion}".strip
+  end
 end
