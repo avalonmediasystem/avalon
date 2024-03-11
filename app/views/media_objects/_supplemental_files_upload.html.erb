@@ -15,7 +15,19 @@ Unless required by applicable law or agreed to in writing, software distributed
 %>
       <% file_section=tag.empty? ? "supplemental_#{section.id}" : "#{tag}_#{section.id}" %>
       <div id="<%= file_section %>" class="section_files_tool">
-        <span class="tool_label"><%= label %></span>
+        <span class="tool_label">
+          <%= label %>
+        </span>
+        <% if tag == 'transcript' %>
+          <span class="tooltip-label">
+            <span class='fa fa-question-circle' type="button" data-toggle="collapse" data-target="#transcript_tooltip" aria-expanded="false" aria-controls="transcript_tooltip"></span>
+          </span>
+          <span class="tooltip-block collapse" id="transcript_tooltip">
+            <p class="text-muted">
+              <%= I18n.t('file_upload_tip.transcript') %>
+            </p>
+          </span>
+        <% end %>
         <%= form_for :supplemental_file, :url => object_supplemental_files_path(section), html: { method: "post" } do |form| %>
           <%= form.hidden_field(:tags, multiple: true, value: tag) if tag.present? %>
           <%= form.file_field :file, class: "filedata" %>

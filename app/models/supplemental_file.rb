@@ -15,15 +15,22 @@
 class SupplementalFile < ApplicationRecord
   has_one_attached :file
 
+  FILE_TYPES = { caption: ['text/vtt', 'text/srt'], transcript: ['text/vtt', 'text/srt', 'text/plain', 'application/pdf', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'] }
+
   # TODO: the empty tag should represent a generic supplemental file
   validates :tags, array_inclusion: ['transcript', 'caption', 'machine_generated', '', nil]
   validates :language, inclusion: { in: LanguageTerm.map.keys }
-  validate  :validate_file_type, if: :caption?
+  validate  :validate_caption_file, if: :caption?
+  validate  :validate_transcript_file, if: :transcript?
 
-  serialize :tags, Array
+  serialize :tags, Array 
 
-  def validate_file_type
-    errors.add(:file_type, "Uploaded file is not a recognized captions file") unless ['text/vtt', 'text/srt'].include? file.content_type
+  def validate_caption_file
+    errors.add(:file_type, "Uploaded file is not a recognized captions file. Caption must be a VTT or SRT file.") unless FILE_TYPES[:caption].include? file.content_type
+  end
+
+  def validate_transcript_file
+    errors.add(:file_type, "Uploaded file is not a recognized transcript file. Transcript must be a VTT, SRT, DOCX, PDF, or TXT file.") unless FILE_TYPES[:transcript].include? file.content_type 
   end
 
   def attach_file(new_file)
@@ -40,6 +47,10 @@ class SupplementalFile < ApplicationRecord
 
   def caption?
     tags.include?('caption')
+  end
+
+  def transcript?
+    tags.include?('transcript')
   end
 
   def machine_generated?

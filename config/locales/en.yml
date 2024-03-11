@@ -148,6 +148,8 @@ en:
       The Thumbnail is a still image that will be displayed in search results. Thumbnails can be grabbed from a video during playback by clicking the 'Create thumbnail' button in the player or by entering a time offset value here in the format 'hh:mm:ss.sss'.
     skip_transcoding: |
       For best results, use AAC-encoded mp4 files for audio and H.264 mp4 files for video. Some file types, such as mp3, will not work with the Adobe Media Server.
+    transcript: |
+      Transcript files must be VTT, SRT, PDF, DOCX, or TXT files. PDF files will not display in the transcript viewer but will be available for download.
   access_control:
     depositorlabel: "Depositor"
     editorlabel: "Editor"

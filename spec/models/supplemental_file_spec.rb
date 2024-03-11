@@ -19,7 +19,9 @@ describe SupplementalFile do
 
   describe 'validations' do
     describe 'file type' do
-      context 'non-caption file' do
+      TEST_TYPES = { txt: 'text/plain', vtt: 'text/vtt', srt: 'text/srt', pdf: 'application/pdf', docx: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' }
+
+      context 'non-caption, non-transcript file' do
         let(:subject) { FactoryBot.create(:supplemental_file, :with_attached_file) }
         it 'should skip validation' do
           expect(subject.valid?).to be_truthy
@@ -44,6 +46,24 @@ describe SupplementalFile do
           expect(subject.errors[:file_type]).not_to be_empty
         end
       end
+      context 'transcript file' do
+        let(:text_content) { double('file') }
+        let(:subject) { FactoryBot.build(:supplemental_file, :with_transcript_tag) }
+        TEST_TYPES.each do |ext, type|
+          it "should validate #{ext}" do
+            allow(subject).to receive(:file).and_return(text_content)
+            allow(text_content).to receive(:content_type).and_return(type)
+            expect(subject.valid?).to be_truthy
+          end
+        end
+      end
+      context 'invalid transcript file' do
+        let(:subject) { FactoryBot.build(:supplemental_file, :with_attached_file, :with_transcript_tag) }
+        it 'should not validate' do
+          expect(subject.valid?).to be_falsey
+          expect(subject.errors[:file_type]).not_to be_empty
+        end
+      end
     end
 
     describe 'language' do
@@ -63,7 +83,7 @@ describe SupplementalFile do
   end
 
   context "with valid tags" do
-    let(:subject) { FactoryBot.create(:supplemental_file, :with_caption_file)}
+    let(:subject) { FactoryBot.create(:supplemental_file, :with_caption_file, :with_transcript_file) }
     let(:tags) { ["transcript", "caption", "machine_generated"] }
 
     it "can store tags" do
