@@ -29,8 +29,7 @@ class SupplementalFile < ApplicationRecord
   def attach_file(new_file)
     file.attach(new_file)
     extension = File.extname(new_file.original_filename)
-    content_type = Mime::Type.lookup_by_extension(extension.slice(1..-1)).to_s
-    self.file.content_type = content_type
+    self.file.content_type = Mime::Type.lookup_by_extension(extension.slice(1..-1)).to_s if extension == '.srt'
     self.label = file.filename.to_s if label.blank?
     self.language = tags.include?('caption') ? Settings.caption_default.language : 'eng'
   end
