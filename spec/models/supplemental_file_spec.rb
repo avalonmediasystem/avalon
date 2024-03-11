@@ -92,10 +92,10 @@ describe SupplementalFile do
   end
 
   describe '.convert_from_srt' do
-    let(:file) { Rails.root.join('spec', 'fixtures', 'captions.srt') }
+    let(:input) { "1\n00:00:03,498 --> 00:00:05,000\n- Example Captions\n" }
     let(:output) { "WEBVTT\n\n1\n00:00:03.498 --> 00:00:05.000\n- Example Captions" }
     it 'converts SRT format captions into VTT captions' do
-      expect(SupplementalFile.convert_from_srt(File.read(file))).to eq output
+      expect(SupplementalFile.convert_from_srt(input)).to eq output
     end
   end
 end

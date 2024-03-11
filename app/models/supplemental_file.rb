@@ -52,13 +52,13 @@ class SupplementalFile < ApplicationRecord
     # This Regex looks for malformed time stamp pieces such as '00:1:00,000', '0:01:00,000', etc.
     # When it finds a match it prepends a 0 to the capture group so both of the above examples 
     # would return '00:01:00,000'
-    srt.gsub!(/(:|^)(\d)(,|:)/, '\10\2\3')
+    conversion = srt.gsub(/(:|^)(\d)(,|:)/, '\10\2\3')
     # convert timestamps and save the file
     # VTT uses '.' as its decimal separator, SRT uses ',' so we convert the punctuation
-    srt.gsub!(/([0-9]{2}:[0-9]{2}:[0-9]{2})([,])([0-9]{3})/, '\1.\3')
+    conversion.gsub!(/([0-9]{2}:[0-9]{2}:[0-9]{2})([,])([0-9]{3})/, '\1.\3')
     # normalize new line character
-    srt.gsub!("\r\n", "\n")
+    conversion.gsub!("\r\n", "\n")
 
-    "WEBVTT\n\n#{srt}".strip
+    "WEBVTT\n\n#{conversion}".strip
   end
 end
