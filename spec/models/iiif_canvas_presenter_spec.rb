@@ -207,7 +207,7 @@ describe IiifCanvasPresenter do
   describe 'Supplemental file handling' do
     let(:master_file) { FactoryBot.create(:master_file, :with_waveform, supplemental_files_json: supplemental_files_json, media_object: media_object, derivatives: [derivative]) }
     let(:supplemental_file) { FactoryBot.create(:supplemental_file) }
-    let(:transcript_file) { FactoryBot.create(:supplemental_file, :with_transcript_tag) }
+    let(:transcript_file) { FactoryBot.create(:supplemental_file, :with_transcript_file, :with_transcript_tag) }
     let(:caption_file) { FactoryBot.create(:supplemental_file, :with_caption_file, :with_caption_tag) }
     let(:supplemental_files) { [supplemental_file, transcript_file, caption_file] }
     let(:supplemental_files_json) { supplemental_files.map(&:to_global_id).map(&:to_s).to_s }
@@ -282,7 +282,7 @@ describe IiifCanvasPresenter do
       end
 
       context 'machine generated transcript' do
-        let(:transcript_file) { FactoryBot.create(:supplemental_file, tags: ['transcript', 'machine_generated']) }
+        let(:transcript_file) { FactoryBot.create(:supplemental_file, :with_transcript_file, tags: ['transcript', 'machine_generated']) }
 
         it "adds '(machine generated)' to the label" do
           expect(subject.any? { |content| content.label['eng'][0] =~ /#{transcript_file.label} \(machine generated\)/ }).to eq true
@@ -294,7 +294,7 @@ describe IiifCanvasPresenter do
   describe '#see_also' do
     let(:master_file) { FactoryBot.build(:master_file, :with_waveform, supplemental_files_json: supplemental_files_json, media_object: media_object, derivatives: [derivative]) }
     let(:supplemental_file) { FactoryBot.create(:supplemental_file) }
-    let(:transcript_file) { FactoryBot.create(:supplemental_file, :with_transcript_tag) }
+    let(:transcript_file) { FactoryBot.create(:supplemental_file, :with_transcript_file, :with_transcript_tag) }
     let(:caption_file) { FactoryBot.create(:supplemental_file, :with_caption_file, tags: ['caption', 'machine_generated']) }
     let(:supplemental_files) { [supplemental_file, transcript_file, caption_file] }
     let(:supplemental_files_json) { supplemental_files.map(&:to_global_id).map(&:to_s).to_s }

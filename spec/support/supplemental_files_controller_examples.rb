@@ -121,6 +121,7 @@ RSpec.shared_examples 'a nested controller for' do |object_class|
         end
 
         let(:tags) { ["transcript"] }
+        let(:uploaded_file) { fixture_file_upload(Rails.root.join('spec', 'fixtures', 'captions.vtt'), 'text/vtt') }
         let(:valid_create_attributes_with_tags) { valid_create_attributes.merge(tags: tags) }
         it "creates a SupplementalFile with tags for #{object_class}" do
           expect {
