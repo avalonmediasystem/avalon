@@ -56,7 +56,8 @@ Unless required by applicable law or agreed to in writing, software distributed
       if (player && player.player != undefined) {
         player.player.on('loadedmetadata', () => {
           let thumbnailBtn = document.getElementById('create-thumbnail-btn');
-          if (thumbnailBtn) {
+          // Leave 'Create Thumbnail' button disabled when item is audio
+          if (thumbnailBtn && !player.player.isAudio()) {
             thumbnailBtn.disabled = false;
           }
         });
@@ -67,7 +68,8 @@ Unless required by applicable law or agreed to in writing, software distributed
         */
         setTimeout(() => {
           let thumbnailBtn = document.getElementById('create-thumbnail-btn');
-          if (thumbnailBtn && thumbnailBtn.disabled && player.player?.readyState() === 4) {
+          // Leave 'Create Thumbnail' button disabled when item is audio
+          if (thumbnailBtn && thumbnailBtn.disabled && player.player?.readyState() === 4 && !player.player.isAudio()) {
               thumbnailBtn.disabled = false;
           }
         }, 100);
