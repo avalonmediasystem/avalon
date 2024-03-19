@@ -110,10 +110,15 @@ function getTimelineScopes() {
   let parent = currentStructureItem.closest('ul').closest('li');
   while (parent.length > 0) {
     let next = parent.closest('ul').closest('li');
+    let begin = 0;
+    let end = '';
     let tracks = parent.find('li a');
     trackCount = tracks.length;
-    let begin = parseFloat(tracks[0].hash.split('#t=').reverse()[0].split(',')[0]) || 0;
-    let end = parseFloat(tracks[trackCount - 1].hash.split('#t=').reverse()[0].split(',')[1]) || '';
+    // Only assign begin/end when structure item is a subsection, not a top level section
+    if (next.length > 0) {
+      begin = parseFloat(tracks[0].hash.split('#t=').reverse()[0].split(',')[0]) || 0;
+      end = parseFloat(tracks[trackCount - 1].hash.split('#t=').reverse()[0].split(',')[1]) || '';
+    }
     streamId = tracks[0].pathname.split('/').reverse()[0];
     let label = parent[0].dataset.label;
     scopes.push({
