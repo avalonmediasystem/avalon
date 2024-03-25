@@ -71,7 +71,7 @@ module Avalon
         json_hash = JSON.parse(json)
         opts = json_hash.except("fields", "files", "position")
         opts[:collection] = Admin::Collection.find(json_hash["collection"])
-        self.new(json_hash["fields"].symbolize_keys, json_hash["files"].map(&:symbolize_keys!), opts.symbolize_keys, json_hash["position"], nil)
+        self.new(json_hash["fields"].symbolize_keys, json_hash["files"].map(&:deep_symbolize_keys!), opts.symbolize_keys, json_hash["position"], nil)
       end
 
       def user_key
@@ -176,17 +176,21 @@ module Avalon
         true
       end
 
-      def self.attach_datastreams_to_master_file( master_file, filename )
+      def self.attach_datastreams_to_master_file( master_file, filename, datastreams )
         structural_file = "#{filename}.structure.xml"
         if FileLocator.new(structural_file).exist?
           master_file.structuralMetadata.content=FileLocator.new(structural_file).reader
           master_file.structuralMetadata.original_name = structural_file
         end
-        captions_file = "#{filename}.vtt"
-        if FileLocator.new(captions_file).exist?
-          master_file.captions.content=FileLocator.new(captions_file).reader
-          master_file.captions.mime_type='text/vtt'
-          master_file.captions.original_name = captions_file
+        datastreams.each do |ds|
+          return unless ds.present?
+          supplemental_file = case ds.keys[0].to_s
+                              when /caption.*/
+                                process_datastream(ds, 'caption')
+                              when /transcript.*/
+                                process_datastream(ds, 'transcript')
+                              end
+          master_file.supplemental_files += [supplemental_file]
         end
       end
 
@@ -198,7 +202,8 @@ module Avalon
           # master_file.save(validate: false) #required: need id before setting media_object
           # master_file.media_object = media_object
           files = self.class.gatherFiles(file_spec[:file])
-          self.class.attach_datastreams_to_master_file(master_file, file_spec[:file])
+          datastreams = gather_datastreams(file_spec).values
+          self.class.attach_datastreams_to_master_file(master_file, file_spec[:file], datastreams)
           master_file.setContent(files, dropbox_dir: media_object.collection.dropbox_absolute_path)
 
           # Overwrite files hash with working file paths to pass to matterhorn
@@ -263,10 +268,41 @@ module Avalon
         filename.dup.insert(filename.rindex('.'), ".#{quality}")
       end
 
+      def self.caption_language(language)
+        begin
+          LanguageTerm.find(language.capitalize).code
+        rescue LanguageTerm::LookupError
+          Settings.caption_default.language
+        end
+      end
+      private_class_method :caption_language
+
+      def self.process_datastream(datastream, type)
+        file, label, language = ["_file", "_label", "_language"].map { |item| item.prepend(type).to_sym }
+        if datastream[file].present? && FileLocator.new(datastream[file]).exist?
+          # Build out file metadata
+          filename = datastream[file].split('/').last
+          label = datastream[label].presence || filename
+          language = datastream[language].present? ? caption_language(datastream[language]) : Settings.caption_default.language
+          machine_generated = datastream[:machine_generated].present? ? 'machine_generated' : nil
+          # Create SupplementalFile
+          supplemental_file = SupplementalFile.new(label: label, tags: [type, machine_generated].compact, language: language)
+          supplemental_file.file.attach(io: FileLocator.new(datastream[file]).reader, filename: filename)
+          supplemental_file.save
+          supplemental_file
+        end
+      end
+      private_class_method :process_datastream
+
       private
 
         def hidden
           !!opts[:hidden]
+        end
+
+        def gather_datastreams(file)
+          [] unless file.keys.any? { |k| k.to_s.include?('caption') || k.to_s.include?('transcript') }
+          file.select { |f| f.to_s.include?('caption') || f.to_s.include?('transcript') }
         end
     end
   end

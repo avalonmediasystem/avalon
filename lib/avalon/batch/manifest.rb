@@ -21,7 +21,8 @@ module Avalon
       extend Forwardable
 
       EXTENSIONS = ['csv','xls','xlsx','ods']
-      FILE_FIELDS = [:file,:label,:offset,:skip_transcoding,:absolute_location,:date_digitized]
+      FILE_FIELDS = [:file,:label,:offset,:skip_transcoding,:absolute_location,:date_digitized, :caption_file, :caption_label, :caption_language, 
+                     :transcript_file, :transcript_label, :machine_generated]
       SKIP_FIELDS = [:collection]
 
       def_delegators :@entries, :each
@@ -102,6 +103,27 @@ module Avalon
         not (value.to_s =~ /^(y(es)?|t(rue)?)$/i).nil?
       end
 
+      def supplementing_files(field, content, values, i)
+        type = case field
+               when /caption.*/
+                 'caption'
+               when /transcript.*/
+                 'transcript'
+               else
+                 'supplemental'
+               end
+
+        if field.to_s.include?('file')
+          @type_count += 1
+          @key = "#{type}_#{@type_count}".to_sym
+          content.last[@key] = {}
+          # Set file path to caption/transcript file
+          content.last[@key][field] = path_to(values[i])
+        end
+        # Set caption/transcript metadata fields
+        content.last[@key][field] ||= values[i]
+      end
+
       def create_entries!
         first = @spreadsheet.first_row + 2
         last = @spreadsheet.last_row
@@ -117,10 +139,15 @@ module Avalon
           content=[]
 
           fields = Hash.new { |h,k| h[k] = [] }
+          @type_count = 0
           @field_names.each_with_index do |f,i|
             unless f.blank? || SKIP_FIELDS.include?(f) || values[i].blank?
               if FILE_FIELDS.include?(f)
                 content << {} if f == :file
+                if ['caption', 'transcript', 'machine_generated'].any? { |type| f.to_s.include?(type) }
+                  supplementing_files(f, content, values, i)
+                  next
+                end
                 content.last[f] = f == :skip_transcoding ? true?(values[i]) : values[i]
               else
                 fields[f] << values[i]
@@ -140,7 +167,6 @@ module Avalon
           entries << Entry.new(fields.select { |f| !FILE_FIELDS.include?(f) }, files, opts, index, self)
         end
       end
-
     end
   end
 end
