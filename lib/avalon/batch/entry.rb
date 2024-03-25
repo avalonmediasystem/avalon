@@ -176,20 +176,20 @@ module Avalon
         true
       end
 
-      def self.attach_datastreams_to_master_file( master_file, filename, captions )
+      def self.attach_datastreams_to_master_file( master_file, filename, datastreams )
         structural_file = "#{filename}.structure.xml"
         if FileLocator.new(structural_file).exist?
           master_file.structuralMetadata.content=FileLocator.new(structural_file).reader
           master_file.structuralMetadata.original_name = structural_file
         end
-        captions.each do |c|
-          next unless c.present? && c[:caption_file].present? && FileLocator.new(c[:caption_file]).exist?
-          filename = c[:caption_file].split('/').last
-          label = c[:caption_label].presence || filename
-          language = c[:caption_language].present? ? caption_language(c[:caption_language]) : Settings.caption_default.language
-          supplemental_file = SupplementalFile.new(label: label, tags: ['caption'], language: language)
-          supplemental_file.file.attach(io: FileLocator.new(c[:caption_file]).reader, filename: filename)
-          supplemental_file.save
+        datastreams.each do |ds|
+          next unless ds.present?
+          supplemental_file = case ds.keys[0].to_s
+                              when /caption.*/
+                                process_datastream(ds, 'caption')
+                              when /transcript.*/
+                                process_datastream(ds, 'transcript')
+                              end
           master_file.supplemental_files += [supplemental_file]
         end
       end
@@ -202,8 +202,8 @@ module Avalon
           # master_file.save(validate: false) #required: need id before setting media_object
           # master_file.media_object = media_object
           files = self.class.gatherFiles(file_spec[:file])
-          captions = gather_captions(file_spec).values
-          self.class.attach_datastreams_to_master_file(master_file, file_spec[:file], captions)
+          datastreams = gather_datastreams(file_spec).values
+          self.class.attach_datastreams_to_master_file(master_file, file_spec[:file], datastreams)
           master_file.setContent(files, dropbox_dir: media_object.collection.dropbox_absolute_path)
 
           # Overwrite files hash with working file paths to pass to matterhorn
@@ -277,15 +277,32 @@ module Avalon
       end
       private_class_method :caption_language
 
+      def self.process_datastream(datastream, type)
+        file, label, language = ["_file", "_label", "_language"].map { |item| item.prepend(type).to_sym }
+        if datastream[file].present? && FileLocator.new(datastream[file]).exist?
+          # Build out file metadata
+          filename = datastream[file].split('/').last
+          label = datastream[label].presence || filename
+          language = datastream[language].present? ? caption_language(datastream[language]) : Settings.caption_default.language
+          machine_generated = datastream[:machine_generated].present? ? 'machine_generated' : nil
+          # Create SupplementalFile
+          supplemental_file = SupplementalFile.new(label: label, tags: [type, machine_generated].compact, language: language)
+          supplemental_file.file.attach(io: FileLocator.new(datastream[file]).reader, filename: filename)
+          supplemental_file.save
+          supplemental_file
+        end
+      end
+      private_class_method :process_datastream
+
       private
 
         def hidden
           !!opts[:hidden]
         end
 
-        def gather_captions(file)
-          [] unless file.keys.any? { |k| k.to_s.include?('caption') }
-          file.select { |f| f.to_s.include?('caption') }
+        def gather_datastreams(file)
+          [] unless file.keys.any? { |k| k.to_s.include?('caption') || k.to_s.include?('transcript') }
+          file.select { |f| f.to_s.include?('caption') || f.to_s.include?('transcript') }
         end
     end
   end
