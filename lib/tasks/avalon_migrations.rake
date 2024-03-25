@@ -38,7 +38,7 @@ namespace :avalon do
         filename = caption_file.original_name
         content_type = caption_file.mime_type
         # Create and populate new SupplementalFile record using original metadata
-        supplemental_file = SupplementalFile.new(label: filename, tags: ['caption'], language: 'eng')
+        supplemental_file = SupplementalFile.new(label: filename, tags: ['caption'], language: Settings.caption_default.language)
         supplemental_file.file.attach(io: ActiveFedora::FileIO.new(caption_file), filename: filename, content_type: content_type, identify: false)
         # Skip validation so that incorrect mimetypes do not bomb the entire task
         supplemental_file.save(validate: false)
