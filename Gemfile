@@ -5,7 +5,7 @@ gem 'bootsnap', require: false
 gem 'listen'
 gem 'net-smtp', require: false
 gem 'psych', '< 4'
-gem 'rails', '=7.0.4.3'
+gem 'rails', '~>7.0.8'
 gem 'sprockets', '~>3.7.2'
 #gem 'sprockets-rails', require: 'sprockets/railtie'
 gem 'sqlite3'
@@ -155,7 +155,7 @@ group :production do
   gem 'google-analytics-rails', '1.1.0'
   gem 'lograge'
   gem 'okcomputer'
-  gem 'puma', '>= 4.3.8'
+  gem 'puma', '>= 6.4.2'
 end
 
 # Install the bundle --with aws when running on Amazon Elastic Beanstalk
