@@ -21,7 +21,7 @@ module Avalon
       extend Forwardable
 
       EXTENSIONS = ['csv','xls','xlsx','ods']
-      FILE_FIELDS = [:file,:label,:offset,:skip_transcoding,:absolute_location,:date_digitized]
+      FILE_FIELDS = [:file,:label,:offset,:skip_transcoding,:absolute_location,:date_digitized, :caption_file, :caption_label, :caption_language]
       SKIP_FIELDS = [:collection]
 
       def_delegators :@entries, :each
@@ -102,6 +102,18 @@ module Avalon
         not (value.to_s =~ /^(y(es)?|t(rue)?)$/i).nil?
       end
 
+      def process_captions(field, content, values, i)
+        if field.to_s.include?('file')
+          @caption_count += 1
+          @caption_key = "caption_#{@caption_count}".to_sym
+          content.last[@caption_key] = {}
+          # Set file path to caption file
+          content.last[@caption_key][field] = path_to(values[i])
+        end
+        # Set caption metadata fields
+        content.last[@caption_key][field] ||= values[i]
+      end
+
       def create_entries!
         first = @spreadsheet.first_row + 2
         last = @spreadsheet.last_row
@@ -117,10 +129,15 @@ module Avalon
           content=[]
 
           fields = Hash.new { |h,k| h[k] = [] }
+          @caption_count = 0
           @field_names.each_with_index do |f,i|
             unless f.blank? || SKIP_FIELDS.include?(f) || values[i].blank?
               if FILE_FIELDS.include?(f)
                 content << {} if f == :file
+                if f.to_s.include?('caption')
+                  process_captions(f, content, values, i)
+                  next
+                end
                 content.last[f] = f == :skip_transcoding ? true?(values[i]) : values[i]
               else
                 fields[f] << values[i]
@@ -140,7 +157,6 @@ module Avalon
           entries << Entry.new(fields.select { |f| !FILE_FIELDS.include?(f) }, files, opts, index, self)
         end
       end
-
     end
   end
 end
