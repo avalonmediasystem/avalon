@@ -203,10 +203,10 @@ services:
 
   cypress:
     network_mode: host
-    image: cypress/included:3.8.2
+    image: cypress/included:latest
     depends_on:
       - avalon
-    entrypoint: cypress run -C spec/cypress/cypress.json
+    entrypoint: cypress run -C spec/cypress/cypress.config.js
     working_dir: /e2e
     volumes:
       - ./:/e2e

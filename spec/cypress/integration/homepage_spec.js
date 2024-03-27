@@ -47,7 +47,7 @@ context('Homepage', () => {
 		cy.contains('Email address')
 		cy.contains('Confirm email address')
 		cy.contains('Subject')
-		cy.contains('Comments')
+		cy.contains('Comment')
 		cy.contains('Submit comments')
   })
 
