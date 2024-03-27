@@ -1,6 +1,13 @@
 const { defineConfig } = require("cypress");
 
 module.exports = defineConfig({
+  env: {
+    "USERS_ADMINISTRATOR_EMAIL": "administrator@example.com",
+    "USERS_ADMINISTRATOR_PASSWORD": "password",
+    "USERS_USER_EMAIL": "user@example.com",
+    "USERS_USER_PASSWORD": "password",
+    "MEDIA_OBJECT_ID": "123456789"
+  },
   downloadsFolder: "spec/cypress/downloads",
   fixturesFolder: "spec/cypress/fixtures",
   screenshotsFolder: "spec/cypress/screenshots",
