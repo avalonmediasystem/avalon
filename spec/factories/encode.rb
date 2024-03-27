@@ -26,12 +26,14 @@ FactoryBot.define do
       state { :running }
       percent_complete { 50.5 }
       current_operations { ['encoding'] }
+      input { FactoryBot.build(:encode_output) }
     end
       
     trait :succeeded do
       state { :completed }
       percent_complete { 100 }
       current_operations { ['DONE'] }
+      input { FactoryBot.build(:encode_output) }
       output { [ FactoryBot.build(:encode_output) ] }
     end
 
@@ -39,15 +41,29 @@ FactoryBot.define do
       state { :failed }
       percent_complete { 50.5 }
       current_operations { ['FAILED'] }
+      input { FactoryBot.build(:encode_output) }
       errors { ['Out of disk space.'] }
     end
+  end
+
+  factory :encode_input, class: ActiveEncode::Input do
+    id { SecureRandom.uuid }
+    label { 'quality-high' }
+    url { 'file://path/to/output.mp4' }
+    duration { '21575.0' }
+    audio_bitrate { '163842.0' }
+    audio_codec { 'AAC' }
+    video_bitrate { '4000000.0' }
+    video_codec { 'AVC' }
+    width { '1024' }
+    height { '768' }
   end
 
   factory :encode_output, class: ActiveEncode::Output do
     id { SecureRandom.uuid }
     label { 'quality-high' }
     url { 'file://path/to/output.mp4' }
-    duration { '21575' }
+    duration { '21575.0' }
     audio_bitrate { '163842.0' }
     audio_codec { 'AAC' }
     video_bitrate { '4000000.0' }

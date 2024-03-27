@@ -539,21 +539,6 @@ describe MasterFile do
     end
   end
 
-  describe '#update_progress_on_success!' do
-    subject(:master_file) { FactoryBot.create(:master_file) }
-    let(:encode) { double("encode", :output => []) }
-    before do
-      allow(master_file).to receive(:update_ingest_batch).and_return(true)
-    end
-
-    it 'should set the digitized date' do
-      master_file.update_progress_on_success!(encode)
-      master_file.reload
-      expect(master_file.date_digitized).to_not be_empty
-    end
-
-  end
-
   describe "#structural_metadata_labels" do
     subject(:master_file) { FactoryBot.create(:master_file, :with_structure) }
     it 'should return correct list of labels' do
@@ -816,10 +801,24 @@ describe MasterFile do
     let(:master_file) { FactoryBot.build(:master_file) }
     let(:encode_succeeded) { FactoryBot.build(:encode, :succeeded) }
 
+    before do
+      allow(master_file).to receive(:update_derivatives)
+      allow(master_file).to receive(:run_hook)
+    end
+
     it 'calls update_derivatives' do
       expect(master_file).to receive(:update_derivatives).with(array_including(hash_including(label: 'quality-high')))
       expect(master_file).to receive(:run_hook).with(:after_transcoding)
       master_file.update_progress_on_success!(encode_succeeded)
+    end
+
+    it 'updates duration' do
+      expect { master_file.update_progress_on_success!(encode_succeeded) }.to change { master_file.duration }.from("200000").to("21575")
+    end
+
+    it 'should set the digitized date' do
+      master_file.update_progress_on_success!(encode_succeeded)
+      expect(master_file.date_digitized).to_not be_empty
     end
   end
 
