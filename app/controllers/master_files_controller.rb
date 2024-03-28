@@ -71,14 +71,6 @@ class MasterFilesController < ApplicationController
   end
 
   def embed
-    if can? :read, @master_file
-      @stream_info = secure_streams(@master_file.stream_details, @master_file.media_object_id)
-      @stream_info['t'] = view_context.parse_media_fragment(params[:t]) # add MediaFragment from params
-      @stream_info['link_back_url'] = view_context.share_link_for(@master_file)
-    end
-
-    @player_width = "100%"
-    @player_height = "100%"
     respond_to do |format|
       format.html do
         response.headers.delete "X-Frame-Options"

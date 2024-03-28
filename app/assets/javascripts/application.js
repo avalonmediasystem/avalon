@@ -47,8 +47,4 @@
 // include all of our vendored js
 //= require_tree ../../../vendor/assets/javascripts/.
 
-// Require VideoJS and VideoJS quality selector for embedded player
-//= require video.js/dist/video.min.js
-//= require @silvermine/videojs-quality-selector/dist/js/silvermine-videojs-quality-selector.min.js
-
 //= require_tree .
