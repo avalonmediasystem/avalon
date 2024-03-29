@@ -294,9 +294,13 @@ class MasterFile < ActiveFedora::Base
     #TODO pull this from the encode
     self.date_digitized ||= Time.now.utc.iso8601
 
-    # Set duration after transcode if mediainfo fails to find.
-    # e.x. WebM files missing technical metadata
-    self.duration ||= encode.input.duration
+    # Update the duration detected by ActiveEncode
+    # because it has higher precision than mediainfo
+    # Set for the first time for files without duration
+    # e.g. WebM files missing technical metadata
+    # ActiveEncode returns duration in milliseconds which
+    # is stored as an integer string
+    self.duration = encode.input.duration.to_i.to_s if encode.input.duration.present?
 
     outputs = Array(encode.output).collect do |output|
       {
