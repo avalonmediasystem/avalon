@@ -236,6 +236,8 @@ class MediaObject < ActiveFedora::Base
     solr_doc['section_id_ssim'] = ordered_master_file_ids
     solr_doc["other_identifier_sim"] +=  master_files.collect {|mf| mf.identifier.to_a }.flatten
     solr_doc["date_digitized_ssim"] = master_files.collect {|mf| mf.date_digitized }.compact.map {|t| Time.parse(t).strftime "%F" }
+    solr_doc["has_captions_bsi"] = has_captions
+    solr_doc["has_transcripts_bsi"] = has_transcripts
     solr_doc["section_label_tesim"] = section_labels
     solr_doc['section_physical_description_ssim'] = section_physical_descriptions
     solr_doc['all_comments_ssim'] = all_comments

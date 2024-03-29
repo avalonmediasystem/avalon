@@ -57,6 +57,14 @@ module MediaObjectBehavior
     "This item is accessible by: #{actors.join(', ')}."
   end
 
+  def has_captions
+    master_files.any? { |mf| mf.has_captions? }
+  end
+
+  def has_transcripts
+    master_files.any? { |mf| mf.has_transcripts? }
+  end
+
   # CDL methods
   def lending_status
     Checkout.active_for_media_object(id).any? ? "checked_out" : "available"

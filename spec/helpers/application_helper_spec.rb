@@ -163,6 +163,16 @@ describe ApplicationHelper do
     end
   end
 
+  describe "#display_has_caption_or_transcript" do
+    it "should return 'Yes' for 'true'" do
+      expect(helper.display_has_caption_or_transcript("true")).to eq("Yes")
+    end
+
+    it "should return 'No' for 'false'" do
+      expect(helper.display_has_caption_or_transcript("false")).to eq("No")
+    end
+  end
+
   describe "#pretty_time" do
     it 'returns a formatted time' do
       expect(helper.pretty_time(0)).to eq '00:00:00.000'
