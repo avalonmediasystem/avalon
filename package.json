@@ -22,7 +22,7 @@
     "react": "^17.0.1",
     "react-bootstrap": "^1.0.0",
     "react-dom": "^17.0.1",
-    "react-structural-metadata-editor": "https://github.com/avalonmediasystem/react-structural-metadata-editor#avalon-7.7",
+    "react-structural-metadata-editor": "https://github.com/avalonmediasystem/react-structural-metadata-editor#avalon-7.7.1",
     "react_ujs": "^2.4.4",
     "sass": "^1.65.1",
     "sass-loader": "^13.3.2",
