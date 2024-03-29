@@ -232,6 +232,28 @@ describe CatalogController do
       end
     end
 
+    describe "facet fields" do
+      let(:media_object) { FactoryBot.create(:fully_searchable_media_object, :with_master_file, :with_completed_workflow, avalon_uploader: 'archivist1', governing_policies: [lease]) }
+      let(:lease) { FactoryBot.create(:lease, inherited_read_groups: ['ExternalGroup']) }
+      before(:each) do
+        MediaObjectIndexingJob.perform_now(media_object.id)
+      end
+      ["avalon_resource_type_ssim", "creator_ssim", "date_sim", "genre_ssim", "series_ssim", "collection_ssim", "unit_ssim", "language_ssim", "has_captions_bsi", "has_transcripts_bsi",
+       "workflow_published_sim", "avalon_uploader_ssi", "read_access_group_ssim", "read_access_virtual_group_ssim", "date_digitized_ssim", "date_ingested_ssim"].each do |field|  
+        it "should facet results on #{field}" do
+          query = Array(media_object.to_solr(include_child_fields:true)[field]).first
+          # The following line is to check that the test is using a valid solr field name
+          # since an incorrect one will lead to an empty query resulting in a false positive below
+          expect(query.to_s).not_to be_empty
+          get :index, params: { 'f' => { field => [query] } }
+          expect(response).to be_successful
+          expect(response).to render_template('catalog/index')
+          expect(assigns(:response).documents.count).to eq 1
+          expect(assigns(:response).documents.map(&:id)).to contain_exactly(media_object.id)
+        end
+      end
+    end
+
     describe "gated discovery" do
       context "with bad ldap groups" do
         let(:ldap_groups) { ['good-group', 'bad group'] }

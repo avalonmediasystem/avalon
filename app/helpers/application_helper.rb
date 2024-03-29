@@ -104,6 +104,10 @@ module ApplicationHelper
     content_tag(:dt, label) + contents
   end
 
+  def display_has_caption_or_transcript value
+    value = value == "true" ? 'Yes' : 'No'
+  end
+
   def search_result_label item
     if item['title_tesi'].present?
       label = truncate(item['title_tesi'], length: 100)
