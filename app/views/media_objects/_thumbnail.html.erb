@@ -56,22 +56,34 @@ Unless required by applicable law or agreed to in writing, software distributed
       if (player && player.player != undefined) {
         player.player.on('loadedmetadata', () => {
           let thumbnailBtn = document.getElementById('create-thumbnail-btn');
-          if (thumbnailBtn) {
+          // Leave 'Create Thumbnail' button disabled when item is audio
+          if (thumbnailBtn && !player.player.isAudio()) {
             thumbnailBtn.disabled = false;
           }
-          clearInterval(timeCheck);
         });
         /*
           Browsers on MacOS sometimes miss the 'loadedmetadata' event resulting in a disabled add to playlist button indefinitely.
           This timeout enables the add to playlist button, when this happens. It checks the button's state and enables it as needed.
+          Additional check for player's readyState ensures the button is enabled only when player is ready after the timeout.
         */
         setTimeout(() => {
           let thumbnailBtn = document.getElementById('create-thumbnail-btn');
-          if (thumbnailBtn && thumbnailBtn.disabled) {
-            thumbnailBtn.disabled = false;
+          // Leave 'Create Thumbnail' button disabled when item is audio
+          if (thumbnailBtn && thumbnailBtn.disabled && player.player?.readyState() === 4 && !player.player.isAudio()) {
+              thumbnailBtn.disabled = false;
           }
-          clearInterval(timeCheck);
-        }, 500);
+        }, 100);
+
+        /* 
+          Disable 'Create Thumbnail' button on player dispose, so that it can be enabled again or keep disabled on the next section load
+          based on the player status.      
+        */
+        player.player.on('dispose', () => {
+          let thumbnailBtn = document.getElementById('create-thumbnail-btn');
+          if (thumbnailBtn) {
+            thumbnailBtn.disabled = true;
+          }
+        });
       }
 
       $('#thumbnailModal').on('show.bs.modal', function(e) {

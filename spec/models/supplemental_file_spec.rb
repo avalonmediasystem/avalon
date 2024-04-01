@@ -25,8 +25,14 @@ describe SupplementalFile do
           expect(subject.valid?).to be_truthy
         end
       end
-      context 'VTT/SRT caption file' do
+      context 'VTT caption file' do
         let(:subject) { FactoryBot.create(:supplemental_file, :with_caption_file, :with_caption_tag) }
+        it 'should validate' do
+          expect(subject.valid?).to be_truthy
+        end
+      end
+      context 'SRT caption file' do
+        let(:subject) { FactoryBot.create(:supplemental_file, :with_caption_srt_file, :with_caption_tag) }
         it 'should validate' do
           expect(subject.valid?).to be_truthy
         end
@@ -82,6 +88,14 @@ describe SupplementalFile do
       subject.language = 'ger'
       subject.save
       expect(subject.reload.language).to eq "ger"
+    end
+  end
+
+  describe '.convert_from_srt' do
+    let(:input) { "1\n00:00:03,498 --> 00:00:05,000\n- Example Captions\n" }
+    let(:output) { "WEBVTT\n\n1\n00:00:03.498 --> 00:00:05.000\n- Example Captions" }
+    it 'converts SRT format captions into VTT captions' do
+      expect(SupplementalFile.convert_from_srt(input)).to eq output
     end
   end
 end

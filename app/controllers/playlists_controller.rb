@@ -260,10 +260,11 @@ class PlaylistsController < ApplicationController
     # Condense secure_streams into single call using master_files
     stream_info_hash = secure_stream_infos(master_files, media_objects)
 
-    canvas_presenters = @playlist.items.collect do |item|
+    canvas_presenters = @playlist.items.collect.with_index do |item, i|
       master_file = master_files.find { |mf| mf.id == item.clip.master_file_id }
       cannot_read_item = master_file.nil? || cannot_read_hash[master_file.media_object_id]
-      IiifPlaylistCanvasPresenter.new(playlist_item: item, stream_info: stream_info_hash[master_file&.id], cannot_read_item: cannot_read_item, master_file: master_file)
+      position = i + 1
+      IiifPlaylistCanvasPresenter.new(playlist_item: item, stream_info: stream_info_hash[master_file&.id], cannot_read_item: cannot_read_item, position: position, master_file: master_file)
     end
 
     can_edit_playlist = can? :edit, @playlist

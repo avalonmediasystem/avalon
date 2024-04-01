@@ -19,8 +19,5 @@ RSpec.describe MasterFilesController, type: :routing do
     it "routes to #move" do
       expect(:post => "/master_files/abc1234/move").to route_to("master_files#move", id: 'abc1234')
     end
-    it "routes to #caption_manifest" do
-      expect(:get => "/master_files/abc1234/caption_manifest/def5678").to route_to("master_files#caption_manifest", id: 'abc1234', c_id: 'def5678')
-    end
   end
 end

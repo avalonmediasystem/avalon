@@ -13,13 +13,14 @@
 # ---  END LICENSE_HEADER BLOCK  ---
 
 class IiifPlaylistCanvasPresenter
-  attr_reader :playlist_item, :stream_info, :cannot_read_item
+  attr_reader :playlist_item, :stream_info, :cannot_read_item, :position
   attr_accessor :media_fragment
 
-  def initialize(playlist_item:, stream_info:, cannot_read_item: false, media_fragment: nil, master_file: nil)
+  def initialize(playlist_item:, stream_info:, cannot_read_item: false, position: nil, media_fragment: nil, master_file: nil)
     @playlist_item = playlist_item
     @stream_info = stream_info
     @cannot_read_item = cannot_read_item
+    @position = position
     @media_fragment = media_fragment
     @master_file = master_file
   end
@@ -95,6 +96,14 @@ class IiifPlaylistCanvasPresenter
 
   def description
     playlist_item.comment
+  end
+
+  def homepage
+    [{
+      "@id" => "#{Rails.application.routes.url_helpers.playlist_url(playlist_item.playlist_id).to_s}?position=#{position}",
+      "type" => "Text",
+      "label" => "Playlist Item #{position}"
+    }]
   end
 
   private

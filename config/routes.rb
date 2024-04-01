@@ -155,7 +155,6 @@ Rails.application.routes.draw do
       get :captions
       get :waveform
       match ':quality.m3u8', to: 'master_files#hls_manifest', via: [:get], as: :hls_manifest
-      get 'caption_manifest/:c_id', to: 'master_files#caption_manifest', as: :caption_manifest
       get 'structure', to: 'master_files#structure', constraints: { format: 'json' }
       post 'structure', to: 'master_files#set_structure', constraints: { format: 'json' }
       delete 'structure', to: 'master_files#delete_structure', constraints: { format: 'json' }
@@ -166,7 +165,7 @@ Rails.application.routes.draw do
     # Supplemental Files
     resources :supplemental_files, except: [:new, :index, :edit] do
       member do
-        get 'captions', :to => redirect('/master_files/%{master_file_id}/supplemental_files/%{id}')
+        get 'captions'
         get 'transcripts', :to => redirect('/master_files/%{master_file_id}/supplemental_files/%{id}')
       end
     end
