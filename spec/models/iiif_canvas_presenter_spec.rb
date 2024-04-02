@@ -298,6 +298,15 @@ describe IiifCanvasPresenter do
           expect(subject.any? { |content| content.label['eng'][0] =~ /#{transcript_file.label} \(machine generated\)/ }).to eq true
         end
       end
+
+      context 'caption being treated as a transcript' do
+        let(:caption_file) { FactoryBot.create(:supplemental_file, :with_caption_file, tags: ['caption', 'transcript']) }
+
+        it 'returns a caption entry and a transcript entry' do
+          expect(subject.any? { |content| content.body_id =~ /supplemental_files\/#{caption_file.id}\/transcripts/ }).to eq true
+          expect(subject.any? { |content| content.body_id =~ /supplemental_files\/#{caption_file.id}\/captions/ }).to eq true
+        end
+      end
     end
   end
 

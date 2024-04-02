@@ -46,6 +46,10 @@ class SupplementalFile < ApplicationRecord
     tags.include?('machine_generated')
   end
 
+  def caption_transcript?
+    tags.include?('caption') && tags.include?('transcript')
+  end
+
   # Adapted from https://github.com/opencoconut/webvtt-ruby/blob/e07d59220260fce33ba5a0c3b355e3ae88b99457/lib/webvtt/parser.rb#L11-L30
   def self.convert_from_srt(srt)
     # normalize timestamps in srt

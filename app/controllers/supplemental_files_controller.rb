@@ -151,12 +151,15 @@ class SupplementalFilesController < ApplicationController
     end
 
     def edit_file_information
-      ident = "machine_generated_#{params[:id]}".to_sym
+      file_params = { machine_generated?: "machine_generated_#{params[:id]}".to_sym, caption_transcript?: "treat_as_transcript_#{params[:id]}".to_sym }
 
-      if params[ident] && !@supplemental_file.machine_generated?
-        @supplemental_file.tags += ['machine_generated']
-      elsif !params[ident] && @supplemental_file.machine_generated?
-        @supplemental_file.tags -= ['machine_generated']
+      file_params.each do |k,v|
+        tag = k.to_s.gsub(/(caption_)?(.*)(\?)/, '\2')
+        if params[v] && !@supplemental_file.send(k)
+          @supplemental_file.tags += [tag]
+        elsif !params[v] && @supplemental_file.send(k)
+          @supplemental_file.tags -= [tag]
+        end
       end
       @supplemental_file.label = supplemental_file_params[:label]
       return unless supplemental_file_params[:language].present?
