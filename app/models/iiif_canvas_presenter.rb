@@ -41,7 +41,7 @@ class IiifCanvasPresenter
   end
 
   def annotation_content
-    supplemental_captions_transcripts.collect { |file| supplementing_content_data(file) }
+    supplemental_captions_transcripts.uniq.collect { |file| supplementing_content_data(file) }.flatten
   end
 
   def sequence_rendering
@@ -103,16 +103,28 @@ class IiifCanvasPresenter
     end
 
     def supplementing_content_data(file)
-      url = if !file.is_a?(SupplementalFile)
-              Rails.application.routes.url_helpers.captions_master_file_url(master_file.id)
-            elsif file.tags.include?('caption')
-              Rails.application.routes.url_helpers.captions_master_file_supplemental_file_url(master_file.id, file.id)
-            elsif file.tags.include?('transcript')
-              Rails.application.routes.url_helpers.transcripts_master_file_supplemental_file_url(master_file.id, file.id)
-            else
-              Rails.application.routes.url_helpers.master_file_supplemental_file_url(master_file.id, file.id)
-            end
-      IIIFManifest::V3::AnnotationContent.new(body_id: url, **supplemental_attributes(file))
+      unless file.is_a?(SupplementalFile)
+        url = Rails.application.routes.url_helpers.captions_master_file_url(master_file.id)
+        return IIIFManifest::V3::AnnotationContent.new(body_id: url, **supplemental_attributes(file))
+      end
+
+      tags = file.tags.reject { |t| t == 'machine_generated' }.compact
+      case tags
+      when ['caption']
+        url = Rails.application.routes.url_helpers.captions_master_file_supplemental_file_url(master_file.id, file.id)
+        IIIFManifest::V3::AnnotationContent.new(body_id: url, **supplemental_attributes(file))
+      when ['transcript']
+        url = Rails.application.routes.url_helpers.transcripts_master_file_supplemental_file_url(master_file.id, file.id)
+        IIIFManifest::V3::AnnotationContent.new(body_id: url, **supplemental_attributes(file))
+      when ['caption', 'transcript']
+        caption_url = Rails.application.routes.url_helpers.captions_master_file_supplemental_file_url(master_file.id, file.id)
+        transcript_url = Rails.application.routes.url_helpers.transcripts_master_file_supplemental_file_url(master_file.id, file.id)
+        [IIIFManifest::V3::AnnotationContent.new(body_id: caption_url, **supplemental_attributes(file)),
+         IIIFManifest::V3::AnnotationContent.new(body_id: transcript_url, **supplemental_attributes(file))]
+      else
+        url = Rails.application.routes.url_helpers.master_file_supplemental_file_url(master_file.id, file.id)
+        IIIFManifest::V3::AnnotationContent.new(body_id: url, **supplemental_attributes(file))
+      end
     end
 
     def stream_urls

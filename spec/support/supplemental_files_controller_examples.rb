@@ -292,6 +292,34 @@ RSpec.shared_examples 'a nested controller for' do |object_class|
         end
       end
 
+      context "caption treated as transcript" do
+        let(:transcript_param) { "treat_as_transcript_#{supplemental_file.id}".to_sym }
+        context "missing transcript tag" do
+          let(:supplemental_file) { FactoryBot.create(:supplemental_file, :with_caption_file, :with_caption_tag, label: 'label') }
+          it "adds transcript note to tags" do
+            expect {
+              put :update, params: { class_id => object.id, id: supplemental_file.id, transcript_param => 1, supplemental_file: valid_update_attributes, format: :html }, session: valid_session
+            }.to change { master_file.reload.supplemental_files.first.tags }.from(['caption']).to(['caption', 'transcript'])
+          end
+        end
+        context "with transcript tag" do
+          let(:supplemental_file) { FactoryBot.create(:supplemental_file, :with_transcript_file, tags: ['caption', 'transcript'], label: 'label') }
+          it "does not add more instances of transcript note" do
+            expect {
+              put :update, params: { class_id => object.id, id: supplemental_file.id, transcript_param => 1, supplemental_file: valid_update_attributes, format: :html }, session: valid_session
+            }.to not_change { master_file.reload.supplemental_files.first.tags }.from(['caption', 'transcript'])
+          end
+        end
+        context "removing transcript designation" do
+          let(:supplemental_file) { FactoryBot.create(:supplemental_file, :with_transcript_file, tags: ['caption', 'transcript'], label: 'label (machine generated)') }
+          it "removes transcript note from tags" do
+            expect {
+              put :update, params: { class_id => object.id, id: supplemental_file.id, supplemental_file: valid_update_attributes, format: :html }, session: valid_session
+            }.to change { master_file.reload.supplemental_files.first.tags }.from(['caption', 'transcript']).to(['caption'])
+          end
+        end
+      end
+
       context "with invalid params" do
         it "returns a 400" do
           put :update, params: { class_id => object.id, id: supplemental_file.id, supplemental_file: invalid_update_attributes, format: :html }, session: valid_session
