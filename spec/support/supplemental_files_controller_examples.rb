@@ -264,7 +264,7 @@ RSpec.shared_examples 'a nested controller for' do |object_class|
         end
       end
 
-      context "machine generated transcript" do
+      context "machine generated file" do
         let(:machine_param) { "machine_generated_#{supplemental_file.id}".to_sym }
         context "missing machine_generated tag" do
           let(:supplemental_file) { FactoryBot.create(:supplemental_file, :with_transcript_file, :with_transcript_tag, label: 'label') }

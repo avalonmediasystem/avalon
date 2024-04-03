@@ -949,6 +949,10 @@ h5.card-title {
       }
     }
 
+    div.supplemental-file-data.is-editing:not(.edit-item) + div.supplemental-file-data {
+      margin-top: 2.6rem;
+    }
+
     .supplemental-file-form {
       float: left;
       width: 100%;
