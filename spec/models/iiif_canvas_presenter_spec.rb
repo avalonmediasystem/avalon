@@ -215,14 +215,14 @@ describe IiifCanvasPresenter do
     describe '#sequence_rendering' do
       subject { presenter.sequence_rendering }
 
-      it 'includes supplemental files' do
+      it 'includes supplemental files and captions' do
         expect(subject.any? { |rendering| rendering["@id"] =~ /supplemental_files\/#{supplemental_file.id}/ }).to eq true
+        expect(subject.any? { |rendering| rendering["@id"] =~ /supplemental_files\/#{caption_file.id}/ }).to eq true
       end
 
-      it 'does not include waveform, transcripts, or captions' do
+      it 'does not include waveform or transcripts' do
         expect(subject.any? { |rendering| rendering["label"]["en"] == ["waveform.json"] }).to eq false
         expect(subject.any? { |rendering| rendering["@id"] =~ /supplemental_files\/#{transcript_file.id}/ }).to eq false
-        expect(subject.any? { |rendering| rendering["@id"] =~ /supplemental_files\/#{caption_file.id}/ }).to eq false
       end
     end
 

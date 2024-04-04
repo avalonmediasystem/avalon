@@ -16,14 +16,20 @@ module IiifSupplementalFileBehavior
   private
 
   def supplemental_files_rendering(object)
-    object.supplemental_files(tag: nil).collect do |sf|
-      {
-        "@id" => object_supplemental_file_url(object, sf),
-        "type" => determine_rendering_type(sf.file.content_type),
-        "label" => { "en" => [sf.label] },
-        "format" => sf.file.content_type
-      }
+    tags = ['caption', nil]
+    supplemental_files = []
+    tags.each do |tag|
+      supplemental_files += object.supplemental_files(tag: tag).collect do |sf|
+                              {
+                                "@id" => object_supplemental_file_url(object, sf),
+                                "type" => determine_rendering_type(sf.file.content_type),
+                                "label" => { "en" => [sf.label] },
+                                "format" => sf.file.content_type
+                              }
+      end
     end
+
+    supplemental_files
   end
 
   def object_supplemental_file_url(object, supplemental_file)
