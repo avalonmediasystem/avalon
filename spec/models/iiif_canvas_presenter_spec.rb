@@ -269,6 +269,16 @@ describe IiifCanvasPresenter do
         expect(subject.any? { |content| content.body_id =~ /master_files\/#{master_file.id}\/captions/ }).to eq false
       end
 
+      context 'srt captions' do
+        let(:srt_caption_file) { FactoryBot.create(:supplemental_file, :with_caption_srt_file, :with_caption_tag) }
+        let(:supplemental_files) { [supplemental_file, transcript_file, caption_file, srt_caption_file] }
+        it 'sets format to "text/vtt"' do
+          captions = subject.select { |s| s.body_id.include?('captions') }
+          expect(captions.none? { |content| content.format == 'text/srt' }).to eq true
+          expect(captions.all? { |content| content.format == 'text/vtt' }).to eq true
+        end
+      end
+
       context 'legacy master file captions' do
         let(:master_file) { FactoryBot.create(:master_file, :with_waveform, :with_captions, supplemental_files_json: supplemental_files_json, media_object: media_object, derivatives: [derivative]) }
 
