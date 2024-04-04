@@ -36,7 +36,7 @@ Unless required by applicable law or agreed to in writing, software distributed
           html: { method: "put", class: "supplemental-file-form edit-item", id: "form-#{file.id}" },
           data: { file_id: file.id, masterfile_id: section.id } do |form| %>
           <div class="col-sm-9 col-md-8 col-9 form-row p-0">
-            <div class="form-group col-md-6 col-sm-6 col-6" style="margin-bottom: 0.1rem;">
+            <div class="form-group col-md-6 col-sm-6 col-6">
               <%= form.text_field :label, id: "supplemental_file_input_#{section.id}_#{file.id}", value: file.label %>
             </div>
             <% if tag == 'transcript' %>
@@ -48,7 +48,7 @@ Unless required by applicable law or agreed to in writing, software distributed
               </span>
             <% end %>
             <% if tag == 'caption' %>
-              <div class="form-group col-md-6 col p-0" style="margin-bottom: 0.1rem;">
+              <div class="form-group col-md-6 col p-0">
                 <%= form.text_field :language, id: "supplemental_file_language_#{section.id}_#{file.id}", value: LanguageTerm.find(file.language).text,
                     class: "typeahead from-model form-control",
                     data: { model: 'languageTerm', validate: false } %>
