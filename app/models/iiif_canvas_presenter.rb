@@ -209,7 +209,11 @@ class IiifCanvasPresenter
     def supplemental_attributes(file)
       if file.is_a?(SupplementalFile)
         label = file.tags.include?('machine_generated') ? file.label + ' (machine generated)' : file.label
-        format = file.file.content_type
+        format = if file.file.content_type == 'text/srt' && file.tags.include?('caption')
+                   'text/vtt'
+                 else
+                   file.file.content_type
+                 end
         language = file.language || 'en'
         filename = file.file.filename.to_s
       else
