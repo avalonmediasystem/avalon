@@ -18,22 +18,26 @@ Unless required by applicable law or agreed to in writing, software distributed
             <div class="file_view <% if tag == "caption" %>captions<% end %>">
               <% if tag == "caption" %>
                 <div class="row supplemental-file-data edit-item" id="edit-label-row">
-                  <div class="col-md-4 col-4">
-                    <label class="caption-form-label">Label</label>
-                  </div>
-                  <div class="col-md-4 col-4">
-                    <label class="caption-form-label">Language</label>
+                  <div class="row col-sm-9 col-md-8 col-9">
+                    <div class="col-md-4 col-4">
+                      <label class="caption-form-label">Label</label>
+                    </div>
+                    <div class="col-md-4 col-4">
+                      <label class="caption-form-label">Language</label>
+                    </div>
                   </div>
                 </div>
               <% end %>
               <% files.each do |file| %>
+                <% next if tag == 'transcript' and file.tags.include?('caption') %>
                 <div class="supplemental-file-data" data-file-id="<%= file.id %>" data-masterfile-id="<%= section.id %>" data-tag="<%= tag %>" >
                     <span name="label_<%= section.id + "_" + file.id.to_s %>" class="display-item"><%= file.label %></span>
                     <%= form_for :supplemental_file, url: object_supplemental_file_path(section, file), remote: true,
                           html: { method: "put", class: "supplemental-file-form edit-item", id: "form-#{file.id}" },
                           data: { file_id: file.id, masterfile_id: section.id } do |form| %>
                         <div class="col-sm-9 col-md-8 col-9 form-row p-0">
-                          <div class="form-group col-md-6 col-sm-6 col-6">
+                          <% col = tag == 'caption' ? 4 : 6 %>
+                          <div class="form-group col-md-<%= col %> col-sm-<%= col %> col-<%= col %>">
                             <%= form.text_field :label, id: "supplemental_file_input_#{section.id}_#{file.id}", value: file.label %>
                           </div>
                           <% if tag == 'transcript' %>
@@ -45,11 +49,17 @@ Unless required by applicable law or agreed to in writing, software distributed
                             </span>
                           <% end %>
                           <% if tag == 'caption' %>
-                            <div class="form-group col-md-6 col p-0">
+                            <div class="form-group col-md-4 col p-0">
                               <%= form.text_field :language, id: "supplemental_file_language_#{section.id}_#{file.id}", value: LanguageTerm.find(file.language).text,
                                   class: "typeahead from-model form-control",
                                   data: { model: 'languageTerm', validate: false } %>
                             </div>
+                            <span class="form-group col-md-4 col-sm-4 col-4 p-0">
+                              <%= label_tag "treat_as_transcript_#{file.id}", class: "ml-3" do %>
+                                <%= check_box_tag "treat_as_transcript_#{file.id}", '1', file.caption_transcript? %>
+                                Treat as transcript
+                              <% end %>
+                            </span>
                           <% end %>
                         </div>
                         <div class="col-sm-3 col-md-4 col-3 p-0">

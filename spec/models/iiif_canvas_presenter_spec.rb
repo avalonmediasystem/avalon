@@ -269,13 +269,19 @@ describe IiifCanvasPresenter do
         expect(subject.any? { |content| content.body_id =~ /master_files\/#{master_file.id}\/captions/ }).to eq false
       end
 
-      context 'srt captions' do
+      context 'srt files' do
         let(:srt_caption_file) { FactoryBot.create(:supplemental_file, :with_caption_srt_file, :with_caption_tag) }
-        let(:supplemental_files) { [supplemental_file, transcript_file, caption_file, srt_caption_file] }
-        it 'sets format to "text/vtt"' do
+        let(:srt_transcript_file) { FactoryBot.create(:supplemental_file, :with_caption_srt_file, :with_transcript_tag) }
+        let(:supplemental_files) { [transcript_file, caption_file, srt_caption_file, srt_transcript_file] }
+        it 'sets caption format to "text/vtt"' do
           captions = subject.select { |s| s.body_id.include?('captions') }
           expect(captions.none? { |content| content.format == 'text/srt' }).to eq true
           expect(captions.all? { |content| content.format == 'text/vtt' }).to eq true
+        end
+        it 'sets other formats to the original file content_type' do
+          supplemental_files = subject.reject { |s| s.body_id.include?('captions') }
+          expect(supplemental_files[0].format).to eq transcript_file.file.content_type
+          expect(supplemental_files[1].format).to eq srt_transcript_file.file.content_type
         end
       end
 
@@ -296,6 +302,22 @@ describe IiifCanvasPresenter do
 
         it "adds '(machine generated)' to the label" do
           expect(subject.any? { |content| content.label['eng'][0] =~ /#{transcript_file.label} \(machine generated\)/ }).to eq true
+        end
+      end
+
+      context 'caption being treated as a transcript' do
+        let(:caption_file) { FactoryBot.create(:supplemental_file, :with_caption_file, tags: ['caption', 'transcript']) }
+        let(:srt_caption_file) { FactoryBot.create(:supplemental_file, :with_caption_srt_file, tags: ['caption', 'transcript']) }
+        let(:supplemental_files) { [caption_file, srt_caption_file] }
+
+        it 'returns a caption entry and a transcript entry with proper formats' do
+          captions = subject.select { |s| s.body_id.include?('captions') }
+          transcripts = subject.select { |s| s.body_id.include?('transcripts') }
+          expect(captions.count).to eq 2
+          expect(transcripts.count).to eq 2
+          expect(captions.all? { |content| content.format == 'text/vtt' }).to eq true
+          expect(transcripts.any? { |content| content.format == 'text/vtt' }).to eq true
+          expect(transcripts.any? { |content| content.format == 'text/srt' }).to eq true
         end
       end
     end
