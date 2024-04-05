@@ -183,16 +183,14 @@ module Avalon
           master_file.structuralMetadata.original_name = structural_file
         end
         captions.each do |c|
-          return unless c.present?
-          if c[:caption_file].present? && FileLocator.new(c[:caption_file]).exist?
-            filename = c[:caption_file].split('/').last
-            label = c[:caption_label].presence || filename
-            language = c[:caption_language].present? ? caption_language(c[:caption_language]) : Settings.caption_default.language
-            supplemental_file = SupplementalFile.new(label: label, tags: ['caption'], language: language)
-            supplemental_file.file.attach(io: FileLocator.new(c[:caption_file]).reader, filename: filename)
-            supplemental_file.save
-            master_file.supplemental_files += [supplemental_file]
-          end
+          next unless c.present? && c[:caption_file].present? && FileLocator.new(c[:caption_file]).exist?
+          filename = c[:caption_file].split('/').last
+          label = c[:caption_label].presence || filename
+          language = c[:caption_language].present? ? caption_language(c[:caption_language]) : Settings.caption_default.language
+          supplemental_file = SupplementalFile.new(label: label, tags: ['caption'], language: language)
+          supplemental_file.file.attach(io: FileLocator.new(c[:caption_file]).reader, filename: filename)
+          supplemental_file.save
+          master_file.supplemental_files += [supplemental_file]
         end
       end
 
