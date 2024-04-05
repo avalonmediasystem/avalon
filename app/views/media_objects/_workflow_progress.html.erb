@@ -16,11 +16,7 @@ Unless required by applicable law or agreed to in writing, software distributed
     <%# only display if depositor/edidtor/manager/administrator %>
     <% if can? :update, @media_object %>
       <section id="progress" data-progress-url="<%= progress_media_object_path :id => @media_object.id, :format => :json %>">
-        <% if @masterFiles.blank? %>
-          <div class="alert">
-            <p>No media is associated with this item</p>
-          </div>
-        <% elsif show_progress?(@masterFiles) %>
+        <% if show_progress?(@masterFiles) %>
           <div class="alert <%= any_failed?(@masterFiles) ? 'alert-danger' : 'alert-info' %>">
             <h4>Conversion Process</h4>
             <br/>
