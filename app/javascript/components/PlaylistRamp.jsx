@@ -61,12 +61,12 @@ const Ramp = ({
     let url = `${base_url}/playlists/${playlist_id}/manifest.json`;
     if (token) url += `?token=${token}`;
 
-    let [fullpath, position] = fullpath_url.split('?position=');
-    let start_canvas = playlist_item_ids[position - 1]
+    let [_, position] = fullpath_url.split('?position=');
+    let start_canvas = playlist_item_ids[position - 1];
     setStartCanvasId(
       start_canvas && start_canvas != undefined
-      ? `${base_url}/playlists/${playlist_id}/manifest/canvas/${start_canvas}`
-      : undefined
+        ? `${base_url}/playlists/${playlist_id}/manifest/canvas/${start_canvas}`
+        : undefined
     );
     setManifestUrl(url);
 
@@ -97,40 +97,43 @@ const Ramp = ({
   return (
     <IIIFPlayer manifestUrl={manifestUrl}
       customErrorMessage='This playlist is empty.'
+      emptyManifestMessage='This playlist currently has no playable items.'
       startCanvasId={startCanvasId}>
       <Row className="ramp--all-components ramp--playlist">
         <Col sm={8}>
           <MediaPlayer enableFileDownload={false} />
-          <Card className="ramp--playlist-accordion">
-            <Card.Header>
-              <h4>{activeItemTitle}</h4>
-              {activeItemSummary && <div>{activeItemSummary}</div>}
-            </Card.Header>
-            <Card.Body>
-              <Accordion>
-                <Card>
-                  <Accordion.Collapse eventKey="0" id="markers">
-                    <Card.Body>
-                      <MarkersDisplay showHeading={false} />
-                    </Card.Body>
-                  </Accordion.Collapse>
-                  <Accordion.Toggle as={Card.Header} variant="link" eventKey="0" className="ramp--playlist-accordion-header">
-                    <ExpandCollapseArrow /> Markers
-                  </Accordion.Toggle>
-                </Card>
-                <Card>
-                  <Accordion.Collapse eventKey="1">
-                    <Card.Body className="p-3">
-                      <MetadataDisplay displayOnlyCanvasMetadata={true} showHeading={false} />
-                    </Card.Body>
-                  </Accordion.Collapse>
-                  <Accordion.Toggle as={Card.Header} variant="link" eventKey="1" className="ramp--playlist-accordion-header">
-                    <ExpandCollapseArrow /> Source Item Details
-                  </Accordion.Toggle>
-                </Card>
-              </Accordion>
-            </Card.Body>
-          </Card>
+          {playlist_item_ids?.lenght > 0 && (
+            <Card className="ramp--playlist-accordion">
+              <Card.Header>
+                <h4>{activeItemTitle}</h4>
+                {activeItemSummary && <div>{activeItemSummary}</div>}
+              </Card.Header>
+              <Card.Body>
+                <Accordion>
+                  <Card>
+                    <Accordion.Collapse eventKey="0" id="markers">
+                      <Card.Body>
+                        <MarkersDisplay showHeading={false} />
+                      </Card.Body>
+                    </Accordion.Collapse>
+                    <Accordion.Toggle as={Card.Header} variant="link" eventKey="0" className="ramp--playlist-accordion-header">
+                      <ExpandCollapseArrow /> Markers
+                    </Accordion.Toggle>
+                  </Card>
+                  <Card>
+                    <Accordion.Collapse eventKey="1">
+                      <Card.Body className="p-3">
+                        <MetadataDisplay displayOnlyCanvasMetadata={true} showHeading={false} />
+                      </Card.Body>
+                    </Accordion.Collapse>
+                    <Accordion.Toggle as={Card.Header} variant="link" eventKey="1" className="ramp--playlist-accordion-header">
+                      <ExpandCollapseArrow /> Source Item Details
+                    </Accordion.Toggle>
+                  </Card>
+                </Accordion>
+              </Card.Body>
+            </Card>
+          )}
         </Col>
         <Col sm={4} className={`ramp--playlist-items-column ${IS_MOBILE ? 'mobile-view' : ''}`}>
           <Row>
@@ -154,7 +157,7 @@ const Ramp = ({
               }
             </Col>
           </Row>
-          <Row className="mx-0">
+          <Row className="mx-0 mb-2">
             <Col md={12} lg={12} sm={12} className="px-0">
               <div className="collapse" id="shareList">
                 <div dangerouslySetInnerHTML={{ __html: share.content }} />
@@ -162,8 +165,12 @@ const Ramp = ({
             </Col>
           </Row>
           <div dangerouslySetInnerHTML={{ __html: comment_tag.content }} />
-          <h4 className="mt-3">Playlist Items</h4>
-          <StructuredNavigation />
+          {playlist_item_ids?.length > 0 && (
+            <React.Fragment>
+              <h4 className="mt-3">Playlist Items</h4>
+              <StructuredNavigation />
+            </React.Fragment>
+          )}
         </Col>
       </Row>
     </IIIFPlayer>
