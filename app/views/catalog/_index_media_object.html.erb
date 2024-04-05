@@ -23,4 +23,10 @@ Unless required by applicable law or agreed to in writing, software distributed
       <dd class="blacklight-<%= field_presenter.key %> col-sm-9"><%= field_presenter.values.join(', ') %></dd>
     <% end %>
   <% end %>
+  <% if params[:q].present? %>
+    <dt class="blacklight-found_in col-sm-3">Found in:</dt>
+    <dd class="blacklight-found_in col-sm-9">metadata (<%= doc_presenter.document.to_h.sum {|k,v| k =~ /metadata_tf_/ ? v : 0 } %>)
+      , transcript (<%= doc_presenter.document["sections"]["docs"].sum {|s| s.sum {|k,v| k =~ /transcript_tf_/ ? v : 0 }} %>)
+      , sections (<%= doc_presenter.document.to_h.sum {|k,v| k =~ /structure_tf_/ ? v : 0 } %>)</dd>
+  <% end %>
 </dl>

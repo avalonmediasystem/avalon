@@ -524,6 +524,7 @@ class MasterFile < ActiveFedora::Base
       solr_doc['status_code_ssi'] = status_code
       solr_doc['operation_ssi'] = operation
       solr_doc['error_ssi'] = error
+      solr_doc['transcript_tim'] = supplemental_file_transcripts.map {|transcript| transcript.file.download}
     end
   end
 
