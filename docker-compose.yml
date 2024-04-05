@@ -54,8 +54,11 @@ services:
       - solr-precreate
       - avalon
       - /opt/solr/avalon_conf
+    ports:
+      - '8983:8983'
     networks:
       internal:
+      external:
   solr-test:
     <<: *solr
     volumes:
