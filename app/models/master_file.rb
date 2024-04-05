@@ -492,6 +492,10 @@ class MasterFile < ActiveFedora::Base
     !captions.empty? || !supplemental_file_captions.empty?
   end
 
+  def has_transcripts?
+    supplemental_file_transcripts.present?
+  end
+
   def has_waveform?
     !waveform.empty?
   end
@@ -508,6 +512,7 @@ class MasterFile < ActiveFedora::Base
     super.tap do |solr_doc|
       solr_doc['file_size_ltsi'] = file_size if file_size.present?
       solr_doc['has_captions?_bs'] = has_captions?
+      solr_doc['has_transcripts?_bs'] = has_transcripts?
       solr_doc['has_waveform?_bs'] = has_waveform?
       solr_doc['has_poster?_bs'] = has_poster?
       solr_doc['has_thumbnail?_bs'] = has_thumbnail?

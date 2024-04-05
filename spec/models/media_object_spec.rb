@@ -1162,4 +1162,33 @@ describe MediaObject do
       expect(MediaObject.autocomplete('te', mo1.id)).to include({ id: 'Test 2', display: 'Test 2' })
     end
   end
+
+  describe "#has_captions" do
+    let(:captionless_media_object) { FactoryBot.create(:media_object, :with_master_file) }
+    let(:captioned_media_object) { FactoryBot.create(:media_object, master_files: [master_file1, master_file2]) }
+    let(:master_file1) { FactoryBot.create(:master_file) }
+    let(:master_file2) { FactoryBot.create(:master_file, :with_captions) }
+    it "returns false when child master files contain no captions" do
+      expect(captionless_media_object.has_captions).to be false
+    end
+
+    it "returns true when any child master file contains a caption" do
+      expect(captioned_media_object.has_captions).to be true
+    end
+  end
+
+  describe "#has_transcripts" do
+    let(:transcriptless_media_object) { FactoryBot.create(:media_object, :with_master_file) }
+    let(:transcript_media_object) { FactoryBot.create(:media_object, master_files: [master_file1, master_file2]) }
+    let(:master_file1) { FactoryBot.create(:master_file) }
+    let(:master_file2) { FactoryBot.create(:master_file, supplemental_files: [transcript]) }
+    let(:transcript) { FactoryBot.create(:supplemental_file, :with_transcript_tag) }
+    it "returns false when child master files contain no transcript" do
+      expect(transcriptless_media_object.has_transcripts).to be false
+    end
+
+    it "returns true when any child master file contains a transcript" do
+      expect(transcript_media_object.has_transcripts).to be true
+    end
+  end
 end
