@@ -151,13 +151,18 @@ class SupplementalFilesController < ApplicationController
     end
 
     def edit_file_information
-      file_params = { machine_generated?: "machine_generated_#{params[:id]}".to_sym, caption_transcript?: "treat_as_transcript_#{params[:id]}".to_sym }
+      file_params = [ 
+        { param: "machine_generated_#{params[:id]}".to_sym, tag: "machine_generated", method: :machine_generated? },
+        { param: "treat_as_transcript_#{params[:id]}".to_sym, tag: "transcript", method: :caption_transcript? }
+      ]
 
-      file_params.each do |k,v|
-        tag = k.to_s.gsub(/(caption_)?(.*)(\?)/, '\2')
-        if params[v] && !@supplemental_file.send(k)
+      file_params.each do |v|
+        param_name = v[:param]
+        tag = v[:tag]
+        method = v[:method]
+        if params[param_name] && !@supplemental_file.send(method)
           @supplemental_file.tags += [tag]
-        elsif !params[v] && @supplemental_file.send(k)
+        elsif !params[param_name] && @supplemental_file.send(method)
           @supplemental_file.tags -= [tag]
         end
       end
