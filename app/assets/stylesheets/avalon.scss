@@ -953,7 +953,7 @@ h5.card-title {
     }
 
     div.supplemental-file-data.is-editing:not(.edit-item) + div.supplemental-file-data {
-      margin-top: 2.6rem;
+      margin-top: 2.5rem;
     }
 
     .supplemental-file-form {
@@ -976,6 +976,12 @@ h5.card-title {
 
     .form-control {
       height: 25px;
+    }
+
+    &.captions {
+      div.supplemental-file-data.is-editing:last-child {
+        margin-bottom: 1.75rem;
+      }
     }
   }
 }
