@@ -15,8 +15,10 @@
 class Admin::CollectionPresenter
   attr_reader :document
 
-  def initialize(solr_doc)
+  def initialize(solr_doc, media_object_count: nil, unpublished_media_object_count: nil)
     @document = solr_doc
+    @media_object_count = media_object_count
+    @unpublished_media_object_count = unpublished_media_object_count
   end
 
   delegate :id, to: :document
@@ -33,7 +35,6 @@ class Admin::CollectionPresenter
     document["description_tesim"]&.first
   end
 
-  # TODO: do these counts in one large query for all collections on the index page to avoid having to do them here
   def media_object_count
     @media_object_count ||= MediaObject.where("collection_ssim" => name).count
   end

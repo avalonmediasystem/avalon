@@ -15,7 +15,11 @@
 class Playlist < ActiveRecord::Base
   belongs_to :user
   scope :by_user, ->(user) { where(user_id: user.id) }
-  scope :title_like, ->(title_filter) { where("title LIKE ?", "%#{title_filter}%")}
+  scope :title_like, ->(title_filter) do
+    term_array = title_filter.split.map { |term| "%#{sanitize_sql_like(term).downcase}%" }
+    query = Array.new(term_array.size, "LOWER(title) LIKE ?").join(" AND ")
+    where(query, *term_array)
+  end
   scope :with_tag, ->(tag_filter) { where("tags LIKE ?", "%\n- #{tag_filter}\n%") }
 
   validates :user, presence: true

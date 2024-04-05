@@ -64,10 +64,7 @@ Unless required by applicable law or agreed to in writing, software distributed
       <% section_info[:stream_hls].each do |hls| %>
         <source src="<%= hls[:url] %>" type="application/x-mpegURL" data-quality="<%= hls[:quality] %>" label="<%= hls[:quality] %>"/>
       <% end %>
-      <%# Captions are contained in the HLS manifest and so we do not need to manually provide them to VideoJS here %>
-      <%# TODO: Reenable if/when we remove captions from HLS %>
-      <% skip_captions = true %>
-      <% if section_info[:caption_paths].present? && !skip_captions %>
+      <% if section_info[:caption_paths].present? %>
         <% section_info[:caption_paths].each do |c| %>
           <track <% if c[:label] %>label="<%= c[:label] %>" <% end %> srclang="<%= c[:language] %>" kind="subtitles" type="<%= c[:mime_type] %>" src="<%= c[:path] %>"></track>
         <% end %>

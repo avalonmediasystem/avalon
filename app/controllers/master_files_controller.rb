@@ -21,8 +21,8 @@ class MasterFilesController < ApplicationController
   include NoidValidator
 
   before_action :authenticate_user!, :only => [:create]
-  before_action :set_masterfile_proxy, except: [:create, :oembed, :attach_structure, :attach_captions, :delete_structure, :delete_captions, :destroy, :update, :set_structure]
-  before_action :set_masterfile, only: [:attach_structure, :attach_captions, :delete_structure, :delete_captions, :destroy, :update, :set_structure]
+  before_action :set_masterfile_proxy, except: [:create, :oembed, :attach_structure, :delete_structure, :destroy, :update, :set_structure]
+  before_action :set_masterfile, only: [:attach_structure, :delete_structure, :destroy, :update, :set_structure]
   before_action :ensure_readable_filedata, :only => [:create]
   skip_before_action :verify_authenticity_token, only: [:set_structure, :delete_structure]
 
@@ -278,16 +278,6 @@ class MasterFilesController < ApplicationController
                        hls_stream(@master_file, quality)
                      end
     end
-  end
-
-  def caption_manifest
-    return head :unauthorized if cannot?(:read, @master_file)
-    caption_id = params[:c_id]
-    @caption_url = if caption_id == 'master_file_caption'
-                     captions_master_file_path
-                   else
-                     master_file_supplemental_file_path(master_file_id: @master_file.id, id: caption_id)
-                   end
   end
 
   def structure

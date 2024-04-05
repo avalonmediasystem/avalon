@@ -5,7 +5,7 @@ gem 'bootsnap', require: false
 gem 'listen'
 gem 'net-smtp', require: false
 gem 'psych', '< 4'
-gem 'rails', '=7.0.4.3'
+gem 'rails', '~>7.0.8'
 gem 'sprockets', '~>3.7.2'
 #gem 'sprockets-rails', require: 'sprockets/railtie'
 gem 'sqlite3'
@@ -53,7 +53,7 @@ gem 'avalon-about', git: 'https://github.com/avalonmediasystem/avalon-about.git'
 #gem 'bootstrap-sass', '< 3.4.1' # Pin to less than 3.4.1 due to change in behavior with popovers
 gem 'bootstrap-toggle-rails'
 gem 'bootstrap_form'
-gem 'iiif_manifest', '>= 1.4.0'
+gem 'iiif_manifest', '~> 1.5'
 gem 'rack-cors', require: 'rack/cors'
 gem 'rails_same_site_cookie'
 gem 'recaptcha', require: 'recaptcha/rails'
@@ -155,7 +155,7 @@ group :production do
   gem 'google-analytics-rails', '1.1.0'
   gem 'lograge'
   gem 'okcomputer'
-  gem 'puma', '>= 4.3.8'
+  gem 'puma', '>= 6.4.2'
 end
 
 # Install the bundle --with aws when running on Amazon Elastic Beanstalk

@@ -58,12 +58,7 @@ class SupplementalFilesController < ApplicationController
   end
 
   def show
-    # TODO: Use a master file presenter which reads from solr instead of loading the masterfile from fedora
-    # FIXME: authorize supplemental file directly (needs supplemental file to have reference to masterfile)
-    raise Avalon::NotFound, "Supplemental file: #{params[:id]} not found" unless SupplementalFile.exists? params[:id].to_s
-
-    @supplemental_file = SupplementalFile.find(params[:id])
-    raise Avalon::NotFound, "Supplemental file: #{@supplemental_file.id} not found" unless @object.supplemental_files.any? { |f| f.id == @supplemental_file.id }
+    find_supplemental_file
 
     # Redirect or proxy the content
     if Settings.supplemental_files.proxy
@@ -107,6 +102,15 @@ class SupplementalFilesController < ApplicationController
     end
   end
 
+  def captions
+    find_supplemental_file
+
+    file_content = @supplemental_file.file.download
+    content = @supplemental_file.file.content_type == 'text/srt' ? SupplementalFile.convert_from_srt(file_content) : file_content
+
+    send_data content, filename: @supplemental_file.file.filename.to_s, type: 'text/vtt', disposition: 'attachment'
+  end
+
   private
 
     def set_object
@@ -117,6 +121,16 @@ class SupplementalFilesController < ApplicationController
       # TODO: Add parameters for minio and s3
       params.fetch(:supplemental_file, {}).permit(:label, :language, :file, tags: [])
     end
+
+    def find_supplemental_file
+      # TODO: Use a master file presenter which reads from solr instead of loading the masterfile from fedora
+      # FIXME: authorize supplemental file directly (needs supplemental file to have reference to masterfile)
+      raise Avalon::NotFound, "Supplemental file: #{params[:id]} not found" unless SupplementalFile.exists? params[:id].to_s
+
+      @supplemental_file = SupplementalFile.find(params[:id])
+      raise Avalon::NotFound, "Supplemental file: #{@supplemental_file.id} not found" unless @object.supplemental_files.any? { |f| f.id == @supplemental_file.id }
+    end
+
 
     def handle_error(message:, status:)
       if request.format == :json
@@ -158,7 +172,7 @@ class SupplementalFilesController < ApplicationController
     end
 
     def authorize_object
-      action = action_name.to_sym == :show ? :show : :edit
+      action = [:show, :captions].include?(action_name.to_sym) ? :show : :edit
       authorize! action, @object, message: "You do not have sufficient privileges to #{action_name} this supplemental file"
     end
 end

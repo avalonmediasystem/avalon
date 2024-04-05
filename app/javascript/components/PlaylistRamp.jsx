@@ -39,8 +39,9 @@ const ExpandCollapseArrow = () => {
 };
 
 const Ramp = ({
-  base_url,
+  urls,
   playlist_id,
+  playlist_item_ids,
   token,
   share,
   comment_tag
@@ -48,6 +49,7 @@ const Ramp = ({
   const [manifestUrl, setManifestUrl] = React.useState('');
   const [activeItemTitle, setActiveItemTitle] = React.useState();
   const [activeItemSummary, setActiveItemSummary] = React.useState();
+  const [startCanvasId, setStartCanvasId] = React.useState();
 
   let interval;
 
@@ -55,8 +57,17 @@ const Ramp = ({
   const IS_MOBILE = (/Mobi/i).test(USER_AGENT);
 
   React.useEffect(() => {
+    const { base_url, fullpath_url } = urls;
     let url = `${base_url}/playlists/${playlist_id}/manifest.json`;
     if (token) url += `?token=${token}`;
+
+    let [fullpath, position] = fullpath_url.split('?position=');
+    let start_canvas = playlist_item_ids[position - 1]
+    setStartCanvasId(
+      start_canvas && start_canvas != undefined
+      ? `${base_url}/playlists/${playlist_id}/manifest/canvas/${start_canvas}`
+      : undefined
+    );
     setManifestUrl(url);
 
     interval = setInterval(addPlayerEventListeners, 500);
@@ -84,7 +95,9 @@ const Ramp = ({
   };
 
   return (
-    <IIIFPlayer manifestUrl={manifestUrl} customErrorMessage='This playlist is empty.'>
+    <IIIFPlayer manifestUrl={manifestUrl}
+      customErrorMessage='This playlist is empty.'
+      startCanvasId={startCanvasId}>
       <Row className="ramp--all-components ramp--playlist">
         <Col sm={8}>
           <MediaPlayer enableFileDownload={false} />

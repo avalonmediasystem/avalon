@@ -157,12 +157,19 @@ RSpec.describe Playlist, type: :model do
       let(:playlist3) { FactoryBot.create(:playlist, title: 'Favorites') }
       let(:title_filter) { 'moose' }
       it 'returns playlists with matching titles' do
-        # Commented out since case insensitivity is default for mysql but not postgres
-        # expect(Playlist.title_like(title_filter)).to include(playlist1)
+        expect(Playlist.title_like(title_filter)).to include(playlist1)
         expect(Playlist.title_like(title_filter)).to include(playlist2)
       end
       it 'does not return playlists without matching titles' do
         expect(Playlist.title_like(title_filter)).not_to include(playlist3)
+      end
+      it 'searches on multiple terms' do
+        expect(Playlist.title_like('Fav Moose')).to include(playlist2)
+        expect(Playlist.title_like('Fav Moose')).not_to include(playlist1)
+        expect(Playlist.title_like('Fav Moose')).not_to include(playlist3)
+        expect(Playlist.title_like('Moose Fav')).to include(playlist2)
+        expect(Playlist.title_like('Moose Fav')).not_to include(playlist1)
+        expect(Playlist.title_like('Moose Fav')).not_to include(playlist3)
       end
     end
     describe 'with_tag' do

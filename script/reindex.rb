@@ -66,8 +66,8 @@
 # already processed minus one day.  This should run quickly (< 1 hour).
 #
 # This script was written for migrating from solr 6 to solr 8/9 with the following process in mind:
-# 1. Reindex from solr 6 into new solr 8 instance
-# 2. Configure avalon to use new solr 8 instance and restart
+# 1. Reindex from solr 6 into new solr 9 instance
+# 2. Configure avalon to use new solr 9 instance and restart
 # 3. Run reindex delta to read from solr 6 and catch any items that have changed since step 1
 
 
@@ -114,15 +114,27 @@ OptionParser.new do |parser|
   end
 
   parser.on("--reindex-limit REINDEX_LIMIT", "Limit reindexing to a set number of items") do |rl|
-    options[:reindex_limit] = rl
+    options[:reindex_limit] = rl.to_i
   end
 
   parser.on("--parallel-indexing", "Reindex using paralellism") do |p|
     options[:parallel_indexing] = p
   end
 
-  parser.on("--batch-size", "Size of batches for indexing (default: 50)") do |bs|
-    options[:batch_size] = bs
+  parser.on("--parallel-threads THREADS", "Number of parallel threads to use for reindexing") do |pt|
+    options[:parallel_threads] = pt.to_i
+  end
+
+  parser.on("--batch-size SIZE", "Size of batches for indexing (default: 50)") do |bs|
+    options[:batch_size] = bs.to_i
+  end
+
+  parser.on("--only-models MODELS", "Only index certain models in the order specified by comma-separated list") do |om|
+    options[:only_models] = om.split(',').map(&:strip)
+  end
+
+  parser.on("--file-fedora-url URL", "Replace fedora url in IndexedFile uri_ss fields (This is not validated so be careful!)") do |ffu|
+    options[:file_fedora_url] = ffu
   end
 
   parser.on("--delta", "Only find changes since last reindexing") do |d|
@@ -154,7 +166,7 @@ if options[:dry_run]
 else
   database_url = options[:database_url]
   database_url ||= ENV['DATABASE_URL']
-  DB = Sequel.connect(database_url)
+  DB = Sequel.connect(database_url, max_connections: 20, pool_timeout: 10)
 end
 
 if options[:prune]
@@ -186,16 +198,23 @@ unless options[:skip_identification]
       last_updated_at = items.order(:updated_at).last[:updated_at]
       query += " AND timestamp:[#{(last_updated_at - 1.day).utc.iso8601} TO *]"
     end
-    docs = read_solr.conn.get("select", params: { q: query, qt: 'standard', fl: ["id", "timestamp"], rows: 1_000_000_000 })["response"]["docs"]
-    # Need to transform ids into uris to match what we get from crawling fedora
-    docs.map { |doc| doc["id"] = ActiveFedora::Base.id_to_uri(doc["id"]) }
-    # Need to transform timestamps into DateTime objects
-    docs.map { |doc| doc["timestamp"] = DateTime.parse(doc["timestamp"]) }
-    # Skip those that are already waiting reindex
-    docs.reject! { |doc| items.where(uri: doc["id"], state: "waiting reindex").any? }
-    # Skip those which haven't changed
-    docs.reject! { |doc| items.where(uri: doc["id"]).where(Sequel.lit('updated_at >= ?', doc["timestamp"])).any? }
-    items.import([:uri, :updated_at, :state, :state_changed_at], docs.map(&:values).product([["waiting reindex", DateTime.now]]).map(&:flatten), commit_every: 10_000)
+    docs = read_solr.conn.get("select", params: { q: query, qt: 'standard', fl: ["id", "timestamp", "has_model_ssim"], rows: 1_000_000_000 })["response"]["docs"]
+    docs.map do |doc|
+      # Need to transform ids into uris to match what we get from crawling fedora
+      doc["id"] = ActiveFedora::Base.id_to_uri(doc["id"])
+      # Need to transform timestamps into DateTime objects
+      doc["timestamp"] = DateTime.parse(doc["timestamp"])
+      model = doc["has_model_ssim"]&.first
+      doc["model"] = model if model
+      doc.delete("has_model_ssim")
+    end
+    docs.reject! do |doc|
+      # Skip those that are already waiting reindex
+      items.where(uri: doc["id"], state: "waiting reindex").any? ||
+      # Skip those which haven't changed
+      items.where(uri: doc["id"]).where(Sequel.lit('updated_at >= ?', doc["timestamp"])).any?
+    end
+    items.import([:uri, :updated_at, :model, :state, :state_changed_at], docs.map(&:values).product([["waiting reindex", DateTime.now]]).map(&:flatten), commit_every: 10_000)
 
     if options[:delta]
       already_deleted_uris = items.where(state: ["waiting deletion", "deleted"]).order(:uri).distinct(:uri).select(:uri).pluck(:uri)
@@ -266,100 +285,113 @@ end
 # Re-index
 unless options[:skip_reindexing]
   reindex_limit = options[:reindex_limit] || nil
-  if reindex_limit
-    puts "#{DateTime.now} Attempting reindex of #{reindex_limit} nodes out of #{items.where(state:"waiting reindex").count}." if options[:verbose]
-  else
-    puts "#{DateTime.now} Attempting reindex of #{items.where(state:"waiting reindex").count} nodes." if options[:verbose]
-  end
-
   batch_size = options[:batch_size] || 50
   softCommit = true
   uris_to_skip = [/\/poster$/, /\/thumbnail$/, /\/waveform$/, /\/captions$/, /\/structuralMetadata$/]
 
-  if options[:parallel_indexing]
-    require 'parallel'
-    require 'ruby-progressbar'
+  models_for_all = DB[:reindexing_nodes].map(:model).uniq - ["Hydra::AccessControl", "Hydra::AccessControls::Permission", "Admin::Collection"]
+  model_prioritization = options[:only_models] ||  ["Hydra::AccessControl", "Hydra::AccessControls::Permission", "Admin::Collection", models_for_all]
 
-    Parallel.each(items.where(state: "waiting reindex").limit(reindex_limit).map(:uri).each_slice(batch_size), in_threads: 10, progress: "Reindexing") do |uris|
+  model_prioritization.each do |model|
+    items_for_reindexing_relation = items.where(state: "waiting reindex", model: model).limit(reindex_limit).map(:uri)
+
+    if reindex_limit
+      puts "#{DateTime.now} Attempting reindex of #{reindex_limit} #{model} nodes out of #{items.where(state:"waiting reindex", model: model).count}." if options[:verbose]
+      reindex_limit = reindex_limit - items_for_reindexing_relation.count
+    else
+      puts "#{DateTime.now} Attempting reindex of #{items.where(state:"waiting reindex", model: model).count} #{model} nodes." if options[:verbose]
+    end
+
+    if options[:parallel_indexing]
+      require 'parallel'
+      require 'ruby-progressbar'
+
+      Parallel.each(items_for_reindexing_relation.each_slice(batch_size), in_threads: options[:parallel_threads] || 10, progress: "Reindexing") do |uris|
+        batch = []
+        batch_uris = []
+
+        uris.each do |uri|
+          begin
+            if uris_to_skip.any? { |pattern| uri =~ pattern }
+              items.where(uri: uri, state: "waiting reindex").update(state: "skipped", state_changed_at: DateTime.now)
+              next
+            end
+            obj = ActiveFedora::Base.find(ActiveFedora::Base.uri_to_id(uri))
+            batch << (obj.is_a?(MediaObject) ? obj.to_solr(include_child_fields: true) : obj.to_solr)
+            batch_uris << uri
+            # Handle speedy_af indexing
+            if obj.is_a?(MasterFile) || obj.is_a?(Admin::Collection)
+              obj.declared_attached_files.each_pair do |name, file|
+                next unless file.present?
+                file_doc = file.to_solr({}, external_index: true) if file.respond_to?(:update_external_index)
+                file_doc[:uri_ss] = file_doc[:uri_ss].sub(ActiveFedora.fedora_config.credentials[:url], options[:file_fedora_url]) if options[:file_fedora_url].present? && file.is_a?(IndexedFile)
+                batch << file_doc
+              end
+            end
+          rescue Exception => e
+            puts "#{DateTime.now} Error adding #{uri} to batch: #{e.message}"
+            puts e.backtrace if options[:verbose]
+            batch_uris -= [uri]
+            batch.compact!
+            batch.delete_if { |doc| ActiveFedora::Base.uri_to_id(uri) == doc[:id] }
+            # Need to worry about removing masterfile attached files from the batch as well?
+            items.where(uri: uri, state: "waiting reindex").update(state: "errored", state_changed_at: DateTime.now)
+            next
+          end
+        end
+
+        begin
+          solr.conn.add(batch, params: { softCommit: softCommit }) unless options[:dry_run]
+          items.where(uri: batch_uris, state: "waiting reindex").update(state: "processed", state_changed_at: DateTime.now)
+        rescue Exception => e
+          puts "#{DateTime.now} Error persisting batch to solr: #{e.message}"
+          puts e.backtrace if options[:verbose]
+          items.where(uri: batch_uris, state: "waiting reindex").update(state: "errored", state_changed_at: DateTime.now)
+        end
+      end
+    else
       batch = []
       batch_uris = []
-
-      uris.each do |uri|
+      items_for_reindexing_relation.each do |uri|
         begin
-          if uris_to_skip.any? { |pattern| uri =~ pattern }
-            items.where(uri: uri, state: "waiting reindex").update(state: "skipped", state_changed_at: DateTime.now)
-	    next
-	  end
           obj = ActiveFedora::Base.find(ActiveFedora::Base.uri_to_id(uri))
-	  batch << (obj.is_a?(MediaObject) ? obj.to_solr(include_child_fields: true) : obj.to_solr)
-	  batch_uris << uri
+          batch << (obj.is_a?(MediaObject) ? obj.to_solr(include_child_fields: true) : obj.to_solr)
+          batch_uris << uri
           # Handle speedy_af indexing
-	  if obj.is_a?(MasterFile) || obj.is_a?(Admin::Collection)
+          if obj.is_a?(MasterFile) || obj.is_a?(Admin::Collection)
             obj.declared_attached_files.each_pair do |name, file|
-	      batch << file.to_solr({}, external_index: true) if file.present? && file.respond_to?(:update_external_index)
+              next unless file.present?
+              file_doc = file.to_solr({}, external_index: true) if file.respond_to?(:update_external_index)
+              file_doc[:uri_ss] = file_doc[:uri_ss].sub(ActiveFedora.fedora_config.credentials[:url], options[:file_fedora_url]) if options[:file_fedora_url].present? && file.is_a?(IndexedFile)
+              batch << file_doc
             end
           end
         rescue Exception => e
-	  puts "#{DateTime.now} Error adding #{uri} to batch: #{e.message}"
-	  puts e.backtrace if options[:verbose]
-	  batch_uris -= [uri]
-	  batch.delete_if { |doc| ActiveFedora::Base.uri_to_id(uri) == doc[:id] }
-	  # Need to worry about removing masterfile attached files from the batch as well?
-	  items.where(uri: uri, state: "waiting reindex").update(state: "errored", state_changed_at: DateTime.now)
+          puts "#{DateTime.now} Error adding #{uri} to batch: #{e.message}"
+          puts e.backtrace if options[:verbose]
+          batch_uris -= [uri]
+          batch.compact!
+          batch.delete_if { |doc| ActiveFedora::Base.uri_to_id(uri) == doc[:id] }
+          # Need to worry about removing masterfile attached files from the batch as well?
+          items.where(uri: uri, state: "waiting reindex").update(state: "errored", state_changed_at: DateTime.now)
           next
+        end
+
+        if (batch.count % batch_size).zero?
+          solr.conn.add(batch, params: { softCommit: softCommit }) unless options[:dry_run]
+          items.where(uri: batch_uris, state: "waiting reindex").update(state: "processed", state_changed_at: DateTime.now)
+          batch.clear
+          batch_uris.clear
+          puts "#{DateTime.now} #{items.where(state: "processed").count} processed" if options[:verbose]
         end
       end
 
-      begin
-	solr.conn.add(batch, params: { softCommit: softCommit }) unless options[:dry_run]
-	items.where(uri: batch_uris, state: "waiting reindex").update(state: "processed", state_changed_at: DateTime.now)
-      rescue Exception => e
-	puts "#{DateTime.now} Error persisting batch to solr: #{e.message}"
-	puts e.backtrace if options[:verbose]
-	items.where(uri: batch_uris, state: "waiting reindex").update(state: "errored", state_changed_at: DateTime.now)
+      if batch.present?
+        solr.conn.add(batch, params: { softCommit: softCommit }) unless options[:dry_run]
+        items.where(uri: batch_uris, state: "waiting reindex").update(state: "processed", state_changed_at: DateTime.now)
+        batch.clear
+        batch_uris.clear
       end
-    end
-  else
-    batch = []
-    batch_uris = []
-    # TODO: take batch_size of uris and pass to background job and remove rescue so it will surface
-    # This could also obviate the need for the final batch processing
-    # Should this actually be a cron-type job to wake up and look for items needing reindexing?
-    items.where(state: "waiting reindex").limit(reindex_limit).map(:uri).each do |uri|
-      begin
-	obj = ActiveFedora::Base.find(ActiveFedora::Base.uri_to_id(uri))
-	batch << (obj.is_a?(MediaObject) ? obj.to_solr(include_child_fields: true) : obj.to_solr)
-	batch_uris << uri
-	# Handle speedy_af indexing
-	if obj.is_a?(MasterFile) || obj.is_a?(Admin::Collection)
-	  obj.declared_attached_files.each_pair do |name, file|
-	    batch << file.to_solr({}, external_index: true) if file.present? && file.respond_to?(:update_external_index)
-	  end
-	end
-      rescue Exception => e
-	puts "#{DateTime.now} Error adding #{uri} to batch: #{e.message}"
-	puts e.backtrace if options[:verbose]
-	batch_uris -= [uri]
-	batch.delete_if { |doc| ActiveFedora::Base.uri_to_id(uri) == doc[:id] }
-	# Need to worry about removing masterfile attached files from the batch as well?
-	items.where(uri: uri, state: "waiting reindex").update(state: "errored", state_changed_at: DateTime.now)
-	next
-      end
-
-      if (batch.count % batch_size).zero?
-	solr.conn.add(batch, params: { softCommit: softCommit }) unless options[:dry_run]
-	items.where(uri: batch_uris, state: "waiting reindex").update(state: "processed", state_changed_at: DateTime.now)
-	batch.clear
-	batch_uris.clear
-	puts "#{DateTime.now} #{items.where(state: "processed").count} processed" if options[:verbose]
-      end
-    end
-
-    if batch.present?
-      solr.conn.add(batch, params: { softCommit: softCommit }) unless options[:dry_run]
-      items.where(uri: batch_uris, state: "waiting reindex").update(state: "processed", state_changed_at: DateTime.now)
-      batch.clear
-      batch_uris.clear
     end
   end
 
@@ -378,6 +410,10 @@ unless options[:skip_reindexing]
       items.where(state: "waiting deletion").update(state: "errored", state_changed_at: DateTime.now)
     end
   end
+
+  # Do a final hard commit and optimize
+  solr.conn.commit
+  solr.conn.optimize
 end
 
 puts "#{DateTime.now} Completed" if options[:verbose]
