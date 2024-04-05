@@ -155,7 +155,9 @@ Unless required by applicable law or agreed to in writing, software distributed
                 <% end %>
                 <div class="section-files">
                    <!-- captions -->
-                   <%= render partial: "supplemental_files_upload", locals: { section: section, label: 'Captions', tag: 'caption' } %>
+                   <% if section.is_video? %>
+                     <%= render partial: "supplemental_files_upload", locals: { section: section, label: 'Captions', tag: 'caption' } %>
+                   <% end %>
                   <!-- transcripts -->
                   <%= render partial: "supplemental_files_upload", locals: { section: section, label: 'Transcripts', tag: 'transcript' } %>
                   <!-- supplemental files -->
