@@ -86,7 +86,7 @@ const Ramp = ({
       if (embeddedPlayer.isAudio()) { embeddedPlayer.controlBar.removeChild('qualitySelector'); }
 
       // Create button component for "View in Repository" and add to control bar
-      let repositoryUrl = Object.values(urls).join('/').replace('/embed', ''); 
+      let repositoryUrl = Object.values(urls).join('/').replace('/embed', '');
       let position = embeddedPlayer.isAudio() ? embeddedPlayer.controlBar.children_.length : embeddedPlayer.controlBar.children_.length - 1;
       var viewInRepoButton = embeddedPlayer.getChild('ControlBar').addChild('button', {
         clickHandler: function(event) {
@@ -95,6 +95,7 @@ const Ramp = ({
       }, position);
 
       viewInRepoButton.addClass('vjs-custom-external-link');
+      viewInRepoButton.el_.setAttribute('style', 'cursor: pointer;');
       viewInRepoButton.controlText('View in Repository');
 
       // Add button icon
