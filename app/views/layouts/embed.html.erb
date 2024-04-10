@@ -13,10 +13,6 @@ Unless required by applicable law or agreed to in writing, software distributed
   specific language governing permissions and limitations under the License.
 ---  END LICENSE_HEADER BLOCK  ---
 %>
-<% content_for :page_styles do %>
-  <%= stylesheet_link_tag 'embed' %>
-<% end %>
-
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -26,8 +22,9 @@ Unless required by applicable law or agreed to in writing, software distributed
 
    <%= csrf_meta_tags %>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <%= favicon_link_tag %>
-    <%= stylesheet_link_tag "application", media: "all" %>
+    <%= favicon_link_tag %>     
+    <%= stylesheet_pack_tag 'embed' %>
+    <%= javascript_pack_tag 'embed' %>
     <%= yield :page_styles %>
     <%= yield :additional_head_content %>
     <%= render "modules/google_analytics" %>
@@ -35,7 +32,6 @@ Unless required by applicable law or agreed to in writing, software distributed
 
   <body>
     <%= yield %>
-    <%= javascript_include_tag "application" %>
     <%= yield :page_scripts %>
   </body>
 </html>
