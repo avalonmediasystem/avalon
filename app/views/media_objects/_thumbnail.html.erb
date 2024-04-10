@@ -50,6 +50,59 @@ Unless required by applicable law or agreed to in writing, software distributed
     let offset = ''
     let timeCheck = setInterval(enableCreateThumbnail, 500);
 
+    function handleCreateThumbnailModalShow() {
+      let currentPlayer = document.getElementById('iiif-media-player');
+      let $imgPolaroid = document.getElementById('img-polaroid');
+      offset = currentPlayer.player.currentTime();
+
+      canvasIndex = parseInt(currentPlayer.dataset.canvasindex);
+      const sectionId = sectionIds[canvasIndex];
+      baseUrl = '/master_files/' + sectionId;
+
+      if ($imgPolaroid) {
+        let src = baseUrl + '/poster?offset=' + offset + '&preview=true';
+
+        // Display a preview of thumbnail to user
+        $imgPolaroid.setAttribute('src', src);
+        $($imgPolaroid).fadeIn('slow');
+      }
+    };
+
+    function handleUpdateThumbnail() {
+      let currentPlayer = document.getElementById('iiif-media-player');
+      canvasIndex = parseInt(currentPlayer.dataset.canvasindex);
+      const sectionId = sectionIds[canvasIndex];
+      baseUrl = '/master_files/' + sectionId;
+      offset = currentPlayer.player.currentTime();
+
+      const modalBody = document.getElementsByClassName('modal-body')[0];
+      // Put in a loading spinner and disable buttons to prevent double clicks
+      modalBody.classList.add('spinner');
+      $('#thumbnailModal')
+        .find('button')
+        .attr({ disabled: true });
+
+      $.ajax({
+        url: baseUrl + '/still',
+        type: 'POST',
+        data: {
+          offset: offset
+        }
+      })
+        .done(response => {
+          $('#thumbnailModal').modal('hide');
+        })
+        .fail(error => {
+          console.log(error);
+        })
+        .always(() => {
+          modalBody.classList.remove('spinner');
+          $('#thumbnailModal')
+            .find('button')
+            .attr({ disabled: false });
+        });
+    };
+
     function enableCreateThumbnail() {
       let player = document.getElementById('iiif-media-player');
 
@@ -85,53 +138,9 @@ Unless required by applicable law or agreed to in writing, software distributed
           }
         });
       }
-
-      $('#thumbnailModal').on('show.bs.modal', function(e) {
-        let currentPlayer = document.getElementById('iiif-media-player');
-        let $imgPolaroid = document.getElementById('img-polaroid');
-        offset = currentPlayer.player.currentTime();
-
-        canvasIndex = parseInt(currentPlayer.dataset.canvasindex);
-        const sectionId = sectionIds[canvasIndex];
-        baseUrl = '/master_files/' + sectionId;
-
-        if ($imgPolaroid) {
-          let src = baseUrl + '/poster?offset=' + offset + '&preview=true';
-
-          // Display a preview of thumbnail to user
-          $imgPolaroid.setAttribute('src', src);
-          $($imgPolaroid).fadeIn('slow');
-        }
-      });
-
-      $('#create-thumbnail-submit-button').on('click', function(e) {
-        const modalBody = document.getElementsByClassName('modal-body')[0];
-        // Put in a loading spinner and disable buttons to prevent double clicks
-        modalBody.classList.add('spinner');
-        $('#thumbnailModal')
-          .find('button')
-          .attr({ disabled: true });
-
-        $.ajax({
-          url: baseUrl + '/still',
-          type: 'POST',
-          data: {
-            offset: offset
-          }
-        })
-          .done(response => {
-            $('#thumbnailModal').modal('hide');
-          })
-          .fail(error => {
-            console.log(error);
-          })
-          .always(() => {
-            modalBody.classList.remove('spinner');
-            $('#thumbnailModal')
-              .find('button')
-              .attr({ disabled: false });
-          });
-      });
+  
+      document.getElementById('create-thumbnail-btn').addEventListener('click', handleCreateThumbnailModalShow);
+      document.getElementById('create-thumbnail-submit-button').addEventListener('click', handleUpdateThumbnail);
     };
   });
 </script>
