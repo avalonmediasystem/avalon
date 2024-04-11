@@ -61,11 +61,20 @@ Unless required by applicable law or agreed to in writing, software distributed
     // When viewing video on smaller devices scroll to page content to fully
     // display the video player
     $(document).ready(function () {
+      const mediaObjectId = <%= @media_object.id.to_json.html_safe %>;
       const sectionIds = <%= @media_object.ordered_master_file_ids.to_json.html_safe %>;
       const transcriptSections = <%= @media_object.sections_with_files(tag: 'transcript').to_json.html_safe %>;
-      let scrollInterval = setInterval(autoScroll, 500);
-      let timeCheck = setInterval(initTranscriptCheck, 500);
 
+      // Enable action buttons after derivative is loaded
+      setInterval(initActionButtons, 500);
+      function initActionButtons() {
+        let player = document.getElementById('iiif-media-player');
+        if (player) {
+          addActionButtonListeners(player, mediaObjectId, sectionIds);
+        }
+      } 
+
+      let scrollInterval = setInterval(autoScroll, 500);
       function autoScroll () {
         const isVideo = <%= @currentStream ? @currentStreamInfo[:is_video] : false %>;
         const player = document.getElementsByTagName('video');
@@ -81,6 +90,7 @@ Unless required by applicable law or agreed to in writing, software distributed
         }
       }
 
+      let timeCheck = setInterval(initTranscriptCheck, 500);
       function initTranscriptCheck() {
         let player = document.getElementById('iiif-media-player');
         if(player) {
