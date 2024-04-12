@@ -17,45 +17,28 @@
 let canvasIndex = -1;
 let currentSectionLabel = undefined;
 let listenersAdded = false;
-let playerState = -1;
+let firstLoad = true;
 
 function addActionButtonListeners(player, mediaObjectId, sectionIds) {
-  let addToPlaylistBtn = document.getElementById('addToPlaylistBtn');
-  let thumbnailBtn = document.getElementById('thumbnailBtn');
-  let timelineBtn = document.getElementById('timelineBtn');
   if (player && player.player != undefined) {
-    // When section (masterfile) changes update the relevant information for action buttons
-    if (parseInt(player.dataset.canvasindex) != canvasIndex) {
-      canvasIndex = parseInt(player.dataset.canvasindex);
+    /* When section (masterfile) changes update the relevant information for action buttons */
+    // Update all action buttons and share links when player.readyState() >= 2,
+    // i.e. player has enough data for playable media source
+    let currentIndex = parseInt(player.dataset.canvasindex);
+    if (currentIndex != canvasIndex && player.player.readyState() >= 2) {
+      canvasIndex = currentIndex;
       buildActionButtons(player, mediaObjectId, sectionIds);
+      firstLoad = false;
     }
-    if (playerState != player.player.readyState() && player.player.readyState() === 4) {
-      playerState = player.player.readyState();
-      buildActionButtons(player, mediaObjectId, sectionIds);
+    // Update share links when player.readyState() == 0 and player.src() is empty,
+    // i.e. player is empty with an inaccessible media source
+    if (currentIndex != canvasIndex && player.player.readyState() === 0
+      && player.player.src() === '') {
+      canvasIndex = currentIndex;
+      setUpShareLinks(mediaObjectId, sectionIds);
     }
-
-    // /*
-    //   Browsers on MacOS sometimes miss the 'loadedmetadata' event resulting in a disabled action buttons indefinitely.
-    //   This timeout enables the disabled action buttons and attach relevant listeners, when this happens. It checks the 
-    //   buttons' states and player status and enables action buttons.
-    //   Additional check for player's readyState ensures the button is enabled only when player is ready after the timeout.
-    // */
-    // setTimeout(() => {
-    //   // Leave 'Create Thumbnail' button disabled when item is audio
-    //   if (thumbnailBtn && thumbnailBtn.disabled
-    //     && player.player?.readyState() === 4 && !player.player.isAudio()) {
-    //     setUpCreateThumbnail(player, sectionIds);
-    //   }
-    //   if (timelineBtn && timelineBtn.disabled && player.player?.readyState() === 4) {
-    //     setUpCreateTimeline(player);
-    //   }
-    //   if (addToPlaylistBtn && addToPlaylistBtn.disabled && player.player?.readyState() === 4) {
-    //     setUpAddToPlaylist(player, sectionIds);
-    //   }
-    // }, 100);
 
     /* Add player event listeners to update UI components on the page */
-
     // Listen to 'timeupdate' event to udate add to playlist form when using while media is playing or manually seeking
     player.player.on('timeupdate', () => {
       if (getActiveItem() != undefined) {
@@ -67,27 +50,26 @@ function addActionButtonListeners(player, mediaObjectId, sectionIds) {
       }
     });
 
-    // Listen to 'dispose' event to disable action buttons on canvas change
+    /*
+      Disable action buttons tied to player related information on player's 'dispose' event, so that the
+      user doesn't interact with them get corrupted data in the UI when player is loading the new section
+      media into it. Once the player is fully loaded these buttons are enabled as needed.
+    */
     player.player.on('dispose', () => {
       currentSectionLabel = undefined;
+      let addToPlaylistBtn = document.getElementById('addToPlaylistBtn');
       $('#addToPlaylistPanel').collapse('hide');
       resetAddToPlaylistForm();
       if (addToPlaylistBtn) {
         addToPlaylistBtn.disabled = true;
       }
-      /* 
-        Disable 'Create Thumbnail' button on player dispose, so that it can be enabled again or keep disabled on the next section load
-        based on the player status.      
-      */
+      let thumbnailBtn = document.getElementById('thumbnailBtn');
       if (thumbnailBtn) {
         thumbnailBtn.disabled = true;
-        thumbnailBtn.removeEventListener('click', handleCreateThumbnailModalShow);
-        document.getElementById('create-thumbnail-submit-button')
-          .removeEventListener('click', handleUpdateThumbnail);
       }
+      let timelineBtn = document.getElementById('timelineBtn');
       if (timelineBtn) {
         timelineBtn.disabled = true;
-        timelineBtn.removeEventListener('click', handleCreateTimelineModalShow);
       }
     });
 
@@ -178,7 +160,7 @@ function setUpAddToPlaylist(player, sectionIds) {
   let addToPlaylistBtn = document.getElementById('addToPlaylistBtn');
 
   if (addToPlaylistBtn && addToPlaylistBtn.disabled
-    && player.player?.readyState() === 4) {
+    && player.player?.readyState() >= 2) {
     addToPlaylistBtn.disabled = false;
     if (!listenersAdded) {
       // Add 'Add new playlist' option to dropdown
@@ -305,14 +287,16 @@ function setUpCreateThumbnail(player, sectionIds) {
 
   // Leave 'Create Thumbnail' button disabled when item is audio
   if (thumbnailBtn && thumbnailBtn.disabled
-    && player.player?.readyState() === 4 && !player.player.isAudio()) {
+    && player.player?.readyState() >= 2 && !player.player.isAudio()) {
     thumbnailBtn.disabled = false;
 
-    // Add click handlers for the create thumbnail and submit buttons
-    document.getElementById('thumbnailBtn').addEventListener('click',
-      () => handleCreateThumbnailModalShow(sectionIds, offset, baseUrl));
-    document.getElementById('create-thumbnail-submit-button').addEventListener('click',
-      () => handleUpdateThumbnail(sectionIds, offset, baseUrl));
+    if (firstLoad) {
+      // Add click handlers for the create thumbnail and submit buttons
+      document.getElementById('thumbnailBtn').addEventListener('click',
+        () => handleCreateThumbnailModalShow(sectionIds, offset, baseUrl));
+      document.getElementById('create-thumbnail-submit-button').addEventListener('click',
+        () => handleUpdateThumbnail(sectionIds, offset, baseUrl));
+    }
   }
 };
 
@@ -370,9 +354,14 @@ function handleUpdateThumbnail(sectionIds, offset, baseUrl) {
 function setUpCreateTimeline(player) {
   let timelineBtn = document.getElementById('timelineBtn');
 
-  if (timelineBtn && timelineBtn.disabled && player.player?.readyState() === 4) {
+  if (timelineBtn && timelineBtn.disabled
+    && player.player?.readyState() >= 2) {
     timelineBtn.disabled = false;
-    timelineBtn.addEventListener('click', handleCreateTimelineModalShow(player.player));
+    if (firstLoad) {
+      timelineBtn.addEventListener('click',
+        handleCreateTimelineModalShow(player.player)
+      );
+    }
   }
 }
 
