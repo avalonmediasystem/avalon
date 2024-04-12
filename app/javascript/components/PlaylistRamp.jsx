@@ -102,7 +102,7 @@ const Ramp = ({
       <Row className="ramp--all-components ramp--playlist">
         <Col sm={8}>
           <MediaPlayer enableFileDownload={false} />
-          {playlist_item_ids?.lenght > 0 && (
+          {playlist_item_ids?.length > 0 && (
             <Card className="ramp--playlist-accordion">
               <Card.Header>
                 <h4>{activeItemTitle}</h4>
