@@ -475,6 +475,7 @@ describe MediaObject do
 
     before do
       master_files
+      media_object.reload
       # Explicitly run indexing job to ensure fields are indexed for structure searching
       MediaObjectIndexingJob.perform_now(media_object.id)
     end

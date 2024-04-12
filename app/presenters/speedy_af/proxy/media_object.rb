@@ -81,15 +81,14 @@ class SpeedyAF::Proxy::MediaObject < SpeedyAF::Base
 
   def master_file_ids
     if real?
-      real_object.indexed_master_file_ids
+      real_object.master_file_ids
     elsif section_id.nil? # No master files or not indexed yet
       ActiveFedora::Base.logger.warn("Reifying MediaObject because master_files not indexed")
-      real_object.indexed_master_file_ids
+      real_object.master_file_ids
     else
       section_id
     end
   end
-  alias_method :indexed_master_file_ids, :master_file_ids
   alias_method :ordered_master_file_ids, :master_file_ids
 
   def master_files
@@ -101,7 +100,6 @@ class SpeedyAF::Proxy::MediaObject < SpeedyAF::Base
                                                         order: -> { master_file_ids },
                                                         load_reflections: true)
   end
-  alias_method :indexed_master_files, :master_files
   alias_method :ordered_master_files, :master_files
 
   def collection

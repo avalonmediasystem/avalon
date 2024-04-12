@@ -117,18 +117,47 @@ class MediaObject < ActiveFedora::Base
     index.as :stored_sortable
   end
 
-  ordered_aggregation :master_files, class_name: 'MasterFile', through: :list_source
-  # ordered_aggregation gives you accessors media_obj.master_files and media_obj.ordered_master_files
-  #  and methods for master_files: first, last, [index], =, <<, +=, delete(mf)
-  #  and methods for ordered_master_files: first, last, [index], =, <<, +=, insert_at(index,mf), delete(mf), delete_at(index)
-  indexed_ordered_aggregation :master_files
+  property :master_file_list, predicate: Avalon::RDFVocab::MediaObject.section_list, multiple: false do |index|
+    index.as :symbol
+  end
 
-  accepts_nested_attributes_for :master_files, :allow_destroy => true
+  def master_file_ids
+    return [] if self.master_file_list.nil?
+    JSON.parse(self.master_file_list)
+  end
+
+  def ordered_master_file_ids
+    self.master_file_ids
+  end
+
+  def master_file_ids= ids
+    self.master_file_list = ids.to_json
+  end
+
+  def ordered_master_file_ids= ids
+    self.master_file_ids = ids
+  end
+
+  def master_files
+    self.master_file_ids.map { |id| MasterFile.find(id) }
+  end
+
+  def master_files= mfs
+    self.master_file_ids = mfs.map(&:id)
+  end
+
+  def ordered_master_files
+    self.master_files
+  end
+
+  def ordered_master_files= mfs
+    self.master_files = mfs
+  end
 
   def destroy
     # attempt to stop the matterhorn processing job
     self.master_files.each(&:destroy)
-    self.master_files.clear
+    self.master_file_list = "[]"
     Bookmark.where(document_id: self.id).destroy_all
     super
   end

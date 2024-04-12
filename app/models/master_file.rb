@@ -239,6 +239,8 @@ class MasterFile < ActiveFedora::Base
 
   # This requires the MasterFile having an actual id
   def media_object=(mo)
+    self.save!(validate: false) unless self.persisted?
+
     # Removes existing association
     if self.media_object.present?
       self.media_object.master_files = self.media_object.master_files.to_a.reject { |mf| mf.id == self.id }
@@ -247,6 +249,8 @@ class MasterFile < ActiveFedora::Base
     end
 
     self._media_object=(mo)
+    self.save!(validate: false)
+
     unless self.media_object.nil?
       self.media_object.ordered_master_files += [self]
       self.media_object.save
@@ -773,8 +777,7 @@ class MasterFile < ActiveFedora::Base
 
   def update_parent!
     return unless media_object.present?
-    media_object.master_files.delete(self)
-    media_object.ordered_master_files.delete(self)
+    media_object.master_file_ids -= [self.id]
     media_object.set_media_types!
     media_object.set_duration!
     if !media_object.save

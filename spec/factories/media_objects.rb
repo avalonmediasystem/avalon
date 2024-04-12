@@ -49,6 +49,7 @@ FactoryBot.define do
         rights_statement { ['http://rightsstatements.org/vocab/InC-EDU/1.0/'] }
         terms_of_use { [ 'Terms of Use: Be kind. Rewind.' ] }
         series { [Faker::Lorem.word] }
+        master_files { [] }
         # after(:create) do |mo|
         #   mo.update_datastream(:descMetadata, {
         #     note: {note[Faker::Lorem.paragraph],

@@ -18,8 +18,8 @@ describe 'Login Redirects' do
   let(:user) { FactoryBot.create(:user, :with_identity) }
 
   describe '/media_objects/:id' do
-    let(:media_object) { FactoryBot.create(:fully_searchable_media_object, master_files: [master_file]) }
-    let(:master_file) { FactoryBot.create(:master_file, :with_derivative) }
+    let(:media_object) { FactoryBot.create(:fully_searchable_media_object) }
+    let!(:master_file) { FactoryBot.create(:master_file, :with_derivative, media_object: media_object) }
 
     it 'redirects to item page' do
       visit media_object_path(media_object)
