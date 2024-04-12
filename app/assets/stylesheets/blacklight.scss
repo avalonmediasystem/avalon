@@ -18,11 +18,13 @@
 
 @import 'blacklight/blacklight';
 
-.result-thumbnail img, img.result-thumbnail {
+.result-thumbnail img,
+img.result-thumbnail {
   max-width: 160px;
 }
 
-.no-icon img, img.no-icon {
+.no-icon img,
+img.no-icon {
   max-height: 90px;
 }
 
@@ -31,7 +33,8 @@
   @extend .btn-outline;
 }
 
-#sort-dropdown, #per_page-dropdown {
+#sort-dropdown,
+#per_page-dropdown {
   .dropdown-item.active {
     color: $dark;
     background-color: $white;
@@ -44,7 +47,9 @@
 
 // Access control update modal form in Bookmarks
 #update_access_control_form {
-  .item-discovery, .item-access, .special-access {
+  .item-discovery,
+  .item-access,
+  .special-access {
     legend {
       border-bottom: 1px solid #e5e5e5;
     }
@@ -55,7 +60,7 @@
 // Needed to override btn-secondary-outline
 .applied-filter .remove:hover {
   color: white !important;
-  background-color: #f44336 !important;
+  background-color: #d14242 !important;
 }
 
 .page-item span.page-link {
