@@ -139,11 +139,14 @@ class MediaObject < ActiveFedora::Base
   end
 
   def master_files
-    self.master_file_ids.map { |id| MasterFile.find(id) }
+    @master_file_cache ||= {}
+    self.master_file_ids.map { |id| @master_file_cache[id] ||= MasterFile.find(id) }
   end
 
   def master_files= mfs
-    self.master_file_ids = mfs.map(&:id)
+    @master_file_cache = {}
+    mfs.map { |mf| @master_file_cache[mf.id] = mf }
+    self.master_file_ids = @master_file_cache.keys
   end
 
   def ordered_master_files
@@ -157,7 +160,7 @@ class MediaObject < ActiveFedora::Base
   def destroy
     # attempt to stop the matterhorn processing job
     self.master_files.each(&:destroy)
-    self.master_file_list = "[]"
+    self.master_files = []
     Bookmark.where(document_id: self.id).destroy_all
     super
   end
@@ -398,6 +401,7 @@ class MediaObject < ActiveFedora::Base
   # Override to reset memoized fields
   def reload
     @master_file_docs = nil
+    @master_file_cache = nil
     super
   end
 
