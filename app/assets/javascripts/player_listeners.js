@@ -18,7 +18,18 @@ let canvasIndex = -1;
 let currentSectionLabel = undefined;
 let listenersAdded = false;
 let firstLoad = true;
+let streamId = '';
 
+/**
+ * Bind action buttons on the page with player events and re-populate details
+ * related to the current section (masterfile) for each action form when a new
+ * section is loaded into the player.
+ * This function is called on 500ms interval and it keeps polling for player events
+ * to update action forms and buttons.
+ * @param {Object} player 
+ * @param {String} mediaObjectId 
+ * @param {Array<String>} sectionIds array of ordered masterfile ids in the mediaobject
+ */
 function addActionButtonListeners(player, mediaObjectId, sectionIds) {
   if (player && player.player != undefined) {
     /* When section (masterfile) changes update the relevant information for action buttons */
@@ -95,7 +106,7 @@ function addActionButtonListeners(player, mediaObjectId, sectionIds) {
  */
 function buildActionButtons(player, mediaObjectId, sectionIds) {
   setUpShareLinks(mediaObjectId, sectionIds);
-  setUpAddToPlaylist(player, sectionIds);
+  setUpAddToPlaylist(player, sectionIds, mediaObjectId);
   setUpCreateThumbnail(player, sectionIds);
   setUpCreateTimeline(player);
 }
@@ -152,11 +163,12 @@ function shareListeners() {
 }
 
 /**
- * 
+ * Build and setup add to playlist form on section (masterfile) change
  * @param {Object} player 
- * @param {Array<String>} sectionIds 
+ * @param {Array<String>} sectionIds array of ordered masterfile ids in the mediaobject
+ * @param {String} mediaObjectId
  */
-function setUpAddToPlaylist(player, sectionIds) {
+function setUpAddToPlaylist(player, sectionIds, mediaObjectId) {
   let addToPlaylistBtn = document.getElementById('addToPlaylistBtn');
 
   if (addToPlaylistBtn && addToPlaylistBtn.disabled
@@ -165,12 +177,17 @@ function setUpAddToPlaylist(player, sectionIds) {
     if (!listenersAdded) {
       // Add 'Add new playlist' option to dropdown
       window.add_new_playlist_option();
-      addToPlaylistListeners(sectionIds);
+      addToPlaylistListeners(sectionIds, mediaObjectId);
     }
   }
 }
 
-function addToPlaylistListeners(sectionIds) {
+/**
+ * Event listeners for HTML elementes associated with add to playlist action
+ * @param {Array<String>} sectionIds array of ordered masterfile ids in the mediaobject
+ * @param {String} mediaObjectId
+ */
+function addToPlaylistListeners(sectionIds, mediaObjectId) {
   $('#addToPlaylistPanel').on('show.bs.collapse', function (e) {
     // Hide add to playlist alert on panel show
     $('#add_to_playlist_alert').slideUp(0);
@@ -192,7 +209,6 @@ function addToPlaylistListeners(sectionIds) {
 
     let activeTrack = null;
     let mediaObjectTitle = playlistForm.dataset.title;
-    let mediaObjectId = playlistForm.dataset.moid;
     let timelineScopes = getTimelineScopes();
     let scopes = timelineScopes.scopes;
     streamId = timelineScopes.streamId || sectionIds[canvasIndex];
@@ -280,6 +296,11 @@ function addToPlaylistListeners(sectionIds) {
   listenersAdded = true;
 }
 
+/**
+ * Build and setup create thubmnail button for the current section (masterfile)
+ * @param {Object} player 
+ * @param {Array<String>} sectionIds array of ordered masterfile ids in the mediaobject
+ */
 function setUpCreateThumbnail(player, sectionIds) {
   let thumbnailBtn = document.getElementById('thumbnailBtn');
   let baseUrl = '';
@@ -290,9 +311,14 @@ function setUpCreateThumbnail(player, sectionIds) {
     && player.player?.readyState() >= 2 && !player.player.isAudio()) {
     thumbnailBtn.disabled = false;
 
+    /*
+     Only add the click event handlers for 'Create Thumbnail' and 'Update Poster Image'
+     buttons only once (on initial page load). This is to avoid adding the same event 
+     handler on each new section load, which results in exponentially growing API requests
+     each time the thumbnail is updated.
+    */
     if (firstLoad) {
-      // Add click handlers for the create thumbnail and submit buttons
-      document.getElementById('thumbnailBtn').addEventListener('click',
+      thumbnailBtn.addEventListener('click',
         () => handleCreateThumbnailModalShow(sectionIds, offset, baseUrl));
       document.getElementById('create-thumbnail-submit-button').addEventListener('click',
         () => handleUpdateThumbnail(sectionIds, offset, baseUrl));
@@ -300,6 +326,12 @@ function setUpCreateThumbnail(player, sectionIds) {
   }
 };
 
+/**
+ * Event handler for the click event on 'Create Thumbnail' button
+ * @param {Array<String>} sectionIds array of ordered masterfile ids in the mediaobject
+ * @param {String} offset time offset for the selected frame
+ * @param {String} baseUrl base URL for the API request to get the still frame
+ */
 function handleCreateThumbnailModalShow(sectionIds, offset, baseUrl) {
   let currentPlayer = document.getElementById('iiif-media-player');
   let $imgPolaroid = document.getElementById('img-polaroid');
@@ -317,6 +349,12 @@ function handleCreateThumbnailModalShow(sectionIds, offset, baseUrl) {
   }
 };
 
+/**
+ * Event handler for the click event on 'Update Poster Image' button in the modal
+ * @param {Array<String>} sectionIds array of ordered masterfile ids in the mediaobject
+ * @param {String} offset time offset for the selected frame
+ * @param {String} baseUrl base URL for the API request to set the thumbnail
+ */
 function handleUpdateThumbnail(sectionIds, offset, baseUrl) {
   let currentPlayer = document.getElementById('iiif-media-player');
   const sectionId = sectionIds[canvasIndex];
@@ -351,30 +389,35 @@ function handleUpdateThumbnail(sectionIds, offset, baseUrl) {
     });
 };
 
+/**
+ * Build and setup create timeline button for the current section (masterfile)
+ * @param {Object} player 
+ */
 function setUpCreateTimeline(player) {
   let timelineBtn = document.getElementById('timelineBtn');
 
   if (timelineBtn && timelineBtn.disabled
     && player.player?.readyState() >= 2) {
     timelineBtn.disabled = false;
-    if (firstLoad) {
-      timelineBtn.addEventListener('click',
-        handleCreateTimelineModalShow(player.player)
-      );
-    }
+    timelineBtn.addEventListener('click',
+      () => handleCreateTimelineModalShow()
+    );
   }
 }
 
-function handleCreateTimelineModalShow(currentPlayer) {
-  let scopes = [];
-  let title, streamId;
+/**
+ * Event handler for the click event on 'Create Timeline' button
+ */
+function handleCreateTimelineModalShow() {
+  let title;
+  let currentPlayer = document.getElementById('iiif-media-player').player;
 
   let $modalBody = $('#timelineModal').find('div#new-timeline-inputs')[0];
   let bodyText = "<p>Choose scope for new timeline:</p>";
 
   title = $('#timelineModal')[0].dataset.title;
   let timelineScopes = getTimelineScopes();
-  scopes = timelineScopes.scopes;
+  let scopes = timelineScopes.scopes;
   streamId = timelineScopes.streamId;
 
   for (let index = 0; index < scopes.length; index++) {
@@ -400,7 +443,6 @@ function handleCreateTimelineModalShow(currentPlayer) {
   bodyText += "<input type=\"text\" name=\"customend\" id=\"customend\" size=\"10\" value=\"" + createTimestamp(currentPlayer.duration(), true) + "\" \>";
   bodyText += "</div>";
   $modalBody.innerHTML = bodyText;
-
 
   $('#timelineModalSave').on('click', function (e) {
     let label, t, id;
