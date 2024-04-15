@@ -182,6 +182,7 @@ module Avalon
           master_file.structuralMetadata.content=FileLocator.new(structural_file).reader
           master_file.structuralMetadata.original_name = structural_file
         end
+        errors = []
         datastreams.each do |ds|
           next unless ds.present?
           supplemental_file = case ds.keys[0].to_s
@@ -190,8 +191,14 @@ module Avalon
                               when /transcript.*/
                                 process_datastream(ds, 'transcript')
                               end
+          if supplemental_file.nil?
+            errors += [ds.values[0].to_s.split('/').last]
+            next
+          end
           master_file.supplemental_files += [supplemental_file]
         end
+
+        errors
       end
 
       def process!
@@ -203,7 +210,8 @@ module Avalon
           # master_file.media_object = media_object
           files = self.class.gatherFiles(file_spec[:file])
           datastreams = gather_datastreams(file_spec).values
-          self.class.attach_datastreams_to_master_file(master_file, file_spec[:file], datastreams)
+          supplemental_file_errors = self.class.attach_datastreams_to_master_file(master_file, file_spec[:file], datastreams)
+          @errors.add(:supplemental_files, "Problem saving caption or transcript files: #{supplemental_file_errors}") unless supplemental_file_errors.empty?
           master_file.setContent(files, dropbox_dir: media_object.collection.dropbox_absolute_path)
 
           # Overwrite files hash with working file paths to pass to matterhorn
@@ -279,18 +287,17 @@ module Avalon
 
       def self.process_datastream(datastream, type)
         file, label, language = ["_file", "_label", "_language"].map { |item| item.prepend(type).to_sym }
-        if datastream[file].present? && FileLocator.new(datastream[file]).exist?
-          # Build out file metadata
-          filename = datastream[file].split('/').last
-          label = datastream[label].presence || filename
-          language = datastream[language].present? ? caption_language(datastream[language]) : Settings.caption_default.language
-          machine_generated = datastream[:machine_generated].present? ? 'machine_generated' : nil
-          # Create SupplementalFile
-          supplemental_file = SupplementalFile.new(label: label, tags: [type, machine_generated].compact, language: language)
-          supplemental_file.file.attach(io: FileLocator.new(datastream[file]).reader, filename: filename)
-          supplemental_file.save
-          supplemental_file
-        end
+        return nil unless datastream[file].present? && FileLocator.new(datastream[file]).exist?
+        
+        # Build out file metadata
+        filename = datastream[file].split('/').last
+        label = datastream[label].presence || filename
+        language = datastream[language].present? ? caption_language(datastream[language]) : Settings.caption_default.language
+        machine_generated = datastream[:machine_generated].present? ? 'machine_generated' : nil
+        # Create SupplementalFile
+        supplemental_file = SupplementalFile.new(label: label, tags: [type, machine_generated].compact, language: language)
+        supplemental_file.file.attach(io: FileLocator.new(datastream[file]).reader, filename: filename)
+        supplemental_file.save ? supplemental_file : nil
       end
       private_class_method :process_datastream
 

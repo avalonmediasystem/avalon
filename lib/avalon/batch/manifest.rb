@@ -104,18 +104,15 @@ module Avalon
       end
 
       def supplementing_files(field, content, values, i)
-        type = case field
-               when /caption.*/
-                 'caption'
-               when /transcript.*/
-                 'transcript'
-               else
-                 'supplemental'
-               end
-
         if field.to_s.include?('file')
-          @type_count += 1
-          @key = "#{type}_#{@type_count}".to_sym
+          @key = case field
+                 when /caption.*/
+                   @caption_count += 1
+                   "caption_#{@caption_count}".to_sym
+                 when /transcript.*/
+                   @transcript_count += 1
+                   "transcript_#{@transcript_count}".to_sym
+                 end
           content.last[@key] = {}
           # Set file path to caption/transcript file
           content.last[@key][field] = path_to(values[i])
@@ -139,7 +136,8 @@ module Avalon
           content=[]
 
           fields = Hash.new { |h,k| h[k] = [] }
-          @type_count = 0
+          @caption_count = 0
+          @transcript_count = 0
           @field_names.each_with_index do |f,i|
             unless f.blank? || SKIP_FIELDS.include?(f) || values[i].blank?
               if FILE_FIELDS.include?(f)

@@ -87,6 +87,18 @@ RSpec.describe BatchRegistriesMailer, type: :mailer do
       expect(email).to have_body_text("Item (#{deleted_media_object.id}) was created but no longer exists")
     end
 
+    it 'indicates when a batch has completed with non-failing errors' do
+      FactoryBot.create(:batch_entries, batch_registries: batch_registries, media_object_pid: media_object.id, complete: true, error: true, error_message: "Problem Saving Supplemental File")
+      email = BatchRegistriesMailer.batch_registration_finished_mailer(batch_registries)
+      expect(email.to).to include(manager.email)
+      expect(email.subject).to include batch_registries.file_name
+      expect(email.subject).to include collection.name
+      expect(email).to have_body_text(batch_registries.file_name)
+      expect(email).to have_body_text("<a href=\"#{media_object.permalink}\">")
+      expect(email).to have_body_text(media_object.id)
+      expect(email).to have_body_text("Problem Saving Supplemental File")
+    end
+
     it 'works when the collection has been deleted already' do
       collection.destroy
       email = BatchRegistriesMailer.batch_registration_finished_mailer(batch_registries)

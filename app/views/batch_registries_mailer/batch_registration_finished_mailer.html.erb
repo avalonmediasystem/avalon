@@ -36,6 +36,32 @@ Unless required by applicable law or agreed to in writing, software distributed
     <% end %>
   </table>
 <% end %>
+<% unless @supplemental_file_errors.empty? %>
+  <div class="alert alert-danger">
+    The following rows of your spreadsheet completed with errors:
+  </div>
+  <table>
+    <tr>
+      <th>Row</th>
+      <th>Media Object ID</th>
+      <th>Error</th>
+    </tr>
+    <% @supplemental_file_errors.each do |sf_error| %>
+      <tr>
+        <td> <%= sf_error.position + 2 %> </td>
+        <% media_object = MediaObject.where(id: sf_error.media_object_pid).first %>
+        <% if media_object %>
+        <% link_url = media_object.permalink %>
+        <% link_url = media_object_url(media_object) if link_url.blank? %>
+        <td> <%= link_to(sf_error.media_object_pid, link_url) %> </td>
+        <% else %>
+        <td> Item (<%= sf_error.media_object_pid %>) was created but no longer exists </td>
+        <% end %>
+        <td> <%= sf_error.error_message %> </td>
+      </tr>
+    <% end %>
+  </table>
+<% end %>
 <% unless @completed_items.empty? %>
   <div class="alert">
     The following rows of your spreadsheet successfully completed:
