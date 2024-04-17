@@ -286,17 +286,17 @@ module Avalon
       private_class_method :caption_language
 
       def self.process_datastream(datastream, type)
-        file, label, language = ["_file", "_label", "_language"].map { |item| item.prepend(type).to_sym }
-        return nil unless datastream[file].present? && FileLocator.new(datastream[file]).exist?
+        file_key, label_key, language_key = ["_file", "_label", "_language"].map { |item| item.prepend(type).to_sym }
+        return nil unless datastream[file_key].present? && FileLocator.new(datastream[file_key]).exist?
         
         # Build out file metadata
-        filename = datastream[file].split('/').last
-        label = datastream[label].presence || filename
-        language = datastream[language].present? ? caption_language(datastream[language]) : Settings.caption_default.language
+        filename = datastream[file_key].split('/').last
+        label = datastream[label_key].presence || filename
+        language = datastream[language_key].present? ? caption_language(datastream[language_key]) : Settings.caption_default.language
         machine_generated = datastream[:machine_generated].present? ? 'machine_generated' : nil
         # Create SupplementalFile
         supplemental_file = SupplementalFile.new(label: label, tags: [type, machine_generated].compact, language: language)
-        supplemental_file.file.attach(io: FileLocator.new(datastream[file]).reader, filename: filename)
+        supplemental_file.file.attach(io: FileLocator.new(datastream[file_key]).reader, filename: filename)
         supplemental_file.save ? supplemental_file : nil
       end
       private_class_method :process_datastream
