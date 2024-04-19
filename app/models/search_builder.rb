@@ -52,7 +52,7 @@ class SearchBuilder < Blacklight::SearchBuilder
     return unless solr_parameters[:q].present?
 
     terms = solr_parameters[:q].split
-    term_subquery = terms.map { |term| "transcript_tim:#{term}" }.join(" OR ")
+    term_subquery = terms.map { |term| "transcript_tsim:#{term}" }.join(" OR ")
     solr_parameters[:q] += " {!join to=id from=isPartOf_ssim}(has_model_ssim:MasterFile AND (#{term_subquery}))"
   end
 
@@ -74,7 +74,7 @@ class SearchBuilder < Blacklight::SearchBuilder
     terms.each_with_index do |term, i|
       fl << "metadata_tf_#{i}:termfreq(mods_tesim,#{term})"
       fl << "structure_tf_#{i}:termfreq(section_label_tesim,#{term})"
-      sections_fl << "transcript_tf_#{i}:termfreq(transcript_tim,#{term})"
+      sections_fl << "transcript_tf_#{i}:termfreq(transcript_tsim,#{term})"
     end
     solr_parameters[:fl] = fl.join(',')
     solr_parameters["sections.fl"] = sections_fl.join(',')
