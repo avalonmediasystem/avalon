@@ -524,7 +524,7 @@ class MasterFile < ActiveFedora::Base
       solr_doc['status_code_ssi'] = status_code
       solr_doc['operation_ssi'] = operation
       solr_doc['error_ssi'] = error
-      solr_doc['transcript_tim'] = supplemental_file_transcripts.map {|transcript| transcript.file.download}
+      solr_doc['transcript_tsim'] = supplemental_file_transcripts.map {|transcript| segment_transcript(transcript.file.download)}.flatten
     end
   end
 
@@ -548,6 +548,10 @@ class MasterFile < ActiveFedora::Base
   end
 
   protected
+
+  def segment_transcript transcript
+    transcript.split(/\n\n+/).map(&:strip).map { |cue| cue.gsub!("\n", " ") }.compact!
+  end
 
   def mediainfo
     Mediainfo.new(FileLocator.new(file_location).location, headers: @auth_header)
