@@ -32,17 +32,32 @@ let streamId = '';
  */
 function addActionButtonListeners(player, mediaObjectId, sectionIds) {
   if (player && player.player != undefined) {
-    /* When section (masterfile) changes update the relevant information for action buttons */
-    // Update all action buttons and share links when player.readyState() >= 2,
-    // i.e. player has enough data for playable media source
     let currentIndex = parseInt(player.dataset.canvasindex);
-    if (currentIndex != canvasIndex && player.player.readyState() >= 2) {
+    /*
+      For iOS Safari, player.readyState() is 0 until media playback is
+      started. Therefore, use player.src() to check whether there's a playable media
+      loaded into the player instead of player.readyState().
+      Keep the player.readyState() >= 2 check for desktop browsers, because without
+      that check the add to playlist form populates NaN values for time fields when user
+      clicks the 'Add to Playlist' button immediately on page load, which does not 
+      happen in mobile context.
+      Update all action buttons and share links when player.readyState() >= 2,
+      i.e. player has enough data for playable media source
+    */
+    const USER_AGENT = window.navigator.userAgent;
+    const IS_MOBILE = (/Mobi/i).test(USER_AGENT);
+    const IS_SAFARI = (/Safari/i).test(USER_AGENT);
+    if (currentIndex != canvasIndex &&
+      ((IS_MOBILE && IS_SAFARI && player?.player.src() != '')
+        || player?.player.readyState() >= 2)) {
       canvasIndex = currentIndex;
       buildActionButtons(player, mediaObjectId, sectionIds);
       firstLoad = false;
     }
-    // Update share links when player.readyState() == 0 and player.src() is empty,
-    // i.e. player is empty with an inaccessible media source
+    /* 
+      Update only share links when player.readyState() == 0 and player.src() is empty,
+      i.e. player is empty with an inaccessible media source
+    */
     if (currentIndex != canvasIndex && player.player.readyState() === 0
       && player.player.src() === '') {
       canvasIndex = currentIndex;
