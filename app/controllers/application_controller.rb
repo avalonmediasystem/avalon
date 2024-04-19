@@ -34,6 +34,11 @@ class ApplicationController < ActionController::Base
   before_action :set_no_cache_headers, if: proc{|c| request.xhr? }
   prepend_before_action :remove_zero_width_chars
 
+  rescue_from RSolr::Error::ConnectionRefused, :with => :handle_solr_connection_error
+  rescue_from RSolr::Error::Timeout, :with => :handle_solr_connection_error
+  rescue_from Blacklight::Exceptions::ECONNREFUSED, :with => :handle_solr_connection_error
+  rescue_from Faraday::ConnectionFailed, :with => :handle_fedora_connection_error
+
   def set_no_cache_headers
     response.headers["Cache-Control"] = "no-cache, no-store"
     response.headers["Pragma"] = "no-cache"
@@ -244,5 +249,27 @@ class ApplicationController < ActionController::Base
 
     def should_store_return_url?
       !(request.xhr? || request.format != "html" || request.path.start_with?("/users/") || request.path.end_with?("poster") || request.path.end_with?("thumbnail"))
+    end
+
+    def handle_solr_connection_error(exception)
+      raise if Settings.solr_and_fedora.raise_on_connection_error
+      Rails.logger.error(exception.class.to_s + ': ' + exception.message + '\n' + exception.backtrace.join('\n'))
+
+      if request.format == :json
+        render json: {errors: [exception.message]}, status: 503
+      else
+        render '/errors/solr_connection', layout: false, status: 503
+      end
+    end
+
+    def handle_fedora_connection_error(exception)
+      raise if Settings.solr_and_fedora.raise_on_connection_error
+      Rails.logger.error(exception.class.to_s + ': ' + exception.message + '\n' + exception.backtrace.join('\n'))
+
+      if request.format == :json
+        render json: {errors: [exception.message]}, status: 503
+      else
+        render '/errors/fedora_connection', status: 503
+      end
     end
 end

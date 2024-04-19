@@ -13,7 +13,18 @@
 # ---  END LICENSE_HEADER BLOCK  ---
 
 class ApplicationJob < ActiveJob::Base
+  rescue_from RSolr::Error::ConnectionRefused, :with => :handle_connection_error
+  rescue_from RSolr::Error::Timeout, :with => :handle_connection_error
+  rescue_from Blacklight::Exceptions::ECONNREFUSED, :with => :handle_connection_error
+  rescue_from Faraday::ConnectionFailed, :with => :handle_connection_error
+
   rescue_from Ldp::Gone do |exception|
     Rails.logger.error(exception.message + '\n' + exception.backtrace.join('\n'))
   end
+
+  private
+    def handle_connection_error(exception)
+      raise if Settings.solr_and_fedora.raise_on_connection_error
+      Rails.logger.error(exception.class.to_s + ': ' + exception.message + '\n' + exception.backtrace.join('\n'))
+    end
 end

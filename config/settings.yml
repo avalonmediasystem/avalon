@@ -44,6 +44,8 @@ solr:
     rule:
     shards:
     snitch:
+solr_and_fedora:
+  raise_on_connection_error: true
 zookeeper:
   connection_str: "localhost:9983/configs"
 streaming:
