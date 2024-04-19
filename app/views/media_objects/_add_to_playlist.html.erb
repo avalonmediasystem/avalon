@@ -202,8 +202,23 @@ Unless required by applicable law or agreed to in writing, software distributed
       function enableAddToPlaylist() {
         let player = document.getElementById('iiif-media-player');
         let addToPlaylistBtn = document.getElementById('addToPlaylistBtn');
-        if(addToPlaylistBtn && addToPlaylistBtn.disabled && player?.player.readyState() === 4) {
-          addToPlaylistBtn.disabled = false;
+        if(addToPlaylistBtn && addToPlaylistBtn.disabled) {
+          const USER_AGENT = window.navigator.userAgent;
+          const IS_MOBILE = (/Mobi/i).test(USER_AGENT);
+          const IS_SAFARI = (/Safari/i).test(USER_AGENT);
+          /*
+            For iOS Safari, player.readyState() never gets to 4 until media playback is
+            started. Therefore, use player.src() to check whether there's a playable media
+            loaded into the player instead of player.readyState().
+            Keep the player.readyState() === 4 check for desktop browsers, because without
+            that check the add to playlist form populates NaN values for time fields when user
+            clicks the 'Add to Playlist' button immediately on page load, which does not 
+            happen in mobile context.
+          */
+          if((IS_MOBILE && IS_SAFARI && player?.player.src() != '') 
+            || player?.player.readyState() === 4) {
+           addToPlaylistBtn.disabled = false;
+          }
         }
         if(!listenersAdded) {
           // Add 'Add new playlist' option to dropdown
