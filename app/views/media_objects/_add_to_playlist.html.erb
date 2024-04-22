@@ -204,7 +204,10 @@ Unless required by applicable law or agreed to in writing, software distributed
         let addToPlaylistBtn = document.getElementById('addToPlaylistBtn');
         if(addToPlaylistBtn && addToPlaylistBtn.disabled) {
           const USER_AGENT = window.navigator.userAgent;
-          const IS_MOBILE = (/Mobi/i).test(USER_AGENT);
+          // Identify both iPad and iPhone devices
+          const IS_IPHONE = (/iPhone/i).test(USER_AGENT);
+          const IS_TOUCH_ONLY = navigator.maxTouchPoints && navigator.maxTouchPoints > 2 && !window.matchMedia("(pointer: fine").matches;
+          // Identify browser is Safari
           const IS_SAFARI = (/Safari/i).test(USER_AGENT);
           /*
             For iOS Safari, player.readyState() never gets to 4 until media playback is
@@ -215,7 +218,7 @@ Unless required by applicable law or agreed to in writing, software distributed
             clicks the 'Add to Playlist' button immediately on page load, which does not 
             happen in mobile context.
           */
-          if((IS_MOBILE && IS_SAFARI && player?.player.src() != '') 
+          if(((IS_TOUCH_ONLY || IS_IPHONE) && IS_SAFARI && player?.player.src() != '') 
             || player?.player.readyState() === 4) {
            addToPlaylistBtn.disabled = false;
           }
