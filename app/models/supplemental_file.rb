@@ -22,6 +22,9 @@ class SupplementalFile < ApplicationRecord
 
   serialize :tags, Array
 
+  #after_create_commit :update_index
+  #after_update :update_index
+
   def validate_file_type
     errors.add(:file_type, "Uploaded file is not a recognized captions file") unless ['text/vtt', 'text/srt'].include? file.content_type
   end
@@ -60,5 +63,40 @@ class SupplementalFile < ApplicationRecord
     conversion.gsub!("\r\n", "\n")
 
     "WEBVTT\n\n#{conversion}".strip
+  end
+
+  #def update_index
+  #  ActiveFedora::SolrService.add(to_solr, softCommit: true)
+  #end
+
+  # Creates a solr document hash for the {#object}
+  # @return [Hash] the solr document
+  def to_solr
+    solr_doc = {}
+    #solr_doc["id"] = to_global_id.to_s
+    solr_doc[ActiveFedora.id_field.to_sym] = to_global_id.to_s
+    ActiveFedora.index_field_mapper.set_field(solr_doc, 'system_create', c_time, :stored_sortable)
+    ActiveFedora.index_field_mapper.set_field(solr_doc, 'system_modified', m_time, :stored_sortable)
+    solr_doc[ActiveFedora::QueryResultBuilder::HAS_MODEL_SOLR_FIELD] = "SupplementalFile"
+    #solr_doc["has_model_ssim"] = ["SupplementalFile"]
+    solr_doc["mime_type_ssi"] = mime_type
+    solr_doc["label_ssi"] = label
+    solr_doc["language_ssi"] = language
+    solr_doc["transcript_tsim"] = segment_transcript(file.download) if tags.include?("transcript")
+    solr_doc
+  end
+
+  private
+
+  def c_time
+    created_at&.to_datetime || DateTime.now
+  end
+
+  def m_time
+    updated_at&.to_datetime || DateTime.now
+  end
+
+  def segment_transcript transcript
+    transcript.split(/\n\n+/).map(&:strip).map { |cue| cue.gsub!("\n", " ") }.compact
   end
 end

@@ -20,7 +20,7 @@ class SearchBuilder < Blacklight::SearchBuilder
 
   class_attribute :avalon_solr_access_filters_logic
   self.avalon_solr_access_filters_logic = [:only_published_items, :limit_to_non_hidden_items]
-  self.default_processor_chain += [:only_wanted_models, :term_frequency_counts]
+  self.default_processor_chain += [:only_wanted_models, :term_frequency_counts, :search_section_transcripts]
 
   def only_wanted_models(solr_parameters)
     solr_parameters[:fq] ||= []
@@ -47,13 +47,15 @@ class SearchBuilder < Blacklight::SearchBuilder
     end
   end
 
-  # NOT working -> need to aggregate in all_text_timv instead?
   def search_section_transcripts(solr_parameters)
     return unless solr_parameters[:q].present?
 
     terms = solr_parameters[:q].split
     term_subquery = terms.map { |term| "transcript_tsim:#{term}" }.join(" OR ")
-    solr_parameters[:q] += " {!join to=id from=isPartOf_ssim}(has_model_ssim:MasterFile AND (#{term_subquery}))"
+    solr_parameters[:defType] = "lucene"
+    #solr_parameters[:uf] = "* _query_ _val_"
+    solr_parameters[:df] = "id,title_tesi,section_label_tesim,all_text_timv"
+    solr_parameters[:q] += " {!join to=id from=isPartOf_ssim}{!parent which=\"*:* -_nest_path_:*\"}#{term_subquery}"
   end
 
   def term_frequency_counts(solr_parameters)
@@ -67,16 +69,20 @@ class SearchBuilder < Blacklight::SearchBuilder
     fl << "sections:[subquery]"
     solr_parameters["sections.q"] = "{!terms f=isPartOf_ssim v=$row.id}"
     solr_parameters["sections.defType"] = "lucene"
-    sections_fl = ['id']
+    sections_fl = ['id', 'transcripts']
+    sections_child_fl = []
    
     # Add fields for each term in the query 
     terms = solr_parameters[:q].split
     terms.each_with_index do |term, i|
       fl << "metadata_tf_#{i}:termfreq(mods_tesim,#{term})"
       fl << "structure_tf_#{i}:termfreq(section_label_tesim,#{term})"
-      sections_fl << "transcript_tf_#{i}:termfreq(transcript_tsim,#{term})"
+      fl << "transcript_tf_#{i}"
+      sections_fl << "transcript_tf_#{i}"
+      sections_child_fl << "transcript_tf_#{i}:termfreq(transcript_tsim,#{term})"
     end
     solr_parameters[:fl] = fl.join(',')
+    sections_fl << "[child fl=#{sections_child_fl.join(',')}]"
     solr_parameters["sections.fl"] = sections_fl.join(',')
   end
 end
