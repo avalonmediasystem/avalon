@@ -8,7 +8,7 @@ require 'resolv-replace'
 Bundler.require(*Rails.groups)
 
 module Avalon
-  VERSION = '7.7.1'
+  VERSION = '7.7.2'
 
   class Application < Rails::Application
     require 'avalon/configuration'
