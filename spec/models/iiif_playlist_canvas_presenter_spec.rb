@@ -245,6 +245,8 @@ describe IiifPlaylistCanvasPresenter do
         expect(subject.format).to eq "text/plain"
         expect(subject.type).to eq "Text"
         expect(subject.label).to eq I18n.t('playlist.restrictedText')
+        expect(subject.width).to eq 1280
+        expect(subject.height).to eq 720
       end
     end
 
@@ -257,6 +259,8 @@ describe IiifPlaylistCanvasPresenter do
         expect(subject.format).to eq "text/plain"
         expect(subject.type).to eq "Text"
         expect(subject.label).to eq I18n.t('playlist.deletedText')
+        expect(subject.width).to eq 1280
+        expect(subject.height).to eq 720
       end
     end
 
@@ -268,6 +272,8 @@ describe IiifPlaylistCanvasPresenter do
         expect(subject.format).to eq "text/plain"
         expect(subject.type).to eq "Text"
         expect(subject.label).to eq I18n.t('errors.missing_derivatives_error') % [Settings.email.support, Settings.email.support]
+        expect(subject.width).to eq 1280
+        expect(subject.height).to eq 720
       end
     end
   end

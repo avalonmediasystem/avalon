@@ -76,21 +76,12 @@ class IiifPlaylistCanvasPresenter
 
   def placeholder_content
     if cannot_read_item
-      IIIFManifest::V3::DisplayContent.new(nil,
-                                           label: I18n.t('playlist.restrictedText'),
-                                           type: 'Text',
-                                           format: 'text/plain')
+      IIIFManifest::V3::DisplayContent.new(nil, **placeholder_attributes(I18n.t('playlist.restrictedText')))
     elsif master_file.nil?
-      IIIFManifest::V3::DisplayContent.new(nil,
-                                           label: I18n.t('playlist.deletedText'),
-                                           type: 'Text',
-                                           format: 'text/plain')
+      IIIFManifest::V3::DisplayContent.new(nil, **placeholder_attributes(I18n.t('playlist.deletedText')))
     elsif master_file.derivative_ids.empty?
       support_email = Settings.email.support
-      IIIFManifest::V3::DisplayContent.new(nil,
-                                           label: I18n.t('errors.missing_derivatives_error') % [support_email, support_email],
-                                           type: 'Text',
-                                           format: 'text/plain')
+      IIIFManifest::V3::DisplayContent.new(nil, **placeholder_attributes(I18n.t('errors.missing_derivatives_error') % [support_email, support_email]))
     end
   end
 
@@ -216,6 +207,16 @@ class IiifPlaylistCanvasPresenter
       else
         media_hash.merge!(auth_service: auth_service(quality))
       end
+    end
+
+    def placeholder_attributes(label_content)
+      placeholder_hash = {
+        label: label_content,
+        type: 'Text',
+        format: 'text/plain',
+        width: 1280,
+        height: 720,
+    }.compact
     end
 
     def marker_attributes(marker)
