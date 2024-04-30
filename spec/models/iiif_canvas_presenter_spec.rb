@@ -185,6 +185,11 @@ describe IiifCanvasPresenter do
       it 'has label' do
         expect(subject.label).to eq I18n.t('errors.missing_derivatives_error') % [Settings.email.support, Settings.email.support]
       end
+
+      it 'has height and width' do
+        expect(subject.width).to eq 1280
+        expect(subject.height).to eq 720
+      end
     end
 
     context 'when master file is processing' do
@@ -200,6 +205,11 @@ describe IiifCanvasPresenter do
 
       it 'has label' do
         expect(subject.label).to eq I18n.t('media_object.conversion_msg')
+      end
+
+      it 'has height and width' do
+        expect(subject.width).to eq 1280
+        expect(subject.height).to eq 720
       end
     end
   end
