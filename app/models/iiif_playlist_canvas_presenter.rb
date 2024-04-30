@@ -216,7 +216,7 @@ class IiifPlaylistCanvasPresenter
         format: 'text/plain',
         width: 1280,
         height: 720,
-    }.compact
+      }.compact
     end
 
     def marker_attributes(marker)
