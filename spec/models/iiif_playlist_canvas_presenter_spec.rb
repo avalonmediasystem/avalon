@@ -85,6 +85,11 @@ describe IiifPlaylistCanvasPresenter do
       it 'handles item start and end time' do
         expect(subject.url).to include("t=#{playlist_item.start_time / 1000},#{playlist_item.end_time / 1000}")
       end
+
+      it 'has height and width' do
+        expect(subject.width).to eq 1280
+        expect(subject.height).to eq 40
+      end
     end
 
     context 'when video file' do
@@ -94,6 +99,11 @@ describe IiifPlaylistCanvasPresenter do
 
       it 'handles item start and end time' do
         expect(subject.url).to include("#t=#{playlist_item.start_time / 1000},#{playlist_item.end_time / 1000}")
+      end
+
+      it 'has height and width' do
+        expect(subject.width).to eq 1024
+        expect(subject.height).to eq 768
       end
     end
 
@@ -245,8 +255,6 @@ describe IiifPlaylistCanvasPresenter do
         expect(subject.format).to eq "text/plain"
         expect(subject.type).to eq "Text"
         expect(subject.label).to eq I18n.t('playlist.restrictedText')
-        expect(subject.width).to eq 1280
-        expect(subject.height).to eq 720
       end
     end
 
@@ -259,8 +267,6 @@ describe IiifPlaylistCanvasPresenter do
         expect(subject.format).to eq "text/plain"
         expect(subject.type).to eq "Text"
         expect(subject.label).to eq I18n.t('playlist.deletedText')
-        expect(subject.width).to eq 1280
-        expect(subject.height).to eq 720
       end
     end
 
@@ -272,8 +278,6 @@ describe IiifPlaylistCanvasPresenter do
         expect(subject.format).to eq "text/plain"
         expect(subject.type).to eq "Text"
         expect(subject.label).to eq I18n.t('errors.missing_derivatives_error') % [Settings.email.support, Settings.email.support]
-        expect(subject.width).to eq 1280
-        expect(subject.height).to eq 720
       end
     end
   end
