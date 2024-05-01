@@ -211,7 +211,7 @@ class IiifManifestPresenter
       if video_count > 0
         Rails.application.routes.url_helpers.thumbnail_master_file_url(master_file_id)
       elsif audio_count > 0
-        ActionController::Base.helpers.asset_url('audio_icon.png')
+        Rails.application.routes.url_helpers.thumbnail_master_file_url(master_file_id)
       end
     elsif video_count > 0 && audio_count > 0
       ActionController::Base.helpers.asset_url('hybrid_icon.png')

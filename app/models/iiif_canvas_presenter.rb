@@ -217,8 +217,8 @@ class IiifCanvasPresenter
     def manifest_attributes(quality, media_type)
       media_hash = {
         label: quality,
-        width: master_file.width.to_i,
-        height: master_file.height.to_i,
+        width: (master_file.width || '1280').to_i,
+        height: (master_file.height || MasterFile::AUDIO_HEIGHT).to_i,
         duration: stream_info[:duration],
         type: media_type,
         format: 'application/x-mpegURL'

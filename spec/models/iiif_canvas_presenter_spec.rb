@@ -56,11 +56,21 @@ describe IiifCanvasPresenter do
       it 'has format' do
         expect(subject.format).to eq "application/x-mpegURL"
       end
+
+      it 'has height and width' do
+        expect(subject.width).to eq 1280
+        expect(subject.height).to eq 40
+      end
     end
 
     context 'when video file' do
       it 'has format' do
         expect(subject.format).to eq "application/x-mpegURL"
+      end
+
+      it 'has height and width' do
+        expect(subject.width).to eq 1280
+        expect(subject.height).to eq 720
       end
     end
   end
