@@ -68,6 +68,7 @@ GIT
 GIT
   remote: https://github.com/samvera/iiif_manifest.git
   revision: 1ea71a9cae92f498b80e98006b9fa8cefe21d3b9
+  branch: main
   specs:
     iiif_manifest (1.5.0)
       activesupport (>= 4)
