@@ -100,19 +100,19 @@ describe Avalon::Batch::Entry do
 
     describe '#gatherFiles' do
       it 'should return a hash of files keyed with their quality' do
-	expect(Avalon::Batch::Entry.gatherFiles(filename)).to hash_match derivative_hash
+	      expect(Avalon::Batch::Entry.gatherFiles(filename)).to hash_match derivative_hash
       end
     end
 
     describe '#derivativePaths' do
       it 'should return the paths to all derivative files that exist' do
-	expect(Avalon::Batch::Entry.derivativePaths(filename)).to eq derivative_paths
+	      expect(Avalon::Batch::Entry.derivativePaths(filename)).to eq derivative_paths
       end
     end
 
     describe '#derivativePath' do
       it 'should insert supplied quality into filename' do
-	expect(Avalon::Batch::Entry.derivativePath(filename, 'low')).to eq filename_low
+	      expect(Avalon::Batch::Entry.derivativePath(filename, 'low')).to eq filename_low
       end
     end
   end
@@ -177,13 +177,25 @@ describe Avalon::Batch::Entry do
       expect(master_file.date_digitized).to eq('2015-10-30T00:00:00Z')
     end
 
-    context 'with caption files' do
+    context 'with caption and transcript files' do
       let(:caption_file) { File.join(Rails.root, 'spec/fixtures/dropbox/example_batch_ingest/assets/sheephead_mountain.mov.vtt')}
       let(:caption) {{ :caption_file => caption_file, :caption_label => 'Sheephead Captions', :caption_language => 'English' }}
-      let(:entry_files) { [{ file: File.join(testdir, filename), offset: '00:00:00.500', label: 'Quis quo', date_digitized: '2015-10-30', skip_transcoding: false, caption_1: caption }] }
+      let(:transcript) {{ :transcript_file => caption_file, :transcript_label => 'Sheephead Transcript', :machine_generated => 'yes' }}
+      let(:entry_files) { [{ file: File.join(testdir, filename), offset: '00:00:00.500', label: 'Quis quo', date_digitized: '2015-10-30', skip_transcoding: false, caption_1: caption, transcript_1: transcript }] }
 
       it 'adds captions to masterfile' do
         expect(master_file.supplemental_file_captions).to be_present
+        expect(master_file.supplemental_files(tag: 'transcript')).to be_present
+      end
+    end
+
+    context 'invalid supplemental file' do
+      let(:caption_file) { File.join(Rails.root, 'spec/fixtures/dropbox/example_batch_ingest/assets/sheephead_mountain.mov.structure.xml') }
+      let(:caption) {{ :caption_file => caption_file, :caption_label => 'Sheephead Captions', :caption_language => 'English' }}
+      let(:entry_files) { [{ file: File.join(testdir, filename), offset: '00:00:00.500', label: 'Quis quo', date_digitized: '2015-10-30', skip_transcoding: false, caption_1: caption }] }
+
+      it 'logs an error' do
+        expect(entry.errors).not_to be_empty
       end
     end
   end
@@ -191,30 +203,46 @@ describe Avalon::Batch::Entry do
   describe '#attach_datastreams_to_master_file' do
     let(:master_file) { FactoryBot.create(:master_file) }
     let(:filename) { File.join(Rails.root, 'spec/fixtures/dropbox/example_batch_ingest/assets/sheephead_mountain.mov') }
-    let(:caption_file) { File.join(Rails.root, 'spec/fixtures/dropbox/example_batch_ingest/assets/sheephead_mountain.mov.vtt')}
+    let(:caption_file) { File.join(Rails.root, 'spec/fixtures/dropbox/example_batch_ingest/assets/sheephead_mountain.mov.vtt') }
     let(:caption) { [{ :caption_file => caption_file, :caption_label => 'Sheephead Captions', :caption_language => 'English' }] }
+    let(:transcript) { [{ :transcript_file => caption_file, :transcript_label => 'Sheephead Transcript' }]}
 
     before do
-      Avalon::Batch::Entry.attach_datastreams_to_master_file(master_file, filename, caption)
+      datastream = caption + transcript
+      Avalon::Batch::Entry.attach_datastreams_to_master_file(master_file, filename, datastream)
     end
 
     it 'should attach structural metadata' do
       expect(master_file.structuralMetadata.has_content?).to be_truthy
     end
     it 'should attach captions' do
-      expect(master_file.supplemental_file_captions).to be_present
+      expect(master_file.has_captions?).to eq true
+    end
+    it 'should attach transcripts' do
+      expect(master_file.has_transcripts?).to eq true
     end
 
-    context 'with multiple captions' do
+    context 'with multiple captions and transcripts' do
       let(:caption) { [{ :caption_file => caption_file, :caption_label => 'Sheephead Captions', :caption_language => 'english' },
                       { :caption_file => caption_file, :caption_label => 'Second Caption', :caption_language => 'fre' }] }
-      it 'should attach all captions to master file' do
-        expect(master_file.supplemental_file_captions).to be_present
+      let(:transcript) { [{ :transcript_file => caption_file, :transcript_label => 'Sheephead Transcript' },
+                          { :transcript_file => caption_file, :machine_generated => 'yes' }] }
+      it 'should attach all captions and transcripts to master file' do
+        expect(master_file.has_captions?).to eq true
         expect(master_file.supplemental_file_captions.count).to eq 2
+        expect(master_file.has_transcripts?).to eq true
+        expect(master_file.supplemental_file_transcripts.count).to eq 2
+      end
+
+      it 'assigns metadata properly' do
         expect(master_file.supplemental_file_captions[0].label).to eq 'Sheephead Captions'
         expect(master_file.supplemental_file_captions[1].label).to eq 'Second Caption'
         expect(master_file.supplemental_file_captions[0].language).to eq 'eng'
         expect(master_file.supplemental_file_captions[1].language).to eq 'fre'
+        expect(master_file.supplemental_file_transcripts[0].label).to eq 'Sheephead Transcript'
+        expect(master_file.supplemental_file_transcripts[1].label).to eq 'sheephead_mountain.mov.vtt'
+        expect(master_file.supplemental_file_transcripts[0].tags).to_not include 'machine_generated'
+        expect(master_file.supplemental_file_transcripts[1].tags).to include 'machine_generated'
       end
     end
   end

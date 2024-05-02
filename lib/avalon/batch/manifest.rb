@@ -21,7 +21,8 @@ module Avalon
       extend Forwardable
 
       EXTENSIONS = ['csv','xls','xlsx','ods']
-      FILE_FIELDS = [:file,:label,:offset,:skip_transcoding,:absolute_location,:date_digitized, :caption_file, :caption_label, :caption_language]
+      FILE_FIELDS = [:file,:label,:offset,:skip_transcoding,:absolute_location,:date_digitized, :caption_file, :caption_label, :caption_language, 
+                     :transcript_file, :transcript_label, :machine_generated]
       SKIP_FIELDS = [:collection]
 
       def_delegators :@entries, :each
@@ -102,16 +103,22 @@ module Avalon
         not (value.to_s =~ /^(y(es)?|t(rue)?)$/i).nil?
       end
 
-      def process_captions(field, content, values, i)
+      def supplementing_files(field, content, values, i)
         if field.to_s.include?('file')
-          @caption_count += 1
-          @caption_key = "caption_#{@caption_count}".to_sym
-          content.last[@caption_key] = {}
-          # Set file path to caption file
-          content.last[@caption_key][field] = path_to(values[i])
+          @key = case field
+                 when /caption.*/
+                   @caption_count += 1
+                   "caption_#{@caption_count}".to_sym
+                 when /transcript.*/
+                   @transcript_count += 1
+                   "transcript_#{@transcript_count}".to_sym
+                 end
+          content.last[@key] = {}
+          # Set file path to caption/transcript file
+          content.last[@key][field] = path_to(values[i])
         end
-        # Set caption metadata fields
-        content.last[@caption_key][field] ||= values[i]
+        # Set caption/transcript metadata fields
+        content.last[@key][field] ||= values[i]
       end
 
       def create_entries!
@@ -130,12 +137,13 @@ module Avalon
 
           fields = Hash.new { |h,k| h[k] = [] }
           @caption_count = 0
+          @transcript_count = 0
           @field_names.each_with_index do |f,i|
             unless f.blank? || SKIP_FIELDS.include?(f) || values[i].blank?
               if FILE_FIELDS.include?(f)
                 content << {} if f == :file
-                if f.to_s.include?('caption')
-                  process_captions(f, content, values, i)
+                if ['caption', 'transcript', 'machine_generated'].any? { |type| f.to_s.include?(type) }
+                  supplementing_files(f, content, values, i)
                   next
                 end
                 content.last[f] = f == :skip_transcoding ? true?(values[i]) : values[i]
