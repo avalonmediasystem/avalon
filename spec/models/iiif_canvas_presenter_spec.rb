@@ -343,4 +343,13 @@ describe IiifCanvasPresenter do
       expect(subject.any? { |sa| sa["@id"] =~ /supplemental_files\/#{caption_file.id}/ }).to eq false
     end
   end
+
+  describe '#service' do
+    subject { presenter.service }
+
+    it 'includes the content search service' do
+      expect(subject.any? { |content| content['@id'] =~ /master_files\/#{master_file.id}\/search/ }).to eq true
+      expect(subject.first["type"]).to eq 'SearchService2'
+    end
+  end
 end

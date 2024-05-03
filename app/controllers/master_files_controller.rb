@@ -326,6 +326,10 @@ class MasterFilesController < ApplicationController
     send_data @supplemental_file.file.download, filename: @supplemental_file.file.filename.to_s, type: @supplemental_file.file.content_type, disposition: 'inline'
   end
 
+  def search
+    # TODO: Build search service
+  end
+
 protected
   def set_masterfile
     if params[:id].blank? || (not MasterFile.exists?(params[:id]))
