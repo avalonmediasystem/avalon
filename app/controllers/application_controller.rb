@@ -252,7 +252,7 @@ class ApplicationController < ActionController::Base
     end
 
     def handle_solr_connection_error(exception)
-      raise if Settings.solr_and_fedora.raise_on_connection_error
+      raise if Settings.app_controller.solr_and_fedora.raise_on_connection_error
       Rails.logger.error(exception.class.to_s + ': ' + exception.message + '\n' + exception.backtrace.join('\n'))
 
       if request.format == :json
@@ -263,7 +263,7 @@ class ApplicationController < ActionController::Base
     end
 
     def handle_fedora_connection_error(exception)
-      raise if Settings.solr_and_fedora.raise_on_connection_error
+      raise if Settings.app_controller.solr_and_fedora.raise_on_connection_error
       Rails.logger.error(exception.class.to_s + ': ' + exception.message + '\n' + exception.backtrace.join('\n'))
 
       if request.format == :json

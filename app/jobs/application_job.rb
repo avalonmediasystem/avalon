@@ -24,7 +24,7 @@ class ApplicationJob < ActiveJob::Base
 
   private
     def handle_connection_error(exception)
-      raise if Settings.solr_and_fedora.raise_on_connection_error
+      raise if Settings.app_job.solr_and_fedora.raise_on_connection_error
       Rails.logger.error(exception.class.to_s + ': ' + exception.message + '\n' + exception.backtrace.join('\n'))
     end
 end

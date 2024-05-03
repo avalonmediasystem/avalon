@@ -30,7 +30,7 @@ describe ApplicationJob do
       [RSolr::Error::ConnectionRefused, RSolr::Error::Timeout, Blacklight::Exceptions::ECONNREFUSED, Faraday::ConnectionFailed].each do |error_code|
         it "rescues #{error_code} errors" do
           raised_error = error_code == RSolr::Error::Timeout ? error_code.new(request_context, e) : error_code 
-          allow(Settings.solr_and_fedora).to receive(:raise_on_connection_error).and_return(false)
+          allow(Settings.app_job.solr_and_fedora).to receive(:raise_on_connection_error).and_return(false)
           allow_any_instance_of(described_class).to receive(:perform).and_raise(raised_error)
           allow_any_instance_of(Exception).to receive(:backtrace).and_return(["Test trace"])
           allow_any_instance_of(Exception).to receive(:message).and_return('Connection reset by peer')
@@ -47,7 +47,7 @@ describe ApplicationJob do
       [RSolr::Error::ConnectionRefused, RSolr::Error::Timeout, Blacklight::Exceptions::ECONNREFUSED, Faraday::ConnectionFailed].each do |error_code|
         it "raises #{error_code} errors" do
           raised_error = error_code == RSolr::Error::Timeout ? error_code.new(request_context, e) : error_code 
-          allow(Settings.solr_and_fedora).to receive(:raise_on_connection_error).and_return(true)
+          allow(Settings.app_job.solr_and_fedora).to receive(:raise_on_connection_error).and_return(true)
           allow_any_instance_of(described_class).to receive(:perform).and_raise(raised_error)
           allow_any_instance_of(Exception).to receive(:backtrace).and_return(["Test trace"])
           allow_any_instance_of(Exception).to receive(:message).and_return('Connection reset by peer')
