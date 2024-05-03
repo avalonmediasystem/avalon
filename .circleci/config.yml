@@ -20,7 +20,9 @@ jobs:
       - image: ualbertalib/docker-fcrepo4:4.7
         environment:
           CATALINA_OPTS: '-Djava.awt.headless=true -Dfile.encoding=UTF-8 -server -Xms512m -Xmx1024m -XX:NewSize=256m -XX:MaxNewSize=256m -XX:PermSize=256m -XX:MaxPermSize=256m -XX:+DisableExplicitGC'
-      - image: zookeeper:3.4
+      - image: zookeeper:3.9
+        environment:
+          ZOO_ADMINSERVER_ENABLED: false
       - image: solr:9
         environment:
           VERBOSE: yes
