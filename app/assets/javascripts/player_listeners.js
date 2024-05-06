@@ -16,7 +16,7 @@
 
 let canvasIndex = -1;
 let currentSectionLabel = undefined;
-let listenersAdded = false;
+let addToPlaylistListenersAdded = false;
 let firstLoad = true;
 let streamId = '';
 
@@ -189,7 +189,7 @@ function setUpAddToPlaylist(player, sectionIds, mediaObjectId) {
   if (addToPlaylistBtn && addToPlaylistBtn.disabled
     && player.player?.readyState() >= 2) {
     addToPlaylistBtn.disabled = false;
-    if (!listenersAdded) {
+    if (!addToPlaylistListenersAdded) {
       // Add 'Add new playlist' option to dropdown
       window.add_new_playlist_option();
       addToPlaylistListeners(sectionIds, mediaObjectId);
@@ -308,7 +308,7 @@ function addToPlaylistListeners(sectionIds, mediaObjectId) {
     }
   });
 
-  listenersAdded = true;
+  addToPlaylistListenersAdded = true;
 }
 
 /**
