@@ -45,10 +45,13 @@ function addActionButtonListeners(player, mediaObjectId, sectionIds) {
       i.e. player has enough data for playable media source
     */
     const USER_AGENT = window.navigator.userAgent;
+    // Identify both iPad and iPhone devices
+    const IS_IPHONE = (/iPhone/i).test(USER_AGENT);
     const IS_MOBILE = (/Mobi/i).test(USER_AGENT);
+    const IS_TOUCH_ONLY = navigator.maxTouchPoints && navigator.maxTouchPoints > 2 && !window.matchMedia("(pointer: fine").matches;
     const IS_SAFARI = (/Safari/i).test(USER_AGENT);
     if (currentIndex != canvasIndex &&
-      ((IS_MOBILE && IS_SAFARI && player?.player.src() != '')
+      (((IS_TOUCH_ONLY || IS_IPHONE || IS_MOBILE) && IS_SAFARI && player?.player.src() != '')
         || player?.player.readyState() >= 2)) {
       canvasIndex = currentIndex;
       buildActionButtons(player, mediaObjectId, sectionIds);
