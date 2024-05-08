@@ -98,4 +98,48 @@ describe SupplementalFile do
       expect(SupplementalFile.convert_from_srt(input)).to eq output
     end
   end
+
+  describe '.segment_transcript' do
+    subject { SupplementalFile.segment_transcript(file.file) }
+
+    context 'plain text' do
+      let(:file) { FactoryBot.create(:supplemental_file, file: fixture_file_upload(Rails.root.join('spec', 'fixtures', 'chunk_test.txt'), 'text/plain')) }
+      it 'splits the text by paragraph' do
+        expect(subject).to be_a Array
+        expect(subject.length).to eq 11
+        expect(subject.all? { |s| s.is_a?(String) }).to eq true
+        expect(subject[3]).to include "The Emigrant. Crossing the Alleghanies. The boundless Wilder-  ness. The Hut on the Holston. Life's Necessaries."
+      end
+    end
+
+    context 'docx' do
+      let(:file) { FactoryBot.create(:supplemental_file, file: fixture_file_upload(Rails.root.join('spec', 'fixtures', 'chunk_test.docx'), 'application/vnd.openxmlformats-officedocument.wordprocessingml.document')) }
+      it 'splits the text by paragraph' do
+        expect(subject).to be_a Array
+        expect(subject.length).to eq 11
+        expect(subject.all? { |s| s.is_a?(String) }).to eq true
+        expect(subject[3]).to include "The Emigrant. Crossing the Alleghanies. The boundless Wilder-  ness. The Hut on the Holston. Life's Necessaries."
+      end
+    end
+
+    context 'vtt' do
+      let(:file) { FactoryBot.create(:supplemental_file, file: fixture_file_upload(Rails.root.join('spec', 'fixtures', 'chunk_test.vtt'), 'text/vtt')) }
+      it 'splits the text by time cue' do
+        expect(subject).to be_a Array
+        expect(subject.length).to eq 10
+        expect(subject.all? { |s| s.is_a?(String) }).to eq true
+        expect(subject[0]).to eq "00:00:01.200 --> 00:00:21.000 [music]"
+      end
+    end
+
+    context 'srt' do
+      let(:file) { FactoryBot.create(:supplemental_file, file: fixture_file_upload(Rails.root.join('spec', 'fixtures', 'chunk_test.srt'), 'text/srt')) }
+      it 'splits the text by time cue' do
+        expect(subject).to be_a Array
+        expect(subject.length).to eq 10
+        expect(subject.all? { |s| s.is_a?(String) }).to eq true
+        expect(subject[0]).to eq "00:00:01,200 --> 00:00:21,000 [music]"
+      end
+    end
+  end
 end

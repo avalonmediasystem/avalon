@@ -12,6 +12,8 @@
 #   specific language governing permissions and limitations under the License.
 # ---  END LICENSE_HEADER BLOCK  ---
 
+require 'avalon/transcript_parser'
+
 class SupplementalFile < ApplicationRecord
   has_one_attached :file
 
@@ -64,5 +66,13 @@ class SupplementalFile < ApplicationRecord
     conversion.gsub!("\r\n", "\n")
 
     "WEBVTT\n\n#{conversion}".strip
+  end
+
+  # private
+  def self.segment_transcript transcript
+    normalized_transcript = Avalon::TranscriptParser.normalize_transcript(transcript)
+    chunked_transcript = normalized_transcript.split(/\n\n+/)
+
+    chunked_transcript.map(&:strip).map { |cue| cue.gsub("\n", " ") }.compact
   end
 end

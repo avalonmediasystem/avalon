@@ -1,6 +1,7 @@
 require 'string_additions'
 require 'avalon/errors'
 require 'day_hour_string'
+require 'parse_docx'
 # Loads configuration information from the YAML file and then sets up the
 # dropbox
 #
