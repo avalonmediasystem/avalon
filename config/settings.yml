@@ -46,7 +46,7 @@ solr:
     snitch:
 app_controller:
   solr_and_fedora:
-    raise_on_connection_error: true
+    raise_on_connection_error: false
 app_job:
   solr_and_fedora:
     raise_on_connection_error: true
