@@ -69,8 +69,8 @@ describe IiifCanvasPresenter do
       end
 
       it 'has height and width' do
-        expect(subject.width).to eq 1280
-        expect(subject.height).to eq 720
+        expect(subject.width).to eq 1024
+        expect(subject.height).to eq 768
       end
     end
   end
