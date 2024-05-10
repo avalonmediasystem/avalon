@@ -81,6 +81,15 @@ class IiifCanvasPresenter
     end
   end
 
+  def service
+    [
+      {
+        "@id" => "#{Rails.application.routes.url_helpers.search_master_file_url(master_file.id)}",
+        "type" => "SearchService2"
+      }
+    ]
+  end
+
   private
 
     def video_content

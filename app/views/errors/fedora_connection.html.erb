@@ -13,13 +13,10 @@ Unless required by applicable law or agreed to in writing, software distributed
   specific language governing permissions and limitations under the License.
 ---  END LICENSE_HEADER BLOCK  ---
 %>
-
-<div id="share-list">
-  <nav class="nav nav-tabs share-tabs">
-    <%= render_conditional_partials :share, section:'share-tabs' %>
-  </nav>
-
-  <div class="tab-content">
-    <%= render_conditional_partials :share, section:'tab-content' %>
+<div id="main_content_container" class="container-fluid">
+  <div class="content" class="col-md-8">
+    <h2>Fedora Connection Error</h2>
+    <p>The application was unable to connect to the Fedora database. Please try again in a few minutes.</p>
+    <p>If the problem persists contact your support staff.</p>
   </div>
 </div>

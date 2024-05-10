@@ -354,6 +354,10 @@ class MasterFilesController < ApplicationController
     end
   end
 
+  def search
+    # TODO: Build search service
+  end
+
 protected
   def set_masterfile
     if params[:id].blank? || (not MasterFile.exists?(params[:id]))
