@@ -50,21 +50,22 @@ function addActionButtonListeners(player, mediaObjectId, sectionIds) {
     const IS_MOBILE = (/Mobi/i).test(USER_AGENT);
     const IS_TOUCH_ONLY = navigator.maxTouchPoints && navigator.maxTouchPoints > 2 && !window.matchMedia("(pointer: fine").matches;
     const IS_SAFARI = (/Safari/i).test(USER_AGENT);
-    if (currentIndex != canvasIndex &&
-      (((IS_TOUCH_ONLY || IS_IPHONE || IS_MOBILE) && IS_SAFARI && player?.player.src() != '')
+    if (currentIndex != canvasIndex && !player.player.canvasIsEmpty) {
+      if ((((IS_TOUCH_ONLY || IS_IPHONE || IS_MOBILE) && IS_SAFARI && player?.player.src() != '')
         || player?.player.readyState() >= 2)) {
-      canvasIndex = currentIndex;
-      buildActionButtons(player, mediaObjectId, sectionIds);
-      firstLoad = false;
+        canvasIndex = currentIndex;
+        buildActionButtons(player, mediaObjectId, sectionIds);
+        firstLoad = false;
+      }
     }
     /* 
-      Update only share links when player.readyState() == 0 and player.src() is empty,
-      i.e. player is empty with an inaccessible media source
+      Update only share links when Canvas/section is empty,
+      i.e. Canvas/section is empty with an inaccessible media source
     */
-    if (currentIndex != canvasIndex && player.player.readyState() === 0
-      && player.player.src() === '') {
+    if (currentIndex != canvasIndex && player.player.canvasIsEmpty) {
       canvasIndex = currentIndex;
       setUpShareLinks(mediaObjectId, sectionIds);
+      resetAllActionButtons();
     }
 
     /* Add player event listeners to update UI components on the page */
@@ -80,26 +81,13 @@ function addActionButtonListeners(player, mediaObjectId, sectionIds) {
     });
 
     /*
-      Disable action buttons tied to player related information on player's 'dispose' event, so that the
-      user doesn't interact with them get corrupted data in the UI when player is loading the new section
-      media into it. Once the player is fully loaded these buttons are enabled as needed.
+      Disable action buttons tied to player related information on player's 'loadstart' event which functions
+      parallel to the player's src changes. So, that the user doesn't interact with them get corrupted data 
+      in the UI when player is loading the new section media into it.
+      Once the player is fully loaded these buttons are enabled as needed.
     */
-    player.player.on('dispose', () => {
-      currentSectionLabel = undefined;
-      let addToPlaylistBtn = document.getElementById('addToPlaylistBtn');
-      $('#addToPlaylistPanel').collapse('hide');
-      resetAddToPlaylistForm();
-      if (addToPlaylistBtn) {
-        addToPlaylistBtn.disabled = true;
-      }
-      let thumbnailBtn = document.getElementById('thumbnailBtn');
-      if (thumbnailBtn) {
-        thumbnailBtn.disabled = true;
-      }
-      let timelineBtn = document.getElementById('timelineBtn');
-      if (timelineBtn) {
-        timelineBtn.disabled = true;
-      }
+    player.player.on('loadstart', () => {
+      resetAllActionButtons();
     });
 
     // Collapse sub-panel related to the selected option in the add to playlist form when it is collapsed
@@ -112,6 +100,26 @@ function addActionButtonListeners(player, mediaObjectId, sectionIds) {
     } else if (playlistTrack.prop("checked") && multiItemExpanded === undefined && moreDetailsExpanded === undefined) {
       collapseMoreDetails();
     }
+  }
+}
+/**
+ * Reset the action buttons and global variables on Canvas/section change
+ */
+function resetAllActionButtons() {
+  currentSectionLabel = undefined;
+  let addToPlaylistBtn = document.getElementById('addToPlaylistBtn');
+  $('#addToPlaylistPanel').collapse('hide');
+  resetAddToPlaylistForm();
+  if (addToPlaylistBtn) {
+    addToPlaylistBtn.disabled = true;
+  }
+  let thumbnailBtn = document.getElementById('thumbnailBtn');
+  if (thumbnailBtn) {
+    thumbnailBtn.disabled = true;
+  }
+  let timelineBtn = document.getElementById('timelineBtn');
+  if (timelineBtn) {
+    timelineBtn.disabled = true;
   }
 }
 
