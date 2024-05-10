@@ -48,6 +48,10 @@ class SupplementalFile < ApplicationRecord
     tags.include?('caption')
   end
 
+  def transcript?
+    tags.include?('transcript')
+  end
+
   def machine_generated?
     tags.include?('machine_generated')
   end
@@ -87,7 +91,7 @@ class SupplementalFile < ApplicationRecord
     solr_doc["mime_type_ssi"] = mime_type
     solr_doc["label_ssi"] = label
     solr_doc["language_ssi"] = language
-    solr_doc["transcript_tsim"] = segment_transcript(file.download) if tags.include?("transcript")
+    solr_doc["transcript_tsim"] = segment_transcript(file.download) if transcript?
     solr_doc["isPartOf_ssim"] = [parent_id]
     solr_doc
   end

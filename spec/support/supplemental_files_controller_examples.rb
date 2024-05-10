@@ -121,7 +121,9 @@ RSpec.shared_examples 'a nested controller for' do |object_class|
         end
 
         let(:tags) { ["transcript"] }
+        let(:uploaded_file) { fixture_file_upload('/captions.vtt', 'text/vtt') }
         let(:valid_create_attributes_with_tags) { valid_create_attributes.merge(tags: tags) }
+
         it "creates a SupplementalFile with tags for #{object_class}" do
           expect {
             post :create, params: { class_id => object.id, supplemental_file: valid_create_attributes_with_tags, format: :json }, session: valid_session

@@ -719,7 +719,7 @@ describe MasterFile do
 
   describe 'supplemental_file_captions' do
     let(:caption_file) { FactoryBot.create(:supplemental_file, :with_caption_file, :with_caption_tag) }
-    let(:transcript_file) { FactoryBot.create(:supplemental_file, :with_transcript_tag) }
+    let(:transcript_file) { FactoryBot.create(:supplemental_file, :with_transcript_tag, :with_transcript_file) }
     let(:master_file) { FactoryBot.create(:master_file, supplemental_files: [caption_file, transcript_file]) }
     it 'returns only caption files' do
       expect(master_file.supplemental_file_captions).to_not be_empty
@@ -731,7 +731,7 @@ describe MasterFile do
 
   describe 'supplemental_file_transcripts' do
     let(:caption_file) { FactoryBot.create(:supplemental_file, :with_caption_file, :with_caption_tag) }
-    let(:transcript_file) { FactoryBot.create(:supplemental_file, :with_transcript_tag) }
+    let(:transcript_file) { FactoryBot.create(:supplemental_file, :with_transcript_tag, :with_transcript_file) }
     let(:master_file) { FactoryBot.create(:master_file, supplemental_files: [caption_file, transcript_file]) }
     it 'returns only transcript files' do
       expect(master_file.supplemental_file_transcripts).to_not be_empty
