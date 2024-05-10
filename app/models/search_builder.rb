@@ -48,7 +48,7 @@ class SearchBuilder < Blacklight::SearchBuilder
   end
 
   def search_section_transcripts(solr_parameters)
-    return unless solr_parameters[:q].present? && SupplementalFile.all.any? { |sf| sf.transcript? }
+    return unless solr_parameters[:q].present? && SupplementalFile.with_tag('transcript').any?
 
     terms = solr_parameters[:q].split
     term_subquery = terms.map { |term| "transcript_tsim:#{term}" }.join(" OR ")
@@ -62,7 +62,7 @@ class SearchBuilder < Blacklight::SearchBuilder
     # Any search or filtering using a `q` parameter when transcripts are not present fails because
     # the transcript_tsim field does not get created. We need to only add the transcript searching
     # when transcripts are present.
-    transcripts_present = SupplementalFile.all.any? { |sf| sf.transcript? }
+    transcripts_present = SupplementalFile.with_tag('transcript').any?
 
     # List of fields for displaying on search results (Blacklight index fields)
     fl = ['id', 'has_model_ssim', 'title_tesi', 'date_issued_ssi', 'creator_ssim', 'abstract_ssi', 'duration_ssi', 'section_id_ssim']

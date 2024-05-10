@@ -15,6 +15,8 @@
 class SupplementalFile < ApplicationRecord
   has_one_attached :file
 
+  scope :with_tag, ->(tag_filter) { where("tags LIKE ?", "%\n- #{tag_filter}\n%") }
+
   # TODO: the empty tag should represent a generic supplemental file
   validates :tags, array_inclusion: ['transcript', 'caption', 'machine_generated', '', nil]
   validates :language, inclusion: { in: LanguageTerm.map.keys }
@@ -107,6 +109,7 @@ class SupplementalFile < ApplicationRecord
   end
 
   def segment_transcript transcript
+    return unless transcript.present?
     transcript.split(/\n\n+/).map(&:strip).map { |cue| cue.gsub!("\n", " ") }.compact
   end
 end

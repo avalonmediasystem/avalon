@@ -46,6 +46,24 @@ describe SupplementalFile do
       end
     end
 
+    describe 'scopes' do
+      describe 'with_tag' do
+        let!(:subject) { FactoryBot.create(:supplemental_file, tags: ['transcript', 'machine_generated']) }
+        let!(:other_transcript) { FactoryBot.create(:supplemental_file, tags: ['transcript']) }
+        let!(:another_file) { FactoryBot.create(:supplemental_file, :with_caption_file, tags: ['caption']) }
+
+        it 'filters for a single tag' do
+          expect(SupplementalFile.with_tag('transcript')).to include(subject,other_transcript)
+          expect(SupplementalFile.with_tag('transcript').count).to eq 2
+        end
+
+        it 'filters for multiple tags' do
+          expect(SupplementalFile.with_tag('transcript').with_tag('machine_generated').first).to eq subject
+          expect(SupplementalFile.with_tag('transcript').with_tag('machine_generated').count).to eq 1
+        end
+      end
+    end
+
     describe '#to_solr' do
       # TODO: Update tests once chunking is in place
       let(:caption) { FactoryBot.create(:supplemental_file, :with_caption_file, :with_caption_tag) }
