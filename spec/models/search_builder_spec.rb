@@ -46,8 +46,7 @@ RSpec.describe SearchBuilder do
       it "should add seaction transcript searching to the solr query" do
         subject.search_section_transcripts(solr_parameters)
         expect(solr_parameters[:defType]).to eq "lucene"
-        expect(solr_parameters[:df]).to eq "id,title_tesi,section_label_tesim,all_text_timv"
-        expect(solr_parameters[:q]).to eq "Example {!join to=id from=isPartOf_ssim}{!join to=id from=isPartOf_ssim }transcript_tsim:Example"
+        expect(solr_parameters[:q]).to eq "({!edismax v=\"Example\"}) {!join to=id from=isPartOf_ssim}{!join to=id from=isPartOf_ssim}transcript_tsim:Example"
       end
     end
   end

@@ -51,10 +51,9 @@ class SearchBuilder < Blacklight::SearchBuilder
     return unless solr_parameters[:q].present? && SupplementalFile.with_tag('transcript').any?
 
     terms = solr_parameters[:q].split
-    term_subquery = terms.map { |term| "transcript_tsim:#{term}" }.join(" OR ")
+    term_subquery = terms.map { |term| "transcript_tsim:#{RSolr.solr_escape(term)}" }.join(" OR ")
     solr_parameters[:defType] = "lucene"
-    solr_parameters[:df] = "id,title_tesi,section_label_tesim,all_text_timv"
-    solr_parameters[:q] += " {!join to=id from=isPartOf_ssim}{!join to=id from=isPartOf_ssim }#{term_subquery}"
+    solr_parameters[:q] = "({!edismax v=\"#{RSolr.solr_escape(solr_parameters[:q])}\"}) {!join to=id from=isPartOf_ssim}{!join to=id from=isPartOf_ssim}#{term_subquery}"
   end
 
   def term_frequency_counts(solr_parameters)
@@ -77,11 +76,11 @@ class SearchBuilder < Blacklight::SearchBuilder
     # Add fields for each term in the query 
     terms = solr_parameters[:q].split
     terms.each_with_index do |term, i|
-      fl << "metadata_tf_#{i}:termfreq(mods_tesim,#{term})"
-      fl << "structure_tf_#{i}:termfreq(section_label_tesim,#{term})"
+      fl << "metadata_tf_#{i}:termfreq(mods_tesim,#{RSolr.solr_escape(term)})"
+      fl << "structure_tf_#{i}:termfreq(section_label_tesim,#{RSolr.solr_escape(term)})"
       fl << "transcript_tf_#{i}" if transcripts_present
       sections_fl << "transcript_tf_#{i}" if transcripts_present
-      transcripts_fl << "transcript_tf_#{i}:termfreq(transcript_tsim,#{term})" if transcripts_present
+      transcripts_fl << "transcript_tf_#{i}:termfreq(transcript_tsim,#{RSolr.solr_escape(term)})" if transcripts_present
     end
     solr_parameters[:fl] = fl.join(',')
 
