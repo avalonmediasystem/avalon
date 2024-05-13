@@ -46,6 +46,42 @@ describe SupplementalFile do
       end
     end
 
+    describe 'scopes' do
+      describe 'with_tag' do
+        let!(:subject) { FactoryBot.create(:supplemental_file, tags: ['transcript', 'machine_generated']) }
+        let!(:other_transcript) { FactoryBot.create(:supplemental_file, tags: ['transcript']) }
+        let!(:another_file) { FactoryBot.create(:supplemental_file, :with_caption_file, tags: ['caption']) }
+
+        it 'filters for a single tag' do
+          expect(SupplementalFile.with_tag('transcript')).to include(subject,other_transcript)
+          expect(SupplementalFile.with_tag('transcript').count).to eq 2
+        end
+
+        it 'filters for multiple tags' do
+          expect(SupplementalFile.with_tag('transcript').with_tag('machine_generated').first).to eq subject
+          expect(SupplementalFile.with_tag('transcript').with_tag('machine_generated').count).to eq 1
+        end
+      end
+    end
+
+    describe '#to_solr' do
+      # TODO: Update tests once chunking is in place
+      let(:caption) { FactoryBot.create(:supplemental_file, :with_caption_file, :with_caption_tag) }
+      let(:transcript) { FactoryBot.create(:supplemental_file, :with_transcript_file, :with_transcript_tag) }
+      let(:caption_transcript) { FactoryBot.create(:supplemental_file, :with_caption_file, tags: ['caption', 'transcript']) }
+
+      it "should solrize transcripts" do
+        expect(transcript.to_solr[ "transcript_tsim" ]).to be_a Array
+        expect(transcript.to_solr[ "transcript_tsim" ][0]).to eq "WEBVTT FILE\r \r 1\r 00:00:03.500 --> 00:00:05.000\r Example captions"
+        expect(caption_transcript.to_solr[ "transcript_tsim" ]).to be_a Array
+        expect(transcript.to_solr[ "transcript_tsim" ][0]).to eq "WEBVTT FILE\r \r 1\r 00:00:03.500 --> 00:00:05.000\r Example captions"
+      end
+
+      it "should not solrize non-transcripts" do
+        expect(caption.to_solr[ "transcript_tsim" ]).to be nil
+      end
+    end
+
     describe 'language' do
       it 'should validate valid language' do
         subject.language = 'eng'

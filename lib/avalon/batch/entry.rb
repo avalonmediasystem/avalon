@@ -187,9 +187,9 @@ module Avalon
           next unless ds.present?
           supplemental_file = case ds.keys[0].to_s
                               when /caption.*/
-                                process_datastream(ds, 'caption')
+                                process_datastream(ds, 'caption', master_file.id)
                               when /transcript.*/
-                                process_datastream(ds, 'transcript')
+                                process_datastream(ds, 'transcript', master_file.id)
                               end
           if supplemental_file.nil?
             errors += [ds.values[0].to_s.split('/').last]
@@ -206,7 +206,7 @@ module Avalon
 
         @files.each do |file_spec|
           master_file = MasterFile.new
-          # master_file.save(validate: false) #required: need id before setting media_object
+          master_file.save(validate: false) #required: need id before setting supplemental files
           # master_file.media_object = media_object
           files = self.class.gatherFiles(file_spec[:file])
           datastreams = gather_datastreams(file_spec).values
@@ -285,7 +285,7 @@ module Avalon
       end
       private_class_method :caption_language
 
-      def self.process_datastream(datastream, type)
+      def self.process_datastream(datastream, type, parent_id)
         file_key, label_key, language_key = ["_file", "_label", "_language"].map { |item| item.prepend(type).to_sym }
         return nil unless datastream[file_key].present? && FileLocator.new(datastream[file_key]).exist?
         
@@ -295,7 +295,7 @@ module Avalon
         language = datastream[language_key].present? ? caption_language(datastream[language_key]) : Settings.caption_default.language
         machine_generated = datastream[:machine_generated].present? ? 'machine_generated' : nil
         # Create SupplementalFile
-        supplemental_file = SupplementalFile.new(label: label, tags: [type, machine_generated].compact, language: language)
+        supplemental_file = SupplementalFile.new(label: label, tags: [type, machine_generated].compact, language: language, parent_id: parent_id)
         supplemental_file.file.attach(io: FileLocator.new(datastream[file_key]).reader, filename: filename)
         supplemental_file.save ? supplemental_file : nil
       end

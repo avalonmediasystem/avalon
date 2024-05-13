@@ -34,7 +34,7 @@ class SupplementalFilesController < ApplicationController
     # FIXME: move filedata to permanent location
     raise Avalon::BadRequest, "Missing required parameters" unless supplemental_file_params[:file]
 
-    @supplemental_file = SupplementalFile.new(label: supplemental_file_params[:label], tags: supplemental_file_params[:tags])
+    @supplemental_file = SupplementalFile.new(label: supplemental_file_params[:label], tags: supplemental_file_params[:tags], parent_id: @object.id)
     begin
       @supplemental_file.attach_file(supplemental_file_params[:file])
     rescue StandardError, LoadError => e

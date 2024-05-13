@@ -1182,7 +1182,7 @@ describe MediaObject do
     let(:transcript_media_object) { FactoryBot.create(:media_object, master_files: [master_file1, master_file2]) }
     let(:master_file1) { FactoryBot.create(:master_file) }
     let(:master_file2) { FactoryBot.create(:master_file, supplemental_files: [transcript]) }
-    let(:transcript) { FactoryBot.create(:supplemental_file, :with_transcript_tag) }
+    let(:transcript) { FactoryBot.create(:supplemental_file, :with_transcript_tag, :with_transcript_file) }
     it "returns false when child master files contain no transcript" do
       expect(transcriptless_media_object.has_transcripts).to be false
     end

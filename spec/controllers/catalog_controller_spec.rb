@@ -212,6 +212,24 @@ describe CatalogController do
         expect(assigns(:response).documents.collect(&:id)).to eq [media_object_1.id, @media_object.id]
       end
     end
+    describe "search transcripts" do
+      before(:each) do
+        @media_object = FactoryBot.create(:fully_searchable_media_object)
+        @master_file = FactoryBot.create(:master_file, media_object: @media_object)
+        @transcript = FactoryBot.create(:supplemental_file, :with_transcript_file, :with_transcript_tag, parent_id: @master_file.id)
+        @master_file.supplemental_files += [@transcript]
+        @master_file.save!
+        @media_object.ordered_master_files += [@master_file]
+        @media_object.save!
+        MediaObjectIndexingJob.perform_now(@media_object.id)
+      end
+
+      it "should find results based upon transcripts" do
+        get 'index', params: { q: 'Example' }
+        expect(assigns(:response).documents.count).to eq 1
+        expect(assigns(:response).documents.collect(&:id)).to eq [@media_object.id]
+      end
+    end
 
     describe "sort fields" do
       let!(:m1) { FactoryBot.create(:published_media_object, title: 'Yabba', date_issued: '1960', creator: ['Fred'], visibility: 'public') }

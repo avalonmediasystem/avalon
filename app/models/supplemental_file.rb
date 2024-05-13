@@ -17,12 +17,20 @@ require 'avalon/transcript_parser'
 class SupplementalFile < ApplicationRecord
   has_one_attached :file
 
+  scope :with_tag, ->(tag_filter) { where("tags LIKE ?", "%\n- #{tag_filter}\n%") }
+
   # TODO: the empty tag should represent a generic supplemental file
   validates :tags, array_inclusion: ['transcript', 'caption', 'machine_generated', '', nil]
   validates :language, inclusion: { in: LanguageTerm.map.keys }
   validate  :validate_file_type, if: :caption?
+  validates :parent_id, presence: true
 
   serialize :tags, Array
+
+  # Need to prepend so this runs before the callback added by `has_one_attached` above
+  # See https://github.com/rails/rails/issues/37304
+  after_create_commit :update_index, prepend: true
+  after_update :update_index
 
   def validate_file_type
     errors.add(:file_type, "Uploaded file is not a recognized captions file") unless ['text/vtt', 'text/srt'].include? file.content_type
@@ -42,6 +50,10 @@ class SupplementalFile < ApplicationRecord
 
   def caption?
     tags.include?('caption')
+  end
+
+  def transcript?
+    tags.include?('transcript')
   end
 
   def machine_generated?
@@ -67,12 +79,42 @@ class SupplementalFile < ApplicationRecord
 
     "WEBVTT\n\n#{conversion}".strip
   end
+  
+  def update_index
+    ActiveFedora::SolrService.add(to_solr, softCommit: true)
+  end
 
-  # private
-  def self.segment_transcript transcript
+  # Creates a solr document hash for the {#object}
+  # @return [Hash] the solr document
+  def to_solr
+    solr_doc = {}
+    solr_doc[ActiveFedora.id_field.to_sym] = to_global_id.to_s
+    ActiveFedora.index_field_mapper.set_field(solr_doc, 'system_create', c_time, :stored_sortable)
+    ActiveFedora.index_field_mapper.set_field(solr_doc, 'system_modified', m_time, :stored_sortable)
+    solr_doc[ActiveFedora::QueryResultBuilder::HAS_MODEL_SOLR_FIELD] = "SupplementalFile"
+    solr_doc["mime_type_ssi"] = mime_type
+    solr_doc["label_ssi"] = label
+    solr_doc["language_ssi"] = language
+    solr_doc["transcript_tsim"] = segment_transcript(file) if transcript?
+    solr_doc["isPartOf_ssim"] = [parent_id]
+    solr_doc
+  end
+  
+  # Should this be a private method?
+  def segment_transcript transcript
     normalized_transcript = Avalon::TranscriptParser.new(transcript).normalize_transcript
     chunked_transcript = normalized_transcript.split(/\n\n+/)
 
     chunked_transcript.map(&:strip).map { |cue| cue.gsub("\n", " ").squeeze(' ') }.compact
+  end
+
+  private
+
+  def c_time
+    created_at&.to_datetime || DateTime.now
+  end
+
+  def m_time
+    updated_at&.to_datetime || DateTime.now
   end
 end
