@@ -48,8 +48,8 @@ describe SupplementalFile do
 
     describe 'scopes' do
       describe 'with_tag' do
-        let!(:subject) { FactoryBot.create(:supplemental_file, tags: ['transcript', 'machine_generated']) }
-        let!(:other_transcript) { FactoryBot.create(:supplemental_file, tags: ['transcript']) }
+        let!(:subject) { FactoryBot.create(:supplemental_file, :with_transcript_file, tags: ['transcript', 'machine_generated']) }
+        let!(:other_transcript) { FactoryBot.create(:supplemental_file, :with_transcript_file, tags: ['transcript']) }
         let!(:another_file) { FactoryBot.create(:supplemental_file, :with_caption_file, tags: ['caption']) }
 
         it 'filters for a single tag' do
@@ -72,9 +72,9 @@ describe SupplementalFile do
 
       it "should solrize transcripts" do
         expect(transcript.to_solr[ "transcript_tsim" ]).to be_a Array
-        expect(transcript.to_solr[ "transcript_tsim" ][0]).to eq "WEBVTT FILE\r \r 1\r 00:00:03.500 --> 00:00:05.000\r Example captions"
+        expect(transcript.to_solr[ "transcript_tsim" ][0]).to eq "00:00:03.500 --> 00:00:05.000 Example captions"
         expect(caption_transcript.to_solr[ "transcript_tsim" ]).to be_a Array
-        expect(transcript.to_solr[ "transcript_tsim" ][0]).to eq "WEBVTT FILE\r \r 1\r 00:00:03.500 --> 00:00:05.000\r Example captions"
+        expect(transcript.to_solr[ "transcript_tsim" ][0]).to eq "00:00:03.500 --> 00:00:05.000 Example captions"
       end
 
       it "should not solrize non-transcripts" do
@@ -135,10 +135,10 @@ describe SupplementalFile do
     end
   end
 
-  describe '.segment_transcript' do
-    subject { SupplementalFile.segment_transcript(file.file) }
+  describe '#segment_transcript' do
+    subject { file.segment_transcript(file.file) }
 
-    context 'plain text' do
+    context 'plain text file' do
       let(:file) { FactoryBot.create(:supplemental_file, file: fixture_file_upload(Rails.root.join('spec', 'fixtures', 'chunk_test.txt'), 'text/plain')) }
       it 'splits the text by paragraph' do
         expect(subject).to be_a Array
@@ -148,7 +148,7 @@ describe SupplementalFile do
       end
     end
 
-    context 'docx' do
+    context 'docx file' do
       let(:file) { FactoryBot.create(:supplemental_file, file: fixture_file_upload(Rails.root.join('spec', 'fixtures', 'chunk_test.docx'), 'application/vnd.openxmlformats-officedocument.wordprocessingml.document')) }
       it 'splits the text by paragraph' do
         expect(subject).to be_a Array
@@ -158,7 +158,7 @@ describe SupplementalFile do
       end
     end
 
-    context 'vtt' do
+    context 'vtt file' do
       let(:file) { FactoryBot.create(:supplemental_file, file: fixture_file_upload(Rails.root.join('spec', 'fixtures', 'chunk_test.vtt'), 'text/vtt')) }
       let(:parsed_text) { [
         "00:00:01.200 --> 00:00:21.000 [music]",
@@ -178,13 +178,20 @@ describe SupplementalFile do
       end
     end
 
-    context 'srt' do
+    context 'srt file' do
       let(:file) { FactoryBot.create(:supplemental_file, file: fixture_file_upload(Rails.root.join('spec', 'fixtures', 'chunk_test.srt'), 'text/srt')) }
       it 'splits the text by time cue' do
         expect(subject).to be_a Array
         expect(subject.length).to eq 10
         expect(subject.all? { |s| s.is_a?(String) }).to eq true
         expect(subject[0]).to eq "00:00:01,200 --> 00:00:21,000 [music]"
+      end
+    end
+
+    context 'non-text file' do
+      let(:file) { FactoryBot.create(:supplemental_file, :with_attached_file) }
+      it 'returns nil' do
+        expect(subject).to be nil
       end
     end
   end

@@ -24,24 +24,29 @@ module Avalon
       @transcript = transcript_file.download
     end
 
-    def transcript_plaintext
+    def plaintext
       # Transcripts can have arbitrary files imported. We need to verify that the transcript
       # is a text based file before attempting processing.
       return unless TEXT_TYPE.include? @mime_type
-      # Docx files are a zip file containing XML files so require specialized handling to retrieve the content.
-      plaintext = Avalon::DocxFile.new(@transcript).unformatted_text if @mime_type == 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
-      # SRT and VTT files are plaintext, so it is sufficient to just download the content without additional handling.
-      plaintext ||= @transcript
+
+      unless @plaintext
+        # Docx files are a zip file containing XML files so require specialized handling to retrieve the content.
+        @plaintext = Avalon::DocxFile.new(@transcript).unformatted_text if @mime_type == 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+        # SRT and VTT files are plaintext, so it is sufficient to just download the content without additional handling.
+        @plaintext ||= @transcript
+      end
+      @plaintext
     end
 
-    def normalize_transcript
-      plaintext = transcript_plaintext
+    def normalized_text
       return if plaintext.blank?
 
       normalized_plaintext = plaintext.gsub("\r\n", "\n")
       normalized_transcript = normalize_timed_text(normalized_plaintext) if @mime_type == 'text/vtt' || @mime_type == 'text/srt'
       normalized_transcript ||= normalized_plaintext
     end
+
+    private
 
     def normalize_timed_text(plaintext)
       # Remove WEBVTT header and anything before the first time cue.

@@ -100,9 +100,10 @@ class SupplementalFile < ApplicationRecord
     solr_doc
   end
   
-  # Should this be a private method?
   def segment_transcript transcript
-    normalized_transcript = Avalon::TranscriptParser.new(transcript).normalize_transcript
+    normalized_transcript = Avalon::TranscriptParser.new(transcript).normalized_text
+    return unless normalized_transcript.present?
+
     chunked_transcript = normalized_transcript.split(/\n\n+/)
 
     chunked_transcript.map(&:strip).map { |cue| cue.gsub("\n", " ").squeeze(' ') }.compact
