@@ -326,6 +326,34 @@ class MasterFilesController < ApplicationController
     send_data @supplemental_file.file.download, filename: @supplemental_file.file.filename.to_s, type: @supplemental_file.file.content_type, disposition: 'inline'
   end
 
+  def download_derivative
+    authorize! :manage, @master_file.media_object.collection
+
+    begin
+      path = derivative_path
+
+      unless FileLocator.new(path).exist?
+        flash[:error] = "Unable to find or access derivative file."
+        redirect_back(fallback_location: edit_media_object_path(@master_file.media_object))
+        return
+      end
+
+      case path
+      when /^s3:/
+        # Use an AWS presigned URL to facilitate direct download of the derivative to avoid
+        # having to download the file to the server as a tmp file and then sending that to
+        # the client. Doing this reduces latency and server load.
+        redirect_to FileLocator::S3File.new(path).download_url
+      else
+        send_file path, filename: File.basename(path), disposition: 'attachment'
+      end
+    rescue => error
+      Rails.logger.error(error.class.to_s + ': ' + error.message + '\n' + error.backtrace.join('\n'))
+      flash[:error] = "A problem was encountered while attempting to download derivative file. Please contact your support person if this issue persists."
+      redirect_back(fallback_location: edit_media_object_path(@master_file.media_object))
+    end
+  end
+
   def search
     # TODO: Build search service
   end
@@ -395,5 +423,23 @@ protected
 
   def samples_per_frame
     Settings.waveform.sample_rate * Settings.waveform.finest_zoom / Settings.waveform.player_width
+  end
+
+  def derivative_path
+    derivative = @master_file.derivatives.find { |d| d.quality == "high" }
+    # There is no guarantee that the full path contained in the absolute_location attribute is accurate.
+    # However, the sub-path in location_url should be consistent between server moves. The location_url
+    # does not include the extension, so we retrieve the extension from absolute_location.
+    extension = File.extname(derivative.absolute_location)
+    location = derivative.location_url + extension
+    # Derivative files that have been moved from their original location/server should have been moved into
+    # the new root path for derivatives/encodings. Combining the subpath and extension from the existing
+    # record with the derivative path defined in our environment variables, we should be able to retrieve the
+    # derivative files, regardless of how many times they have been rehomed.
+    if Settings.encoding.derivative_bucket
+      File.join('s3://', Settings.encoding.derivative_bucket, location)
+    else
+      File.join(ENV["ENCODE_WORK_DIR"], location).to_s
+    end
   end
 end

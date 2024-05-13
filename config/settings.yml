@@ -117,3 +117,6 @@ recaptcha:
   v3:
     action: "comment"
     minimum_score: 0.5
+derivative:
+  # Choose whether collection managers and admins can download high quality derivatives
+  allow_download: true

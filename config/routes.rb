@@ -161,6 +161,10 @@ Rails.application.routes.draw do
       post 'move'
       get 'transcript/:t_id', to: 'master_files#transcript'
       get :search
+      
+      if Settings.derivative.allow_download
+        get :download_derivative
+      end
     end
 
     # Supplemental Files

@@ -749,4 +749,74 @@ describe MasterFilesController do
       end
     end
   end
+
+  describe "#download_derivative" do
+    let(:collection) { FactoryBot.create(:collection) }
+    let(:media_object) { FactoryBot.create(:media_object, collection: collection)}
+    let(:master_file) { FactoryBot.create(:master_file, media_object: media_object, derivatives: [high_derivative, med_derivative]) }
+    let(:high_derivative) { FactoryBot.create(:derivative, absolute_location: Rails.root.join('spec', 'fixtures', 'meow.wav').to_s) }
+    let(:med_derivative) { FactoryBot.create(:derivative, quality: 'medium') }
+    before do
+      allow(Settings.derivative).to receive(:allow_download).and_return(true)
+      login_as :administrator
+    end
+
+    it 'should download the high quality derivative' do
+      allow(ENV).to receive(:[]).and_call_original
+      allow(ENV).to receive(:[]).with("ENCODE_WORK_DIR").and_return(Rails.root.join('spec').to_s)
+      allow(high_derivative).to receive(:location_url).and_return('/fixtures/meow')
+      allow(med_derivative).to receive(:location_url).and_return('/fixtures/meow-medium')
+      get :download_derivative, params: { id: master_file.id }
+      expect(response.header['Content-Disposition']).to include 'attachment; filename="meow.wav"'
+      expect(response.header['Content-Disposition']).to_not include 'filename="meow-medium.wav"'
+    end
+
+    it 'should display a flash message if file is not found' do
+      allow(ENV).to receive(:[]).and_call_original
+      allow(ENV).to receive(:[]).with("ENCODE_WORK_DIR").and_return(Rails.root.join('spec').to_s)
+      allow(high_derivative).to receive(:location_url).and_return('missing')
+      get :download_derivative, params: { id: master_file.id }
+      expect(response).to redirect_to(edit_media_object_path(media_object))
+      expect(flash[:error]).to be_present
+    end
+
+    it 'should display a flash message if an error is encountered' do
+      allow(ENV).to receive(:[]).and_call_original
+      allow(ENV).to receive(:[]).with("ENCODE_WORK_DIR").and_raise
+      expect(Rails.logger).to receive(:error)
+      get :download_derivative, params: { id: master_file.id }
+      expect(response).to redirect_to(edit_media_object_path(media_object))
+      expect(flash[:error]).to be_present
+    end
+
+    context 's3 file' do
+      before do
+        @encoding_backup = Settings.encoding
+        Settings.encoding = double("encoding", engine_adapter: 'test', derivative_bucket: 'mybucket')
+      end
+
+      it 'should redirect to a presigned url for AWS' do
+        allow(ENV).to receive(:[]).and_call_original
+        allow(ENV).to receive(:[]).with('AWS_REGION').and_return('us-east-2')
+        allow(high_derivative).to receive(:location_url).and_return('/fixtures/meow')
+        get :download_derivative, params: { id: master_file.id }
+        expect(response.status).to eq 302
+        expect(response.location).to include('s3.us-stubbed-1.amazonaws.com', 'X-Amz-Algorithm', 'X-Amz-Credential', 'X-Amz-Expires', 'X-Amz-SignedHeaders', 'X-Amz-Signature')
+      end
+
+      after do
+        Settings.encoding = @encoding_backup
+      end
+    end
+
+    context 'unauthorized user' do
+      it 'should redirect to restricted page' do
+        allow(ENV).to receive(:[]).and_call_original
+        allow(ENV).to receive(:[]).with("ENCODE_WORK_DIR").and_return(Rails.root.join('spec').to_s)
+        allow(high_derivative).to receive(:location_url).and_return('/fixtures/meow')
+        login_as :user
+        expect(get :download_derivative, params: { id: master_file.id }).to render_template 'errors/restricted_pid'
+      end
+    end
+  end
 end
