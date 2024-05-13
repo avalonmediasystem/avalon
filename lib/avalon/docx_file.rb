@@ -12,18 +12,20 @@
 #   specific language governing permissions and limitations under the License.
 # ---  END LICENSE_HEADER BLOCK  ---
 
-module ParseDocx
-  def parse_docx
-    # https://github.com/ruby-docx/docx/blob/master/lib/docx/document.rb#L38-42
-    document = self.glob('word/document*.xml').first
-    raise Errno::ENOENT if document.nil?
-    document_xml = document.get_input_stream.read
-    doc = Nokogiri::XML(document_xml)
+require 'zip'
 
-    # https://github.com/ruby-docx/docx/blob/c5bcb57b3d21fead105f1c7af8d3881dd31674cc/lib/docx/document.rb#L66
-    paragraphs = doc.xpath('//w:document//w:body/w:p')
+module Avalon
+  class DocxFile
+    def initialize(io)
+      zip_file = Zip::File.open_buffer(io)
+      document = zip_file.glob('word/document*.xml').first
+      raise Errno::ENOENT if document.nil?
+      document_xml = document.get_input_stream.read
+      @doc = Nokogiri::XML(document_xml)
+    end
 
-    paragraphs.map(&:content).join("\n")
+    def unformatted_text
+      @doc.xpath('//w:document//w:body/w:p').map(&:content).join("\n")
+    end
   end
 end
-Zip::File.prepend(ParseDocx)

@@ -1,13 +1,30 @@
 WEBVTT
 
-1
-00:00:01.200 --> 00:00:21.000
-[music]
+STYLE
+::cue {
+  color: black;
+  font-size: 40px;
+}
 
-2
+NOTE This is all a test
+
+STYLE
+::cue(b) {
+  color: red;
+}
+
+1
+00:00:01.200 --> 00:00:21.000 position:50%,line-left align:center size: 40%
+[<i>music</i>]
+
+2 - Speech Begins
 00:00:22.200 --> 00:00:26.600
 Just before lunch one day, a puppet show 
 was put on at school.
+
+NOTE
+Multiline comment
+support testing
 
 3
 00:00:26.700 --> 00:00:31.500
@@ -16,6 +33,9 @@ It was called "Mister Bungle Goes to Lunch".
 4
 00:00:31.600 --> 00:00:34.500
 It was fun to watch.
+
+NOTE More multiline comment
+testing
 
 5
 00:00:36.100 --> 00:00:41.300

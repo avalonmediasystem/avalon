@@ -108,7 +108,7 @@ describe SupplementalFile do
         expect(subject).to be_a Array
         expect(subject.length).to eq 11
         expect(subject.all? { |s| s.is_a?(String) }).to eq true
-        expect(subject[3]).to include "The Emigrant. Crossing the Alleghanies. The boundless Wilder-  ness. The Hut on the Holston. Life's Necessaries."
+        expect(subject[3]).to include "The Emigrant. Crossing the Alleghanies. The boundless Wilder- ness. The Hut on the Holston. Life's Necessaries."
       end
     end
 
@@ -118,17 +118,27 @@ describe SupplementalFile do
         expect(subject).to be_a Array
         expect(subject.length).to eq 11
         expect(subject.all? { |s| s.is_a?(String) }).to eq true
-        expect(subject[3]).to include "The Emigrant. Crossing the Alleghanies. The boundless Wilder-  ness. The Hut on the Holston. Life's Necessaries."
+        expect(subject[3]).to include "The Emigrant. Crossing the Alleghanies. The boundless Wilder- ness. The Hut on the Holston. Life's Necessaries."
       end
     end
 
     context 'vtt' do
       let(:file) { FactoryBot.create(:supplemental_file, file: fixture_file_upload(Rails.root.join('spec', 'fixtures', 'chunk_test.vtt'), 'text/vtt')) }
+      let(:parsed_text) { [
+        "00:00:01.200 --> 00:00:21.000 [music]",
+        "00:00:22.200 --> 00:00:26.600 Just before lunch one day, a puppet show was put on at school.",
+        '00:00:26.700 --> 00:00:31.500 It was called "Mister Bungle Goes to Lunch".',
+        "00:00:31.600 --> 00:00:34.500 It was fun to watch.",
+        "00:00:36.100 --> 00:00:41.300 In the puppet show, Mr. Bungle came to the boys' room on his way to lunch.",
+        "00:00:41.400 --> 00:00:46.200 He looked at his hands. His hands were dirty and his hair was messy.",
+        "00:00:46.300 --> 00:00:51.100 But Mr. Bungle didn't stop to wash his hands or comb his hair.",
+        "00:00:51.200 --> 00:00:54.900 He went right to lunch.",
+        "00:00:57.900 --> 00:01:05.700 Then, instead of getting into line at the lunchroom, Mr. Bungle pushed everyone aside and went right to the front.",
+        "00:01:06.000 --> 00:01:11.800 Even though this made the children laugh, no one thought that was a fair thing to do."
+      ] }
+      
       it 'splits the text by time cue' do
-        expect(subject).to be_a Array
-        expect(subject.length).to eq 10
-        expect(subject.all? { |s| s.is_a?(String) }).to eq true
-        expect(subject[0]).to eq "00:00:01.200 --> 00:00:21.000 [music]"
+        expect(subject).to match_array parsed_text
       end
     end
 

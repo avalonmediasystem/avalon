@@ -70,9 +70,9 @@ class SupplementalFile < ApplicationRecord
 
   # private
   def self.segment_transcript transcript
-    normalized_transcript = Avalon::TranscriptParser.normalize_transcript(transcript)
+    normalized_transcript = Avalon::TranscriptParser.new(transcript).normalize_transcript
     chunked_transcript = normalized_transcript.split(/\n\n+/)
 
-    chunked_transcript.map(&:strip).map { |cue| cue.gsub("\n", " ") }.compact
+    chunked_transcript.map(&:strip).map { |cue| cue.gsub("\n", " ").squeeze(' ') }.compact
   end
 end
