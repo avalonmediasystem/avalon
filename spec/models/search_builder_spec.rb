@@ -43,7 +43,7 @@ RSpec.describe SearchBuilder do
       # the conditional in the model could see. Running the create in a :before block works.
       before { FactoryBot.create(:supplemental_file, :with_transcript_file, :with_transcript_tag) }
 
-      it "should add seaction transcript searching to the solr query" do
+      it "should add section transcript searching to the solr query" do
         subject.search_section_transcripts(solr_parameters)
         expect(solr_parameters[:defType]).to eq "lucene"
         expect(solr_parameters[:q]).to eq "({!edismax v=\"Example\"}) {!join to=id from=isPartOf_ssim}{!join to=id from=isPartOf_ssim}transcript_tsim:Example"

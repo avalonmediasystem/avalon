@@ -65,7 +65,6 @@ describe SupplementalFile do
     end
 
     describe '#to_solr' do
-      # TODO: Update tests once chunking is in place
       let(:caption) { FactoryBot.create(:supplemental_file, :with_caption_file, :with_caption_tag) }
       let(:transcript) { FactoryBot.create(:supplemental_file, :with_transcript_file, :with_transcript_tag) }
       let(:caption_transcript) { FactoryBot.create(:supplemental_file, :with_caption_file, tags: ['caption', 'transcript']) }

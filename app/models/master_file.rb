@@ -548,10 +548,6 @@ class MasterFile < ActiveFedora::Base
 
   protected
 
-  def segment_transcript transcript
-    transcript.split(/\n\n+/).map(&:strip).map { |cue| cue.gsub!("\n", " ") }.compact!
-  end
-
   def mediainfo
     Mediainfo.new(FileLocator.new(file_location).location, headers: @auth_header)
   end
