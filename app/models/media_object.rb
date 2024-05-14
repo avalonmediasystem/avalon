@@ -117,13 +117,21 @@ class MediaObject < ActiveFedora::Base
     index.as :stored_sortable
   end
 
-  property :master_file_list, predicate: Avalon::RDFVocab::MediaObject.section_list, multiple: false do |index|
+  property :section_list, predicate: Avalon::RDFVocab::MediaObject.section_list, multiple: false do |index|
     index.as :symbol
   end
 
+  def section_ids
+    return [] if self.section_list.nil?
+    JSON.parse(self.section_list)
+  end
+
+  def section_ids= ids
+    self.section_list = ids.to_json
+  end
+
   def master_file_ids
-    return [] if self.master_file_list.nil?
-    JSON.parse(self.master_file_list)
+    self.section_ids
   end
 
   def ordered_master_file_ids
@@ -131,7 +139,7 @@ class MediaObject < ActiveFedora::Base
   end
 
   def master_file_ids= ids
-    self.master_file_list = ids.to_json
+    self.section_ids = ids
   end
 
   def ordered_master_file_ids= ids
