@@ -129,15 +129,15 @@ describe ApplicationHelper do
     end
     it "should return audio icon" do
       doc = {"avalon_resource_type_ssim" => ['Sound Recording', 'Sound Recording'] }
-      expect(helper.image_for(doc).start_with?('/assets/audio_icon')).to be_truthy
+      expect(helper.image_for(doc).start_with?("#{root_url}assets/audio_icon")).to be_truthy
     end
     it "should return video icon" do
       doc = {"avalon_resource_type_ssim" => ['Moving Image'] }
-      expect(helper.image_for(doc).start_with?('/assets/video_icon')).to be_truthy
+      expect(helper.image_for(doc).start_with?("#{root_url}assets/video_icon")).to be_truthy
     end
     it "should return hybrid icon" do
       doc = {"avalon_resource_type_ssim" => ['Moving Image', 'Sound Recording'] }
-      expect(helper.image_for(doc).start_with?('/assets/hybrid_icon')).to be_truthy
+      expect(helper.image_for(doc).start_with?("#{root_url}assets/hybrid_icon")).to be_truthy
     end
     it "should return nil when only unprocessed video" do
       doc = {"section_id_ssim" => ['1'], "avalon_resource_type_ssim" => [] }
