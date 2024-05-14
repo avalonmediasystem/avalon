@@ -12,6 +12,8 @@
 #   specific language governing permissions and limitations under the License.
 # ---  END LICENSE_HEADER BLOCK  ---
 
+require 'avalon/transcript_parser'
+
 class SupplementalFile < ApplicationRecord
   has_one_attached :file
 
@@ -77,7 +79,7 @@ class SupplementalFile < ApplicationRecord
 
     "WEBVTT\n\n#{conversion}".strip
   end
-
+  
   def update_index
     ActiveFedora::SolrService.add(to_solr, softCommit: true)
   end
@@ -93,9 +95,18 @@ class SupplementalFile < ApplicationRecord
     solr_doc["mime_type_ssi"] = mime_type
     solr_doc["label_ssi"] = label
     solr_doc["language_ssi"] = language
-    solr_doc["transcript_tsim"] = segment_transcript(file.download) if transcript?
+    solr_doc["transcript_tsim"] = segment_transcript(file) if transcript?
     solr_doc["isPartOf_ssim"] = [parent_id]
     solr_doc
+  end
+  
+  def segment_transcript transcript
+    normalized_transcript = Avalon::TranscriptParser.new(transcript).normalized_text
+    return unless normalized_transcript.present?
+
+    chunked_transcript = normalized_transcript.split(/\n\n+/)
+
+    chunked_transcript.map(&:strip).map { |cue| cue.gsub("\n", " ").squeeze(' ') }.compact
   end
 
   private
@@ -106,10 +117,5 @@ class SupplementalFile < ApplicationRecord
 
   def m_time
     updated_at&.to_datetime || DateTime.now
-  end
-
-  def segment_transcript transcript
-    return unless transcript.present?
-    transcript.split(/\n\n+/).map(&:strip).map { |cue| cue.gsub!("\n", " ") }.compact
   end
 end
