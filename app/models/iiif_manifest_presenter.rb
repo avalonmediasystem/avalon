@@ -59,7 +59,7 @@ class IiifManifestPresenter
   def ranges
     [
       IiifManifestRange.new(
-        label: { '@none'.to_sym => media_object.title },
+        label: { 'none' => [media_object.title] },
         items: file_set_presenters.collect(&:range)
       )
     ]

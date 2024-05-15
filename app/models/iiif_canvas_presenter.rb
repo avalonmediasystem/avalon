@@ -70,12 +70,16 @@ class IiifCanvasPresenter
     elsif section_processing?(@master_file)
       IIIFManifest::V3::DisplayContent.new(nil,
                                            label: I18n.t('media_object.conversion_msg'),
+                                           width: 1280,
+                                           height: 720,
                                            type: 'Text',
                                            format: 'text/plain')
     else
       support_email = Settings.email.support
       IIIFManifest::V3::DisplayContent.new(nil,
                                            label: I18n.t('errors.missing_derivatives_error') % [support_email, support_email],
+                                           width: 1280,
+                                           height: 720,
                                            type: 'Text',
                                            format: 'text/plain')
     end
@@ -213,8 +217,8 @@ class IiifCanvasPresenter
     def manifest_attributes(quality, media_type)
       media_hash = {
         label: quality,
-        width: master_file.width.to_i,
-        height: master_file.height.to_i,
+        width: (master_file.width || '1280').to_i,
+        height: (master_file.height || MasterFile::AUDIO_HEIGHT).to_i,
         duration: stream_info[:duration],
         type: media_type,
         format: 'application/x-mpegURL'
