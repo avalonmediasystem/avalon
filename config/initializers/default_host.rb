@@ -17,7 +17,7 @@ if server_options
     Rails.application.routes.default_url_options.merge!( server_options )
     ActionMailer::Base.default_url_options.merge!( server_options )
     ApplicationController.default_url_options = server_options
-    ActionController::Base.asset_host = URI("#{Settings.domain.protocol}://#{Settings.domain.host}:#{Settings.domain.port}").to_s
+    ActionController::Base.asset_host = URI("#{server_options[:protocol]}://#{server_options[:host]}:#{server_options[:port]}").to_s
   end
 
   # Required for rails 6+
