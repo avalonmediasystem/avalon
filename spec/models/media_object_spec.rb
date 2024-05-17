@@ -456,13 +456,13 @@ describe MediaObject do
 
   describe '#finished_processing?' do
     it 'returns true if the statuses indicate processing is finished' do
-      media_object.ordered_master_files += [FactoryBot.create(:master_file, :cancelled_processing)]
-      media_object.ordered_master_files += [FactoryBot.create(:master_file, :completed_processing)]
+      media_object.sections += [FactoryBot.create(:master_file, :cancelled_processing)]
+      media_object.sections += [FactoryBot.create(:master_file, :completed_processing)]
       expect(media_object.finished_processing?).to be true
     end
     it 'returns true if the statuses indicate processing is not finished' do
-      media_object.ordered_master_files += [FactoryBot.create(:master_file, :cancelled_processing)]
-      media_object.ordered_master_files += [FactoryBot.create(:master_file)]
+      media_object.sections += [FactoryBot.create(:master_file, :cancelled_processing)]
+      media_object.sections += [FactoryBot.create(:master_file)]
       expect(media_object.finished_processing?).to be false
     end
   end
@@ -819,7 +819,7 @@ describe MediaObject do
       mf2 = FactoryBot.create(:master_file, title: 'Test Label2', physical_description: 'cave paintings', media_object: media_object)
       media_object.reload
 
-      #expect(media_object.ordered_master_files.size).to eq(2)
+      #expect(media_object.sections.size).to eq(2)
       expect(media_object.section_physical_descriptions).to match(['cave paintings'])
     end
   end

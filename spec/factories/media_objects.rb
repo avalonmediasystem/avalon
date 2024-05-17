@@ -67,7 +67,7 @@ FactoryBot.define do
         mf = FactoryBot.create(:master_file)
         mf.media_object = mo
         mf.save
-        # mo.ordered_master_files += [mf]
+        # mo.sections += [mf]
         mo.save
       end
     end

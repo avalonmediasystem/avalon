@@ -119,7 +119,7 @@ class MediaObjectsController < ApplicationController
     end
     playlistitem_scope = params[:post][:playlistitem_scope] #'section', 'structure'
     # If a single masterfile_id wasn't in the request, then create playlist_items for all masterfiles
-    masterfile_ids = masterfile_id.present? ? [masterfile_id] : @media_object.ordered_master_file_ids
+    masterfile_ids = masterfile_id.present? ? [masterfile_id] : @media_object.section_ids
     masterfile_ids.each do |mf_id|
       mf = SpeedyAF::Proxy::MasterFile.find(mf_id)
       if playlistitem_scope=='structure' && mf.has_structuralMetadata? && mf.structuralMetadata.xpath('//Span').present?
@@ -216,7 +216,7 @@ class MediaObjectsController < ApplicationController
     if !@media_object.save
       error_messages += ['Failed to create media object:']+@media_object.errors.full_messages
     elsif master_files_params.respond_to?('each')
-      old_ordered_master_files = @media_object.ordered_master_files.to_a.collect(&:id)
+      old_ordered_master_files = @media_object.section_ids
       master_files_params.each_with_index do |file_spec, index|
         master_file = MasterFile.new(file_spec.except(:structure, :captions, :captions_type, :files, :other_identifier, :label, :date_digitized))
         # master_file.media_object = @media_object
@@ -249,8 +249,8 @@ class MediaObjectsController < ApplicationController
         if api_params[:replace_masterfiles]
           old_ordered_master_files.each do |mf|
             p = MasterFile.find(mf)
-            # Remove from in-memory object
-            @media_object.master_file_ids -= [p.id]
+            @media_object.master_files.delete(p)
+            @media_object.section_ids -= [p.id]
             p.destroy
           end
         end
@@ -451,7 +451,7 @@ class MediaObjectsController < ApplicationController
       }
       format.json {
         result = { @media_object.id => {} }
-        @media_object.master_files.each do |mf|
+        @media_object.sections.each do |mf|
           result[@media_object.id][mf.id] = mf.derivatives.collect(&:id)
         end
         render :json => result
@@ -524,11 +524,11 @@ class MediaObjectsController < ApplicationController
 
   def master_file_presenters
     # Assume that @media_object is a SpeedyAF::Proxy::MediaObject
-    @media_object.ordered_master_files
+    @media_object.sections
   end
 
   def load_master_files(mode = :rw)
-    @masterFiles ||= mode == :rw ? @media_object.master_files.to_a : master_file_presenters
+    @masterFiles ||= mode == :rw ? @media_object.sections : master_file_presenters
   end
 
   def set_player_token
@@ -582,7 +582,7 @@ class MediaObjectsController < ApplicationController
       end
     end
     if @currentStream.nil?
-      @currentStream = @media_object.master_files.first
+      @currentStream = @media_object.sections.first
     end
     return @currentStream
   end

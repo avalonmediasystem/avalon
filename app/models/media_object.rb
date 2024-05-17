@@ -36,6 +36,12 @@ class MediaObject < ActiveFedora::Base
   before_save :update_dependent_properties!, prepend: true
   before_save :update_permalink, if: Proc.new { |mo| mo.persisted? && mo.published? }, prepend: true
   before_save :assign_id!, prepend: true
+
+  before_save do
+    # Force loading of section_ids from list_source
+    self.section_ids if self.section_list.nil?
+  end
+
   after_save :update_dependent_permalinks_job, if: Proc.new { |mo| mo.persisted? && mo.published? }
   after_save :remove_bookmarks
   after_update_index :enqueue_long_indexing
@@ -117,52 +123,29 @@ class MediaObject < ActiveFedora::Base
     index.as :stored_sortable
   end
 
+  #TODO: get rid of all ordered_* and indexed_* references, after everything is migrated then convert from `ordered_aggregation` to `has_many`
+  ordered_aggregation :master_files, class_name: 'MasterFile', through: :list_source
+  # ordered_aggregation gives you accessors media_obj.master_files and media_obj.ordered_master_files
+  #  and methods for master_files: first, last, [index], =, <<, +=, delete(mf)
+  #  and methods for ordered_master_files: first, last, [index], =, <<, +=, insert_at(index,mf), delete(mf), delete_at(index)
+  indexed_ordered_aggregation :master_files
+
+  accepts_nested_attributes_for :master_files, :allow_destroy => true
+
   property :section_list, predicate: Avalon::RDFVocab::MediaObject.section_list, multiple: false do |index|
     index.as :symbol
   end
 
-  def section_ids
-    return [] if self.section_list.nil?
-    JSON.parse(self.section_list)
-  end
-
   def section_ids= ids
     self.section_list = ids.to_json
+    @sections = nil
+    @section_ids = ids
   end
 
-  def master_file_ids
-    self.section_ids
-  end
-
-  def ordered_master_file_ids
-    self.master_file_ids
-  end
-
-  def master_file_ids= ids
-    self.section_ids = ids
-  end
-
-  def ordered_master_file_ids= ids
-    self.master_file_ids = ids
-  end
-
-  def master_files
-    @master_file_cache ||= {}
-    self.master_file_ids.map { |id| @master_file_cache[id] ||= MasterFile.find(id) }
-  end
-
-  def master_files= mfs
-    @master_file_cache = {}
-    mfs.map { |mf| @master_file_cache[mf.id] = mf }
-    self.master_file_ids = @master_file_cache.keys
-  end
-
-  def ordered_master_files
-    self.master_files
-  end
-
-  def ordered_master_files= mfs
+  def sections= mfs
     self.master_files = mfs
+    self.section_ids = mfs.map(&:id)
+    @sections = mfs
   end
 
   def destroy
@@ -246,7 +229,7 @@ class MediaObject < ActiveFedora::Base
   end
 
   def all_comments
-    comment.sort + ordered_master_files.to_a.compact.collect do |mf|
+    comment.sort + sections.compact.collect do |mf|
       mf.comment.reject(&:blank?).collect do |c|
         mf.display_title.present? ? "[#{mf.display_title}] #{c}" : c
       end.sort
@@ -273,7 +256,6 @@ class MediaObject < ActiveFedora::Base
   # this is probably okay since this is just aggregating the values already in the master file solr docs
 
   def fill_in_solr_fields_that_need_master_files(solr_doc)
-    solr_doc['section_id_ssim'] = ordered_master_file_ids
     solr_doc["other_identifier_sim"] +=  master_files.collect {|mf| mf.identifier.to_a }.flatten
     solr_doc["date_digitized_ssim"] = master_files.collect {|mf| mf.date_digitized }.compact.map {|t| Time.parse(t).strftime "%F" }
     solr_doc["has_captions_bsi"] = has_captions
@@ -305,6 +287,7 @@ class MediaObject < ActiveFedora::Base
       solr_doc['note_ssm'] = self.note.collect { |n| n.to_json }
       solr_doc['other_identifier_ssm'] = self.other_identifier.collect { |oi| oi.to_json }
       solr_doc['related_item_url_ssm'] = self.related_item_url.collect { |r| r.to_json }
+      solr_doc['section_id_ssim'] = section_ids
       if include_child_fields
         fill_in_solr_fields_that_need_master_files(solr_doc)
       elsif id.present? # avoid error in test suite
@@ -389,7 +372,7 @@ class MediaObject < ActiveFedora::Base
     media_objects.dup.each do |mo|
       begin
         # TODO: mass assignment may speed things up
-        mo.ordered_master_files.to_a.dup.each { |mf| mf.media_object = self }
+        mo.sections.each { |mf| mf.media_object = self }
         mo.reload.destroy!
 
         mergeds << mo
@@ -409,7 +392,8 @@ class MediaObject < ActiveFedora::Base
   # Override to reset memoized fields
   def reload
     @master_file_docs = nil
-    @master_file_cache = nil
+    @sections = nil
+    @section_ids = nil
     super
   end
 
@@ -459,6 +443,7 @@ class MediaObject < ActiveFedora::Base
     end
 
     def sections_with_files(tag: '*')
-      ordered_master_file_ids.select { |m| SpeedyAF::Proxy::MasterFile.find(m).supplemental_files(tag: tag).present? }
+      # TODO: Optimize this into a single solr query?
+      section_ids.select { |m| SpeedyAF::Proxy::MasterFile.find(m).supplemental_files(tag: tag).present? }
     end
 end

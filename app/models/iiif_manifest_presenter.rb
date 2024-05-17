@@ -202,7 +202,7 @@ class IiifManifestPresenter
   end
 
   def thumbnail_url
-    master_file_id = media_object.ordered_master_file_ids.try :first
+    master_file_id = media_object.section_ids.try :first
 
     video_count = media_object.avalon_resource_type.map(&:titleize)&.count { |m| m.start_with?('moving image'.titleize) } || 0
     audio_count = media_object.avalon_resource_type.map(&:titleize)&.count { |m| m.start_with?('sound recording'.titleize) } || 0

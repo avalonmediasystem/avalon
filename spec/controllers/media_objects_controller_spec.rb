@@ -160,7 +160,7 @@ describe MediaObjectsController, type: :controller do
         login_as(:administrator)
         session[:intercom_collections] = {}
         session[:intercom_default_collection] = ''
-        media_object.ordered_master_files = [master_file_with_structure]
+        media_object.sections = [master_file_with_structure]
         allow_any_instance_of(Avalon::Intercom).to receive(:fetch_user_collections).and_return target_collections
       end
       it 'should refetch user collections from target and set session' do
@@ -314,7 +314,7 @@ describe MediaObjectsController, type: :controller do
           expect(new_media_object.title).to eq media_object.title
           expect(new_media_object.creator).to eq media_object.creator
           expect(new_media_object.date_issued).to eq media_object.date_issued
-          expect(new_media_object.ordered_master_files.to_a.map(&:id)).to match_array new_media_object.master_file_ids
+          expect(new_media_object.section_ids).to match_array new_media_object.master_file_ids
           expect(new_media_object.duration).to eq '6315'
           expect(new_media_object.format).to eq ['video/mp4']
           expect(new_media_object.avalon_resource_type).to eq ['moving image']
@@ -415,7 +415,7 @@ describe MediaObjectsController, type: :controller do
           expect(new_media_object.title).to eq media_object.title
           expect(new_media_object.creator).to eq media_object.creator
           expect(new_media_object.date_issued).to eq media_object.date_issued
-          expect(new_media_object.ordered_master_files.to_a.map(&:id)).to match_array new_media_object.master_file_ids
+          expect(new_media_object.section_ids).to match_array new_media_object.master_file_ids
           expect(new_media_object.duration).to eq media_object.duration
           expect(new_media_object.format).to eq media_object.format
           expect(new_media_object.note).to eq media_object.note
@@ -814,11 +814,11 @@ describe MediaObjectsController, type: :controller do
       it "should choose the correct default master_file" do
         mf1 = FactoryBot.create(:master_file, media_object: media_object)
         mf2 = FactoryBot.create(:master_file, media_object: media_object)
-        expect(media_object.ordered_master_files.to_a.first).to eq(mf1)
-        media_object.ordered_master_files = media_object.ordered_master_files.to_a.reverse
+        expect(media_object.sections.first).to eq(mf1)
+        media_object.sections = media_object.sections.reverse
         media_object.save!
         controller.instance_variable_set('@media_object', media_object)
-        expect(media_object.ordered_master_files.to_a.first).to eq(mf2)
+        expect(media_object.sections.first).to eq(mf2)
         expect(controller.send('set_active_file')).to eq(mf2)
       end
     end
@@ -1534,14 +1534,14 @@ describe MediaObjectsController, type: :controller do
         mf.media_object = media_object
         mf.save
       end
-      master_file_ids = media_object.ordered_master_files.to_a.collect(&:id)
+      master_file_ids = media_object.section_ids
       media_object.save
 
       login_user media_object.collection.managers.first
 
       put 'update', params: { :id => media_object.id, :master_file_ids => master_file_ids.reverse, :step => 'structure' }
       media_object.reload
-      expect(media_object.ordered_master_files.to_a.collect(&:id)).to eq master_file_ids.reverse
+      expect(media_object.section_ids).to eq master_file_ids.reverse
     end
     it 'sets the MIME type' do
       media_object = FactoryBot.create(:media_object)
@@ -1569,11 +1569,11 @@ describe MediaObjectsController, type: :controller do
       it "should update all the labels" do
         login_user media_object.collection.managers.first
         part_params = {}
-        media_object.ordered_master_files.to_a.each_with_index { |mf,i| part_params[mf.id] = { id: mf.id, title: "Part #{i}", permalink: '', poster_offset: '00:00:00.000' } }
+        media_object.sections.each_with_index { |mf,i| part_params[mf.id] = { id: mf.id, title: "Part #{i}", permalink: '', poster_offset: '00:00:00.000' } }
         params = { id: media_object.id, master_files: part_params, save: 'Save', step: 'file-upload', donot_advance: 'true' }
         patch 'update', params: params
         media_object.reload
-        media_object.ordered_master_files.to_a.each_with_index do |mf,i|
+        media_object.sections.each_with_index do |mf,i|
           expect(mf.title).to eq "Part #{i}"
         end
       end
@@ -1728,18 +1728,18 @@ describe MediaObjectsController, type: :controller do
     let(:playlist) { FactoryBot.create(:playlist, user: user) }
 
     before do
-      media_object.ordered_master_files = [master_file, master_file_with_structure]
+      media_object.sections = [master_file, master_file_with_structure]
     end
 
     it "should create a single playlist_item for a single master_file" do
       expect {
-        post :add_to_playlist, params: { id: media_object.id, post: { playlist_id: playlist.id, masterfile_id: media_object.ordered_master_file_ids[0], playlistitem_scope: 'section' } }
+        post :add_to_playlist, params: { id: media_object.id, post: { playlist_id: playlist.id, masterfile_id: media_object.section_ids[0], playlistitem_scope: 'section' } }
       }.to change { playlist.items.count }.from(0).to(1)
-      expect(playlist.items[0].title).to eq("#{media_object.title} - #{media_object.ordered_master_files.to_a[0].title}")
+      expect(playlist.items[0].title).to eq("#{media_object.title} - #{media_object.sections[0].title}")
     end
     it "should create playlist_items for each span in a single master_file's structure" do
       expect {
-        post :add_to_playlist, params: { id: media_object.id, post: { playlist_id: playlist.id, masterfile_id: media_object.ordered_master_file_ids[1], playlistitem_scope: 'structure' } }
+        post :add_to_playlist, params: { id: media_object.id, post: { playlist_id: playlist.id, masterfile_id: media_object.section_ids[1], playlistitem_scope: 'structure' } }
       }.to change { playlist.items.count }.from(0).to(13)
       expect(playlist.items[0].title).to eq("Test Item - CD 1 - Copland, Three Piano Excerpts from Our Town - Track 1. Story of Our Town")
       expect(playlist.items[12].title).to eq("Test Item - CD 1 - Track 13. Copland, Danzon Cubano")
@@ -1748,21 +1748,21 @@ describe MediaObjectsController, type: :controller do
       expect {
         post :add_to_playlist, params: { id: media_object.id, post: { playlist_id: playlist.id, playlistitem_scope: 'section' } }
       }.to change { playlist.items.count }.from(0).to(2)
-      expect(playlist.items[0].title).to eq(media_object.ordered_master_files.to_a[0].embed_title)
-      expect(playlist.items[1].title).to eq(media_object.ordered_master_files.to_a[1].embed_title)
+      expect(playlist.items[0].title).to eq(media_object.sections[0].embed_title)
+      expect(playlist.items[1].title).to eq(media_object.sections[1].embed_title)
     end
     it "should create playlist_items for each span in a master_file structures in a media_object" do
       expect {
         post :add_to_playlist, params: { id: media_object.id, post: { playlist_id: playlist.id, playlistitem_scope: 'structure' } }
       }.to change { playlist.items.count }.from(0).to(14)
       expect(response.response_code).to eq(200)
-      expect(playlist.items[0].title).to eq("#{media_object.title} - #{media_object.ordered_master_files.to_a[0].title}")
+      expect(playlist.items[0].title).to eq("#{media_object.title} - #{media_object.sections[0].title}")
       expect(playlist.items[13].title).to eq("Test Item - CD 1 - Track 13. Copland, Danzon Cubano")
     end
     it 'redirects with flash message when playlist is owned by another user' do
       login_as :user
       other_playlist = FactoryBot.create(:playlist)
-      post :add_to_playlist, params: { id: media_object.id, post: { playlist_id: other_playlist.id, masterfile_id: media_object.ordered_master_file_ids[0], playlistitem_scope: 'section' } }
+      post :add_to_playlist, params: { id: media_object.id, post: { playlist_id: other_playlist.id, masterfile_id: media_object.section_ids[0], playlistitem_scope: 'section' } }
       expect(response).to have_http_status(403)
       expect(JSON.parse(response.body).symbolize_keys).to eq({message: "<p>You are not authorized to update this playlist.</p>", status: 403})
     end
@@ -1772,7 +1772,7 @@ describe MediaObjectsController, type: :controller do
         media_object
         perform_enqueued_jobs(only: MediaObjectIndexingJob)
         WebMock.reset_executed_requests!
-        post :add_to_playlist, params: { id: media_object.id, post: { playlist_id: playlist.id, masterfile_id: media_object.ordered_master_file_ids[0], playlistitem_scope: 'section' } }
+        post :add_to_playlist, params: { id: media_object.id, post: { playlist_id: playlist.id, masterfile_id: media_object.section_ids[0], playlistitem_scope: 'section' } }
         expect(a_request(:any, /#{ActiveFedora.fedora.base_uri}/)).not_to have_been_made
       end
     end

@@ -27,6 +27,7 @@ class SpeedyAF::Proxy::MediaObject < SpeedyAF::Base
     end
     # Handle this case here until a better fix can be found for multiple solr fields which don't have a model property
     @attrs[:section_id] = solr_document["section_id_ssim"]
+    @attrs[:section_ids] = solr_document["section_id_ssim"]
     @attrs[:hidden?] = solr_document["hidden_bsi"]
     @attrs[:read_groups] = solr_document["read_access_group_ssim"] || []
     @attrs[:edit_groups] = solr_document["edit_access_group_ssim"] || []
@@ -81,15 +82,14 @@ class SpeedyAF::Proxy::MediaObject < SpeedyAF::Base
 
   def master_file_ids
     if real?
-      real_object.master_file_ids
-    elsif section_id.nil? # No master files or not indexed yet
+      real_object.section_ids
+    elsif section_ids.nil? # No master files or not indexed yet
       ActiveFedora::Base.logger.warn("Reifying MediaObject because master_files not indexed")
-      real_object.master_file_ids
+      real_object.section_ids
     else
-      section_id
+      section_ids
     end
   end
-  alias_method :ordered_master_file_ids, :master_file_ids
 
   def master_files
     # NOTE: Defaults are set on returned SpeedyAF::Base objects if field isn't present in the solr doc.
@@ -100,7 +100,6 @@ class SpeedyAF::Proxy::MediaObject < SpeedyAF::Base
                                                         order: -> { master_file_ids },
                                                         load_reflections: true)
   end
-  alias_method :ordered_master_files, :master_files
 
   def collection
     @collection ||= SpeedyAF::Proxy::Admin::Collection.find(collection_id)
