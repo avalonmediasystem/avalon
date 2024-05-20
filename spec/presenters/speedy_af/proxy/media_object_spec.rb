@@ -83,4 +83,16 @@ describe SpeedyAF::Proxy::MediaObject do
       expect(presenter.lending_period).to be_present
     end
   end
+
+  describe '#master_files' do
+  end
+
+  describe '#master_file_ids' do
+  end
+
+  describe '#sections' do
+  end
+
+  describe '#section_ids' do
+  end
 end

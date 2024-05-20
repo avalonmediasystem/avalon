@@ -37,9 +37,22 @@ class MediaObject < ActiveFedora::Base
   before_save :update_permalink, if: Proc.new { |mo| mo.persisted? && mo.published? }, prepend: true
   before_save :assign_id!, prepend: true
 
-  before_save do
+  after_find do
     # Force loading of section_ids from list_source
     self.section_ids if self.section_list.nil?
+  end
+
+  # Persist to master_files only on save to avoid changes to master_files auto-saving and making things out of sync
+  # This might be able to be removed along with the ordered_aggregation to rely purely on section_list and the relationship
+  # on the MasterFile model
+  # Have to handle create specially otherwise will attempt to associate prior to having an id
+  around_create do |_, block|
+    block.call
+    self.master_files = self.sections unless self.master_file_ids.sort == self.section_ids.sort
+    self.save!(validate: false)
+  end
+  before_save do
+    self.master_files = self.sections unless self.new_record? || self.master_file_ids.sort == self.section_ids.sort
   end
 
   after_save :update_dependent_permalinks_job, if: Proc.new { |mo| mo.persisted? && mo.published? }
@@ -124,6 +137,7 @@ class MediaObject < ActiveFedora::Base
   end
 
   #TODO: get rid of all ordered_* and indexed_* references, after everything is migrated then convert from `ordered_aggregation` to `has_many`
+  # OR possibly remove the master_files relationship entirely?
   ordered_aggregation :master_files, class_name: 'MasterFile', through: :list_source
   # ordered_aggregation gives you accessors media_obj.master_files and media_obj.ordered_master_files
   #  and methods for master_files: first, last, [index], =, <<, +=, delete(mf)
@@ -143,15 +157,29 @@ class MediaObject < ActiveFedora::Base
   end
 
   def sections= mfs
-    self.master_files = mfs
     self.section_ids = mfs.map(&:id)
     @sections = mfs
   end
 
+  def sections
+    @sections ||= MasterFile.find(self.section_ids)
+  end
+
+  def section_ids
+    return @section_ids if @section_ids
+
+    # Do migration
+    self.section_ids = self.ordered_master_file_ids if self.section_list.nil?
+
+    return [] if self.section_list.nil?
+    @section_ids = JSON.parse(self.section_list)
+  end
+
   def destroy
     # attempt to stop the matterhorn processing job
-    self.master_files.each(&:destroy)
-    self.master_files = []
+    self.master_files.each(&:stop_processing!)
+    # avoid calling destroy on each master file since it calls save on parent media object
+    self.master_files.each(&:delete)
     Bookmark.where(document_id: self.id).destroy_all
     super
   end

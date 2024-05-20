@@ -1192,4 +1192,101 @@ describe MediaObject do
       expect(transcript_media_object.has_transcripts).to be true
     end
   end
+
+  describe 'section_list' do
+    let(:section) { FactoryBot.create(:master_file) }
+    let(:section2) { FactoryBot.create(:master_file) }
+    let!(:media_object) { FactoryBot.create(:media_object, master_files: [section2, section], sections: [section, section2]) }
+
+    describe 'section_ids' do
+      it 'returns an ordered list of master file ids' do
+        expect(media_object.section_ids).to eq [section.id, section2.id]
+      end
+    end
+
+    describe 'section_ids=' do
+      it 'sets ordered list of master file ids without modifying master_file_ids' do
+        expect(media_object.master_file_ids).to contain_exactly(section.id, section2.id)
+        expect(media_object.section_ids).to eq [section.id, section2.id]
+        media_object.section_ids = [section2.id]
+        expect(media_object.master_file_ids).to contain_exactly(section.id, section2.id)
+        expect(media_object.section_ids).to eq [section2.id]
+      end
+    end
+
+    describe 'sections' do
+      it 'returns an ordered list of master file objects' do
+        expect(media_object.sections).to eq [section, section2]
+      end
+    end
+
+    describe 'sections=' do
+      it 'sets ordered list of master file objects without modifying master_file_ids' do
+        expect(media_object.master_files).to contain_exactly(section, section2)
+        expect(media_object.sections).to eq [section, section2]
+        media_object.sections = [section2]
+        expect(media_object.master_files).to contain_exactly(section, section2)
+        expect(media_object.sections).to eq [section2]
+      end
+    end
+
+    it '#sections and #section_ids stay sync' do
+      expect(media_object.section_ids).to eq [section.id, section2.id]
+      expect(media_object.sections).to eq [section, section2]
+      media_object.sections = [section2]
+      expect(media_object.section_ids).to eq [section2.id]
+      expect(media_object.sections).to eq [section2]
+      media_object.section_ids = [section.id]
+      expect(media_object.section_ids).to eq [section.id]
+      expect(media_object.sections).to eq [section]
+    end
+
+    context 'migrating ordered_aggregation' do
+      let!(:media_object) do
+        mo = FactoryBot.build(:media_object)
+        mo.ordered_master_files = [section, section2]
+        # Trick the callback to avoid persisting section_list
+        mo.instance_variable_set(:@section_ids, mo.master_file_ids)
+        mo.save
+        mo.reload
+      end
+
+      it 'reads from ordered_aggregation' do
+        expect(media_object.section_list).to eq nil
+        mo = MediaObject.find(media_object.id)
+        expect(mo.section_list).not_to eq nil
+        expect(mo.ordered_master_files.to_a).to eq [section, section2]
+        expect(mo.ordered_master_file_ids).to eq [section.id, section2.id]
+        expect(mo.sections).to eq [section, section2]
+        expect(mo.section_ids).to eq [section.id, section2.id]
+      end
+
+      it 'migrates to section_list without interaction' do
+        expect(media_object.section_list).to eq nil
+        mo = MediaObject.find(media_object.id)
+        mo.save
+        mo = MediaObject.find(media_object.id)
+        expect(mo.section_list).not_to eq nil
+        expect(mo.sections).to eq [section, section2]
+        expect(mo.section_ids).to eq [section.id, section2.id]
+      end
+    end
+  end
+
+  describe '#reload' do
+    let(:section) { FactoryBot.create(:master_file) }
+
+    context 'resets cached values' do
+      it 'resets sections' do
+        expect(media_object.sections).to eq []
+        expect(media_object.section_ids).to eq []
+        media_object.sections += [section]
+        expect(media_object.sections).to eq [section]
+        expect(media_object.section_ids).to eq [section.id]
+        media_object.reload
+        expect(media_object.sections).to eq []
+        expect(media_object.section_ids).to eq []
+      end
+    end
+  end
 end

@@ -15,20 +15,6 @@
 # This module contains methods which transform stored values for use either on the MediaObject or the SpeedyAF presenter
 module MediaObjectBehavior
 
-  def section_ids
-    return @section_ids if @section_ids
-
-    # Do migration
-    self.section_ids = self.ordered_master_file_ids if self.section_list.nil?
-
-    return [] if self.section_list.nil?
-    @section_ids = JSON.parse(self.section_list)
-  end
-
-  def sections
-    @sections ||= self.master_files.sort { |mf1, mf2| section_ids.index(mf1.id) <=> section_ids.index(mf2.id) }
-  end
-
   def as_json(options={})
     {
       id: id,

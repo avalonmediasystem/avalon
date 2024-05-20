@@ -101,6 +101,14 @@ class SpeedyAF::Proxy::MediaObject < SpeedyAF::Base
                                                         load_reflections: true)
   end
 
+  def sections
+    return [] unless section_ids.present?
+    query = "id:" + section_ids.join(" id:")
+    @master_files ||= SpeedyAF::Proxy::MasterFile.where(query,
+                                                        order: -> { section_ids },
+                                                        load_reflections: true)
+  end
+
   def collection
     @collection ||= SpeedyAF::Proxy::Admin::Collection.find(collection_id)
   end
