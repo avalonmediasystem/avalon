@@ -85,6 +85,7 @@ describe SpeedyAF::Proxy::MediaObject do
   end
 
   describe '#master_files' do
+
   end
 
   describe '#master_file_ids' do

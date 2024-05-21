@@ -23,7 +23,7 @@ describe IngestBatch do
   end
   describe '#finished?' do
     it 'returns true when all the master files are finished' do
-      media_object = FactoryBot.create(:media_object, master_files: [FactoryBot.create(:master_file, :cancelled_processing), FactoryBot.create(:master_file, :completed_processing)])
+      media_object = FactoryBot.create(:media_object, sections: [FactoryBot.create(:master_file, :cancelled_processing), FactoryBot.create(:master_file, :completed_processing)])
       ingest_batch = IngestBatch.new(media_object_ids: [media_object.id], email: 'email@something.com')
       expect(ingest_batch.finished?).to be true
     end

@@ -855,10 +855,10 @@ describe MediaObject do
 
   describe 'descMetadata' do
     it 'sets original_name to default value' do
-      expect(media_object.descMetadata.original_name).to eq 'descMetadata.xml'
+      # requires a reload now?
+      expect(media_object.reload.descMetadata.original_name).to eq 'descMetadata.xml'
     end
     it 'is a valid MODS document' do
-      media_object = FactoryBot.create(:media_object, :with_master_file)
       xsd_path = File.join(Rails.root, 'spec', 'fixtures', 'mods-3-6.xsd')
       # Note: we instantiate Schema with a file handle so that relative paths
       # to included schema definitions can be resolved
@@ -1166,7 +1166,7 @@ describe MediaObject do
 
   describe "#has_captions" do
     let(:captionless_media_object) { FactoryBot.create(:media_object, :with_master_file) }
-    let(:captioned_media_object) { FactoryBot.create(:media_object, master_files: [master_file1, master_file2]) }
+    let(:captioned_media_object) { FactoryBot.create(:media_object, sections: [master_file1, master_file2]) }
     let(:master_file1) { FactoryBot.create(:master_file) }
     let(:master_file2) { FactoryBot.create(:master_file, :with_captions) }
     it "returns false when child master files contain no captions" do
@@ -1180,7 +1180,7 @@ describe MediaObject do
 
   describe "#has_transcripts" do
     let(:transcriptless_media_object) { FactoryBot.create(:media_object, :with_master_file) }
-    let(:transcript_media_object) { FactoryBot.create(:media_object, master_files: [master_file1, master_file2]) }
+    let(:transcript_media_object) { FactoryBot.create(:media_object, sections: [master_file1, master_file2]) }
     let(:master_file1) { FactoryBot.create(:master_file) }
     let(:master_file2) { FactoryBot.create(:master_file, supplemental_files: [transcript]) }
     let(:transcript) { FactoryBot.create(:supplemental_file, :with_transcript_tag) }

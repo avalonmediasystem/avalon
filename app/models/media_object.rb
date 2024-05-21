@@ -177,9 +177,9 @@ class MediaObject < ActiveFedora::Base
 
   def destroy
     # attempt to stop the matterhorn processing job
-    self.master_files.each(&:stop_processing!)
-    # avoid calling destroy on each master file since it calls save on parent media object
-    self.master_files.each(&:delete)
+    self.sections.each(&:stop_processing!)
+    # avoid calling destroy on each section since it calls save on parent media object
+    self.sections.each(&:delete)
     Bookmark.where(document_id: self.id).destroy_all
     super
   end
@@ -214,7 +214,7 @@ class MediaObject < ActiveFedora::Base
   end
 
   def finished_processing?
-    self.master_files.all?{ |master_file| master_file.finished_processing? }
+    self.sections.all? { |section| section.finished_processing? }
   end
 
   def set_duration!
@@ -230,14 +230,14 @@ class MediaObject < ActiveFedora::Base
   end
 
   def set_media_types!
-    mime_types = master_file_solr_docs.reject { |mf| mf["file_location_ssi"].blank? }.collect do |mf|
+    mime_types = section_solr_docs.reject { |mf| mf["file_location_ssi"].blank? }.collect do |mf|
       Rack::Mime.mime_type(File.extname(mf["file_location_ssi"]))
     end.uniq
     self.format = mime_types.empty? ? nil : mime_types
   end
 
   def set_resource_types!
-    self.avalon_resource_type = master_file_solr_docs.reject { |mf| mf["file_format_ssi"].blank? }.collect do |mf|
+    self.avalon_resource_type = section_solr_docs.reject { |mf| mf["file_format_ssi"].blank? }.collect do |mf|
       case mf["file_format_ssi"]
       when 'Moving image'
         'moving image'
@@ -250,7 +250,7 @@ class MediaObject < ActiveFedora::Base
   end
 
   def update_dependent_properties!
-    @master_file_docs = nil
+    @section_docs = nil
     self.set_duration!
     self.set_media_types!
     self.set_resource_types!
@@ -265,7 +265,7 @@ class MediaObject < ActiveFedora::Base
   end
 
   def section_labels
-    all_labels = master_files.collect{|mf|mf.structural_metadata_labels << mf.title}
+    all_labels = sections.collect{ |section| section.structural_metadata_labels << section.title}
     all_labels.flatten.uniq.compact
   end
 
@@ -273,8 +273,8 @@ class MediaObject < ActiveFedora::Base
   # @return [Array<String>] A unique list of all physical descriptions for the media object
   def section_physical_descriptions
     all_pds = []
-    self.master_files.each do |master_file|
-      all_pds += Array(master_file.physical_description) unless master_file.physical_description.nil?
+    self.sections.each do |section|
+      all_pds += Array(section.physical_description) unless section.physical_description.nil?
     end
     all_pds.uniq
   end
@@ -283,9 +283,9 @@ class MediaObject < ActiveFedora::Base
   # using a copy of the master file solr doc to avoid having to fetch them all from fedora
   # this is probably okay since this is just aggregating the values already in the master file solr docs
 
-  def fill_in_solr_fields_that_need_master_files(solr_doc)
-    solr_doc["other_identifier_sim"] +=  master_files.collect {|mf| mf.identifier.to_a }.flatten
-    solr_doc["date_digitized_ssim"] = master_files.collect {|mf| mf.date_digitized }.compact.map {|t| Time.parse(t).strftime "%F" }
+  def fill_in_solr_fields_that_need_sections(solr_doc)
+    solr_doc["other_identifier_sim"] +=  sections.collect {|section| section.identifier.to_a }.flatten
+    solr_doc["date_digitized_ssim"] = sections.collect {|section| section.date_digitized }.compact.map {|t| Time.parse(t).strftime "%F" }
     solr_doc["has_captions_bsi"] = has_captions
     solr_doc["has_transcripts_bsi"] = has_transcripts
     solr_doc["section_label_tesim"] = section_labels
@@ -317,7 +317,7 @@ class MediaObject < ActiveFedora::Base
       solr_doc['related_item_url_ssm'] = self.related_item_url.collect { |r| r.to_json }
       solr_doc['section_id_ssim'] = section_ids
       if include_child_fields
-        fill_in_solr_fields_that_need_master_files(solr_doc)
+        fill_in_solr_fields_that_need_sections(solr_doc)
       elsif id.present? # avoid error in test suite
         # Fill in other identifier so these values aren't stripped from the solr doc while waiting for the background job
         mf_docs = ActiveFedora::SolrService.query("isPartOf_ssim:#{id}", rows: 1_000_000)
@@ -368,10 +368,10 @@ class MediaObject < ActiveFedora::Base
   end
 
   def update_dependent_permalinks
-    self.master_files.each do |master_file|
+    self.sections.each do |section|
       begin
-      	updated = master_file.ensure_permalink!
-      	master_file.save( validate: false ) if updated
+        updated = section.ensure_permalink!
+        section.save( validate: false ) if updated
       rescue
       	# no-op
       	# Save is called (uncharacteristically) during a destroy.
@@ -419,7 +419,7 @@ class MediaObject < ActiveFedora::Base
 
   # Override to reset memoized fields
   def reload
-    @master_file_docs = nil
+    @section_docs = nil
     @sections = nil
     @section_ids = nil
     super
@@ -454,12 +454,17 @@ class MediaObject < ActiveFedora::Base
 
   private
 
-    def master_file_solr_docs
-      @master_file_docs ||= ActiveFedora::SolrService.query("isPartOf_ssim:#{id}", rows: 1_000_000)
+    def section_solr_docs
+      # Explicitly query for each id in section_ids instead of the reverse to ensure consistency
+      # This may skip master file objects which claim to be a part of this media object but are not
+      # in the section_list
+      return [] unless section_ids.present?
+      query = "id:" + section_ids.join(" id:")
+      @section_docs ||= ActiveFedora::SolrService.query(query, rows: 1_000_000)
     end
 
     def calculate_duration
-      master_file_solr_docs.collect { |h| h['duration_ssi'].to_i }.compact.sum
+      section_solr_docs.collect { |h| h['duration_ssi'].to_i }.compact.sum
     end
 
     def collect_ips_for_index ip_strings

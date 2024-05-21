@@ -759,9 +759,13 @@ describe MasterFile do
     let(:master_file) { FactoryBot.build(:master_file) }
     before do
       allow(ActiveEncode::Base).to receive(:find).and_return(nil)
+      allow(master_file).to receive(:finished_processing?).and_return(false)
     end
     it 'does not error if the master file has no encode' do
-      expect { master_file.send(:stop_processing!) }.not_to raise_error
+      expect { master_file.stop_processing! }.not_to raise_error
+    end
+    it 'enqueues cancel job if currently processing' do
+      expect { master_file.stop_processing! }.to have_enqueued_job(ActiveEncodeJobs::CancelEncodeJob)
     end
   end
 
