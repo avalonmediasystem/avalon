@@ -329,14 +329,9 @@ describe MasterFile do
       let(:media_path) { File.expand_path("../../master_files-#{SecureRandom.uuid}",__FILE__)}
       let(:dropbox_path) { File.expand_path("../../collection-#{SecureRandom.uuid}",__FILE__)}
       let(:upload)     { ActionDispatch::Http::UploadedFile.new :tempfile => tempfile, :filename => original, :type => 'video/mp4' }
-      let(:media_object) { MediaObject.new }
+      let!(:media_object) { FactoryBot.create(:media_object, sections: [subject]) }
       let(:collection) { Admin::Collection.new }
-      subject {
-        mf = MasterFile.new
-        mf.media_object = media_object
-        mf.setContent(upload, dropbox_dir: collection.dropbox_absolute_path)
-        mf
-      }
+      subject { FactoryBot.create(:master_file) }
 
       before(:each) do
         @old_media_path = Settings.encoding.working_file_path
@@ -356,11 +351,13 @@ describe MasterFile do
 
       it "should move an uploaded file into the root of the collection's dropbox" do
         Settings.encoding.working_file_path = nil
+        subject.setContent(upload, dropbox_dir: collection.dropbox_absolute_path)
         expect(subject.file_location).to eq(File.realpath(File.join(collection.dropbox_absolute_path,original)))
       end
 
       it "should copy an uploaded file to the media path" do
         Settings.encoding.working_file_path = media_path
+        subject.setContent(upload, dropbox_dir: collection.dropbox_absolute_path)
         expect(File.fnmatch("#{media_path}/*/#{original}", subject.working_file_path.first)).to be true
       end
 
@@ -373,6 +370,7 @@ describe MasterFile do
 
         it "appends a numerical suffix" do
           Settings.encoding.working_file_path = nil
+          subject.setContent(upload, dropbox_dir: collection.dropbox_absolute_path)
           expect(subject.file_location).to eq(File.realpath(File.join(collection.dropbox_absolute_path,duplicate)))
         end
       end
@@ -384,14 +382,9 @@ describe MasterFile do
       let(:dropbox_file_path) { File.join(dropbox_path, 'nested-dir', original)}
       let(:media_path) { File.expand_path("../../master_files-#{SecureRandom.uuid}",__FILE__)}
       let(:dropbox_path) { File.expand_path("../../collection-#{SecureRandom.uuid}",__FILE__)}
-      let(:media_object) { MediaObject.new }
+      let!(:media_object) { FactoryBot.create(:media_object, sections: [subject]) }
       let(:collection) { Admin::Collection.new }
-      subject {
-        mf = MasterFile.new
-        mf.media_object = media_object
-        mf.setContent(File.new(dropbox_file_path), dropbox_dir: collection.dropbox_absolute_path)
-        mf
-      }
+      subject { FactoryBot.create(:master_file) }
 
       before(:each) do
         @old_media_path = Settings.encoding.working_file_path
@@ -412,6 +405,7 @@ describe MasterFile do
 
       it "should not move a file in a subdirectory of the collection's dropbox" do
         Settings.encoding.working_file_path = nil
+        subject.setContent(File.new(dropbox_file_path), dropbox_dir: collection.dropbox_absolute_path)
         expect(subject.file_location).to eq dropbox_file_path
         expect(File.exist?(dropbox_file_path)).to eq true
         expect(File.exist?(File.join(collection.dropbox_absolute_path,original))).to eq false
@@ -419,6 +413,7 @@ describe MasterFile do
 
       it "should copy an uploaded file to the media path" do
         Settings.encoding.working_file_path = media_path
+        subject.setContent(File.new(dropbox_file_path), dropbox_dir: collection.dropbox_absolute_path)
         expect(File.fnmatch("#{media_path}/*/#{original}", subject.working_file_path.first)).to be true
       end
     end
@@ -429,7 +424,7 @@ describe MasterFile do
       let(:file_size) { 12345 }
       let(:auth_header) { {"Authorization"=>"Bearer ya29.a0AfH6SMC6vSj4D6po1aDxAr6JmY92azh3lxevSuPKxf9QPPSKmMzqbZvI7B3oIACqqMVono1P0XD2F1Jl_rkayoI6JGz-P2cpg44-55oJFcWychAvUliWeRKf1cifMo9JF10YmXxhIfrG5mu7Ahy9FZpudN92p2JhvTI"} }
 
-      subject { MasterFile.new }
+      subject { FactoryBot.create(:master_file) }
 
       it "should set the right properties" do
         allow(subject).to receive(:reloadTechnicalMetadata!).and_return(nil)

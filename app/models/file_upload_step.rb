@@ -39,12 +39,8 @@ class FileUploadStep < Avalon::Workflow::BasicStep
     deleted_master_files = update_master_files context
     context[:notice] = "Several clean up jobs have been sent out. Their statuses can be viewed by your sysadmin at #{ Settings.matterhorn.cleanup_log }" unless deleted_master_files.empty?
 
-    # Reloads media_object.master_files, should use .reload when we update hydra-head
     media = MediaObject.find(context[:media_object].id)
-    unless media.master_files.empty?
-      media.save
-      context[:media_object] = media
-    end
+    context[:media_object] = media
 
     context
   end
@@ -56,7 +52,6 @@ class FileUploadStep < Avalon::Workflow::BasicStep
   # label - Display label in the interface
   # id - Identifier for the masterFile to help with mapping
   def update_master_files(context)
-    media_object = context[:media_object]
     files = context[:master_files] || {}
     deleted_master_files = []
     if not files.blank?

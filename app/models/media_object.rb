@@ -48,8 +48,8 @@ class MediaObject < ActiveFedora::Base
   # Have to handle create specially otherwise will attempt to associate prior to having an id
   around_create do |_, block|
     block.call
-    self.master_files = self.sections unless self.master_file_ids.sort == self.section_ids.sort
-    self.save!(validate: false)
+    # Saving again will force running through the before_save callback that should do the actual work
+    self.save!(validate: false) unless self.master_file_ids.sort == self.section_ids.sort
   end
   before_save do
     self.master_files = self.sections unless self.new_record? || self.master_file_ids.sort == self.section_ids.sort

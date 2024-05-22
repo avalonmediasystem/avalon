@@ -66,9 +66,7 @@ FactoryBot.define do
       after(:create) do |mo|
         mf = FactoryBot.create(:master_file)
         mf.media_object = mo
-        mf.save
-        # mo.sections += [mf]
-        mo.save
+        # Above line will cause a save of both the master file and parent media object
       end
     end
     trait :with_completed_workflow do

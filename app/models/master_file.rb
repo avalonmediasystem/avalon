@@ -243,18 +243,19 @@ class MasterFile < ActiveFedora::Base
 
     # Removes existing association
     if self.media_object.present?
-      self.media_object.master_files = self.media_object.master_files.to_a.reject { |mf| mf.id == self.id }
       self.media_object.section_ids -= [self.id]
-      self.media_object.save
+      self.media_object.save(validate: false)
     end
 
     self._media_object=(mo)
     self.save!(validate: false)
 
     unless self.media_object.nil?
-      self.media_object.master_files += [self]
       self.media_object.section_ids += [self.id]
-      self.media_object.save
+      self.media_object.save(validate: false)
+      # Need to reload here because somehow a cached copy of media_object is saved in memory
+      # which lacks the updated section_ids and master_file_ids just set and persisted above
+      self.media_object.reload
     end
   end
 
@@ -778,8 +779,7 @@ class MasterFile < ActiveFedora::Base
 
   def update_parent!
     return unless media_object.present?
-    media_object.master_files.delete(self)
-    media_object.section_ids.delete(self.id)
+    media_object.section_ids -= [self.id]
     media_object.set_media_types!
     media_object.set_duration!
     if !media_object.save
