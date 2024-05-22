@@ -73,13 +73,13 @@ class BatchEntries < ActiveRecord::Base
     return (@encoding_status = :error) unless media_object
 
     # TODO: match file_locations strings with those in MasterFiles?
-    if media_object.master_files.to_a.count != files.count
+    if media_object.sections.count != files.count
       return (@encoding_status = :error)
     end
 
     # Only return success if all MasterFiles have status 'COMPLETED'
     status = :success
-    media_object.master_files.each do |master_file|
+    media_object.sections.each do |master_file|
       next if master_file.status_code == 'COMPLETED'
       # TODO: explore border cases
       if master_file.status_code == 'FAILED' || master_file.status_code == 'CANCELLED'

@@ -513,7 +513,7 @@ describe MasterFile do
 
       it 'should have an appropriate title for the embed code with no label (more than 1 section)' do
         allow(subject.media_object).to receive(:sections).and_return([subject,subject])
-        allow(subject.media_object).to receive(:master_file_ids).and_return([subject.id,subject.id])
+        allow(subject.media_object).to receive(:section_ids).and_return([subject.id,subject.id])
         expect( subject.embed_title ).to eq( 'test - video.mp4' )
       end
 
@@ -801,10 +801,12 @@ describe MasterFile do
 
     it 'sets a new media object as its parent' do
       master_file.media_object = media_object2
-      expect(media_object1.reload.master_file_ids).not_to include master_file.id
-      expect(media_object1.reload.section_ids).not_to include master_file.id
-      expect(media_object2.reload.master_file_ids).to include master_file.id
-      expect(media_object2.reload.section_ids).to include master_file.id
+      media_object1.reload
+      media_object2.reload
+      expect(media_object1.master_file_ids).not_to include master_file.id
+      expect(media_object1.section_ids).not_to include master_file.id
+      expect(media_object2.master_file_ids).to include master_file.id
+      expect(media_object2.section_ids).to include master_file.id
     end
   end
 

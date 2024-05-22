@@ -84,7 +84,7 @@ class SpeedyAF::Proxy::MediaObject < SpeedyAF::Base
     if real?
       real_object.section_ids
     elsif section_ids.nil? # No master files or not indexed yet
-      ActiveFedora::Base.logger.warn("Reifying MediaObject because master_files not indexed")
+      ActiveFedora::Base.logger.warn("Reifying MediaObject because sections not indexed")
       real_object.section_ids
     else
       section_ids
@@ -104,9 +104,9 @@ class SpeedyAF::Proxy::MediaObject < SpeedyAF::Base
   def sections
     return [] unless section_ids.present?
     query = "id:" + section_ids.join(" id:")
-    @master_files ||= SpeedyAF::Proxy::MasterFile.where(query,
-                                                        order: -> { section_ids },
-                                                        load_reflections: true)
+    @sections ||= SpeedyAF::Proxy::MasterFile.where(query,
+                                                    order: -> { section_ids },
+                                                    load_reflections: true)
   end
 
   def collection
@@ -119,7 +119,7 @@ class SpeedyAF::Proxy::MediaObject < SpeedyAF::Base
 
   def format
     # TODO figure out how to memoize this
-    mime_types = master_files.reject { |mf| mf.file_location.blank? }.collect do |mf|
+    mime_types = sections.reject { |mf| mf.file_location.blank? }.collect do |mf|
       Rack::Mime.mime_type(File.extname(mf.file_location))
     end.uniq
     mime_types.empty? ? nil : mime_types
@@ -154,7 +154,7 @@ class SpeedyAF::Proxy::MediaObject < SpeedyAF::Base
   end
 
   def sections_with_files(tag: '*')
-    master_files.select { |master_file| master_file.supplemental_files(tag: tag).present? }.map(&:id)
+    sections.select { |master_file| master_file.supplemental_files(tag: tag).present? }.map(&:id)
   end
 
   def permalink_with_query(query_vars = {})

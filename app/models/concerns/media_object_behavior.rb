@@ -59,11 +59,11 @@ module MediaObjectBehavior
   end
 
   def has_captions
-    master_files.any? { |mf| mf.has_captions? }
+    sections.any? { |mf| mf.has_captions? }
   end
 
   def has_transcripts
-    master_files.any? { |mf| mf.has_transcripts? }
+    sections.any? { |mf| mf.has_transcripts? }
   end
 
   # CDL methods

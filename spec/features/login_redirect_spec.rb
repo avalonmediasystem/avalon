@@ -23,7 +23,7 @@ describe 'Login Redirects' do
 
     it 'redirects to item page' do
       visit media_object_path(media_object)
-      visit hls_manifest_master_file_path(media_object.master_files.first, "high")
+      visit hls_manifest_master_file_path(media_object.sections.first, "high")
       sign_in user
       expect(page.current_path).to eq media_object_path(media_object)
     end

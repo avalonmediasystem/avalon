@@ -304,7 +304,7 @@ describe MediaObjectsController, type: :controller do
         end
         it "should create a new media_object" do
           # master_file_obj = FactoryBot.create(:master_file, master_file.slice(:files))
-          media_object = FactoryBot.create(:media_object)#, master_files: [master_file_obj])
+          media_object = FactoryBot.create(:media_object)#, sections: [master_file_obj])
           fields = {other_identifier_type: []}
           descMetadata_fields.each {|f| fields[f] = media_object.send(f) }
           # fields = media_object.attributes.select {|k,v| descMetadata_fields.include? k.to_sym }
@@ -314,17 +314,17 @@ describe MediaObjectsController, type: :controller do
           expect(new_media_object.title).to eq media_object.title
           expect(new_media_object.creator).to eq media_object.creator
           expect(new_media_object.date_issued).to eq media_object.date_issued
-          expect(new_media_object.section_ids).to match_array new_media_object.master_file_ids
+          expect(new_media_object.section_ids.size).to eq 1
           expect(new_media_object.duration).to eq '6315'
           expect(new_media_object.format).to eq ['video/mp4']
           expect(new_media_object.avalon_resource_type).to eq ['moving image']
-          expect(new_media_object.master_files.first.date_digitized).to eq('2015-12-31T00:00:00Z')
-          expect(new_media_object.master_files.first.identifier).to include('40000000045312')
-          expect(new_media_object.master_files.first.structuralMetadata.has_content?).to be_truthy
-          expect(new_media_object.master_files.first.captions.has_content?).to be_truthy
-          expect(new_media_object.master_files.first.captions.mime_type).to eq('text/vtt')
-          expect(new_media_object.master_files.first.derivatives.count).to eq(2)
-          expect(new_media_object.master_files.first.derivatives.first.location_url).to eq(absolute_location)
+          expect(new_media_object.sections.first.date_digitized).to eq('2015-12-31T00:00:00Z')
+          expect(new_media_object.sections.first.identifier).to include('40000000045312')
+          expect(new_media_object.sections.first.structuralMetadata.has_content?).to be_truthy
+          expect(new_media_object.sections.first.captions.has_content?).to be_truthy
+          expect(new_media_object.sections.first.captions.mime_type).to eq('text/vtt')
+          expect(new_media_object.sections.first.derivatives.count).to eq(2)
+          expect(new_media_object.sections.first.derivatives.first.location_url).to eq(absolute_location)
           expect(new_media_object.workflow.last_completed_step).to eq([HYDRANT_STEPS.last.step])
         end
         it "should create a new published media_object" do
@@ -406,6 +406,7 @@ describe MediaObjectsController, type: :controller do
           # master_file_obj = FactoryBot.create(:master_file, master_file.slice(:files))
           media_object = FactoryBot.create(:fully_searchable_media_object, :with_completed_workflow)
           master_file = FactoryBot.create(:master_file, :with_derivative, :with_thumbnail, :with_poster, :with_structure, :with_captions, :with_comments, media_object: media_object)
+          media_object.reload
           allow_any_instance_of(MasterFile).to receive(:extract_frame).and_return('some data')
           media_object.update_dependent_properties!
           api_hash = media_object.to_ingest_api_hash
@@ -415,7 +416,7 @@ describe MediaObjectsController, type: :controller do
           expect(new_media_object.title).to eq media_object.title
           expect(new_media_object.creator).to eq media_object.creator
           expect(new_media_object.date_issued).to eq media_object.date_issued
-          expect(new_media_object.section_ids).to match_array new_media_object.master_file_ids
+          expect(new_media_object.section_ids.size).to eq 1
           expect(new_media_object.duration).to eq media_object.duration
           expect(new_media_object.format).to eq media_object.format
           expect(new_media_object.note).to eq media_object.note
@@ -427,13 +428,13 @@ describe MediaObjectsController, type: :controller do
           expect(new_media_object.rights_statement).to eq media_object.rights_statement
           expect(new_media_object.series).to eq media_object.series
           expect(new_media_object.avalon_resource_type).to eq media_object.avalon_resource_type
-          expect(new_media_object.master_files.first.date_digitized).to eq(media_object.master_files.first.date_digitized)
-          expect(new_media_object.master_files.first.identifier).to eq(media_object.master_files.first.identifier)
-          expect(new_media_object.master_files.first.structuralMetadata.has_content?).to be_truthy
-          expect(new_media_object.master_files.first.captions.has_content?).to be_truthy
-          expect(new_media_object.master_files.first.captions.mime_type).to eq(media_object.master_files.first.captions.mime_type)
-          expect(new_media_object.master_files.first.derivatives.count).to eq(media_object.master_files.first.derivatives.count)
-          expect(new_media_object.master_files.first.derivatives.first.location_url).to eq(media_object.master_files.first.derivatives.first.location_url)
+          expect(new_media_object.sections.first.date_digitized).to eq(media_object.sections.first.date_digitized)
+          expect(new_media_object.sections.first.identifier).to eq(media_object.sections.first.identifier)
+          expect(new_media_object.sections.first.structuralMetadata.has_content?).to be_truthy
+          expect(new_media_object.sections.first.captions.has_content?).to be_truthy
+          expect(new_media_object.sections.first.captions.mime_type).to eq(media_object.sections.first.captions.mime_type)
+          expect(new_media_object.sections.first.derivatives.count).to eq(media_object.sections.first.derivatives.count)
+          expect(new_media_object.sections.first.derivatives.first.location_url).to eq(media_object.sections.first.derivatives.first.location_url)
           expect(new_media_object.workflow.last_completed_step).to eq(media_object.workflow.last_completed_step)
         end
         it "should return 422 if master_file update failed" do
@@ -483,29 +484,29 @@ describe MediaObjectsController, type: :controller do
           expect(JSON.parse(response.body)['id'].class).to eq String
           expect(JSON.parse(response.body)).not_to include('errors')
           media_object.reload
-          expect(media_object.master_files.to_a.size).to eq 2
+          expect(media_object.sections.to_a.size).to eq 2
         end
         it "should update the poster and thumbnail for its masterfile" do
           media_object = FactoryBot.create(:media_object)
           put 'json_update', params: { format: 'json', id: media_object.id, files: [master_file], collection_id: media_object.collection_id }
           media_object.reload
-          expect(media_object.master_files.to_a.size).to eq 1
-          expect(ExtractStillJob).to have_been_enqueued.with(media_object.master_files.first.id, { type: 'both', offset: 2000, headers: nil })
+          expect(media_object.sections.to_a.size).to eq 1
+          expect(ExtractStillJob).to have_been_enqueued.with(media_object.sections.first.id, { type: 'both', offset: 2000, headers: nil })
         end
         it "should update the waveform for its masterfile" do
           media_object = FactoryBot.create(:media_object)
           put 'json_update', params: { format: 'json', id: media_object.id, files: [master_file], collection_id: media_object.collection_id }
           media_object.reload
-          expect(media_object.master_files.to_a.size).to eq 1
-          expect(WaveformJob).to have_been_enqueued.with(media_object.master_files.first.id)
+          expect(media_object.sections.to_a.size).to eq 1
+          expect(WaveformJob).to have_been_enqueued.with(media_object.sections.first.id)
         end
-        it "should delete existing master_files and add a new master_file to a media_object" do
+        it "should delete existing sections and add a new master_file to a media_object" do
           allow_any_instance_of(MasterFile).to receive(:stop_processing!)
           put 'json_update', params: { format: 'json', id: media_object.id, files: [master_file], collection_id: media_object.collection_id, replace_masterfiles: true }
           expect(JSON.parse(response.body)['id'].class).to eq String
           expect(JSON.parse(response.body)).not_to include('errors')
           media_object.reload
-          expect(media_object.master_files.to_a.size).to eq 1
+          expect(media_object.sections.to_a.size).to eq 1
         end
         it "should return 404 if media object doesn't exist" do
           allow_any_instance_of(MediaObject).to receive(:save).and_return false
@@ -1218,8 +1219,8 @@ describe MediaObjectsController, type: :controller do
           mf[:files].each { |d| d.symbolize_keys! }
         end
         expect(json['files']).to eq(media_object.to_ingest_api_hash(false)[:files])
-        expect(json['files'].first[:id]).to eq(media_object.master_files.first.id)
-        expect(json['files'].first[:files].first[:id]).to eq(media_object.master_files.first.derivatives.first.id)
+        expect(json['files'].first[:id]).to eq(media_object.sections.first.id)
+        expect(json['files'].first[:files].first[:id]).to eq(media_object.sections.first.derivatives.first.id)
       end
 
       it "should return 404 if requested media_object not present" do
@@ -1347,18 +1348,18 @@ describe MediaObjectsController, type: :controller do
       delete :destroy, params: { id: media_object.id }
       expect(flash[:notice]).to include("media object deleted")
       expect(MediaObject.exists?(media_object.id)).to be_falsey
-      expect(MasterFile.exists?(media_object.master_file_ids.first)).to be_falsey
+      expect(MasterFile.exists?(media_object.section_ids.first)).to be_falsey
     end
 
     it "should remove a MediaObject with multiple MasterFiles" do
       media_object = FactoryBot.create(:media_object, :with_master_file, collection: collection)
       FactoryBot.create(:master_file, media_object: media_object)
-      master_file_ids = media_object.master_files.map(&:id)
+      section_ids = media_object.section_ids
       media_object.reload
       delete :destroy, params: { id: media_object.id }
       expect(flash[:notice]).to include("media object deleted")
       expect(MediaObject.exists?(media_object.id)).to be_falsey
-      master_file_ids.each { |mf_id| expect(MasterFile.exists?(mf_id)).to be_falsey }
+      section_ids.each { |mf_id| expect(MasterFile.exists?(mf_id)).to be_falsey }
     end
 
     it "should fail when id doesn't exist" do
@@ -1546,14 +1547,14 @@ describe MediaObjectsController, type: :controller do
         mf.media_object = media_object
         mf.save
       end
-      master_file_ids = media_object.section_ids
+      section_ids = media_object.section_ids
       media_object.save
 
       login_user media_object.collection.managers.first
 
-      put 'update', params: { :id => media_object.id, :master_file_ids => master_file_ids.reverse, :step => 'structure' }
+      put 'update', params: { :id => media_object.id, :master_file_ids => section_ids.reverse, :step => 'structure' }
       media_object.reload
-      expect(media_object.section_ids).to eq master_file_ids.reverse
+      expect(media_object.section_ids).to eq section_ids.reverse
     end
     it 'sets the MIME type' do
       media_object = FactoryBot.create(:media_object)
@@ -1704,19 +1705,19 @@ describe MediaObjectsController, type: :controller do
   end
 
   describe "#show_progress" do
-    it "should return information about the processing state of the media object's master_files" do
+    it "should return information about the processing state of the media object's sections" do
       media_object =  FactoryBot.create(:media_object, :with_master_file)
       login_as 'administrator'
       get :show_progress, params: { id: media_object.id, format: 'json' }
       expect(JSON.parse(response.body)["overall"]).to_not be_empty
     end
-    it "should return information about the processing state of the media object's master_files for managers" do
+    it "should return information about the processing state of the media object's sections for managers" do
       media_object =  FactoryBot.create(:media_object, :with_master_file)
       login_user media_object.collection.managers.first
       get :show_progress, params: { id: media_object.id, format: 'json' }
       expect(JSON.parse(response.body)["overall"]).to_not be_empty
     end
-    it "should return something even if the media object has no master_files" do
+    it "should return something even if the media object has no sections" do
       media_object = FactoryBot.create(:media_object)
       login_as 'administrator'
       get :show_progress, params: { id: media_object.id, format: 'json' }

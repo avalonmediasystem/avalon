@@ -139,7 +139,7 @@ class MediaObjectsController < ApplicationController
         end
       else
         #create a single item for the entire masterfile
-        item_title = @media_object.master_file_ids.count>1? mf.embed_title : @media_object.title
+        item_title = @media_object.section_ids.count > 1 ? mf.embed_title : @media_object.title
         clip = AvalonClip.new(title: item_title, master_file: mf)
         playlist.items += [PlaylistItem.new(clip: clip, playlist: playlist)]
       end
@@ -216,7 +216,7 @@ class MediaObjectsController < ApplicationController
     if !@media_object.save
       error_messages += ['Failed to create media object:']+@media_object.errors.full_messages
     elsif master_files_params.respond_to?('each')
-      old_ordered_master_files = @media_object.section_ids
+      old_ordered_sections = @media_object.section_ids
       master_files_params.each_with_index do |file_spec, index|
         master_file = MasterFile.new(file_spec.except(:structure, :captions, :captions_type, :files, :other_identifier, :label, :date_digitized))
         # master_file.media_object = @media_object
@@ -247,9 +247,13 @@ class MediaObjectsController < ApplicationController
 
       if error_messages.empty?
         if api_params[:replace_masterfiles]
-          old_ordered_master_files.each do |mf|
+          old_ordered_sections.each do |mf|
             p = MasterFile.find(mf)
+            # FIXME: Figure out why this next line is necessary
+            # without it the save below will fail with Ldp::Gone when attempting to set master_files in the MediaObject before_save callback
+            # This could be avoided by doing a reload after all of the destroys but I'm afraid that would mess up other changes already staged in-memory.
             @media_object.master_files.delete(p)
+            # Need to manually remove from section_ids in memory to match changes that will persist when the master file is destroyed
             @media_object.section_ids -= [p.id]
             p.destroy
           end
@@ -283,7 +287,7 @@ class MediaObjectsController < ApplicationController
 
   def custom_edit
     if ['preview', 'structure', 'file-upload'].include? @active_step
-      @masterFiles = load_master_files
+      @masterFiles = load_sections
     end
 
     if 'preview' == @active_step
@@ -363,9 +367,9 @@ class MediaObjectsController < ApplicationController
         [encode.master_file_id, mf_status]
       end
     ]
-    master_files_count = @media_object.master_files.size
-    if master_files_count > 0
-      overall.each { |k,v| overall[k] = [0,[100,v.to_f/master_files_count.to_f].min].max.floor }
+    sections_count = @media_object.sections.size
+    if sections_count > 0
+      overall.each { |k,v| overall[k] = [0,[100,v.to_f/sections_count.to_f].min].max.floor }
     else
       overall = {success: 0, error: 0}
     end
@@ -527,7 +531,7 @@ class MediaObjectsController < ApplicationController
     @media_object.sections
   end
 
-  def load_master_files(mode = :rw)
+  def load_sections(mode = :rw)
     @masterFiles ||= mode == :rw ? @media_object.sections : master_file_presenters
   end
 
@@ -553,13 +557,13 @@ class MediaObjectsController < ApplicationController
 
     if params[:part]
       index = params[:part].to_i-1
-      if index < 0 or index > @media_object.master_files.size-1
+      if index < 0 or index > @media_object.sections.size - 1
         raise ActiveFedora::ObjectNotFoundError
       end
-      params[:content] = @media_object.master_file_ids[index]
+      params[:content] = @media_object.section_ids[index]
     end
 
-    load_master_files(mode: :ro)
+    load_sections(mode: :ro)
     load_current_stream
   end
 

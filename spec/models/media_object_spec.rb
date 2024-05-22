@@ -471,10 +471,10 @@ describe MediaObject do
     let(:master_file1) { FactoryBot.create(:master_file, media_object: media_object, duration: '40') }
     let(:master_file2) { FactoryBot.create(:master_file, media_object: media_object, duration: '40') }
     let(:master_file3) { FactoryBot.create(:master_file, media_object: media_object, duration: nil) }
-    let(:master_files) { [] }
+    let(:sections) { [] }
 
     before do
-      master_files
+      sections
       media_object.reload
       # Explicitly run indexing job to ensure fields are indexed for structure searching
       MediaObjectIndexingJob.perform_now(media_object.id)
@@ -486,19 +486,19 @@ describe MediaObject do
       end
     end
     context 'with two master files' do
-      let(:master_files) { [master_file1, master_file2] }
+      let(:sections) { [master_file1, master_file2] }
       it 'returns the correct duration' do
 	expect(media_object.send(:calculate_duration)).to eq(80)
       end
     end
     context 'with two master files one nil' do
-      let(:master_files) { [master_file1, master_file3] }
+      let(:sections) { [master_file1, master_file3] }
       it 'returns the correct duration' do
 	expect(media_object.send(:calculate_duration)).to eq(40)
       end
     end
     context 'with one master file that is nil' do
-      let(:master_files) { [master_file3] }
+      let(:sections) { [master_file3] }
       it 'returns the correct duration' do
 	expect(media_object.send(:calculate_duration)).to eq(0)
       end
@@ -507,21 +507,21 @@ describe MediaObject do
 
   describe '#destroy' do
     let(:media_object) { FactoryBot.create(:media_object, :with_master_file) }
-    let(:master_file) { media_object.master_files.first }
+    let(:master_file) { media_object.sections.first }
 
     before do
       allow(master_file).to receive(:stop_processing!)
     end
 
-    it 'destroys related master_files' do
+    it 'destroys related sections' do
       expect { media_object.destroy }.to change { MasterFile.exists?(master_file) }.from(true).to(false)
     end
 
     it 'destroys multiple sections' do
       FactoryBot.create(:master_file, media_object: media_object)
       media_object.reload
-      expect(media_object.master_files.size).to eq 2
-      media_object.master_files.each do |mf|
+      expect(media_object.sections.size).to eq 2
+      media_object.sections.each do |mf|
         allow(mf).to receive(:stop_processing!)
       end
       expect { media_object.destroy }.to change { MasterFile.count }.from(2).to(0)
@@ -996,7 +996,7 @@ describe MediaObject do
 
     context "no error" do
       it 'merges' do
-        expect { media_object.merge! media_objects }.to change { media_object.master_files.to_a.count }.by(2)
+        expect { media_object.merge! media_objects }.to change { media_object.sections.count }.by(2)
         expect(media_objects.any? { |mo| MediaObject.exists?(mo.id) }).to be_falsey
       end
     end
@@ -1012,7 +1012,7 @@ describe MediaObject do
         expect(fails).to eq([media_objects.first])
         expect(media_objects.first.errors.count).to eq(1)
 
-        expect(media_object.master_files.to_a.count).to eq(2)
+        expect(media_object.sections.count).to eq(2)
         expect(MediaObject.exists?(media_objects.first.id)).to be_truthy
         expect(MediaObject.exists?(media_objects.second.id)).to be_falsey
       end
