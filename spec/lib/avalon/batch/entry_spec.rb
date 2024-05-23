@@ -183,9 +183,10 @@ describe Avalon::Batch::Entry do
       let(:transcript) {{ :transcript_file => caption_file, :transcript_label => 'Sheephead Transcript', :machine_generated => 'yes' }}
       let(:entry_files) { [{ file: File.join(testdir, filename), offset: '00:00:00.500', label: 'Quis quo', date_digitized: '2015-10-30', skip_transcoding: false, caption_1: caption, transcript_1: transcript }] }
 
-      it 'adds captions to masterfile' do
+      it 'adds captions and transcripts to masterfile' do
         expect(master_file.supplemental_file_captions).to be_present
-        expect(master_file.supplemental_files(tag: 'transcript')).to be_present
+        expect(master_file.supplemental_file_transcripts).to be_present
+        expect(master_file.supplemental_files.all? { |sf| sf.parent_id == master_file.id }).to be true
       end
     end
 
@@ -243,6 +244,7 @@ describe Avalon::Batch::Entry do
         expect(master_file.supplemental_file_transcripts[1].label).to eq 'sheephead_mountain.mov.vtt'
         expect(master_file.supplemental_file_transcripts[0].tags).to_not include 'machine_generated'
         expect(master_file.supplemental_file_transcripts[1].tags).to include 'machine_generated'
+        expect(master_file.supplemental_files.all? { |sf| sf.parent_id == master_file.id }).to be true
       end
     end
   end

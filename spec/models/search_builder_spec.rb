@@ -29,4 +29,48 @@ RSpec.describe SearchBuilder do
       expect(subject.only_published_items({})).to eq "test:clause OR workflow_published_sim:\"Published\""
     end
   end
+
+  describe "#search_section_transcripts" do
+    let(:solr_parameters) { { q: 'Example' } }
+    context "without transcripts present" do
+      it "should return nil" do
+        expect(subject.search_section_transcripts(solr_parameters)).to eq nil
+      end
+    end
+
+    context "with transcripts present" do
+      # Creating the transcript as a `let() {}` block was not adding it to the database in a way that
+      # the conditional in the model could see. Running the create in a :before block works.
+      before { FactoryBot.create(:supplemental_file, :with_transcript_file, :with_transcript_tag) }
+
+      it "should add section transcript searching to the solr query" do
+        subject.search_section_transcripts(solr_parameters)
+        expect(solr_parameters[:defType]).to eq "lucene"
+        expect(solr_parameters[:q]).to eq "({!edismax v=\"Example\"}) {!join to=id from=isPartOf_ssim}{!join to=id from=isPartOf_ssim}transcript_tsim:Example"
+      end
+    end
+  end
+
+  describe "#term_frequency_counts" do
+    let(:solr_parameters) { { q: 'Example' } }
+    context "without transcripts present" do
+      it "should skip transcript options in query" do
+        subject.term_frequency_counts(solr_parameters)
+        expect(solr_parameters[:fl]).to include "metadata_tf_0:termfreq(mods_tesim,Example),structure_tf_0:termfreq(section_label_tesim,Example)"
+        expect(solr_parameters[:fl]).to_not include "transcripts_tf_0"
+      end
+    end
+
+    context "with transcripts present" do
+      before { FactoryBot.create(:supplemental_file, :with_transcript_file, :with_transcript_tag) }
+
+      it "should add transcript options to query" do
+        subject.term_frequency_counts(solr_parameters)
+        expect(solr_parameters[:fl]).to include "metadata_tf_0:termfreq(mods_tesim,Example),structure_tf_0:termfreq(section_label_tesim,Example),transcript_tf_0"
+        expect(solr_parameters["sections.fl"]).to eq "id,transcript_tf_0,transcripts:[subquery]"
+        expect(solr_parameters["sections.transcripts.fl"]).to eq "id,transcript_tf_0:termfreq(transcript_tsim,Example)"
+        expect(solr_parameters["sections.transcripts.q"]).to eq "{!terms f=isPartOf_ssim v=$row.id}{!join to=id from=isPartOf_ssim}"
+      end
+    end
+  end
 end
