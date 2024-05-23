@@ -46,6 +46,14 @@ module Avalon
       normalized_transcript ||= normalized_plaintext
     end
 
+    # Separate time cue and text content from a single line of timed text to facilitate result formatting of transcript searches.
+    def self.extract_single_time_cue(timed_text)
+      split_text = timed_text.match(/(\d{2,}*:?\d{2}:\d{2}\.?,?\d{3} --> \d{2,}*:?\d{2}:\d{2}\.?,?\d{3})(.*)/)
+      time_cue = split_text[1].sub(',', '.').gsub(/\s-->\s/, ',')
+      text = split_text[2].strip
+      [time_cue, text]
+    end
+
     private
 
     def normalize_timed_text(plaintext)

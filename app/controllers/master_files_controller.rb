@@ -13,6 +13,7 @@
 # ---  END LICENSE_HEADER BLOCK  ---
 
 # require 'avalon/controller/controller_behavior'
+require 'avalon/transcript_search'
 
 include SecurityHelper
 
@@ -355,7 +356,7 @@ class MasterFilesController < ApplicationController
   end
 
   def search
-    # TODO: Build search service
+    render json: search_response_json
   end
 
 protected
@@ -441,5 +442,11 @@ protected
     else
       File.join(ENV["ENCODE_WORK_DIR"], location).to_s
     end
+  end
+
+private
+
+  def search_response_json
+    Avalon::TranscriptSearch.new(query: params[:q], master_file: @master_file, request_url: request.url).iiif_content_search.to_json
   end
 end
