@@ -819,4 +819,36 @@ describe MasterFilesController do
       end
     end
   end
+  
+  describe "search" do
+    let(:transcript_1) { FactoryBot.create(:supplemental_file, :with_transcript_tag, parent_id: parent_master_file.id, file: fixture_file_upload(Rails.root.join('spec', 'fixtures', 'chunk_test.vtt'), 'text/vtt')) }
+    let(:transcript_2) { FactoryBot.create(:supplemental_file, :with_transcript_tag, parent_id: parent_master_file.id, file: fixture_file_upload(Rails.root.join('spec', 'fixtures', 'chunk_test.txt'), 'text/plain')) }
+    let(:other_transcript) { FactoryBot.create(:supplemental_file, :with_transcript_tag, parent_id: other_master_file.id, file: fixture_file_upload(Rails.root.join('spec', 'fixtures', 'chunk_test.txt'), 'text/plain')) }
+    let(:parent_master_file) { FactoryBot.create(:master_file, :with_media_object) }
+    let(:other_master_file) { FactoryBot.create(:master_file, :with_media_object)}
+
+    before :each do
+      parent_master_file.supplemental_files += [transcript_1, transcript_2]
+      other_master_file.supplemental_files += [other_transcript]
+      parent_master_file.save
+      other_master_file.save
+    end
+
+    it "returns a list of matches from all of a master file's transcripts" do
+      get('search', params: { id: parent_master_file.id, q: 'before' } )
+      result = JSON.parse(response.body)
+      items = result["items"]
+      expect(items.count).to eq 2
+      expect(items[0]["body"]["value"]).to eq "Just <em>before</em> lunch one day, a puppet show was put on at school."
+      expect(items[0]["target"]).to eq "#{Rails.application.routes.url_helpers.transcripts_master_file_supplemental_file_url(parent_master_file.id, transcript_1.id)}#t=00:00:22.200,00:00:26.600"
+      expect(items[1]["body"]["value"]).to eq "A LITTLE more than a hundred years ago, a poor man, by the name of Crockett, embarked on board an emigrant-ship, in Ireland, for the New World. He was in the humblest station in life. But very- little is known respecting his uneventful career, excepting its tragical close. His family consisted of a wife and three or four children. Just <em>before</em> he sailed, or on the Atlantic passage, a son was born, to"
+      expect(items[1]["target"]).to eq Rails.application.routes.url_helpers.transcripts_master_file_supplemental_file_url(parent_master_file.id, transcript_2.id)
+    end
+
+    it 'does not return matches from other master files' do
+      get('search', params: { id: parent_master_file.id, q: 'before' } )
+      result = JSON.parse(response.body)
+      expect(result['items'].any? { |item| item["id"].include?(other_master_file.id) }).to eq false
+    end
+  end
 end
