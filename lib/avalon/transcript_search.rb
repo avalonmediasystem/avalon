@@ -53,37 +53,37 @@ module Avalon
       formatted_response = []
       search_results["highlighting"].each do |result|
         transcript_id = result.first.split('/').last.to_i
-        @mime_type = search_results["response"]["docs"].filter { |doc| doc["id"] == result.first }.first["mime_type_ssi"]
-        @canvas = "#{Rails.application.routes.url_helpers.media_object_url(master_file.media_object_id).to_s}/manifest/canvas/#{master_file.id}"
-        @target = Rails.application.routes.url_helpers.transcripts_master_file_supplemental_file_url(master_file.id, transcript_id)
+        mime_type = search_results["response"]["docs"].filter { |doc| doc["id"] == result.first }.first["mime_type_ssi"]
+        canvas = "#{Rails.application.routes.url_helpers.media_object_url(master_file.media_object_id).to_s}/manifest/canvas/#{master_file.id}"
+        target = Rails.application.routes.url_helpers.transcripts_master_file_supplemental_file_url(master_file.id, transcript_id)
 
         text_matches = result[1]["transcript_tsim"]
 
-        formatted_response += process_items(text_matches)
+        formatted_response += process_items(text_matches, mime_type, canvas, target)
       end
 
       formatted_response
     end
 
-    def process_items(matches)
+    def process_items(matches, mime_type, canvas_url, target_url)
       formatted_matches = []
 
       matches.each do |cue|
-        if @mime_type == 'text/vtt' || @mime_type == 'text/srt'
+        if mime_type == 'text/vtt' || mime_type == 'text/srt'
           time_cue, text = Avalon::TranscriptParser.extract_single_time_cue(cue)
         end
 
         text ||= cue
 
-        formatted_matches += [format_item(text, @target, time_cue: time_cue)]
+        formatted_matches += [format_item(text, canvas_url, target_url, time_cue: time_cue)]
       end
 
       formatted_matches
     end
 
-    def format_item(result, target, time_cue: nil)
+    def format_item(result, canvas, target, time_cue: nil)
       {
-        id: "#{@canvas}/search/#{SecureRandom.uuid}",
+        id: "#{canvas}/search/#{SecureRandom.uuid}",
         type: "Annotation",
         motivation: "supplementing",
         body: {

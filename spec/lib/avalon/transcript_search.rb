@@ -71,5 +71,19 @@ describe Avalon::TranscriptSearch do
       expect(item[:body][:format]).to eq 'text/plain'
       expect(item[:target]).to eq Rails.application.routes.url_helpers.transcripts_master_file_supplemental_file_url(parent_master_file.id, transcript.id)
     end
+
+    context 'transcript with timed text' do
+      let(:transcript) { FactoryBot.create(:supplemental_file, :with_transcript_tag, parent_id: parent_master_file.id, file: fixture_file_upload(Rails.root.join('spec', 'fixtures', 'chunk_test.vtt'), 'text/vtt')) }
+
+      it 'returns result value without time cues' do
+        item = subject.iiif_content_search[:items].first
+        expect(item[:body][:value]).to_not match(/\d{2}:\d{2}:\d{2}/)
+      end
+
+      it 'returns result target with time cue' do
+        item = subject.iiif_content_search[:items].first
+        expect(item[:target]).to include '#t=00:00:22.200,00:00:26.600'
+      end
+    end
   end
 end
