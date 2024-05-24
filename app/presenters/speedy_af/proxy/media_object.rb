@@ -80,27 +80,6 @@ class SpeedyAF::Proxy::MediaObject < SpeedyAF::Base
     end
   end
 
-  def master_file_ids
-    if real?
-      real_object.section_ids
-    elsif section_ids.nil? # No master files or not indexed yet
-      ActiveFedora::Base.logger.warn("Reifying MediaObject because sections not indexed")
-      real_object.section_ids
-    else
-      section_ids
-    end
-  end
-
-  def master_files
-    # NOTE: Defaults are set on returned SpeedyAF::Base objects if field isn't present in the solr doc.
-    # This is important otherwise speedy_af will reify from fedora when trying to access this field.
-    # When adding a new property to the master file model that will be used in the interface,
-    # add it to the default below to avoid reifying for master files lacking a value for the property.
-    @master_files ||= SpeedyAF::Proxy::MasterFile.where("isPartOf_ssim:#{id}",
-                                                        order: -> { master_file_ids },
-                                                        load_reflections: true)
-  end
-
   def sections
     return [] unless section_ids.present?
     query = "id:" + section_ids.join(" id:")
