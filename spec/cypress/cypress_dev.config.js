@@ -4,8 +4,8 @@ module.exports = defineConfig({
   env: {
     "USERS_ADMINISTRATOR_EMAIL": "archivist1@example.com",
     "USERS_ADMINISTRATOR_PASSWORD": "archivist1",
-    "USERS_USER_EMAIL":"chravi@iu.edu",
-    "USERS_USER_PASSWORD": "Test1234!",
+    "USERS_USER_EMAIL":"user1@example.com",
+    "USERS_USER_PASSWORD": "testing_user1",
     "MEDIA_OBJECT_ID": "fj236208t",
     "MEDIA_OBJECT_TITLE":"Beginning Responsibility: Lunchroom Manners",
     "SEARCH_COLLECTION":"7.7 regression test",
