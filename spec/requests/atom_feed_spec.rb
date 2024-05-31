@@ -25,7 +25,7 @@ describe 'atom feed', type: :request do
     let(:updated_date) do
       query = ActiveFedora::SolrQueryBuilder.construct_query(ActiveFedora.id_field => media_object.id)
       doc = ActiveFedora::SolrService.get(query)['response']['docs'].first
-      doc["timestamp"]
+      doc["descMetadata_modified_dtsi"]
     end
 
     it 'returns information about a media object' do
@@ -45,12 +45,12 @@ describe 'atom feed', type: :request do
     let(:updated_date1) do
       query = ActiveFedora::SolrQueryBuilder.construct_query(ActiveFedora.id_field => media_object1.id)
       doc = ActiveFedora::SolrService.get(query)['response']['docs'].first
-      doc["timestamp"]
+      doc["descMetadata_modified_dtsi"]
     end
     let(:updated_date2) do
       query = ActiveFedora::SolrQueryBuilder.construct_query(ActiveFedora.id_field => media_object2.id)
       doc = ActiveFedora::SolrService.get(query)['response']['docs'].first
-      doc["timestamp"]
+      doc["descMetadata_modified_dtsi"]
     end
 
     it 'sorts based upon solr timestamp' do
