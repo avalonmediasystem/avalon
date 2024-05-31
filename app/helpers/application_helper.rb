@@ -226,6 +226,10 @@ module ApplicationHelper
       omission: "...#{label.last(end_length)}")
   end
 
+  def titleize value
+    value.is_a?(Array) ? value.map(&:titleize) : value.titleize
+  end
+
   def master_file_meta_properties( m )
     formatted_duration = m.duration ? Time.new(m.duration.to_i / 1000).iso8601 : ''
     item_type = m.is_video? ? 'http://schema.org/VideoObject' : 'http://schema.org/AudioObject'

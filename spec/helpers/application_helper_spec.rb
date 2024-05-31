@@ -87,6 +87,15 @@ describe ApplicationHelper do
     end
   end
 
+  describe "#titleize" do
+    it "titleizes a string" do
+      expect(helper.titleize("lower case phrase")).to eq "Lower Case Phrase"
+    end
+    it "titleizes an array of strings" do
+      expect(helper.titleize(["ant", "adam ant", "tic tac toe"])).to eq ["Ant", "Adam Ant", "Tic Tac Toe"]
+    end
+  end
+
   describe "#truncate_center" do
     it "should return empty string if empty string received" do
       expect(helper.truncate_center("", 5)).to eq ""
