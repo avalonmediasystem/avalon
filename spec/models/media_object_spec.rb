@@ -1252,23 +1252,25 @@ describe MediaObject do
       end
 
       it 'reads from ordered_aggregation' do
+        expect(media_object.ordered_master_files.to_a).to eq [section, section2]
         expect(media_object.section_list).to eq nil
         mo = MediaObject.find(media_object.id)
         expect(mo.section_list).not_to eq nil
         expect(mo.ordered_master_files.to_a).to eq [section, section2]
-        expect(mo.ordered_master_file_ids).to eq [section.id, section2.id]
-        expect(mo.sections).to eq [section, section2]
-        expect(mo.section_ids).to eq [section.id, section2.id]
+        expect(mo.sections).to eq mo.ordered_master_files.to_a
+        expect(mo.section_ids).to eq mo.ordered_master_file_ids
       end
 
-      it 'migrates to section_list without interaction' do
+      it 'prefers reading from section_list when set' do
         expect(media_object.section_list).to eq nil
         mo = MediaObject.find(media_object.id)
+        new_section = FactoryBot.create(:master_file)
+        mo.sections += [new_section]
         mo.save
         mo = MediaObject.find(media_object.id)
         expect(mo.section_list).not_to eq nil
-        expect(mo.sections).to eq [section, section2]
-        expect(mo.section_ids).to eq [section.id, section2.id]
+        expect(mo.sections).not_to eq mo.ordered_master_files.to_a
+        expect(mo.section_ids).to eq [section.id, section2.id, new_section.id]
       end
     end
   end

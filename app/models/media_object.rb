@@ -230,21 +230,21 @@ class MediaObject < ActiveFedora::Base
   end
 
   def set_media_types!
-    mime_types = section_solr_docs.reject { |mf| mf["file_location_ssi"].blank? }.collect do |mf|
-      Rack::Mime.mime_type(File.extname(mf["file_location_ssi"]))
+    mime_types = section_solr_docs.reject { |section| section["file_location_ssi"].blank? }.collect do |section|
+      Rack::Mime.mime_type(File.extname(section["file_location_ssi"]))
     end.uniq
     self.format = mime_types.empty? ? nil : mime_types
   end
 
   def set_resource_types!
-    self.avalon_resource_type = section_solr_docs.reject { |mf| mf["file_format_ssi"].blank? }.collect do |mf|
-      case mf["file_format_ssi"]
+    self.avalon_resource_type = section_solr_docs.reject { |section| section["file_format_ssi"].blank? }.collect do |section|
+      case section["file_format_ssi"]
       when 'Moving image'
         'moving image'
       when 'Sound'
         'sound recording'
       else
-        mf.file_format.downcase
+        section.file_format.downcase
       end
     end.uniq
   end
@@ -257,9 +257,9 @@ class MediaObject < ActiveFedora::Base
   end
 
   def all_comments
-    comment.sort + sections.compact.collect do |mf|
-      mf.comment.reject(&:blank?).collect do |c|
-        mf.display_title.present? ? "[#{mf.display_title}] #{c}" : c
+    comment.sort + sections.compact.collect do |section|
+      section.comment.reject(&:blank?).collect do |c|
+        section.display_title.present? ? "[#{section.display_title}] #{c}" : c
       end.sort
     end.flatten.uniq
   end
@@ -400,7 +400,7 @@ class MediaObject < ActiveFedora::Base
     media_objects.dup.each do |mo|
       begin
         # TODO: mass assignment may speed things up
-        mo.sections.each { |mf| mf.media_object = self }
+        mo.sections.each { |section| section.media_object = self }
         mo.reload.destroy!
 
         mergeds << mo
