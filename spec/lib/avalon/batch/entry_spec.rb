@@ -164,7 +164,7 @@ describe Avalon::Batch::Entry do
 
   describe '#process!' do
     let(:entry_files) { [{ file: File.join(testdir, filename), offset: '00:00:00.500', label: 'Quis quo', date_digitized: '2015-10-30', skip_transcoding: false }] }
-    let(:master_file) { entry.media_object.master_files.first }
+    let(:master_file) { entry.media_object.sections.first }
     before do
       entry.process!
     end

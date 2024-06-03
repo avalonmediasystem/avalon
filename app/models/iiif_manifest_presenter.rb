@@ -20,16 +20,16 @@ class IiifManifestPresenter
   IIIF_ALLOWED_TAGS = ['a', 'b', 'br', 'i', 'img', 'p', 'small', 'span', 'sub', 'sup'].freeze
   IIIF_ALLOWED_ATTRIBUTES = ['href', 'src', 'alt'].freeze
 
-  attr_reader :media_object, :master_files, :lending_enabled
+  attr_reader :media_object, :sections, :lending_enabled
 
   def initialize(media_object:, master_files:, lending_enabled: false)
     @media_object = media_object
-    @master_files = master_files
+    @sections = master_files
     @lending_enabled = lending_enabled
   end
 
   def file_set_presenters
-    master_files
+    sections
   end
 
   def work_presenters
@@ -202,7 +202,7 @@ class IiifManifestPresenter
   end
 
   def thumbnail_url
-    master_file_id = media_object.ordered_master_file_ids.try :first
+    master_file_id = media_object.section_ids.try :first
 
     video_count = media_object.avalon_resource_type.map(&:titleize)&.count { |m| m.start_with?('moving image'.titleize) } || 0
     audio_count = media_object.avalon_resource_type.map(&:titleize)&.count { |m| m.start_with?('sound recording'.titleize) } || 0

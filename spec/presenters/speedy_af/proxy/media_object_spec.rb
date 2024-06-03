@@ -65,6 +65,8 @@ describe SpeedyAF::Proxy::MediaObject do
       expect(presenter.other_identifier).to eq media_object.other_identifier
       expect(presenter.comment).to eq media_object.comment.to_a
       expect(presenter.visibility).to eq media_object.visibility
+      expect(presenter.section_list).to eq media_object.section_list
+      expect(presenter.section_ids).to eq media_object.section_ids
     end
   end
 
@@ -81,6 +83,26 @@ describe SpeedyAF::Proxy::MediaObject do
       expect(presenter.identifier).to be_present
       expect(presenter.comment).to be_present
       expect(presenter.lending_period).to be_present
+    end
+  end
+
+  describe '#sections' do
+    let(:section1) { FactoryBot.create(:master_file, media_object: media_object) }
+    let(:section2) { FactoryBot.create(:master_file, media_object: media_object) }
+    let(:media_object) { FactoryBot.create(:media_object) }
+
+    context 'when no sections present' do
+      it 'returns empty array without reifying' do
+        expect(presenter.sections).to eq []
+        expect(presenter.real?).to eq false
+      end
+    end
+
+    it 'returns array of master file proxy objects in proper order' do
+      section1
+      section2
+      expect(presenter.sections.map(&:id)).to eq media_object.section_ids
+      expect(presenter.sections.map(&:class)).to eq [SpeedyAF::Proxy::MasterFile, SpeedyAF::Proxy::MasterFile]
     end
   end
 end

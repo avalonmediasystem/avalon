@@ -20,8 +20,8 @@ Unless required by applicable law or agreed to in writing, software distributed
     <h4>
       <%= media_object.title %>
     </h4>
-    <% master_files = media_object.master_files.to_a %>
-    <% if master_files.count > 0 %>
+    <% sections = media_object.sections %>
+    <% if sections.count > 0 %>
       <table class="master-files table table-striped">
         <thead>
           <th>Name</th>
@@ -29,7 +29,7 @@ Unless required by applicable law or agreed to in writing, software distributed
           <th>Status</th>
         </thead>
         <tbody>
-          <% master_files.each do |master_file| %>
+          <% sections.each do |master_file| %>
             <% status_code = master_file.status_code.downcase %>
             <tr>
               <td class="master-file">

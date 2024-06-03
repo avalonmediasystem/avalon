@@ -108,8 +108,7 @@ module MasterFileBehavior
                  structuralMetadata.section_title
                elsif title.present?
                  title
-               # FIXME: The test for media_object.master_file_ids.size is expensive and takes ~0.25 seconds
-               elsif file_location.present? && (media_object.master_file_ids.size > 1)
+               elsif file_location.present? && (media_object.section_ids.size > 1)
                  file_location.split("/").last
                end
     mf_title.blank? ? nil : mf_title

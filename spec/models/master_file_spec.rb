@@ -84,7 +84,7 @@ describe MasterFile do
     end
   end
 
-  describe "master_files=" do
+  describe "derivatives=" do
     let(:derivative) {Derivative.create}
     let(:master_file) {FactoryBot.create(:master_file)}
     it "should set hasDerivation relationships on self" do
@@ -329,14 +329,9 @@ describe MasterFile do
       let(:media_path) { File.expand_path("../../master_files-#{SecureRandom.uuid}",__FILE__)}
       let(:dropbox_path) { File.expand_path("../../collection-#{SecureRandom.uuid}",__FILE__)}
       let(:upload)     { ActionDispatch::Http::UploadedFile.new :tempfile => tempfile, :filename => original, :type => 'video/mp4' }
-      let(:media_object) { MediaObject.new }
+      let!(:media_object) { FactoryBot.create(:media_object, sections: [subject]) }
       let(:collection) { Admin::Collection.new }
-      subject {
-        mf = MasterFile.new
-        mf.media_object = media_object
-        mf.setContent(upload, dropbox_dir: collection.dropbox_absolute_path)
-        mf
-      }
+      subject { FactoryBot.create(:master_file) }
 
       before(:each) do
         @old_media_path = Settings.encoding.working_file_path
@@ -356,11 +351,13 @@ describe MasterFile do
 
       it "should move an uploaded file into the root of the collection's dropbox" do
         Settings.encoding.working_file_path = nil
+        subject.setContent(upload, dropbox_dir: collection.dropbox_absolute_path)
         expect(subject.file_location).to eq(File.realpath(File.join(collection.dropbox_absolute_path,original)))
       end
 
       it "should copy an uploaded file to the media path" do
         Settings.encoding.working_file_path = media_path
+        subject.setContent(upload, dropbox_dir: collection.dropbox_absolute_path)
         expect(File.fnmatch("#{media_path}/*/#{original}", subject.working_file_path.first)).to be true
       end
 
@@ -373,6 +370,7 @@ describe MasterFile do
 
         it "appends a numerical suffix" do
           Settings.encoding.working_file_path = nil
+          subject.setContent(upload, dropbox_dir: collection.dropbox_absolute_path)
           expect(subject.file_location).to eq(File.realpath(File.join(collection.dropbox_absolute_path,duplicate)))
         end
       end
@@ -384,14 +382,9 @@ describe MasterFile do
       let(:dropbox_file_path) { File.join(dropbox_path, 'nested-dir', original)}
       let(:media_path) { File.expand_path("../../master_files-#{SecureRandom.uuid}",__FILE__)}
       let(:dropbox_path) { File.expand_path("../../collection-#{SecureRandom.uuid}",__FILE__)}
-      let(:media_object) { MediaObject.new }
+      let!(:media_object) { FactoryBot.create(:media_object, sections: [subject]) }
       let(:collection) { Admin::Collection.new }
-      subject {
-        mf = MasterFile.new
-        mf.media_object = media_object
-        mf.setContent(File.new(dropbox_file_path), dropbox_dir: collection.dropbox_absolute_path)
-        mf
-      }
+      subject { FactoryBot.create(:master_file) }
 
       before(:each) do
         @old_media_path = Settings.encoding.working_file_path
@@ -412,6 +405,7 @@ describe MasterFile do
 
       it "should not move a file in a subdirectory of the collection's dropbox" do
         Settings.encoding.working_file_path = nil
+        subject.setContent(File.new(dropbox_file_path), dropbox_dir: collection.dropbox_absolute_path)
         expect(subject.file_location).to eq dropbox_file_path
         expect(File.exist?(dropbox_file_path)).to eq true
         expect(File.exist?(File.join(collection.dropbox_absolute_path,original))).to eq false
@@ -419,6 +413,7 @@ describe MasterFile do
 
       it "should copy an uploaded file to the media path" do
         Settings.encoding.working_file_path = media_path
+        subject.setContent(File.new(dropbox_file_path), dropbox_dir: collection.dropbox_absolute_path)
         expect(File.fnmatch("#{media_path}/*/#{original}", subject.working_file_path.first)).to be true
       end
     end
@@ -429,7 +424,7 @@ describe MasterFile do
       let(:file_size) { 12345 }
       let(:auth_header) { {"Authorization"=>"Bearer ya29.a0AfH6SMC6vSj4D6po1aDxAr6JmY92azh3lxevSuPKxf9QPPSKmMzqbZvI7B3oIACqqMVono1P0XD2F1Jl_rkayoI6JGz-P2cpg44-55oJFcWychAvUliWeRKf1cifMo9JF10YmXxhIfrG5mu7Ahy9FZpudN92p2JhvTI"} }
 
-      subject { MasterFile.new }
+      subject { FactoryBot.create(:master_file) }
 
       it "should set the right properties" do
         allow(subject).to receive(:reloadTechnicalMetadata!).and_return(nil)
@@ -517,8 +512,8 @@ describe MasterFile do
       end
 
       it 'should have an appropriate title for the embed code with no label (more than 1 section)' do
-        allow(subject.media_object).to receive(:ordered_master_files).and_return([subject,subject])
-        allow(subject.media_object).to receive(:master_file_ids).and_return([subject.id,subject.id])
+        allow(subject.media_object).to receive(:sections).and_return([subject,subject])
+        allow(subject.media_object).to receive(:section_ids).and_return([subject.id,subject.id])
         expect( subject.embed_title ).to eq( 'test - video.mp4' )
       end
 
@@ -759,9 +754,13 @@ describe MasterFile do
     let(:master_file) { FactoryBot.build(:master_file) }
     before do
       allow(ActiveEncode::Base).to receive(:find).and_return(nil)
+      allow(master_file).to receive(:finished_processing?).and_return(false)
     end
     it 'does not error if the master file has no encode' do
-      expect { master_file.send(:stop_processing!) }.not_to raise_error
+      expect { master_file.stop_processing! }.not_to raise_error
+    end
+    it 'enqueues cancel job if currently processing' do
+      expect { master_file.stop_processing! }.to have_enqueued_job(ActiveEncodeJobs::CancelEncodeJob)
     end
   end
 
@@ -802,10 +801,12 @@ describe MasterFile do
 
     it 'sets a new media object as its parent' do
       master_file.media_object = media_object2
-      expect(media_object1.reload.master_file_ids).not_to include master_file.id
-      expect(media_object1.reload.ordered_master_file_ids).not_to include master_file.id
-      expect(media_object2.reload.master_file_ids).to include master_file.id
-      expect(media_object2.reload.ordered_master_file_ids).to include master_file.id
+      media_object1.reload
+      media_object2.reload
+      expect(media_object1.master_file_ids).not_to include master_file.id
+      expect(media_object1.section_ids).not_to include master_file.id
+      expect(media_object2.master_file_ids).to include master_file.id
+      expect(media_object2.section_ids).to include master_file.id
     end
   end
 

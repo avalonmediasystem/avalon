@@ -15,7 +15,7 @@
 module MediaObjectIntercom
   def to_ingest_api_hash(include_structure = true, remove_identifiers: false, publish: false)
     {
-      files: ordered_master_files.to_a.collect { |mf| mf.to_ingest_api_hash(include_structure, remove_identifiers: remove_identifiers) },
+      files: sections.collect { |mf| mf.to_ingest_api_hash(include_structure, remove_identifiers: remove_identifiers) },
       fields:
         {
           duration: duration,

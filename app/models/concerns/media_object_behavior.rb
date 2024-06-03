@@ -14,6 +14,7 @@
 
 # This module contains methods which transform stored values for use either on the MediaObject or the SpeedyAF presenter
 module MediaObjectBehavior
+
   def as_json(options={})
     {
       id: id,
@@ -58,11 +59,11 @@ module MediaObjectBehavior
   end
 
   def has_captions
-    master_files.any? { |mf| mf.has_captions? }
+    sections.any? { |mf| mf.has_captions? }
   end
 
   def has_transcripts
-    master_files.any? { |mf| mf.has_transcripts? }
+    sections.any? { |mf| mf.has_transcripts? }
   end
 
   # CDL methods

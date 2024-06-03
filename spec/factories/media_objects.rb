@@ -49,6 +49,7 @@ FactoryBot.define do
         rights_statement { ['http://rightsstatements.org/vocab/InC-EDU/1.0/'] }
         terms_of_use { [ 'Terms of Use: Be kind. Rewind.' ] }
         series { [Faker::Lorem.word] }
+        sections { [] }
         # after(:create) do |mo|
         #   mo.update_datastream(:descMetadata, {
         #     note: {note[Faker::Lorem.paragraph],
@@ -65,9 +66,7 @@ FactoryBot.define do
       after(:create) do |mo|
         mf = FactoryBot.create(:master_file)
         mf.media_object = mo
-        mf.save
-        # mo.ordered_master_files += [mf]
-        mo.save
+        # Above line will cause a save of both the master file and parent media object
       end
     end
     trait :with_completed_workflow do

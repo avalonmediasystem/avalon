@@ -100,7 +100,7 @@ describe MasterFilesController do
         file = fixture_file_upload('/videoshort.mp4', 'video/mp4')
         post :create, params: { Filedata: [file], original: 'any', container_id: media_object.id }
 
-        master_file = media_object.reload.ordered_master_files.to_a.first
+        master_file = media_object.reload.sections.first
         expect(master_file.file_format).to eq "Moving image"
 
         expect(flash[:error]).to be_nil
@@ -110,7 +110,7 @@ describe MasterFilesController do
         file = fixture_file_upload('/jazz-performance.mp3', 'audio/mp3')
         post :create, params: { Filedata: [file], original: 'any', container_id: media_object.id }
 
-        master_file = media_object.reload.ordered_master_files.to_a.first
+        master_file = media_object.reload.sections.first
         expect(master_file.file_format).to eq "Sound"
       end
 
@@ -147,7 +147,7 @@ describe MasterFilesController do
         post :create, params: { Filedata: [file], original: 'any', container_id: media_object.id }
 
         master_file = MasterFile.all.last
-        expect(media_object.reload.ordered_master_files.to_a).to include master_file
+        expect(media_object.reload.sections).to include master_file
         expect(master_file.media_object.id).to eq(media_object.id)
 
         expect(flash[:error]).to be_nil
@@ -159,7 +159,7 @@ describe MasterFilesController do
 
         master_file = MasterFile.all.last
         media_object.reload
-        expect(media_object.ordered_master_files.to_a).to include master_file
+        expect(media_object.sections).to include master_file
         expect(master_file.media_object.id).to eq(media_object.id)
 
         expect(flash[:error]).to be_nil
@@ -171,7 +171,7 @@ describe MasterFilesController do
 
         master_file = MasterFile.all.last
         media_object.reload
-        expect(media_object.ordered_master_files.to_a).to include master_file
+        expect(media_object.sections).to include master_file
         expect(master_file.media_object.id).to eq(media_object.id)
 
         expect(flash[:error]).to be_nil
@@ -189,7 +189,7 @@ describe MasterFilesController do
         post :create, params: { Filedata: [file], original: 'any', container_id: media_object.id }
 
         master_file = MasterFile.all.last
-        expect(media_object.reload.ordered_master_files.to_a).to include master_file
+        expect(media_object.reload.sections).to include master_file
         expect(master_file.media_object.id).to eq(media_object.id)
 
         expect(flash[:error]).to be_nil
@@ -206,14 +206,14 @@ describe MasterFilesController do
       login_as :administrator
       expect(controller.current_ability.can?(:destroy, master_file)).to be_truthy
       expect { post :destroy, params: { id: master_file.id } }.to change { MasterFile.count }.by(-1)
-      expect(master_file.media_object.reload.ordered_master_files.to_a).not_to include master_file
+      expect(master_file.media_object.reload.sections).not_to include master_file
     end
 
     it "deletes a master file as manager of owning collection" do
       login_user master_file.media_object.collection.managers.first
       expect(controller.current_ability.can?(:destroy, master_file)).to be_truthy
       expect { post(:destroy, params: { id: master_file.id }) }.to change { MasterFile.count }.by(-1)
-      expect(master_file.media_object.reload.ordered_master_files.to_a).not_to include master_file
+      expect(master_file.media_object.reload.sections).not_to include master_file
     end
 
     it "redirect to restricted content page for end users" do
@@ -685,18 +685,16 @@ describe MasterFilesController do
         login_as :administrator
       end
       it 'moves the master file' do
-        expect(current_media_object.master_file_ids).to include master_file.id
-        expect(current_media_object.ordered_master_file_ids).to include master_file.id
-        expect(target_media_object.master_file_ids).not_to include master_file.id
-        expect(target_media_object.ordered_master_file_ids).not_to include master_file.id
+        expect(current_media_object.section_ids).to include master_file.id
+        expect(target_media_object.section_ids).not_to include master_file.id
         post('move', params: { id: master_file.id, target: target_media_object.id })
+        current_media_object.reload
+        target_media_object.reload
         expect(response).to redirect_to(edit_media_object_path(current_media_object))
         expect(flash[:success]).not_to be_blank
         expect(master_file.reload.media_object_id).to eq target_media_object.id
-        expect(current_media_object.reload.master_file_ids).not_to include master_file.id
-        expect(current_media_object.ordered_master_file_ids).not_to include master_file.id
-        expect(target_media_object.reload.master_file_ids).to include master_file.id
-        expect(target_media_object.ordered_master_file_ids).to include master_file.id
+        expect(current_media_object.section_ids).not_to include master_file.id
+        expect(target_media_object.section_ids).to include master_file.id
       end
     end
   end

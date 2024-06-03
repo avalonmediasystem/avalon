@@ -190,7 +190,7 @@ describe CatalogController do
       before(:each) do
         @media_object = FactoryBot.create(:fully_searchable_media_object)
         @master_file = FactoryBot.create(:master_file, :with_structure, media_object: @media_object, title: 'Test Label')
-        @media_object.ordered_master_files += [@master_file]
+        @media_object.sections += [@master_file]
         @media_object.save!
         # Explicitly run indexing job to ensure fields are indexed for structure searching
         MediaObjectIndexingJob.perform_now(@media_object.id)

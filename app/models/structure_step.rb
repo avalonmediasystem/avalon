@@ -20,12 +20,7 @@
     def execute context
       media_object = context[:media_object]
       if ! context[:master_file_ids].nil?
-        # gather the parts in the right order
-        # in this situation we cannot use MatterFile.find([]) because
-        # it will not return the results in the correct order
-        master_files = context[:master_file_ids].map{ |master_file_id| MasterFile.find(master_file_id) }
-        # re-add the parts that are now in the right order
-        media_object.ordered_master_files = master_files
+        media_object.section_ids = context[:master_file_ids]
         media_object.save
       end
       context
