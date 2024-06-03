@@ -1181,7 +1181,7 @@ describe MediaObjectsController, type: :controller do
     context "with json format" do
       subject(:json) { JSON.parse(response.body) }
       let(:administrator) { FactoryBot.create(:administrator) }
-      let!(:media_object) { FactoryBot.create(:media_object) }
+      let!(:media_object) { FactoryBot.create(:fully_searchable_media_object) }
       let!(:master_file) { FactoryBot.create(:master_file, :with_derivative, media_object: media_object) }
 
       before do
@@ -1190,6 +1190,8 @@ describe MediaObjectsController, type: :controller do
       end
 
       it "should return json for specific media_object" do
+        # Run indexing job to ensure object isn't reified in this request
+        perform_enqueued_jobs(only: MediaObjectIndexingJob)
         get 'show', params: { id: media_object.id, format:'json' }
         expect(json['id']).to eq(media_object.id)
         expect(json['title']).to eq(media_object.title)

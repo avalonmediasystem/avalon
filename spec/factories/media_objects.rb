@@ -50,6 +50,12 @@ FactoryBot.define do
         terms_of_use { [ 'Terms of Use: Be kind. Rewind.' ] }
         series { [Faker::Lorem.word] }
         sections { [] }
+        statement_of_responsibility { Faker::Lorem.word }
+        uniform_title { [Faker::Lorem.sentence] }
+        identifier { [Faker::Alphanumeric.alphanumeric(number: 8, min_alpha: 1, min_numeric: 1).downcase,
+                      Faker::Alphanumeric.alphanumeric(number: 8, min_alpha: 1, min_numeric: 1).upcase,
+                      Faker::Barcode.isbn] }
+        resource_type { ['moving image'] }
         # after(:create) do |mo|
         #   mo.update_datastream(:descMetadata, {
         #     note: {note[Faker::Lorem.paragraph],

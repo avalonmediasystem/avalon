@@ -42,7 +42,7 @@ module ModsBehaviors
     solr_doc['abstract_ssi'] = self.find_by_terms(:abstract).text
     solr_doc['publisher_ssim'] = gather_terms(self.find_by_terms(:publisher))
     solr_doc['contributor_ssim'] = gather_terms(self.find_by_terms(:contributor))
-    solr_doc['subject_ssim'] = gather_terms(self.find_by_terms(:subject))
+    solr_doc['subject_ssim'] = gather_terms(self.find_by_terms(:topical_subject))
     solr_doc['genre_ssim'] = gather_terms(self.find_by_terms(:genre))
 #    solr_doc['physical_dtl_sim'] = gather_terms(self.find_by_terms(:format))
 #    solr_doc['contents_sim'] = gather_terms(self.find_by_terms(:parts_list))
@@ -52,7 +52,7 @@ module ModsBehaviors
 #    solr_doc['collection_sim'] = gather_terms(self.find_by_terms(:archival_collection))
     solr_doc['series_ssim'] = gather_terms(self.find_by_terms(:series))
     #filter formats based upon whitelist
-    solr_doc['resource_type_ssim'] = (gather_terms(self.find_by_terms(:resource_type)) & ['moving image', 'sound recording' ]).map(&:titleize)
+    solr_doc['resource_type_ssim'] = (gather_terms(self.find_by_terms(:resource_type)) & ['moving image', 'sound recording' ])
     solr_doc['location_ssim'] = gather_terms(self.find_by_terms(:geographic_subject))
 
     # Blacklight facets - these are the same facet fields used in our Blacklight app
@@ -78,6 +78,11 @@ module ModsBehaviors
     solr_doc['terms_of_use_ssi'] = (self.find_by_terms(:terms_of_use) - self.find_by_terms(:rights_statement)).text
     solr_doc['rights_statement_ssi'] = self.find_by_terms(:rights_statement).text
     solr_doc['other_identifier_sim'] = gather_terms(self.find_by_terms(:other_identifier))
+    solr_doc['bibliographic_id_ssi'] = self.bibliographic_id.first
+    solr_doc['bibliographic_id_source_ssi'] = self.bibliographic_id.source.first
+    solr_doc['uniform_title_ssim'] = gather_terms(self.find_by_terms(:uniform_title))
+    solr_doc['statement_of_responsibility_ssi'] = gather_terms(self.find_by_terms(:statement_of_responsibility))
+    solr_doc['record_identifier_ssim'] = gather_terms(self.find_by_terms(:record_identifier))
 
     # Extract 4-digit year for creation date facet in Hydra and pub_date facet in Blacklight
     solr_doc['date_issued_ssi'] = self.find_by_terms(:date_issued).text
