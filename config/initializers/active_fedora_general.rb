@@ -91,3 +91,55 @@ Hydra::AccessControls::Permissions.module_eval do
       end
 end
 # End of overrides for AccessControl dirty tracking and autosaving
+
+# Override ActiveFedora::Associations::Builder::Orders::FixFirstLast to remove attempts to set first and last from list_source on saving
+ActiveFedora::Associations::Builder::Orders::FixFirstLast.module_eval do
+  def save(*args)
+    super
+  end
+
+  def save!(*args)
+    super
+  end
+end
+
+# Override to add handling of :master_files associations
+# This override allows setting the hasPart triples of the master_files association manually
+# without going through the indirectly_contains association writer.
+# Without this override new hasPart triples signaled as changes via attribute_will_change! are not
+# detected as changes for the ChangeSet and are not persisted.
+ActiveFedora::ChangeSet.class_eval do
+    # @return [Hash<RDF::URI, RDF::Queryable::Enumerator>] hash of predicate uris to statements
+    def changes
+      @changes ||= changed_attributes.each_with_object({}) do |key, result|
+        if object.association(key.to_sym).is_a? ActiveFedora::Associations::Association
+          # ActiveFedora::Reflection::RDFPropertyReflection
+          predicate = object.association(key.to_sym).reflection.predicate
+          values = graph.query({ subject: object.rdf_subject, predicate: predicate })
+          result[predicate] = values if predicate.present?
+        elsif object.class.properties.keys.include?(key)
+          predicate = graph.reflections.reflect_on_property(key).predicate
+          results = graph.query({ subject: object.rdf_subject, predicate: predicate })
+          new_graph = child_graphs(results.map(&:object))
+          results.each do |res|
+            new_graph << res
+          end
+          result[predicate] = new_graph
+        elsif key == 'type'.freeze
+          # working around https://github.com/ActiveTriples/ActiveTriples/issues/122
+          predicate = ::RDF.type
+          result[predicate] = graph.query({ subject: object.rdf_subject, predicate: predicate }).select do |statement|
+            !statement.object.to_s.start_with?("http://fedora.info/definitions/v4/repository#", "http://www.w3.org/ns/ldp#")
+          end
+        elsif object.local_attributes.include?(key)
+          raise "Unable to find a graph predicate corresponding to the attribute: \"#{key}\""
+        end
+      end
+    end
+end
+
+ActiveFedora::Reflection::IndirectlyContainsReflection.class_eval do
+  def predicate
+    options[:has_member_relation] || ::RDF::Vocab::LDP.contains
+  end
+end
