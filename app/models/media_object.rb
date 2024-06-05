@@ -52,7 +52,15 @@ class MediaObject < ActiveFedora::Base
     self.save!(validate: false) unless self.master_file_ids.sort == self.section_ids.sort
   end
   before_save do
-    self.master_files = self.sections unless self.new_record? || self.master_file_ids.sort == self.section_ids.sort
+    unless self.new_record? || self.master_file_ids.sort == self.section_ids.sort
+      # Instead of using the master_files association writer manually set the hasPart triples on the media object
+      # The association writer in ActiveFedora fetches all of the master files including associated resources (via find)
+      # before writing the master file ids to the proxy ActiveFedora::IndirectContainer subresource id/master_files.
+      # This approach requires some overrides of ActiveFedora to fill in some missing functionality.
+      # These overrides have been appended to config/initializers/active_fedora_general.rb
+      self.attribute_will_change! :master_files
+      self.resource.set_value(::RDF::Vocab::DC.hasPart, self.section_ids.collect {|id| ::RDF::Resource.new(MasterFile.id_to_uri(id))})
+    end
   end
 
   after_save :update_dependent_permalinks_job, if: Proc.new { |mo| mo.persisted? && mo.published? }

@@ -249,10 +249,6 @@ class MediaObjectsController < ApplicationController
         if api_params[:replace_masterfiles]
           old_ordered_sections.each do |mf|
             p = MasterFile.find(mf)
-            # FIXME: Figure out why this next line is necessary
-            # without it the save below will fail with Ldp::Gone when attempting to set master_files in the MediaObject before_save callback
-            # This could be avoided by doing a reload after all of the destroys but I'm afraid that would mess up other changes already staged in-memory.
-            @media_object.master_files.delete(p)
             # Need to manually remove from section_ids in memory to match changes that will persist when the master file is destroyed
             @media_object.section_ids -= [p.id]
             p.destroy
