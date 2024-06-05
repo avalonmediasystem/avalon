@@ -89,6 +89,8 @@ module ModsBehaviors
     # For full text, we stuff it into the mods_tesim field which is already configured for Mods doucments
     solr_doc['mods_tesim'] = self.ng_xml.xpath('//text()').collect { |t| t.text }
 
+    solr_doc['descMetadata_modified_dtsi'] = ActiveFedora::Indexing::DefaultDescriptors.iso8601_date(self.record_change_date.first)
+
     # TODO: Find a better way to handle super long fields other than simply dropping them from the solr doc.
     solr_doc.delete_if do |field,value|
       case value
