@@ -1181,7 +1181,7 @@ describe MediaObjectsController, type: :controller do
     context "with json format" do
       subject(:json) { JSON.parse(response.body) }
       let(:administrator) { FactoryBot.create(:administrator) }
-      let!(:media_object) { FactoryBot.create(:fully_searchable_media_object) }
+      let!(:media_object) { FactoryBot.create(:all_fields_media_object) }
       let!(:master_file) { FactoryBot.create(:master_file, :with_derivative, media_object: media_object) }
 
       before do
@@ -1203,17 +1203,8 @@ describe MediaObjectsController, type: :controller do
         expect(json['published']).to eq(media_object.published?)
         expect(json['summary']).to eq(media_object.abstract)
 
-        # FIXME: https://github.com/avalonmediasystem/avalon/issues/5834
         ingest_api_hash = media_object.to_ingest_api_hash(false)
-        json['fields'].each do |k,v|
-          if k == "avalon_resource_type"
-            expect(v.map(&:downcase)).to eq(ingest_api_hash[:fields][k.to_sym])
-          elsif k == "record_identifier"
-            # no-op since not indexed
-          else
-            expect(v).to eq(ingest_api_hash[:fields][k.to_sym])
-          end
-        end
+        json['fields'].each { |k,v| expect(v).to eq(ingest_api_hash[:fields][k.to_sym]) }
 
         # Symbolize keys for master files and derivatives
         json['files'].each do |mf|

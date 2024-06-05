@@ -34,7 +34,9 @@ module ModsBehaviors
     end
     solr_doc['title_addl_sim'] = gather_terms(addl_titles)
     solr_doc['heading_sim'] = self.find_by_terms(:main_title).text
-
+    solr_doc['uniform_title_ssim'] = gather_terms(self.find_by_terms(:uniform_title))
+    solr_doc['alternative_title_ssim'] = gather_terms(self.find_by_terms(:alternative_title))
+    solr_doc['translated_title_ssim'] = gather_terms(self.find_by_terms(:translated_title))
 
     solr_doc['creator_ssim'] = gather_terms(self.find_by_terms(:creator))
 #    solr_doc['creator_ssi'] = self.find_by_terms(:creator).text
@@ -80,13 +82,13 @@ module ModsBehaviors
     solr_doc['other_identifier_sim'] = gather_terms(self.find_by_terms(:other_identifier))
     solr_doc['bibliographic_id_ssi'] = self.bibliographic_id.first
     solr_doc['bibliographic_id_source_ssi'] = self.bibliographic_id.source.first
-    solr_doc['uniform_title_ssim'] = gather_terms(self.find_by_terms(:uniform_title))
     solr_doc['statement_of_responsibility_ssi'] = gather_terms(self.find_by_terms(:statement_of_responsibility))
     solr_doc['record_identifier_ssim'] = gather_terms(self.find_by_terms(:record_identifier))
 
     # Extract 4-digit year for creation date facet in Hydra and pub_date facet in Blacklight
     solr_doc['date_issued_ssi'] = self.find_by_terms(:date_issued).text
     solr_doc['date_created_ssi'] = self.find_by_terms(:date_created).text
+    solr_doc['copyright_date_ssi'] = self.find_by_terms(:copyright_date).text
     # Put both publication date and creation date into the date facet
     solr_doc['date_sim'] = gather_years(solr_doc['date_issued_ssi'])
     solr_doc['date_sim'] += gather_years(solr_doc['date_created_ssi']) if solr_doc['date_created_ssi'].present?
