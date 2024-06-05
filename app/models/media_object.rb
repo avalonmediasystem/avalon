@@ -318,7 +318,7 @@ class MediaObject < ActiveFedora::Base
       solr_doc["title_ssort"] = self.title
       solr_doc["creator_ssort"] = Array(self.creator).join(', ')
       solr_doc["date_ingested_ssim"] = self.create_date.strftime "%F" if self.create_date.present?
-      solr_doc['avalon_resource_type_ssim'] = self.avalon_resource_type.map(&:titleize)
+      solr_doc['avalon_resource_type_ssim'] = self.avalon_resource_type
       solr_doc['identifier_ssim'] = self.identifier.map(&:downcase)
       solr_doc['note_ssm'] = self.note.collect { |n| n.to_json }
       solr_doc['other_identifier_ssm'] = self.other_identifier.collect { |oi| oi.to_json }
