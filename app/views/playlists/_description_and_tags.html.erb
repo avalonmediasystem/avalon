@@ -14,8 +14,8 @@ Unless required by applicable law or agreed to in writing, software distributed
 ---  END LICENSE_HEADER BLOCK  ---
 %>
 <% if @playlist.comment.present? %>
-<h4>Comments</h4>
-<%= @playlist.comment %>
+<h4><%= t("activerecord.attributes.playlist.comment") %></h4>
+<%= simple_format @playlist.comment %>
 <% end %>
 
 <% if @playlist.tags.present? %>

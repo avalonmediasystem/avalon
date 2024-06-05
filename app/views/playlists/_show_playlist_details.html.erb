@@ -36,7 +36,7 @@ Unless required by applicable law or agreed to in writing, software distributed
         <% if @playlist.comment.blank? %>
         <span class="info-text-gray">No description</span>
         <% else %>
-        <%= @playlist.comment %>
+        <%= simple_format @playlist.comment %>
         <% end %>
       </dd>
       <dt class="col-sm-2"><%= t("playlist.visibility") %>:</dt>
