@@ -52,6 +52,7 @@ module Avalon
         resource '/master_files/*/supplemental_files/*', headers: :any, methods: [:get]
         resource '/playlists/*/manifest.json', headers: :any, credentials: true, methods: [:get]
         resource '/timelines/*/manifest.json', headers: :any, methods: [:get, :post]
+        resource '/master_files/*/search', headers: :any, methods: [:get]
       end
     end
 
