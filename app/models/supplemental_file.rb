@@ -32,7 +32,7 @@ class SupplementalFile < ApplicationRecord
 
   # Need to prepend so this runs before the callback added by `has_one_attached` above
   # See https://github.com/rails/rails/issues/37304
-  after_create_commit :update_index, prepend: true, unless: :skip_index
+  after_create_commit :index_file, prepend: true, unless: :skip_index
   after_update_commit :update_index, prepend: true
 
   def attach_file(new_file)
@@ -98,9 +98,13 @@ class SupplementalFile < ApplicationRecord
     "WEBVTT\n\n#{conversion}".strip
   end
   
+  # We need to use both after_create_commit and after_update_commit to update the index properly in both cases. 
+  # However, they cannot call the same method name or only the last defined callback will take effect.
+  # https://guides.rubyonrails.org/active_record_callbacks.html#aliases-for-after-commit
   def update_index
     ActiveFedora::SolrService.add(to_solr, softCommit: true)
   end
+  alias index_file update_index
 
   # Creates a solr document hash for the {#object}
   # @return [Hash] the solr document

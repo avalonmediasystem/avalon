@@ -44,6 +44,12 @@ describe SupplementalFile do
           expect(subject.errors[:file_type]).not_to be_empty
         end
       end
+      context "caption metadata only with skip_file_type" do
+        let(:subject) { FactoryBot.build(:supplemental_file, :with_caption_tag, skip_file_type: true) }
+        it 'should skip validation' do
+          expect(subject.valid?).to be_truthy
+        end
+      end
     end
 
     describe 'scopes' do
@@ -60,6 +66,48 @@ describe SupplementalFile do
         it 'filters for multiple tags' do
           expect(SupplementalFile.with_tag('transcript').with_tag('machine_generated').first).to eq subject
           expect(SupplementalFile.with_tag('transcript').with_tag('machine_generated').count).to eq 1
+        end
+      end
+    end
+
+    describe '#update_index' do
+      let(:transcript) { FactoryBot.build(:supplemental_file, :with_transcript_file, :with_transcript_tag) }
+      context 'on create' do
+        it 'triggers callback' do
+          expect(transcript).to receive(:index_file)
+          transcript.save
+        end
+
+        it 'indexes the transcript' do
+          transcript.save
+          solr_doc = ActiveFedora::SolrService.query("id:#{RSolr.solr_escape(transcript.to_global_id.to_s)}").first
+          expect(solr_doc["transcript_tsim"]).to eq ["00:00:03.500 --> 00:00:05.000 Example captions"]
+        end
+
+        context 'skip index' do
+          let(:transcript) { FactoryBot.build(:supplemental_file, :with_transcript_file, :with_transcript_tag, skip_index: true) }
+          it 'does not trigger callback' do
+            expect(transcript).to_not receive(:index_file)
+            transcript.save
+          end
+        end
+      end
+
+      context 'on update' do
+        let(:transcript) { FactoryBot.create(:supplemental_file, :with_transcript_file, :with_transcript_tag) }
+        it 'triggers callback' do
+          transcript.file.attach(fixture_file_upload(Rails.root.join('spec', 'fixtures', 'chunk_test.vtt'), 'text/vtt'))
+          expect(transcript).to receive(:update_index)
+          transcript.save
+        end
+
+        it 'updates the indexed transcript' do
+          before_doc = ActiveFedora::SolrService.query("id:#{RSolr.solr_escape(transcript.to_global_id.to_s)}").first
+          expect(before_doc["transcript_tsim"].first).to eq "00:00:03.500 --> 00:00:05.000 Example captions"
+          transcript.file.attach(fixture_file_upload(Rails.root.join('spec', 'fixtures', 'chunk_test.vtt'), 'text/vtt'))
+          transcript.save
+          after_doc = ActiveFedora::SolrService.query("id:#{RSolr.solr_escape(transcript.to_global_id.to_s)}").first
+          expect(after_doc["transcript_tsim"].first).to eq("00:00:01.200 --> 00:00:21.000 [music]")
         end
       end
     end
