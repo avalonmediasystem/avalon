@@ -133,6 +133,10 @@ class Ability
           @user.in?(collection.managers)
         end
 
+        can :manage, [Admin::Collection, SpeedyAF::Proxy::Admin::Collection] do |collection|
+          @user.in?(collection.managers)
+        end
+
         can :update_depositors, [Admin::Collection, SpeedyAF::Proxy::Admin::Collection] do |collection|
           is_editor_of?(collection)
         end
