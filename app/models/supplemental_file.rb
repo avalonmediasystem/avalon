@@ -19,29 +19,28 @@ class SupplementalFile < ApplicationRecord
 
   scope :with_tag, ->(tag_filter) { where("tags LIKE ?", "%\n- #{tag_filter}\n%") }
 
+  attr_accessor :skip_file_type
+  attr_accessor :skip_index
+
   # TODO: the empty tag should represent a generic supplemental file
   validates :tags, array_inclusion: ['transcript', 'caption', 'machine_generated', '', nil]
   validates :language, inclusion: { in: LanguageTerm.map.keys }
-  validate  :validate_file_type, if: :caption?
   validates :parent_id, presence: true
+  validate  :validate_file_type, if: :validate_caption?
 
   serialize :tags, Array
 
   # Need to prepend so this runs before the callback added by `has_one_attached` above
   # See https://github.com/rails/rails/issues/37304
-  after_create_commit :update_index, prepend: true
-  after_update :update_index
-
-  def validate_file_type
-    errors.add(:file_type, "Uploaded file is not a recognized captions file") unless ['text/vtt', 'text/srt'].include? file.content_type
-  end
+  after_create_commit :update_index, prepend: true, unless: :skip_index
+  after_update_commit :update_index, prepend: true
 
   def attach_file(new_file)
     file.attach(new_file)
     extension = File.extname(new_file.original_filename)
     self.file.content_type = Mime::Type.lookup_by_extension(extension.slice(1..-1)).to_s if extension == '.srt'
     self.label = file.filename.to_s if label.blank?
-    self.language = tags.include?('caption') ? Settings.caption_default.language : 'eng'
+    self.language ||= tags.include?('caption') ? Settings.caption_default.language : 'eng'
   end
 
   def mime_type
@@ -62,6 +61,25 @@ class SupplementalFile < ApplicationRecord
 
   def caption_transcript?
     tags.include?('caption') && tags.include?('transcript')
+  end
+
+  def as_json(options={})
+    type = if tags.include?('caption')
+             'caption'
+           elsif tags.include?('transcript')
+             'transcript'
+           else
+             'generic'
+           end
+
+    {
+      id: id,
+      type: type,
+      label: label,
+      language: LanguageTerm.find(language).text,
+      treat_as_transcript: caption_transcript? ? '1' : nil,
+      machine_generated: machine_generated? ? '1' : nil
+    }.compact
   end
 
   # Adapted from https://github.com/opencoconut/webvtt-ruby/blob/e07d59220260fce33ba5a0c3b355e3ae88b99457/lib/webvtt/parser.rb#L11-L30
@@ -110,6 +128,14 @@ class SupplementalFile < ApplicationRecord
   end
 
   private
+
+  def validate_file_type
+    errors.add(:file_type, "Uploaded file is not a recognized captions file") unless ['text/vtt', 'text/srt'].include? file.content_type
+  end
+
+  def validate_caption?
+    caption? && !skip_file_type
+  end
 
   def c_time
     created_at&.to_datetime || DateTime.now

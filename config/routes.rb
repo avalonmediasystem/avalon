@@ -139,7 +139,7 @@ Rails.application.routes.draw do
     end
 
     # Supplemental Files
-    resources :supplemental_files, except: [:new, :index, :edit]
+    resources :supplemental_files, except: [:new, :edit]
   end
 
   resources :master_files, except: [:new, :index] do
@@ -168,7 +168,7 @@ Rails.application.routes.draw do
     end
 
     # Supplemental Files
-    resources :supplemental_files, except: [:new, :index, :edit] do
+    resources :supplemental_files, except: [:new, :edit] do
       member do
         get 'captions'
         get 'transcripts', :to => redirect('/master_files/%{master_file_id}/supplemental_files/%{id}')
