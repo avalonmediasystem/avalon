@@ -15,7 +15,7 @@ Unless required by applicable law or agreed to in writing, software distributed
 %>
 <% if section.supplemental_files_json.present? %>
   <% files=tag.empty? ? section.supplemental_files(tag: nil) : section.supplemental_files(tag: tag) %>
-  <div class="file_view <% if tag == "caption" %>captions<% end %>">
+  <div class="file_view <%= tag.pluralize if tag.present? %>">
     <% if tag == "caption" %>
       <div class="row supplemental-file-data edit-item" id="edit-label-row">
         <div class="row col-sm-9 col-md-8 col-9">
@@ -40,12 +40,19 @@ Unless required by applicable law or agreed to in writing, software distributed
               <%= form.text_field :label, id: "supplemental_file_input_#{section.id}_#{file.id}", value: file.label %>
             </div>
             <% if tag == 'transcript' %>
-              <span class="form-group col-md-6 col-sm-6 col-6 p-0">
-                <%= label_tag "machine_generated_#{file.id}", class: "ml-3" do %>
-                  <%= check_box_tag "machine_generated_#{file.id}", '1', file.machine_generated? %>
-                  Machine Generated
-                <% end %>
-              </span>
+              <div class="form-group col-md-6 col p-0">
+                <%= form.text_field :language, id: "supplemental_file_language_#{section.id}_#{file.id}", value: LanguageTerm.find(file.language).text,
+                    class: "typeahead from-model form-control",
+                    data: { model: 'languageTerm', validate: false } %>
+              </div>
+              <div class="row-col-sm-9 row-col-md-8 row-col-9 p-0">
+                <span class="form-check-inline col-md-6 col-sm-6 col-6 p-0">
+                  <%= label_tag "machine_generated_#{file.id}", class: "checkbox", style: "white-space: nowrap; padding-left: 0.45rem;" do %>
+                    <%= check_box_tag "machine_generated_#{file.id}", '1', file.machine_generated? %>
+                    Machine Generated
+                  <% end %>
+                </span>
+              </div>
             <% end %>
             <% if tag == 'caption' %>
               <div class="form-group col-md-6 col p-0">
