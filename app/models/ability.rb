@@ -133,10 +133,6 @@ class Ability
           @user.in?(collection.managers)
         end
 
-        can :manage, [Admin::Collection, SpeedyAF::Proxy::Admin::Collection] do |collection|
-          @user.in?(collection.managers)
-        end
-
         can :update_depositors, [Admin::Collection, SpeedyAF::Proxy::Admin::Collection] do |collection|
           is_editor_of?(collection)
         end
@@ -155,6 +151,10 @@ class Ability
 
         can [:edit, :destroy, :update], [MasterFile, SpeedyAF::Proxy::MasterFile] do |master_file|
           can? :edit, master_file.media_object
+        end
+
+        can :download, [MasterFile, SpeedyAF::Proxy::MasterFile] do |master_file|
+          @user.in?(master_file.media_object.collection.managers)
         end
 
         # Users logged in through LTI cannot share
