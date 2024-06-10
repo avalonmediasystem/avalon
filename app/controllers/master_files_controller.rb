@@ -325,7 +325,7 @@ class MasterFilesController < ApplicationController
   end
 
   def download_derivative
-    authorize! :manage, @master_file.media_object.collection
+    authorize! :download, @master_file
 
     begin
       path = derivative_path

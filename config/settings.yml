@@ -106,6 +106,7 @@ controlled_digital_lending:
   # Choose whether every collection has CDL enabled or disabled by default
   collections_enabled: false
   default_lending_period: 'P14D' # ISO8601 duration format: P14D == 14.days, PT8H == 8.hours, etc.
+# Caption default field also sets the default language information for transcript files
 caption_default:
   # Language should be 3 letter ISO 639-2 code
   language: 'eng'

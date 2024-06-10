@@ -637,6 +637,9 @@ describe MediaObject do
       media_object.save!
       expect(media_object.to_solr['read_access_ip_group_ssim']).to include(ip_addr)
     end
+    it 'indexes modified time for descMetadata subresource' do
+      expect(DateTime.parse(media_object.to_solr['descMetadata_modified_dtsi'])).to eq DateTime.parse(media_object.descMetadata.record_change_date.first)
+    end
   end
 
   describe 'permalink' do

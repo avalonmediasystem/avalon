@@ -4,7 +4,7 @@ xml.entry do
   xml.title index_presenter(document).label(document_show_link_field(document))
 
   # updated is required, for now we'll just set it to now, sorry
-  xml.updated document[:timestamp]
+  xml.updated document[:descMetadata_modified_dtsi] || document[:timestamp]
 
   xml.link    "rel" => "alternate", "type" => "application/json", "href" => media_object_url(document.id, format: :json)
   # add other doc-specific formats, atom only lets us have one per

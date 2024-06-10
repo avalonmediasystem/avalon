@@ -756,7 +756,7 @@ describe MasterFilesController do
     let(:med_derivative) { FactoryBot.create(:derivative, quality: 'medium') }
     before do
       allow(Settings.derivative).to receive(:allow_download).and_return(true)
-      login_as :administrator
+      login_user collection.managers.first
     end
 
     it 'should download the high quality derivative' do
