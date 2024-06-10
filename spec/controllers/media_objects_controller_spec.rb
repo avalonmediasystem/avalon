@@ -1181,7 +1181,7 @@ describe MediaObjectsController, type: :controller do
     context "with json format" do
       subject(:json) { JSON.parse(response.body) }
       let(:administrator) { FactoryBot.create(:administrator) }
-      let!(:media_object) { FactoryBot.create(:media_object) }
+      let!(:media_object) { FactoryBot.create(:all_fields_media_object) }
       let!(:master_file) { FactoryBot.create(:master_file, :with_derivative, media_object: media_object) }
 
       before do
@@ -1190,6 +1190,8 @@ describe MediaObjectsController, type: :controller do
       end
 
       it "should return json for specific media_object" do
+        # Run indexing job to ensure object isn't reified in this request
+        perform_enqueued_jobs(only: MediaObjectIndexingJob)
         get 'show', params: { id: media_object.id, format:'json' }
         expect(json['id']).to eq(media_object.id)
         expect(json['title']).to eq(media_object.title)
@@ -1201,13 +1203,11 @@ describe MediaObjectsController, type: :controller do
         expect(json['published']).to eq(media_object.published?)
         expect(json['summary']).to eq(media_object.abstract)
 
-        # FIXME: https://github.com/avalonmediasystem/avalon/issues/5834
         ingest_api_hash = media_object.to_ingest_api_hash(false)
         json['fields'].each do |k,v|
-          if k == "avalon_resource_type"
-            expect(v.map(&:downcase)).to eq(ingest_api_hash[:fields][k.to_sym])
-          elsif k == "record_identifier"
-            # no-op since not indexed
+          # Known issue: identifiers are downcased when indexing to allow for case-insensitive searching
+          if k.to_sym == :identifier
+            expect(v).to eq(ingest_api_hash[:fields][k.to_sym].map(&:downcase))
           else
             expect(v).to eq(ingest_api_hash[:fields][k.to_sym])
           end
