@@ -1204,7 +1204,14 @@ describe MediaObjectsController, type: :controller do
         expect(json['summary']).to eq(media_object.abstract)
 
         ingest_api_hash = media_object.to_ingest_api_hash(false)
-        json['fields'].each { |k,v| expect(v).to eq(ingest_api_hash[:fields][k.to_sym]) }
+        json['fields'].each do |k,v|
+          # Known issue: identifiers are downcased when indexing to allow for case-insensitive searching
+          if k.to_sym == :identifier
+            expect(v).to eq(ingest_api_hash[:fields][k.to_sym].map(&:downcase))
+          else
+            expect(v).to eq(ingest_api_hash[:fields][k.to_sym])
+          end
+        end
 
         # Symbolize keys for master files and derivatives
         json['files'].each do |mf|
