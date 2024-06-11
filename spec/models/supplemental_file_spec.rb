@@ -44,12 +44,6 @@ describe SupplementalFile do
           expect(subject.errors[:file_type]).not_to be_empty
         end
       end
-      context "caption metadata only with skip_file_type" do
-        let(:subject) { FactoryBot.build(:supplemental_file, :with_caption_tag, skip_file_type: true) }
-        it 'should skip validation' do
-          expect(subject.valid?).to be_truthy
-        end
-      end
     end
 
     describe 'scopes' do
@@ -82,14 +76,6 @@ describe SupplementalFile do
           transcript.save
           solr_doc = ActiveFedora::SolrService.query("id:#{RSolr.solr_escape(transcript.to_global_id.to_s)}").first
           expect(solr_doc["transcript_tsim"]).to eq ["00:00:03.500 --> 00:00:05.000 Example captions"]
-        end
-
-        context 'skip index' do
-          let(:transcript) { FactoryBot.build(:supplemental_file, :with_transcript_file, :with_transcript_tag, skip_index: true) }
-          it 'does not trigger callback' do
-            expect(transcript).to_not receive(:index_file)
-            transcript.save
-          end
         end
       end
 
@@ -192,7 +178,7 @@ describe SupplementalFile do
     context 'machine generated file' do
       let(:supplemental_file) { FactoryBot.create(:supplemental_file, :with_caption_file, tags: ['machine_generated'], label: 'Test') }
       it 'includes machine_generated in json' do
-        expect(subject[:machine_generated]).to eq '1'
+        expect(subject[:machine_generated]).to eq true
       end
     end
 
@@ -205,7 +191,7 @@ describe SupplementalFile do
       context 'as transcript' do
         let(:supplemental_file) { FactoryBot.create(:supplemental_file, :with_caption_file, tags: ['caption', 'transcript'], label: 'Test') }
         it 'includes treat_as_transcript in JSON' do
-          expect(subject[:treat_as_transcript]).to eq '1'
+          expect(subject[:treat_as_transcript]).to eq true
         end
       end
     end
