@@ -82,7 +82,7 @@ RSpec.shared_examples 'a nested controller for' do |object_class|
     describe 'normal auth' do
       context 'with unauthenticated user' do
         it "all routes should return 401" do
-          expect(get :index, params: { class_id => object.id }).to have_http_status(401)
+          expect(get :index, params: { class_id => object.id, format: 'json' }).to have_http_status(401)
           expect(get :show, params: { class_id =>  object.id, id: supplemental_file.id }).to have_http_status(401)
           expect(post :create, params: { class_id => object.id }).to have_http_status(401)
           expect(put :update, params: { class_id =>  object.id, id: supplemental_file.id }).to have_http_status(401)
@@ -94,7 +94,7 @@ RSpec.shared_examples 'a nested controller for' do |object_class|
           login_as :user
         end
         it "all routes should return 401" do
-          expect(get :index, params: { class_id => object.id }).to have_http_status(401)
+          expect(get :index, params: { class_id => object.id, format: 'json' }).to have_http_status(401)
           expect(get :show, params: { class_id => object.id, id: supplemental_file.id }).to have_http_status(401)
           expect(post :create, params: { class_id => object.id }).to have_http_status(401)
           expect(put :update, params: { class_id => object.id, id: supplemental_file.id }).to have_http_status(401)
@@ -120,7 +120,7 @@ RSpec.shared_examples 'a nested controller for' do |object_class|
     end
 
     it "returns metadata for all associated supplemental files" do
-      get :index, params: { class_id => object.id }, session: valid_session
+      get :index, params: { class_id => object.id, format: 'json' }, session: valid_session
       expect(subject.count).to eq 3
       [supplemental_file, caption, transcript].each do |file|
         expect(subject.any? { |s| s == JSON.parse(file.as_json.to_json) }).to eq true
@@ -128,7 +128,7 @@ RSpec.shared_examples 'a nested controller for' do |object_class|
     end
 
     it "paginates results when requested" do
-      get :index, params: { class_id => object.id, per_page: 1, page: 1 }, session: valid_session
+      get :index, params: { class_id => object.id, format: 'json', per_page: 1, page: 1 }, session: valid_session
       expect(subject.count).to eq 1
       expect(subject.first.symbolize_keys).to eq supplemental_file.as_json
     end
@@ -163,7 +163,7 @@ RSpec.shared_examples 'a nested controller for' do |object_class|
     end
 
     context 'json request' do
-      let(:metadata) { { label: 'label', type: 'caption', language: 'French', machine_generated: 1, treat_as_transcript: 1 } }
+      let(:metadata) { { label: 'label', type: 'caption', language: 'French', machine_generated: true, treat_as_transcript: true } }
       context "with valid params" do
         let(:uploaded_file) { fixture_file_upload(Rails.root.join('spec', 'fixtures', 'captions.vtt'), 'text/vtt') }
         let(:valid_create_attributes) { { file: uploaded_file, metadata: metadata.to_json } }
@@ -172,7 +172,7 @@ RSpec.shared_examples 'a nested controller for' do |object_class|
             post :create, params: { class_id => object.id, **valid_create_attributes, format: :json }, session: valid_session
           }.to change { object.reload.supplemental_files.size }.by(1)
           expect(response).to have_http_status(:created)
-          expect(JSON.parse(response.body)).to eq ({ "supplemental_file" => assigns(:supplemental_file).id })
+          expect(JSON.parse(response.body)).to eq ({ "id" => assigns(:supplemental_file).id })
 
           expect(object.supplemental_files.first.id).to eq 1
           expect(object.supplemental_files.first.label).to eq 'label'
@@ -186,7 +186,7 @@ RSpec.shared_examples 'a nested controller for' do |object_class|
               post :create, params: { class_id => object.id, metadata: metadata.to_json, format: :json }, session: valid_session
             }.to change { object.reload.supplemental_files.size }.by(1)
             expect(response).to have_http_status(:created)
-            expect(JSON.parse(response.body)).to eq ({ "supplemental_file" => assigns(:supplemental_file).id })
+            expect(JSON.parse(response.body)).to eq ({ "id" => assigns(:supplemental_file).id })
 
             expect(object.supplemental_files.first.id).to eq 1
             expect(object.supplemental_files.first.label).to eq 'label'
@@ -202,7 +202,7 @@ RSpec.shared_examples 'a nested controller for' do |object_class|
                 post :create, params: { class_id => object.id, **metadata, format: :json }, session: valid_session
               }.to change { object.reload.supplemental_files.size }.by(1)
               expect(response).to have_http_status(:created)
-              expect(JSON.parse(response.body)).to eq ({ "supplemental_file" => assigns(:supplemental_file).id })
+              expect(JSON.parse(response.body)).to eq ({ "id" => assigns(:supplemental_file).id })
 
               expect(object.supplemental_files.first.id).to eq 1
               expect(object.supplemental_files.first.label).to eq 'label'
@@ -221,7 +221,7 @@ RSpec.shared_examples 'a nested controller for' do |object_class|
               post :create, params: { class_id => object.id, metadata: metadata.to_json, format: :json }, session: valid_session
             }.to change { object.reload.supplemental_files.size }.by(1)
             expect(response).to have_http_status(:created)
-            expect(JSON.parse(response.body)).to eq ({ "supplemental_file" => assigns(:supplemental_file).id })
+            expect(JSON.parse(response.body)).to eq ({ "id" => assigns(:supplemental_file).id })
 
             expect(object.supplemental_files.first.id).to eq 1
             expect(object.supplemental_files.first.label).to eq 'label'
@@ -306,11 +306,12 @@ RSpec.shared_examples 'a nested controller for' do |object_class|
         before { ApiToken.create token: 'secret_token', username: 'archivist1@example.com', email: 'archivist1@example.com' }
         it "creates a SupplementalFile for #{object_class}" do
           request.headers['Avalon-Api-Key'] = 'secret_token'
+          request.headers['Accept'] = 'application/json'
           expect {
             post :create, params: { class_id => object.id, file: uploaded_file, format: :html }, session: valid_session
           }.to change { object.reload.supplemental_files.size }.by(1)
           expect(response).to have_http_status(:created)
-          expect(JSON.parse(response.body)).to eq ({ "supplemental_file" => assigns(:supplemental_file).id })
+          expect(JSON.parse(response.body)).to eq ({ "id" => assigns(:supplemental_file).id })
 
           expect(object.supplemental_files.first.id).to eq 1
           expect(object.supplemental_files.first.label).to eq 'captions.srt'
@@ -372,7 +373,7 @@ RSpec.shared_examples 'a nested controller for' do |object_class|
         request.headers['Content-Type'] = 'application/json'
       end
       context "with valid metadata params" do
-        let(:valid_update_attributes) { { label: 'new label', type: 'transcript', machine_generated: 1 }.to_json }
+        let(:valid_update_attributes) { { label: 'new label', type: 'transcript', machine_generated: true }.to_json }
         it "updates the SupplementalFile metadata for #{object_class}" do
           expect {
             put :update, params: { class_id => object.id, id: supplemental_file.id, metadata: valid_update_attributes, format: :json }, session: valid_session
@@ -380,7 +381,7 @@ RSpec.shared_examples 'a nested controller for' do |object_class|
            .and change { object.reload.supplemental_files.first.tags }.from([]).to(['transcript', 'machine_generated'])
 
           expect(response).to have_http_status(:ok)
-          expect(response.body).to eq({ "supplemental_file": supplemental_file.id }.to_json)
+          expect(response.body).to eq({ "id": supplemental_file.id }.to_json)
         end
       end
 
@@ -480,12 +481,13 @@ RSpec.shared_examples 'a nested controller for' do |object_class|
         before { ApiToken.create token: 'secret_token', username: 'archivist1@example.com', email: 'archivist1@example.com' }
         it "updates the SupplementalFile attached file for #{object_class}" do
           request.headers['Avalon-Api-Key'] = 'secret_token'
+          request.headers['Accept'] = 'application/json'
           expect {
             put :update, params: { class_id => object.id, id: supplemental_file.id, file: file_update, format: :html }, session: valid_session
           }.to change { object.reload.supplemental_files.first.file }
 
           expect(response).to have_http_status(:ok)
-          expect(response.body).to eq({ "supplemental_file": supplemental_file.id }.to_json)
+          expect(response.body).to eq({ "id": supplemental_file.id }.to_json)
         end
       end
 
@@ -493,6 +495,7 @@ RSpec.shared_examples 'a nested controller for' do |object_class|
         before { ApiToken.create token: 'secret_token', username: 'archivist1@example.com', email: 'archivist1@example.com' }
         it "returns a 400" do
           request.headers['Avalon-Api-Key'] = 'secret_token'
+          request.headers['Accept'] = 'application/json'
           put :update, params: { class_id=> object.id, id: supplemental_file.id, metadata: valid_update_attributes, format: :html }, session: valid_session
           expect(response).to have_http_status(400)
         end
@@ -515,10 +518,11 @@ RSpec.shared_examples 'a nested controller for' do |object_class|
       end
 
       context "API updating caption with invalid file type" do
-        let(:supplemental_file) { FactoryBot.create(:supplemental_file, :with_caption_tag, skip_file_type: true) }
+        let(:supplemental_file) { FactoryBot.create(:supplemental_file, :with_caption_tag) }
         before { ApiToken.create token: 'secret_token', username: 'archivist1@example.com', email: 'archivist1@example.com' }
         it "returns a 500" do
           request.headers['Avalon-Api-Key'] = 'secret_token'
+          request.headers['Accept'] = 'application/json'
           put :update, params: { class_id=> object.id, id: supplemental_file.id, file: uploaded_file, format: :html }, session: valid_session
           expect(response).to have_http_status(500)
         end

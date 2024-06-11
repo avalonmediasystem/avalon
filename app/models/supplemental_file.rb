@@ -19,20 +19,17 @@ class SupplementalFile < ApplicationRecord
 
   scope :with_tag, ->(tag_filter) { where("tags LIKE ?", "%\n- #{tag_filter}\n%") }
 
-  attr_accessor :skip_file_type
-  attr_accessor :skip_index
-
   # TODO: the empty tag should represent a generic supplemental file
   validates :tags, array_inclusion: ['transcript', 'caption', 'machine_generated', '', nil]
   validates :language, inclusion: { in: LanguageTerm.map.keys }
   validates :parent_id, presence: true
-  validate  :validate_file_type, if: :validate_caption?
+  validate  :validate_file_type, if: :caption?
 
   serialize :tags, Array
 
   # Need to prepend so this runs before the callback added by `has_one_attached` above
   # See https://github.com/rails/rails/issues/37304
-  after_create_commit :index_file, prepend: true, unless: :skip_index
+  after_create_commit :index_file, prepend: true
   after_update_commit :update_index, prepend: true
 
   def attach_file(new_file)
@@ -77,8 +74,8 @@ class SupplementalFile < ApplicationRecord
       type: type,
       label: label,
       language: LanguageTerm.find(language).text,
-      treat_as_transcript: caption_transcript? ? '1' : nil,
-      machine_generated: machine_generated? ? '1' : nil
+      treat_as_transcript: caption_transcript? ? true : false,
+      machine_generated: machine_generated? ? true : false
     }.compact
   end
 
@@ -102,7 +99,7 @@ class SupplementalFile < ApplicationRecord
   # However, they cannot call the same method name or only the last defined callback will take effect.
   # https://guides.rubyonrails.org/active_record_callbacks.html#aliases-for-after-commit
   def update_index
-    ActiveFedora::SolrService.add(to_solr, softCommit: true)
+    ActiveFedora::SolrService.add(to_solr, softCommit: true) if file.present?
   end
   alias index_file update_index
 
@@ -134,11 +131,8 @@ class SupplementalFile < ApplicationRecord
   private
 
   def validate_file_type
-    errors.add(:file_type, "Uploaded file is not a recognized captions file") unless ['text/vtt', 'text/srt'].include? file.content_type
-  end
-
-  def validate_caption?
-    caption? && !skip_file_type
+    return unless file.present?
+    errors.add(:file_type, "Uploaded file is not a recognized captions file") unless ['text/vtt', 'text/srt'].include?(file.content_type)
   end
 
   def c_time

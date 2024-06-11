@@ -16,7 +16,6 @@
 class SupplementalFilesController < ApplicationController
   include Rails::Pagination
 
-  before_action :authenticate_user!, except: [:show, :captions]
   before_action :set_object
   before_action :authorize_object
 
@@ -55,17 +54,9 @@ class SupplementalFilesController < ApplicationController
 
       # Raise errror if file wasn't attached
       raise Avalon::SaveError, "File could not be attached." unless @supplemental_file.file.attached?
-
-      raise Avalon::SaveError, @supplemental_file.errors.full_messages unless @supplemental_file.save
-    else
-      # For multi-step API upload, we need to skip file type validation on the metadata portion of the save.
-      # Captions are validated as VTT or SRT which cannot be validated if there is no file attached.
-      @supplemental_file.skip_file_type = true
-      # Transcripts are automatically indexed on creation, so we need to skip indexing to avoid an error
-      # when saving without an uploaded file.
-      @supplemental_file.skip_index = true
-      raise Avalon::SaveError, @supplemental_file.errors.full_messages unless @supplemental_file.save
     end
+
+    raise Avalon::SaveError, @supplemental_file.errors.full_messages unless @supplemental_file.save
 
     @object.supplemental_files += [@supplemental_file]
     raise Avalon::SaveError, @object.errors[:supplemental_files_json].full_messages unless @object.save
@@ -73,14 +64,17 @@ class SupplementalFilesController < ApplicationController
     flash[:success] = "Supplemental file successfully added."
 
     respond_to do |format|
-      format.html { 
-        if request.headers['Avalon-Api-Key'].present?
-          render json: { supplemental_file: @supplemental_file.id }, status: :created
+      format.html {
+        # This path is for uploading the binary file. We need to provide a JSON response
+        # for the case of someone uploading through a CLI.
+        if request.headers['Accept'] == 'application/json'
+          render json: { id: @supplemental_file.id }, status: :created
         else
           redirect_to edit_structure_path
         end
       }
-      format.json { render json: { supplemental_file: @supplemental_file.id }, status: :created }
+      # This path is for uploading the metadata payload.
+      format.json { render json: { id: @supplemental_file.id }, status: :created }
     end
   end
 
@@ -113,20 +107,23 @@ class SupplementalFilesController < ApplicationController
 
     edit_file_information if !attachment
 
-    update_attached_file if attachment
+    @supplemental_file.attach_file(attachment) if attachment
 
     raise Avalon::SaveError, @supplemental_file.errors.full_messages unless @supplemental_file.save
 
     flash[:success] = "Supplemental file successfully updated."
     respond_to do |format|
-      format.html { 
-        if request.headers['Avalon-Api-Key'].present?
-          render json: { supplemental_file: @supplemental_file.id }
+      format.html {
+        # This path is for uploading the binary file. We need to provide a JSON response
+        # for the case of someone uploading through a CLI.
+        if request.headers['Accept'] == 'application/json'
+          render json: { id: @supplemental_file.id }
         else
           redirect_to edit_structure_path
         end
       }
-      format.json { render json: { supplemental_file: @supplemental_file.id }, status: :ok  }
+      # This path is for uploading the metadata payload.
+      format.json { render json: { id: @supplemental_file.id }, status: :ok  }
     end
   end
 
@@ -177,10 +174,10 @@ class SupplementalFilesController < ApplicationController
              when 'transcript'
                'transcript'
              else
-              nil
+               nil
              end
-      treat_as_transcript = 'transcript' if meta_params[:treat_as_transcript] == 1
-      machine_generated = 'machine_generated' if meta_params[:machine_generated] == 1
+      treat_as_transcript = 'transcript' if meta_params[:treat_as_transcript] == true
+      machine_generated = 'machine_generated' if meta_params[:machine_generated] == true
 
       sup_file_params[:label] ||= meta_params[:label].presence
       sup_file_params[:language] ||= meta_params[:language].presence
@@ -267,10 +264,6 @@ class SupplementalFilesController < ApplicationController
 
     def attachment
       params[:file] || supplemental_file_params[:file]
-    end
-
-    def update_attached_file
-      @supplemental_file.attach_file(attachment)
     end
 
     def object_supplemental_file_path
