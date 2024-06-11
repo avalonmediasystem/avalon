@@ -211,3 +211,5 @@ services:
     volumes:
       - ./:/e2e
       - npms:/e2e/node_modules
+    environment:
+      - CYPRESS_ENV=${CYPRESS_ENV:-local}
