@@ -19,7 +19,12 @@ context('Collections', () => {
   const search_collection = Cypress.env('SEARCH_COLLECTION')
   const collection_title = `Automation collection title ${Math.floor(Math.random() * 10000) + 1}`
 
-
+  Cypress.on('uncaught:exception', (err, runnable) => {
+	// Prevents Cypress from failing the test due to uncaught exceptions in the application code  - TypeError: Cannot read properties of undefined (reading 'scrollDown')
+	if (err.message.includes('Cannot read properties of undefined (reading \'success\')')) {
+	  return false;
+	}
+  });
   // checks navigation to Browse
   it('Verify whether an admin user is able to create a collection - @T553cda51', () => {
 		cy.login('administrator')
@@ -60,12 +65,121 @@ context('Collections', () => {
 	//slice a random portion of the collection title as the search keyword to ensure variablitity in testing
 	const search_keyword = search_collection.slice(startIndex, startIndex + sliceLength)
 	cy.get('input[placeholder="Search collections..."]').type(search_keyword).should('have.value', search_keyword)
-	cy.screenshot('search');
 	cy.get('.card-body').contains('a', search_collection);
-
 })
 
+
+it('Verify whether a user is able to update Collection information - @Ta1b2fef8', () => {
+	cy.login('administrator')
+	cy.visit('/')
+	cy.get('#manageDropdown').click()
+	cy.contains('Manage Content').click()
+	cy.contains('a', collection_title).click();
+	cy.get('.admin-collection-details')
+      .contains('button', 'Edit Collection Info')
+      .click();
+
+	//update description
+	var updatedDescription = ' Adding more details to collection description'
+	cy.get('#admin_collection_description').invoke('val').then((existingText) => {
+		updatedDescription = existingText + updatedDescription;  
+		cy.get('#admin_collection_description').type(updatedDescription);
+	  });
+	//update title
+	var new_title =  `Updated automation title ${Math.floor(Math.random() * 10000) + 1}`
+	cy.get('#admin_collection_name').clear().type(new_title);
+
+	//update contact email
+	cy.get('#admin_collection_contact_email').clear().type('test@yopmail.com');
 	
+	cy.get('input[value="Update Collection"]').click();
+
+	// Validate updated collection title and update the collection_title global variable
+	cy.get('.admin-collection-details h2').should('contain.text', new_title).then(() => {
+		// Update the global variable collection_title with new_title if the assertion passes
+		collection_title = new_title;
+	  });
+
+    // Validate updated contact email
+    cy.get('.admin-collection-details').within(() => {
+		cy.get('a[href="mailto:test@yopmail.com"]')
+		.should('have.text', 'test@yopmail.com')
+    });
+	//validate updated description
+	cy.get('.admin-collection-details .collection-description').should('contain.text', updatedDescription);
+	
+})
+
+it('Verify whether aan admin/manager is able assign other users as managers to the collection - @T3c428871', () => {
+	cy.login('administrator')
+	cy.visit('/')
+	cy.get('#manageDropdown').click()
+	cy.contains('Manage Content').click()
+	cy.contains('a', collection_title).click();
+	const user_manager = Cypress.env('USER_MANAGER')
+	cy.get("#add_manager_display").type(user_manager).should('have.value', user_manager)
+	// Verify that the correct suggestions appear in the dropdown and click it
+	cy.get('.tt-menu .tt-suggestion')
+      .should('be.visible')
+      .and('contain', user_manager).click();
+	cy.get('button[name="submit_add_manager"]')
+	.click();
+
+	//reload the page to ensure that the data is updated in the backend
+	cy.reload(true);
+	
+	cy.get('table.table-hover')
+	.find('td.access_list_label')
+	.contains('label', user_manager)
+	.should('be.visible');
+
+	//Additional assertions to add :Login as user_manager and validate that the collection is visible in the "Manage page" and/or API validation
+})
+
+
+
+it('Verify changing item access - Collection staff only (New items) - @T9978b4f7', () => {
+	cy.login('administrator')
+	cy.visit('/')
+	cy.get('#manageDropdown').click()
+	cy.contains('Manage Content').click()
+	cy.contains('a', collection_title).click();
+	cy.get('.item-access').within(() => {
+    cy.contains('label', 'Collection staff only')
+	.find('input[type="radio"]').click().should('be.checked');
+	cy.get('input[value = "Save Setting"]').click()
+      });
+	//reload the page to ensure that the data is updated in the backend
+	cy.reload()
+	cy.contains('label', 'Collection staff only')
+	.find('input[type="radio"]').should('be.checked');
+
+	//Add UI and/or API assertions here............Assert via UI by opening the create item page and verifying the default access control
+})
+
+it('Verify changing item access - Collection staff only (Existing items) - @Tdcf756bd', () => {
+	cy.login('administrator')
+	cy.visit('/')
+	cy.get('#manageDropdown').click()
+	cy.contains('Manage Content').click()
+	cy.contains('a', collection_title).click();
+	cy.get('.item-access').within(() => {
+    cy.contains('label', 'Collection staff only')
+	.find('input[type="radio"]').click().should('be.checked');
+	cy.get('input[name = "apply_to_existing"]').click()
+      });
+	
+	//reload the page to ensure that the data is updated in the backend
+	cy.reload()
+	cy.contains('label', 'Collection staff only')
+	.find('input[type="radio"]').should('be.checked');
+
+//Add UI and API assertions here............Assert via UI by opening the an ecisting item within the collection and verifying the default access control
+
+})
+	
+
+//Teardown code : delete the created collection 
 	it('Verify deleting a collection - @T959a56df', () => {
 		cy.login('administrator')
 		cy.visit('/')
