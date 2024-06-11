@@ -137,15 +137,15 @@ describe ApplicationHelper do
       expect(helper.image_for(doc)).to eq(nil)
     end
     it "should return audio icon" do
-      doc = {"avalon_resource_type_ssim" => ['Sound Recording', 'Sound Recording'] }
+      doc = {"avalon_resource_type_ssim" => ['sound recording', 'sound recording'] }
       expect(helper.image_for(doc).start_with?("#{root_url}assets/audio_icon")).to be_truthy
     end
     it "should return video icon" do
-      doc = {"avalon_resource_type_ssim" => ['Moving Image'] }
+      doc = {"avalon_resource_type_ssim" => ['moving image'] }
       expect(helper.image_for(doc).start_with?("#{root_url}assets/video_icon")).to be_truthy
     end
     it "should return hybrid icon" do
-      doc = {"avalon_resource_type_ssim" => ['Moving Image', 'Sound Recording'] }
+      doc = {"avalon_resource_type_ssim" => ['moving image', 'sound recording'] }
       expect(helper.image_for(doc).start_with?("#{root_url}assets/hybrid_icon")).to be_truthy
     end
     it "should return nil when only unprocessed video" do
@@ -153,7 +153,7 @@ describe ApplicationHelper do
       expect(helper.image_for(doc)).to eq(nil)
     end
     it "should return thumbnail" do
-      doc = {"section_id_ssim" => ['1'], "avalon_resource_type_ssim" => ['Moving Image'] }
+      doc = {"section_id_ssim" => ['1'], "avalon_resource_type_ssim" => ['moving image'] }
       expect(helper.image_for(doc)).to eq('/master_files/1/thumbnail')
     end
   end
