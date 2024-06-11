@@ -58,12 +58,11 @@ module ApplicationHelper
     user_omniauth_callback_lti_url(target_id: target)
   end
 
-  # TODO: Fix me with latest changes from 5.1.4
   def image_for(document)
     master_file_id = document["section_id_ssim"].try :first
 
-    video_count = document["avalon_resource_type_ssim"].count{|m| m.start_with?('moving image'.titleize) } rescue 0
-    audio_count = document["avalon_resource_type_ssim"].count{|m| m.start_with?('sound recording'.titleize) } rescue 0
+    video_count = document["avalon_resource_type_ssim"].count{|m| m.start_with?('moving image') } rescue 0
+    audio_count = document["avalon_resource_type_ssim"].count{|m| m.start_with?('sound recording') } rescue 0
 
     if master_file_id
       if video_count > 0
