@@ -60,7 +60,8 @@ Rails.application.config.to_prepare do
                         uniform_title: [],
                         resource_type: [],
                         record_identifier: [],
-                        series: []
+                        series: [],
+                        format: []
                       }
       include VirtualGroups
       include MediaObjectIntercom

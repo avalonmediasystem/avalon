@@ -978,7 +978,7 @@ h5.card-title {
       height: 25px;
     }
 
-    &.captions {
+    &.captions, &.transcripts {
       div.supplemental-file-data.is-editing:last-child {
         margin-bottom: 1.75rem;
       }

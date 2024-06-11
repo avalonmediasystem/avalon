@@ -153,6 +153,10 @@ class Ability
           can? :edit, master_file.media_object
         end
 
+        can :download, [MasterFile, SpeedyAF::Proxy::MasterFile] do |master_file|
+          @user.in?(master_file.media_object.collection.managers)
+        end
+
         # Users logged in through LTI cannot share
         can :share, [MediaObject, SpeedyAF::Proxy::MediaObject]
       end

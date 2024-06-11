@@ -91,7 +91,7 @@ Unless required by applicable law or agreed to in writing, software distributed
                         Move
                       </button>
                     </span>
-                    <% if Settings.derivative.allow_download && (current_ability.can? :manage, @media_object.collection || current_ability.is_administrator?) %>
+                    <% if Settings.derivative.allow_download && (current_ability.can? :download, section) %>
                     <span>
                       <%= link_to "Download", download_derivative_master_file_path(section.id), class: 'btn btn-sm btn-outline', target: '_self' %>
                     </span>

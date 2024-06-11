@@ -132,6 +132,14 @@ class SpeedyAF::Proxy::MediaObject < SpeedyAF::Base
     attrs[:language_code].present? ? attrs[:language_code].map { |code| { code: code, text: LanguageTerm.find(code).text } } : []
   end
 
+  def bibliographic_id
+    if attrs[:bibliographic_id].present? && attrs[:bibliographic_id_source].present?
+      { id: attrs[:bibliographic_id], source: attrs[:bibliographic_id_source] }
+    else
+      nil
+    end
+  end
+
   def sections_with_files(tag: '*')
     sections.select { |master_file| master_file.supplemental_files(tag: tag).present? }.map(&:id)
   end
