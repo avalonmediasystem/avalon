@@ -40,12 +40,12 @@ context('Playlists', () => {
 		cy.visit('/playlists/new');
 	});
 
+	//is able to create a new playlist
 	it('Verify creating a Playlist - @Tf1b9413d', () => {
 		cy.login('administrator');
 		cy.visit('/');
 		cy.get('#playlists_nav').click();
 		cy.get('a[href="/playlists/new"]').click();
-		// cy.visit('/playlists/new')
 
 		cy.get('#playlist_title').type(playlist_title);
 		cy.get('#playlist_comment').type(playlist_description);
@@ -113,8 +113,6 @@ context('Playlists', () => {
 
 		cy.get('#playlists_nav').click();
 		cy.get('a[href="/playlists/new"]').click();
-		// cy.visit('/playlists/new')
-
 		cy.get('#playlist_title').type(playlist_title_1);
 		cy.get('#playlist_comment').type(playlist_description_1);
 		cy.get('#submit-playlist-form').click();
@@ -125,13 +123,11 @@ context('Playlists', () => {
 			.parent('tr')
 			.find('.btn-danger')
 			.click();
-		cy.screenshot()
 		cy.contains('Yes, Delete').click();
 
 		cy.visit('/playlists');
 
 		//Handle pagination case - search for the playlist. Add  API validation
-
 		cy.contains(playlist_title).should('not.exist');
 	});
 
@@ -145,8 +141,6 @@ context('Playlists', () => {
 
 		cy.get('#playlists_nav').click();
 		cy.get('a[href="/playlists/new"]').click();
-		// cy.visit('/playlists/new')
-
 		cy.get('#playlist_title').type(playlist_title);
 		cy.get('#playlist_comment').type(playlist_description);
 		cy.get('#submit-playlist-form').click();
@@ -165,6 +159,7 @@ context('Playlists', () => {
 	// is able to create public playlist
 	it('.create_public_playlist()', () => {
 		cy.login('administrator');
+		cy.visit('/');
 
 		cy.get('#playlists_nav').click();
 		cy.get('a[href="/playlists/new"]').click();
@@ -185,11 +180,10 @@ context('Playlists', () => {
 	});
 
 	//is able to share a public playlist
-	it.only('Verify sharing a public playlist - @c89c89d0', () => {
+	it('Verify sharing a public playlist - @c89c89d0', () => {
 		cy.login('administrator');
 		cy.visit('/');
 		cy.get('#playlists_nav').click();
-		playlist_title_public = 'Android test 3'
 		cy.contains(playlist_title_public).click();
 		cy.get('#share-button').click()
 		cy.get('#share-list').within(()=>{
@@ -223,7 +217,6 @@ context('Playlists', () => {
 	it('Verify editing a Playlist from playlist page - @T5055855c', () => {
 		cy.login('administrator')
 		cy.visit('/playlists')
-		playlist_title_public = '_Automation playlist title 5124'
 
 		cy.contains(playlist_title_public).click()
 		cy.contains('Edit Playlist').click()

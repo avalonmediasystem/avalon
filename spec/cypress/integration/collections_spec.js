@@ -16,8 +16,8 @@
 
 context('Collections', () => {
 	  //Since it takes a while for a newly created collection to reflect in search, we are using static search data
-  const search_collection = Cypress.env('SEARCH_COLLECTION')
-  const collection_title = `Automation collection title ${Math.floor(Math.random() * 10000) + 1}`
+  var search_collection = Cypress.env('SEARCH_COLLECTION')
+  var collection_title = `Automation collection title ${Math.floor(Math.random() * 10000) + 1}`
 
   Cypress.on('uncaught:exception', (err, runnable) => {
 	// Prevents Cypress from failing the test due to uncaught exceptions in the application code  - TypeError: Cannot read properties of undefined (reading 'scrollDown')
@@ -69,48 +69,7 @@ context('Collections', () => {
 })
 
 
-it('Verify whether a user is able to update Collection information - @Ta1b2fef8', () => {
-	cy.login('administrator')
-	cy.visit('/')
-	cy.get('#manageDropdown').click()
-	cy.contains('Manage Content').click()
-	cy.contains('a', collection_title).click();
-	cy.get('.admin-collection-details')
-      .contains('button', 'Edit Collection Info')
-      .click();
-
-	//update description
-	var updatedDescription = ' Adding more details to collection description'
-	cy.get('#admin_collection_description').invoke('val').then((existingText) => {
-		updatedDescription = existingText + updatedDescription;  
-		cy.get('#admin_collection_description').type(updatedDescription);
-	  });
-	//update title
-	var new_title =  `Updated automation title ${Math.floor(Math.random() * 10000) + 1}`
-	cy.get('#admin_collection_name').clear().type(new_title);
-
-	//update contact email
-	cy.get('#admin_collection_contact_email').clear().type('test@yopmail.com');
-	
-	cy.get('input[value="Update Collection"]').click();
-
-	// Validate updated collection title and update the collection_title global variable
-	cy.get('.admin-collection-details h2').should('contain.text', new_title).then(() => {
-		// Update the global variable collection_title with new_title if the assertion passes
-		collection_title = new_title;
-	  });
-
-    // Validate updated contact email
-    cy.get('.admin-collection-details').within(() => {
-		cy.get('a[href="mailto:test@yopmail.com"]')
-		.should('have.text', 'test@yopmail.com')
-    });
-	//validate updated description
-	cy.get('.admin-collection-details .collection-description').should('contain.text', updatedDescription);
-	
-})
-
-it('Verify whether aan admin/manager is able assign other users as managers to the collection - @T3c428871', () => {
+it('Verify whether an admin/manager is able assign other users as managers to the collection - @T3c428871', () => {
 	cy.login('administrator')
 	cy.visit('/')
 	cy.get('#manageDropdown').click()
@@ -178,6 +137,47 @@ it('Verify changing item access - Collection staff only (Existing items) - @Tdcf
 
 })
 	
+it('Verify whether a user is able to update Collection information - @Ta1b2fef8', () => {
+	cy.login('administrator')
+	cy.visit('/')
+	cy.get('#manageDropdown').click()
+	cy.contains('Manage Content').click()
+	cy.contains('a', collection_title).click();
+	cy.get('.admin-collection-details')
+      .contains('button', 'Edit Collection Info')
+      .click();
+
+	//update description
+	var updatedDescription = ' Adding more details to collection description'
+	cy.get('#admin_collection_description').invoke('val').then((existingText) => {
+		updatedDescription = existingText + updatedDescription;  
+		cy.get('#admin_collection_description').type(updatedDescription);
+	  });
+	//update title
+	var new_title =  `Updated automation title ${Math.floor(Math.random() * 10000) + 1}`
+	cy.get('#admin_collection_name').clear().type(new_title);
+
+	//update contact email
+	cy.get('#admin_collection_contact_email').clear().type('test@yopmail.com');
+	
+	cy.get('input[value="Update Collection"]').click();
+
+	// Validate updated collection title and update the collection_title global variable
+	cy.get('.admin-collection-details h2').should('contain.text', new_title).then(() => {
+		// Update the global variable collection_title with new_title if the assertion passes
+		collection_title = new_title;
+	  });
+
+    // Validate updated contact email
+    cy.get('.admin-collection-details').within(() => {
+		cy.get('a[href="mailto:test@yopmail.com"]')
+		.should('have.text', 'test@yopmail.com')
+    });
+	//validate updated description
+	cy.get('.admin-collection-details .collection-description').should('contain.text', updatedDescription);
+	
+})
+
 
 //Teardown code : delete the created collection 
 	it('Verify deleting a collection - @T959a56df', () => {
@@ -189,7 +189,7 @@ it('Verify changing item access - Collection staff only (Existing items) - @Tdcf
 		//May require adding steps to select a collection to move the existing  items, when dealing with non empty collections
 		cy.get('input[value="Yes, I am sure"]').click()
 		cy.contains('h1', 'My Collections')
-		//May need to update this assertion to ensire that this is valid during pagination of collections. Another alternative would be to check via API or search My collections
+		//May need to update this assertion to ensure that this is valid during pagination of collections. Another alternative would be to check via API or search My collections
 		cy.contains('a', collection_title).should('not.exist');
 		
 	})
