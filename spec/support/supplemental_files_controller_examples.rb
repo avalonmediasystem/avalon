@@ -42,12 +42,10 @@ RSpec.shared_examples 'a nested controller for' do |object_class|
   }
 
   let(:invalid_update_attributes) {
-    { file: uploaded_file }
+    {}
   }
 
   let(:uploaded_file) { fixture_file_upload('/collection_poster.png', 'image/png') }
-
-  let(:supplemental_file) { FactoryBot.create(:supplemental_file) }
 
   # This should return the minimal set of values that should be in the session
   # in order to pass any filters (e.g. authentication) defined in
@@ -64,24 +62,75 @@ RSpec.shared_examples 'a nested controller for' do |object_class|
   let(:manager) { media_object.collection.managers.first }
 
   describe 'security' do
-    context 'with unauthenticated user' do
-      it "all routes should return 401" do
-        expect(post :create, params: { class_id => object.id }).to have_http_status(401)
-        expect(put :update, params: { class_id =>  object.id, id: supplemental_file.id }).to have_http_status(401)
-        expect(delete :destroy, params: { class_id =>  object.id, id: supplemental_file.id }).to have_http_status(401)
-        expect(get :show, params: { class_id =>  object.id, id: supplemental_file.id }).to have_http_status(401)
+    describe 'ingest api' do
+      it "all routes should return 401 when no token is present" do
+        expect(get :index, params: { class_id => object.id, format: 'json' }).to have_http_status(401)
+        expect(get :show, params: { class_id => object.id, id: supplemental_file.id, format: 'json' }).to have_http_status(401)
+        expect(post :create, params: { class_id => object.id, format: 'json' }).to have_http_status(401)
+        expect(put :update, params: { class_id => object.id, id: supplemental_file.id, format: 'json' }).to have_http_status(401)
+        expect(delete :destroy, params: { class_id => object.id, id: supplemental_file.id }).to have_http_status(401)
+      end
+      it "all routes should return 403 when a bad token in present" do
+        request.headers['Avalon-Api-Key'] = 'badtoken'
+        expect(get :index, params: { class_id => object.id, format: 'json' }).to have_http_status(403)
+        expect(get :show, params: { class_id => object.id, id: supplemental_file.id, format: 'json' }).to have_http_status(403)
+        expect(post :create, params: { class_id => object.id, format: 'json' }).to have_http_status(403)
+        expect(put :update, params: { class_id => object.id, id: supplemental_file.id, format: 'json' }).to have_http_status(403)
+        expect(delete :destroy, params: { class_id => object.id, id: supplemental_file.id, format: 'json' }).to have_http_status(403)
       end
     end
-    context 'with end-user without permission' do
-      before do
-        login_as :user
+    describe 'normal auth' do
+      context 'with unauthenticated user' do
+        it "all routes should return 401" do
+          expect(get :index, params: { class_id => object.id, format: 'json' }).to have_http_status(401)
+          expect(get :show, params: { class_id =>  object.id, id: supplemental_file.id }).to have_http_status(401)
+          expect(post :create, params: { class_id => object.id }).to have_http_status(401)
+          expect(put :update, params: { class_id =>  object.id, id: supplemental_file.id }).to have_http_status(401)
+          expect(delete :destroy, params: { class_id =>  object.id, id: supplemental_file.id }).to have_http_status(401)
+        end
       end
-      it "all routes should return 401" do
-        expect(post :create, params: { class_id => object.id }).to have_http_status(401)
-        expect(put :update, params: { class_id => object.id, id: supplemental_file.id }).to have_http_status(401)
-        expect(delete :destroy, params: { class_id => object.id, id: supplemental_file.id }).to have_http_status(401)
-        expect(get :show, params: { class_id => object.id, id: supplemental_file.id }).to have_http_status(401)
+      context 'with end-user without permission' do
+        before do
+          login_as :user
+        end
+        it "all routes should return 401" do
+          expect(get :index, params: { class_id => object.id, format: 'json' }).to have_http_status(401)
+          expect(get :show, params: { class_id => object.id, id: supplemental_file.id }).to have_http_status(401)
+          expect(post :create, params: { class_id => object.id }).to have_http_status(401)
+          expect(put :update, params: { class_id => object.id, id: supplemental_file.id }).to have_http_status(401)
+          expect(delete :destroy, params: { class_id => object.id, id: supplemental_file.id }).to have_http_status(401)
+        end
       end
+    end
+  end
+
+  describe "GET #index" do
+    subject { JSON.parse(response.body) }
+    let(:master_file) { FactoryBot.create(:master_file, media_object: media_object) }
+    let(:media_object) { FactoryBot.create(:fully_searchable_media_object) }
+    let(:supplemental_file) { FactoryBot.create(:supplemental_file, :with_attached_file, parent_id: object.id) }
+    let(:caption) { FactoryBot.create(:supplemental_file, :with_caption_file, tags: ['caption', 'transcript'], parent_id: object.id) }
+    let(:transcript) { FactoryBot.create(:supplemental_file, :with_transcript_file, tags: ['transcript', 'machine_generated'], parent_id: object.id) }
+    let(:object) { object_class == MasterFile ? master_file : media_object }
+
+    before :each do
+      login_user manager
+      object.supplemental_files = [supplemental_file, caption, transcript]
+      object.save
+    end
+
+    it "returns metadata for all associated supplemental files" do
+      get :index, params: { class_id => object.id, format: 'json' }, session: valid_session
+      expect(subject.count).to eq 3
+      [supplemental_file, caption, transcript].each do |file|
+        expect(subject.any? { |s| s == JSON.parse(file.as_json.to_json) }).to eq true
+      end
+    end
+
+    it "paginates results when requested" do
+      get :index, params: { class_id => object.id, format: 'json', per_page: 1, page: 1 }, session: valid_session
+      expect(subject.count).to eq 1
+      expect(subject.first.symbolize_keys).to eq supplemental_file.as_json
     end
   end
 
@@ -95,6 +144,13 @@ RSpec.shared_examples 'a nested controller for' do |object_class|
       get :show, params: { class_id => object.id, id: supplemental_file.id }, session: valid_session
       expect(response).to redirect_to Rails.application.routes.url_helpers.rails_blob_path(supplemental_file.file, disposition: "attachment")
     end
+
+    context '.json' do
+      it 'returns the supplemental file metadata' do
+        get :show, params: { class_id => object.id, id: supplemental_file.id, format: 'json' }, session: valid_session
+        expect(JSON.parse(response.body).symbolize_keys).to eq supplemental_file.as_json
+      end
+    end
   end
 
   describe "POST #create" do
@@ -107,52 +163,71 @@ RSpec.shared_examples 'a nested controller for' do |object_class|
     end
 
     context 'json request' do
+      let(:metadata) { { label: 'label', type: 'caption', language: 'French', machine_generated: true, treat_as_transcript: true } }
       context "with valid params" do
-        it "updates the SupplementalFile for #{object_class}" do
+        let(:uploaded_file) { fixture_file_upload(Rails.root.join('spec', 'fixtures', 'captions.vtt'), 'text/vtt') }
+        let(:valid_create_attributes) { { file: uploaded_file, metadata: metadata.to_json } }
+        it "creates a SupplementalFile for #{object_class}" do
           expect {
-            post :create, params: { class_id => object.id, supplemental_file: valid_create_attributes, format: :json }, session: valid_session
+            post :create, params: { class_id => object.id, **valid_create_attributes, format: :json }, session: valid_session
           }.to change { object.reload.supplemental_files.size }.by(1)
           expect(response).to have_http_status(:created)
-          expect(response.location).to eq "/#{object_class.model_name.plural}/#{object.id}/supplemental_files/#{assigns(:supplemental_file).id}"
+          expect(JSON.parse(response.body)).to eq ({ "id" => assigns(:supplemental_file).id })
 
           expect(object.supplemental_files.first.id).to eq 1
           expect(object.supplemental_files.first.label).to eq 'label'
           expect(object.supplemental_files.first.file).to be_attached
         end
 
-        let(:tags) { ["transcript"] }
-        let(:uploaded_file) { fixture_file_upload('/captions.vtt', 'text/vtt') }
-        let(:valid_create_attributes_with_tags) { valid_create_attributes.merge(tags: tags) }
-
-        it "creates a SupplementalFile with tags for #{object_class}" do
-          expect {
-            post :create, params: { class_id => object.id, supplemental_file: valid_create_attributes_with_tags, format: :json }, session: valid_session
-          }.to change { object.reload.supplemental_files.size }.by(1)
-          expect(response).to have_http_status(:created)
-          expect(response.location).to eq "/#{object_class.model_name.plural}/#{object.id}/supplemental_files/#{assigns(:supplemental_file).id}"
-
-          expect(object.supplemental_files.first.id).to eq 1
-          expect(object.supplemental_files.first.label).to eq 'label'
-          expect(object.supplemental_files.first.tags).to eq tags
-          expect(object.supplemental_files.first.file).to be_attached
-        end
-
-        context 'with mime type that does not match extension' do
-          let(:tags) { ['caption'] }
-          let(:extension) { 'srt' }
-          let(:uploaded_file) { fixture_file_upload(Rails.root.join('spec', 'fixtures', 'captions.srt'), 'text/plain') }
-          it "creates a SupplementalFile with correct content_type" do
-            expect{
-              post :create, params: { class_id => object.id, supplemental_file: valid_create_attributes_with_tags, format: :json}, session: valid_session
+        context 'with just metadata' do
+          it "creates a SupplementalFile for #{object_class}" do
+            request.headers['Content-Type'] = 'application/json'
+            expect {
+              post :create, params: { class_id => object.id, metadata: metadata.to_json, format: :json }, session: valid_session
             }.to change { object.reload.supplemental_files.size }.by(1)
             expect(response).to have_http_status(:created)
-            expect(response.location).to eq "/#{object_class.model_name.plural}/#{object.id}/supplemental_files/#{assigns(:supplemental_file).id}"
+            expect(JSON.parse(response.body)).to eq ({ "id" => assigns(:supplemental_file).id })
 
             expect(object.supplemental_files.first.id).to eq 1
             expect(object.supplemental_files.first.label).to eq 'label'
-            expect(object.supplemental_files.first.tags).to eq tags
-            expect(object.supplemental_files.first.file).to be_attached
-            expect(object.supplemental_files.first.file.content_type).to eq Mime::Type.lookup_by_extension(extension)
+            expect(object.supplemental_files.first.language).to eq 'fre'
+            expect(object.supplemental_files.first.tags).to match_array ['caption', 'transcript', 'machine_generated']
+            expect(object.supplemental_files.first.file).to_not be_attached
+          end
+
+          context 'with just inlined metadata' do
+            it "creates a SupplementalFile for #{object_class}" do
+              request.headers['Content-Type'] = 'application/json'
+              expect {
+                post :create, params: { class_id => object.id, **metadata, format: :json }, session: valid_session
+              }.to change { object.reload.supplemental_files.size }.by(1)
+              expect(response).to have_http_status(:created)
+              expect(JSON.parse(response.body)).to eq ({ "id" => assigns(:supplemental_file).id })
+
+              expect(object.supplemental_files.first.id).to eq 1
+              expect(object.supplemental_files.first.label).to eq 'label'
+              expect(object.supplemental_files.first.language).to eq 'fre'
+              expect(object.supplemental_files.first.tags).to match_array ['caption', 'transcript', 'machine_generated']
+              expect(object.supplemental_files.first.file).to_not be_attached
+            end
+          end
+        end
+
+        context 'with incomplete metadata' do
+          let(:metadata) { { label: 'label' } }
+          it "creates a SupplementalFile for #{object_class} with default values" do
+            request.headers['Content-Type'] = 'application/json'
+            expect {
+              post :create, params: { class_id => object.id, metadata: metadata.to_json, format: :json }, session: valid_session
+            }.to change { object.reload.supplemental_files.size }.by(1)
+            expect(response).to have_http_status(:created)
+            expect(JSON.parse(response.body)).to eq ({ "id" => assigns(:supplemental_file).id })
+
+            expect(object.supplemental_files.first.id).to eq 1
+            expect(object.supplemental_files.first.label).to eq 'label'
+            expect(object.supplemental_files.first.language).to eq 'eng'
+            expect(object.supplemental_files.first.tags).to eq []
+            expect(object.supplemental_files.first.file).to_not be_attached
           end
         end
       end
@@ -163,11 +238,18 @@ RSpec.shared_examples 'a nested controller for' do |object_class|
           expect(response).to have_http_status(400)
         end
       end
+
+      context "with invalid file type" do
+        it "returns a 500" do
+          post :create, params: { class_id=> object.id, file: uploaded_file, type: 'caption', format: :json }, session: valid_session
+          expect(response).to have_http_status(500)
+        end
+      end
     end
 
     context 'html request' do
       context "with valid params" do
-        it "updates the SupplementalFile" do
+        it "creates a SupplementalFile for #{object_class}" do
           expect {
             post :create, params: { class_id => object.id, supplemental_file: valid_create_attributes, format: :html }, session: valid_session
           }.to change { object.reload.supplemental_files.size }.by(1)
@@ -176,6 +258,65 @@ RSpec.shared_examples 'a nested controller for' do |object_class|
 
           expect(object.supplemental_files.first.id).to eq 1
           expect(object.supplemental_files.first.label).to eq 'label'
+          expect(object.supplemental_files.first.file).to be_attached
+        end
+      end
+
+      context "including tags" do
+        let(:tags) { ["transcript"] }
+        let(:uploaded_file) { fixture_file_upload('/captions.vtt', 'text/vtt') }
+        let(:valid_create_attributes_with_tags) { valid_create_attributes.merge(tags: tags) }
+
+        it "creates a SupplementalFile with tags for #{object_class}" do
+          expect {
+            post :create, params: { class_id => object.id, supplemental_file: valid_create_attributes_with_tags, format: :html }, session: valid_session
+          }.to change { object.reload.supplemental_files.size }.by(1)
+          expect(response).to redirect_to("http://#{@request.host}/media_objects/#{media_object.id}/edit?step=file-upload")
+          expect(flash[:success]).to be_present
+
+          expect(object.supplemental_files.first.id).to eq 1
+          expect(object.supplemental_files.first.label).to eq 'label'
+          expect(object.supplemental_files.first.tags).to eq tags
+          expect(object.supplemental_files.first.file).to be_attached
+        end
+      end
+
+      context 'with mime type that does not match extension' do
+        let(:tags) { ['caption'] }
+        let(:extension) { 'srt' }
+        let(:uploaded_file) { fixture_file_upload(Rails.root.join('spec', 'fixtures', 'captions.srt'), 'text/plain') }
+        let(:valid_create_attributes_with_tags) { valid_create_attributes.merge(tags: tags) }
+        it "creates a SupplementalFile with correct content_type" do
+          expect{
+            post :create, params: { class_id => object.id, supplemental_file: valid_create_attributes_with_tags, format: :html }, session: valid_session
+          }.to change { object.reload.supplemental_files.size }.by(1)
+          expect(response).to redirect_to("http://#{@request.host}/media_objects/#{media_object.id}/edit?step=file-upload")
+          expect(flash[:success]).to be_present
+
+          expect(object.supplemental_files.first.id).to eq 1
+          expect(object.supplemental_files.first.label).to eq 'label'
+          expect(object.supplemental_files.first.tags).to eq tags
+          expect(object.supplemental_files.first.file).to be_attached
+          expect(object.supplemental_files.first.file.content_type).to eq Mime::Type.lookup_by_extension(extension)
+        end
+      end
+
+      context 'API with just a file' do
+        let(:uploaded_file) { fixture_file_upload(Rails.root.join('spec', 'fixtures', 'captions.srt'), 'text/plain') }
+        before { ApiToken.create token: 'secret_token', username: 'archivist1@example.com', email: 'archivist1@example.com' }
+        it "creates a SupplementalFile for #{object_class}" do
+          request.headers['Avalon-Api-Key'] = 'secret_token'
+          request.headers['Accept'] = 'application/json'
+          expect {
+            post :create, params: { class_id => object.id, file: uploaded_file, format: :html }, session: valid_session
+          }.to change { object.reload.supplemental_files.size }.by(1)
+          expect(response).to have_http_status(:created)
+          expect(JSON.parse(response.body)).to eq ({ "id" => assigns(:supplemental_file).id })
+
+          expect(object.supplemental_files.first.id).to eq 1
+          expect(object.supplemental_files.first.label).to eq 'captions.srt'
+          expect(object.supplemental_files.first.language).to eq Settings.caption_default.language
+          expect(object.supplemental_files.first.tags).to be_empty
           expect(object.supplemental_files.first.file).to be_attached
         end
       end
@@ -189,7 +330,7 @@ RSpec.shared_examples 'a nested controller for' do |object_class|
       end
     end
 
-    context 'does not attach' do
+    context 'fails to attach file' do
       let(:supplemental_file) { FactoryBot.build(:supplemental_file) }
       before do
         allow(SupplementalFile).to receive(:new).and_return(supplemental_file)
@@ -228,14 +369,27 @@ RSpec.shared_examples 'a nested controller for' do |object_class|
     end
 
     context 'json request' do
-      context "with valid params" do
-        it "creates a new SupplementalFile" do
+      before :each do
+        request.headers['Content-Type'] = 'application/json'
+      end
+      context "with valid metadata params" do
+        let(:valid_update_attributes) { { label: 'new label', type: 'transcript', machine_generated: true }.to_json }
+        it "updates the SupplementalFile metadata for #{object_class}" do
           expect {
-            put :update, params: { class_id => object.id, id: supplemental_file.id, supplemental_file: valid_update_attributes, format: :json }, session: valid_session
+            put :update, params: { class_id => object.id, id: supplemental_file.id, metadata: valid_update_attributes, format: :json }, session: valid_session
           }.to change { object.reload.supplemental_files.first.label }.from('label').to('new label')
+           .and change { object.reload.supplemental_files.first.tags }.from([]).to(['transcript', 'machine_generated'])
 
           expect(response).to have_http_status(:ok)
-          expect(response.location).to eq "/#{object_class.model_name.plural}/#{object.id}/supplemental_files/#{assigns(:supplemental_file).id}"
+          expect(response.body).to eq({ "id": supplemental_file.id }.to_json)
+        end
+      end
+
+      context "with new file and valid metadata params" do
+        let(:file_update) { fixture_file_upload(Rails.root.join('spec', 'fixtures', 'captions.vtt'), 'text/vtt') }
+        it "returns a 400" do
+          put :update, params: { class_id => object.id, id: supplemental_file.id, file: file_update, supplemental_file: valid_update_attributes, format: :json }, session: valid_session
+          expect(response).to have_http_status(400)
         end
       end
 
@@ -256,7 +410,7 @@ RSpec.shared_examples 'a nested controller for' do |object_class|
 
     context 'html request' do
       context "with valid params" do
-        it "creates a new SupplementalFile" do
+        it "updates the SupplementalFile for #{object_class}" do
           expect {
             put :update, params: { class_id => object.id, id: supplemental_file.id, supplemental_file: valid_update_attributes, format: :html }, session: valid_session
           }.to change { master_file.reload.supplemental_files.first.label }.from('label').to('new label')
@@ -322,6 +476,31 @@ RSpec.shared_examples 'a nested controller for' do |object_class|
         end
       end
 
+      context "API with new file" do
+        let(:file_update) { fixture_file_upload(Rails.root.join('spec', 'fixtures', 'captions.vtt'), 'text/vtt') }
+        before { ApiToken.create token: 'secret_token', username: 'archivist1@example.com', email: 'archivist1@example.com' }
+        it "updates the SupplementalFile attached file for #{object_class}" do
+          request.headers['Avalon-Api-Key'] = 'secret_token'
+          request.headers['Accept'] = 'application/json'
+          expect {
+            put :update, params: { class_id => object.id, id: supplemental_file.id, file: file_update, format: :html }, session: valid_session
+          }.to change { object.reload.supplemental_files.first.file }
+
+          expect(response).to have_http_status(:ok)
+          expect(response.body).to eq({ "id": supplemental_file.id }.to_json)
+        end
+      end
+
+      context "API without file" do
+        before { ApiToken.create token: 'secret_token', username: 'archivist1@example.com', email: 'archivist1@example.com' }
+        it "returns a 400" do
+          request.headers['Avalon-Api-Key'] = 'secret_token'
+          request.headers['Accept'] = 'application/json'
+          put :update, params: { class_id=> object.id, id: supplemental_file.id, metadata: valid_update_attributes, format: :html }, session: valid_session
+          expect(response).to have_http_status(400)
+        end
+      end
+
       context "with invalid params" do
         it "returns a 400" do
           put :update, params: { class_id => object.id, id: supplemental_file.id, supplemental_file: invalid_update_attributes, format: :html }, session: valid_session
@@ -335,6 +514,17 @@ RSpec.shared_examples 'a nested controller for' do |object_class|
           put :update, params: { class_id => object.id, id: 'missing-id', supplemental_file: valid_update_attributes, format: :html }, session: valid_session
           expect(response).to redirect_to("http://#{@request.host}/media_objects/#{media_object.id}/edit?step=file-upload")
           expect(flash[:error]).to be_present
+        end
+      end
+
+      context "API updating caption with invalid file type" do
+        let(:supplemental_file) { FactoryBot.create(:supplemental_file, :with_caption_tag) }
+        before { ApiToken.create token: 'secret_token', username: 'archivist1@example.com', email: 'archivist1@example.com' }
+        it "returns a 500" do
+          request.headers['Avalon-Api-Key'] = 'secret_token'
+          request.headers['Accept'] = 'application/json'
+          put :update, params: { class_id=> object.id, id: supplemental_file.id, file: uploaded_file, format: :html }, session: valid_session
+          expect(response).to have_http_status(500)
         end
       end
     end

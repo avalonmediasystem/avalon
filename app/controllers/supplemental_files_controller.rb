@@ -14,6 +14,8 @@
 
 # frozen_string_literal: true
 class SupplementalFilesController < ApplicationController
+  include Rails::Pagination
+
   before_action :set_object
   before_action :authorize_object
 
@@ -30,19 +32,29 @@ class SupplementalFilesController < ApplicationController
     handle_error(message: exception.full_message, status: 404)
   end
 
+  def index
+    files = paginate SupplementalFile.where("parent_id = ?", @object.id)
+    render json: files.to_a.collect { |f| f.as_json }
+  end
+
   def create
-    # FIXME: move filedata to permanent location
-    raise Avalon::BadRequest, "Missing required parameters" unless supplemental_file_params[:file]
-
-    @supplemental_file = SupplementalFile.new(label: supplemental_file_params[:label], tags: supplemental_file_params[:tags], parent_id: @object.id)
-    begin
-      @supplemental_file.attach_file(supplemental_file_params[:file])
-    rescue StandardError, LoadError => e
-      raise Avalon::SaveError, "File could not be attached: #{e.full_message}"
+    if metadata_upload? && !attachment
+      raise Avalon::BadRequest, "Missing required Content-type headers" unless request.headers["Content-Type"] == 'application/json'
     end
+    raise Avalon::BadRequest, "Missing required parameters" unless validate_params
 
-    # Raise errror if file wasn't attached
-    raise Avalon::SaveError, "File could not be attached." unless @supplemental_file.file.attached?
+    @supplemental_file = SupplementalFile.new(**metadata_from_params)
+    
+    if attachment
+      begin
+        @supplemental_file.attach_file(attachment)
+      rescue StandardError, LoadError => e
+        raise Avalon::SaveError, "File could not be attached: #{e.full_message}"
+      end
+
+      # Raise errror if file wasn't attached
+      raise Avalon::SaveError, "File could not be attached." unless @supplemental_file.file.attached?
+    end
 
     raise Avalon::SaveError, @supplemental_file.errors.full_messages unless @supplemental_file.save
 
@@ -52,43 +64,71 @@ class SupplementalFilesController < ApplicationController
     flash[:success] = "Supplemental file successfully added."
 
     respond_to do |format|
-      format.html { redirect_to edit_structure_path }
-      format.json { head :created, location: object_supplemental_file_path }
+      format.html {
+        # This path is for uploading the binary file. We need to provide a JSON response
+        # for the case of someone uploading through a CLI.
+        if request.headers['Accept'] == 'application/json'
+          render json: { id: @supplemental_file.id }, status: :created
+        else
+          redirect_to edit_structure_path
+        end
+      }
+      # This path is for uploading the metadata payload.
+      format.json { render json: { id: @supplemental_file.id }, status: :created }
     end
   end
 
   def show
     find_supplemental_file
 
-    # Redirect or proxy the content
-    if Settings.supplemental_files.proxy
-      send_data @supplemental_file.file.download, filename: @supplemental_file.file.filename.to_s, type: @supplemental_file.file.content_type, disposition: 'attachment'
-    else
-      redirect_to rails_blob_path(@supplemental_file.file, disposition: "attachment")
+    respond_to do |format|
+      format.html { 
+        # Redirect or proxy the content
+        if Settings.supplemental_files.proxy
+          send_data @supplemental_file.file.download, filename: @supplemental_file.file.filename.to_s, type: @supplemental_file.file.content_type, disposition: 'attachment'
+        else
+          redirect_to rails_blob_path(@supplemental_file.file, disposition: "attachment")
+        end
+      }
+      format.json { render json: @supplemental_file.as_json }
     end
   end
 
-  # Update the label and tags of the supplemental file
   def update
-    raise Avalon::NotFound, "Cannot update the supplemental file: #{params[:id]} not found" unless SupplementalFile.exists? params[:id].to_s
-    @supplemental_file = SupplementalFile.find(params[:id])
-    raise Avalon::NotFound, "Cannot update the supplemental file: #{@supplemental_file.id} not found" unless @object.supplemental_files.any? { |f| f.id == @supplemental_file.id }
-    raise Avalon::BadRequest, "Updating file contents not allowed" if supplemental_file_params[:file].present?
+    if metadata_upload?
+      raise Avalon::BadRequest, "Incorrect request format. Use HTML if updating attached file." if attachment
+      raise Avalon::BadRequest, "Missing required Content-type headers" unless request.headers["Content-Type"] == 'application/json'
+    elsif request.headers['Avalon-Api-Key'].present?
+      raise Avalon::BadRequest, "Incorrect request format. Use JSON if updating metadata." unless attachment
+    end
+    raise Avalon::BadRequest, "Missing required parameters" unless validate_params
 
-    edit_file_information
+    find_supplemental_file
+
+    edit_file_information if !attachment
+
+    @supplemental_file.attach_file(attachment) if attachment
+
     raise Avalon::SaveError, @supplemental_file.errors.full_messages unless @supplemental_file.save
 
     flash[:success] = "Supplemental file successfully updated."
     respond_to do |format|
-      format.html { redirect_to edit_structure_path }
-      format.json { head :ok, location: object_supplemental_file_path }
+      format.html {
+        # This path is for uploading the binary file. We need to provide a JSON response
+        # for the case of someone uploading through a CLI.
+        if request.headers['Accept'] == 'application/json'
+          render json: { id: @supplemental_file.id }
+        else
+          redirect_to edit_structure_path
+        end
+      }
+      # This path is for uploading the metadata payload.
+      format.json { render json: { id: @supplemental_file.id }, status: :ok  }
     end
   end
 
   def destroy
-    raise Avalon::NotFound, "Cannot delete the supplemental file: #{params[:id]} not found" unless SupplementalFile.exists? params[:id].to_s
-    @supplemental_file = SupplementalFile.find(params[:id])
-    raise Avalon::NotFound, "Cannot delete the supplemental file: #{@supplemental_file.id} not found" unless @object.supplemental_files.any? { |f| f.id == @supplemental_file.id }
+    find_supplemental_file
 
     @object.supplemental_files -= [@supplemental_file]
     raise Avalon::SaveError, "An error occurred when deleting the supplemental file: #{@object.errors[:supplemental_files_json].full_messages}" unless @object.save
@@ -117,9 +157,34 @@ class SupplementalFilesController < ApplicationController
       @object = fetch_object params[:master_file_id] || params[:media_object_id]
     end
 
+    def validate_params
+      attachment.present? || [:label, :language, :tags].any? { |v| supplemental_file_params[v].present? }
+    end
+
     def supplemental_file_params
       # TODO: Add parameters for minio and s3
-      params.fetch(:supplemental_file, {}).permit(:label, :language, :file, tags: [])
+      sup_file_params = params.fetch(:supplemental_file, {}).permit(:label, :language, :file, tags: [])
+      return sup_file_params unless metadata_upload?
+
+      meta_params = params[:metadata].present? ? JSON.parse(params[:metadata]).symbolize_keys : params
+
+      type = case meta_params[:type]
+             when 'caption'
+               'caption'
+             when 'transcript'
+               'transcript'
+             else
+               nil
+             end
+      treat_as_transcript = 'transcript' if meta_params[:treat_as_transcript] == true
+      machine_generated = 'machine_generated' if meta_params[:machine_generated] == true
+
+      sup_file_params[:label] ||= meta_params[:label].presence
+      sup_file_params[:language] ||= meta_params[:language].presence
+      # The uniq is to prevent multiple instances of 'transcript' tag if an update is performed with
+      # `{ type: transcript, treat_as_transcript: 1}`
+      sup_file_params[:tags] ||= [type, treat_as_transcript, machine_generated].compact.uniq
+      sup_file_params
     end
 
     def find_supplemental_file
@@ -133,7 +198,7 @@ class SupplementalFilesController < ApplicationController
 
 
     def handle_error(message:, status:)
-      if request.format == :json
+      if request.format == :json || request.headers['Avalon-Api-Key'].present?
         render json: { errors: message }, status: status
       else
         flash[:error] = message
@@ -151,6 +216,22 @@ class SupplementalFilesController < ApplicationController
     end
 
     def edit_file_information
+      update_tags
+
+      @supplemental_file.label = supplemental_file_params[:label]
+      return unless supplemental_file_params[:language].present?
+      @supplemental_file.language = LanguageTerm.find(supplemental_file_params[:language]).code
+    end
+
+    def update_tags
+      # The edit page only provides supplemental_file_params[:tags] on object creation.
+      # Thus, we need to provide individual handling for both updates triggered by page
+      # actions and updates through the JSON api.
+      if request.format == 'json'
+        @supplemental_file.tags = supplemental_file_params[:tags].presence
+        return
+      end
+
       file_params = [ 
         { param: "machine_generated_#{params[:id]}".to_sym, tag: "machine_generated", method: :machine_generated? },
         { param: "treat_as_transcript_#{params[:id]}".to_sym, tag: "transcript", method: :caption_transcript? }
@@ -166,9 +247,23 @@ class SupplementalFilesController < ApplicationController
           @supplemental_file.tags -= [tag]
         end
       end
-      @supplemental_file.label = supplemental_file_params[:label]
-      return unless supplemental_file_params[:language].present?
-      @supplemental_file.language = LanguageTerm.find(supplemental_file_params[:language]).code
+    end
+
+    def metadata_from_params
+      {
+        label: supplemental_file_params[:label],
+        tags: supplemental_file_params[:tags],
+        language: supplemental_file_params[:language].present? ? LanguageTerm.find(supplemental_file_params[:language]).code : Settings.caption_default.language,
+        parent_id: @object.id
+      }.compact
+    end
+
+    def metadata_upload?
+      params[:format] == 'json'
+    end
+
+    def attachment
+      params[:file] || supplemental_file_params[:file]
     end
 
     def object_supplemental_file_path

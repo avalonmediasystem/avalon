@@ -22,26 +22,22 @@ class SupplementalFile < ApplicationRecord
   # TODO: the empty tag should represent a generic supplemental file
   validates :tags, array_inclusion: ['transcript', 'caption', 'machine_generated', '', nil]
   validates :language, inclusion: { in: LanguageTerm.map.keys }
-  validate  :validate_file_type, if: :caption?
   validates :parent_id, presence: true
+  validate  :validate_file_type, if: :caption?
 
   serialize :tags, Array
 
   # Need to prepend so this runs before the callback added by `has_one_attached` above
   # See https://github.com/rails/rails/issues/37304
-  after_create_commit :update_index, prepend: true
-  after_update :update_index
-
-  def validate_file_type
-    errors.add(:file_type, "Uploaded file is not a recognized captions file") unless ['text/vtt', 'text/srt'].include? file.content_type
-  end
+  after_create_commit :index_file, prepend: true
+  after_update_commit :update_index, prepend: true
 
   def attach_file(new_file)
     file.attach(new_file)
     extension = File.extname(new_file.original_filename)
     self.file.content_type = Mime::Type.lookup_by_extension(extension.slice(1..-1)).to_s if extension == '.srt'
     self.label = file.filename.to_s if label.blank?
-    self.language = Settings.caption_default.language
+    self.language ||= Settings.caption_default.language
   end
 
   def mime_type
@@ -64,6 +60,25 @@ class SupplementalFile < ApplicationRecord
     tags.include?('caption') && tags.include?('transcript')
   end
 
+  def as_json(options={})
+    type = if tags.include?('caption')
+             'caption'
+           elsif tags.include?('transcript')
+             'transcript'
+           else
+             'generic'
+           end
+
+    {
+      id: id,
+      type: type,
+      label: label,
+      language: LanguageTerm.find(language).text,
+      treat_as_transcript: caption_transcript? ? true : false,
+      machine_generated: machine_generated? ? true : false
+    }.compact
+  end
+
   # Adapted from https://github.com/opencoconut/webvtt-ruby/blob/e07d59220260fce33ba5a0c3b355e3ae88b99457/lib/webvtt/parser.rb#L11-L30
   def self.convert_from_srt(srt)
     # normalize timestamps in srt
@@ -80,9 +95,13 @@ class SupplementalFile < ApplicationRecord
     "WEBVTT\n\n#{conversion}".strip
   end
   
+  # We need to use both after_create_commit and after_update_commit to update the index properly in both cases. 
+  # However, they cannot call the same method name or only the last defined callback will take effect.
+  # https://guides.rubyonrails.org/active_record_callbacks.html#aliases-for-after-commit
   def update_index
-    ActiveFedora::SolrService.add(to_solr, softCommit: true)
+    ActiveFedora::SolrService.add(to_solr, softCommit: true) if file.present?
   end
+  alias index_file update_index
 
   # Creates a solr document hash for the {#object}
   # @return [Hash] the solr document
@@ -110,6 +129,11 @@ class SupplementalFile < ApplicationRecord
   end
 
   private
+
+  def validate_file_type
+    return unless file.present?
+    errors.add(:file_type, "Uploaded file is not a recognized captions file") unless ['text/vtt', 'text/srt'].include?(file.content_type)
+  end
 
   def c_time
     created_at&.to_datetime || DateTime.now

@@ -64,6 +64,40 @@ describe SupplementalFile do
       end
     end
 
+    describe '#update_index' do
+      let(:transcript) { FactoryBot.build(:supplemental_file, :with_transcript_file, :with_transcript_tag) }
+      context 'on create' do
+        it 'triggers callback' do
+          expect(transcript).to receive(:index_file)
+          transcript.save
+        end
+
+        it 'indexes the transcript' do
+          transcript.save
+          solr_doc = ActiveFedora::SolrService.query("id:#{RSolr.solr_escape(transcript.to_global_id.to_s)}").first
+          expect(solr_doc["transcript_tsim"]).to eq ["00:00:03.500 --> 00:00:05.000 Example captions"]
+        end
+      end
+
+      context 'on update' do
+        let(:transcript) { FactoryBot.create(:supplemental_file, :with_transcript_file, :with_transcript_tag) }
+        it 'triggers callback' do
+          transcript.file.attach(fixture_file_upload(Rails.root.join('spec', 'fixtures', 'chunk_test.vtt'), 'text/vtt'))
+          expect(transcript).to receive(:update_index)
+          transcript.save
+        end
+
+        it 'updates the indexed transcript' do
+          before_doc = ActiveFedora::SolrService.query("id:#{RSolr.solr_escape(transcript.to_global_id.to_s)}").first
+          expect(before_doc["transcript_tsim"].first).to eq "00:00:03.500 --> 00:00:05.000 Example captions"
+          transcript.file.attach(fixture_file_upload(Rails.root.join('spec', 'fixtures', 'chunk_test.vtt'), 'text/vtt'))
+          transcript.save
+          after_doc = ActiveFedora::SolrService.query("id:#{RSolr.solr_escape(transcript.to_global_id.to_s)}").first
+          expect(after_doc["transcript_tsim"].first).to eq("00:00:01.200 --> 00:00:21.000 [music]")
+        end
+      end
+    end
+
     describe '#to_solr' do
       let(:caption) { FactoryBot.create(:supplemental_file, :with_caption_file, :with_caption_tag) }
       let(:transcript) { FactoryBot.create(:supplemental_file, :with_transcript_file, :with_transcript_tag) }
@@ -123,6 +157,50 @@ describe SupplementalFile do
       subject.language = 'ger'
       subject.save
       expect(subject.reload.language).to eq "ger"
+    end
+  end
+
+  describe '#as_json' do
+    subject { supplemental_file.as_json }
+    let(:supplemental_file) { FactoryBot.create(:supplemental_file, label: 'Test') }
+    
+    context 'generic supplemental file' do
+      it 'serializes the metadata' do
+        expect(subject[:id]).to eq supplemental_file.id
+        expect(subject[:type]).to eq 'generic'
+        expect(subject[:label]).to eq supplemental_file.label
+        expect(subject[:language]).to eq 'English'
+        expect(subject[:treat_as_transcript]).to_not be_present
+        expect(subject[:machine_generated]).to_not be_present
+      end
+    end
+
+    context 'machine generated file' do
+      let(:supplemental_file) { FactoryBot.create(:supplemental_file, :with_caption_file, tags: ['machine_generated'], label: 'Test') }
+      it 'includes machine_generated in json' do
+        expect(subject[:machine_generated]).to eq true
+      end
+    end
+
+    context 'caption file' do
+      let(:supplemental_file) { FactoryBot.create(:supplemental_file, :with_caption_file, :with_caption_tag, label: 'Test') }
+      it 'sets the type properly' do
+        expect(subject[:type]).to eq 'caption'
+      end
+
+      context 'as transcript' do
+        let(:supplemental_file) { FactoryBot.create(:supplemental_file, :with_caption_file, tags: ['caption', 'transcript'], label: 'Test') }
+        it 'includes treat_as_transcript in JSON' do
+          expect(subject[:treat_as_transcript]).to eq true
+        end
+      end
+    end
+
+    context 'transcript file' do
+      let(:supplemental_file) { FactoryBot.create(:supplemental_file, :with_transcript_file, :with_transcript_tag, label: 'Test') }
+      it 'sets the type properly' do
+        expect(subject[:type]).to eq 'transcript'
+      end
     end
   end
 
