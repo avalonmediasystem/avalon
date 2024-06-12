@@ -1,23 +1,53 @@
 const { defineConfig } = require("cypress");
+const path = require('path');
+const fs = require('fs');
 
 module.exports = defineConfig({
-  env: {
-    "USERS_ADMINISTRATOR_EMAIL": "administrator@example.com",
-    "USERS_ADMINISTRATOR_PASSWORD": "password",
-    "USERS_USER_EMAIL": "user@example.com",
-    "USERS_USER_PASSWORD": "password",
-    "MEDIA_OBJECT_ID": "123456789"
-  },
+ 
   downloadsFolder: "spec/cypress/downloads",
   fixturesFolder: "spec/cypress/fixtures",
   screenshotsFolder: "spec/cypress/screenshots",
   videosFolder: "spec/cypress/videos",
+  browser: process.env.BROWSER || 'electron', //
   e2e: {
     setupNodeEvents(on, config) {
+      
       // implement node event listeners here
+      const environmentName = process.env.CYPRESS_ENV || 'local';
+      const environmentFilename = `cypress.env.${environmentName}.json`;
+      const environmentPath = path.resolve(__dirname, environmentFilename);
+
+      console.log('Environment name: %s', environmentName);
+      console.log('Environment path: %s', environmentPath);
+
+      if (fs.existsSync(environmentPath)) {
+        console.log('Loading %s', environmentFilename);
+        const settings = require(environmentPath);
+
+        // Set baseUrl if defined in the environment settings
+        if (settings.baseUrl) {
+          config.baseUrl = settings.baseUrl;
+          console.log('Loading the baseURL....  %s', config.baseUrl);
+        }
+
+        // Merge environment variables
+        if (settings.env) {
+          config.env = {
+            ...config.env,
+            ...settings.env,
+          };
+        }
+
+        console.log('Loaded settings for environment %s', environmentName);
+      } else {
+        console.error(`Environment config file ${environmentFilename} not found`);
+      }
+      return config;
     },
-    baseUrl: "http://localhost:3000",
+
     supportFile: "spec/cypress/support/e2e.js",
     specPattern: "spec/cypress/integration/**/*.js"
   },
+
 });
+ 
