@@ -171,6 +171,7 @@ class MasterFile < ActiveFedora::Base
   after_transcoding :generate_waveform
   after_transcoding :update_ingest_batch
   # Generate and set the poster and thumbnail
+  after_transcoding :set_display_aspect_ratio
   after_transcoding :set_default_poster_offset
   after_transcoding :update_stills_from_offset!
 
@@ -605,9 +606,11 @@ class MasterFile < ActiveFedora::Base
     end
 
     frame_size = (options[:size].nil? or options[:size] == 'auto') ? self.original_frame_size : options[:size]
+    # Handle existing files that may have inaccurate display_aspect_ratio saved.
+    aspect_ratio = actual_aspect_ratio != self.display_aspect_ratio.to_f ? actual_aspect_ratio : self.display_aspect_ratio
 
     (new_width,new_height) = frame_size.split(/x/).collect(&:to_f)
-    new_height = (new_width/self.display_aspect_ratio.to_f).round
+    new_height = (new_width/aspect_ratio.to_f).round
     frame_source = find_frame_source(offset: offset)
     data = get_ffmpeg_frame_data(frame_source, new_width, new_height, options[:headers])
     raise RuntimeError, "Frame extraction failed. See log for details." if data.empty?
@@ -744,6 +747,23 @@ class MasterFile < ActiveFedora::Base
         self.display_aspect_ratio = display_aspect_ratio_s
       end
       self.original_frame_size = @mediainfo.video.streams.first.frame_size
+    end
+  end
+
+  def actual_aspect_ratio
+    deriv = self.derivatives.where(quality_ssi: "high").first
+
+    deriv.width.to_f / deriv.height.to_f
+  end
+
+  # Input videos that are in portrait orientation can have metadata showing landscape orientation
+  # with a rotation value. This can cause the aspect ratio on the master file to be incorrect. 
+  # We can get the proper aspect ratio from the transcoded files, so set the master file off the 
+  # derivatives when the aspect ratios do not match.
+  def set_display_aspect_ratio
+    if self.display_aspect_ratio.to_f != actual_aspect_ratio
+      self.display_aspect_ratio = actual_aspect_ratio.to_s
+      self.save
     end
   end
 
