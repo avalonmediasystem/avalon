@@ -44,14 +44,19 @@ const Ramp = ({
   playlist_item_ids,
   token,
   share,
-  comment_tag
+  comment_label,
+  comment,
+  tags
 }) => {
   const [manifestUrl, setManifestUrl] = React.useState('');
   const [activeItemTitle, setActiveItemTitle] = React.useState();
   const [activeItemSummary, setActiveItemSummary] = React.useState();
   const [startCanvasId, setStartCanvasId] = React.useState();
+  const [expanded, setExpanded] = React.useState(false);
+  const [description, setDescription] = React.useState();
 
   let interval;
+  let descriptionCheck;
 
   const USER_AGENT = window.navigator.userAgent;
   const IS_MOBILE = (/Mobi/i).test(USER_AGENT);
@@ -71,9 +76,15 @@ const Ramp = ({
     setManifestUrl(url);
 
     interval = setInterval(addPlayerEventListeners, 500);
+    /**
+     * The passed in description is not immediately available for some reason.
+     * Use an interval to wait and set initial description.
+     */
+    descriptionCheck = setInterval(prepInitialDescription, 100);
 
     // Clear interval upon component unmounting
     return () => clearInterval(interval);
+    return () => clearInterval(descriptionCheck);
   }, []);
 
   /**
@@ -92,6 +103,34 @@ const Ramp = ({
         }
       });
     }
+  };
+
+  const expandBtn = {
+    paddingLeft: '2px',
+    cursor: 'pointer'
+  };
+
+  const wordCount = 32;
+  const words = comment ? comment.split(' ') : [];
+
+  function prepInitialDescription() {
+    if (words !== undefined && words.length > 0) {
+      clearInterval(descriptionCheck);
+      let desc = words.length > wordCount
+        ? `${words.slice(0, wordCount).join(' ')}...`
+        : words.join(' ');
+
+      setDescription(desc);
+    } else if (words.length === 0) {
+      clearInterval(descriptionCheck);
+    }
+  }
+
+  const handleClick = () => {
+    setDescription(
+      expanded ? `${words.slice(0, wordCount).join(' ')}...` : words.join(' ')
+    );
+    setExpanded(!expanded);
   };
 
   return (
@@ -164,7 +203,27 @@ const Ramp = ({
               </div>
             </Col>
           </Row>
-          <div dangerouslySetInnerHTML={{ __html: comment_tag.content }} />
+          <div>
+            {comment && (
+              <div>
+                <h4>{comment_label}</h4>
+                <div>
+                  <span dangerouslySetInnerHTML={{ __html: description }} />
+                  {words.length > wordCount && (
+                    <a className="btn-link" style={expandBtn} onClick={handleClick}>
+                      Show {expanded ? 'less' : 'more'}
+                    </a>
+                  )}
+                </div>
+              </div>
+            )}
+            {tags && (
+              <div>
+                <h4>Tags</h4>
+                <div className="tag-button-wrapper" dangerouslySetInnerHTML={{ __html: tags }} />
+              </div>
+            )}
+          </div>
           {playlist_item_ids?.length > 0 && (
             <React.Fragment>
               <h4 className="mt-3">Playlist Items</h4>
