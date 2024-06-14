@@ -126,7 +126,7 @@ const Ramp = ({
     }
   }
 
-  const handleClick = () => {
+  const handleDescriptionMoreLessClick = () => {
     setDescription(
       expanded ? `${words.slice(0, wordCount).join(' ')}...` : words.join(' ')
     );
@@ -210,7 +210,7 @@ const Ramp = ({
                 <div>
                   <span dangerouslySetInnerHTML={{ __html: description }} />
                   {words.length > wordCount && (
-                    <a className="btn-link" style={expandBtn} onClick={handleClick}>
+                    <a className="btn-link" style={expandBtn} onClick={handleDescriptionMoreLessClick}>
                       Show {expanded ? 'less' : 'more'}
                     </a>
                   )}
