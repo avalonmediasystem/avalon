@@ -64,5 +64,34 @@ namespace :avalon do
         puts("#{error.length} files migrated with unsupported mime types. Refer to caption_type_errors.log for full list of SupplementalFile IDs.")
       end
     end
+    desc "Backfill the parent_id field on SupplementalFile records as part of improvements to the model to allow transcript indexing"
+    task backfill_parent_id: :environment do
+      error = []
+      logger = Logger.new(File.join(Rails.root, 'log/parent_id_backfill_errors.log'))
+
+      objects = ActiveFedora::SolrService.get("supplemental_files_json_ssi:*", { fl: "id,supplemental_files_json_ssi", rows: 1000000 })["response"]["docs"]
+      objects.each do |object|
+        files = JSON.parse(object["supplemental_files_json_ssi"]).collect { |file_gid| GlobalID::Locator.locate(file_gid) }
+
+        files.each do |file|
+          begin
+            if file.parent_id.blank?
+              file.parent_id = object["id"]
+              file.save!
+            else
+              next
+            end
+          rescue
+            error += [file.id]
+          end
+        end
+      end
+
+      puts("Backfill complete.")
+      if error.present?
+        logger.info("Failed to save: #{error}")
+        puts("#{error.length} files failed to save. Refer to parent_id_backfill_errors.log for full list of SupplementalFile IDs.")
+      end
+    end
   end
 end
