@@ -176,12 +176,8 @@ class MasterFile < ActiveFedora::Base
 
   after_processing :post_processing_file_management
 
-  # First and simplest test - make sure that the uploaded file does not exceed the
-  # limits of the system. For now this is hard coded but should probably eventually
-  # be set up in a configuration file somewhere
-  #
-  # 250 MB is the file limit for now
-  MAXIMUM_UPLOAD_SIZE = Settings.max_upload_size || 2.gigabytes
+  # Make sure that the uploaded file does not exceed the limits of the system
+  MAXIMUM_UPLOAD_SIZE = Settings.max_upload_size
 
   WORKFLOWS = ['fullaudio', 'avalon', 'pass_through', 'avalon-skip-transcoding', 'avalon-skip-transcoding-audio'].freeze
   AUDIO_TYPES = ["audio/vnd.wave", "audio/mpeg", "audio/mp3", "audio/mp4", "audio/wav", "audio/x-wav"]

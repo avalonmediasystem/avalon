@@ -24,17 +24,33 @@ describe MasterFileBuilder, type: :service do
   end
 
   describe 'FileUpload.build' do
-    it "should raise error if file is too big" do
-      file = double("file", size: MasterFile::MAXIMUM_UPLOAD_SIZE + 1)
-      params = { Filedata: [file] }
-      expect { MasterFileBuilder::FileUpload.build(params) }.to raise_error MasterFileBuilder::BuildError
+    context "with upload limit enabled" do
+      around do |example|
+        @old_maximum_upload_size = MasterFile::MAXIMUM_UPLOAD_SIZE
+        MasterFile::MAXIMUM_UPLOAD_SIZE = 2.gigabytes
+        example.run
+        MasterFile::MAXIMUM_UPLOAD_SIZE = @old_maximum_upload_size
+      end
+
+     it "should raise error if file is too big" do
+        file = double("file", size: MasterFile::MAXIMUM_UPLOAD_SIZE + 1)
+        params = { Filedata: [file] }
+        expect { MasterFileBuilder::FileUpload.build(params) }.to raise_error MasterFileBuilder::BuildError
+      end
+
+      it "should return a Spec for legit file" do
+        file = double("file", size: MasterFile::MAXIMUM_UPLOAD_SIZE - 1, original_filename: "aname", content_type: "mp4")
+        params = { Filedata: [file], workflow: double("workflow") }
+        s = MasterFileBuilder::FileUpload.build(params)
+        expect(s).to eq [MasterFileBuilder::Spec.new(file, file.original_filename, file.content_type, params[:workflow])]
+      end
     end
 
-    it "should return a Spec for legit file" do
-      file = double("file", size: MasterFile::MAXIMUM_UPLOAD_SIZE - 1, original_filename: "aname", content_type: "mp4")
-      params = { Filedata: [file], workflow: double("workflow") }
-      s = MasterFileBuilder::FileUpload.build(params)
-      expect(s).to eq [MasterFileBuilder::Spec.new(file, file.original_filename, file.content_type, params[:workflow])]
+    it "should not raise error when no limit" do
+      expect(MasterFile::MAXIMUM_UPLOAD_SIZE.is_a? Numeric).to eq false
+      file = double("file", size: 2.gigabytes + 1)
+      params = { Filedata: [file] }
+      expect { MasterFileBuilder::FileUpload.build(params) }.not_to raise_error MasterFileBuilder::BuildError
     end
   end
 

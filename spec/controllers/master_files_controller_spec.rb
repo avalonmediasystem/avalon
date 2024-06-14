@@ -57,6 +57,13 @@ describe MasterFilesController do
     end
 
     context "cannot upload a file over the defined limit" do
+      around do |example|
+        @old_maximum_upload_size = MasterFile::MAXIMUM_UPLOAD_SIZE
+        MasterFile::MAXIMUM_UPLOAD_SIZE = 2.gigabytes
+        example.run
+        MasterFile::MAXIMUM_UPLOAD_SIZE = @old_maximum_upload_size
+      end
+
       it "provides a warning about the file size" do
         request.env["HTTP_REFERER"] = "/"
 

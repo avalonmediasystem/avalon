@@ -178,7 +178,11 @@ Unless required by applicable law or agreed to in writing, software distributed
       <div class="row">
         <div class="col-sm-7">
           <!-- web-upload -->
-          <p class="muted">Upload through the web (files must not exceed <%= number_to_human_size MasterFile::MAXIMUM_UPLOAD_SIZE %>)</p>
+          <% if MasterFile::MAXIMUM_UPLOAD_SIZE.is_a? Numeric %>
+            <p class="muted">Upload through the web (files must not exceed <%= number_to_human_size MasterFile::MAXIMUM_UPLOAD_SIZE %>)</p>
+          <% else %>
+            <p class="muted">Upload through the web</p>
+          <% end %>
           <fieldset id='uploader'>
             <%= form_tag(master_files_path, :enctype=>"multipart/form-data", class: upload_form_classes, data: upload_form_data) do -%>
             <input type="hidden" name="container_id" value="<%= @media_object.id %>" />
