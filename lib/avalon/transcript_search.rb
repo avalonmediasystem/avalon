@@ -24,10 +24,14 @@ module Avalon
       @request_url = request_url
     end
 
-    def perform_search
-      terms = query.split
-      term_subquery = terms.map { |term| "transcript_tsim:#{RSolr.solr_escape(term)}" }.join(" OR ")
-      ActiveFedora::SolrService.get("isPartOf_ssim:#{master_file.id} AND #{term_subquery}",
+    def perform_search(phrase_searching: true)
+      subquery = if phrase_searching
+                   "transcript_tsim:\"#{RSolr.solr_escape(query)}\""
+                 else
+                   query.split.map { |term| "transcript_tsim:#{RSolr.solr_escape(term)}" }.join(" OR ")
+                 end
+
+      ActiveFedora::SolrService.get("isPartOf_ssim:#{master_file.id} AND #{subquery}",
                                     "fl": "id,mime_type_ssi",
                                     "hl": true,
                                     "hl.fl": "transcript_tsim",
@@ -36,8 +40,8 @@ module Avalon
                                     "hl.method": "original")
     end
 
-    def iiif_content_search
-      results = perform_search
+    def iiif_content_search(phrase_searching: true)
+      results = perform_search(phrase_searching: phrase_searching)
 
       {
         "@context": "http://iiif.io/api/search/2/context.json",
