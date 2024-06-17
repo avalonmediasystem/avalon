@@ -308,6 +308,15 @@ class MasterFile < ActiveFedora::Base
     # is stored as an integer string
     self.duration = encode.input.duration.to_i.to_s if encode.input.duration.present?
 
+    # Input videos that are in portrait orientation can have metadata showing landscape orientation
+    # with a rotation value. This can cause the aspect ratio on the master file to be incorrect. 
+    # We can get the proper aspect ratio from the transcoded files, so we set the master file off the 
+    # encode output.
+    if is_video?
+      high_output = Array(encode.output).select { |out| out.label.include?("high") }.first
+      self.display_aspect_ratio = (high_output.width.to_f / high_output.height.to_f).to_s
+    end
+
     outputs = Array(encode.output).collect do |output|
       {
         id: output.id,
