@@ -93,5 +93,26 @@ namespace :avalon do
         puts("#{error.length} files failed to save. Refer to parent_id_backfill_errors.log for full list of SupplementalFile IDs.")
       end
     end
+    desc "Migrate MediaObjects from list_source linked list of sections to JSON array section_list property"
+    task media_object_section_list: :environment do
+      error_ids = []
+      mo_count = MediaObject.count
+      ids_to_migrate = ActiveFedora::SolrService.query("has_model_ssim:MediaObject AND NOT section_list_ssim:[* TO *]", rows: mo_count).pluck("id")
+      puts "Migrating #{ids_to_migrate.size} out of #{mo_count} Media Objects."
+      ids_to_migrate.each do |id|
+        MediaObject.find(id).save!
+      rescue StandardError => error
+        error_ids += [id]
+        puts "Error migrating #{id}: #{error.message}"
+      end
+      remaining_ids_count = ActiveFedora::SolrService.query("has_model_ssim:MediaObject AND NOT section_list_ssim:[* TO *]", rows: mo_count).size
+      if error_ids.size > 0
+        puts "Migration finished running but #{error_ids.size} Media Objects failed to migrate.  Try running the migration again."
+      elsif remaining_ids_count > 0
+        puts "Migration finished running but #{remaining_ids_count} Media Objects found still needing to be migrated."
+      else
+        puts "Migration completed successfully."
+      end
+    end
   end
 end
