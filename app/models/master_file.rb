@@ -312,8 +312,10 @@ class MasterFile < ActiveFedora::Base
     # with a rotation value. This can cause the aspect ratio on the master file to be incorrect. 
     # We can get the proper aspect ratio from the transcoded files, so we set the master file off the 
     # encode output.
-    high_output = Array(encode.output).select { |out| out.label.include?("high") }.first
-    self.display_aspect_ratio = (high_output.width.to_f / high_output.height.to_f).to_s
+    if is_video?
+      high_output = Array(encode.output).select { |out| out.label.include?("high") }.first
+      self.display_aspect_ratio = (high_output.width.to_f / high_output.height.to_f).to_s
+    end
 
     outputs = Array(encode.output).collect do |output|
       {
