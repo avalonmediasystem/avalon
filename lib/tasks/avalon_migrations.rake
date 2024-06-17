@@ -77,7 +77,7 @@ namespace :avalon do
           begin
             if file.parent_id.blank?
               file.parent_id = object["id"]
-              file.save!
+              file.save!(validate: false)
             else
               next
             end
@@ -100,7 +100,7 @@ namespace :avalon do
       ids_to_migrate = ActiveFedora::SolrService.query("has_model_ssim:MediaObject AND NOT section_list_ssim:[* TO *]", rows: mo_count).pluck("id")
       puts "Migrating #{ids_to_migrate.size} out of #{mo_count} Media Objects."
       ids_to_migrate.each do |id|
-        MediaObject.find(id).save!
+        MediaObject.find(id).save!(validate: false)
       rescue StandardError => error
         error_ids += [id]
         puts "Error migrating #{id}: #{error.message}"
