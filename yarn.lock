@@ -1479,7 +1479,7 @@
 
 "@samvera/ramp@https://github.com/samvera-labs/ramp.git":
   version "3.1.2"
-  resolved "https://github.com/samvera-labs/ramp.git#836f27f2225fbb4406b412603a1ca124d4563430"
+  resolved "https://github.com/samvera-labs/ramp.git#6ba3a206ac7bbda3682d70c6bdb53c709c36b29f"
   dependencies:
     "@rollup/plugin-json" "^6.0.1"
     "@silvermine/videojs-quality-selector" "^1.3.1"
@@ -4629,9 +4629,9 @@ make-dir@^3.0.2, make-dir@^3.1.0:
     semver "^6.0.0"
 
 mammoth@^1.4.19:
-  version "1.7.2"
-  resolved "https://registry.yarnpkg.com/mammoth/-/mammoth-1.7.2.tgz#e0efd28f46e183d807230e9ce119966dc6b1215e"
-  integrity sha512-MqWU2hcLf1I5QMKyAbfJCvrLxnv5WztrAQyorfZ+WPq7Hk82vZFmvfR2/64ajIPpM4jlq0TXp1xZvp/FFaL1Ug==
+  version "1.8.0"
+  resolved "https://registry.yarnpkg.com/mammoth/-/mammoth-1.8.0.tgz#d8f1b0d3a0355fda129270346e9dc853f223028f"
+  integrity sha512-pJNfxSk9IEGVpau+tsZFz22ofjUsl2mnA5eT8PjPs2n0BP+rhVte4Nez6FdgEuxv3IGI3afiV46ImKqTGDVlbA==
   dependencies:
     "@xmldom/xmldom" "^0.8.6"
     argparse "~1.0.3"
