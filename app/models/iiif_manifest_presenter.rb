@@ -107,9 +107,14 @@ class IiifManifestPresenter
 
   def display_other_identifiers(media_object)
     # bibliographic_id has form [:type,"value"], other_identifier has form [[:type,"value],[:type,"value"],...]
-    ids = media_object.bibliographic_id.present? ? [media_object.bibliographic_id] : []
-    ids += Array(media_object.other_identifier)
+    ids = Array(media_object.other_identifier) - [media_object.bibliographic_id]
+    return nil unless ids.present?
     ids.uniq.collect { |i| "#{ModsDocument::IDENTIFIER_TYPES[i[:source]]}: #{i[:id]}" }
+  end
+
+  def display_bibliographic_id(media_object)
+    return nil unless media_object.bibliographic_id.present?
+    "#{ModsDocument::IDENTIFIER_TYPES[media_object.bibliographic_id[:source]]}: #{media_object.bibliographic_id[:id]}"
   end
 
   def note_fields(media_object)
@@ -197,6 +202,7 @@ class IiifManifestPresenter
       metadata_field('Lending Period', display_lending_period(media_object))
     ]
     fields += note_fields(media_object)
+    fields += [metadata_field('Bibliographic ID', display_bibliographic_id(media_object))]
     fields += [metadata_field('Other Identifier', display_other_identifiers(media_object))]
     fields
   end
