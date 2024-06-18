@@ -32,7 +32,7 @@
     "terser-webpack-plugin": "5",
     "url-search-params-polyfill": "^7.0.1",
     "util": "^0.12.5",
-    "video.js": "7.21.4",
+    "video.js": "^8.10.0",
     "webpack": "5",
     "webpack-assets-manifest": "5",
     "webpack-merge": "^5.9.0"
