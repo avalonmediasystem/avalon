@@ -855,5 +855,14 @@ describe MasterFilesController do
       result = JSON.parse(response.body)
       expect(result['items'].any? { |item| item["id"].include?(other_master_file.id) }).to eq false
     end
+
+    it 'does phrase searches' do
+      get('search', params: { id: parent_master_file.id, q: 'before lunch' } )
+      result = JSON.parse(response.body)
+      items = result["items"]
+      expect(items.count).to eq 1
+      expect(items[0]["body"]["value"]).to eq "Just <em>before</em> <em>lunch</em> one day, a puppet show was put on at school."
+      expect(items[0]["target"]).to eq "#{Rails.application.routes.url_helpers.transcripts_master_file_supplemental_file_url(parent_master_file.id, transcript_1.id)}#t=00:00:22.200,00:00:26.600"
+    end
   end
 end
