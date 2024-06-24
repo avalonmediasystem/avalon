@@ -131,5 +131,23 @@ describe StreamToken do
         expect(session[:hash_tokens]).not_to include(token)
       end
     end
+
+    context 'with custom max_tokens_per_user' do
+      around do |example|
+        @previous_max_tokens_per_user = StreamToken.max_tokens_per_user
+        StreamToken.max_tokens_per_user = 10
+        example.run
+        StreamToken.max_tokens_per_user = @previous_max_tokens_per_user
+      end
+
+      it 'limits the number of tokens in the session' do
+        (1..10).each { |i| StreamToken.find_or_create_session_token(session, i.to_s) }
+        expect(session[:hash_tokens].size).to eq 11
+        expect(session[:hash_tokens]).to include(token)
+        StreamToken.purge_expired!(session)
+        expect(session[:hash_tokens].size).to eq 10
+        expect(session[:hash_tokens]).not_to include(token)
+      end
+    end
   end
 end

@@ -17,6 +17,8 @@ class StreamToken < ActiveRecord::Base
   class Unauthorized < Exception; end
 
   #  attr_accessible :token, :target, :expires
+  class_attribute :max_tokens_per_user
+  self.max_tokens_per_user = 1000
 
   def self.media_token(session)
     session[:hash_tokens] ||= []
@@ -75,7 +77,7 @@ class StreamToken < ActiveRecord::Base
 
   def self.purge_expired!(session)
     purged = expired.delete_all
-    session[:hash_tokens] = StreamToken.where(token: Array(session[:hash_tokens])).pluck(:token)
+    session[:hash_tokens] = StreamToken.where(token: Array(session[:hash_tokens])).order(expires: :desc).limit(max_tokens_per_user).pluck(:token)
     purged
   end
 
