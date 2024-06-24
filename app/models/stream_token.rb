@@ -18,7 +18,7 @@ class StreamToken < ActiveRecord::Base
 
   #  attr_accessible :token, :target, :expires
   class_attribute :max_tokens_per_user
-  self.max_tokens_per_user = 1000
+  self.max_tokens_per_user = 2000
 
   def self.media_token(session)
     session[:hash_tokens] ||= []
