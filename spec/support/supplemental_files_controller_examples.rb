@@ -361,6 +361,23 @@ RSpec.shared_examples 'a nested controller for' do |object_class|
         expect(JSON.parse(response.body)["errors"]).to be_present
       end
     end
+
+    context 'throws error while saving' do
+      let(:supplemental_file) { FactoryBot.build(:supplemental_file) }
+      before do
+        allow(SupplementalFile).to receive(:new).and_return(supplemental_file)
+        allow(master_file).to receive(:save).and_return(false)
+        allow(controller).to receive(:fetch_object).and_return(master_file)
+      end
+
+      it 'does not add a SupplementalFile to parent object' do
+        expect {
+          post :create, params: { class_id => object.id, supplemental_file: valid_create_attributes, format: :json }, session: valid_session
+        }.not_to change { master_file.reload.supplemental_files.size }
+        expect(response).to have_http_status(500)
+        expect(JSON.parse(response.body)["errors"]).to be_present
+      end
+    end
   end
 
   describe "PUT #update" do
@@ -572,6 +589,20 @@ RSpec.shared_examples 'a nested controller for' do |object_class|
           expect(response).to redirect_to("http://#{@request.host}/media_objects/#{media_object.id}/edit?step=file-upload")
           expect(flash[:error]).to be_present
         end
+      end
+    end
+
+    context 'throws error while saving' do
+      let(:supplemental_file) { FactoryBot.create(:supplemental_file) }
+      before do
+        allow(master_file).to receive(:save).and_return(false)
+        allow(controller).to receive(:fetch_object).and_return(master_file)
+      end
+
+      it 'returns a 500' do
+        delete :destroy, params: { class_id => object.id, id: supplemental_file.id, format: :json }, session: valid_session
+        expect(response).to have_http_status(500)
+        expect(JSON.parse(response.body)["errors"]).to be_present
       end
     end
   end
