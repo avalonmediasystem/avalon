@@ -19,6 +19,7 @@ let currentSectionLabel = undefined;
 let addToPlaylistListenersAdded = false;
 let firstLoad = true;
 let streamId = '';
+let isMobile = false;
 
 /**
  * Bind action buttons on the page with player events and re-populate details
@@ -34,15 +35,13 @@ function addActionButtonListeners(player, mediaObjectId, sectionIds) {
   if (player && player.player != undefined) {
     let currentIndex = parseInt(player.dataset.canvasindex);
     /*
-      For iOS Safari, player.readyState() is 0 until media playback is
+      For both Android and iOS, player.readyState() is 0 until media playback is
       started. Therefore, use player.src() to check whether there's a playable media
       loaded into the player instead of player.readyState().
       Keep the player.readyState() >= 2 check for desktop browsers, because without
       that check the add to playlist form populates NaN values for time fields when user
       clicks the 'Add to Playlist' button immediately on page load, which does not 
       happen in mobile context.
-      Update all action buttons and share links when player.readyState() >= 2,
-      i.e. player has enough data for playable media source
     */
     const USER_AGENT = window.navigator.userAgent;
     // Identify both iPad and iPhone devices
@@ -50,9 +49,10 @@ function addActionButtonListeners(player, mediaObjectId, sectionIds) {
     const IS_MOBILE = (/Mobi/i).test(USER_AGENT);
     const IS_TOUCH_ONLY = navigator.maxTouchPoints && navigator.maxTouchPoints > 2 && !window.matchMedia("(pointer: fine").matches;
     const IS_SAFARI = (/Safari/i).test(USER_AGENT);
+    // For mobile devices use this check instead of player.readyState() >= 2 for enabling action buttons
+    isMobile = (IS_TOUCH_ONLY || IS_IPHONE || IS_MOBILE) && IS_SAFARI && player?.player.src() != '';
     if (currentIndex != canvasIndex && !player.player.canvasIsEmpty) {
-      if ((((IS_TOUCH_ONLY || IS_IPHONE || IS_MOBILE) && IS_SAFARI && player?.player.src() != '')
-        || player?.player.readyState() >= 2)) {
+      if (isMobile || player?.player.readyState() >= 2) {
         canvasIndex = currentIndex;
         buildActionButtons(player, mediaObjectId, sectionIds);
         firstLoad = false;
@@ -198,7 +198,7 @@ function setUpAddToPlaylist(player, sectionIds, mediaObjectId) {
   let addToPlaylistBtn = document.getElementById('addToPlaylistBtn');
 
   if (addToPlaylistBtn && addToPlaylistBtn.disabled
-    && player.player?.readyState() >= 2) {
+    && (player.player?.readyState() >= 2 || isMobile)) {
     addToPlaylistBtn.disabled = false;
     if (!addToPlaylistListenersAdded) {
       // Add 'Add new playlist' option to dropdown
@@ -334,7 +334,7 @@ function setUpCreateThumbnail(player, sectionIds) {
 
   // Leave 'Create Thumbnail' button disabled when item is audio
   if (thumbnailBtn && thumbnailBtn.disabled
-    && player.player?.readyState() >= 2 && !player.player.isAudio()) {
+    && (player.player?.readyState() >= 2 || isMobile) && !player.player.isAudio()) {
     thumbnailBtn.disabled = false;
 
     /*
@@ -423,7 +423,7 @@ function setUpCreateTimeline(player) {
   let timelineBtn = document.getElementById('timelineBtn');
 
   if (timelineBtn && timelineBtn.disabled
-    && player.player?.readyState() >= 2) {
+    && (player.player?.readyState() >= 2 || isMobile)) {
     timelineBtn.disabled = false;
     timelineBtn.addEventListener('click',
       () => handleCreateTimelineModalShow()
