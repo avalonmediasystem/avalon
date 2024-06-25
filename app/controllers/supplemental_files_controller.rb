@@ -59,7 +59,7 @@ class SupplementalFilesController < ApplicationController
     raise Avalon::SaveError, @supplemental_file.errors.full_messages unless @supplemental_file.save
 
     @object.supplemental_files += [@supplemental_file]
-    raise Avalon::SaveError, @object.errors[:supplemental_files_json].full_messages unless @object.save
+    raise Avalon::SaveError, @object.errors[:supplemental_files_json] unless @object.save
 
     flash[:success] = "Supplemental file successfully added."
 
@@ -131,7 +131,7 @@ class SupplementalFilesController < ApplicationController
     find_supplemental_file
 
     @object.supplemental_files -= [@supplemental_file]
-    raise Avalon::SaveError, "An error occurred when deleting the supplemental file: #{@object.errors[:supplemental_files_json].full_messages}" unless @object.save
+    raise Avalon::SaveError, "An error occurred when deleting the supplemental file: #{@object.errors[:supplemental_files_json]}" unless @object.save
     # FIXME: also wrap this in a transaction
     raise Avalon::SaveError, "An error occurred when deleting the supplemental file: #{@supplemental_file.errors.full_messages}" unless @supplemental_file.destroy
 
