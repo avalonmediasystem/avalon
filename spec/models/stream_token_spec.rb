@@ -133,11 +133,8 @@ describe StreamToken do
     end
 
     context 'with custom max_tokens_per_user' do
-      around do |example|
-        @previous_max_tokens_per_user = StreamToken.max_tokens_per_user
-        StreamToken.max_tokens_per_user = 10
-        example.run
-        StreamToken.max_tokens_per_user = @previous_max_tokens_per_user
+      before do
+        allow(StreamToken).to receive(:max_tokens_per_user).and_return(10)
       end
 
       it 'limits the number of tokens in the session' do
