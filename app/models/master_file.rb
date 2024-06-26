@@ -593,6 +593,7 @@ class MasterFile < ActiveFedora::Base
 
     source = FileLocator.new(working_file_path&.first || file_location)
     options[:non_temp_file] = true
+    options[:master] = true
     if source.source.blank? or (source.uri.scheme == 's3' and not source.exist?)
       source = FileLocator.new(self.derivatives.where(quality_ssi: 'high').first.absolute_location)
       options[:non_temp_file] = true
