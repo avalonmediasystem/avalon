@@ -70,6 +70,7 @@ class SearchBuilder < Blacklight::SearchBuilder
     fl << "sections:[subquery]"
     solr_parameters["sections.q"] = "{!terms f=isPartOf_ssim v=$row.id}"
     solr_parameters["sections.defType"] = "lucene"
+    solr_parameters["sections.rows"] = 1_000_000
     sections_fl = ['id']
     transcripts_fl = ['id'] if transcripts_present
    
@@ -89,6 +90,7 @@ class SearchBuilder < Blacklight::SearchBuilder
     solr_parameters["sections.fl"] = sections_fl.join(',')
     solr_parameters["sections.transcripts.fl"] = transcripts_fl.join(',')
     solr_parameters["sections.transcripts.defType"] = "lucene"
+    solr_parameters["sections.transcripts.rows"] = 1_000_000
     solr_parameters["sections.transcripts.q"] = "{!terms f=isPartOf_ssim v=$row.id}{!join to=id from=isPartOf_ssim}"
   end
 end
