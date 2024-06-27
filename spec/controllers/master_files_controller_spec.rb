@@ -759,18 +759,17 @@ describe MasterFilesController do
     let(:collection) { FactoryBot.create(:collection) }
     let(:media_object) { FactoryBot.create(:media_object, collection: collection)}
     let(:master_file) { FactoryBot.create(:master_file, media_object: media_object, derivatives: [high_derivative, med_derivative]) }
-    let(:high_derivative) { FactoryBot.create(:derivative, absolute_location: Rails.root.join('spec', 'fixtures', 'meow.wav').to_s) }
-    let(:med_derivative) { FactoryBot.create(:derivative, quality: 'medium') }
+    let(:high_derivative) { FactoryBot.create(:derivative, absolute_location: "/fixtures/meow.wav") }
+    let(:med_derivative) { FactoryBot.create(:derivative, quality: 'medium', absolute_location: "/fixtures/meow-medium.wav") }
     before do
       allow(Settings.derivative).to receive(:allow_download).and_return(true)
+      allow(Settings.streaming).to receive(:content_path).and_return('/')
       login_user collection.managers.first
     end
 
     it 'should download the high quality derivative' do
       allow(ENV).to receive(:[]).and_call_original
       allow(ENV).to receive(:[]).with("ENCODE_WORK_DIR").and_return(Rails.root.join('spec').to_s)
-      allow(high_derivative).to receive(:location_url).and_return('/fixtures/meow')
-      allow(med_derivative).to receive(:location_url).and_return('/fixtures/meow-medium')
       get :download_derivative, params: { id: master_file.id }
       expect(response.header['Content-Disposition']).to include 'attachment; filename="meow.wav"'
       expect(response.header['Content-Disposition']).to_not include 'filename="meow-medium.wav"'
@@ -779,7 +778,7 @@ describe MasterFilesController do
     it 'should display a flash message if file is not found' do
       allow(ENV).to receive(:[]).and_call_original
       allow(ENV).to receive(:[]).with("ENCODE_WORK_DIR").and_return(Rails.root.join('spec').to_s)
-      allow(high_derivative).to receive(:location_url).and_return('missing')
+      allow(high_derivative).to receive(:hls_url).and_return('missing')
       get :download_derivative, params: { id: master_file.id }
       expect(response).to redirect_to(edit_media_object_path(media_object))
       expect(flash[:error]).to be_present
@@ -795,6 +794,11 @@ describe MasterFilesController do
     end
 
     context 's3 file' do
+      # Settings.encoding does not have a `derivative_bucket` method in
+      # the default configuration so we have to use a full double rather
+      # than just stubbing the method in these tests. RSpec also throws
+      # an error when using a double within an `around` block so we 
+      # explicitly use a `before...after` pattern here.
       before do
         @encoding_backup = Settings.encoding
         Settings.encoding = double("encoding", engine_adapter: 'test', derivative_bucket: 'mybucket')
@@ -803,7 +807,6 @@ describe MasterFilesController do
       it 'should redirect to a presigned url for AWS' do
         allow(ENV).to receive(:[]).and_call_original
         allow(ENV).to receive(:[]).with('AWS_REGION').and_return('us-east-2')
-        allow(high_derivative).to receive(:location_url).and_return('/fixtures/meow')
         get :download_derivative, params: { id: master_file.id }
         expect(response.status).to eq 302
         expect(response.location).to include('s3.us-stubbed-1.amazonaws.com', 'X-Amz-Algorithm', 'X-Amz-Credential', 'X-Amz-Expires', 'X-Amz-SignedHeaders', 'X-Amz-Signature')
@@ -818,7 +821,6 @@ describe MasterFilesController do
       it 'should redirect to restricted page' do
         allow(ENV).to receive(:[]).and_call_original
         allow(ENV).to receive(:[]).with("ENCODE_WORK_DIR").and_return(Rails.root.join('spec').to_s)
-        allow(high_derivative).to receive(:location_url).and_return('/fixtures/meow')
         login_as :user
         expect(get :download_derivative, params: { id: master_file.id }).to render_template 'errors/restricted_pid'
       end

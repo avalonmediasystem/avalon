@@ -130,6 +130,10 @@ class Derivative < ActiveFedora::Base
     audio_bitrate.to_i + video_bitrate.to_i
   end
 
+  def download_path
+    Avalon::Configuration.construct_download_path.call(self)
+  end
+
   private
 
     def delete_file!
