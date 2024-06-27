@@ -40,21 +40,8 @@ class FileLocator
     end
 
     def download_url
-      # Minio:
-      # Because the request to the generated URL will be coming from an external context, we need
-      # to generate the presigned URL with a publicly accessible endpoint. To accomplish this, we
-      # create a new client definition using the public_host address and use that for access to the
-      # object.
-      if Settings.minio.present? && Settings.minio.public_host.present?
-        client = Aws::S3::Client.new(endpoint: Settings.minio.public_host,
-                                     access_key_id: Settings.minio.access,
-                                     secret_access_key: Settings.minio.secret,
-                                     region: ENV["AWS_REGION"])
-        download_object = Aws::S3::Object.new(bucket_name: bucket, key: key, client: client)
-      end
-      # Other AWS implementations should be fine with the default client so we can use the default object.
-      download_object ||= object
-      # Presigned URL is set to expire in 1 hour. Is that too long?
+      download_object = Avalon::Configuration.construct_s3_download_object.call(bucket, key, object)
+      # Presigned URL is set to expire in 1 hour.
       download_object.presigned_url(:get, expires_in: 3600, response_content_disposition: "attachment; filename=#{File.basename(key)}")
     end
   end

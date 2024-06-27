@@ -328,7 +328,8 @@ class MasterFilesController < ApplicationController
     authorize! :download, @master_file
 
     begin
-      path = derivative_path
+      high_deriv = @master_file.derivatives.find { |deriv| deriv.quality == 'high' }
+      path = high_deriv.download_path
 
       unless FileLocator.new(path).exist?
         flash[:error] = "Unable to find or access derivative file."
@@ -421,24 +422,6 @@ protected
 
   def samples_per_frame
     Settings.waveform.sample_rate * Settings.waveform.finest_zoom / Settings.waveform.player_width
-  end
-
-  def derivative_path
-    derivative = @master_file.derivatives.find { |d| d.quality == "high" }
-    # There is no guarantee that the full path contained in the absolute_location attribute is accurate.
-    # However, the sub-path in location_url should be consistent between server moves. The location_url
-    # does not include the extension, so we retrieve the extension from absolute_location.
-    extension = File.extname(derivative.absolute_location)
-    location = derivative.location_url + extension
-    # Derivative files that have been moved from their original location/server should have been moved into
-    # the new root path for derivatives/encodings. Combining the subpath and extension from the existing
-    # record with the derivative path defined in our environment variables, we should be able to retrieve the
-    # derivative files, regardless of how many times they have been rehomed.
-    if Settings.encoding.derivative_bucket
-      File.join('s3://', Settings.encoding.derivative_bucket, location)
-    else
-      File.join(ENV["ENCODE_WORK_DIR"], location).to_s
-    end
   end
 
 private
