@@ -48,7 +48,8 @@ module Avalon
 
     # Separate time cue and text content from a single line of timed text to facilitate result formatting of transcript searches.
     def self.extract_single_time_cue(timed_text)
-      split_text = timed_text.match(/(\d{2,}*:?\d{2}:\d{2}\.?,?\d{3} --> \d{2,}*:?\d{2}:\d{2}\.?,?\d{3})(.*)/)
+      split_text = timed_text.match(/(\d{0,}:?\d{2}:\d{2}\.?,?\d{3} --> \d{0,}:?\d{2}:\d{2}\.?,?\d{3})(.*)/)
+      return [nil, nil] if split_text.blank?
       time_cue = split_text[1].sub(',', '.').gsub(/\s-->\s/, ',')
       text = split_text[2].strip
       [time_cue, text]
