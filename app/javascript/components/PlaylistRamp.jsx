@@ -133,6 +133,26 @@ const Ramp = ({
     setExpanded(!expanded);
   };
 
+  // Update scrolling indicators when end of scrolling has been reached
+  const handleScrollableDescription = (e) => {
+    let elem = e.target;
+    const scrollMsg = elem.nextSibling;
+    const structureEnd = Math.abs(elem.scrollHeight - (elem.scrollTop + elem.clientHeight)) <= 1;
+
+    if (scrollMsg && structureEnd && scrollMsg.classList.contains('scrollable')) {
+      scrollMsg.classList.remove('scrollable');
+    } else if (scrollMsg && !structureEnd && !scrollMsg.classList.contains('scrollable')) {
+      scrollMsg.classList.add('scrollable');
+    }
+  };
+
+  // Update scrolling indicators when page is resized
+  const resizeObserver = new ResizeObserver(entries => {
+    for (let entry of entries) {
+      handleScrollableDescription(entry);
+    }
+  });
+
   return (
     <IIIFPlayer manifestUrl={manifestUrl}
       customErrorMessage='This playlist is empty.'
@@ -203,27 +223,32 @@ const Ramp = ({
               </div>
             </Col>
           </Row>
-          <div>
+          <Row>
             {comment && (
-              <div>
+              <div style={{position: 'relative'}}>
                 <h4>{comment_label}</h4>
-                <div>
+                <div className='ramp--playlist-description' onScroll={handleScrollableDescription}>
                   <span dangerouslySetInnerHTML={{ __html: description }} />
-                  {words.length > wordCount && (
-                    <a className="btn-link" style={expandBtn} onClick={handleDescriptionMoreLessClick}>
-                      Show {expanded ? 'less' : 'more'}
-                    </a>
-                  )}
                 </div>
+                {expanded && (
+                  <div className='ramp--playlist-description-scroll scrollable'>
+                    Scroll to see more
+                  </div>
+                )}
+                {words.length > wordCount && (
+                  <a className="btn-link" style={expandBtn} onClick={handleDescriptionMoreLessClick}>
+                    Show {expanded ? 'less' : 'more'}
+                  </a>
+                )}
               </div>
             )}
             {tags && (
-              <div>
+              <div className='ramp--playlist-tags'>
                 <h4>Tags</h4>
                 <div className="tag-button-wrapper" dangerouslySetInnerHTML={{ __html: tags }} />
               </div>
             )}
-          </div>
+          </Row>
           {playlist_item_ids?.length > 0 && (
             <React.Fragment>
               <h4 className="mt-3">Playlist Items</h4>
