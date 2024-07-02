@@ -41,7 +41,9 @@ Unless required by applicable law or agreed to in writing, software distributed
             </div>
             <% if tag == 'transcript' %>
               <div class="form-group col-md-6 col p-0">
-                <%= form.text_field :language, id: "supplemental_file_language_#{section.id}_#{file.id}", value: LanguageTerm.find(file.language).text,
+                <%= form.text_field :language, 
+                    id: "supplemental_file_language_#{section.id}_#{file.id}", 
+                    value: display_supplemental_file_language(file.language),
                     class: "typeahead from-model form-control",
                     data: { model: 'languageTerm', validate: false } %>
               </div>
@@ -56,7 +58,9 @@ Unless required by applicable law or agreed to in writing, software distributed
             <% end %>
             <% if tag == 'caption' %>
               <div class="form-group col-md-6 col p-0">
-                <%= form.text_field :language, id: "supplemental_file_language_#{section.id}_#{file.id}", value: LanguageTerm.find(file.language).text,
+                <%= form.text_field :language, 
+                    id: "supplemental_file_language_#{section.id}_#{file.id}", 
+                    value: display_supplemental_file_language(file.language),
                     class: "typeahead from-model form-control",
                     data: { model: 'languageTerm', validate: false } %>
               </div>
