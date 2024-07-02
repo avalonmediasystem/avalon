@@ -30,7 +30,7 @@ Unless required by applicable law or agreed to in writing, software distributed
         <% end %>
       </div>
       <div class="form-group">
-        <label for="link-object-manifest">IIIF Manifest</label>
+        <label for="link-object-manifest">IIIF Manifest</label><img src="<%= asset_path('iiif-logo.svg') %>" alt="IIIF Logo SVG" class="iiif-manifest-logo ml-1">
         <input type="text" class="col-md-12 form-control" id="link-object-manifest" value="<%= manifest_media_object_url(@media_object.id) %>" 
           placeholder="<%= manifest_media_object_url(@media_object.id) %>" onClick="this.select();" readonly="readonly">
       </div>
