@@ -360,6 +360,37 @@
     flex-basis: auto;
     height: 70vh;
 
+    .ramp--playlist-description {
+      overflow: auto;
+      max-height: 25vh;
+    }
+
+    // Scroll to see more message
+    .ramp--playlist-description-scroll {
+      display: none;
+    }
+
+    .ramp--playlist-description-scroll.scrollable {
+      background: #bbbbbb;
+      text-align: center;
+      display: block;
+      position: absolute;
+      color: black;
+      font-size: 13px;
+      width: fit-content;
+      bottom: 0;
+      left: 35.5%;
+      border: 1px solid #ddd;
+      border-radius: 0.25rem 0.25rem 0 0;
+      border-bottom: none;
+      padding: 0.25em;
+      transform: translateY(-1.5rem);
+
+      @media (min-width: 585px) and (max-width: 768px) {
+        left: 25%;
+      }
+    }
+
     .ramp--structured-nav__border {
       margin-top: 0;
       overflow: auto;
