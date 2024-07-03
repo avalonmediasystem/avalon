@@ -485,10 +485,31 @@ RSpec.shared_examples 'a nested controller for' do |object_class|
         end
         context "removing transcript designation" do
           let(:supplemental_file) { FactoryBot.create(:supplemental_file, :with_transcript_file, tags: ['caption', 'transcript'], label: 'label (machine generated)') }
+
+          before do
+            if object.is_a?(MasterFile)
+              supplemental_file.parent_id = object.id
+              supplemental_file.save
+              mo = object.media_object
+              mo.sections = [object]
+              mo.save
+            end
+          end
+
           it "removes transcript note from tags" do
             expect {
               put :update, params: { class_id => object.id, id: supplemental_file.id, supplemental_file: valid_update_attributes, format: :html }, session: valid_session
             }.to change { master_file.reload.supplemental_files.first.tags }.from(['caption', 'transcript']).to(['caption'])
+          end
+
+          it 'removes transcript from parent media object\'s index' do
+            # Media object only looks at section files for has_transcript check,
+            # so we only test against the MasterFile case.
+            if object.is_a?(MasterFile)
+              expect{
+                put :update, params: { class_id => object.id, id: supplemental_file.id, supplemental_file:valid_update_attributes, format: :html}, session: valid_session
+              }.to change { object.media_object.to_solr(include_child_fields: true)['has_transcripts_bsi'] }.from(true).to(false)
+            end
           end
         end
       end
@@ -603,6 +624,30 @@ RSpec.shared_examples 'a nested controller for' do |object_class|
         delete :destroy, params: { class_id => object.id, id: supplemental_file.id, format: :json }, session: valid_session
         expect(response).to have_http_status(500)
         expect(JSON.parse(response.body)["errors"]).to be_present
+      end
+    end
+
+    context 'supplemental file marked as transcript' do
+      let(:supplemental_file) { FactoryBot.create(:supplemental_file, :with_transcript_file, tags: ['caption', 'transcript']) }
+
+      before do
+        if object.is_a?(MasterFile)
+          supplemental_file.parent_id = object.id
+          supplemental_file.save
+          mo = object.media_object
+          mo.sections = [object]
+          mo.save
+        end
+      end
+
+      it 'removes transcript from parent media object\'s index' do
+        # Media object only looks at section files for has_transcript check,
+        # so we only test against the MasterFile case.
+        if object.is_a?(MasterFile)
+          expect{
+            delete :destroy, params: { class_id => object.id, id: supplemental_file.id, format: :html}, session: valid_session
+          }.to change { object.media_object.to_solr(include_child_fields: true)['has_transcripts_bsi'] }.from(true).to(false)
+        end
       end
     end
   end

@@ -31,6 +31,7 @@ class SupplementalFile < ApplicationRecord
   # See https://github.com/rails/rails/issues/37304
   after_create_commit :index_file, prepend: true
   after_update_commit :update_index, prepend: true
+  after_destroy_commit :remove_from_index
 
   def attach_file(new_file)
     file.attach(new_file)
@@ -102,6 +103,10 @@ class SupplementalFile < ApplicationRecord
     ActiveFedora::SolrService.add(to_solr, softCommit: true) if file.present?
   end
   alias index_file update_index
+
+  def remove_from_index
+    ActiveFedora::SolrService.delete(to_global_id)
+  end
 
   # Creates a solr document hash for the {#object}
   # @return [Hash] the solr document
