@@ -107,6 +107,15 @@ describe Avalon::TranscriptSearch do
         item = subject.iiif_content_search[:items].first
         expect(item[:target]).to include '#t=00:00:22.200,00:00:26.600'
       end
+
+      context 'srt file' do
+        let(:transcript) { FactoryBot.create(:supplemental_file, :with_transcript_tag, parent_id: parent_master_file.id, file: fixture_file_upload(Rails.root.join('spec', 'fixtures', 'chunk_test.srt'), transcript_mime_type)) }
+        let(:transcript_mime_type) { 'text/srt' }
+        it 'returns result with properly formatted time cue' do
+          item = subject.iiif_content_search[:items].first
+          expect(item[:target]).to include '#t=00:00:22.200,00:00:26.600'
+        end
+      end
     end
   end
 end
