@@ -22,6 +22,14 @@
   .video-js .vjs-big-play-button {
     left: 55% !important;
   }
+  .video-js.vjs-audio-only-mode {
+    // Disable tooltips for volume and progress in embedded
+    // audio. Viewport is too small to display them.
+    .vjs-volume-panel:hover .vjs-mouse-display,
+    .vjs-custom-progress-bar .tooltiptext {
+      display: none !important;
+    }
+  }
   @media (max-width: 585px) {
     .video-js .vjs-big-play-button {
       scale: 1.5;
