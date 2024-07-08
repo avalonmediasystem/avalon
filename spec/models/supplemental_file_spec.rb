@@ -95,6 +95,38 @@ describe SupplementalFile do
           after_doc = ActiveFedora::SolrService.query("id:#{RSolr.solr_escape(transcript.to_global_id.to_s)}").first
           expect(after_doc["transcript_tsim"].first).to eq("00:00:01.200 --> 00:00:21.000 [music]")
         end
+
+        context 'caption as transcript' do
+          let(:transcript) { FactoryBot.create(:supplemental_file, :with_caption_file, tags: ['caption', 'transcript']) }
+
+          it 'removes the transcript_tsim content when transcript tag is removed' do
+            before_doc = ActiveFedora::SolrService.query("id:#{RSolr.solr_escape(transcript.to_global_id.to_s)}").first
+            expect(before_doc["transcript_tsim"].first).to eq "00:00:03.500 --> 00:00:05.000 Example captions"
+            transcript.tags = ['caption']
+            transcript.save
+            after_doc = ActiveFedora::SolrService.query("id:#{RSolr.solr_escape(transcript.to_global_id.to_s)}").first
+            expect(after_doc["transcript_tsim"]).to be_nil
+          end
+        end
+      end
+    end
+
+    describe "#remove_from_index" do
+      let(:transcript) { FactoryBot.create(:supplemental_file, :with_transcript_file, :with_transcript_tag) }
+
+      context 'on delete' do
+        it 'triggers callback' do
+          expect(transcript).to receive(:remove_from_index)
+          transcript.destroy
+        end
+
+        it 'removes the transcript from the index' do
+          before_doc = ActiveFedora::SolrService.query("id:#{RSolr.solr_escape(transcript.to_global_id.to_s)}").first
+          expect(before_doc['transcript_tsim']).to eq ["00:00:03.500 --> 00:00:05.000 Example captions"]
+          transcript.destroy
+          after_doc = ActiveFedora::SolrService.query("id:#{RSolr.solr_escape(transcript.to_global_id.to_s)}").first
+          expect(after_doc).to be_nil
+        end
       end
     end
 

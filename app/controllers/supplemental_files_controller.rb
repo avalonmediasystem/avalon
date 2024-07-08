@@ -110,6 +110,8 @@ class SupplementalFilesController < ApplicationController
     @supplemental_file.attach_file(attachment) if attachment
 
     raise Avalon::SaveError, @supplemental_file.errors.full_messages unless @supplemental_file.save
+    # Updates parent object's solr document
+    @object.update_index
 
     flash[:success] = "Supplemental file successfully updated."
     respond_to do |format|
