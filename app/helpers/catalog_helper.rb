@@ -21,4 +21,15 @@ module CatalogHelper
     blacklight_config.sort_fields[actualSort] || default_sort_field
   end
 
+  def display_found_in(document)
+    metadata_count = document.to_h.sum {|k,v| k =~ /metadata_tf_/ ? v : 0 }
+    transcript_count = document["sections"]["docs"].sum { |d| d["transcripts"]["docs"].sum {|s| s.sum {|k,v| k =~ /transcript_tf_/ ? v : 0 }}}
+    section_count = document.to_h.sum {|k,v| k =~ /structure_tf_/ ? v : 0 }
+
+    metadata = "metadata (#{metadata_count})" if metadata_count > 0
+    transcript = "transcript (#{transcript_count})" if transcript_count > 0
+    sections = "sections (#{section_count})" if section_count > 0
+
+    [metadata, transcript, sections].compact.join(', ')
+  end
 end
