@@ -37,7 +37,8 @@ module Avalon
                                     "hl.fl": "transcript_tsim",
                                     "hl.snippets": 1000000,
                                     "hl.fragsize": 0,
-                                    "hl.method": "original")
+                                    "hl.method": "original",
+                                    "hl.maxAnalyzedChars": "-1")
     end
 
     def iiif_content_search(phrase_searching: true)
