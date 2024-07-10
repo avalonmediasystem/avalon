@@ -527,6 +527,14 @@ RSpec.shared_examples 'a nested controller for' do |object_class|
           expect(response).to have_http_status(:ok)
           expect(response.body).to eq({ "id": supplemental_file.id }.to_json)
         end
+
+        context "without Accept header" do
+          it "returns a 400" do
+            request.headers['Avalon-Api-Key'] = 'secret_token'
+            put :update, params: { class_id => object.id, id: supplemental_file.id, file: file_update, format: :html }, session: valid_session
+            expect(response).to have_http_status(400)
+          end
+        end
       end
 
       context "API without file" do
