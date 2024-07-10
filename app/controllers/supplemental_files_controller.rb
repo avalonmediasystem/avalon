@@ -100,6 +100,7 @@ class SupplementalFilesController < ApplicationController
       raise Avalon::BadRequest, "Missing required Content-type headers" unless request.headers["Content-Type"] == 'application/json'
     elsif request.headers['Avalon-Api-Key'].present?
       raise Avalon::BadRequest, "Incorrect request format. Use JSON if updating metadata." unless attachment
+      raise Avalon::BadRequest, "Missing required Accept headers" unless request.headers["Accept"] == 'application/json'
     end
     raise Avalon::BadRequest, "Missing required parameters" unless validate_params
 
