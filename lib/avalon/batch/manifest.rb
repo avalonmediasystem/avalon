@@ -22,7 +22,7 @@ module Avalon
 
       EXTENSIONS = ['csv','xls','xlsx','ods']
       FILE_FIELDS = [:file,:label,:offset,:skip_transcoding,:absolute_location,:date_digitized, :caption_file, :caption_label, :caption_language, 
-                     :transcript_file, :transcript_label, :machine_generated]
+                     :treat_as_transcript, :transcript_file, :transcript_label, :transcript_language, :machine_generated]
       SKIP_FIELDS = [:collection]
 
       def_delegators :@entries, :each
@@ -142,7 +142,7 @@ module Avalon
             unless f.blank? || SKIP_FIELDS.include?(f) || values[i].blank?
               if FILE_FIELDS.include?(f)
                 content << {} if f == :file
-                if ['caption', 'transcript', 'machine_generated'].any? { |type| f.to_s.include?(type) }
+                if ['caption', 'transcript', 'treat_as_transcript', 'machine_generated'].any? { |type| f.to_s.include?(type) }
                   supplementing_files(f, content, values, i)
                   next
                 end

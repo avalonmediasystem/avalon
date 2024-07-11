@@ -100,19 +100,19 @@ describe Avalon::Batch::Entry do
 
     describe '#gatherFiles' do
       it 'should return a hash of files keyed with their quality' do
-	      expect(Avalon::Batch::Entry.gatherFiles(filename)).to hash_match derivative_hash
+        expect(Avalon::Batch::Entry.gatherFiles(filename)).to hash_match derivative_hash
       end
     end
 
     describe '#derivativePaths' do
       it 'should return the paths to all derivative files that exist' do
-	      expect(Avalon::Batch::Entry.derivativePaths(filename)).to eq derivative_paths
+        expect(Avalon::Batch::Entry.derivativePaths(filename)).to eq derivative_paths
       end
     end
 
     describe '#derivativePath' do
       it 'should insert supplied quality into filename' do
-	      expect(Avalon::Batch::Entry.derivativePath(filename, 'low')).to eq filename_low
+        expect(Avalon::Batch::Entry.derivativePath(filename, 'low')).to eq filename_low
       end
     end
   end
@@ -179,8 +179,8 @@ describe Avalon::Batch::Entry do
 
     context 'with caption and transcript files' do
       let(:caption_file) { File.join(Rails.root, 'spec/fixtures/dropbox/example_batch_ingest/assets/sheephead_mountain.mov.vtt')}
-      let(:caption) {{ :caption_file => caption_file, :caption_label => 'Sheephead Captions', :caption_language => 'English' }}
-      let(:transcript) {{ :transcript_file => caption_file, :transcript_label => 'Sheephead Transcript', :machine_generated => 'yes' }}
+      let(:caption) {{ :caption_file => caption_file, :caption_label => 'Sheephead Captions', :caption_language => 'English', :treat_as_transcript => 'yes', :machine_generated => 'yes' }}
+      let(:transcript) {{ :transcript_file => caption_file, :transcript_label => 'Sheephead Transcript', :transcript_language => 'French', :machine_generated => 'yes' }}
       let(:entry_files) { [{ file: File.join(testdir, filename), offset: '00:00:00.500', label: 'Quis quo', date_digitized: '2015-10-30', skip_transcoding: false, caption_1: caption, transcript_1: transcript }] }
 
       it 'adds captions and transcripts to masterfile' do
@@ -224,15 +224,15 @@ describe Avalon::Batch::Entry do
     end
 
     context 'with multiple captions and transcripts' do
-      let(:caption) { [{ :caption_file => caption_file, :caption_label => 'Sheephead Captions', :caption_language => 'english' },
-                      { :caption_file => caption_file, :caption_label => 'Second Caption', :caption_language => 'fre' }] }
+      let(:caption) { [{ :caption_file => caption_file, :caption_label => 'Sheephead Captions', :caption_language => 'english', :treat_as_transcript => 'yes' },
+                      { :caption_file => caption_file, :caption_label => 'Second Caption', :caption_language => 'fre', :machine_generated => 'yes' }] }
       let(:transcript) { [{ :transcript_file => caption_file, :transcript_label => 'Sheephead Transcript' },
-                          { :transcript_file => caption_file, :machine_generated => 'yes' }] }
+                          { :transcript_file => caption_file, :transcript_language => 'french', :machine_generated => 'yes' }] }
       it 'should attach all captions and transcripts to master file' do
         expect(master_file.has_captions?).to eq true
         expect(master_file.supplemental_file_captions.count).to eq 2
         expect(master_file.has_transcripts?).to eq true
-        expect(master_file.supplemental_file_transcripts.count).to eq 2
+        expect(master_file.supplemental_file_transcripts.count).to eq 3
       end
 
       it 'assigns metadata properly' do
@@ -240,10 +240,15 @@ describe Avalon::Batch::Entry do
         expect(master_file.supplemental_file_captions[1].label).to eq 'Second Caption'
         expect(master_file.supplemental_file_captions[0].language).to eq 'eng'
         expect(master_file.supplemental_file_captions[1].language).to eq 'fre'
-        expect(master_file.supplemental_file_transcripts[0].label).to eq 'Sheephead Transcript'
-        expect(master_file.supplemental_file_transcripts[1].label).to eq 'sheephead_mountain.mov.vtt'
-        expect(master_file.supplemental_file_transcripts[0].tags).to_not include 'machine_generated'
-        expect(master_file.supplemental_file_transcripts[1].tags).to include 'machine_generated'
+        expect(master_file.supplemental_file_captions[0].tags).to_not include 'machine_generated'
+        expect(master_file.supplemental_file_captions[1].tags).to include 'machine_generated'
+        expect(master_file.supplemental_file_transcripts[0]).to eq master_file.supplemental_file_captions[0]
+        expect(master_file.supplemental_file_transcripts[1].label).to eq 'Sheephead Transcript'
+        expect(master_file.supplemental_file_transcripts[2].label).to eq 'sheephead_mountain.mov.vtt'
+        expect(master_file.supplemental_file_transcripts[1].language).to eq 'eng'
+        expect(master_file.supplemental_file_transcripts[2].language).to eq 'fre'
+        expect(master_file.supplemental_file_transcripts[1].tags).to_not include 'machine_generated'
+        expect(master_file.supplemental_file_transcripts[2].tags).to include 'machine_generated'
         expect(master_file.supplemental_files.all? { |sf| sf.parent_id == master_file.id }).to be true
       end
     end
