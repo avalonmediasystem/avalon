@@ -48,7 +48,7 @@ class SearchBuilder < Blacklight::SearchBuilder
   end
 
   def search_section_transcripts(solr_parameters)
-    return unless solr_parameters[:q].present? && SupplementalFile.with_tag('transcript').any?
+    return unless solr_parameters[:q].present? && SupplementalFile.with_tag('transcript').any? && !(blacklight_params[:controller] == 'bookmarks')
 
     terms = solr_parameters[:q].split
     term_subquery = terms.map { |term| "transcript_tsim:#{RSolr.solr_escape(term)}" }.join(" OR ")
@@ -57,7 +57,7 @@ class SearchBuilder < Blacklight::SearchBuilder
   end
 
   def term_frequency_counts(solr_parameters)
-    return unless solr_parameters[:q].present?
+    return unless solr_parameters[:q].present? && !(blacklight_params[:controller] == 'bookmarks')
     # Any search or filtering using a `q` parameter when transcripts are not present fails because
     # the transcript_tsim field does not get created. We need to only add the transcript searching
     # when transcripts are present.
