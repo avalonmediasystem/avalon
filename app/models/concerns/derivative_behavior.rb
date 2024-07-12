@@ -21,6 +21,10 @@ module DerivativeBehavior
     is_mobile ? hls_url : location_url
   end
 
+  def download_path
+    Avalon::Configuration.construct_download_path.call(self)
+  end
+
   def format
     if video_codec.present?
       'video'

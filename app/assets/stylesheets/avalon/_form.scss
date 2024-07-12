@@ -80,6 +80,11 @@ $border-radius-base: 4px !default;
   margin-bottom: 2px;
 }
 
+.form-group label.checkbox {
+  margin-left: 0.5rem !important;
+  padding-right: 1rem !important;
+}
+
 /*
  * Fix that shouldn't be needed to make sure that the text behaves like a regular
  * link

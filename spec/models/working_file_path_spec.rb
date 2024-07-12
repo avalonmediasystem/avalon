@@ -93,7 +93,7 @@ describe "MasterFile#working_file_path" do
 
       it 'sends the working_file_path to active_encode' do
         MasterFileBuilder.build(media_object, params)
-        master_file = media_object.reload.master_files.first
+        master_file = media_object.reload.sections.first
         expect(File.exist? master_file.working_file_path.first).to be true
         input = FileLocator.new(master_file.working_file_path.first).uri.to_s
         expect(encoder_class).to have_received(:create).with(input, { headers: nil, master_file_id: master_file.id, preset: workflow })
@@ -104,7 +104,7 @@ describe "MasterFile#working_file_path" do
 
         it 'sends the working_file_path to active_encode' do
           MasterFileBuilder.build(media_object, params)
-          master_file = media_object.reload.master_files.first
+          master_file = media_object.reload.sections.first
           expect(File.exist? master_file.working_file_path.first).to be true
           input_path = FileLocator.new(master_file.working_file_path.first).uri.to_s
           expect(encoder_class).to have_received(:create).with(input_path, master_file_id: master_file.id, outputs: [{ label: "high", url: input_path }], preset: "pass_through")
@@ -119,7 +119,7 @@ describe "MasterFile#working_file_path" do
 
       it 'sends the working_file_path to active_encode' do
         MasterFileBuilder.build(media_object, params)
-        master_file = media_object.reload.master_files.first
+        master_file = media_object.reload.sections.first
         expect(File.exist? master_file.working_file_path.first).to be true
         input = FileLocator.new(master_file.working_file_path.first).uri.to_s
         expect(encoder_class).to have_received(:create).with(input, { headers: nil, master_file_id: master_file.id, preset: workflow })
@@ -130,7 +130,7 @@ describe "MasterFile#working_file_path" do
 
         it 'sends the working_file_path to active_encode' do
           MasterFileBuilder.build(media_object, params)
-          master_file = media_object.reload.master_files.first
+          master_file = media_object.reload.sections.first
           expect(File.exist? master_file.working_file_path.first).to be true
           input_path = FileLocator.new(master_file.working_file_path.first).uri.to_s
           expect(encoder_class).to have_received(:create).with(input_path, master_file_id: master_file.id, outputs: [{ label: "high", url: input_path }], preset: "pass_through")
@@ -152,7 +152,7 @@ describe "MasterFile#working_file_path" do
 
       it 'sends the working_file_path to active_encode' do
         entry.process!
-        master_file = media_object.reload.master_files.first
+        master_file = media_object.reload.sections.first
         expect(File.exist? master_file.working_file_path.first).to be true
         input = FileLocator.new(master_file.working_file_path.first).uri.to_s
         expect(encoder_class).to have_received(:create).with(input, { headers: nil, master_file_id: master_file.id, preset: workflow })
@@ -163,7 +163,7 @@ describe "MasterFile#working_file_path" do
 
         it 'sends the working_file_path to active_encode' do
           entry.process!
-          master_file = media_object.reload.master_files.first
+          master_file = media_object.reload.sections.first
           expect(File.exist? master_file.working_file_path.first).to be true
           input_path = FileLocator.new(master_file.working_file_path.first).uri.to_s
           expect(encoder_class).to have_received(:create).with(input_path, master_file_id: master_file.id, outputs: [{ label: "high", url: input_path }], preset: "pass_through" )
@@ -191,7 +191,7 @@ describe "MasterFile#working_file_path" do
         # TODO: Ensure all working file copies are cleaned up by the background job
         it 'sends the working_file_path to active_encode' do
           entry.process!
-          master_file = media_object.reload.master_files.first
+          master_file = media_object.reload.sections.first
           working_file_path_high = master_file.working_file_path.find { |file| file.include? "high" }
           working_file_path_medium = master_file.working_file_path.find { |file| file.include? "medium" }
           working_file_path_low = master_file.working_file_path.find { |file| file.include? "low" }
@@ -224,7 +224,7 @@ describe "MasterFile#working_file_path" do
 
       it 'sends the file_location to active_encode' do
         MasterFileBuilder.build(media_object, params)
-        master_file = media_object.reload.master_files.first
+        master_file = media_object.reload.sections.first
         input = FileLocator.new(master_file.file_location).uri.to_s
         expect(encoder_class).to have_received(:create).with(input, { headers: nil, master_file_id: master_file.id, preset: workflow })
       end
@@ -234,7 +234,7 @@ describe "MasterFile#working_file_path" do
 
         it 'sends the file_location to active_encode' do
           MasterFileBuilder.build(media_object, params)
-          master_file = media_object.reload.master_files.first
+          master_file = media_object.reload.sections.first
           input_path = FileLocator.new(master_file.file_location).uri.to_s
           expect(encoder_class).to have_received(:create).with(input_path, master_file_id: master_file.id, outputs: [{ label: "high", url: input_path }], preset: "pass_through")
         end
@@ -248,7 +248,7 @@ describe "MasterFile#working_file_path" do
 
       it 'sends the file_location to active_encode' do
         MasterFileBuilder.build(media_object, params)
-        master_file = media_object.reload.master_files.first
+        master_file = media_object.reload.sections.first
         input = FileLocator.new(master_file.file_location).uri.to_s
         expect(encoder_class).to have_received(:create).with(input, { headers: nil, master_file_id: master_file.id, preset: workflow })
       end
@@ -258,7 +258,7 @@ describe "MasterFile#working_file_path" do
 
         it 'sends the file_location to active_encode' do
           MasterFileBuilder.build(media_object, params)
-          master_file = media_object.reload.master_files.first
+          master_file = media_object.reload.sections.first
           input_path = FileLocator.new(master_file.file_location).uri.to_s
           expect(encoder_class).to have_received(:create).with(input_path, master_file_id: master_file.id, outputs: [{ label: "high", url: input_path }], preset: "pass_through")
         end
@@ -279,7 +279,7 @@ describe "MasterFile#working_file_path" do
 
       it 'sends the file_location to active_encode' do
         entry.process!
-        master_file = media_object.reload.master_files.first
+        master_file = media_object.reload.sections.first
         input = FileLocator.new(master_file.file_location).uri.to_s
         expect(encoder_class).to have_received(:create).with(input, { headers: nil, master_file_id: master_file.id, preset: workflow })
       end
@@ -289,7 +289,7 @@ describe "MasterFile#working_file_path" do
 
         it 'sends the file_location to active_encode' do
           entry.process!
-          master_file = media_object.reload.master_files.first
+          master_file = media_object.reload.sections.first
           input_path = FileLocator.new(master_file.file_location).uri.to_s
           expect(encoder_class).to have_received(:create).with(input_path, master_file_id: master_file.id, outputs: [{ label: "high", url: input_path }], preset: "pass_through")
         end
@@ -314,7 +314,7 @@ describe "MasterFile#working_file_path" do
 
         it 'sends the derivative locations to active_encode' do
           entry.process!
-          master_file = media_object.reload.master_files.first
+          master_file = media_object.reload.sections.first
 
           input_path = Addressable::URI.convert_path(File.absolute_path(filename_high)).to_s
           expect(encoder_class).to have_received(:create).with(

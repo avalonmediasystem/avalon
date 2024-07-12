@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_05_16_142233) do
+ActiveRecord::Schema[7.0].define(version: 2024_06_24_204921) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -48,7 +48,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_05_16_142233) do
     t.string "content_type"
     t.text "metadata"
     t.bigint "byte_size", null: false
-    t.string "checksum", null: false
+    t.string "checksum"
     t.datetime "created_at", precision: nil, null: false
     t.string "service_name", null: false
     t.index ["key"], name: "index_active_storage_blobs_on_key", unique: true
@@ -196,7 +196,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_05_16_142233) do
   create_table "playlists", force: :cascade do |t|
     t.string "title"
     t.bigint "user_id", null: false
-    t.string "comment"
+    t.text "comment"
     t.string "visibility"
     t.datetime "created_at", precision: nil, null: false
     t.datetime "updated_at", precision: nil, null: false
@@ -240,6 +240,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_05_16_142233) do
     t.datetime "updated_at", precision: nil, null: false
     t.string "tags"
     t.string "language"
+    t.string "parent_id"
   end
 
   create_table "timelines", force: :cascade do |t|

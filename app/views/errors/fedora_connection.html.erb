@@ -13,16 +13,10 @@ Unless required by applicable law or agreed to in writing, software distributed
   specific language governing permissions and limitations under the License.
 ---  END LICENSE_HEADER BLOCK  ---
 %>
-<% if @playlist.comment.present? %>
-<h4>Comments</h4>
-<%= @playlist.comment %>
-<% end %>
-
-<% if @playlist.tags.present? %>
-<h4>Tags</h4>
-<div class="tag-button-wrapper">
-  <% @playlist.tags.each do |tag| %>
-  <span class="btn btn-sm btn-info"><%=tag%></span>
-  <% end %>
+<div id="main_content_container" class="container-fluid">
+  <div class="content" class="col-md-8">
+    <h2>Fedora Connection Error</h2>
+    <p>The application was unable to connect to the Fedora database. Please try again in a few minutes.</p>
+    <p>If the problem persists contact your support staff.</p>
+  </div>
 </div>
-<% end %>

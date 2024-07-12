@@ -41,7 +41,7 @@ class IiifCanvasPresenter
   end
 
   def annotation_content
-    supplemental_captions_transcripts.collect { |file| supplementing_content_data(file) }
+    supplemental_captions_transcripts.uniq.collect { |file| supplementing_content_data(file) }.flatten
   end
 
   def sequence_rendering
@@ -70,15 +70,28 @@ class IiifCanvasPresenter
     elsif section_processing?(@master_file)
       IIIFManifest::V3::DisplayContent.new(nil,
                                            label: I18n.t('media_object.conversion_msg'),
+                                           width: 1280,
+                                           height: 720,
                                            type: 'Text',
                                            format: 'text/plain')
     else
       support_email = Settings.email.support
       IIIFManifest::V3::DisplayContent.new(nil,
                                            label: I18n.t('errors.missing_derivatives_error') % [support_email, support_email],
+                                           width: 1280,
+                                           height: 720,
                                            type: 'Text',
                                            format: 'text/plain')
     end
+  end
+
+  def service
+    [
+      {
+        "@id" => "#{Rails.application.routes.url_helpers.search_master_file_url(master_file.id)}",
+        "type" => "SearchService2"
+      }
+    ]
   end
 
   private
@@ -103,16 +116,28 @@ class IiifCanvasPresenter
     end
 
     def supplementing_content_data(file)
-      url = if !file.is_a?(SupplementalFile)
-              Rails.application.routes.url_helpers.captions_master_file_url(master_file.id)
-            elsif file.tags.include?('caption')
-              Rails.application.routes.url_helpers.captions_master_file_supplemental_file_url(master_file.id, file.id)
-            elsif file.tags.include?('transcript')
-              Rails.application.routes.url_helpers.transcripts_master_file_supplemental_file_url(master_file.id, file.id)
-            else
-              Rails.application.routes.url_helpers.master_file_supplemental_file_url(master_file.id, file.id)
-            end
-      IIIFManifest::V3::AnnotationContent.new(body_id: url, **supplemental_attributes(file))
+      unless file.is_a?(SupplementalFile)
+        url = Rails.application.routes.url_helpers.captions_master_file_url(master_file.id)
+        return IIIFManifest::V3::AnnotationContent.new(body_id: url, **supplemental_attributes(file))
+      end
+
+      tags = file.tags.reject { |t| t == 'machine_generated' }.compact
+      case tags
+      when ['caption']
+        url = Rails.application.routes.url_helpers.captions_master_file_supplemental_file_url(master_file.id, file.id)
+        IIIFManifest::V3::AnnotationContent.new(body_id: url, **supplemental_attributes(file, type: 'caption'))
+      when ['transcript']
+        url = Rails.application.routes.url_helpers.transcripts_master_file_supplemental_file_url(master_file.id, file.id)
+        IIIFManifest::V3::AnnotationContent.new(body_id: url, **supplemental_attributes(file, type: 'transcript'))
+      when ['caption', 'transcript']
+        caption_url = Rails.application.routes.url_helpers.captions_master_file_supplemental_file_url(master_file.id, file.id)
+        transcript_url = Rails.application.routes.url_helpers.transcripts_master_file_supplemental_file_url(master_file.id, file.id)
+        [IIIFManifest::V3::AnnotationContent.new(body_id: caption_url, **supplemental_attributes(file, type: 'caption')),
+         IIIFManifest::V3::AnnotationContent.new(body_id: transcript_url, **supplemental_attributes(file, type: 'transcript'))]
+      else
+        url = Rails.application.routes.url_helpers.master_file_supplemental_file_url(master_file.id, file.id)
+        IIIFManifest::V3::AnnotationContent.new(body_id: url, **supplemental_attributes(file))
+      end
     end
 
     def stream_urls
@@ -192,8 +217,8 @@ class IiifCanvasPresenter
     def manifest_attributes(quality, media_type)
       media_hash = {
         label: quality,
-        width: master_file.width.to_i,
-        height: master_file.height.to_i,
+        width: (master_file.width || '1280').to_i,
+        height: (master_file.height || MasterFile::AUDIO_HEIGHT).to_i,
         duration: stream_info[:duration],
         type: media_type,
         format: 'application/x-mpegURL'
@@ -206,10 +231,10 @@ class IiifCanvasPresenter
       end
     end
 
-    def supplemental_attributes(file)
+    def supplemental_attributes(file, type: nil)
       if file.is_a?(SupplementalFile)
         label = file.tags.include?('machine_generated') ? file.label + ' (machine generated)' : file.label
-        format = if file.file.content_type == 'text/srt' && file.tags.include?('caption')
+        format = if file.file.content_type == 'text/srt' && type == 'caption'
                    'text/vtt'
                  else
                    file.file.content_type

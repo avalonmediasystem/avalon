@@ -28,6 +28,11 @@ Unless required by applicable law or agreed to in writing, software distributed
   </div>
 
   <div class="col-sm-12 px-0">
+    <% # Replace 2 or more consecutive sets of line break characters with <br> tags %>
+    <% # This is because <p> tags force the show more link to a new line since it %>
+    <% # is outside the element(s) containing the text. Avoiding <p> allows the link to be inline %>
+    <% comment = @playlist.comment.gsub(/(\r?\n){2,}/m, "<br/><br/>") %>
+    <% tags = @playlist.tags.map { |tag| "<span class='btn btn-sm btn-info'>#{tag}</span>" }.join(' ') %>
     <%= react_component("PlaylistRamp",
       {
         urls: { base_url: request.protocol+request.host_with_port, fullpath_url: request.fullpath },
@@ -35,7 +40,9 @@ Unless required by applicable law or agreed to in writing, software distributed
         playlist_item_ids: @playlist.item_ids,
         token: @playlist_token,
         share: { canShare: (will_partial_list_render? :share), content: render('share') },
-        comment_tag: { content: render('comments_and_tags') }
+        comment_label: t("activerecord.attributes.playlist.comment"),
+        comment: comment,
+        tags: tags
       }
     ) %>
   </div>

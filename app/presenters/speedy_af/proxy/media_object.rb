@@ -27,6 +27,7 @@ class SpeedyAF::Proxy::MediaObject < SpeedyAF::Base
     end
     # Handle this case here until a better fix can be found for multiple solr fields which don't have a model property
     @attrs[:section_id] = solr_document["section_id_ssim"]
+    @attrs[:section_ids] = solr_document["section_id_ssim"]
     @attrs[:hidden?] = solr_document["hidden_bsi"]
     @attrs[:read_groups] = solr_document["read_access_group_ssim"] || []
     @attrs[:edit_groups] = solr_document["edit_access_group_ssim"] || []
@@ -79,30 +80,13 @@ class SpeedyAF::Proxy::MediaObject < SpeedyAF::Base
     end
   end
 
-  def master_file_ids
-    if real?
-      real_object.indexed_master_file_ids
-    elsif section_id.nil? # No master files or not indexed yet
-      ActiveFedora::Base.logger.warn("Reifying MediaObject because master_files not indexed")
-      real_object.indexed_master_file_ids
-    else
-      section_id
-    end
+  def sections
+    return [] unless section_ids.present?
+    query = "id:" + section_ids.join(" id:")
+    @sections ||= SpeedyAF::Proxy::MasterFile.where(query,
+                                                    order: -> { section_ids },
+                                                    load_reflections: true)
   end
-  alias_method :indexed_master_file_ids, :master_file_ids
-  alias_method :ordered_master_file_ids, :master_file_ids
-
-  def master_files
-    # NOTE: Defaults are set on returned SpeedyAF::Base objects if field isn't present in the solr doc.
-    # This is important otherwise speedy_af will reify from fedora when trying to access this field.
-    # When adding a new property to the master file model that will be used in the interface,
-    # add it to the default below to avoid reifying for master files lacking a value for the property.
-    @master_files ||= SpeedyAF::Proxy::MasterFile.where("isPartOf_ssim:#{id}",
-                                                        order: -> { master_file_ids },
-                                                        load_reflections: true)
-  end
-  alias_method :indexed_master_files, :master_files
-  alias_method :ordered_master_files, :master_files
 
   def collection
     @collection ||= SpeedyAF::Proxy::Admin::Collection.find(collection_id)
@@ -114,7 +98,7 @@ class SpeedyAF::Proxy::MediaObject < SpeedyAF::Base
 
   def format
     # TODO figure out how to memoize this
-    mime_types = master_files.reject { |mf| mf.file_location.blank? }.collect do |mf|
+    mime_types = sections.reject { |mf| mf.file_location.blank? }.collect do |mf|
       Rack::Mime.mime_type(File.extname(mf.file_location))
     end.uniq
     mime_types.empty? ? nil : mime_types
@@ -148,8 +132,16 @@ class SpeedyAF::Proxy::MediaObject < SpeedyAF::Base
     attrs[:language_code].present? ? attrs[:language_code].map { |code| { code: code, text: LanguageTerm.find(code).text } } : []
   end
 
+  def bibliographic_id
+    if attrs[:bibliographic_id].present? && attrs[:bibliographic_id_source].present?
+      { id: attrs[:bibliographic_id], source: attrs[:bibliographic_id_source] }
+    else
+      nil
+    end
+  end
+
   def sections_with_files(tag: '*')
-    master_files.select { |master_file| master_file.supplemental_files(tag: tag).present? }.map(&:id)
+    sections.select { |master_file| master_file.supplemental_files(tag: tag).present? }.map(&:id)
   end
 
   def permalink_with_query(query_vars = {})

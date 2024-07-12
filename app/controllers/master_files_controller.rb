@@ -13,6 +13,7 @@
 # ---  END LICENSE_HEADER BLOCK  ---
 
 # require 'avalon/controller/controller_behavior'
+require 'avalon/transcript_search'
 
 include SecurityHelper
 
@@ -71,14 +72,6 @@ class MasterFilesController < ApplicationController
   end
 
   def embed
-    if can? :read, @master_file
-      @stream_info = secure_streams(@master_file.stream_details, @master_file.media_object_id)
-      @stream_info['t'] = view_context.parse_media_fragment(params[:t]) # add MediaFragment from params
-      @stream_info['link_back_url'] = view_context.share_link_for(@master_file)
-    end
-
-    @player_width = "100%"
-    @player_height = "100%"
     respond_to do |format|
       format.html do
         response.headers.delete "X-Frame-Options"
@@ -210,13 +203,10 @@ class MasterFilesController < ApplicationController
     authorize! :destroy, @master_file, message: "You do not have sufficient privileges to delete files"
     filename = File.basename(@master_file.file_location) if @master_file.file_location.present?
     filename ||= @master_file.id
-    media_object = MediaObject.find(@master_file.media_object_id)
-    media_object.ordered_master_files.delete(@master_file)
-    media_object.master_files.delete(@master_file)
-    media_object.save
+    media_object_id = @master_file.media_object_id
     @master_file.destroy
     flash[:notice] = "#{filename} has been deleted from the system"
-    redirect_to edit_media_object_path(media_object, step: "file-upload")
+    redirect_to edit_media_object_path(media_object_id, step: "file-upload")
   end
 
   def set_frame
@@ -334,6 +324,39 @@ class MasterFilesController < ApplicationController
     send_data @supplemental_file.file.download, filename: @supplemental_file.file.filename.to_s, type: @supplemental_file.file.content_type, disposition: 'inline'
   end
 
+  def download_derivative
+    authorize! :download, @master_file
+
+    begin
+      high_deriv = @master_file.derivatives.find { |deriv| deriv.quality == 'high' }
+      path = high_deriv.download_path
+
+      unless FileLocator.new(path).exist?
+        flash[:error] = "Unable to find or access derivative file."
+        redirect_back(fallback_location: edit_media_object_path(@master_file.media_object))
+        return
+      end
+
+      case path
+      when /^s3:/
+        # Use an AWS presigned URL to facilitate direct download of the derivative to avoid
+        # having to download the file to the server as a tmp file and then sending that to
+        # the client. Doing this reduces latency and server load.
+        redirect_to FileLocator::S3File.new(path).download_url
+      else
+        send_file path, filename: File.basename(path), disposition: 'attachment'
+      end
+    rescue => error
+      Rails.logger.error(error.class.to_s + ': ' + error.message + '\n' + error.backtrace.join('\n'))
+      flash[:error] = "A problem was encountered while attempting to download derivative file. Please contact your support person if this issue persists."
+      redirect_back(fallback_location: edit_media_object_path(@master_file.media_object))
+    end
+  end
+
+  def search
+    render json: search_response_json
+  end
+
 protected
   def set_masterfile
     if params[:id].blank? || (not MasterFile.exists?(params[:id]))
@@ -399,5 +422,11 @@ protected
 
   def samples_per_frame
     Settings.waveform.sample_rate * Settings.waveform.finest_zoom / Settings.waveform.player_width
+  end
+
+private
+
+  def search_response_json
+    Avalon::TranscriptSearch.new(query: params[:q], master_file: @master_file, request_url: request.url).iiif_content_search.to_json
   end
 end

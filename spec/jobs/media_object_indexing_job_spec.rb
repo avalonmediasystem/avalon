@@ -18,15 +18,16 @@ describe MediaObjectIndexingJob do
   let(:job) { MediaObjectIndexingJob.new }
 
   describe "perform" do
+    let(:comment) { "A comment" }
     let!(:media_object) { FactoryBot.create(:media_object) }
-    let!(:master_file) { FactoryBot.create(:master_file, media_object: media_object) }
+    let!(:master_file) { FactoryBot.create(:master_file, media_object: media_object, comment: [comment]) }
 
     it 'indexes the media object including master_file fields' do
       before_doc = ActiveFedora::SolrService.query("id:#{media_object.id}").first
-      expect(before_doc["section_id_ssim"]).to be_blank
+      expect(before_doc["all_comments_ssim"]).to be_blank
       job.perform(media_object.id)
       after_doc = ActiveFedora::SolrService.query("id:#{media_object.id}").first
-      expect(after_doc["section_id_ssim"]).to eq [master_file.id]
+      expect(after_doc["all_comments_ssim"]).to eq [comment]
     end
   end
 end

@@ -172,7 +172,7 @@ describe CatalogController do
 
     describe "search fields" do
       let(:media_object) { FactoryBot.create(:fully_searchable_media_object) }
-      ["title_tesi", "creator_ssim", "contributor_ssim", "unit_ssim", "collection_ssim", "abstract_ssi", "publisher_ssim", "topical_subject_ssim", "geographic_subject_ssim", "temporal_subject_ssim", "genre_ssim", "physical_description_ssim", "language_ssim", "date_sim", "notes_sim", "table_of_contents_ssim", "other_identifier_sim", "series_ssim" ].each do |field|
+      ["title_tesi", "creator_ssim", "contributor_ssim", "unit_ssim", "collection_ssim", "abstract_ssi", "publisher_ssim", "topical_subject_ssim", "geographic_subject_ssim", "temporal_subject_ssim", "genre_ssim", "physical_description_ssim", "language_ssim", "date_sim", "notes_sim", "table_of_contents_ssim", "other_identifier_sim", "series_ssim", "bibliographic_id_ssi" ].each do |field|
         it "should find results based upon #{field}" do
           query = Array(media_object.to_solr[field]).first
           #split on ' ' and only search on the first word of a multiword field value
@@ -190,7 +190,7 @@ describe CatalogController do
       before(:each) do
         @media_object = FactoryBot.create(:fully_searchable_media_object)
         @master_file = FactoryBot.create(:master_file, :with_structure, media_object: @media_object, title: 'Test Label')
-        @media_object.ordered_master_files += [@master_file]
+        @media_object.sections += [@master_file]
         @media_object.save!
         # Explicitly run indexing job to ensure fields are indexed for structure searching
         MediaObjectIndexingJob.perform_now(@media_object.id)
@@ -212,6 +212,24 @@ describe CatalogController do
         expect(assigns(:response).documents.collect(&:id)).to eq [media_object_1.id, @media_object.id]
       end
     end
+    describe "search transcripts" do
+      before(:each) do
+        @media_object = FactoryBot.create(:fully_searchable_media_object)
+        @master_file = FactoryBot.create(:master_file, media_object: @media_object)
+        @transcript = FactoryBot.create(:supplemental_file, :with_transcript_file, :with_transcript_tag, parent_id: @master_file.id)
+        @master_file.supplemental_files += [@transcript]
+        @master_file.save!
+        @media_object.ordered_master_files += [@master_file]
+        @media_object.save!
+        MediaObjectIndexingJob.perform_now(@media_object.id)
+      end
+
+      it "should find results based upon transcripts" do
+        get 'index', params: { q: 'Example' }
+        expect(assigns(:response).documents.count).to eq 1
+        expect(assigns(:response).documents.collect(&:id)).to eq [@media_object.id]
+      end
+    end
 
     describe "sort fields" do
       let!(:m1) { FactoryBot.create(:published_media_object, title: 'Yabba', date_issued: '1960', creator: ['Fred'], visibility: 'public') }
@@ -229,6 +247,28 @@ describe CatalogController do
       it "should sort correctly by creator" do
         get :index, params: { :sort => 'creator_ssort asc, title_ssort asc' }
         expect(assigns(:response).documents.map(&:id)).to eq [m2.id, m1.id, m3.id]
+      end
+    end
+
+    describe "facet fields" do
+      let(:media_object) { FactoryBot.create(:fully_searchable_media_object, :with_master_file, :with_completed_workflow, avalon_uploader: 'archivist1', governing_policies: [lease]) }
+      let(:lease) { FactoryBot.create(:lease, inherited_read_groups: ['ExternalGroup']) }
+      before(:each) do
+        MediaObjectIndexingJob.perform_now(media_object.id)
+      end
+      ["avalon_resource_type_ssim", "creator_ssim", "date_sim", "genre_ssim", "series_ssim", "collection_ssim", "unit_ssim", "language_ssim", "has_captions_bsi", "has_transcripts_bsi",
+       "workflow_published_sim", "avalon_uploader_ssi", "read_access_group_ssim", "read_access_virtual_group_ssim", "date_digitized_ssim", "date_ingested_ssim"].each do |field|  
+        it "should facet results on #{field}" do
+          query = Array(media_object.to_solr(include_child_fields:true)[field]).first
+          # The following line is to check that the test is using a valid solr field name
+          # since an incorrect one will lead to an empty query resulting in a false positive below
+          expect(query.to_s).not_to be_empty
+          get :index, params: { 'f' => { field => [query] } }
+          expect(response).to be_successful
+          expect(response).to render_template('catalog/index')
+          expect(assigns(:response).documents.count).to eq 1
+          expect(assigns(:response).documents.map(&:id)).to contain_exactly(media_object.id)
+        end
       end
     end
 

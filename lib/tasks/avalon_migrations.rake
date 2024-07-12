@@ -38,7 +38,7 @@ namespace :avalon do
         filename = caption_file.original_name
         content_type = caption_file.mime_type
         # Create and populate new SupplementalFile record using original metadata
-        supplemental_file = SupplementalFile.new(label: filename, tags: ['caption'], language: Settings.caption_default.language)
+        supplemental_file = SupplementalFile.new(label: filename, tags: ['caption'], language: Settings.caption_default.language, parent_id: master_file.id)
         supplemental_file.file.attach(io: ActiveFedora::FileIO.new(caption_file), filename: filename, content_type: content_type, identify: false)
         # Skip validation so that incorrect mimetypes do not bomb the entire task
         supplemental_file.save(validate: false)
@@ -62,6 +62,56 @@ namespace :avalon do
       if error.present?
         logger.info("Files with unsupported mime types: #{error}")
         puts("#{error.length} files migrated with unsupported mime types. Refer to caption_type_errors.log for full list of SupplementalFile IDs.")
+      end
+    end
+    desc "Backfill the parent_id field on SupplementalFile records as part of improvements to the model to allow transcript indexing"
+    task backfill_parent_id: :environment do
+      error = []
+      logger = Logger.new(File.join(Rails.root, 'log/parent_id_backfill_errors.log'))
+
+      objects = ActiveFedora::SolrService.get("supplemental_files_json_ssi:*", { fl: "id,supplemental_files_json_ssi", rows: 1000000 })["response"]["docs"]
+      objects.each do |object|
+        files = JSON.parse(object["supplemental_files_json_ssi"]).collect { |file_gid| GlobalID::Locator.locate(file_gid) }
+
+        files.each do |file|
+          begin
+            if file.parent_id.blank?
+              file.parent_id = object["id"]
+              file.save!(validate: false)
+            else
+              next
+            end
+          rescue
+            error += [file.id]
+          end
+        end
+      end
+
+      puts("Backfill complete.")
+      if error.present?
+        logger.info("Failed to save: #{error}")
+        puts("#{error.length} files failed to save. Refer to parent_id_backfill_errors.log for full list of SupplementalFile IDs.")
+      end
+    end
+    desc "Migrate MediaObjects from list_source linked list of sections to JSON array section_list property"
+    task media_object_section_list: :environment do
+      error_ids = []
+      mo_count = MediaObject.count
+      ids_to_migrate = ActiveFedora::SolrService.query("has_model_ssim:MediaObject AND NOT section_list_ssim:[* TO *]", rows: mo_count).pluck("id")
+      puts "Migrating #{ids_to_migrate.size} out of #{mo_count} Media Objects."
+      ids_to_migrate.each do |id|
+        MediaObject.find(id).save!(validate: false)
+      rescue StandardError => error
+        error_ids += [id]
+        puts "Error migrating #{id}: #{error.message}"
+      end
+      remaining_ids_count = ActiveFedora::SolrService.query("has_model_ssim:MediaObject AND NOT section_list_ssim:[* TO *]", rows: mo_count).size
+      if error_ids.size > 0
+        puts "Migration finished running but #{error_ids.size} Media Objects failed to migrate.  Try running the migration again."
+      elsif remaining_ids_count > 0
+        puts "Migration finished running but #{remaining_ids_count} Media Objects found still needing to be migrated."
+      else
+        puts "Migration completed successfully."
       end
     end
   end

@@ -598,7 +598,8 @@ RSpec.describe PlaylistsController, type: :controller do
           it "returns a blank canvas" do
             get :manifest, format: 'json', params: { id: playlist.id }, session: valid_session
             parsed_response = JSON.parse(response.body)
-            expect(parsed_response['items'][0]['items'][0].keys).to_not include 'items'
+            expect(parsed_response['items'][0]['items'][0].keys).to include 'items'
+            expect(parsed_response['items'][0]['items'][0]['items']).to be_empty
           end
         end
       end
@@ -614,7 +615,8 @@ RSpec.describe PlaylistsController, type: :controller do
           parsed_response = JSON.parse(response.body)
           expect(parsed_response['items'].length).to eq 2
           expect(parsed_response['items'][0]['items'][0].keys).to include 'items'
-          expect(parsed_response['items'][1]['items'][0].keys).to_not include 'items'
+          expect(parsed_response['items'][1]['items'][0].keys).to include 'items'
+          expect(parsed_response['items'][1]['items'][0]['items']).to be_empty
         end
       end
 

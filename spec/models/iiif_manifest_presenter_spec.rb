@@ -50,11 +50,30 @@ describe IiifManifestPresenter do
       allow_any_instance_of(IiifManifestPresenter).to receive(:lending_enabled).and_return(false)
 
       ['Title', 'Date', 'Main contributor', 'Summary', 'Contributor', 'Publisher', 'Genre', 'Subject', 'Time period',
-       'Location', 'Collection', 'Unit', 'Language', 'Rights Statement', 'Terms of Use', 'Physical Description',
-       'Series', 'Related Item', 'Notes', 'Table of Contents', 'Local Note', 'Other Identifiers', 'Access Restrictions'].each do |field|
+       'Location', 'Collection', 'Unit', 'Language', 'Rights Statement', 'Terms of Use', 'Physical Description', 'Series',
+       'Related Item', 'Notes', 'Table of Contents', 'Local Note', 'Other Identifier', 'Access Restrictions', 'Bibliographic ID'
+      ].each do |field|
         expect(subject).to include(field)
       end
       expect(subject).to_not include('Lending Period')
+    end
+
+    context 'with duplicate identifiers' do
+      let(:media_object) do
+        FactoryBot.build(:fully_searchable_media_object).tap do |mo|
+          mo.other_identifier += mo.other_identifier
+          mo.other_identifier += [mo.bibliographic_id]
+          mo
+        end
+      end
+
+      it 'de-dupes other identifiers' do
+        allow_any_instance_of(IiifManifestPresenter).to receive(:lending_enabled).and_return(false)
+        expect(subject['Bibliographic ID'].first).to include media_object.bibliographic_id[:id]
+        expect(subject['Other Identifier'].size).to eq 1
+        expect(subject['Other Identifier'].first).not_to include media_object.bibliographic_id[:id]
+        expect(subject['Other Identifier'].first).to include media_object.other_identifier.first[:id]
+      end
     end
 
     context 'when controlled digital lending is enabled' do
@@ -62,8 +81,9 @@ describe IiifManifestPresenter do
         allow_any_instance_of(IiifManifestPresenter).to receive(:lending_enabled).and_return(true)
 
         ['Title', 'Date', 'Main contributor', 'Summary', 'Contributor', 'Publisher', 'Genre', 'Subject', 'Time period',
-         'Location', 'Collection', 'Unit', 'Language', 'Rights Statement', 'Terms of Use', 'Physical Description',
-         'Series', 'Related Item', 'Notes', 'Table of Contents', 'Local Note', 'Other Identifiers', 'Access Restrictions', 'Lending Period'].each do |field|
+         'Location', 'Collection', 'Unit', 'Language', 'Rights Statement', 'Terms of Use', 'Physical Description', 'Series',
+         'Related Item', 'Notes', 'Table of Contents', 'Local Note', 'Other Identifier', 'Access Restrictions', 'Bibliographic ID', 'Lending Period'
+        ].each do |field|
           expect(subject).to include(field)
         end
       end

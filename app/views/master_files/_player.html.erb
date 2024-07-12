@@ -14,28 +14,10 @@ Unless required by applicable law or agreed to in writing, software distributed
 ---  END LICENSE_HEADER BLOCK  ---
 %>
 
-<%= render partial: 'modules/player/section', locals: {section: @master_file, section_info: @stream_info, f_start: @f_start, f_end: @f_end} %>
-
-<% content_for :page_scripts do %>
-
-  <script>
-    window.addEventListener('message', function(event) {
-      var command = event.data.command;
-      let embeddedPlayer = videojs.getPlayer('video-js-embed-<%= @master_file.id %>_html5_api');
-
-      if (command=='play') embeddedPlayer.play();
-      else if (command=='pause') embeddedPlayer.pause();
-      else if (command=='toggle_loop') {
-        embeddedPlayer.loop() ? embeddedPlayer.loop(false): embeddedPlayer.loop(true);
-        embeddedPlayer.autoplay() ? embeddedPlayer.autoplay(false) : embeddedPlayer.autoplay(true);
-      }
-      else if (command=='set_offset') embeddedPlayer.currentTime(event.data.offset); // time is in seconds
-      else if (command=='get_offset') event.source.postMessage({'command':'currentTime','currentTime':embeddedPlayer.currentTime()}, event.origin);
-    });
-  </script>
-
-  <style>
-    a { text-decoration: none; }
-    a:hover { text-decoration: underline }
-  </style>
-<% end %>
+<%= react_component("EmbeddedRamp",
+  {
+    urls: { base_url: request.protocol+request.host_with_port, fullpath_url: request.fullpath },
+    media_object_id: @master_file.media_object_id,
+    is_video: @master_file.is_video?
+  }
+) %>

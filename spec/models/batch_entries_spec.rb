@@ -106,7 +106,7 @@ describe BatchEntries do
       media_object = FactoryBot.create(:media_object)
       batch_entry = FactoryBot.build(:batch_entries, media_object_pid: media_object.id)
 
-      expect(media_object.master_files.to_a.count).to eq(0)
+      expect(media_object.sections.count).to eq(0)
       expect(JSON.parse(batch_entry.payload)['files'].count).to eq(1)
 
       expect(batch_entry.encoding_finished?).to be_truthy
@@ -119,7 +119,7 @@ describe BatchEntries do
       media_object = master_file.media_object
       batch_entry = FactoryBot.build(:batch_entries, media_object_pid: media_object.id)
 
-      expect(media_object.master_files.to_a.count).to eq(1)
+      expect(media_object.sections.count).to eq(1)
       expect(JSON.parse(batch_entry.payload)['files'].count).to eq(1)
 
       expect(batch_entry.encoding_finished?).to be_truthy
@@ -132,7 +132,7 @@ describe BatchEntries do
       media_object = master_file.media_object
       batch_entry = FactoryBot.build(:batch_entries, media_object_pid: media_object.id)
 
-      expect(media_object.master_files.to_a.count).to eq(1)
+      expect(media_object.sections.count).to eq(1)
       expect(JSON.parse(batch_entry.payload)['files'].count).to eq(1)
 
       expect(batch_entry.encoding_finished?).to be_truthy
@@ -145,7 +145,7 @@ describe BatchEntries do
       media_object = master_file.media_object
       batch_entry = FactoryBot.build(:batch_entries, media_object_pid: media_object.id)
 
-      expect(media_object.master_files.to_a.count).to eq(1)
+      expect(media_object.sections.count).to eq(1)
       expect(JSON.parse(batch_entry.payload)['files'].count).to eq(1)
 
       expect(batch_entry.encoding_finished?).to be_truthy
@@ -158,7 +158,7 @@ describe BatchEntries do
       media_object = master_file.media_object
       batch_entry = FactoryBot.build(:batch_entries, media_object_pid: media_object.id)
 
-      expect(media_object.master_files.to_a.count).to eq(1)
+      expect(media_object.sections.count).to eq(1)
       expect(JSON.parse(batch_entry.payload)['files'].count).to eq(1)
 
       expect(batch_entry.encoding_finished?).to be_falsey

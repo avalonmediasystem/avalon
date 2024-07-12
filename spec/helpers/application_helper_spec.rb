@@ -87,6 +87,15 @@ describe ApplicationHelper do
     end
   end
 
+  describe "#titleize" do
+    it "titleizes a string" do
+      expect(helper.titleize("lower case phrase")).to eq "Lower Case Phrase"
+    end
+    it "titleizes an array of strings" do
+      expect(helper.titleize(["ant", "adam ant", "tic tac toe"])).to eq ["Ant", "Adam Ant", "Tic Tac Toe"]
+    end
+  end
+
   describe "#truncate_center" do
     it "should return empty string if empty string received" do
       expect(helper.truncate_center("", 5)).to eq ""
@@ -128,23 +137,23 @@ describe ApplicationHelper do
       expect(helper.image_for(doc)).to eq(nil)
     end
     it "should return audio icon" do
-      doc = {"avalon_resource_type_ssim" => ['Sound Recording', 'Sound Recording'] }
-      expect(helper.image_for(doc).start_with?('/assets/audio_icon')).to be_truthy
+      doc = {"avalon_resource_type_ssim" => ['sound recording', 'sound recording'] }
+      expect(helper.image_for(doc).start_with?("#{root_url}assets/audio_icon")).to be_truthy
     end
     it "should return video icon" do
-      doc = {"avalon_resource_type_ssim" => ['Moving Image'] }
-      expect(helper.image_for(doc).start_with?('/assets/video_icon')).to be_truthy
+      doc = {"avalon_resource_type_ssim" => ['moving image'] }
+      expect(helper.image_for(doc).start_with?("#{root_url}assets/video_icon")).to be_truthy
     end
     it "should return hybrid icon" do
-      doc = {"avalon_resource_type_ssim" => ['Moving Image', 'Sound Recording'] }
-      expect(helper.image_for(doc).start_with?('/assets/hybrid_icon')).to be_truthy
+      doc = {"avalon_resource_type_ssim" => ['moving image', 'sound recording'] }
+      expect(helper.image_for(doc).start_with?("#{root_url}assets/hybrid_icon")).to be_truthy
     end
     it "should return nil when only unprocessed video" do
       doc = {"section_id_ssim" => ['1'], "avalon_resource_type_ssim" => [] }
       expect(helper.image_for(doc)).to eq(nil)
     end
     it "should return thumbnail" do
-      doc = {"section_id_ssim" => ['1'], "avalon_resource_type_ssim" => ['Moving Image'] }
+      doc = {"section_id_ssim" => ['1'], "avalon_resource_type_ssim" => ['moving image'] }
       expect(helper.image_for(doc)).to eq('/master_files/1/thumbnail')
     end
   end
@@ -160,6 +169,16 @@ describe ApplicationHelper do
 
     it "should return a default value if provided" do
       expect(helper.display_metadata("Label", [""], "Default value")).to eq("<dt>Label</dt><dd><pre>Default value</pre></dd>")
+    end
+  end
+
+  describe "#display_has_caption_or_transcript" do
+    it "should return 'Yes' for 'true'" do
+      expect(helper.display_has_caption_or_transcript("true")).to eq("Yes")
+    end
+
+    it "should return 'No' for 'false'" do
+      expect(helper.display_has_caption_or_transcript("false")).to eq("No")
     end
   end
 

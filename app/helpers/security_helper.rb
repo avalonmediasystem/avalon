@@ -30,20 +30,20 @@ module SecurityHelper
   # media_object CDL check only happens once
   # session tokens retrieved in batch then passed into add_stream_url
   # Returns Hash[MasterFile.id, stream_info]
-  def secure_stream_infos(master_files, media_objects)
+  def secure_stream_infos(sections, media_objects)
     stream_info_hash = {}
 
     not_checked_out_hash = {}
-    mo_ids = master_files.collect(&:media_object_id)
+    mo_ids = sections.collect(&:media_object_id)
     mo_ids.each { |mo_id| not_checked_out_hash[mo_id] ||= not_checked_out?(mo_id, media_object: media_objects.find {|mo| mo.id == mo_id}) }
-    not_checked_out_master_files = master_files.select { |mf| not_checked_out_hash[mf.media_object_id] }
-    checked_out_master_files = master_files - not_checked_out_master_files
+    not_checked_out_sections = sections.select { |mf| not_checked_out_hash[mf.media_object_id] }
+    checked_out_sections = sections - not_checked_out_sections
 
-    not_checked_out_master_files.each { |mf| stream_info_hash[mf.id] = mf.stream_details }
+    not_checked_out_sections.each { |mf| stream_info_hash[mf.id] = mf.stream_details }
 
-    stream_tokens = StreamToken.get_session_tokens_for(session: session, targets: checked_out_master_files.map(&:id))
+    stream_tokens = StreamToken.get_session_tokens_for(session: session, targets: checked_out_sections.map(&:id))
     stream_token_hash = stream_tokens.pluck(:target, :token).to_h
-    checked_out_master_files.each { |mf| stream_info_hash[mf.id] = secure_stream_info(mf.stream_details, stream_token_hash[mf.id]) }
+    checked_out_sections.each { |mf| stream_info_hash[mf.id] = secure_stream_info(mf.stream_details, stream_token_hash[mf.id]) }
 
     stream_info_hash
   end

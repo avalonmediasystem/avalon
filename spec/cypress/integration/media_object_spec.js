@@ -17,6 +17,7 @@
 context('Media objects', () => {
 
 	const media_object_id = Cypress.env('MEDIA_OBJECT_ID')
+	const media_object_title = Cypress.env('MEDIA_OBJECT_TITLE')
 
   // can visit a media object
   it('.visit_media_object()', () => {
@@ -24,11 +25,11 @@ context('Media objects', () => {
 		// The below code is hard-coded for a media object url. This needs to be changed with a valid object URL later for each website.
 		cy.visit('/media_objects/' + media_object_id)
 		cy.contains('Unknown item').should('not.exist')
-		cy.contains('Beginning Responsibility: Lunchroom Manners')
+		cy.contains(media_object_title)
 		cy.contains('Main contributor')
 		cy.contains('Date')
 		// This below line is to play the video. If the video is not playable, this might return error. In that case, comment the below code.
-		cy.get('#mep_0').click()
+		cy.get('button[title="Play"]').click()
   })
 
   // Open multiple media objects in different tabs and play it.

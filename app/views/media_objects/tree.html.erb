@@ -16,7 +16,7 @@ Unless required by applicable law or agreed to in writing, software distributed
 <ul>
   <li><%=@media_object.title%> (<%=@media_object.id%>)
     <ul>
-      <% @media_object.ordered_master_files.to_a.each do |mf| %>
+      <% @media_object.sections.each do |mf| %>
         <li><%=stream_label_for(mf)%> (<%=mf.id%>)
           <ul>
             <% mf.derivatives.each do |d| %>

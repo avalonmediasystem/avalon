@@ -40,10 +40,13 @@ class BatchRegistriesMailer < ApplicationMailer
     @user = User.find(@batch_registry.user_id)
     email = @user.email unless @user.nil?
     email ||= Settings.email.notification
+    @processed_items = BatchEntries.where(batch_registries_id: @batch_registry.id, complete: true).order(position: :asc)
+    @supplemental_file_errors = @processed_items.select { |be| be.error == true }.compact
     @error_items = BatchEntries.where(batch_registries_id: @batch_registry.id, error: true).order(position: :asc)
-    @completed_items = BatchEntries.where(batch_registries_id: @batch_registry.id, complete: true).order(position: :asc)
+    @error_items = @error_items - @supplemental_file_errors if !@supplemental_file_errors.empty?
+    @completed_items = @processed_items.select { |be| be.error == false }.compact
     prefix = "Success:"
-    prefix = "Errors Present:" unless @error_items.empty?
+    prefix = "Errors Present:" unless (@error_items.empty? && @supplemental_file_errors.empty?)
     collection_text = Admin::Collection.find(@batch_registry.collection).name if Admin::Collection.exists?(@batch_registry.collection)
     collection_text ||= "Collection"
 

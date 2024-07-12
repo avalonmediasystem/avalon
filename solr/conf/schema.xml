@@ -333,7 +333,7 @@
  <!-- Field to use to determine and enforce document uniqueness.
       Unless this field is marked with required="false", it will be a required field
    -->
- <uniqueKey>id</uniqueKey>
+  <uniqueKey>id</uniqueKey>
 
   <!-- copyField commands copy one field to another at the time a document
         is added to the index.  It's used either to index the same field differently,
@@ -347,9 +347,10 @@
 
    <!-- <copyField source="*_tesim" dest="all_text_timv" maxChars="3000"/> -->
    <!-- for suggestions -->
+   <!--
    <copyField source="*_tesim" dest="suggest"/>
    <copyField source="*_ssim" dest="suggest"/>
-
+   -->
  <!-- Similarity is the scoring routine for each document vs. a query.
       A custom similarity may be specified here, but the default is fine
       for most applications.  -->

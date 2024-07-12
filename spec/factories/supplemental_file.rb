@@ -16,6 +16,7 @@ FactoryBot.define do
   factory :supplemental_file do
     label { Faker::Lorem.word }
     language { "eng" }
+    parent_id { "abc1234" }
 
     trait :with_attached_file do
       file { fixture_file_upload(Rails.root.join('spec', 'fixtures', 'collection_poster.png'), 'image/png') }

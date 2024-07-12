@@ -21,7 +21,8 @@ module Avalon
       extend Forwardable
 
       EXTENSIONS = ['csv','xls','xlsx','ods']
-      FILE_FIELDS = [:file,:label,:offset,:skip_transcoding,:absolute_location,:date_digitized]
+      FILE_FIELDS = [:file,:label,:offset,:skip_transcoding,:absolute_location,:date_digitized, :caption_file, :caption_label, :caption_language, 
+                     :treat_as_transcript, :transcript_file, :transcript_label, :transcript_language, :machine_generated]
       SKIP_FIELDS = [:collection]
 
       def_delegators :@entries, :each
@@ -98,8 +99,23 @@ module Avalon
       end
 
       private
-      def true?(value)
-        not (value.to_s =~ /^(y(es)?|t(rue)?)$/i).nil?
+
+      def supplementing_files(field, content, values, i)
+        if field.to_s.include?('file')
+          @key = case field
+                 when /caption.*/
+                   @caption_count += 1
+                   "caption_#{@caption_count}".to_sym
+                 when /transcript.*/
+                   @transcript_count += 1
+                   "transcript_#{@transcript_count}".to_sym
+                 end
+          content.last[@key] = {}
+          # Set file path to caption/transcript file
+          content.last[@key][field] = path_to(values[i])
+        end
+        # Set caption/transcript metadata fields
+        content.last[@key][field] ||= values[i]
       end
 
       def create_entries!
@@ -117,11 +133,17 @@ module Avalon
           content=[]
 
           fields = Hash.new { |h,k| h[k] = [] }
+          @caption_count = 0
+          @transcript_count = 0
           @field_names.each_with_index do |f,i|
             unless f.blank? || SKIP_FIELDS.include?(f) || values[i].blank?
               if FILE_FIELDS.include?(f)
                 content << {} if f == :file
-                content.last[f] = f == :skip_transcoding ? true?(values[i]) : values[i]
+                if ['caption', 'transcript', 'treat_as_transcript', 'machine_generated'].any? { |type| f.to_s.include?(type) }
+                  supplementing_files(f, content, values, i)
+                  next
+                end
+                content.last[f] = f == :skip_transcoding ? Avalon::Batch.true_field?(values[i]) : values[i]
               else
                 fields[f] << values[i]
               end
@@ -131,7 +153,7 @@ module Avalon
           opts.keys.each { |opt|
             val = Array(fields.delete(opt)).first.to_s
             if opts[opt].is_a?(TrueClass) or opts[opt].is_a?(FalseClass)
-              opts[opt] = true?(val)
+              opts[opt] = Avalon::Batch.true_field?(val)
             else
               opts[opt] = val
             end
@@ -140,7 +162,6 @@ module Avalon
           entries << Entry.new(fields.select { |f| !FILE_FIELDS.include?(f) }, files, opts, index, self)
         end
       end
-
     end
   end
 end

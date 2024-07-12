@@ -22,22 +22,16 @@ describe IngestBatch do
     expect(ingest_batch.media_object_ids).to eq(media_object_ids)
   end
   describe '#finished?' do
-    it 'returns true when all the master files are finished' do
-      media_object = FactoryBot.create(:media_object, master_files: [FactoryBot.create(:master_file, :cancelled_processing), FactoryBot.create(:master_file, :completed_processing)])
+    it 'returns true when all the sections are finished' do
+      media_object = FactoryBot.create(:media_object, sections: [FactoryBot.create(:master_file, :cancelled_processing), FactoryBot.create(:master_file, :completed_processing)])
       ingest_batch = IngestBatch.new(media_object_ids: [media_object.id], email: 'email@something.com')
       expect(ingest_batch.finished?).to be true
     end
 
-    # fix: adding master_files to media object parts is broken
-    it 'returns false when one or more master files are not finished' do
-       skip "Fix problems with this test"
-
-       media_object = MediaObject.new(id:'avalon:ingest-batch-test')
-       media_object.add_relationship(:has_part, FactoryBot.build(:master_file, :completed_processing))
-       media_object.parts << FactoryBot.build(:master_file)
-       media_object.save
-       ingest_batch = IngestBatch.new(media_object_ids: ['avalon:ingest-batch-test'], email: 'email@something.com')
-       expect(ingest_batch.finished?).to be true
+    it 'returns false when one or more sections are not finished' do
+       media_object = FactoryBot.create(:media_object, sections: [FactoryBot.create(:master_file), FactoryBot.create(:master_file)])
+       ingest_batch = IngestBatch.new(media_object_ids: [media_object.id], email: 'email@something.com')
+       expect(ingest_batch.finished?).to be false
     end
   end
 
