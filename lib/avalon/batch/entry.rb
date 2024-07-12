@@ -276,14 +276,14 @@ module Avalon
         filename.dup.insert(filename.rindex('.'), ".#{quality}")
       end
 
-      def self.caption_language(language)
+      def self.content_language(language)
         begin
           LanguageTerm.find(language.capitalize).code
         rescue LanguageTerm::LookupError
           Settings.caption_default.language
         end
       end
-      private_class_method :caption_language
+      private_class_method :content_language
 
       def self.process_datastream(datastream, type, parent_id)
         file_key, label_key, language_key = ["_file", "_label", "_language"].map { |item| item.prepend(type).to_sym }
@@ -292,10 +292,11 @@ module Avalon
         # Build out file metadata
         filename = datastream[file_key].split('/').last
         label = datastream[label_key].presence || filename
-        language = datastream[language_key].present? ? caption_language(datastream[language_key]) : Settings.caption_default.language
+        language = datastream[language_key].present? ? content_language(datastream[language_key]) : Settings.caption_default.language
+        treat_as_transcript = datastream[:treat_as_transcript].present? ? 'transcript' : nil
         machine_generated = datastream[:machine_generated].present? ? 'machine_generated' : nil
         # Create SupplementalFile
-        supplemental_file = SupplementalFile.new(label: label, tags: [type, machine_generated].compact, language: language, parent_id: parent_id)
+        supplemental_file = SupplementalFile.new(label: label, tags: [type, treat_as_transcript, machine_generated].uniq.compact, language: language, parent_id: parent_id)
         supplemental_file.file.attach(io: FileLocator.new(datastream[file_key]).reader, filename: filename)
         supplemental_file.save ? supplemental_file : nil
       end
