@@ -293,8 +293,8 @@ module Avalon
         filename = datastream[file_key].split('/').last
         label = datastream[label_key].presence || filename
         language = datastream[language_key].present? ? content_language(datastream[language_key]) : Settings.caption_default.language
-        treat_as_transcript = datastream[:treat_as_transcript].present? ? 'transcript' : nil
-        machine_generated = datastream[:machine_generated].present? ? 'machine_generated' : nil
+        treat_as_transcript = Avalon::Batch.true_field?(datastream[:treat_as_transcript]) ? 'transcript' : nil
+        machine_generated = Avalon::Batch.true_field?(datastream[:machine_generated]) ? 'machine_generated' : nil
         # Create SupplementalFile
         supplemental_file = SupplementalFile.new(label: label, tags: [type, treat_as_transcript, machine_generated].uniq.compact, language: language, parent_id: parent_id)
         supplemental_file.file.attach(io: FileLocator.new(datastream[file_key]).reader, filename: filename)
