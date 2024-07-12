@@ -108,6 +108,11 @@ function getTimelineScopes() {
   }
 
   let parent = currentStructureItem.closest('ul').closest('li');
+  if (parent.length === 0) {
+    let begin = 0;
+    let end = activeItem.times.end;
+    scopes[0].times = { begin: 0, end: end }
+  }
   while (parent.length > 0) {
     let next = parent.closest('ul').closest('li');
     let begin = 0;
