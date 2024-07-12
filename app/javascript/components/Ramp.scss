@@ -38,6 +38,9 @@
         min-height: 2.9em;
       }
     }
+    .vjs-volume-horizontal .vjs-volume-level .vjs-svg-icon>svg {
+      vertical-align: top;
+    }
   }
 
   .ramp--structured-nav {
