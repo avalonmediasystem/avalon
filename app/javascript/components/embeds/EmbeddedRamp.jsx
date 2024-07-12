@@ -114,7 +114,7 @@ const Ramp = ({
       customErrorMessage='This embed encountered an error. Please refresh or contact an administrator.'
       startCanvasId={startCanvasId}
       startCanvasTime={startCanvasTime}>
-      <MediaPlayer enableFileDownload={false} enablePlaybackRate={is_video} />
+      <MediaPlayer enableFileDownload={false} enablePlaybackRate={is_video} enableTitleLink={is_video} />
     </IIIFPlayer>
   );
 };
