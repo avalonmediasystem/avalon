@@ -99,9 +99,6 @@ module Avalon
       end
 
       private
-      def true?(value)
-        not (value.to_s =~ /^(y(es)?|t(rue)?)$/i).nil?
-      end
 
       def supplementing_files(field, content, values, i)
         if field.to_s.include?('file')
@@ -146,7 +143,7 @@ module Avalon
                   supplementing_files(f, content, values, i)
                   next
                 end
-                content.last[f] = f == :skip_transcoding ? true?(values[i]) : values[i]
+                content.last[f] = f == :skip_transcoding ? Avalon::Batch.true_field?(values[i]) : values[i]
               else
                 fields[f] << values[i]
               end
@@ -156,7 +153,7 @@ module Avalon
           opts.keys.each { |opt|
             val = Array(fields.delete(opt)).first.to_s
             if opts[opt].is_a?(TrueClass) or opts[opt].is_a?(FalseClass)
-              opts[opt] = true?(val)
+              opts[opt] = Avalon::Batch.true_field?(val)
             else
               opts[opt] = val
             end

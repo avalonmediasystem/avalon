@@ -225,8 +225,8 @@ describe Avalon::Batch::Entry do
 
     context 'with multiple captions and transcripts' do
       let(:caption) { [{ :caption_file => caption_file, :caption_label => 'Sheephead Captions', :caption_language => 'english', :treat_as_transcript => 'yes' },
-                      { :caption_file => caption_file, :caption_label => 'Second Caption', :caption_language => 'fre', :machine_generated => 'yes' }] }
-      let(:transcript) { [{ :transcript_file => caption_file, :transcript_label => 'Sheephead Transcript' },
+                      { :caption_file => caption_file, :caption_label => 'Second Caption', :caption_language => 'fre', :machine_generated => 'yes', :treat_as_transcript => 'no' }] }
+      let(:transcript) { [{ :transcript_file => caption_file, :transcript_label => 'Sheephead Transcript', :machine_generated => 'no' },
                           { :transcript_file => caption_file, :transcript_language => 'french', :machine_generated => 'yes' }] }
       it 'should attach all captions and transcripts to master file' do
         expect(master_file.has_captions?).to eq true

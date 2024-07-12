@@ -69,5 +69,9 @@ module Avalon
       end
       found_files
     end
+
+    def self.true_field?(value)
+      not (value.to_s =~ /^(y(es)?|t(rue)?)$/i).nil?
+    end
   end
 end
