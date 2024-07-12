@@ -23,8 +23,9 @@ Unless required by applicable law or agreed to in writing, software distributed
       <dd class="blacklight-<%= field_presenter.key %> col-sm-9"><%= field_presenter.values.join(', ') %></dd>
     <% end %>
   <% end %>
-  <% if params[:q].present? %>
+  <% found_in_hits = display_found_in(doc_presenter.document) %>
+  <% if params[:q].present? && found_in_hits.present? %>
     <dt class="blacklight-found_in col-sm-3">Found in:</dt>
-    <dd class="blacklight-found_in col-sm-9"><%= display_found_in(doc_presenter.document) %></dd>
+    <dd class="blacklight-found_in col-sm-9"><%= found_in_hits %></dd>
   <% end %>
 </dl>
