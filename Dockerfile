@@ -133,7 +133,7 @@ COPY        --from=node-modules --chown=app:app /node_modules ./node_modules
 USER        app
 ENV         RAILS_ENV=production
 
-RUN         SECRET_KEY_BASE=$(ruby -r 'securerandom' -e 'puts SecureRandom.hex(64)') bundle exec rake assets:precompile
+RUN         SECRET_KEY_BASE=$(ruby -r 'securerandom' -e 'puts SecureRandom.hex(64)') SHAKAPACKER_ASSET_HOST='' bundle exec rake assets:precompile
 RUN         cp config/controlled_vocabulary.yml.example config/controlled_vocabulary.yml
 
 
