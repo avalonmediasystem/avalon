@@ -204,6 +204,8 @@ class MasterFilesController < ApplicationController
     filename = File.basename(@master_file.file_location) if @master_file.file_location.present?
     filename ||= @master_file.id
     media_object_id = @master_file.media_object_id
+    supplemental_files = @master_file.supplemental_files
+    BulkActionJobs::DeleteChildFiles.perform_later(supplemental_files, nil)
     @master_file.destroy
     flash[:notice] = "#{filename} has been deleted from the system"
     redirect_to edit_media_object_path(media_object_id, step: "file-upload")

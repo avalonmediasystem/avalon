@@ -228,6 +228,23 @@ describe MasterFilesController do
       expect(controller.current_ability.can?(:destroy, master_file)).to be_falsey
       expect(post(:destroy, params: { id: master_file.id })).to render_template('errors/restricted_pid')
     end
+
+    context "master file with child supplemental files" do
+      let!(:master_file) { FactoryBot.create(:master_file, :with_media_object, :cancelled_processing, supplemental_files: [supplemental_file]) }
+      let(:supplemental_file) { FactoryBot.create(:supplemental_file) }
+
+      around(:example) do |example|
+        # In Rails 5.1+ this can be restricted to whitelist jobs allowed to be performed
+        perform_enqueued_jobs { example.run }
+      end
+
+      it "deletes child files" do
+        login_as :administrator
+        expect(SupplementalFile.exists?(supplemental_file.id)).to be_truthy
+        post :destroy, params: { id: master_file.id }
+        expect(SupplementalFile.exists?(supplemental_file.id)).to be_falsey
+      end
+    end
   end
 
   describe "#show" do
