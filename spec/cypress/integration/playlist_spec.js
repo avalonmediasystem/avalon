@@ -16,12 +16,15 @@
 
 context('Playlists', () => {
 	//Playlist names start with '_' character for easy navigation without pagination
-	var playlist_title = `_Automation playlist title ${Math.floor(Math.random() * 10000) + 1
-		}`;
+	// var playlist_title = `_Automation playlist title ${Math.floor(Math.random() * 10000) + 1
+	// 	}`;
+	var playlist_title=	"_Automation playlist title 2086"
 	var playlist_description = `${playlist_title} description`;
 	var playlist_title_public = `_Automation public playlist title ${Math.floor(Math.random() * 10000) + 1
 		}`;
 	var playlist_description_public = `${playlist_title_public} description`;
+	const media_object_id = Cypress.env('MEDIA_OBJECT_ID_2')
+	const media_object_title = Cypress.env('MEDIA_OBJECT_TITLE_2')
 
 	Cypress.on('uncaught:exception', (err, runnable) => {
 		// Prevents Cypress from failing the test due to uncaught exceptions in the application code  - TypeError: Cannot read properties of undefined (reading 'scrollDown')
@@ -102,59 +105,6 @@ context('Playlists', () => {
 		cy.contains('Edit');
 	});
 
-
-	// deletes playlist permanently from playlists page
-	it('Verify Deleting a Playlist - playlist table - @T53c3887a', () => {
-		cy.login('administrator');
-		cy.visit('/');
-		var playlist_title_1 = `__Automation playlist title ${Math.floor(Math.random() * 10000) + 1
-			}`;
-		var playlist_description_1 = `${playlist_title} description`;
-
-		cy.get('#playlists_nav').click();
-		cy.get('a[href="/playlists/new"]').click();
-		cy.get('#playlist_title').type(playlist_title_1);
-		cy.get('#playlist_comment').type(playlist_description_1);
-		cy.get('#submit-playlist-form').click();
-
-		cy.visit('/playlists');
-		cy.get('tr')
-			.contains('td', playlist_title_1)
-			.parent('tr')
-			.find('.btn-danger')
-			.click();
-		cy.contains('Yes, Delete').click();
-
-		cy.visit('/playlists');
-
-		//Handle pagination case - search for the playlist. Add  API validation
-		cy.contains(playlist_title).should('not.exist');
-	});
-
-	// is able to delete playlist from edit playlist page
-	it('Verify Deleting a Playlist - playlist page - @T49ac05b8', () => {
-		cy.login('user');
-		cy.visit('/');
-		var playlist_title = `__Automation playlist title ${Math.floor(Math.random() * 10000) + 1
-			}`;
-		var playlist_description = `${playlist_title} description`;
-
-		cy.get('#playlists_nav').click();
-		cy.get('a[href="/playlists/new"]').click();
-		cy.get('#playlist_title').type(playlist_title);
-		cy.get('#playlist_comment').type(playlist_description);
-		cy.get('#submit-playlist-form').click();
-
-		cy.visit('/playlists');
-		cy.contains(playlist_title).click();
-		cy.contains('Edit Playlist').click();
-
-		cy.contains('Delete Playlist').click();
-		cy.contains('Yes, Delete').click();
-		cy.contains('Playlist was successfully destroyed.');
-		cy.visit('/playlists');
-		cy.contains(playlist_title).should('not.exist');
-	});
 
 	// is able to create public playlist
 	it('.create_public_playlist()', () => {
@@ -241,8 +191,117 @@ context('Playlists', () => {
 			  });
 	})
 
+	it('Verify the "add to playlist" button behavior - @Tcdb5ac47', () => {
+		cy.login('administrator')
+		cy.visit('/')
+		// The below code is hard-coded for a media object url. This needs to be changed with a valid object URL later for each website.
+		cy.visit('/media_objects/' + media_object_id)
+		cy.contains(media_object_title)
+		cy.get('#addToPlaylistBtn').click();
+		//Validate the "Add to playlist options"
+		cy.get('#add-to-playlist-form-group')
+          .within(() => {
+			cy.contains('label.form-check-label', 'Custom Timespan').get('input[type="radio"]')
+			cy.contains('label.form-check-label', 'Current Track ()').get('input[type="radio"]')
+			cy.contains('label.form-check-label', 'Current Section ').get('input[type="radio"]')
+			cy.contains('label.form-check-label', 'All Sections').get('input[type="radio"]')
+          });
+		
+		//Validate Playlist dropdown
+		cy.get("#select2-post_playlist_id-container").click()
+		
+		cy.get("span.select2-dropdown").within(()=>{
+			cy.get('ul.select2-results__options li')
+      .contains('Add new playlist')
+      .should('be.visible');
+	  //Validate search for playlist within the playlist dropdown
+	  cy.get('span.select2-search input.select2-search__field')
+      .type(playlist_title)
+	  cy.get('span.select2-results')
+      .contains('b', playlist_title)
+      .should('be.visible');
+		})
+		
+  });
 
-	//Add teardown code here to delete playlist_title and playlist_title_public
+  it.only('Verify adding the current section of an item to a playlist - Create playlist items for each track/subsection - @T3e614dbc', () => {
+	cy.login('administrator')
+	cy.visit('/')
+	// The below code is hard-coded for a media object url. This needs to be changed with a valid object URL later for each website.
+	cy.visit('/media_objects/' + media_object_id)
+	cy.contains(media_object_title)
+	cy.get('#addToPlaylistBtn').click();
+
+	 //Click on the "Current section" radio button
+	 cy.get('#playlistitem_scope_section').should('be.visible').click();
+	
+	//Open Playlist dropdown
+	cy.get("#select2-post_playlist_id-container").click()
+
+  //Validate search for playlist within the playlist dropdown
+  cy.get('span.select2-search input.select2-search__field')
+  .type(playlist_title)
+  cy.get('span.select2-results')
+  .contains('b', playlist_title)
+  .should('be.visible');
+	
+//Click on the playlist_title from search 
+cy.get('ul#select2-post_playlist_id-results').within(() => {
+	cy.contains('li.select2-results__option', '_Automation playlist title 2086').eq(1).click();
+  });
+cy.get('#addToPlaylistSave').click();
+
+//verify playlist created success message
+cy.get('#add_to_playlist_result_message')
+  .should('be.visible')
+  .should('contain.text', 'Playlist items created successfully.');
+cy.screenshot()
+
+});
+
+		
+	// Teardown codes  to delete playlist_title and playlist_title_public
+
+	// deletes playlist permanently from playlists table
+	//The "playlist_title" playlist gets deleted here
+	it('Verify Deleting a Playlist - playlist table - @T53c3887a', () => {
+		cy.login('administrator');
+		cy.visit('/');
+
+		cy.visit('/playlists');
+		cy.get('tr')
+			.contains('td', playlist_title)
+			.parent('tr')
+			.find('.btn-danger')
+			.click();
+		cy.contains('Yes, Delete').click();
+
+		cy.visit('/playlists');
+
+		//Add more assertions here
+		//Handle pagination case - search for the playlist - it should not appear. Add  API validation
+		cy.contains(playlist_title).should('not.exist');
+	});
+
+	// is able to delete playlist from edit playlist page
+	//The "playlist_title_public" playlist gets deleted here
+	it('Verify Deleting a Playlist - playlist page - @T49ac05b8', () => {
+		cy.login('user');
+		cy.visit('/');
+
+		cy.visit('/playlists');
+		cy.contains(playlist_title_public).click();
+		cy.contains('Edit Playlist').click();
+
+		cy.contains('Delete Playlist').click();
+		cy.contains('Yes, Delete').click();
+		cy.contains('Playlist was successfully destroyed.');
+		cy.visit('/playlists');
+
+		//Add more assertions here
+		//Handle pagination case - search for the playlist - it should not appear. Add  API validation
+		cy.contains(playlist_title_public).should('not.exist');
+	});
 
 	
 });
