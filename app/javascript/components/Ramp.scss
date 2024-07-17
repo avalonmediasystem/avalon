@@ -367,6 +367,10 @@
     flex-basis: auto;
     height: 70vh;
 
+    .ramp--playlist-desc-tags {
+      flex-direction: column;
+    }
+
     .ramp--playlist-description {
       overflow: auto;
       max-height: 25vh;
