@@ -38,15 +38,12 @@
     .video-js .vjs-control-bar {
       font-size: 90% !important;
     }
-    
+
     // reduce player height to match with adjusted font-size
     // for smaller screens
     .video-js.vjs-audio {
       min-height: 2.9em;
     }
-  }
-  .vjs-volume-horizontal .vjs-volume-level .vjs-svg-icon>svg {
-    vertical-align: top;
   }
   .video-js .vjs-title-bar .vjs-title-link {
     font-size: 125%;
