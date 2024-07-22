@@ -20,6 +20,7 @@ let addToPlaylistListenersAdded = false;
 let firstLoad = true;
 let streamId = '';
 let isMobile = false;
+let isPlaying = false;
 
 /**
  * Bind action buttons on the page with player events and re-populate details
@@ -69,16 +70,20 @@ function addActionButtonListeners(player, mediaObjectId, sectionIds) {
     }
 
     /* Add player event listeners to update UI components on the page */
-    // Listen to 'timeupdate' event to udate add to playlist form when using while media is playing or manually seeking
-    player.player.on('timeupdate', () => {
+    // Listen to 'seeked' event to udate add to playlist form
+    player.player.on('seeked', () => {
       if (getActiveItem() != undefined) {
         activeTrack = getActiveItem(false);
         if (activeTrack != undefined) {
           streamId = activeTrack.streamId;
         }
-        disableEnableCurrentTrack(activeTrack, player.player.currentTime(), true, currentSectionLabel);
+        disableEnableCurrentTrack(activeTrack, player.player.currentTime(), isPlaying, currentSectionLabel);
       }
     });
+
+    player.player.on('play', () => { isPlaying = true; });
+
+    player.player.on('pause', () => { isPlaying = false; });
 
     /*
       Disable action buttons tied to player related information on player's 'loadstart' event which functions
@@ -273,7 +278,7 @@ function addToPlaylistListeners(sectionIds, mediaObjectId) {
     disableEnableCurrentTrack(
       activeTrack,
       currentTime,
-      false,
+      isPlaying,
       $('#playlist_item_title').val() || currentSectionLabel // Preserve user edits for the title when available
     );
     $('#current-section-name').text(currentSectionLabel);

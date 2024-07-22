@@ -111,7 +111,7 @@ function getTimelineScopes() {
   if (parent.length === 0) {
     let begin = 0;
     let end = activeItem.times.end;
-    scopes[0].times = { begin: 0, end: end }
+    scopes[0].times = { begin: 0, end: end };
   }
   while (parent.length > 0) {
     let next = parent.closest('ul').closest('li');
@@ -209,10 +209,10 @@ function collapseMoreDetails() {
  * disable the option otherwise enable it.
  * @param {Object} activeTrack JSON object for the active timespans
  * @param {Number} currentTime player's playhead position
- * @param {Boolean} isSeeked flag to indicate player 'seeked' event happened/not
+ * @param {Boolean} isPlaying flag to inidicate media is playing or not
  * @param {String} sectionTitle name of the current section
  */
-function disableEnableCurrentTrack(activeTrack, currentTime, isSeeked, sectionTitle) {
+function disableEnableCurrentTrack(activeTrack, currentTime, isPlaying, sectionTitle) {
   // Return when add to playlist form is not visible
   let playlistForm = $('#add_to_playlist')[0];
   if (!playlistForm) {
@@ -222,7 +222,8 @@ function disableEnableCurrentTrack(activeTrack, currentTime, isSeeked, sectionTi
   if (activeTrack != undefined) {
     streamId = activeTrack.streamId;
     let { label, times, sectionLabel } = activeTrack;
-    let starttime = currentTime || times.begin;
+    // Update starttime when media is not playing
+    let starttime = isPlaying ? times.begin : currentTime || times.begin;
     $('#playlist_item_start').val(createTimestamp(starttime, true));
     $('#playlist_item_end').val(createTimestamp(times.end, true));
     title = `${sectionLabel} - ${label}`;
@@ -245,9 +246,7 @@ function disableEnableCurrentTrack(activeTrack, currentTime, isSeeked, sectionTi
       $('#playlistitem_scope_track').prop('checked', false);
     }
   }
-  // Only change the title when user actively seeked to a different timestamp,
-  // persisting the user changes to the field unless the active track is changed
-  if (isSeeked && sectionTitle != undefined) {
+  if (sectionTitle != undefined) {
     $('#playlist_item_title').val(title);
   }
 }
@@ -345,4 +344,10 @@ function resetAddToPlaylistForm() {
 function closeAlert() {
   $('#add_to_playlist_alert').slideUp();
   $('#add_to_playlist_form_group').slideDown();
+  // Set default selection in options list when alert is closed
+  if ($('#playlistitem_scope_track')[0].disabled) {
+    $('#playlistitem_scope_section').prop('checked', true);
+  } else {
+    $('#playlistitem_scope_track').prop('checked', true);
+  }
 }
