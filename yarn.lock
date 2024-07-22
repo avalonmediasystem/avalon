@@ -1477,9 +1477,9 @@
     estree-walker "^2.0.2"
     picomatch "^2.3.1"
 
-"@samvera/ramp@https://github.com/samvera-labs/ramp.git#672dc338eaf31a821e4a9343ae2d03800c96ee1a":
+"@samvera/ramp@https://github.com/samvera-labs/ramp.git#e7d98e06ceceebe7e8ba59af29d1350a3a43acee":
   version "3.1.2"
-  resolved "https://github.com/samvera-labs/ramp.git#672dc338eaf31a821e4a9343ae2d03800c96ee1a"
+  resolved "https://github.com/samvera-labs/ramp.git#e7d98e06ceceebe7e8ba59af29d1350a3a43acee"
   dependencies:
     "@rollup/plugin-json" "^6.0.1"
     "@silvermine/videojs-quality-selector" "^1.3.1"
