@@ -98,21 +98,29 @@ class IiifCanvasPresenter
 
     def video_content
       # @see https://github.com/samvera-labs/iiif_manifest
-      stream_urls.collect { |quality, _url| video_display_content(quality) }
+      stream_urls.collect { |quality, url, mimetype| video_display_content(quality, url, mimetype) }
     end
 
-    def video_display_content(quality)
-      IIIFManifest::V3::DisplayContent.new(Rails.application.routes.url_helpers.hls_manifest_master_file_url(master_file.id, quality: quality),
-                                           **manifest_attributes(quality, 'Video'))
+    def video_display_content(quality, url, mimetype)
+      if mimetype.present? && mimetype != 'application/x-mpegURL'
+        IIIFManifest::V3::DisplayContent.new(url, **manifest_attributes(quality, 'Video', mimetype: mimetype))
+      else
+        IIIFManifest::V3::DisplayContent.new(Rails.application.routes.url_helpers.hls_manifest_master_file_url(master_file.id, quality: quality),
+                                             **manifest_attributes(quality, 'Video'))
+      end
     end
 
     def audio_content
-      stream_urls.collect { |quality, _url| audio_display_content(quality) }
+      stream_urls.collect { |quality, url, mimetype| audio_display_content(quality, url, mimetype) }
     end
 
-    def audio_display_content(quality)
-      IIIFManifest::V3::DisplayContent.new(Rails.application.routes.url_helpers.hls_manifest_master_file_url(master_file.id, quality: quality),
-                                           **manifest_attributes(quality, 'Sound'))
+    def audio_display_content(quality, url, mimetype)
+      if mimetype.present? && mimetype != 'application/x-mpegURL'
+        IIIFManifest::V3::DisplayContent.new(url, **manifest_attributes(quality, 'Sound', mimetype: mimetype))
+      else
+        IIIFManifest::V3::DisplayContent.new(Rails.application.routes.url_helpers.hls_manifest_master_file_url(master_file.id, quality: quality),
+                                             **manifest_attributes(quality, 'Sound'))
+      end
     end
 
     def supplementing_content_data(file)
@@ -142,7 +150,7 @@ class IiifCanvasPresenter
 
     def stream_urls
       stream_info[:stream_hls].collect do |d|
-        [d[:quality], d[:url]]
+        [d[:quality], d[:url], d[:mimetype]]
       end
     end
 
@@ -214,14 +222,14 @@ class IiifCanvasPresenter
       smh[0] + (60 * smh[1]) + (3600 * smh[2])
     end
 
-    def manifest_attributes(quality, media_type)
+    def manifest_attributes(quality, media_type, mimetype: 'application/x-mpegURL')
       media_hash = {
         label: quality,
         width: (master_file.width || '1280').to_i,
         height: (master_file.height || MasterFile::AUDIO_HEIGHT).to_i,
         duration: stream_info[:duration],
         type: media_type,
-        format: 'application/x-mpegURL'
+        format: mimetype
       }.compact
 
       if master_file.media_object.visibility == 'public'
