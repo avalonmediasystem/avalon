@@ -16,8 +16,13 @@
 
 context('Media objects', () => {
 
-	const media_object_id = Cypress.env('MEDIA_OBJECT_ID')
-	const media_object_title = Cypress.env('MEDIA_OBJECT_TITLE')
+	const media_object_id = Cypress.env('MEDIA_OBJECT_ID_2')
+	const media_object_title = Cypress.env('MEDIA_OBJECT_TITLE_2')
+	const caption = Cypress.env('MEDIA_OBJECT_CAPTION_2')
+
+	beforeEach(() => {
+		cy.visit('/media_objects/' + media_object_id); 
+	  });
 
   // can visit a media object
   it('.visit_media_object()', () => {
@@ -57,4 +62,57 @@ context('Media objects', () => {
 			}
 		})
   })
+
+  it.only('Verify the icons in a video player - @Tb155c718', () => {
+    cy.get('.vjs-big-play-button[title="Play Video"]')
+  .should('exist'); //validates the centre play button
+  cy.get('.vjs-play-control[title="Play"]')
+  .should('exist'); //validates the  play button in the control bar
+  cy.get('#slider-range') //validates the slider
+  cy.get('.vjs-subs-caps-button[title="Captions"]')
+  .should('exist'); //validates the captions button
+  cy.get('.vjs-mute-control[title="Mute"]')
+  .should('exist'); //validates the Audio button 
+  cy.get('button[title="Open quality selector menu"]')
+  .should('exist'); //validates the quality selector button
+  cy.get('button[title="Playback Rate"]')
+  .should('exist'); //validates the playback rate  button
+  cy.get('button[title="Fullscreen"]')
+  .should('exist'); //validates the playback rate  button
+  });
+
+  it('Verify whether the user is able to adjust volume in the audio player - @T2e46961f', () => {
+    // Assume the video player is already loaded and accessible
+    cy.get('.vjs-mute-control').as('muteButton');
+    cy.get('.vjs-volume-bar').as('volumeBar');
+
+    // Check initial state if needed
+    cy.get('@volumeBar').invoke('attr', 'aria-valuenow').should('eq', '100'); // Checking initial volume level, adjust as needed
+
+    // Click to mute and verify
+    cy.get('@muteButton').click();
+    cy.get('@muteButton').should('have.class', 'vjs-vol-0'); // Checking if the mute button reflects the muted state
+
+    // Adjust volume using the volume control slider
+    cy.get('@volumeBar').invoke('val', 50).trigger('change'); // Adjust the slider to a midpoint value
+
+    // Verify the volume has been adjusted
+    cy.get('@volumeBar').invoke('attr', 'aria-valuenow').should('eq', '50'); // Confirm the slider reflects the new volume level
+  });
+
+
+  it('Verify turning on closed captions - @T4ceb4111', () => {
+    // Access the closed captions button
+    cy.get('.vjs-subs-caps-button').as('ccButton');
+    cy.get('@ccButton').click();
+    // Select the caption 
+    cy.contains('li.vjs-subtitles-menu-item', caption).click();
+    // Assert that the captions are enabled - the class name should change to captions-on
+    cy.get('@ccButton').should('have.class', 'captions-on'); // Change 'captions-on' to the actual class or attribute that indicates active captions
+
+    //Add more assertions here to verefy captions on the screen
+  });
+
+
+
 })

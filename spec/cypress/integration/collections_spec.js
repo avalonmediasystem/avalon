@@ -18,7 +18,7 @@ context('Collections', () => {
 	  //Since it takes a while for a newly created collection to reflect in search, we are using static search data
   var search_collection = Cypress.env('SEARCH_COLLECTION')
   var collection_title = `Automation collection title ${Math.floor(Math.random() * 10000) + 1}`
-
+  
   Cypress.on('uncaught:exception', (err, runnable) => {
 	// Prevents Cypress from failing the test due to uncaught exceptions in the application code  - TypeError: Cannot read properties of undefined (reading 'scrollDown')
 	if (err.message.includes('Cannot read properties of undefined (reading \'success\')')) {
@@ -178,6 +178,19 @@ it('Verify whether a user is able to update Collection information - @Ta1b2fef8'
 	
 })
 
+it('Verify whether a user is able to update poster image -  @T26526b2e', () => {
+	cy.login('administrator')
+	cy.visit('/')
+	cy.get('#manageDropdown').click()
+	cy.contains('Manage Content').click()
+	cy.contains('a', collection_title).click();
+	cy.get('#poster_input').selectFile('spec/cypress/fixtures/image.png', { force: true });
+	cy.wait(5000)
+	cy.screenshot()
+	cy.get('button#crop').click()
+	cy.get('.alert-success').should('be.visible').and('contain', 'Poster file successfully added.');
+	
+})
 
 //Teardown code : delete the created collection 
 	it('Verify deleting a collection - @T959a56df', () => {
@@ -193,5 +206,8 @@ it('Verify whether a user is able to update Collection information - @Ta1b2fef8'
 		cy.contains('a', collection_title).should('not.exist');
 		
 	})
+
+
+	
 
 })
