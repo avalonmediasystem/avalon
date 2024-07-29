@@ -38,9 +38,6 @@
         min-height: 2.9em;
       }
     }
-    .vjs-volume-horizontal .vjs-volume-level .vjs-svg-icon>svg {
-      vertical-align: top;
-    }
   }
 
   .ramp--structured-nav {
@@ -366,6 +363,10 @@
     flex-direction: column;
     flex-basis: auto;
     height: 70vh;
+
+    .ramp--playlist-desc-tags {
+      flex-direction: column;
+    }
 
     .ramp--playlist-description {
       overflow: auto;

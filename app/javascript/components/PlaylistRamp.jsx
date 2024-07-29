@@ -223,9 +223,9 @@ const Ramp = ({
               </div>
             </Col>
           </Row>
-          <Row>
+          <Row className="ramp--playlist-desc-tags">
             {comment && (
-              <div style={{position: 'relative'}}>
+              <div style={{ position: 'relative' }}>
                 <h4>{comment_label}</h4>
                 <div className='ramp--playlist-description' onScroll={handleScrollableDescription}>
                   <span dangerouslySetInnerHTML={{ __html: description }} />
