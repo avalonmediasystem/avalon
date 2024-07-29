@@ -68,7 +68,7 @@ Cypress.Commands.add("login", (role) => {
 // Cypress.Commands.overwrite("visit", (originalFn, url, options) => { ... })
 // support/commands.js
 
-Cypress.Commands.add('createItemUnderCollectionUI', (collectionTitle, itemTitle) => {
+Cypress.Commands.add('createItemUnderCollectionUI',(collectionTitle, itemTitle ) => {
   const videoName = "test_sample.mp4";
   const publicationYear = String(Math.floor(Math.random() * (2020 - 1900 + 1)) + 1900);
   

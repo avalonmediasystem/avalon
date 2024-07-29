@@ -16,19 +16,19 @@
 
 class LoginPage {
     visit() {
-      cy.visit('/login');
+      cy.visit('/users/sign_in');
     }
   
     fillEmail(email) {
-      cy.get('input[name=email]').type(email);
+      cy.get('input[name="user[login]"]').type(email);
     }
   
     fillPassword(password) {
-      cy.get('input[name=password]').type(password);
+      cy.get('input[name="user[password]"]').type(password);
     }
   
     submit() {
-      cy.get('button[type=submit]').click();
+      cy.get('input[type="submit"][value="Connect"]').click();
     }
   }
   

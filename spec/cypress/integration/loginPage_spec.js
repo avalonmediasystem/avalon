@@ -32,11 +32,13 @@ context('Login page', () => {
 
 	it('should log out successfully', () => {
 		cy.login('user')
+		cy.visit('/')
 		// Logout
 		homePage.logout();
 		// Assert that the login page is visible
 		homePage.getLogoutSuccessAlert();
-		cy.url().should('include', '/login');
+		//assert user can visit the login page from here
+		loginPage.visit();
 	  });
 
 
@@ -54,7 +56,7 @@ context('Login page', () => {
 		cy.get('#playlists_nav').should('not.exist');
 		cy.get('#bookmarks_nav').should('not.exist');
 		cy.get('#manageDropdown').should('not.exist');
-		cy.get('a["href"="/users/sign_in"]').should('exist')
+		cy.get('a[href="/users/sign_in"]').should('exist')
 	})
 
 

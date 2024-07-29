@@ -15,6 +15,7 @@
 */
 
 class HomePage {
+
       getBrowseNavButton() {
         return cy.contains('a.nav-link', 'Browse');
     }
@@ -24,7 +25,7 @@ class HomePage {
       }
     
       logout() {
-        cy.get('a[href="/users/sign_out"]').click();
+        cy.get('a[href="/users/sign_out"]').first().click();
       }
 
       getLogoutSuccessAlert(){
