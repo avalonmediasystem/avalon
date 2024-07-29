@@ -131,12 +131,7 @@ context('Item', () => {
   it('Verify setting Item access to “Collections staff only” for a published item - @T13b097f8', () => {
     cy.login('administrator');
     cy.visit('/');
-    // The below code is hard-coded for a media object url. This needs to be changed with a valid object URL later for each website.
     cy.visit('/media_objects/' + item_id+'/edit?step=access-control');
-    // cy.get('#administrative_options').find('a.btn').contains('Edit').click();
-    // cy.get('li.nav-item.nav-success')
-    //   .contains('a.nav-link', 'Access Control')
-    //   .click();
     cy.get('.item-access').within(() => {
       cy.contains('label', 'Collection staff only')
         .find('input[type="radio"]')
@@ -152,12 +147,7 @@ context('Item', () => {
   it('Verify setting Item access to “Logged in users only” for a published item - @T0cc6ee02', () => {
     cy.login('administrator');
     cy.visit('/');
-    // The below code is hard-coded for a media object url. This needs to be changed with a valid object URL later for each website.
     cy.visit('/media_objects/' + item_id+'/edit?step=access-control');
-    // cy.get('#administrative_options').find('a.btn').contains('Edit').click();
-    // cy.get('li.nav-item.nav-success')
-    //   .contains('a.nav-link', 'Access Control')
-    //   .click();
     cy.get('.item-access').within(() => {
       cy.contains('label', 'Logged in users only')
         .find('input[type="radio"]')
@@ -174,12 +164,7 @@ context('Item', () => {
   it('Verify setting Item access to “Available to general public” for a published item - @T593dc580', () => {
     cy.login('administrator');
     cy.visit('/');
-    // The below code is hard-coded for a media object url. This needs to be changed with a valid object URL later for each website.
     cy.visit('/media_objects/' + item_id+'/edit?step=access-control');
-    // cy.get('#administrative_options').find('a.btn').contains('Edit').click();
-    // cy.get('li.nav-item.nav-success')
-    //   .contains('a.nav-link', 'Access Control')
-    //   .click();
     cy.get('.item-access').within(() => {
       cy.contains('label', 'Available to the general public')
         .find('input[type="radio"]')
@@ -197,10 +182,6 @@ context('Item', () => {
     cy.visit('/');
     // The below code is hard-coded for a media object url. This needs to be changed with a valid object URL later for each website.
     cy.visit('/media_objects/' + item_id+'/edit?step=access-control');
-    // cy.get('#administrative_options').find('a.btn').contains('Edit').click();
-    // cy.get('li.nav-item.nav-success')
-    //   .contains('a.nav-link', 'Access Control')
-    //   .click();
     const user_username = Cypress.env('USERS_USER_USERNAME');
     //Assign special access - Avalon user (who is not associated with the collection)
     cy.get('.card.special-access')

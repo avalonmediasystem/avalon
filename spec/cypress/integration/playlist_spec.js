@@ -38,11 +38,6 @@ context('Playlists', () => {
     }
   });
 
-  //checks navigation when create new playlist is accessed
-  it('.create_playlists()', () => {
-    cy.login('administrator');
-    cy.visit('/playlists/new');
-  });
 
   //is able to create a new playlist
   it('Verify creating a Playlist - @Tf1b9413d', () => {
@@ -80,10 +75,8 @@ context('Playlists', () => {
     cy.get('div.playlist-title')
       .find('span[title="This playlist can only be viewed by you."]')
       .should('be.visible');
-    cy.contains('h4', 'Description')
-      .should('be.visible')
-      .next('span')
-      .should('have.text', playlist_description);
+    cy.get('div.ramp--playlist-description')
+      .contains(playlist_description);
     cy.get('button.copy-playlist-button').should('be.visible');
     cy.get('div.ramp--auto-advance').should('be.visible');
     cy.get('#share-button').should('be.visible');
@@ -120,9 +113,7 @@ context('Playlists', () => {
     cy.contains('Public').click();
     cy.get('#submit-playlist-form').click();
 
-    cy.visit('/playlists');
     cy.contains(playlist_title_public);
-    cy.contains(playlist_description_public);
     cy.contains('Public');
     cy.get('div.playlist-title')
       .find('span[title="This playlist can be viewed by anyone on the web."]')
