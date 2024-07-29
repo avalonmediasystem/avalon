@@ -61,8 +61,8 @@ module ApplicationHelper
   def image_for(document)
     master_file_id = document["section_id_ssim"].try :first
 
-    video_count = document["avalon_resource_type_ssim"].count{|m| m.start_with?('moving image') } rescue 0
-    audio_count = document["avalon_resource_type_ssim"].count{|m| m.start_with?('sound recording') } rescue 0
+    video_count = document["avalon_resource_type_ssim"].count{|m| m.downcase.start_with?('moving image') } rescue 0
+    audio_count = document["avalon_resource_type_ssim"].count{|m| m.downcase.start_with?('sound recording') } rescue 0
 
     if master_file_id
       if video_count > 0
