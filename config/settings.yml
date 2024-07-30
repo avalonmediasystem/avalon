@@ -127,4 +127,4 @@ derivative:
 # If the default system /tmp directory is storage constrained, you can define an alternative here. 
 # Leave commented out to use the system default.
 # tempfile:
-#   location: ''
+#   location: '/tmp'
