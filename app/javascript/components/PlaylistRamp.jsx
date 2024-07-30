@@ -223,7 +223,7 @@ const Ramp = ({
               </div>
             </Col>
           </Row>
-          <Row className="ramp--playlist-desc-tags">
+          <Row className="ramp--playlist-desc-tags mx-1 mx-sm-0">
             {comment && (
               <div style={{ position: 'relative' }}>
                 <h4>{comment_label}</h4>
@@ -251,7 +251,7 @@ const Ramp = ({
           </Row>
           {playlist_item_ids?.length > 0 && (
             <React.Fragment>
-              <h4 className="mt-3">Playlist Items</h4>
+              <h4 className="mt-3 mx-1 mx-sm-0">Playlist Items</h4>
               <StructuredNavigation />
             </React.Fragment>
           )}
