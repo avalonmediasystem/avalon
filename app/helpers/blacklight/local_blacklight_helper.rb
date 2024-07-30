@@ -26,7 +26,7 @@ module Blacklight::LocalBlacklightHelper
   end
 
   def url_for_document doc, options = {}
-    SpeedyAF::Base.find(doc[:id])
+    SpeedyAF::Base.for(doc.to_h.with_indifferent_access)
   end
 
   def contributor_index_display args
