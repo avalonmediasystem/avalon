@@ -177,7 +177,7 @@ class MediaObject < ActiveFedora::Base
     return @section_ids if @section_ids
 
     # Do migration
-    self.section_ids = self.ordered_master_file_ids if self.section_list.nil?
+    self.section_ids = self.ordered_master_file_ids.compact if self.section_list.nil?
 
     return [] if self.section_list.nil?
     @section_ids = JSON.parse(self.section_list)
