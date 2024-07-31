@@ -57,7 +57,7 @@ module Avalon
       end
     end
 
-    config.middleware.use TempfileFactory
+    config.middleware.insert_before 0, TempfileFactory
 
     config.active_storage.service = (Settings&.active_storage&.service.presence || "local").to_sym
   end
