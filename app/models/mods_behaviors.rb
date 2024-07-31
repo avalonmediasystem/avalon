@@ -82,7 +82,7 @@ module ModsBehaviors
     solr_doc['other_identifier_sim'] = gather_terms(self.find_by_terms(:other_identifier))
     solr_doc['bibliographic_id_ssi'] = self.bibliographic_id.first
     solr_doc['bibliographic_id_source_ssi'] = self.bibliographic_id.source.first
-    solr_doc['statement_of_responsibility_ssi'] = gather_terms(self.find_by_terms(:statement_of_responsibility))
+    solr_doc['statement_of_responsibility_ssi'] = gather_terms(self.find_by_terms(:statement_of_responsibility)).first
     solr_doc['record_identifier_ssim'] = gather_terms(self.find_by_terms(:record_identifier))
 
     # Extract 4-digit year for creation date facet in Hydra and pub_date facet in Blacklight
