@@ -21,41 +21,59 @@ describe TempfileFactory do
     end
   end
 
-  let(:file) { Rack::Test::UploadedFile.new(Rails.root.join('spec', 'fixtures', 'videoshort.mp4'), 'video/mp4')}
+  let(:file) { fixture_file_upload("videoshort.mp4", "video/mp4") }
   let(:env) { Rack::MockRequest.env_for('/', method: :post, params: file) }
   let(:app) { MockApp.new }
   subject { TempfileFactory.new(app) }
 
+  around do |example|
+    @old_config = Settings.dig(:tempfile, :location)
+    if tempfile_config.present?
+      Settings.tempfile ||= Config::Options.new
+      Settings.tempfile.location = tempfile_config
+    else
+      Settings.tempfile = nil
+    end
+    example.run
+    if @old_config.present?
+      Settings.tempfile ||= Config::Options.new
+      Settings.tempfile.location = @old_config
+    else
+      Settings.tempfile = nil
+    end
+  end
+
   context "when an alternate directory is defined" do
+    let(:tempfile_config) { Rails.root.join('spec', 'fixtures').to_s }
+
     it "sets `env['rack.multipart.tempfile_factory']`" do
-      without_partial_double_verification do
-        allow(Settings.tempfile).to receive(:location).and_return(Rails.root.join('spec', 'fixtures').to_s)
-        subject.instance_variable_set(:@tempfile_location, Settings.tempfile.location)
-        status, headers, response = subject.call(env)
-        expect(response).to include 'rack.multipart.tempfile_factory'
-      end
+      status, headers, response = subject.call(env)
+      expect(response).to include 'rack.multipart.tempfile_factory'
+      expect(response['rack.multipart.tempfile_factory'].call("videoshort.mp4", "video/mp4").path).to start_with(tempfile_config)
     end
   end
 
   context "when an alternate directory is NOT defined" do
+    let(:tempfile_config) { nil }
+
     it "does not set `env['rack.multipart.tempfile_factory']`" do
-      without_partial_double_verification do
-        allow(Settings.tempfile).to receive(:location).and_return(nil)
-        subject.instance_variable_set(:@tempfile_location, Settings.tempfile.location)
-        status, headers, response = subject.call(env)
-        expect(response).to_not include 'rack.multipart.tempfile_factory'
-      end
+      status, headers, response = subject.call(env)
+      expect(response).to_not include 'rack.multipart.tempfile_factory'
     end
   end
 
   context "when there is a problem with the defined alternate directory" do
+    let(:tempfile_config) { 'does not exist' }
+    let(:logger) { double() }
+
+    before do
+      allow_any_instance_of(TempfileFactory).to receive(:logger).and_return(logger)
+    end
+
     it "does not set `env['rack.multipart.tempfile_factory']`" do
-      without_partial_double_verification do
-        allow(Settings.tempfile).to receive(:location).and_return('does not exist')
-        subject.instance_variable_set(:@tempfile_loaction, Settings.tempfile.location)
-        status, headers, response = subject.call(env)
-        expect(response).to_not include 'rack.multipart.tempfile_factory'
-      end
+      expect(logger).to receive(:warn).with(match("Falling back"))
+      status, headers, response = subject.call(env)
+      expect(response).to_not include 'rack.multipart.tempfile_factory'
     end
   end
 end

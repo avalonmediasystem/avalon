@@ -7,8 +7,7 @@ class TempfileFactory
     if Settings.tempfile&.location.present? && File.directory?(Settings.tempfile&.location) && File.writable?(Settings.tempfile&.location)
       @tempfile_location = Settings.tempfile.location
     else
-      logger = ActiveSupport::TaggedLogging.new(Logger.new(File.join(Rails.root, 'log', "#{Rails.env}.log")))
-      logger.tagged('Rack::Multipart', 'Tempfile').warn "#{Settings.tempfile.location} is not a diretory or not writable. Falling back to #{Dir.tmpdir}."
+      logger.warn("[Rack::Multipart] [Tempfile] #{Settings.tempfile.location} is not a diretory or not writable. Falling back to #{Dir.tmpdir}.")
     end
   end
 
@@ -21,5 +20,11 @@ class TempfileFactory
     end
 
     @app.call(env)
+  end
+
+  private
+
+  def logger
+    @logger ||= Logger.new(File.join(Rails.root, 'log', "#{Rails.env}.log"))
   end
 end
