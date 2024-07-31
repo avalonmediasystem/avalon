@@ -248,7 +248,7 @@ context('Playlists', () => {
     cy.get('ul#select2-post_playlist_id-results').within(() => {
       cy.contains(
         'li.select2-results__option',
-        '_Automation playlist title 2086'
+        playlist_title
       )
         .eq(1)
         .click();

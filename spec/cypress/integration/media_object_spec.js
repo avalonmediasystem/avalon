@@ -77,7 +77,7 @@ context('Media objects', () => {
     cy.get('button[title="Fullscreen"]').should('exist'); //validates the playback rate  button
   });
 
-  it.only('Verify whether the user is able to adjust volume in the audio player - @T2e46961f', () => {
+  it('Verify whether the user is able to adjust volume in the audio player - @T2e46961f', () => {
     // Assume the video player is already loaded and accessible
     cy.get('.vjs-mute-control').as('muteButton');
     cy.get('.vjs-volume-bar').as('volumeBar');
@@ -102,7 +102,7 @@ context('Media objects', () => {
 
   });
 
-  it.only('Verify turning on closed captions - @T4ceb4111', () => {
+  it('Verify turning on closed captions - @T4ceb4111', () => {
     // Access the closed captions button
     cy.get('.vjs-subs-caps-button').as('ccButton');
     cy.get('@ccButton').click();

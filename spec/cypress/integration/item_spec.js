@@ -18,8 +18,7 @@ context('Item', () => {
   //Create dynamic items here
   const collection_title = Cypress.env('SEARCH_COLLECTION');
   var item_title = `Automation Item title ${Math.floor(Math.random() * 100000) + 1}`
-  //Fallback for item id. It will be updated later once the creating an item under a collection is executed
-  let item_id = Cypress.env('MEDIA_OBJECT_ID_2');
+  let item_id;
 
   Cypress.on('uncaught:exception', (err, runnable) => {
     // Prevents Cypress from failing the test due to uncaught exceptions in the application code  - TypeError: Cannot read properties of undefined (reading 'scrollDown')
@@ -127,7 +126,6 @@ context('Item', () => {
     cy.get('#administrative_options a').contains('Unpublish');
   });
 
-
   it('Verify setting Item access to “Collections staff only” for a published item - @T13b097f8', () => {
     cy.login('administrator');
     cy.visit('/');
@@ -139,6 +137,10 @@ context('Item', () => {
         .should('be.checked');
     });
     cy.get('input[type="submit"][name="save"]').click();
+//reload the page to ensure that the data is updated in the backend
+cy.reload()
+cy.contains('label', 'Collection staff only')
+.find('input[type="radio"]').should('be.checked');
 
     //Login as a user who is not a staff to collection to validate the result
     //login as a user who is a staff to the collection and verify that the item is accessible
@@ -156,7 +158,11 @@ context('Item', () => {
     });
     cy.get('input[type="submit"][name="save"]').click();
     //reload the page to ensure that the data is updated in the backend
+    cy.reload()
+    cy.contains('label', 'Logged in users only')
+	.find('input[type="radio"]').should('be.checked');
 
+    //Additional assertions::
     //Logout of the application and verify that the item is not visible
     //login as any non collection staff user and validate the result
   });
@@ -173,8 +179,11 @@ context('Item', () => {
     });
     cy.get('input[type="submit"][name="save"]').click();
     //reload the page to ensure that the data is updated in the backend
+    cy.reload()
+    cy.contains('label', 'Available to the general public')
+	.find('input[type="radio"]').should('be.checked');
 
-    //Verify item access without logging in
+    //Additional assertion:: Verify item access without logging in
   });
 
   it('Verify setting Special access for an Avalon user - published item - @Ta15294e5', () => {
@@ -188,14 +197,13 @@ context('Item', () => {
       .find('input#add_user_display')
       .type(user_username)
       .should('have.value', user_username);
+    cy.screenshot()
     cy.get('input[id="add_user_display"]')
       .closest('.form-group') // Find the closest form-group div that contains this input
       .find('button[name="submit_add_user"]')
       .click();
-    cy.get('input[type="submit"][name="save"]').click();
     //reload the page to ensure that the data is updated in the backend
-
-    //Login as the special access user and validate the result
+    // Additional assertion:: Login as the special access user and validate the result
   });
 
 
@@ -294,6 +302,37 @@ context('Item', () => {
     cy.get('div#documents').within(() => {
       cy.get('h3.index_title.document-title-heading').contains(item_title);
     });
+  });
+
+  it('Verify if a user is able to create timelines under an item - @T9972f970', () => {
+    cy.login('administrator');
+    cy.visit('/');
+    // The below code is hard-coded for a media object url. This needs to be changed with a valid object URL later for each website.
+    cy.visit('/media_objects/' + item_id);
+    cy.wait(3000) //wait for timeline button to load
+    cy.get('#timelineBtn').click();
+    cy.get('#timelineModalSave').click()
+    //validate the timeline page elements
+    cy.wait(3000) //wait for timeline page to load 
+    cy.contains('div.app')
+    cy.contains('h6',"Timeline information")
+    cy.contains('h3',item_title)
+    //Validate the "Add to playlist options"
+  });
+
+  it('Verify deleting a timeline - @T89215320', () => {
+    cy.login('administrator');
+    cy.visit('/timelines');
+    cy.get('#Timelines_filter input[type="search"]')
+      .type(item_title)
+      .should('have.value', item_title);
+    cy.get('tr')
+      .contains('td', item_title)
+      .parent('tr')
+      .find('.btn-danger')
+      .click();
+    cy.contains('Yes, Delete').click();
+    cy.get('div.alert').contains('Timeline was successfully destroyed.')
   });
 
   //teardown code: delete the created item
