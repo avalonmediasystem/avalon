@@ -123,3 +123,8 @@ derivative:
   allow_download: true
 # Maximum size for uploaded files in bytes (default is disabled)
 #max_upload_size: 2147483648 # Use :none or comment out to disable limit
+# Rack Multipart creates temporary files when processing multipart form data with a large payload.
+# If the default system /tmp directory is storage constrained, you can define an alternative here. 
+# Leave commented out to use the system default.
+# tempfile:
+#   location: '/tmp'
