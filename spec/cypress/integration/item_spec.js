@@ -304,6 +304,8 @@ cy.contains('label', 'Collection staff only')
     });
   });
 
+  //This case and thus the following case may fail intermittently since the item sometimes takes too long to load, 
+  //and the timeline button is disabled
   it('Verify if a user is able to create timelines under an item - @T9972f970', () => {
     cy.login('administrator');
     cy.visit('/');

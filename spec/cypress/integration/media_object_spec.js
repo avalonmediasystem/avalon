@@ -89,6 +89,9 @@ context('Media objects', () => {
     cy.get('@muteButton').click();
     cy.get('@muteButton').should('have.class', 'vjs-vol-0'); // Checking if the mute button reflects the muted state
 
+
+  //This part is failing - need to fix this
+
      // Adjust volume using the volume control slider
      cy.get('@volumeBar')
   .invoke('val', 50)

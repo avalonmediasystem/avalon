@@ -244,6 +244,7 @@ context('Playlists', () => {
       .contains('b', playlist_title)
       .should('be.visible');
 
+    // This part is failing - need to fix this
     //Click on the playlist_title from search
     cy.get('ul#select2-post_playlist_id-results').within(() => {
       cy.contains(
