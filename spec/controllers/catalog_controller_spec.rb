@@ -308,6 +308,22 @@ describe CatalogController do
           expect(assigns(:response).documents.count).to eq 2
           expect(assigns(:response).documents.map(&:id)).to match_array [private_media_object.id, public_media_object.id]
         end
+        context "when there are transcripts present" do
+          let!(:transcript) { FactoryBot.create(:supplemental_file, :with_transcript_file, :with_transcript_tag, parent_id: private_media_object.id) }
+          
+          before do
+            private_media_object.supplemental_files = [transcript]
+            private_media_object.save
+          end
+
+          it "should not error when search includes curly brackets" do
+            request.headers['Avalon-Api-Key'] = 'secret_token'
+            get 'index', params: { q: '{8}', format: 'atom' }
+            expect(response).to be_successful
+            expect(response).to render_template('catalog/index')
+            expect(response.content_type).to eq "application/atom+xml; charset=utf-8"
+          end
+        end
       end
       context "without api key" do
         it "should not show results" do
