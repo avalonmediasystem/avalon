@@ -97,7 +97,7 @@ namespace :avalon do
     task media_object_section_list: :environment do
       error_ids = []
       mo_count = MediaObject.count
-      ids_to_migrate = ActiveFedora::SolrService.query("has_model_ssim:MediaObject AND NOT section_list_ssim:[* TO *]", rows: mo_count).pluck("id")
+      ids_to_migrate = ActiveFedora::SolrService.query("has_model_ssim:MediaObject AND NOT section_list_ssim:[* TO *]", fl: [:id], rows: mo_count).pluck("id")
       puts "Migrating #{ids_to_migrate.size} out of #{mo_count} Media Objects."
       ids_to_migrate.each do |id|
         MediaObject.find(id).save!(validate: false)
@@ -105,7 +105,7 @@ namespace :avalon do
         error_ids += [id]
         puts "Error migrating #{id}: #{error.message}"
       end
-      remaining_ids_count = ActiveFedora::SolrService.query("has_model_ssim:MediaObject AND NOT section_list_ssim:[* TO *]", rows: mo_count).size
+      remaining_ids_count = ActiveFedora::SolrService.query("has_model_ssim:MediaObject AND NOT section_list_ssim:[* TO *]", fl: [:id], rows: mo_count).size
       if error_ids.size > 0
         puts "Migration finished running but #{error_ids.size} Media Objects failed to migrate.  Try running the migration again."
       elsif remaining_ids_count > 0

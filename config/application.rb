@@ -1,4 +1,5 @@
 require_relative 'boot'
+require_relative '../lib/tempfile_factory'
 
 require 'rails/all'
 require 'resolv-replace'
@@ -55,6 +56,8 @@ module Avalon
         resource '/master_files/*/search', headers: :any, methods: [:get]
       end
     end
+
+    config.middleware.insert_before 0, TempfileFactory
 
     config.active_storage.service = (Settings&.active_storage&.service.presence || "local").to_sym
   end
