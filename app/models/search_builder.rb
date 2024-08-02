@@ -51,6 +51,7 @@ class SearchBuilder < Blacklight::SearchBuilder
     return unless solr_parameters[:q].present? && SupplementalFile.with_tag('transcript').any? && !(blacklight_params[:controller] == 'bookmarks')
 
     terms = solr_parameters[:q].split
+    return if terms.any? { |term| term.match?(/[\{\}]/) }
     term_subquery = terms.map { |term| "transcript_tsim:#{RSolr.solr_escape(term)}" }.join(" OR ")
     solr_parameters[:defType] = "lucene"
     solr_parameters[:q] = "({!edismax v=\"#{RSolr.solr_escape(solr_parameters[:q])}\"}) {!join to=id from=isPartOf_ssim}{!join to=id from=isPartOf_ssim}#{term_subquery}"
