@@ -13,18 +13,6 @@
  *   specific language governing permissions and limitations under the License.
  * ---  END LICENSE_HEADER BLOCK  ---
 */
-
-{
-  "baseUrl": "http://localhost:3000",
-  "fixtureFolder": "spec/cypress/fixtures",
-  "integrationFolder": "spec/cypress/integration",
-  "pluginsFile": "spec/cypress/plugins/index.js",
-  "supportFile": "spec/cypress/support/index.js",
-  "env": {
-    "USERS_ADMINISTRATOR_EMAIL": "administrator@example.com",
-    "USERS_ADMINISTRATOR_PASSWORD": "password",
-    "USERS_USER_EMAIL": "user@example.com",
-    "USERS_USER_PASSWORD": "password",
-    "MEDIA_OBJECT_ID": "123456789"
-  }
-}
+var embedRequireContext = require.context("components/embeds", false)
+var ReactRailsUJS = require("react_ujs")
+ReactRailsUJS.useContext(embedRequireContext)

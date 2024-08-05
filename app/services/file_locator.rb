@@ -24,7 +24,7 @@ class FileLocator
     def initialize(uri)
       uri = Addressable::URI.parse(uri)
       @bucket = Addressable::URI.unencode(uri.host)
-      @key = Addressable::URI.unencode(ActiveEncode.sanitize_uri(uri)).sub(%r(^/*(.+)/*$),'\1')
+      @key = Addressable::URI.unencode(ActiveEncode.sanitize_uri(uri)).sub(%r(^/*(.+)/*$), '\1')
     end
 
     def object
@@ -37,6 +37,12 @@ class FileLocator
       @local_file
     ensure
       @local_file.close
+    end
+
+    def download_url
+      download_object = Avalon::Configuration.construct_s3_download_object.call(bucket, key, object)
+      # Presigned URL is set to expire in 1 hour.
+      download_object.presigned_url(:get, expires_in: 3600, response_content_disposition: "attachment; filename=#{File.basename(key)}")
     end
   end
 

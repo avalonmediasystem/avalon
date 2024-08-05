@@ -56,11 +56,21 @@ describe IiifCanvasPresenter do
       it 'has format' do
         expect(subject.format).to eq "application/x-mpegURL"
       end
+
+      it 'has height and width' do
+        expect(subject.width).to eq 1280
+        expect(subject.height).to eq 40
+      end
     end
 
     context 'when video file' do
       it 'has format' do
         expect(subject.format).to eq "application/x-mpegURL"
+      end
+
+      it 'has height and width' do
+        expect(subject.width).to eq 1024
+        expect(subject.height).to eq 768
       end
     end
   end
@@ -185,6 +195,11 @@ describe IiifCanvasPresenter do
       it 'has label' do
         expect(subject.label).to eq I18n.t('errors.missing_derivatives_error') % [Settings.email.support, Settings.email.support]
       end
+
+      it 'has height and width' do
+        expect(subject.width).to eq 1280
+        expect(subject.height).to eq 720
+      end
     end
 
     context 'when master file is processing' do
@@ -201,13 +216,18 @@ describe IiifCanvasPresenter do
       it 'has label' do
         expect(subject.label).to eq I18n.t('media_object.conversion_msg')
       end
+
+      it 'has height and width' do
+        expect(subject.width).to eq 1280
+        expect(subject.height).to eq 720
+      end
     end
   end
 
   describe 'Supplemental file handling' do
     let(:master_file) { FactoryBot.create(:master_file, :with_waveform, supplemental_files_json: supplemental_files_json, media_object: media_object, derivatives: [derivative]) }
     let(:supplemental_file) { FactoryBot.create(:supplemental_file) }
-    let(:transcript_file) { FactoryBot.create(:supplemental_file, :with_transcript_tag) }
+    let(:transcript_file) { FactoryBot.create(:supplemental_file, :with_transcript_tag, :with_transcript_file) }
     let(:caption_file) { FactoryBot.create(:supplemental_file, :with_caption_file, :with_caption_tag) }
     let(:supplemental_files) { [supplemental_file, transcript_file, caption_file] }
     let(:supplemental_files_json) { supplemental_files.map(&:to_global_id).map(&:to_s).to_s }
@@ -215,14 +235,14 @@ describe IiifCanvasPresenter do
     describe '#sequence_rendering' do
       subject { presenter.sequence_rendering }
 
-      it 'includes supplemental files' do
+      it 'includes supplemental files and captions' do
         expect(subject.any? { |rendering| rendering["@id"] =~ /supplemental_files\/#{supplemental_file.id}/ }).to eq true
+        expect(subject.any? { |rendering| rendering["@id"] =~ /supplemental_files\/#{caption_file.id}/ }).to eq true
       end
 
-      it 'does not include waveform, transcripts, or captions' do
+      it 'does not include waveform or transcripts' do
         expect(subject.any? { |rendering| rendering["label"]["en"] == ["waveform.json"] }).to eq false
         expect(subject.any? { |rendering| rendering["@id"] =~ /supplemental_files\/#{transcript_file.id}/ }).to eq false
-        expect(subject.any? { |rendering| rendering["@id"] =~ /supplemental_files\/#{caption_file.id}/ }).to eq false
       end
     end
 
@@ -269,13 +289,19 @@ describe IiifCanvasPresenter do
         expect(subject.any? { |content| content.body_id =~ /master_files\/#{master_file.id}\/captions/ }).to eq false
       end
 
-      context 'srt captions' do
+      context 'srt files' do
         let(:srt_caption_file) { FactoryBot.create(:supplemental_file, :with_caption_srt_file, :with_caption_tag) }
-        let(:supplemental_files) { [supplemental_file, transcript_file, caption_file, srt_caption_file] }
-        it 'sets format to "text/vtt"' do
+        let(:srt_transcript_file) { FactoryBot.create(:supplemental_file, :with_caption_srt_file, :with_transcript_tag) }
+        let(:supplemental_files) { [transcript_file, caption_file, srt_caption_file, srt_transcript_file] }
+        it 'sets caption format to "text/vtt"' do
           captions = subject.select { |s| s.body_id.include?('captions') }
           expect(captions.none? { |content| content.format == 'text/srt' }).to eq true
           expect(captions.all? { |content| content.format == 'text/vtt' }).to eq true
+        end
+        it 'sets other formats to the original file content_type' do
+          supplemental_files = subject.reject { |s| s.body_id.include?('captions') }
+          expect(supplemental_files[0].format).to eq transcript_file.file.content_type
+          expect(supplemental_files[1].format).to eq srt_transcript_file.file.content_type
         end
       end
 
@@ -292,10 +318,26 @@ describe IiifCanvasPresenter do
       end
 
       context 'machine generated transcript' do
-        let(:transcript_file) { FactoryBot.create(:supplemental_file, tags: ['transcript', 'machine_generated']) }
+        let(:transcript_file) { FactoryBot.create(:supplemental_file, :with_transcript_file, tags: ['transcript', 'machine_generated']) }
 
         it "adds '(machine generated)' to the label" do
           expect(subject.any? { |content| content.label['eng'][0] =~ /#{transcript_file.label} \(machine generated\)/ }).to eq true
+        end
+      end
+
+      context 'caption being treated as a transcript' do
+        let(:caption_file) { FactoryBot.create(:supplemental_file, :with_caption_file, tags: ['caption', 'transcript']) }
+        let(:srt_caption_file) { FactoryBot.create(:supplemental_file, :with_caption_srt_file, tags: ['caption', 'transcript']) }
+        let(:supplemental_files) { [caption_file, srt_caption_file] }
+
+        it 'returns a caption entry and a transcript entry with proper formats' do
+          captions = subject.select { |s| s.body_id.include?('captions') }
+          transcripts = subject.select { |s| s.body_id.include?('transcripts') }
+          expect(captions.count).to eq 2
+          expect(transcripts.count).to eq 2
+          expect(captions.all? { |content| content.format == 'text/vtt' }).to eq true
+          expect(transcripts.any? { |content| content.format == 'text/vtt' }).to eq true
+          expect(transcripts.any? { |content| content.format == 'text/srt' }).to eq true
         end
       end
     end
@@ -304,7 +346,7 @@ describe IiifCanvasPresenter do
   describe '#see_also' do
     let(:master_file) { FactoryBot.build(:master_file, :with_waveform, supplemental_files_json: supplemental_files_json, media_object: media_object, derivatives: [derivative]) }
     let(:supplemental_file) { FactoryBot.create(:supplemental_file) }
-    let(:transcript_file) { FactoryBot.create(:supplemental_file, :with_transcript_tag) }
+    let(:transcript_file) { FactoryBot.create(:supplemental_file, :with_transcript_tag, :with_transcript_file) }
     let(:caption_file) { FactoryBot.create(:supplemental_file, :with_caption_file, tags: ['caption', 'machine_generated']) }
     let(:supplemental_files) { [supplemental_file, transcript_file, caption_file] }
     let(:supplemental_files_json) { supplemental_files.map(&:to_global_id).map(&:to_s).to_s }
@@ -319,6 +361,15 @@ describe IiifCanvasPresenter do
       expect(subject.any? { |sa| sa["@id"] =~ /supplemental_files\/#{supplemental_file.id}/ }).to eq false
       expect(subject.any? { |sa| sa["@id"] =~ /supplemental_files\/#{transcript_file.id}/ }).to eq false
       expect(subject.any? { |sa| sa["@id"] =~ /supplemental_files\/#{caption_file.id}/ }).to eq false
+    end
+  end
+
+  describe '#service' do
+    subject { presenter.service }
+
+    it 'includes the content search service' do
+      expect(subject.any? { |content| content['@id'] =~ /master_files\/#{master_file.id}\/search/ }).to eq true
+      expect(subject.first["type"]).to eq 'SearchService2'
     end
   end
 end

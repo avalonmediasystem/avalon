@@ -5,7 +5,7 @@
     "@babel/plugin-proposal-object-rest-spread": "^7.20.7",
     "@babel/preset-react": "^7.0.0",
     "@babel/runtime": "7",
-    "@samvera/ramp": "https://github.com/samvera-labs/ramp.git#v3.1.3",
+    "@samvera/ramp": "^3.2.0",
     "babel-plugin-macros": "^3.1.0",
     "babel-plugin-transform-react-remove-prop-types": "^0.4.24",
     "buffer": "^6.0.3",
@@ -32,7 +32,7 @@
     "terser-webpack-plugin": "5",
     "url-search-params-polyfill": "^7.0.1",
     "util": "^0.12.5",
-    "video.js": "7.21.4",
+    "video.js": "^8.10.0",
     "webpack": "5",
     "webpack-assets-manifest": "5",
     "webpack-merge": "^5.9.0"
@@ -41,6 +41,7 @@
     "@babel/plugin-transform-runtime": "7",
     "@babel/preset-env": "7",
     "babel-loader": "8",
+    "cypress": "^13.7.1",
     "html-webpack-plugin": "^5.3.2",
     "prop-types": "^15.7.2",
     "webpack-cli": "4",
@@ -55,6 +56,8 @@
   },
   "scripts": {
     "start-collection-index": "webpack-dev-server --mode development --config config/webpack/collection_index.js --host 0.0.0.0",
-    "start-collection-view": "webpack-dev-server --mode development --config config/webpack/collection_view.js --host 0.0.0.0"
+    "start-collection-view": "webpack-dev-server --mode development --config config/webpack/collection_view.js --host 0.0.0.0",
+    "cypress:open": "cypress open -C spec/cypress/cypress.config.js",
+    "cypress:run": "cypress run -C spec/cypress/cypress.config.js"
   }
 }

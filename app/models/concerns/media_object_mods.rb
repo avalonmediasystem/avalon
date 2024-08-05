@@ -90,7 +90,7 @@ module MediaObjectMods
 
   # has_attributes :translated_title, datastream: :descMetadata, at: [:translated_title], multiple: true
   def translated_title
-    descMetadata.alternative_title
+    descMetadata.translated_title
   end
 
   def translated_title=(value)

@@ -85,6 +85,11 @@ describe IiifPlaylistCanvasPresenter do
       it 'handles item start and end time' do
         expect(subject.url).to include("t=#{playlist_item.start_time / 1000},#{playlist_item.end_time / 1000}")
       end
+
+      it 'has height and width' do
+        expect(subject.width).to eq 1280
+        expect(subject.height).to eq 40
+      end
     end
 
     context 'when video file' do
@@ -94,6 +99,11 @@ describe IiifPlaylistCanvasPresenter do
 
       it 'handles item start and end time' do
         expect(subject.url).to include("#t=#{playlist_item.start_time / 1000},#{playlist_item.end_time / 1000}")
+      end
+
+      it 'has height and width' do
+        expect(subject.width).to eq 1024
+        expect(subject.height).to eq 768
       end
     end
 

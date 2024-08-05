@@ -86,7 +86,7 @@ describe Avalon::Intercom do
       expect(response).to eq({ message: 'StandardError', status: 500 })
     end
     it "should respond with a link to the pushed object on target" do
-      media_object.ordered_master_files=[master_file_with_structure]
+      media_object.sections=[master_file_with_structure]
       media_object_hash = media_object.to_ingest_api_hash(false)
       media_object_hash.merge!(
         { 'collection_id' => 'cupcake_collection', 'import_bib_record' => true, 'publish' => false }

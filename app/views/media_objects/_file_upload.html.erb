@@ -91,6 +91,11 @@ Unless required by applicable law or agreed to in writing, software distributed
                         Move
                       </button>
                     </span>
+                    <% if Settings.derivative.allow_download && (current_ability.can? :download, section) %>
+                    <span>
+                      <%= link_to "Download", download_derivative_master_file_path(section.id), class: 'btn btn-sm btn-outline', target: '_self' %>
+                    </span>
+                    <% end %>
                     <span>
                       <button id="<%="edit_section_#{section.id}"%>" class="btn btn-sm btn-primary" onclick="return false;" data-toggle="collapse"
                               data-target="<%="#collapseExample#{section.id}"%>" data-section-id="<%= section.id %>" aria-expanded="false" aria-controls="collapseExample">
@@ -155,7 +160,9 @@ Unless required by applicable law or agreed to in writing, software distributed
                 <% end %>
                 <div class="section-files">
                    <!-- captions -->
-                   <%= render partial: "supplemental_files_upload", locals: { section: section, label: 'Captions', tag: 'caption' } %>
+                   <% if section.is_video? %>
+                     <%= render partial: "supplemental_files_upload", locals: { section: section, label: 'Captions', tag: 'caption' } %>
+                   <% end %>
                   <!-- transcripts -->
                   <%= render partial: "supplemental_files_upload", locals: { section: section, label: 'Transcripts', tag: 'transcript' } %>
                   <!-- supplemental files -->
@@ -171,7 +178,11 @@ Unless required by applicable law or agreed to in writing, software distributed
       <div class="row">
         <div class="col-sm-7">
           <!-- web-upload -->
-          <p class="muted">Upload through the web (files must not exceed <%= number_to_human_size MasterFile::MAXIMUM_UPLOAD_SIZE %>)</p>
+          <% if MasterFile::MAXIMUM_UPLOAD_SIZE.is_a? Numeric %>
+            <p class="muted">Upload through the web (files must not exceed <%= number_to_human_size MasterFile::MAXIMUM_UPLOAD_SIZE %>)</p>
+          <% else %>
+            <p class="muted">Upload through the web</p>
+          <% end %>
           <fieldset id='uploader'>
             <%= form_tag(master_files_path, :enctype=>"multipart/form-data", class: upload_form_classes, data: upload_form_data) do -%>
             <input type="hidden" name="container_id" value="<%= @media_object.id %>" />

@@ -49,6 +49,12 @@ FactoryBot.define do
         rights_statement { ['http://rightsstatements.org/vocab/InC-EDU/1.0/'] }
         terms_of_use { [ 'Terms of Use: Be kind. Rewind.' ] }
         series { [Faker::Lorem.word] }
+        sections { [] }
+        identifier { [Faker::Alphanumeric.alphanumeric(number: 8, min_alpha: 1, min_numeric: 1).downcase,
+                      Faker::Alphanumeric.alphanumeric(number: 8, min_alpha: 1, min_numeric: 1).upcase,
+                      Faker::Barcode.isbn] }
+        resource_type { ['moving image'] }
+        statement_of_responsibility { Faker::Lorem.word }
         # after(:create) do |mo|
         #   mo.update_datastream(:descMetadata, {
         #     note: {note[Faker::Lorem.paragraph],
@@ -59,15 +65,20 @@ FactoryBot.define do
         #   })
         #  mo.save
         # end
+
+        factory :all_fields_media_object do
+          uniform_title { [Faker::Lorem.sentence] }
+          alternative_title { [Faker::Lorem.sentence] }
+          translated_title { [Faker::Lorem.sentence] }
+          copyright_date { '2011' }
+        end
       end
     end
     trait :with_master_file do
       after(:create) do |mo|
         mf = FactoryBot.create(:master_file)
         mf.media_object = mo
-        mf.save
-        # mo.ordered_master_files += [mf]
-        mo.save
+        # Above line will cause a save of both the master file and parent media object
       end
     end
     trait :with_completed_workflow do

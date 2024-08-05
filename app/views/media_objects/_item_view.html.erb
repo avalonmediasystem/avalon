@@ -42,8 +42,8 @@ Unless required by applicable law or agreed to in writing, software distributed
     <%= react_component("MediaObjectRamp",
       {
         urls: { base_url: request.protocol + request.host_with_port, fullpath_url: request.fullpath },
-        master_files_count: @media_object.master_files.size,
-        has_structure: @media_object.master_files.any?{ |mf| mf.has_structuralMetadata? },
+        sections_count: @media_object.sections.size,
+        has_structure: @media_object.sections.any?{ |mf| mf.has_structuralMetadata? },
         title: { content: render('title') },
         share: { canShare: (will_partial_list_render? :share), content: lending_enabled?(@media_object) ? (render('share') if can_stream) : render('share') },
         timeline: { canCreate: (current_ability.can? :create, Timeline), content: lending_enabled?(@media_object) ? (render('timeline') if can_stream) : render('timeline') },
@@ -61,11 +61,20 @@ Unless required by applicable law or agreed to in writing, software distributed
     // When viewing video on smaller devices scroll to page content to fully
     // display the video player
     $(document).ready(function () {
-      const sectionIds = <%= @media_object.ordered_master_file_ids.to_json.html_safe %>;
+      const mediaObjectId = <%= @media_object.id.to_json.html_safe %>;
+      const sectionIds = <%= @media_object.section_ids.to_json.html_safe %>;
       const transcriptSections = <%= @media_object.sections_with_files(tag: 'transcript').to_json.html_safe %>;
-      let scrollInterval = setInterval(autoScroll, 500);
-      let timeCheck = setInterval(initTranscriptCheck, 500);
 
+      // Enable action buttons after derivative is loaded
+      setInterval(initActionButtons, 500);
+      function initActionButtons() {
+        let player = document.getElementById('iiif-media-player');
+        if (player) {
+          addActionButtonListeners(player, mediaObjectId, sectionIds);
+        }
+      } 
+
+      let scrollInterval = setInterval(autoScroll, 500);
       function autoScroll () {
         const isVideo = <%= @currentStream ? @currentStreamInfo[:is_video] : false %>;
         const player = document.getElementsByTagName('video');
@@ -81,6 +90,7 @@ Unless required by applicable law or agreed to in writing, software distributed
         }
       }
 
+      let timeCheck = setInterval(initTranscriptCheck, 500);
       function initTranscriptCheck() {
         let player = document.getElementById('iiif-media-player');
         if(player) {

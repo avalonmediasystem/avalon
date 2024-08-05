@@ -15,7 +15,7 @@ Unless required by applicable law or agreed to in writing, software distributed
 %>
 
 <div id="thumbnail-button" class="d-inline-block">
-  <button type="button" class="btn btn-outline text-nowrap" id="create-thumbnail-btn" data-toggle="modal" data-target="#thumbnailModal" disabled>
+  <button type="button" class="btn btn-outline text-nowrap" id="thumbnailBtn" data-toggle="modal" data-target="#thumbnailModal" disabled>
     Create Thumbnail
   </button>
 </div>
@@ -41,107 +41,3 @@ Unless required by applicable law or agreed to in writing, software distributed
     </div>
   </div>
 </div>
-
-<% content_for :page_scripts do %>
-<script>
-  $(document).ready(function() {
-    const sectionIds = <%= @media_object.ordered_master_file_ids.to_json.html_safe %>;
-    let baseUrl = ''
-    let offset = ''
-    let timeCheck = setInterval(enableCreateThumbnail, 500);
-
-    function handleCreateThumbnailModalShow() {
-      let currentPlayer = document.getElementById('iiif-media-player');
-      let $imgPolaroid = document.getElementById('img-polaroid');
-      offset = currentPlayer.player.currentTime();
-
-      canvasIndex = parseInt(currentPlayer.dataset.canvasindex);
-      const sectionId = sectionIds[canvasIndex];
-      baseUrl = '/master_files/' + sectionId;
-
-      if ($imgPolaroid) {
-        let src = baseUrl + '/poster?offset=' + offset + '&preview=true';
-
-        // Display a preview of thumbnail to user
-        $imgPolaroid.setAttribute('src', src);
-        $($imgPolaroid).fadeIn('slow');
-      }
-    };
-
-    function handleUpdateThumbnail() {
-      let currentPlayer = document.getElementById('iiif-media-player');
-      canvasIndex = parseInt(currentPlayer.dataset.canvasindex);
-      const sectionId = sectionIds[canvasIndex];
-      baseUrl = '/master_files/' + sectionId;
-      offset = currentPlayer.player.currentTime();
-
-      const modalBody = document.getElementsByClassName('modal-body')[0];
-      // Put in a loading spinner and disable buttons to prevent double clicks
-      modalBody.classList.add('spinner');
-      $('#thumbnailModal')
-        .find('button')
-        .attr({ disabled: true });
-
-      $.ajax({
-        url: baseUrl + '/still',
-        type: 'POST',
-        data: {
-          offset: offset
-        }
-      })
-        .done(response => {
-          $('#thumbnailModal').modal('hide');
-        })
-        .fail(error => {
-          console.log(error);
-        })
-        .always(() => {
-          modalBody.classList.remove('spinner');
-          $('#thumbnailModal')
-            .find('button')
-            .attr({ disabled: false });
-        });
-    };
-
-    function enableCreateThumbnail() {
-      let player = document.getElementById('iiif-media-player');
-
-      if (player && player.player != undefined) {
-        player.player.on('loadedmetadata', () => {
-          let thumbnailBtn = document.getElementById('create-thumbnail-btn');
-          // Leave 'Create Thumbnail' button disabled when item is audio
-          if (thumbnailBtn && !player.player.isAudio()) {
-            thumbnailBtn.disabled = false;
-          }
-        });
-        /*
-          Browsers on MacOS sometimes miss the 'loadedmetadata' event resulting in a disabled add to playlist button indefinitely.
-          This timeout enables the add to playlist button, when this happens. It checks the button's state and enables it as needed.
-          Additional check for player's readyState ensures the button is enabled only when player is ready after the timeout.
-        */
-        setTimeout(() => {
-          let thumbnailBtn = document.getElementById('create-thumbnail-btn');
-          // Leave 'Create Thumbnail' button disabled when item is audio
-          if (thumbnailBtn && thumbnailBtn.disabled && player.player?.readyState() === 4 && !player.player.isAudio()) {
-              thumbnailBtn.disabled = false;
-          }
-        }, 100);
-
-        /* 
-          Disable 'Create Thumbnail' button on player dispose, so that it can be enabled again or keep disabled on the next section load
-          based on the player status.      
-        */
-        player.player.on('dispose', () => {
-          let thumbnailBtn = document.getElementById('create-thumbnail-btn');
-          if (thumbnailBtn) {
-            thumbnailBtn.disabled = true;
-          }
-        });
-      }
-  
-      document.getElementById('create-thumbnail-btn').addEventListener('click', handleCreateThumbnailModalShow);
-      document.getElementById('create-thumbnail-submit-button').addEventListener('click', handleUpdateThumbnail);
-    };
-  });
-</script>
-<% end %>

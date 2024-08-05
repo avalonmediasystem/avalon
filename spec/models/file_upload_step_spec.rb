@@ -16,8 +16,8 @@ require 'rails_helper'
 
 describe FileUploadStep do
   describe '#update_master_files' do
-    let!(:master_file) {FactoryBot.create(:master_file, title: 'foo')}
-    let!(:media_object) {FactoryBot.create(:media_object, master_files: [master_file])}
+    let(:master_file) {FactoryBot.create(:master_file, title: 'foo')}
+    let(:media_object) {FactoryBot.create(:media_object, sections: [master_file])}
     it 'should not regenerate a section permalink when the title is changed' do
       step_context = {media_object: media_object, master_files: {master_file.id => {title: 'new title'}}}
       expect{FileUploadStep.new.update_master_files(step_context)}.to_not change{master_file.permalink}

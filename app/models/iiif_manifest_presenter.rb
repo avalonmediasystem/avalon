@@ -20,16 +20,16 @@ class IiifManifestPresenter
   IIIF_ALLOWED_TAGS = ['a', 'b', 'br', 'i', 'img', 'p', 'small', 'span', 'sub', 'sup'].freeze
   IIIF_ALLOWED_ATTRIBUTES = ['href', 'src', 'alt'].freeze
 
-  attr_reader :media_object, :master_files, :lending_enabled
+  attr_reader :media_object, :sections, :lending_enabled
 
   def initialize(media_object:, master_files:, lending_enabled: false)
     @media_object = media_object
-    @master_files = master_files
+    @sections = master_files
     @lending_enabled = lending_enabled
   end
 
   def file_set_presenters
-    master_files
+    sections
   end
 
   def work_presenters
@@ -59,7 +59,7 @@ class IiifManifestPresenter
   def ranges
     [
       IiifManifestRange.new(
-        label: { '@none'.to_sym => media_object.title },
+        label: { 'none' => [media_object.title] },
         items: file_set_presenters.collect(&:range)
       )
     ]
@@ -107,9 +107,14 @@ class IiifManifestPresenter
 
   def display_other_identifiers(media_object)
     # bibliographic_id has form [:type,"value"], other_identifier has form [[:type,"value],[:type,"value"],...]
-    ids = media_object.bibliographic_id.present? ? [media_object.bibliographic_id] : []
-    ids += Array(media_object.other_identifier)
+    ids = Array(media_object.other_identifier) - [media_object.bibliographic_id]
+    return nil unless ids.present?
     ids.uniq.collect { |i| "#{ModsDocument::IDENTIFIER_TYPES[i[:source]]}: #{i[:id]}" }
+  end
+
+  def display_bibliographic_id(media_object)
+    return nil unless media_object.bibliographic_id.present?
+    "#{ModsDocument::IDENTIFIER_TYPES[media_object.bibliographic_id[:source]]}: #{media_object.bibliographic_id[:id]}"
   end
 
   def note_fields(media_object)
@@ -197,12 +202,13 @@ class IiifManifestPresenter
       metadata_field('Lending Period', display_lending_period(media_object))
     ]
     fields += note_fields(media_object)
+    fields += [metadata_field('Bibliographic ID', display_bibliographic_id(media_object))]
     fields += [metadata_field('Other Identifier', display_other_identifiers(media_object))]
     fields
   end
 
   def thumbnail_url
-    master_file_id = media_object.ordered_master_file_ids.try :first
+    master_file_id = media_object.section_ids.try :first
 
     video_count = media_object.avalon_resource_type.map(&:titleize)&.count { |m| m.start_with?('moving image'.titleize) } || 0
     audio_count = media_object.avalon_resource_type.map(&:titleize)&.count { |m| m.start_with?('sound recording'.titleize) } || 0

@@ -43,7 +43,7 @@ class IiifPlaylistManifestPresenter
   def ranges
     [
       IiifManifestRange.new(
-        label: { '@none'.to_sym => playlist.title },
+        label: { "none" => [playlist.title] },
         items: file_set_presenters.collect(&:range)
       )
     ]

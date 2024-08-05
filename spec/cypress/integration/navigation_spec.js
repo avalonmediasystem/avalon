@@ -72,9 +72,5 @@ context('Navigations', () => {
   })
 
   // Search - is able to enter keyword and perform search
-  it('.search()', () => {
-		cy.visit('/')
-		cy.get('#searchField').type('lunchroom').should('have.value', 'lunchroom') // Only yield inputs within form
-		cy.get('#global-search-submit').click()
-  })
+  
 })

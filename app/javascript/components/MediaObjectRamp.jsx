@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2023, The Trustees of Indiana University and Northwestern
+ * Copyright 2011-2024, The Trustees of Indiana University and Northwestern
  *   University.  Licensed under the Apache License, Version 2.0 (the "License");
  *   you may not use this file except in compliance with the License.
  *
@@ -40,7 +40,7 @@ const ExpandCollapseArrow = () => {
 
 const Ramp = ({
   urls,
-  master_files_count,
+  sections_count,
   has_structure,
   title,
   share,
@@ -153,9 +153,9 @@ const Ramp = ({
               </React.Fragment>
               )
             : (<React.Fragment>
-              {master_files_count > 0 &&
+              {sections_count > 0 &&
                 <React.Fragment>
-                  <MediaPlayer enableFileDownload={false} />
+                  <MediaPlayer enableFileDownload={false} enablePlaybackRate={true} />
                   <div className="ramp--rails-title">
                     {<div className="object-title" dangerouslySetInnerHTML={{ __html: title.content }} />}
                   </div>
@@ -217,7 +217,7 @@ const Ramp = ({
                           ref={expandCollapseBtnRef}
                         >
                           <ExpandCollapseArrow />
-                          {isClosed ? ' Expand' : ' Close'} {master_files_count > 1 ? `${master_files_count} Sections` : 'Section'}
+                          {isClosed ? ' Expand' : ' Close'} {sections_count > 1 ? `${sections_count} Sections` : 'Section'}
                         </button>
                       </Col>
                     }
@@ -244,13 +244,13 @@ const Ramp = ({
             )
           }
         </Col>
-        <Col sm={(master_files_count == 0) ? 12 : 4} className="ramp--tabs-panel">
+        <Col sm={(sections_count == 0) ? 12 : 4} className="ramp--tabs-panel">
           {cdl.enabled && <div dangerouslySetInnerHTML={{ __html: cdl.destroy }} />}
           <Tabs>
             <Tab eventKey="details" title="Details">
               <MetadataDisplay showHeading={false} displayTitle={false} />
             </Tab>
-            {(cdl.can_stream && master_files_count != 0 && has_transcripts) &&
+            {(cdl.can_stream && sections_count != 0 && has_transcripts) &&
               <Tab eventKey="transcripts" title="Transcripts" className="ramp--transcripts_tab">
                 <Transcript
                   playerID="iiif-media-player"

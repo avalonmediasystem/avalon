@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2023, The Trustees of Indiana University and Northwestern
+ * Copyright 2011-2024, The Trustees of Indiana University and Northwestern
  *   University.  Licensed under the Apache License, Version 2.0 (the "License");
  *   you may not use this file except in compliance with the License.
  *
@@ -44,14 +44,19 @@ const Ramp = ({
   playlist_item_ids,
   token,
   share,
-  comment_tag
+  comment_label,
+  comment,
+  tags
 }) => {
   const [manifestUrl, setManifestUrl] = React.useState('');
   const [activeItemTitle, setActiveItemTitle] = React.useState();
   const [activeItemSummary, setActiveItemSummary] = React.useState();
   const [startCanvasId, setStartCanvasId] = React.useState();
+  const [expanded, setExpanded] = React.useState(false);
+  const [description, setDescription] = React.useState();
 
   let interval;
+  let descriptionCheck;
 
   const USER_AGENT = window.navigator.userAgent;
   const IS_MOBILE = (/Mobi/i).test(USER_AGENT);
@@ -61,19 +66,25 @@ const Ramp = ({
     let url = `${base_url}/playlists/${playlist_id}/manifest.json`;
     if (token) url += `?token=${token}`;
 
-    let [fullpath, position] = fullpath_url.split('?position=');
-    let start_canvas = playlist_item_ids[position - 1]
+    let [_, position] = fullpath_url.split('?position=');
+    let start_canvas = playlist_item_ids[position - 1];
     setStartCanvasId(
       start_canvas && start_canvas != undefined
-      ? `${base_url}/playlists/${playlist_id}/manifest/canvas/${start_canvas}`
-      : undefined
+        ? `${base_url}/playlists/${playlist_id}/manifest/canvas/${start_canvas}`
+        : undefined
     );
     setManifestUrl(url);
 
     interval = setInterval(addPlayerEventListeners, 500);
+    /**
+     * The passed in description is not immediately available for some reason.
+     * Use an interval to wait and set initial description.
+     */
+    descriptionCheck = setInterval(prepInitialDescription, 100);
 
     // Clear interval upon component unmounting
     return () => clearInterval(interval);
+    return () => clearInterval(descriptionCheck);
   }, []);
 
   /**
@@ -94,43 +105,94 @@ const Ramp = ({
     }
   };
 
+  const expandBtn = {
+    paddingLeft: '2px',
+    cursor: 'pointer'
+  };
+
+  const wordCount = 32;
+  const words = comment ? comment.split(' ') : [];
+
+  function prepInitialDescription() {
+    if (words !== undefined && words.length > 0) {
+      clearInterval(descriptionCheck);
+      let desc = words.length > wordCount
+        ? `${words.slice(0, wordCount).join(' ')}...`
+        : words.join(' ');
+
+      setDescription(desc);
+    } else if (words.length === 0) {
+      clearInterval(descriptionCheck);
+    }
+  }
+
+  const handleDescriptionMoreLessClick = () => {
+    setDescription(
+      expanded ? `${words.slice(0, wordCount).join(' ')}...` : words.join(' ')
+    );
+    setExpanded(!expanded);
+  };
+
+  // Update scrolling indicators when end of scrolling has been reached
+  const handleScrollableDescription = (e) => {
+    let elem = e.target;
+    const scrollMsg = elem.nextSibling;
+    const structureEnd = Math.abs(elem.scrollHeight - (elem.scrollTop + elem.clientHeight)) <= 1;
+
+    if (scrollMsg && structureEnd && scrollMsg.classList.contains('scrollable')) {
+      scrollMsg.classList.remove('scrollable');
+    } else if (scrollMsg && !structureEnd && !scrollMsg.classList.contains('scrollable')) {
+      scrollMsg.classList.add('scrollable');
+    }
+  };
+
+  // Update scrolling indicators when page is resized
+  const resizeObserver = new ResizeObserver(entries => {
+    for (let entry of entries) {
+      handleScrollableDescription(entry);
+    }
+  });
+
   return (
     <IIIFPlayer manifestUrl={manifestUrl}
       customErrorMessage='This playlist is empty.'
+      emptyManifestMessage='This playlist currently has no playable items.'
       startCanvasId={startCanvasId}>
       <Row className="ramp--all-components ramp--playlist">
         <Col sm={8}>
-          <MediaPlayer enableFileDownload={false} />
-          <Card className="ramp--playlist-accordion">
-            <Card.Header>
-              <h4>{activeItemTitle}</h4>
-              {activeItemSummary && <div>{activeItemSummary}</div>}
-            </Card.Header>
-            <Card.Body>
-              <Accordion>
-                <Card>
-                  <Accordion.Collapse eventKey="0" id="markers">
-                    <Card.Body>
-                      <MarkersDisplay showHeading={false} />
-                    </Card.Body>
-                  </Accordion.Collapse>
-                  <Accordion.Toggle as={Card.Header} variant="link" eventKey="0" className="ramp--playlist-accordion-header">
-                    <ExpandCollapseArrow /> Markers
-                  </Accordion.Toggle>
-                </Card>
-                <Card>
-                  <Accordion.Collapse eventKey="1">
-                    <Card.Body className="p-3">
-                      <MetadataDisplay displayOnlyCanvasMetadata={true} showHeading={false} />
-                    </Card.Body>
-                  </Accordion.Collapse>
-                  <Accordion.Toggle as={Card.Header} variant="link" eventKey="1" className="ramp--playlist-accordion-header">
-                    <ExpandCollapseArrow /> Source Item Details
-                  </Accordion.Toggle>
-                </Card>
-              </Accordion>
-            </Card.Body>
-          </Card>
+          <MediaPlayer enableFileDownload={false} enablePlaybackRate={true} />
+          {playlist_item_ids?.length > 0 && (
+            <Card className="ramp--playlist-accordion">
+              <Card.Header>
+                <h4>{activeItemTitle}</h4>
+                {activeItemSummary && <div>{activeItemSummary}</div>}
+              </Card.Header>
+              <Card.Body>
+                <Accordion>
+                  <Card>
+                    <Accordion.Collapse eventKey="0" id="markers">
+                      <Card.Body>
+                        <MarkersDisplay showHeading={false} />
+                      </Card.Body>
+                    </Accordion.Collapse>
+                    <Accordion.Toggle as={Card.Header} variant="link" eventKey="0" className="ramp--playlist-accordion-header">
+                      <ExpandCollapseArrow /> Markers
+                    </Accordion.Toggle>
+                  </Card>
+                  <Card>
+                    <Accordion.Collapse eventKey="1">
+                      <Card.Body className="p-3">
+                        <MetadataDisplay displayOnlyCanvasMetadata={true} showHeading={false} />
+                      </Card.Body>
+                    </Accordion.Collapse>
+                    <Accordion.Toggle as={Card.Header} variant="link" eventKey="1" className="ramp--playlist-accordion-header">
+                      <ExpandCollapseArrow /> Source Item Details
+                    </Accordion.Toggle>
+                  </Card>
+                </Accordion>
+              </Card.Body>
+            </Card>
+          )}
         </Col>
         <Col sm={4} className={`ramp--playlist-items-column ${IS_MOBILE ? 'mobile-view' : ''}`}>
           <Row>
@@ -154,16 +216,45 @@ const Ramp = ({
               }
             </Col>
           </Row>
-          <Row className="mx-0">
+          <Row className="mx-0 mb-2">
             <Col md={12} lg={12} sm={12} className="px-0">
               <div className="collapse" id="shareList">
                 <div dangerouslySetInnerHTML={{ __html: share.content }} />
               </div>
             </Col>
           </Row>
-          <div dangerouslySetInnerHTML={{ __html: comment_tag.content }} />
-          <h4 className="mt-3">Playlist Items</h4>
-          <StructuredNavigation />
+          <Row className="ramp--playlist-desc-tags mx-1 mx-sm-0">
+            {comment && (
+              <div style={{ position: 'relative' }}>
+                <h4>{comment_label}</h4>
+                <div className='ramp--playlist-description' onScroll={handleScrollableDescription}>
+                  <span dangerouslySetInnerHTML={{ __html: description }} />
+                </div>
+                {expanded && (
+                  <div className='ramp--playlist-description-scroll scrollable'>
+                    Scroll to see more
+                  </div>
+                )}
+                {words.length > wordCount && (
+                  <a className="btn-link" style={expandBtn} onClick={handleDescriptionMoreLessClick}>
+                    Show {expanded ? 'less' : 'more'}
+                  </a>
+                )}
+              </div>
+            )}
+            {tags && (
+              <div className='ramp--playlist-tags'>
+                <h4>Tags</h4>
+                <div className="tag-button-wrapper" dangerouslySetInnerHTML={{ __html: tags }} />
+              </div>
+            )}
+          </Row>
+          {playlist_item_ids?.length > 0 && (
+            <React.Fragment>
+              <h4 className="mt-3 mx-1 mx-sm-0">Playlist Items</h4>
+              <StructuredNavigation />
+            </React.Fragment>
+          )}
         </Col>
       </Row>
     </IIIFPlayer>

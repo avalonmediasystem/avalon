@@ -47,7 +47,7 @@ context('Homepage', () => {
 		cy.contains('Email address')
 		cy.contains('Confirm email address')
 		cy.contains('Subject')
-		cy.contains('Comments')
+		cy.contains('Comment')
 		cy.contains('Submit comments')
   })
 
@@ -66,7 +66,7 @@ context('Homepage', () => {
   it('.describe_sign_in_page() - click on a DOM element', () => {
 		cy.visit('/')
 		cy.get('a[href*="/users/sign_in"] ').first().click()
-		cy.contains('Email / Password').click()
+		cy.contains('Username or email').click()
 		cy.contains('Username or email')
 		cy.contains('Password')
 		cy.contains('Sign up')
@@ -86,7 +86,7 @@ context('Homepage', () => {
   // is able to create new account
   it('.create_new_account()', () => {
 		cy.visit('/users/sign_up')
-		cy.get('form').within(() => {
+		cy.get('form.new_user').within(() => {
 			cy.get('#user_username').type('Sumith').should('have.value', 'Sumith') // Only yield inputs within form
 			cy.get('#user_email').type('sumith3@example.com').should('have.value', 'sumith3@example.com') // Only yield inputs within form
 			cy.get('#user_password').type('sumith3') // Only yield textareas within form

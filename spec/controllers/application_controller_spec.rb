@@ -80,6 +80,50 @@ describe ApplicationController do
       get :show, params: { id: 'deleted-id' }
       expect(response).to render_template("errors/deleted_pid")
     end
+
+    context 'raise_on_connection_error disabled' do
+      let(:request_context) { { body: "request_context" } }
+      let(:e) { { body: "error_response" } }
+
+      before :each do
+        allow(Settings.app_controller.solr_and_fedora).to receive(:raise_on_connection_error).and_return(false)
+      end
+
+      [RSolr::Error::ConnectionRefused, RSolr::Error::Timeout, Blacklight::Exceptions::ECONNREFUSED, Faraday::ConnectionFailed].each do |error_code|
+        it "rescues #{error_code} errors" do
+          raised_error = error_code == RSolr::Error::Timeout ? error_code.new(request_context, e) : error_code      
+          allow(controller).to receive(:show).and_raise(raised_error)
+          allow_any_instance_of(Exception).to receive(:backtrace).and_return(["Test trace"])
+          allow_any_instance_of(Exception).to receive(:message).and_return('Connection reset by peer')
+          expect(Rails.logger).to receive(:error).with(error_code.to_s + ': Connection reset by peer\nTest trace')
+          expect { get :show, params: { id: 'abc1234' } }.to_not raise_error
+        end
+
+        it "renders error template for #{error_code} errors" do
+          error_template = error_code == Faraday::ConnectionFailed ? 'errors/fedora_connection' : 'errors/solr_connection'
+          raised_error = error_code == RSolr::Error::Timeout ? error_code.new(request_context, e) : error_code
+          allow(controller).to receive(:show).and_raise(raised_error)
+          get :show, params: { id: 'abc1234' }
+          expect(response).to render_template(error_template)
+        end
+      end
+    end
+
+    context 'raise_on_connection_error enabled' do
+      let(:request_context) { { body: "request_context" } }
+      let(:e) { { body: "error_response" } }
+
+      [RSolr::Error::ConnectionRefused, RSolr::Error::Timeout, Blacklight::Exceptions::ECONNREFUSED, Faraday::ConnectionFailed].each do |error_code|
+        it "raises #{error_code} errors" do
+          raised_error = error_code == RSolr::Error::Timeout ? error_code.new(request_context, e) : error_code 
+          allow(Settings.app_controller.solr_and_fedora).to receive(:raise_on_connection_error).and_return(true)
+          allow(controller).to receive(:show).and_raise(raised_error)
+          allow_any_instance_of(Exception).to receive(:backtrace).and_return(["Test trace"])
+          allow_any_instance_of(Exception).to receive(:message).and_return('Connection reset by peer')
+          expect { get :show, params: { id: 'abc1234' } }.to raise_error(error_code, 'Connection reset by peer')
+        end
+      end
+    end
   end
 
   describe "rewrite_v4_ids" do

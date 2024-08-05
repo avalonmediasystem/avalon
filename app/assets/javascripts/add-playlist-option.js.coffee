@@ -32,7 +32,7 @@ $ ->
       has_new_opt = true
   
   if !has_new_opt
-    select_element.prepend(new Option(addnew))
+    select_element.append(new Option(addnew))
 
   getSearchTerm = () ->
     return $('span.select2-search--dropdown input').val()
@@ -103,7 +103,7 @@ $ ->
 
   $('#add-playlist-modal').on('hidden.bs.modal', () ->
     if (!add_success)
-      op = select_element.children()[1]
+      op = select_element.children()[0]
       if (op)
         newval = op.value
       else
