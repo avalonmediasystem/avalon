@@ -74,51 +74,61 @@ Unless required by applicable law or agreed to in writing, software distributed
             <legend>Special Access</legend>
             <%= label_tag "user" do %>
               <%= render partial: "modules/tooltip", locals: { form: form, field: 'user', tooltip: t("access_control.user"), options: {display_label: t("access_control.userlabel").html_safe} } %>
-              <div style='display:inline-block;position:relative'>
+              <div class="d-flex flex-column flex-sm-row mb-1">
                 <%= hidden_field_tag "user" %>
                 <%= text_field_tag "user_display", nil,
                       class: "typeahead from-model form-control",
-                      data: { model: 'user', target: "user" } %><br>
-                <%= text_field_tag "add_user_begin", nil, placeholder: 'Begin Date (yyyy-mm-dd)', class: 'form-control date-input access_date', autocomplete: 'off' %><br>
+                      data: { model: 'user', target: "user" } %>
+                <%= text_field_tag "add_user_begin", nil, placeholder: 'Begin Date (yyyy-mm-dd)', class: 'form-control date-input access_date', autocomplete: 'off' %>
                 <%= text_field_tag "add_user_end", nil, placeholder: 'End Date (yyyy-mm-dd)', class: 'form-control date-input access_date', autocomplete: 'off' %>
               </div>
-              <%= button_tag "Add", name: 'submit_add_user', class:'btn btn-outline', value: 'Add' %>
-              <%= button_tag "Remove", name: 'submit_remove_user', class:'btn btn-outline remove_access', value: 'Remove' %>
+              <div class="d-flex justify-content-start">
+                <%= button_tag "Add", name: 'submit_add_user', class:'btn btn-outline', value: 'Add' %>
+                <%= button_tag "Remove", name: 'submit_remove_user', class:'btn btn-outline remove_access', value: 'Remove' %>
+              </div>
             <% end %>
             <%= label_tag "group" do %>
               <%= render partial: "modules/tooltip", locals: { form: form, field: 'group', tooltip: t("access_control.group"), options: {display_label: t("access_control.grouplabel").html_safe} } %>
-              <%  dropdown_values = [Admin::Group.non_system_groups, 'name', 'name'] %>
-              <%  dropdown_values = options_from_collection_for_select(*dropdown_values) %>
-              <%= select_tag "group",
-                    dropdown_values,
-                    { include_blank: true, class: "form-control"}%><br>
-              <%= text_field_tag "add_group_begin", nil, placeholder: 'Begin Date (yyyy-mm-dd)', class: 'form-control date-input access_date', autocomplete: 'off' %><br>
-              <%= text_field_tag "add_group_end", nil, placeholder: 'End Date (yyyy-mm-dd)', class: 'form-control date-input access_date', autocomplete: 'off' %>
-              <%= button_tag "Add", name: 'submit_add_group', class:'btn btn-outline', value: 'Add'  %>
-              <%= button_tag "Remove", name: 'submit_remove_group', class:'btn btn-outline remove_access', value: 'Remove' %>
+              <div class="d-flex flex-column flex-sm-row mb-1">
+                <%  dropdown_values = [Admin::Group.non_system_groups, 'name', 'name'] %>
+                <%  dropdown_values = options_from_collection_for_select(*dropdown_values) %>
+                <%= select_tag "group",
+                      dropdown_values,
+                      { include_blank: true, class: "form-control"}%>
+                <%= text_field_tag "add_group_begin", nil, placeholder: 'Begin Date (yyyy-mm-dd)', class: 'form-control date-input access_date', autocomplete: 'off' %>
+                <%= text_field_tag "add_group_end", nil, placeholder: 'End Date (yyyy-mm-dd)', class: 'form-control date-input access_date', autocomplete: 'off' %>
+              </div>
+              <div class="d-flex justify-content-start">
+                <%= button_tag "Add", name: 'submit_add_group', class:'btn btn-outline', value: 'Add'  %>
+                <%= button_tag "Remove", name: 'submit_remove_group', class:'btn btn-outline remove_access', value: 'Remove' %>
+              </div>
             <% end %>
             <%= label_tag "class" do %>
               <%= render partial: "modules/tooltip", locals: { form: form, field: 'class', tooltip: t("access_control.class"), options: {display_label: t("access_control.classlabel").html_safe} } %>
-              <div style='display:inline-block;position:relative;'>
+              <div class="d-flex flex-column flex-sm-row mb-1">
                 <%= hidden_field_tag "class" %>
                 <%= text_field_tag "class_display", nil,
                       class: "typeahead from-model form-control",
-                      data: { model: 'externalGroup', target: "class" } %><br>
-                <%= text_field_tag "add_class_begin", nil, placeholder: 'Begin Date (yyyy-mm-dd)', class: 'form-control date-input access_date', autocomplete: 'off' %><br>
+                      data: { model: 'externalGroup', target: "class" } %>
+                <%= text_field_tag "add_class_begin", nil, placeholder: 'Begin Date (yyyy-mm-dd)', class: 'form-control date-input access_date', autocomplete: 'off' %>
                 <%= text_field_tag "add_class_end", nil, placeholder: 'End Date (yyyy-mm-dd)', class: 'form-control date-input access_date', autocomplete: 'off' %>
               </div>
-              <%= button_tag "Add", name: 'submit_add_class', class:'btn btn-outline', value: 'Add'  %>
-              <%= button_tag "Remove", name: 'submit_remove_class', class:'btn btn-outline remove_access', value: 'Remove' %>
+              <div class="d-flex justify-content-start">
+                <%= button_tag "Add", name: 'submit_add_class', class:'btn btn-outline', value: 'Add'  %>
+                <%= button_tag "Remove", name: 'submit_remove_class', class:'btn btn-outline remove_access', value: 'Remove' %>
+              </div>
             <% end %>
             <%= label_tag "ipaddress" do %>
               <%= render partial: "modules/tooltip", locals: { form: form, field: 'ipaddress', tooltip: t("access_control.ipaddress"), options: {display_label: t("access_control.ipaddresslabel").html_safe} } %>
-              <div style='display:inline-block;top:1px;position:relative;'>
-              <%= text_field_tag "ipaddress", nil, class: "form-control" %><br>
-                <%= text_field_tag "add_ipaddress_begin", nil, placeholder: 'Begin Date (yyyy-mm-dd)', class: 'form-control date-input access_date', autocomplete: 'off' %><br>
+              <div class="d-flex flex-column flex-sm-row mb-1">
+              <%= text_field_tag "ipaddress", nil, class: "form-control" %>
+                <%= text_field_tag "add_ipaddress_begin", nil, placeholder: 'Begin Date (yyyy-mm-dd)', class: 'form-control date-input access_date', autocomplete: 'off' %>
                 <%= text_field_tag "add_ipaddress_end", nil, placeholder: 'End Date (yyyy-mm-dd)', class: 'form-control date-input access_date', autocomplete: 'off' %>
               </div>
-              <%= button_tag "Add", name: 'submit_add_ipaddress', class:'btn btn-outline', value: 'Add'  %>
-              <%= button_tag "Remove", name: 'submit_remove_ipaddress', class:'btn btn-outline remove_access', value: 'Remove' %>
+              <div class="d-flex justify-content-start">
+                <%= button_tag "Add", name: 'submit_add_ipaddress', class:'btn btn-outline', value: 'Add'  %>
+                <%= button_tag "Remove", name: 'submit_remove_ipaddress', class:'btn btn-outline remove_access', value: 'Remove' %>
+              </div>
             <% end %>
           </fieldset>
           <div class="modal-footer">
