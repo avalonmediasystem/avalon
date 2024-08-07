@@ -13,7 +13,7 @@ module.exports = defineConfig({
     setupNodeEvents(on, config) {
       
       // implement node event listeners here
-      const environmentName = process.env.CYPRESS_ENV || 'local';
+      const environmentName = process.env.CYPRESS_ENV || 'dev';
       const environmentFilename = `cypress.env.${environmentName}.json`;
       const environmentPath = path.resolve(__dirname, environmentFilename);
 

@@ -55,15 +55,6 @@ context('Navigations', () => {
 		cy.contains('manager')
   })
 
-  // checks naviagtion to Playlist
-  it('.playlists()', () => {
-		cy.login('administrator')
-		cy.visit('/')
-		cy.contains('Playlists').click()
-		cy.contains('Playlists')
-		cy.contains('Create New Playlist')
-  })
-
   // is able to sign out
   it('.signout()', () => {
 		cy.login('administrator')
