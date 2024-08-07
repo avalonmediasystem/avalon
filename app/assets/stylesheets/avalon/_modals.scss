@@ -37,21 +37,25 @@
 
   .special-access label {
     display: block;
-
-    input,
-    select {
-      display: inline;
-      width: auto;
-      min-width: 300px;
-    }
-
     p {
       margin: 10px 0 5px 0;
     }
 
+    input,
+    select,
     .twitter-typeahead {
-      width: auto;
+      width: fit-content;
+      min-width: 375px;
     }
+
+    input.form-control.date-input {
+      width: fit-content;
+      min-width: 0;
+    }
+  }
+
+  .special-access .d-flex {
+    gap: 0.5em;
   }
 }
 
