@@ -373,6 +373,20 @@ describe MasterFilesController do
         expect(response.body).to eq('fake image content')
         expect(response.headers['Content-Type']).to eq('image/jpeg')
       end
+
+      context "video without thumbnail" do
+        subject(:mf) { FactoryBot.create(:master_file, :with_media_object) }
+        it "returns video_icon.png" do
+          expect(get :get_frame, params: { id: mf.id, type: 'thumbnail', size: 'bar' }).to redirect_to(ActionController::Base.helpers.asset_path('video_icon.png'))
+        end
+      end
+
+      context "audio" do
+        subject(:mf) { FactoryBot.create(:master_file, :audio, :with_media_object) }
+        it "returns audio_icon.png" do
+          expect(get :get_frame, params: { id: mf.id, type: 'thumbnail', size: 'bar' }).to redirect_to(ActionController::Base.helpers.asset_path('audio_icon.png'))
+        end
+      end
     end
 
     context 'read from solr' do
