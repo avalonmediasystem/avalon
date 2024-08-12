@@ -20,15 +20,11 @@ describe MasterFilesController do
 
   describe "#create" do
     let(:media_object) { FactoryBot.create(:media_object) }
-    # TODO: fill in the lets below with a legitimate values from mediainfo
-    # let(:mediainfo_video) {  }
-    # let(:mediainfo_audio) {  }
 
     before do
       # login_user media_object.collection.managers.first
       login_as :administrator
       disableCanCan!
-      # allow_any_instance_of(MasterFile).to receive(:mediainfo).and_return(mediainfo_output)
     end
 
     context "must provide a container id" do
@@ -125,9 +121,12 @@ describe MasterFilesController do
         request.env["HTTP_REFERER"] = "/"
 
         file = fixture_file_upload('/public-domain-book.txt', 'application/json')
+        image = fixture_file_upload('/collection_poster.jpg', 'image/jpeg')
 
         expect { post :create, params: { Filedata: [file], original: 'any', container_id: media_object.id } }.not_to change { MasterFile.count }
+        expect(flash[:error]).not_to be_nil
 
+        expect { post :create, params: { Filedata: [image], original: 'any', container_id: media_object.id } }.not_to change { MasterFile.count }
         expect(flash[:error]).not_to be_nil
       end
 

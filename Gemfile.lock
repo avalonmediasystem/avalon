@@ -8,12 +8,11 @@ GIT
 
 GIT
   remote: https://github.com/avalonmediasystem/avalon-about.git
-  revision: cc8d816b9751d6a04750399d9ef828a33e7ac7eb
-  tag: avalon-r7.7
+  revision: f3106d139d9092ffb0e9ca468fac9e85188ad339
+  branch: main
   specs:
     avalon-about (0.1.0)
       about_page
-      mediainfo
 
 GIT
   remote: https://github.com/avalonmediasystem/avalon-workflow.git
@@ -37,13 +36,6 @@ GIT
       ruby-box
       signet (~> 0.8)
       typhoeus
-
-GIT
-  remote: https://github.com/avalonmediasystem/mediainfo.git
-  revision: bea9479d33328c6b483ee19c008730f939d98266
-  tag: v0.7.1-avalon
-  specs:
-    mediainfo (0.7.1)
 
 GIT
   remote: https://github.com/avalonmediasystem/om.git
@@ -1050,7 +1042,6 @@ DEPENDENCIES
   lograge
   mail (> 2.8.0.1)
   marc
-  mediainfo!
   mysql2
   net-ldap
   net-smtp

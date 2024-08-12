@@ -15,6 +15,7 @@
 require 'fileutils'
 require 'hooks'
 require 'open-uri'
+require 'avalon/ffprobe'
 require 'avalon/file_resolver'
 require 'avalon/m3u8_reader'
 
@@ -564,10 +565,6 @@ class MasterFile < ActiveFedora::Base
 
   protected
 
-  def mediainfo
-    Mediainfo.new(FileLocator.new(file_location).location, headers: @auth_header)
-  end
-
   def find_frame_source(options={})
     options[:offset] ||= 2000
 
@@ -722,33 +719,33 @@ class MasterFile < ActiveFedora::Base
   end
 
   def reloadTechnicalMetadata!
-    #Reset mediainfo
-    @mediainfo = mediainfo
+    # Reset ffprobe
+    @ffprobe = Avalon::FFprobe.new(FileLocator.new(file_location).location)
 
     # Formats like MP4 can be caught as both audio and video
     # so the case statement flows in the preferred order
-    self.file_format = if @mediainfo.video?
+    self.file_format = if @ffprobe.video?
                          'Moving image'
-                       elsif @mediainfo.audio?
+                       elsif @ffprobe.audio?
                          'Sound'
                        else
                          'Unknown'
                        end
 
     self.duration = begin
-      @mediainfo.duration.to_s
+      @ffprobe.duration.to_s
     rescue
       nil
     end
 
-    unless @mediainfo.video.streams.empty?
-      display_aspect_ratio_s = @mediainfo.video.streams.first.display_aspect_ratio
+    unless !@ffprobe.video?
+      display_aspect_ratio_s = @ffprobe.display_aspect_ratio
       if ':'.in? display_aspect_ratio_s
         self.display_aspect_ratio = display_aspect_ratio_s.split(/:/).collect(&:to_f).reduce(:/).to_s
       else
         self.display_aspect_ratio = display_aspect_ratio_s
       end
-      self.original_frame_size = @mediainfo.video.streams.first.frame_size
+      self.original_frame_size = @ffprobe.original_frame_size
     end
   end
 
