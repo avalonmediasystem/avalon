@@ -5,7 +5,7 @@ gem 'bootsnap', require: false
 gem 'listen'
 gem 'net-smtp', require: false
 gem 'psych', '< 4'
-gem 'rails', '~>7.0.8'
+gem 'rails', '~>7.2'
 gem 'sprockets', '~>3.7.2'
 #gem 'sprockets-rails', require: 'sprockets/railtie'
 gem 'sqlite3'
@@ -29,11 +29,11 @@ gem 'terser'
 gem 'shakapacker'
 
 # Core Samvera
-gem 'active-fedora', '~> 14.0', '>= 14.0.1'
+gem 'active-fedora', git: 'https://github.com/samvera/active_fedora.git', branch: 'further_along_the_rails'
 gem 'active_fedora-datastreams', '~> 0.5'
-gem 'hydra-head', '~> 12.0'
+gem 'hydra-head', git: 'https://github.com/samvera/hydra-head.git', branch: 'af_version'
 gem 'ldp', '~> 1.1.0'
-gem 'noid-rails', '~> 3.1'
+gem 'noid-rails', git: 'https://github.com/samvera/noid-rails.git', branch: 'main'
 gem 'om', git: 'https://github.com/avalonmediasystem/om.git', tag: 'v3.2.0-ruby3'
 gem 'rdf-rdfxml'
 
@@ -45,7 +45,7 @@ gem 'rsolr', '~> 2.0'
 
 # Rails & Samvera Plugins
 gem 'about_page', git: 'https://github.com/avalonmediasystem/about_page.git', tag: 'avalon-r6.5'
-gem 'active_annotations', '~> 0.4'
+gem 'active_annotations', git: 'https://github.com/avalonmediasystem/active_annotations.git', branch: 'rails_upgrade'
 gem 'activerecord-session_store', '>= 2.0.0'
 gem 'acts_as_list'
 gem 'api-pagination'
@@ -57,7 +57,7 @@ gem 'iiif_manifest', '~> 1.6'
 gem 'rack-cors', require: 'rack/cors'
 gem 'rails_same_site_cookie'
 gem 'recaptcha', require: 'recaptcha/rails'
-gem 'samvera-persona', '~> 0.4', '>= 0.4.1'
+gem 'samvera-persona', git: 'https://github.com/samvera-labs/samvera-persona.git', branch: 'rails_7-2'
 gem 'speedy-af', '~> 0.3'
 
 # Avalon Components
@@ -76,7 +76,7 @@ gem "omniauth-saml", "~> 2.0"
 # Media Access & Transcoding
 gem 'active_encode', '>= 1.2.2'
 gem 'audio_waveform-ruby', '~> 1.0.7', require: 'audio_waveform'
-gem 'browse-everything', git: "https://github.com/avalonmediasystem/browse-everything.git", branch: 'v1.2-avalon'
+gem 'browse-everything', git: "https://github.com/avalonmediasystem/browse-everything.git", branch: 'v1.4-avalon'
 gem 'fastimage'
 gem 'mediainfo', git: "https://github.com/avalonmediasystem/mediainfo.git", tag: 'v0.7.1-avalon'
 gem 'rest-client', '~> 2.0'
