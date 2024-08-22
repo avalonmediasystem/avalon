@@ -70,25 +70,27 @@ Rails.application.config.to_prepare do
 end
 
 # Override set_entities to notify ActiveModel::Dirty dirty tracking that the permissions attribute is changing
-Hydra::AccessControls::Permissions.module_eval do
-  private
-      # @param [Symbol] permission either :discover, :read or :edit
-      # @param [Symbol] type either :person or :group
-      # @param [Array<String>] values Values to set
-      # @param [Array<String>] changeable Values we are allowed to change
-      def set_entities(permission, type, values, changeable)
-        (changeable - values).each do |entity|
-          for_destroy = search_by_type_and_mode(type, permission_to_uri(permission)).select { |p| p.agent_name == entity }
-          access_control.permissions_will_change!
-          permissions.delete(for_destroy)
-        end
+Rails.application.config.to_prepare do
+  Hydra::AccessControls::Permissions.module_eval do
+    private
+        # @param [Symbol] permission either :discover, :read or :edit
+        # @param [Symbol] type either :person or :group
+        # @param [Array<String>] values Values to set
+        # @param [Array<String>] changeable Values we are allowed to change
+        def set_entities(permission, type, values, changeable)
+          (changeable - values).each do |entity|
+            for_destroy = search_by_type_and_mode(type, permission_to_uri(permission)).select { |p| p.agent_name == entity }
+            access_control.permissions_will_change!
+            permissions.delete(for_destroy)
+          end
 
-        values.each do |agent_name|
-          exists = search_by_type_and_mode(type, permission_to_uri(permission)).select { |p| p.agent_name == agent_name }
-          access_control.permissions_will_change!
-          permissions.build(name: agent_name, access: permission.to_s, type: type) unless exists.present?
+          values.each do |agent_name|
+            exists = search_by_type_and_mode(type, permission_to_uri(permission)).select { |p| p.agent_name == agent_name }
+            access_control.permissions_will_change!
+            permissions.build(name: agent_name, access: permission.to_s, type: type) unless exists.present?
+          end
         end
-      end
+  end
 end
 # End of overrides for AccessControl dirty tracking and autosaving
 
