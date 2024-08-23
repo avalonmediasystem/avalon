@@ -135,7 +135,7 @@ module BulkActionJobs
       documents.each do |id|
         media_object = MediaObject.find(id)
         supplemental_files = media_object.supplemental_files
-        DeleteChildFiles.perform_later(supplemental_files, nil)
+        DeleteChildFiles.perform_now(supplemental_files, nil)
 
         if media_object.destroy
           successes += [media_object]

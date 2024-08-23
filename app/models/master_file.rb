@@ -164,6 +164,7 @@ class MasterFile < ActiveFedora::Base
   after_save :update_stills_from_offset!, if: Proc.new { |mf| mf.previous_changes.include?("poster_offset") || mf.previous_changes.include?("thumbnail_offset") }
   before_destroy :stop_processing!
   before_destroy :update_parent!
+  before_destroy :remove_child_files
   define_hooks :after_transcoding, :after_processing
   after_update_index { |mf| mf.media_object&.enqueue_long_indexing }
 
@@ -562,6 +563,12 @@ class MasterFile < ActiveFedora::Base
     ActiveEncodeJobs::CancelEncodeJob.perform_later(workflow_id, id) if workflow_id.present? && !finished_processing?
   end
 
+  # Delete does not trigger callbacks so override method to ensure deletion of child supplemental files
+  def delete
+    remove_child_files
+    super
+  end
+
   protected
 
   def mediainfo
@@ -790,6 +797,10 @@ class MasterFile < ActiveFedora::Base
     if !media_object.save
       logger.error "Failed when updating media object #{media_object.id} while destroying master file #{self.id}"
     end
+  end
+
+  def remove_child_files
+    BulkActionJobs::DeleteChildFiles.perform_later(supplemental_files, nil)
   end
 
   private
