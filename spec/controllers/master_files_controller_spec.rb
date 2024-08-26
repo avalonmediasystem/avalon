@@ -234,7 +234,6 @@ describe MasterFilesController do
       let(:supplemental_file) { FactoryBot.create(:supplemental_file) }
 
       around(:example) do |example|
-        # In Rails 5.1+ this can be restricted to whitelist jobs allowed to be performed
         perform_enqueued_jobs { example.run }
       end
 
