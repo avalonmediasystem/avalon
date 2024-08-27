@@ -16,7 +16,15 @@ module Avalon
   class FFprobe
     # media_path should be the output of `FileLocator.new(file_location).location`
     def initialize(media_path)
-      @json_output = JSON.parse(`ffprobe -i "#{media_path}" -v quiet -show_format -show_streams -count_packets -of json`).deep_symbolize_keys
+      ffprobe = Settings&.ffprobe&.path || 'ffprobe'
+      raw_output = `#{ffprobe} -i "#{media_path}" -v quiet -show_format -show_streams -count_packets -of json`
+      # $? is a variable for the exit status of the last executed process. 
+      # Success == 0, any other value means the command failed in some way.
+      unless $?.exitstatus == 0
+        Rails.logger.error "File processing failed. Please ensure that FFprobe is installed and that the correct path is configured."
+        return
+      end
+      @json_output = JSON.parse(raw_output).deep_symbolize_keys
       @video_stream = @json_output[:streams].select { |stream| stream[:codec_type] == 'video' }.first
     end
 
@@ -35,6 +43,7 @@ module Avalon
     end
 
     def duration
+      return unless video? || audio?
       # ffprobe return duration as seconds. Existing Avalon logic expects milliseconds.
       (@json_output[:format][:duration].to_f * 1000).to_i
     end
