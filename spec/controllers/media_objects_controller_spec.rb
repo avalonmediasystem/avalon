@@ -1374,6 +1374,23 @@ describe MediaObjectsController, type: :controller do
       expect(flash[:notice]).to include('3 media objects')
       media_objects.each {|mo| expect(MediaObject.exists?(mo.id)).to be_falsey }
     end
+
+    it "should remove child supplemental files" do
+      supplemental_file = FactoryBot.create(:supplemental_file)
+      media_object = FactoryBot.create(:media_object, collection: collection, supplemental_files: [supplemental_file] )
+      expect(SupplementalFile.exists?(supplemental_file.id)).to be_truthy
+      delete :destroy, params: { id: media_object.id }
+      expect(SupplementalFile.exists?(supplemental_file.id)).to be_falsey
+    end
+
+    it "should remove section supplemental files" do
+      supplemental_file = FactoryBot.create(:supplemental_file)
+      media_object = FactoryBot.create(:media_object, collection: collection )
+      master_file = FactoryBot.create(:master_file, media_object: media_object, supplemental_files: [supplemental_file])
+      expect(SupplementalFile.exists?(supplemental_file.id)).to be_truthy
+      delete :destroy, params: { id: media_object.id }
+      expect(SupplementalFile.exists?(supplemental_file.id)).to be_falsey
+    end
   end
 
   describe "#confirm_remove" do
