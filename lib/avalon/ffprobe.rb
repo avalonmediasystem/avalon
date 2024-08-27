@@ -21,6 +21,7 @@ module Avalon
       # $? is a variable for the exit status of the last executed process. 
       # Success == 0, any other value means the command failed in some way.
       unless $?.exitstatus == 0
+        @json_output = {}
         Rails.logger.error "File processing failed. Please ensure that FFprobe is installed and that the correct path is configured."
         return
       end
@@ -39,7 +40,7 @@ module Avalon
     end
 
     def audio?
-      @json_output[:streams].any? { |stream| stream[:codec_type] == 'audio' }
+      @json_output[:streams]&.any? { |stream| stream[:codec_type] == 'audio' }
     end
 
     def duration

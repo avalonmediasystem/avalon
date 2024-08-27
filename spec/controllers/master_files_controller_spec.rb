@@ -139,6 +139,13 @@ describe MasterFilesController do
 
         expect(flash[:error]).to be_nil
       end
+
+      it "rejects when ffprobe is misconfigured" do
+        allow(Settings.ffprobe).to receive(:path).and_return('misconfigured/path')
+        file = fixture_file_upload('/jazz-performance.mp3', 'audio/mp3')
+        expect { post :create, params: { Filedata: [file], original: 'any', container_id: media_object.id } }.not_to change { MasterFile.count }
+        expect(flash[:error]).not_to be_nil
+      end
     end
 
     # rubocop:disable RSpec/ExampleLength
