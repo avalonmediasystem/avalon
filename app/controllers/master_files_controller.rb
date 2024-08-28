@@ -370,10 +370,10 @@ protected
   end
 
   def set_masterfile_proxy
-    if params[:id].blank? || SpeedyAF::Proxy::MasterFile.find(params[:id]).nil?
+    @master_file = SpeedyAF::Proxy::MasterFile.find(params[:id], load_reflections: true)
+    if params[:id].blank? || @master_file.nil?
       flash[:notice] = "MasterFile #{params[:id]} does not exist"
     end
-    @master_file = SpeedyAF::Proxy::MasterFile.find(params[:id])
   end
 
   # return deflated waveform content. deflate only if necessary
