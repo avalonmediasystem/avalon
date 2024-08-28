@@ -334,9 +334,10 @@ GEM
       deprecation (~> 1.0)
     bootsnap (1.18.4)
       msgpack (~> 1.2)
-    bootstrap (4.6.2.1)
+    bootstrap (4.6.2)
       autoprefixer-rails (>= 9.1.0)
       popper_js (>= 1.16.1, < 2)
+      sassc-rails (>= 2.0.0)
     bootstrap-toggle-rails (2.2.1.0)
     bootstrap_form (5.4.0)
       actionpack (>= 6.1)
@@ -882,6 +883,14 @@ GEM
       rexml
     rubyzip (1.3.0)
     sass (3.4.22)
+    sassc (2.4.0)
+      ffi (~> 1.9)
+    sassc-rails (2.1.2)
+      railties (>= 4.0.0)
+      sassc (>= 2.0)
+      sprockets (> 3.0)
+      sprockets-rails
+      tilt
     scanf (1.0.0)
     scrub_rb (1.0.1)
     securerandom (0.3.1)
@@ -940,6 +949,10 @@ GEM
     sprockets-es6 (0.9.2)
       babel-source (>= 5.8.11)
       babel-transpiler
+      sprockets (>= 3.0.0)
+    sprockets-rails (3.5.2)
+      actionpack (>= 6.1)
+      activesupport (>= 6.1)
       sprockets (>= 3.0.0)
     sqlite3 (2.0.4)
       mini_portile2 (~> 2.8.0)
@@ -1043,7 +1056,7 @@ DEPENDENCIES
   blacklight (~> 7.25)
   blacklight-access_controls (>= 6.0.1)
   bootsnap
-  bootstrap (~> 4.0)
+  bootstrap (= 4.6.2)
   bootstrap-toggle-rails
   bootstrap_form
   browse-everything!

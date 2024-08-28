@@ -13,7 +13,7 @@ gem 'sqlite3'
 gem 'mail', '> 2.8.0.1'
 
 # Assets
-gem 'bootstrap', '~> 4.0'
+gem 'bootstrap', '4.6.2'
 gem 'coffee-rails', '~> 5.0'
 gem "font-awesome-rails"
 gem 'jquery-datatables'
