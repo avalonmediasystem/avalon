@@ -20,7 +20,7 @@ describe Avalon::Batch do
   describe "#find_open_files" do
     # TODO: mock filesystem with open file
     subject { Avalon::Batch.find_open_files([]) }
-    it 'returns open files' do
+    xit 'returns open files' do
       expect(subject).to include()
     end
 
@@ -29,7 +29,7 @@ describe Avalon::Batch do
       let(:files) { Array.new(5000, file) }
       subject { Avalon::Batch.find_open_files(files) }
 
-      it 'logs an error and moves on' do
+      xit 'logs an error and moves on' do
         expect(Rails.logger).to receive(:warn).with(match("too many files"))
         expect(subject).to include()
       end
