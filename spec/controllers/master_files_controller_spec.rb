@@ -20,15 +20,11 @@ describe MasterFilesController do
 
   describe "#create" do
     let(:media_object) { FactoryBot.create(:media_object) }
-    # TODO: fill in the lets below with a legitimate values from mediainfo
-    # let(:mediainfo_video) {  }
-    # let(:mediainfo_audio) {  }
 
     before do
       # login_user media_object.collection.managers.first
       login_as :administrator
       disableCanCan!
-      # allow_any_instance_of(MasterFile).to receive(:mediainfo).and_return(mediainfo_output)
     end
 
     context "must provide a container id" do
@@ -125,9 +121,12 @@ describe MasterFilesController do
         request.env["HTTP_REFERER"] = "/"
 
         file = fixture_file_upload('/public-domain-book.txt', 'application/json')
+        image = fixture_file_upload('/collection_poster.jpg', 'image/jpeg')
 
         expect { post :create, params: { Filedata: [file], original: 'any', container_id: media_object.id } }.not_to change { MasterFile.count }
+        expect(flash[:error]).not_to be_nil
 
+        expect { post :create, params: { Filedata: [image], original: 'any', container_id: media_object.id } }.not_to change { MasterFile.count }
         expect(flash[:error]).not_to be_nil
       end
 
@@ -139,6 +138,13 @@ describe MasterFilesController do
         expect(master_file.file_format).to eq "Moving image"
 
         expect(flash[:error]).to be_nil
+      end
+
+      it "rejects when ffprobe is misconfigured" do
+        allow(Settings.ffprobe).to receive(:path).and_return('misconfigured/path')
+        file = fixture_file_upload('/jazz-performance.mp3', 'audio/mp3')
+        expect { post :create, params: { Filedata: [file], original: 'any', container_id: media_object.id } }.not_to change { MasterFile.count }
+        expect(flash[:error]).not_to be_nil
       end
     end
 

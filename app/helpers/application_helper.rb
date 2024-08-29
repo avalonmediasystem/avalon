@@ -139,8 +139,9 @@ module ApplicationHelper
     current_user.user_key if current_user
   end
 
-  # the mediainfo gem returns duration as milliseconds
-  # see attr_reader.rb line 48 in the mediainfo source
+  # We are converting FFprobe's duration output to milliseconds for
+  # uniformity with existing metadata and consequently leaving these
+  # conversion methods in place for now.
   def milliseconds_to_formatted_time(milliseconds, include_fractions = true)
     total_seconds = milliseconds / 1000
     hours = total_seconds / (60 * 60)
