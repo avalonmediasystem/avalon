@@ -96,7 +96,6 @@ $('.supplemental-file-form')
     isMachineGen
       ? $row.find('.fa-laptop').removeClass('d-none')
       : $row.find('.fa-laptop').addClass('d-none');
-    $row.find('.fa-laptop').removeClass('d-none');
     $row.find('.icon-success').removeClass('d-none');
     $row.find('.visible-inline').addClass('alert');
   })
