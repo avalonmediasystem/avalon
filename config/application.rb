@@ -19,7 +19,7 @@ module Avalon
     end
 
     # Initialize configuration defaults for originally generated Rails version.
-    config.load_defaults 6.0
+    config.load_defaults 7.2
 
     # Settings in config/environments/* take precedence over those specified here.
     # Application configuration should go into files in config/initializers
@@ -43,6 +43,14 @@ module Avalon
     config.active_job.queue_adapter = :sidekiq
 
     config.action_dispatch.default_headers = { 'X-Frame-Options' => 'ALLOWALL' }
+
+    # We have a number of serializers in place that have not previously had a :coder defined.
+    # Setting our global default to the old default :coder should maintain compatibility.
+    config.active_record.default_column_serializer = YAML
+
+    # Rails recommends having this set to false, especially in zeitwerk mode. However, that
+    # currently causes issues with the Samvera gems (hydra-head, Blacklight)
+    config.add_autoload_paths_to_load_path = true
 
     config.middleware.insert_before 0, Rack::Cors do
       allow do

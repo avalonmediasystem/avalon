@@ -67,10 +67,8 @@ end
 # Enable dirty tracking for the permissions attribute
 Rails.application.config.to_prepare do
   Hydra::AccessControl.define_attribute_methods :permissions
-end
 
 # Override set_entities to notify ActiveModel::Dirty dirty tracking that the permissions attribute is changing
-Rails.application.config.to_prepare do
   Hydra::AccessControls::Permissions.module_eval do
     private
         # @param [Symbol] permission either :discover, :read or :edit
