@@ -73,6 +73,8 @@ $('.supplemental-file-form')
   .on('ajax:success', (event, data, status, xhr) => {
     var $row = $(event.currentTarget.parentElement);
     const { masterfileId, fileId } = event.currentTarget.dataset;
+    // Get machine-generated checkbox input on form submission
+    var isMachineGen = $row.find(`input[id="machine_generated_${fileId}"]`)[0].checked;
 
     // Set the label to the new value
     var newLabel = $row
@@ -90,6 +92,10 @@ $('.supplemental-file-form')
 
     // Show flash message for success
     $row.find('.message-content').html('Successfully updated.');
+    // Show/hide icon based on the updated machine-generated form check
+    isMachineGen
+      ? $row.find('.fa-laptop').removeClass('d-none')
+      : $row.find('.fa-laptop').addClass('d-none');
     $row.find('.icon-success').removeClass('d-none');
     $row.find('.visible-inline').addClass('alert');
   })
