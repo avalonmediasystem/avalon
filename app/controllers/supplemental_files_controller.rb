@@ -87,7 +87,9 @@ class SupplementalFilesController < ApplicationController
         if Settings.supplemental_files.proxy
           send_data @supplemental_file.file.download, filename: @supplemental_file.file.filename.to_s, type: @supplemental_file.file.content_type, disposition: 'attachment'
         else
-          redirect_to rails_blob_path(@supplemental_file.file, disposition: "attachment")
+          # Rails 7.0 adds a config option to protect against "open redirects". We override
+          # that here in case the active storage db is not local.
+          redirect_to rails_blob_path(@supplemental_file.file, disposition: "attachment"), allow_other_host: true
         end
       }
       format.json { render json: @supplemental_file.as_json }

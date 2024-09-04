@@ -19,11 +19,16 @@ module Avalon
     end
 
     # Initialize configuration defaults for originally generated Rails version.
-    config.load_defaults 6.0
+    config.load_defaults 7.2
 
     # Settings in config/environments/* take precedence over those specified here.
     # Application configuration should go into files in config/initializers
     # -- all .rb files in that directory are automatically loaded.
+
+    # Please, add to the `ignore` list any other `lib` subdirectories that do
+    # not contain `.rb` files, or that should not be reloaded or eager loaded.
+    # Common ones are `templates`, `generators`, or `middleware`, for example.
+    # config.autoload_lib(ignore: %w[assets avalon capistrano tasks])
 
     # Set Time.zone default to the specified zone and make Active Record auto-convert to this zone.
     # Run "rake -D time" for a list of tasks for finding time zone names. Default is UTC.
@@ -38,6 +43,14 @@ module Avalon
     config.active_job.queue_adapter = :sidekiq
 
     config.action_dispatch.default_headers = { 'X-Frame-Options' => 'ALLOWALL' }
+
+    # We have a number of serializers in place that have not previously had a :coder defined.
+    # Setting our global default to the old default :coder should maintain compatibility.
+    config.active_record.default_column_serializer = YAML
+
+    # Rails recommends having this set to false, especially in zeitwerk mode. However, that
+    # currently causes issues with the Samvera gems (hydra-head, Blacklight)
+    config.add_autoload_paths_to_load_path = true
 
     config.middleware.insert_before 0, Rack::Cors do
       allow do
