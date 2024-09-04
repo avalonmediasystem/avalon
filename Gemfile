@@ -58,7 +58,7 @@ gem 'rack-cors', require: 'rack/cors'
 gem 'rails_same_site_cookie'
 gem 'recaptcha', require: 'recaptcha/rails'
 gem 'samvera-persona', git: 'https://github.com/samvera-labs/samvera-persona.git', branch: 'rails_7-2'
-gem 'speedy-af', '~> 0.3'
+gem 'speedy-af', git: 'https://github.com/samvera-labs/speedy_af.git', branch: 'empty_reflection'
 
 # Avalon Components
 gem 'avalon-workflow', git: "https://github.com/avalonmediasystem/avalon-workflow.git", tag: 'avalon-r6.5'

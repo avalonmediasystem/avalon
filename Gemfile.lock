@@ -69,7 +69,7 @@ GIT
 
 GIT
   remote: https://github.com/samvera-labs/samvera-persona.git
-  revision: 879fed8e7a3a86fb28eb1dba46bcf926a18dd330
+  revision: ce6ada95684fe1c5487e8ee5d698b8529c69bf75
   branch: rails_7-2
   specs:
     samvera-persona (0.4.1)
@@ -77,6 +77,14 @@ GIT
       devise_invitable (>= 1.7, < 3.0)
       paranoia (~> 3.0)
       pretender
+
+GIT
+  remote: https://github.com/samvera-labs/speedy_af.git
+  revision: 223abe9e2a7cdc68b033398bf69922523aeff47e
+  branch: empty_reflection
+  specs:
+    speedy-af (0.3.0)
+      activesupport (> 5.2)
 
 GIT
   remote: https://github.com/samvera/active_fedora.git
@@ -931,9 +939,6 @@ GEM
       nokogiri
       stomp
       xml-simple
-    speedy-af (0.3.0)
-      active-fedora (>= 11.0.0)
-      activesupport (> 5.2)
     sprockets (3.7.3)
       base64
       concurrent-ruby (~> 1.0)
@@ -1137,7 +1142,7 @@ DEPENDENCIES
   sidekiq-cron (~> 1.9)
   simplecov
   solr_wrapper (>= 0.16)
-  speedy-af (~> 0.3)
+  speedy-af!
   sprockets (~> 3.7.2)
   sprockets-es6
   sqlite3
