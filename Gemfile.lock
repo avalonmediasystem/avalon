@@ -69,7 +69,7 @@ GIT
 
 GIT
   remote: https://github.com/samvera-labs/samvera-persona.git
-  revision: 879fed8e7a3a86fb28eb1dba46bcf926a18dd330
+  revision: ce6ada95684fe1c5487e8ee5d698b8529c69bf75
   branch: rails_7-2
   specs:
     samvera-persona (0.4.1)
@@ -80,8 +80,8 @@ GIT
 
 GIT
   remote: https://github.com/samvera/active_fedora.git
-  revision: a0b1725328a624b3106a04dacbf524275b06dd7a
-  branch: further_along_the_rails
+  revision: 41df99e6077467fdd5e57e45d754500778140853
+  branch: rewording
   specs:
     active-fedora (14.0.1)
       active-triples (>= 0.11.0, < 2.0.0)

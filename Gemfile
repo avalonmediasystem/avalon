@@ -29,7 +29,7 @@ gem 'terser'
 gem 'shakapacker'
 
 # Core Samvera
-gem 'active-fedora', git: 'https://github.com/samvera/active_fedora.git', branch: 'further_along_the_rails'
+gem 'active-fedora', git: 'https://github.com/samvera/active_fedora.git', branch: 'rewording'
 gem 'active_fedora-datastreams', '~> 0.5'
 gem 'hydra-head', git: 'https://github.com/samvera/hydra-head.git', branch: 'af_version'
 gem 'ldp', '~> 1.1.0'
