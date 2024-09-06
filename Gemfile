@@ -33,7 +33,7 @@ gem 'active-fedora', git: 'https://github.com/samvera/active_fedora.git', branch
 gem 'active_fedora-datastreams', '~> 0.5'
 gem 'hydra-head', git: 'https://github.com/samvera/hydra-head.git', branch: 'af_version'
 gem 'ldp', '~> 1.1.0'
-gem 'noid-rails', git: 'https://github.com/samvera/noid-rails.git', branch: 'main'
+gem 'noid-rails', '~> 3.2'
 gem 'om', git: 'https://github.com/avalonmediasystem/om.git', tag: 'v3.2.0-ruby3'
 gem 'rdf-rdfxml'
 
