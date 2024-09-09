@@ -122,15 +122,6 @@ GIT
       hydra-core (= 12.1.0)
       rails (>= 6.1, < 8.0)
 
-GIT
-  remote: https://github.com/samvera/noid-rails.git
-  revision: 2ba44c844bc34a2bd78e8c492d75ed5e180669f6
-  branch: main
-  specs:
-    noid-rails (3.1.0)
-      actionpack (>= 5.0.0, < 8)
-      noid (~> 0.9)
-
 GEM
   remote: https://rubygems.org/
   specs:
@@ -640,6 +631,9 @@ GEM
     netrc (0.11.0)
     nio4r (2.7.3)
     noid (0.9.0)
+    noid-rails (3.2.0)
+      actionpack (>= 5.0.0, < 8)
+      noid (~> 0.9)
     nokogiri (1.16.7)
       mini_portile2 (~> 2.8.2)
       racc (~> 1.4)
@@ -1102,7 +1096,7 @@ DEPENDENCIES
   mysql2
   net-ldap
   net-smtp
-  noid-rails!
+  noid-rails (~> 3.2)
   okcomputer
   om!
   omniauth (~> 2.0)
