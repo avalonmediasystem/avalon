@@ -96,7 +96,7 @@ gem 'sidekiq', '~> 6.2'
 gem 'sidekiq-cron', '~> 1.9'
 
 # Coding Patterns
-gem 'config'
+gem 'config', '~> 5.5'
 gem 'hooks'
 gem 'jbuilder', '~> 2.0'
 gem 'parallel'
