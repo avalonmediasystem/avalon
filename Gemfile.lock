@@ -1016,7 +1016,7 @@ DEPENDENCIES
   capybara
   cloudfront-signer
   coffee-rails (~> 5.0)
-  config
+  config (~> 5.5)
   csv
   database_cleaner
   devise (~> 4.8)
