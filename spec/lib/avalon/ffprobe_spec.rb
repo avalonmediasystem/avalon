@@ -18,9 +18,11 @@ require 'avalon/ffprobe'
 describe Avalon::FFprobe do
   subject { described_class.new(test_file) }
 
-  let(:video_file) { Rails.root.join('spec', 'fixtures', 'videoshort.mp4').to_s }
-  let(:audioless_video_file) { Rails.root.join('spec', 'fixtures', 'videoshort_no_audio.mp4').to_s }
-  let(:audio_file) { Rails.root.join('spec', 'fixtures', 'jazz-performance.mp4').to_s }
+  let(:video_file) { FileLocator.new(Rails.root.join('spec', 'fixtures', 'videoshort.mp4').to_s) }
+  let(:audioless_video_file) { FileLocator.new(Rails.root.join('spec', 'fixtures', 'videoshort_no_audio.mp4').to_s) }
+  let(:audio_file) { FileLocator.new(Rails.root.join('spec', 'fixtures', 'jazz-performance.mp4').to_s) }
+  let(:image_file) { FileLocator.new(Rails.root.join('spec', 'fixtures', 'collection_poster.png').to_s) }
+  let(:text_file) { FileLocator.new(Rails.root.join('spec', 'fixtures', 'chunk_test.txt').to_s) }
 
   describe 'error handling' do
     let(:test_file) { video_file }
@@ -50,12 +52,12 @@ describe Avalon::FFprobe do
     end
 
     context 'with non-media files' do
-      let(:text_file) { described_class.new(Rails.root.join('spec', 'fixtures', 'chunk_test.txt')) }
-      let(:image_file) { described_class.new(Rails.root.join('spec', 'fixtures', 'collection_poster.png')) }
+      let(:text_test) { described_class.new(text_file) }
+      let(:image_test) { described_class.new(image_file) }
 
       it 'returns false' do
-        expect(text_file.video?).to be false
-        expect(image_file.video?).to be false
+        expect(text_test.video?).to be false
+        expect(image_test.video?).to be false
       end
     end
   end
@@ -86,12 +88,12 @@ describe Avalon::FFprobe do
     end
 
     context 'with non-media files' do
-      let(:text_file) { described_class.new(Rails.root.join('spec', 'fixtures', 'chunk_test.txt')) }
-      let(:image_file) { described_class.new(Rails.root.join('spec', 'fixtures', 'collection_poster.png')) }
+      let(:text_test) { described_class.new(text_file) }
+      let(:image_test) { described_class.new(image_file) }
 
       it 'returns false' do
-        expect(text_file.audio?).to be false
-        expect(image_file.audio?).to be false
+        expect(text_test.audio?).to be false
+        expect(image_test.audio?).to be false
       end
     end
   end
@@ -104,12 +106,12 @@ describe Avalon::FFprobe do
     end
 
     context 'with non-media files' do
-      let(:text_file) { described_class.new(Rails.root.join('spec', 'fixtures', 'chunk_test.txt')) }
-      let(:image_file) { described_class.new(Rails.root.join('spec', 'fixtures', 'collection_poster.png')) }
+      let(:text_test) { described_class.new(text_file) }
+      let(:image_test) { described_class.new(image_file) }
 
       it 'returns nil' do
-        expect(text_file.duration).to be nil
-        expect(image_file.duration).to be nil
+        expect(text_test.duration).to be nil
+        expect(image_test.duration).to be nil
       end
     end
   end
@@ -138,12 +140,12 @@ describe Avalon::FFprobe do
     end
 
     context 'with non-media files' do
-      let(:text_file) { described_class.new(Rails.root.join('spec', 'fixtures', 'chunk_test.txt')) }
-      let(:image_file) { described_class.new(Rails.root.join('spec', 'fixtures', 'collection_poster.png')) }
+      let(:text_test) { described_class.new(text_file) }
+      let(:image_test) { described_class.new(image_file) }
 
       it 'returns nil' do
-        expect(text_file.display_aspect_ratio).to be nil
-        expect(image_file.display_aspect_ratio).to be nil
+        expect(text_test.display_aspect_ratio).to be nil
+        expect(image_test.display_aspect_ratio).to be nil
       end
     end
   end
@@ -166,12 +168,12 @@ describe Avalon::FFprobe do
     end
 
     context 'with non-media files' do
-      let(:text_file) { described_class.new(Rails.root.join('spec', 'fixtures', 'chunk_test.txt')) }
-      let(:image_file) { described_class.new(Rails.root.join('spec', 'fixtures', 'collection_poster.png')) }
+      let(:text_test) { described_class.new(text_file) }
+      let(:image_test) { described_class.new(image_file) }
 
       it 'returns nil' do
-        expect(text_file.original_frame_size).to be nil
-        expect(image_file.original_frame_size).to be nil
+        expect(text_test.original_frame_size).to be nil
+        expect(image_test.original_frame_size).to be nil
       end
     end
   end

@@ -15,10 +15,11 @@
 module Avalon
   class FFprobe
     attr_reader :json_output, :video_stream, :audio_stream
-    # @param [String] media_path the full path to the media file
-    def initialize(media_path)
+    # @param [FileLocator] media_file a file locator instance for the media file
+    def initialize(media_file)
+      return @json_output = {} unless valid_content_type?(media_file)
       ffprobe = Settings&.ffprobe&.path || 'ffprobe'
-      raw_output = `#{ffprobe} -i "#{media_path}" -v quiet -show_format -show_streams -count_frames -of json`
+      raw_output = `#{ffprobe} -i "#{media_file.location}" -v quiet -show_format -show_streams -of json`
       # $? is a variable for the exit status of the last executed process. 
       # Success == 0, any other value means the command failed in some way.
       unless $?.exitstatus == 0
@@ -28,19 +29,12 @@ module Avalon
       end
       @json_output = JSON.parse(raw_output).deep_symbolize_keys
 
-      # Plain text files should return from ffprobe as an empty hash.
-      # When the hash is not empty, the format name is 'tty' so we provide
-      # a catch here just in case.
-      return @json_output = {} if json_output[:format][:format_name] == 'tty'
-
       @video_stream = json_output[:streams].select { |stream| stream[:codec_type] == 'video' }.first
       @audio_stream = json_output[:streams].select { |stream| stream[:codec_type] == 'audio' }.first
     end
 
     def video?
-      # ffprobe treats image files as a single frame video. This sets the codec type to video,
-      # but leaves the frame count at 1. If frame count is 1, return false.
-      return true if video_stream && video_stream[:nb_read_frames].to_i > 1
+      return true if video_stream
 
       false
     end
@@ -67,6 +61,18 @@ module Avalon
 
     def original_frame_size
       "#{video_stream[:width]}x#{video_stream[:height]}" if video?
+    end
+
+    private
+
+    def valid_content_type? media_file
+      # Remove S3 credentials or other params from extension output
+      extension = File.extname(media_file.location)&.gsub(/[\?#].*/, '')
+      # Fall back on file extension if magic bytes fail to identify file
+      content_type = Marcel::MimeType.for media_file.reader, extension: extension
+      return true if ['audio', 'video'].any? { |type| content_type.include?(type) }
+
+      false
     end
   end
 end

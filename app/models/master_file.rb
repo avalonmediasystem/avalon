@@ -727,7 +727,7 @@ class MasterFile < ActiveFedora::Base
 
   def reloadTechnicalMetadata!
     # Reset ffprobe
-    @ffprobe = Avalon::FFprobe.new(FileLocator.new(file_location).location)
+    @ffprobe = Avalon::FFprobe.new(FileLocator.new(file_location))
 
     # Formats like MP4 can be caught as both audio and video
     # so the case statement flows in the preferred order
