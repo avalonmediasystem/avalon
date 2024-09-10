@@ -1048,7 +1048,7 @@ DEPENDENCIES
   cloudfront-signer
   codeclimate-test-reporter
   coffee-rails (~> 5.0)
-  config
+  config (~> 5.5)
   database_cleaner
   devise (~> 4.8)
   devise_invitable (~> 2.0)
