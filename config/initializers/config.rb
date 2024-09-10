@@ -28,4 +28,7 @@ Config.setup do |config|
 
   # Parse numeric values as integers instead of strings.
   config.env_parse_values = true
+
+  # Allow env variables for array settings
+  config.env_parse_arrays = true
 end
