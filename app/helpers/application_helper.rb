@@ -66,7 +66,7 @@ module ApplicationHelper
 
     if master_file_id
       if video_count > 0
-        thumbnail_master_file_path(master_file_id)
+        document["sections"][:docs].first["thumbnail"][:docs].first["content_ss"]
       elsif audio_count > 0
         asset_path('audio_icon.png')
       else
@@ -86,9 +86,14 @@ module ApplicationHelper
   end
 
   def avalon_image_tag(document, image_options)
-    image_url = image_for(document)
+    image = image_for(document)
     link_to(media_object_path(document[:id]), {class: 'result-thumbnail'}) do
-      image_url.present? ? image_tag(image_url) : image_tag('no_icon.png')
+      return image_tag('no_icon.png') unless image.present?
+      if image.start_with?(root_url)
+        image_tag(image)
+      else
+        image_tag("data:image/jpg;base64,#{image}")
+      end
     end
   end
 
