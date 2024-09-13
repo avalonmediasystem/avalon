@@ -30,7 +30,7 @@ describe Avalon::FFprobe do
     it 'logs an error if ffprobe is misconfigured' do
       allow(Settings.ffprobe).to receive(:path).and_return('misconfigured/path')
       expect(Rails.logger).to receive(:error)
-      subject
+      subject.json_output
     end
   end
 
