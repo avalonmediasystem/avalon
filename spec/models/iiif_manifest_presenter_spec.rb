@@ -19,6 +19,19 @@ describe IiifManifestPresenter do
   let(:master_file) { FactoryBot.build(:master_file, media_object: media_object) }
   let(:presenter) { described_class.new(media_object: media_object, master_files: [master_file]) }
 
+  context 'to_s' do
+    it "returns the media object's title" do
+      expect(presenter.to_s).to eq media_object.title
+    end
+
+    context 'when media object is missing title' do
+      it "returns the media object's id" do
+        allow(media_object).to receive(:title).and_return(nil)
+        expect(presenter.to_s).to eq media_object.id
+      end
+    end
+  end
+
   context 'homepage' do
     subject { presenter.homepage.first }
 
