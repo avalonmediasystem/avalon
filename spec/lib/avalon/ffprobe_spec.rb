@@ -121,13 +121,15 @@ describe Avalon::FFprobe do
       let(:test_file) { video_file }
 
       it 'returns the display aspect ratio' do
+        expect(subject.display_aspect_ratio).to be_a(String)
         expect(subject.display_aspect_ratio).to eq '20:11'
       end
 
       context 'file missing display aspect ratio' do
         it 'calculates the display aspect ratio' do
           subject.instance_variable_set(:@video_stream, subject.video_stream.except!(:display_aspect_ratio))
-          expect(subject.display_aspect_ratio).to eq(200.to_f / 110.to_f)
+          expect(subject.display_aspect_ratio).to be_a(String)
+          expect(subject.display_aspect_ratio).to eq((200.to_f / 110.to_f).to_s)
         end
       end
     end

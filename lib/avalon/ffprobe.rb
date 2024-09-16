@@ -62,7 +62,7 @@ module Avalon
       if video? && video_stream[:display_aspect_ratio].present?
         video_stream[:display_aspect_ratio]
       elsif video?
-        video_stream[:width].to_f / video_stream[:height].to_f
+        (video_stream[:width].to_f / video_stream[:height].to_f).to_s
       end
     end
 
