@@ -329,7 +329,7 @@ class MediaObject < ActiveFedora::Base
         fill_in_solr_fields_that_need_sections(solr_doc)
       elsif id.present? # avoid error in test suite
         # Fill in other identifier so these values aren't stripped from the solr doc while waiting for the background job
-        mf_docs = ActiveFedora::SolrService.query("isPartOf_ssim:#{id}", rows: 1_000_000)
+        mf_docs = ActiveFedora::SolrService.query("isPartOf_ssim:#{id}", rows: 100_000)
         solr_doc["other_identifier_sim"] +=  mf_docs.collect { |h| h['identifier_ssim'] }.flatten
       end
 
@@ -470,7 +470,7 @@ class MediaObject < ActiveFedora::Base
       # in the section_list
       return [] unless section_ids.present?
       query = "id:" + section_ids.join(" id:")
-      @section_docs ||= ActiveFedora::SolrService.query(query, rows: 1_000_000)
+      @section_docs ||= ActiveFedora::SolrService.query(query, rows: 100_000)
     end
 
     def calculate_duration
