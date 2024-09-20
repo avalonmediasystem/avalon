@@ -100,6 +100,7 @@ class IiifManifestPresenter
   end
 
   def combined_display_date(media_object)
+    #FIXME Does this need to change now that date_issued is not required and thus could be nil
     result = media_object.date_issued
     result += " (Creation date: #{media_object.date_created})" if media_object.date_created.present?
     result

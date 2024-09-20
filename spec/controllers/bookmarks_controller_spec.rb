@@ -91,7 +91,6 @@ describe BookmarksController, type: :controller do
       it "should show a warning for incomplete items" do
         invalid_mo = media_objects.first
         invalid_mo.title = nil
-        invalid_mo.date_issued = nil
         invalid_mo.save
 
         post 'publish'

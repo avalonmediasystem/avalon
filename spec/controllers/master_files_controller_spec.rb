@@ -39,7 +39,6 @@ describe MasterFilesController do
     context "must provide a valid media object" do
       before do
         media_object.title = nil
-        media_object.date_issued = nil
         media_object.workflow.last_completed_step = 'file-upload'
         media_object.save(validate: false)
       end

@@ -79,7 +79,6 @@ class MediaObject < ActiveFedora::Base
   # validates :governing_policies, presence: true if Proc.new { |mo| mo.changes["governing_policy_ids"].empty? }
 
   validates :title, presence: true, if: :resource_description_active?
-  validates :date_issued, presence: true, if: :resource_description_active?
   validate  :validate_language, if: :resource_description_active?
   validate  :validate_related_items, if: :resource_description_active?
   validate  :validate_dates, if: :resource_description_active?
