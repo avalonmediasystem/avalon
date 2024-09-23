@@ -174,6 +174,13 @@ class IiifManifestPresenter
     Rails.application.routes.url_helpers.blacklight_url({ "f[collection_ssim][]" => media_object.collection.name, "f[series_ssim][]" => series })
   end
 
+  def display_search_linked(solr_field, values)
+    Array(values).collect do |value|
+      url = Rails.application.routes.url_helpers.blacklight_url({ "f[#{solr_field}][]" => RSolr.solr_escape(value) })
+      "<a href='#{url}'>#{value}</a>"
+    end
+  end
+
   def display_lending_period(media_object)
     return nil unless lending_enabled
     ActiveSupport::Duration.build(media_object.lending_period).to_day_hour_s
@@ -188,7 +195,7 @@ class IiifManifestPresenter
       metadata_field('Contributor', media_object.contributor),
       metadata_field('Publisher', media_object.publisher),
       metadata_field('Genre', media_object.genre),
-      metadata_field('Subject', media_object.topical_subject),
+      metadata_field('Subject', display_search_linked("subject_ssim", media_object.topical_subject)),
       metadata_field('Time period', media_object.temporal_subject),
       metadata_field('Location', media_object.geographic_subject),
       metadata_field('Collection', display_collection(media_object)),
