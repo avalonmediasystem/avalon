@@ -157,7 +157,7 @@ class BookmarksController < CatalogController
       else
         case params['action']
         when 'publish'
-          if media_object.title.nil? || media_object.date_issued.nil?
+          if media_object.title.nil?
             errors += ["#{id}, Unable to Publish Item. Missing required fields."]
           else
             success_ids << id

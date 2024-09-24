@@ -359,7 +359,7 @@ describe MediaObjectsController, type: :controller do
           expect(new_media_object.bibliographic_id).to eq({source: "local", id: bib_id})
           expect(new_media_object.title).to eq ex_media_object.title
           expect(new_media_object.creator).to eq [] #creator no longer required, so supplied value won't be used
-          expect(new_media_object.date_issued).to eq ex_media_object.date_issued
+          expect(new_media_object.date_issued).to eq nil #date_issued no longer required, so supplied value won't be used
         end
         it "should create a new media_object, removing invalid data for non-required fields" do
           media_object = FactoryBot.create(:media_object)
@@ -618,13 +618,12 @@ describe MediaObjectsController, type: :controller do
         media_object.save
         login_user media_object.collection.managers.first
 
-        put :update, params: { id: media_object.id, step: 'resource-description', media_object: {title: '', date_issued: ''} }
+        put :update, params: { id: media_object.id, step: 'resource-description', media_object: {title: ''} }
         expect(response.response_code).to eq(200)
         expect(flash[:error]).not_to be_empty
         media_object.reload
         expect(media_object.valid?).to be_truthy
         expect(media_object.title).not_to be_blank
-        expect(media_object.date_issued).not_to be_blank
       end
     end
 
@@ -1470,7 +1469,6 @@ describe MediaObjectsController, type: :controller do
         it "item is invalid" do
           media_object = FactoryBot.create(:media_object, collection: collection)
           media_object.title = nil
-          media_object.date_issued = nil
           media_object.workflow.last_completed_step = 'file-upload'
           media_object.save!(validate: false)
           get 'update_status', params: { id: media_object.id, status: 'publish' }
@@ -1482,7 +1480,6 @@ describe MediaObjectsController, type: :controller do
         it "item is invalid and no last_completed_step" do
           media_object = FactoryBot.create(:media_object, collection: collection)
           media_object.title = nil
-          media_object.date_issued = nil
           media_object.workflow.last_completed_step = ''
           media_object.save!(validate: false)
           get 'update_status', params: { id: media_object.id, status: 'publish' }
@@ -1504,7 +1501,6 @@ describe MediaObjectsController, type: :controller do
       it 'unpublishes invalid items' do
         media_object = FactoryBot.create(:published_media_object, collection: collection)
         media_object.title = nil
-        media_object.date_issued = nil
         media_object.save!(validate: false)
         get 'update_status', params: { id: media_object.id, status: 'unpublish' }
         media_object.reload
@@ -1514,7 +1510,6 @@ describe MediaObjectsController, type: :controller do
       it 'unpublishes invalid items and no last completed step' do
         media_object = FactoryBot.create(:published_media_object, collection: collection)
         media_object.title = nil
-        media_object.date_issued = nil
         media_object.workflow.last_completed_step = ''
         media_object.save!(validate: false)
         get 'update_status', params: { id: media_object.id, status: 'unpublish' }

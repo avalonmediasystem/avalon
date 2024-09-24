@@ -34,8 +34,8 @@ describe BatchEntries do
 
   describe 'validating payload' do
     describe 'with sufficient metadata' do
-      it 'does not record an error when title and date_issued are present' do
-        payload = { fields: { title: 'foo', date_issued: Time.now.utc } }
+      it 'does not record an error when title is present' do
+        payload = { fields: { title: 'foo' } }
         be = BatchEntries.new(payload: payload.to_json, batch_registries: batch_registry)
         be.save
         be.reload
@@ -58,12 +58,12 @@ describe BatchEntries do
         be.reload
         expect(be.error).to be_truthy
       end
-      it 'records an error when only title is present' do
+      it 'does not record an error when only title is present' do
         payload = { fields: { title: 'foo' } }
         be = BatchEntries.new(payload: payload.to_json, batch_registries: batch_registry)
         be.save
         be.reload
-        expect(be.error).to be_truthy
+        expect(be.error).to be_falsey
       end
       it 'records an error when only date issued is present' do
         payload = { fields: { date_issued: Time.now.utc } }

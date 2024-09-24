@@ -18,7 +18,7 @@ describe Avalon::Batch::Entry do
   let(:testdir) {'spec/fixtures/'}
   let(:filename) {'videoshort.mp4'}
   let(:collection) {FactoryBot.build(:collection)}
-  let(:entry_fields) {{ title: Faker::Lorem.sentence, date_issued: "#{DateTime.now.strftime('%F')}" }}
+  let(:entry_fields) {{ title: Faker::Lorem.sentence }}
   let(:entry_files) { [{ file: File.join(testdir, filename), skip_transcoding: false }] }
   let(:entry_opts) { {user_key: 'archivist1@example.org', collection: collection} }
   let(:entry) { Avalon::Batch::Entry.new(entry_fields, entry_files, entry_opts, nil, nil) }

@@ -272,7 +272,6 @@ describe MediaObject do
     # Force the validations to run by being on the resource-description workflow step
     subject(:media_object) { FactoryBot.build(:media_object).tap {|mo| mo.workflow.last_completed_step = "resource-description"} }
 
-    it {is_expected.to validate_presence_of(:date_issued)}
     it {is_expected.to validate_presence_of(:title)}
   end
 
