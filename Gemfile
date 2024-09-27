@@ -76,9 +76,9 @@ gem 'omniauth-lti', git: "https://github.com/avalonmediasystem/omniauth-lti.git"
 gem "omniauth-saml", "~> 2.0", ">= 2.2.1"
 
 # Media Access & Transcoding
-gem 'active_encode', '>= 1.2.2'
+gem 'active_encode', git: "https://github.com/samvera-labs/active_encode.git", branch: 'main'
 gem 'audio_waveform-ruby', '~> 1.0.7', require: 'audio_waveform'
-gem 'browse-everything', git: "https://github.com/avalonmediasystem/browse-everything.git", branch: 'v1.4-avalon'
+gem 'browse-everything', git: "https://github.com/avalonmediasystem/browse-everything.git", branch: 'sharepoint_integration'
 gem 'fastimage'
 gem 'rest-client', '~> 2.0'
 gem 'roo'

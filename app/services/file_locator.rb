@@ -118,7 +118,7 @@ class FileLocator
     when 'file'
       File.open(location,'r')
     else
-      Kernel::open(uri.to_s, 'r')
+      URI.open(uri, 'r')
     end
   end
 
