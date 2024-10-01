@@ -73,10 +73,9 @@ en:
       href="http://www.loc.gov/standards/datetime/"
       target="_blank">Extended Date/Time Format (EDTF) Level 1</a>.
     date_issued: |
-      <strong>Required field.</strong> Date should be the main publication date
-      associated with the item to be used for sorting browse and search results.
-      Enter date information in a format consistent with the options shown in <a
-      href="http://www.loc.gov/standards/datetime/"
+      Date should be the main publication date associated with the item to be used for
+      sorting browse and search results. Enter date information in a format consistent
+      with the options shown in <a href="http://www.loc.gov/standards/datetime/"
       target="_blank">Extended Date/Time Format (EDTF) Level 1</a>.
     genre: |
       Genre can be used to categorize an item by form, style, or subject matter. For
