@@ -189,7 +189,8 @@ class IiifManifestPresenter
   def iiif_metadata_fields
     fields = [
       metadata_field('Title', media_object.title, media_object.id),
-      metadata_field('Date', combined_display_date(media_object), 'Not provided'),
+      metadata_field('Publication date', media_object.date_issued),
+      metadata_field('Creation date', media_object.date_created),
       metadata_field('Main contributor', media_object.creator),
       metadata_field('Summary', display_summary(media_object)),
       metadata_field('Contributor', media_object.contributor),
