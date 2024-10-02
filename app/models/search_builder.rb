@@ -65,7 +65,7 @@ class SearchBuilder < Blacklight::SearchBuilder
     transcripts_present = SupplementalFile.with_tag('transcript').any?
 
     # List of fields for displaying on search results (Blacklight index fields)
-    fl = ['id', 'has_model_ssim', 'title_tesi', 'date_issued_ssi', 'creator_ssim', 'abstract_ssi', 'duration_ssi', 'section_id_ssim', 'avalon_resource_type_ssim']
+    fl = ['id', 'has_model_ssim', 'title_tesi', 'date_issued_ssi', 'creator_ssim', 'abstract_ssi', 'duration_ssi', 'section_id_ssim', 'avalon_resource_type_ssim', 'content_ss']
 
     # Add a field for matching child sections
     fl << "sections:[subquery]"
@@ -81,10 +81,18 @@ class SearchBuilder < Blacklight::SearchBuilder
       fl << "metadata_tf_#{i}:termfreq(mods_tesim,#{RSolr.solr_escape(term)})"
       fl << "structure_tf_#{i}:termfreq(section_label_tesim,#{RSolr.solr_escape(term)})"
       fl << "transcript_tf_#{i}" if transcripts_present
+      fl << "thumbnail"
       sections_fl << "transcript_tf_#{i}" if transcripts_present
       transcripts_fl << "transcript_tf_#{i}:termfreq(transcript_tsim,#{RSolr.solr_escape(term)})" if transcripts_present
+      sections_fl << "thumbnail:[subquery]"
     end
     solr_parameters[:fl] = fl.join(',')
+
+    solr_parameters["sections.thumbnail.q"] = "{!terms f=isPartOf_ssi v=$row.id}{!join to=id from=isPartOf_ssim}"
+    solr_parameters["sections.thumbnail.fq"] = "original_name_ssi:thumbnail.jpg"
+    solr_parameters["sections.thumbnail.defType"] = "lucene"
+    solr_parameters["sections.thumbnail.rows"] = 1
+    solr_parameters["sections.thumbnail.fl"] = "content_ss"
 
     return solr_parameters unless transcripts_present
     sections_fl << "transcripts:[subquery]"

@@ -26,10 +26,11 @@ class IndexedFile < ActiveFedora::File
     return solr_doc unless opts[:external_index]
     solr_doc.tap do |doc|
       doc[:id] = id
+      doc[:isPartOf_ssi] = id.gsub(/\/.*/, '')
       doc[:has_model_ssim] = self.class.name
       doc[:uri_ss] = uri.to_s
       doc[:mime_type_ss] = mime_type
-      doc[:original_name_ss] = original_name
+      doc[:original_name_ssi] = original_name
       doc[:size_is] = content.present? ? content.size : 0
       doc[:'empty?_bs'] = content.blank?
       if index_content?
