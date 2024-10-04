@@ -593,7 +593,7 @@ class MasterFile < ActiveFedora::Base
   end
 
   def create_frame_source_hls_temp_file(offset)
-    playlist_url = self.hls_streams.find { |d| d[:quality] == 'high' }[:url]
+    playlist_url = self.hls_streams.find { |d| d[:quality] == 'high' || d[:quality] == 'medium' || d[:quality] == 'low' }[:url]
     secure_url = SecurityHandler.secure_url(playlist_url, target: self.id)
     playlist = Avalon::M3U8Reader.read(secure_url)
     details = playlist.at(offset)
