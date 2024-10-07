@@ -29,9 +29,9 @@ gem 'terser'
 gem 'shakapacker'
 
 # Core Samvera
-gem 'active-fedora', git: 'https://github.com/samvera/active_fedora.git', branch: 'further_along_the_rails'
+gem 'active-fedora', '~> 15.0'
 gem 'active_fedora-datastreams', '~> 0.5'
-gem 'hydra-head', git: 'https://github.com/samvera/hydra-head.git', branch: 'af_version'
+gem 'hydra-head', '~> 13.0'
 gem 'ldp', '~> 1.1.0'
 gem 'noid-rails', '~> 3.2'
 gem 'om', git: 'https://github.com/avalonmediasystem/om.git', tag: 'v3.2.0-ruby3'
