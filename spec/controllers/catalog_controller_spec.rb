@@ -291,8 +291,10 @@ describe CatalogController do
     end
 
     describe "atom feed" do
-      let!(:private_media_object) { FactoryBot.create(:media_object, visibility: 'private') }
-      let!(:public_media_object) { FactoryBot.create(:published_media_object, visibility: 'public') }
+      render_views
+
+      let!(:private_media_object) { FactoryBot.create(:media_object, visibility: 'private', other_identifier: [{ id: "GR12345678", source: 'local' }]) }
+      let!(:public_media_object) { FactoryBot.create(:published_media_object, visibility: 'public', other_identifier: [{ id: "GR12345678", source: 'local' }]) }
       let(:administrator) { FactoryBot.create(:administrator) }
 
       context "with an api key" do
@@ -305,8 +307,29 @@ describe CatalogController do
           expect(response).to be_successful
           expect(response).to render_template('catalog/index')
           expect(response.content_type).to eq "application/atom+xml; charset=utf-8"
-          expect(assigns(:response).documents.count).to eq 2
-          expect(assigns(:response).documents.map(&:id)).to match_array [private_media_object.id, public_media_object.id]
+          documents = assigns(:response).documents
+          expect(documents.count).to eq 2
+          expect(documents.map(&:id)).to match_array [private_media_object.id, public_media_object.id]
+          xml = Nokogiri::XML(response.body)
+          xml.remove_namespaces!
+          updated_times = xml.xpath('/feed/entry/updated/text()').map(&:to_s)
+          expect(updated_times).to be_present
+          expect(updated_times.all?(&:present?)).to eq true
+        end
+        it "should show results for all items" do
+          request.headers['Avalon-Api-Key'] = 'secret_token'
+          get 'index', params: { q: "other_identifier_sim:/GR[0-9]{8}/", sort: "timestamp+desc", rows: 100, page: 1, format: 'atom' }
+          expect(response).to be_successful
+          expect(response).to render_template('catalog/index')
+          expect(response.content_type).to eq "application/atom+xml; charset=utf-8"
+          documents = assigns(:response).documents
+          expect(documents.count).to eq 2
+          expect(documents.map(&:id)).to match_array [private_media_object.id, public_media_object.id]
+          xml = Nokogiri::XML(response.body)
+          xml.remove_namespaces!
+          updated_times = xml.xpath('/feed/entry/updated/text()').map(&:to_s)
+          expect(updated_times).to be_present
+          expect(updated_times.all?(&:present?)).to eq true
         end
         context "when there are transcripts present" do
           let!(:transcript) { FactoryBot.create(:supplemental_file, :with_transcript_file, :with_transcript_tag, parent_id: private_media_object.id) }
@@ -326,13 +349,19 @@ describe CatalogController do
         end
       end
       context "without api key" do
-        it "should not show results" do
-          get 'index', params: { q: "", format: 'atom' }
+        it "should only show visible results" do
+          get 'index', params: {  q: "other_identifier_sim:/GR[0-9]{8}/", sort: "timestamp+desc", rows: 100, page: 1, format: 'atom' }
           expect(response).to be_successful
           expect(response.content_type).to eq "application/atom+xml; charset=utf-8"
           expect(response).to render_template('catalog/index')
-          expect(assigns(:response).documents.count).to eq 1
-          expect(assigns(:response).documents.map(&:id)).to eq([public_media_object.id])
+          documents = assigns(:response).documents
+          expect(documents.count).to eq 1
+          expect(documents.map(&:id)).to match_array [public_media_object.id]
+          xml = Nokogiri::XML(response.body)
+          xml.remove_namespaces!
+          updated_times = xml.xpath('/feed/entry/updated/text()').map(&:to_s)
+          expect(updated_times).to be_present
+          expect(updated_times.all?(&:present?)).to eq true
         end
       end
     end
