@@ -18,3 +18,9 @@ file_system:
 # sky_drive:
 #   :client_id: YOUR_MS_LIVE_CONNECT_CLIENT_ID
 #   :client_secret: YOUR_MS_LIVE_CONNECT_CLIENT_SECRET
+# sharepoint:
+#   client_id: YOUR_MICROSOFT_GRAPH_CLIENT_ID
+#   client_secret: YOUR_MICROSOFT_GRAPH_CLIENT_SECRET
+#   tenant_id: YOUR_MICROSOFT_GRAPH_TENANT_ID
+#   scope: offline_access https://graph.microsoft.com/.default
+#   redirect_uri: https://example.com/browse/connect
