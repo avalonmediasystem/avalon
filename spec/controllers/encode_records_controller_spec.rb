@@ -63,6 +63,14 @@ RSpec.describe EncodeRecordsController, type: :controller do
         expect(response).to render_template('errors/restricted_pid')
       end
     end
+
+    context "when state is nil" do
+      let(:encode_record_test) { FactoryBot.create(:encode_record, state: nil) }
+      it "returns a success response" do
+        get :index, params: {}, session: valid_session
+        expect(response).to be_successful
+      end
+    end
   end
 
   describe "GET #show" do
@@ -75,8 +83,16 @@ RSpec.describe EncodeRecordsController, type: :controller do
       let(:user) { FactoryBot.create(:user) }
 
       it "redirects to restricted content page" do
-        get :index, params: {}, session: valid_session
+        get :show, params: { id: encode_record_test.to_param }, session: valid_session
         expect(response).to render_template('errors/restricted_pid')
+      end
+    end
+
+    context "when state is nil" do
+      let(:encode_record_test) { FactoryBot.create(:encode_record, state: nil) }
+      it "returns a success response" do
+        get :show, params: { id: encode_record_test.to_param }, session: valid_session
+        expect(response).to be_successful
       end
     end
   end
@@ -132,6 +148,20 @@ RSpec.describe EncodeRecordsController, type: :controller do
         parsed_response = JSON.parse(response.body)
         expect(parsed_response['data'][0][3]).to eq('Title 998')
         expect(parsed_response['data'][1][3]).to eq('Title 997')
+      end
+    end
+
+    context "when state is nil" do
+      let(:params) { { start: 0, length: 20, order: { '0': { column: 3, dir: 'asc' } }, search: { value: '' } } }
+      before do
+        FactoryBot.create(:encode_record, state: nil)
+      end
+
+      it "returns a success response" do
+        post :paged_index, format: 'json', params: params, session: valid_session
+        expect(response).to be_successful
+        parsed_response = JSON.parse(response.body)
+        expect(parsed_response['recordsTotal']).to eq(12)
       end
     end
   end
