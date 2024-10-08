@@ -33,7 +33,7 @@ GIT
 
 GIT
   remote: https://github.com/avalonmediasystem/browse-everything.git
-  revision: cbc4534255ab2634a18552adae12d6e1de3061c3
+  revision: be4bbdf47df0090a40bbce7bf5678e7c8fe68130
   branch: sharepoint_integration
   specs:
     browse-everything (1.4.0)
@@ -66,6 +66,15 @@ GIT
     omniauth-lti (0.0.2)
       ims-lti
       omniauth
+
+GIT
+  remote: https://github.com/samvera-labs/active_encode.git
+  revision: 49ab76ab6b2593ed250530aa3659dd5c8f5adb25
+  branch: output_label_parsing
+  specs:
+    active_encode (1.2.2)
+      addressable (~> 2.8)
+      rails
 
 GIT
   remote: https://github.com/samvera-labs/active_fedora-datastreams.git
@@ -472,9 +481,9 @@ GEM
       retriable (>= 2.0, < 4.a)
     google-apis-drive_v3 (0.57.0)
       google-apis-core (>= 0.15.0, < 2.a)
-    google-cloud-env (2.2.0)
+    google-cloud-env (2.2.1)
       faraday (>= 1.0, < 3.a)
-    googleauth (1.11.0)
+    googleauth (1.11.1)
       faraday (>= 1.0, < 3.a)
       google-cloud-env (~> 2.1)
       jwt (>= 1.4, < 3.0)
@@ -550,7 +559,7 @@ GEM
       rack (>= 2.2, < 4)
       rdf (~> 3.3)
       rexml (~> 3.2)
-    jwt (2.9.1)
+    jwt (2.9.3)
       base64
     kaminari (1.2.2)
       activesupport (>= 4.1.0)
