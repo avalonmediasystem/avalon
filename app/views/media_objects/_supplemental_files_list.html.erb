@@ -98,7 +98,7 @@ Unless required by applicable law or agreed to in writing, software distributed
       </small>
       <div class="btn-toolbar float-right">
         <%# Update button %>
-        <i class="fa fa-laptop align-content-center<%= file.machine_generated? ? '' : ' d-none' %>" title="Machine generated file"></i>
+        <i class="fa fa-gears align-content-center<%= file.machine_generated? ? '' : ' d-none' %>" title="Machine generated file"></i>
         <%= button_tag name: 'edit_label', class:'btn btn-outline btn-sm edit_label display-item', type: 'button' do %>
           <i class="fa fa-edit" title="Edit"></i> <span class="sm-hidden">Edit</span>
         <% end %>

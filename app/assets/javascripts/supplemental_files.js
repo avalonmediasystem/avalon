@@ -94,8 +94,8 @@ $('.supplemental-file-form')
     $row.find('.message-content').html('Successfully updated.');
     // Show/hide icon based on the updated machine-generated form check
     isMachineGen
-      ? $row.find('.fa-laptop').removeClass('d-none')
-      : $row.find('.fa-laptop').addClass('d-none');
+      ? $row.find('.fa-gears').removeClass('d-none')
+      : $row.find('.fa-gears').addClass('d-none');
     $row.find('.icon-success').removeClass('d-none');
     $row.find('.visible-inline').addClass('alert');
   })
