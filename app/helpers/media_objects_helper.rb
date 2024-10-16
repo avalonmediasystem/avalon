@@ -51,18 +51,6 @@ module MediaObjectsHelper
      ic.iconv(url)
   end
 
-  def combined_display_date media_object
-    (issued,created) = case media_object
-    when MediaObject, SpeedyAF::Proxy::MediaObject
-      [media_object.date_issued, media_object.date_created]
-    when Hash
-      [media_object[:document]['date_issued_ssi'], media_object[:document]['date_created_ssi']]
-    end
-    result = issued
-    result += " (Creation date: #{created})" if created.present?
-    result
-  end
-
   def display_other_identifiers media_object
     # bibliographic_id has form [:type,"value"], other_identifier has form [[:type,"value],[:type,"value"],...]
     ids = media_object.bibliographic_id.present? ? [media_object.bibliographic_id] : []
