@@ -102,6 +102,8 @@ class CatalogController < ApplicationController
     config.add_facet_field 'has_captions_bsi', label: 'Has Captions', if: Proc.new {|context, config, opts| context.current_ability.can? :create, MediaObject}, group: "workflow", helper_method: :display_has_caption_or_transcript
     config.add_facet_field 'has_transcripts_bsi', label: 'Has Transcripts', if: Proc.new {|context, config, opts| context.current_ability.can? :create, MediaObject}, group: "workflow", helper_method: :display_has_caption_or_transcript
 
+    config.add_facet_field 'subject_ssim', label: 'Subject', if: false
+
     # Have BL send all facet field names to Solr, which has been the default
     # previously. Simply remove these lines if you'd rather use Solr request
     # handler defaults, or have no facets.

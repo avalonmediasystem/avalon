@@ -109,6 +109,17 @@ describe IiifManifestPresenter do
         expect(subject['Notes']).to be_a Array
       end
     end
+
+    context 'values with search links' do
+      it 'includes appropriate link tags' do
+        search_url = Rails.application.routes.url_helpers.blacklight_url.gsub('/','\/')
+        ['Subject'].each do |field|
+          subject[field].each do |value|
+            expect(value).to match /^<a href="#{search_url}\?f%5B.+%5D%5B%5D=.*">.*<\/a>$/
+          end
+        end
+      end
+    end
   end
 
   context 'viewing_hint' do
