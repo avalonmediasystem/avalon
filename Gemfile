@@ -31,7 +31,7 @@ gem 'shakapacker'
 # Core Samvera
 #gem 'active-fedora', '~> 15.0'
 #gem 'active_fedora-datastreams', '~> 0.5'
-gem 'active-fedora', git: 'https://github.com/samvera/active_fedora.git', branch: 'fedora6-cjcolvar-rebase'
+gem 'active-fedora', git: 'https://github.com/samvera/active_fedora.git', branch: 'fedora6_rebase'
 gem 'active_fedora-datastreams', git: 'https://github.com/samvera-labs/active_fedora-datastreams.git', branch: 'fedora6_rebase'
 gem 'hydra-head', '~> 13.0'
 gem 'ldp', '~> 1.1.0'

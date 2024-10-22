@@ -102,18 +102,19 @@ GIT
 
 GIT
   remote: https://github.com/samvera/active_fedora.git
-  revision: 3a8ff7b0384dba852ee70fc337c11c778afd7b58
-  branch: fedora6-cjcolvar-rebase
+  revision: 0f5ccb1536224efec750941ce9a1f58f2e09cd3c
+  branch: fedora6_rebase
   specs:
-    active-fedora (14.0.1)
+    active-fedora (15.0.1)
       active-triples (>= 0.11.0, < 2.0.0)
-      activemodel (>= 5.1)
-      activesupport (>= 5.1)
+      activemodel (>= 6.1)
+      activesupport (>= 6.1)
       deprecation
       faraday (>= 2.0)
       faraday-encoding (>= 0.0.5)
       faraday-follow_redirects
       ldp (>= 0.7.0, < 2)
+      mutex_m
       rsolr (>= 1.1.2, < 3)
       ruby-progressbar (~> 1.0)
 
@@ -436,8 +437,9 @@ GEM
     fakefs (2.5.0)
     faker (3.4.2)
       i18n (>= 1.8.11, < 2)
-    faraday (2.11.0)
+    faraday (2.12.0)
       faraday-net_http (>= 2.0, < 3.4)
+      json
       logger
     faraday-encoding (0.0.6)
       faraday
@@ -515,7 +517,7 @@ GEM
       hydra-access-controls (= 13.0.0)
       hydra-core (= 13.0.0)
       rails (>= 6.1, < 8.0)
-    i18n (1.14.5)
+    i18n (1.14.6)
       concurrent-ruby (~> 1.0)
     iconv (1.0.8)
     iiif_manifest (1.6.0)
@@ -582,7 +584,7 @@ GEM
     llhttp-ffi (0.5.0)
       ffi-compiler (~> 1.0)
       rake (~> 13.0)
-    logger (1.6.0)
+    logger (1.6.1)
     lograge (0.14.0)
       actionpack (>= 4)
       activesupport (>= 4)
@@ -692,7 +694,7 @@ GEM
       nio4r (~> 2.0)
     raabro (1.4.0)
     racc (1.8.1)
-    rack (2.2.9)
+    rack (2.2.10)
     rack-cors (2.0.2)
       rack (>= 2.0.0)
     rack-protection (3.2.0)
@@ -829,8 +831,7 @@ GEM
       mime-types (>= 1.16, < 4.0)
       netrc (~> 0.8)
     retriable (3.1.2)
-    rexml (3.3.6)
-      strscan
+    rexml (3.3.8)
     roo (2.10.1)
       nokogiri (~> 1)
       rubyzip (>= 1.3.0, < 3.0.0)
@@ -968,7 +969,6 @@ GEM
       net-sftp (>= 2.1.2)
       net-ssh (>= 2.8.0)
     stomp (1.4.10)
-    strscan (3.1.0)
     suo (0.4.0)
       dalli
       msgpack
@@ -994,7 +994,7 @@ GEM
     uber (0.0.15)
     unf (0.2.0)
     unicode-display_width (2.5.0)
-    unicode-types (1.9.0)
+    unicode-types (1.10.0)
     uri (0.13.1)
     user_agent_parser (2.18.0)
     useragent (0.16.10)
