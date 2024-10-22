@@ -18,7 +18,7 @@ jobs:
           - POSTGRES_USER=postgres
           - POSTGRES_DB=avalon
           - POSTGRES_PASSWORD=password
-      - image: fcrepo/fcrepo:6.4.0
+      - image: fcrepo/fcrepo:6.5-tomcat9
         environment:
           CATALINA_OPTS: -Dfcrepo.autoversioning.enabled=false
       - image: zookeeper:3.9
@@ -143,7 +143,7 @@ jobs:
         default: 4
     docker:
       # Primary container image where all steps run.
-      - image: avalonmediasystem/avalon:7.6.0-dev
+      - image: avalonmediasystem/avalon:7.8.0-dev
 
     working_directory: /home/app/avalon
 
@@ -166,10 +166,10 @@ workflows:
   build_test_report:
     jobs:
       - build:
-          ruby_ver: '3.2'
-          name: 'Ruby3-2'
+          ruby_ver: '3.3'
+          name: 'Ruby3-3'
           parallelism: 4
       - upload-coverage:
           parallelism: 4
           requires:
-            - Ruby3-2
+            - Ruby3-3
