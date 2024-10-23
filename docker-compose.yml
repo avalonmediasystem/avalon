@@ -32,7 +32,7 @@ services:
     depends_on:
       - db
     volumes:
-      - fedora:/data
+      - fedora:/usr/local/tomcat/fcrepo-home
     environment:
       - CATALINA_OPTS=-Dfcrepo.autoversioning.enabled=false
     networks:
