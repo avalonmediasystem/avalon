@@ -92,6 +92,28 @@ Rails.application.config.to_prepare do
 end
 # End of overrides for AccessControl dirty tracking and autosaving
 
+class UUIDIdentifierService
+  def mint
+    SecureRandom.uuid
+  end
+end
+ActiveFedora::Base.identifier_service_class = UUIDIdentifierService
+
+ActiveFedora::Persistence.module_eval do
+    # This is only used when creating a new record. If the object doesn't have an id
+    # and assign_id can mint an id for the object, then assign it to the resource.
+    # Otherwise the resource will have the id assigned by the LDP server
+    def assign_rdf_subject
+      @ldp_source = if !id && new_id = assign_id
+		      subject_uri = base_path_for_resource + self.class.id_to_uri(new_id).gsub(ActiveFedora.fedora.base_uri, '') if base_path_for_resource != ActiveFedora.fedora.base_uri
+		      subject_uri ||= self.class.id_to_uri(new_id)
+		      ActiveFedora::LdpResource.new(ActiveFedora.fedora.connection, subject_uri, @resource)
+		    else
+		      ActiveFedora::LdpResource.new(ActiveFedora.fedora.connection, @ldp_source.subject, @resource, base_path_for_resource)
+		    end
+    end
+end
+
 # Override ActiveFedora::Associations::Builder::Orders::FixFirstLast to remove attempts to set first and last from list_source on saving
 ActiveFedora::Associations::Builder::Orders::FixFirstLast.module_eval do
   def save(*args)
@@ -142,4 +164,35 @@ ActiveFedora::Reflection::IndirectlyContainsReflection.class_eval do
   def predicate
     options[:has_member_relation] || ::RDF::Vocab::LDP.contains
   end
+end
+
+ActiveFedora::Associations::IndirectlyContainsAssociation.class_eval do
+  def insert_record(record, force = true, validate = true)
+    container.save!
+    if force
+      record.save!
+    else
+      return false unless record.save(validate: validate)
+    end
+
+    save_through_record(record)
+
+    # Add triples to the parent object
+    owner.send(:attribute_will_change!, reflection.name)
+    owner.resource << ::RDF::Statement(owner.resource, reflection.predicate, record.id)
+    owner.save
+
+    true
+  end
+
+  private
+
+    def delete_record(record)
+      record_proxy_finder.find(record).delete
+
+      # Remove triples from the parent object
+      owner.send(:attribute_will_change!, reflection.name)
+      owner.resource.delete({ predicate: reflection.predicate, object: record.id})
+      owner.save
+    end
 end

@@ -8,7 +8,8 @@ jobs:
       - image: avalonmediasystem/avalon:develop
         environment:
           - DATABASE_URL=postgresql://postgres@localhost:5432/postgres
-          - FEDORA_URL=http://localhost:8080/fcrepo/rest
+          - FEDORA_URL=http://fedoraAdmin:fedoraAdmin@localhost:8080/fcrepo/rest
+          - FEDORA_BASE_PATH=/test
           - FEDORA_TIMEOUT=300
           - RAILS_ENV=test
       # Secondary container image on common network.
@@ -17,9 +18,9 @@ jobs:
           - POSTGRES_USER=postgres
           - POSTGRES_DB=avalon
           - POSTGRES_PASSWORD=password
-      - image: ualbertalib/docker-fcrepo4:4.7
+      - image: fcrepo/fcrepo:6.5-tomcat9
         environment:
-          CATALINA_OPTS: '-Djava.awt.headless=true -Dfile.encoding=UTF-8 -server -Xms512m -Xmx1024m -XX:NewSize=256m -XX:MaxNewSize=256m -XX:PermSize=256m -XX:MaxPermSize=256m -XX:+DisableExplicitGC'
+          CATALINA_OPTS: -Dfcrepo.autoversioning.enabled=false
       - image: zookeeper:3.9
         environment:
           ZOO_ADMINSERVER_ENABLED: false
@@ -142,7 +143,7 @@ jobs:
         default: 4
     docker:
       # Primary container image where all steps run.
-      - image: avalonmediasystem/avalon:7.5.0-dev-ruby3
+      - image: avalonmediasystem/avalon:7.8.0-dev
 
     working_directory: /home/app/avalon
 
@@ -165,10 +166,10 @@ workflows:
   build_test_report:
     jobs:
       - build:
-          ruby_ver: '3.2'
-          name: 'Ruby3-2'
+          ruby_ver: '3.3'
+          name: 'Ruby3-3'
           parallelism: 4
       - upload-coverage:
           parallelism: 4
           requires:
-            - Ruby3-2
+            - Ruby3-3

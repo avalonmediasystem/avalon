@@ -230,7 +230,15 @@ class MediaObjectsController < ApplicationController
         master_file.date_digitized = DateTime.parse(file_spec[:date_digitized]).to_time.utc.iso8601 if file_spec[:date_digitized].present?
         master_file.identifier += Array(params[:files][index][:other_identifier])
         master_file.comment += Array(params[:files][index][:comment])
-        master_file.media_object = @media_object
+        begin
+          master_file.media_object = @media_object
+        rescue ActiveFedora::Rollback => e
+          file_location = file_spec.dig(:file_location) || '<unknown>'
+          message = "Problem saving MasterFile for #{file_location}:"
+          error_messages += [message]
+          error_messages += [e.message]
+          break
+        end
         if file_spec[:files].present?
           if master_file.update_derivatives(file_spec[:files], false)
             master_file.update_stills_from_offset!

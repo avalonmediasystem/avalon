@@ -181,6 +181,10 @@ class MediaObject < ActiveFedora::Base
     return [] if self.section_list.nil?
     @section_ids = JSON.parse(self.section_list)
   end
+  
+  def published?
+    !avalon_publisher.blank?
+  end
 
   def destroy
     # attempt to stop the matterhorn processing job

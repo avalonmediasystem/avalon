@@ -1273,8 +1273,8 @@ describe MediaObject do
         expect(mo.section_list).not_to eq nil
         expect(mo.sections).not_to eq mo.ordered_master_files.to_a
         expect(mo.section_ids).to eq [section.id, section2.id, new_section.id]
-        expect(mo.master_file_ids).to eq mo.section_ids
-        expect(mo.master_files).to eq mo.sections
+        expect(mo.master_file_ids).to match_array mo.section_ids
+        expect(mo.master_files).to match_array mo.sections
       end
     end
   end
