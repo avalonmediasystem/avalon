@@ -278,7 +278,8 @@
   .ramp--structured-nav {
     margin-top: 0px;
     min-width: inherit;
-    max-height: inherit;
+    max-height: 85%;
+    overflow: hidden;
   }
 
   .tab-pane {
