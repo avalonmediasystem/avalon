@@ -159,10 +159,10 @@ const Ramp = ({
       emptyManifestMessage='This playlist currently has no playable items.'
       startCanvasId={startCanvasId}>
       <Row className="ramp--all-components ramp--playlist">
-        <Col sm={8}>
+        <Col sm={12} md={8}>
           <MediaPlayer enableFileDownload={false} enablePlaybackRate={true} />
           {playlist_item_ids?.length > 0 && (
-            <Card className="ramp--playlist-accordion">
+            <Card className={`ramp--playlist-accordion ${IS_MOBILE ? 'mobile-view' : ''}`}>
               <Card.Header>
                 <h4>{activeItemTitle}</h4>
                 {activeItemSummary && <div>{activeItemSummary}</div>}
@@ -194,7 +194,7 @@ const Ramp = ({
             </Card>
           )}
         </Col>
-        <Col sm={4} className={`ramp--playlist-items-column ${IS_MOBILE ? 'mobile-view' : ''}`}>
+        <Col sm={12} md={4} className={`ramp--playlist-items-column ${IS_MOBILE ? 'mobile-view' : ''}`}>
           <Row>
             <Col sm={6}>
               <AutoAdvanceToggle />

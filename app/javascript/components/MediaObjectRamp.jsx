@@ -72,7 +72,7 @@ const Ramp = ({
       startCanvasId={startCanvasId}
       startCanvasTime={startCanvasTime}>
       <Row className="ramp--all-components ramp--itemview">
-        <Col sm={8}>
+        <Col sm={12} md={9}>
           {(cdl.enabled && !cdl.can_stream)
             ? (<React.Fragment>
                 <div dangerouslySetInnerHTML={{ __html: cdl.embed }} />
@@ -160,7 +160,7 @@ const Ramp = ({
             )
           }
         </Col>
-        <Col sm={(sections_count == 0) ? 12 : 4} className="ramp--tabs-panel">
+        <Col sm={12} md={3} className="ramp--tabs-panel">
           {cdl.enabled && <div dangerouslySetInnerHTML={{ __html: cdl.destroy }} />}
           <Tabs>
             <Tab eventKey="details" title="Details">
