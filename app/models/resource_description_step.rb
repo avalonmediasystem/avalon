@@ -24,9 +24,8 @@ class ResourceDescriptionStep < Avalon::Workflow::BasicStep
       media_object.descMetadata.populate_from_catalog!(context[:media_object_params][:bibliographic_id][:id],context[:media_object_params][:bibliographic_id][:source])
     else
       media_object.permalink = context[:media_object_params].delete(:permalink)
-      media_object.update_attributes(context[:media_object_params])
+      media_object.assign_attributes(context[:media_object_params])
     end
-    media_object.save
     context
   end
 end
