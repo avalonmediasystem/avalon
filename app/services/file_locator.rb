@@ -118,8 +118,17 @@ class FileLocator
     when 'file'
       File.open(location,'r')
     else
-      URI.open(uri, 'r')
+      open_uri
     end
+  end
+
+  # Ruby 3.0 removed URI#open from being called by Kernel#open.
+  # Prioritize using URI#open, attempt to fallback to Kernel#open
+  # if URI fails.
+  def open_uri
+    URI.open(uri, 'r')
+  rescue
+    Kernel::open(uri.to_s, 'r')
   end
 
   def attachment
