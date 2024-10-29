@@ -628,13 +628,17 @@ describe MediaObject do
     it 'includes virtual group leases in external group facet' do
       media_object.governing_policies += [FactoryBot.create(:lease, inherited_read_groups: ['TestGroup'])]
       media_object.save!
-      expect(media_object.to_solr['read_access_virtual_group_ssim']).to include('TestGroup')
+      media_object.reload
+      solr_doc = media_object.to_solr(include_child_fields: true)
+      expect(solr_doc['read_access_virtual_group_ssim']).to include('TestGroup')
     end
     it 'includes ip group leases in ip group facet' do
       ip_addr = Faker::Internet.ip_v4_address
       media_object.governing_policies += [FactoryBot.create(:lease, inherited_read_groups: [ip_addr])]
       media_object.save!
-      expect(media_object.to_solr['read_access_ip_group_ssim']).to include(ip_addr)
+      media_object.reload
+      solr_doc = media_object.to_solr(include_child_fields: true)
+      expect(solr_doc['read_access_ip_group_ssim']).to include(ip_addr)
     end
     it 'indexes modified time for descMetadata subresource' do
       expect(DateTime.parse(media_object.to_solr['descMetadata_modified_dtsi'])).to eq DateTime.parse(media_object.descMetadata.record_change_date.first)
