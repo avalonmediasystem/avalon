@@ -16,6 +16,8 @@ require 'rails_helper'
 require 'cancan/matchers'
 
 describe MediaObject do
+  include ActiveJob::TestHelper
+
   let(:media_object) { FactoryBot.create(:media_object) }
 
   it 'assigns a noid id' do
@@ -251,18 +253,21 @@ describe MediaObject do
         media_object.read_groups += [Faker::Internet.ip_v4_address]
         media_object.publish! "random"
         media_object.reload
+        perform_enqueued_jobs(only: MediaObjectIndexingJob)
         expect(subject.can?(:read, media_object)).to be_falsey
       end
       it 'should be able to read single-ip authorized, published MediaObject' do
         media_object.read_groups += [ip_addr]
         media_object.publish! "random"
         media_object.reload
+        perform_enqueued_jobs(only: MediaObjectIndexingJob)
         expect(subject.can?(:read, media_object)).to be_truthy
       end
       it 'should be able to read ip-range authorized, published MediaObject' do
         media_object.read_groups += ["#{ip_addr}/30"]
         media_object.publish! "random"
         media_object.reload
+        perform_enqueued_jobs(only: MediaObjectIndexingJob)
         expect(subject.can?(:read, media_object)).to be_truthy
       end
     end
