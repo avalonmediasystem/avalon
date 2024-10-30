@@ -62,8 +62,8 @@ describe IiifManifestPresenter do
     it 'provides metadata' do
       allow_any_instance_of(IiifManifestPresenter).to receive(:lending_enabled).and_return(false)
 
-      ['Title', 'Date', 'Main contributor', 'Summary', 'Contributor', 'Publisher', 'Genre', 'Subject', 'Time period',
-       'Location', 'Collection', 'Unit', 'Language', 'Rights Statement', 'Terms of Use', 'Physical Description', 'Series',
+      ['Title', 'Publication date', 'Creation date', 'Main contributor', 'Summary', 'Contributor', 'Publisher', 'Genre', 'Subject', 
+       'Time period', 'Location', 'Collection', 'Unit', 'Language', 'Rights Statement', 'Terms of Use', 'Physical Description', 'Series',
        'Related Item', 'Notes', 'Table of Contents', 'Local Note', 'Other Identifier', 'Access Restrictions', 'Bibliographic ID'
       ].each do |field|
         expect(subject).to include(field)
@@ -93,8 +93,8 @@ describe IiifManifestPresenter do
       it 'provides metadata' do
         allow_any_instance_of(IiifManifestPresenter).to receive(:lending_enabled).and_return(true)
 
-        ['Title', 'Date', 'Main contributor', 'Summary', 'Contributor', 'Publisher', 'Genre', 'Subject', 'Time period',
-         'Location', 'Collection', 'Unit', 'Language', 'Rights Statement', 'Terms of Use', 'Physical Description', 'Series',
+        ['Title', 'Publication date', 'Creation date', 'Main contributor', 'Summary', 'Contributor', 'Publisher', 'Genre', 'Subject',
+         'Time period', 'Location', 'Collection', 'Unit', 'Language', 'Rights Statement', 'Terms of Use', 'Physical Description', 'Series',
          'Related Item', 'Notes', 'Table of Contents', 'Local Note', 'Other Identifier', 'Access Restrictions', 'Bibliographic ID', 'Lending Period'
         ].each do |field|
           expect(subject).to include(field)
