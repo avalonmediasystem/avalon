@@ -19,6 +19,10 @@
 }
 
 .ramp--all-components {
+  .ramp--structured-nav.display>.ramp--structured-nav__sections {
+    align-items: center;
+  }
+
   .ramp--media_player {
     .video-js .vjs-big-play-button {
       left: 55% !important;
@@ -42,15 +46,6 @@
 
   .ramp--structured-nav {
     max-width: initial;
-    .ramp--structured-nav__collapse-all-btn {
-      background-color: white;
-      color: #0e1825;
-      border: 1px solid #999;
-      height: fit-content;
-      i {
-        border-color: #0e1825 !important;
-      }
-    }
   }
 
   .ramp--rails-title {
