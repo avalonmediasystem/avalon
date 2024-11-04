@@ -81,14 +81,8 @@ module MasterFileManagementJobs
         when 'file' then File.delete(oldpath)
         when 's3'   then FileLocator::S3File.new(locator.source).object.delete
         end
-      	masterfile.file_location = ""
-      	masterfile.save
       	Rails.logger.info "#{oldpath} has been deleted"
       else
-      	unless masterfile.file_location.empty?
-      	  masterfile.file_location = ""
-      	  masterfile.save
-      	end
       	Rails.logger.warn "MasterFile #{oldpath} does not exist"
       end
     end
