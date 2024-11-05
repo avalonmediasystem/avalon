@@ -42,6 +42,10 @@
       margin: 0 0.15em;
     }
 
+    .vjs-volume-horizontal .vjs-volume-level span.vjs-icon-placeholder {
+      margin-top: 0.15em;
+    }
+
     // Set control-bar to player's width and remove spacers & offset
     .vjs-control-bar {
       &::after, &::before {
