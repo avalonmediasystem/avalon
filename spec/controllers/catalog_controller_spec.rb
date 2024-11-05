@@ -15,6 +15,8 @@
 require 'rails_helper'
 
 describe CatalogController do
+  include ActiveJob::TestHelper
+
   describe "#index" do
     describe "as an un-authenticated user" do
       it "should show results for items that are public and published" do
@@ -128,6 +130,7 @@ describe CatalogController do
       let!(:lti_group) { @controller.user_session[:virtual_groups].first }
       it "should show results for items visible to the lti virtual group" do
         mo = FactoryBot.create(:published_media_object, visibility: 'private', read_groups: [lti_group])
+        perform_enqueued_jobs(only: MediaObjectIndexingJob)
         get 'index', params: { :q => "read_access_virtual_group_ssim:#{lti_group}" }
         expect(response).to be_successful
         expect(response).to render_template('catalog/index')
@@ -141,6 +144,7 @@ describe CatalogController do
         @user = login_as 'public'
         @ip_address1 = Faker::Internet.ip_v4_address
         @mo = FactoryBot.create(:published_media_object, visibility: 'private', read_groups: [@ip_address1])
+        perform_enqueued_jobs(only: MediaObjectIndexingJob)
       end
       it "should show no results when no items are visible to the user's IP address" do
         get 'index', params: { :q => "" }
@@ -156,6 +160,7 @@ describe CatalogController do
         ip_address2 = Faker::Internet.ip_v4_address
         allow_any_instance_of(ActionDispatch::Request).to receive(:remote_ip).and_return(ip_address2)
         mo2 = FactoryBot.create(:published_media_object, visibility: 'private', read_groups: [ip_address2+'/30'])
+        perform_enqueued_jobs(only: MediaObjectIndexingJob)
         get 'index', params: { :q => "" }
         expect(assigns(:response).documents.count).to be >= 1
         expect(assigns(:response).documents.map(&:id)).to include mo2.id
@@ -164,6 +169,7 @@ describe CatalogController do
         ip_address3 = Faker::Internet.ip_v6_address
         allow_any_instance_of(ActionDispatch::Request).to receive(:remote_ip).and_return(ip_address3)
         mo3 = FactoryBot.create(:published_media_object, visibility: 'private', read_groups: [ip_address3+'/ffff:ffff:ffff:ffff:ffff:ffff:ffff:ff00'])
+        perform_enqueued_jobs(only: MediaObjectIndexingJob)
         get 'index', params: { :q => "" }
         expect(assigns(:response).documents.count).to be >= 1
         expect(assigns(:response).documents.map(&:id)).to include mo3.id

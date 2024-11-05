@@ -304,6 +304,13 @@ class MediaObject < ActiveFedora::Base
     solr_doc['all_comments_ssim'] = all_comments
   end
 
+  def fill_in_solr_fields_needing_leases(solr_doc)
+    solr_doc['read_access_virtual_group_ssim'] = virtual_read_groups + leases('external').map(&:inherited_read_groups).flatten
+    solr_doc['read_access_ip_group_ssim'] = collect_ips_for_index(ip_read_groups + leases('ip').map(&:inherited_read_groups).flatten)
+    solr_doc[Hydra.config.permissions.read.group] ||= []
+    solr_doc[Hydra.config.permissions.read.group] += solr_doc['read_access_ip_group_ssim']
+  end
+
   # Enqueue background job to do a full indexing including more costly fields that read from children
   def enqueue_long_indexing
     MediaObjectIndexingJob.perform_later(id)
@@ -314,10 +321,6 @@ class MediaObject < ActiveFedora::Base
       solr_doc[ActiveFedora.index_field_mapper.solr_name("workflow_published", :facetable, type: :string)] = published? ? 'Published' : 'Unpublished'
       solr_doc[ActiveFedora.index_field_mapper.solr_name("collection", :symbol, type: :string)] = collection.name if collection.present?
       solr_doc[ActiveFedora.index_field_mapper.solr_name("unit", :symbol, type: :string)] = collection.unit if collection.present?
-      solr_doc['read_access_virtual_group_ssim'] = virtual_read_groups + leases('external').map(&:inherited_read_groups).flatten
-      solr_doc['read_access_ip_group_ssim'] = collect_ips_for_index(ip_read_groups + leases('ip').map(&:inherited_read_groups).flatten)
-      solr_doc[Hydra.config.permissions.read.group] ||= []
-      solr_doc[Hydra.config.permissions.read.group] += solr_doc['read_access_ip_group_ssim']
       solr_doc["title_ssort"] = self.title
       solr_doc["creator_ssort"] = Array(self.creator).join(', ')
       solr_doc["date_ingested_ssim"] = self.create_date.strftime "%F" if self.create_date.present?
@@ -330,6 +333,7 @@ class MediaObject < ActiveFedora::Base
       solr_doc['section_id_ssim'] = section_ids
       if include_child_fields
         fill_in_solr_fields_that_need_sections(solr_doc)
+        fill_in_solr_fields_needing_leases(solr_doc)
       elsif id.present? # avoid error in test suite
         # Fill in other identifier so these values aren't stripped from the solr doc while waiting for the background job
         mf_docs = ActiveFedora::SolrService.query("isPartOf_ssim:#{id}", rows: 100_000)
