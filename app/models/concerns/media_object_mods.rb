@@ -496,6 +496,11 @@ module MediaObjectMods
   end
 
   def delete_all_values(*field_name)
+    # Manually mark the content as changed when deleteing values.
+    # Adding values causes calls into active_fedora-datastreams which markes the content as changed.
+    # The ng_xml_will_change! call here covers the case when all values are deleted and none are added back.
+    # This also markes the content as changed.
+    descMetadata.ng_xml_will_change!
     descMetadata.find_by_terms(*field_name).each &:remove
   end
 end
