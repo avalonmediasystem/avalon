@@ -64,9 +64,11 @@ module Avalon
         resource '/master_files/*/*.m3u8', headers: :any, credentials: true, methods: [:get, :head]
         resource '/master_files/*/captions', headers: :any, methods: [:get]
         resource '/master_files/*/supplemental_files/*', headers: :any, methods: [:get]
-        resource '/playlists/*/manifest.json', headers: :any, credentials: true, methods: [:get]
-        resource '/timelines/*/manifest.json', headers: :any, methods: [:get, :post]
+        resource '/playlists/*/manifest*', headers: :any, credentials: true, methods: [:get]
+        resource '/timelines/*/manifest*', headers: :any, methods: [:get, :post]
         resource '/master_files/*/search', headers: :any, methods: [:get]
+        resource '/rails/active_storage/blobs/*/*/*', headers: :any, methods: [:get]
+        resource '/rails/active_storage/disk/*/*', headers: :any, methods: [:get]
       end
     end
 
