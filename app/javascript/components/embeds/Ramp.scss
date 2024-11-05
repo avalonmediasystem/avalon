@@ -18,18 +18,40 @@
   font-family: Arial, Helvetica, sans-serif;
 }
 
-.ramp--media_player {
+// Scope CSS to only embedded player
+.embedded-ramp .ramp--media_player {
   .video-js .vjs-big-play-button {
     left: 55% !important;
   }
+
   .video-js.vjs-audio-only-mode {
+    // Player height to the height of iframe container in embeds
+    max-height: 40px !important;
+
     // Disable tooltips for volume and progress in embedded
     // audio. Viewport is too small to display them.
     .vjs-volume-panel:hover .vjs-mouse-display,
-    .vjs-custom-progress-bar .tooltiptext {
+    .vjs-custom-progress-bar .vjs-time-tooltip {
       display: none !important;
     }
+
+    // Display progress-bar inline with player controls
+    .vjs-custom-progress-bar {
+      position: relative;
+      top: 0.475em;
+      margin: 0 0.15em;
+    }
+
+    // Set control-bar to player's width and remove spacers & offset
+    .vjs-control-bar {
+      &::after, &::before {
+        content: none;
+      }
+      width: 100% !important;
+      left: 0;
+    }
   }
+
   @media (max-width: 585px) {
     .video-js .vjs-big-play-button {
       scale: 1.5;
