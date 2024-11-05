@@ -196,3 +196,16 @@ ActiveFedora::Associations::IndirectlyContainsAssociation.class_eval do
       owner.save
     end
 end
+
+ActiveFedora::WithMetadata::MetadataNode.class_eval do
+  # @param file [ActiveFedora::File]
+  def initialize(file)
+    @file = file
+    super(file.uri, ldp_source.graph)
+    # Override the guard to ensure there is a type present in the class
+    return unless self.class.type.present? && !type.include?(self.class.type)
+    attribute_will_change!(:type) if type.present?
+    # Workaround for https://github.com/ActiveTriples/ActiveTriples/issues/123
+    get_values(:type) << self.class.type
+  end
+end

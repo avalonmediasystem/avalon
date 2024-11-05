@@ -63,7 +63,7 @@ gem 'samvera-persona', git: 'https://github.com/samvera-labs/samvera-persona.git
 gem 'speedy-af', git: 'https://github.com/samvera-labs/speedy_af.git', branch: 'empty_reflection'
 
 # Avalon Components
-gem 'avalon-workflow', git: "https://github.com/avalonmediasystem/avalon-workflow.git", tag: 'avalon-r6.5'
+gem 'avalon-workflow', git: "https://github.com/avalonmediasystem/avalon-workflow.git", branch: 'failed_update_setup_edit'
 
 # Authentication & Authorization
 gem 'devise', '~> 4.8'

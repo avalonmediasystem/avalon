@@ -19,9 +19,8 @@
 
     def execute context
       media_object = context[:media_object]
-      if ! context[:master_file_ids].nil?
+      if context[:master_file_ids].present?
         media_object.section_ids = context[:master_file_ids]
-        media_object.save
       end
       context
     end
