@@ -40,7 +40,7 @@ class SpeedyAF::Proxy::MasterFile < SpeedyAF::Base
                  structuralMetadata.section_title
                elsif title.present?
                  title
-               elsif file_location.present? && (media_object.section_ids.size > 1)
+               elsif file_location.present?
                  file_location.split("/").last
                end
     mf_title.blank? ? nil : mf_title
