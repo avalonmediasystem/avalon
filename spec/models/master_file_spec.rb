@@ -508,7 +508,7 @@ describe MasterFile do
       end
 
       it "should have an appropriate title for the embed code with no label (only one section)" do
-        expect( subject.embed_title ).to eq( "test - video.mp4" )
+        expect( subject.embed_title ).to eq( "test" )
       end
 
       it 'should have an appropriate title for the embed code with no label (more than 1 section)' do

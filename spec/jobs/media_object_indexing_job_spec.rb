@@ -27,7 +27,7 @@ describe MediaObjectIndexingJob do
       expect(before_doc["all_comments_ssim"]).to be_blank
       job.perform(media_object.id)
       after_doc = ActiveFedora::SolrService.query("id:#{media_object.id}").first
-      expect(after_doc["all_comments_ssim"]).to eq ["[#{master_file.display_title}] #{comment}"]
+      expect(after_doc["all_comments_ssim"]).to eq [comment]
     end
   end
 end
