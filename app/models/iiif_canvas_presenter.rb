@@ -27,7 +27,7 @@ class IiifCanvasPresenter
   delegate :derivative_ids, :id, to: :master_file
 
   def to_s
-    master_file.display_title
+    master_file.structure_title
   end
 
   def range
