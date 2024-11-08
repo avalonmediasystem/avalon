@@ -1,5 +1,3 @@
-version: '3.4'
-
 volumes:
   database:
   fedora:
@@ -162,7 +160,8 @@ services:
       - SETTINGS__FFMPEG__PATH=/usr/bin/ffmpeg
       - SETTINGS__REDIS__HOST=redis-test
       - SETTINGS__REDIS__PORT=6379
-      - FEDORA_URL=http://fedora-test:8080/fedora/rest
+      - FEDORA_URL=http://fedoraAdmin:fedoraAdmin@fedora-test:8080/fcrepo/rest
+      - FEDORA_BASE_PATH=/test
       - SOLR_URL=http://solr-test:8983/solr/avalon
       - RAILS_ENV=test
       - BUNDLE_FLAGS=--with aws test postgres --without production
