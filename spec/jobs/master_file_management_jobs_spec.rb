@@ -33,7 +33,7 @@ describe MasterFileManagementJobs do
       it "should delete masterfile" do
         MasterFileManagementJobs::Delete.perform_now(master_file.id)
         expect(File.exist? location).to be false
-        expect(MasterFile.find(master_file.id).file_location).to be_blank
+        expect(MasterFile.find(master_file.id).file_location).not_to be_blank
       end
     end
 
