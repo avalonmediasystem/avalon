@@ -176,7 +176,7 @@ class IiifManifestPresenter
 
   def display_search_linked(solr_field, values)
     Array(values).collect do |value|
-      url = Rails.application.routes.url_helpers.blacklight_url({ "f[#{solr_field}][]" => RSolr.solr_escape(value) })
+      url = Rails.application.routes.url_helpers.blacklight_url({ "f[#{solr_field}][]" => value })
       "<a href='#{url}'>#{value}</a>"
     end
   end
