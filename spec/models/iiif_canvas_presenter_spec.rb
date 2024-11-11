@@ -47,6 +47,33 @@ describe IiifCanvasPresenter do
     end
   end
 
+  describe "#to_s" do
+    subject { presenter.to_s }
+
+    context 'single-section item' do
+      it 'prioritizes MediaObject#title for section title' do
+        expect(subject).to eq master_file.structure_title
+        expect(subject).to eq media_object.title
+        expect(subject).to_not eq master_file.display_title
+      end
+    end
+
+    context 'multi-section item' do
+      let(:second) { FactoryBot.build(:master_file, media_object: media_object, derivatives: [derivative]) }
+
+      before :each do
+        media_object.sections = [master_file, second]
+        media_object.save!
+      end
+
+      it 'prioritizes MasterFile#display_title for section titles' do
+        expect(subject).to eq master_file.structure_title
+        expect(subject).to eq master_file.display_title
+        expect(subject).to_not eq media_object.title
+      end
+    end
+  end
+
   describe '#display_content' do
     subject { presenter.display_content.first }
 
