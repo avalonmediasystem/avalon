@@ -65,7 +65,8 @@ class SearchBuilder < Blacklight::SearchBuilder
     transcripts_present = SupplementalFile.with_tag('transcript').any?
 
     # List of fields for displaying on search results (Blacklight index fields)
-    fl = ['id', 'has_model_ssim', 'title_tesi', 'date_issued_ssi', 'creator_ssim', 'abstract_ssi', 'duration_ssi', 'section_id_ssim', 'avalon_resource_type_ssim']
+    fl = ['id', 'has_model_ssim', 'title_tesi', 'date_issued_ssi', 'creator_ssim', 'abstract_ssi', 'duration_ssi', 'section_id_ssim', 'avalon_resource_type_ssim',
+          'descMetadata_modified_dtsi', 'timestamp']
 
     # Add a field for matching child sections
     fl << "sections:[subquery]"

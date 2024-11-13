@@ -106,8 +106,8 @@ class Derivative < ActiveFedora::Base
     derivative.managed = managed
     derivative.track_id = output[:id]
     derivative.duration = output[:duration].to_i
-    # FIXME: Implement this in ActiveEncode
-    # derivative.mime_type = output[:mime_type]
+    # FIXME: Implement this in ActiveEncode or determine mimetype here
+    derivative.mime_type = output[:mime_type].presence
     derivative.quality = output[:label].sub(/quality-/, '')
 
     derivative.audio_bitrate = output[:audio_bitrate]

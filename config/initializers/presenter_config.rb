@@ -103,6 +103,10 @@ Rails.application.config.to_prepare do
 	ng_xml.xpath(*args)
       end
     end
+
+    sp.config IndexedFile do
+      self.defaults = { original_name: nil }
+    end
   end
 
   SpeedyAF::Base.class_eval do
@@ -115,4 +119,7 @@ Rails.application.config.to_prepare do
       @real_object
     end
   end
+
+  # Reduce from 10_000_000 to reduce solr QTimes from triple digits to single digits
+  SpeedyAF::Base::SOLR_ALL = 100_000
 end

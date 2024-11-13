@@ -90,8 +90,8 @@ class AccessControlStep < Avalon::Workflow::BasicStep
     end
     if context['remove_lease'].present?
       limited_access_submit = true
-      lease = Lease.find( context['remove_lease'] )
-      media_object.governing_policies.delete( lease )
+      lease = Lease.find(context['remove_lease'])
+      media_object.governing_policies.delete(lease)
       lease.destroy
     end
 
@@ -108,21 +108,6 @@ class AccessControlStep < Avalon::Workflow::BasicStep
       end
     end
 
-    media_object.save!
-
-    #Setup these values in the context because the edit partial is being rendered without running the controller's #edit (VOV-2978)
-    media_object.reload
-    context[:users] = media_object.read_users
-    context[:groups] = media_object.read_groups
-    context[:virtual_groups] = media_object.virtual_read_groups
-    context[:ip_groups] = media_object.ip_read_groups
-    context[:group_leases] = media_object.leases('local')
-    context[:user_leases] = media_object.leases('user')
-    context[:virtual_leases] = media_object.leases('external')
-    context[:ip_leases] = media_object.leases('ip')
-    context[:addable_groups] = Admin::Group.non_system_groups.reject { |g| context[:groups].include? g.name }
-    context[:addable_courses] = Course.all.reject { |c| context[:virtual_groups].include? c.context_id }
-    context[:lending_period] = media_object.lending_period
     context
   end
 

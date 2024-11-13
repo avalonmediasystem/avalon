@@ -19,6 +19,10 @@
 }
 
 .ramp--all-components {
+  .ramp--structured-nav.display>.ramp--structured-nav__sections {
+    align-items: center;
+  }
+
   .ramp--media_player {
     .video-js .vjs-big-play-button {
       left: 55% !important;
@@ -278,7 +282,8 @@
   .ramp--structured-nav {
     margin-top: 0px;
     min-width: inherit;
-    max-height: inherit;
+    max-height: 100%;
+    overflow: hidden;
   }
 
   .tab-pane {
@@ -323,6 +328,15 @@
   }
 
   .ramp--playlist-accordion {
+    // Set accordion with to fit player's minimum width
+    min-width: 490px;
+    &.mobile-view {
+      min-width: 380px;
+    }
+
+    border-radius: 0 0 0.25em 0.25em;
+    border-top: none;
+
     .accordion .card {
       border: none;
       border-bottom: 1px solid rgba(0, 0, 0, 0.125);

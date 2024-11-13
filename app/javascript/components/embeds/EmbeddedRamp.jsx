@@ -110,12 +110,14 @@ const Ramp = ({
   };
 
   return (
-  	<IIIFPlayer manifestUrl={manifestUrl}
-      customErrorMessage='This embed encountered an error. Please refresh or contact an administrator.'
-      startCanvasId={startCanvasId}
-      startCanvasTime={startCanvasTime}>
-      <MediaPlayer enableFileDownload={false} enablePlaybackRate={is_video} enableTitleLink={is_video} />
-    </IIIFPlayer>
+    <div className='embedded-ramp'>
+      <IIIFPlayer manifestUrl={manifestUrl}
+        customErrorMessage='This embed encountered an error. Please refresh or contact an administrator.'
+        startCanvasId={startCanvasId}
+        startCanvasTime={startCanvasTime}>
+        <MediaPlayer enableFileDownload={false} enablePlaybackRate={is_video} enableTitleLink={is_video} />
+      </IIIFPlayer>
+    </div>
   );
 };
 

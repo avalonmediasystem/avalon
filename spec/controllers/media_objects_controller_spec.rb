@@ -359,7 +359,7 @@ describe MediaObjectsController, type: :controller do
           expect(new_media_object.bibliographic_id).to eq({source: "local", id: bib_id})
           expect(new_media_object.title).to eq ex_media_object.title
           expect(new_media_object.creator).to eq [] #creator no longer required, so supplied value won't be used
-          expect(new_media_object.date_issued).to eq ex_media_object.date_issued
+          expect(new_media_object.date_issued).to eq nil #date_issued no longer required, so supplied value won't be used
         end
         it "should create a new media_object, removing invalid data for non-required fields" do
           media_object = FactoryBot.create(:media_object)
@@ -618,13 +618,12 @@ describe MediaObjectsController, type: :controller do
         media_object.save
         login_user media_object.collection.managers.first
 
-        put :update, params: { id: media_object.id, step: 'resource-description', media_object: {title: '', date_issued: ''} }
+        put :update, params: { id: media_object.id, step: 'resource-description', media_object: {title: ''} }
         expect(response.response_code).to eq(200)
         expect(flash[:error]).not_to be_empty
         media_object.reload
         expect(media_object.valid?).to be_truthy
         expect(media_object.title).not_to be_blank
-        expect(media_object.date_issued).not_to be_blank
       end
     end
 
@@ -1374,6 +1373,23 @@ describe MediaObjectsController, type: :controller do
       expect(flash[:notice]).to include('3 media objects')
       media_objects.each {|mo| expect(MediaObject.exists?(mo.id)).to be_falsey }
     end
+
+    it "should remove child supplemental files" do
+      supplemental_file = FactoryBot.create(:supplemental_file)
+      media_object = FactoryBot.create(:media_object, collection: collection, supplemental_files: [supplemental_file] )
+      expect(SupplementalFile.exists?(supplemental_file.id)).to be_truthy
+      delete :destroy, params: { id: media_object.id }
+      expect(SupplementalFile.exists?(supplemental_file.id)).to be_falsey
+    end
+
+    it "should remove section supplemental files" do
+      supplemental_file = FactoryBot.create(:supplemental_file)
+      media_object = FactoryBot.create(:media_object, collection: collection )
+      master_file = FactoryBot.create(:master_file, media_object: media_object, supplemental_files: [supplemental_file])
+      expect(SupplementalFile.exists?(supplemental_file.id)).to be_truthy
+      delete :destroy, params: { id: media_object.id }
+      expect(SupplementalFile.exists?(supplemental_file.id)).to be_falsey
+    end
   end
 
   describe "#confirm_remove" do
@@ -1453,7 +1469,6 @@ describe MediaObjectsController, type: :controller do
         it "item is invalid" do
           media_object = FactoryBot.create(:media_object, collection: collection)
           media_object.title = nil
-          media_object.date_issued = nil
           media_object.workflow.last_completed_step = 'file-upload'
           media_object.save!(validate: false)
           get 'update_status', params: { id: media_object.id, status: 'publish' }
@@ -1465,7 +1480,6 @@ describe MediaObjectsController, type: :controller do
         it "item is invalid and no last_completed_step" do
           media_object = FactoryBot.create(:media_object, collection: collection)
           media_object.title = nil
-          media_object.date_issued = nil
           media_object.workflow.last_completed_step = ''
           media_object.save!(validate: false)
           get 'update_status', params: { id: media_object.id, status: 'publish' }
@@ -1487,7 +1501,6 @@ describe MediaObjectsController, type: :controller do
       it 'unpublishes invalid items' do
         media_object = FactoryBot.create(:published_media_object, collection: collection)
         media_object.title = nil
-        media_object.date_issued = nil
         media_object.save!(validate: false)
         get 'update_status', params: { id: media_object.id, status: 'unpublish' }
         media_object.reload
@@ -1497,7 +1510,6 @@ describe MediaObjectsController, type: :controller do
       it 'unpublishes invalid items and no last completed step' do
         media_object = FactoryBot.create(:published_media_object, collection: collection)
         media_object.title = nil
-        media_object.date_issued = nil
         media_object.workflow.last_completed_step = ''
         media_object.save!(validate: false)
         get 'update_status', params: { id: media_object.id, status: 'unpublish' }
@@ -1853,6 +1865,34 @@ describe MediaObjectsController, type: :controller do
   end
 
   describe '#manifest' do
+    before do
+      login_as :administrator
+    end
+
+    context 'with supplemental files' do
+      let(:mf_supplemental_file) { FactoryBot.create(:supplemental_file) }
+      let(:mo_supplemental_file) { FactoryBot.create(:supplemental_file) }
+      let(:master_file) { FactoryBot.create(:master_file, media_object: media_object, supplemental_files: [mf_supplemental_file]) }
+      let(:media_object) { FactoryBot.create(:published_media_object, supplemental_files: [mo_supplemental_file]) }
+
+      before do
+        mf_supplemental_file.parent_id = master_file.id
+        mo_supplemental_file.parent_id = media_object.id
+        mf_supplemental_file.save
+        mo_supplemental_file.save
+      end
+
+      it 'should link to proper object route in rendering section' do
+        get 'manifest', params: { id: media_object.id, format: 'json' }
+        parsed_response = JSON.parse(response.body)
+        mo_rendering = parsed_response['rendering'].first
+        expect(mo_rendering['id']).to eq Rails.application.routes.url_helpers.media_object_supplemental_file_url(id: mo_supplemental_file.id, media_object_id: media_object.id)
+        item = parsed_response['items'].first
+        mf_rendering = item['rendering'].first
+        expect(mf_rendering['id']).to eq Rails.application.routes.url_helpers.master_file_supplemental_file_url(id: mf_supplemental_file.id, master_file_id: master_file.id)
+      end
+    end
+ 
     context 'read from solr' do
       let!(:master_file) { FactoryBot.create(:master_file, :with_derivative, media_object: media_object) }
       let!(:media_object) { FactoryBot.create(:published_media_object, visibility: 'public') }

@@ -23,7 +23,7 @@
 }
 
 .modal-open .modal {
-  height: 100vh;
+  height: calc(100vh - 80px);
   overflow: scroll;
 }
 

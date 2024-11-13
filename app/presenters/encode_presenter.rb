@@ -29,7 +29,7 @@ class EncodePresenter
   delegate :id, :adapter, :display_title, :master_file_id, :media_object_id, :created_at, :progress, to: :encode_record
 
   def status
-    @encode_record.state.capitalize
+    @encode_record.state&.capitalize
   end
 
   def global_id

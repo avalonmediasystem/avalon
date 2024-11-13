@@ -13,8 +13,11 @@
  *   specific language governing permissions and limitations under the License.
  * ---  END LICENSE_HEADER BLOCK  ---
 */
+import HomePage from '../pageObjects/homePage';
 
 context('Browse', () => {
+	const homePage = new HomePage();
+
 	it('should use the base URL', () => {
 		cy.visit('/'); // This will navigate to CYPRESS_BASE_URL
 		cy.screenshot()
@@ -24,12 +27,12 @@ context('Browse', () => {
   it('.browse_navigation()', () => {
 		cy.login('administrator')
 		cy.visit('/')
-		cy.contains('Browse').click()
+		homePage.getBrowseNavButton().click()
   })
 
   it('Verify searching for an item by keyword - @T9c1158fb', () => {
 	cy.visit('/')
-	cy.get("li[class='nav-item'] a[class='nav-link']").click()
+	homePage.getBrowseNavButton().click()
 	//create a dynamic item here and use a portion of it as a search keyword
 	const media_object_title = Cypress.env('MEDIA_OBJECT_TITLE')
 	cy.get("input.global-search-input[placeholder='Search this site']").first().type(media_object_title).should('have.value', media_object_title) // Only yield inputs within form
@@ -41,7 +44,7 @@ context('Browse', () => {
 
 it('Verify browsing items by a format - @Tb477685f', () => {
 	cy.visit('/')
-	cy.get("li[class='nav-item'] a[class='nav-link']").click()
+	homePage.getBrowseNavButton().click()
 	cy.contains('button', 'Format').click()
 	cy.contains('a', 'Moving Image').click()
 	cy.get('.constraint-value').within(() => {

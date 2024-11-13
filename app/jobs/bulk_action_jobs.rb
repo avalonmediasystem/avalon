@@ -134,6 +134,9 @@ module BulkActionJobs
       successes = []
       documents.each do |id|
         media_object = MediaObject.find(id)
+        supplemental_files = media_object.supplemental_files
+        DeleteChildFiles.perform_now(supplemental_files, nil)
+
         if media_object.destroy
           successes += [media_object]
         else
@@ -141,6 +144,19 @@ module BulkActionJobs
         end
       end
       return successes, errors
+    end
+  end
+
+  class DeleteChildFiles < ActiveJob::Base
+    def perform(documents, _params)
+      documents.each do |doc|
+        begin
+          doc.destroy
+        rescue
+          logger.error("Failed to delete supplemental file #{doc.id}")
+          next
+        end
+      end
     end
   end
 

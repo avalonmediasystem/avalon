@@ -11,5 +11,15 @@ Rails.application.config.to_prepare do
   else
     settings['file_system'] = { name: 'File Dropbox', home: Settings.dropbox.path }
   end
+  if Settings.dropbox.sharepoint
+    settings['sharepoint'] = { client_id: Settings.dropbox.sharepoint.client_id,
+                               client_secret: Settings.dropbox.sharepoint.client_secret,
+                               tenant_id: Settings.dropbox.sharepoint.tenant_id,
+                               grant_type: Settings.dropbox.sharepoint.grant_type,
+                               scope: Settings.dropbox.sharepoint.scope,
+                               redirect_uri: Settings.dropbox.sharepoint.redirect_uri,
+                               filter_terms: Settings.dropbox.sharepoint.filter_terms
+                             }
+  end
   BrowseEverything.configure(settings)
 end

@@ -5,7 +5,7 @@ gem 'bootsnap', require: false
 gem 'listen'
 gem 'net-smtp', require: false
 gem 'psych', '< 4'
-gem 'rails', '~>7.0.8'
+gem 'rails', '~>7.2.2'
 gem 'sprockets', '~>3.7.2'
 #gem 'sprockets-rails', require: 'sprockets/railtie'
 gem 'sqlite3'
@@ -13,7 +13,7 @@ gem 'sqlite3'
 gem 'mail', '> 2.8.0.1'
 
 # Assets
-gem 'bootstrap', '~> 4.0'
+gem 'bootstrap', '4.6.2'
 gem 'coffee-rails', '~> 5.0'
 gem "font-awesome-rails"
 gem 'jquery-datatables'
@@ -29,11 +29,13 @@ gem 'terser'
 gem 'shakapacker'
 
 # Core Samvera
-gem 'active-fedora', '~> 14.0', '>= 14.0.1'
-gem 'active_fedora-datastreams', '~> 0.5'
-gem 'hydra-head', '~> 12.0'
+#gem 'active-fedora', '~> 15.0'
+#gem 'active_fedora-datastreams', '~> 0.5'
+gem 'active-fedora', git: 'https://github.com/samvera/active_fedora.git', branch: 'fedora6_rebase'
+gem 'active_fedora-datastreams', git: 'https://github.com/samvera-labs/active_fedora-datastreams.git', branch: 'fedora6_rebase'
+gem 'hydra-head', '~> 13.0'
 gem 'ldp', '~> 1.1.0'
-gem 'noid-rails', '~> 3.1'
+gem 'noid-rails', '~> 3.2'
 gem 'om', git: 'https://github.com/avalonmediasystem/om.git', tag: 'v3.2.0-ruby3'
 gem 'rdf-rdfxml'
 
@@ -45,11 +47,11 @@ gem 'rsolr', '~> 2.0'
 
 # Rails & Samvera Plugins
 gem 'about_page', git: 'https://github.com/avalonmediasystem/about_page.git', tag: 'avalon-r6.5'
-gem 'active_annotations', '~> 0.4'
+gem 'active_annotations', '~> 0.5.0'
 gem 'activerecord-session_store', '>= 2.0.0'
 gem 'acts_as_list'
 gem 'api-pagination'
-gem 'avalon-about', git: 'https://github.com/avalonmediasystem/avalon-about.git', tag: 'avalon-r7.7'
+gem 'avalon-about', git: 'https://github.com/avalonmediasystem/avalon-about.git', tag: 'avalon-r8.0'
 #gem 'bootstrap-sass', '< 3.4.1' # Pin to less than 3.4.1 due to change in behavior with popovers
 gem 'bootstrap-toggle-rails'
 gem 'bootstrap_form'
@@ -57,11 +59,11 @@ gem 'iiif_manifest', '~> 1.6'
 gem 'rack-cors', require: 'rack/cors'
 gem 'rails_same_site_cookie'
 gem 'recaptcha', require: 'recaptcha/rails'
-gem 'samvera-persona', '~> 0.4', '>= 0.4.1'
-gem 'speedy-af', '~> 0.3'
+gem 'samvera-persona', '~> 0.5.0'
+gem 'speedy-af', git: 'https://github.com/samvera-labs/speedy_af.git', branch: 'empty_reflection'
 
 # Avalon Components
-gem 'avalon-workflow', git: "https://github.com/avalonmediasystem/avalon-workflow.git", tag: 'avalon-r6.5'
+gem 'avalon-workflow', git: "https://github.com/avalonmediasystem/avalon-workflow.git", tag: 'avalon-r8.0'
 
 # Authentication & Authorization
 gem 'devise', '~> 4.8'
@@ -71,14 +73,13 @@ gem 'net-ldap'
 gem 'omniauth', '~> 2.0'
 gem 'omniauth-identity', '>= 2.0.0'
 gem 'omniauth-lti', git: "https://github.com/avalonmediasystem/omniauth-lti.git", tag: 'avalon-r4'
-gem "omniauth-saml", "~> 2.0"
+gem "omniauth-saml", "~> 2.0", ">= 2.2.1"
 
 # Media Access & Transcoding
-gem 'active_encode', '>= 1.2.2'
+gem 'active_encode', '~> 1.2'
 gem 'audio_waveform-ruby', '~> 1.0.7', require: 'audio_waveform'
-gem 'browse-everything', git: "https://github.com/avalonmediasystem/browse-everything.git", branch: 'v1.2-avalon'
+gem 'browse-everything', git: "https://github.com/avalonmediasystem/browse-everything.git", branch: 'sharepoint_integration'
 gem 'fastimage'
-gem 'mediainfo', git: "https://github.com/avalonmediasystem/mediainfo.git", tag: 'v0.7.1-avalon'
 gem 'rest-client', '~> 2.0'
 gem 'roo'
 gem 'wavefile', '~> 1.0.1'

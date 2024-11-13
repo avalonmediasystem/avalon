@@ -15,6 +15,7 @@
 require 'fileutils'
 require 'hooks'
 require 'open-uri'
+require 'avalon/ffprobe'
 require 'avalon/file_resolver'
 require 'avalon/m3u8_reader'
 
@@ -164,6 +165,7 @@ class MasterFile < ActiveFedora::Base
   after_save :update_stills_from_offset!, if: Proc.new { |mf| mf.previous_changes.include?("poster_offset") || mf.previous_changes.include?("thumbnail_offset") }
   before_destroy :stop_processing!
   before_destroy :update_parent!
+  before_destroy :remove_child_files
   define_hooks :after_transcoding, :after_processing
   after_update_index { |mf| mf.media_object&.enqueue_long_indexing }
 
@@ -562,11 +564,13 @@ class MasterFile < ActiveFedora::Base
     ActiveEncodeJobs::CancelEncodeJob.perform_later(workflow_id, id) if workflow_id.present? && !finished_processing?
   end
 
-  protected
-
-  def mediainfo
-    Mediainfo.new(FileLocator.new(file_location).location, headers: @auth_header)
+  # Delete does not trigger callbacks so override method to ensure deletion of child supplemental files
+  def delete
+    remove_child_files
+    super
   end
+
+  protected
 
   def find_frame_source(options={})
     options[:offset] ||= 2000
@@ -589,7 +593,7 @@ class MasterFile < ActiveFedora::Base
   end
 
   def create_frame_source_hls_temp_file(offset)
-    playlist_url = self.stream_details[:stream_hls].find { |d| d[:quality] == 'high' }[:url]
+    playlist_url = self.hls_streams.find { |d| d[:quality] == 'high' || d[:quality] == 'medium' || d[:quality] == 'low' }[:url]
     secure_url = SecurityHandler.secure_url(playlist_url, target: self.id)
     playlist = Avalon::M3U8Reader.read(secure_url)
     details = playlist.at(offset)
@@ -722,33 +726,33 @@ class MasterFile < ActiveFedora::Base
   end
 
   def reloadTechnicalMetadata!
-    #Reset mediainfo
-    @mediainfo = mediainfo
+    # Reset ffprobe
+    @ffprobe = Avalon::FFprobe.new(FileLocator.new(file_location))
 
     # Formats like MP4 can be caught as both audio and video
     # so the case statement flows in the preferred order
-    self.file_format = if @mediainfo.video?
+    self.file_format = if @ffprobe.video?
                          'Moving image'
-                       elsif @mediainfo.audio?
+                       elsif @ffprobe.audio?
                          'Sound'
                        else
                          'Unknown'
                        end
 
     self.duration = begin
-      @mediainfo.duration.to_s
+      @ffprobe.duration.to_s
     rescue
       nil
     end
 
-    unless @mediainfo.video.streams.empty?
-      display_aspect_ratio_s = @mediainfo.video.streams.first.display_aspect_ratio
+    unless !@ffprobe.video?
+      display_aspect_ratio_s = @ffprobe.display_aspect_ratio
       if ':'.in? display_aspect_ratio_s
         self.display_aspect_ratio = display_aspect_ratio_s.split(/:/).collect(&:to_f).reduce(:/).to_s
       else
         self.display_aspect_ratio = display_aspect_ratio_s
       end
-      self.original_frame_size = @mediainfo.video.streams.first.frame_size
+      self.original_frame_size = @ffprobe.original_frame_size
     end
   end
 
@@ -790,6 +794,10 @@ class MasterFile < ActiveFedora::Base
     if !media_object.save
       logger.error "Failed when updating media object #{media_object.id} while destroying master file #{self.id}"
     end
+  end
+
+  def remove_child_files
+    BulkActionJobs::DeleteChildFiles.perform_later(supplemental_files, nil)
   end
 
   private

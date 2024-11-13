@@ -246,6 +246,8 @@ class MasterFilesController < ApplicationController
     end
     if content
       send_data content, :filename => "#{params[:type]}-#{@master_file.id.split(':')[1]}", :disposition => :inline, :type => mimeType
+    elsif @master_file.is_video?
+      redirect_to ActionController::Base.helpers.asset_path('video_icon.png')
     else
       redirect_to ActionController::Base.helpers.asset_path('audio_icon.png')
     end
@@ -342,7 +344,9 @@ class MasterFilesController < ApplicationController
         # Use an AWS presigned URL to facilitate direct download of the derivative to avoid
         # having to download the file to the server as a tmp file and then sending that to
         # the client. Doing this reduces latency and server load.
-        redirect_to FileLocator::S3File.new(path).download_url
+        # Rails 7.0 adds a config option to protect against "open redirects". We override
+        # that here in case the s3 bucket is not local.
+        redirect_to FileLocator::S3File.new(path).download_url, allow_other_host: true
       else
         send_file path, filename: File.basename(path), disposition: 'attachment'
       end
@@ -366,10 +370,10 @@ protected
   end
 
   def set_masterfile_proxy
-    if params[:id].blank? || SpeedyAF::Proxy::MasterFile.find(params[:id]).nil?
+    @master_file = SpeedyAF::Proxy::MasterFile.find(params[:id], load_reflections: true)
+    if params[:id].blank? || @master_file.nil?
       flash[:notice] = "MasterFile #{params[:id]} does not exist"
     end
-    @master_file = SpeedyAF::Proxy::MasterFile.find(params[:id])
   end
 
   # return deflated waveform content. deflate only if necessary

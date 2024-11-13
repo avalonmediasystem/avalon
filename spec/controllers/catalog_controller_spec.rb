@@ -15,6 +15,8 @@
 require 'rails_helper'
 
 describe CatalogController do
+  include ActiveJob::TestHelper
+
   describe "#index" do
     describe "as an un-authenticated user" do
       it "should show results for items that are public and published" do
@@ -128,6 +130,7 @@ describe CatalogController do
       let!(:lti_group) { @controller.user_session[:virtual_groups].first }
       it "should show results for items visible to the lti virtual group" do
         mo = FactoryBot.create(:published_media_object, visibility: 'private', read_groups: [lti_group])
+        perform_enqueued_jobs(only: MediaObjectIndexingJob)
         get 'index', params: { :q => "read_access_virtual_group_ssim:#{lti_group}" }
         expect(response).to be_successful
         expect(response).to render_template('catalog/index')
@@ -141,6 +144,7 @@ describe CatalogController do
         @user = login_as 'public'
         @ip_address1 = Faker::Internet.ip_v4_address
         @mo = FactoryBot.create(:published_media_object, visibility: 'private', read_groups: [@ip_address1])
+        perform_enqueued_jobs(only: MediaObjectIndexingJob)
       end
       it "should show no results when no items are visible to the user's IP address" do
         get 'index', params: { :q => "" }
@@ -156,6 +160,7 @@ describe CatalogController do
         ip_address2 = Faker::Internet.ip_v4_address
         allow_any_instance_of(ActionDispatch::Request).to receive(:remote_ip).and_return(ip_address2)
         mo2 = FactoryBot.create(:published_media_object, visibility: 'private', read_groups: [ip_address2+'/30'])
+        perform_enqueued_jobs(only: MediaObjectIndexingJob)
         get 'index', params: { :q => "" }
         expect(assigns(:response).documents.count).to be >= 1
         expect(assigns(:response).documents.map(&:id)).to include mo2.id
@@ -164,6 +169,7 @@ describe CatalogController do
         ip_address3 = Faker::Internet.ip_v6_address
         allow_any_instance_of(ActionDispatch::Request).to receive(:remote_ip).and_return(ip_address3)
         mo3 = FactoryBot.create(:published_media_object, visibility: 'private', read_groups: [ip_address3+'/ffff:ffff:ffff:ffff:ffff:ffff:ffff:ff00'])
+        perform_enqueued_jobs(only: MediaObjectIndexingJob)
         get 'index', params: { :q => "" }
         expect(assigns(:response).documents.count).to be >= 1
         expect(assigns(:response).documents.map(&:id)).to include mo3.id
@@ -257,7 +263,7 @@ describe CatalogController do
         MediaObjectIndexingJob.perform_now(media_object.id)
       end
       ["avalon_resource_type_ssim", "creator_ssim", "date_sim", "genre_ssim", "series_ssim", "collection_ssim", "unit_ssim", "language_ssim", "has_captions_bsi", "has_transcripts_bsi",
-       "workflow_published_sim", "avalon_uploader_ssi", "read_access_group_ssim", "read_access_virtual_group_ssim", "date_digitized_ssim", "date_ingested_ssim"].each do |field|  
+       "workflow_published_sim", "avalon_uploader_ssi", "read_access_group_ssim", "read_access_virtual_group_ssim", "date_digitized_ssim", "date_ingested_ssim", "subject_ssim"].each do |field|  
         it "should facet results on #{field}" do
           query = Array(media_object.to_solr(include_child_fields:true)[field]).first
           # The following line is to check that the test is using a valid solr field name
@@ -291,8 +297,10 @@ describe CatalogController do
     end
 
     describe "atom feed" do
-      let!(:private_media_object) { FactoryBot.create(:media_object, visibility: 'private') }
-      let!(:public_media_object) { FactoryBot.create(:published_media_object, visibility: 'public') }
+      render_views
+
+      let!(:private_media_object) { FactoryBot.create(:media_object, visibility: 'private', other_identifier: [{ id: "GR12345678", source: 'local' }]) }
+      let!(:public_media_object) { FactoryBot.create(:published_media_object, visibility: 'public', other_identifier: [{ id: "GR12345678", source: 'local' }]) }
       let(:administrator) { FactoryBot.create(:administrator) }
 
       context "with an api key" do
@@ -305,8 +313,29 @@ describe CatalogController do
           expect(response).to be_successful
           expect(response).to render_template('catalog/index')
           expect(response.content_type).to eq "application/atom+xml; charset=utf-8"
-          expect(assigns(:response).documents.count).to eq 2
-          expect(assigns(:response).documents.map(&:id)).to match_array [private_media_object.id, public_media_object.id]
+          documents = assigns(:response).documents
+          expect(documents.count).to eq 2
+          expect(documents.map(&:id)).to match_array [private_media_object.id, public_media_object.id]
+          xml = Nokogiri::XML(response.body)
+          xml.remove_namespaces!
+          updated_times = xml.xpath('/feed/entry/updated/text()').map(&:to_s)
+          expect(updated_times).to be_present
+          expect(updated_times.all?(&:present?)).to eq true
+        end
+        it "should show results for all items" do
+          request.headers['Avalon-Api-Key'] = 'secret_token'
+          get 'index', params: { q: "other_identifier_sim:/GR[0-9]{8}/", sort: "timestamp+desc", rows: 100, page: 1, format: 'atom' }
+          expect(response).to be_successful
+          expect(response).to render_template('catalog/index')
+          expect(response.content_type).to eq "application/atom+xml; charset=utf-8"
+          documents = assigns(:response).documents
+          expect(documents.count).to eq 2
+          expect(documents.map(&:id)).to match_array [private_media_object.id, public_media_object.id]
+          xml = Nokogiri::XML(response.body)
+          xml.remove_namespaces!
+          updated_times = xml.xpath('/feed/entry/updated/text()').map(&:to_s)
+          expect(updated_times).to be_present
+          expect(updated_times.all?(&:present?)).to eq true
         end
         context "when there are transcripts present" do
           let!(:transcript) { FactoryBot.create(:supplemental_file, :with_transcript_file, :with_transcript_tag, parent_id: private_media_object.id) }
@@ -326,13 +355,19 @@ describe CatalogController do
         end
       end
       context "without api key" do
-        it "should not show results" do
-          get 'index', params: { q: "", format: 'atom' }
+        it "should only show visible results" do
+          get 'index', params: {  q: "other_identifier_sim:/GR[0-9]{8}/", sort: "timestamp+desc", rows: 100, page: 1, format: 'atom' }
           expect(response).to be_successful
           expect(response.content_type).to eq "application/atom+xml; charset=utf-8"
           expect(response).to render_template('catalog/index')
-          expect(assigns(:response).documents.count).to eq 1
-          expect(assigns(:response).documents.map(&:id)).to eq([public_media_object.id])
+          documents = assigns(:response).documents
+          expect(documents.count).to eq 1
+          expect(documents.map(&:id)).to match_array [public_media_object.id]
+          xml = Nokogiri::XML(response.body)
+          xml.remove_namespaces!
+          updated_times = xml.xpath('/feed/entry/updated/text()').map(&:to_s)
+          expect(updated_times).to be_present
+          expect(updated_times.all?(&:present?)).to eq true
         end
       end
     end

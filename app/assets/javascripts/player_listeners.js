@@ -17,6 +17,7 @@
 let canvasIndex = -1;
 let currentSectionLabel = undefined;
 let addToPlaylistListenersAdded = false;
+let searchFieldListenerAdded = false
 let firstLoad = true;
 let streamId = '';
 let isMobile = false;
@@ -35,6 +36,51 @@ let isPlaying = false;
 function addActionButtonListeners(player, mediaObjectId, sectionIds) {
   if (player && player.player != undefined) {
     let currentIndex = parseInt(player.dataset.canvasindex);
+    /* Ensure we only add player listeners once */
+    if (firstLoad === true) {
+      /* Add player event listeners to update UI components on the page */
+      // Listen to 'seeked' event to udate add to playlist form when using while media is playing or manually seeking
+      player.player.on('seeked', () => {
+        if (getActiveItem() != undefined) {
+          activeTrack = getActiveItem(false);
+          if (activeTrack != undefined) {
+            streamId = activeTrack.streamId;
+          }
+          disableEnableCurrentTrack(activeTrack, player.player.currentTime(), isPlaying, currentSectionLabel);
+        }
+      });
+
+      player.player.on('play', () => { isPlaying = true; });
+
+      player.player.on('pause', () => { isPlaying = false; });
+
+      /*
+        Disable action buttons tied to player related information on player's 'emptied' event which functions
+        parallel to the player's src changes. So, that the user doesn't interact with them get corrupted data 
+        in the UI when player is loading the new section media into it.
+        Once the player is fully loaded these buttons are enabled as needed.
+      */
+      player.player.on('emptied', () => {
+        resetAllActionButtons();
+      });
+
+      /*
+        Enable action buttons on player's 'loadstart' event which functions parallel to the player's src changes.
+        Sometimes the player event to disable the buttons is triggered after the function to enable the buttons,
+        resulting in the buttons never enabling. Since the enabling of the action buttons occurs before the player
+        is emptied, it is also possible that the information populating the buttons is for the old canvas, so we
+        run `buildActionButtons` again rather than just enabling the buttons.
+      */
+      player.player.on('loadstart', () => {
+        let addToPlaylistBtn = document.getElementById('addToPlaylistBtn');
+        let thumbnailBtn = document.getElementById('thumbnailBtn');
+        let timelineBtn = document.getElementById('timelineBtn');
+
+        if (addToPlaylistBtn.disabled && thumbnailBtn.disabled && timelineBtn.disabled) {
+          buildActionButtons(player, mediaObjectId, sectionIds);
+        }
+      });
+    }
     /*
       For both Android and iOS, player.readyState() is 0 until media playback is
       started. Therefore, use player.src() to check whether there's a playable media
@@ -68,32 +114,6 @@ function addActionButtonListeners(player, mediaObjectId, sectionIds) {
       setUpShareLinks(mediaObjectId, sectionIds);
       resetAllActionButtons();
     }
-
-    /* Add player event listeners to update UI components on the page */
-    // Listen to 'seeked' event to udate add to playlist form
-    player.player.on('seeked', () => {
-      if (getActiveItem() != undefined) {
-        activeTrack = getActiveItem(false);
-        if (activeTrack != undefined) {
-          streamId = activeTrack.streamId;
-        }
-        disableEnableCurrentTrack(activeTrack, player.player.currentTime(), isPlaying, currentSectionLabel);
-      }
-    });
-
-    player.player.on('play', () => { isPlaying = true; });
-
-    player.player.on('pause', () => { isPlaying = false; });
-
-    /*
-      Disable action buttons tied to player related information on player's 'loadstart' event which functions
-      parallel to the player's src changes. So, that the user doesn't interact with them get corrupted data 
-      in the UI when player is loading the new section media into it.
-      Once the player is fully loaded these buttons are enabled as needed.
-    */
-    player.player.on('loadstart', () => {
-      resetAllActionButtons();
-    });
 
     // Collapse sub-panel related to the selected option in the add to playlist form when it is collapsed
     let playlistSection = $('#playlistitem_scope_section');
@@ -321,6 +341,23 @@ function addToPlaylistListeners(sectionIds, mediaObjectId) {
     // of conflicting actions when populating panel.
     if ($('#addToPlaylistPanel.show').length > 0) {
       resetAddToPlaylistForm();
+    }
+  });
+
+  // Set playlist search box to readonly in mobile browsers to prevent
+  // keyboard from popping up when opening playlist dropdown.
+  $('.select2-selection').on("click", function () {
+    const IS_TOUCH_ONLY = navigator.maxTouchPoints && navigator.maxTouchPoints > 2 && !window.matchMedia("(pointer: fine").matches;
+    let searchField = $('.select2-search__field');
+    if ((/Mobi|iPhone/i.test(window.navigator.userAgent) || IS_TOUCH_ONLY) && searchField.length > 0) {
+      searchField.attr('readonly', 'readonly')
+      if (!searchFieldListenerAdded) {
+        searchField.on('click', function(e) {
+          searchField.removeAttr('readonly').select();
+        });
+
+        searchFieldListenerAdded = true
+      }
     }
   });
 

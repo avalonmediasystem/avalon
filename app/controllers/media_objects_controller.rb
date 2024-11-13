@@ -203,7 +203,7 @@ class MediaObjectsController < ApplicationController
     error_messages = []
     unless @media_object.valid?
       invalid_fields = @media_object.errors.attribute_names
-      required_fields = [:title, :date_issued]
+      required_fields = [:title]
       unless required_fields.any? { |f| invalid_fields.include? f }
         invalid_fields.each do |field|
           #NOTE this will erase all values for fields with multiple values
@@ -230,7 +230,15 @@ class MediaObjectsController < ApplicationController
         master_file.date_digitized = DateTime.parse(file_spec[:date_digitized]).to_time.utc.iso8601 if file_spec[:date_digitized].present?
         master_file.identifier += Array(params[:files][index][:other_identifier])
         master_file.comment += Array(params[:files][index][:comment])
-        master_file.media_object = @media_object
+        begin
+          master_file.media_object = @media_object
+        rescue ActiveFedora::Rollback => e
+          file_location = file_spec.dig(:file_location) || '<unknown>'
+          message = "Problem saving MasterFile for #{file_location}:"
+          error_messages += [message]
+          error_messages += [e.message]
+          break
+        end
         if file_spec[:files].present?
           if master_file.update_derivatives(file_spec[:files], false)
             master_file.update_stills_from_offset!
@@ -413,7 +421,7 @@ class MediaObjectsController < ApplicationController
         begin
           case status
           when 'publish'
-            unless media_object.title.present? && media_object.date_issued.present?
+            unless media_object.title.present?
               errors += ["#{media_object&.title} (#{id}) (missing required fields)"]
               next
             end
