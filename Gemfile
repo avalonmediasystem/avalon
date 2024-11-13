@@ -47,11 +47,11 @@ gem 'rsolr', '~> 2.0'
 
 # Rails & Samvera Plugins
 gem 'about_page', git: 'https://github.com/avalonmediasystem/about_page.git', tag: 'avalon-r6.5'
-gem 'active_annotations', git: 'https://github.com/avalonmediasystem/active_annotations.git', branch: 'rails_upgrade'
+gem 'active_annotations', '~> 0.5.0'
 gem 'activerecord-session_store', '>= 2.0.0'
 gem 'acts_as_list'
 gem 'api-pagination'
-gem 'avalon-about', git: 'https://github.com/avalonmediasystem/avalon-about.git', branch: 'main'
+gem 'avalon-about', git: 'https://github.com/avalonmediasystem/avalon-about.git', tag: 'avalon-r8.0'
 #gem 'bootstrap-sass', '< 3.4.1' # Pin to less than 3.4.1 due to change in behavior with popovers
 gem 'bootstrap-toggle-rails'
 gem 'bootstrap_form'
@@ -59,11 +59,11 @@ gem 'iiif_manifest', '~> 1.6'
 gem 'rack-cors', require: 'rack/cors'
 gem 'rails_same_site_cookie'
 gem 'recaptcha', require: 'recaptcha/rails'
-gem 'samvera-persona', git: 'https://github.com/samvera-labs/samvera-persona.git', branch: 'rails_7-2'
+gem 'samvera-persona', '~> 0.5.0'
 gem 'speedy-af', git: 'https://github.com/samvera-labs/speedy_af.git', branch: 'empty_reflection'
 
 # Avalon Components
-gem 'avalon-workflow', git: "https://github.com/avalonmediasystem/avalon-workflow.git", branch: 'failed_update_setup_edit'
+gem 'avalon-workflow', git: "https://github.com/avalonmediasystem/avalon-workflow.git", tag: 'avalon-r8.0'
 
 # Authentication & Authorization
 gem 'devise', '~> 4.8'
@@ -76,7 +76,7 @@ gem 'omniauth-lti', git: "https://github.com/avalonmediasystem/omniauth-lti.git"
 gem "omniauth-saml", "~> 2.0", ">= 2.2.1"
 
 # Media Access & Transcoding
-gem 'active_encode', git: "https://github.com/samvera-labs/active_encode.git", branch: 'output_label_parsing'
+gem 'active_encode', '~> 1.2'
 gem 'audio_waveform-ruby', '~> 1.0.7', require: 'audio_waveform'
 gem 'browse-everything', git: "https://github.com/avalonmediasystem/browse-everything.git", branch: 'sharepoint_integration'
 gem 'fastimage'
