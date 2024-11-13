@@ -44,8 +44,8 @@
     "cypress": "^13.7.1",
     "html-webpack-plugin": "^5.3.2",
     "prop-types": "^15.7.2",
-    "webpack-cli": "4",
-    "webpack-dev-server": "4"
+    "webpack-cli": "5",
+    "webpack-dev-server": "5"
   },
   "resolutions": {
     "glob-parent": "^6.0.2",
