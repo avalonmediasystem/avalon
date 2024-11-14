@@ -12,7 +12,11 @@
 #   specific language governing permissions and limitations under the License.
 # ---  END LICENSE_HEADER BLOCK  ---
 
+require 'active_model'
+
 class SpeedyAF::Proxy::MediaObject < SpeedyAF::Base
+  extend ActiveModel::Translation
+
   SINGULAR_FIELDS = [:title, :statement_of_responsibility, :date_created, :date_issued, :copyright_date, :abstract, :terms_of_use, :rights_statement]
   HASH_FIELDS = [:note, :other_identifier, :related_item_url]
 
@@ -44,7 +48,11 @@ class SpeedyAF::Proxy::MediaObject < SpeedyAF::Base
     end
     # Convert empty strings to nil
     @attrs.transform_values! { |value| value == "" ? nil : value }
+    @errors = ActiveModel::Errors.new(self)
   end
+
+  attr_accessor :name
+  attr_accessor :errors
 
   def to_model
     self
@@ -154,6 +162,10 @@ class SpeedyAF::Proxy::MediaObject < SpeedyAF::Base
       val = "#{val}?#{query_vars.to_query}"
     end
     val ? val.to_s : nil
+  end
+
+  def workflow
+    WorkflowDatastream.find("#{id}/workflow")
   end
 
   protected
