@@ -25,10 +25,6 @@ module Blacklight::LocalBlacklightHelper
     blacklight_config.facet_fields.map {|facet,opts| opts[:group]}.uniq
   end
 
-  def url_for_document doc, options = {}
-    SpeedyAF::Base.for(doc.to_h.with_indifferent_access)
-  end
-
   def contributor_index_display args
     args[:document][args[:field]].first(3).join("; ")
   end
