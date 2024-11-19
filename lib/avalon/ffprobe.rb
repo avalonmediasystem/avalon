@@ -23,7 +23,9 @@ module Avalon
       return @json_output unless @json_output.nil?
       return @json_output = {} unless valid_content_type?(@media_file)
       ffprobe = Settings&.ffprobe&.path || 'ffprobe'
-      raw_output = `#{ffprobe} -i "#{@media_file.location}" -v quiet -show_format -show_streams -of json`
+      # Include authorization headers for cases like Google Drive
+      header = "-headers 'Authorization: #{@media_file.auth_header.fetch('Authorization')}'" if @media_file.auth_header.present?
+      raw_output = `#{ffprobe} #{header} -i "#{@media_file.location}" -v quiet -show_format -show_streams -of json`
       # $? is a variable for the exit status of the last executed process. 
       # Success == 0, any other value means the command failed in some way.
       unless $?.exitstatus == 0

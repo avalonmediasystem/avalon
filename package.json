@@ -48,11 +48,7 @@
     "webpack-dev-server": "5"
   },
   "resolutions": {
-    "glob-parent": "^6.0.2",
-    "unset-value": "^2.0.1",
-    "nth-check": "^2.1.1",
-    "set-value": "^4.1.0",
-    "kind-of": "^6.0.3"
+    "glob-parent": "^6.0.2"
   },
   "scripts": {
     "start-collection-index": "webpack-dev-server --mode development --config config/webpack/collection_index.js --host 0.0.0.0",
