@@ -30,9 +30,8 @@ gem 'shakapacker'
 
 # Core Samvera
 #gem 'active-fedora', '~> 15.0'
-#gem 'active_fedora-datastreams', '~> 0.5'
-gem 'active-fedora', git: 'https://github.com/samvera/active_fedora.git', branch: 'fedora6_rebase'
-gem 'active_fedora-datastreams', git: 'https://github.com/samvera-labs/active_fedora-datastreams.git', branch: 'fedora6_rebase'
+gem 'active-fedora', git: 'https://github.com/samvera/active_fedora.git', ref: '0f5ccb1536224efec750941ce9a1f58f2e09cd3c'
+gem 'active_fedora-datastreams', '~> 0.5'
 gem 'hydra-head', '~> 13.0'
 gem 'ldp', '~> 1.1.0'
 gem 'noid-rails', '~> 3.2'
@@ -60,7 +59,7 @@ gem 'rack-cors', require: 'rack/cors'
 gem 'rails_same_site_cookie'
 gem 'recaptcha', require: 'recaptcha/rails'
 gem 'samvera-persona', '~> 0.5.0'
-gem 'speedy-af', git: 'https://github.com/samvera-labs/speedy_af.git', branch: 'empty_reflection'
+gem 'speedy-af', '~> 0.4.0'
 
 # Avalon Components
 gem 'avalon-workflow', git: "https://github.com/avalonmediasystem/avalon-workflow.git", tag: 'avalon-r8.0'
