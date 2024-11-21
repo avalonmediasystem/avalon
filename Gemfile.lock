@@ -23,7 +23,7 @@ GIT
 
 GIT
   remote: https://github.com/avalonmediasystem/browse-everything.git
-  revision: eefa721865f392cd3b58f679a9761cbb3e4b5cc9
+  revision: a8453e9ad1ae3b4050b1d97dacd499dd0990765d
   branch: sharepoint_integration
   specs:
     browse-everything (1.4.0)
