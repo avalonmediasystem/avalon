@@ -1497,9 +1497,10 @@
     estree-walker "^2.0.2"
     picomatch "^4.0.2"
 
-"@samvera/ramp@https://github.com/samvera-labs/ramp.git#25d3c47533c5a452dca4b129294f97c8ced24873":
-  version "3.2.1"
-  resolved "https://github.com/samvera-labs/ramp.git#25d3c47533c5a452dca4b129294f97c8ced24873"
+"@samvera/ramp@^3.3.0":
+  version "3.3.0"
+  resolved "https://registry.yarnpkg.com/@samvera/ramp/-/ramp-3.3.0.tgz#411b45d4aeccf77106c38c7c9901bc6164b5e8a5"
+  integrity sha512-pldz5titVmJb2JcjHXulFdxG8uv4y5KTc1IbPYNAiZumqIqUTMZwgMNDfrgbKYyfOMj+BeEBOny2EspbvR5l5g==
   dependencies:
     "@rollup/plugin-json" "^6.0.1"
     "@silvermine/videojs-quality-selector" "^1.3.1"
@@ -1579,12 +1580,7 @@
   resolved "https://registry.yarnpkg.com/@types/estree/-/estree-1.0.1.tgz#aa22750962f3bf0e79d753d3cc067f010c95f194"
   integrity sha512-LG4opVs2ANWZ1TJoKc937iMmNstM/d0ae1vNbnBvBhqCSezgVUOzcLCqbI5elV8Vy6WKwKjaqR+zO9VKirBBCA==
 
-"@types/estree@^1.0.0":
-  version "1.0.5"
-  resolved "https://registry.yarnpkg.com/@types/estree/-/estree-1.0.5.tgz#a6ce3e556e00fd9895dd872dd172ad0d4bd687f4"
-  integrity sha512-/kYRxGDLWzHOB7q+wtSUQlFrtcdUccpfy+X+9iMBpHK8QLLhx2wIPYuS5DYtR9Wa/YlZAbIovy7qVdB1Aq6Lyw==
-
-"@types/estree@^1.0.6":
+"@types/estree@^1.0.0", "@types/estree@^1.0.6":
   version "1.0.6"
   resolved "https://registry.yarnpkg.com/@types/estree/-/estree-1.0.6.tgz#628effeeae2064a1b4e79f78e81d87b7e5fc7b50"
   integrity sha512-AYnb1nQyY49te+VRAVgmzfcgjYS91mY5P0TKUDCLEM+gNnA+3T6rWITXRLYCpahpqSQbN5cE+gHpnPyXjHWxcw==
@@ -4753,9 +4749,9 @@ mammoth@^1.4.19:
     xmlbuilder "^10.0.0"
 
 manifesto.js@^4.1.0:
-  version "4.2.20"
-  resolved "https://registry.yarnpkg.com/manifesto.js/-/manifesto.js-4.2.20.tgz#67abb70dff9988c343e2d382379889ccbd6c2a0d"
-  integrity sha512-6J09N3pC335QirVZMXBkp4Mfa9IthKfy1BtGCvyre59z5h4l6OCc62NsyDFCGaysZRyuZ7zY4uzT7xU1g8yVHg==
+  version "4.2.21"
+  resolved "https://registry.yarnpkg.com/manifesto.js/-/manifesto.js-4.2.21.tgz#a62e9c7673467f7dd832a4fe27fe1c97a7b62d6c"
+  integrity sha512-C14J8zMSXlQaQjKR7KpIYEAXWquS2DtdxL8cFj1P2kc/ZJ5nWWmDUrthysVoQlRIzks5HtUNf5bStOwzhzarag==
   dependencies:
     "@edsilv/http-status-codes" "^1.0.3"
     "@iiif/vocabulary" "^1.0.26"
