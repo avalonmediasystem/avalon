@@ -25,7 +25,7 @@ class SupplementalFile < ApplicationRecord
   validates :parent_id, presence: true
   validate  :validate_file_type, if: :caption?
 
-  serialize :tags, Array
+  serialize :tags, type: Array
 
   # Need to prepend so this runs before the callback added by `has_one_attached` above
   # See https://github.com/rails/rails/issues/37304

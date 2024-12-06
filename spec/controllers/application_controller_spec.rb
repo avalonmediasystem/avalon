@@ -82,7 +82,7 @@ describe ApplicationController do
     end
 
     context 'raise_on_connection_error disabled' do
-      let(:request_context) { { body: "request_context" } }
+      let(:request_context) { { uri: Addressable::URI.parse("http://example.com"), body: "request_context" } }
       let(:e) { { body: "error_response" } }
 
       before :each do
@@ -91,7 +91,13 @@ describe ApplicationController do
 
       [RSolr::Error::ConnectionRefused, RSolr::Error::Timeout, Blacklight::Exceptions::ECONNREFUSED, Faraday::ConnectionFailed].each do |error_code|
         it "rescues #{error_code} errors" do
-          raised_error = error_code == RSolr::Error::Timeout ? error_code.new(request_context, e) : error_code      
+          raised_error = if error_code == RSolr::Error::ConnectionRefused
+                           error_code.new(request_context)
+                         elsif error_code == RSolr::Error::Timeout
+                           error_code.new(request_context, e)
+                         else
+                           error_code
+                         end      
           allow(controller).to receive(:show).and_raise(raised_error)
           allow_any_instance_of(Exception).to receive(:backtrace).and_return(["Test trace"])
           allow_any_instance_of(Exception).to receive(:message).and_return('Connection reset by peer')
@@ -101,7 +107,13 @@ describe ApplicationController do
 
         it "renders error template for #{error_code} errors" do
           error_template = error_code == Faraday::ConnectionFailed ? 'errors/fedora_connection' : 'errors/solr_connection'
-          raised_error = error_code == RSolr::Error::Timeout ? error_code.new(request_context, e) : error_code
+          raised_error = if error_code == RSolr::Error::ConnectionRefused
+                           error_code.new(request_context)
+                         elsif error_code == RSolr::Error::Timeout
+                           error_code.new(request_context, e)
+                         else
+                           error_code
+                         end
           allow(controller).to receive(:show).and_raise(raised_error)
           get :show, params: { id: 'abc1234' }
           expect(response).to render_template(error_template)
@@ -110,12 +122,18 @@ describe ApplicationController do
     end
 
     context 'raise_on_connection_error enabled' do
-      let(:request_context) { { body: "request_context" } }
+      let(:request_context) { { uri: Addressable::URI.parse("http://example.com"), body: "request_context" } }
       let(:e) { { body: "error_response" } }
 
       [RSolr::Error::ConnectionRefused, RSolr::Error::Timeout, Blacklight::Exceptions::ECONNREFUSED, Faraday::ConnectionFailed].each do |error_code|
         it "raises #{error_code} errors" do
-          raised_error = error_code == RSolr::Error::Timeout ? error_code.new(request_context, e) : error_code 
+          raised_error = if error_code == RSolr::Error::ConnectionRefused
+                           error_code.new(request_context)
+                         elsif error_code == RSolr::Error::Timeout
+                           error_code.new(request_context, e)
+                         else
+                           error_code
+                         end 
           allow(Settings.app_controller.solr_and_fedora).to receive(:raise_on_connection_error).and_return(true)
           allow(controller).to receive(:show).and_raise(raised_error)
           allow_any_instance_of(Exception).to receive(:backtrace).and_return(["Test trace"])

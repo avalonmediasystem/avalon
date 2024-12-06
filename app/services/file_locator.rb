@@ -16,7 +16,7 @@ require 'addressable/uri'
 require 'aws-sdk-s3'
 
 class FileLocator
-  attr_reader :source
+  attr_reader :source, :auth_header
 
   class S3File
     attr_reader :bucket, :key
@@ -46,8 +46,9 @@ class FileLocator
     end
   end
 
-  def initialize(source)
+  def initialize(source, opts = {})
     @source = source
+    @auth_header = opts[:auth_header]
   end
 
   def uri
@@ -118,8 +119,24 @@ class FileLocator
     when 'file'
       File.open(location,'r')
     else
-      Kernel::open(uri.to_s, 'r')
+      open_uri
     end
+  end
+
+  # Ruby 3.0 removed URI#open from being called by Kernel#open.
+  # Prioritize using URI#open, attempt to fallback to Kernel#open
+  # if URI fails.
+  def open_uri
+    # Google Drive download urls have the auth as a param
+    # so we need to make sure the auth gets passed in
+    # when we try to access files
+    if auth_header.present? && auth_header.is_a?(Hash)
+      URI.open(uri, 'r', auth_header)
+    else
+      URI.open(uri, 'r')
+    end
+  rescue
+    Kernel::open(uri.to_s, 'r')
   end
 
   def attachment

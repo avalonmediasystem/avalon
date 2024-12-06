@@ -18,7 +18,7 @@ describe WaveformService, type: :service do
   let(:service) { WaveformService.new }
 
   describe "get_waveform_json" do
-    let(:wav_path) { File.join(Rails.root, "spec/fixtures/meow.wav") }
+    let(:wav_path) { File.join(Rails.root, "spec/fixtures/meow.mono.wav") }
 
     it "should return waveform json from file" do
       allow(service).to receive(:get_wave_io).and_return(open(wav_path))
@@ -67,7 +67,7 @@ describe WaveformService, type: :service do
 
     context "http file" do
       let(:uri) { "http://domain/to/video.mp4" }
-      let(:cmd) {"#{Settings.ffmpeg.path} -headers $'Referer: http://test.host/\r\n' -rw_timeout 60000000 -i '#{uri}' -f wav -ar 44100 - 2> /dev/null"}
+      let(:cmd) {"#{Settings.ffmpeg.path} -headers $'Referer: http://test.host/\r\n' -rw_timeout 60000000 -i '#{uri}' -f wav -ar 44100 -ac 1 - 2> /dev/null"}
 
       it "should call ffmpeg with headers" do
         service.send(:get_wave_io, uri)
@@ -77,7 +77,7 @@ describe WaveformService, type: :service do
 
     context "local file" do
       let(:uri) { "file:///path/to/video.mp4" }
-      let(:cmd) {"#{Settings.ffmpeg.path}  -rw_timeout 60000000 -i '#{uri}' -f wav -ar 44100 - 2> /dev/null"}
+      let(:cmd) {"#{Settings.ffmpeg.path}  -rw_timeout 60000000 -i '#{uri}' -f wav -ar 44100 -ac 1 - 2> /dev/null"}
 
       it "should call ffmpeg without headers" do
         service.send(:get_wave_io, uri)
@@ -87,7 +87,7 @@ describe WaveformService, type: :service do
       context 'with spaces in filename' do
         let(:uri) { 'file:///path/to/special%20video%20file.mp4' }
         let(:unencoded_uri) { 'file:///path/to/special video file.mp4' }
-        let(:cmd) {"#{Settings.ffmpeg.path}  -rw_timeout 60000000 -i '#{unencoded_uri}' -f wav -ar 44100 - 2> /dev/null"}
+        let(:cmd) {"#{Settings.ffmpeg.path}  -rw_timeout 60000000 -i '#{unencoded_uri}' -f wav -ar 44100 -ac 1 - 2> /dev/null"}
 
         it "should call ffmpeg without url encoding" do
           service.send(:get_wave_io, uri)

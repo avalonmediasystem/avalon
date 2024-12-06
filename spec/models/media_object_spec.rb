@@ -16,6 +16,8 @@ require 'rails_helper'
 require 'cancan/matchers'
 
 describe MediaObject do
+  include ActiveJob::TestHelper
+
   let(:media_object) { FactoryBot.create(:media_object) }
 
   it 'assigns a noid id' do
@@ -251,18 +253,21 @@ describe MediaObject do
         media_object.read_groups += [Faker::Internet.ip_v4_address]
         media_object.publish! "random"
         media_object.reload
+        perform_enqueued_jobs(only: MediaObjectIndexingJob)
         expect(subject.can?(:read, media_object)).to be_falsey
       end
       it 'should be able to read single-ip authorized, published MediaObject' do
         media_object.read_groups += [ip_addr]
         media_object.publish! "random"
         media_object.reload
+        perform_enqueued_jobs(only: MediaObjectIndexingJob)
         expect(subject.can?(:read, media_object)).to be_truthy
       end
       it 'should be able to read ip-range authorized, published MediaObject' do
         media_object.read_groups += ["#{ip_addr}/30"]
         media_object.publish! "random"
         media_object.reload
+        perform_enqueued_jobs(only: MediaObjectIndexingJob)
         expect(subject.can?(:read, media_object)).to be_truthy
       end
     end
@@ -272,7 +277,6 @@ describe MediaObject do
     # Force the validations to run by being on the resource-description workflow step
     subject(:media_object) { FactoryBot.build(:media_object).tap {|mo| mo.workflow.last_completed_step = "resource-description"} }
 
-    it {is_expected.to validate_presence_of(:date_issued)}
     it {is_expected.to validate_presence_of(:title)}
   end
 
@@ -629,13 +633,17 @@ describe MediaObject do
     it 'includes virtual group leases in external group facet' do
       media_object.governing_policies += [FactoryBot.create(:lease, inherited_read_groups: ['TestGroup'])]
       media_object.save!
-      expect(media_object.to_solr['read_access_virtual_group_ssim']).to include('TestGroup')
+      media_object.reload
+      solr_doc = media_object.to_solr(include_child_fields: true)
+      expect(solr_doc['read_access_virtual_group_ssim']).to include('TestGroup')
     end
     it 'includes ip group leases in ip group facet' do
       ip_addr = Faker::Internet.ip_v4_address
       media_object.governing_policies += [FactoryBot.create(:lease, inherited_read_groups: [ip_addr])]
       media_object.save!
-      expect(media_object.to_solr['read_access_ip_group_ssim']).to include(ip_addr)
+      media_object.reload
+      solr_doc = media_object.to_solr(include_child_fields: true)
+      expect(solr_doc['read_access_ip_group_ssim']).to include(ip_addr)
     end
     it 'indexes modified time for descMetadata subresource' do
       expect(DateTime.parse(media_object.to_solr['descMetadata_modified_dtsi'])).to eq DateTime.parse(media_object.descMetadata.record_change_date.first)
@@ -1274,8 +1282,8 @@ describe MediaObject do
         expect(mo.section_list).not_to eq nil
         expect(mo.sections).not_to eq mo.ordered_master_files.to_a
         expect(mo.section_ids).to eq [section.id, section2.id, new_section.id]
-        expect(mo.master_file_ids).to eq mo.section_ids
-        expect(mo.master_files).to eq mo.sections
+        expect(mo.master_file_ids).to match_array mo.section_ids
+        expect(mo.master_files).to match_array mo.sections
       end
     end
   end

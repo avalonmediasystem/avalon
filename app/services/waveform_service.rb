@@ -75,33 +75,37 @@ private
 
   def get_normalized_peaks(uri)
     wave_io = get_wave_io(uri.to_s)
-    peaks = gather_peaks(wave_io)
+    peaks = []
+    reader = nil
+    abs_max = 0
+    begin
+      reader = WaveFile::Reader.new(wave_io)
+      reader.each_buffer(@samples_per_pixel) do |buffer|
+        sample_min, sample_max = buffer.samples.minmax
+        peaks << [sample_min, sample_max]
+        abs_max = [abs_max, sample_min.abs, sample_max.abs].max
+      end
+    rescue WaveFile::InvalidFormatError
+      # ffmpeg generated no wavefile data
+    end
     return [] if peaks.blank?
-    max_peak = peaks.flatten.map(&:abs).max
     res = 2**(@bit_res - 1)
-    factor = max_peak.zero? ? 1 : res / max_peak.to_f
-    peaks.map { |peak| peak.collect { |num| (num * factor).to_i } }
+    factor = abs_max.zero? ? 1 : res / abs_max.to_f
+    peaks.each do |peak|
+      peak[0] = (peak[0] * factor).to_i
+      peak[1] = (peak[1] * factor).to_i
+    end
+    peaks
   ensure
-    Process.wait(wave_io.pid) if wave_io&.pid
+    reader&.close
+    wave_io&.close
   end
 
   def get_wave_io(uri)
     headers = "-headers $'Referer: #{Rails.application.routes.url_helpers.root_url}\r\n'" if uri.starts_with? "http"
     normalized_uri = uri.starts_with?("file") ? Addressable::URI.unencode(uri) : uri
     timeout = 60000000 # Must be in microseconds. Current value = 1 minute.
-    cmd = "#{Settings.ffmpeg.path} #{headers} -rw_timeout #{timeout} -i '#{normalized_uri}' -f wav -ar 44100 - 2> /dev/null"
+    cmd = "#{Settings.ffmpeg.path} #{headers} -rw_timeout #{timeout} -i '#{normalized_uri}' -f wav -ar 44100 -ac 1 - 2> /dev/null"
     IO.popen(cmd)
-  end
-
-  def gather_peaks(wav_file)
-    peaks = []
-    begin
-      WaveFile::Reader.new(wav_file).each_buffer(@samples_per_pixel) do |buffer|
-        peaks << [buffer.samples.flatten.min, buffer.samples.flatten.max]
-      end
-    rescue WaveFile::InvalidFormatError
-      # ffmpeg generated no wavefile data
-    end
-    peaks
   end
 end

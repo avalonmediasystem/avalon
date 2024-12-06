@@ -33,7 +33,7 @@ module IiifSupplementalFileBehavior
   end
 
   def object_supplemental_file_url(object, supplemental_file)
-    if object.is_a? MasterFile
+    if object.is_a?(MasterFile) || object.is_a?(SpeedyAF::Proxy::MasterFile)
       Rails.application.routes.url_helpers.master_file_supplemental_file_url(id: supplemental_file.id, master_file_id: object.id)
     else
       Rails.application.routes.url_helpers.media_object_supplemental_file_url(id: supplemental_file.id, media_object_id: object.id)

@@ -45,7 +45,7 @@ class IiifManifestPresenter
   end
 
   def to_s
-    media_object.title
+    media_object.title || media_object.id
   end
 
   def manifest_metadata
@@ -100,6 +100,7 @@ class IiifManifestPresenter
   end
 
   def combined_display_date(media_object)
+    #FIXME Does this need to change now that date_issued is not required and thus could be nil
     result = media_object.date_issued
     result += " (Creation date: #{media_object.date_created})" if media_object.date_created.present?
     result
@@ -173,6 +174,13 @@ class IiifManifestPresenter
     Rails.application.routes.url_helpers.blacklight_url({ "f[collection_ssim][]" => media_object.collection.name, "f[series_ssim][]" => series })
   end
 
+  def display_search_linked(solr_field, values)
+    Array(values).collect do |value|
+      url = Rails.application.routes.url_helpers.blacklight_url({ "f[#{solr_field}][]" => value })
+      "<a href='#{url}'>#{value}</a>"
+    end
+  end
+
   def display_lending_period(media_object)
     return nil unless lending_enabled
     ActiveSupport::Duration.build(media_object.lending_period).to_day_hour_s
@@ -180,14 +188,15 @@ class IiifManifestPresenter
 
   def iiif_metadata_fields
     fields = [
-      metadata_field('Title', media_object.title),
-      metadata_field('Date', combined_display_date(media_object), 'Not provided'),
+      metadata_field('Title', media_object.title, media_object.id),
+      metadata_field('Publication date', media_object.date_issued),
+      metadata_field('Creation date', media_object.date_created),
       metadata_field('Main contributor', media_object.creator),
       metadata_field('Summary', display_summary(media_object)),
       metadata_field('Contributor', media_object.contributor),
       metadata_field('Publisher', media_object.publisher),
       metadata_field('Genre', media_object.genre),
-      metadata_field('Subject', media_object.topical_subject),
+      metadata_field('Subject', display_search_linked("subject_ssim", media_object.topical_subject)),
       metadata_field('Time period', media_object.temporal_subject),
       metadata_field('Location', media_object.geographic_subject),
       metadata_field('Collection', display_collection(media_object)),

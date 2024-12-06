@@ -19,6 +19,19 @@ describe IiifManifestPresenter do
   let(:master_file) { FactoryBot.build(:master_file, media_object: media_object) }
   let(:presenter) { described_class.new(media_object: media_object, master_files: [master_file]) }
 
+  context 'to_s' do
+    it "returns the media object's title" do
+      expect(presenter.to_s).to eq media_object.title
+    end
+
+    context 'when media object is missing title' do
+      it "returns the media object's id" do
+        allow(media_object).to receive(:title).and_return(nil)
+        expect(presenter.to_s).to eq media_object.id
+      end
+    end
+  end
+
   context 'homepage' do
     subject { presenter.homepage.first }
 
@@ -49,8 +62,8 @@ describe IiifManifestPresenter do
     it 'provides metadata' do
       allow_any_instance_of(IiifManifestPresenter).to receive(:lending_enabled).and_return(false)
 
-      ['Title', 'Date', 'Main contributor', 'Summary', 'Contributor', 'Publisher', 'Genre', 'Subject', 'Time period',
-       'Location', 'Collection', 'Unit', 'Language', 'Rights Statement', 'Terms of Use', 'Physical Description', 'Series',
+      ['Title', 'Publication date', 'Creation date', 'Main contributor', 'Summary', 'Contributor', 'Publisher', 'Genre', 'Subject', 
+       'Time period', 'Location', 'Collection', 'Unit', 'Language', 'Rights Statement', 'Terms of Use', 'Physical Description', 'Series',
        'Related Item', 'Notes', 'Table of Contents', 'Local Note', 'Other Identifier', 'Access Restrictions', 'Bibliographic ID'
       ].each do |field|
         expect(subject).to include(field)
@@ -80,8 +93,8 @@ describe IiifManifestPresenter do
       it 'provides metadata' do
         allow_any_instance_of(IiifManifestPresenter).to receive(:lending_enabled).and_return(true)
 
-        ['Title', 'Date', 'Main contributor', 'Summary', 'Contributor', 'Publisher', 'Genre', 'Subject', 'Time period',
-         'Location', 'Collection', 'Unit', 'Language', 'Rights Statement', 'Terms of Use', 'Physical Description', 'Series',
+        ['Title', 'Publication date', 'Creation date', 'Main contributor', 'Summary', 'Contributor', 'Publisher', 'Genre', 'Subject',
+         'Time period', 'Location', 'Collection', 'Unit', 'Language', 'Rights Statement', 'Terms of Use', 'Physical Description', 'Series',
          'Related Item', 'Notes', 'Table of Contents', 'Local Note', 'Other Identifier', 'Access Restrictions', 'Bibliographic ID', 'Lending Period'
         ].each do |field|
           expect(subject).to include(field)
@@ -94,6 +107,17 @@ describe IiifManifestPresenter do
 
       it 'serializes multiple values as an array' do
         expect(subject['Notes']).to be_a Array
+      end
+    end
+
+    context 'values with search links' do
+      it 'includes appropriate link tags' do
+        search_url = Rails.application.routes.url_helpers.blacklight_url.gsub('/','\/')
+        ['Subject'].each do |field|
+          subject[field].each do |value|
+            expect(value).to match /^<a href="#{search_url}\?f%5B.+%5D%5B%5D=.*">.*<\/a>$/
+          end
+        end
       end
     end
   end

@@ -20,15 +20,11 @@ describe MasterFilesController do
 
   describe "#create" do
     let(:media_object) { FactoryBot.create(:media_object) }
-    # TODO: fill in the lets below with a legitimate values from mediainfo
-    # let(:mediainfo_video) {  }
-    # let(:mediainfo_audio) {  }
 
     before do
       # login_user media_object.collection.managers.first
       login_as :administrator
       disableCanCan!
-      # allow_any_instance_of(MasterFile).to receive(:mediainfo).and_return(mediainfo_output)
     end
 
     context "must provide a container id" do
@@ -43,7 +39,6 @@ describe MasterFilesController do
     context "must provide a valid media object" do
       before do
         media_object.title = nil
-        media_object.date_issued = nil
         media_object.workflow.last_completed_step = 'file-upload'
         media_object.save(validate: false)
       end
@@ -125,9 +120,12 @@ describe MasterFilesController do
         request.env["HTTP_REFERER"] = "/"
 
         file = fixture_file_upload('/public-domain-book.txt', 'application/json')
+        image = fixture_file_upload('/collection_poster.jpg', 'image/jpeg')
 
         expect { post :create, params: { Filedata: [file], original: 'any', container_id: media_object.id } }.not_to change { MasterFile.count }
+        expect(flash[:error]).not_to be_nil
 
+        expect { post :create, params: { Filedata: [image], original: 'any', container_id: media_object.id } }.not_to change { MasterFile.count }
         expect(flash[:error]).not_to be_nil
       end
 
@@ -139,6 +137,13 @@ describe MasterFilesController do
         expect(master_file.file_format).to eq "Moving image"
 
         expect(flash[:error]).to be_nil
+      end
+
+      it "rejects when ffprobe is misconfigured" do
+        allow(Settings.ffprobe).to receive(:path).and_return('misconfigured/path')
+        file = fixture_file_upload('/jazz-performance.mp3', 'audio/mp3')
+        expect { post :create, params: { Filedata: [file], original: 'any', container_id: media_object.id } }.not_to change { MasterFile.count }
+        expect(flash[:error]).not_to be_nil
       end
     end
 
@@ -227,6 +232,22 @@ describe MasterFilesController do
       login_as :user
       expect(controller.current_ability.can?(:destroy, master_file)).to be_falsey
       expect(post(:destroy, params: { id: master_file.id })).to render_template('errors/restricted_pid')
+    end
+
+    context "master file with child supplemental files" do
+      let!(:master_file) { FactoryBot.create(:master_file, :with_media_object, :cancelled_processing, supplemental_files: [supplemental_file]) }
+      let(:supplemental_file) { FactoryBot.create(:supplemental_file) }
+
+      around(:example) do |example|
+        perform_enqueued_jobs { example.run }
+      end
+
+      it "deletes child files" do
+        login_as :administrator
+        expect(SupplementalFile.exists?(supplemental_file.id)).to be_truthy
+        post :destroy, params: { id: master_file.id }
+        expect(SupplementalFile.exists?(supplemental_file.id)).to be_falsey
+      end
     end
   end
 
@@ -372,6 +393,20 @@ describe MasterFilesController do
         get :get_frame, params: { id: mf.id, type: 'thumbnail', size: 'bar', offset: '1' }
         expect(response.body).to eq('fake image content')
         expect(response.headers['Content-Type']).to eq('image/jpeg')
+      end
+
+      context "video without thumbnail" do
+        subject(:mf) { FactoryBot.create(:master_file, :with_media_object) }
+        it "returns video_icon.png" do
+          expect(get :get_frame, params: { id: mf.id, type: 'thumbnail', size: 'bar' }).to redirect_to(ActionController::Base.helpers.asset_path('video_icon.png'))
+        end
+      end
+
+      context "audio" do
+        subject(:mf) { FactoryBot.create(:master_file, :audio, :with_media_object) }
+        it "returns audio_icon.png" do
+          expect(get :get_frame, params: { id: mf.id, type: 'thumbnail', size: 'bar' }).to redirect_to(ActionController::Base.helpers.asset_path('audio_icon.png'))
+        end
       end
     end
 

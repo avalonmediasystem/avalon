@@ -43,7 +43,6 @@ Unless required by applicable law or agreed to in writing, software distributed
       {
         urls: { base_url: request.protocol + request.host_with_port, fullpath_url: request.fullpath },
         sections_count: @media_object.sections.size,
-        has_structure: @media_object.sections.any?{ |mf| mf.has_structuralMetadata? },
         title: { content: render('title') },
         share: { canShare: (will_partial_list_render? :share), content: lending_enabled?(@media_object) ? (render('share') if can_stream) : render('share') },
         timeline: { canCreate: (current_ability.can? :create, Timeline), content: lending_enabled?(@media_object) ? (render('timeline') if can_stream) : render('timeline') },

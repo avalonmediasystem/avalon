@@ -102,6 +102,8 @@ class CatalogController < ApplicationController
     config.add_facet_field 'has_captions_bsi', label: 'Has Captions', if: Proc.new {|context, config, opts| context.current_ability.can? :create, MediaObject}, group: "workflow", helper_method: :display_has_caption_or_transcript
     config.add_facet_field 'has_transcripts_bsi', label: 'Has Transcripts', if: Proc.new {|context, config, opts| context.current_ability.can? :create, MediaObject}, group: "workflow", helper_method: :display_has_caption_or_transcript
 
+    config.add_facet_field 'subject_ssim', label: 'Subject', if: false
+
     # Have BL send all facet field names to Solr, which has been the default
     # previously. Simply remove these lines if you'd rather use Solr request
     # handler defaults, or have no facets.
@@ -113,7 +115,8 @@ class CatalogController < ApplicationController
     # solr fields to be displayed in the index (search results) view
     #   The ordering of the field names is the order of the display
     config.add_index_field 'title_tesi', label: 'Title', if: Proc.new {|context, _field_config, _document| context.request.format == :json }
-    config.add_index_field 'date_issued_ssi', label: 'Date', helper_method: :combined_display_date
+    config.add_index_field 'date_issued_ssi', label: 'Date', if: Proc.new {|_context, _field_config, document| document[:date_issued_ssi].present? }
+    config.add_index_field 'date_created_ssi', label: 'Date', if: Proc.new {|_context, _field_config, document| document[:date_created_ssi].present? && document[:date_issued_ssi].blank? }
     config.add_index_field 'creator_ssim', label: 'Main contributors', helper_method: :contributor_index_display
     config.add_index_field 'abstract_ssi', label: 'Summary', helper_method: :description_index_display
     config.add_index_field 'duration_ssi', label: 'Duration', if: Proc.new {|context, _field_config, _document| context.request.format == :json }

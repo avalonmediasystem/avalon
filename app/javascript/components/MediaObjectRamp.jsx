@@ -28,20 +28,9 @@ import "@samvera/ramp/dist/ramp.css";
 import { Col, Row, Tab, Tabs } from 'react-bootstrap';
 import './Ramp.scss';
 
-const ExpandCollapseArrow = () => {
-  return (
-    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" className="expand-collapse-svg" fill="currentColor" viewBox="0 0 16 16">
-      <path
-        fillRule="evenodd"
-        d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z">
-      </path>
-    </svg>);
-};
-
 const Ramp = ({
   urls,
   sections_count,
-  has_structure,
   title,
   share,
   timeline,
@@ -53,10 +42,6 @@ const Ramp = ({
   const [manifestUrl, setManifestUrl] = React.useState('');
   const [startCanvasId, setStartCanvasId] = React.useState();
   const [startCanvasTime, setStartCanvasTime] = React.useState();
-  const [isClosed, setIsClosed] = React.useState(false);
-
-  let expandCollapseBtnRef = React.useRef();
-  let interval;
 
   React.useEffect(() => {
     const { base_url, fullpath_url } = urls;
@@ -79,63 +64,7 @@ const Ramp = ({
         : undefined
     );
     setManifestUrl(url);
-
-    // Attach player event listeners when there's structure
-    if (has_structure) {
-      interval = setInterval(addPlayerEventListeners, 500);
-    }
-
-    // Clear interval upon component unmounting
-    return () => clearInterval(interval);
   }, []);
-
-  /**
-   * Listen to player's events to update the structure navigation
-   * UI
-   */
-  const addPlayerEventListeners = () => {
-    let player = document.getElementById('iiif-media-player');
-    if (player && player.player != undefined && !player.player.isDisposed()) {
-      let playerInst = player.player;
-      playerInst.on('loadedmetadata', () => {
-        playerInst.on('timeupdate', () => {
-          setIsClosed(false);
-        });
-      });
-      // Expand sections when a new Canvas is loaded into the player
-      playerInst.on('ready', () => {
-        setIsClosed(false);
-      });
-    }
-  };
-
-  React.useEffect(() => {
-    expandCollapseSections(isClosed);
-  }, [isClosed]);
-
-  const handleCollapseExpand = () => {
-    setIsClosed(isClosed => !isClosed);
-  };
-
-  const expandCollapseSections = (isClosing) => {
-    const allSections = $('div[class*="ramp--structured-nav__section"]');
-    allSections.each(function (index, section) {
-      let sectionUl = section.nextSibling;
-      if (sectionUl) {
-        if (isClosing) {
-          sectionUl.classList.remove('expanded');
-          sectionUl.classList.add('closed');
-          expandCollapseBtnRef.current.classList.remove('expanded');
-          expandCollapseBtnRef.current.classList.add('closed');
-        } else {
-          sectionUl.classList.remove('closed');
-          sectionUl.classList.add('expanded');
-          expandCollapseBtnRef.current.classList.remove('closed');
-          expandCollapseBtnRef.current.classList.add('expanded');
-        }
-      }
-    });
-  };
 
   return (
     <IIIFPlayer manifestUrl={manifestUrl}
@@ -143,7 +72,7 @@ const Ramp = ({
       startCanvasId={startCanvasId}
       startCanvasTime={startCanvasTime}>
       <Row className="ramp--all-components ramp--itemview">
-        <Col sm={8}>
+        <Col sm={12} md={9}>
           {(cdl.enabled && !cdl.can_stream)
             ? (<React.Fragment>
                 <div dangerouslySetInnerHTML={{ __html: cdl.embed }} />
@@ -208,19 +137,6 @@ const Ramp = ({
                         </button>
                       }
                     </Col>
-                    {has_structure &&
-                      <Col className="ramp-button-group-2">
-                        <button
-                          className="btn btn-outline expand-collapse-toggle-button expanded"
-                          id="expand_all_btn"
-                          onClick={handleCollapseExpand}
-                          ref={expandCollapseBtnRef}
-                        >
-                          <ExpandCollapseArrow />
-                          {isClosed ? ' Expand' : ' Close'} {sections_count > 1 ? `${sections_count} Sections` : 'Section'}
-                        </button>
-                      </Col>
-                    }
                   </div>
                   <Row className="mx-0">
                     <Col>
@@ -237,14 +153,14 @@ const Ramp = ({
                       </div>
                     </Col>
                   </Row>
-                  <StructuredNavigation />
+                  <StructuredNavigation showAllSectionsButton={true} />
                 </React.Fragment>
               }
             </React.Fragment>
             )
           }
         </Col>
-        <Col sm={(sections_count == 0) ? 12 : 4} className="ramp--tabs-panel">
+        <Col sm={12} md={3} className="ramp--tabs-panel">
           {cdl.enabled && <div dangerouslySetInnerHTML={{ __html: cdl.destroy }} />}
           <Tabs>
             <Tab eventKey="details" title="Details">

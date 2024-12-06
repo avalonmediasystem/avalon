@@ -27,7 +27,7 @@ class BatchEntries < ActiveRecord::Base
   def ensure_mininum_viable_metadata
     return nil if  minimal_viable_metadata?
     self.error = true
-    self.error_message = 'To successfully ingest, either title and date issued must be set or a bibliographic id must be provided'
+    self.error_message = 'To successfully ingest, either title must be set or a bibliographic id must be provided'
   end
 
   def queue
@@ -54,7 +54,7 @@ class BatchEntries < ActiveRecord::Base
     return false if payload.nil? # nil guard
     fields = JSON.parse(payload)['fields']
     return false if fields.blank?
-    return false if (fields['date_issued'].blank? || fields['title'].blank?) && fields['bibliographic_id'].blank?
+    return false if fields['title'].blank? && fields['bibliographic_id'].blank?
     true
   end
 

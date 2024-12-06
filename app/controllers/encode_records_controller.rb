@@ -71,7 +71,7 @@ class EncodeRecordsController < ApplicationController
       "recordsFiltered": filtered_records_total,
       "data": @encode_records.collect do |encode|
         encode_presenter = EncodePresenter.new(encode)
-        encode_status = encode_presenter.status.downcase
+        encode_status = encode_presenter.status&.downcase
         unless encode_status == 'completed'
           progress_class = 'progress-bar-striped'
         end
@@ -117,7 +117,7 @@ class EncodeRecordsController < ApplicationController
 
     def format_progress(presenter)
       # Set progress = 100.0 when job failed
-      if presenter.status.casecmp("failed") == 0
+      if presenter.status&.casecmp("failed") == 0
         100.0
       else
         presenter.progress

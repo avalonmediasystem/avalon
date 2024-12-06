@@ -14,8 +14,8 @@
 
 namespace :avalon do
   namespace :tools do
-    ffmpeg_path    = Settings.ffmpeg.path || "/usr/bin/ffmpeg"
-    mediainfo_path = Settings.mediainfo.path || "/usr/bin/mediainfo"
+    ffmpeg_path    = Settings&.ffmpeg&.path || "/usr/bin/ffmpeg"
+    mediainfo_path = Settings&.mediainfo&.path || "/usr/bin/mediainfo"
     DEFAULT_TOOLS = [
       { name: "ffmpeg", path: ffmpeg_path, version_params: "-version", version_string: ">= 4", version_trim_pre: "ffmpeg version ", version_trim_last_char: "-" },
       { name: "mediainfo", path: mediainfo_path, version_string: "> 18", version_line: 1, version_trim_pre: "MediaInfoLib - v" },
