@@ -851,6 +851,7 @@ describe MasterFile do
 
     before do
       allow(master_file).to receive(:update_derivatives)
+      allow(master_file).to receive(:add_supplemental_files)
       allow(master_file).to receive(:run_hook)
     end
 
@@ -867,6 +868,17 @@ describe MasterFile do
     it 'should set the digitized date' do
       master_file.update_progress_on_success!(encode_succeeded)
       expect(master_file.date_digitized).to_not be_empty
+    end
+
+    context 'with embedded captions' do
+      let(:encode_succeeded) { FactoryBot.build(:encode, :embedded_captions) }
+
+      it 'calls update_supplemental_files' do
+        expect(master_file).to receive(:update_derivatives).with(array_including(hash_including(label: 'quality-high')))
+        expect(master_file).to receive(:add_supplemental_files).with(array_including(1))
+        expect(master_file).to receive(:run_hook).with(:after_transcoding)
+        master_file.update_progress_on_success!(encode_succeeded)
+      end
     end
   end
 
@@ -893,6 +905,16 @@ describe MasterFile do
         expect(master_file_with_derivative.reload.derivative_ids).not_to include(existing_derivative.id)
         expect(master_file_with_derivative.reload.derivative_ids).not_to be_empty
       end
+    end
+  end
+
+  describe 'add_supplemental_files' do
+    let(:master_file) { FactoryBot.create(:master_file) }
+    let(:caption_file) { FactoryBot.create(:supplemental_file, :with_caption_file, :with_caption_tag, parent_id: master_file.id) }
+
+    it 'adds the supplemental file to the master file record' do
+      expect { master_file.add_supplemental_files([caption_file.id]) }.to change { master_file.supplemental_files.count }.by(1)
+      expect(master_file.reload.supplemental_files).to eq [caption_file]
     end
   end
 

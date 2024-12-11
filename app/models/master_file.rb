@@ -314,10 +314,11 @@ class MasterFile < ActiveFedora::Base
     # We can get the proper aspect ratio from the transcoded files, so we set the master file off the 
     # encode output.
     if is_video?
-      high_output = Array(encode.output).select { |out| out.label.include?("high") }.first
+      high_output = Array(encode.output).select { |out| out.label&.include?("high") }.first
       self.display_aspect_ratio = (high_output.width.to_f / high_output.height.to_f).to_s
     end
 
+    # Supplemental file outputs do not have a label. Use that to identify output type for now.
     outputs = Array(encode.output).collect do |output|
       {
         id: output.id,
@@ -333,8 +334,13 @@ class MasterFile < ActiveFedora::Base
         width: output.width,
         height: output.height
       }
-    end
+    end.reject { |output| output[:label].blank? }
     update_derivatives(outputs)
+
+    supplemental_file_outputs = Array(encode.output).reject { |out| out.label.present? }
+    supplemental_file_ids = supplemental_file_outputs.collect { |sf| sf.id }.compact
+    add_supplemental_files(supplemental_file_ids) if supplemental_file_ids.present?
+
     run_hook :after_transcoding
   end
 
@@ -348,6 +354,12 @@ class MasterFile < ActiveFedora::Base
         existing.delete
       end
     end
+
+    save
+  end
+
+  def add_supplemental_files(ids)
+    self.supplemental_files += SupplementalFile.find(ids)
 
     save
   end

@@ -33,9 +33,14 @@ class SupplementalFile < ApplicationRecord
   after_update_commit :update_index, prepend: true
   after_destroy_commit :remove_from_index
 
-  def attach_file(new_file)
-    file.attach(new_file)
-    extension = File.extname(new_file.original_filename)
+  def attach_file(new_file, io: false)
+    if io
+      file.attach(io: File.open(new_file), filename: File.basename(new_file))
+      extension = File.extname(new_file)
+    else
+      file.attach(new_file)
+      extension = File.extname(new_file.original_filename)
+    end
     self.file.content_type = Mime::Type.lookup_by_extension(extension.slice(1..-1)).to_s if extension == '.srt'
     self.label = file.filename.to_s if label.blank?
     self.language ||= Settings.caption_default.language
