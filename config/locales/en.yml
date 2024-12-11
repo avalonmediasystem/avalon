@@ -180,10 +180,8 @@ en:
     class: |
       Enter an external group to grant it access to an item or collection. This group might represent students in a course or members of an institution-specific group. Start and end dates are not required; if included, access for the specified group will start at the beginning of the start date and end at the beginning of the end date. Otherwise, access will be open ended for the specified group.
     ipaddress: |
-      An IP Address or subnet. Eg. 255.0.1.10 or 255.0.1.10/21 or 255.0.1.10/255.255.255.0
-      or ffaa:aaff:bbcc:ddee:1122:3344:5566:7777
-      or ffaa:aaff:bbcc:ddee:1122:3344:5566:7777/ffff:ffff:ffff:ffff:ffff:ffff:ffff:ff00
-      Start and end dates are not required; if included, access for the specified IP Address(es) will start at the beginning of the start date and end at the beginning of the end date. Otherwise, access will be open ended for the specified IP Address(es).
+      An IP Address in dot-decimal or CIDR notation, e.g. 255.0.1.10 or 255.0.1.10/21.
+      Start and end dates are optional.
     lending_period: |
       Lending Period is the length of time that an item may be checked out for.
       Day and Hour values must be positive integers.
