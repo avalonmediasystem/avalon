@@ -18,34 +18,6 @@ module MasterFileManagementJobs
   class Move < ActiveJob::Base
     queue_as :master_file_management_move
 
-    def s3_to_s3(source, dest)
-      source_object = FileLocator::S3File.new(source.source).object
-      dest_object = FileLocator::S3File.new(dest.source).object
-      if dest_object.copy_from(source_object, multipart_copy: source_object.size > 15.megabytes)
-        source_object.delete if FileLocator.new(dest.source).exists?
-      end
-    end
-
-    def s3_to_file(source, dest)
-      source_object = FileLocator::S3File.new(source.source).object
-      FileUtils.mkdir_p File.dirname(dest.uri.path) unless File.exist? File.dirname(dest.uri.path)
-      if source_object.download_file(dest.uri.path)
-        source_object.delete
-      end
-    end
-
-    def file_to_s3(source, dest)
-      dest_object = FileLocator::S3File.new(dest.source).object
-      if dest_object.upload_file(source.uri.path)
-        FileUtils.rm(source.uri.path)
-      end
-    end
-
-    def file_to_file(source, dest)
-    	FileUtils.mkdir_p File.dirname(dest.location) unless File.exist? File.dirname(dest.location)
-    	FileUtils.mv source.location, dest.location
-    end
-
     def perform(id, newpath)
       Rails.logger.debug "Moving masterfile to #{newpath}"
 
@@ -58,7 +30,7 @@ module MasterFileManagementJobs
       elsif old_locator.exists?
         new_locator = FileLocator.new(newpath)
         copy_method = "#{old_locator.uri.scheme}_to_#{new_locator.uri.scheme}".to_sym
-        send(copy_method, old_locator, new_locator)
+        FileMover.send(copy_method, old_locator, new_locator)
         masterfile.file_location = newpath
       	masterfile.save
         Rails.logger.info "#{oldpath} has been moved to #{newpath}"

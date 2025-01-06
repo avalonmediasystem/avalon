@@ -423,15 +423,50 @@ describe MasterFile do
       let(:file_name) { "sample.mp4" }
       let(:file_size) { 12345 }
       let(:auth_header) { {"Authorization"=>"Bearer ya29.a0AfH6SMC6vSj4D6po1aDxAr6JmY92azh3lxevSuPKxf9QPPSKmMzqbZvI7B3oIACqqMVono1P0XD2F1Jl_rkayoI6JGz-P2cpg44-55oJFcWychAvUliWeRKf1cifMo9JF10YmXxhIfrG5mu7Ahy9FZpudN92p2JhvTI"} }
+      let(:fixture)    { File.expand_path('../../fixtures/videoshort.mp4',__FILE__) }
+      let(:tempfile)   { Tempfile.new('foo') }
+      let(:media_path) { File.expand_path("../../master_files-#{SecureRandom.uuid}",__FILE__)}
+      let(:dropbox_path) { File.expand_path("../../collection-#{SecureRandom.uuid}",__FILE__)}
+      let(:upload)     { ActionDispatch::Http::UploadedFile.new :tempfile => tempfile, :filename => original, :type => 'video/mp4' }
+      let!(:media_object) { FactoryBot.create(:media_object, sections: [subject]) }
+      let(:collection) { Admin::Collection.new }
 
       subject { FactoryBot.create(:master_file) }
 
-      it "should set the right properties" do
+      before(:each) do
         allow(subject).to receive(:reloadTechnicalMetadata!).and_return(nil)
-        subject.setContent(file, file_name: file_name, file_size: file_size, auth_header: auth_header)
-        expect(subject.file_location).to eq(file.to_s)
+        @old_media_path = Settings.encoding.working_file_path
+        FileUtils.mkdir_p media_path
+        FileUtils.cp fixture, tempfile
+        allow_any_instance_of(FileLocator).to receive(:local_location).and_return(tempfile.path)
+        allow_any_instance_of(File).to receive(:size).and_return(file_size)
+        allow(media_object).to receive(:collection).and_return(collection)
+        FileUtils.mkdir_p dropbox_path
+        allow(collection).to receive(:dropbox_absolute_path).and_return(File.absolute_path(dropbox_path))
+      end
+
+      after(:each) do
+        Settings.encoding.working_file_path = @old_media_path
+        File.unlink subject.file_location
+        FileUtils.rm_rf media_path
+        FileUtils.rm_rf dropbox_path
+      end
+
+      it "should move an uploaded file into the root of the collection's dropbox" do
+        Settings.encoding.working_file_path = nil
+        subject.setContent(file, file_name: file_name, file_size: file_size, auth_header: auth_header, dropbox_dir: collection.dropbox_absolute_path)
+        expect(subject.file_location).to eq(File.realpath(File.join(collection.dropbox_absolute_path, file_name)))
+      end
+
+      it "should copy an uploaded file to the media path" do
+        Settings.encoding.working_file_path = media_path
+        subject.setContent(file, file_name: file_name, file_size: file_size, auth_header: auth_header, dropbox_dir: collection.dropbox_absolute_path)
+        expect(File.fnmatch("#{media_path}/*/#{file_name}", subject.working_file_path.first)).to be true
+      end
+
+      it "should set the right properties" do
+        subject.setContent(file, file_name: file_name, file_size: file_size, auth_header: auth_header, dropbox_dir: collection.dropbox_absolute_path)
         expect(subject.file_size).to eq(file_size)
-        expect(subject.title).to eq(file_name)
         expect(subject.instance_variable_get(:@auth_header)).to eq(auth_header)
       end
     end
