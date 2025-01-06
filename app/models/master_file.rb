@@ -208,9 +208,8 @@ class MasterFile < ActiveFedora::Base
         self.file_location = file.to_s
         self.file_size = FileLocator::S3File.new(file).object.size
       else
-        self.file_location = file.to_s
-        self.file_size = file_size
-        self.title = file_name
+        local_file = FileLocator.new(file, filename: file_name, auth_header: auth_header).local_location
+        saveOriginal(File.open(local_file), file_name, dropbox_dir)
       end
     else #Batch
       saveOriginal(file, File.basename(file.path), dropbox_dir)
@@ -682,6 +681,7 @@ class MasterFile < ActiveFedora::Base
   def saveOriginal(file, original_name = nil, dropbox_dir = media_object.collection.dropbox_absolute_path)
     realpath = File.realpath(file.path)
 
+    self.file_size = file.size
     if original_name.present?
       # If we have a temp name from an upload, rename to the original name supplied by the user
       unless File.basename(realpath) == original_name
@@ -694,14 +694,16 @@ class MasterFile < ActiveFedora::Base
           path = File.join(parent_dir, duplicate_file_name(original_name, num))
           num += 1
         end
-        FileUtils.move(realpath, path)
+        old_locator = FileLocator.new(realpath)
+        new_locator = FileLocator.new(path)
+        copy_method = "#{old_locator.uri.scheme}_to_#{new_locator.uri.scheme}".to_sym
+        FileMover.send(copy_method, old_locator, new_locator)
         realpath = path
       end
 
       create_working_file!(realpath)
     end
     self.file_location = realpath
-    self.file_size = file.size.to_s
   ensure
     file.close
   end
