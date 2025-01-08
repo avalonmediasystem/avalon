@@ -35,37 +35,25 @@ describe FileMover, type: :service do
     end
 
     describe 's3 source to s3 dest', s3: true do
-      it 'copies file from source to dest' do
+      it 'moves file from source to dest' do
         expect(@dest_object).to receive(:copy_from).with(Aws::S3::Object.new(key: 'test.mp4', bucket_name: 'source_bucket'), multipart_copy: false)
-        described_class.move(s3_file, s3_dest)
-      end
-
-      it 'deletes file after copying' do
         expect(@source_object).to receive(:delete)
         described_class.move(s3_file, s3_dest)
       end
     end
 
     describe 's3 source to filesystem dest', s3: true do
-      it 'copies file from source to dest' do
+      it 'moves file from source to dest' do
         expect(@source_object).to receive(:download_file).with(fs_dest.uri.path)
-        described_class.move(s3_file, fs_dest)
-      end
-
-      it 'deletes file after copying' do
         expect(@source_object).to receive(:delete)
         described_class.move(s3_file, fs_dest)
       end
     end
 
     describe 'filesystem source to s3 dest', s3: true do
-      it 'copies file from source to dest' do
-        expect(@dest_object).to receive(:upload_file).with(fs_file.uri.path)
-        described_class.move(fs_file, s3_dest)
-      end
-
-      it 'deletes file after copying' do
+      it 'moves file from source to dest' do
         allow(@dest_object).to receive(:upload_file).and_return(true)
+        expect(@dest_object).to receive(:upload_file).with(fs_file.uri.path)
         expect(FileUtils).to receive(:rm).with(fs_file.uri.path)
         described_class.move(fs_file, s3_dest)
       end
