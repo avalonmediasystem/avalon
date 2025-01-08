@@ -29,8 +29,7 @@ module MasterFileManagementJobs
         Rails.logger.info "Masterfile #{newpath} already moved"
       elsif old_locator.exists?
         new_locator = FileLocator.new(newpath)
-        copy_method = "#{old_locator.uri.scheme}_to_#{new_locator.uri.scheme}".to_sym
-        FileMover.send(copy_method, old_locator, new_locator)
+        FileMover.move(old_locator, new_locator)
         masterfile.file_location = newpath
       	masterfile.save
         Rails.logger.info "#{oldpath} has been moved to #{newpath}"

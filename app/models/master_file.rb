@@ -696,8 +696,7 @@ class MasterFile < ActiveFedora::Base
         end
         old_locator = FileLocator.new(realpath)
         new_locator = FileLocator.new(path)
-        copy_method = "#{old_locator.uri.scheme}_to_#{new_locator.uri.scheme}".to_sym
-        FileMover.send(copy_method, old_locator, new_locator)
+        FileMover.move(old_locator, new_locator)
         realpath = path
       end
 
