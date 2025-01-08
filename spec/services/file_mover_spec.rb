@@ -16,78 +16,78 @@ require 'rails_helper'
 require 'fakefs/safe'
 
 describe FileMover, type: :service do
-  let(:fs_location) { '/path/to/source/test.mp4' }
-  let(:fs_file) { FileLocator.new("file://#{fs_location}") }
-  let(:fs_dest) { FileLocator.new('file:///path/to/dest/test.mp4') }
-
-  context 's3 methods' do
+  describe '.move' do
+    let(:fs_location) { '/path/to/source/test.mp4' }
+    let(:fs_file) { FileLocator.new("file://#{fs_location}") }
+    let(:fs_dest) { FileLocator.new('file:///path/to/dest/test.mp4') }
     let(:s3_file) { FileLocator.new('s3://source_bucket/test.mp4') }
     let(:s3_dest) { FileLocator.new('s3://dest_bucket/test.mp4') }
 
-    before :each do
-      @source_object = double(key: 'test.mp4', bucket_name: 'source_bucket')
+    before(:each, s3: true) do
+      @source_object = double(key: 'test.mp4', bucket_name: 'source_bucket', size: 1)
+      @dest_object = double(key: 'test.mp4', bucket_name: 'dest_bucket', exists?: true)
       allow(Aws::S3::Object).to receive(:new).and_call_original
       allow(Aws::S3::Object).to receive(:new).with(key: 'test.mp4', bucket_name: 'source_bucket').and_return(@source_object)
-      allow(@source_object).to receive(:size).and_return(1)
+      allow(Aws::S3::Object).to receive(:new).with(key: 'test.mp4', bucket_name: 'dest_bucket').and_return(@dest_object)
       allow(@source_object).to receive(:delete).and_return(true)
       allow(@source_object).to receive(:download_file).and_return(true)
+      allow(@dest_object).to receive(:copy_from).and_return(true)
     end
 
-    describe '.s3_to_s3' do
+    describe 's3 source to s3 dest', s3: true do
       it 'copies file from source to dest' do
-        expect_any_instance_of(Aws::S3::Object).to receive(:copy_from).with(Aws::S3::Object.new(key: 'test.mp4', bucket_name: 'source_bucket'), multipart_copy: false)
-        described_class.s3_to_s3(s3_file, s3_dest)
+        expect(@dest_object).to receive(:copy_from).with(Aws::S3::Object.new(key: 'test.mp4', bucket_name: 'source_bucket'), multipart_copy: false)
+        described_class.move(s3_file, s3_dest)
       end
 
       it 'deletes file after copying' do
-        allow_any_instance_of(Aws::S3::Object).to receive(:copy_from).and_return(true)
         expect(@source_object).to receive(:delete)
-        described_class.s3_to_s3(s3_file, s3_dest)
+        described_class.move(s3_file, s3_dest)
       end
     end
 
-    describe '.s3_to_file' do
+    describe 's3 source to filesystem dest', s3: true do
       it 'copies file from source to dest' do
         expect(@source_object).to receive(:download_file).with(fs_dest.uri.path)
-        described_class.s3_to_file(s3_file, fs_dest)
+        described_class.move(s3_file, fs_dest)
       end
 
       it 'deletes file after copying' do
         expect(@source_object).to receive(:delete)
-        described_class.s3_to_file(s3_file, fs_dest)
+        described_class.move(s3_file, fs_dest)
       end
     end
 
-    describe '.file_to_s3' do
+    describe 'filesystem source to s3 dest', s3: true do
       it 'copies file from source to dest' do
-        expect_any_instance_of(Aws::S3::Object).to receive(:upload_file).with(fs_file.uri.path)
-        described_class.file_to_s3(fs_file, s3_dest)
+        expect(@dest_object).to receive(:upload_file).with(fs_file.uri.path)
+        described_class.move(fs_file, s3_dest)
       end
 
       it 'deletes file after copying' do
-        allow_any_instance_of(Aws::S3::Object).to receive(:upload_file).and_return(true)
+        allow(@dest_object).to receive(:upload_file).and_return(true)
         expect(FileUtils).to receive(:rm).with(fs_file.uri.path)
-        described_class.file_to_s3(fs_file, s3_dest)
+        described_class.move(fs_file, s3_dest)
       end
     end
-  end
 
-  describe '.file_to_file' do 
-    before :each do
-      FakeFS.activate!
-      FileUtils.mkdir_p File.dirname(fs_location)
-      File.open(fs_location, 'w'){}
-    end
+    describe 'file system source to filesystem dest' do 
+      before :each do
+        FakeFS.activate!
+        FileUtils.mkdir_p File.dirname(fs_location)
+        File.open(fs_location, 'w'){}
+      end
 
-    after :each do
-      FakeFS.deactivate!
-    end
+      after :each do
+        FakeFS.deactivate!
+      end
 
-    it 'moves file from source to dest' do
-      expect(File.exist? fs_location).to be true
-      described_class.file_to_file(fs_file, fs_dest)
-      expect(File.exist? fs_location).to be false
-      expect(File.exist? '/path/to/dest/test.mp4').to be true
+      it 'moves file from source to dest' do
+        expect(File.exist? fs_location).to be true
+        described_class.move(fs_file, fs_dest)
+        expect(File.exist? fs_location).to be false
+        expect(File.exist? '/path/to/dest/test.mp4').to be true
+      end
     end
   end
 end

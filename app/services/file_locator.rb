@@ -107,7 +107,6 @@ class FileLocator
   def local_file
     @local_file ||= Tempfile.new(filename)
     File.binwrite(@local_file, reader.read)
-    @local_file.rewind
     @local_file
   ensure
     @local_file.close
