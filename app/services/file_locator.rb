@@ -16,7 +16,7 @@ require 'addressable/uri'
 require 'aws-sdk-s3'
 
 class FileLocator
-  attr_reader :source, :auth_header
+  attr_reader :source, :filename, :auth_header
 
   class S3File
     attr_reader :bucket, :key
@@ -48,6 +48,7 @@ class FileLocator
 
   def initialize(source, opts = {})
     @source = source
+    @filename = opts[:filename]
     @auth_header = opts[:auth_header]
   end
 
@@ -89,15 +90,26 @@ class FileLocator
     end
   end
 
-  # If S3, download object to /tmp
+  # If S3 or http(s), download object to /tmp
   def local_location
     @local_location ||= begin
-      if uri.scheme == 's3'
+      case uri.scheme
+      when 's3'
         S3File.new(uri).local_file.path
-      else
+      when 'file'
         location
+      else
+        local_file.path
       end
     end
+  end
+
+  def local_file
+    @local_file ||= Tempfile.new(filename)
+    File.binwrite(@local_file, reader.read)
+    @local_file
+  ensure
+    @local_file.close
   end
 
   def exist?
