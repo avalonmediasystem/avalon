@@ -59,7 +59,7 @@ GIT
 
 GIT
   remote: https://github.com/samvera-labs/active_encode.git
-  revision: 31e59574a60a54be0b35faf79e8a913480d68362
+  revision: bfc46242def0040404ea400e70028eca37b43659
   branch: caption_extraction
   specs:
     active_encode (1.2.3)

@@ -120,7 +120,7 @@ describe MasterFile do
     end
 
     it 'creates an encode' do
-      expect(master_file.encoder_class).to receive(:create).with("file://" + Addressable::URI.escape(master_file.file_location), { master_file_id: master_file.id, preset: master_file.workflow_name, headers: nil })
+      expect(master_file.encoder_class).to receive(:create).with("file://" + Addressable::URI.escape(master_file.file_location), { master_file_id: master_file.id, preset: master_file.workflow_name, headers: nil, extract_subtitles: true })
       master_file.process
     end
 
@@ -155,8 +155,8 @@ describe MasterFile do
         end
 
         it 'creates an encode' do
-	  expect(master_file.encoder_class).to receive(:create).with("file://" + Rails.root.join(high_file).to_path, { outputs: outputs_hash, master_file_id: master_file.id, preset: master_file.workflow_name })
-	  master_file.process(files)
+      	  expect(master_file.encoder_class).to receive(:create).with("file://" + Rails.root.join(high_file).to_path, { outputs: outputs_hash, master_file_id: master_file.id, preset: master_file.workflow_name, extract_subtitles: true })
+          master_file.process(files)
         end
       end
 
@@ -165,8 +165,8 @@ describe MasterFile do
         let(:outputs_hash) { [{ label: 'high', url: input_url }] }
 
         it 'creates an encode' do
-          expect(master_file.encoder_class).to receive(:create).with(input_url, { outputs: outputs_hash, master_file_id: master_file.id, preset: master_file.workflow_name })
-	  master_file.process
+          expect(master_file.encoder_class).to receive(:create).with(input_url, { outputs: outputs_hash, master_file_id: master_file.id, preset: master_file.workflow_name, extract_subtitles: true })
+          master_file.process
         end
       end
     end
@@ -873,7 +873,7 @@ describe MasterFile do
     context 'with embedded captions' do
       let(:encode_succeeded) { FactoryBot.build(:encode, :embedded_captions) }
 
-      it 'calls update_supplemental_files' do
+      it 'calls add_supplemental_files' do
         expect(master_file).to receive(:update_derivatives).with(array_including(hash_including(label: 'quality-high')))
         expect(master_file).to receive(:add_supplemental_files).with(array_including(1))
         expect(master_file).to receive(:run_hook).with(:after_transcoding)
