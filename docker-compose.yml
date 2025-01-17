@@ -1,6 +1,5 @@
 volumes:
   database:
-  fedora:
   solr:
   npms:
   data:
@@ -29,10 +28,8 @@ services:
     image: fcrepo/fcrepo:6.4.0
     depends_on:
       - db
-    volumes:
-      - fedora:/usr/local/tomcat/fcrepo-home
     environment:
-      - CATALINA_OPTS=-Dfcrepo.autoversioning.enabled=false
+      - CATALINA_OPTS=-Dfcrepo.autoversioning.enabled=false -Dfcrepo.aws.access-key=minio -Dfcrepo.aws.secret-key=minio123 -Dfcrepo.storage=ocfl-s3 -Dfcrepo.ocfl.s3.bucket=fcrepo -Dfcrepo.s3.endpoint=http://minio:9000 -Dfcrepo.aws.region=us-east-1
     networks:
       external:
       internal:
