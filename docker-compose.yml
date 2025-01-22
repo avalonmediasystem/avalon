@@ -47,7 +47,7 @@ services:
     volumes: []
 
   solr: &solr
-    image: solr:9
+    image: solr:9.7
     volumes:
       - ./solr/conf:/opt/solr/avalon_conf
       - solr:/var/solr

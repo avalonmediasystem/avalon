@@ -24,7 +24,7 @@ jobs:
       - image: zookeeper:3.9
         environment:
           ZOO_ADMINSERVER_ENABLED: false
-      - image: solr:9
+      - image: solr:9.7
         environment:
           VERBOSE: yes
           SECURITY_JSON: '{"authentication":{"blockUnknown": false, "class":"solr.BasicAuthPlugin", "credentials":{"solr":"IV0EHq1OnNrj6gvRCwvFwTrZ1+z1oBbnQdiVC3otuq0= Ndd7LKvVBAaZIF0QAVi1ekCfAJXr1GGfLtRUXhgrF8c="}, "realm":"My Solr users", "forwardCredentials": false}, "authorization":{ "class":"solr.RuleBasedAuthorizationPlugin", "permissions":[{"name":"security-edit", "role":"admin"}], "user-role":{"solr":"admin"}}}'
