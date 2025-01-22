@@ -104,8 +104,13 @@ class FileLocator
     end
   end
 
+  # Tempfile.create generates a regular File object instead of a Tempfile object:
+  # https://ruby-doc.org/stdlib-3.1.1/libdoc/tempfile/rdoc/Tempfile.html#method-c-create
+  # It is necessary for us to use this method to avoid issues with garbage collection.
+  # When calling this method ensure that the file gets unlinked/rm-ed explicitly
+  # after it is done being used.
   def local_file
-    @local_file ||= Tempfile.new(filename)
+    @local_file ||= Tempfile.create(filename)
     File.binwrite(@local_file, reader.read)
     @local_file
   ensure
