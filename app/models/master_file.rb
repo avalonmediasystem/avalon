@@ -210,6 +210,7 @@ class MasterFile < ActiveFedora::Base
       else
         local_file = FileLocator.new(file, filename: file_name, auth_header: auth_header).local_location
         saveOriginal(File.open(local_file), file_name, dropbox_dir)
+        auth_header = nil
       end
     else #Batch
       saveOriginal(file, File.basename(file.path), dropbox_dir)
