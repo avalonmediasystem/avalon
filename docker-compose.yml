@@ -44,7 +44,7 @@ services:
     volumes: []
 
   solr: &solr
-    image: solr:9.7
+    image: solr:9
     volumes:
       - ./solr/conf:/opt/solr/avalon_conf
       - solr:/var/solr
@@ -52,6 +52,8 @@ services:
       - solr-precreate
       - avalon
       - /opt/solr/avalon_conf
+    environment:
+      - SOLR_MODULES=analysis-extras,extraction
     networks:
       internal:
     ulimits:
