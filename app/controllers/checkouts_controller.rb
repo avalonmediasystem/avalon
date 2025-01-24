@@ -29,7 +29,7 @@ class CheckoutsController < ApplicationController
             else
               user_array(checkout)
             end
-          end
+          end.compact
         }
         render json: response
       end
@@ -125,7 +125,8 @@ class CheckoutsController < ApplicationController
     end
 
     def admin_array(checkout)
-      [checkout.user.user_key] + user_array(checkout)
+      checkout_array = user_array(checkout)
+      checkout_array.present? ? [checkout.user.user_key] + checkout_array : nil
     end
 
     def user_array(checkout)
@@ -136,6 +137,8 @@ class CheckoutsController < ApplicationController
         time_remaining(checkout),
         checkout_actions(checkout)
       ]
+    rescue ActiveFedora::ObjectNotFoundError
+      nil
     end
 
     def time_remaining(checkout)

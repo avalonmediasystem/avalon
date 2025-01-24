@@ -110,6 +110,23 @@ RSpec.describe "/checkouts", type: :request do
             parsed_body = JSON.parse(response.body)
             expect(parsed_body['data'].count).to eq(2)
           end
+
+          context "with deleted parent" do
+            before :each do
+              media_object = MediaObject.find(checkout.media_object.id)
+              media_object.destroy!
+            end
+            it "renders a successful JSON response" do
+              get checkouts_url(format: :json, params: { display_returned: true } )
+              expect(response).to be_successful
+              expect(response.content_type).to eq("application/json; charset=utf-8")
+            end
+            it "returns checkouts with existing parents" do
+              get checkouts_url(format: :json, params: { display_returned: true } )
+              parsed_body = JSON.parse(response.body)
+              expect(parsed_body['data'].count).to eq(1)
+            end
+          end
         end
 
         context "as an admin user" do
@@ -123,6 +140,23 @@ RSpec.describe "/checkouts", type: :request do
             get checkouts_url(format: :json, params: { display_returned: true } )
             parsed_body = JSON.parse(response.body)
             expect(parsed_body['data'].count).to eq(4)
+          end
+
+          context "with deleted parent" do
+            before :each do
+              media_object = MediaObject.find(checkout.media_object.id)
+              media_object.destroy!
+            end
+            it "renders a successful JSON response" do
+              get checkouts_url(format: :json, params: { display_returned: true } )
+              expect(response).to be_successful
+              expect(response.content_type).to eq("application/json; charset=utf-8")
+            end
+            it "returns checkouts with existing parents" do
+              get checkouts_url(format: :json, params: { display_returned: true } )
+              parsed_body = JSON.parse(response.body)
+              expect(parsed_body['data'].count).to eq(3)
+            end
           end
         end
       end
