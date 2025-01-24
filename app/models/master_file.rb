@@ -210,6 +210,10 @@ class MasterFile < ActiveFedora::Base
       else
         local_file = FileLocator.new(file, filename: file_name, auth_header: auth_header).local_location
         saveOriginal(File.open(local_file), file_name, dropbox_dir)
+        # The auth header is only needed for retrieving the file on initial download.
+        # Leaving it in place to be passed on can cause issues with the S3 related
+        # file move actions, so we set to nil after use to prevent that.
+        auth_header = nil
       end
     else #Batch
       saveOriginal(file, File.basename(file.path), dropbox_dir)

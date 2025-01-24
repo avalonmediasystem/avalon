@@ -467,7 +467,7 @@ describe MasterFile do
       it "should set the right properties" do
         subject.setContent(file, file_name: file_name, file_size: file_size, auth_header: auth_header, dropbox_dir: collection.dropbox_absolute_path)
         expect(subject.file_size).to eq(file_size)
-        expect(subject.instance_variable_get(:@auth_header)).to eq(auth_header)
+        expect(subject.instance_variable_get(:@auth_header)).to be_nil
       end
     end
   end
