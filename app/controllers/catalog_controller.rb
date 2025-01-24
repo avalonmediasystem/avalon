@@ -88,6 +88,8 @@ class CatalogController < ApplicationController
     config.add_facet_field 'collection_ssim', label: 'Collection', limit: 5
     config.add_facet_field 'unit_ssim', label: 'Unit', limit: 5
     config.add_facet_field 'language_ssim', label: 'Language', limit: 5
+    config.add_facet_field 'rights_statement_ssi', label: 'Rights Statement', limit: 5, helper_method: :rights_statement_facet_display
+
     # Hide these facets if not a Collection Manager
     config.add_facet_field 'workflow_published_sim', label: 'Published', limit: 5, if: Proc.new {|context, config, opts| context.current_ability.can? :create, MediaObject}, group: "workflow"
     config.add_facet_field 'avalon_uploader_ssi', label: 'Created by', limit: 5, if: Proc.new {|context, config, opts| context.current_ability.can? :create, MediaObject}, group: "workflow"
