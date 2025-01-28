@@ -318,8 +318,7 @@ class MasterFile < ActiveFedora::Base
       self.display_aspect_ratio = (high_output.width.to_f / high_output.height.to_f).to_s
     end
 
-    # Supplemental file outputs do not have a label. Use that to identify output type for now.
-    outputs = Array(encode.output).collect do |output|
+    outputs = Array(encode.output).reject { |output| output.subtitles.nil? }.collect do |output|
       {
         id: output.id,
         label: output.label,
@@ -334,10 +333,10 @@ class MasterFile < ActiveFedora::Base
         width: output.width,
         height: output.height
       }
-    end.reject { |output| output[:label].blank? }
+    end
     update_derivatives(outputs)
 
-    supplemental_file_outputs = Array(encode.output).reject { |out| out.label.present? }
+    supplemental_file_outputs = Array(encode.output).select { |out| out.subtitles.nil? }
     supplemental_file_ids = supplemental_file_outputs.collect { |sf| sf.id }.compact
     add_supplemental_files(supplemental_file_ids) if supplemental_file_ids.present?
 

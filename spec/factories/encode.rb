@@ -64,7 +64,7 @@ FactoryBot.define do
     video_codec { 'AVC' }
     width { '1024' }
     height { '768' }
-    subtitle_count { 0 }
+    subtitles { [] }
   end
 
   factory :encode_output, class: ActiveEncode::Output do
@@ -78,10 +78,12 @@ FactoryBot.define do
     video_codec { 'AVC' }
     width { '1024' }
     height { '768' }
+    subtitles { [] }
   end
 
   factory :encode_supplemental_output, class: ActiveEncode::Output do
     id { 1 }
     url { "file://#{Rails.root.join('spec', 'fixtures', 'caption.vtt')}"}
+    format { "vtt" }
   end
 end
