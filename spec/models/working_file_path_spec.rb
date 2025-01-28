@@ -96,7 +96,7 @@ describe "MasterFile#working_file_path" do
         master_file = media_object.reload.sections.first
         expect(File.exist? master_file.working_file_path.first).to be true
         input = FileLocator.new(master_file.working_file_path.first).uri.to_s
-        expect(encoder_class).to have_received(:create).with(input, { headers: nil, master_file_id: master_file.id, preset: workflow })
+        expect(encoder_class).to have_received(:create).with(input, { headers: nil, master_file_id: master_file.id, preset: workflow, extract_subtitles: true })
       end
 
       context "with skip transcoding" do
@@ -107,7 +107,7 @@ describe "MasterFile#working_file_path" do
           master_file = media_object.reload.sections.first
           expect(File.exist? master_file.working_file_path.first).to be true
           input_path = FileLocator.new(master_file.working_file_path.first).uri.to_s
-          expect(encoder_class).to have_received(:create).with(input_path, master_file_id: master_file.id, outputs: [{ label: "high", url: input_path }], preset: "pass_through")
+          expect(encoder_class).to have_received(:create).with(input_path, master_file_id: master_file.id, outputs: [{ label: "high", url: input_path }], preset: "pass_through", extract_subtitles: true)
         end
       end
     end
@@ -122,7 +122,7 @@ describe "MasterFile#working_file_path" do
         master_file = media_object.reload.sections.first
         expect(File.exist? master_file.working_file_path.first).to be true
         input = FileLocator.new(master_file.working_file_path.first).uri.to_s
-        expect(encoder_class).to have_received(:create).with(input, { headers: nil, master_file_id: master_file.id, preset: workflow })
+        expect(encoder_class).to have_received(:create).with(input, { headers: nil, master_file_id: master_file.id, preset: workflow, extract_subtitles: true })
       end
 
       context "with skip transcoding" do
@@ -133,7 +133,7 @@ describe "MasterFile#working_file_path" do
           master_file = media_object.reload.sections.first
           expect(File.exist? master_file.working_file_path.first).to be true
           input_path = FileLocator.new(master_file.working_file_path.first).uri.to_s
-          expect(encoder_class).to have_received(:create).with(input_path, master_file_id: master_file.id, outputs: [{ label: "high", url: input_path }], preset: "pass_through")
+          expect(encoder_class).to have_received(:create).with(input_path, master_file_id: master_file.id, outputs: [{ label: "high", url: input_path }], preset: "pass_through", extract_subtitles: true)
         end
       end
     end
@@ -155,7 +155,7 @@ describe "MasterFile#working_file_path" do
         master_file = media_object.reload.sections.first
         expect(File.exist? master_file.working_file_path.first).to be true
         input = FileLocator.new(master_file.working_file_path.first).uri.to_s
-        expect(encoder_class).to have_received(:create).with(input, { headers: nil, master_file_id: master_file.id, preset: workflow })
+        expect(encoder_class).to have_received(:create).with(input, { headers: nil, master_file_id: master_file.id, preset: workflow, extract_subtitles: true })
       end
 
       context 'with skip transcoding' do
@@ -166,7 +166,7 @@ describe "MasterFile#working_file_path" do
           master_file = media_object.reload.sections.first
           expect(File.exist? master_file.working_file_path.first).to be true
           input_path = FileLocator.new(master_file.working_file_path.first).uri.to_s
-          expect(encoder_class).to have_received(:create).with(input_path, master_file_id: master_file.id, outputs: [{ label: "high", url: input_path }], preset: "pass_through" )
+          expect(encoder_class).to have_received(:create).with(input_path, master_file_id: master_file.id, outputs: [{ label: "high", url: input_path }], preset: "pass_through", extract_subtitles: true)
         end
       end
 
@@ -207,7 +207,8 @@ describe "MasterFile#working_file_path" do
             outputs: [{ label: "low", url: FileLocator.new(working_file_path_low).uri.to_s }, 
                       { label: "medium", url: FileLocator.new(working_file_path_medium).uri.to_s },
                       { label: "high", url: input_path}],
-            preset: "pass_through")
+            preset: "pass_through",
+            extract_subtitles: true)
         end
       end
     end
@@ -226,7 +227,7 @@ describe "MasterFile#working_file_path" do
         MasterFileBuilder.build(media_object, params)
         master_file = media_object.reload.sections.first
         input = FileLocator.new(master_file.file_location).uri.to_s
-        expect(encoder_class).to have_received(:create).with(input, { headers: nil, master_file_id: master_file.id, preset: workflow })
+        expect(encoder_class).to have_received(:create).with(input, { headers: nil, master_file_id: master_file.id, preset: workflow, extract_subtitles: true })
       end
 
       context "with skip transcoding" do
@@ -236,7 +237,7 @@ describe "MasterFile#working_file_path" do
           MasterFileBuilder.build(media_object, params)
           master_file = media_object.reload.sections.first
           input_path = FileLocator.new(master_file.file_location).uri.to_s
-          expect(encoder_class).to have_received(:create).with(input_path, master_file_id: master_file.id, outputs: [{ label: "high", url: input_path }], preset: "pass_through")
+          expect(encoder_class).to have_received(:create).with(input_path, master_file_id: master_file.id, outputs: [{ label: "high", url: input_path }], preset: "pass_through", extract_subtitles: true)
         end
       end
     end
@@ -250,7 +251,7 @@ describe "MasterFile#working_file_path" do
         MasterFileBuilder.build(media_object, params)
         master_file = media_object.reload.sections.first
         input = FileLocator.new(master_file.file_location).uri.to_s
-        expect(encoder_class).to have_received(:create).with(input, { headers: nil, master_file_id: master_file.id, preset: workflow })
+        expect(encoder_class).to have_received(:create).with(input, { headers: nil, master_file_id: master_file.id, preset: workflow, extract_subtitles: true })
       end
 
       context "with skip transcoding" do
@@ -260,7 +261,7 @@ describe "MasterFile#working_file_path" do
           MasterFileBuilder.build(media_object, params)
           master_file = media_object.reload.sections.first
           input_path = FileLocator.new(master_file.file_location).uri.to_s
-          expect(encoder_class).to have_received(:create).with(input_path, master_file_id: master_file.id, outputs: [{ label: "high", url: input_path }], preset: "pass_through")
+          expect(encoder_class).to have_received(:create).with(input_path, master_file_id: master_file.id, outputs: [{ label: "high", url: input_path }], preset: "pass_through", extract_subtitles: true)
         end
       end
     end
@@ -281,7 +282,7 @@ describe "MasterFile#working_file_path" do
         entry.process!
         master_file = media_object.reload.sections.first
         input = FileLocator.new(master_file.file_location).uri.to_s
-        expect(encoder_class).to have_received(:create).with(input, { headers: nil, master_file_id: master_file.id, preset: workflow })
+        expect(encoder_class).to have_received(:create).with(input, { headers: nil, master_file_id: master_file.id, preset: workflow, extract_subtitles: true })
       end
 
       context 'with skip transcoding' do
@@ -291,7 +292,7 @@ describe "MasterFile#working_file_path" do
           entry.process!
           master_file = media_object.reload.sections.first
           input_path = FileLocator.new(master_file.file_location).uri.to_s
-          expect(encoder_class).to have_received(:create).with(input_path, master_file_id: master_file.id, outputs: [{ label: "high", url: input_path }], preset: "pass_through")
+          expect(encoder_class).to have_received(:create).with(input_path, master_file_id: master_file.id, outputs: [{ label: "high", url: input_path }], preset: "pass_through", extract_subtitles: true)
         end
       end
 
@@ -323,7 +324,8 @@ describe "MasterFile#working_file_path" do
             outputs: [{ label: "low", url: Addressable::URI.convert_path(File.absolute_path(filename_low)).to_s },
                       { label: "medium", url: Addressable::URI.convert_path(File.absolute_path(filename_medium)).to_s },
                       { label: "high", url: input_path }],
-            preset: "pass_through")
+            preset: "pass_through",
+            extract_subtitles: true)
         end
       end
     end

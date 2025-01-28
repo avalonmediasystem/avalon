@@ -101,6 +101,42 @@ describe WatchedEncode do
         expect(encode_record.display_title).to eq fixture_file
       end
 
+      context 'with embedded captions' do
+        let(:caption_file) { 'captions.vtt' }
+        let(:completed_encode) do
+          running_encode.clone.tap do |e| 
+            e.state = :completed
+            output = double(url: 'file://' + Rails.root.join('spec', 'fixtures', fixture_file).to_s)
+            allow(output).to receive(:url=)
+            sup_file = double(url: 'file://supplemental_files' + Rails.root.join('spec', 'fixtures', caption_file).to_s)
+            allow(sup_file).to receive(:url=)
+            allow(sup_file).to receive(:id=)
+            e.output = [output, sup_file]
+          end
+        end
+
+        before do
+          allow_any_instance_of(ActiveStorage::Blob).to receive(:url).and_return("https://example.com")
+        end
+
+        it 'creates a SupplementalFile' do
+          expect { encode.create! }.to change { SupplementalFile.all.count }.by(1)
+          expect(master_file).to have_received(:update_progress_on_success!)
+        end
+
+        it 'uploads to Minio' do
+          encode.create!
+          expect(master_file).to have_received(:update_progress_on_success!)
+        end
+
+        it 'creates and encode record' do
+          encode.create!
+          encode_record = ActiveEncode::EncodeRecord.last
+          expect(encode_record.title).to eq fixture_file
+          expect(encode_record.display_title).to eq fixture_file
+        end
+      end
+
       after do
         Settings.minio = nil
       end
