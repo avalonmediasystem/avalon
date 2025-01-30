@@ -309,6 +309,7 @@ describe MasterFile do
           master_file.setContent(derivative_hash)
           expect(master_file.file_location).to eq(filename_high)
           expect(master_file.file_size).to eq("199160")
+          expect(master_file.original_filename).to eq("videoshort.high.mp4")
         end
       end
       describe "quality-high does not exist" do
@@ -317,6 +318,7 @@ describe MasterFile do
           master_file.setContent(derivative_hash.except("quality-high"))
           expect(master_file.file_location).to eq(filename_medium)
           expect(master_file.file_size).to eq("199160")
+          expect(master_file.original_filename).to eq("videoshort.medium.mp4")
         end
       end
 
@@ -359,6 +361,12 @@ describe MasterFile do
         Settings.encoding.working_file_path = media_path
         subject.setContent(upload, dropbox_dir: collection.dropbox_absolute_path)
         expect(File.fnmatch("#{media_path}/*/#{original}", subject.working_file_path.first)).to be true
+      end
+
+      it "should set the original filename" do
+        Settings.encoding.working_file_path = nil
+        subject.setContent(upload, file_name: original, dropbox_dir: collection.dropbox_absolute_path)
+        expect(subject.original_filename).to eq("videoshort.mp4")
       end
 
       context "when file with same name already exists in the collection's dropbox" do
@@ -416,6 +424,12 @@ describe MasterFile do
         subject.setContent(File.new(dropbox_file_path), dropbox_dir: collection.dropbox_absolute_path)
         expect(File.fnmatch("#{media_path}/*/#{original}", subject.working_file_path.first)).to be true
       end
+
+      it "should set the original filename" do
+        Settings.encoding.working_file_path = nil
+        subject.setContent(File.new(dropbox_file_path), file_name: original, dropbox_dir: collection.dropbox_absolute_path)
+        expect(subject.original_filename).to eq("videoshort.mp4")
+      end
     end
 
     context "google drive" do
@@ -468,6 +482,7 @@ describe MasterFile do
         subject.setContent(file, file_name: file_name, file_size: file_size, auth_header: auth_header, dropbox_dir: collection.dropbox_absolute_path)
         expect(subject.file_size).to eq(file_size)
         expect(subject.instance_variable_get(:@auth_header)).to be_nil
+        expect(subject.original_filename).to eq(file_name)
       end
     end
   end
