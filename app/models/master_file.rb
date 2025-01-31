@@ -58,6 +58,9 @@ class MasterFile < ActiveFedora::Base
   property :title, predicate: ::RDF::Vocab::EBUCore.title, multiple: false do |index|
     index.as :stored_searchable
   end
+  property :original_filename, predicate: Avalon::RDFVocab::MasterFile.originalFileName, multiple: false do |index|
+    index.as :stored_sortable
+  end
   property :file_location, predicate: Avalon::RDFVocab::EBUCore.locator, multiple: false do |index|
     index.as :stored_sortable
   end
@@ -218,6 +221,7 @@ class MasterFile < ActiveFedora::Base
     else #Batch
       saveOriginal(file, File.basename(file.path), dropbox_dir)
     end
+    self.original_filename = File.basename(file_name) unless (file.is_a?(Hash) || file_name.nil?)
 
     @auth_header = auth_header
     reloadTechnicalMetadata!
@@ -724,6 +728,7 @@ class MasterFile < ActiveFedora::Base
       next unless usable_files.has_key?(quality)
       self.file_location = File.realpath(usable_files[quality])
       self.file_size = usable_files[quality].size.to_s
+      self.original_filename = File.basename(File.realpath(usable_files[quality]))
       break
     end
   ensure

@@ -114,5 +114,18 @@ namespace :avalon do
         puts "Migration completed successfully."
       end
     end
+    desc "Backfill original filename property on MasterFile records"
+    task master_file_original_filename: :environment do
+      count = 0
+      missing = MasterFile.where(original_filename: nil)
+      missing.each do |mf|
+        filename = File.basename(mf.file_location)&.gsub(/^#{mf.id}-/, '')
+        mf.original_filename = filename
+        mf.save
+        count += 1
+      end
+
+      puts("Backfill complete. #{count} records updated.")
+    end
   end
 end
