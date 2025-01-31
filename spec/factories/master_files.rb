@@ -16,7 +16,6 @@ FactoryBot.define do
   factory :master_file do
     file_location {'/path/to/video.mp4'}
     file_format {'Moving image'}
-    # original_filename { 'video.mp4' }
     # percent_complete {"#{rand(100)}"}
     workflow_name { 'avalon' }
     duration {'200000'}
