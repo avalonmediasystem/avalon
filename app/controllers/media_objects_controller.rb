@@ -240,7 +240,8 @@ class MediaObjectsController < ApplicationController
           break
         end
         if file_spec[:files].present?
-          if master_file.update_derivatives(file_spec[:files], false)
+          master_file.update_derivatives(file_spec[:files], false)
+          if master_file.save
             master_file.update_stills_from_offset!
             WaveformJob.perform_later(master_file.id)
           else
