@@ -22,7 +22,8 @@ class Ability
                          :marker_permissions,
                          :encode_dashboard_permissions,
                          :timeline_permissions,
-                         :checkout_permissions]
+                         :checkout_permissions,
+                         :repository_read_only_permissions]
 
   # Override to add handling of SpeedyAF proxy objects
   def edit_permissions
@@ -260,6 +261,16 @@ class Ability
     end
   end
 
+  def repository_read_only_permissions
+    if Settings.repository_read_only_mode
+      cannot [:create, :edit, :update, :destroy, :update_access_control, :unpublish], [MediaObject, SpeedyAF::Proxy::MediaObject]
+      cannot [:create, :edit, :update, :destroy], [MasterFile, SpeedyAF::Proxy::MasterFile]
+      cannot [:create, :edit, :update, :destroy], [Derivative, SpeedyAF::Proxy::Derivative]
+      cannot [:create, :edit, :update, :destroy, :update_unit, :update_access_control, :update_managers, :update_editors, :update_depositors], [Admin::Collection, SpeedyAF::Proxy::Admin::Collection]
+      cannot [:create, :edit, :update, :destroy], SpeedyAF::Base
+    end
+  end
+
   def is_administrator?
     @user_groups.include?("administrator")
   end
@@ -289,5 +300,4 @@ class Ability
     @json_api_login ||= false
     @json_api_login
   end
-
 end
