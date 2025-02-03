@@ -130,3 +130,8 @@ derivative:
 # Leave commented out to use the system default.
 # tempfile:
 #   location: '/tmp'
+
+# Enable read-only mode for disabling all save interactions with fedora and solr
+# Does not affect actions that only affect the database
+# This is useful when running long migrations
+repository_read_only_mode: false
