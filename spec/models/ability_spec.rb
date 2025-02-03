@@ -22,7 +22,8 @@ describe Ability, type: :model do
   end
 
   describe 'repository read-only mode' do
-    let(:media_object) { FactoryBot.create(:media_object) }
+    # Next line is let! to ensure that it runs before the before block which would stop the object from being created
+    let!(:media_object) { FactoryBot.create(:media_object) }
     let(:media_object_proxy) { SpeedyAF::Base.find(media_object.id) }
     let(:collection) { media_object.collection }
     let(:collection_proxy) { SpeedyAF::Base.find(collection.id) }
