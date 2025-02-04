@@ -120,7 +120,7 @@ describe MasterFile do
     end
 
     it 'creates an encode' do
-      expect(master_file.encoder_class).to receive(:create).with("file://" + Addressable::URI.escape(master_file.file_location), { master_file_id: master_file.id, preset: master_file.workflow_name, headers: nil })
+      expect(master_file.encoder_class).to receive(:create).with("file://" + Addressable::URI.escape(master_file.file_location), { master_file_id: master_file.id, preset: master_file.workflow_name, headers: nil, extract_subtitles: true })
       master_file.process
     end
 
@@ -155,8 +155,8 @@ describe MasterFile do
         end
 
         it 'creates an encode' do
-	  expect(master_file.encoder_class).to receive(:create).with("file://" + Rails.root.join(high_file).to_path, { outputs: outputs_hash, master_file_id: master_file.id, preset: master_file.workflow_name })
-	  master_file.process(files)
+      	  expect(master_file.encoder_class).to receive(:create).with("file://" + Rails.root.join(high_file).to_path, { outputs: outputs_hash, master_file_id: master_file.id, preset: master_file.workflow_name, extract_subtitles: true })
+          master_file.process(files)
         end
       end
 
@@ -165,8 +165,8 @@ describe MasterFile do
         let(:outputs_hash) { [{ label: 'high', url: input_url }] }
 
         it 'creates an encode' do
-          expect(master_file.encoder_class).to receive(:create).with(input_url, { outputs: outputs_hash, master_file_id: master_file.id, preset: master_file.workflow_name })
-	  master_file.process
+          expect(master_file.encoder_class).to receive(:create).with(input_url, { outputs: outputs_hash, master_file_id: master_file.id, preset: master_file.workflow_name, extract_subtitles: true })
+          master_file.process
         end
       end
     end
@@ -866,11 +866,13 @@ describe MasterFile do
 
     before do
       allow(master_file).to receive(:update_derivatives)
+      allow(master_file).to receive(:add_supplemental_files)
       allow(master_file).to receive(:run_hook)
     end
 
     it 'calls update_derivatives' do
       expect(master_file).to receive(:update_derivatives).with(array_including(hash_including(label: 'quality-high')))
+      expect(master_file).to receive(:save)
       expect(master_file).to receive(:run_hook).with(:after_transcoding)
       master_file.update_progress_on_success!(encode_succeeded)
     end
@@ -882,6 +884,18 @@ describe MasterFile do
     it 'should set the digitized date' do
       master_file.update_progress_on_success!(encode_succeeded)
       expect(master_file.date_digitized).to_not be_empty
+    end
+
+    context 'with embedded captions' do
+      let(:encode_succeeded) { FactoryBot.build(:encode, :embedded_captions) }
+
+      it 'calls add_supplemental_files' do
+        expect(master_file).to receive(:update_derivatives).with(array_including(hash_including(label: 'quality-high')))
+        expect(master_file).to receive(:add_supplemental_files).with(array_including("gid://avalon/SupplementalFile/1"))
+        expect(master_file).to receive(:save)
+        expect(master_file).to receive(:run_hook).with(:after_transcoding)
+        master_file.update_progress_on_success!(encode_succeeded)
+      end
     end
   end
 
@@ -908,6 +922,15 @@ describe MasterFile do
         expect(master_file_with_derivative.reload.derivative_ids).not_to include(existing_derivative.id)
         expect(master_file_with_derivative.reload.derivative_ids).not_to be_empty
       end
+    end
+  end
+
+  describe 'add_supplemental_files' do
+    let(:master_file) { FactoryBot.create(:master_file) }
+    let(:caption_file) { FactoryBot.create(:supplemental_file, :with_caption_file, :with_caption_tag, parent_id: master_file.id) }
+
+    it 'adds the supplemental file to the master file record' do
+      expect { master_file.add_supplemental_files([caption_file.to_global_id.to_s]) }.to change { master_file.supplemental_files.count }.by(1)
     end
   end
 
