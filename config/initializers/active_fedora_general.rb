@@ -209,3 +209,9 @@ ActiveFedora::WithMetadata::MetadataNode.class_eval do
     get_values(:type) << self.class.type
   end
 end
+
+ActiveFedora::Common.module_eval do
+  def readonly?
+    @readonly || Settings.repository_read_only_mode
+  end
+end
