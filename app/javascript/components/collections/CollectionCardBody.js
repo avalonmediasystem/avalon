@@ -17,7 +17,7 @@
 import React from 'react';
 
 const CollectionCardBody = ({ children }) => (
-  <div className="card-body">
+  <div className="card-body" data-testid="collectionCardBody">
     <div className="collection-card-description">{children}</div>
   </div>
 );

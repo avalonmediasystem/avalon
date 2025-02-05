@@ -19,7 +19,7 @@ Unless required by applicable law or agreed to in writing, software distributed
   <div class="page-title-wrapper playlist-title-wrapper row">
     <div class=" playlist-title col-sm-8 pl-0">
       <%= icon_only_visibility @playlist.visibility %>
-      <h1 class="page-title"><%= @playlist.title %></h1>
+      <h1 class="page-title" data-testid="playlistTitle"><%= @playlist.title %></h1>
     </div>
 
     <div class="playlist-action-button-row col-sm-4">
