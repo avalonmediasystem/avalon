@@ -27,18 +27,18 @@ Unless required by applicable law or agreed to in writing, software distributed
       </div>
       <%= bootstrap_form_for @collection, remote: true, html: { modal: true }, format: 'json' do |f| %>
       <div class="modal-body">
-        <%= f.text_field :name %>
+        <%= f.text_field :name, 'data-testid': 'adminCollectionName' %>
         <% if @collection.new_record? || can?(:update_unit, @collection)%>
-          <%= f.select(:unit, Admin::Collection.units, {}, {:class => 'form-control'}) %>
+          <%= f.select(:unit, Admin::Collection.units, {}, {:class => 'form-control', 'data-testid': 'adminCollectionUnit'} ) %>
         <% end %>
-        <%= f.text_area :description, rows: 3  %>
-        <%= f.text_field :contact_email %>
-        <%= f.text_field :website_url %>
-        <%= f.text_field :website_label %>
+        <%= f.text_area :description, rows: 3 ,'data-testid':'adminCollectionDescription' %>
+        <%= f.text_field :contact_email, 'data-testid': 'adminCollectionContactEmail' %>
+        <%= f.text_field :website_url, 'data-testid':'adminCollectionWebsiteUrl' %>
+        <%= f.text_field :website_label, 'data-testid':'adminCollectionWebsiteLabel' %>
       </div>
       <div class="modal-footer">
         <a href="#" data-dismiss="modal" aria-hidden="true" class="btn btn-outline">Cancel</a>
-        <%= f.submit class: 'btn btn-primary btn-stateful-loading', data: { loading_text: 'Saving...' } %>
+        <%= f.submit class: 'btn btn-primary btn-stateful-loading', data: { loading_text: 'Saving...' } , 'data-testid': 'updateCollection' %>
       </div>
       <% end %>
     </div>

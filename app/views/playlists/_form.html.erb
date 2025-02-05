@@ -17,12 +17,12 @@ Unless required by applicable law or agreed to in writing, software distributed
   <%= form_for(@playlist, html: { id: 'playlist_form', class: 'playlist_actions' }) do |f| %>
   <div class="form-group">
     <%= f.label "Name", class: "font-weight-bold" %>
-    <%= f.text_field :title, class: (@playlist.errors[:title].any? ? 'is-invalid form-control' : 'form-control') %>
+    <%= f.text_field :title, class: (@playlist.errors[:title].any? ? 'is-invalid form-control' : 'form-control') , 'data-testid': 'playlistTitle' %>
   </div>
 
   <div class="form-group">
     <%= f.label :comment, 'Description', class: "font-weight-bold" %>
-    <%= f.text_area :comment, class: 'form-control', rows: '4' %>
+    <%= f.text_area :comment, class: 'form-control', rows: '4', 'data-testid': 'playlistComment' %>
   </div>
 
   <div class="form-group">
@@ -53,7 +53,7 @@ Unless required by applicable law or agreed to in writing, software distributed
   </div>
 
   <div class="form-group">
-    <%= f.submit id: 'submit-playlist-form', class: 'btn btn-primary', value: t("playlist.#{params[:action]}.action") %>
+    <%= f.submit id: 'submit-playlist-form', class: 'btn btn-primary', value: t("playlist.#{params[:action]}.action"), 'data-testid': 'submitPlaylistForm' %>
       <% if params[:action] == "edit" || params[:action] == "update" %>
       <a id="playlist_edit_cancel" class="btn btn-outline" data-toggle="collapse"
         data-target="#playlist_edit_div, #playlist_view_div">Cancel</a>

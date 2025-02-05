@@ -17,14 +17,14 @@ Unless required by applicable law or agreed to in writing, software distributed
   <h1 class="page-title">New collection</h1>
 </div>
 <%= bootstrap_form_for @collection, action: 'create' do |f| %>
-  <%= f.text_field :name %>
+  <%= f.text_field :name, 'data-testid': 'adminCollectionName' %>
   <% if @collection.new_record? || can?(:update_unit, @collection)%>
-    <%= f.select(:unit, Admin::Collection.units, {}, {:class => 'form-control'}) %>
+    <%= f.select(:unit, Admin::Collection.units, {}, {:class => 'form-control', 'data-testid': 'adminCollectionUnit' }) %>
   <% end %>
-  <%= f.text_area :description, rows: 3  %>
-  <%= f.text_field :contact_email %>
-  <%= f.text_field :website_url %>
-  <%= f.text_field :website_label %>
+  <%= f.text_area :description, rows: 3, 'data-testid':'adminCollectionDescription'  %>
+  <%= f.text_field :contact_email, 'data-testid':'adminCollectionContactEmail' %>
+  <%= f.text_field :website_url, 'data-testid': 'adminCollectionWebsiteUrl' %>
+  <%= f.text_field :website_label, 'data-testid':'adminCollectionWebsiteLabel' %>
   <a href="/admin/collections" aria-hidden="true" class="btn btn-outline">Cancel</a>
-  <%= f.submit class: 'btn btn-primary' %>
+  <%= f.submit class: 'btn btn-primary', 'data-testid': 'newCollection' %>
 <% end %>
