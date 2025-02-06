@@ -15,6 +15,79 @@
 class LanguageTerm
   class LookupError < Exception; end
 
+  class Iso6391
+    Terms = File.join(Rails.root, 'config/iso639-1.yml')
+
+    class << self
+      def convert_to_6392(term)
+        raise LookupError, "Incorrect number of characters. Term must be a string of 2 alphabetic characters." unless /[a-zA-Z]{2}/.match?(term)
+        lang_text = self.find(term).text
+        # ISO 639-1 can have multiple languages defined for a single code:
+        # 'es': "Spanish | Castilian".
+        # ISO 639-2 does not follow the same convention, so we iterate through
+        # any multi languages until we get a match from the ISO 639-2 standard.
+        lang_text = lang_text.split('|').map(&:strip) if lang_text.include?('|')
+        Array(lang_text).each do |text|
+          begin
+            @alpha3 = LanguageTerm.find(text).code
+            break
+          rescue LookupError
+            next
+          end
+        end
+
+        raise LookupError, "Unknown language: `'#{value}" if @alpha3.nil?
+
+        return @alpha3
+      end
+
+      def map
+        @@map ||= self.load!
+      end
+
+      def find(value)
+        result = self.map[value.downcase]
+        result = self.map.select{ |k,v| v[:text]==value }.values.first if result.nil?
+        raise LookupError, "Unknown language: `#{value}'" if result.nil?
+        self.new(result)
+      end
+      alias_method :[], :find
+
+      def load!
+        if File.exist?(Terms)
+          YAML.load(File.read(Terms))
+        else
+          harvest!
+        end
+      end
+
+      def harvest!
+        language_map = {}
+        doc = RestClient.get('http://id.loc.gov/vocabulary/iso639-1.tsv').split(/\n/).collect{ |l| l.split(/\t/) }
+        doc.shift
+        doc.each { |entry| language_map[entry[1].to_s] = { code: entry[1].to_s, text: entry[2].to_s, uri: entry[0].to_s } }
+        begin
+          File.open(Terms,'w') { |f| f.write(YAML.dump(language_map)) }
+        rescue
+          # Don't care if we can't cache it
+        end
+        language_map
+      end
+    end
+
+    def initialize(term)
+      @term = term
+    end
+
+    def code
+      @term[:code]
+    end
+
+    def text
+      @term[:text]
+    end
+  end
+
   Store = File.join(Rails.root, 'config/iso639-2.yml')
 
   class << self
