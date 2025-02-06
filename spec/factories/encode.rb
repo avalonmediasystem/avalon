@@ -85,5 +85,7 @@ FactoryBot.define do
     id { "gid://avalon/SupplementalFile/1" }
     url { "file://#{Rails.root.join('spec', 'fixtures', 'caption.vtt')}"}
     format { "vtt" }
+    label { "Test Caption" }
+    language { "en" }
   end
 end
