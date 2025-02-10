@@ -173,7 +173,7 @@ services:
     ports: []
 
   minio:
-    image: minio/minio:RELEASE.2024-01-29T03-56-32Z
+    image: minio/minio
     command: minio server /data --console-address ":9090"
     environment:
       MINIO_ACCESS_KEY: minio
@@ -195,7 +195,8 @@ services:
   createbuckets:
     image: minio/mc
     depends_on:
-      - minio
+      minio:
+        condition: service_healthy
     entrypoint: >
       /bin/sh -c "
       /usr/bin/mc config host add myminio http://minio:9000 minio minio123;
