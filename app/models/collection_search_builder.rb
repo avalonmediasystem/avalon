@@ -64,7 +64,7 @@ class CollectionSearchBuilder < Blacklight::SearchBuilder
 
     # Copied from SearchBuilder
     def only_published_items(solr_parameters, ability = current_ability)
-      if ability.cannot? :create, MediaObject
+      if !ability.is_member_of_any_collection?
         solr_parameters[:fq] ||= []
         solr_parameters[:fq] << 'workflow_published_sim:"Published"'
       end

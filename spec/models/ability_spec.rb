@@ -53,6 +53,7 @@ describe Ability, type: :model do
         expect(subject.can?(:destroy, MediaObject)).to eq false
         expect(subject.can?(:update_access_control, MediaObject)).to eq false
         expect(subject.can?(:unpublish, MediaObject)).to eq false
+        expect(subject.can?(:intercom_push, MediaObject)).to eq false
 
         expect(subject.can?(:create, SpeedyAF::Proxy::MediaObject)).to eq false
         expect(subject.can?(:read, SpeedyAF::Proxy::MediaObject)).to eq true
@@ -107,6 +108,8 @@ describe Ability, type: :model do
         expect(subject.can?(:update_managers, SpeedyAF::Proxy::Admin::Collection)).to eq false
         expect(subject.can?(:update_editors, SpeedyAF::Proxy::Admin::Collection)).to eq false
         expect(subject.can?(:update_depositors, SpeedyAF::Proxy::Admin::Collection)).to eq false
+
+        expect(subject.can?(:destroy, Admin::CollectionPresenter)).to eq false
       end
     end
 
@@ -136,6 +139,7 @@ describe Ability, type: :model do
         expect(subject.can?(:destroy, SpeedyAF::Proxy::MediaObject)).to eq true
         expect(subject.can?(:update_access_control, SpeedyAF::Proxy::MediaObject)).to eq true
         expect(subject.can?(:unpublish, SpeedyAF::Proxy::MediaObject)).to eq true
+        expect(subject.can?(:intercom_push, MediaObject)).to eq true
  
         expect(subject.can?(:create, MasterFile)).to eq true
         expect(subject.can?(:read, MasterFile)).to eq true
@@ -182,6 +186,8 @@ describe Ability, type: :model do
         expect(subject.can?(:update_managers, SpeedyAF::Proxy::Admin::Collection)).to eq true
         expect(subject.can?(:update_editors, SpeedyAF::Proxy::Admin::Collection)).to eq true
         expect(subject.can?(:update_depositors, SpeedyAF::Proxy::Admin::Collection)).to eq true
+
+        expect(subject.can?(:destroy, Admin::CollectionPresenter)).to eq true
       end
     end
   end
