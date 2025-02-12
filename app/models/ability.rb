@@ -23,6 +23,7 @@ class Ability
                          :encode_dashboard_permissions,
                          :timeline_permissions,
                          :checkout_permissions,
+                         :administrative_permissions,
                          :repository_read_only_permissions]
 
   # Override to add handling of SpeedyAF proxy objects
@@ -73,7 +74,7 @@ class Ability
         can :create, MediaObject
       end
 
-      if @user_groups.include? "manager"
+      if is_manager?
         can :create, Admin::Collection
       end
     end
@@ -101,7 +102,7 @@ class Ability
           is_member_of?(collection)
         end
 
-        unless (is_member_of_any_collection? or @user_groups.include? 'manager')
+        unless has_administrative_access?
           cannot :read, [Admin::Collection, SpeedyAF::Proxy::Admin::Collection]
         end
 
@@ -261,6 +262,13 @@ class Ability
     end
   end
 
+  def administrative_permissions
+    if has_administrative_access?
+      can :discover_unpublished, MediaObject
+      can :read, :administrative_facets
+    end
+  end
+
   def repository_read_only_permissions
     if Settings.repository_read_only_mode
       cannot [:create, :edit, :update, :destroy, :update_access_control, :unpublish, :intercom_push], [MediaObject, SpeedyAF::Proxy::MediaObject]
@@ -273,6 +281,10 @@ class Ability
 
   def is_administrator?
     @user_groups.include?("administrator")
+  end
+
+  def is_manager?
+    @user_groups.include?("manager")
   end
 
   def is_member_of?(collection)
@@ -299,5 +311,9 @@ class Ability
     @json_api_login ||= !!@options[:json_api_login] if @options.present?
     @json_api_login ||= false
     @json_api_login
+  end
+
+  def has_administrative_access?
+    is_administrator? || is_manager? || is_member_of_any_collection?
   end
 end
