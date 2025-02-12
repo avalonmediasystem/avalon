@@ -90,7 +90,7 @@ class PlaylistsController < ApplicationController
         edit_button = view_context.link_to(edit_playlist_path(playlist), class: 'btn btn-outline btn-sm') do
           "<i class='fa fa-edit' aria-hidden='true'></i> Edit".html_safe
         end
-        delete_button = view_context.link_to(playlist_path(playlist), method: :delete, class: 'btn btn-sm btn-danger btn-confirmation', data: {placement: 'bottom'}) do
+        delete_button = view_context.link_to(playlist_path(playlist), method: :delete, class: 'btn btn-sm btn-danger btn-confirmation', data: {placement: 'bottom', testid: 'playlist-delete-table-view'}) do
           "<i class='fa fa-times' aria-hidden='true'></i> Delete".html_safe
         end
         [

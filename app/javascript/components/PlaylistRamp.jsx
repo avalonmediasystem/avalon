@@ -209,6 +209,7 @@ const Ramp = ({
                   aria-expanded="false"
                   aria-controls="shareList"
                   id="share-button"
+                  data-testid="playlist-share-btn"
                 >
                   <i className="fa fa-share-alt"></i>
                   Share
@@ -227,7 +228,7 @@ const Ramp = ({
             {comment && (
               <div style={{ position: 'relative' }}>
                 <h4>{comment_label}</h4>
-                <div className='ramp--playlist-description' onScroll={handleScrollableDescription}>
+                <div className='ramp--playlist-description' onScroll={handleScrollableDescription} data-testid="playlist-ramp-description">
                   <span dangerouslySetInnerHTML={{ __html: description }} />
                 </div>
                 {expanded && (
