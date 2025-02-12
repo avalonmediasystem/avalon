@@ -27,18 +27,18 @@ Unless required by applicable law or agreed to in writing, software distributed
       </div>
       <%= bootstrap_form_for @collection, remote: true, html: { modal: true }, format: 'json' do |f| %>
       <div class="modal-body">
-        <%= f.text_field :name, 'data-testid': 'adminCollectionName' %>
+        <%= f.text_field :name, 'data-testid': 'collection-update-name' %>
         <% if @collection.new_record? || can?(:update_unit, @collection)%>
-          <%= f.select(:unit, Admin::Collection.units, {}, {:class => 'form-control', 'data-testid': 'adminCollectionUnit'} ) %>
+          <%= f.select(:unit, Admin::Collection.units, {}, {:class => 'form-control', 'data-testid': 'collection-update-unit'} ) %>
         <% end %>
-        <%= f.text_area :description, rows: 3 ,'data-testid':'adminCollectionDescription' %>
-        <%= f.text_field :contact_email, 'data-testid': 'adminCollectionContactEmail' %>
-        <%= f.text_field :website_url, 'data-testid':'adminCollectionWebsiteUrl' %>
-        <%= f.text_field :website_label, 'data-testid':'adminCollectionWebsiteLabel' %>
+        <%= f.text_area :description, rows: 3 ,'data-testid':'collection-update-description' %>
+        <%= f.text_field :contact_email, 'data-testid': 'collection-update-contact-email' %>
+        <%= f.text_field :website_url, 'data-testid':'collection-update-website-url' %>
+        <%= f.text_field :website_label, 'data-testid':'collection-update-website-label' %>
       </div>
       <div class="modal-footer">
         <a href="#" data-dismiss="modal" aria-hidden="true" class="btn btn-outline">Cancel</a>
-        <%= f.submit class: 'btn btn-primary btn-stateful-loading', data: { loading_text: 'Saving...' } , 'data-testid': 'updateCollection' %>
+        <%= f.submit class: 'btn btn-primary btn-stateful-loading', data: { loading_text: 'Saving...' } , 'data-testid': 'collection-update-collection-btn' %>
       </div>
       <% end %>
     </div>

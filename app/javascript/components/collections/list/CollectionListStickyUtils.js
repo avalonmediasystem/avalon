@@ -39,7 +39,7 @@ const CollectionListStickyUtils = ({
               className="form-control form-control-lg"
               placeholder="Search collections..."
               autoFocus="autofocus"
-              data-testid="searchCollections"
+              data-testid="collection-search-collection-input"
             />
           </div>
         </form>

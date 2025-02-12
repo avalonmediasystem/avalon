@@ -59,7 +59,7 @@ Unless required by applicable law or agreed to in writing, software distributed
         <% end %>
         <div class="col-1">
           <%= button_tag "Add",name: "submit_add_#{access_object}", type: "submit",
-            class: "btn btn-primary", style: 'margin-top:2.4rem', disabled: input_disabled, value: "Add", "data-testid": "submit_add_#{access_object}" %>
+            class: "btn btn-primary", style: 'margin-top:2.4rem', disabled: input_disabled, value: "Add", "data-testid": "collection-submit-add-#{access_object}" %>
         </div>
       </div>
     </div>
@@ -71,7 +71,7 @@ Unless required by applicable law or agreed to in writing, software distributed
         <% if members.present? %>
         <% members.each do |member_object| %>
         <tr>
-          <td  class='access_list_label' data-testid='accessListLabel'>
+          <td class='access_list_label' data-testid="<%= 'collection-access-label-' + access_object %>">
             <%= label_tag do %>
             <% if defined?(display_helper) && display_helper.present? %>
             <%= self.send(display_helper, member_object) %>

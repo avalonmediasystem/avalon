@@ -18,7 +18,7 @@ context('Playlists', () => {
   //Playlist names start with '_' character for easy navigation without pagination
   // var playlist_title = `_Automation playlist title ${Math.floor(Math.random() * 10000) + 1
   // 	}`;
-  var playlist_title = '_Automation playlist title 2086';
+  var playlist_title = '_Automation playlist title 20765';
   var playlist_description = `${playlist_title} description`;
   var playlist_title_public = `_Automation public playlist title ${
     Math.floor(Math.random() * 10000) + 1
@@ -44,10 +44,10 @@ context('Playlists', () => {
     cy.login('administrator');
     cy.visit('/');
     cy.get('#playlists_nav').contains("Playlists").click(); // present in mco-staging as well
-    cy.get("[data-testid='createNewPlaylists']").contains("Create New Playlist").click();
-    cy.get("[data-testid='playlistTitle']").type(playlist_title);
-    cy.get("[data-testid='playlistComment']").type(playlist_description);
-    cy.get("[data-testid='submitPlaylistForm']").click();
+    cy.get("[data-testid='playlist-create-new-btn']").contains("Create New Playlist").click();
+    cy.get("[data-testid='playlist-title']").type(playlist_title);
+    cy.get("[data-testid='playlist-comment']").type(playlist_description);
+    cy.get("[data-testid='playlist-submit-form']").click();
 
     //Validate play list creation success message
     cy.get("[data-testid='alert']")
@@ -60,10 +60,7 @@ context('Playlists', () => {
     // Validate the presence of the video.js element
     cy.get('video[data-testid="videojs-audio-element"]')
       .should('exist')
-      
-      // .and('have.class', 'video-js')
-      // .and('have.class', 'vjs-big-play-centered');
-      //why were they added
+    
     // Validate the presence of the text "This playlist currently has no playable items."
     cy.get('[data-testid="inaccessible-message-display"]')
       .should('be.visible')
@@ -72,24 +69,25 @@ context('Playlists', () => {
       });
       
     //validate the playlist details - title, description, buttons , etc
-    cy.get('[data-testid="playlistTitle"]').get('h1').contains(playlist_title);
+    cy.get('[data-testid="playlist-title"]').get('h1').contains(playlist_title);
     //verify that the  playlist created by default is private
-    cy.get('[data-testid="visibilityIcon"]')
+    cy.get('[data-testid="playlist-visibility-icon"]')
     .should('be.visible')
     .and('have.attr', 'title', 'This playlist can only be viewed by you.');  
-    cy.get('[data-testid="rampPlaylistDescription"]')
+    cy.get('[data-testid="playlist-ramp-description"]')
       .contains(playlist_description);
-    cy.get('[data-testid="copyPlaylist"]').should('be.visible');
+    cy.get('[data-testid="playlist-copy-playlist-btn"]').should('be.visible');
     cy.get('[data-testid="auto-advance"]').should('be.visible');
-    cy.get('[data-testid="shareButton"]').should('be.visible');
-    cy.get('[data-testid="editPlaylistButton"]').should('be.visible');
+    cy.get('[data-testid="playlist-share-btn"]').should('be.visible');
+    cy.get('[data-testid="playlist-edit-playlist-btn"]').should('be.visible');
   });
 
+  //Verify playlist Table View
   it('.validate_playlist_table()', () => {
     cy.login('administrator');
     cy.visit('/');
     cy.get('#playlists_nav').contains("Playlists").click(); 
-    cy.get('[ data-testid="playlistRow"]').should('be.visible').within(() => {
+    cy.get('[ data-testid="playlist-table-head"]').should('be.visible').within(() => {
       cy.contains('Name').should('be.visible');
       cy.contains('Size').should('be.visible');
       cy.contains('Visibility').should('be.visible');
@@ -99,33 +97,34 @@ context('Playlists', () => {
       cy.contains('Actions').should('be.visible');
     });
 
-    cy.get('[data-testid="playlistTableBody"] tr')
-    .contains('td', 'Testing Playlists')  
+    cy.get('[data-testid="playlist-table-body"] tr')
+    .contains('td', playlist_title)  
     .closest('tr')  
     .within(() => {
       cy.get('td').eq(2).should('contain.text', 'Private');  // Check visibility (Private)
       cy.get('td').eq(6).should('contain.text', 'Copy');
       cy.get('td').eq(6).should('contain.text', 'Edit');
       cy.get('td').eq(6).should('contain.text', 'Delete');
+      //we can add more checks
     });
   });
 
-  // is able to create public playlist
+  // Is able to create public playlist
   it('.create_public_playlist()', () => {
     cy.login('administrator');
     cy.visit('/');
 
     cy.get('#playlists_nav').contains("Playlists").click(); // present in mco-staging as well
-    cy.get("[data-testid='createNewPlaylists']").contains("Create New Playlist").click();
-    cy.get("[data-testid='playlistTitle']").type(playlist_title_public);
-    cy.get("[data-testid='playlistComment']").type(playlist_description_public);   
+    cy.get("[data-testid='playlist-create-new-btn']").contains("Create New Playlist").click();
+    cy.get("[data-testid='playlist-title']").type(playlist_title_public);
+    cy.get("[data-testid='playlist-comment']").type(playlist_description_public);   
     cy.contains('Public').click();
-    cy.get("[data-testid='submitPlaylistForm']").click();
+    cy.get("[data-testid='playlist-submit-form']").click();
     
     cy.contains(playlist_title_public);
     cy.contains('Public');
 
-    cy.get('[data-testid="visibilityIcon"]')
+    cy.get('[data-testid="playlist-visibility-icon"]')
     .should('be.visible')
     .and('have.attr', 'title', 'This playlist can be viewed by anyone on the web.');
   });
@@ -136,10 +135,10 @@ context('Playlists', () => {
     cy.visit('/');
     cy.get('#playlists_nav').contains("Playlists").click();
     cy.contains(playlist_title_public).click();
-    cy.get('[data-testid="shareButton"]').click();
-    cy.get('[data-testid="shareList"]').within(() => {
+    cy.get('[data-testid="playlist-share-btn"]').click();
+    cy.get('[data-testid="playlist-share-list"]').within(() => {
       cy.url().then((currentUrl) => {
-        cy.get('[ data-testid="publicLink"]').should('have.value', currentUrl);
+        cy.get('[ data-testid="playlist-link"]').should('have.value', currentUrl);
       });
     });
   });
@@ -151,10 +150,10 @@ context('Playlists', () => {
 
     cy.get('#playlists_nav').contains("Playlists").click();
     cy.contains(playlist_title_public).click();
-    cy.get('[data-testid="editPlaylistButton"]')
+    cy.get('[data-testid="playlist-edit-playlist-btn"]')
       .should('be.visible')
       .click();
-    cy.get('[data-testid="playlistEditButton"]').click();
+    cy.get('[data-testid="playlist-edit-icon-btn"]').click();
     cy.contains('Private').click();
     cy.contains('Save Changes').click();
     cy.get('[data-testid="alert"]').contains('Playlist was successfully updated');
@@ -167,19 +166,19 @@ context('Playlists', () => {
     cy.visit('/');
     cy.get('#playlists_nav').contains("Playlists").click();
     cy.contains(playlist_title_public).click();
-    cy.get('[data-testid="editPlaylistButton"]')
+    cy.get('[data-testid="playlist-edit-playlist-btn"]')
       .should('be.visible')
       .click();
-    cy.get('[data-testid="playlistEditButton"]').click();
+    cy.get('[data-testid="playlist-edit-icon-btn"]').click();
 
     var updated_title = '_Edited' + playlist_title_public;
     var updatedDescription = '_Edited' + playlist_description_public;
 
-    cy.get('[data-testid="playlistTitle"]').clear().type(updated_title);
-    cy.get('[data-testid="playlistComment"]').clear().type(updatedDescription);
-    cy.get('[data-testid="submitPlaylistForm"]').contains('Save Changes').click();
+    cy.get('[data-testid="playlist-title"]').clear().type(updated_title);
+    cy.get('[data-testid="playlist-comment"]').clear().type(updatedDescription);
+    cy.get('[data-testid="playlist-submit-form"]').contains('Save Changes').click();
     cy.get('[data-testid="alert"]').contains('Playlist was successfully updated');
-    cy.get('[data-testid="playlistDetails"]')
+    cy.get('[data-testid="playlist-details"]')
       .within(() => {
         cy.contains(updated_title).should('be.visible');
         cy.contains(updatedDescription).should('be.visible');
@@ -191,53 +190,23 @@ context('Playlists', () => {
         cy.log(`Playlist title updated to: ${playlist_title_public}`); // Log the updated value
       });
   });
-
-  it('Verify the "add to playlist" button behavior - @Tcdb5ac47', () => {
-    cy.login('administrator');
-    cy.visit('/');
-    // The below code is hard-coded for a media object url. This needs to be changed with a valid object URL later for each website.
-    cy.visit('/media_objects/' + media_object_id);
-    cy.contains(media_object_title); 
-    cy.get('[data-testid="addToPlaylistButton"]').contains('Add to Playlist').click();
-    //Validate the "Add to playlist options"
-    cy.get('[ data-testid="addToPlaylistForm"]').within(() => {
-      cy.get('[data-testid="currentTrackRadioBtn"]').should('exist').parent().should('contain.text', 'Current Track (');
-      cy.get('[ data-testid="customTimespanRadioBtn"]').should('exist').parent().should('contain.text', 'Custom Timespan');
-      cy.get('[data-testid="currentSectionkRadioBtn"]').should('exist').parent().should('contain.text', 'Current Section (');
-      cy.get('[data-testid="allSectionRadioBtn"]').should('exist').parent().should('contain.text', 'All Sections');
-    });
-
-    //Validate Playlist dropdown
-    cy.get('[data-testid="playlistDropdown"]').next('span').click();
-
-    //Validate add new playlist option in the dropdown
-    cy.get('[data-testid="playlistSearchInput"]').parent().next() 
-      .contains('Add new playlist').should('be.visible');
-    
-    //Validate search for playlist within the playlist dropdown
-    cy.get('[data-testid="playlistSearchInput"]').type(playlist_title);
-    cy.get('[data-testid="playlistSearchInput"]').parent().next() 
-    .contains('b', playlist_title).should('be.visible');
-
-  });
-
   it('Verify adding the current section of an item to a playlist - Create playlist items for each track/subsection - @T3e614dbc', () => {
     cy.login('administrator');
     cy.visit('/');
     // The below code is hard-coded for a media object url. This needs to be changed with a valid object URL later for each website.
     cy.visit('/media_objects/' + media_object_id);
     cy.contains(media_object_title);
-    cy.get('[data-testid="addToPlaylistButton"]').contains('Add to Playlist').click();
+    cy.get('[data-testid="media-object-add-to-playlist-btn"]').contains('Add to Playlist').click();
 
     //Click on the "Current section" radio button
-    cy.get('[data-testid="currentTrackRadioBtn"]').should('exist').parent().should('contain.text', 'Current Track (');
+    cy.get('[data-testid="media-object-current-track-radio-btn"]').should('exist').parent().should('contain.text', 'Current Track (');
 
     //Open Playlist dropdown
-    cy.get('[data-testid="playlistDropdown"]').next('span').click();
+    cy.get('[data-testid="media-object-playlist-dropdown"]').next('span').click();
 
     //Validate search for playlist within the playlist dropdown
-    cy.get('[data-testid="playlistSearchInput"]').type(playlist_title);
-    cy.get('[data-testid="playlistSearchInput"]')
+    cy.get('[data-testid="media-object-playlist-search-input"]').type(playlist_title);
+    cy.get('[data-testid="media-object-playlist-search-input"]')
       .parent() 
       .next() 
       .find('b')
@@ -248,14 +217,44 @@ context('Playlists', () => {
           cy.wrap($el).click(); 
         }
       });
-    cy.get('[data-testid="addToPlaylistSave"]').click();
+    cy.get('[data-testid="media-object-playlist-save-btn"]').click();
 
     //verify playlist created success message
-    cy.get('[data-testid="addToPlaylistResultMsg"]')
+    cy.get('[data-testid="media-object-playlist-result-msg"]')
       .should('be.visible')
       .contains('Add to playlist was successful.');
     cy.screenshot();
   });
+  it('Verify the "add to playlist" button behavior - @Tcdb5ac47', () => {
+    cy.login('administrator');
+    cy.visit('/');
+    // The below code is hard-coded for a media object url. This needs to be changed with a valid object URL later for each website.
+    cy.visit('/media_objects/' + media_object_id);
+    cy.contains(media_object_title); 
+    cy.get('[data-testid="media-object-add-to-playlist-btn"]').contains('Add to Playlist').click();
+    //Validate the "Add to playlist options"
+    cy.get('[ data-testid="media-object-add-to-playlist-form"]').within(() => {
+      cy.get('[data-testid="media-object-current-track-radio-btn"]').should('exist').parent().should('contain.text', 'Current Track (');
+      cy.get('[ data-testid="media-object-custom-timespan-radio-btn"]').should('exist').parent().should('contain.text', 'Custom Timespan');
+      cy.get('[data-testid="media-object-current-section-radio-btn"]').should('exist').parent().should('contain.text', 'Current Section (');
+      cy.get('[data-testid="media-object-all-section-radio-btn"]').should('exist').parent().should('contain.text', 'All Sections');
+    });
+
+    //Validate Playlist dropdown
+    cy.get('[data-testid="media-object-playlist-dropdown"]').next('span').click();
+
+    //Validate add new playlist option in the dropdown
+    cy.get('[data-testid="media-object-playlist-search-input"]').parent().next() 
+      .contains('Add new playlist').should('be.visible');
+    
+    //Validate search for playlist within the playlist dropdown
+    cy.get('[data-testid="media-object-playlist-search-input"]').type(playlist_title);
+    cy.get('[data-testid="media-object-playlist-search-input"]').parent().next() 
+    .contains('b', playlist_title).should('be.visible');
+
+  });
+
+
 
   // Teardown codes  to delete playlist_title and playlist_title_public
 
@@ -266,11 +265,11 @@ context('Playlists', () => {
     cy.visit('/');
 
     cy.visit('/playlists');
-    cy.get('[data-testid="playlistTableBody"] tr')
+    cy.get('[data-testid="playlist-table-body"] tr')
     .contains('td', playlist_title)  
     .closest('tr')  
     .within(() => {
-      cy.get('[data-testid="deleteTableView"]').should('contain.text', 'Delete').click();
+      cy.get('[data-testid="playlist-delete-table-view"]').should('contain.text', 'Delete').click();
     });
     cy.contains('Yes, Delete').click();
     cy.get('[data-testid="alert"]').contains("Playlist was successfully destroyed.").should('be.visible');
@@ -282,7 +281,7 @@ context('Playlists', () => {
    cy.get('#Playlists_filter').within(()=>{
       cy.get('input[type="search"]').type(playlist_title);
     });
-    cy.get('[data-testid="playlistTableBody"] tr').contains(playlist_title).should('not.exist');
+    cy.get('[data-testid="playlist-table-body"] tr').contains(playlist_title).should('not.exist');
   });
 
   // is able to delete playlist from edit playlist page
@@ -293,9 +292,9 @@ context('Playlists', () => {
 
     cy.visit('/playlists');
     cy.contains(playlist_title_public).click();
-    cy.get('[data-testid="editPlaylistButton"]').click();
+    cy.get('[data-testid="playlist-edit-playlist-btn"]').click();
 
-    cy.get('[data-testid="deletePlaylistForm"]').contains('Delete Playlist').click();
+    cy.get('[data-testid="playlist-delete-playlist-form"]').contains('Delete Playlist').click();
     cy.contains('Yes, Delete').click();
     cy.get('[data-testid="alert"]').contains("Playlist was successfully destroyed.").should('be.visible');
     cy.visit('/playlists');
@@ -305,7 +304,7 @@ context('Playlists', () => {
     cy.get('#Playlists_filter').within(()=>{
       cy.get('input[type="search"]').type(playlist_title);
     });
-    cy.get('[data-testid="playlistTableBody"] tr').contains(playlist_title).should('not.exist');
+    cy.get('[data-testid="playlist-table-body"] tr').contains(playlist_title).should('not.exist');
 
   });
 });

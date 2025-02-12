@@ -80,7 +80,7 @@ Cypress.Commands.add('createItemUnderCollectionUI',(collectionTitle, itemTitle )
     cy.contains('a', collectionTitle).click();
     cy.contains('a', 'Create An Item').click();
     
-    cy.get('div#file-upload input[type="file"][name="Filedata[]"]').selectFile(`/fixtures/${videoName}`, { force: true });
+    cy.get('div#file-upload input[type="file"][name="Filedata[]"]').selectFile(`spec/cypress/fixtures/${videoName}`, { force: true });
     cy.wait(5000);
     cy.get('div#file-upload a.fileinput-submit').click({ force: true });
     cy.wait(5000);
