@@ -35,7 +35,7 @@ $ ->
     select_element.append(new Option(addnew))
 
   getSearchTerm = () ->
-    return $('span.select2-search--dropdown input').attr('data-testid', 'playlistSearchInput').val()
+    return $('span.select2-search--dropdown input').attr('data-testid', 'media-object-playlist-search-input').val()
 
   matchWithNew = (params, data) ->
     term = params.term || ''

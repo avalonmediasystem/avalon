@@ -15,17 +15,17 @@ context('Collections Test', () => {
 		cy.visit('/')
 		cy.contains('Manage').click();
 		cy.get('a[href="/admin/collections"]').contains('Manage Content').should('be.visible').click();
-		cy.get("[data-testid='createCollection']").contains('Create Collection').click()
+		cy.get("[data-testid='collection-create-collection-button']").contains('Create Collection').click()
         // Intercept the POST request for creating a collection
         cy.intercept('POST', '/admin/collections').as('createCollection');
 		//Create dynamic data below 
-		cy.get("[data-testid='adminCollectionName']").type(collection_title).should('have.value', collection_title)
-		cy.get("[data-testid='adminCollectionUnit']").select("Default Unit").should('have.value', 'Default Unit') //added unit as it is mandatory
-		cy.get("[data-testid='adminCollectionDescription']").type("Collection desc").should('have.value', 'Collection desc')
-		cy.get("[data-testid='adminCollectionContactEmail']").type("admin@example.com").should('have.value', 'admin@example.com')
-		cy.get("[data-testid='adminCollectionWebsiteUrl']").type("https://www.google.com").should('have.value', 'https://www.google.com')
-		cy.get("[data-testid='adminCollectionWebsiteLabel']").type("test label").should('have.value', 'test label')
-		cy.get("[data-testid='newCollection']").click() //introduced id here as the text on button change would cause this fail 
+		cy.get("[data-testid='collection-name']").type(collection_title).should('have.value', collection_title)
+		cy.get("[data-testid='collection-unit']").select("Default Unit").should('have.value', 'Default Unit') //added unit as it is mandatory
+		cy.get("[data-testid='collection-description']").type("Collection desc").should('have.value', 'Collection desc')
+		cy.get("[data-testid='collection-contact-email']").type("admin@example.com").should('have.value', 'admin@example.com')
+		cy.get("[data-testid='collection-website-url']").type("https://www.google.com").should('have.value', 'https://www.google.com')
+		cy.get("[data-testid='collection-website-label']").type("test label").should('have.value', 'test label')
+		cy.get("[data-testid='collection-new-collection-btn']").click() //introduced id here as the text on button change would cause this fail 
 		// Handle the alert
 		Cypress.on('uncaught:exception', (err, runnable) => {
 
@@ -39,8 +39,8 @@ context('Collections Test', () => {
         });
 
 		//Assert title and edit collection button. Can add more assertions here if required.
-        cy.get("[data-testid='adminCollectionDetails']").contains(collection_title).should('be.visible')
-		cy.get("[data-testid='editCollectionInfo']").should('exist')
+        cy.get("[data-testid='collection-collection-details']").contains(collection_title).should('be.visible')
+		cy.get("[data-testid='collection-edit-collection-info']").should('exist')
 
 		
 
@@ -50,8 +50,8 @@ context('Collections Test', () => {
 		cy.login('administrator')
 		cy.visit('/')
 		cy.get('a[href="/collections"]').contains(/Collections$/).should('be.visible').click();// added should be visible so when a page is loading it won't cause problems
-		cy.get("[data-testid='searchCollections']").type(search_collection).should('have.value', search_collection)// if the placeholder text changes; hence introduce ids
-		cy.get("[data-testid='collectionCardBody']").contains('a', search_collection);
+		cy.get("[data-testid='collection-search-collection-input']").type(search_collection).should('have.value', search_collection)// if the placeholder text changes; hence introduce ids
+		cy.get("[data-testid='collection-card-body']").contains('a', search_collection);
 	})
 
     it('Verify whether an admin/manager is able assign other users as managers to the collection - @T3c428871', () => {
@@ -59,7 +59,7 @@ context('Collections Test', () => {
         cy.visit('/')
         cy.contains('Manage').click();
 		cy.get('a[href="/admin/collections"]').contains('Manage Content').should('be.visible').click();
-        cy.get("[data-testid='collectionName']").contains(collection_title).click(); 
+        cy.get("[data-testid='collection-name-table']").contains(collection_title).click(); 
         cy.intercept('POST', '/admin/collections/*').as('updateCollectionManager');
         const user_manager = Cypress.env('USER_MANAGER_USERNAME')
         cy.get('input[name="add_manager_display"]').type(user_manager).should('have.value', user_manager)
@@ -67,7 +67,7 @@ context('Collections Test', () => {
         cy.get('.tt-menu .tt-suggestion') //cannot add id for this as this is configured by typeahead.js. they render the elements directs app/javascript/autocomplete.j
           .should('be.visible')
           .and('contain', user_manager).click();
-        cy.get("[data-testid='submit_add_manager']")
+        cy.get("[data-testid='collection-submit-add-manager']")
         .click();
 
         cy.wait('@updateCollectionManager').then((interception) => {
@@ -78,7 +78,7 @@ context('Collections Test', () => {
         //reload the page to ensure that the data is updated in the backend
         //cy.reload(true);
         
-        cy.get("[data-testid='accessListLabel']")//introduced id here
+        cy.get("[data-testid='collection-access-label-manager']")//introduced id here
         .should('exist')
         .contains('label', user_manager)
         .should('be.visible');
@@ -91,12 +91,12 @@ context('Collections Test', () => {
         cy.visit('/')
         cy.contains('Manage').click();
 		cy.get('a[href="/admin/collections"]').contains('Manage Content').should('be.visible').click();
-        cy.get("[data-testid='collectionName']").contains(collection_title).click(); 
+        cy.get("[data-testid='collection-name-table']").contains(collection_title).click(); 
         cy.intercept('POST', '/admin/collections/*').as('updateAccessControl');
-        cy.get("[data-testid='itemAccess']").within(() => { //added id here
+        cy.get("[data-testid='collection-item-access']").within(() => { //added id here
         cy.contains('label', 'Collection staff only')
-        .find("[data-testid='collectionStaffCheckBox']").click().should('be.checked');
-        cy.get("[data-testid='saveSettingButton']").click() //we can introduce an id here if the name were to change
+        .find("[data-testid='collection-checkbox-collection-staff']").click().should('be.checked');
+        cy.get("[data-testid='collection-save-setting-btn']").click() //we can introduce an id here if the name were to change
           });
           //check if the status was 200 to make sure the setting was saved
         cy.wait('@updateAccessControl').then((interception) => {
@@ -104,7 +104,7 @@ context('Collections Test', () => {
             expect(interception.response.headers.location).to.include('/admin/collections/');
         });
         cy.contains('label', 'Collection staff only')
-        .find("[data-testid='collectionStaffCheckBox']").should('be.checked');
+        .find("[data-testid='collection-checkbox-collection-staff']").should('be.checked');
     
         //Add UI and/or API assertions here............Assert via UI by opening the create item page and verifying the default access control
     })
@@ -114,12 +114,12 @@ context('Collections Test', () => {
         cy.visit('/')
         cy.contains('Manage').click();
 		cy.get('a[href="/admin/collections"]').contains('Manage Content').should('be.visible').click();
-        cy.get("[data-testid='collectionName']").contains(collection_title).click(); 
+        cy.get("[data-testid='collection-name-table']").contains(collection_title).click(); 
         cy.intercept('POST', '/admin/collections/*').as('updateAccessControl');
-        cy.get("[data-testid='itemAccess']").within(() => {
+        cy.get("[data-testid='collection-item-access']").within(() => {
             cy.contains('label', 'Collection staff only')
-                .find("[data-testid='collectionStaffCheckBox']").click().should('be.checked');
-            cy.get("[data-testid='applyToExisting']").click()
+                .find("[data-testid='collection-checkbox-collection-staff']").click().should('be.checked');
+            cy.get("[data-testid='collection-apply-to-existing-btn']").click()
         });
         cy.wait('@updateAccessControl').then((interception) => {
             expect(interception.response.statusCode).to.eq(302);
@@ -128,7 +128,7 @@ context('Collections Test', () => {
         //reload the page to ensure that the data is updated in the backend
         //cy.reload()
         cy.contains('label', 'Collection staff only')
-            .find("[data-testid='collectionStaffCheckBox']").should('be.checked');
+            .find("[data-testid='collection-checkbox-collection-staff']").should('be.checked');
     
     //Add UI and API assertions here............Assert via UI by opening the an ecisting item within the collection and verifying the default access control
     
@@ -139,8 +139,8 @@ context('Collections Test', () => {
         cy.visit('/')
         cy.contains('Manage').click();
 		cy.get('a[href="/admin/collections"]').contains('Manage Content').should('be.visible').click();
-        cy.get("[data-testid='collectionName']").contains(collection_title).click(); 
-        cy.get("[data-testid='editCollectionInfo']")
+        cy.get("[data-testid='collection-name-table']").contains(collection_title).click(); 
+        cy.get("[data-testid='collection-edit-collection-info']")
             .should('exist')
             .and('contain.text', 'Edit Collection Info')
             .click(); //this will make sure that button is fully loaded before we click on it 
@@ -155,18 +155,18 @@ context('Collections Test', () => {
 
         //update description
         var updatedDescription = ' Adding more details to collection description'
-        cy.get("[data-testid='adminCollectionDescription']").invoke('val').then((existingText) => {
+        cy.get("[data-testid='collection-update-description']").invoke('val').then((existingText) => {
             updatedDescription = existingText + updatedDescription;  
-            cy.get("[data-testid='adminCollectionDescription']").type(updatedDescription);
+            cy.get("[data-testid='collection-update-description']").type(updatedDescription);
           });
         //update title
         var new_title =  `Updated automation title ${Math.floor(Math.random() * 10000) + 1}`
-        cy.get("[data-testid='adminCollectionName']").clear().type(new_title);
+        cy.get("[data-testid='collection-update-name']").clear().type(new_title);
     
         //update contact email
-        cy.get("[data-testid='adminCollectionContactEmail']").clear().type('test1@mail.com');
-        
-        cy.get("[data-testid='updateCollection']").click();
+        cy.get("[data-testid='collection-update-contact-email']").clear().type('test1@mail.com');
+        //click on update button
+        cy.get("[data-testid='collection-update-collection-btn']").click();
 
         cy.wait('@updateCollectionInfo').then((interception) => {
             expect(interception.response.statusCode).to.eq(200);  // Ensure successful update
@@ -174,18 +174,17 @@ context('Collections Test', () => {
     
         // Validate updated collection title and update the collection_title global variable
         //replaced classes with id: adminCollectionDetails and 
-        cy.get("[data-testid='adminCollectionDetails']").should('contain.text', new_title).then(() => { 
+        cy.get("[data-testid='collection-collection-details']").should('contain.text', new_title).then(() => { 
             // Update the global variable collection_title with new_title if the assertion passes
             collection_title = new_title;
           });
     
-        // Validate updated contact email
-        cy.get("[data-testid='adminCollectionDetails']").within(() => {
-            cy.get("[data-testid='collectionContactEmail']")
+        // Validate updated contact email and description
+        cy.get("[data-testid='collection-collection-details']").within(() => {
+            cy.get("[data-testid='collection-contact-email']")
                 .should('have.text', 'test1@mail.com')
-            cy.get("[data-testid='collectionDescription']").should('contain.text', updatedDescription);
+            cy.get("[data-testid='collection-description']").should('contain.text', updatedDescription);
         });
-        //validate updated description
         
         
     })
@@ -195,19 +194,19 @@ context('Collections Test', () => {
         cy.visit('/')
         cy.contains('Manage').click();
 		cy.get('a[href="/admin/collections"]').contains('Manage Content').should('be.visible').click();
-        cy.get("[data-testid='collectionName']").contains(collection_title).click(); 
+        cy.get("[data-testid='collection-name-table']").contains(collection_title).click(); 
         cy.intercept('POST', '**/poster').as('updatePoster');
-        cy.get("[data-testid='posterInput']").selectFile('spec/cypress/fixtures/image.png', { force: true });
+        cy.get("[data-testid='collection-poster-input']").selectFile('spec/cypress/fixtures/image.png', { force: true });
         cy.wait(5000)
         cy.screenshot()
-        cy.get("[data-testid='uploadPoster']").click()
+        cy.get("[data-testid='collection-upload-poster']").click()
         //Added sync api check 
         cy.wait('@updatePoster').then((interception) => {
             expect(interception.response.statusCode).to.eq(302);
             expect(interception.response.headers.location).to.include('/admin/collections/');
         });
         //These test will only start after the api is validated
-        cy.contains('Poster file successfully added.') 
+        cy.get("[data-testid='alert']").contains('Poster file successfully added.') 
             .should('be.visible')
             .and('be.visible');
         
@@ -218,17 +217,17 @@ context('Collections Test', () => {
 		cy.visit('/')
         cy.contains('Manage').click();
 		cy.get('a[href="/admin/collections"]').contains('Manage Content').should('be.visible').click();
-        cy.get("[data-testid='collectionName']").contains(collection_title).closest('tr').find("[data-testid='deleteCollection']").click();
+        cy.get("[data-testid='collection-name-table']").contains(collection_title).closest('tr').find("[data-testid='collection-delete-collection-btn']").click();
         cy.intercept('POST', `/admin/collections/*`).as('deleteCollection');
 		//May require adding steps to select a collection to move the existing  items, when dealing with non empty collections
-		cy.get("[data-testid='deleteConfirmButton']").click()
+		cy.get("[data-testid='collection-delete-confirm-btn']").click()
         cy.wait('@deleteCollection').then((interception) => {
             expect(interception.response.statusCode).to.eq(302);
             expect(interception.response.headers.location).to.include('/admin/collections');
         });
 		cy.contains('My Collections');
 		//May need to update this assertion to ensure that this is valid during pagination of collections. Another alternative would be to check via API or search My collections
-		cy.get("[data-testid='collectionName']").contains(collection_title).should('not.exist');
+		cy.get("[data-testid='collection-name-table']").contains(collection_title).should('not.exist');
 		
 	})
 

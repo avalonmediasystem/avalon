@@ -16,22 +16,21 @@
 
 class HomePage {
 
-      getBrowseNavButton() {
-        return cy.contains('a.nav-link', 'Browse');
-    }
-
-    getLoginSuccessAlert() {
-      return cy.get('div.alert.alert-info').contains('p', 'Signed in successfully.');
-      }
-    
-      logout() {
-        cy.get('a[href="/users/sign_out"]').first().click();
-      }
-
-      getLogoutSuccessAlert(){
-        return cy.get('div.alert.alert-success').contains('p', 'Signed out successfully.');
-    }
+  getBrowseNavButton() {
+    return cy.contains('a.nav-link', 'Browse');
 }
 
-  export default HomePage;
-  
+getLoginSuccessAlert() {
+  return cy.get('div.alert.alert-info').contains('p', 'Signed in successfully.');
+  }
+
+  logout() {
+    cy.get('a[href="/users/sign_out"]').first().click();
+  }
+
+  getLogoutSuccessAlert(){
+    return cy.get('div.alert.alert-success').contains('p', 'Signed out successfully.');
+}
+}
+
+export default HomePage;

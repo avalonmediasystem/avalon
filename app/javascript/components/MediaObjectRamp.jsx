@@ -127,7 +127,7 @@ const Ramp = ({
                           aria-expanded="false"
                           aria-controls="addToPlaylistPanel"
                           disabled={true}
-                          data-testid="addToPlaylistButton"
+                          data-testid="media-object-add-to-playlist-btn"
                         >
                           {/* Static SVG image in /app/assets/images/add_to_playlist_icon.svg */}
                           <svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
