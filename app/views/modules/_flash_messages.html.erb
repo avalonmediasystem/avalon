@@ -14,42 +14,48 @@ Unless required by applicable law or agreed to in writing, software distributed
 ---  END LICENSE_HEADER BLOCK  ---
 %>
 
-<% if Settings&.flash_message&.message %>
-  <% flash[Settings.flash_message.type || :error] = Settings.flash_message.message.html_safe %>
-<% end %>
+<div class="container-fluid px-0" id="alerts">
+  <% if Settings&.repository_read_only_mode && current_ability.can?(:read, Admin::Collection) %>
+    <div class="alert alert-info" data-testid="alert">
+      <p><%= Settings.repository_read_only_mode_message %></p>
+    </div>
+  <% end %>
 
-<% if defined? flash and !flash.empty? %>
-  <div class="container-fluid px-0" id="alerts">
-  <% [:success, :notice, :error, :alert].each do |type| %>
-    <%- alert_class = case type
-      when :success then "alert-success"
-      when :notice  then "alert-info"
-      when :alert   then "alert-warning"
-      when :error   then "alert-danger"
-      else "alert-#{type}"
-      end
-    -%>
-    <% if flash[type] %>
-      <div class="alert <%=alert_class %>" data-testid="alert">
-        <button type="button" class="close" data-dismiss="alert" >&times;</button>
-          <% Array(flash[type]).each do |msg| %>
-          <p><%= msg %></p>
-        <% end %>
-      </div>
+  <% if Settings&.flash_message&.message %>
+    <% flash[Settings.flash_message.type || :error] = Settings.flash_message.message.html_safe %>
+  <% end %>
+
+  <% if defined? flash and !flash.empty? %>
+    <% [:success, :notice, :error, :alert].each do |type| %>
+      <%- alert_class = case type
+        when :success then "alert-success"
+        when :notice  then "alert-info"
+        when :alert   then "alert-warning"
+        when :error   then "alert-danger"
+        else "alert-#{type}"
+        end
+      -%>
+      <% if flash[type] %>
+        <div class="alert <%=alert_class %>" data-testid="alert">
+          <button type="button" class="close" data-dismiss="alert" >&times;</button>
+            <% Array(flash[type]).each do |msg| %>
+            <p><%= msg %></p>
+          <% end %>
+        </div>
+      <% end %>
     <% end %>
   <% end %>
-  </div>
-<% end %>
 
-<div class="alert alert-danger" style="display: none;" id="cookieless">
-  <button type="button" class="close" data-dismiss="alert">&times;</button>
-  <p>Could not complete log in. Possible causes and solutions are:</p>
-  <ul>
-    <li>Cookies are not set, which might happen if you've never visited this website before.<br/>
-        Please open <%= link_to main_app.root_url, main_app.root_url, target: :_blank %> in a new window, then come back and refresh this page.</li>
-    <li>An ad blocker is preventing successful login.<br/>
-        Please disable ad blockers for this site then refresh this page.</li>
-  </ul>
+  <div class="alert alert-danger" style="display: none;" id="cookieless">
+    <button type="button" class="close" data-dismiss="alert">&times;</button>
+    <p>Could not complete log in. Possible causes and solutions are:</p>
+    <ul>
+      <li>Cookies are not set, which might happen if you've never visited this website before.<br/>
+          Please open <%= link_to main_app.root_url, main_app.root_url, target: :_blank %> in a new window, then come back and refresh this page.</li>
+      <li>An ad blocker is preventing successful login.<br/>
+          Please disable ad blockers for this site then refresh this page.</li>
+    </ul>
+  </div>
 </div>
 
 <% content_for :page_scripts do %>
