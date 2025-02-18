@@ -77,7 +77,7 @@ gem "omniauth-saml", "~> 2.0", ">= 2.2.1"
 # Media Access & Transcoding
 gem 'active_encode', '~> 1.2'
 gem 'audio_waveform-ruby', '~> 1.0.7', require: 'audio_waveform'
-gem 'browse-everything', git: "https://github.com/avalonmediasystem/browse-everything.git", tag: '1.4-avalon'
+gem 'browse-everything', git: "https://github.com/avalonmediasystem/browse-everything.git", branch: 'v1.4-avalon'
 gem 'fastimage'
 gem 'rest-client', '~> 2.0'
 gem 'roo'

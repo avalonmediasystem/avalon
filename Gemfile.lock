@@ -23,8 +23,8 @@ GIT
 
 GIT
   remote: https://github.com/avalonmediasystem/browse-everything.git
-  revision: 73cc89eb263bf5669d7bf29b6da73e8dcf1184ef
-  tag: 1.4-avalon
+  revision: 99fc455cce84550a0efb994d305a9da48b0e5014
+  branch: v1.4-avalon
   specs:
     browse-everything (1.4.0)
       addressable (~> 2.5)
@@ -432,7 +432,7 @@ GEM
     globalid (1.2.1)
       activesupport (>= 6.1)
     google-analytics-rails (1.1.0)
-    google-apis-core (0.15.1)
+    google-apis-core (0.16.0)
       addressable (~> 2.5, >= 2.5.1)
       googleauth (~> 1.9)
       httpclient (>= 2.8.3, < 3.a)
@@ -440,12 +440,12 @@ GEM
       mutex_m
       representable (~> 3.0)
       retriable (>= 2.0, < 4.a)
-    google-apis-drive_v3 (0.60.0)
+    google-apis-drive_v3 (0.61.0)
       google-apis-core (>= 0.15.0, < 2.a)
     google-cloud-env (2.2.1)
       faraday (>= 1.0, < 3.a)
     google-logging-utils (0.1.0)
-    googleauth (1.12.0)
+    googleauth (1.13.1)
       faraday (>= 1.0, < 3.a)
       google-cloud-env (~> 2.2)
       google-logging-utils (~> 0.1)
@@ -519,7 +519,7 @@ GEM
       rack (>= 2.2, < 4)
       rdf (~> 3.3)
       rexml (~> 3.2)
-    jwt (2.9.3)
+    jwt (2.10.1)
       base64
     kaminari (1.2.2)
       activesupport (>= 4.1.0)
