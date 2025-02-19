@@ -36,6 +36,12 @@ class WatchedEncode < ActiveEncode::Base
       encode.output.collect! do |output|
         if output.format == "vtt"
           new_file = SupplementalFile.new(tags: ['caption'], parent_id: record.master_file_id)
+          new_file.label = output.label.presence
+          begin
+            new_file.language = LanguageTerm.find(output.language).code if output.language.present?
+          rescue LanguageTerm::LookupError
+            new_file.language = nil
+          end
           new_file.attach_file(FileLocator.new(output.url).location, io: true)
           new_file.save
           output.url = if Settings.active_storage.bucket.present?
