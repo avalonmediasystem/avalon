@@ -17,12 +17,12 @@ require 'rails_helper'
 describe LanguageTerm, type: :model do
   describe "::Iso6391" do
     describe ".convert_to_6392" do
-      it "takes an alpha2 code and returns the matching alpha3 code" do
-        expect(LanguageTerm::Iso6391.convert_to_6392('en')).to eq 'eng'
+      it "takes an alpha2 code and returns the matching entry from the 639-2 vocab" do
+        expect(LanguageTerm::Iso6391.convert_to_6392('en').code).to eq 'eng'
         # 'es' returns 'Spanish | Castilian', matches on 'Spanish'
-        expect(LanguageTerm::Iso6391.convert_to_6392('es')).to eq 'spa'
+        expect(LanguageTerm::Iso6391.convert_to_6392('es').code).to eq 'spa'
         # 'gd' returns 'Gaelic | Scottish Gaelic', matches on 'Scottish Gaelic'
-        expect(LanguageTerm::Iso6391.convert_to_6392('gd')).to eq 'gla'
+        expect(LanguageTerm::Iso6391.convert_to_6392('gd').code).to eq 'gla'
       end
 
       it "returns a lookup error if there is not a match" do
@@ -44,7 +44,8 @@ describe LanguageTerm, type: :model do
     end
 
     it "returns correct entry for code search" do
-      expect(described_class.find("spa").instance_variable_get(:@term)).to eq( {:code=>"spa", :text=>"Spanish", :uri=>"http://id.loc.gov/vocabulary/languages/spa"} )
+      expect(described_class.find("spa").instance_variable_get(:@term)).to eq( { :code=>"spa", :text=>"Spanish", :uri=>"http://id.loc.gov/vocabulary/languages/spa" } )
+      expect(described_class.find("es").instance_variable_get(:@term)).to eq( { :code=>"spa", :text=>"Spanish", :uri=>"http://id.loc.gov/vocabulary/languages/spa" })
     end
 
     it "raises LookupError for terms not in the vocabulary" do

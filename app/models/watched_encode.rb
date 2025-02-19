@@ -37,21 +37,8 @@ class WatchedEncode < ActiveEncode::Base
         if output.format == "vtt"
           new_file = SupplementalFile.new(tags: ['caption'], parent_id: record.master_file_id)
           new_file.label = output.label.presence
-          # SupplementalFile#attach_file sets the language to Settings.caption_default.language. If there is an error
-          # looking up or converting the language code we should fallback to this default behavior.
           begin
-            case 
-            when output.language.nil?
-              new_file.language = nil
-            when output.language.length == 2
-              new_file.language = LanguageTerm::Iso6391.convert_to_6392(output.language)
-            when output.language.length == 3
-              # Ensure that output.language is in the controlled vocabulary because
-              # the language field is validated on the SupplementalFile model.
-              new_file.language = LanguageTerm.find(output.language).code
-            else
-              new_file.language = nil
-            end
+            new_file.language = LanguageTerm.find(output.language).code if output.language.present?
           rescue LanguageTerm::LookupError
             new_file.language = nil
           end
