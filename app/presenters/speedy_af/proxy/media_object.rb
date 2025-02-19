@@ -144,6 +144,10 @@ class SpeedyAF::Proxy::MediaObject < SpeedyAF::Base
     sections.select { |master_file| master_file.supplemental_files(tag: tag).present? }.map(&:id)
   end
 
+  def sections_with_rendering_files(tags)
+    tags.select { |t| sections_with_files(tag: t).present? }.present?
+  end
+
   def permalink_with_query(query_vars = {})
     val = permalink
     if val && query_vars.present?
