@@ -496,4 +496,9 @@ class MediaObject < ActiveFedora::Base
       # TODO: Optimize this into a single solr query?
       section_ids.select { |m| SpeedyAF::Proxy::MasterFile.find(m).supplemental_files(tag: tag).present? }
     end
+
+    def sections_with_rendering_files?(tags)
+      tags.any? { |t| sections_with_files(tag: t).present? }
+    end
+
 end
