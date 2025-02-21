@@ -192,6 +192,7 @@ class MediaObject < ActiveFedora::Base
     # avoid calling destroy on each section since it calls save on parent media object
     self.sections.each(&:delete)
     Bookmark.where(document_id: self.id).destroy_all
+    Checkout.where(media_object_id: self.id).destroy_all
     super
   end
 
