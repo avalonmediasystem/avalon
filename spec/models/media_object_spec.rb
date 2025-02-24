@@ -512,6 +512,7 @@ describe MediaObject do
   describe '#destroy' do
     let(:media_object) { FactoryBot.create(:media_object, :with_master_file) }
     let(:master_file) { media_object.sections.first }
+    let!(:checkouts) { FactoryBot.create_list(:checkout, 3, media_object_id: media_object.id) }
 
     before do
       allow(master_file).to receive(:stop_processing!)
@@ -530,6 +531,10 @@ describe MediaObject do
       end
       expect { media_object.destroy }.to change { MasterFile.count }.from(2).to(0)
       expect(MediaObject.exists?(media_object.id)).to be_falsey
+    end
+
+    it 'destroys related checkouts' do
+      expect { media_object.destroy }.to change { Checkout.where(media_object_id: media_object.id).count }.from(3).to(0)
     end
   end
 
