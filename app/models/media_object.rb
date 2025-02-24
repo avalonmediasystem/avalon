@@ -99,7 +99,7 @@ class MediaObject < ActiveFedora::Base
   end
 
   def validate_language
-    Array(language).each{|i|errors.add(:language, "Language not recognized (#{i[:code]})") unless LanguageTerm::map[i[:code]] }
+    Array(language).each{|i|errors.add(:language, "Language not recognized (#{i[:code]})") unless LanguageTerm::Iso6392.map[i[:code]] }
   end
 
   def validate_related_items
