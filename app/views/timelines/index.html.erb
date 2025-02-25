@@ -78,8 +78,8 @@ Unless required by applicable law or agreed to in writing, software distributed
       $('#Timelines').DataTable({
         processing: true,
         serverSide: true,
-        dom:'<"dataTableToolsTop"if><"dataTableBody"t><"dataTableToolsBottom"rlp>',
-        autoWidth:true,
+        dom: '<"dataTableToolsTop"if><"dataTableBody"t><"dataTableToolsBottom"rlp>',
+        autoWidth: true,
         ajax: {
           url: '/timelines/paged_index',
           type: 'POST'
@@ -96,6 +96,8 @@ Unless required by applicable law or agreed to in writing, software distributed
           { className: "text-right" }
         ]
       }).on( 'draw', function () {
+        // hide any active popovers on table refresh
+        $('.popover.show').hide();
         window.apply_button_confirmation()
         window.add_copy_button_event()
         // move the tag filter into the datatables layout

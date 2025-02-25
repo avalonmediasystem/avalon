@@ -78,8 +78,8 @@ Unless required by applicable law or agreed to in writing, software distributed
     $('#Playlists').DataTable({
       processing: true,
       serverSide: true,
-        dom:'<"dataTableToolsTop"if><"dataTableBody"t><"dataTableToolsBottom"rlp>',
-      autoWidth:true,
+      dom: '<"dataTableToolsTop"if><"dataTableBody"t><"dataTableToolsBottom"rlp>',
+      autoWidth: true,
       ajax: {
         url: '/playlists/paged_index',
         type: 'POST'
@@ -98,6 +98,8 @@ Unless required by applicable law or agreed to in writing, software distributed
         }
       ]
     }).on('draw', function () {
+      // hide any active popovers on table refresh
+      $('.popover.show').hide();
       window.apply_button_confirmation()
       window.add_copy_playlist_button_event()
       // move the tag filter into the datatables layout
