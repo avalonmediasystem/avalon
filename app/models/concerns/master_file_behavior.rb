@@ -42,6 +42,11 @@ module MasterFileBehavior
                  mimetype: d.mime_type,
                  format: d.format }
       flash << common.merge(url: d.streaming_url(false))
+
+      hls_url = d.streaming_url(true)
+      # Quick fix for old items with mimetypes to deal with issue due to mp3 progressive download code in IIIFCanvasPresenter
+      common[:mimetype] = 'application/x-mpegURL' if File.extname(hls_url) == ".m3u8"
+
       hls << common.merge(url: d.streaming_url(true))
     end
     if hls.length > 1
@@ -90,6 +95,11 @@ module MasterFileBehavior
                  bitrate: d.bitrate,
                  mimetype: d.mime_type,
                  format: d.format }
+
+      hls_url = d.streaming_url(true)
+      # Quick fix for old items with mimetypes to deal with issue due to mp3 progressive download code in IIIFCanvasPresenter
+      common[:mimetype] = 'application/x-mpegURL' if File.extname(hls_url) == ".m3u8"
+
       hls << common.merge(url: d.streaming_url(true))
     end
     if hls.length > 1

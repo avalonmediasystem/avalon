@@ -803,18 +803,18 @@ describe MasterFile do
     let(:master_file) { FactoryBot.create(:master_file) }
     let(:streams) do
       [{:format=>"video",
-        :mimetype=>nil,
+        :mimetype=>"application/x-mpegURL",
         :quality=>"auto",
         :url=>"http://test.host/master_files/#{master_file.id}/auto.m3u8"},
       {:bitrate=>4163842,
         :format=>"video",
-        :mimetype=>nil,
+        :mimetype=>"application/x-mpegURL",
         :quality=>"high",
         :url=>
          "http://localhost:3000/streams/6f69c008-06a4-4bad-bb60-26297f0b4c06/35bddaa0-fbb4-404f-ab76-58f22921529c/warning.mp4.m3u8"},
       {:bitrate=>4163842,
         :format=>"video",
-        :mimetype=>nil,
+        :mimetype=>"application/x-mpegURL",
         :quality=>"medium",
         :url=>
          "http://localhost:3000/streams/6f69c008-06a4-4bad-bb60-26297f0b4c06/35bddaa0-fbb4-404f-ab76-58f22921529c/warning.mp4.m3u8"}]
