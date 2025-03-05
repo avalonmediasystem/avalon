@@ -270,8 +270,8 @@ function addToPlaylistListeners(sectionIds, mediaObjectId) {
       let sectionInfo = scopes.filter(s => s.tags.includes('current-section'));
       let trackInfo = scopes.filter(s => s.tags.includes('current-track'));
 
-      if (sectionInfo?.length > 0 || trackInfo?.length > 0) {
-        currentSectionLabel = sectionInfo[0]?.label || trackInfo[0]?.sectionLabel || currentSectionLabel;
+      if (sectionInfo?.length > 0) {
+        currentSectionLabel = sectionInfo[0].label || currentSectionLabel;
 
         if (trackInfo.length === 0 && event?.target.id === "addToPlaylistBtn") {
           $('#playlistitem_scope_section').prop('checked', true);
