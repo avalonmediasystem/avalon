@@ -43,8 +43,8 @@ class User < ActiveRecord::Base
   before_destroy :remove_bookmarks
 
   def username_email_uniqueness
-    errors.add(:email, :taken, value: email) if User.find_by_username(email) && User.find_by_username(email).id != id
-    errors.add(:username, :taken, valud: username) if User.find_by_email(username) && User.find_by_email(username).id != id
+    errors.add(:email, :taken, value: email) if User.find_and_verify_by_username(email) && User.find_and_verify_by_username(email).id != id
+    errors.add(:username, :taken, value: username) if User.find_and_verify_by_email(username) && User.find_and_verify_by_email(username).id != id
   end
 
   # Method added by Blacklight; Blacklight uses #to_s on your
@@ -71,7 +71,7 @@ class User < ActiveRecord::Base
   end
 
   def self.find_and_verify_by_username(username)
-    user = User.find_by(username: username)
+    user = User.find_by("lower(username) = ?", username&.downcase)
     if user&.deleted_at
       raise Avalon::DeletedUserId
     end
@@ -79,7 +79,7 @@ class User < ActiveRecord::Base
   end
 
   def self.find_and_verify_by_email(email)
-    user = User.find_by(email: email)
+    user = User.find_by("lower(email) = ?", email&.downcase)
     if user&.deleted_at
       raise Avalon::DeletedUserId
     end

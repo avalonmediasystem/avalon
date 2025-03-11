@@ -92,8 +92,20 @@ describe User do
     end
 
     it "should find undeleted users by email" do
-      found_user = User.find_or_create_by_username_or_email(user.username, nil)
+      found_user = User.find_or_create_by_username_or_email(nil, user.email)
       expect(found_user).to eq(user)
+    end
+
+    context 'case insensitive' do
+      it "should find undeleted users by usernames" do
+        found_user = User.find_or_create_by_username_or_email(user.username.upcase, nil)
+        expect(found_user).to eq(user)
+      end
+
+      it "should find undeleted users by email" do
+        found_user = User.find_or_create_by_username_or_email(nil, user.email.upcase)
+        expect(found_user).to eq(user)
+      end
     end
   end
 
