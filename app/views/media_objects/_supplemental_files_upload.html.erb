@@ -24,10 +24,13 @@ Unless required by applicable law or agreed to in writing, software distributed
   <% end %>
   <% if file_section.include?("caption") && !section.finished_processing? %>
     <% encode = ActiveEncode::EncodeRecord.find_by(master_file_id: section.id)&.raw_object %>
-    <% if encode.present? %>
-      <div>
-        <%= JSON.parse(encode)["input"]["subtitles"].count %> embedded captions will be available once processing is complete.
-      </div>
+    <% caption_count = JSON.parse(encode)["input"]["subtitles"].count %>
+    <% if caption_count.present? %>
+      <% if caption_count.positive? %>
+        <div>
+          <%= caption_count %> embedded captions will be available once processing is complete.
+        </div>
+      <% end %>
     <% else %>
       <div>
         This file is currently processing. Embedded captions may be added during processing. Refresh the page to check for additions.
