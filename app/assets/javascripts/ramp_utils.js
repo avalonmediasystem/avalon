@@ -96,6 +96,7 @@ function getTimelineScopes() {
   let trackCount = 1;
   let currentStructureItem = $('li[class="ramp--structured-nav__list-item active"]') ||
     $('div[class="ramp--structured-nav__section active"]');
+  let currentSection = $('div[class="ramp--structured-nav__section active"]');
   let activeItem = getActiveItem();
   let streamId = '';
 
@@ -130,9 +131,17 @@ function getTimelineScopes() {
       label: label,
       tracks: trackCount,
       times: { begin, end },
-      tags: next.length == 0 ? ['current-section'] : [], // mark the outermost item representing the current section
+      tags: [], 
     });
     parent = next;
+  }
+  // mark the outermost item representing the current section
+  if (currentStructureItem !== currentSection) {
+    scopes.push({
+      label: currentSection[0].dataset.label,
+      times: { begin: 0, end: activeItem.times.end },
+      tags: ['current-section']
+    });
   }
   return { scopes: scopes.reverse(), streamId };
 }
