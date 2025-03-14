@@ -50,11 +50,11 @@ class SearchBuilder < Blacklight::SearchBuilder
   def search_section_transcripts(solr_parameters)
     return unless solr_parameters[:q].present? && SupplementalFile.with_tag('transcript').any? && !(blacklight_params[:controller] == 'bookmarks')
 
-    terms = solr_parameters[:q].split
-    return if terms.any? { |term| term.match?(/[\{\}]/) }
-    term_subquery = terms.map { |term| "transcript_tsim:#{RSolr.solr_escape(term)}" }.join(" OR ")
+    return if solr_parameters[:q].match?(/[\{\}]/)
+    # In order for the multi-word query to work we need to NOT escape the query AND replace the spaces as +; this is also true for quoted phrase searches
+    transcript_subquery = "transcript_tsim:#{solr_parameters[:q].gsub(/ /, '+')}"
     solr_parameters[:defType] = "lucene"
-    solr_parameters[:q] = "({!edismax v=\"#{RSolr.solr_escape(solr_parameters[:q])}\"}) {!join to=id from=isPartOf_ssim}{!join to=id from=isPartOf_ssim}#{term_subquery}"
+    solr_parameters[:q] = "({!edismax v=\"#{RSolr.solr_escape(solr_parameters[:q])}\"}) {!join to=id from=isPartOf_ssim}{!join to=id from=isPartOf_ssim}#{transcript_subquery}"
   end
 
   def term_frequency_counts(solr_parameters)
