@@ -50,11 +50,10 @@ class SearchBuilder < Blacklight::SearchBuilder
   def search_section_transcripts(solr_parameters)
     return unless solr_parameters[:q].present? && SupplementalFile.with_tag('transcript').any? && !(blacklight_params[:controller] == 'bookmarks')
 
-    terms = solr_parameters[:q].split
-    return if terms.any? { |term| term.match?(/[\{\}]/) }
-    term_subquery = terms.map { |term| "transcript_tsim:#{RSolr.solr_escape(term)}" }.join(" OR ")
+    return if solr_parameters[:q].match?(/[\{\}]/)
+    transcript_subquery = "transcript_tsim:#{RSolr.solr_escape(solr_parameters[:q])}"
     solr_parameters[:defType] = "lucene"
-    solr_parameters[:q] = "({!edismax v=\"#{RSolr.solr_escape(solr_parameters[:q])}\"}) {!join to=id from=isPartOf_ssim}{!join to=id from=isPartOf_ssim}#{term_subquery}"
+    solr_parameters[:q] = "({!edismax v=\"#{RSolr.solr_escape(solr_parameters[:q])}\"}) {!join to=id from=isPartOf_ssim}{!join to=id from=isPartOf_ssim}#{transcript_subquery}"
   end
 
   def term_frequency_counts(solr_parameters)
