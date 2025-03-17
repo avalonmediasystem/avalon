@@ -83,4 +83,8 @@ module MediaObjectBehavior
     checkouts = Checkout.active_for_media_object(id)
     checkouts.select{ |ch| ch.user_id == user_id  }.first
   end
+
+  def section_share_infos
+    @share_infos ||= sections.collect { |section| section.share_info }
+  end
 end

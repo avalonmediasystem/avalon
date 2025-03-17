@@ -199,4 +199,34 @@ module MasterFileBehavior
   def rdf_type
     is_video? ? 'dctypes:MovingImage' : 'dctypes:Sound'
   end
+
+  def share_info
+    {
+      lti_share_link: lti_share_url,
+      link_back_url: share_link,
+      embed_code: embed_code(EMBED_SIZE[:medium], {urlappend: '/embed'})
+    }
+  end
+
+  protected
+
+  def share_link(only_path: false)
+    if permalink.present?
+      permalink
+    else
+      if only_path
+        Rails.application.routes.url_helpers.id_section_media_object_path(self.media_object_id, self.id)
+      else
+        Rails.application.routes.url_helpers.id_section_media_object_url(self.media_object_id, self.id)
+      end
+    end
+  end
+
+  def lti_share_url
+    if Avalon::Authentication.lti_configured?
+      Rails.application.routes.url_helpers.user_omniauth_callback_lti_url(target_id: self.id)
+    else
+      I18n.t('share.empty_lti_share_url')
+    end
+  end
 end
