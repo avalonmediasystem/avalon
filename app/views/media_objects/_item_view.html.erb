@@ -62,6 +62,7 @@ Unless required by applicable law or agreed to in writing, software distributed
     $(document).ready(function () {
       const mediaObjectId = <%= @media_object.id.to_json.html_safe %>;
       const sectionIds = <%= @media_object.section_ids.to_json.html_safe %>;
+      const sectionShareInfos = <%= @media_object.section_share_infos.to_json.html_safe %>;
       const transcriptSections = <%= @media_object.sections_with_files(tag: 'transcript').to_json.html_safe %>;
 
       // Enable action buttons after derivative is loaded
@@ -69,7 +70,7 @@ Unless required by applicable law or agreed to in writing, software distributed
       function initActionButtons() {
         let player = document.getElementById('iiif-media-player');
         if (player) {
-          addActionButtonListeners(player, mediaObjectId, sectionIds);
+          addActionButtonListeners(player, mediaObjectId, sectionIds, sectionShareInfos);
         }
       } 
 

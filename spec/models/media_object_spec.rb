@@ -1304,4 +1304,12 @@ describe MediaObject do
       end
     end
   end
+
+  describe '#section_share_infos' do
+    let(:media_object) { FactoryBot.create(:media_object, :with_master_file) }
+
+    it 'is an array of hashes' do
+      expect(media_object.section_share_infos).to contain_exactly({lti_share_link: be_a(String), link_back_url: be_a(String), embed_code: be_a(String)})
+    end
+  end
 end
