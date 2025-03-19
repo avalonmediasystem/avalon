@@ -70,6 +70,11 @@ namespace :avalon do
     orphans.destroy_all
   end
 
+  desc 'clean out expired stream tokens'
+  task stream_token_cleanup: :environment do
+    CleanupStreamTokenJob.perform_now
+  end
+
   namespace :services do
     services = ["jetty", "felix", "delayed_job"]
     desc "Start Avalon's dependent services"
