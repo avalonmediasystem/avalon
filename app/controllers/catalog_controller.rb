@@ -222,6 +222,18 @@ class CatalogController < ApplicationController
     config.bootstrap_version = 4
   end
 
+  def manifest
+    @response = search_service.search_results
+
+    presenter = IiifCollectionManifestPresenter.new(items: @response.documents.map { |doc| SpeedyAF::Base.for(doc) }, params: params)
+    manifest = IIIFManifest::V3::ManifestFactory.new(presenter).to_h
+
+    respond_to do |wants|
+      wants.json { render json: manifest.to_json }
+      wants.html { render json: manifest.to_json }
+    end
+  end
+
   private
 
     def load_home_page_collections

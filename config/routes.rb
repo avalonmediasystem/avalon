@@ -8,6 +8,8 @@ Rails.application.routes.draw do
 
   resource :catalog, only: [], as: 'catalog', path: '/catalog', controller: 'catalog' do
     concerns :searchable
+
+    get :manifest
   end
 
   # For some reason this needs to be after `resource :catalog` otherwise Blacklight will generate links to / instead of /catalog
