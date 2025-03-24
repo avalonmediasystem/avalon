@@ -27,21 +27,20 @@ services:
   fedora: &fedora
     image: fcrepo/fcrepo:6.4.0
     depends_on:
-      - db
+      - createbuckets
     environment:
       - CATALINA_OPTS=-Dfcrepo.autoversioning.enabled=false -Dfcrepo.aws.access-key=minio -Dfcrepo.aws.secret-key=minio123 -Dfcrepo.storage=ocfl-s3 -Dfcrepo.ocfl.s3.bucket=fcrepo -Dfcrepo.s3.endpoint=http://minio:9000 -Dfcrepo.aws.region=us-east-1
     networks:
-      external:
       internal:
-    ports:
-      - '8080:8080'
     ulimits:
       nofile:
         soft: "65536"
         hard: "65536"
   fedora-test:
     <<: *fedora
-    volumes: []
+    depends_on: []
+    environment:
+      - CATALINA_OPTS=-Dfcrepo.autoversioning.enabled=false
 
   solr: &solr
     image: solr:9
@@ -105,9 +104,8 @@ services:
       - CONTROLLED_VOCABULARY=config/controlled_vocabulary.yml
       - DATABASE_URL=postgres://postgres:password@db/avalon
       - DATABASE_CLEANER_ALLOW_REMOTE_DATABASE_URL=true
-      - FEDORA_NAMESPACE=avalon
       - FEDORA_URL=http://fedoraAdmin:fedoraAdmin@fedora:8080/fcrepo/rest
-      - FEDORA_BASE_PATH=/test
+      - FEDORA_BASE_PATH=/dev
       - RAILS_ENV=development
       - RAILS_ADDITIONAL_HOSTS=avalon
       - SETTINGS__REDIS__HOST=redis
