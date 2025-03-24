@@ -14,6 +14,7 @@
 
 class StreamToken < ActiveRecord::Base
   scope :expired, proc { where('expires <= :now', now: Time.now.utc) }
+  scope :not_expired, proc { where('expires > :now', now: Time.now.utc) }
   class Unauthorized < Exception; end
 
   #  attr_accessible :token, :target, :expires
@@ -76,9 +77,11 @@ class StreamToken < ActiveRecord::Base
   end
 
   def self.purge_expired!(session)
-    purged = expired.delete_all
-    session[:hash_tokens] = StreamToken.where(token: Array(session[:hash_tokens])).order(expires: :desc).limit(max_tokens_per_user).pluck(:token)
-    purged
+    session[:hash_tokens] = not_expired.where(token: Array(session[:hash_tokens])).order(expires: :desc).limit(max_tokens_per_user).pluck(:token)
+  end
+
+  def self.delete_expired
+    expired.delete_all
   end
 
   def self.validate_token(value)
