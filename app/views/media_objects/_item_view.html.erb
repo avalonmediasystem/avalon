@@ -65,12 +65,13 @@ Unless required by applicable law or agreed to in writing, software distributed
       const sectionShareInfos = <%= @media_object.section_share_infos.to_json.html_safe %>;
       const transcriptSections = <%= @media_object.sections_with_files(tag: 'transcript').to_json.html_safe %>;
 
-      // Enable action buttons after derivative is loaded
-      setInterval(initActionButtons, 500);
-      function initActionButtons() {
+      // Enable action buttons and token refresh after derivative is loaded
+      setInterval(initPlayerListeners, 500);
+      function initPlayerListeners() {
         let player = document.getElementById('iiif-media-player');
         if (player) {
           addActionButtonListeners(player, mediaObjectId, sectionIds, sectionShareInfos);
+          initM3U8Reload(player);
         }
       } 
 
