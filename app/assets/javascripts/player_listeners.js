@@ -33,7 +33,7 @@ let isPlaying = false;
  * @param {String} mediaObjectId 
  * @param {Array<String>} sectionIds array of ordered masterfile ids in the mediaobject
  */
-function addActionButtonListeners(player, mediaObjectId, sectionIds) {
+function addActionButtonListeners(player, mediaObjectId, sectionIds, sectionShareInfos) {
   if (player && player.player != undefined) {
     let currentIndex = parseInt(player.dataset.canvasindex);
     /* Ensure we only add player listeners once */
@@ -77,7 +77,7 @@ function addActionButtonListeners(player, mediaObjectId, sectionIds) {
         let timelineBtn = document.getElementById('timelineBtn');
 
         if (addToPlaylistBtn.disabled && thumbnailBtn.disabled && timelineBtn.disabled) {
-          buildActionButtons(player, mediaObjectId, sectionIds);
+          buildActionButtons(player, mediaObjectId, sectionIds, sectionShareInfos);
         }
       });
     }
@@ -101,7 +101,7 @@ function addActionButtonListeners(player, mediaObjectId, sectionIds) {
     if (currentIndex != canvasIndex && !player.player.canvasIsEmpty) {
       if (isMobile || player?.player.readyState() >= 2) {
         canvasIndex = currentIndex;
-        buildActionButtons(player, mediaObjectId, sectionIds);
+        buildActionButtons(player, mediaObjectId, sectionIds, sectionShareInfos);
         firstLoad = false;
       }
     }
@@ -111,7 +111,7 @@ function addActionButtonListeners(player, mediaObjectId, sectionIds) {
     */
     if (currentIndex != canvasIndex && player.player.canvasIsEmpty) {
       canvasIndex = currentIndex;
-      setUpShareLinks(mediaObjectId, sectionIds);
+      setUpShareLinks(mediaObjectId, sectionIds, sectionShareInfos);
       resetAllActionButtons();
     }
 
@@ -155,8 +155,8 @@ function resetAllActionButtons() {
  * @param {String} mediaObjectId 
  * @param {Array<String>} sectionIds array of ordered masterfile ids in the mediaobject
  */
-function buildActionButtons(player, mediaObjectId, sectionIds) {
-  setUpShareLinks(mediaObjectId, sectionIds);
+function buildActionButtons(player, mediaObjectId, sectionIds, sectionShareInfos) {
+  setUpShareLinks(mediaObjectId, sectionIds, sectionShareInfos);
   setUpAddToPlaylist(player, sectionIds, mediaObjectId);
   setUpCreateThumbnail(player, sectionIds);
   setUpCreateTimeline(player);
@@ -168,25 +168,15 @@ function buildActionButtons(player, mediaObjectId, sectionIds) {
  * @param {String} mediaObjectId 
  * @param {Array<String>} sectionIds array of ordered masterfile id in the mediaobject
  */
-function setUpShareLinks(mediaObjectId, sectionIds) {
+function setUpShareLinks(mediaObjectId, sectionIds, sectionShareInfos) {
   const sectionId = sectionIds[canvasIndex];
-  $.ajax({
-    url: '/media_objects/' + mediaObjectId + '/section/' + sectionId + '/stream',
-    type: 'GET',
-    success: function (data) {
-      const { lti_share_link, link_back_url, embed_code } = data;
-      $('#share-link-section')
-        .val(link_back_url)
-        .attr('placeholder', link_back_url);
-      $('#ltilink-section')
-        .val(lti_share_link)
-        .attr('placeholder', lti_share_link);
-      $('#embed-part').val(embed_code);
-    },
-    error: function (err) {
-      console.log(err);
-    }
-  });
+  const sectionShareInfo = sectionShareInfos[canvasIndex];
+  const { lti_share_link, link_back_url, embed_code } = sectionShareInfo;
+
+  $('#share-link-section').val(link_back_url).attr('placeholder', link_back_url);
+  $('#ltilink-section').val(lti_share_link).attr('placeholder', lti_share_link);
+  $('#embed-part').val(embed_code);
+
   shareListeners();
 }
 
