@@ -71,7 +71,7 @@ Unless required by applicable law or agreed to in writing, software distributed
         let player = document.getElementById('iiif-media-player');
         if (player) {
           addActionButtonListeners(player, mediaObjectId, sectionIds, sectionShareInfos);
-          initM3U8Reload(player);
+          initM3U8Reload(player, mediaObjectId, sectionIds, sectionShareInfos);
         }
       } 
 
