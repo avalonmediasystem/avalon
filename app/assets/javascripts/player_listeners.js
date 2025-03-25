@@ -542,7 +542,7 @@ function handleCreateTimelineModalShow() {
 /**
  * Handler to refresh stream tokens via reloading the m3u8 file
  */
-function initM3U8Reload(player) {
+function initM3U8Reload(player, mediaObjectId, sectionIds, sectionShareInfos) {
   if (player && player.player != undefined) {
     if (firstLoad === true) {
       player.player.on('pause', () => {
@@ -561,6 +561,7 @@ function initM3U8Reload(player) {
       // Set player to user's active time after reloading m3u8
       player.player.on('loadeddata', () => {
         player.player.currentTime(currentTime);
+        buildActionButtons(player, mediaObjectId, sectionIds, sectionShareInfos);
       });
     }
   }
