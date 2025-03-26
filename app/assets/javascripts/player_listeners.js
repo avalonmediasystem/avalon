@@ -76,7 +76,7 @@ function addActionButtonListeners(player, mediaObjectId, sectionIds, sectionShar
         let thumbnailBtn = document.getElementById('thumbnailBtn');
         let timelineBtn = document.getElementById('timelineBtn');
 
-        if (addToPlaylistBtn.disabled && thumbnailBtn.disabled && timelineBtn.disabled) {
+        if (addToPlaylistBtn.disabled || thumbnailBtn.disabled || timelineBtn.disabled) {
           buildActionButtons(player, mediaObjectId, sectionIds, sectionShareInfos);
         }
       });
