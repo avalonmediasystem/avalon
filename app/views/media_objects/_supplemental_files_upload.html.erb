@@ -24,7 +24,7 @@ Unless required by applicable law or agreed to in writing, software distributed
   <% end %>
   <% if file_section.include?("caption") && !section.finished_processing? %>
     <% encode = ActiveEncode::EncodeRecord.find_by(master_file_id: section.id)&.raw_object %>
-    <% caption_count = JSON.parse(encode)["input"]["subtitles"].count %>
+    <% caption_count = JSON.parse(encode)["input"]["subtitles"].count rescue nil %>
     <% if caption_count.present? %>
       <% if caption_count.positive? %>
         <div>
