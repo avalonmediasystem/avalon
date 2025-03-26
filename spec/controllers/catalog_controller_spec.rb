@@ -235,6 +235,20 @@ describe CatalogController do
         expect(assigns(:response).documents.count).to eq 1
         expect(assigns(:response).documents.collect(&:id)).to eq [@media_object.id]
       end
+
+      context "phrase searching" do
+        it "finds the full phrase in transcripts" do
+          get 'index', params: { q: '"Example captions"' }
+          expect(assigns(:response).documents.count).to eq 1
+          expect(assigns(:response).documents.collect(&:id)).to eq [@media_object.id]
+        end
+
+        it "does not find partial phrase matches in transcripts" do
+          get 'index', params: { q: '"Example quote"' }
+          expect(assigns(:response).documents.count).to eq 0
+          expect(assigns(:response).documents.collect(&:id)).not_to include @media_object.id
+        end
+      end
     end
 
     describe "sort fields" do
