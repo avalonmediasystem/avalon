@@ -313,6 +313,9 @@ function addToPlaylistListeners(sectionIds, mediaObjectId) {
     e.preventDefault();
     let playlistId = $('#post_playlist_id').val();
     if ($('#playlistitem_scope_track')[0].checked) {
+      if (activeTrack === undefined) {
+        activeTrack = getActiveItem(false);
+      }
       let starttime = createTimestamp(activeTrack.times.begin, true);
       let endtime = createTimestamp(activeTrack.times.end, true);
       addPlaylistItem(playlistId, streamId, starttime, endtime);
