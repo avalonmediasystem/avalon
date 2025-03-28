@@ -147,17 +147,11 @@ class IiifPlaylistCanvasPresenter
     end
 
     def supplemental_captions
-      files = master_file.supplemental_files(tag: 'caption')
-      files += [master_file.captions] if master_file.captions.present? && master_file.captions.persisted?
-      files
+      master_file.supplemental_files(tag: 'caption')
     end
 
     def supplemental_captions_data(file)
-      url = if !file.is_a?(SupplementalFile)
-              Rails.application.routes.url_helpers.captions_master_file_url(master_file.id)
-            elsif file.tags.include?('caption')
-              Rails.application.routes.url_helpers.captions_master_file_supplemental_file_url(master_file.id, file.id)
-            end
+      url = Rails.application.routes.url_helpers.captions_master_file_supplemental_file_url(master_file.id, file.id)
       IIIFManifest::V3::AnnotationContent.new(body_id: url, **supplemental_attributes(file))
     end
 
