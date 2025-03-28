@@ -67,6 +67,7 @@ class SpeedyAF::Proxy::MasterFile < SpeedyAF::Base
   end
 
   def captions
+    return nil unless has_captions?
     load_subresource_content(:captions) rescue nil
   end
 
