@@ -160,7 +160,7 @@ class IiifCanvasPresenter
 
     def supplemental_captions_transcripts
       files = master_file.supplemental_files(tag: 'caption') + master_file.supplemental_files(tag: 'transcript')
-      files += [master_file.captions] if master_file.captions.present? && master_file.captions.persisted?
+      files += [master_file.captions] if master_file.has_captions?
       files
     end
 
