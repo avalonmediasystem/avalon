@@ -43,7 +43,9 @@ context('Browse', () => {
 })
 
 it('Verify browsing items by a format - @Tb477685f', () => {
+	cy.login('administrator')
 	cy.visit('/')
+
 	homePage.getBrowseNavButton().click()
 	cy.contains('button', 'Format').click()
 	cy.contains('a', 'Moving Image').click()

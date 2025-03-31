@@ -14,6 +14,9 @@
  * ---  END LICENSE_HEADER BLOCK  ---
  */
 
+import ItemPage from '../pageObjects/itemPage';
+const itemPage = new ItemPage();
+
 context('Item', () => {
   //Create dynamic items here
   const collection_title = Cypress.env('SEARCH_COLLECTION');
@@ -43,62 +46,87 @@ context('Item', () => {
     // Go to an existing collection to create an item
     cy.get('#manageDropdown').click();
     cy.contains('Manage Content').click();
-    cy.contains('a', collection_title).click();
-    cy.contains('a', 'Create An Item').click();
+    cy.get("[data-testid='collection-name-table']").contains(collection_title).click(); 
+
+    //create item api
+    cy.intercept('GET', '/media_objects/new?collection_id=*').as('getManageFile');
+
+    cy.get("[data-testid='collection-create-item-btn']").contains('Create An Item').click();
+
+    cy.wait('@getManageFile').then((interception) => {
+      expect(interception.response.statusCode).to.eq(302);
+    });
+
+    //upload api
+    cy.intercept('GET', '**/edit?step=file-upload').as('fileuploadredirect');
 
     // Upload a video from fixtures and continue
     // cy.get('li.nav-item.nav-success').contains('a.nav-link', 'Manage files').click();
     const videoName = 'test_sample.mp4';
-    cy.get('div#file-upload input[type="file"][name="Filedata[]"]').selectFile(
+    cy.get("[data-testid='media-object-edit-select-file-btn']").click().selectFile(
       `spec/cypress/fixtures/${videoName}`,
-      { force: true }
     );
-    cy.wait(5000);
+
 
     // Click the Upload button to submit the form, force the click action
-    cy.get('div#file-upload a.fileinput-submit').click({ force: true });
+    cy.get("[data-testid='media-object-edit-upload-btn']").click();
+
+    cy.wait('@fileuploadredirect').then((interception) => {
+      expect(interception.response.statusCode).to.eq(200);
+    });
 
     // Wait for the upload process to complete (you might need to wait for a success message or network request)
-    cy.wait(5000);
+    //cy.wait(5000);
 
     // Verify that the file appears in the list of uploaded files and save and continue
-    cy.get('#associated_files .card-body').should('contain', videoName); // Adjust the selector as needed
-    cy.get('input[name="save_and_continue"][value="Continue"]').click();
+    cy.get("[data-testid='media-object-edit-associated-files-block']").should('contain', videoName); // Adjust the selector as needed
+    //continue to resource description api
+    cy.intercept('GET', '**/edit?step=resource-description').as('resourcedescription');
+    cy.get('[data-testid="media-object-continue-btn"]').click();
+
+    cy.wait('@resourcedescription').then((interception) => {
+      expect(interception.response.statusCode).to.eq(200);
+    });
 
     // Fill the mandatory fields in the resource description and save and continue
-    cy.get('input#media_object_title')
+    cy.get('[data-testid="resource-description-title"]')
       .type(item_title)
       .should('have.value', item_title);
     const publicationYear = String(
       Math.floor(Math.random() * (2020 - 1900 + 1)) + 1900
     );
-    cy.get('input#media_object_date_issued')
+    cy.get('[data-testid="resource-description-date-issued"]')
       .type(publicationYear)
       .should('have.value', publicationYear);
-    cy.get(
-      'input[name="save_and_continue"][value="Save and continue"]'
-    ).click();
 
+    //continue to structure page api
+    cy.intercept('GET', '**/edit?step=structure').as('structurepage');
+    cy.get('[data-testid="media-object-continue-btn"]').click();
+    cy.wait('@structurepage').then((interception) => {
+      expect(interception.response.statusCode).to.eq(200);
+    });
+    //continue to access page
+    cy.intercept('GET', '**//edit?step=access-control').as('accesspage');
     // Navigate to the preview page by passing through structure and access control page
     //structure page
-    cy.get(
-      'input[name="save_and_continue"][value="Continue"]'
-    ).click()
+    cy.get('[data-testid="media-object-continue-btn"]').click()
+    cy.wait('@accesspage').then((interception) => {
+      expect(interception.response.statusCode).to.eq(200);
+    });
+
     //Access control page
-    cy.get(
-      'input[name="save_and_continue"][value="Save and continue"]'
-    ).click()
+    cy.get('[data-testid="media-object-continue-btn"]').click();
 
 
     // Validate the item title, collection, and publication date
-    cy.get('.page-title-wrapper h2').should('contain.text', item_title);
+    cy.get('[data-testid="media-object-title"]').should('contain.text', item_title);
 
-    cy.get('div.ramp--tabs-panel').within(() => {
-      cy.get('div.tab-content dt')
+    cy.get('[data-testid="metadata-display"]').within(() => {
+      cy.get('dt')
         .contains('Publication date') //changed from Date
         .next('dd')
         .should('have.text', publicationYear);
-      cy.get('div.tab-content dt')
+      cy.get('dt')
         .contains('Collection')
         .next('dd')
         .contains(collection_title);
@@ -114,74 +142,115 @@ context('Item', () => {
     cy.login('administrator');
     cy.visit('/');
     // The below code is hard-coded for a media object url. This needs to be changed with a valid object URL later for each website.
+    cy.intercept('GET', '**/stream').as('getmediaobject');
     cy.visit('/media_objects/' + item_id);
-    cy.get('#administrative_options a').contains('Publish').click();
-
+    cy.wait('@getmediaobject').then((interception) => {
+      expect(interception.response.statusCode).to.eq(200);
+    });
+    cy.intercept('POST', '**/update_status?status=publish').as('publishmedia');
+    cy.get('[data-testid="media-object-publish-btn"]').contains('Publish').click();
+    cy.wait('@publishmedia').then((interception) => {
+      expect(interception.response.statusCode).to.eq(302);
+    });
     //validate success message
-    cy.get('div.alert p').contains('1 media object successfully published.');
-    cy.get('#administrative_options a').contains('Unpublish');
+    cy.get('[data-testid="alert"]').contains('1 media object successfully published.');
+    cy.get('[data-testid="media-object-unpublish-btn"]').contains('Unpublish');
 
     //reload the page to ensure that the data is updated in the backend
-    cy.reload();
-    cy.get('#administrative_options a').contains('Unpublish');
+    //why do we need to validate again?
   });
 
   it('Verify setting Item access to “Collections staff only” for a published item - @T13b097f8', () => {
     cy.login('administrator');
     cy.visit('/');
+    cy.intercept('GET', '**/edit?step=access-control').as('accesspage');
     cy.visit('/media_objects/' + item_id + '/edit?step=access-control');
-    cy.get('.item-access').within(() => {
+    cy.wait('@accesspage').then((interception) => {
+      expect(interception.response.statusCode).to.eq(200);
+    });
+    cy.get('[data-testid="media-object-item-access"]').within(() => {
       cy.contains('label', 'Collection staff only')
-        .find('input[type="radio"]')
+        .find('[data-testid="media-object-collection-staff-only"]')
         .click()
         .should('be.checked');
     });
-    cy.get('input[type="submit"][name="save"]').click();
-    //reload the page to ensure that the data is updated in the backend
-    cy.reload()
-    cy.contains('label', 'Collection staff only')
-      .find('input[type="radio"]').should('be.checked');
+    //update access control api
+    cy.intercept('POST', '/media_objects/**').as('updateaccesscontrol');
+    cy.get('[data-testid="media-object-save-btn"]').click();
+    cy.wait('@updateaccesscontrol').then((interception) => {
+      expect(interception.response.statusCode).to.eq(302);
+    });
+    cy.get('[data-testid="media-object-item-access"]').within(() => {
+      cy.contains('label', 'Collection staff only')
+        .find('[data-testid="media-object-collection-staff-only"]')
+        .should('be.checked');
+    });
 
-    //Login as a user who is not a staff to collection to validate the result
-    //login as a user who is a staff to the collection and verify that the item is accessible
+    itemPage.verifyCollecttionStaffAccess(item_id);
+
+
   });
 
   it('Verify setting Item access to “Logged in users only” for a published item - @T0cc6ee02', () => {
     cy.login('administrator');
     cy.visit('/');
+    cy.intercept('GET', '**/edit?step=access-control').as('accesspage');
     cy.visit('/media_objects/' + item_id + '/edit?step=access-control');
-    cy.get('.item-access').within(() => {
+    cy.wait('@accesspage').then((interception) => {
+      expect(interception.response.statusCode).to.eq(200);
+    });
+    cy.get('[data-testid="media-object-item-access"]').within(() => {
       cy.contains('label', 'Logged in users only')
-        .find('input[type="radio"]')
+        .find('[data-testid="media-object-logged-in-users"]')
         .click()
         .should('be.checked');
     });
-    cy.get('input[type="submit"][name="save"]').click();
-    //reload the page to ensure that the data is updated in the backend
-    cy.reload()
-    cy.contains('label', 'Logged in users only')
-      .find('input[type="radio"]').should('be.checked');
+    //update access control api
+    cy.intercept('POST', '/media_objects/**').as('updateaccesscontrol');
+    cy.get('[data-testid="media-object-save-btn"]').click();
+    
+    cy.wait('@updateaccesscontrol').then((interception) => {
+      expect(interception.response.statusCode).to.eq(302);
+    });
+    cy.get('[data-testid="media-object-item-access"]').within(() => {
+      cy.contains('label', 'Logged in users only')
+        .find('[data-testid="media-object-logged-in-users"]')
+        .should('be.checked');
+    });
 
     //Additional assertions::
     //Logout of the application and verify that the item is not visible
     //login as any non collection staff user and validate the result
+    itemPage.verifyLoggedInUserAccess(item_id);
   });
 
   it('Verify setting Item access to “Available to general public” for a published item - @T593dc580', () => {
     cy.login('administrator');
     cy.visit('/');
+    cy.intercept('GET', '**/edit?step=access-control').as('accesspage');
     cy.visit('/media_objects/' + item_id + '/edit?step=access-control');
-    cy.get('.item-access').within(() => {
+    cy.wait('@accesspage').then((interception) => {
+      expect(interception.response.statusCode).to.eq(200);
+    });
+    cy.get('[data-testid="media-object-item-access"]').within(() => {
       cy.contains('label', 'Available to the general public')
-        .find('input[type="radio"]')
+        .find('[data-testid="media-object-general-public"]')
         .click()
         .should('be.checked');
     });
-    cy.get('input[type="submit"][name="save"]').click();
-    //reload the page to ensure that the data is updated in the backend
-    cy.reload()
-    cy.contains('label', 'Available to the general public')
-      .find('input[type="radio"]').should('be.checked');
+    //update access control api
+    cy.intercept('POST', '/media_objects/**').as('updateaccesscontrol');
+    cy.get('[data-testid="media-object-save-btn"]').click();
+    cy.wait('@updateaccesscontrol').then((interception) => {
+      expect(interception.response.statusCode).to.eq(302);
+    });
+    cy.get('[data-testid="media-object-item-access"]').within(() => {
+      cy.contains('label', 'Available to the general public')
+        .find('[data-testid="media-object-general-public"]')
+        .should('be.checked');
+    });
+
+    itemPage.verifyGeneralPublicAccess(item_id);
 
     //Additional assertion:: Verify item access without logging in
   });
@@ -189,19 +258,30 @@ context('Item', () => {
   it('Verify setting Special access for an Avalon user - published item - @Ta15294e5', () => {
     cy.login('administrator');
     cy.visit('/');
+    cy.intercept('GET', '**/edit?step=access-control').as('accesspage');
     // The below code is hard-coded for a media object url. This needs to be changed with a valid object URL later for each website.
     cy.visit('/media_objects/' + item_id + '/edit?step=access-control');
+    cy.wait('@accesspage').then((interception) => {
+      expect(interception.response.statusCode).to.eq(200);
+    });
     const user_username = Cypress.env('USERS_USER_USERNAME');
     //Assign special access - Avalon user (who is not associated with the collection)
-    cy.get('.card.special-access')
-      .find('input#add_user_display')
+    cy.get('[data-testid="media-object-user"]')
+      .parent()
+      .find('input:not([readonly])')
       .type(user_username)
       .should('have.value', user_username);
+    cy.get('.tt-menu .tt-suggestion') 
+      .should('be.visible')
+      .and('contain', user_username).click();
     cy.screenshot()
-    cy.get('input[id="add_user_display"]')
-      .closest('.form-group') // Find the closest form-group div that contains this input
-      .find('button[name="submit_add_user"]')
+    //update access control api
+    cy.intercept('POST', '/media_objects/**').as('updateaccesscontrol');
+    cy.get('[data-testid="submit-add-user"]')
       .click();
+    cy.wait('@updateaccesscontrol').then((interception) => {
+        expect(interception.response.statusCode).to.eq(302);
+      });
     //reload the page to ensure that the data is updated in the backend
     // Additional assertion:: Login as the special access user and validate the result
   });
@@ -210,11 +290,16 @@ context('Item', () => {
   it('Verify that modifying the resource metadata fields are reflected properly in the preview section- @T16bc91af', () => {
     cy.login('administrator');
     cy.visit('/');
-    // The below code is hard-coded for a media object url. This needs to be changed with a valid object URL later for each website.
+    cy.intercept('GET', '**/stream').as('getmediaobject');
     cy.visit('/media_objects/' + item_id);
-    cy.get('#administrative_options').find('a.btn').contains('Edit').click();
-    cy.get('li.nav-item.nav-success')
-      .contains('a.nav-link', 'Resource description')
+    cy.wait('@getmediaobject').then((interception) => {
+      expect(interception.response.statusCode).to.eq(200);
+    });
+
+
+    cy.get('[data-testid="media-object-edit-btn"]').contains('Edit').click();
+    cy.get('[data-testid="media-object-side-nav-link"]')
+      .contains("Resource description")
       .click();
 
     //Add some resource metadata fields in the resource description section
@@ -224,40 +309,54 @@ context('Item', () => {
     const summary =
       "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.";
 
-    cy.get('input#media_object_creator_0')
+    cy.get('[data-testid="resource-description-creator"]')
       .clear()
       .type(main_contributor)
       .should('have.value', main_contributor);
-    cy.get('input#display_media_object_language_0')
+    cy.get('[data-testid="resource-description-media-object[language][]"]')
+    .parent()
+      .find('input:not([readonly])') //there are two inputs, this check will select the right input
       .clear()
       .type(language)
       .should('have.value', language);
-    cy.get('textarea#abstract_0')
+    cy.get('[data-testid="resource-description-abstract"]')
       .clear()
       .type(summary)
       .should('have.value', summary);
+    //update resource description api
+    cy.intercept('POST', '/media_objects/**').as('updateResourceDescription');
     cy.get(
-      'input[name="save_and_continue"][value="Save and continue"]'
+      '[data-testid="media-object-save-btn"]'
     ).click();
+    cy.wait('@updateResourceDescription').then((interception) => {
+      expect(interception.response.statusCode).to.eq(302);
+    });
 
-    // Navigate to the preview page
-    cy.get('li.nav-item.nav-success').contains('a.nav-link', 'Preview').click();
+    
+    //Navigate to the item
+    
+    cy.intercept('GET', '**/stream').as('getmediaobject');
+    cy.visit('/media_objects/' + item_id);
+    cy.wait('@getmediaobject').then((interception) => {
+      expect(interception.response.statusCode).to.eq(200);
+    });
 
     //Validate the fields
-    cy.get('div.ramp--tabs-panel').within(() => {
-      cy.get('div.tab-content dt')
+    //It comes from samvera/ramp - node_modules
+    cy.get('[data-testid="metadata-display"]').within(() => {
+      cy.get('dt')
         .contains('Summary')
         .next('dd')
         .should('have.text', summary);
 
       // Validate the "Language" field
-      cy.get('div.tab-content dt')
+      cy.get('dt')
         .contains('Language')
         .next('dd')
         .should('have.text', language);
 
       // Validate the "Main contributor" field
-      cy.get('div.tab-content dt')
+      cy.get('dt')
         .contains('Main contributor')
         .next('dd')
         .should('have.text', main_contributor);
@@ -268,25 +367,34 @@ context('Item', () => {
     cy.login('administrator');
     cy.visit('/');
     // The below code is hard-coded for a media object url. This needs to be changed with a valid object URL later for each website.
+    cy.intercept('GET', '**/stream').as('getmediaobject');
     cy.visit('/media_objects/' + item_id);
-    cy.get('#administrative_options').find('a.btn').contains('Edit').click();
-    cy.get('li.nav-item.nav-success')
-      .contains('a.nav-link', 'Resource description')
+    cy.wait('@getmediaobject').then((interception) => {
+      expect(interception.response.statusCode).to.eq(200);
+    });
+    cy.get('[data-testid="media-object-edit-btn"]').contains('Edit').click();
+
+    cy.get('[data-testid="media-object-side-nav-link"]')
+      .contains('Resource description')
       .click();
 
     //Add some resource metadata fields in the resource description section to search via index
     const genre = Cypress.env('MEDIA_OBJECT_FIELD_GENRE');
 
-    cy.get('input#media_object_genre_0')
+    cy.get('[data-testid="resource-description-genre"]')
       .clear()
       .type(genre)
       .should('have.value', genre);
-    cy.get('input[name="save"][value="Save"]').click();
-    cy.get(
-      'input[name="save_and_continue"][value="Save and continue"]'
-    ).click();
+      cy.intercept('POST', '/media_objects/**').as('updateResourceDescription');
+      cy.get(
+        '[data-testid="media-object-save-btn"]'
+      ).click();
+      cy.wait('@updateResourceDescription').then((interception) => {
+        expect(interception.response.statusCode).to.eq(302);
+      });
 
     //Navigate to the browse section and search for the item_title
+    //Need to change according to page objects
     cy.contains('a.nav-link', 'Browse').click();
     cy.get("input.global-search-input[placeholder='Search this site']")
       .first()
@@ -295,6 +403,7 @@ context('Item', () => {
     cy.get('button.global-search-submit').first().click();
 
     //Filter using the added resource meta data ie: GENRE
+    //This comes from blacklight - would have to custom _facet_limit.html.erb
     cy.contains('button', 'Genres').click();
     cy.get('span.facet-label').contains('a', genre).click();
 
@@ -310,42 +419,59 @@ context('Item', () => {
     cy.login('administrator');
     cy.visit('/');
     // The below code is hard-coded for a media object url. This needs to be changed with a valid object URL later for each website.
+    cy.intercept('GET', '**/stream').as('getmediaobject');
     cy.visit('/media_objects/' + item_id);
-    cy.wait(3000) //wait for timeline button to load
-    cy.get('#timelineBtn').click();
-    cy.get('#timelineModalSave').click();
-    //validate the timeline page elements
-    cy.wait(6000); //wait for timeline page to load 
-    cy.get('div#app') // Select the div with id 'app'
-      .contains('h6', 'Timeline information');
-    cy.get('div#app') // Select the div with id 'app'
-      .contains('h3', item_title);
-    //Validate the "Add to playlist options"
+    cy.wait('@getmediaobject').then((interception) => {
+      expect(interception.response.statusCode).to.eq(200);
+    });
+    cy.intercept('POST', '/timelines').as('createTimeline');
+
+    cy.get('[data-testid="media-object-create-timeline-btn"]').click();
+    cy.get('[data-testid="media-object-modal-create-timeline-btn"]').click();
+    cy.wait('@createTimeline').then((interception) => {
+      expect(interception.response.statusCode).to.eq(302);
+    });
+
   });
 
   it('Verify deleting a timeline - @T89215320', () => {
     cy.login('administrator');
     cy.visit('/timelines');
-    cy.get('#Timelines_filter input[type="search"]')
+    cy.intercept('POST', '/timelines/*').as('deleteTimeline');
+    cy.get('[data-testid="timeline-search-input"]')
       .type(item_title)
       .should('have.value', item_title);
-    cy.get('tr')
+    cy.get('[data-testid="timeline-table-body"]')
       .contains('td', item_title)
       .parent('tr')
       .find('.btn-danger')
       .click();
-    cy.contains('Yes, Delete').click();
-    cy.get('div.alert').contains('Timeline was successfully destroyed.')
+    cy.get('[data-testid="table-view-delete-confirmation-btn"]').contains('Yes, Delete').click();
+    cy.wait('@deleteTimeline').then((interception) => {
+      expect(interception.response.statusCode).to.eq(200);
+    });
+    cy.get('[data-testid="alert"]').contains('Timeline was successfully destroyed.')
   });
 
   //teardown code: delete the created item
   // Final test to run at the end
   it('Verify deleting an item - @Tf46071b7', () => {
     cy.login('administrator');
+    cy.intercept({
+      method: 'GET',
+      url: /\/media_objects\/.*\/section\/(?!undefined).*\/stream/
+    }).as('getmediaobject');
     cy.visit('/media_objects/' + item_id);
-    cy.get('#administrative_options').find('a.btn').contains('Edit').click();
-    cy.get('a#special_button_color').contains('Delete this item').click();
-    cy.get('a#deleteLink').contains('Yes, I am sure').click();
-    cy.get('div.alert').contains('1 media object deleted.');
+    cy.wait('@getmediaobject').then((interception) => {
+      expect(interception.response.statusCode).to.eq(200);
+    });
+    cy.get('[data-testid="media-object-edit-btn"]').contains('Edit').click();
+    cy.intercept('POST', '/media_objects/**').as('removeMediaObject');
+    cy.get('[data-testid="media-object-delete-btn"]').contains('Delete this item').click();
+    cy.get('[data-testid="media-object-delete-confirmation-btn"]').contains('Yes, I am sure').click();
+    cy.wait('@removeMediaObject').then((interception) => {
+      expect(interception.response.statusCode).to.eq(302);
+    });
+    cy.get('[data-testid="alert"]').contains('1 media object deleted.');
   });
 });

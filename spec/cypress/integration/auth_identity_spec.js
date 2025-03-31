@@ -19,23 +19,43 @@ context('Authentication', () => {
   // Error when creating duplicate user
   it('.duplicate_user_error()', () => {
 		cy.visit('/users/sign_up')
-		cy.get('form.new_user').within(() => {
-			cy.get('#user_username').type('test1').should('have.value', 'test1') // Only yield inputs within form
-			cy.get('#user_email').type('test1@example.com').should('have.value', 'test1@example.com') // Only yield inputs within form
-			cy.get('#user_password').type('test1') // Only yield textareas within form
-			cy.get('#user_password_confirmation').type('test1') // Only yield textareas within form
-			})
-		cy.get('input[name=commit]').last().click()
+		cy.intercept('POST', '/users').as('signup');
+		cy.get("[data-testid='sign-up-username']").type('test1').should('have.value', 'test1') // Only yield inputs within form
+		cy.get("[data-testid='sign-up-email']").type('test1@example.com').should('have.value', 'test1@example.com') // Only yield inputs within form
+		cy.get("[data-testid='sign-up-password']").type('password') // Only yield textareas within form
+		cy.get("[data-testid='sign-up-password-confirm']").type('password') // Only yield textareas within form
+		
+		cy.get("[data-testid='sign-up-btn']").last().click()
+		cy.wait('@signup').then((interception) => {
+            expect(interception.response.statusCode).to.eq(302);
+            expect(interception.response.headers.location).to.include('/');
+        });
+		cy.contains('Sign out').click();
 
 		cy.visit('/users/sign_up')
-		cy.get('form.new_user').within(() => {
-			cy.get('#user_username').type('test1').should('have.value', 'test1') // Only yield inputs within form
-			cy.get('#user_email').type('test1@example.com').should('have.value', 'test1@example.com') // Only yield inputs within form
-			cy.get('#user_password').type('test1') // Only yield textareas within form
-			cy.get('#user_password_confirmation').type('test1') // Only yield textareas within form
-			})
-		cy.get('input[name=commit]').last().click()
+		cy.intercept('POST', '/users').as('duplicateSignup');
+		cy.get("[data-testid='sign-up-username']").type('test1').should('have.value', 'test1') // Only yield inputs within form
+		cy.get("[data-testid='sign-up-email']").type('test1@example.com').should('have.value', 'test1@example.com') // Only yield inputs within form
+		cy.get("[data-testid='sign-up-password']").type('password') // Only yield textareas within form
+		cy.get("[data-testid='sign-up-password-confirm']").type('password') // Only yield textareas within form
+			
+		cy.get("[data-testid='sign-up-btn']").last().click()
+
+		cy.wait('@duplicateSignup').then((interception) => {
+            expect(interception.response.statusCode).to.eq(200);
+        });
 
 		cy.contains('prohibited this user from being saved')
   })
+//clean up code
+
+  it('Deleting the user created',()=>{
+	cy.login('administrator');
+	cy.visit('/persona/users');
+	cy.get("[data-testid='users-search-field']").type('test1@example.com');
+	cy.get("tr").contains("td", "test1@example.com").should('exist').parent().find("a").contains("Delete").click();
+	cy.contains("test1@example.com").should('not.exist');
+	cy.get("[data-testid='alert']").contains('User "test1" has been successfully deleted.');
+  })
+
 })

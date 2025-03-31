@@ -45,7 +45,7 @@ Unless required by applicable law or agreed to in writing, software distributed
           <% @masterFiles.each do |section| %>
             <%= hidden_field_tag "master_files[#{section.id}][id]", section.id  %>
 
-            <div class="associated-files-block">
+            <div class="associated-files-block" data-testid="media-object-edit-associated-files-block">
               <div class="associated-files-top-row row">
                 <!-- Icon -->
                 <div class="col-md-9 col-xs-8">
@@ -205,11 +205,11 @@ Unless required by applicable law or agreed to in writing, software distributed
 
             <div class="fileinput fileinput-new" id="file-upload" data-provides="fileinput"  style="height: 33px">
               <a href="#" class="fileinput-submit fileinput-exists btn btn-outline btn-file file-upload-buttons"
-                data-trigger="submit" data-toggle="modal" data-target="#uploading">Upload</a>
+                data-trigger="submit" data-toggle="modal" data-target="#uploading" data-testid="media-object-edit-upload-btn">Upload</a>
               <span class="btn btn-outline btn-file file-upload-buttons">
                 <span class="fileinput-new">Select file</span>
                 <span class="fileinput-exists">Change</span>
-                <input type="file" name="Filedata[]">
+                <input type="file" name="Filedata[]" data-testid="media-object-edit-select-file-btn">
               </span>
               <span class="fileinput-filename"></span>
               <a href="#" class="close fileinput-exists fileinput-close" data-dismiss="fileinput">&times;</a>

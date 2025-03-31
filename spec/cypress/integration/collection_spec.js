@@ -61,13 +61,13 @@ context('Collections Test', () => {
 		cy.get('a[href="/admin/collections"]').contains('Manage Content').should('be.visible').click();
         cy.get("[data-testid='collection-name-table']").contains(collection_title).click(); 
         cy.intercept('POST', '/admin/collections/*').as('updateCollectionManager');
-        const user_manager = Cypress.env('USER_MANAGER_USERNAME')
+        const user_manager = Cypress.env('USERS_MANAGER_USERNAME')
         cy.get('input[name="add_manager_display"]').type(user_manager).should('have.value', user_manager)
         // Verify that the correct suggestions appear in the dropdown and click it
         cy.get('.tt-menu .tt-suggestion') //cannot add id for this as this is configured by typeahead.js. they render the elements directs app/javascript/autocomplete.j
           .should('be.visible')
           .and('contain', user_manager).click();
-        cy.get("[data-testid='collection-submit-add-manager']")
+        cy.get("[data-testid='submit-add-manager']")
         .click();
 
         cy.wait('@updateCollectionManager').then((interception) => {
@@ -151,7 +151,15 @@ context('Collections Test', () => {
 
             cy.intercept('POST', `/admin/collections/${collectionId}.json`).as('updateCollectionInfo');
             });
-        
+               
+        //update contact email
+        cy.get("[data-testid='collection-update-contact-email']").clear().type('test1@mail.com');
+         //update title
+        var new_title =  `Updated automation title ${Math.floor(Math.random() * 10000) + 1}`;
+        cy.get("[data-testid='collection-update-name']input").clear().type(new_title);
+            
+                
+       
 
         //update description
         var updatedDescription = ' Adding more details to collection description'
@@ -159,12 +167,7 @@ context('Collections Test', () => {
             updatedDescription = existingText + updatedDescription;  
             cy.get("[data-testid='collection-update-description']").type(updatedDescription);
           });
-        //update title
-        var new_title =  `Updated automation title ${Math.floor(Math.random() * 10000) + 1}`
-        cy.get("[data-testid='collection-update-name']").clear().type(new_title);
-    
-        //update contact email
-        cy.get("[data-testid='collection-update-contact-email']").clear().type('test1@mail.com');
+
         //click on update button
         cy.get("[data-testid='collection-update-collection-btn']").click();
 
