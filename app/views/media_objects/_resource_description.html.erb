@@ -65,7 +65,9 @@ Unless required by applicable law or agreed to in writing, software distributed
                                 autocomplete_model: 'languageTerm',
                                 autocomplete_validate: false,
                                 autocomplete_display_key: :text,
-                                autocomplete_id_key: :code}} %>
+                                autocomplete_id_key: :code,
+                                data:{testid:'resource-description-language'}}} 
+                                %>
 
   <%= render partial: 'text_field',
              locals: {form: form, field: :physical_description,

@@ -100,6 +100,7 @@ const Ramp = ({
                           aria-expanded="false"
                           aria-controls="timelineModal"
                           disabled={true}
+                          data-testid="media-object-create-timeline-btn"
                         >
                           Create Timeline
                         </button>
@@ -164,7 +165,7 @@ const Ramp = ({
         <Col sm={12} md={3} lg={4} className="ramp--tabs-panel">
           {cdl.enabled && <div dangerouslySetInnerHTML={{ __html: cdl.destroy }} />}
           <Tabs>
-            <Tab eventKey="details" title="Details">
+            <Tab eventKey="details" title="Details" >
               <MetadataDisplay showHeading={false} displayTitle={false} />
             </Tab>
             {(cdl.can_stream && sections_count != 0 && has_transcripts) &&

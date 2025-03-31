@@ -40,7 +40,7 @@ Unless required by applicable law or agreed to in writing, software distributed
             <%= render partial: "multipart_dropdown_field", locals: {selected_value: value.present? ? value[options[:secondary_hash_key]] : nil, options: options} %>
               <% value = value.present? ? value[options[:primary_hash_key]] : "" %>
           <% end %>
-          <%= text_field_tag fieldname, value || '', class: (@media_object.errors[field].any? ? 'form-control is-invalid' : 'form-control') %>
+          <%= text_field_tag fieldname, value || '', class: (@media_object.errors[field].any? ? 'form-control is-invalid' : 'form-control'), data: { testid: "resource-description-#{field.to_s.dasherize}" } %>
         <% end %>
       </div>
     <% end %>

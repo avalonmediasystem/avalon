@@ -30,7 +30,7 @@ $ ->
     content: ->
       button = undefined
       if typeof $(this).attr('form') == "undefined"
-        button = '<a href="' + $(this).attr('href') + '" class="btn btn-sm btn-danger btn-confirm" data-method="delete" rel="nofollow">Yes, Delete</a>'
+        button = '<a href="' + $(this).attr('href') + '" class="btn btn-sm btn-danger btn-confirm" data-method="delete" rel="nofollow" data-testid="table-view-delete-confirmation-btn">Yes, Delete</a>'
       else
         button = '<input class="btn btn-sm btn-danger btn-confirm" form="' + $(this).attr('form') + '" type="submit" value="Yes, Delete">'
         $('#' + $(this).attr('form')).find('[name=\'_method\']').val 'delete'

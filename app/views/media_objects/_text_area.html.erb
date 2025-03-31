@@ -36,10 +36,10 @@ Unless required by applicable law or agreed to in writing, software distributed
           <input type="text" class="form-control" style="display: none;"><%# to maintain spacing %>
           <% value = value.present? ? value[options[:primary_hash_key]] : "" %>
         </div>
-        <%= text_area_tag fieldname, value || '', rows: 10, class: 'form-control typed-textarea', id: "typed_textarea_#{field}_#{i}" %>
+        <%= text_area_tag fieldname, value || '', rows: 10, class: 'form-control typed-textarea', id: "typed_textarea_#{field}_#{i}",  data: { testid: "resource-description-#{field.to_s.dasherize}" } %>
       <% else %>
         <div class="input-group <%=options[:extra_classes]%>">
-          <%= text_area_tag fieldname, value || '', rows: 10, class: (@media_object.errors[field].any? ? 'form-control is-invalid' : 'form-control'), id: "#{field}_#{i}" %>
+          <%= text_area_tag fieldname, value || '', rows: 10, class: (@media_object.errors[field].any? ? 'form-control is-invalid' : 'form-control'), id: "#{field}_#{i}", data: { testid: "resource-description-#{field.to_s.dasherize}" } %>
         </div>
       <% end %>
     <% end %>
