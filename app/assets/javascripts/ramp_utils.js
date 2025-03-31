@@ -364,5 +364,5 @@ function closeAlert() {
 /** Refresh stream token by reloading active m3u8 */
 function m3u8Reload() {
   player = document.getElementById('iiif-media-player');
-  player.player.src(player.player.currentSources());
+  fetch(player.player.currentSources()[0]["src"]);
 };
