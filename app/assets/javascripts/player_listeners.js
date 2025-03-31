@@ -561,10 +561,9 @@ function initM3U8Reload(player, mediaObjectId, sectionIds, sectionShareInfos) {
           reloadInterval = false;
         }
       });
-      // Set player to user's active time after reloading m3u8
-      player.player.on('loadeddata', () => {
-        player.player.currentTime(currentTime);
-        buildActionButtons(player, mediaObjectId, sectionIds, sectionShareInfos);
+
+      player.player.on('waiting', () => {
+        m3u8Reload();
       });
     }
   }
