@@ -430,6 +430,7 @@ GEM
     ffi-compiler (1.3.2)
       ffi (>= 1.15.5)
       rake
+    flamegraph (0.9.5)
     font-awesome-rails (4.7.0.8)
       railties (>= 3.2, < 8.0)
     fugit (1.11.1)
@@ -579,6 +580,7 @@ GEM
       unf
     marcel (1.0.4)
     matrix (0.4.2)
+    memory_profiler (1.1.0)
     method_source (1.1.0)
     mime-types (3.5.2)
       mime-types-data (~> 3.2015)
@@ -672,6 +674,8 @@ GEM
     rack (2.2.13)
     rack-cors (2.0.2)
       rack (>= 2.0.0)
+    rack-mini-profiler (3.3.1)
+      rack (>= 1.2.0)
     rack-protection (3.2.0)
       base64 (>= 0.1.0)
       rack (~> 2.2, >= 2.2.4)
@@ -943,6 +947,7 @@ GEM
       net-scp (>= 1.1.2)
       net-sftp (>= 2.1.2)
       net-ssh (>= 2.8.0)
+    stackprof (0.2.27)
     stomp (1.4.10)
     suo (0.4.0)
       dalli
@@ -1065,6 +1070,7 @@ DEPENDENCIES
   faker
   fastimage
   fcrepo_wrapper
+  flamegraph
   font-awesome-rails
   google-analytics-rails (= 1.1.0)
   hashdiff (>= 1.0)
@@ -1083,6 +1089,7 @@ DEPENDENCIES
   lograge
   mail (> 2.8.0.1)
   marc
+  memory_profiler
   mysql2
   net-ldap
   net-smtp
@@ -1100,6 +1107,7 @@ DEPENDENCIES
   psych (< 4)
   puma (>= 6.4.2)
   rack-cors
+  rack-mini-profiler
   rails (~> 7.2.2)
   rails-controller-testing
   rails_same_site_cookie
@@ -1130,6 +1138,7 @@ DEPENDENCIES
   sprockets (~> 3.7.2)
   sprockets-es6
   sqlite3
+  stackprof
   terser
   twitter-typeahead-rails (= 0.11.1.pre.corejavascript)
   wavefile (~> 1.0.1)
