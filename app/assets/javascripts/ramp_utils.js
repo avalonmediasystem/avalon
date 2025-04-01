@@ -360,3 +360,9 @@ function closeAlert() {
     $('#playlistitem_scope_track').prop('checked', true);
   }
 }
+
+/** Refresh stream token by reloading active m3u8 */
+function m3u8Reload() {
+  player = document.getElementById('iiif-media-player');
+  fetch(player.player.currentSources()[0]["src"]);
+};
