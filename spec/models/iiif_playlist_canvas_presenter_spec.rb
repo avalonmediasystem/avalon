@@ -182,12 +182,12 @@ describe IiifPlaylistCanvasPresenter do
 
       it "serializes captions as iiif annotations" do
         expect(subject).to all be_a(IIIFManifest::V3::AnnotationContent)
-        expect(subject.length).to eq 2
+        expect(subject.length).to eq 1
       end
 
-      it "includes paths to supplemental and legacy caption files" do
+      it "includes paths to supplemental but NOT legacy caption files" do
         expect(subject.any? { |content| content.body_id =~ /supplemental_files\/#{caption_file.id}\/captions/ }).to eq true
-        expect(subject.any? { |content| content.body_id =~ /master_files\/#{master_file.id}\/captions/ }).to eq true
+        expect(subject.any? { |content| content.body_id =~ /master_files\/#{master_file.id}\/captions/ }).to eq false
       end
 
       it "includes 'supplementing' motivation" do
@@ -203,7 +203,7 @@ describe IiifPlaylistCanvasPresenter do
 
       it "serializes captions as iiif annotations" do
         expect(subject).to all be_a(IIIFManifest::V3::AnnotationContent)
-        expect(subject.length).to eq 3
+        expect(subject.length).to eq 2
       end
 
       it "includes marker label" do
@@ -214,9 +214,9 @@ describe IiifPlaylistCanvasPresenter do
         expect(subject.any? { |content| content.media_fragment =~ /t=#{marker.start_time}/ }).to eq true
       end
 
-      it "includes paths to supplemental and legacy caption files" do
+      it "includes paths to supplemental but NOT legacy caption files" do
         expect(subject.any? { |content| content.body_id =~ /supplemental_files\/#{caption_file.id}\/captions/ }).to eq true
-        expect(subject.any? { |content| content.body_id =~ /master_files\/#{master_file.id}\/captions/ }).to eq true
+        expect(subject.any? { |content| content.body_id =~ /master_files\/#{master_file.id}\/captions/ }).to eq false
       end
 
       it "includes 'highlighting' motivation" do

@@ -124,11 +124,6 @@ class IiifCanvasPresenter
     end
 
     def supplementing_content_data(file)
-      unless file.is_a?(SupplementalFile)
-        url = Rails.application.routes.url_helpers.captions_master_file_url(master_file.id)
-        return IIIFManifest::V3::AnnotationContent.new(body_id: url, **supplemental_attributes(file))
-      end
-
       tags = file.tags.reject { |t| t == 'machine_generated' }.compact
       case tags
       when ['caption']
@@ -159,9 +154,7 @@ class IiifCanvasPresenter
     end
 
     def supplemental_captions_transcripts
-      files = master_file.supplemental_files(tag: 'caption') + master_file.supplemental_files(tag: 'transcript')
-      files += [master_file.captions] if master_file.captions.present? && master_file.captions.persisted?
-      files
+      master_file.supplemental_files(tag: 'caption') + master_file.supplemental_files(tag: 'transcript')
     end
 
     def simple_iiif_range(label = stream_info[:label])
