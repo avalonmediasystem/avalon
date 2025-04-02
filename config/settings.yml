@@ -85,7 +85,7 @@ encode_throttling:
   update_jobs_throttle_threshold: 3
   update_jobs_spacing: 10
 auth:
-  registerable: true
+  registerable: true # Set to false to disable new user registrations
 #   configuration:
 #     - :name: Avalon Lti OAuth
 #       :provider: :lti
