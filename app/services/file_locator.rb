@@ -1,11 +1,11 @@
-# Copyright 2011-2024, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2025, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
-# 
+#
 # You may obtain a copy of the License at
-# 
+#
 # http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software distributed
 #   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
 #   CONDITIONS OF ANY KIND, either express or implied. See the License for the
@@ -16,7 +16,7 @@ require 'addressable/uri'
 require 'aws-sdk-s3'
 
 class FileLocator
-  attr_reader :source, :auth_header
+  attr_reader :source, :filename, :auth_header
 
   class S3File
     attr_reader :bucket, :key
@@ -48,6 +48,7 @@ class FileLocator
 
   def initialize(source, opts = {})
     @source = source
+    @filename = opts[:filename]
     @auth_header = opts[:auth_header]
   end
 
@@ -89,15 +90,31 @@ class FileLocator
     end
   end
 
-  # If S3, download object to /tmp
+  # If S3 or http(s), download object to /tmp
   def local_location
     @local_location ||= begin
-      if uri.scheme == 's3'
+      case uri.scheme
+      when 's3'
         S3File.new(uri).local_file.path
-      else
+      when 'file'
         location
+      else
+        local_file.path
       end
     end
+  end
+
+  # Tempfile.create generates a regular File object instead of a Tempfile object:
+  # https://ruby-doc.org/stdlib-3.1.1/libdoc/tempfile/rdoc/Tempfile.html#method-c-create
+  # It is necessary for us to use this method to avoid issues with garbage collection.
+  # When calling this method ensure that the file gets unlinked/rm-ed explicitly
+  # after it is done being used.
+  def local_file
+    @local_file ||= Tempfile.create(filename)
+    File.binwrite(@local_file, reader.read)
+    @local_file
+  ensure
+    @local_file.close
   end
 
   def exist?

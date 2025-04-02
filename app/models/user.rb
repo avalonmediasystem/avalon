@@ -1,11 +1,11 @@
-# Copyright 2011-2024, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2025, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
-# 
+#
 # You may obtain a copy of the License at
-# 
+#
 # http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software distributed
 #   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
 #   CONDITIONS OF ANY KIND, either express or implied. See the License for the
@@ -43,8 +43,8 @@ class User < ActiveRecord::Base
   before_destroy :remove_bookmarks
 
   def username_email_uniqueness
-    errors.add(:email, :taken, value: email) if User.find_by_username(email) && User.find_by_username(email).id != id
-    errors.add(:username, :taken, valud: username) if User.find_by_email(username) && User.find_by_email(username).id != id
+    errors.add(:email, :taken, value: email) if User.find_and_verify_by_username(email) && User.find_and_verify_by_username(email).id != id
+    errors.add(:username, :taken, value: username) if User.find_and_verify_by_email(username) && User.find_and_verify_by_email(username).id != id
   end
 
   # Method added by Blacklight; Blacklight uses #to_s on your
@@ -71,7 +71,7 @@ class User < ActiveRecord::Base
   end
 
   def self.find_and_verify_by_username(username)
-    user = User.find_by(username: username)
+    user = User.find_by("lower(username) = ?", username&.downcase)
     if user&.deleted_at
       raise Avalon::DeletedUserId
     end
@@ -79,7 +79,7 @@ class User < ActiveRecord::Base
   end
 
   def self.find_and_verify_by_email(email)
-    user = User.find_by(email: email)
+    user = User.find_by("lower(email) = ?", email&.downcase)
     if user&.deleted_at
       raise Avalon::DeletedUserId
     end

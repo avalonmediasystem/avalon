@@ -48,7 +48,8 @@
     "webpack-dev-server": "5"
   },
   "resolutions": {
-    "glob-parent": "^6.0.2"
+    "glob-parent": "^6.0.2",
+    "path-to-regexp": "^0.1.12"
   },
   "scripts": {
     "start-collection-index": "webpack-dev-server --mode development --config config/webpack/collection_index.js --host 0.0.0.0",

@@ -1,11 +1,11 @@
-# Copyright 2011-2024, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2025, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
-# 
+#
 # You may obtain a copy of the License at
-# 
+#
 # http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software distributed
 #   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
 #   CONDITIONS OF ANY KIND, either express or implied. See the License for the
@@ -147,17 +147,11 @@ class IiifPlaylistCanvasPresenter
     end
 
     def supplemental_captions
-      files = master_file.supplemental_files(tag: 'caption')
-      files += [master_file.captions] if master_file.captions.present? && master_file.captions.persisted?
-      files
+      master_file.supplemental_files(tag: 'caption')
     end
 
     def supplemental_captions_data(file)
-      url = if !file.is_a?(SupplementalFile)
-              Rails.application.routes.url_helpers.captions_master_file_url(master_file.id)
-            elsif file.tags.include?('caption')
-              Rails.application.routes.url_helpers.captions_master_file_supplemental_file_url(master_file.id, file.id)
-            end
+      url = Rails.application.routes.url_helpers.captions_master_file_supplemental_file_url(master_file.id, file.id)
       IIIFManifest::V3::AnnotationContent.new(body_id: url, **supplemental_attributes(file))
     end
 

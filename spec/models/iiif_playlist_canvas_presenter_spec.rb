@@ -1,11 +1,11 @@
-# Copyright 2011-2024, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2025, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
-# 
+#
 # You may obtain a copy of the License at
-# 
+#
 # http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software distributed
 #   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
 #   CONDITIONS OF ANY KIND, either express or implied. See the License for the
@@ -182,12 +182,12 @@ describe IiifPlaylistCanvasPresenter do
 
       it "serializes captions as iiif annotations" do
         expect(subject).to all be_a(IIIFManifest::V3::AnnotationContent)
-        expect(subject.length).to eq 2
+        expect(subject.length).to eq 1
       end
 
-      it "includes paths to supplemental and legacy caption files" do
+      it "includes paths to supplemental but NOT legacy caption files" do
         expect(subject.any? { |content| content.body_id =~ /supplemental_files\/#{caption_file.id}\/captions/ }).to eq true
-        expect(subject.any? { |content| content.body_id =~ /master_files\/#{master_file.id}\/captions/ }).to eq true
+        expect(subject.any? { |content| content.body_id =~ /master_files\/#{master_file.id}\/captions/ }).to eq false
       end
 
       it "includes 'supplementing' motivation" do
@@ -203,7 +203,7 @@ describe IiifPlaylistCanvasPresenter do
 
       it "serializes captions as iiif annotations" do
         expect(subject).to all be_a(IIIFManifest::V3::AnnotationContent)
-        expect(subject.length).to eq 3
+        expect(subject.length).to eq 2
       end
 
       it "includes marker label" do
@@ -214,9 +214,9 @@ describe IiifPlaylistCanvasPresenter do
         expect(subject.any? { |content| content.media_fragment =~ /t=#{marker.start_time}/ }).to eq true
       end
 
-      it "includes paths to supplemental and legacy caption files" do
+      it "includes paths to supplemental but NOT legacy caption files" do
         expect(subject.any? { |content| content.body_id =~ /supplemental_files\/#{caption_file.id}\/captions/ }).to eq true
-        expect(subject.any? { |content| content.body_id =~ /master_files\/#{master_file.id}\/captions/ }).to eq true
+        expect(subject.any? { |content| content.body_id =~ /master_files\/#{master_file.id}\/captions/ }).to eq false
       end
 
       it "includes 'highlighting' motivation" do
