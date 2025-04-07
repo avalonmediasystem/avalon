@@ -39,14 +39,6 @@ class ApplicationController < ActionController::Base
   rescue_from Blacklight::Exceptions::ECONNREFUSED, :with => :handle_solr_connection_error
   rescue_from Faraday::ConnectionFailed, :with => :handle_fedora_connection_error
 
-  # Enable profiling
-  if ActiveModel::Type::Boolean.new.cast(ENV['AVALON_PROFILING'])
-    prepend_before_action do
-      # Setup profiling for all users
-      Rack::MiniProfiler.authorize_request
-    end
-  end
-
   def set_no_cache_headers
     response.headers["Cache-Control"] = "no-cache, no-store"
     response.headers["Pragma"] = "no-cache"

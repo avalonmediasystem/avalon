@@ -188,13 +188,5 @@ group :mysql, optional: true do
   gem 'mysql2'
 end
 
-# Install the bundle --with profiling and enable via AVALON_PROFILING environment variable
-group :profiling, optional: true do
-  gem 'rack-mini-profiler'
-  gem 'flamegraph'
-  gem 'stackprof'
-  gem 'memory_profiler'
-end
-
 extra_gems = File.expand_path("../Gemfile.local", __FILE__)
 eval File.read(extra_gems) if File.exist?(extra_gems)
