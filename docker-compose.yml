@@ -132,7 +132,7 @@ services:
       - SETTINGS__STREAMING__SERVER=nginx
       - SETTINGS__STREAMING__STREAM_TOKEN_TTL=20
       - SYSTEM_GROUPS=administrator,group_manager,manager
-      - AVALON_PROFILING=true
+      - AVALON_PROFILING=false
     volumes:
       - .:/home/app/avalon
       - npms:/home/app/avalon/node_modules
