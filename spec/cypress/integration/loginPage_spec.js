@@ -20,7 +20,7 @@ context('Login page', () => {
 	const loginPage = new LoginPage();
 	const homePage = new HomePage();
 
-	it('Verify if a user is able to log in', () => {
+	it('Verify if a user is able to log in - @critical', () => {
 		loginPage.visit();
 		loginPage.fillEmail(Cypress.env('USERS_USER_EMAIL'));
 		loginPage.fillPassword(Cypress.env('USERS_USER_PASSWORD'));
@@ -30,7 +30,7 @@ context('Login page', () => {
 		homePage.getLoginSuccessAlert();
 	})
 
-	it('should log out successfully', () => {
+	it('should log out successfully - @critical', () => {
 		cy.login('user')
 		cy.visit('/')
 		// Logout
@@ -43,14 +43,14 @@ context('Login page', () => {
 
 
 	// validates presence of header and footer on homepage for logged-in user
-	it('.sign_in_feature_testing()', () => {
+	it('.sign_in_feature_testing() - @critical', () => {
 		cy.login('user')
 		cy.visit('/')
 		cy.get('#playlists_nav')
 	})
 
 	// validates absence of features when not logged in
-	it('.public_user_feature_testing()', () => {
+	it('.public_user_feature_testing() - @critical', () => {
 		cy.visit('/')
 		cy.get('#timelines_nav').should('not.exist');
 		cy.get('#playlists_nav').should('not.exist');
@@ -61,13 +61,13 @@ context('Login page', () => {
 
 
 	// checks navigation to external links
-	it('.external_links()', () => {
+	it('.external_links() - @critical', () => {
 		cy.visit('/')
 		cy.get(' a[href*="/"] ').first().click()
 	})
 
 	// checks navigation to Contact us page
-	it('.Contact_us()', () => {
+	it('.Contact_us() - @critical', () => {
 		cy.visit('/')
 		cy.contains('Contact Us').click()
 		cy.url().should('include', '/comments')
@@ -80,7 +80,7 @@ context('Login page', () => {
 	})
 
 	// verifies presence of features after login
-	it('.feature_verfication_login()', () => {
+	it('.feature_verfication_login() - @critical', () => {
 		cy.login('administrator')
 		cy.visit('/')
 		cy.contains('Playlists')
@@ -91,7 +91,7 @@ context('Login page', () => {
 	})
 
 	// Sign in page
-	it('.describe_sign_in_page() - click on a DOM element', () => {
+	it('.describe_sign_in_page() - click on a DOM element - @critical', () => {
 		cy.visit('/')
 		cy.get('a[href*="/users/sign_in"] ').first().click()
 		cy.contains('Username or email').click()
@@ -102,7 +102,7 @@ context('Login page', () => {
 	})
 
 	// validates presence of items on register page
-	it('.validate_register_page()', () => {
+	it('.validate_register_page() - @critical', () => {
 		cy.visit('/users/sign_up')
 		cy.contains('Username')
 		cy.contains('Email')
@@ -112,7 +112,7 @@ context('Login page', () => {
 	})
 
 	// is able to create new account
-	it('.create_new_account()', () => {
+	it('.create_new_account() - @critical', () => {
 		cy.visit('/users/sign_up')
 		cy.get('form.new_user').within(() => {
 			cy.get('#user_username').type('Sumith').should('have.value', 'Sumith') // Only yield inputs within form

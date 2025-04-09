@@ -10,7 +10,7 @@ context('Collections Test', () => {
 		}
 	});
     	// checks navigation to Browse
-	it('Verify whether an admin user is able to create a collection - @T553cda51', () => {
+	it('Verify whether an admin user is able to create a collection - @T553cda51 - @critical', () => {
 		cy.login('administrator')
 		cy.visit('/')
 		cy.contains('Manage').click();
@@ -46,7 +46,7 @@ context('Collections Test', () => {
 
 	})
 
-    it("Verify whether the user is able to search for Collections-'@Tf7cefb09", () => {
+    it("Verify whether the user is able to search for Collections-'@Tf7cefb09 - @critical", () => {
 		cy.login('administrator')
 		cy.visit('/')
 		cy.get('a[href="/collections"]').contains(/Collections$/).should('be.visible').click();// added should be visible so when a page is loading it won't cause problems
@@ -54,7 +54,7 @@ context('Collections Test', () => {
 		cy.get("[data-testid='collection-card-body']").contains('a', search_collection);
 	})
 
-    it('Verify whether an admin/manager is able assign other users as managers to the collection - @T3c428871', () => {
+    it('Verify whether an admin/manager is able assign other users as managers to the collection - @T3c428871 - @critical', () => {
         cy.login('administrator')
         cy.visit('/')
         cy.contains('Manage').click();
@@ -86,7 +86,7 @@ context('Collections Test', () => {
         //Additional assertions to add :Login as user_manager and validate that the collection is visible in the "Manage page" and/or API validation
     })
 
-    it('Verify changing item access - Collection staff only (New items) - @T9978b4f7', () => {
+    it('Verify changing item access - Collection staff only (New items) - @T9978b4f7 - @critical', () => {
         cy.login('administrator')
         cy.visit('/')
         cy.contains('Manage').click();
@@ -109,7 +109,7 @@ context('Collections Test', () => {
         //Add UI and/or API assertions here............Assert via UI by opening the create item page and verifying the default access control
     })
 
-    it('Verify changing item access - Collection staff only (Existing items) - @Tdcf756bd', () => {
+    it('Verify changing item access - Collection staff only (Existing items) - @Tdcf756bd - @critical', () => {
         cy.login('administrator')
         cy.visit('/')
         cy.contains('Manage').click();
@@ -134,7 +134,7 @@ context('Collections Test', () => {
     
     })
 
-    it('Verify whether a user is able to update Collection information - @Ta1b2fef8', () => {
+    it('Verify whether a user is able to update Collection information - @Ta1b2fef8 - @critical', () => {
         cy.login('administrator')
         cy.visit('/')
         cy.contains('Manage').click();
@@ -192,7 +192,7 @@ context('Collections Test', () => {
         
     })
 
-    it('Verify whether a user is able to update poster image -  @T26526b2e', () => {
+    it('Verify whether a user is able to update poster image -  @T26526b2e - @critical', () => {
         cy.login('administrator')
         cy.visit('/')
         cy.contains('Manage').click();
@@ -215,7 +215,7 @@ context('Collections Test', () => {
         
     })
 
-    it('Verify deleting a collection - @T959a56df', () => {
+    it('Verify deleting a collection - @T959a56df - @critical', () => {
 		cy.login('administrator')
 		cy.visit('/')
         cy.contains('Manage').click();

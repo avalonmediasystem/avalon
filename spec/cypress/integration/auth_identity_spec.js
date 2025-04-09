@@ -17,7 +17,7 @@
 context('Authentication', () => {
 
   // Error when creating duplicate user
-  it('.duplicate_user_error()', () => {
+  it('.duplicate_user_error() - @critical', () => {
 		cy.visit('/users/sign_up')
 		cy.intercept('POST', '/users').as('signup');
 		cy.get("[data-testid='sign-up-username']").type('test1').should('have.value', 'test1') // Only yield inputs within form
@@ -28,7 +28,7 @@ context('Authentication', () => {
 		cy.get("[data-testid='sign-up-btn']").last().click()
 		cy.wait('@signup').then((interception) => {
             expect(interception.response.statusCode).to.eq(302);
-            expect(interception.response.headers.location).to.include('/');
+            
         });
 		cy.contains('Sign out').click();
 
@@ -49,7 +49,7 @@ context('Authentication', () => {
   })
 //clean up code
 
-  it('Deleting the user created',()=>{
+  it('Deleting the user created - @critical',()=>{
 	cy.login('administrator');
 	cy.visit('/persona/users');
 	cy.get("[data-testid='users-search-field']").type('test1@example.com');

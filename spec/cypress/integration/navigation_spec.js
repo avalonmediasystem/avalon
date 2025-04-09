@@ -17,14 +17,14 @@
 context('Navigations', () => {
 
   // checks navigation to Browse
-  it('.browse_navigation()', () => {
+  it('.browse_navigation() - @critical', () => {
 		cy.login('administrator')
 		cy.visit('/')
 		cy.contains('Browse').click()
   })
 
   // checks navigation to Manage content
-  it('.manage_content()', () => {
+  it('.manage_content() - @critical', () => {
 		cy.login('administrator')
 		cy.visit('/')
 		cy.contains('Manage Content')//.click()
@@ -41,7 +41,7 @@ context('Navigations', () => {
   })
 
   // checks naviagtion to Manage Groups
-  it('.manage_groups()', () => {
+  it('.manage_groups() - @critical', () => {
 		cy.login('administrator')
 		cy.visit('/')
 		cy.contains('Manage Groups')//.click()
@@ -56,7 +56,7 @@ context('Navigations', () => {
   })
 
   // is able to sign out
-  it('.signout()', () => {
+  it('.signout() - @critical', () => {
 		cy.login('administrator')
 		cy.visit('/')
 		cy.contains('Sign out').click()

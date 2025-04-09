@@ -34,7 +34,7 @@ Cypress.Commands.add("login", (role) => {
   cy.request('/users/sign_in')
   .its('body')
   .then((body) => {
-    // we can use Cypress.$ to parse the string body
+    
     // thus enabling us to query into it easily
     const $html = Cypress.$(body)
     const csrfToken = $html.find('input[name=authenticity_token]').val()
@@ -106,3 +106,11 @@ Cypress.Commands.add('createItemUnderCollectionUI',(collectionTitle, itemTitle )
     });
   }));
 });
+
+Cypress.Commands.add('waitForVideoReady', () => {
+  cy.get('video').should(($video) => {
+    const videoEl = $video[0];
+    expect(videoEl.readyState).to.be.greaterThan(1);
+  });
+ });
+ 
