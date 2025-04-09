@@ -21,8 +21,8 @@ module SecurityHelper
     end
   end
 
-  def secure_streams(stream_info, media_object_id)
-    add_stream_url(stream_info) unless not_checked_out?(media_object_id)
+  def secure_streams(stream_info, media_object_id, media_object: nil)
+    add_stream_url(stream_info) unless not_checked_out?(media_object_id, media_object: media_object)
     stream_info
   end
 

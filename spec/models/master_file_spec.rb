@@ -818,18 +818,18 @@ describe MasterFile do
     let(:master_file) { FactoryBot.create(:master_file) }
     let(:streams) do
       [{:format=>"video",
-        :mimetype=>nil,
+        :mimetype=>"application/x-mpegURL",
         :quality=>"auto",
         :url=>"http://test.host/master_files/#{master_file.id}/auto.m3u8"},
       {:bitrate=>4163842,
         :format=>"video",
-        :mimetype=>nil,
+        :mimetype=>"application/x-mpegURL",
         :quality=>"high",
         :url=>
          "http://localhost:3000/streams/6f69c008-06a4-4bad-bb60-26297f0b4c06/35bddaa0-fbb4-404f-ab76-58f22921529c/warning.mp4.m3u8"},
       {:bitrate=>4163842,
         :format=>"video",
-        :mimetype=>nil,
+        :mimetype=>"application/x-mpegURL",
         :quality=>"medium",
         :url=>
          "http://localhost:3000/streams/6f69c008-06a4-4bad-bb60-26297f0b4c06/35bddaa0-fbb4-404f-ab76-58f22921529c/warning.mp4.m3u8"}]
@@ -997,6 +997,36 @@ describe MasterFile do
     it 'enqueues indexing of parent media object' do
       master_file.update_index
       expect(MediaObjectIndexingJob).to have_been_enqueued.with(master_file.media_object.id)
+    end
+  end
+
+  describe '#share_info' do
+    let(:master_file) { FactoryBot.create(:master_file, :with_media_object) }
+    subject(:share_info) { master_file.share_info }
+
+    it 'is a hash of sharing urls and embed code' do
+      expect(share_info[:lti_share_link]).to eq "http://test.host/users/auth/lti/callback?target_id=#{master_file.id}"
+      expect(share_info[:link_back_url]).to eq "http://test.host/media_objects/#{master_file.media_object.id}/section/#{master_file.id}"
+      expect(share_info[:embed_code]).to include "http://test.host/master_files/#{master_file.id}/embed"
+    end
+
+    context 'with permalinks' do
+      let(:master_file) { FactoryBot.create(:master_file, :with_media_object, permalink: 'https://permalink.host/path/id') }
+
+      it 'uses permalinks' do
+        expect(share_info[:link_back_url]).to eq 'https://permalink.host/path/id'
+        expect(share_info[:embed_code]).to include "https://permalink.host/path/id?urlappend=%2Fembed"
+      end
+    end
+
+    context 'with LTI disabled' do
+      before do
+        allow(Avalon::Authentication).to receive(:lti_configured?).and_return(false)
+      end
+
+      it 'displays an notice for the lti_share_link' do
+        expect(share_info[:lti_share_link]).to eq I18n.t('share.empty_lti_share_url')
+      end
     end
   end
 end

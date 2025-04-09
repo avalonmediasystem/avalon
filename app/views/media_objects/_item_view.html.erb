@@ -48,7 +48,7 @@ Unless required by applicable law or agreed to in writing, software distributed
         timeline: { canCreate: (current_ability.can? :create, Timeline), content: lending_enabled?(@media_object) ? (render('timeline') if can_stream) : render('timeline') },
         playlist: { canCreate: (current_ability.can? :create, Playlist), tab: render('add_to_playlist') },
         cdl: { enabled: lending_enabled?(@media_object), can_stream: can_stream, embed: render('embed_checkout'), destroy: render('destroy_checkout') },
-        has_files: @media_object.supplemental_files.present? || @media_object.sections_with_files.present?,
+        has_files: @media_object.supplemental_files.present? || @media_object.sections_with_rendering_files?([nil, 'caption']),
         has_transcripts: @media_object.sections_with_files(tag: 'transcript').present?
       }
     ) %>
@@ -62,14 +62,16 @@ Unless required by applicable law or agreed to in writing, software distributed
     $(document).ready(function () {
       const mediaObjectId = <%= @media_object.id.to_json.html_safe %>;
       const sectionIds = <%= @media_object.section_ids.to_json.html_safe %>;
+      const sectionShareInfos = <%= @media_object.section_share_infos.to_json.html_safe %>;
       const transcriptSections = <%= @media_object.sections_with_files(tag: 'transcript').to_json.html_safe %>;
 
-      // Enable action buttons after derivative is loaded
-      setInterval(initActionButtons, 500);
-      function initActionButtons() {
+      // Enable action buttons and token refresh after derivative is loaded
+      setInterval(initPlayerListeners, 500);
+      function initPlayerListeners() {
         let player = document.getElementById('iiif-media-player');
         if (player) {
-          addActionButtonListeners(player, mediaObjectId, sectionIds);
+          addActionButtonListeners(player, mediaObjectId, sectionIds, sectionShareInfos);
+          initM3U8Reload(player, mediaObjectId, sectionIds, sectionShareInfos);
         }
       } 
 

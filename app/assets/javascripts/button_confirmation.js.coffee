@@ -20,7 +20,9 @@ $ ->
   apply_button_confirmation()
 
 @apply_button_confirmation = () ->
-  $(document).on 'click', '#special_button_color', ->
+  $(document).on 'click', '#special_button_color', (e) ->
+    # Stop page from scrolling up on 'Cancel' click
+    e.preventDefault()
     $('.btn-confirmation').popover 'hide'
     true
   $('.btn-confirmation').popover(

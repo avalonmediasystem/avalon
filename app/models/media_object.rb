@@ -99,7 +99,7 @@ class MediaObject < ActiveFedora::Base
   end
 
   def validate_language
-    Array(language).each{|i|errors.add(:language, "Language not recognized (#{i[:code]})") unless LanguageTerm::map[i[:code]] }
+    Array(language).each{|i|errors.add(:language, "Language not recognized (#{i[:code]})") unless LanguageTerm::Iso6392.map[i[:code]] }
   end
 
   def validate_related_items
@@ -192,6 +192,7 @@ class MediaObject < ActiveFedora::Base
     # avoid calling destroy on each section since it calls save on parent media object
     self.sections.each(&:delete)
     Bookmark.where(document_id: self.id).destroy_all
+    Checkout.where(media_object_id: self.id).destroy_all
     super
   end
 
@@ -496,4 +497,9 @@ class MediaObject < ActiveFedora::Base
       # TODO: Optimize this into a single solr query?
       section_ids.select { |m| SpeedyAF::Proxy::MasterFile.find(m).supplemental_files(tag: tag).present? }
     end
+
+    def sections_with_rendering_files?(tags)
+      tags.any? { |t| sections_with_files(tag: t).present? }
+    end
+
 end

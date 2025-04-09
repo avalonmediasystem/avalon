@@ -147,4 +147,24 @@ describe StreamToken do
       end
     end
   end
+
+  describe 'delete_expired' do
+    let(:session) { { session_id: '00112233445566778899aabbccddeeff' } }
+    let!(:valid_token) { StreamToken.find_or_create_session_token(session, 1.to_s) }
+    let!(:expired_token1) { StreamToken.find_or_create_session_token(session, 2.to_s) }
+    let!(:expired_token2) { StreamToken.find_or_create_session_token(session, 3.to_s) }
+
+    it 'deletes all expired tokens' do
+      expect(StreamToken.count).to eq 3
+      [expired_token1, expired_token2].each do |token|
+        stream_token = StreamToken.find_by_token(token)
+        stream_token.update_attribute :expires, Time.now.utc
+      end
+      StreamToken.delete_expired
+      expect(StreamToken.count).to eq 1
+      expect(StreamToken.find_by_token(expired_token1)).to be_nil
+      expect(StreamToken.find_by_token(expired_token2)).to be_nil
+      expect(StreamToken.find_by_token(valid_token)).not_to be_nil
+    end
+  end
 end

@@ -21,7 +21,7 @@ class SupplementalFile < ApplicationRecord
 
   # TODO: the empty tag should represent a generic supplemental file
   validates :tags, array_inclusion: ['transcript', 'caption', 'machine_generated', '', nil]
-  validates :language, inclusion: { in: LanguageTerm.map.keys }
+  validates :language, inclusion: { in: LanguageTerm::Iso6392.map.keys }
   validates :parent_id, presence: true
   validate  :validate_file_type, if: :caption?
 

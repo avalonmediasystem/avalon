@@ -22,6 +22,8 @@ let firstLoad = true;
 let streamId = '';
 let isMobile = false;
 let isPlaying = false;
+let reloadInterval = false;
+let currentTime;
 
 /**
  * Bind action buttons on the page with player events and re-populate details
@@ -33,7 +35,7 @@ let isPlaying = false;
  * @param {String} mediaObjectId 
  * @param {Array<String>} sectionIds array of ordered masterfile ids in the mediaobject
  */
-function addActionButtonListeners(player, mediaObjectId, sectionIds) {
+function addActionButtonListeners(player, mediaObjectId, sectionIds, sectionShareInfos) {
   if (player && player.player != undefined) {
     let currentIndex = parseInt(player.dataset.canvasindex);
     /* Ensure we only add player listeners once */
@@ -76,8 +78,8 @@ function addActionButtonListeners(player, mediaObjectId, sectionIds) {
         let thumbnailBtn = document.getElementById('thumbnailBtn');
         let timelineBtn = document.getElementById('timelineBtn');
 
-        if (addToPlaylistBtn.disabled && thumbnailBtn.disabled && timelineBtn.disabled) {
-          buildActionButtons(player, mediaObjectId, sectionIds);
+        if (addToPlaylistBtn.disabled || thumbnailBtn.disabled || timelineBtn.disabled) {
+          buildActionButtons(player, mediaObjectId, sectionIds, sectionShareInfos);
         }
       });
     }
@@ -101,7 +103,7 @@ function addActionButtonListeners(player, mediaObjectId, sectionIds) {
     if (currentIndex != canvasIndex && !player.player.canvasIsEmpty) {
       if (isMobile || player?.player.readyState() >= 2) {
         canvasIndex = currentIndex;
-        buildActionButtons(player, mediaObjectId, sectionIds);
+        buildActionButtons(player, mediaObjectId, sectionIds, sectionShareInfos);
         firstLoad = false;
       }
     }
@@ -111,7 +113,7 @@ function addActionButtonListeners(player, mediaObjectId, sectionIds) {
     */
     if (currentIndex != canvasIndex && player.player.canvasIsEmpty) {
       canvasIndex = currentIndex;
-      setUpShareLinks(mediaObjectId, sectionIds);
+      setUpShareLinks(mediaObjectId, sectionIds, sectionShareInfos);
       resetAllActionButtons();
     }
 
@@ -155,8 +157,8 @@ function resetAllActionButtons() {
  * @param {String} mediaObjectId 
  * @param {Array<String>} sectionIds array of ordered masterfile ids in the mediaobject
  */
-function buildActionButtons(player, mediaObjectId, sectionIds) {
-  setUpShareLinks(mediaObjectId, sectionIds);
+function buildActionButtons(player, mediaObjectId, sectionIds, sectionShareInfos) {
+  setUpShareLinks(mediaObjectId, sectionIds, sectionShareInfos);
   setUpAddToPlaylist(player, sectionIds, mediaObjectId);
   setUpCreateThumbnail(player, sectionIds);
   setUpCreateTimeline(player);
@@ -168,25 +170,15 @@ function buildActionButtons(player, mediaObjectId, sectionIds) {
  * @param {String} mediaObjectId 
  * @param {Array<String>} sectionIds array of ordered masterfile id in the mediaobject
  */
-function setUpShareLinks(mediaObjectId, sectionIds) {
+function setUpShareLinks(mediaObjectId, sectionIds, sectionShareInfos) {
   const sectionId = sectionIds[canvasIndex];
-  $.ajax({
-    url: '/media_objects/' + mediaObjectId + '/section/' + sectionId + '/stream',
-    type: 'GET',
-    success: function (data) {
-      const { lti_share_link, link_back_url, embed_code } = data;
-      $('#share-link-section')
-        .val(link_back_url)
-        .attr('placeholder', link_back_url);
-      $('#ltilink-section')
-        .val(lti_share_link)
-        .attr('placeholder', lti_share_link);
-      $('#embed-part').val(embed_code);
-    },
-    error: function (err) {
-      console.log(err);
-    }
-  });
+  const sectionShareInfo = sectionShareInfos[canvasIndex];
+  const { lti_share_link, link_back_url, embed_code } = sectionShareInfo;
+
+  $('#share-link-section').val(link_back_url).attr('placeholder', link_back_url);
+  $('#ltilink-section').val(lti_share_link).attr('placeholder', lti_share_link);
+  $('#embed-part').val(embed_code);
+
   shareListeners();
 }
 
@@ -313,6 +305,9 @@ function addToPlaylistListeners(sectionIds, mediaObjectId) {
     e.preventDefault();
     let playlistId = $('#post_playlist_id').val();
     if ($('#playlistitem_scope_track')[0].checked) {
+      if (activeTrack === undefined) {
+        activeTrack = getActiveItem(false);
+      }
       let starttime = createTimestamp(activeTrack.times.begin, true);
       let endtime = createTimestamp(activeTrack.times.end, true);
       addPlaylistItem(playlistId, streamId, starttime, endtime);
@@ -545,4 +540,31 @@ function handleCreateTimelineModalShow() {
     $('#new-timeline-source')[0].value = '/master_files/' + id + '?' + t;
     $('#new-timeline-form')[0].submit();
   });
+}
+
+/**
+ * Handler to refresh stream tokens via reloading the m3u8 file
+ */
+function initM3U8Reload(player, mediaObjectId, sectionIds, sectionShareInfos) {
+  if (player && player.player != undefined) {
+    if (firstLoad === true) {
+      player.player.on('pause', () => {
+        currentTime = player.player.currentTime();
+        // How long to wait before resetting stream tokens: default 5 minutes
+        intervalLength = 5*60*1000
+        reloadInterval = setInterval(m3u8Reload, intervalLength);
+      });
+
+      player.player.on('play', () => {
+        if (reloadInterval !== false) {
+          clearInterval(reloadInterval);
+          reloadInterval = false;
+        }
+      });
+
+      player.player.on('waiting', () => {
+        m3u8Reload();
+      });
+    }
+  }
 }

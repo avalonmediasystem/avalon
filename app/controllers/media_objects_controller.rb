@@ -528,7 +528,7 @@ class MediaObjectsController < ApplicationController
   protected
 
   def load_resource
-    @media_object = SpeedyAF::Proxy::MediaObject.find(params[:id])
+    @media_object ||= SpeedyAF::Proxy::MediaObject.find(params[:id])
   end
 
   def master_file_presenters
@@ -548,9 +548,9 @@ class MediaObjectsController < ApplicationController
     set_active_file
     set_player_token
     @currentStreamInfo = if params[:id]
-                           @currentStream.nil? ? {} : secure_streams(@currentStream.stream_details, params[:id])
+                           @currentStream.nil? ? {} : secure_streams(@currentStream.stream_details, params[:id], media_object: @media_object)
                          else
-                           @currentStream.nil? ? {} : secure_streams(@currentStream.stream_details, @media_object.id)
+                           @currentStream.nil? ? {} : secure_streams(@currentStream.stream_details, @media_object.id, media_object: @media_object)
                          end
     @currentStreamInfo['t'] = view_context.parse_media_fragment(params[:t]) # add MediaFragment from params
     @currentStreamInfo['lti_share_link'] = view_context.lti_share_url_for(@currentStream)
@@ -581,16 +581,16 @@ class MediaObjectsController < ApplicationController
   # return a nil value that needs to be handled appropriately by the calling code
   # block
   def set_active_file
-    @currentStream ||= if params[:content]
-      begin
-        MasterFile.find(params[:content])
-      rescue ActiveFedora::ObjectNotFoundError
+    if params[:content]
+      @currentStream ||= SpeedyAF::Proxy::MasterFile.find(params[:content])
+      if @currentStream.nil?
         flash[:notice] = "That stream was not recognized. Defaulting to the first available stream for the resource"
-        redirect_to media_object_path(@media_object.id)
-        nil
+        redirect_to media_object_path(params[:id])
       end
     end
     if @currentStream.nil?
+      # @media_object isn't loaded yet so manually load here
+      load_resource
       @currentStream = @media_object.sections.first
     end
     return @currentStream
