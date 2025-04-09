@@ -18,9 +18,9 @@ Unless required by applicable law or agreed to in writing, software distributed
         <span class="tool_label"><%= label %></span>
         <%= form_for :supplemental_file, :url => object_supplemental_files_path(section), html: { method: "post" } do |form| %>
           <%= form.hidden_field(:tags, multiple: true, value: tag) if tag.present? %>
-          <%= form.file_field :file, class: "filedata" %>
+          <%= form.file_field :file, class: "filedata", data: { testid: "media-object-upload-button-#{tag}" }%>
           <input type="button" class="btn btn-primary btn-sm" onclick="$('#<%= file_section %> .filedata').click();"
-            value="Upload" />
+            value="Upload"/>
         <% end %>
         <%= render partial: "supplemental_files_list", locals: { section: section, tag: tag, supplemental_files: section.supplemental_files } %>
       </div>

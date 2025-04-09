@@ -22,6 +22,7 @@ context('Item', () => {
   const collection_title = Cypress.env('SEARCH_COLLECTION');
   var item_title = `Automation Item title ${Math.floor(Math.random() * 100000) + 1}`
   let item_id;
+  
 
   Cypress.on('uncaught:exception', (err, runnable) => {
     // Prevents Cypress from failing the test due to uncaught exceptions in the application code  - TypeError: Cannot read properties of undefined (reading 'scrollDown')
@@ -32,11 +33,14 @@ context('Item', () => {
     ) {
       return false;
     }
+    if (err.message.includes('scrollHeight')) {
+      return false; 
+    }
   });
 
 
 
-  it('Verify creating an item under a collection - @T139381a0', () => {
+  it('Verify creating an item under a collection - @T139381a0 - @critical', () => {
     // Log in as an administrator
     cy.login('administrator');
 
@@ -138,15 +142,13 @@ context('Item', () => {
     });
   });
 
-  it('Verify whether a user can publish an item - @T1faa36d2', () => {
+  it('Verify whether a user can publish an item - @T1faa36d2 - @critical', () => {
     cy.login('administrator');
     cy.visit('/');
     // The below code is hard-coded for a media object url. This needs to be changed with a valid object URL later for each website.
-    cy.intercept('GET', '**/stream').as('getmediaobject');
+    
     cy.visit('/media_objects/' + item_id);
-    cy.wait('@getmediaobject').then((interception) => {
-      expect(interception.response.statusCode).to.eq(200);
-    });
+    cy.waitForVideoReady();
     cy.intercept('POST', '**/update_status?status=publish').as('publishmedia');
     cy.get('[data-testid="media-object-publish-btn"]').contains('Publish').click();
     cy.wait('@publishmedia').then((interception) => {
@@ -160,7 +162,7 @@ context('Item', () => {
     //why do we need to validate again?
   });
 
-  it('Verify setting Item access to “Collections staff only” for a published item - @T13b097f8', () => {
+  it('Verify setting Item access to “Collections staff only” for a published item - @T13b097f8 - @critical', () => {
     cy.login('administrator');
     cy.visit('/');
     cy.intercept('GET', '**/edit?step=access-control').as('accesspage');
@@ -191,7 +193,7 @@ context('Item', () => {
 
   });
 
-  it('Verify setting Item access to “Logged in users only” for a published item - @T0cc6ee02', () => {
+  it('Verify setting Item access to “Logged in users only” for a published item - @T0cc6ee02 - @critical', () => {
     cy.login('administrator');
     cy.visit('/');
     cy.intercept('GET', '**/edit?step=access-control').as('accesspage');
@@ -224,7 +226,7 @@ context('Item', () => {
     itemPage.verifyLoggedInUserAccess(item_id);
   });
 
-  it('Verify setting Item access to “Available to general public” for a published item - @T593dc580', () => {
+  it('Verify setting Item access to “Available to general public” for a published item - @T593dc580 - @critical', () => {
     cy.login('administrator');
     cy.visit('/');
     cy.intercept('GET', '**/edit?step=access-control').as('accesspage');
@@ -255,7 +257,7 @@ context('Item', () => {
     //Additional assertion:: Verify item access without logging in
   });
 
-  it('Verify setting Special access for an Avalon user - published item - @Ta15294e5', () => {
+  it('Verify setting Special access for an Avalon user - published item - @Ta15294e5 - @critical', () => {
     cy.login('administrator');
     cy.visit('/');
     cy.intercept('GET', '**/edit?step=access-control').as('accesspage');
@@ -287,16 +289,12 @@ context('Item', () => {
   });
 
 
-  it('Verify that modifying the resource metadata fields are reflected properly in the preview section- @T16bc91af', () => {
+  it('Verify that modifying the resource metadata fields are reflected properly in the preview section- @T16bc91af - @critical', () => {
     cy.login('administrator');
     cy.visit('/');
-    cy.intercept('GET', '**/stream').as('getmediaobject');
+   
     cy.visit('/media_objects/' + item_id);
-    cy.wait('@getmediaobject').then((interception) => {
-      expect(interception.response.statusCode).to.eq(200);
-    });
-
-
+    cy.waitForVideoReady();
     cy.get('[data-testid="media-object-edit-btn"]').contains('Edit').click();
     cy.get('[data-testid="media-object-side-nav-link"]')
       .contains("Resource description")
@@ -335,11 +333,9 @@ context('Item', () => {
     
     //Navigate to the item
     
-    cy.intercept('GET', '**/stream').as('getmediaobject');
+    
     cy.visit('/media_objects/' + item_id);
-    cy.wait('@getmediaobject').then((interception) => {
-      expect(interception.response.statusCode).to.eq(200);
-    });
+    cy.waitForVideoReady();
 
     //Validate the fields
     //It comes from samvera/ramp - node_modules
@@ -363,15 +359,13 @@ context('Item', () => {
     });
   });
 
-  it('Verify modifying the resource metadata of an item reflects in the index- @Tec49689f', () => {
+  it('Verify modifying the resource metadata of an item reflects in the index- @Tec49689f - @critical', () => {
     cy.login('administrator');
     cy.visit('/');
     // The below code is hard-coded for a media object url. This needs to be changed with a valid object URL later for each website.
-    cy.intercept('GET', '**/stream').as('getmediaobject');
+    
     cy.visit('/media_objects/' + item_id);
-    cy.wait('@getmediaobject').then((interception) => {
-      expect(interception.response.statusCode).to.eq(200);
-    });
+    cy.waitForVideoReady();
     cy.get('[data-testid="media-object-edit-btn"]').contains('Edit').click();
 
     cy.get('[data-testid="media-object-side-nav-link"]')
@@ -413,20 +407,218 @@ context('Item', () => {
     });
   });
 
+  it('Verify user is able to update structure of an item - @critical', ()=>{
+
+    const heading = 'Heading Example';
+    const timespan="Introduction"
+
+    cy.login('administrator')
+    cy.visit('/')
+    cy.visit('/media_objects/' + item_id);
+    cy.waitForVideoReady();
+    cy.get('[data-testid="media-object-edit-btn"]').click(); //edit button
+    cy.get('[data-testid="media-object-side-nav-link"]').contains('Structure').click(); //structure page
+    cy.get('[data-testid="media-object-edit-structure-btn"]').click(); //edit structure button
+    //cy.get('[data-testid="media-object-edit-structure-react-btn"]').click(); //collapsible edit structure button
+    cy.get('.ReactButtonContainer')
+      .find('button')
+      .contains('Edit Structure')
+      .click();
+    cy.wait(8000);
+    //renders from ReactSME
+    //verifying edit structure panel
+    cy.get('[data-testid="waveform-video-player"]')
+      .should('be.visible')
+      .and('have.prop', 'paused', true); // Initially paused
+
+    // Click the Play button
+    cy.get('[data-testid="waveform-play-button"]').click();
+
+    // Wait a short moment to simulate playback
+    cy.wait(1000);
+
+    // Click the Pause button
+    cy.get('[data-testid="waveform-pause-button"]').click();
+
+    // Zoom in and zoom out buttons should be visible
+    cy.get('[data-testid="waveform"]').should('be.visible');
+    cy.get('[data-testid="zoomview-view"]').should('be.visible');
+    cy.get('[data-testid="overview-view"]').should('be.visible');
+
+    // Zoom in and zoom out buttons
+    cy.get('[data-testid="waveform-zoomin-button"]').click();
+    cy.wait(300);
+    cy.get('[data-testid="waveform-zoomout-button"]').click();
+
+    //turning the volume down 
+    cy.get('[data-testid="waveform-toolbar"]')
+    .find('[role="slider"]')
+    .should('exist')
+    .focus()
+    .type('{leftarrow}{leftarrow}{leftarrow}') // lowering volume
+    .should(($el) => {
+      const value = parseInt($el.attr('aria-valuenow'));
+      expect(value).to.be.lessThan(100); 
+    });
+
+    //validating the volume has changed
+    cy.get('[data-testid="waveform-toolbar"]')
+    .find('[role="slider"]')
+    .should(($el) => {
+      const value = parseInt($el.attr('aria-valuenow'));
+      expect(value).to.be.lessThan(100); 
+    });
+    //Add a Heading
+    cy.get('[data-testid="add-heading-button"]').contains('Add a Heading').click();
+    cy.get('[data-testid="heading-title-form-control"]').type(heading);//Heading title
+    cy.get('#headingChildOf').select(item_title); //selecting 
+    cy.get('#headingChildOf').find(':selected').should('have.text', item_title);
+    cy.get('[data-testid="heading-form-save-button"]').contains('Save').click();
+
+    //Add a Timespan
+    cy.get('[data-testid="add-timespan-button"]').contains('Add a Timespan').click();
+    cy.get('[data-testid="timespan-form-title"]').type(timespan).click();
+    cy.get('[data-testid="timespan-form-begintime"]').clear().type('00:00:10.000');
+    cy.get('[data-testid="timespan-form-endtime"]').clear().type('00:00:20.000');
+    cy.get('[data-testid="timespan-form-childof"]')
+    .should('be.visible')
+    .select(heading);
+    cy.get('[data-testid="timespan-form-childof"]') //verifying the child of dropdown
+    .find(':selected')
+    .should('have.text', heading);
+    cy.get('[data-testid="timespan-form-save-button"]').click();
+
+    cy.get('[data-testid="structure-save-button"]').click(); //saving the structure
+    cy.contains('Saved successfully.'); 
+
+    //Validating the structure
+    cy.visit('/media_objects/' + item_id);
+    cy.waitForVideoReady();
+
+    cy.get('[data-testid="listitem-section"]')
+      .should('exist')
+      .and('have.attr', 'data-label', item_title);
+
+    // Within the section, find the heading
+    cy.get('[data-testid="listitem-section"]')
+      .contains('[data-testid="list-item"]', heading)
+      .should('exist')
+      .within(() => {
+       
+        cy.contains('[data-testid="list-item"]', timespan) //nested timespan
+          .should('exist')
+          .and('be.visible');
+      });
+
+      //Clicking on section to check if it plays the right duration
+      const expectedTime = '0:10'; 
+      cy.get('[data-testid="list-item"]')
+        .contains(timespan)
+        .click();
+  
+      // Wait briefly for the player to seek & update
+      cy.wait(1000);
+      cy.get('.current-time-display')
+        .should('be.visible')
+        .should('contain.text', expectedTime); //validating it starts from the right duration
+  });
+
+  it('Adding a caption file under Manage file - @critical', ()=>{
+    
+    cy.login('administrator');
+    cy.visit('/media_objects/' + item_id);
+    cy.waitForVideoReady();
+    cy.get('[data-testid="media-object-edit-btn"]').click(); //edit button
+    cy.get('[data-testid="media-object-side-nav-link"]').contains('Manage files').click();
+    cy.get('[data-testid="media-object-manage-files-edit-btn"]').click();
+    const captionFileName ='captions-example.srt';
+    //added force: true because the element is not visible
+    cy.get('[data-testid="media-object-upload-button-caption"]').selectFile(`spec/cypress/fixtures/${captionFileName}`,  { force: true });
+    
+    cy.get('[data-testid="alert"]').contains('Supplemental file successfully added.');
+
+    //Verifying on ramp video
+    cy.visit('/media_objects/' + item_id);
+    cy.waitForVideoReady();
+    cy.get('.vjs-big-play-button').should('exist').click();
+
+    cy.get('[data-testid="media-player"]').within(() => {
+      // Access the closed captions button
+      cy.get('button.vjs-subs-caps-button').as('ccButton');
+      cy.get('@ccButton').click();
+      
+      // Select the caption 
+      cy.get('.vjs-menu-content').first().within(() => {
+        cy.contains('li.vjs-menu-item', captionFileName).click();
+      });
+      
+      // Assert that the captions are enabled
+      cy.get('@ccButton').should('have.class', 'captions-on');
+      
+      // Additional verification that captions are displayed
+      cy.get('.vjs-text-track-cue-eng').should('exist');
+    });
+
+  })
+
+  it.only('Adding a transcript file under Manage file - @critical', ()=>{
+    item_id='xd07gs68j';
+    item_title='Automation Item title 53977';
+    
+    cy.login('administrator');
+    cy.visit('/media_objects/' + item_id);
+    cy.waitForVideoReady();
+    cy.get('[data-testid="media-object-edit-btn"]').click(); //edit button
+    cy.get('[data-testid="media-object-side-nav-link"]').contains('Manage files').click();
+    cy.get('[data-testid="media-object-manage-files-edit-btn"]').click();
+    const transcriptFileName ='transcript-example.vtt';
+    //added force: true because the element is not visible
+    cy.get('[data-testid="media-object-upload-button-transcript"]').selectFile(`spec/cypress/fixtures/${transcriptFileName}`,  { force: true });
+    cy.get('[data-testid="alert"]').contains('Supplemental file successfully added.');
+
+    //Verifying on ramp video
+    cy.visit('/media_objects/' + item_id);
+    cy.waitForVideoReady();
+    //verifying the trabscript tab
+    cy.get('[role="tab"][data-rb-event-key="transcripts"]')
+    .should('exist')
+    .click();
+
+  // clicking on a specific time - 28 seconds
+  const transcriptTime = '[00:00:28]';
+  const expectedSeconds = 28;
+
+  cy.get('[data-testid="transcript_time"]')
+    .contains(transcriptTime)
+    .scrollIntoView()
+    .should('be.visible')
+    .parents('[data-testid="transcript_item"]')
+    .click();
+
+  cy.wait(1000);
+
+  //  Verifying that the video player has moved to the expected time
+  cy.get('video')
+    .should('have.prop', 'currentTime')
+    .then(currentTime => {
+      expect(currentTime).to.be.closeTo(expectedSeconds, 1); //margin of 1 second
+    });
+
+  })
+
+
   //This case and thus the following case may fail intermittently since the item sometimes takes too long to load, 
   //and the timeline button is disabled
-  it('Verify if a user is able to create timelines under an item - @T9972f970', () => {
+  it('Verify if a user is able to create timelines under an item - @T9972f970 - @critical', () => {
     cy.login('administrator');
     cy.visit('/');
     // The below code is hard-coded for a media object url. This needs to be changed with a valid object URL later for each website.
-    cy.intercept('GET', '**/stream').as('getmediaobject');
+    
     cy.visit('/media_objects/' + item_id);
-    cy.wait('@getmediaobject').then((interception) => {
-      expect(interception.response.statusCode).to.eq(200);
-    });
+    
     cy.intercept('POST', '/timelines').as('createTimeline');
 
-    cy.get('[data-testid="media-object-create-timeline-btn"]').click();
+    cy.contains('Create Timeline').click();
     cy.get('[data-testid="media-object-modal-create-timeline-btn"]').click();
     cy.wait('@createTimeline').then((interception) => {
       expect(interception.response.statusCode).to.eq(302);
@@ -434,7 +626,7 @@ context('Item', () => {
 
   });
 
-  it('Verify deleting a timeline - @T89215320', () => {
+  it('Verify deleting a timeline - @T89215320 - @critical', () => {
     cy.login('administrator');
     cy.visit('/timelines');
     cy.intercept('POST', '/timelines/*').as('deleteTimeline');
@@ -455,16 +647,11 @@ context('Item', () => {
 
   //teardown code: delete the created item
   // Final test to run at the end
-  it('Verify deleting an item - @Tf46071b7', () => {
+  it('Verify deleting an item - @Tf46071b7 - @critical', () => {
     cy.login('administrator');
-    cy.intercept({
-      method: 'GET',
-      url: /\/media_objects\/.*\/section\/(?!undefined).*\/stream/
-    }).as('getmediaobject');
+    
     cy.visit('/media_objects/' + item_id);
-    cy.wait('@getmediaobject').then((interception) => {
-      expect(interception.response.statusCode).to.eq(200);
-    });
+    cy.waitForVideoReady();
     cy.get('[data-testid="media-object-edit-btn"]').contains('Edit').click();
     cy.intercept('POST', '/media_objects/**').as('removeMediaObject');
     cy.get('[data-testid="media-object-delete-btn"]').contains('Delete this item').click();

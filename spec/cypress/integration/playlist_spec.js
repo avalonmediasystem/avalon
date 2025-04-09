@@ -41,7 +41,7 @@ context('Playlists', () => {
 
 
   //is able to create a new playlist
-  it('Verify creating a Playlist - @Tf1b9413d', () => {
+  it('Verify creating a Playlist - @Tf1b9413d - @critical', () => {
     cy.login('administrator');
     cy.visit('/');
     cy.get('#playlists_nav').contains("Playlists").click(); // present in mco-staging as well
@@ -89,7 +89,7 @@ context('Playlists', () => {
   });
 
   //Verify playlist Table View
-  it('.validate_playlist_table()', () => {
+  it('.validate_playlist_table() - @critical', () => {
     cy.login('administrator');
     cy.visit('/');
     cy.intercept('GET', '/playlists').as('getPlaylists'); //getting the playlists api
@@ -125,7 +125,7 @@ context('Playlists', () => {
   });
 
   // Is able to create public playlist
-  it('.create_public_playlist()', () => {
+  it('.create_public_playlist() - @critical', () => {
     cy.login('administrator');
     cy.visit('/');
 
@@ -150,7 +150,7 @@ context('Playlists', () => {
   });
 
   //is able to share a public playlist
-  it('Verify sharing a public playlist - @c89c89d0', () => {
+  it('Verify sharing a public playlist - @c89c89d0 - @critical', () => {
     cy.login('administrator');
     cy.visit('/');
     cy.get('#playlists_nav').contains("Playlists").click();
@@ -168,7 +168,7 @@ context('Playlists', () => {
   });
 
   // is able to change public playlist to private
-  it('Verify editing a playlist from playlist table (Access control) - @T7fa4cea5', () => {
+  it('Verify editing a playlist from playlist table (Access control) - @T7fa4cea5 - @critical', () => {
     cy.login('administrator');
     cy.visit('/');
 
@@ -196,7 +196,7 @@ context('Playlists', () => {
   });
 
   // is able to edit playlist name and description
-  it('Verify editing a Playlist from playlist page - @T5055855c', () => {
+  it('Verify editing a Playlist from playlist page - @T5055855c - @critical', () => {
     cy.login('administrator');
     cy.visit('/');
     cy.get('#playlists_nav').contains("Playlists").click();
@@ -241,7 +241,7 @@ context('Playlists', () => {
   });
 
 
-  it('Verify adding the current section of an item to a playlist - Create playlist items for each track/subsection - @T3e614dbc', () => {
+  it('Verify adding the current section of an item to a playlist - Create playlist items for each track/subsection - @T3e614dbc - @critical', () => {
     cy.login('administrator');
     cy.visit('/');
     // The below code is hard-coded for a media object url. This needs to be changed with a valid object URL later for each website.
@@ -288,7 +288,7 @@ context('Playlists', () => {
     cy.screenshot();
   });
 
-  it('Verify the "add to playlist" button behavior - @Tcdb5ac47', () => {
+  it('Verify the "add to playlist" button behavior - @Tcdb5ac47 - @critical', () => {
     cy.login('administrator');
     cy.visit('/');
     // The below code is hard-coded for a media object url. This needs to be changed with a valid object URL later for each website.
@@ -323,7 +323,7 @@ context('Playlists', () => {
 
   // deletes playlist permanently from playlists table
   //The "playlist_title" playlist gets deleted here
-  it('Verify Deleting a Playlist - playlist table - @T53c3887a', () => {
+  it('Verify Deleting a Playlist - playlist table - @T53c3887a - @critical', () => {
     cy.login('administrator');
     cy.visit('/');
 
@@ -358,7 +358,7 @@ context('Playlists', () => {
 
   // is able to delete playlist from edit playlist page
   //The "playlist_title_public" playlist gets deleted here
-  it('Verify Deleting a Playlist - playlist page - @T49ac05b8', () => {
+  it('Verify Deleting a Playlist - playlist page - @T49ac05b8 - @critical', () => {
     cy.login('administrator');
     cy.visit('/');
 

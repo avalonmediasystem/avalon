@@ -16,41 +16,41 @@
 
 context('Secure routes', () => {
   // '/about' - should provide access to admins
-  it('.about_access_admins()', () => {
+  it('.about_access_admins() - @critical', () => {
     cy.login('administrator')
     cy.visit('/about')
     cy.contains('Environment')
   })
 
   // '/about' - should not provide access to regular users
-  it('.about_access_regular_users()', () => {
+  it('.about_access_regular_users() - @critical', () => {
     cy.login('user')
     cy.visit('/about')
     cy.contains('Environment').should('not.exist')
   })
 
   // '/about' - should not provide access to anonymous users
-  it('.about_access_anonymous_users()', () => {
+  it('.about_access_anonymous_users() - @critical', () => {
     cy.visit('/about')
     cy.contains('Environment').should('not.exist')
   })
 
   // '/about/health' - should provide access to admins
-  it('.health_access_admins()', () => {
+  it('.health_access_admins() - @critical', () => {
     cy.login('administrator')
     cy.visit('/about/health')
     cy.contains('Service Health')
   })
 
   // '/about/health' - should not provide access to regular users
-  it('.health_access_regular_users()', () => {
+  it('.health_access_regular_users() - @critical', () => {
     cy.login('user')
     cy.visit('/about/health')
     cy.contains('Service Health').should('not.exist')
   })
 
   // '/about/health' - should not provide access to anonymous users
-  it('.health_access_anonymous_users()', () => {
+  it('.health_access_anonymous_users() - @critical', () => {
     cy.visit('/about/health')
     cy.contains('Service Health').should('not.exist')
   })

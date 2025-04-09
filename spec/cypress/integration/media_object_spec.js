@@ -21,18 +21,13 @@ context('Media objects', () => {
 
   beforeEach(() => {
     cy.login("administrator")
-    cy.intercept({
-      method: 'GET',
-      url: /\/media_objects\/.*\/section\/(?!undefined).*\/stream/
-    }).as('getmediaobject');
+    
     cy.visit('/media_objects/' + media_object_id);
-    cy.wait('@getmediaobject').then((interception) => {
-      expect(interception.response.statusCode).to.eq(200);
-    });
+    cy.waitForVideoReady();
   });
 
   // can visit a media object
-  it('.visit_media_object()', () => {
+  it('.visit_media_object() - @critical', () => {
     
     cy.contains('Unknown item').should('not.exist');
     cy.get('[data-testid="media-object-title"]').should('contain', media_object_title);
@@ -42,9 +37,8 @@ context('Media objects', () => {
   });
 
   // Open multiple media objects in different tabs and play it.
-  it.skip('.play_media_objects()', () => {
-    cy.login('administrator');
-    cy.visit('/');
+  it.skip('.play_media_objects() - @critical', () => {
+    
     cy.get('a[href*="catalog"] ').first().click();
     
     cy.get('a[href*="media_objects"]').then((media_objects) => {
@@ -59,7 +53,7 @@ context('Media objects', () => {
     });
   });
 
-  it('Verify the icons in a video player - @Tb155c718', () => {
+  it('Verify the icons in a video player - @Tb155c718 - @critical', () => {
     cy.get('[data-testid="media-player"]').within(() => {
       // Validate the center play button
       cy.get('.vjs-big-play-button').should('exist');
@@ -80,7 +74,7 @@ context('Media objects', () => {
     });
   });
 
-  it('Verify whether the user is able to adjust volume in the audio player - @T2e46961f', () => {
+  it('Verify whether the user is able to adjust volume in the audio player - @T2e46961f - @critical', () => {
 
     
     // Access the media player container
@@ -110,7 +104,7 @@ context('Media objects', () => {
     });
   });
 
-  it('Verify turning on closed captions - @T4ceb4111', () => {
+  it('Verify turning on closed captions - @T4ceb4111 - @critical', () => {
     
     cy.get('[data-testid="media-player"]').within(() => {
       // Access the closed captions button

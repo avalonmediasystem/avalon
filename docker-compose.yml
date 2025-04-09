@@ -220,3 +220,4 @@ services:
       - npms:/e2e/node_modules
     environment:
       - CYPRESS_ENV=${CYPRESS_ENV:-local}
+      - CYPRESS_grep=${CYPRESS_grep:-@critical}
