@@ -26,6 +26,7 @@ module MasterFileIntercom
       thumbnail_offset: thumbnail_offset,
       poster_offset: poster_offset,
       physical_description: physical_description,
+      original_filename: original_filename,
       file_location: file_location,
       file_size: file_size,
       duration: duration,
