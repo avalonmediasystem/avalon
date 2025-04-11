@@ -516,7 +516,7 @@ describe Admin::CollectionsController, type: :controller do
           end
 
           it "queues checkout return background job" do
-            expect { put 'update', params: { id: collection.id, save_field: "cdl" } }.to have_enqueued_job(BulkActionJobs::ReturnCheckouts).with(collection.id)
+            expect { put 'update', params: { id: collection.id, save_field: "cdl" } }.to have_enqueued_job(BulkActionJobs::ReturnCheckouts).with(collection.id, nil)
           end
         end
       end
