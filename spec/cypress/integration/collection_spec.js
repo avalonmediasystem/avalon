@@ -10,7 +10,7 @@ context('Collections Test', () => {
 		}
 	});
     	// checks navigation to Browse
-	it('Verify whether an admin user is able to create a collection - @T553cda51', () => {
+	it('Verify whether an admin user is able to create a collection - @T553cda51 - @critical', () => {
 		cy.login('administrator')
 		cy.visit('/')
 		cy.contains('Manage').click();
@@ -46,7 +46,7 @@ context('Collections Test', () => {
 
 	})
 
-    it("Verify whether the user is able to search for Collections-'@Tf7cefb09", () => {
+    it("Verify whether the user is able to search for Collections-'@Tf7cefb09 - @critical", () => {
 		cy.login('administrator')
 		cy.visit('/')
 		cy.get('a[href="/collections"]').contains(/Collections$/).should('be.visible').click();// added should be visible so when a page is loading it won't cause problems
@@ -54,20 +54,20 @@ context('Collections Test', () => {
 		cy.get("[data-testid='collection-card-body']").contains('a', search_collection);
 	})
 
-    it('Verify whether an admin/manager is able assign other users as managers to the collection - @T3c428871', () => {
+    it('Verify whether an admin/manager is able assign other users as managers to the collection - @T3c428871 - @critical', () => {
         cy.login('administrator')
         cy.visit('/')
         cy.contains('Manage').click();
 		cy.get('a[href="/admin/collections"]').contains('Manage Content').should('be.visible').click();
         cy.get("[data-testid='collection-name-table']").contains(collection_title).click(); 
         cy.intercept('POST', '/admin/collections/*').as('updateCollectionManager');
-        const user_manager = Cypress.env('USER_MANAGER_USERNAME')
+        const user_manager = Cypress.env('USERS_MANAGER_USERNAME')
         cy.get('input[name="add_manager_display"]').type(user_manager).should('have.value', user_manager)
         // Verify that the correct suggestions appear in the dropdown and click it
         cy.get('.tt-menu .tt-suggestion') //cannot add id for this as this is configured by typeahead.js. they render the elements directs app/javascript/autocomplete.j
           .should('be.visible')
           .and('contain', user_manager).click();
-        cy.get("[data-testid='collection-submit-add-manager']")
+        cy.get("[data-testid='submit-add-manager']")
         .click();
 
         cy.wait('@updateCollectionManager').then((interception) => {
@@ -86,7 +86,7 @@ context('Collections Test', () => {
         //Additional assertions to add :Login as user_manager and validate that the collection is visible in the "Manage page" and/or API validation
     })
 
-    it('Verify changing item access - Collection staff only (New items) - @T9978b4f7', () => {
+    it('Verify changing item access - Collection staff only (New items) - @T9978b4f7 - @critical', () => {
         cy.login('administrator')
         cy.visit('/')
         cy.contains('Manage').click();
@@ -109,7 +109,7 @@ context('Collections Test', () => {
         //Add UI and/or API assertions here............Assert via UI by opening the create item page and verifying the default access control
     })
 
-    it('Verify changing item access - Collection staff only (Existing items) - @Tdcf756bd', () => {
+    it('Verify changing item access - Collection staff only (Existing items) - @Tdcf756bd - @critical', () => {
         cy.login('administrator')
         cy.visit('/')
         cy.contains('Manage').click();
@@ -134,7 +134,7 @@ context('Collections Test', () => {
     
     })
 
-    it('Verify whether a user is able to update Collection information - @Ta1b2fef8', () => {
+    it('Verify whether a user is able to update Collection information - @Ta1b2fef8 - @critical', () => {
         cy.login('administrator')
         cy.visit('/')
         cy.contains('Manage').click();
@@ -151,7 +151,15 @@ context('Collections Test', () => {
 
             cy.intercept('POST', `/admin/collections/${collectionId}.json`).as('updateCollectionInfo');
             });
-        
+               
+        //update contact email
+        cy.get("[data-testid='collection-update-contact-email']").clear().type('test1@mail.com');
+         //update title
+        var new_title =  `Updated automation title ${Math.floor(Math.random() * 10000) + 1}`;
+        cy.get("[data-testid='collection-update-name']input").clear().type(new_title);
+            
+                
+       
 
         //update description
         var updatedDescription = ' Adding more details to collection description'
@@ -159,12 +167,7 @@ context('Collections Test', () => {
             updatedDescription = existingText + updatedDescription;  
             cy.get("[data-testid='collection-update-description']").type(updatedDescription);
           });
-        //update title
-        var new_title =  `Updated automation title ${Math.floor(Math.random() * 10000) + 1}`
-        cy.get("[data-testid='collection-update-name']").clear().type(new_title);
-    
-        //update contact email
-        cy.get("[data-testid='collection-update-contact-email']").clear().type('test1@mail.com');
+
         //click on update button
         cy.get("[data-testid='collection-update-collection-btn']").click();
 
@@ -189,7 +192,7 @@ context('Collections Test', () => {
         
     })
 
-    it('Verify whether a user is able to update poster image -  @T26526b2e', () => {
+    it('Verify whether a user is able to update poster image -  @T26526b2e - @critical', () => {
         cy.login('administrator')
         cy.visit('/')
         cy.contains('Manage').click();
@@ -212,7 +215,7 @@ context('Collections Test', () => {
         
     })
 
-    it('Verify deleting a collection - @T959a56df', () => {
+    it('Verify deleting a collection - @T959a56df - @critical', () => {
 		cy.login('administrator')
 		cy.visit('/')
         cy.contains('Manage').click();
