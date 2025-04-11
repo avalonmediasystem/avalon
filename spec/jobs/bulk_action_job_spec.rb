@@ -168,3 +168,26 @@ describe BulkActionJobs::ApplyCollectionAccessControl do
     end
   end
 end
+
+describe BulkActionJobs::ReturnCheckouts do
+  let(:collection_1) { FactoryBot.create(:collection, items: 2) }
+  let(:collection_2) { FactoryBot.create(:collection, items: 1) }
+  let!(:checkout_1) { FactoryBot.create(:checkout, media_object_id: collection_1.media_object_ids[0]) }
+  let!(:checkout_2) { FactoryBot.create(:checkout, media_object_id: collection_1.media_object_ids[1]) }
+  let!(:checkout_3) { FactoryBot.create(:checkout, media_object_id: collection_2.media_object_ids[0]) }
+
+  it 'returns checkouts for the input collection' do
+    # byebug
+    BulkActionJobs::ReturnCheckouts.perform_now(collection_1.id, nil)
+    checkout_1.reload
+    checkout_2.reload
+    expect(checkout_1.return_time).to be < DateTime.current.to_time
+    expect(checkout_2.return_time).to be < DateTime.current.to_time
+  end
+
+  it 'does not return checkouts for other collections' do
+    BulkActionJobs::ReturnCheckouts.perform_now(collection_1.id, nil)
+    checkout_3.reload
+    expect(checkout_3.return_time).to be >= DateTime.current.to_time
+  end
+end
