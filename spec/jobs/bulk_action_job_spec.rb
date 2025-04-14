@@ -178,7 +178,7 @@ describe BulkActionJobs::ReturnCheckouts do
 
   it 'returns checkouts for the input collection' do
     # byebug
-    BulkActionJobs::ReturnCheckouts.perform_now(collection_1.id, nil)
+    BulkActionJobs::ReturnCheckouts.perform_now(collection_1.id)
     checkout_1.reload
     checkout_2.reload
     expect(checkout_1.return_time).to be < DateTime.current.to_time
@@ -186,7 +186,7 @@ describe BulkActionJobs::ReturnCheckouts do
   end
 
   it 'does not return checkouts for other collections' do
-    BulkActionJobs::ReturnCheckouts.perform_now(collection_1.id, nil)
+    BulkActionJobs::ReturnCheckouts.perform_now(collection_1.id)
     checkout_3.reload
     expect(checkout_3.return_time).to be >= DateTime.current.to_time
   end

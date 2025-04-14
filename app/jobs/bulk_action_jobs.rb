@@ -274,8 +274,7 @@ module BulkActionJobs
   end
 
   class ReturnCheckouts < ActiveJob::Base
-    queue_as :bulk_return_checkouts
-    def perform(collection_id, _params)
+    def perform(collection_id)
       collection = Admin::Collection.find(collection_id)
       Checkout.active_for_media_object(collection.media_object_ids).update_all(return_time: DateTime.current, updated_at: DateTime.current)
     end
