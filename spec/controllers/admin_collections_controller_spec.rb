@@ -514,10 +514,6 @@ describe Admin::CollectionsController, type: :controller do
             collection.reload
             expect(collection.cdl_enabled).to be false
           end
-
-          it "queues checkout return background job" do
-            expect { put 'update', params: { id: collection.id, save_field: "cdl" } }.to have_enqueued_job(BulkActionJobs::ReturnCheckouts).with(collection.id, nil)
-          end
         end
       end
     end

@@ -533,6 +533,28 @@ describe Admin::Collection do
         collection.save
       end
     end
+
+    describe "after_save if cdl_enabled has changed" do
+      context "from true to false" do
+        let!(:collection) { FactoryBot.create(:collection, cdl_enabled: true) }
+        it 'should call #return_checkouts' do
+          collection.cdl_enabled = false
+          expect(collection).to be_cdl_enabled_changed
+          expect(collection).to receive("return_checkouts")
+          collection.save
+        end
+      end
+
+      context "from false to true" do
+        let!(:collection) { FactoryBot.create(:collection, cdl_enabled: false) }
+        it 'should do nothing' do
+          collection.cdl_enabled = true
+          expect(collection).to be_cdl_enabled_changed
+          expect(collection).to_not receive("return_checkouts")
+          collection.save
+        end
+      end
+    end
   end
 
   describe "reindex_members" do
@@ -542,6 +564,14 @@ describe Admin::Collection do
     it 'should queue a reindex job for all member objects' do
       @collection.reindex_members {}
       expect(ReindexJob).to have_been_enqueued.with(@collection.media_object_ids)
+    end
+  end
+
+  describe "#return_checkouts" do
+    let(:collection) { FactoryBot.build(:collection) }
+    it "should enqueue a return checkouts job" do
+      collection.return_checkouts {}
+      expect(BulkActionJobs::ReturnCheckouts).to have_been_enqueued.with(collection.id, nil)
     end
   end
 

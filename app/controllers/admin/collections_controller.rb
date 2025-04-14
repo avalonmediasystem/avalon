@@ -347,13 +347,7 @@ class Admin::CollectionsController < ApplicationController
       collection.default_hidden = params[:hidden] == "1"
     end
     if params[:save_field] == "cdl"
-      case params[:cdl]
-      when "1"
-        collection.cdl_enabled = true
-      else
-        BulkActionJobs::ReturnCheckouts.perform_later(collection.id, nil)
-        collection.cdl_enabled = false
-      end
+      collection.cdl_enabled = params[:cdl] == "1"
     end
   end
 
