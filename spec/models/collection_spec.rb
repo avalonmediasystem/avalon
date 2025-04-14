@@ -571,7 +571,7 @@ describe Admin::Collection do
     let(:collection) { FactoryBot.build(:collection) }
     it "should enqueue a return checkouts job" do
       collection.return_checkouts {}
-      expect(BulkActionJobs::ReturnCheckouts).to have_been_enqueued.with(collection.id, nil)
+      expect(BulkActionJobs::ReturnCheckouts).to have_been_enqueued.with(collection.id)
     end
   end
 

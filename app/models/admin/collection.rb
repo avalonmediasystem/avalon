@@ -175,7 +175,7 @@ class Admin::Collection < ActiveFedora::Base
 
   def return_checkouts
     yield
-    BulkActionJobs::ReturnCheckouts.perform_later(self.id, nil)
+    BulkActionJobs::ReturnCheckouts.perform_later(self.id)
   end
 
   def to_solr
