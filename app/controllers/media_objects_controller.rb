@@ -109,22 +109,23 @@ class MediaObjectsController < ApplicationController
 
   # POST /media_objects/avalon:1/add_to_playlist
   def add_to_playlist
-    @media_object = SpeedyAF::Proxy::MediaObject.find(params[:id])
+    @media_object = params[:post][:masterfile_id].present? ? SpeedyAF::Proxy::MediaObject.find(params[:id]) : SpeedyAF::Proxy::MediaObject.find(params[:id], load_reflections: true)
     authorize! :read, @media_object
     masterfile_id = params[:post][:masterfile_id]
     playlist_id = params[:post][:playlist_id]
     playlist = Playlist.find(playlist_id)
+    new_items = []
     if current_ability.cannot? :update, playlist
       render json: {message: "<p>You are not authorized to update this playlist.</p>", status: 403}, status: 403 and return
     end
     playlistitem_scope = params[:post][:playlistitem_scope] #'section', 'structure'
     # If a single masterfile_id wasn't in the request, then create playlist_items for all masterfiles
-    masterfile_ids = masterfile_id.present? ? [masterfile_id] : @media_object.section_ids
-    masterfile_ids.each do |mf_id|
-      mf = SpeedyAF::Proxy::MasterFile.find(mf_id)
-      if playlistitem_scope=='structure' && mf.has_structuralMetadata? && mf.structuralMetadata.xpath('//Span').present?
+    masterfiles = masterfile_id.present? ? [SpeedyAF::Proxy::MasterFile.find(masterfile_id)] : @media_object.sections
+    masterfiles.each do |mf|
+      sf = mf.has_structuralMetadata? ? mf.structuralMetadata : nil
+      if playlistitem_scope=='structure' && sf.present? && sf.xpath('//Span').present?
         #create individual items for spans within structure
-        mf.structuralMetadata.xpath('//Span').each do |s|
+        sf.xpath('//Span').each do |s|
           labels = [mf.embed_title]
           labels += s.xpath('ancestor::Div[\'label\']').collect{|a|a.attribute('label').value.strip}
           labels << s.attribute('label')
@@ -134,16 +135,16 @@ class MediaObjectsController < ApplicationController
           start_time = time_str_to_milliseconds(start_time.value) if start_time.present?
           end_time = time_str_to_milliseconds(end_time.value) if end_time.present?
           clip = AvalonClip.new(title: label, master_file: mf, start_time: start_time, end_time: end_time)
-          new_item = PlaylistItem.new(clip: clip, playlist: playlist)
-          playlist.items += [new_item]
+          new_items += [PlaylistItem.new(clip: clip, playlist: playlist)]
         end
       else
         #create a single item for the entire masterfile
         item_title = @media_object.section_ids.count > 1 ? mf.embed_title : @media_object.title
         clip = AvalonClip.new(title: item_title, master_file: mf)
-        playlist.items += [PlaylistItem.new(clip: clip, playlist: playlist)]
+        new_items += [PlaylistItem.new(clip: clip, playlist: playlist)]
       end
     end
+    playlist.items += new_items
     link = view_context.link_to('View Playlist', playlist_path(playlist), class: "btn btn-primary btn-sm")
     render json: {message: "<p>Playlist items created successfully.</p> #{link}", status: 200}
   end
