@@ -109,7 +109,9 @@ class MediaObjectsController < ApplicationController
 
   # POST /media_objects/avalon:1/add_to_playlist
   def add_to_playlist
-    @media_object = params[:post][:masterfile_id].present? ? SpeedyAF::Proxy::MediaObject.find(params[:id]) : SpeedyAF::Proxy::MediaObject.find(params[:id], load_reflections: true)
+    if params[:post].present?
+      @media_object = params[:post][:masterfile_id].present? ? SpeedyAF::Proxy::MediaObject.find(params[:id]) : SpeedyAF::Proxy::MediaObject.find(params[:id], load_reflections: true)
+    end
     authorize! :read, @media_object
     masterfile_id = params[:post][:masterfile_id]
     playlist_id = params[:post][:playlist_id]
