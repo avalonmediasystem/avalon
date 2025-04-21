@@ -1,5 +1,5 @@
 # Base stage for building gems
-FROM        ruby:3.3-bullseye as bundle
+FROM        ruby:3.3-bookworm as bundle
 LABEL       stage=build
 LABEL       project=avalon
 RUN        apt-get update && apt-get upgrade -y build-essential && apt-get autoremove \
@@ -37,7 +37,7 @@ RUN         bundle config set --local without 'production' \
 
 
 # Download binaries in parallel
-FROM        ruby:3.3-bullseye as download
+FROM        ruby:3.3-bookworm as download
 LABEL       stage=build
 LABEL       project=avalon
 RUN         curl -L https://github.com/jwilder/dockerize/releases/download/v0.6.1/dockerize-linux-amd64-v0.6.1.tar.gz | tar xvz -C /usr/bin/
@@ -50,12 +50,12 @@ RUN      apt-get -y update && apt-get install -y ffmpeg
 
 
 # Base stage for building final images
-FROM        ruby:3.3-slim-bullseye as base
+FROM        ruby:3.3-slim-bookworm as base
 LABEL       stage=build
 LABEL       project=avalon
-RUN         echo "deb     http://ftp.us.debian.org/debian/    bullseye main contrib non-free"  >  /etc/apt/sources.list.d/bullseye.list \
-         && echo "deb-src http://ftp.us.debian.org/debian/    bullseye main contrib non-free"  >> /etc/apt/sources.list.d/bullseye.list \
-         && cat /etc/apt/sources.list.d/bullseye.list \
+RUN         echo "deb     http://ftp.us.debian.org/debian/    bookworm main contrib non-free"  >  /etc/apt/sources.list.d/bookworm.list \
+         && echo "deb-src http://ftp.us.debian.org/debian/    bookworm main contrib non-free"  >> /etc/apt/sources.list.d/bookworm.list \
+         && cat /etc/apt/sources.list.d/bookworm.list \
          && mkdir -p /etc/apt/keyrings \
          && apt-get update && apt-get install -y --no-install-recommends curl ca-certificates gnupg2 ffmpeg \
          && curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg \
@@ -122,7 +122,7 @@ RUN         bundle config set --local without 'development test' \
 
 
 # Install node modules
-FROM        node:20-bullseye-slim as node-modules
+FROM        node:20-bookworm-slim as node-modules
 LABEL       stage=build
 LABEL       project=avalon
 RUN         apt-get update && apt-get install -y --no-install-recommends git ca-certificates
