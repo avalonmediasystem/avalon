@@ -32,7 +32,7 @@ FROM        bundle as bundle-dev
 LABEL       stage=build
 LABEL       project=avalon
 RUN         bundle config set --local without 'production' \
-         && bundle config set --local with 'aws development test postgres profiling' \
+         && bundle config set --local with 'aws development test postgres' \
          && bundle install
 
 
@@ -116,7 +116,7 @@ RUN         dpkg -i /chrome.deb || apt-get install -yf
 FROM        bundle as bundle-prod
 LABEL       stage=build
 LABEL       project=avalon
-RUN         bundle config set --local without 'development test profiling' \
+RUN         bundle config set --local without 'development test' \
          && bundle config set --local with 'aws production postgres' \
          && bundle install
 

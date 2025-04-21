@@ -106,6 +106,12 @@ gem 'with_locking'
 gem 'sequel'
 gem 'httpx'
 
+# Profiling tools - enable via AVALON_PROFILING environment variable
+gem 'rack-mini-profiler'
+gem 'flamegraph'
+gem 'stackprof'
+gem 'memory_profiler'
+
 group :development do
   gem 'capistrano', '~>3.6'
   gem 'capistrano-passenger', require: false
@@ -186,14 +192,6 @@ end
 # Install the bundle --with mysql if using mysql as the database backend
 group :mysql, optional: true do
   gem 'mysql2'
-end
-
-# Install the bundle --with profiling and enable via AVALON_PROFILING environment variable
-group :profiling, optional: true do
-  gem 'rack-mini-profiler'
-  gem 'flamegraph'
-  gem 'stackprof'
-  gem 'memory_profiler'
 end
 
 extra_gems = File.expand_path("../Gemfile.local", __FILE__)
