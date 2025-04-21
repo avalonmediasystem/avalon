@@ -132,6 +132,8 @@ services:
       - SETTINGS__STREAMING__SERVER=nginx
       - SETTINGS__STREAMING__STREAM_TOKEN_TTL=20
       - SYSTEM_GROUPS=administrator,group_manager,manager
+      - PIDFILE=tmp/pids/server.pid
+      - PUMA_STATE_PATH=tmp/puma.state
       - AVALON_PROFILING=true
     volumes:
       - .:/home/app/avalon
