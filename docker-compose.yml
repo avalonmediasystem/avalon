@@ -99,7 +99,7 @@ services:
       - minio
     environment:
       - APP_NAME=avalon
-      - BUNDLE_FLAGS=--with development postgres profiling --without production test
+      - BUNDLE_FLAGS=--with development postgres --without production test
       - ENCODE_WORK_DIR=/tmp
       - CONTROLLED_VOCABULARY=config/controlled_vocabulary.yml
       - DATABASE_URL=postgres://postgres:password@db/avalon
@@ -132,7 +132,7 @@ services:
       - SETTINGS__STREAMING__SERVER=nginx
       - SETTINGS__STREAMING__STREAM_TOKEN_TTL=20
       - SYSTEM_GROUPS=administrator,group_manager,manager
-      - AVALON_PROFILING=false
+      - AVALON_PROFILING=true
     volumes:
       - .:/home/app/avalon
       - npms:/home/app/avalon/node_modules
@@ -162,7 +162,7 @@ services:
       - FEDORA_BASE_PATH=/test
       - SOLR_URL=http://solr-test:8983/solr/avalon
       - RAILS_ENV=test
-      - BUNDLE_FLAGS=--with aws test postgres --without production profiling
+      - BUNDLE_FLAGS=--with aws test postgres --without production
       - DATABASE_CLEANER_ALLOW_REMOTE_DATABASE_URL=true
     ports: []
 
