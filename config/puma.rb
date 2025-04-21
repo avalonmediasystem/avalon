@@ -31,3 +31,6 @@ plugin :tmp_restart
 
 # Only use a pidfile when requested
 pidfile ENV["PIDFILE"] if ENV["PIDFILE"]
+
+state_path ENV["PUMA_STATE_PATH"] if ENV["PUMA_STATE_PATH"]
+activate_control_app

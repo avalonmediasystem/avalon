@@ -11,6 +11,8 @@ gem 'sprockets', '~>3.7.2'
 gem 'sqlite3'
 # Force newer version of mail for compatibility with rails 6.0.6.1
 gem 'mail', '> 2.8.0.1'
+gem 'puma', '>= 6.4.2'
+gem 'puma-status'
 
 # Assets
 gem 'bootstrap', '4.6.2'
@@ -161,7 +163,6 @@ group :production do
   gem 'google-analytics-rails', '1.1.0'
   gem 'lograge'
   gem 'okcomputer'
-  gem 'puma', '>= 6.4.2'
 end
 
 # Install the bundle --with aws when running on Amazon Elastic Beanstalk
