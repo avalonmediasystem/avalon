@@ -11,6 +11,8 @@ gem 'sprockets', '~>3.7.2'
 gem 'sqlite3'
 # Force newer version of mail for compatibility with rails 6.0.6.1
 gem 'mail', '> 2.8.0.1'
+gem 'puma', '>= 6.4.2'
+gem 'puma-status'
 
 # Assets
 gem 'bootstrap', '4.6.2'
@@ -106,6 +108,12 @@ gem 'with_locking'
 gem 'sequel'
 gem 'httpx'
 
+# Profiling tools - enable via AVALON_PROFILING environment variable
+gem 'rack-mini-profiler'
+gem 'flamegraph'
+gem 'stackprof'
+gem 'memory_profiler'
+
 group :development do
   gem 'capistrano', '~>3.6'
   gem 'capistrano-passenger', require: false
@@ -155,7 +163,6 @@ group :production do
   gem 'google-analytics-rails', '1.1.0'
   gem 'lograge'
   gem 'okcomputer'
-  gem 'puma', '>= 6.4.2'
 end
 
 # Install the bundle --with aws when running on Amazon Elastic Beanstalk
@@ -186,14 +193,6 @@ end
 # Install the bundle --with mysql if using mysql as the database backend
 group :mysql, optional: true do
   gem 'mysql2'
-end
-
-# Install the bundle --with profiling and enable via AVALON_PROFILING environment variable
-group :profiling, optional: true do
-  gem 'rack-mini-profiler'
-  gem 'flamegraph'
-  gem 'stackprof'
-  gem 'memory_profiler'
 end
 
 extra_gems = File.expand_path("../Gemfile.local", __FILE__)
