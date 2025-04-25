@@ -113,6 +113,7 @@ gem 'rack-mini-profiler'
 gem 'flamegraph'
 gem 'stackprof'
 gem 'memory_profiler'
+gem 'prometheus_exporter'
 
 group :development do
   gem 'capistrano', '~>3.6'

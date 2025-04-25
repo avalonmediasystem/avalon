@@ -34,3 +34,31 @@ pidfile ENV["PIDFILE"] if ENV["PIDFILE"]
 
 state_path ENV["PUMA_STATE_PATH"] if ENV["PUMA_STATE_PATH"]
 activate_control_app
+
+def start_puma_instrumentation
+  require "prometheus_exporter"
+  require "prometheus_exporter/instrumentation"
+
+  if !PrometheusExporter::Instrumentation::Puma.started?
+    PrometheusExporter::Instrumentation::Process.start(type: "puma_master")
+    PrometheusExporter::Instrumentation::Puma.start
+  end
+end
+
+after_worker_boot do
+  start_puma_instrumentation
+end
+
+on_worker_boot do
+  ActiveSupport.on_load(:active_record) do
+    ActiveRecord::Base.establish_connection
+    PrometheusExporter::Instrumentation::ActiveRecord.start
+  end
+
+  PrometheusExporter::Instrumentation::Process.start(type: "puma_worker")
+end
+
+# Allow running instrumentation in single process mode
+if !ENV["WEB_CONCURRANCY"]
+  start_puma_instrumentation
+end

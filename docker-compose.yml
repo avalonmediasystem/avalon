@@ -3,6 +3,7 @@ volumes:
   solr:
   npms:
   data:
+  grafana:
 
 networks:
   internal:
@@ -29,13 +30,16 @@ services:
     depends_on:
       - createbuckets
     environment:
-      - CATALINA_OPTS=-Dfcrepo.autoversioning.enabled=false -Dfcrepo.aws.access-key=minio -Dfcrepo.aws.secret-key=minio123 -Dfcrepo.storage=ocfl-s3 -Dfcrepo.ocfl.s3.bucket=fcrepo -Dfcrepo.s3.endpoint=http://minio:9000 -Dfcrepo.aws.region=us-east-1
+      - CATALINA_OPTS=-Dfcrepo.autoversioning.enabled=false -Dfcrepo.aws.access-key=minio -Dfcrepo.aws.secret-key=minio123 -Dfcrepo.storage=ocfl-s3 -Dfcrepo.ocfl.s3.bucket=fcrepo -Dfcrepo.s3.endpoint=http://minio:9000 -Dfcrepo.aws.region=us-east-1 -Dfcrepo.metrics.enable=true
     networks:
       internal:
+      external:
     ulimits:
       nofile:
         soft: "65536"
         hard: "65536"
+    ports:
+      - 8080:8080
   fedora-test:
     <<: *fedora
     depends_on: []
@@ -55,6 +59,9 @@ services:
       - SOLR_MODULES=analysis-extras,extraction
     networks:
       internal:
+      external:
+    ports:
+      - '8983:8983'
     ulimits:
       nofile:
         soft: "65536"
@@ -135,6 +142,7 @@ services:
       - PIDFILE=tmp/pids/server.pid
       - PUMA_STATE_PATH=tmp/puma.state
       - AVALON_PROFILING=true
+      - PROMETHEUS_EXPORTER_HOST=prometheus-rails
     volumes:
       - .:/home/app/avalon
       - npms:/home/app/avalon/node_modules
@@ -179,6 +187,7 @@ services:
     environment:
       MINIO_ACCESS_KEY: minio
       MINIO_SECRET_KEY: minio123
+      MINIO_PROMETHEUS_AUTH_TYPE: public
     volumes:
       - data:/data
     ports:
@@ -222,3 +231,51 @@ services:
     environment:
       - CYPRESS_ENV=${CYPRESS_ENV:-local}
       - CYPRESS_grep=${CYPRESS_grep:-@critical}
+
+  prometheus:
+    image: prom/prometheus
+    volumes:
+      - "./prometheus.yml:/etc/prometheus/prometheus.yml"
+    networks:
+      - internal
+      - external
+    ports:
+      - 9099:9090
+
+  node-exporter:
+    image: prom/node-exporter
+    networks:
+      - internal
+      - external
+    ports:
+      - 9100:9100
+
+  prometheus-rails:
+    build: https://github.com/discourse/prometheus_exporter.git
+    networks:
+      - internal
+      - external
+    ports:
+      - 9394:9394
+
+  prometheus-solr:
+    image: solr:9
+    command: prometheus-exporter/bin/solr-exporter -p 9395 -b http://solr:8983/solr
+    networks:
+      - internal
+      - external
+    ports:
+      - 9395:9395
+
+  grafana:
+    image: grafana/grafana-enterprise
+    volumes:
+      - grafana:/var/lib/grafana
+      - ./grafana.yml:/etc/grafana/provisioning/datasources/grafana.yml
+    environment:
+     - GF_PLUGINS_PREINSTALL=grafana-clock-panel
+    networks:
+      - internal
+      - external
+    ports:
+      - 9098:3000
