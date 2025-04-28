@@ -402,14 +402,14 @@ protected
   def gather_hls_streams(master_file)
     stream_info = secure_streams(master_file.stream_details, master_file.media_object_id)
     hls_streams = stream_info[:stream_hls].reject { |stream| stream[:quality] == 'auto' }
-    hls_streams.each { |stream| unnest_wowza_stream(stream) } if Settings.streaming.server == "wowza"
+    hls_streams.each { |stream| unnest_wowza_stream(stream) } if Settings.streaming.server.to_sym == :wowza
     hls_streams
   end
 
   def hls_stream(master_file, quality)
     stream_info = secure_streams(master_file.stream_details, master_file.media_object_id)
     hls_stream = stream_info[:stream_hls].select { |stream| stream[:quality] == quality }
-    unnest_wowza_stream(hls_stream&.first) if Settings.streaming.server == "wowza"
+    unnest_wowza_stream(hls_stream&.first) if Settings.streaming.server.to_sym == :wowza
     hls_stream
   end
 
