@@ -121,7 +121,7 @@ function getTimelineScopes() {
     let tracks = parent.find('li a');
     trackCount = tracks.length;
     // Only assign begin/end when structure item is a subsection, not a top level section
-    if (next.length > 0) {
+    if (next.length >= 0) {
       begin = parseFloat(tracks[0].hash.split('#t=').reverse()[0].split(',')[0]) || 0;
       end = parseFloat(tracks[trackCount - 1].hash.split('#t=').reverse()[0].split(',')[1]) || '';
     }
@@ -139,7 +139,7 @@ function getTimelineScopes() {
   if (currentStructureItem !== currentSection) {
     scopes.push({
       label: currentSection[0].dataset.label,
-      times: { begin: 0, end: activeItem.times.end },
+      times: { begin: 0, end: parseFloat(currentSection[0].dataset.mediafrag.split('#t=').reverse()[0].split(',')[1]) || '' },
       tags: ['current-section']
     });
   }
