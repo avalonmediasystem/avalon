@@ -17,7 +17,7 @@ Unless required by applicable law or agreed to in writing, software distributed
 <div class="row playlist-action-buttons">
   <div class="col-sm-6">
     <% if current_ability.can? :edit, @playlist %>
-    <div id="edit-playlist-button">
+    <div id="edit-playlist-button" data-testid="playlist-edit-playlist-btn">
       <%= link_to edit_playlist_path(@playlist), class: "btn btn-primary btn-block text-nowrap" do %>
       <i class="fa fa-edit" aria-hidden="true"></i> Edit Playlist
       <% end %>
@@ -26,7 +26,7 @@ Unless required by applicable law or agreed to in writing, software distributed
   </div>
   <div class="col-sm-6">
     <% if current_ability.can? :duplicate, @playlist %>
-    <%= button_tag( type: 'button', data: { playlist: @playlist }, class: 'copy-playlist-button btn btn-outline btn-block text-nowrap') do %>
+    <%= button_tag(type: 'button', data: { playlist: @playlist, testid: 'playlist-copy-playlist-btn' }, class: 'copy-playlist-button btn btn-outline btn-block text-nowrap') do %>
     <i class="fa fa-clone" aria-hidden="true"></i> Copy Playlist
     <% end %>
     <% end %>

@@ -29,7 +29,7 @@ module PlaylistsHelper
       else
         "fa-link"
     end
-    content_tag(:span, '', class:"fa #{icon} fa-lg", title: visibility_description(visibility))
+    content_tag(:span, '', class:"fa #{icon} fa-lg", title: visibility_description(visibility), 'data-testid': 'playlist-visibility-icon')
   end
 
   def visibility_description(visibility)

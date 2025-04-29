@@ -31,7 +31,7 @@ context('Item', () => {
     }
   });
 
-  
+
 
   it('Verify creating an item under a collection - @T139381a0', () => {
     // Log in as an administrator
@@ -80,22 +80,22 @@ context('Item', () => {
     ).click();
 
     // Navigate to the preview page by passing through structure and access control page
-	//structure page
-	cy.get(
-		'input[name="save_and_continue"][value="Continue"]'
-	  ).click()
-	//Access control page
-	cy.get(
-		'input[name="save_and_continue"][value="Save and continue"]'
-	  ).click()
+    //structure page
+    cy.get(
+      'input[name="save_and_continue"][value="Continue"]'
+    ).click()
+    //Access control page
+    cy.get(
+      'input[name="save_and_continue"][value="Save and continue"]'
+    ).click()
 
-	
+
     // Validate the item title, collection, and publication date
     cy.get('.page-title-wrapper h2').should('contain.text', item_title);
 
     cy.get('div.ramp--tabs-panel').within(() => {
       cy.get('div.tab-content dt')
-        .contains('Date')
+        .contains('Publication date') //changed from Date
         .next('dd')
         .should('have.text', publicationYear);
       cy.get('div.tab-content dt')
@@ -129,7 +129,7 @@ context('Item', () => {
   it('Verify setting Item access to “Collections staff only” for a published item - @T13b097f8', () => {
     cy.login('administrator');
     cy.visit('/');
-    cy.visit('/media_objects/' + item_id+'/edit?step=access-control');
+    cy.visit('/media_objects/' + item_id + '/edit?step=access-control');
     cy.get('.item-access').within(() => {
       cy.contains('label', 'Collection staff only')
         .find('input[type="radio"]')
@@ -137,10 +137,10 @@ context('Item', () => {
         .should('be.checked');
     });
     cy.get('input[type="submit"][name="save"]').click();
-//reload the page to ensure that the data is updated in the backend
-cy.reload()
-cy.contains('label', 'Collection staff only')
-.find('input[type="radio"]').should('be.checked');
+    //reload the page to ensure that the data is updated in the backend
+    cy.reload()
+    cy.contains('label', 'Collection staff only')
+      .find('input[type="radio"]').should('be.checked');
 
     //Login as a user who is not a staff to collection to validate the result
     //login as a user who is a staff to the collection and verify that the item is accessible
@@ -149,7 +149,7 @@ cy.contains('label', 'Collection staff only')
   it('Verify setting Item access to “Logged in users only” for a published item - @T0cc6ee02', () => {
     cy.login('administrator');
     cy.visit('/');
-    cy.visit('/media_objects/' + item_id+'/edit?step=access-control');
+    cy.visit('/media_objects/' + item_id + '/edit?step=access-control');
     cy.get('.item-access').within(() => {
       cy.contains('label', 'Logged in users only')
         .find('input[type="radio"]')
@@ -160,7 +160,7 @@ cy.contains('label', 'Collection staff only')
     //reload the page to ensure that the data is updated in the backend
     cy.reload()
     cy.contains('label', 'Logged in users only')
-	.find('input[type="radio"]').should('be.checked');
+      .find('input[type="radio"]').should('be.checked');
 
     //Additional assertions::
     //Logout of the application and verify that the item is not visible
@@ -170,7 +170,7 @@ cy.contains('label', 'Collection staff only')
   it('Verify setting Item access to “Available to general public” for a published item - @T593dc580', () => {
     cy.login('administrator');
     cy.visit('/');
-    cy.visit('/media_objects/' + item_id+'/edit?step=access-control');
+    cy.visit('/media_objects/' + item_id + '/edit?step=access-control');
     cy.get('.item-access').within(() => {
       cy.contains('label', 'Available to the general public')
         .find('input[type="radio"]')
@@ -181,7 +181,7 @@ cy.contains('label', 'Collection staff only')
     //reload the page to ensure that the data is updated in the backend
     cy.reload()
     cy.contains('label', 'Available to the general public')
-	.find('input[type="radio"]').should('be.checked');
+      .find('input[type="radio"]').should('be.checked');
 
     //Additional assertion:: Verify item access without logging in
   });
@@ -190,7 +190,7 @@ cy.contains('label', 'Collection staff only')
     cy.login('administrator');
     cy.visit('/');
     // The below code is hard-coded for a media object url. This needs to be changed with a valid object URL later for each website.
-    cy.visit('/media_objects/' + item_id+'/edit?step=access-control');
+    cy.visit('/media_objects/' + item_id + '/edit?step=access-control');
     const user_username = Cypress.env('USERS_USER_USERNAME');
     //Assign special access - Avalon user (who is not associated with the collection)
     cy.get('.card.special-access')
@@ -313,12 +313,13 @@ cy.contains('label', 'Collection staff only')
     cy.visit('/media_objects/' + item_id);
     cy.wait(3000) //wait for timeline button to load
     cy.get('#timelineBtn').click();
-    cy.get('#timelineModalSave').click()
+    cy.get('#timelineModalSave').click();
     //validate the timeline page elements
-    cy.wait(3000) //wait for timeline page to load 
-    cy.contains('div.app')
-    cy.contains('h6',"Timeline information")
-    cy.contains('h3',item_title)
+    cy.wait(6000); //wait for timeline page to load 
+    cy.get('div#app') // Select the div with id 'app'
+      .contains('h6', 'Timeline information');
+    cy.get('div#app') // Select the div with id 'app'
+      .contains('h3', item_title);
     //Validate the "Add to playlist options"
   });
 

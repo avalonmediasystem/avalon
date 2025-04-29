@@ -19,7 +19,7 @@ Unless required by applicable law or agreed to in writing, software distributed
     <p class="muted">Copy the link below to share this playlist</p>
     <form role="form">
       <div class="form-group">
-        <input type="text" class="form-control" id="link-object" value="<%= playlist_url(@playlist) %>" placeholder="<%= playlist_url(@playlist) %>" onClick="this.select();" readonly="readonly">
+        <input type="text" class="form-control" id="link-object" value="<%= playlist_url(@playlist) %>" placeholder="<%= playlist_url(@playlist) %>" onClick="this.select();" readonly="readonly" data-testid="playlist-link">
       </div>
     </form>
     <% elsif @playlist.visibility == Playlist::PRIVATE_WITH_TOKEN %>
