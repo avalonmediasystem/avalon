@@ -247,7 +247,7 @@ class PlaylistsController < ApplicationController
     authorize! :read, @playlist
 
     # Fetch all master files related to the playlist items in a single SpeedyAF::Base.where
-    master_file_ids = @playlist.items.collect { |item| item.clip.master_file_id }
+    master_file_ids = @playlist.clips.collect(&:master_file_id)
     master_files = []
     master_files = SpeedyAF::Proxy::MasterFile.where("id:#{master_file_ids.join(' id:')}", load_reflections: true) if master_file_ids.present?
     media_objects = master_files.collect(&:media_object).uniq(&:id)
