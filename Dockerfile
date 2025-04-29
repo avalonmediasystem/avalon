@@ -143,7 +143,7 @@ USER        app
 ENV         RAILS_ENV=production
 
 RUN         SECRET_KEY_BASE=$(ruby -r 'securerandom' -e 'puts SecureRandom.hex(64)') SHAKAPACKER_ASSET_HOST='' bundle exec rake assets:precompile
-RUN         cp config/controlled_vocabulary.yml.example config/controlled_vocabulary.yml
+RUN         cp -n config/controlled_vocabulary.yml.example config/controlled_vocabulary.yml
 
 
 # Build production image
