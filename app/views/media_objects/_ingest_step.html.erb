@@ -15,7 +15,7 @@ Unless required by applicable law or agreed to in writing, software distributed
 %>
 <li class="nav-item <%= class_for_step(@media_object, step.step) %>">
   <% if active %>
-  <%= link_to edit_media_object_path(@media_object, step: step.step), class: "nav-link" do %>
+  <%= link_to edit_media_object_path(@media_object, step: step.step), class: "nav-link", data:{testid: 'media-object-side-nav-link'} do %>
     <strong><%= step.title %></strong>
   <% end %>
   <% else %>

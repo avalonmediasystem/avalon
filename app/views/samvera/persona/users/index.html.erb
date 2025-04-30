@@ -87,7 +87,10 @@ Unless required by applicable law or agreed to in writing, software distributed
         null,
         null,
         { className: "text-right"}
-      ]
+      ],
+      initComplete: function () {
+      $('div.dataTableToolsTop input[type="search"]').attr('data-testid', 'users-search-field');
+    }
     }).on('draw', function () {
       window.apply_button_confirmation()
     });

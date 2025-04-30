@@ -15,7 +15,7 @@ Unless required by applicable law or agreed to in writing, software distributed
 %>
 
 <div class="page-title-wrapper">
-  <h2>
+  <h2 data-testid="media-object-title">
     <% unless @media_object.title.blank? %>
     <%= @media_object.title %>
     <% else %>

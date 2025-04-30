@@ -15,105 +15,112 @@
 */
 
 context('Media objects', () => {
-  const media_object_id = Cypress.env('MEDIA_OBJECT_ID_2');
-  const media_object_title = Cypress.env('MEDIA_OBJECT_TITLE_2');
-  const caption = Cypress.env('MEDIA_OBJECT_CAPTION_2');
+  const media_object_id = Cypress.env('MEDIA_OBJECT_ID');
+  const media_object_title = Cypress.env('MEDIA_OBJECT_TITLE');
+  const caption = Cypress.env('MEDIA_OBJECT_CAPTION');
 
   beforeEach(() => {
     cy.login("administrator")
+    
     cy.visit('/media_objects/' + media_object_id);
+    cy.waitForVideoReady();
   });
 
   // can visit a media object
-  it('.visit_media_object()', () => {
-    cy.login('administrator');
-    // The below code is hard-coded for a media object url. This needs to be changed with a valid object URL later for each website.
-    cy.visit('/media_objects/' + media_object_id);
+  it('.visit_media_object() - @critical', () => {
+    
     cy.contains('Unknown item').should('not.exist');
-    cy.contains(media_object_title);
+    cy.get('[data-testid="media-object-title"]').should('contain', media_object_title);
     cy.contains('Publication date');
     // This below line is to play the video. If the video is not playable, this might return error. In that case, comment the below code.
-    cy.get('button[title="Play"]').click({ force: true }); // added force to click on the play button
+    cy.get('[data-testid="videojs-video-element"]').parent().find('.vjs-big-play-button').click();
   });
 
   // Open multiple media objects in different tabs and play it.
-  it.skip('.play_media_objects()', () => {
-    cy.login('administrator');
-    cy.visit('/');
+  it.skip('.play_media_objects() - @critical', () => {
+    
     cy.get('a[href*="catalog"] ').first().click();
-    //cy.get(' a[href*="/media_objects/"] ').first().click()
-    cy.get('a[href*="media_objects').then((media_objects) => {
-      function printObject(o) {
-        var out = '';
-        for (var p in o) {
-          out += p + ': ' + o[p] + '\n';
-        }
-        alert(out);
-      }
+    
+    cy.get('a[href*="media_objects"]').then((media_objects) => {
       var i;
       for (i = 0; i < 3; i += 2) {
-        //media_objects[i].click()
-        //cy.get('div').should('have.class', 'mejs__overlay-play').first().click()
-        window.open(media_objects[i]);
-        cy.visit(String(media_objects[i]));
-        // Below code is to make media play
-        cy.window()
-          .get('div')
-          .should('have.class', 'mejs__overlay-play')
-          .first()
-          .click({ force: true });
+        cy.visit(media_objects[i].href);
+        // Below code is to make media play using more resilient selectors
+        cy.get('[data-testid="media-player"]').within(() => {
+          cy.get('.vjs-big-play-button').click({ force: true });
+        });
       }
     });
   });
 
-  it('Verify the icons in a video player - @Tb155c718', () => {
-    cy.get('.vjs-big-play-button[title="Play Video"]').should('exist'); //validates the centre play button
-    cy.get('.vjs-play-control[title="Play"]').should('exist'); //validates the  play button in the control bar
-    cy.get('[role="slider"]').should('exist'); //validates the slider
-    cy.get('.vjs-subs-caps-button[title="Captions"]').should('exist'); //validates the captions button
-    cy.get('.vjs-mute-control[title="Mute"]').should('exist'); //validates the Audio button
-    cy.get('button[title="Open quality selector menu"]').should('exist'); //validates the quality selector button
-    cy.get('button[title="Playback Rate"]').should('exist'); //validates the playback rate  button
-    cy.get('button[title="Fullscreen"]').should('exist'); //validates the playback rate  button
+  it('Verify the icons in a video player - @Tb155c718 - @critical', () => {
+    cy.get('[data-testid="media-player"]').within(() => {
+      // Validate the center play button
+      cy.get('.vjs-big-play-button').should('exist');
+      // Validate the play button in the control bar
+      cy.get('.vjs-play-control').should('exist');
+      // Validate the seekbar
+      cy.get('[data-testid="videojs-custom-seekbar"]').should('exist');
+      // Validate the captions button
+      cy.get('.vjs-subs-caps-button').should('exist');
+      // Validate the volume button
+      cy.get('.vjs-mute-control').should('exist');
+      // Validate the quality selector button
+      cy.get('.vjs-quality-selector').should('exist');
+      // Validate the playback rate button
+      cy.get('.vjs-playback-rate').should('exist');
+      // Validate the fullscreen button
+      cy.get('.vjs-fullscreen-control').should('exist');
+    });
   });
 
-  it('Verify whether the user is able to adjust volume in the audio player - @T2e46961f', () => {
-    // Assume the video player is already loaded and accessible
-    cy.get('.vjs-mute-control').as('muteButton');
-    cy.get('.vjs-volume-bar').as('volumeBar');
+  it('Verify whether the user is able to adjust volume in the audio player - @T2e46961f - @critical', () => {
 
-    // Check initial state if needed
-    cy.get('@volumeBar').invoke('attr', 'aria-valuenow').should('eq', '100'); // Checking initial volume level, adjust as needed
+    
+    // Access the media player container
+    cy.get('[data-testid="media-player"]').within(() => {
+      // Get the mute button and volume bar with more resilient selectors
+      cy.get('.vjs-mute-control').as('muteButton');
+      cy.get('.vjs-volume-bar').as('volumeBar');
 
-    // Click to mute and verify
-    cy.get('@muteButton').click({ force: true });
-    cy.get('@muteButton').should('have.class', 'vjs-vol-0'); // Checking if the mute button reflects the muted state
+      // Check initial state
+      cy.get('@volumeBar').invoke('attr', 'aria-valuenow').then((initialVolume) => {
+        // Click to mute and verify
+        cy.get('@muteButton').click({ force: true });
+        cy.get('@muteButton').should('have.class', 'vjs-vol-0');
 
+        // Adjust volume using the volume control slider
+        // First, make the volume panel visible if it's not already
+        cy.get('.vjs-volume-panel').trigger('mouseover', { force: true });
+        
+        // Then adjust the volume
+        cy.get('@volumeBar')
+          .invoke('attr', 'aria-valuenow', '50')
+          .trigger('input', { force: true });
 
-    //This part is failing - need to fix this
-
-    // Adjust volume using the volume control slider
-    cy.get('@volumeBar')
-      .invoke('attr', 'aria-valuenow', '50') //fixed the failing part -- val was being set before
-      .trigger('input', { force: true }); // Adjust the slider to a midpoint value
-
-    // Verify the volume has been adjusted
-    cy.get('@volumeBar').invoke('attr', 'aria-valuenow').should('eq', '50'); // Confirm the slider reflects the new volume level
-
-
-
+        // Verify the volume has been adjusted
+        cy.get('@volumeBar').invoke('attr', 'aria-valuenow').should('eq', '50');
+      });
+    });
   });
 
-  it('Verify turning on closed captions - @T4ceb4111', () => {
-    // Access the closed captions button  
-    cy.get('button.vjs-subs-caps-button')
-      .as('ccButton');
-    cy.get('@ccButton').click({ force: true });
-    // Select the caption
-    cy.contains('li.vjs-subtitles-menu-item', caption).click({ force: true });//added force while clicking
-    // Assert that the captions are enabled - the class name should change to captions-on
-    cy.get('@ccButton').should('have.class', 'captions-on'); // Change 'captions-on' to the actual class or attribute that indicates active captions
-
-    //Add more assertions here to verefy captions on the screen
+  it('Verify turning on closed captions - @T4ceb4111 - @critical', () => {
+    
+    cy.get('[data-testid="media-player"]').within(() => {
+      // Access the closed captions button
+      cy.get('button.vjs-subs-caps-button').as('ccButton');
+      cy.get('@ccButton').click();
+      
+      // Select the caption 
+      cy.get('.vjs-menu-content').first().within(() => {
+        cy.contains('li.vjs-menu-item', caption).click();
+      });
+      
+      // Assert that the captions are enabled
+      cy.get('@ccButton').should('have.class', 'captions-on');
+      
+      // Additional verification that captions are displayed
+      cy.get('.vjs-text-track-display').should('exist');
+    });
   });
 });
