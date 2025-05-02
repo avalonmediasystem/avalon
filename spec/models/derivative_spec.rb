@@ -153,6 +153,15 @@ describe Derivative do
         allow(Settings.streaming).to receive(:server).and_return(:nginx)
         expect(subject.download_path).to eq "file://6f69c008-06a4-4bad-bb60-26297f0b4c06/35bddaa0-fbb4-404f-ab76-58f22921529c/warning.mp4"
       end
+
+      context "with mp3 derivative" do
+        let(:hls_url) { "http://localhost:3000/streams/6f69c008-06a4-4bad-bb60-26297f0b4c06/35bddaa0-fbb4-404f-ab76-58f22921529c/warning.mp3" }
+
+        it "provides a file path" do
+          allow(Settings.streaming).to receive(:server).and_return(:nginx)
+          expect(subject.download_path).to eq "file://6f69c008-06a4-4bad-bb60-26297f0b4c06/35bddaa0-fbb4-404f-ab76-58f22921529c/warning.mp3"
+        end
+      end
     end
 
     describe "s3" do
