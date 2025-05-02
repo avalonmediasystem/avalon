@@ -1,12 +1,12 @@
 /* 
- * Copyright 2011-2024, The Trustees of Indiana University and Northwestern
+ * Copyright 2011-2025, The Trustees of Indiana University and Northwestern
  *   University.  Licensed under the Apache License, Version 2.0 (the "License");
  *   you may not use this file except in compliance with the License.
- * 
+ *
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed
  *   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
  *   CONDITIONS OF ANY KIND, either express or implied. See the License for the
@@ -33,7 +33,7 @@ let isPlaying = false;
  * @param {String} mediaObjectId 
  * @param {Array<String>} sectionIds array of ordered masterfile ids in the mediaobject
  */
-function addActionButtonListeners(player, mediaObjectId, sectionIds) {
+function addActionButtonListeners(player, mediaObjectId, sectionIds, sectionShareInfos) {
   if (player && player.player != undefined) {
     let currentIndex = parseInt(player.dataset.canvasindex);
     /* Ensure we only add player listeners once */
@@ -76,8 +76,8 @@ function addActionButtonListeners(player, mediaObjectId, sectionIds) {
         let thumbnailBtn = document.getElementById('thumbnailBtn');
         let timelineBtn = document.getElementById('timelineBtn');
 
-        if (addToPlaylistBtn.disabled && thumbnailBtn.disabled && timelineBtn.disabled) {
-          buildActionButtons(player, mediaObjectId, sectionIds);
+        if (addToPlaylistBtn.disabled || thumbnailBtn.disabled || timelineBtn.disabled) {
+          buildActionButtons(player, mediaObjectId, sectionIds, sectionShareInfos);
         }
       });
     }
@@ -101,7 +101,7 @@ function addActionButtonListeners(player, mediaObjectId, sectionIds) {
     if (currentIndex != canvasIndex && !player.player.canvasIsEmpty) {
       if (isMobile || player?.player.readyState() >= 2) {
         canvasIndex = currentIndex;
-        buildActionButtons(player, mediaObjectId, sectionIds);
+        buildActionButtons(player, mediaObjectId, sectionIds, sectionShareInfos);
         firstLoad = false;
       }
     }
@@ -111,7 +111,7 @@ function addActionButtonListeners(player, mediaObjectId, sectionIds) {
     */
     if (currentIndex != canvasIndex && player.player.canvasIsEmpty) {
       canvasIndex = currentIndex;
-      setUpShareLinks(mediaObjectId, sectionIds);
+      setUpShareLinks(mediaObjectId, sectionIds, sectionShareInfos);
       resetAllActionButtons();
     }
 
@@ -155,8 +155,8 @@ function resetAllActionButtons() {
  * @param {String} mediaObjectId 
  * @param {Array<String>} sectionIds array of ordered masterfile ids in the mediaobject
  */
-function buildActionButtons(player, mediaObjectId, sectionIds) {
-  setUpShareLinks(mediaObjectId, sectionIds);
+function buildActionButtons(player, mediaObjectId, sectionIds, sectionShareInfos) {
+  setUpShareLinks(mediaObjectId, sectionIds, sectionShareInfos);
   setUpAddToPlaylist(player, sectionIds, mediaObjectId);
   setUpCreateThumbnail(player, sectionIds);
   setUpCreateTimeline(player);
@@ -168,25 +168,15 @@ function buildActionButtons(player, mediaObjectId, sectionIds) {
  * @param {String} mediaObjectId 
  * @param {Array<String>} sectionIds array of ordered masterfile id in the mediaobject
  */
-function setUpShareLinks(mediaObjectId, sectionIds) {
+function setUpShareLinks(mediaObjectId, sectionIds, sectionShareInfos) {
   const sectionId = sectionIds[canvasIndex];
-  $.ajax({
-    url: '/media_objects/' + mediaObjectId + '/section/' + sectionId + '/stream',
-    type: 'GET',
-    success: function (data) {
-      const { lti_share_link, link_back_url, embed_code } = data;
-      $('#share-link-section')
-        .val(link_back_url)
-        .attr('placeholder', link_back_url);
-      $('#ltilink-section')
-        .val(lti_share_link)
-        .attr('placeholder', lti_share_link);
-      $('#embed-part').val(embed_code);
-    },
-    error: function (err) {
-      console.log(err);
-    }
-  });
+  const sectionShareInfo = sectionShareInfos[canvasIndex];
+  const { lti_share_link, link_back_url, embed_code } = sectionShareInfo;
+
+  $('#share-link-section').val(link_back_url).attr('placeholder', link_back_url);
+  $('#ltilink-section').val(lti_share_link).attr('placeholder', lti_share_link);
+  $('#embed-part').val(embed_code);
+
   shareListeners();
 }
 
@@ -313,6 +303,9 @@ function addToPlaylistListeners(sectionIds, mediaObjectId) {
     e.preventDefault();
     let playlistId = $('#post_playlist_id').val();
     if ($('#playlistitem_scope_track')[0].checked) {
+      if (activeTrack === undefined) {
+        activeTrack = getActiveItem(false);
+      }
       let starttime = createTimestamp(activeTrack.times.begin, true);
       let endtime = createTimestamp(activeTrack.times.end, true);
       addPlaylistItem(playlistId, streamId, starttime, endtime);

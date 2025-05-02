@@ -1,5 +1,5 @@
 <%#
-Copyright 2011-2024, The Trustees of Indiana University and Northwestern
+Copyright 2011-2025, The Trustees of Indiana University and Northwestern
   University.  Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
 
@@ -32,22 +32,22 @@ Unless required by applicable law or agreed to in writing, software distributed
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-outline" data-dismiss="modal" id="crop-cancel">Cancel</button>
-        <button type="button" class="btn btn-primary" id="crop">Upload</button>
+        <button type="button" class="btn btn-primary" id="crop" data-testid="collection-upload-poster">Upload</button>
       </div>
     </div>
   </div>
 </div>
-<div class="admin-collection-details mb-2">
+<div class="admin-collection-details mb-2" data-testid="collection-collection-details">
   <h2><%= @collection.name %></h2>
   <div class="row">
     <div class="col-md-9">
       <p><strong>Unit:</strong></p>
       <p><%= @collection.unit %></p>
       <p><strong>Description:</strong></p>
-      <p class="collection-description"><%= @collection.description %></p>
+      <p id="collectionDescription", class="collection-description", data-testid="collection-description"><%= @collection.description %></p>
       <% if @collection.contact_email.present? %>
         <p><strong>Contact email:</strong></p>
-        <p><%= mail_to(@collection.contact_email) %></p>
+        <p data-testid="collection-contact-email"><%= mail_to(@collection.contact_email) %></p>
       <% end %>
       <% if @collection.website_url.present? %>
         <p><strong>Website:</strong></p>
@@ -66,7 +66,7 @@ Unless required by applicable law or agreed to in writing, software distributed
       </div>
       <div class="row">
         <%= form_for @collection, url: attach_poster_admin_collection_path(@collection.id), html: {method: "post"} do |form| %>
-          <%= form.file_field :poster, id: 'poster_input', class: "filedata", style: "height:0px;width:0px;" %>
+          <%= form.file_field :poster, id: 'poster_input', class: "filedata", style: "height:0px;width:0px;", 'data-testid': "collection-poster-input" %>
           <input type="button" class="btn btn-primary btn-sm mr-2" onclick="$('.filedata').click();" value="<% if @collection.poster.present? %>Change Poster<%else%>Upload Poster<%end%>"
             <% if cannot?(:edit, @collection) %>disabled<%end%> />
         <% end %>
@@ -84,9 +84,9 @@ Unless required by applicable law or agreed to in writing, software distributed
     </div>
   </div>
   <div class="well-vertical-spacer">
-    <%= link_to('Create An Item', new_media_object_path(collection_id: @collection.id), class: 'btn btn-primary') if can? :create, MediaObject %>
+    <%= link_to('Create An Item', new_media_object_path(collection_id: @collection.id), class: 'btn btn-primary', data: { testid: 'collection-create-item-btn' }) if can? :create, MediaObject %>
     <%= link_to('List All Items', search_catalog_path('f[collection_ssim][]' => @collection.name), class: 'btn btn-outline') %>
-    <%= button_tag('Edit Collection Info', class: 'btn btn-outline', data: {toggle:"modal", target:"#new_collection"}) if can? :update, @collection %>
+    <%= button_tag('Edit Collection Info', class: 'btn btn-outline', data: {toggle:"modal", target:"#new_collection", testid:"collection-edit-collection-info"}) if can? :update, @collection %>
   </div>
   <div>
     <p>Or <a

@@ -1,11 +1,11 @@
-# Copyright 2011-2024, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2025, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
-# 
+#
 # You may obtain a copy of the License at
-# 
+#
 # http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software distributed
 #   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
 #   CONDITIONS OF ANY KIND, either express or implied. See the License for the
@@ -208,9 +208,12 @@ class MasterFile < ActiveFedora::Base
         self.file_location = file.to_s
         self.file_size = FileLocator::S3File.new(file).object.size
       else
-        self.file_location = file.to_s
-        self.file_size = file_size
-        self.title = file_name
+        local_file = FileLocator.new(file, filename: file_name, auth_header: auth_header).local_location
+        saveOriginal(File.open(local_file), file_name, dropbox_dir)
+        # The auth header is only needed for retrieving the file on initial download.
+        # Leaving it in place to be passed on can cause issues with the S3 related
+        # file move actions, so we set to nil after use to prevent that.
+        auth_header = nil
       end
     else #Batch
       saveOriginal(file, File.basename(file.path), dropbox_dir)
@@ -682,6 +685,7 @@ class MasterFile < ActiveFedora::Base
   def saveOriginal(file, original_name = nil, dropbox_dir = media_object.collection.dropbox_absolute_path)
     realpath = File.realpath(file.path)
 
+    self.file_size = file.size
     if original_name.present?
       # If we have a temp name from an upload, rename to the original name supplied by the user
       unless File.basename(realpath) == original_name
@@ -694,14 +698,15 @@ class MasterFile < ActiveFedora::Base
           path = File.join(parent_dir, duplicate_file_name(original_name, num))
           num += 1
         end
-        FileUtils.move(realpath, path)
+        old_locator = FileLocator.new(realpath)
+        new_locator = FileLocator.new(path)
+        FileMover.move(old_locator, new_locator)
         realpath = path
       end
 
       create_working_file!(realpath)
     end
     self.file_location = realpath
-    self.file_size = file.size.to_s
   ensure
     file.close
   end

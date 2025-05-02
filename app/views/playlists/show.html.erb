@@ -1,5 +1,5 @@
 <%#
-Copyright 2011-2024, The Trustees of Indiana University and Northwestern
+Copyright 2011-2025, The Trustees of Indiana University and Northwestern
   University.  Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
 
@@ -19,7 +19,7 @@ Unless required by applicable law or agreed to in writing, software distributed
   <div class="page-title-wrapper playlist-title-wrapper row">
     <div class=" playlist-title col-sm-8 pl-0">
       <%= icon_only_visibility @playlist.visibility %>
-      <h1 class="page-title"><%= @playlist.title %></h1>
+      <h1 class="page-title" data-testid="playlist-title"><%= @playlist.title %></h1>
     </div>
 
     <div class="playlist-action-button-row col-sm-4">
@@ -31,8 +31,8 @@ Unless required by applicable law or agreed to in writing, software distributed
     <% # Replace 2 or more consecutive sets of line break characters with <br> tags %>
     <% # This is because <p> tags force the show more link to a new line since it %>
     <% # is outside the element(s) containing the text. Avoiding <p> allows the link to be inline %>
-    <% comment = @playlist.comment.gsub(/(\r?\n){2,}/m, "<br/><br/>") %>
-    <% tags = @playlist.tags.map { |tag| "<span class='btn btn-sm btn-info'>#{tag}</span>" }.join(' ') %>
+    <% comment = @playlist.comment&.gsub(/(\r?\n){2,}/m, "<br/><br/>") %>
+    <% tags = @playlist.tags&.map { |tag| "<span class='btn btn-sm btn-info'>#{tag}</span>" }.join(' ') %>
     <%= react_component("PlaylistRamp",
       {
         urls: { base_url: request.protocol+request.host_with_port, fullpath_url: request.fullpath },

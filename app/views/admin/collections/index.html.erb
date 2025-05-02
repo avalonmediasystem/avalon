@@ -1,5 +1,5 @@
 <%#
-Copyright 2011-2024, The Trustees of Indiana University and Northwestern
+Copyright 2011-2025, The Trustees of Indiana University and Northwestern
   University.  Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
 
@@ -26,7 +26,7 @@ Unless required by applicable law or agreed to in writing, software distributed
       <h1 class="page-title">My Collections</h1>
     </div>
     <div class="col-xs-6 collection-btn">
-      <%= link_to('<span class="btn btn-primary btn-large">Create Collection</span>'.html_safe, new_admin_collection_path) unless cannot? :create, Admin::Collection %>
+      <%= link_to('<span class="btn btn-primary btn-large" data-testid="collection-create-collection-button">Create Collection</span>'.html_safe, new_admin_collection_path) unless cannot? :create, Admin::Collection %>
     </div>
   </div>
 
@@ -43,7 +43,7 @@ Unless required by applicable law or agreed to in writing, software distributed
     <tbody>
       <% @collections.to_a.each do |collection| %>
       <tr>
-        <td> <strong><%= link_to collection.name, admin_collection_path(collection.id) %></strong> </td>
+        <td> <strong><%= link_to collection.name, admin_collection_path(collection.id), 'data-testid':"collection-name-table" %></strong> </td>
         <td>
           <%= link_to(pluralize(collection.media_object_count, 'item'), search_catalog_path('f[collection_ssim][]' => collection.name)) %>
           <% if collection.unpublished_media_object_count > 0 %>
@@ -55,7 +55,7 @@ Unless required by applicable law or agreed to in writing, software distributed
         <td class="text-right">
           <% if can?(:destroy, collection) %>
           <div class="btn-group">
-            <%= link_to('Delete', remove_admin_collection_path(collection.id), class: 'btn btn-danger btn-sm')%>
+            <%= link_to('Delete', remove_admin_collection_path(collection.id), class: 'btn btn-danger btn-sm', 'data-testid': 'collection-delete-collection-btn')%>
           </div>
           <% else %>
           &nbsp;

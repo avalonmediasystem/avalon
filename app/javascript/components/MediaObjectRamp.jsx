@@ -72,7 +72,7 @@ const Ramp = ({
       startCanvasId={startCanvasId}
       startCanvasTime={startCanvasTime}>
       <Row className="ramp--all-components ramp--itemview">
-        <Col sm={12} md={9}>
+        <Col sm={12} md={9} lg={8}>
           {(cdl.enabled && !cdl.can_stream)
             ? (<React.Fragment>
                 <div dangerouslySetInnerHTML={{ __html: cdl.embed }} />
@@ -100,6 +100,8 @@ const Ramp = ({
                           aria-expanded="false"
                           aria-controls="timelineModal"
                           disabled={true}
+                          data-testid="media-object-create-timeline-btn"
+                        
                         >
                           Create Timeline
                         </button>
@@ -127,6 +129,7 @@ const Ramp = ({
                           aria-expanded="false"
                           aria-controls="addToPlaylistPanel"
                           disabled={true}
+                          data-testid="media-object-add-to-playlist-btn"
                         >
                           {/* Static SVG image in /app/assets/images/add_to_playlist_icon.svg */}
                           <svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
@@ -160,10 +163,10 @@ const Ramp = ({
             )
           }
         </Col>
-        <Col sm={12} md={3} className="ramp--tabs-panel">
+        <Col sm={12} md={3} lg={4} className="ramp--tabs-panel">
           {cdl.enabled && <div dangerouslySetInnerHTML={{ __html: cdl.destroy }} />}
           <Tabs>
-            <Tab eventKey="details" title="Details">
+            <Tab eventKey="details" title="Details" >
               <MetadataDisplay showHeading={false} displayTitle={false} />
             </Tab>
             {(cdl.can_stream && sections_count != 0 && has_transcripts) &&

@@ -1,5 +1,5 @@
 <%#
-Copyright 2011-2024, The Trustees of Indiana University and Northwestern
+Copyright 2011-2025, The Trustees of Indiana University and Northwestern
   University.  Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
 
@@ -35,7 +35,7 @@ Unless required by applicable law or agreed to in writing, software distributed
             <%= text_field_tag "add_#{access_object}_display", nil,
               class: "typeahead from-model form-control",
               style: "width: 100%;",
-              data: { model: autocomplete_model, target: "add_#{access_object}" },
+              data: { model: autocomplete_model, target: "add_#{access_object}", testid: "media-object-#{access_object}" },
               disabled: input_disabled %>
           <% else %>
             <%= text_field_tag "add_#{access_object}", nil,
@@ -58,8 +58,8 @@ Unless required by applicable law or agreed to in writing, software distributed
           </div>
         <% end %>
         <div class="col-1">
-          <%= button_tag "Add", name: "submit_add_#{access_object}", type: "submit",
-            class: "btn btn-primary", style: 'margin-top:2.4rem', disabled: input_disabled, value: "Add" %>
+          <%= button_tag "Add",name: "submit_add_#{access_object}", type: "submit",
+            class: "btn btn-primary", style: 'margin-top:2.4rem', disabled: input_disabled, value: "Add", "data-testid": "submit-add-#{access_object}" %>
         </div>
       </div>
     </div>
@@ -71,7 +71,7 @@ Unless required by applicable law or agreed to in writing, software distributed
         <% if members.present? %>
         <% members.each do |member_object| %>
         <tr>
-          <td class='access_list_label'>
+          <td class='access_list_label' data-testid="<%= 'collection-access-label-' + access_object %>">
             <%= label_tag do %>
             <% if defined?(display_helper) && display_helper.present? %>
             <%= self.send(display_helper, member_object) %>

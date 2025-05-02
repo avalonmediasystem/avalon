@@ -1,11 +1,11 @@
-# Copyright 2011-2024, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2025, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
-# 
+#
 # You may obtain a copy of the License at
-# 
+#
 # http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software distributed
 #   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
 #   CONDITIONS OF ANY KIND, either express or implied. See the License for the
@@ -29,7 +29,7 @@ class CheckoutsController < ApplicationController
             else
               user_array(checkout)
             end
-          end
+          end.compact
         }
         render json: response
       end
@@ -125,7 +125,8 @@ class CheckoutsController < ApplicationController
     end
 
     def admin_array(checkout)
-      [checkout.user.user_key] + user_array(checkout)
+      checkout_array = user_array(checkout)
+      checkout_array.present? ? [checkout.user.user_key] + checkout_array : nil
     end
 
     def user_array(checkout)
@@ -136,6 +137,8 @@ class CheckoutsController < ApplicationController
         time_remaining(checkout),
         checkout_actions(checkout)
       ]
+    rescue ActiveFedora::ObjectNotFoundError
+      nil
     end
 
     def time_remaining(checkout)

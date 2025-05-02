@@ -1,5 +1,5 @@
 <%#
-Copyright 2011-2024, The Trustees of Indiana University and Northwestern
+Copyright 2011-2025, The Trustees of Indiana University and Northwestern
   University.  Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
 
@@ -27,7 +27,7 @@ Unless required by applicable law or agreed to in writing, software distributed
         </div>
           <div class="<% if !playlists.empty? %>col-sm-6 text-right<% end %>">
             <div class="create-buttons">
-              <%= link_to('<span class="btn btn-primary headline-button">Create New Playlist</span>'.html_safe, new_playlist_path) %>
+              <%= link_to('<span class="btn btn-primary headline-button" data-testid="playlist-create-new-btn">Create New Playlist</span>'.html_safe, new_playlist_path) %>
               <% if Settings['variations'].present? %>
                 <%= form_tag(import_variations_playlist_playlists_path, method:"post", enctype:"multipart/form-data", style:"display:inline") do %>
                   <input type="file" name="Filedata" class="filedata" style="visibility:hidden; display:inline; width:0;" />
@@ -50,7 +50,7 @@ Unless required by applicable law or agreed to in writing, software distributed
         </select>
       </div>
       <table id="Playlists" class="table table-striped dataTable">
-        <thead>
+        <thead data-testid="playlist-table-head">
           <tr>
             <th>Name</th>
             <th>Size</th>
@@ -61,7 +61,7 @@ Unless required by applicable law or agreed to in writing, software distributed
             <th class="text-right" data-orderable="false">Actions</th>
           </tr>
         </thead>
-        <tbody>
+        <tbody data-testid="playlist-table-body">
         </tbody>
       </table>
     <% end %>

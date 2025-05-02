@@ -1,5 +1,5 @@
 <%#
-Copyright 2011-2024, The Trustees of Indiana University and Northwestern
+Copyright 2011-2025, The Trustees of Indiana University and Northwestern
   University.  Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
 
@@ -59,7 +59,7 @@ Unless required by applicable law or agreed to in writing, software distributed
   </div>
 </div>
 
-<div class="card item-access">
+<div class="card item-access" data-testid="media-object-item-access">
   <div class="card-header">
     <h3 class="card-title">Item access</h3>
   </div>
@@ -67,19 +67,19 @@ Unless required by applicable law or agreed to in writing, software distributed
     <div class="form-group">
       <div class="form-check">
         <label>
-          <%= radio_button_tag :visibility, 'public', (@visibility == 'public') %>
+          <%= radio_button_tag :visibility, 'public', (@visibility == 'public'),data:{testid: 'media-object-general-public'} %>
           Available to the general public
         </label>
       </div>
       <div class="form-check">
         <label>
-          <%= radio_button_tag :visibility, 'restricted', (@visibility == 'restricted') %>
+          <%= radio_button_tag :visibility, 'restricted', (@visibility == 'restricted'), data:{testid: 'media-object-logged-in-users'} %>
           Logged in users only
         </label>
       </div>
       <div class="form-check">
         <label>
-          <%= radio_button_tag :visibility, 'private', (@visibility == 'private') %>
+          <%= radio_button_tag :visibility, 'private', (@visibility == 'private'), data:{testid: 'media-object-collection-staff-only'} %>
           Collection staff only
         </label>
       </div>

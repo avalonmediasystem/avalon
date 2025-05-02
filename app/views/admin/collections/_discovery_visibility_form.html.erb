@@ -1,5 +1,5 @@
 <%#
-Copyright 2011-2024, The Trustees of Indiana University and Northwestern
+Copyright 2011-2025, The Trustees of Indiana University and Northwestern
   University.  Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
 
@@ -40,7 +40,7 @@ Unless required by applicable law or agreed to in writing, software distributed
 <% end %>
 
 <%= bootstrap_form_for object, html: { id: 'visibility_form' }  do |vid| %>
-<div class="card item-access">
+<div class="card item-access" data-testid="collection-item-access">
   <div class="card-header">
     <h3 class="card-title">Item access</h3>
   </div>
@@ -60,14 +60,14 @@ Unless required by applicable law or agreed to in writing, software distributed
       </div>
       <div class="form-check">
         <label>
-          <%= radio_button_tag :visibility, 'private', (@visibility == 'private') %>
+          <%= radio_button_tag :visibility, 'private', (@visibility == 'private'), 'data-testid': 'collection-checkbox-collection-staff' %>
           Collection staff only
         </label>
       </div>
       <%= hidden_field_tag :save_field, "visibility" %>
       <%= hidden_field_tag :overwrite, false %>
-      <%= submit_tag "Save Setting", class: "btn btn-primary", form: 'visibility_form' %>
-      <%= submit_tag "Apply to All Existing Items", name: "apply_to_existing", class: "btn btn-outline", data: { confirm: I18n.t('access_control.apply_to_all_warning') % [object.media_objects.count] }, form: "visibility_form" %>
+      <%= submit_tag "Save Setting", class: "btn btn-primary", form: 'visibility_form', 'data-testid': 'collection-save-setting-btn' %>
+      <%= submit_tag "Apply to All Existing Items", name: "apply_to_existing", class: "btn btn-outline", data: { confirm: I18n.t('access_control.apply_to_all_warning') % [object.media_objects.count], testid: "collection-apply-to-existing-btn" }, form: "visibility_form" %>
     </div>
   </div>
 </div>

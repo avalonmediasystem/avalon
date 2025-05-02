@@ -1,5 +1,5 @@
 <%#
-Copyright 2011-2024, The Trustees of Indiana University and Northwestern
+Copyright 2011-2025, The Trustees of Indiana University and Northwestern
   University.  Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
 
@@ -58,7 +58,7 @@ Unless required by applicable law or agreed to in writing, software distributed
                 <th class="text-right" data-orderable="false">Actions</th>
               </tr>
             </thead>
-            <tbody>
+            <tbody data-testid="timeline-table-body">
             </tbody>
           </table>
           <div> </div>
@@ -75,6 +75,9 @@ Unless required by applicable law or agreed to in writing, software distributed
 <% content_for :page_scripts do %>
   <script>
     $(document).ready( function () {
+      $('#Timelines').on('draw.dt', function () {
+          $('.dataTables_filter input[type="search"]').attr('data-testid', 'timeline-search-input');
+      });
       $('#Timelines').DataTable({
         processing: true,
         serverSide: true,

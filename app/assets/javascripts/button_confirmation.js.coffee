@@ -1,11 +1,11 @@
-# Copyright 2011-2024, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2025, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
-# 
+#
 # You may obtain a copy of the License at
-# 
+#
 # http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software distributed
 #   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
 #   CONDITIONS OF ANY KIND, either express or implied. See the License for the
@@ -30,7 +30,7 @@ $ ->
     content: ->
       button = undefined
       if typeof $(this).attr('form') == "undefined"
-        button = '<a href="' + $(this).attr('href') + '" class="btn btn-sm btn-danger btn-confirm" data-method="delete" rel="nofollow">Yes, Delete</a>'
+        button = '<a href="' + $(this).attr('href') + '" class="btn btn-sm btn-danger btn-confirm" data-method="delete" rel="nofollow" data-testid="table-view-delete-confirmation-btn">Yes, Delete</a>'
       else
         button = '<input class="btn btn-sm btn-danger btn-confirm" form="' + $(this).attr('form') + '" type="submit" value="Yes, Delete">'
         $('#' + $(this).attr('form')).find('[name=\'_method\']').val 'delete'

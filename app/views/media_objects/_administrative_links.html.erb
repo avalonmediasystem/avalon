@@ -1,5 +1,5 @@
 <%#
-Copyright 2011-2024, The Trustees of Indiana University and Northwestern
+Copyright 2011-2025, The Trustees of Indiana University and Northwestern
   University.  Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
 
@@ -15,14 +15,14 @@ Unless required by applicable law or agreed to in writing, software distributed
 %>
 <% if can? :update, @media_object %>
   <div id="administrative_options" class="d-inline-block">
-    <%= link_to 'Edit', edit_media_object_path(@media_object), class: 'btn btn-primary text-nowrap' %>
+    <%= link_to 'Edit', edit_media_object_path(@media_object), class: 'btn btn-primary text-nowrap', data:{testid: 'media-object-edit-btn'} %>
 
     <% if @media_object.published? %>
     <% if can?(:unpublish, @media_object) %>
-    <%= link_to 'Unpublish', update_status_media_object_path(@media_object, status:'unpublish'), method: :put, class: 'btn btn-primary' %>
+    <%= link_to 'Unpublish', update_status_media_object_path(@media_object, status:'unpublish'), method: :put, class: 'btn btn-primary', data: {testid: 'media-object-unpublish-btn'} %>
     <% end %>
     <% else %>
-    <%= link_to 'Publish', update_status_media_object_path(@media_object, status:'publish'), method: :put, class: 'btn btn-primary' %>
+    <%= link_to 'Publish', update_status_media_object_path(@media_object, status:'publish'), method: :put, class: 'btn btn-primary', data: {testid: 'media-object-publish-btn'} %>
     <% end %>
 
     <% if Settings.intercom.present? and can? :intercom_push, @media_object %>

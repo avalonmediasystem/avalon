@@ -1,5 +1,5 @@
 <%#
-Copyright 2011-2024, The Trustees of Indiana University and Northwestern
+Copyright 2011-2025, The Trustees of Indiana University and Northwestern
   University.  Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
 
@@ -19,9 +19,9 @@ Unless required by applicable law or agreed to in writing, software distributed
   <%= hidden_field_tag :step, @active_step, form: form %>
   <% if form.present? %>
     <div class="btn-group">
-      <%= submit_tag 'Save', name: 'save', class: "btn btn-outline", form: form, disabled: save_disabled %>
-      <%= submit_tag "Save and continue", name: 'save_and_continue', class: 'btn btn-primary', form: form %>
+      <%= submit_tag 'Save', name: 'save', class: "btn btn-outline", form: form, disabled: save_disabled, data:{ testid:'media-object-save-btn'} %>
+      <%= submit_tag "Save and continue", name: 'save_and_continue', class: 'btn btn-primary', form: form, data:{ testid:'media-object-continue-btn'} %>
     </div>
   <% else %>
-    <%= submit_tag "Continue", name: 'save_and_continue', class: 'btn btn-primary', form: form %>
+    <%= submit_tag "Continue", name: 'save_and_continue', class: 'btn btn-primary', data:{ testid:'media-object-continue-btn'}, form: form %>
   <% end %>

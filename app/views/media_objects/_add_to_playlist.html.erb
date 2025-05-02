@@ -1,5 +1,5 @@
 <%#
-Copyright 2011-2024, The Trustees of Indiana University and Northwestern
+Copyright 2011-2025, The Trustees of Indiana University and Northwestern
   University.  Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
 
@@ -20,7 +20,7 @@ Unless required by applicable law or agreed to in writing, software distributed
 <div id="add_to_playlist_panel">
   <div id="add_to_playlist_alert" class="alert">
     <button type="button" class="close" onclick="closeAlert()">&times;</button>
-    <p id="add_to_playlist_result_message"></p>
+    <p id="add_to_playlist_result_message" data-testid="media-object-playlist-result-msg"></p>
   </div>
   <div id="add_to_playlist_form_group">
     <% unless @add_playlist_item_playlists.empty? %>
@@ -31,21 +31,21 @@ Unless required by applicable law or agreed to in writing, software distributed
           </div>
           <div class="col">
             <div class="form-group">
-              <%= collection_select(:post, :playlist_id, @add_playlist_item_playlists, :id, :title, {}, {class: "form-control form-model", style: 'width:100%;'}) %>
+              <%= collection_select(:post, :playlist_id, @add_playlist_item_playlists, :id, :title, {}, {class: "form-control form-model",'data-testid': 'media-object-playlist-dropdown', style: 'width:100%;'}) %>
             </div>
           </div>
         </div>
 
-        <div id="add-to-playlist-form-group">
+        <div id="add-to-playlist-form-group" data-testid="media-object-add-to-playlist-form">
           <div class="form-check">
             <label class="form-check-label">
-              <input type="radio" onclick="collapseMoreDetails()" name="post[playlistitem_scope]" id="playlistitem_scope_track" aria-label="playlist item current track">
+              <input type="radio" onclick="collapseMoreDetails()" name="post[playlistitem_scope]" id="playlistitem_scope_track" aria-label="playlist item current track" data-testid="media-object-current-track-radio-btn">
                 <span id="current-track-text">Current Track (<span id="current-track-name"></span>)</span>
             </label>
           </div>
           <div class="form-check">
             <label class="form-check-label">
-              <input type="radio" onclick="collapseMoreDetails()" name="post[playlistitem_scope]" id="playlistitem_timeselection" aria-label="playlist item time selection">
+              <input type="radio" onclick="collapseMoreDetails()" name="post[playlistitem_scope]" id="playlistitem_timeselection" aria-label="playlist item time selection" data-testid="media-object-custom-timespan-radio-btn">
               Custom Timespan
             </label>
             <input type="text" name="playlist_item_start" id="playlist_item_start" pattern="(\d+:){0,2}\d+(\.\d+)?" value="" aria-label="start time">
@@ -54,13 +54,13 @@ Unless required by applicable law or agreed to in writing, software distributed
           </div>
           <div class="form-check">
             <label class="form-check-label" onclick="collapseMultiItemCheck()">
-              <input type="radio" name="post[playlistitem_scope]" id="playlistitem_scope_section" aria-label="playlist item current section">
+              <input type="radio" name="post[playlistitem_scope]" id="playlistitem_scope_section" aria-label="playlist item current section" data-testid="media-object-current-section-radio-btn">
               Current Section (<span id="current-section-name"></span>)
             </label>
           </div>
           <div class="form-check">
             <label class="form-check-label" onclick="collapseMultiItemCheck()">
-              <input type="radio" name="post[playlistitem_scope]" id="playlistitem_scope_item" aria-label="playlist item current item">
+              <input type="radio" name="post[playlistitem_scope]" id="playlistitem_scope_item" aria-label="playlist item current item" data-testid="media-object-all-section-radio-btn">
               All Sections
             </label>
           </div>
@@ -90,7 +90,7 @@ Unless required by applicable law or agreed to in writing, software distributed
           </div>
         </div>
         <div class="add-to-playlist-form-buttons">
-          <input type="submit" name="commit" value="Add" class="btn btn-primary mr-2" id="addToPlaylistSave" />
+          <input type="submit" name="commit" value="Add" class="btn btn-primary mr-2" id="addToPlaylistSave" data-testid="media-object-playlist-save-btn"/>
           <button type="button" class="btn btn-outline" onclick="resetAddToPlaylistForm()" data-toggle="collapse" data-target="#addToPlaylistPanel">Cancel</button>
         </div>
       </form>

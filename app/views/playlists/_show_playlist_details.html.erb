@@ -1,5 +1,5 @@
 <%#
-Copyright 2011-2024, The Trustees of Indiana University and Northwestern
+Copyright 2011-2025, The Trustees of Indiana University and Northwestern
   University.  Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
 
@@ -17,17 +17,17 @@ Unless required by applicable law or agreed to in writing, software distributed
   <div>
     <%= link_to "View Playlist", @playlist, { class: 'btn btn-primary'} %>
     <% if can?(:destroy, @playlist) %>
-    <%= link_to "Delete Playlist", @playlist, method: :delete, class: 'btn btn-link btn-confirmation', data: {placement: 'bottom'} %>
+    <%= link_to "Delete Playlist", @playlist, method: :delete, class: 'btn btn-link btn-confirmation', data: {placement: 'bottom', testid:'playlist-delete-playlist-form'} %>
     <% end %>
   </div>
 
   <div class="playlist-details-headline-wrapper">
     <h2 class="headline" style="display:inline-block"><%= t("playlist.details") %></h2>
     <a id="playlist_edit_button" data-toggle="collapse" data-target="#playlist_edit_div, #playlist_view_div"
-    class="fa fa-edit btn btn-lg"></a>
+    class="fa fa-edit btn btn-lg" data-testid="playlist-edit-icon-btn"></a>
   </div>
 
-  <div id="playlist_view_div" class="container collapse <%= 'show' if @playlist.errors.empty? %>">
+  <div id="playlist_view_div" class="container collapse <%= 'show' if @playlist.errors.empty? %>" data-testid="playlist-details">
     <dl class="row">
       <dt class="col-sm-2"><%=t("activerecord.attributes.playlist.title")%>:</dt>
       <dd class="col-sm-10"><%= @playlist.title %></dd>

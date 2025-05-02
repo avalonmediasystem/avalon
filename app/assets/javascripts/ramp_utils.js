@@ -1,12 +1,12 @@
 /* 
- * Copyright 2011-2024, The Trustees of Indiana University and Northwestern
+ * Copyright 2011-2025, The Trustees of Indiana University and Northwestern
  *   University.  Licensed under the Apache License, Version 2.0 (the "License");
  *   you may not use this file except in compliance with the License.
- * 
+ *
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed
  *   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
  *   CONDITIONS OF ANY KIND, either express or implied. See the License for the
@@ -96,6 +96,7 @@ function getTimelineScopes() {
   let trackCount = 1;
   let currentStructureItem = $('li[class="ramp--structured-nav__list-item active"]') ||
     $('div[class="ramp--structured-nav__section active"]');
+  let currentSection = $('div[class="ramp--structured-nav__section active"]');
   let activeItem = getActiveItem();
   let streamId = '';
 
@@ -120,7 +121,7 @@ function getTimelineScopes() {
     let tracks = parent.find('li a');
     trackCount = tracks.length;
     // Only assign begin/end when structure item is a subsection, not a top level section
-    if (next.length > 0) {
+    if (next.length >= 0) {
       begin = parseFloat(tracks[0].hash.split('#t=').reverse()[0].split(',')[0]) || 0;
       end = parseFloat(tracks[trackCount - 1].hash.split('#t=').reverse()[0].split(',')[1]) || '';
     }
@@ -130,9 +131,17 @@ function getTimelineScopes() {
       label: label,
       tracks: trackCount,
       times: { begin, end },
-      tags: next.length == 0 ? ['current-section'] : [], // mark the outermost item representing the current section
+      tags: [], 
     });
     parent = next;
+  }
+  // mark the outermost item representing the current section
+  if (currentStructureItem !== currentSection) {
+    scopes.push({
+      label: currentSection[0].dataset.label,
+      times: { begin: 0, end: parseFloat(currentSection[0].dataset.mediafrag.split('#t=').reverse()[0].split(',')[1]) || '' },
+      tags: ['current-section']
+    });
   }
   return { scopes: scopes.reverse(), streamId };
 }

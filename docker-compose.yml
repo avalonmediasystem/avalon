@@ -47,7 +47,7 @@ services:
     volumes: []
 
   solr: &solr
-    image: solr:9
+    image: solr:9.7
     volumes:
       - ./solr/conf:/opt/solr/avalon_conf
       - solr:/var/solr
@@ -220,3 +220,4 @@ services:
       - npms:/e2e/node_modules
     environment:
       - CYPRESS_ENV=${CYPRESS_ENV:-local}
+      - CYPRESS_grep=${CYPRESS_grep:-@critical}

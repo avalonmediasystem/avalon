@@ -1,5 +1,5 @@
 <%#
-Copyright 2011-2024, The Trustees of Indiana University and Northwestern
+Copyright 2011-2025, The Trustees of Indiana University and Northwestern
   University.  Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
 
@@ -35,7 +35,7 @@ Unless required by applicable law or agreed to in writing, software distributed
 						<% end %>
 					</ul>
 				</div>
-			<%= link_to 'Yes, I am sure', remove_media_objects_path( id: params[:id], previous_view: @previous_view ), method: :delete, id: 'deleteLink', name: 'delete', class: 'btn btn-danger' %>
+			<%= link_to 'Yes, I am sure', remove_media_objects_path( id: params[:id], previous_view: @previous_view ), method: :delete, id: 'deleteLink', name: 'delete', class: 'btn btn-danger', data:{testid: 'media-object-delete-confirmation-btn'} %>
 			<%= link_to 'No, go back', :back, class: 'btn btn-outline' %> 
 		<% end %>
 	</div>

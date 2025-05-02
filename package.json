@@ -40,15 +40,18 @@
   "devDependencies": {
     "@babel/plugin-transform-runtime": "7",
     "@babel/preset-env": "7",
+    "@cypress/grep": "^4.1.0",
     "babel-loader": "8",
-    "cypress": "^13.7.1",
+    "cypress": "^13.7",
+    "cypress-file-upload": "^5.0",
     "html-webpack-plugin": "^5.3.2",
     "prop-types": "^15.7.2",
     "webpack-cli": "5",
     "webpack-dev-server": "5"
   },
   "resolutions": {
-    "glob-parent": "^6.0.2"
+    "glob-parent": "^6.0.2",
+    "path-to-regexp": "^0.1.12"
   },
   "scripts": {
     "start-collection-index": "webpack-dev-server --mode development --config config/webpack/collection_index.js --host 0.0.0.0",

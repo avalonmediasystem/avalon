@@ -1,11 +1,11 @@
-# Copyright 2011-2024, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2025, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
-# 
+#
 # You may obtain a copy of the License at
-# 
+#
 # http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software distributed
 #   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
 #   CONDITIONS OF ANY KIND, either express or implied. See the License for the
@@ -42,6 +42,11 @@ module MasterFileBehavior
                  mimetype: d.mime_type,
                  format: d.format }
       flash << common.merge(url: d.streaming_url(false))
+
+      hls_url = d.streaming_url(true)
+      # Quick fix for old items with mimetypes to deal with issue due to mp3 progressive download code in IIIFCanvasPresenter
+      common[:mimetype] = 'application/x-mpegURL' if File.extname(hls_url) == ".m3u8"
+
       hls << common.merge(url: d.streaming_url(true))
     end
     if hls.length > 1
@@ -90,6 +95,11 @@ module MasterFileBehavior
                  bitrate: d.bitrate,
                  mimetype: d.mime_type,
                  format: d.format }
+
+      hls_url = d.streaming_url(true)
+      # Quick fix for old items with mimetypes to deal with issue due to mp3 progressive download code in IIIFCanvasPresenter
+      common[:mimetype] = 'application/x-mpegURL' if File.extname(hls_url) == ".m3u8"
+
       hls << common.merge(url: d.streaming_url(true))
     end
     if hls.length > 1
@@ -186,5 +196,35 @@ module MasterFileBehavior
   # @return [String] either 'dctypes:MovingImage' or 'dctypes:Sound'
   def rdf_type
     is_video? ? 'dctypes:MovingImage' : 'dctypes:Sound'
+  end
+
+  def share_info
+    {
+      lti_share_link: lti_share_url,
+      link_back_url: share_link,
+      embed_code: embed_code(EMBED_SIZE[:medium], {urlappend: '/embed'})
+    }
+  end
+
+  protected
+
+  def share_link(only_path: false)
+    if permalink.present?
+      permalink
+    else
+      if only_path
+        Rails.application.routes.url_helpers.id_section_media_object_path(self.media_object_id, self.id)
+      else
+        Rails.application.routes.url_helpers.id_section_media_object_url(self.media_object_id, self.id)
+      end
+    end
+  end
+
+  def lti_share_url
+    if Avalon::Authentication.lti_configured?
+      Rails.application.routes.url_helpers.user_omniauth_callback_lti_url(target_id: self.id)
+    else
+      I18n.t('share.empty_lti_share_url')
+    end
   end
 end

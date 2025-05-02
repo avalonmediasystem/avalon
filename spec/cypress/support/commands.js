@@ -1,12 +1,12 @@
 /* 
- * Copyright 2011-2024, The Trustees of Indiana University and Northwestern
+ * Copyright 2011-2025, The Trustees of Indiana University and Northwestern
  *   University.  Licensed under the Apache License, Version 2.0 (the "License");
  *   you may not use this file except in compliance with the License.
- * 
+ *
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed
  *   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
  *   CONDITIONS OF ANY KIND, either express or implied. See the License for the
@@ -34,7 +34,7 @@ Cypress.Commands.add("login", (role) => {
   cy.request('/users/sign_in')
   .its('body')
   .then((body) => {
-    // we can use Cypress.$ to parse the string body
+    
     // thus enabling us to query into it easily
     const $html = Cypress.$(body)
     const csrfToken = $html.find('input[name=authenticity_token]').val()
@@ -106,3 +106,11 @@ Cypress.Commands.add('createItemUnderCollectionUI',(collectionTitle, itemTitle )
     });
   }));
 });
+
+Cypress.Commands.add('waitForVideoReady', () => {
+  cy.get('video').should(($video) => {
+    const videoEl = $video[0];
+    expect(videoEl.readyState).to.be.greaterThan(1);
+  });
+ });
+ 

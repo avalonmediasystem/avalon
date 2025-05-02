@@ -1,11 +1,11 @@
-# Copyright 2011-2024, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2025, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
-# 
+#
 # You may obtain a copy of the License at
-# 
+#
 # http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software distributed
 #   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
 #   CONDITIONS OF ANY KIND, either express or implied. See the License for the
@@ -90,7 +90,7 @@ class PlaylistsController < ApplicationController
         edit_button = view_context.link_to(edit_playlist_path(playlist), class: 'btn btn-outline btn-sm') do
           "<i class='fa fa-edit' aria-hidden='true'></i> Edit".html_safe
         end
-        delete_button = view_context.link_to(playlist_path(playlist), method: :delete, class: 'btn btn-sm btn-danger btn-confirmation', data: {placement: 'bottom'}) do
+        delete_button = view_context.link_to(playlist_path(playlist), method: :delete, class: 'btn btn-sm btn-danger btn-confirmation', data: {placement: 'bottom', testid: 'playlist-delete-table-view'}) do
           "<i class='fa fa-times' aria-hidden='true'></i> Delete".html_safe
         end
         [

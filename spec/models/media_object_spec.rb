@@ -1,11 +1,11 @@
-# Copyright 2011-2024, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2025, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
-# 
+#
 # You may obtain a copy of the License at
-# 
+#
 # http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software distributed
 #   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
 #   CONDITIONS OF ANY KIND, either express or implied. See the License for the
@@ -1302,6 +1302,14 @@ describe MediaObject do
         expect(media_object.sections).to eq []
         expect(media_object.section_ids).to eq []
       end
+    end
+  end
+
+  describe '#section_share_infos' do
+    let(:media_object) { FactoryBot.create(:media_object, :with_master_file) }
+
+    it 'is an array of hashes' do
+      expect(media_object.section_share_infos).to contain_exactly({lti_share_link: be_a(String), link_back_url: be_a(String), embed_code: be_a(String)})
     end
   end
 end

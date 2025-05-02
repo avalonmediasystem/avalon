@@ -1,5 +1,5 @@
 <%#
-Copyright 2011-2024, The Trustees of Indiana University and Northwestern
+Copyright 2011-2025, The Trustees of Indiana University and Northwestern
   University.  Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
 
@@ -17,14 +17,14 @@ Unless required by applicable law or agreed to in writing, software distributed
   <h1 class="page-title">New collection</h1>
 </div>
 <%= bootstrap_form_for @collection, action: 'create' do |f| %>
-  <%= f.text_field :name %>
+  <%= f.text_field :name, 'data-testid': 'collection-name' %>
   <% if @collection.new_record? || can?(:update_unit, @collection)%>
-    <%= f.select(:unit, Admin::Collection.units, {}, {:class => 'form-control'}) %>
+    <%= f.select(:unit, Admin::Collection.units, {}, {:class => 'form-control', 'data-testid': 'collection-unit' }) %>
   <% end %>
-  <%= f.text_area :description, rows: 3  %>
-  <%= f.text_field :contact_email %>
-  <%= f.text_field :website_url %>
-  <%= f.text_field :website_label %>
+  <%= f.text_area :description, rows: 3, 'data-testid':'collection-description'  %>
+  <%= f.text_field :contact_email, 'data-testid':'collection-contact-email' %>
+  <%= f.text_field :website_url, 'data-testid': 'collection-website-url' %>
+  <%= f.text_field :website_label, 'data-testid':'collection-website-label' %>
   <a href="/admin/collections" aria-hidden="true" class="btn btn-outline">Cancel</a>
-  <%= f.submit class: 'btn btn-primary' %>
+  <%= f.submit class: 'btn btn-primary', 'data-testid': 'collection-new-collection-btn' %>
 <% end %>

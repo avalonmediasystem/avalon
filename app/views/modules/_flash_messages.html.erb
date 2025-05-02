@@ -1,5 +1,5 @@
 <%#
-Copyright 2011-2024, The Trustees of Indiana University and Northwestern
+Copyright 2011-2025, The Trustees of Indiana University and Northwestern
   University.  Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
 
@@ -30,8 +30,8 @@ Unless required by applicable law or agreed to in writing, software distributed
       end
     -%>
     <% if flash[type] %>
-      <div class="alert <%=alert_class %>">
-        <button type="button" class="close" data-dismiss="alert">&times;</button>
+      <div class="alert <%=alert_class %>" data-testid="alert">
+        <button type="button" class="close" data-dismiss="alert" >&times;</button>
           <% Array(flash[type]).each do |msg| %>
           <p><%= msg %></p>
         <% end %>
