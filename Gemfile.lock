@@ -598,7 +598,7 @@ GEM
     mysql2 (0.5.6)
     net-http (0.4.1)
       uri
-    net-imap (0.5.1)
+    net-imap (0.5.8)
       date
       net-protocol
     net-ldap (0.19.0)
@@ -620,7 +620,7 @@ GEM
     noid-rails (3.2.0)
       actionpack (>= 5.0.0, < 8)
       noid (~> 0.9)
-    nokogiri (1.18.5)
+    nokogiri (1.18.8)
       mini_portile2 (~> 2.8.2)
       racc (~> 1.4)
     nom-xml (1.2.0)
@@ -675,7 +675,7 @@ GEM
       parallel (~> 1)
     raabro (1.4.0)
     racc (1.8.1)
-    rack (2.2.13)
+    rack (2.2.14)
     rack-cors (2.0.2)
       rack (>= 2.0.0)
     rack-mini-profiler (3.3.1)
