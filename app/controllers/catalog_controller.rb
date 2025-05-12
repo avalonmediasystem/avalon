@@ -117,6 +117,7 @@ class CatalogController < ApplicationController
     # solr fields to be displayed in the index (search results) view
     #   The ordering of the field names is the order of the display
     config.add_index_field 'title_tesi', label: 'Title', if: Proc.new {|context, _field_config, _document| context.request.format == :json }
+    # TODO: Add helper_method for alternative title display after #6301 is resolved
     config.add_index_field 'alternative_title_ssim', label: 'Alternative title', if: Proc.new {|_context, _field_config, document| document[:alternative_title_ssim].present? }
     config.add_index_field 'date_issued_ssi', label: 'Date', if: Proc.new {|_context, _field_config, document| document[:date_issued_ssi].present? }
     config.add_index_field 'date_created_ssi', label: 'Date', if: Proc.new {|_context, _field_config, document| document[:date_created_ssi].present? && document[:date_issued_ssi].blank? }
