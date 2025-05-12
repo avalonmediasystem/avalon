@@ -344,6 +344,7 @@ class MediaObject < ActiveFedora::Base
       #Add all searchable fields to the all_text_timv field
       all_text_values = []
       all_text_values << solr_doc["title_tesi"]
+      all_text_values << solr_doc["alternative_title_ssim"]
       all_text_values << solr_doc["creator_ssim"]
       all_text_values << solr_doc["contributor_ssim"]
       all_text_values << solr_doc["unit_ssim"]
