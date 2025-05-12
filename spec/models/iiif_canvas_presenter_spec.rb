@@ -213,6 +213,42 @@ describe IiifCanvasPresenter do
           expect(subject.items.second.items.second.items.first.media_fragment).to eq 't=0.0,1.235'
         end
       end
+
+      context 'with nested divs and spans' do
+        let(:structure_xml) { '<?xml version="1.0"?><Item label="Test"><Div label="Div 1"><Span label="Span 1" begin="00:00:00.000" end="00:00:01.235"><Div label="Div 2"><Div label="Div 3"/></Div><Span label="Span 2" begin="00:00:00.500" end="00:00:01.000"/></Span><Span label="Span 3" begin="00:00:01.236" end="00:00:02.235"/></Div></Item>' }
+        
+        it 'generates a canvas reference in the root range' do
+          expect(subject.label.to_s).to eq '{"none"=>["Test"]}'
+          expect(subject.items.size).to eq 2
+          item = subject.items.first
+          expect(item).to be_a IiifCanvasPresenter
+          expect(item.media_fragment).to eq "t=0,#{master_file.duration.to_f/1000}"
+          top_level_div = subject.items.second
+          expect(top_level_div.label.to_s).to eq '{"none"=>["Div 1"]}'
+          expect(top_level_div.items.size).to eq 2
+          parent_span = top_level_div.items.first
+          expect(parent_span.label.to_s).to eq '{"none"=>["Span 1"]}'
+          expect(parent_span.items.first).to be_a IiifCanvasPresenter
+          expect(parent_span.items.size).to eq 3
+          expect(parent_span.items.first.media_fragment).to eq 't=0.0,1.235'
+          child_div = parent_span.items.second
+          expect(child_div.label.to_s).to eq '{"none"=>["Div 2"]}'
+          expect(child_div.items.size).to eq 1
+          grandchild_div = child_div.items.first
+          expect(grandchild_div.label.to_s).to eq '{"none"=>["Div 3"]}'
+          expect(grandchild_div.items.size).to eq 0
+          child_span = parent_span.items.third
+          expect(child_span.label.to_s).to eq '{"none"=>["Span 2"]}'
+          expect(child_span.items.size).to eq 1
+          expect(child_span.items.first).to be_a IiifCanvasPresenter
+          expect(child_span.items.first.media_fragment).to eq 't=0.5,1.0'
+          sibling_span = subject.items.second.items.second
+          expect(sibling_span.label.to_s).to eq '{"none"=>["Span 3"]}'
+          expect(sibling_span.items.size).to eq 1
+          expect(sibling_span.items.first).to be_a IiifCanvasPresenter
+          expect(sibling_span.items.first.media_fragment).to eq 't=1.236,2.235'
+        end
+      end
     end
   end
 
