@@ -15,6 +15,7 @@
 */
 
 import React from 'react';
+import { createRoot } from "react-dom/client";
 import { render } from 'react-dom';
 import CollectionList from './CollectionList';
 
@@ -23,4 +24,7 @@ const props = {
   // filter: 'Good Morning Dave'
 };
 
-render(<CollectionList {...props} />, document.getElementById('root'));
+const root = createRoot(document.getElementById('root'));
+console.log('Rendering CollectionList with props:', props, root);
+root.render(<CollectionList {...props} />);
+// render(<CollectionList {...props} />, document.getElementById('root'));
