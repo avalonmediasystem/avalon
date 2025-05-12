@@ -30,6 +30,7 @@ FactoryBot.define do
       factory :fully_searchable_media_object do
         # with_collection
         visibility { 'public' }
+        alternative_title { ['Alternative'] }
         abstract { Faker::Lorem.paragraph }
         contributor { [Faker::Name.name] }
         date_created { Time.zone.today.edtf.to_s }
