@@ -136,9 +136,15 @@
       -ms-flex-positive: 1;
       flex-grow: 1;
       line-height: 1;
-      padding: 1rem;
       position: relative;
       z-index: 100;
+
+      button {
+        border: none;
+        width: 100%;
+        height: 100%;
+        padding: 1rem;
+      }
     }
     .nav-item:not(:first-child) {
       border-left: 1px solid #e2e7e9;
@@ -167,10 +173,10 @@
     .nav-item:focus:not(:focus-visible) {
       outline: none;
     }
-    .nav-item[aria-selected=true] {
+    .nav-item button[aria-selected=true] {
       background-color: #f8f9fa;
     }
-    .nav-item[aria-selected=true]:after {
+    .nav-item button[aria-selected=true]:after {
       bottom: 0;
       background-color: #2a5459;
       content: "";
@@ -337,23 +343,11 @@
     border-radius: 0 0 0.25em 0.25em;
     border-top: none;
 
-    .accordion .card {
-      border: none;
-      border-bottom: 1px solid rgba(0, 0, 0, 0.125);
-      display: flex;
-      flex-direction: column-reverse;
-      cursor: pointer;
-      
-      &:last-child {
-        border-bottom: none;
-      }
+    .accordion-button::after {
+      background-image: unset !important;
     }
 
-    .card-body {
-      padding: 0;
-    }
-
-    .card-header .accordion-arrow {
+    .accordion-button svg.accordion-arrow {
       transition: all 0.3s ease;
       -o-transition: all 0.3s ease;
       -moz-transition: all 0.3s ease;
@@ -364,7 +358,7 @@
       -webkit-transform: rotate(270deg);
     }
 
-    div[class~="show"]+.card-header .accordion-arrow {
+    .accordion-button[aria-expanded="true"] .accordion-arrow {
       transform: rotate(360deg);
       -o-transform: rotate(360deg);
       -ms-transform: rotate(360deg);

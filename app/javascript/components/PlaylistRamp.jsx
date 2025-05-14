@@ -38,7 +38,7 @@ const ExpandCollapseArrow = () => {
     </svg>);
 };
 
-const Ramp = ({
+const PlaylistRamp = ({
   urls,
   playlist_id,
   playlist_item_ids,
@@ -167,28 +167,20 @@ const Ramp = ({
                 <h4>{activeItemTitle}</h4>
                 {activeItemSummary && <div>{activeItemSummary}</div>}
               </Card.Header>
-              <Card.Body>
-                <Accordion>
-                  <Card>
-                    <Accordion.Collapse eventKey="0" id="markers">
-                      <Card.Body>
-                        <MarkersDisplay showHeading={false} />
-                      </Card.Body>
-                    </Accordion.Collapse>
-                    <Accordion.Toggle as={Card.Header} variant="link" eventKey="0" className="ramp--playlist-accordion-header">
-                      <ExpandCollapseArrow /> Markers
-                    </Accordion.Toggle>
-                  </Card>
-                  <Card>
-                    <Accordion.Collapse eventKey="1">
-                      <Card.Body className="p-3">
-                        <MetadataDisplay displayOnlyCanvasMetadata={true} showHeading={false} />
-                      </Card.Body>
-                    </Accordion.Collapse>
-                    <Accordion.Toggle as={Card.Header} variant="link" eventKey="1" className="ramp--playlist-accordion-header">
-                      <ExpandCollapseArrow /> Source Item Details
-                    </Accordion.Toggle>
-                  </Card>
+              <Card.Body className='p-0'>
+                <Accordion flush>
+                  <Accordion.Item eventKey='0'>
+                    <Accordion.Header><ExpandCollapseArrow /> Markers</Accordion.Header>
+                    <Accordion.Body>
+                      <MarkersDisplay showHeading={false} />
+                    </Accordion.Body>
+                  </Accordion.Item>
+                  <Accordion.Item eventKey='1'>
+                    <Accordion.Header><ExpandCollapseArrow /> Source Item Details</Accordion.Header>
+                    <Accordion.Body>
+                      <MetadataDisplay displayOnlyCanvasMetadata={true} showHeading={false} />
+                    </Accordion.Body>
+                  </Accordion.Item>
                 </Accordion>
               </Card.Body>
             </Card>
@@ -262,4 +254,4 @@ const Ramp = ({
   );
 };
 
-export default Ramp;
+export default PlaylistRamp;
