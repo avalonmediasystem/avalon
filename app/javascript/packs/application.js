@@ -23,11 +23,6 @@
 // To reference this file, add <%= javascript_pack_tag 'application' %> to the appropriate
 // layout file, like app/views/layouts/application.html.erb
 
-/* 
- * For some reason including the `embeds` directory in this `require.context` breaks
- * the player. Filtering out the directory allows everything to operate as intended.
- */
-
 import ReactOnRails from 'react-on-rails';
 
 import CollectionList from '../components/CollectionList';

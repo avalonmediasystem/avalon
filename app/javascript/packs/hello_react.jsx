@@ -3,7 +3,7 @@
 // of the page.
 
 import React from 'react';
-import { createRoot } from "react-dom/client";
+import { createRoot } from 'react-dom/client';
 import PropTypes from 'prop-types';
 
 const Hello = props => (
