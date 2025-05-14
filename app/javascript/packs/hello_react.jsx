@@ -20,11 +20,3 @@ Hello.propTypes = {
 
 const root = createRoot(document.body.appendChild(document.createElement('div')));
 root.render(<Hello name="React" />);
-
-
-// document.addEventListener('DOMContentLoaded', () => {
-//   ReactDOM.render(
-//     <Hello name="React" />,
-//     document.body.appendChild(document.createElement('div')),
-//   )
-// })
