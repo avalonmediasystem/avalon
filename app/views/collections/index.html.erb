@@ -20,5 +20,5 @@ Unless required by applicable law or agreed to in writing, software distributed
     <h1 class="page-title">Collections</h1>
   </div>
 
-  <%= react_component("CollectionList", { baseUrl: collections_url(format: :json), filter: params['filter'] }) %>
+  <%= react_component("CollectionList", { props: { baseUrl: collections_url(format: :json), filter: params['filter'] } }) %>
 </div>

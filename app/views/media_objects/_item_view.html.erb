@@ -41,15 +41,17 @@ Unless required by applicable law or agreed to in writing, software distributed
   <div class="col-sm-12">
     <%= react_component("MediaObjectRamp",
       {
-        urls: { base_url: request.protocol + request.host_with_port, fullpath_url: request.fullpath },
-        sections_count: @media_object.sections.size,
-        title: { content: render('title') },
-        share: { canShare: (will_partial_list_render? :share), content: lending_enabled?(@media_object) ? (render('share') if can_stream) : render('share') },
-        timeline: { canCreate: (current_ability.can? :create, Timeline), content: lending_enabled?(@media_object) ? (render('timeline') if can_stream) : render('timeline') },
-        playlist: { canCreate: (current_ability.can? :create, Playlist), tab: render('add_to_playlist') },
-        cdl: { enabled: lending_enabled?(@media_object), can_stream: can_stream, embed: render('embed_checkout'), destroy: render('destroy_checkout') },
-        has_files: @media_object.supplemental_files.present? || @media_object.sections_with_rendering_files?([nil, 'caption']),
-        has_transcripts: @media_object.sections_with_files(tag: 'transcript').present?
+        props: {
+          urls: { base_url: request.protocol + request.host_with_port, fullpath_url: request.fullpath },
+          sections_count: @media_object.sections.size,
+          title: { content: render('title') },
+          share: { canShare: (will_partial_list_render? :share), content: lending_enabled?(@media_object) ? (render('share') if can_stream) : render('share') },
+          timeline: { canCreate: (current_ability.can? :create, Timeline), content: lending_enabled?(@media_object) ? (render('timeline') if can_stream) : render('timeline') },
+          playlist: { canCreate: (current_ability.can? :create, Playlist), tab: render('add_to_playlist') },
+          cdl: { enabled: lending_enabled?(@media_object), can_stream: can_stream, embed: render('embed_checkout'), destroy: render('destroy_checkout') },
+          has_files: @media_object.supplemental_files.present? || @media_object.sections_with_rendering_files?([nil, 'caption']),
+          has_transcripts: @media_object.sections_with_files(tag: 'transcript').present?,
+        }
       }
     ) %>
   </div>
@@ -139,20 +141,20 @@ Unless required by applicable law or agreed to in writing, software distributed
 
       function transcriptCheck(canvasindex) {
         let sectionId = sectionIds[canvasindex];
-        let transcriptTab = document.evaluate('//a[text()="Transcripts"]', document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
-        let detailTab = document.evaluate('//a[text()="Details"]', document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+        let transcriptTab = document.evaluate('//button[text()="Transcripts"]', document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+        let detailTab = document.evaluate('//button[text()="Details"]', document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
 
         if(!transcriptSections.includes(sectionId)) {
           // If transcript tab is the active tab when it is hidden, the tab goes away but the box still displays
           // the missing transcript file message. Force change over to a different tab to avoid this case.
           if(transcriptTab) {
             if (transcriptTab.getAttribute('aria-selected') === "true") { detailTab.click(); }
-            transcriptTab.style.display = 'none';
-            transcriptTab.classList.add("disabled");
+            transcriptTab.parentElement.style.display = 'none';
+            transcriptTab.parentElement.classList.add("disabled");
           }
-        } else if (transcriptSections.includes(sectionId) && transcriptTab.style.display === 'none') {
-          transcriptTab.style.display = '';
-          transcriptTab.classList.remove("disabled");
+        } else if (transcriptSections.includes(sectionId) && transcriptTab.parentElement.style.display === 'none') {
+          transcriptTab.parentElement.style.display = '';
+          transcriptTab.parentElement.classList.remove("disabled");
         }
       }
     });

@@ -14,19 +14,7 @@
  * ---  END LICENSE_HEADER BLOCK  ---
 */
 
-/* eslint no-console:0 */
-// This file is automatically compiled by Webpack, along with any other files
-// present in this directory. You're encouraged to place your actual application logic in
-// a relevant structure within app/javascript and only use these pack files to reference
-// that code so it'll be compiled.
-//
-// To reference this file, add <%= javascript_pack_tag 'application' %> to the appropriate
-// layout file, like app/views/layouts/application.html.erb
-
-/* 
- * For some reason including the `embeds` directory in this `require.context` breaks
- * the player. Filtering out the directory allows everything to operate as intended.
- */
+// By default, this is used by react_on_rails for rendering the React components.
 
 import ReactOnRails from 'react-on-rails';
 
@@ -34,18 +22,15 @@ import CollectionList from '../components/CollectionList';
 import CollectionCarousel from '../components/CollectionCarousel';
 import CollectionDetails from '../components/CollectionDetails';
 import Search from '../components/Search';
-import EmbeddedRamp from '../components/embeds/EmbeddedRamp';
 import MediaObjectRamp from '../components/MediaObjectRamp';
 import ReactButtonContainer from '../components/ReactButtonContainer';
 import PlaylistRamp from '../components/PlaylistRamp';
 
-// Register components individually with ReactOnRails
 ReactOnRails.register({
   CollectionList,
   CollectionCarousel,
   CollectionDetails,
   Search,
-  EmbeddedRamp,
   MediaObjectRamp,
   ReactButtonContainer,
   PlaylistRamp,

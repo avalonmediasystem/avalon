@@ -28,7 +28,7 @@ import "@samvera/ramp/dist/ramp.css";
 import { Col, Row, Tab, Tabs } from 'react-bootstrap';
 import './Ramp.scss';
 
-const Ramp = ({
+const MediaObjectRamp = ({
   urls,
   sections_count,
   title,
@@ -75,12 +75,12 @@ const Ramp = ({
         <Col sm={12} md={9} lg={8}>
           {(cdl.enabled && !cdl.can_stream)
             ? (<React.Fragment>
-                <div dangerouslySetInnerHTML={{ __html: cdl.embed }} />
-                <div className="ramp--rails-title">
-                  {<div className="object-title" dangerouslySetInnerHTML={{ __html: title.content }} />}
-                </div>
-              </React.Fragment>
-              )
+              <div dangerouslySetInnerHTML={{ __html: cdl.embed }} />
+              <div className="ramp--rails-title">
+                {<div className="object-title" dangerouslySetInnerHTML={{ __html: title.content }} />}
+              </div>
+            </React.Fragment>
+            )
             : (<React.Fragment>
               {sections_count > 0 &&
                 <React.Fragment>
@@ -101,7 +101,6 @@ const Ramp = ({
                           aria-controls="timelineModal"
                           disabled={true}
                           data-testid="media-object-create-timeline-btn"
-                        
                         >
                           Create Timeline
                         </button>
@@ -189,4 +188,4 @@ const Ramp = ({
   );
 };
 
-export default Ramp;
+export default MediaObjectRamp;
