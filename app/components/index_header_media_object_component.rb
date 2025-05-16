@@ -1,0 +1,2 @@
+class IndexHeaderMediaObjectComponent < Blacklight::DocumentTitleComponent
+end

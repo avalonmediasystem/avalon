@@ -26,6 +26,7 @@ class CatalogController < ApplicationController
   before_action :load_home_page_collections, only: :index, if: proc { helpers.current_page? root_path }
 
   configure_blacklight do |config|
+    config.show.route = { controller: "media_objects" }
 
     # Default component configuration
     config.add_results_document_tool(:bookmark, partial: 'bookmark_control', if: :render_bookmarks_control?)
@@ -53,6 +54,11 @@ class CatalogController < ApplicationController
     }
 
     # solr field configuration for search results/index views
+    config.index.document_component = IndexMediaObjectComponent
+    config.index.title_component = IndexHeaderMediaObjectComponent
+    config.index.metadata_component = IndexMetadataMediaObjectComponent
+    config.index.thumbnail_component = ThumbnailMediaObjectComponent
+
     config.index.title_field = 'title_tesi'
     config.index.display_type_field = 'has_model_ssim'
     config.index.thumbnail_method = :avalon_image_tag
@@ -208,6 +214,9 @@ class CatalogController < ApplicationController
     config.spell_max = 5
 
     config.fetch_many_document_params = { fl: "*" }
+
+    # Continue to use Bootstrap 4 for the time being
+    config.bootstrap_version = 4
   end
 
   private
