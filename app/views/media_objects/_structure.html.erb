@@ -79,7 +79,7 @@ Unless required by applicable law or agreed to in writing, software distributed
                     baseURL: request.protocol+request.host_with_port, 
                     initStructure: section.structuralMetadata.as_json,
                   },
-                  html_options={ class: 'react-button-container' }
+                  html_options: { class: 'react-button-container' }
                 }) %>
               <% else %>
                 <%= react_component("ReactButtonContainer",
@@ -91,7 +91,7 @@ Unless required by applicable law or agreed to in writing, software distributed
                     baseURL: request.protocol+request.host_with_port, 
                     initStructure: { label: "#{item_label}", type: "div", items: [] },
                   },
-                  html_options={ class: 'react-button-container' }
+                  html_options: { class: 'react-button-container' }
                 }) %>
               <% end %>
               <button type="button" class="btn btn-primary btn-struct mr-1" value="Advanced Edit" data-toggle="modal"
