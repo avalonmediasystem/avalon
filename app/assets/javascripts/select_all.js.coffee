@@ -18,5 +18,4 @@ $("#bookmarks_selectall").on "change", (e) ->
     $("label.toggle-bookmark:not(.checked) input.toggle-bookmark").click()
   else
     $("label.toggle-bookmark.checked input.toggle-bookmark").click()
-  $("#bookmarks_selectall").disabled = false;
   return
