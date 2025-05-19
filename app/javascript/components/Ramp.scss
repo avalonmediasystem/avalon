@@ -299,31 +299,13 @@
     max-height: 33.5px;
     align-items: center;
 
+    .slider {
+      height: 30px;
+      width: 55px;
+    }
     .ramp--auto-advance-label {
       font-weight: bold;
       padding: 0px;
-    }
-
-    .ramp--auto-advance-toggle {
-      width: 2.5rem;
-      height: 1.45rem;
-
-      .slider:before {
-        height: 1.1rem;
-        width: 1rem;
-        left: 0.16rem;
-        bottom: 0.16rem;
-      }
-
-      input:checked+.slider:before {
-        -webkit-transform: translateX(1.1rem);
-        -ms-transform: translateX(1.1rem);
-        transform: translateX(1.1rem);
-      }
-    }
-
-    label.ramp--auto-advance-toggle {
-      margin-bottom: 0px;
     }
   }
 
@@ -343,7 +325,7 @@
       display: flex;
       flex-direction: column-reverse;
       cursor: pointer;
-      
+
       &:last-child {
         border-bottom: none;
       }
