@@ -14,42 +14,44 @@ Unless required by applicable law or agreed to in writing, software distributed
 ---  END LICENSE_HEADER BLOCK  ---
 %>
 
-<script type="text/javascript">
-  $('#target_collection_id').select2({
-    dropdownParent: $('#blacklight-modal')
-  });
-</script>
+<div data-blacklight-modal="container">
+  <script type="text/javascript">
+    $('#target_collection_id').select2({
+      dropdownParent: $('#blacklight-modal')
+    });
+  </script>
 
-<% @candidates = @documents %>
-<div class="modal-header">
-  <h1><%= t('blacklight.merge.form.title') %></h1>
-  <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-</div>
-
-<%= form_tag url_for(:controller => "bookmarks", :action => "merge"), :id => 'merge_form', :method => :post do %>
-  <div class="modal-body">
-    <div class="row-fluid">
-      <% if @documents.empty? || @documents.count < 2 %>
-        <div class="alert alert-danger">
-          <p><%= t('blacklight.merge.insufficient_items') %></p>
-        </div>
-      <% else %>
-        <div class="alert">
-          <fieldset>
-            <p><%= t('blacklight.merge.confirm') %></p>
-            <% @documents.each do |d| %>
-              <div class="form-check">
-                <%= radio_button_tag :media_object, d.id, style: 'width:100%;' %>
-                <%= label_tag "media_object_#{d.id}", "#{d["title_tesi"] || "No title"} - #{d.id}" %>
-                <% t('blacklight.merge.insufficient_rights') if cannot? :destroy, SpeedyAF::Proxy::MediaObject.find(d.id) %>
-              </div>
-            <% end %>
-          </fieldset>
-        </div>
-        <div class="modal-footer">
-          <button type="submit" class="btn btn-primary"><%= t('blacklight.merge.button') %></button>
-        </div>
-      <% end %>
-    </div>
+  <% @candidates = @documents %>
+  <div class="modal-header">
+    <h1><%= t('blacklight.merge.form.title') %></h1>
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
   </div>
-<% end %>
+
+  <%= form_tag url_for(:controller => "bookmarks", :action => "merge"), :id => 'merge_form', :method => :post do %>
+    <div class="modal-body">
+      <div class="row-fluid">
+        <% if @documents.empty? || @documents.count < 2 %>
+          <div class="alert alert-danger">
+            <p><%= t('blacklight.merge.insufficient_items') %></p>
+          </div>
+        <% else %>
+          <div class="alert">
+            <fieldset>
+              <p><%= t('blacklight.merge.confirm') %></p>
+              <% @documents.each do |d| %>
+                <div class="form-check">
+                  <%= radio_button_tag :media_object, d.id, style: 'width:100%;' %>
+                  <%= label_tag "media_object_#{d.id}", "#{d["title_tesi"] || "No title"} - #{d.id}" %>
+                  <% t('blacklight.merge.insufficient_rights') if cannot? :destroy, SpeedyAF::Proxy::MediaObject.find(d.id) %>
+                </div>
+              <% end %>
+            </fieldset>
+          </div>
+          <div class="modal-footer">
+            <button type="submit" class="btn btn-primary"><%= t('blacklight.merge.button') %></button>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  <% end %>
+</div>

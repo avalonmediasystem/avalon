@@ -14,41 +14,43 @@ Unless required by applicable law or agreed to in writing, software distributed
 ---  END LICENSE_HEADER BLOCK  ---
 %>
 
-<script type="text/javascript">
-  $('#target_playlist_id').select2({
-    dropdownParent: $('#blacklight-modal')
-  });
-</script>
+<div data-blacklight-modal="container">
+  <script type="text/javascript">
+    $('#target_playlist_id').select2({
+      dropdownParent: $('#blacklight-modal')
+    });
+  </script>
 
-<% @candidates = Playlist.where(user: current_user) %>
+  <% @candidates = Playlist.where(user: current_user) %>
 
-<div class="modal-header">
-  <h1><%= t('blacklight.add_to_playlist.form.title') %></h1>
-  <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-</div>
-
-<%= form_tag url_for(:controller => "bookmarks", :action => "add_to_playlist"), :id => 'add_to_playlist_form', :method => :post do %>
-  <div class="modal-body">
-    <div class="row-fluid">
-      <% if @candidates.count == 0 || @documents.empty? %>
-        <div class="alert alert-danger">
-          <% if @documents.empty? %>
-                  <p><%= t('blacklight.bookmarks.no_bookmarks') %></p>
-          <% else %>
-                  <p><%= t('blacklight.add_to_playlist.no_playlists') %></p>
-          <% end %>
-        </div>
-      <% else %>
-        <div class="alert">
-          <fieldset>
-            <p><%= t('blacklight.add_to_playlist.confirm') %></p>
-            <%= select_tag :target_playlist_id, options_from_collection_for_select(@candidates, "id", "title"), style: 'width:100%;' %>
-          </fieldset>
-        </div>
-        <div class="modal-footer">
-          <button type="submit" class="btn btn-primary"><%= t('blacklight.add_to_playlist.button') %></button>
-        </div>
-	    <% end %>
-    </div>
+  <div class="modal-header">
+    <h1><%= t('blacklight.add_to_playlist.form.title') %></h1>
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
   </div>
-<% end %>
+
+  <%= form_tag url_for(:controller => "bookmarks", :action => "add_to_playlist"), :id => 'add_to_playlist_form', :method => :post do %>
+    <div class="modal-body">
+      <div class="row-fluid">
+        <% if @candidates.count == 0 || @documents.empty? %>
+          <div class="alert alert-danger">
+            <% if @documents.empty? %>
+                    <p><%= t('blacklight.bookmarks.no_bookmarks') %></p>
+            <% else %>
+                    <p><%= t('blacklight.add_to_playlist.no_playlists') %></p>
+            <% end %>
+          </div>
+        <% else %>
+          <div class="alert">
+            <fieldset>
+              <p><%= t('blacklight.add_to_playlist.confirm') %></p>
+              <%= select_tag :target_playlist_id, options_from_collection_for_select(@candidates, "id", "title"), style: 'width:100%;' %>
+            </fieldset>
+          </div>
+          <div class="modal-footer">
+            <button type="submit" class="btn btn-primary"><%= t('blacklight.add_to_playlist.button') %></button>
+          </div>
+  	    <% end %>
+      </div>
+    </div>
+  <% end %>
+</div>

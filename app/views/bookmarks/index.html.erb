@@ -13,28 +13,31 @@ Unless required by applicable law or agreed to in writing, software distributed
   specific language governing permissions and limitations under the License.
 ---  END LICENSE_HEADER BLOCK  ---
 %>
-<div id="content" class="col-md-12">
-  <h1><%= t('blacklight.bookmarks.title') %></h1>
 
-  <%- if current_or_guest_user.blank? -%>
+<div data-blacklight-modal="container">
+  <div id="content" class="col-md-12">
+    <h1><%= t('blacklight.bookmarks.title') %></h1>
 
-  <h2><%= t('blacklight.bookmarks.need_login') %></h2>
+    <%- if current_or_guest_user.blank? -%>
 
-  <%- elsif @response.documents.blank? -%>
+    <h2><%= t('blacklight.bookmarks.need_login') %></h2>
 
-  <div class="alert alert-info" role="alert"><%= t('blacklight.bookmarks.no_bookmarks') %></div>
+    <%- elsif @response.documents.blank? -%>
 
-  <% else %>
-  <%# link_to t('blacklight.bookmarks.clear.action_title'), clear_bookmarks_path, :method => :delete, :data => { :confirm => t('blacklight.bookmarks.clear.action_confirm') }, :class => 'clear-bookmarks btn btn-danger float-right' %>
-  <%= render 'sort_and_per_page' %>
-  <%= render partial: 'tools', locals: { document_list: @response.documents } %>
+    <div class="alert alert-info" role="alert"><%= t('blacklight.bookmarks.no_bookmarks') %></div>
 
-  <%= render_document_index @response.documents %>
-  <%= render 'results_pagination' %>
+    <% else %>
+    <%# link_to t('blacklight.bookmarks.clear.action_title'), clear_bookmarks_path, :method => :delete, :data => { :confirm => t('blacklight.bookmarks.clear.action_confirm') }, :class => 'clear-bookmarks btn btn-danger float-right' %>
+    <%= render 'sort_and_per_page' %>
+    <%= render partial: 'tools', locals: { document_list: @response.documents } %>
+
+    <%= render_document_index @response.documents %>
+    <%= render 'results_pagination' %>
+    <% end %>
+  </div>
+
+  <% content_for :page_scripts do %>
+  <%= javascript_include_tag 'select2.min' %>
+  <%= stylesheet_link_tag 'select2.min' %>
   <% end %>
 </div>
-
-<% content_for :page_scripts do %>
-<%= javascript_include_tag 'select2.min' %>
-<%= stylesheet_link_tag 'select2.min' %>
-<% end %>
