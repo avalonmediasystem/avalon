@@ -24,7 +24,7 @@ Unless required by applicable law or agreed to in writing, software distributed
   <% @candidates = @documents %>
   <div class="modal-header">
     <h1><%= t('blacklight.merge.form.title') %></h1>
-    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    <button type="button" class="close" data-bl-dismiss="modal" aria-hidden="true">×</button>
   </div>
 
   <%= form_tag url_for(:controller => "bookmarks", :action => "merge"), :id => 'merge_form', :method => :post do %>

@@ -17,7 +17,7 @@ Unless required by applicable law or agreed to in writing, software distributed
 <div data-blacklight-modal="container">
   <div class="modal-header">
     <h1><%= t('blacklight.delete.form.title') %></h1>
-    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    <button type="button" class="close" data-bl-dismiss="modal" aria-hidden="true">×</button>
   </div>
   <%= form_tag url_for(:controller => "bookmarks", :action => "delete"), :id => 'delete_form', :method => :post do %>
     <div class="modal-body">
