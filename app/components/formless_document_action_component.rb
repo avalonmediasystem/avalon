@@ -3,7 +3,7 @@ class FormlessDocumentActionComponent < Blacklight::Document::ActionComponent
     link_to label,
             url,
             id: @id,
-            class: @link_classes,
+            class: "btn btn-default btn-outline",
             method: 'post',
             data: {}.merge(({ blacklight_modal: "trigger", turbo: false } if @action.modal != false) || {})
   end
