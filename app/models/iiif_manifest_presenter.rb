@@ -199,7 +199,7 @@ class IiifManifestPresenter
       metadata_field('Genre', media_object.genre),
       metadata_field('Subject', display_search_linked("subject_ssim", media_object.topical_subject)),
       metadata_field('Time period', media_object.temporal_subject),
-      metadata_field('Location', media_object.geographic_subject),
+      metadata_field('Geographic Subject', media_object.geographic_subject),
       metadata_field('Collection', display_collection(media_object)),
       metadata_field('Unit', display_unit(media_object)),
       metadata_field('Language', display_language(media_object)),

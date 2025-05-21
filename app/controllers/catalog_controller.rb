@@ -134,7 +134,7 @@ class CatalogController < ApplicationController
     config.add_show_field 'language_ssim', label: 'Language'
     config.add_show_field 'date_issued_ssi', label: 'Date'
     config.add_show_field 'abstract_ssim', label: 'Abstract'
-    config.add_show_field 'location_ssim', label: 'Locations'
+    config.add_show_field 'geographic_subject_ssim', label: 'Geographic Subjects'
     config.add_show_field 'contributor_ssim', label: 'Contributors'
     config.add_show_field 'publisher_ssim', label: 'Publisher'
     config.add_show_field 'genre_ssim', label: 'Genre'

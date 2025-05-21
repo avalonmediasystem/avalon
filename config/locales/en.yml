@@ -89,7 +89,7 @@ en:
       href="http://metadataregistry.org/concept/list/vocabulary_id/148.html"
       target="_blank">Open Metadata Registry labels for PBCore: pbcoreGenre</a>.
     geographic_subject: |
-      Location should be used for the geographic subject of the content. For
+      The geographic subject of the content. For
       consistency and to allow for sorting and aggregating, use terms from the
       <a href="http://www.getty.edu/research/tools/vocabularies/tgn/index.html"
       target="_blank">Getty Thesaurus of Geographic Names</a>.
