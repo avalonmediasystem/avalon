@@ -58,16 +58,6 @@ GIT
       omniauth
 
 GIT
-  remote: https://github.com/projectblacklight/blacklight-access_controls
-  revision: 0148cf32414b0fd4c39c3652aaae32193c207e4b
-  branch: rails7_ruby3_blacklight8_upgrade
-  specs:
-    blacklight-access_controls (6.0.1)
-      blacklight (> 6.0, < 9)
-      cancancan (>= 1.8)
-      deprecation (~> 1.0)
-
-GIT
   remote: https://github.com/samvera-labs/active_encode.git
   revision: 25c839f7fd88f1a42dbc56ba8ad3a0cfef1d4a6f
   branch: main
@@ -293,6 +283,10 @@ GEM
       rails (>= 6.1, < 9)
       view_component (>= 2.74, < 4)
       zeitwerk
+    blacklight-access_controls (6.1.0)
+      blacklight (> 6.0, < 9)
+      cancancan (>= 1.8)
+      deprecation (~> 1.0)
     bootsnap (1.18.4)
       msgpack (~> 1.2)
     bootstrap (4.6.2)
@@ -1049,7 +1043,7 @@ DEPENDENCIES
   aws-sigv4
   bixby
   blacklight (~> 8.10)
-  blacklight-access_controls!
+  blacklight-access_controls (~> 6.1)
   bootsnap
   bootstrap (= 4.6.2)
   bootstrap-toggle-rails

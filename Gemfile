@@ -42,7 +42,7 @@ gem 'rdf-rdfxml'
 
 # Samvera version pins
 gem 'blacklight', '~> 8.10'
-gem 'blacklight-access_controls', git: 'https://github.com/projectblacklight/blacklight-access_controls', branch: 'rails7_ruby3_blacklight8_upgrade' # '>= 6.0.1' # ensure rails 6 support
+gem 'blacklight-access_controls', '~> 6.1'
 gem 'rdf', '~> 3.1'
 gem 'rsolr', '~> 2.0'
 
