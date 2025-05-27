@@ -196,7 +196,7 @@ ActiveRecord::Schema[7.2].define(version: 2024_08_22_194731) do
   create_table "playlists", force: :cascade do |t|
     t.string "title"
     t.bigint "user_id", null: false
-    t.string "comment"
+    t.text "comment"
     t.string "visibility"
     t.datetime "created_at", precision: nil, null: false
     t.datetime "updated_at", precision: nil, null: false

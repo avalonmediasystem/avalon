@@ -15,9 +15,6 @@
 */
 
 import ItemPage from '../pageObjects/itemPage';
-const itemPage = new ItemPage();
-
-import ItemPage from '../pageObjects/itemPage';
 import HomePage from '../pageObjects/homePage.js';
 const itemPage = new ItemPage();
 import {
