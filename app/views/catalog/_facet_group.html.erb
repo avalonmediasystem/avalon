@@ -27,7 +27,7 @@ Unless required by applicable law or agreed to in writing, software distributed
   </h2>
     </div>
 
-  <div id="facet-panel<%= "-#{groupname}" unless groupname.nil? %>-collapse" class="collapse facet-group">
+  <div id="facet-panel<%= "-#{groupname}" unless groupname.nil? %>-collapse" class="collapse facet-group" data-testid="browse-facet-group-<%= groupname || 'browse-by' %>" >
   <%= render_facet_partials facet_field_names(groupname) %>
 </div>
 </div>

@@ -30,7 +30,7 @@ Unless required by applicable law or agreed to in writing, software distributed
         <%= t('blacklight.search.documents.counter', counter: counter) %>
       </span>
     <% end %>
-    <%= link_to_document document, search_result_label(document), counter: counter %>
+    <%= link_to_document document, search_result_label(document), counter: counter ,  data: { testid: "browse-document-title-#{document.id}" }%>
   </h3>
 
   <%= document_actions %>

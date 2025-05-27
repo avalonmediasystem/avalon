@@ -17,4 +17,4 @@ Unless required by applicable law or agreed to in writing, software distributed
             document_action_path(document_action_config, (local_assigns.has_key?(:url_opts) ? url_opts : {}).merge(({id: document} if document) || {})),
             id: document_action_config.fetch(:id, "#{document_action_config.key}Link"),
             class: "btn btn-outline",
-            data: {}.merge(({blacklight_modal: "trigger"} if document_action_config.modal != false) || {}) %>
+            data: {testid: "bookmark-#{document_action_config.key}"}.merge(({blacklight_modal: "trigger"} if document_action_config.modal != false) || {}) %>
