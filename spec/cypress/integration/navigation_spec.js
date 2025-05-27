@@ -12,56 +12,50 @@
  *   CONDITIONS OF ANY KIND, either express or implied. See the License for the
  *   specific language governing permissions and limitations under the License.
  * ---  END LICENSE_HEADER BLOCK  ---
-*/
+ */
 
 context('Navigations', () => {
-
   // checks navigation to Browse
-  it('.browse_navigation() - @critical', () => {
-		cy.login('administrator')
-		cy.visit('/')
-		cy.contains('Browse').click()
-  })
+  it('.browse_navigation()', { tags: '@critical' }, () => {
+    cy.login('administrator');
+    cy.contains('Browse').click();
+  });
 
   // checks navigation to Manage content
-  it('.manage_content() - @critical', () => {
-		cy.login('administrator')
-		cy.visit('/')
-		cy.contains('Manage Content')//.click()
-		cy.contains('Manage').click()
-		cy.visit('/admin/collections')
-		cy.contains('Skip to main content')
-		cy.contains('Create Collection')
-		// What if there are no collections yet?
-		cy.contains('Title')
-		cy.contains('Items')
-		cy.contains('Managers')
-		cy.contains('Description')
-		cy.contains('My Collections')
-  })
+  it('.manage_content()', { tags: '@critical' }, () => {
+    cy.login('administrator');
+    cy.contains('Manage Content'); //.click()
+    cy.contains('Manage').click();
+    cy.visit('/admin/collections');
+    cy.contains('Skip to main content');
+    cy.contains('Create Collection');
+    // What if there are no collections yet?
+    cy.contains('Title');
+    cy.contains('Items');
+    cy.contains('Managers');
+    cy.contains('Description');
+    cy.contains('My Collections');
+  });
 
   // checks naviagtion to Manage Groups
-  it('.manage_groups() - @critical', () => {
-		cy.login('administrator')
-		cy.visit('/')
-		cy.contains('Manage Groups')//.click()
-		cy.contains('Manage').click()
-		cy.visit('/admin/groups')
-		cy.contains('System Groups')
-		cy.contains('Additional Groups')
-		cy.contains('Group Name')
-		cy.contains('group_manager')
-		cy.contains('administrator')
-		cy.contains('manager')
-  })
+  it('.manage_groups()', { tags: '@critical' }, () => {
+    cy.login('administrator');
+    cy.contains('Manage Groups'); //.click()
+    cy.contains('Manage').click();
+    cy.visit('/admin/groups');
+    cy.contains('System Groups');
+    cy.contains('Additional Groups');
+    cy.contains('Group Name');
+    cy.contains('group_manager');
+    cy.contains('administrator');
+    cy.contains('manager');
+  });
 
   // is able to sign out
-  it('.signout() - @critical', () => {
-		cy.login('administrator')
-		cy.visit('/')
-		cy.contains('Sign out').click()
-  })
+  it('.signout()', { tags: '@critical' }, () => {
+    cy.login('administrator');
+    cy.contains('Sign out').click();
+  });
 
   // Search - is able to enter keyword and perform search
-  
-})
+});

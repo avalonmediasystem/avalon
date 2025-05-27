@@ -12,25 +12,24 @@
  *   CONDITIONS OF ANY KIND, either express or implied. See the License for the
  *   specific language governing permissions and limitations under the License.
  * ---  END LICENSE_HEADER BLOCK  ---
-*/
+ */
 
 class LoginPage {
-    visit() {
-      cy.visit('/users/sign_in');
-    }
-  
-    fillEmail(email) {
-      cy.get('input[name="user[login]"]').type(email);
-    }
-  
-    fillPassword(password) {
-      cy.get('input[name="user[password]"]').type(password);
-    }
-  
-    submit() {
-      cy.get('input[type="submit"][value="Connect"]').click();
-    }
+  visit() {
+    cy.visit('/users/sign_in');
   }
-  
-  export default LoginPage;
-  
+
+  fillEmail(email) {
+    cy.get('input[name="user[login]"]').type(email);
+  }
+
+  fillPassword(password) {
+    cy.get('input[name="user[password]"]').type(password);
+  }
+
+  submit() {
+    cy.get('input[type="submit"][value="Connect"]').click();
+  }
+}
+
+export default LoginPage;

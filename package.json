@@ -40,7 +40,7 @@
   "devDependencies": {
     "@babel/plugin-transform-runtime": "7",
     "@babel/preset-env": "7",
-    "@cypress/grep": "^4.1.0",
+    "@bahmutov/cy-grep": "^2.0.27",
     "babel-loader": "8",
     "cypress": "^13.7",
     "cypress-file-upload": "^5.0",

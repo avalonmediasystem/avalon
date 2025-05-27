@@ -69,7 +69,7 @@ Unless required by applicable law or agreed to in writing, software distributed
 
         <% end # playlists.present?%>
         <%= f.submit "Delete Selected", id: 'delete_selected_playlist_items', class: 'btn btn-danger btn-confirmation btn-sm',
-          form:"edit_playlist_#{@playlist.id}", data: { placement: 'bottom' }, disabled:'disabled', sanitize: false %>
+          form:"edit_playlist_#{@playlist.id}", data: { placement: 'bottom', testid: 'playlist-delete-selected-btn' }, disabled:'disabled', sanitize: false %>
       </div>
     </div>
     <% end #form_for update_multiple %>
@@ -96,7 +96,7 @@ Unless required by applicable law or agreed to in writing, software distributed
                   data-toggle="collapse" href="#playlist_item_edit_<%= i.id %>" aria-expanded="false" type="button">
                 </button>
                 <label>
-                  <%= check_box_tag 'clip_ids[]', i.id, false, form:"edit_playlist_#{@playlist.id}", class:"playlist_item_select" %>
+                  <%= check_box_tag 'clip_ids[]', i.id, false, form:"edit_playlist_#{@playlist.id}", class:"playlist_item_select" , data: { testid: "playlist-item-checkbox" }   %>
                   Select
                 </label>
               </div>

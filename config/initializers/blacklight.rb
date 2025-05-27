@@ -1,4 +1,5 @@
 require 'blacklight'
+
 Rails.application.config.to_prepare do
   module Blacklight::UrlHelperBehavior
     def url_for_document doc, options = {}
