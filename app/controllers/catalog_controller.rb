@@ -1,11 +1,11 @@
-# Copyright 2011-2024, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2025, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
-# 
+#
 # You may obtain a copy of the License at
-# 
+#
 # http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software distributed
 #   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
 #   CONDITIONS OF ANY KIND, either express or implied. See the License for the
@@ -117,6 +117,8 @@ class CatalogController < ApplicationController
     # solr fields to be displayed in the index (search results) view
     #   The ordering of the field names is the order of the display
     config.add_index_field 'title_tesi', label: 'Title', if: Proc.new {|context, _field_config, _document| context.request.format == :json }
+    # TODO: Add helper_method for alternative title display after #6301 is resolved
+    config.add_index_field 'alternative_title_ssim', label: 'Alternative title'
     config.add_index_field 'date_issued_ssi', label: 'Date', if: Proc.new {|_context, _field_config, document| document[:date_issued_ssi].present? }
     config.add_index_field 'date_created_ssi', label: 'Date', if: Proc.new {|_context, _field_config, document| document[:date_created_ssi].present? && document[:date_issued_ssi].blank? }
     config.add_index_field 'creator_ssim', label: 'Main contributors', helper_method: :contributor_index_display
@@ -132,7 +134,7 @@ class CatalogController < ApplicationController
     config.add_show_field 'language_ssim', label: 'Language'
     config.add_show_field 'date_issued_ssi', label: 'Date'
     config.add_show_field 'abstract_ssim', label: 'Abstract'
-    config.add_show_field 'location_ssim', label: 'Locations'
+    config.add_show_field 'geographic_subject_ssim', label: 'Geographic Subjects'
     config.add_show_field 'contributor_ssim', label: 'Contributors'
     config.add_show_field 'publisher_ssim', label: 'Publisher'
     config.add_show_field 'genre_ssim', label: 'Genre'

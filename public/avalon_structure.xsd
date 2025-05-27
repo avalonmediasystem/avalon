@@ -9,6 +9,10 @@
         <xs:attribute type="label" name="label" use="required"/>
     </xs:complexType>
     <xs:complexType name="span">
+        <xs:choice maxOccurs="unbounded" minOccurs="0">
+            <xs:element name="Div" type="div" maxOccurs="unbounded" minOccurs="0"/>
+            <xs:element name="Span" type="span" maxOccurs="unbounded" minOccurs="0"/>
+        </xs:choice>
         <xs:attribute type="label" name="label" use="required"/>
         <xs:attribute name="begin" type="time" />        
         <xs:attribute name="end" type="time" />        

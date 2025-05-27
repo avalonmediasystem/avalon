@@ -78,4 +78,8 @@ describe FileMover, type: :service do
       end
     end
   end
+<<<<<<< HEAD
 end
+=======
+end
+>>>>>>> origin/develop

@@ -1,11 +1,11 @@
-# Copyright 2011-2024, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2025, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
-# 
+#
 # You may obtain a copy of the License at
-# 
+#
 # http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software distributed
 #   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
 #   CONDITIONS OF ANY KIND, either express or implied. See the License for the
@@ -69,6 +69,7 @@ class StructuralMetadata < ActiveFedora::File
       new_node.set_attribute('label', sanitize(item[:label]))
       new_node.set_attribute('begin', item[:begin])
       new_node.set_attribute('end', item[:end])
+      item[:items].each { |i| node_json_to_xml(i, new_node, document) } if item[:items].present?
       node.add_child(new_node)
     end
   end
@@ -77,18 +78,21 @@ class StructuralMetadata < ActiveFedora::File
 
     def node_xml_to_json(node)
       if node.name.casecmp("div").zero? || node.name.casecmp('item').zero?
+        items = node.children.reject(&:blank?).collect { |n| node_xml_to_json n }
         {
           type: 'div',
           label: node.attribute('label').value,
-          items: node.children.reject(&:blank?).collect { |n| node_xml_to_json n }
+          items: items
         }
       elsif node.name.casecmp('span').zero?
+        items = node.children.reject(&:blank?).collect { |n| node_xml_to_json n }
         {
           type: 'span',
           label: node.attribute('label').value,
           begin: node.attribute('begin').present? ? node.attribute('begin').value : '0',
-          end: node.attribute('end').present? ? node.attribute('end').value : '0'
-        }
+          end: node.attribute('end').present? ? node.attribute('end').value : '0',
+          items: items
+        }.delete_if { |k,v| v.blank? }
       end
     end
 end

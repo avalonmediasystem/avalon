@@ -598,7 +598,11 @@ GEM
     mysql2 (0.5.6)
     net-http (0.4.1)
       uri
+<<<<<<< HEAD
     net-imap (0.5.1)
+=======
+    net-imap (0.5.8)
+>>>>>>> origin/develop
       date
       net-protocol
     net-ldap (0.19.0)
@@ -675,7 +679,11 @@ GEM
       parallel (~> 1)
     raabro (1.4.0)
     racc (1.8.1)
+<<<<<<< HEAD
     rack (2.2.13)
+=======
+    rack (2.2.14)
+>>>>>>> origin/develop
     rack-cors (2.0.2)
       rack (>= 2.0.0)
     rack-mini-profiler (3.3.1)

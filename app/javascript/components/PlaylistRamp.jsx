@@ -82,9 +82,11 @@ const Ramp = ({
      */
     descriptionCheck = setInterval(prepInitialDescription, 100);
 
-    // Clear interval upon component unmounting
-    return () => clearInterval(interval);
-    return () => clearInterval(descriptionCheck);
+    // Clear intervals upon component unmounting
+    return () => {
+      clearInterval(interval);
+      clearInterval(descriptionCheck);
+    };
   }, []);
 
   /**
@@ -96,7 +98,7 @@ const Ramp = ({
     if (player && player.player != undefined && !player.player.isDisposed()) {
       let playerInst = player.player;
       playerInst.ready(() => {
-        let activeElement = document.getElementsByClassName('ramp--structured-nav__list-item active');
+        let activeElement = document.getElementsByClassName('ramp--structured-nav__tree-item active');
         if (activeElement != undefined && activeElement?.length > 0) {
           setActiveItemTitle(activeElement[0]?.dataset.label);
           setActiveItemSummary(activeElement[0]?.dataset.summary);

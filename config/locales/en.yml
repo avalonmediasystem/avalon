@@ -45,6 +45,12 @@ en:
       is not meant for cataloger's descriptions but for descriptions that
       accompany the item. Depending on the length of the summary it may be
       truncated in search results.
+    alternative_title: |
+      Alternative title is used for display in search results and single item views.
+      Only the first 32 characters of a title are included in search result listings.
+      Recommended use is to reflect the content captured in digitized media files (such 
+      as the title of the piece performed or a short description of the content of a
+      home movie).
     collection: |
       Collection defines the source or host of the item (for example, the source
       of the original record or the collection responsible for entering
@@ -83,7 +89,7 @@ en:
       href="http://metadataregistry.org/concept/list/vocabulary_id/148.html"
       target="_blank">Open Metadata Registry labels for PBCore: pbcoreGenre</a>.
     geographic_subject: |
-      Location should be used for the geographic subject of the content. For
+      The geographic subject of the content. For
       consistency and to allow for sorting and aggregating, use terms from the
       <a href="http://www.getty.edu/research/tools/vocabularies/tgn/index.html"
       target="_blank">Getty Thesaurus of Geographic Names</a>.
