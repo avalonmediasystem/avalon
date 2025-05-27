@@ -325,7 +325,10 @@
       display: flex;
       flex-direction: column-reverse;
       cursor: pointer;
+<<<<<<< HEAD
 
+=======
+>>>>>>> 1c2e2182b (reverted the db change and item.spec fix)
       &:last-child {
         border-bottom: none;
       }
