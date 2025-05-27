@@ -34,8 +34,8 @@ services:
       internal:
     ulimits:
       nofile:
-        soft: "65536"
-        hard: "65536"
+        soft: '65536'
+        hard: '65536'
   fedora-test:
     <<: *fedora
     depends_on: []
@@ -57,8 +57,8 @@ services:
       internal:
     ulimits:
       nofile:
-        soft: "65536"
-        hard: "65536"
+        soft: '65536'
+        hard: '65536'
   solr-test:
     <<: *solr
     volumes:
@@ -188,7 +188,7 @@ services:
       internal:
       external:
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      test: ['CMD', 'curl', '-f', 'http://localhost:9000/minio/health/live']
       interval: 30s
       timeout: 20s
       retries: 3
@@ -214,11 +214,14 @@ services:
     image: cypress/included:latest
     depends_on:
       - avalon
-    entrypoint: cypress run -C spec/cypress/cypress.config.js
+    entrypoint:
+      - sh
+      - -c
+      - 'yarn install --dev && cypress run -C spec/cypress/cypress.config.js'
     working_dir: /e2e
     volumes:
       - ./:/e2e
       - npms:/e2e/node_modules
     environment:
-      - CYPRESS_ENV=${CYPRESS_ENV:-local}
-      - CYPRESS_grep=${CYPRESS_grep:-@critical}
+      CYPRESS_ENV: ${CYPRESS_ENV:-local}
+      grepTags: ${CYPRESS_grep:-@critical}

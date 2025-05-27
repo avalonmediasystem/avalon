@@ -1,5 +1,10 @@
+<<<<<<< Updated upstream
 /* 
  * Copyright 2011-2025, The Trustees of Indiana University and Northwestern
+=======
+/*
+ * Copyright 2011-2024, The Trustees of Indiana University and Northwestern
+>>>>>>> Stashed changes
  *   University.  Licensed under the Apache License, Version 2.0 (the "License");
  *   you may not use this file except in compliance with the License.
  *
@@ -12,7 +17,7 @@
  *   CONDITIONS OF ANY KIND, either express or implied. See the License for the
  *   specific language governing permissions and limitations under the License.
  * ---  END LICENSE_HEADER BLOCK  ---
-*/
+ */
 
 // ***********************************************************
 // This example support/index.js is processed and
@@ -30,7 +35,8 @@
 // ***********************************************************
 
 // Import commands.js using ES2015 syntax:
-import '@cypress/grep';
+import registerCypressGrep from '@bahmutov/cy-grep/src/support';
+registerCypressGrep();
 import './commands';
 
 // Alternatively you can use CommonJS syntax:

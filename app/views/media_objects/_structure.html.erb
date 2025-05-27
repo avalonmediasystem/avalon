@@ -55,7 +55,7 @@ Unless required by applicable law or agreed to in writing, software distributed
             <%= number_to_human_size(section.file_size) %>
           </li>
           <li>
-            <button class="btn btn-outline btn-struct" type="button" data-toggle="collapse" data-target="#structure_<%= index %>" aria-expanded="false" aria-controls="structure_<%= index %>" data-testid="media-object-edit-structure-btn">
+            <button class="btn btn-outline btn-struct" type="button" data-toggle="collapse" data-target="#structure_<%= index %>" aria-expanded="false" aria-controls="structure_<%= index %>" data-testid="media-object-edit-structure-btn-<%= index %>">
               Edit Structure
             </button>
           </li>
@@ -68,14 +68,14 @@ Unless required by applicable law or agreed to in writing, software distributed
             <% item_label=html_escape(stream_label_for(section)) %>
             <% stream_url=hls_manifest_master_file_url(section.id, quality: 'auto') %>
             <div class="btn-toolbar">
-              <label class="btn btn-primary btn-struct mr-1 file-upload-label" for="structure_<%= index %>_filedata"><%= section.structuralMetadata.present? ? 'Replace' : 'Upload'%></label>
+              <label class="btn btn-primary btn-struct mr-1 file-upload-label" for="structure_<%= index %>_filedata" data-testid="media-object-struct-upload-btn-<%= index %>" ><%= section.structuralMetadata.present? ? 'Replace' : 'Upload'%></label>
               <% if section.structuralMetadata.valid? %>
                 <%= react_component("ReactButtonContainer", {canvasIndex: index, mediaObjectID: @media_object.id, masterFileID: section.id, baseURL: request.protocol+request.host_with_port, initStructure: section.structuralMetadata.as_json}, html_options={ class: 'react-button-container' }) %>
               <% else %>
                 <%= react_component("ReactButtonContainer", {canvasIndex: index, mediaObjectID: @media_object.id, masterFileID: section.id, baseURL: request.protocol+request.host_with_port, initStructure: { label: "#{item_label}", type: "div", items: [] }}, html_options={ class: 'react-button-container' }) %>
               <% end %>
               <button type="button" class="btn btn-primary btn-struct mr-1" value="Advanced Edit" data-toggle="modal"
-                data-target="#advanced_edit_structure_<%= index %>">Advanced Edit</button>
+                data-target="#advanced_edit_structure_<%= index %>"  data-testid="media-object-struct-adv-edit-btn-<%= index %>" >Advanced Edit</button>
               <% if section.structuralMetadata.present? %>
                 <%= link_to 'Remove', structure_master_file_path(section.id), method: :delete, class: 'btn btn-danger btn-struct btn-confirmation', data: {placement: 'top'} %>
               <% end %>
@@ -108,7 +108,7 @@ Unless required by applicable law or agreed to in writing, software distributed
         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
       </div>
       <div class="modal-body structure_edit col-md-12" style="height:40vh">
-        <textarea rows=20 class="col-md-12 original_textarea" id="structure_<%= index %>"
+        <textarea rows=20 class="col-md-12 original_textarea" id="structure_<%= index %>" data-testid="advanced-edit-structure-textarea-<%= index %>"
           style="visibility:hidden"><%= section.structuralMetadata.valid? ? section.structuralMetadata.to_xml : default_structure %></textarea>
       </div>
     </div>
