@@ -1,7 +1,8 @@
 # frozen_string_literal: true
 
+presenter = document_presenter(document)
 xml.entry do
-  xml.title document_presenter(document).heading
+  xml.title presenter.heading
 
   # updated is required, for now we'll just set it to now, sorry
   xml.updated document[:descMetadata_modified_dtsi] || document[:timestamp]
@@ -20,7 +21,7 @@ xml.entry do
   with_format(:html) do
     xml.summary "type" => "html" do
       document_component = blacklight_config.view_config(:atom).summary_component
-      render document_component.new(document: document_presenter(document), component: :div, show: true)
+      xml.text! render document_component.new(document: presenter, component: :dl, show: true)
     end
   end
 

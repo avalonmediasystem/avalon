@@ -15,7 +15,7 @@ Unless required by applicable law or agreed to in writing, software distributed
 %>
 
 <div class="documentHeader row col-sm-12">
-  <%= content_tag @as, class: "#{@classes} #{actions.present? ? "col-sm-9 col-lg-10" : "col-md-12"}" do %>
+  <%= content_tag @as, class: @classes do %>
     <% before_titles.each do |t| %>
       <%= t %>
     <% end %>

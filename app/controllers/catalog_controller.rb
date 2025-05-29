@@ -58,6 +58,7 @@ class CatalogController < ApplicationController
     config.index.title_component = IndexHeaderMediaObjectComponent
     config.index.metadata_component = IndexMetadataMediaObjectComponent
     config.index.thumbnail_component = ThumbnailMediaObjectComponent
+    config.view.atom.summary_component = IndexAtomComponent
 
     config.index.title_field = 'title_tesi'
     config.index.display_type_field = 'has_model_ssim'
