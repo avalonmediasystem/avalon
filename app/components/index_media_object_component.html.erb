@@ -1,0 +1,28 @@
+<%= content_tag @component,
+  id: @id,
+  data: {
+    'document-id': @document.id.to_s.parameterize,
+    'document-counter': @counter,
+  },
+  itemscope: true,
+  itemtype: @document.itemtype,
+  class: classes.flatten.join(' ') do %>
+  <%= header %>
+  <% if body.present? %>
+    <%= body %>
+  <% else %>
+    <%= title %>
+    <%= thumbnail %>
+    <%= embed %>
+    <%= content %>
+    <%= metadata %>
+    <% metadata_sections.each do |section| %>
+      <%= section %>
+    <% end %>
+
+    <% partials.each do |partial| %>
+      <%= partial %>
+    <% end %>
+  <% end %>
+  <%= footer %>
+<% end %>

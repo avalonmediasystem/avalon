@@ -18,7 +18,7 @@ Unless required by applicable law or agreed to in writing, software distributed
 <% @collections.map! { |c| OpenStruct.new(c) } %>
 <div class="modal-header">
    <h4 class='modal-title'><%= Settings.intercom['default']['push_label'] %></h4>
-   <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span
+   <button type="button" class="close" data-dismiss="modal" data-bl-dismiss="modal"><span aria-hidden="true">&times;</span><span
       class="sr-only">Close</span></button>
 </div>
 

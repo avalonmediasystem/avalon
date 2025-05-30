@@ -13,144 +13,147 @@ Unless required by applicable law or agreed to in writing, software distributed
   specific language governing permissions and limitations under the License.
 ---  END LICENSE_HEADER BLOCK  ---
 %>
-<div class="modal-header">
-  <h1><%= t('blacklight.update_access_control.form.title') %></h1>
-  <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-</div>
 
-<% if (@documents.empty?)%>
-  <div class="modal-body">
-    <div class="row-fluid">
-      <div class="alert alert-danger">
-        <p><%= t('blacklight.bookmarks.no_bookmarks') %> </p>
-      </div>
-    </div>
+<div data-blacklight-modal="container">
+  <div class="modal-header">
+    <h1><%= t('blacklight.update_access_control.form.title') %></h1>
+    <button type="button" class="close" data-bl-dismiss="modal" aria-hidden="true">×</button>
   </div>
-<% else %>
-  <%
-   @media_objects = @documents.collect {|doc| SpeedyAF::Proxy::MediaObject.find(doc.id)}
-   visibility = @media_objects.first.visibility
-   @visibility = visibility if @media_objects.all? {|mo| mo.visibility == visibility}
-   @shown = @media_objects.all? {|doc| doc.hidden? == false}
-   @hidden = @media_objects.all? {|doc| doc.hidden? == true}
-  %>
 
-  <%= form_for "add", url: url_for(:controller => "bookmarks", :action => "update_access_control"), html: { :id => 'update_access_control_form' } do |form| %>
+  <% if (@documents.empty?)%>
     <div class="modal-body">
       <div class="row-fluid">
-        <% if @documents.empty? %>
-          <div class="alert alert-danger">
-            <p><%= t('blacklight.bookmarks.no_bookmarks') %></p>
-          </div>
-        <% else %>
-          <div class="alert" style="display: none;">
-          </div>
-          <fieldset class="item-discovery mb-3">
-            <legend>Discovery</legend>
-            <%= label_tag :hidden, class: "form-check" do %>
-              <%= radio_button_tag :hidden, false, @shown %>
-              Show these items in search results
-              <br>
-              <%= radio_button_tag :hidden, true, @hidden %>
-              Hide these items from search results
-            <% end %>
-          </fieldset>
-          <fieldset class="item-access mb-3">
-            <legend>Item Access</legend>
-            <%= label_tag :visibility, class: "form-check" do %>
-              <%= radio_button_tag :visibility, 'public', (@visibility == 'public') %>
-              Available to the general public
-            <% end %>
-            <%= label_tag :visibility, class: "form-check" do %>
-              <%= radio_button_tag :visibility, 'restricted', (@visibility == 'restricted') %>
-              Logged in users only
-            <% end %>
-            <%= label_tag :visibility, class: "form-check" do %>
-              <%= radio_button_tag :visibility, 'private', (@visibility == 'private') %>
-              Collection staff only
-            <% end %>
-          </fieldset>
-          <fieldset class="special-access">
-            <legend>Special Access</legend>
-            <%= label_tag "user" do %>
-              <%= render partial: "modules/tooltip", locals: { form: form, field: 'user', tooltip: t("access_control.user"), options: {display_label: t("access_control.userlabel").html_safe} } %>
-              <div class="d-flex flex-column flex-sm-row mb-1">
-                <%= hidden_field_tag "user" %>
-                <%= text_field_tag "user_display", nil,
-                      class: "typeahead from-model form-control",
-                      data: { model: 'user', target: "user" } %>
-                <%= text_field_tag "add_user_begin", nil, placeholder: 'Begin Date (yyyy-mm-dd)', class: 'form-control date-input access_date', autocomplete: 'off' %>
-                <%= text_field_tag "add_user_end", nil, placeholder: 'End Date (yyyy-mm-dd)', class: 'form-control date-input access_date', autocomplete: 'off' %>
-              </div>
-              <div class="d-flex justify-content-start">
-                <%= button_tag "Add", name: 'submit_add_user', class:'btn btn-outline', value: 'Add' %>
-                <%= button_tag "Remove", name: 'submit_remove_user', class:'btn btn-outline remove_access', value: 'Remove' %>
-              </div>
-            <% end %>
-            <%= label_tag "group" do %>
-              <%= render partial: "modules/tooltip", locals: { form: form, field: 'group', tooltip: t("access_control.group"), options: {display_label: t("access_control.grouplabel").html_safe} } %>
-              <div class="d-flex flex-column flex-sm-row mb-1">
-                <%  dropdown_values = [Admin::Group.non_system_groups, 'name', 'name'] %>
-                <%  dropdown_values = options_from_collection_for_select(*dropdown_values) %>
-                <%= select_tag "group",
-                      dropdown_values,
-                      { include_blank: true, class: "form-control"}%>
-                <%= text_field_tag "add_group_begin", nil, placeholder: 'Begin Date (yyyy-mm-dd)', class: 'form-control date-input access_date', autocomplete: 'off' %>
-                <%= text_field_tag "add_group_end", nil, placeholder: 'End Date (yyyy-mm-dd)', class: 'form-control date-input access_date', autocomplete: 'off' %>
-              </div>
-              <div class="d-flex justify-content-start">
-                <%= button_tag "Add", name: 'submit_add_group', class:'btn btn-outline', value: 'Add'  %>
-                <%= button_tag "Remove", name: 'submit_remove_group', class:'btn btn-outline remove_access', value: 'Remove' %>
-              </div>
-            <% end %>
-            <%= label_tag "class" do %>
-              <%= render partial: "modules/tooltip", locals: { form: form, field: 'class', tooltip: t("access_control.class"), options: {display_label: t("access_control.classlabel").html_safe} } %>
-              <div class="d-flex flex-column flex-sm-row mb-1">
-                <%= hidden_field_tag "class" %>
-                <%= text_field_tag "class_display", nil,
-                      class: "typeahead from-model form-control",
-                      data: { model: 'externalGroup', target: "class" } %>
-                <%= text_field_tag "add_class_begin", nil, placeholder: 'Begin Date (yyyy-mm-dd)', class: 'form-control date-input access_date', autocomplete: 'off' %>
-                <%= text_field_tag "add_class_end", nil, placeholder: 'End Date (yyyy-mm-dd)', class: 'form-control date-input access_date', autocomplete: 'off' %>
-              </div>
-              <div class="d-flex justify-content-start">
-                <%= button_tag "Add", name: 'submit_add_class', class:'btn btn-outline', value: 'Add'  %>
-                <%= button_tag "Remove", name: 'submit_remove_class', class:'btn btn-outline remove_access', value: 'Remove' %>
-              </div>
-            <% end %>
-            <%= label_tag "ipaddress" do %>
-              <%= render partial: "modules/tooltip", locals: { form: form, field: 'ipaddress', tooltip: t("access_control.ipaddress"), options: {display_label: t("access_control.ipaddresslabel").html_safe} } %>
-              <div class="d-flex flex-column flex-sm-row mb-1">
-              <%= text_field_tag "ipaddress", nil, class: "form-control" %>
-                <%= text_field_tag "add_ipaddress_begin", nil, placeholder: 'Begin Date (yyyy-mm-dd)', class: 'form-control date-input access_date', autocomplete: 'off' %>
-                <%= text_field_tag "add_ipaddress_end", nil, placeholder: 'End Date (yyyy-mm-dd)', class: 'form-control date-input access_date', autocomplete: 'off' %>
-              </div>
-              <div class="d-flex justify-content-start">
-                <%= button_tag "Add", name: 'submit_add_ipaddress', class:'btn btn-outline', value: 'Add'  %>
-                <%= button_tag "Remove", name: 'submit_remove_ipaddress', class:'btn btn-outline remove_access', value: 'Remove' %>
-              </div>
-            <% end %>
-          </fieldset>
-          <div class="modal-footer">
-            <button type="submit" class="btn btn-primary"><%= t('blacklight.update_access_control.button') %></button>
-          </div>
-        <% end %>
+        <div class="alert alert-danger">
+          <p><%= t('blacklight.bookmarks.no_bookmarks') %> </p>
+        </div>
       </div>
     </div>
-  <% end %>
-<% end %>
+  <% else %>
+    <%
+     @media_objects = @documents.collect {|doc| SpeedyAF::Proxy::MediaObject.find(doc.id)}
+     visibility = @media_objects.first.visibility
+     @visibility = visibility if @media_objects.all? {|mo| mo.visibility == visibility}
+     @shown = @media_objects.all? {|doc| doc.hidden? == false}
+     @hidden = @media_objects.all? {|doc| doc.hidden? == true}
+    %>
 
-<script>
-$('.tooltip-label').on("click", function(event){
+    <%= form_for "add", url: url_for(:controller => "bookmarks", :action => "update_access_control"), html: { :id => 'update_access_control_form' } do |form| %>
+      <div class="modal-body">
+        <div class="row-fluid">
+          <% if @documents.empty? %>
+            <div class="alert alert-danger">
+              <p><%= t('blacklight.bookmarks.no_bookmarks') %></p>
+            </div>
+          <% else %>
+            <div class="alert" style="display: none;">
+            </div>
+            <fieldset class="item-discovery mb-3">
+              <legend>Discovery</legend>
+              <%= label_tag :hidden, class: "form-check" do %>
+                <%= radio_button_tag :hidden, false, @shown %>
+                Show these items in search results
+                <br>
+                <%= radio_button_tag :hidden, true, @hidden %>
+                Hide these items from search results
+              <% end %>
+            </fieldset>
+            <fieldset class="item-access mb-3">
+              <legend>Item Access</legend>
+              <%= label_tag :visibility, class: "form-check" do %>
+                <%= radio_button_tag :visibility, 'public', (@visibility == 'public') %>
+                Available to the general public
+              <% end %>
+              <%= label_tag :visibility, class: "form-check" do %>
+                <%= radio_button_tag :visibility, 'restricted', (@visibility == 'restricted') %>
+                Logged in users only
+              <% end %>
+              <%= label_tag :visibility, class: "form-check" do %>
+                <%= radio_button_tag :visibility, 'private', (@visibility == 'private') %>
+                Collection staff only
+              <% end %>
+            </fieldset>
+            <fieldset class="special-access">
+              <legend>Special Access</legend>
+              <%= label_tag "user" do %>
+                <%= render partial: "modules/tooltip", locals: { form: form, field: 'user', tooltip: t("access_control.user"), options: {display_label: t("access_control.userlabel").html_safe} } %>
+                <div class="d-flex flex-column flex-sm-row mb-1">
+                  <%= hidden_field_tag "user" %>
+                  <%= text_field_tag "user_display", nil,
+                        class: "typeahead from-model form-control",
+                        data: { model: 'user', target: "user" } %>
+                  <%= text_field_tag "add_user_begin", nil, placeholder: 'Begin Date (yyyy-mm-dd)', class: 'form-control date-input access_date', autocomplete: 'off' %>
+                  <%= text_field_tag "add_user_end", nil, placeholder: 'End Date (yyyy-mm-dd)', class: 'form-control date-input access_date', autocomplete: 'off' %>
+                </div>
+                <div class="d-flex justify-content-start">
+                  <%= button_tag "Add", name: 'submit_add_user', class:'btn btn-outline', value: 'Add' %>
+                  <%= button_tag "Remove", name: 'submit_remove_user', class:'btn btn-outline remove_access', value: 'Remove' %>
+                </div>
+              <% end %>
+              <%= label_tag "group" do %>
+                <%= render partial: "modules/tooltip", locals: { form: form, field: 'group', tooltip: t("access_control.group"), options: {display_label: t("access_control.grouplabel").html_safe} } %>
+                <div class="d-flex flex-column flex-sm-row mb-1">
+                  <%  dropdown_values = [Admin::Group.non_system_groups, 'name', 'name'] %>
+                  <%  dropdown_values = options_from_collection_for_select(*dropdown_values) %>
+                  <%= select_tag "group",
+                        dropdown_values,
+                        { include_blank: true, class: "form-control"}%>
+                  <%= text_field_tag "add_group_begin", nil, placeholder: 'Begin Date (yyyy-mm-dd)', class: 'form-control date-input access_date', autocomplete: 'off' %>
+                  <%= text_field_tag "add_group_end", nil, placeholder: 'End Date (yyyy-mm-dd)', class: 'form-control date-input access_date', autocomplete: 'off' %>
+                </div>
+                <div class="d-flex justify-content-start">
+                  <%= button_tag "Add", name: 'submit_add_group', class:'btn btn-outline', value: 'Add'  %>
+                  <%= button_tag "Remove", name: 'submit_remove_group', class:'btn btn-outline remove_access', value: 'Remove' %>
+                </div>
+              <% end %>
+              <%= label_tag "class" do %>
+                <%= render partial: "modules/tooltip", locals: { form: form, field: 'class', tooltip: t("access_control.class"), options: {display_label: t("access_control.classlabel").html_safe} } %>
+                <div class="d-flex flex-column flex-sm-row mb-1">
+                  <%= hidden_field_tag "class" %>
+                  <%= text_field_tag "class_display", nil,
+                        class: "typeahead from-model form-control",
+                        data: { model: 'externalGroup', target: "class" } %>
+                  <%= text_field_tag "add_class_begin", nil, placeholder: 'Begin Date (yyyy-mm-dd)', class: 'form-control date-input access_date', autocomplete: 'off' %>
+                  <%= text_field_tag "add_class_end", nil, placeholder: 'End Date (yyyy-mm-dd)', class: 'form-control date-input access_date', autocomplete: 'off' %>
+                </div>
+                <div class="d-flex justify-content-start">
+                  <%= button_tag "Add", name: 'submit_add_class', class:'btn btn-outline', value: 'Add'  %>
+                  <%= button_tag "Remove", name: 'submit_remove_class', class:'btn btn-outline remove_access', value: 'Remove' %>
+                </div>
+              <% end %>
+              <%= label_tag "ipaddress" do %>
+                <%= render partial: "modules/tooltip", locals: { form: form, field: 'ipaddress', tooltip: t("access_control.ipaddress"), options: {display_label: t("access_control.ipaddresslabel").html_safe} } %>
+                <div class="d-flex flex-column flex-sm-row mb-1">
+                <%= text_field_tag "ipaddress", nil, class: "form-control" %>
+                  <%= text_field_tag "add_ipaddress_begin", nil, placeholder: 'Begin Date (yyyy-mm-dd)', class: 'form-control date-input access_date', autocomplete: 'off' %>
+                  <%= text_field_tag "add_ipaddress_end", nil, placeholder: 'End Date (yyyy-mm-dd)', class: 'form-control date-input access_date', autocomplete: 'off' %>
+                </div>
+                <div class="d-flex justify-content-start">
+                  <%= button_tag "Add", name: 'submit_add_ipaddress', class:'btn btn-outline', value: 'Add'  %>
+                  <%= button_tag "Remove", name: 'submit_remove_ipaddress', class:'btn btn-outline remove_access', value: 'Remove' %>
+                </div>
+              <% end %>
+            </fieldset>
+            <div class="modal-footer">
+              <button type="submit" class="btn btn-primary"><%= t('blacklight.update_access_control.button') %></button>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    <% end %>
+  <% end %>
+
+  <script>
+  $('.tooltip-label').on("click", function(event){
+      event.preventDefault()
+      targetNode = $(this).data('tooltip')
+      $(targetNode).collapse('toggle')
+  });
+  $('.form-text .close').on("click", function(event){
     event.preventDefault()
-    targetNode = $(this).data('tooltip')
-    $(targetNode).collapse('toggle')
-});
-$('.form-text .close').on("click", function(event){
-  event.preventDefault()
-  $(this).parent().collapse('toggle')
-});
-$('.typeahead.from-model').each(function() {
-  initialize_typeahead($(this));
-});
-</script>
+    $(this).parent().collapse('toggle')
+  });
+  $('.typeahead.from-model').each(function() {
+    initialize_typeahead($(this));
+  });
+  </script>
+</div>

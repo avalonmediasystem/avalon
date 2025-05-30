@@ -13,18 +13,6 @@
 # ---  END LICENSE_HEADER BLOCK  ---
 
 module Blacklight::LocalBlacklightHelper
-  def has_facet_values? fields = facet_field_names, options = {}
-    facets_from_request(fields).any? { |display_facet| !display_facet.items.empty? && should_render_facet?(display_facet) }
-  end
-
-  def facet_field_names group=nil
-    blacklight_config.facet_fields.select { |facet,opts| group == opts[:group] }.keys
-  end
-
-  def facet_group_names
-    blacklight_config.facet_fields.map {|facet,opts| opts[:group]}.uniq
-  end
-
   def rights_statement_facet_display arg
     ModsDocument::RIGHTS_STATEMENTS[arg]
   end

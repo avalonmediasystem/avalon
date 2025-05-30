@@ -41,8 +41,8 @@ gem 'om', git: 'https://github.com/avalonmediasystem/om.git', tag: 'v3.2.0-ruby3
 gem 'rdf-rdfxml'
 
 # Samvera version pins
-gem 'blacklight', '~> 7.25'
-gem 'blacklight-access_controls', '>= 6.0.1' # ensure rails 6 support
+gem 'blacklight', '~> 8.10'
+gem 'blacklight-access_controls', '~> 6.1'
 gem 'rdf', '~> 3.1'
 gem 'rsolr', '~> 2.0'
 
