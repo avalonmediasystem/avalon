@@ -21,7 +21,7 @@ import {
   StructuredNavigation,
   MetadataDisplay,
   AutoAdvanceToggle,
-  MarkersDisplay
+  Annotations
 } from "@samvera/ramp";
 import 'video.js/dist/video-js.css';
 import "@samvera/ramp/dist/ramp.css";
@@ -174,7 +174,7 @@ const Ramp = ({
                   <Card>
                     <Accordion.Collapse eventKey="0" id="markers">
                       <Card.Body>
-                        <MarkersDisplay showHeading={false} />
+                        <Annotations showHeading={false} />
                       </Card.Body>
                     </Accordion.Collapse>
                     <Accordion.Toggle as={Card.Header} variant="link" eventKey="0" className="ramp--playlist-accordion-header">
