@@ -28,7 +28,7 @@ module Avalon
       raw_output = `#{ffprobe} #{header} -i "#{@media_file.location}" -v quiet -show_format -show_streams -of json`
       # $? is a variable for the exit status of the last executed process. 
       # Success == 0, any other value means the command failed in some way.
-      unless $?.exitstatus == 0
+      if raw_output.empty?
         Rails.logger.error "File processing failed. Please ensure that FFprobe is installed and that the correct path is configured."
         return @json_output = {}
       end
@@ -54,7 +54,7 @@ module Avalon
 
     def audio?
       # Prioritize mimetype check, fallback to audio stream for mp4
-      content_type(@media_file).start_with?('audio') || audio_stream.present?
+      (content_type(@media_file).start_with?('audio') && audio_stream.present?) || audio_stream.present?
     end
 
     def duration
