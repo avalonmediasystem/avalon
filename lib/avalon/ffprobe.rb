@@ -47,11 +47,14 @@ module Avalon
     end
 
     def video?
-      video_stream.present?
+      # Audio only mp4s still register as 'video/mp4' so check for presence of video stream
+      # May still return false positives if mp4 has album art
+      content_type(@media_file).start_with?('video') && video_stream.present?
     end
 
     def audio?
-      audio_stream.present?
+      # Prioritize mimetype check, fallback to audio stream for mp4
+      content_type(@media_file).start_with?('audio') || audio_stream.present?
     end
 
     def duration
@@ -74,13 +77,15 @@ module Avalon
 
     private
 
-    def valid_content_type? media_file
+    def content_type media_file
       # Remove S3 credentials or other params from extension output
       extension = File.extname(media_file.location)&.gsub(/[\?#].*/, '')
       # Fall back on file extension if magic bytes fail to identify file
-      content_type = Marcel::MimeType.for media_file.reader, extension: extension
+      Marcel::MimeType.for media_file.reader, extension: extension
+    end
 
-      ['audio', 'video'].any? { |type| content_type.include?(type) }
+    def valid_content_type? media_file
+      ['audio', 'video'].any? { |type| content_type(media_file).include?(type) }
     end
   end
 end
