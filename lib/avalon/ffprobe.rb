@@ -26,8 +26,7 @@ module Avalon
       # Include authorization headers for cases like Google Drive
       header = "-headers 'Authorization: #{@media_file.auth_header.fetch('Authorization')}'" if @media_file.auth_header.present?
       raw_output = `#{ffprobe} #{header} -i "#{@media_file.location}" -v quiet -show_format -show_streams -of json`
-      # $? is a variable for the exit status of the last executed process. 
-      # Success == 0, any other value means the command failed in some way.
+      
       if raw_output.empty?
         Rails.logger.error "File processing failed. Please ensure that FFprobe is installed and that the correct path is configured."
         return @json_output = {}
