@@ -5,7 +5,7 @@
     "@babel/plugin-proposal-object-rest-spread": "^7.20.7",
     "@babel/preset-react": "^7.0.0",
     "@babel/runtime": "^7.21.1",
-    "@samvera/ramp": "https://github.com/samvera-labs/ramp.git#25c4a41",
+    "@samvera/ramp": "https://github.com/samvera-labs/ramp.git#23aae5c5aa9e7c95d1c94cba5cf870daf76df1aa",
     "babel-plugin-macros": "^3.1.0",
     "babel-plugin-transform-react-remove-prop-types": "^0.4.24",
     "buffer": "^6.0.3",
