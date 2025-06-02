@@ -329,7 +329,7 @@ class Admin::Collection < ActiveFedora::Base
         obj = FileLocator::S3File.new(base_uri.join(n).to_s + '/').object
         obj.exists?
       end
-      absolute_path = base_uri.join(name).to_s + '/'
+      absolute_path = base_uri.join(name).to_s + '/.keep'
       obj = FileLocator::S3File.new(absolute_path).object
       Aws::S3::Client.new.put_object(bucket: obj.bucket_name, key: obj.key)
       self.dropbox_directory_name = name
