@@ -3,6 +3,7 @@ class IndexMetadataMediaObjectComponent < Blacklight::DocumentMetadataComponent
   # rubocop:disable Metrics/ParameterLists
   def initialize(fields: [], tag: 'dl', classes: %w[document-metadata dl-invert row col-md-12 col-lg-8], show: false, view_type: nil, field_layout: nil, **component_args)
     super
+    @field_layout ||= MetadataFieldLayoutComponent
   end
 
   def before_render

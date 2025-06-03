@@ -124,15 +124,15 @@ class CatalogController < ApplicationController
 
     # solr fields to be displayed in the index (search results) view
     #   The ordering of the field names is the order of the display
-    config.add_index_field 'title_tesi', label: 'Title', if: Proc.new {|context, _field_config, _document| context.request.format == :json }, component: MetadataFieldComponent
+    config.add_index_field 'title_tesi', label: 'Title', if: Proc.new {|context, _field_config, _document| context.request.format == :json }
     # TODO: Add helper_method for alternative title display after #6301 is resolved
-    config.add_index_field 'alternative_title_ssim', label: 'Alternative title', component: MetadataFieldComponent
-    config.add_index_field 'date_issued_ssi', label: 'Date', if: Proc.new {|_context, _field_config, document| document[:date_issued_ssi].present? }, component: MetadataFieldComponent
-    config.add_index_field 'date_created_ssi', label: 'Date', if: Proc.new {|_context, _field_config, document| document[:date_created_ssi].present? && document[:date_issued_ssi].blank? }, component: MetadataFieldComponent
-    config.add_index_field 'creator_ssim', label: 'Main contributors', helper_method: :contributor_index_display, component: MetadataFieldComponent
-    config.add_index_field 'abstract_ssi', label: 'Summary', helper_method: :description_index_display, component: MetadataFieldComponent
-    config.add_index_field 'duration_ssi', label: 'Duration', if: Proc.new {|context, _field_config, _document| context.request.format == :json }, component: MetadataFieldComponent
-    config.add_index_field 'section_id_ssim', label: 'Sections', if: Proc.new {|context, _field_config, _document| context.request.format == :json }, helper_method: :section_id_json_index_display, component: MetadataFieldComponent
+    config.add_index_field 'alternative_title_ssim', label: 'Alternative title'
+    config.add_index_field 'date_issued_ssi', label: 'Date', if: Proc.new {|_context, _field_config, document| document[:date_issued_ssi].present? }
+    config.add_index_field 'date_created_ssi', label: 'Date', if: Proc.new {|_context, _field_config, document| document[:date_created_ssi].present? && document[:date_issued_ssi].blank? }
+    config.add_index_field 'creator_ssim', label: 'Main contributors', helper_method: :contributor_index_display
+    config.add_index_field 'abstract_ssi', label: 'Summary', helper_method: :description_index_display
+    config.add_index_field 'duration_ssi', label: 'Duration', if: Proc.new {|context, _field_config, _document| context.request.format == :json }
+    config.add_index_field 'section_id_ssim', label: 'Sections', if: Proc.new {|context, _field_config, _document| context.request.format == :json }, helper_method: :section_id_json_index_display
 
     # solr fields to be displayed in the show (single result) view
     #   The ordering of the field names is the order of the display
