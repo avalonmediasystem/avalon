@@ -7,6 +7,7 @@
 
 	<!-- Avalon Media System changes:
 
+Added $np to 800, 810, 811, 830. Removed $v from 490, 800,810,811,830. mab 20250604
 Added Notes element: 382 (note@type="instruments") mab 20250522
 Changed XSL version to 1.0 since that is what Nokogiri gem supports. jlh 20170630
 Changing checks for $controlField008-35-37 to make sure value is both not an empty string and not 'N/A' instead of true/false boolean. jlh 20170630
@@ -2716,7 +2717,7 @@ Revision 1.02 - Added Log Comment  2003/03/24 19:37:42  ckeith
 						<xsl:call-template name="chopPunctuation">
 							<xsl:with-param name="chopString">
 								<xsl:call-template name="specialSubfieldSelect">
-									<xsl:with-param name="anyCodes">tfklmorsv</xsl:with-param>
+									<xsl:with-param name="anyCodes">tfklmnoprs</xsl:with-param>
 									<xsl:with-param name="axis">t</xsl:with-param>
 									<xsl:with-param name="afterCodes">g</xsl:with-param>
 								</xsl:call-template>
@@ -2751,7 +2752,7 @@ Revision 1.02 - Added Log Comment  2003/03/24 19:37:42  ckeith
 						<xsl:call-template name="chopPunctuation">
 							<xsl:with-param name="chopString">
 								<xsl:call-template name="specialSubfieldSelect">
-									<xsl:with-param name="anyCodes">tfklmorsv</xsl:with-param>
+									<xsl:with-param name="anyCodes">atfklmnoprs</xsl:with-param>
 									<xsl:with-param name="axis">t</xsl:with-param>
 									<xsl:with-param name="afterCodes">dg</xsl:with-param>
 								</xsl:call-template>
@@ -2790,7 +2791,7 @@ Revision 1.02 - Added Log Comment  2003/03/24 19:37:42  ckeith
 						<xsl:call-template name="chopPunctuation">
 							<xsl:with-param name="chopString">
 								<xsl:call-template name="specialSubfieldSelect">
-									<xsl:with-param name="anyCodes">tfklsv</xsl:with-param>
+									<xsl:with-param name="anyCodes">tfklnps</xsl:with-param>
 									<xsl:with-param name="axis">t</xsl:with-param>
 									<xsl:with-param name="afterCodes">g</xsl:with-param>
 								</xsl:call-template>
@@ -2819,7 +2820,7 @@ Revision 1.02 - Added Log Comment  2003/03/24 19:37:42  ckeith
 						<xsl:call-template name="chopPunctuation">
 							<xsl:with-param name="chopString">
 								<xsl:call-template name="subfieldSelect">
-									<xsl:with-param name="codes">adfgklmorsv</xsl:with-param>
+									<xsl:with-param name="codes">adfgklmnoprs</xsl:with-param>
 								</xsl:call-template>
 							</xsl:with-param>
 						</xsl:call-template>
@@ -5995,7 +5996,7 @@ Revision 1.02 - Added Log Comment  2003/03/24 19:37:42  ckeith
 					<xsl:call-template name="chopPunctuation">
 						<xsl:with-param name="chopString">
 							<xsl:call-template name="subfieldSelect">
-								<xsl:with-param name="codes">av</xsl:with-param>
+								<xsl:with-param name="codes">a</xsl:with-param>
 							</xsl:call-template>
 						</xsl:with-param>
 					</xsl:call-template>
