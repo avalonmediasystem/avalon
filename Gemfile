@@ -32,7 +32,7 @@ gem 'shakapacker'
 
 # Core Samvera
 #gem 'active-fedora', '~> 15.0'
-gem 'active-fedora', git: 'https://github.com/samvera/active_fedora.git', ref: '0f5ccb1536224efec750941ce9a1f58f2e09cd3c'
+gem 'active-fedora', git: 'https://github.com/samvera/active_fedora.git', ref: '7f91e09e630f7e3c1eb3d355e5a016ae8af44778'
 gem 'active_fedora-datastreams', '~> 0.5'
 gem 'hydra-head', '~> 13.0'
 gem 'ldp', '~> 1.1.0'
@@ -48,7 +48,7 @@ gem 'rsolr', '~> 2.0'
 
 # Rails & Samvera Plugins
 gem 'about_page', git: 'https://github.com/avalonmediasystem/about_page.git', tag: 'avalon-r6.5'
-gem 'active_annotations', '~> 0.5.0'
+gem 'active_annotations', '~> 0.6'
 gem 'activerecord-session_store', '>= 2.0.0'
 gem 'acts_as_list'
 gem 'api-pagination'
@@ -60,7 +60,7 @@ gem 'iiif_manifest', '~> 1.6'
 gem 'rack-cors', require: 'rack/cors'
 gem 'rails_same_site_cookie'
 gem 'recaptcha', require: 'recaptcha/rails'
-gem 'samvera-persona', '~> 0.5.0'
+gem 'samvera-persona', '~> 0.6'
 gem 'speedy-af', '~> 0.4.0'
 
 # Avalon Components
@@ -79,7 +79,7 @@ gem "omniauth-saml", "~> 2.0", ">= 2.2.3"
 # Media Access & Transcoding
 gem 'active_encode', git: "https://github.com/samvera-labs/active_encode.git", branch: 'main'
 gem 'audio_waveform-ruby', '~> 1.0.7', require: 'audio_waveform'
-gem 'browse-everything', git: "https://github.com/avalonmediasystem/browse-everything.git", branch: 'v1.4-avalon'
+gem 'browse-everything', git: "https://github.com/avalonmediasystem/browse-everything.git", branch: 'v1.5-avalon'
 gem 'fastimage'
 gem 'rest-client', '~> 2.0'
 gem 'roo'
