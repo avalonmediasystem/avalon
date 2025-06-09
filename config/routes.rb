@@ -6,7 +6,7 @@ Rails.application.routes.draw do
   concern :searchable, Blacklight::Routes::Searchable.new
   concern :exportable, Blacklight::Routes::Exportable.new
 
-  resource :catalog, only: [:index], as: 'catalog', path: '/catalog', controller: 'catalog' do
+  resource :catalog, only: [], as: 'catalog', path: '/catalog', controller: 'catalog' do
     concerns :searchable
   end
 
@@ -249,7 +249,7 @@ Rails.application.routes.draw do
   get '/jobs(.:format)', to: redirect('/')
 
   scope :persona, as: 'persona' do
-    resources :users, only: [:paged_index], controller: 'samvera/persona/users' do
+    resources :users, only: [], controller: 'samvera/persona/users' do
       collection do
         post 'paged_index'
       end
