@@ -68,7 +68,7 @@ Unless required by applicable law or agreed to in writing, software distributed
             <% item_label=html_escape(stream_label_for(section)) %>
             <% stream_url=hls_manifest_master_file_url(section.id, quality: 'auto') %>
             <div class="btn-toolbar">
-              <label class="btn btn-primary btn-struct mr-1 file-upload-label" for="structure_<%= index %>_filedata"><%= section.structuralMetadata.present? ? 'Replace' : 'Upload'%></label>
+              <label class="btn btn-primary btn-struct mr-1 file-upload-label" for="structure_<%= index %>_filedata"><%= section.structuralMetadata.content.present? ? 'Replace' : 'Upload'%></label>
               <% if section.structuralMetadata.valid? %>
                 <%= react_component("ReactButtonContainer", {canvasIndex: index, mediaObjectID: @media_object.id, masterFileID: section.id, baseURL: request.protocol+request.host_with_port, initStructure: section.structuralMetadata.as_json}, html_options={ class: 'react-button-container' }) %>
               <% else %>
@@ -76,7 +76,7 @@ Unless required by applicable law or agreed to in writing, software distributed
               <% end %>
               <button type="button" class="btn btn-primary btn-struct mr-1" value="Advanced Edit" data-toggle="modal"
                 data-target="#advanced_edit_structure_<%= index %>">Advanced Edit</button>
-              <% if section.structuralMetadata.present? %>
+              <% if section.structuralMetadata.content.present? %>
                 <%= link_to 'Remove', structure_master_file_path(section.id), method: :delete, class: 'btn btn-danger btn-struct btn-confirmation', data: {placement: 'top'} %>
               <% end %>
             </div>
