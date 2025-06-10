@@ -56,7 +56,7 @@ class CollectionPresenter
     view_context.link_to label, document["website_url_ssi"] if document["website_url_ssi"].present?
   end
 
-  def as_json(_)
+  def as_json(*)
     {
       id: id,
       name: name,

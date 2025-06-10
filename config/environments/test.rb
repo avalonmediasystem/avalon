@@ -21,9 +21,10 @@ Rails.application.configure do
   config.public_file_server.enabled = true
   config.public_file_server.headers = { "cache-control" => "public, max-age=3600" }
 
-  # Show full error reports.
+  # Show full error reports and disable caching
   config.consider_all_requests_local = true
-  config.cache_store = :null_store
+  config.action_controller.perform_caching = false
+  config.cache_store = :memory_store
 
   # Render exception templates for rescuable exceptions and raise for other exceptions.
   # config.action_dispatch.show_exceptions = :rescuable
