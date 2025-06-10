@@ -72,15 +72,15 @@ const Ramp = ({
       startCanvasId={startCanvasId}
       startCanvasTime={startCanvasTime}>
       <Row className="ramp--all-components ramp--itemview">
-        <Col sm={12} md={9} lg={8}>
+        <Col sm={12} md={12} xl={8}>
           {(cdl.enabled && !cdl.can_stream)
             ? (<React.Fragment>
-                <div dangerouslySetInnerHTML={{ __html: cdl.embed }} />
-                <div className="ramp--rails-title">
-                  {<div className="object-title" dangerouslySetInnerHTML={{ __html: title.content }} />}
-                </div>
-              </React.Fragment>
-              )
+              <div dangerouslySetInnerHTML={{ __html: cdl.embed }} />
+              <div className="ramp--rails-title">
+                {<div className="object-title" dangerouslySetInnerHTML={{ __html: title.content }} />}
+              </div>
+            </React.Fragment>
+            )
             : (<React.Fragment>
               {sections_count > 0 &&
                 <React.Fragment>
@@ -101,7 +101,6 @@ const Ramp = ({
                           aria-controls="timelineModal"
                           disabled={true}
                           data-testid="media-object-create-timeline-btn"
-                        
                         >
                           Create Timeline
                         </button>
@@ -164,7 +163,7 @@ const Ramp = ({
             )
           }
         </Col>
-        <Col sm={12} md={3} lg={4} className="ramp--tabs-panel">
+        <Col sm={12} md={12} xl={4} className="ramp--tabs-panel">
           {cdl.enabled && <div dangerouslySetInnerHTML={{ __html: cdl.destroy }} />}
           <Tabs>
             <Tab eventKey="details" title="Details" >
