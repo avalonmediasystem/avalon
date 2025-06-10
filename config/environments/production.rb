@@ -82,7 +82,6 @@ Rails.application.configure do
   # config.active_job.queue_adapter = :resque
   # config.active_job.queue_name_prefix = "avalon_production"
   config.active_job.queue_adapter = Settings&.active_job&.queue_adapter || :sidekiq
-  require 'active_job/queue_adapters/better_active_elastic_job_adapter' if config.active_job.queue_adapter == :active_elastic_job
 
   # Disable caching for Action Mailer templates even if Action Controller
   # caching is enabled.

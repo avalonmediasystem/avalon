@@ -93,7 +93,6 @@ gem 'marc'
 # Jobs
 gem 'activejob-traffic_control'
 gem 'activejob-uniqueness'
-# gem 'redis-rails'
 gem 'sidekiq', '~> 6.2'
 gem 'sidekiq-cron', '~> 1.9'
 
@@ -167,7 +166,7 @@ end
 
 # Install the bundle --with aws when running on Amazon Elastic Beanstalk
 group :aws, optional: true do
-  # gem 'active_elastic_job'
+  gem 'aws-activejob-sqs'
   gem 'aws-partitions'
   gem 'aws-sdk-rails'
   gem 'aws-sdk-cloudfront'

@@ -200,6 +200,10 @@ GEM
       json (~> 2.3)
     autoprefixer-rails (10.4.21.0)
       execjs (~> 2)
+    aws-activejob-sqs (1.0.2)
+      activejob (>= 7.1.0)
+      aws-sdk-sqs (~> 1, >= 1.56.0)
+      concurrent-ruby (~> 1)
     aws-eventstream (1.4.0)
     aws-partitions (1.1112.0)
     aws-sdk-cloudfront (1.119.0)
@@ -994,6 +998,7 @@ DEPENDENCIES
   audio_waveform-ruby (~> 1.0.7)
   avalon-about!
   avalon-workflow!
+  aws-activejob-sqs
   aws-partitions
   aws-sdk-cloudfront
   aws-sdk-elastictranscoder

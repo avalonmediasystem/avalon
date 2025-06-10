@@ -62,9 +62,7 @@ streaming:
   http_base: 'http://localhost:3000/streams'
   default_quality: 'auto'
 redis:
-  host: localhost
-  port: 6379
-  db: 0
+  url: 'redis://localhost:6379/0'
 groups:
   system_groups: [administrator, group_manager, manager]
 master_file_management:

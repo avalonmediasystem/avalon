@@ -108,8 +108,7 @@ services:
       - FEDORA_BASE_PATH=/dev
       - RAILS_ENV=development
       - RAILS_ADDITIONAL_HOSTS=avalon
-      - SETTINGS__REDIS__HOST=redis
-      - SETTINGS__REDIS__PORT=6379
+      - SETTINGS__REDIS__URL=redis://redis:6379/0
       - SECRET_KEY_BASE=abcd
       - SOLR_URL=http://solr:8983/solr/avalon
       - AWS_REGION=us-east-1
