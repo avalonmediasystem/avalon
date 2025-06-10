@@ -37,7 +37,8 @@ const Ramp = ({
   playlist,
   cdl,
   has_files,
-  has_transcripts
+  has_transcripts,
+  accessibility_text = '',
 }) => {
   const [manifestUrl, setManifestUrl] = React.useState('');
   const [startCanvasId, setStartCanvasId] = React.useState();
@@ -66,6 +67,10 @@ const Ramp = ({
     setManifestUrl(url);
   }, []);
 
+  const a11yWithOnlyShare = React.useMemo(() => {
+    return accessibility_text && !(timeline.canCreate && playlist.canCreate);
+  }, [accessibility_text, timeline.canCreate, playlist.canCreate]);
+
   return (
     <IIIFPlayer manifestUrl={manifestUrl}
       customErrorMessage='This page encountered an error. Please refresh or contact an administrator.'
@@ -88,8 +93,8 @@ const Ramp = ({
                   <div className="ramp--rails-title">
                     {<div className="object-title" dangerouslySetInnerHTML={{ __html: title.content }} />}
                   </div>
-                  <div className="ramp--rails-content">
-                    <Col className="ramp-button-group-1">
+                  <div className={`ramp--rails-content ${a11yWithOnlyShare ? 'only-share' : ''}`}>
+                    <Col className="ramp-button-group-1" sm={accessibility_text ? 6 : 12} xs={a11yWithOnlyShare ? 4 : 12}>
                       {timeline.canCreate &&
                         <button
                           id="timelineBtn"
@@ -139,6 +144,11 @@ const Ramp = ({
                         </button>
                       }
                     </Col>
+                    {accessibility_text &&
+                      <Col className='accessibility-request text-right' sm={6} xs={a11yWithOnlyShare ? 8 : 12}>
+                        <span dangerouslySetInnerHTML={{ __html: accessibility_text }} />
+                      </Col>
+                    }
                   </div>
                   <Row className="mx-0">
                     <Col>

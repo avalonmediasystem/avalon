@@ -38,6 +38,7 @@ en:
       expire:
         heading: "Check Out Expired!"
         message: "Your lending period has been expired. Please return the item, and check for availability later."
+    accessibility_request_text: 'Need an accessible version? <a href="%{a11y_link}">Contact us</a>'
   metadata_tip:
     abstract: |
       Summary provides a space for describing the contents of the item. Examples

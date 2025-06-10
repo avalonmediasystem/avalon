@@ -16,6 +16,7 @@
 
 [class*="ramp--"] {
   font-family: Arial, Helvetica, sans-serif;
+  font-size: 1em;
 }
 
 .ramp--all-components {
@@ -61,6 +62,7 @@
     margin: 14px 0;
     display: flex;
     justify-content: space-between;
+    flex-wrap: wrap;
 
     #shareBtn {
       i {
@@ -75,10 +77,18 @@
       padding: 0;
     }
 
-    .ramp-button-group-2 {
-      display: flex;
-      justify-content: flex-end;
+    .accessibility-request {
       padding: 0;
+      // Align text to left when wrapped to a new line in smaller screens
+      @media (max-width: 575px) {
+        &:not(.col-8) {
+          text-align: left !important;
+        }
+      }
+      span {
+        vertical-align: -moz-middle-with-baseline;
+        vertical-align: -webkit-baseline-middle;
+      }
     }
   }
 
