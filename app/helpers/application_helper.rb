@@ -107,23 +107,6 @@ module ApplicationHelper
     value = value == "true" ? 'Yes' : 'No'
   end
 
-  def search_result_label item
-    if item['title_tesi'].present?
-      label = truncate(item['title_tesi'], length: 100)
-    else
-      label = item[:id]
-    end
-
-    if item['duration_ssi'].present?
-      duration = item['duration_ssi']
-      if duration.respond_to?(:to_i) && duration.to_i > 0
-        label += " (#{milliseconds_to_formatted_time(duration.to_i, false)})"
-      end
-    end
-
-    label
-  end
-
   def stream_label_for(resource)
     if resource.title.present?
       resource.title
@@ -137,41 +120,6 @@ module ApplicationHelper
   #Taken from Hydra::Controller::ControllerBehavior
   def user_key
     current_user.user_key if current_user
-  end
-
-  # We are converting FFprobe's duration output to milliseconds for
-  # uniformity with existing metadata and consequently leaving these
-  # conversion methods in place for now.
-  def milliseconds_to_formatted_time(milliseconds, include_fractions = true)
-    total_seconds = milliseconds / 1000
-    hours = total_seconds / (60 * 60)
-    minutes = (total_seconds / 60) % 60
-    seconds = total_seconds % 60
-    fractional_seconds = milliseconds.to_s[-3, 3].to_i
-    fractional_seconds = (include_fractions && fractional_seconds.positive? ? ".#{fractional_seconds}" : '')
-
-    output = ''
-    if hours > 0
-      output += "#{hours}:"
-    end
-
-    output += "#{minutes.to_s.rjust(2,'0')}:#{seconds.to_s.rjust(2,'0')}#{fractional_seconds}"
-    output
-  end
-
-  # display millisecond times in HH:MM:SS.sss format
-  # @param [Float] milliseconds the time to convert
-  # @return [String] time in HH:MM:SS.sss
-  def pretty_time(milliseconds)
-    milliseconds = Float(milliseconds).to_int # will raise TypeError or ArgumentError if unparsable as a Float
-    return "00:00:00.000" if milliseconds <= 0
-
-    total_seconds = milliseconds / 1000.0
-    hours = (total_seconds / (60 * 60)).to_i.to_s.rjust(2, "0")
-    minutes = ((total_seconds / 60) % 60).to_i.to_s.rjust(2, "0")
-    seconds = (total_seconds % 60).to_i.to_s.rjust(2, "0")
-    frac_seconds = (milliseconds % 1000).to_s.rjust(3, "0")[0..2]
-    hours + ":" + minutes + ":" + seconds + "." + frac_seconds
   end
 
   FLOAT_PATTERN = Regexp.new(/^\d+([.]\d*)?$/).freeze

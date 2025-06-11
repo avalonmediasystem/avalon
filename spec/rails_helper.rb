@@ -46,6 +46,8 @@ require 'noid/rails/rspec'
 require "email_spec"
 require "email_spec/rspec"
 require 'webdrivers'
+require "view_component/test_helpers"
+require "view_component/system_test_helpers"
 # require 'equivalent-xml/rspec_matchers'
 # require 'fakefs/safe'
 # require 'fileutils'
@@ -192,6 +194,8 @@ RSpec.configure do |config|
   config.include FixtureMacros, type: :controller
   config.include OptionalExample
   config.include Features::SessionHelpers, type: :feature
+  config.include ViewComponent::TestHelpers, type: :component
+  config.include ViewComponent::SystemTestHelpers, type: :component
 end
 
 FactoryBot::SyntaxRunner.class_eval do
