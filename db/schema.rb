@@ -10,9 +10,9 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2024_08_22_194731) do
+ActiveRecord::Schema[8.0].define(version: 2024_08_22_194731) do
   # These are extensions that must be enabled in order to support this database
-  enable_extension "plpgsql"
+  enable_extension "pg_catalog.plpgsql"
 
   create_table "active_encode_encode_records", id: :serial, force: :cascade do |t|
     t.string "global_id"
