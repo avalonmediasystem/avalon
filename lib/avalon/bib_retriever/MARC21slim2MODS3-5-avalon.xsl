@@ -7,6 +7,7 @@
 
 	<!-- Avalon Media System changes:
 
+Changed 730 to relatedItem@type="series" and added $n$p. mab 20250611
 Added $np to 800, 810, 811, 830. Removed $v from 490, 800,810,811,830. mab 20250604
 Added Notes element: 382 (note@type="instruments") mab 20250522
 Changed XSL version to 1.0 since that is what Nokogiri gem supports. jlh 20170630
@@ -2620,15 +2621,14 @@ Revision 1.02 - Added Log Comment  2003/03/24 19:37:42  ckeith
 				<xsl:call-template name="relatedIdentifierISSN"/>
 			</relatedItem>
 		</xsl:for-each>
-		<xsl:for-each select="marc:datafield[@tag=730][@ind2=2]">
-			<relatedItem>
-				<xsl:call-template name="constituentOrRelatedType"/>
+		<xsl:for-each select="marc:datafield[@tag=730]">
+			<relatedItem type="series">
 				<titleInfo>
 					<title>
 						<xsl:call-template name="chopPunctuation">
 							<xsl:with-param name="chopString">
 								<xsl:call-template name="subfieldSelect">
-									<xsl:with-param name="codes">adfgklmorsv</xsl:with-param>
+									<xsl:with-param name="codes">adfgklmnoprsv</xsl:with-param>
 								</xsl:call-template>
 							</xsl:with-param>
 						</xsl:call-template>
@@ -2636,7 +2636,6 @@ Revision 1.02 - Added Log Comment  2003/03/24 19:37:42  ckeith
 					<xsl:call-template name="part"/>
 				</titleInfo>
 				<xsl:call-template name="relatedForm"/>
-				<xsl:call-template name="relatedIdentifierISSN"/>
 			</relatedItem>
 		</xsl:for-each>
 
