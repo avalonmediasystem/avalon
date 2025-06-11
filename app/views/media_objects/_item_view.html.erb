@@ -49,7 +49,8 @@ Unless required by applicable law or agreed to in writing, software distributed
         playlist: { canCreate: (current_ability.can? :create, Playlist), tab: render('add_to_playlist') },
         cdl: { enabled: lending_enabled?(@media_object), can_stream: can_stream, embed: render('embed_checkout'), destroy: render('destroy_checkout') },
         has_files: @media_object.supplemental_files.present? || @media_object.sections_with_rendering_files?([nil, 'caption']),
-        has_transcripts: @media_object.sections_with_files(tag: 'transcript').present?
+        has_transcripts: @media_object.sections_with_files(tag: 'transcript').present?,
+        accessibility_text: t('media_object.accessibility_request_text', :a11y_link => Avalon::Configuration.accessibility_request_link),
       }
     ) %>
   </div>

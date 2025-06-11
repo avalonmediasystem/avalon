@@ -28,6 +28,8 @@ email:
   comments: 'avalon-comments@example.edu'
   notification: 'avalon-notifications@example.edu'
   support: 'avalon-support@example.edu'
+  # Accessibility request form link
+  accessibility_request_link: 'https://iublib-fireform.eas.iu.edu/online/form/index/libacc'
 solr:
   configset: avalon
   configset_source_path: <%= File.join(Rails.root, 'solr', 'config') %>

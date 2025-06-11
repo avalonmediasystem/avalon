@@ -99,6 +99,11 @@ module Avalon
       !!Settings.controlled_digital_lending&.enable
     end
 
+    # To be called as Avalon::Configuration.accessibility_request_link
+    def accessibility_request_link
+      Settings.email&.accessibility_request_link || ''
+    end
+
     private
     class << self
       def coerce(value, method)
