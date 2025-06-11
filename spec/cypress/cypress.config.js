@@ -3,10 +3,10 @@ const path = require('path');
 const fs = require('fs');
 
 module.exports = defineConfig({
-  downloadsFolder: 'spec/cypress/downloads',
-  fixturesFolder: 'spec/cypress/fixtures',
-  screenshotsFolder: 'spec/cypress/screenshots',
-  videosFolder: 'spec/cypress/videos',
+  downloadsFolder: 'downloads',
+  fixturesFolder: 'fixtures',
+  screenshotsFolder: 'screenshots',
+  videosFolder: 'videos',
   browser: process.env.BROWSER || 'electron',
 
   e2e: {
@@ -54,7 +54,7 @@ module.exports = defineConfig({
       return config;
     },
 
-    supportFile: 'spec/cypress/support/e2e.js',
-    specPattern: 'spec/cypress/integration/**/*.js',
+    supportFile: 'support/e2e.js',
+    specPattern: 'integration/**/*.js',
   },
 });

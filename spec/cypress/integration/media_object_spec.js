@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2011-2025, The Trustees of Indiana University and Northwestern
  *   University.  Licensed under the Apache License, Version 2.0 (the "License");
  *   you may not use this file except in compliance with the License.
@@ -12,255 +12,83 @@
  *   CONDITIONS OF ANY KIND, either express or implied. See the License for the
  *   specific language governing permissions and limitations under the License.
  * ---  END LICENSE_HEADER BLOCK  ---
-*/
+ */
 
+import CollectionPage from '../pageObjects/collectionPage';
 import { navigateToManageContent, performSearch } from '../support/navigation';
+
+const collectionPage = new CollectionPage();
+
 context('Media objects', () => {
   //This will contain test cases for an item that is manually created in an env.
   //Must have captions
   //Available to all
   //Multiple sections - lunchroom manner, audio file, 10 second clip, Lunchroom manner
-  const collection_title = Cypress.env('SEARCH_COLLECTION'); //underwhich the item will be created - access - general public
+  var collection_title = `Automation collection title ${
+    Math.floor(Math.random() * 10000) + 1
+  }`;
+  var media_object_title = `Automation Item title ${
+    Math.floor(Math.random() * 100000) + 1
+  }`;
   var media_object_id;
-  const media_object_title = Cypress.env('MEDIA_OBJECT_TITLE');
   const caption = `captions-example.srt`;
-  const structureFile = `test-sample.mp4.structure.xml`;
   Cypress.on('uncaught:exception', (err, runnable) => {
-    // Ignore specific error message and let test continue
-    if (err.message.includes('Permissions check failed')) {
-      return false;
-    }
-  });
-  Cypress.on('uncaught:exception', (err, runnable) => {
-    // Prevents Cypress from failing the test due to uncaught exceptions in the application code  - TypeError: Cannot read properties of undefined (reading 'scrollDown')
     if (
+      err.message.includes('Permissions check failed') ||
       err.message.includes(
         "Cannot read properties of undefined (reading 'success')"
-      )
-    ) {
-      return false;
-    }
-    if (err.message.includes('scrollHeight')) {
-      return false;
-    }
-    if (
+      ) ||
+      err.message.includes('scrollHeight') ||
       err.message.includes(
         "Cannot read properties of undefined (reading 'end')"
-      )
+      ) ||
+      err.message === 'Script error.'
     ) {
       return false;
     }
   });
+  // Create collection and complex media object before all tests
+  // Create collection and complex media object before all tests
+  before(() => {
+    cy.login('administrator');
+    navigateToManageContent();
 
-  it(
-    'Creates an item with 3 sections (2 video and 1 audio)',
-    { tags: '@critical' },
-    () => {
-      // Log in as an administrator
-      cy.login('administrator');
+    // Create collection with public access
+    collectionPage.createCollection(
+      { title: collection_title },
+      { setPublicAccess: true }
+    );
 
-      // Go to an existing collection to create an item
-      navigateToManageContent();
-      cy.get("[data-testid='collection-name-table']")
-        .contains(collection_title)
-        .click();
+    // Navigate to the collection and create complex media object
+    collectionPage.navigateToCollection(collection_title);
 
-      //create item api
-      cy.intercept('GET', '/media_objects/new?collection_id=*').as(
-        'getManageFile'
-      );
+    collectionPage.createComplexMediaObject(media_object_title, {
+      publish: true,
+      addStructure: true,
+    });
 
-      cy.get("[data-testid='collection-create-item-btn']")
-        .contains('Create An Item')
-        .click();
+    // Get the media object ID from the alias
+    cy.get('@mediaObjectId').then((id) => {
+      media_object_id = id;
+    });
+  });
 
-      cy.wait('@getManageFile').then((interception) => {
-        expect(interception.response.statusCode).to.eq(302);
-      });
+  // Clean up after all tests - ITEM FIRST, THEN COLLECTION
+  after(() => {
+    cy.login('administrator');
 
-      //upload api
-      cy.intercept('GET', '**/edit?step=file-upload').as('fileuploadredirect');
-
-      // Upload a video from fixtures and continue
-
-      //First Video
-
-      const videoName = 'test_sample.mp4';
-      cy.get("[data-testid='media-object-edit-select-file-btn']")
-        .click()
-        .selectFile(`spec/cypress/fixtures/${videoName}`);
-
-      // Click the Upload button to submit the form, force the click action
-      cy.get("[data-testid='media-object-edit-upload-btn']").click();
-
-      cy.wait('@fileuploadredirect').then((interception) => {
-        expect(interception.response.statusCode).to.eq(200);
-      });
-
-      // Verify that the file appears in the list of uploaded files and save and continue
-      cy.get("[data-testid='media-object-edit-associated-files-block']").should(
-        'contain',
-        '.mp4'
-      ); // Adjust the selector as needed
-
-      //Adding caption to the first video file
-      cy.get('[data-testid="media-object-manage-files-edit-btn"]').click();
-      const captionFileName = 'captions-example.srt';
-      //added force: true because the element is not visible
-      cy.get('[data-testid="media-object-upload-button-caption"]').selectFile(
-        `spec/cypress/fixtures/${captionFileName}`,
-        { force: true }
-      );
-
-      cy.get('[data-testid="alert"]').contains(
-        'Supplemental file successfully added.'
-      );
-
-      //Second audio
-      const audioName = 'test_sample_audio.mp3';
-      cy.get("[data-testid='media-object-edit-select-file-btn']")
-        .click()
-        .selectFile(`spec/cypress/fixtures/${audioName}`);
-
-      // Click the Upload button to submit the form, force the click action
-      cy.get("[data-testid='media-object-edit-upload-btn']").click();
-
-      cy.wait('@fileuploadredirect').then((interception) => {
-        expect(interception.response.statusCode).to.eq(200);
-      });
-
-      // Verify that the file appears in the list of uploaded files and save and continue
-      cy.get("[data-testid='media-object-edit-associated-files-block']").should(
-        'contain',
-        '.mp3'
-      );
-
-      //Third Video
-      cy.get("[data-testid='media-object-edit-select-file-btn']")
-        .click()
-        .selectFile(`spec/cypress/fixtures/${videoName}`);
-
-      // Click the Upload button to submit the form, force the click action
-      cy.get("[data-testid='media-object-edit-upload-btn']").click();
-
-      cy.wait('@fileuploadredirect').then((interception) => {
-        expect(interception.response.statusCode).to.eq(200);
-      });
-
-      // Verify that the file appears in the list of uploaded files and save and continue
-      cy.get("[data-testid='media-object-edit-associated-files-block']").should(
-        'contain',
-        '.mp4'
-      );
-
-      //continue to resource description api
-      cy.intercept('GET', '**/edit?step=resource-description').as(
-        'resourcedescription'
-      );
-      cy.get('[data-testid="media-object-continue-btn"]').click();
-
-      cy.wait('@resourcedescription').then((interception) => {
-        expect(interception.response.statusCode).to.eq(200);
-      });
-
-      // Fill the mandatory fields in the resource description and save and continue
-      cy.get('[data-testid="resource-description-title"]')
-        .type(media_object_title)
-        .should('have.value', media_object_title);
-      const publicationYear = String(
-        Math.floor(Math.random() * (2020 - 1900 + 1)) + 1900
-      );
-      cy.get('[data-testid="resource-description-date-issued"]')
-        .type(publicationYear)
-        .should('have.value', publicationYear);
-
-      //continue to structure page api
-
-      cy.get('[data-testid="media-object-continue-btn"]').click();
-      //structure page
-      //adding structure file later used for playlist
-
-      cy.get('[data-testid="media-object-edit-structure-btn-0"]').click();
-      cy.get('[data-testid="media-object-struct-adv-edit-btn-0"]').click();
-      cy.wait(2000);
-      cy.window().then((win) => {
-        const editor = win.ace.edit('text_editor_0');
-        const xmlContent = `<Item label="Short Documentary.mp4">
-      <Div label="Opening">
-        <Span label="Intro 1" begin="00:00:00" end="00:00:10"/>
-        <Span label="Intro 2" begin="00:00:11" end="00:00:20"/>
-      </Div>
-      <Div label="Main Content">
-        <Span label="Segment A" begin="00:00:20" end="00:00:30"/>
-        <Span label="Segment B" begin="00:00:30" end="00:00:45"/>
-      </Div>
-      <Span label="Wrap-up" begin="00:00:45" end="00:00:53"/>
-    </Item>`;
-        editor.setValue(xmlContent, -1);
-      });
-
-      cy.get('input[type="button"][value="Save and Exit"]').click();
-
-      //continue to access page
-      cy.intercept('GET', '**//edit?step=access-control').as('accesspage');
-      // Navigate to the preview page by passing through structure and access control page
-
-      cy.get('[data-testid="media-object-continue-btn"]').click();
-      cy.wait('@accesspage').then((interception) => {
-        expect(interception.response.statusCode).to.eq(200);
-      });
-
-      //Access control page
-      cy.get('[data-testid="media-object-continue-btn"]').click();
-
-      // Validate the item title, collection, and publication date
-      cy.get('[data-testid="media-object-title"]').should(
-        'contain.text',
-        media_object_title
-      );
-
-      cy.get('[data-testid="metadata-display"]').within(() => {
-        cy.get('dt')
-          .contains('Publication date') //changed from Date
-          .next('dd')
-          .should('have.text', publicationYear);
-        cy.get('dt')
-          .contains('Collection')
-          .next('dd')
-          .contains(collection_title);
-      });
-
-      //Extract the item id to run the rest of the tests
-      cy.url().then((url) => {
-        media_object_id = url.split('/').pop();
-        cy.writeFile('cypress.env.dynamic.json', {
-          MEDIA_OBJECT_ID: media_object_id,
-        });
-      });
-
-      //publish the item so different user roles can check the playback
-      cy.intercept('POST', '**/update_status?status=publish').as(
-        'publishmedia'
-      );
-      cy.get('[data-testid="media-object-publish-btn"]')
-        .contains('Publish')
-        .click();
-      cy.wait('@publishmedia').its('response.statusCode').should('eq', 302);
-
-      cy.get('[data-testid="alert"]').contains(
-        '1 media object successfully published.'
-      );
-      cy.wait(5000);
-
-      cy.get('[data-testid="media-object-unpublish-btn"]').contains(
-        'Unpublish'
-      );
+    // Delete the media object first (if it exists)
+    if (media_object_id) {
+      collectionPage.deleteItemById(media_object_id);
     }
-  );
+
+    // Then delete the collection
+    collectionPage.deleteCollectionByName(collection_title);
+  });
+
   context('With media object loaded', () => {
     beforeEach(() => {
       cy.login('administrator');
-
       cy.visit('/media_objects/' + media_object_id);
       cy.waitForVideoReady();
     });
@@ -281,7 +109,7 @@ context('Media objects', () => {
     });
 
     // Open multiple media objects in different tabs and play it.
-    it.skip('.play_media_objects()', { tags: '@critical' }, () => {
+    it('.play_media_objects()', { tags: '@critical' }, () => {
       cy.get('a[href*="catalog"] ').first().click();
 
       cy.get('a[href*="media_objects"]').then((media_objects) => {
@@ -433,11 +261,11 @@ context('Media objects', () => {
       { tags: '@critical' },
       () => {
         // Clicking on the first mp3 audio
-        cy.get('[data-testid="listitem-section"]')
+        cy.get('[data-testid="tree-item"]')
           .filter('[data-label*=".mp3"]')
           .first()
           .within(() => {
-            cy.get('[data-testid="listitem-section-button"]').click();
+            cy.get('[data-testid="treeitem-section-button"]').click();
           });
 
         // Waiting for the media player to be loaded
@@ -490,13 +318,13 @@ context('Media objects', () => {
         //Verifying sections exists
         cy.get('[data-testid="structured-nav"]').should('exist');
 
-        cy.get('[data-testid="listitem-section-button"]').then(($buttons) => {
+        cy.get('[data-testid="treeitem-section-button"]').then(($buttons) => {
           const sectionCount = Math.min($buttons.length, 3); //Limits to the first 3 sections
 
           //Loops through the 3 sections
           Cypress._.times(sectionCount, (index) => {
             //Section titles should be visible
-            cy.get('[data-testid="listitem-section-button"]')
+            cy.get('[data-testid="treeitem-section-button"]')
               .eq(index)
               .should('be.visible')
               .click();

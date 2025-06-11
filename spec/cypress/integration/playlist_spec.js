@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2011-2025, The Trustees of Indiana University and Northwestern
  *   University.  Licensed under the Apache License, Version 2.0 (the "License");
  *   you may not use this file except in compliance with the License.
@@ -12,10 +12,22 @@
  *   CONDITIONS OF ANY KIND, either express or implied. See the License for the
  *   specific language governing permissions and limitations under the License.
  * ---  END LICENSE_HEADER BLOCK  ---
-*/
+ */
 
 import { navigateToManageContent } from '../support/navigation';
+import CollectionPage from '../pageObjects/collectionPage';
+
 context('Playlists', () => {
+  const collectionPage = new CollectionPage();
+
+  var collection_title = `Automation collection title ${
+    Math.floor(Math.random() * 10000) + 1
+  }`;
+  var media_object_title = `Automation Item title ${
+    Math.floor(Math.random() * 100000) + 1
+  }`;
+  var media_object_id;
+
   //Playlist names start with '_' character for easy navigation without pagination
   var playlist_title = `_Automation playlist title ${
     Math.floor(Math.random() * 10000) + 1
@@ -25,32 +37,57 @@ context('Playlists', () => {
   var playlist_title_public = `_Automation public playlist title ${
     Math.floor(Math.random() * 10000) + 1
   }`;
-  let media_object_id;
-  before(() => {
-    cy.readFile('cypress.env.dynamic.json').then((data) => {
-      media_object_id = Cypress.env('MEDIA_OBJECT_ID', data.MEDIA_OBJECT_ID);
-    });
-  });
   var playlist_description_public = `${playlist_title_public} description`;
-
-  const media_object_title = Cypress.env('MEDIA_OBJECT_TITLE');
-
   Cypress.on('uncaught:exception', (err, runnable) => {
-    // Prevents Cypress from failing the test due to uncaught exceptions in the application code  - TypeError: Cannot read properties of undefined (reading 'scrollDown')
     if (
       err.message.includes(
         "Cannot read properties of undefined (reading 'success')"
-      )
-    ) {
-      return false;
-    }
-    if (
+      ) ||
       err.message.includes(
         "Cannot read properties of undefined (reading 'times')"
       )
     ) {
       return false;
     }
+  });
+
+  // Create collection and complex media object before all tests
+  before(() => {
+    cy.login('administrator');
+    navigateToManageContent();
+
+    // Create collection with public access
+    collectionPage.createCollection(
+      { title: collection_title },
+      { setPublicAccess: true }
+    );
+
+    // Navigate to the collection and create complex media object
+    collectionPage.navigateToCollection(collection_title);
+
+    collectionPage.createComplexMediaObject(media_object_title, {
+      publish: true,
+      addStructure: true,
+    });
+
+    // Get the media object ID from the alias
+    cy.get('@mediaObjectId').then((id) => {
+      media_object_id = id;
+    });
+  });
+
+  // Clean up after all tests - ITEM FIRST, THEN COLLECTION
+  // Clean up after all tests - ITEM FIRST, THEN COLLECTION
+  after(() => {
+    cy.login('administrator');
+
+    // Delete the media object first (if it exists)
+    if (media_object_id) {
+      collectionPage.deleteItemById(media_object_id);
+    }
+
+    // Then delete the collection
+    collectionPage.deleteCollectionByName(collection_title);
   });
 
   //is able to create a new playlist
@@ -604,51 +641,4 @@ context('Playlists', () => {
         .should('not.exist');
     }
   );
-
-  //Clean up code for item and collection created across spec
-
-  it('Verify deleting an item - @Tf46071b7', { tags: '@critical' }, () => {
-    cy.login('administrator');
-
-    cy.visit('/media_objects/' + media_object_id);
-    cy.waitForVideoReady();
-    cy.get('[data-testid="media-object-edit-btn"]').contains('Edit').click();
-    cy.intercept('POST', '/media_objects/**').as('removeMediaObject');
-    cy.get('[data-testid="media-object-delete-btn"]')
-      .contains('Delete this item')
-      .click();
-    cy.get('[data-testid="media-object-delete-confirmation-btn"]')
-      .contains('Yes, I am sure')
-      .click();
-    cy.wait('@removeMediaObject').then((interception) => {
-      expect(interception.response.statusCode).to.eq(302);
-    });
-    cy.get('[data-testid="alert"]').contains('1 media object deleted.');
-  });
-
-  it('Verify deleting a collection - @T959a56df', { tags: '@critical' }, () => {
-    var search_collection = Cypress.env('SEARCH_COLLECTION');
-    cy.login('administrator');
-    cy.visit('/');
-    navigateToManageContent();
-    cy.get("[data-testid='collection-name-table']")
-      .contains(search_collection)
-      .closest('tr')
-      .find("[data-testid='collection-delete-collection-btn']")
-      .click();
-    cy.intercept('POST', `/admin/collections/*`).as('deleteCollection');
-    //May require adding steps to select a collection to move the existing  items, when dealing with non empty collections
-    cy.get("[data-testid='collection-delete-confirm-btn']").click();
-    cy.wait('@deleteCollection').then((interception) => {
-      expect(interception.response.statusCode).to.eq(302);
-      expect(interception.response.headers.location).to.include(
-        '/admin/collections'
-      );
-    });
-    navigateToManageContent();
-    //May need to update this assertion to ensure that this is valid during pagination of collections. Another alternative would be to check via API or search My collections
-    cy.get("[data-testid='collection-name-table']")
-      .contains(search_collection)
-      .should('not.exist');
-  });
 });

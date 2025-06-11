@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2011-2025, The Trustees of Indiana University and Northwestern
  *   University.  Licensed under the Apache License, Version 2.0 (the "License");
  *   you may not use this file except in compliance with the License.
@@ -12,159 +12,83 @@
  *   CONDITIONS OF ANY KIND, either express or implied. See the License for the
  *   specific language governing permissions and limitations under the License.
  * ---  END LICENSE_HEADER BLOCK  ---
-*/
+ */
 
 import ItemPage from '../pageObjects/itemPage';
 import HomePage from '../pageObjects/homePage.js';
+import CollectionPage from '../pageObjects/collectionPage';
 const itemPage = new ItemPage();
 import {
   navigateToManageContent,
   selectLoggedInUsersOnlyAccess,
   performSearch,
 } from '../support/navigation';
+const collectionPage = new CollectionPage();
 const homePage = new HomePage();
 context('Item', () => {
   //Create dynamic ite
-  const collection_title = Cypress.env('SEARCH_COLLECTION');
+  var collection_title = `Automation collection title ${
+    Math.floor(Math.random() * 10000) + 1
+  }`;
   var item_title = `Automation Item title ${
     Math.floor(Math.random() * 100000) + 1
   }`;
+
   let item_id;
+  const createdItems = []; // Track all created items for cleanup
 
   Cypress.on('uncaught:exception', (err, runnable) => {
-    // Prevents Cypress from failing the test due to uncaught exceptions in the application code  - TypeError: Cannot read properties of undefined (reading 'scrollDown')
     if (
       err.message.includes(
         "Cannot read properties of undefined (reading 'success')"
-      )
+      ) ||
+      err.message.includes('scrollHeight') ||
+      err.message.includes('e is not defined') ||
+      err.message === 'Script error.'
     ) {
       return false;
     }
-    if (err.message.includes('scrollHeight')) {
-      return false;
-    }
-    if (err.message.includes('e is not defined')) {
-      return false;
-    }
-    if (err.message === 'Script error.') {
-      return false;
-    }
+  });
+  // Create collection before all tests
+  before(() => {
+    cy.login('administrator');
+    navigateToManageContent();
+
+    // Create collection with public access for item testing
+    collectionPage.createCollection(
+      { title: collection_title },
+      { setPublicAccess: true, addManager: true }
+    );
+  });
+
+  // Clean up after all tests - ITEM FIRST, THEN COLLECTION
+  after(() => {
+    cy.login('administrator');
+
+    // Then delete the collection
+    collectionPage.deleteCollectionByName(collection_title);
   });
 
   it(
     'Verify creating an item under a collection - @T139381a0 ',
     { tags: '@critical' },
     () => {
-      // Log in as an administrator
       cy.login('administrator');
 
-      // Go to an existing collection to create an item
-      navigateToManageContent();
-      cy.get("[data-testid='collection-name-table']")
-        .contains(collection_title)
-        .click();
+      collectionPage.navigateToCollection(collection_title);
 
-      //create item api
-      cy.intercept('GET', '/media_objects/new?collection_id=*').as(
-        'getManageFile'
-      );
+      collectionPage.createItem(item_title, 'test_sample.mp4').then((id) => {
+        item_id = id;
+        createdItems.push(item_id);
 
-      cy.get("[data-testid='collection-create-item-btn']")
-        .contains('Create An Item')
-        .click();
-
-      cy.wait('@getManageFile').then((interception) => {
-        expect(interception.response.statusCode).to.eq(302);
-      });
-
-      //upload api
-      cy.intercept('GET', '**/edit?step=file-upload').as('fileuploadredirect');
-
-      // Upload a video from fixtures and continue
-      // cy.get('li.nav-item.nav-success').contains('a.nav-link', 'Manage files').click();
-      const videoName = 'test_sample.mp4';
-      cy.get("[data-testid='media-object-edit-select-file-btn']")
-        .click()
-        .selectFile(`spec/cypress/fixtures/${videoName}`);
-
-      // Click the Upload button to submit the form, force the click action
-      cy.get("[data-testid='media-object-edit-upload-btn']").click();
-
-      cy.wait('@fileuploadredirect').then((interception) => {
-        expect(interception.response.statusCode).to.eq(200);
-      });
-
-      // Wait for the upload process to complete (you might need to wait for a success message or network request)
-      //cy.wait(5000);
-
-      // Verify that the file appears in the list of uploaded files and save and continue
-      cy.get("[data-testid='media-object-edit-associated-files-block']").should(
-        'contain',
-        'mp4'
-      ); // Adjust the selector as needed
-      //continue to resource description api
-      cy.intercept('GET', '**/edit?step=resource-description').as(
-        'resourcedescription'
-      );
-      cy.get('[data-testid="media-object-continue-btn"]').click();
-
-      cy.wait('@resourcedescription').then((interception) => {
-        expect(interception.response.statusCode).to.eq(200);
-      });
-
-      // Fill the mandatory fields in the resource description and save and continue
-      cy.get('[data-testid="resource-description-title"]')
-        .type(item_title)
-        .should('have.value', item_title);
-      const publicationYear = String(
-        Math.floor(Math.random() * (2020 - 1900 + 1)) + 1900
-      );
-      cy.get('[data-testid="resource-description-date-issued"]')
-        .type(publicationYear)
-        .should('have.value', publicationYear);
-
-      //continue to structure page api
-      cy.intercept('GET', '**/edit?step=structure').as('structurepage');
-      cy.get('[data-testid="media-object-continue-btn"]').click();
-      cy.wait('@structurepage').then((interception) => {
-        expect(interception.response.statusCode).to.eq(200);
-      });
-      //continue to access page
-      cy.intercept('GET', '**//edit?step=access-control').as('accesspage');
-      // Navigate to the preview page by passing through structure and access control page
-      //structure page
-      cy.get('[data-testid="media-object-continue-btn"]').click();
-      cy.wait('@accesspage').then((interception) => {
-        expect(interception.response.statusCode).to.eq(200);
-      });
-
-      //Access control page
-      cy.get('[data-testid="media-object-continue-btn"]').click();
-
-      // Validate the item title, collection, and publication date
-      cy.get('[data-testid="media-object-title"]').should(
-        'contain.text',
-        item_title
-      );
-
-      cy.get('[data-testid="metadata-display"]').within(() => {
-        cy.get('dt')
-          .contains('Publication date') //changed from Date
-          .next('dd')
-          .should('have.text', publicationYear);
-        cy.get('dt')
-          .contains('Collection')
-          .next('dd')
-          .contains(collection_title);
-      });
-
-      //Extract the item id to run the rest of the tests
-      cy.url().then((url) => {
-        item_id = url.split('/').pop(); // Extract the media object ID from the URL
+        // Verify item was created
+        cy.get('[data-testid="media-object-title"]').should(
+          'contain.text',
+          item_title
+        );
       });
     }
   );
-
   it(
     'Verify whether a user can publish an item - @T1faa36d2',
     { tags: '@critical' },
@@ -190,9 +114,6 @@ context('Item', () => {
       cy.get('[data-testid="media-object-unpublish-btn"]').contains(
         'Unpublish'
       );
-
-      //reload the page to ensure that the data is updated in the backend
-      //why do we need to validate again?
     }
   );
 
@@ -201,7 +122,6 @@ context('Item', () => {
     { tags: '@critical' },
     () => {
       cy.login('administrator');
-      cy.visit('/');
       cy.intercept('GET', '**/edit?step=access-control').as('accesspage');
       cy.visit('/media_objects/' + item_id + '/edit?step=access-control');
       cy.wait('@accesspage').then((interception) => {
@@ -224,7 +144,7 @@ context('Item', () => {
           .find('[data-testid="media-object-collection-staff-only"]')
           .should('be.checked');
       });
-
+      //checking the access with admin, manager and user
       itemPage.verifyCollecttionStaffAccess(item_id);
     }
   );
@@ -234,7 +154,6 @@ context('Item', () => {
     { tags: '@critical' },
     () => {
       cy.login('administrator');
-      cy.visit('/');
       cy.intercept('GET', '**/edit?step=access-control').as('accesspage');
       cy.visit('/media_objects/' + item_id + '/edit?step=access-control');
       cy.wait('@accesspage').then((interception) => {
@@ -256,9 +175,7 @@ context('Item', () => {
         );
       });
 
-      //Additional assertions::
-      //Logout of the application and verify that the item is not visible
-      //login as any non collection staff user and validate the result
+      //checking the access with admin, manager and user
       itemPage.verifyLoggedInUserAccess(item_id);
     }
   );
@@ -292,9 +209,8 @@ context('Item', () => {
           .should('be.checked');
       });
 
+      //checking the access with admin, manager and user
       itemPage.verifyGeneralPublicAccess(item_id);
-
-      //Additional assertion:: Verify item access without logging in
     }
   );
   it('Verify the selected item', { tags: '@critical' }, () => {
@@ -343,7 +259,7 @@ context('Item', () => {
         .should('exist');
 
       // Click on update access control button
-      cy.get('[data-testid="bookmark-update_access_control"]')
+      cy.get('a[href="/bookmarks/update_access_control"]')
         .should('exist')
         .click();
       // Click on Collection Staff only
@@ -367,15 +283,12 @@ context('Item', () => {
     { tags: '@critical' },
     () => {
       cy.login('administrator');
-      cy.visit('/');
       cy.intercept('GET', '**/edit?step=access-control').as('accesspage');
-      // The below code is hard-coded for a media object url. This needs to be changed with a valid object URL later for each website.
       cy.visit('/media_objects/' + item_id + '/edit?step=access-control');
       cy.wait('@accesspage').then((interception) => {
         expect(interception.response.statusCode).to.eq(200);
       });
       const user_username = Cypress.env('USERS_USER_USERNAME');
-      //Assign special access - Avalon user (who is not associated with the collection)
       cy.get('[data-testid="media-object-user"]')
         .parent()
         .find('input:not([readonly])')
@@ -402,7 +315,6 @@ context('Item', () => {
     { tags: '@critical' },
     () => {
       cy.login('administrator');
-      cy.visit('/');
 
       cy.visit('/media_objects/' + item_id);
       cy.waitForVideoReady();
@@ -474,9 +386,6 @@ context('Item', () => {
     { tags: '@critical' },
     () => {
       cy.login('administrator');
-      cy.visit('/');
-      // The below code is hard-coded for a media object url. This needs to be changed with a valid object URL later for each website.
-
       cy.visit('/media_objects/' + item_id);
       cy.waitForVideoReady();
       cy.get('[data-testid="media-object-edit-btn"]').contains('Edit').click();
@@ -485,7 +394,6 @@ context('Item', () => {
         .contains('Resource description')
         .click();
 
-      //Add some resource metadata fields in the resource description section to search via index
       const genre = Cypress.env('MEDIA_OBJECT_FIELD_GENRE');
 
       cy.get('[data-testid="resource-description-genre"]')
@@ -725,23 +633,23 @@ context('Item', () => {
       cy.visit('/media_objects/' + item_id);
       cy.waitForVideoReady();
 
-      cy.get('[data-testid="listitem-section"]')
+      cy.get('[data-testid="tree-item"]')
         .should('exist')
         .and('have.attr', 'data-label', item_title);
 
       // Within the section, find the heading
-      cy.get('[data-testid="listitem-section"]')
-        .contains('[data-testid="list-item"]', heading)
+      cy.get('[data-testid="tree-group"]')
+        .contains('[data-testid="tree-item"]', heading)
         .should('exist')
         .within(() => {
-          cy.contains('[data-testid="list-item"]', timespan) //nested timespan
+          cy.contains('[data-testid="tree-item"]', timespan) //nested timespan
             .should('exist')
             .and('be.visible');
         });
 
       //Clicking on section to check if it plays the right duration
       const expectedTime = '0:10';
-      cy.get('[data-testid="list-item"]').contains(timespan).click();
+      cy.get('[data-testid="tree-item"]').contains(timespan).click();
 
       // Wait briefly for the player to seek & update
       cy.wait(1000);
@@ -822,7 +730,7 @@ context('Item', () => {
       //Verifying on ramp video
       cy.visit('/media_objects/' + item_id);
       cy.waitForVideoReady();
-      //verifying the trabscript tab
+      //verifying the transcript tab
       cy.get('[role="tab"][data-rb-event-key="transcripts"]')
         .should('exist')
         .click();
@@ -838,7 +746,7 @@ context('Item', () => {
         .parents('[data-testid="transcript_item"]')
         .click();
 
-      cy.wait(1000);
+      cy.wait(1500);
 
       //  Verifying that the video player has moved to the expected time
       cy.get('video')
