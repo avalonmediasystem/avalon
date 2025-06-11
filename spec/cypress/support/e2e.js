@@ -12,7 +12,7 @@
  *   CONDITIONS OF ANY KIND, either express or implied. See the License for the
  *   specific language governing permissions and limitations under the License.
  * ---  END LICENSE_HEADER BLOCK  ---
-*/
+ */
 
 // ***********************************************************
 // This example support/index.js is processed and
@@ -30,7 +30,8 @@
 // ***********************************************************
 
 // Import commands.js using ES2015 syntax:
-import '@cypress/grep';
+import registerCypressGrep from '@bahmutov/cy-grep/src/support';
+registerCypressGrep();
 import './commands';
 
 // Alternatively you can use CommonJS syntax:

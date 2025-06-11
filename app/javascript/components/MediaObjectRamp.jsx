@@ -119,6 +119,7 @@ const Ramp = ({
                           aria-expanded="false"
                           aria-controls="shareResourcePanel"
                           id="shareBtn"
+                          data-testid="media-object-share-btn"
                         >
                           <i className="fa fa-share-alt"></i>
                           Share

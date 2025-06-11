@@ -19,11 +19,11 @@ Unless required by applicable law or agreed to in writing, software distributed
     <p>This item cannot be embedded.</p>
     <% elsif @currentStream.present? %>
     <p class="muted">Copy the text below to embed this resource</p>
-    <textarea class="col-md-12" rows="3" id="embed-part" onClick="this.select();" readonly="readonly"><%= @currentStream.embed_code(MasterFile::EMBED_SIZE[:medium], { urlappend: '/embed' }) %></textarea>
+    <textarea class="col-md-12" rows="3" id="embed-part" onClick="this.select();" readonly="readonly" data-testid="media-object-iframe-link"><%= @currentStream.embed_code(MasterFile::EMBED_SIZE[:medium], { urlappend: '/embed' }) %></textarea>
     <% else %>
     <p class="muted"> <%= I18n.t('media_object.empty_share_link_notice') %> </p>
     <% end %>
   </div>
 <% elsif section=='share-tabs' %>
-  <a href="#embed-tab" data-toggle="tab" class="nav-link nav-item">Embed</a>
+  <a href="#embed-tab" data-toggle="tab" class="nav-link nav-item" data-testid="media-object-embed-tab">Embed</a>
 <% end %>

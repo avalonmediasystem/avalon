@@ -68,7 +68,7 @@ Unless required by applicable law or agreed to in writing, software distributed
                 Logged in users only
               <% end %>
               <%= label_tag :visibility, class: "form-check" do %>
-                <%= radio_button_tag :visibility, 'private', (@visibility == 'private') %>
+                <%= radio_button_tag :visibility, 'private', (@visibility == 'private'), data: { testid: 'bookmark-visibility-private' } %>
                 Collection staff only
               <% end %>
             </fieldset>
@@ -134,7 +134,7 @@ Unless required by applicable law or agreed to in writing, software distributed
               <% end %>
             </fieldset>
             <div class="modal-footer">
-              <button type="submit" class="btn btn-primary"><%= t('blacklight.update_access_control.button') %></button>
+              <button type="submit" class="btn btn-primary" data-testid="bookmark-update-access-control-submit"><%= t('blacklight.update_access_control.button') %></button>
             </div>
           <% end %>
         </div>

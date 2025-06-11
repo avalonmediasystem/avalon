@@ -12,25 +12,30 @@
  *   CONDITIONS OF ANY KIND, either express or implied. See the License for the
  *   specific language governing permissions and limitations under the License.
  * ---  END LICENSE_HEADER BLOCK  ---
-*/
+ */
 
 class HomePage {
-
   getBrowseNavButton() {
-    return cy.contains('a.nav-link', 'Browse');
-}
+    return cy.get('[data-testid="browse-items-link"]').contains('Browse');
+  }
 
-getLoginSuccessAlert() {
-  return cy.get('div.alert.alert-info').contains('p', 'Signed in successfully.');
+  getLoginSuccessAlert() {
+    return cy
+      .get('div.alert.alert-info')
+      .contains('p', 'Signed in successfully.');
   }
 
   logout() {
     cy.get('a[href="/users/sign_out"]').first().click();
+    cy.clearCookies();
+    cy.clearLocalStorage();
   }
 
-  getLogoutSuccessAlert(){
-    return cy.get('div.alert.alert-success').contains('p', 'Signed out successfully.');
-}
+  getLogoutSuccessAlert() {
+    return cy
+      .get('div.alert.alert-success')
+      .contains('p', 'Signed out successfully.');
+  }
 }
 
 export default HomePage;
