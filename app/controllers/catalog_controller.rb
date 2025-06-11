@@ -126,7 +126,7 @@ class CatalogController < ApplicationController
     #   The ordering of the field names is the order of the display
     config.add_index_field 'title_tesi', label: 'Title', if: Proc.new {|context, _field_config, _document| context.request.format == :json }
     # TODO: Add helper_method for alternative title display after #6301 is resolved
-    config.add_index_field 'alternative_title_ssim', label: 'Alternative title'
+    config.add_index_field 'alternative_title_ssim', label: 'Alternative title', helper_method: :alternative_title_index_display
     config.add_index_field 'date_issued_ssi', label: 'Date', if: Proc.new {|_context, _field_config, document| document[:date_issued_ssi].present? }
     config.add_index_field 'date_created_ssi', label: 'Date', if: Proc.new {|_context, _field_config, document| document[:date_created_ssi].present? && document[:date_issued_ssi].blank? }
     config.add_index_field 'creator_ssim', label: 'Main contributors', helper_method: :contributor_index_display
