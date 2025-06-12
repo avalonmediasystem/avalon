@@ -1,8 +1,9 @@
 class IndexMetadataMediaObjectComponent < Blacklight::DocumentMetadataComponent
   # @param fields [Enumerable<Blacklight::FieldPresenter>] Document field presenters
   # rubocop:disable Metrics/ParameterLists
-  def initialize(fields: [], tag: 'dl', classes: %w[document-metadata dl-invert row col-md-12 col-lg-8], show: false, view_type: nil, field_layout: nil, **component_args)
+  def initialize(**kwargs)
     super
+    @classes += %w[col-md-12 col-lg-8]
     @field_layout ||= MetadataFieldLayoutComponent
   end
 
