@@ -1,4 +1,5 @@
-redis_conn = { url: "redis://#{Settings.redis.host}:#{Settings.redis.port}/#{Settings.redis.db}" }
+redis_url = Settings.redis.url || "redis://#{Settings.redis.host}:#{Settings.redis.port}/#{Settings.redis.db}"
+redis_conn = { url: redis_url }
 Sidekiq.configure_server do |s|
   s.redis = redis_conn
 end
