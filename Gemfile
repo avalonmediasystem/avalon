@@ -13,6 +13,8 @@ gem 'sqlite3'
 gem 'mail', '> 2.8.0.1'
 gem 'puma', '>= 6.4.2'
 gem 'puma-status'
+gem 'resolv-replace'
+gem 'csv'
 
 # Assets
 gem 'bootstrap', '4.6.2'

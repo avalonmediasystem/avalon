@@ -331,6 +331,7 @@ GEM
       bigdecimal
       rexml
     crass (1.0.6)
+    csv (3.3.5)
     daemons (1.4.1)
     dalli (3.2.8)
     database_cleaner (2.1.0)
@@ -756,6 +757,9 @@ GEM
       uber (< 0.2.0)
     request_store (1.7.0)
       rack (>= 1.4)
+    resolv (0.6.0)
+    resolv-replace (0.1.1)
+      resolv
     responders (3.1.1)
       actionpack (>= 5.2)
       railties (>= 5.2)
@@ -1027,6 +1031,7 @@ DEPENDENCIES
   codeclimate-test-reporter
   coffee-rails (~> 5.0)
   config
+  csv
   database_cleaner
   devise (~> 4.8)
   devise_invitable (~> 2.0)
@@ -1086,6 +1091,7 @@ DEPENDENCIES
   rdf-rdfxml
   react-rails
   recaptcha
+  resolv-replace
   rest-client (~> 2.0)
   roo
   rsolr (~> 2.0)
