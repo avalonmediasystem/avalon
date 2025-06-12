@@ -1,5 +1,5 @@
 # Base stage for building gems
-FROM        ruby:3.3-bookworm as bundle
+FROM        ruby:3.4-bookworm as bundle
 LABEL       stage=build
 LABEL       project=avalon
 RUN        apt-get update && apt-get upgrade -y build-essential && apt-get autoremove \
@@ -37,7 +37,7 @@ RUN         bundle config set --local without 'production' \
 
 
 # Download binaries in parallel
-FROM        ruby:3.3-bookworm as download
+FROM        ruby:3.4-bookworm as download
 LABEL       stage=build
 LABEL       project=avalon
 RUN         curl -L https://github.com/jwilder/dockerize/releases/download/v0.6.1/dockerize-linux-amd64-v0.6.1.tar.gz | tar xvz -C /usr/bin/
@@ -50,7 +50,7 @@ RUN      apt-get -y update && apt-get install -y ffmpeg
 
 
 # Base stage for building final images
-FROM        ruby:3.3-slim-bookworm as base
+FROM        ruby:3.4-slim-bookworm as base
 LABEL       stage=build
 LABEL       project=avalon
 RUN         echo "deb     http://ftp.us.debian.org/debian/    bookworm main contrib non-free"  >  /etc/apt/sources.list.d/bookworm.list \

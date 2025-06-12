@@ -144,7 +144,7 @@ jobs:
         default: 4
     docker:
       # Primary container image where all steps run.
-      - image: avalonmediasystem/avalon:7.8.0-dev
+      - image: avalonmediasystem/avalon:develop
 
     working_directory: /home/app/avalon
 
@@ -167,10 +167,10 @@ workflows:
   build_test_report:
     jobs:
       - build:
-          ruby_ver: '3.3'
-          name: 'Ruby3-3'
+          ruby_ver: '3.4'
+          name: 'Ruby3-4'
           parallelism: 4
       - upload-coverage:
           parallelism: 4
           requires:
-            - Ruby3-3
+            - Ruby3-4
