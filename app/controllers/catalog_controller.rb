@@ -130,7 +130,7 @@ class CatalogController < ApplicationController
     config.add_index_field 'date_issued_ssi', label: 'Date', if: Proc.new {|_context, _field_config, document| document[:date_issued_ssi].present? }
     config.add_index_field 'date_created_ssi', label: 'Date', if: Proc.new {|_context, _field_config, document| document[:date_created_ssi].present? && document[:date_issued_ssi].blank? }
     config.add_index_field 'creator_ssim', label: 'Main contributors', helper_method: :contributor_index_display
-    config.add_index_field 'abstract_ssi', label: 'Summary', helper_method: :description_index_display
+    config.add_index_field 'abstract_ssi', label: 'Summary', helper_method: :description_index_display, if: Proc.new {|_context, _field_config, document| document[:abstract_ssi].present? }
     config.add_index_field 'duration_ssi', label: 'Duration', if: Proc.new {|context, _field_config, _document| context.request.format == :json }
     config.add_index_field 'section_id_ssim', label: 'Sections', if: Proc.new {|context, _field_config, _document| context.request.format == :json }, helper_method: :section_id_json_index_display
 
