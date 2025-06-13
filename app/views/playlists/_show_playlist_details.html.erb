@@ -23,8 +23,10 @@ Unless required by applicable law or agreed to in writing, software distributed
 
   <div class="playlist-details-headline-wrapper">
     <h2 class="headline" style="display:inline-block"><%= t("playlist.details") %></h2>
-    <a id="playlist_edit_button" data-toggle="collapse" data-target="#playlist_edit_div, #playlist_view_div"
-    class="fa fa-edit btn btn-lg" data-testid="playlist-edit-icon-btn"></a>
+    <button id="playlist_edit_button" type="button" class="fa fa-edit btn btn-lg"
+        data-toggle="collapse" data-target="#playlist_edit_div, #playlist_view_div"
+        aria-expanded="false" aria-label="Edit playlist details" data-testid="playlist-edit-icon-btn">
+    </button>
   </div>
 
   <div id="playlist_view_div" class="container collapse <%= 'show' if @playlist.errors.empty? %>" data-testid="playlist-details">

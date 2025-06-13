@@ -82,7 +82,7 @@ Unless required by applicable law or agreed to in writing, software distributed
           <div class="row">
             <div class="col-sm-2">
               <span class="fa fa-arrows-v float-left dd-handle"></span>
-              <%= text_field_tag "playlist[items_attributes[#{index}[position]]]", i.position, class: 'form-control position-input', form: 'playlist_sort_form' %>
+              <%= text_field_tag "playlist[items_attributes[#{index}[position]]]", i.position, class: 'form-control position-input', form: 'playlist_sort_form', 'aria-label': 'Playlist item position' %>
               <%= hidden_field_tag "playlist[items_attributes[#{index}[id]]]", i.id, form: 'playlist_sort_form' %>
             </div>
             <% if can? :read, i.clip.master_file %>
@@ -90,7 +90,7 @@ Unless required by applicable law or agreed to in writing, software distributed
                 <%= link_to i.clip.title, i.clip.mediafragment_uri, id: "playlist_item_title_label_#{i.id}" %>
               </div>
               <div class="col-sm-2 text-right" style="margin-top:5px">
-                <button id="playlist_item_edit_button" class="btn btn-sm fa fa-edit" <%= i.clip.master_file.nil? ? 'disabled' : '' %>
+                <button id="playlist_item_edit_button" class="btn btn-sm fa fa-edit" aria-label="Edit playlist item" <%= i.clip.master_file.nil? ? 'disabled' : '' %>
                   data-toggle="collapse" href="#playlist_item_edit_<%= i.id %>" aria-expanded="false" type="button">
                 </button>
                 <label>
@@ -151,7 +151,7 @@ Unless required by applicable law or agreed to in writing, software distributed
                 <div class="form-group form-row">
                   <div class="col-sm-3 offset-2">
                     <button class='btn btn-sm btn-primary playlist_item_form_submit' data-id="<%= i.id %>" form="playlist_item_form_<%= i.id %>">Save Item</button>
-                    <span id="playlist_item_edit_cancel_<%= i.id %>" class="btn btn-outline btn-sm playlist_item_edit_cancel" data-id="<%= i.id %>" data-target="playlist_item_edit_<%= i.id %>">Cancel</span>
+                    <button id="playlist_item_edit_cancel_<%= i.id %>" type="button" class="btn btn-outline btn-sm playlist_item_edit_cancel" data-id="<%= i.id %>" data-target="playlist_item_edit_<%= i.id %>">Cancel</button>
                   </div>
                   <div class="col-sm-7" id="playlist_item_edit_alert_<%= i.id %>"></div>
                 </div>
