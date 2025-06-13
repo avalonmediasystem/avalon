@@ -19,7 +19,7 @@ module Blacklight::LocalBlacklightHelper
 
   def alternative_title_index_display args
     field = args[:document][args[:field]]
-    field.first(3).map { |f| truncate(f, length: 32) }.join(", ")
+    field.first(3).map { |f| truncate(f, length: 32) }.join("; ")
   end
 
   def contributor_index_display args
