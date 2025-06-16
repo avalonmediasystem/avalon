@@ -18,6 +18,7 @@ $("#bookmarks_selectall").on("click", function (e) {
   // Disable 'Select All' to prevent collision between select
   // and deselect POST requests while the page is getting updated
   $(this).prop("disabled", true);
+
   if (!$(this).is(':checked')) {
     $("label.toggle-bookmark.checked input.toggle-bookmark").each(function (index, input) {
       input.click();
@@ -27,24 +28,7 @@ $("#bookmarks_selectall").on("click", function (e) {
       input.click();
     });
   }
-  // Enable 'Select All' afer
+
+  // Enable 'Select All' afer all checkboxes have been toggled
   $(this).prop("disabled", false);
-  return;
 });
-
-// Fetch total bookmarks count after all POST requests for each document 
-// finishes. And update 'Selected Items' count in the nav bar
-$(document).ajaxStop(function () {
-  fetch('/bookmarks/count.json')
-    .then(response => {
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      return response.json();
-    })
-    .then(data => {
-      $("span[data-role='bookmark-counter']").text(data['count']);
-      $('#bookmarks_selectall')[0].prop("disabled", false);
-    });
-});
-
