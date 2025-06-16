@@ -17,7 +17,7 @@ require 'rails_helper'
 RSpec.describe IndexHeaderMediaObjectComponent, type: :component do
   let(:component) { described_class.new(presenter: presenter, **attr) }
 
-  let(:presented_document) { SolrDocument.new(id: 'abcd1234', title_tesi: 'Title', duration_ssi: '361000') }
+  let(:presented_document) { SolrDocument.new(id: 'abcd1234', title_tesi: 'Title', duration_ssi: '361000', has_model_ssim: ['MediaObject']) }
 
   let(:presenter) { vc_test_controller.view_context.document_presenter(presented_document) }
 
@@ -33,7 +33,7 @@ RSpec.describe IndexHeaderMediaObjectComponent, type: :component do
   end
 
   context 'without title' do
-    let(:presented_document) { SolrDocument.new(id: 'abcd1234', duration_ssi: '361100') }
+    let(:presented_document) { SolrDocument.new(id: 'abcd1234', duration_ssi: '361100', has_model_ssim: ['MediaObject']) }
 
     it 'renders id with duration' do
       expect(page).to have_content 'abcd1234 (06:01)'
@@ -41,7 +41,7 @@ RSpec.describe IndexHeaderMediaObjectComponent, type: :component do
   end
 
   context 'without duration' do
-    let(:presented_document) { SolrDocument.new(id: 'abcd1234', title_tesi: 'Title') }
+    let(:presented_document) { SolrDocument.new(id: 'abcd1234', title_tesi: 'Title', has_model_ssim: ['MediaObject']) }
 
     it 'renders title without duration' do
       expect(page).to have_content 'Title'
