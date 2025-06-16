@@ -157,8 +157,7 @@ services:
     environment:
       - DATABASE_URL=postgresql://postgres:password@db-test/avalon
       - SETTINGS__FFMPEG__PATH=/usr/bin/ffmpeg
-      - SETTINGS__REDIS__HOST=redis-test
-      - SETTINGS__REDIS__PORT=6379
+      - SETTINGS__REDIS__URL=redis://redis-test:6379/0
       - FEDORA_URL=http://fedoraAdmin:fedoraAdmin@fedora-test:8080/fcrepo/rest
       - FEDORA_BASE_PATH=/test
       - SOLR_URL=http://solr-test:8983/solr/avalon
