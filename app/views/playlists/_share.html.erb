@@ -14,14 +14,14 @@ Unless required by applicable law or agreed to in writing, software distributed
 ---  END LICENSE_HEADER BLOCK  ---
 %>
 <div id="share-list" data-testid="playlist-share-list">
-    <nav class="nav nav-tabs share-tabs">
-      <%= render_conditional_partials :share, section:'share-tabs' %>
-    </nav>
+  <nav class="nav nav-tabs share-tabs" role="tablist">
+    <%= render_conditional_partials :share, section:'share-tabs' %>
+  </nav>
 
-    <div class="tab-content">
-      <%= render_conditional_partials :share, section:'tab-content' %>
-    </div>
+  <div class="tab-content">
+    <%= render_conditional_partials :share, section:'tab-content' %>
   </div>
+</div>
 
 <% content_for :page_scripts do %>
 
