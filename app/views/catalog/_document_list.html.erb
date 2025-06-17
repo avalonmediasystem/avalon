@@ -15,9 +15,10 @@ Unless required by applicable law or agreed to in writing, software distributed
 %>
 <% # container for all documents in index list view -%>
 <% view_config = local_assigns[:view_config] || blacklight_config&.view_config(document_index_view_type) %>
-<div id="documents" class="documents-<%= document_index_view_type %>" data-testid="browse-results-list">
+<div id="documents" class="documents-<%= view_config&.key || document_index_view_type %>" data-testid="browse-results-list">
   <% if render_bookmarks_control? && documents.count>1 %> 
     <%= render "select_all" %>
   <% end %>
-  <%= render documents, as: :document, view_config: view_config %>
+  <% document_presenters = documents.map { |doc| document_presenter(doc) } -%>
+  <%= render view_config.document_component.with_collection(document_presenters, partials: view_config.partials, counter_offset: @response&.start || 0) %>
 </div>

@@ -33,6 +33,10 @@ img.no-icon {
   @extend .btn-outline;
 }
 
+.facet-pagination .btn-outline-secondary.active {
+  @extend .btn-primary;
+}
+
 #sort-dropdown,
 #per_page-dropdown {
   .dropdown-item.active {

@@ -53,7 +53,7 @@ class CatalogController < ApplicationController
       rows: 10
     }
 
-    # solr field configuration for search results/index views
+    # Component overrides for Avalon specific customizations
     config.index.document_component = IndexMediaObjectComponent
     config.index.title_component = IndexHeaderMediaObjectComponent
     config.index.metadata_component = IndexMetadataMediaObjectComponent
@@ -61,6 +61,7 @@ class CatalogController < ApplicationController
     config.view.atom.summary_component = IndexAtomComponent
     config.index.facet_group_component = FacetGroupComponent
 
+    # solr field configuration for search results/index views
     config.index.title_field = 'title_tesi'
     config.index.display_type_field = 'has_model_ssim'
     config.index.thumbnail_method = :avalon_image_tag
