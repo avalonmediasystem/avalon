@@ -129,10 +129,8 @@ services:
       - SETTINGS__STREAMING__STREAM_DEFAULT_QUALITY=medium
       #- SETTINGS__STREAMING__HTTP_BASE=http://localhost:8880/avalon
       #- SETTINGS__STREAMING__SERVER=nginx
-      - SETTINGS__STREAMING__HTTP_BASE=http://wowza:1935/avalon-minio/_definst_
+      - SETTINGS__STREAMING__HTTP_BASE=http://172.17.0.1:1935/avalon-minio/_definst_
       - SETTINGS__STREAMING__AUTH_REFERER=http://avalon:3000
-      - SETTINGS__STREAMING__PUBLIC_HOST=http://localhost:1935
-      #- SETTINGS__STREAMING__HTTP_BASE=http://localhost:1935/avalon-minio/_definst_
       - SETTINGS__STREAMING__SERVER=wowza
       - SETTINGS__STREAMING__STREAM_TOKEN_TTL=20
       - SYSTEM_GROUPS=administrator,group_manager,manager

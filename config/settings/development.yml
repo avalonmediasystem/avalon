@@ -1,5 +1,4 @@
 domain:
-  #host: 172.17.0.1
   port: 3000
 supplemental_files:
   proxy: true

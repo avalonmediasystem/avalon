@@ -52,14 +52,7 @@ module Avalon
           url = @base.is_a?(Addressable::URI) ? @base.join(line).to_s : File.expand_path(line, @base.to_s)
           @playlist.merge!(Avalon::M3U8Reader.read(url).playlist)
         elsif line =~ /\.m3u8?.*$/i
-          url = if @base.is_a?(Addressable::URI)
-                  new_url = @base.join(line)
-                  # rewrite url to public host (if needed)
-                  new_url.site = Settings.streaming.public_host if Settings.streaming.public_host.present?
-                  new_url.to_s
-                else
-                  File.expand_path(line, @base.to_s)
-                end
+          url = @base.is_a?(Addressable::URI) ? @base.join(line).to_s : File.expand_path(line, @base.to_s)
           @playlist[:playlists] << url
         elsif line =~ /^[^#]/
           tags[:filename] = line
