@@ -127,8 +127,13 @@ services:
       - SETTINGS__MASTER_FILE_MANAGEMENT__STRATEGY=move
       - SETTINGS__STREAMING__CONTENT_PATH=/
       - SETTINGS__STREAMING__STREAM_DEFAULT_QUALITY=medium
-      - SETTINGS__STREAMING__HTTP_BASE=http://localhost:8880/avalon
-      - SETTINGS__STREAMING__SERVER=nginx
+      #- SETTINGS__STREAMING__HTTP_BASE=http://localhost:8880/avalon
+      #- SETTINGS__STREAMING__SERVER=nginx
+      - SETTINGS__STREAMING__HTTP_BASE=http://wowza:1935/avalon-minio/_definst_
+      - SETTINGS__STREAMING__AUTH_REFERER=http://avalon:3000
+      - SETTINGS__STREAMING__PUBLIC_HOST=http://localhost:1935
+      #- SETTINGS__STREAMING__HTTP_BASE=http://localhost:1935/avalon-minio/_definst_
+      - SETTINGS__STREAMING__SERVER=wowza
       - SETTINGS__STREAMING__STREAM_TOKEN_TTL=20
       - SYSTEM_GROUPS=administrator,group_manager,manager
       - PIDFILE=tmp/pids/server.pid
@@ -139,6 +144,7 @@ services:
       - npms:/home/app/avalon/node_modules
     ports:
       - '3000:3000'
+
     networks:
       internal:
       external:
@@ -223,3 +229,39 @@ services:
     environment:
       CYPRESS_ENV: ${CYPRESS_ENV:-local}
       grepTags: ${CYPRESS_grep:-@critical}
+
+  wowza:
+    image: wowza/wowza-streaming-engine:latest-trial
+    environment:
+      - WSE_LICENSE_KEY=ET1B4-juaN3-D7nQm-aaBUM-ucRwB-wdyeX-6VvaZmtxyEpZ
+      - ADMIN_USER=admin
+      - ADMIN_PASSWORD=password
+      - IPWHITELIST=*
+      - TRANSCODER=disabled #enabled | disabled | remove to not change
+      - LOG_LEVEL=DEBUG #DEBUG INFO WARN ERROR
+    #to persist the configurations between starts of Wowza Streaming Engine, uncomment the lines below:
+    volumes:
+      - ./tmp/wse/applications:/usr/local/WowzaStreamingEngine/applications
+      - ./tmp/wse/conf:/usr/local/WowzaStreamingEngine/conf
+      - ./tmp/wse/content:/usr/local/WowzaStreamingEngine/content
+      - ./tmp/wse/transcoder:/usr/local/WowzaStreamingEngine/transcoder
+      - ./tmp/wse/lib:/usr/local/WowzaStreamingEngine/lib
+      - ./tmp/wse/logs:/usr/local/WowzaStreamingEngine/logs
+    ports:
+      - 8087:8087
+      - 80:80
+      - 443:443
+      - 1935:1935
+    networks:
+      internal:
+      external:
+
+  wowza-manager:
+    image: wowza/wowza-streaming-engine-manager:latest
+    environment:
+      - LOG_LEVEL=DEBUG #DEBUG INFO WARN ERROR
+    ports:
+      - 8088:8080
+    networks:
+      internal:
+      external:

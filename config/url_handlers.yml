@@ -9,8 +9,8 @@ adobe:
     audio: <%=http_base%>/audio-only/<%=path%>/<%=filename%>.<%=extension%>.m3u8
 wowza:
   http:
-    video: <%=http_base%>/<%=extension%>:<%=path%>/<%=filename%>.<%=extension%>/playlist.m3u8
-    audio: <%=http_base%>/<%=extension%>:<%=path%>/<%=filename%>.<%=extension%>/playlist.m3u8
+    video: <%=http_base%>/<%=extension%>:minio/<%=path%>/<%=filename%>.<%=extension%>/playlist.m3u8
+    audio: <%=http_base%>/<%=extension%>:minio/<%=path%>/<%=filename%>.<%=extension%>/playlist.m3u8
 nginx:
   http:
     video: <%=http_base%>/<%=path%>/<%=filename%>.<%=extension%>/index.m3u8
