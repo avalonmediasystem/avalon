@@ -105,4 +105,9 @@ table.dataTable thead .sorting_desc_disabled:after {
 
 .dataTableToolsBottom .pagination .active a {
   cursor: default;
+  color: #6e6e6e;
+}
+
+.dataTableToolsBottom .pagination .page-item.disabled .page-link {
+  color: #767676 !important;
 }
