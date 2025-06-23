@@ -18,7 +18,7 @@ class MediaObject < ActiveFedora::Base
   include VirtualGroups
   include ActiveFedora::Associations
   include MediaObjectMods
-  include Avalon::Workflow::WorkflowModelMixin
+  include WorkflowModelMixin
   include Permalink
   include Identifier
   include MigrationTarget

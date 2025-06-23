@@ -15,13 +15,6 @@ GIT
       about_page
 
 GIT
-  remote: https://github.com/avalonmediasystem/avalon-workflow.git
-  revision: 503f5fd195359ca73e7facf79843381c611cfa0b
-  tag: avalon-r8.0
-  specs:
-    avalon-workflow (0.0.3)
-
-GIT
   remote: https://github.com/avalonmediasystem/browse-everything.git
   revision: 3d03380a73b2bf97cb94ea987f725d15bc71af12
   branch: v1.5-avalon
@@ -1001,7 +994,6 @@ DEPENDENCIES
   api-pagination
   audio_waveform-ruby (~> 1.0.7)
   avalon-about!
-  avalon-workflow!
   aws-activejob-sqs
   aws-partitions
   aws-sdk-cloudfront

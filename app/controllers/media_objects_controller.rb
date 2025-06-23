@@ -17,7 +17,7 @@ require 'avalon/intercom'
 
 class MediaObjectsController < ApplicationController
   include Rails::Pagination
-  include Avalon::Workflow::WorkflowControllerBehavior
+  include WorkflowControllerBehavior
   include Avalon::Controller::ControllerBehavior
   include ConditionalPartials
   include NoidValidator
