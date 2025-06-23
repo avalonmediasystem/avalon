@@ -65,9 +65,6 @@ gem 'recaptcha', require: 'recaptcha/rails'
 gem 'samvera-persona', '~> 0.6'
 gem 'speedy-af', '~> 0.4.0'
 
-# Avalon Components
-gem 'avalon-workflow', git: "https://github.com/avalonmediasystem/avalon-workflow.git", tag: 'avalon-r8.0'
-
 # Authentication & Authorization
 gem 'devise', '~> 4.8'
 gem 'devise_invitable', '~> 2.0'

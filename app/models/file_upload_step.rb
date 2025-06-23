@@ -14,7 +14,7 @@
 
 require 'avalon/dropbox'
 
-class FileUploadStep < Avalon::Workflow::BasicStep
+class FileUploadStep < BasicStep
   def initialize(step = 'file-upload',
                  title = "Manage files",
                  summary = "Associated bitstreams",
