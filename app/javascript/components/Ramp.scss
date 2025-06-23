@@ -333,7 +333,6 @@
       border: none;
       border-bottom: 1px solid rgba(0, 0, 0, 0.125);
       display: flex;
-      flex-direction: column-reverse;
       cursor: pointer;
 
       &:last-child {
@@ -356,7 +355,7 @@
       -webkit-transform: rotate(270deg);
     }
 
-    div[class~="show"]+.card-header .accordion-arrow {
+    .card-header:has(+div[class~="show"]) .accordion-arrow {
       transform: rotate(360deg);
       -o-transform: rotate(360deg);
       -ms-transform: rotate(360deg);
@@ -414,6 +413,12 @@
       overflow: auto;
       max-height: inherit;
     }
+
+    .ramp--structured-nav__content.playlist-items:focus,
+    .ramp--structured-nav__border:focus {
+      outline: 0.125rem solid #2a5459;
+      outline-offset: -0.125rem;
+    }
   }
 
   /* CSS for playlist items column height in landscape mode for mobile devices */
@@ -421,5 +426,30 @@
     .ramp--playlist-items-column.mobile-view {
       height: 109vh !important;
     }
+  }
+}
+
+.ramp--playlist-accordion-header {
+  padding: 0;
+  width: 100%;
+  text-align: left;
+  text-decoration: none;
+  &:focus,
+  &:hover,
+  &:active {
+    text-decoration: none;
+  }
+  // Remove default focus ring for mouse users
+  &:focus {
+    outline: none;
+    box-shadow: none;
+  }
+  // Allow focus ring to be visible on the accordion header for keyboard users
+  &:focus-visible {
+    box-shadow: 0 0 0 0.2rem rgba(42, 84, 89, 0.25);
+  }
+
+  svg.accordion-arrow {
+    vertical-align: text-bottom;
   }
 }

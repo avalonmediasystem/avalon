@@ -25,7 +25,7 @@ import {
 } from "@samvera/ramp";
 import 'video.js/dist/video-js.css';
 import "@samvera/ramp/dist/ramp.css";
-import { Accordion, Card, Col, Row } from 'react-bootstrap';
+import { Accordion, Button, Card, Col, Row } from 'react-bootstrap';
 import './Ramp.scss';
 
 const ExpandCollapseArrow = () => {
@@ -172,24 +172,28 @@ const Ramp = ({
               <Card.Body>
                 <Accordion>
                   <Card>
+                    <Card.Header>
+                      <Accordion.Toggle as={Button} variant="link" eventKey="0" className="ramp--playlist-accordion-header">
+                        <ExpandCollapseArrow /> Markers
+                      </Accordion.Toggle>
+                    </Card.Header>
                     <Accordion.Collapse eventKey="0" id="markers">
                       <Card.Body>
                         <Annotations showHeading={false} />
                       </Card.Body>
                     </Accordion.Collapse>
-                    <Accordion.Toggle as={Card.Header} variant="link" eventKey="0" className="ramp--playlist-accordion-header">
-                      <ExpandCollapseArrow /> Markers
-                    </Accordion.Toggle>
                   </Card>
                   <Card>
+                    <Card.Header>
+                      <Accordion.Toggle as={Button} variant="link" eventKey="1" className="ramp--playlist-accordion-header">
+                        <ExpandCollapseArrow /> Source Item Details
+                      </Accordion.Toggle>
+                    </Card.Header>
                     <Accordion.Collapse eventKey="1">
                       <Card.Body className="p-3">
                         <MetadataDisplay displayOnlyCanvasMetadata={true} showHeading={false} />
                       </Card.Body>
                     </Accordion.Collapse>
-                    <Accordion.Toggle as={Card.Header} variant="link" eventKey="1" className="ramp--playlist-accordion-header">
-                      <ExpandCollapseArrow /> Source Item Details
-                    </Accordion.Toggle>
                   </Card>
                 </Accordion>
               </Card.Body>
