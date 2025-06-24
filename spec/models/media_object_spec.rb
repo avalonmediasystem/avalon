@@ -533,6 +533,14 @@ describe MediaObject do
       expect(MediaObject.exists?(media_object.id)).to be_falsey
     end
 
+    context 'with deleted sections' do
+      it 'destroys existing sections' do
+        media_object.reload
+        media_object.instance_variable_set(:@section_ids, [master_file.id, "deleted-id"])
+        expect { media_object.destroy }.to change { MasterFile.exists?(master_file) }.from(true).to(false)
+      end
+    end
+
     it 'destroys related checkouts' do
       expect { media_object.destroy }.to change { Checkout.where(media_object_id: media_object.id).count }.from(3).to(0)
     end
@@ -1236,6 +1244,14 @@ describe MediaObject do
     describe 'sections' do
       it 'returns an ordered list of master file objects' do
         expect(media_object.sections).to eq [section, section2]
+      end
+
+      context 'in safe_load mode' do
+        it 'returns only sections that exist in both solr and fedora' do
+          media_object.reload
+          media_object.instance_variable_set(:@section_ids, [section.id, 'non-existant-id', section2.id])
+          expect(media_object.sections(safe_load: true)).to eq [section, section2]
+        end
       end
     end
 

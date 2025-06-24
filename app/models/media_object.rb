@@ -168,8 +168,14 @@ class MediaObject < ActiveFedora::Base
     @sections = mfs
   end
 
-  def sections
-    @sections ||= MasterFile.find(self.section_ids)
+  def sections(safe_load: false)
+    if safe_load
+      # Trick ActiveFedora to use solr so it doesn't raise an exception when a section has already been deleted
+      # In this case return all sections that were found in both solr and fedora
+      @sections = MasterFile.where("has_model_ssim:MasterFile").find(self.section_ids).compact
+    else
+      @sections ||= MasterFile.find(self.section_ids)
+    end
   end
 
   def section_ids
@@ -187,10 +193,13 @@ class MediaObject < ActiveFedora::Base
   end
 
   def destroy
+    # Ignore sections that have already been deleted (or don't appear in solr)
+    existing_sections = self.sections(safe_load: true)
+
     # attempt to stop the matterhorn processing job
-    self.sections.each(&:stop_processing!)
+    existing_sections.each(&:stop_processing!)
     # avoid calling destroy on each section since it calls save on parent media object
-    self.sections.each(&:delete)
+    existing_sections.each(&:delete)
     Bookmark.where(document_id: self.id).destroy_all
     Checkout.where(media_object_id: self.id).destroy_all
     super
