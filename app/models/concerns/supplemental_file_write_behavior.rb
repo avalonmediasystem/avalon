@@ -13,48 +13,33 @@
 # ---  END LICENSE_HEADER BLOCK  ---
 
 # frozen_string_literal: true
-module SupplementalFileBehavior
+module SupplementalFileWriteBehavior
   extend ActiveSupport::Concern
 
   included do |base|
     property :supplemental_files_json, predicate: Avalon::RDFVocab.const_get(base.name).supplementalFiles, multiple: false do |index|
       index.as :stored_sortable
     end
+
+    before_destroy :destroy_supplemental_files
   end
 
   # FIXME: Switch absolute_path to stored_file_id and use valkyrie or other file store to allow for abstracting file path and content from fedora (think stream urls)
   # See https://github.com/samvera/valkyrie/blob/master/lib/valkyrie/storage/disk.rb
   # SupplementalFile = Struct.new(:id, :label, :absolute_path, keyword_init: true)
 
-  # @return [SupplementalFile]
-  def supplemental_files(tag: '*')
-    return [] if supplemental_files_json.blank?
-    # If the supplemental_files_json becomes out of sync with the
-    # database after a delete, this check could fail. Have not 
-    # encountered in a live environment but came up in automated 
-    # testing. Adding a rescue on fail to locate allows us to skip
-    # these out of sync files.
-    files = JSON.parse(supplemental_files_json).collect do |file_gid|
-      begin
-        GlobalID::Locator.locate(file_gid)
-      rescue ActiveRecord::RecordNotFound
-        nil
-      end
-    end.compact
-    return [] if files.blank?
-
-    case tag
-    when '*'
-      files
-    when nil
-      files.select { |file| file.tags.empty? }
-    else
-      files.select { |file| Array(tag).all? { |t| file.tags.include?(t) } }
-    end
-  end
-
   # @param files [SupplementalFile]
   def supplemental_files=(files)
     self.supplemental_files_json = files.collect { |file| file.to_global_id.to_s }.to_s
+    @supplemental_files = files # update the memoized @supplemental_files ivar
+  end
+
+  private
+
+  def destroy_supplemental_files
+    return if supplemental_files.blank?
+
+    BulkActionJobs::DeleteChildFiles.perform_later(supplemental_files, nil)
+    self.supplemental_files = [] # Clear out supplemental_files_json and the memoized @supplemental_files ivar
   end
 end
