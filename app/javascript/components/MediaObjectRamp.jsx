@@ -30,7 +30,7 @@ import './Ramp.scss';
 
 const Ramp = ({
   urls,
-  sections_count,
+  has_sections,
   title,
   share,
   timeline,
@@ -87,7 +87,7 @@ const Ramp = ({
             </React.Fragment>
             )
             : (<React.Fragment>
-              {sections_count > 0 &&
+              {has_sections &&
                 <React.Fragment>
                   <MediaPlayer enableFileDownload={false} enablePlaybackRate={true} />
                   <div className="ramp--rails-title">
@@ -179,7 +179,7 @@ const Ramp = ({
             <Tab eventKey="details" title="Details" >
               <MetadataDisplay showHeading={false} displayTitle={false} />
             </Tab>
-            {(cdl.can_stream && sections_count != 0 && has_transcripts) &&
+            {(cdl.can_stream && has_sections && has_transcripts) &&
               <Tab eventKey="transcripts" title="Transcripts" className="ramp--transcripts_tab">
                 <Transcript
                   playerID="iiif-media-player"
