@@ -12,13 +12,12 @@
 #   specific language governing permissions and limitations under the License.
 # ---  END LICENSE_HEADER BLOCK  ---
 
-require 'avalon/controller/controller_behavior'
 require 'avalon/intercom'
 
 class MediaObjectsController < ApplicationController
   include Rails::Pagination
   include WorkflowControllerBehavior
-  include Avalon::Controller::ControllerBehavior
+  include DownloadBehavior
   include ConditionalPartials
   include NoidValidator
   include SecurityHelper
