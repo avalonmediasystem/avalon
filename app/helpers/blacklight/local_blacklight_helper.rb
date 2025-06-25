@@ -59,6 +59,12 @@ module Blacklight::LocalBlacklightHelper
     result
   end
 
+  # Override of blacklight helper identify if the document is in the user's bookmarks
+  # https://github.com/projectblacklight/blacklight/blob/fe4b92fa4866f192c50f717cfa24bbf528d3c8ee/app/helpers/blacklight/document_helper_behavior.rb#L45
+  def bookmarked? document
+    current_or_guest_user.bookmarks.any? { |b| b.document_id == document.id && b.document_type.to_s == document.class.to_s }
+  end
+
   # Override of blacklight helper to add row class
   def render_document_class(document)
     # HACK I'm not sure why CatalogController needs to reference these helpers through helpers, but BookmarksController doesn't
