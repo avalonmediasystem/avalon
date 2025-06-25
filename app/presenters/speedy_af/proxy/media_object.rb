@@ -71,7 +71,7 @@ class SpeedyAF::Proxy::MediaObject < SpeedyAF::Base
     query = "id:" + section_ids.join(" id:")
     @sections ||= SpeedyAF::Proxy::MasterFile.where(query,
                                                     order: -> { section_ids },
-                                                    load_reflections: true)
+                                                    load_reflections: [:derivatives, :structuralMetadata, :media_object])
   end
 
   def collection
