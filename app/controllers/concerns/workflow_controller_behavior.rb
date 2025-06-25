@@ -90,8 +90,13 @@ module WorkflowControllerBehavior
   def custom_update
   end
 
+  # Use SpeedyAF for loading edit pages more quickly, switch to fedora for saves
   def model_object
-    @model_object ||= ActiveFedora::Base.find(params[:id], cast: true)
+    @model_object ||= if params[:action] == "edit"
+                        SpeedyAF::Base.find(params[:id])
+                      else
+                        ActiveFedora::Base.find(params[:id], cast: true)
+                      end
   end
 
   def build_context
