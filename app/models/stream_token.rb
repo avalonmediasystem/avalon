@@ -61,10 +61,10 @@ class StreamToken < ActiveRecord::Base
       attrs[:id] = existing_token_hash[attrs[:token]] if existing_token_hash[attrs[:token]].present?
     end
 
-    result = token_attributes.present? ? StreamToken.upsert_all(token_attributes) : []
+    token_attributes.present? ? StreamToken.upsert_all(token_attributes) : []
 
     # Fetch StreamToken fresh so they can be put into session and returned
-    tokens = StreamToken.where(id: result.to_a.pluck("id"))
+    tokens = StreamToken.where(id: token_attributes.pluck(:id))
     session[:hash_tokens] += tokens.pluck(:token)
     session[:hash_tokens].uniq! # Avoid duplicate entry
     tokens.to_a
