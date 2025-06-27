@@ -791,6 +791,8 @@ h5.card-title {
 .twitter-typeahead {
   z-index: auto !important;
   background-color: $white;
+  display: inline-flex !important;
+  flex-grow: 2;
 }
 
 /**
