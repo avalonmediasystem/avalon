@@ -22,7 +22,7 @@ module Avalon
         @config['query'] ||= 'rec.id=%{bib_id}'
         @config['namespace'] ||= "http://www.loc.gov/zing/srw/"
       end
-      
+
       def get_record(bib_id)
         # multiple queries specified as an Array in the config will run each in sequence until a record is found
         Array(config['query']).each do |query|
@@ -32,10 +32,10 @@ module Avalon
         end
         nil
       end
-      
+
       def url_for(query, bib_id)
         uri = Addressable::URI.parse config['url']
-        query_param = Addressable::URI.escape(query % { bib_id: bib_id.to_s })
+        query_param = Addressable::URI.encode_component(query % { bib_id: bib_id.to_s }, Addressable::URI::CharacterClasses::QUERY)
         uri.query = "version=1.1&operation=searchRetrieve&maximumRecords=1&recordSchema=marcxml&query=#{query_param}"
         uri.to_s
       end
