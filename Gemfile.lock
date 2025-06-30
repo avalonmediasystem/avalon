@@ -738,12 +738,12 @@ GEM
       rdf (~> 3.3)
       rexml (~> 3.2)
     rdoc (6.3.4.1)
-    react-rails (3.2.1)
-      babel-transpiler (>= 0.7.0)
+    react_on_rails (14.2.1)
+      addressable
       connection_pool
-      execjs
-      railties (>= 3.2)
-      tilt
+      execjs (~> 2.5)
+      rails (>= 5.2)
+      rainbow (~> 3.0)
     recaptcha (5.19.0)
     redis (4.8.1)
     redis-client (0.24.0)
@@ -1087,7 +1087,7 @@ DEPENDENCIES
   rb-readline
   rdf (~> 3.1)
   rdf-rdfxml
-  react-rails
+  react_on_rails
   recaptcha
   resolv-replace
   rest-client (~> 2.0)

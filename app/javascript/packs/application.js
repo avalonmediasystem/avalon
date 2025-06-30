@@ -30,6 +30,25 @@
  * For some reason including the `embeds` directory in this `require.context` breaks
  * the player. Filtering out the directory allows everything to operate as intended.
  */
-var componentRequireContext = require.context("components", true, /^(?!embed)/)
-var ReactRailsUJS = require("react_ujs")
-ReactRailsUJS.useContext(componentRequireContext)
+
+import ReactOnRails from 'react-on-rails';
+
+import CollectionList from '../components/CollectionList';
+import CollectionCarousel from '../components/CollectionCarousel';
+import CollectionDetails from '../components/CollectionDetails';
+import Search from '../components/Search';
+import EmbeddedRamp from '../components/embeds/EmbeddedRamp';
+import MediaObjectRamp from '../components/MediaObjectRamp';
+import ReactButtonContainer from '../components/ReactButtonContainer';
+import PlaylistRamp from '../components/PlaylistRamp';
+
+ReactOnRails.register({
+  CollectionList,
+  CollectionCarousel,
+  CollectionDetails,
+  Search,
+  EmbeddedRamp,
+  MediaObjectRamp,
+  ReactButtonContainer,
+  PlaylistRamp,
+});

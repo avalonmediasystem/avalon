@@ -38,7 +38,7 @@ const ExpandCollapseArrow = () => {
     </svg>);
 };
 
-const Ramp = ({
+const PlaylistRamp = ({
   urls,
   playlist_id,
   playlist_item_ids,
@@ -268,4 +268,4 @@ const Ramp = ({
   );
 };
 
-export default Ramp;
+export default PlaylistRamp;
