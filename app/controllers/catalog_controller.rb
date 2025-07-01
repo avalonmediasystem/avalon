@@ -217,9 +217,6 @@ class CatalogController < ApplicationController
     config.spell_max = 5
 
     config.fetch_many_document_params = { fl: "*" }
-
-    # Continue to use Bootstrap 4 for the time being
-    config.bootstrap_version = 4
   end
 
   private
