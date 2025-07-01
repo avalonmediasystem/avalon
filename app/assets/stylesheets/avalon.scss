@@ -81,6 +81,10 @@ tr.active-false td {
   border-color: $state-info-border;
 }
 
+.form-control {
+  appearance: auto;
+}
+
 pre {
   background-color: #f5f5f5;
   border: 1px solid #ccc;
@@ -209,7 +213,6 @@ div.alert-danger {
   margin-left: -40%;
 }
 
-// Custom file preview field for Jasny bootstrap
 .uneditable-input-exists {
   //@extend .uneditable-input;
   width: 45%;
