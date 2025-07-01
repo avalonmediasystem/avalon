@@ -14,8 +14,8 @@
 
 
 $ ->
-  add_button_html = '<div class="input-group-append"><button type="button" class="add-dynamic-field btn btn-outline btn-light"><span class="fa fa-plus"></span></button></div>'
-  remove_button_html = '<div class="input-group-append"><button type="button" class="remove-dynamic-field btn btn-outline btn-light"><span class="fa fa-minus"></span></button></div>'
+  add_button_html = '<button type="button" class="add-dynamic-field btn btn-outline btn-light"><span class="fa fa-plus"></span></button>'
+  remove_button_html = '<button type="button" class="remove-dynamic-field btn btn-outline btn-light"><span class="fa fa-minus"></span></button>'
   
   $('.form-group.multivalued').each ->
     t = $(this)
@@ -52,7 +52,7 @@ $ ->
       dropdown_default_value = current_input_group.find('.dropdown-menu li:first span').text()
       new_input_group.find('.dropdown-toggle span').first().text(dropdown_default_label)
       new_input_group.find('input[type="hidden"]').val(dropdown_default_value)
-    current_input_group.find('.input-group-append').has('.add-dynamic-field').remove()
+    current_input_group.find('button.add-dynamic-field').remove()
     current_input_group.append(remove_button_html)
     textarea = current_input_group.data('textarea')
     if typeof(textarea) != "undefined"

@@ -16,7 +16,7 @@
 
 $(document).ready(function() {
   var form = $('div.import-button').closest('form').prop('id');
-  var import_button_html = '<div class="input-group-append"><button id="media_object_bibliographic_id_btn" type="submit" name="media_object[import_bib_record]" class="btn btn-outline" value="yes" >Import</button></div>';
+  var import_button_html = '<button id="media_object_bibliographic_id_btn" type="submit" name="media_object[import_bib_record]" class="btn btn-outline" value="yes" >Import</button>';
   $('div.import-button').append(import_button_html);
   if (!!document.querySelector('#media_object_bibliographic_id_btn')) {
     var importPopover = new bootstrap.Popover(document.querySelector('#media_object_bibliographic_id_btn'), {

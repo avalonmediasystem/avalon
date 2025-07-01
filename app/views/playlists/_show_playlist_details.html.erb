@@ -52,10 +52,8 @@ Unless required by applicable law or agreed to in writing, software distributed
               <input type="text" class="form-control" id="playlist-share-link"
                 value="<%= access_token_url(@playlist) %>" placeholder="<%= access_token_url(@playlist) %>"
                 onClick="this.select();" readonly="readonly">
-              <span class="input-group-append" id="playlist-share-btn-result">
-                <%= button_tag "Copy", id: 'playlist-share-btn',
-                    class: "btn btn-success" %>
-              </span>
+              <%= button_tag "Copy", id: 'playlist-share-btn',
+                  class: "btn btn-success" %>
             </div>
           </div>
           <div class="col-sm-3">
