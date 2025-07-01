@@ -77,7 +77,7 @@ class TimelinesController < ApplicationController
         edit_button = view_context.link_to(edit_timeline_path(timeline), class: 'btn btn-sm btn-outline') do
           "<i class='fa fa-edit' aria-hidden='true'></i> Edit Details".html_safe
         end
-        delete_button = view_context.link_to(timeline_path(timeline), method: :delete, class: 'btn btn-sm btn-danger btn-confirmation', data: { placement: 'bottom' }) do
+        delete_button = view_context.link_to(timeline_path(timeline), method: :delete, class: 'btn btn-sm btn-danger btn-confirmation', data: { placement: 'bottom', confirm: "Are you sure?" }) do
           "<i class='fa fa-times' aria-hidden='true'></i> Delete".html_safe
         end
         [

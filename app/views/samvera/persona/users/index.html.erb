@@ -71,29 +71,28 @@ Unless required by applicable law or agreed to in writing, software distributed
           url: '/persona/users/paged_index',
           type: 'POST'
         },
-        order: [ <%= "[#{session[:users_sort][0]}, '#{session[:users_sort][1]}']".html_safe if session[:users_sort] %>
-      ],
-      "columnDefs": [{
-        'targets': 3,
-        'createdCell': function (td, cellData, rowData, row, col) {
-          $(td).attr('data-sort', cellData.match(/(?<=datetime=').*Z/))
+        order: [ 
+          <%= "[#{session[:users_sort][0]}, '#{session[:users_sort][1]}']".html_safe if session[:users_sort] %>
+        ],
+        "columnDefs": [{
+          'targets': 3,
+          'createdCell': function (td, cellData, rowData, row, col) {
+            $(td).attr('data-sort', cellData.match(/(?<=datetime=').*Z/))
+          }
+        }],
+        "columns": [
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          { className: "text-right"}
+        ],
+        initComplete: function () {
+          $('div.dataTableToolsTop input[type="search"]').attr('data-testid', 'users-search-field');
         }
-      }],
-      "columns": [
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        { className: "text-right"}
-      ],
-      initComplete: function () {
-      $('div.dataTableToolsTop input[type="search"]').attr('data-testid', 'users-search-field');
-    }
-    }).on('draw', function () {
-      window.apply_button_confirmation()
-    });
+      });
     });
   </script>
 <% end %>

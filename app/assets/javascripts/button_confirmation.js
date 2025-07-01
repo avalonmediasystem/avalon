@@ -23,37 +23,45 @@ $(function () {
 });
 
 window.apply_button_confirmation = function () {
-  $(document).on('click', '#special_button_color', function (e) {
-    // Stop page from scrolling up on 'Cancel' click
-    e.preventDefault();
-    // Restore focus to the active delete button
-    if (activeDeleteBtn) {
-      activeDeleteBtn.focus();
-    }
-    $('.btn-confirmation').popover('hide');
-    return true;
+  var btnList = [].slice.call(document.querySelectorAll('.btn-confirmation'))
+  var popoverList = btnList.map(function(btn) {
+    return new bootstrap.Popover(btn, {
+      trigger: 'manual',
+      html: true,
+      sanitize: false,
+      content: function () {
+        let button;
+        if (typeof $(this).attr('form') === "undefined") {
+          button = '<a href="' + $(this).attr('href') + '" class="btn btn-sm btn-danger btn-confirm" role="button" data-method="delete" rel="nofollow" data-testid="table-view-delete-confirmation-btn">Yes, Delete</a>';
+        } else {
+          button = '<input class="btn btn-sm btn-danger btn-confirm" role="button" form="' + $(this).attr('form') + '" type="submit" value="Yes, Delete">';
+          $('#' + $(this).attr('form')).find('[name="_method"]').val('delete');
+        }
+        return '<p>Are you sure?</p> ' + button + ' <a href="#" class="btn btn-sm btn-primary" role="button" id="special_button_color">No, Cancel</a>';
+      }
+    });
   });
 
-  // Initialize the popover
-  $('.btn-confirmation').popover({
-    trigger: 'manual',
-    html: true,
-    sanitize: false,
-    content: function () {
-      let button;
-      if (typeof $(this).attr('form') === "undefined") {
-        button = '<a href="' + $(this).attr('href') + '" class="btn btn-sm btn-danger btn-confirm" role="button" data-method="delete" rel="nofollow" data-testid="table-view-delete-confirmation-btn">Yes, Delete</a>';
-      } else {
-        button = '<input class="btn btn-sm btn-danger btn-confirm" role="button" form="' + $(this).attr('form') + '" type="submit" value="Yes, Delete">';
-        $('#' + $(this).attr('form')).find('[name="_method"]').val('delete');
+  if (popoverList.length !== 0) {
+    $(document).on('click', '#special_button_color', function (e) {
+      // Stop page from scrolling up on 'Cancel' click
+      e.preventDefault();
+      // Restore focus to the active delete button
+      if (activeDeleteBtn) {
+        bootstrap.Popover.getInstance(activeDeleteBtn).hide();
+        activeDeleteBtn.focus();
       }
-      return '<p>Are you sure?</p> ' + button + ' <a href="#" class="btn btn-sm btn-primary" role="button" id="special_button_color">No, Cancel</a>';
-    }
-  }).click(function () {
-    $('.btn-confirmation').popover('hide');
-    $(this).popover('show');
-    return false;
-  });
+      return true;
+    });
+
+    $(document).on('confirm', '.btn-confirmation', function(e) {
+      if (activeDeleteBtn) {
+        bootstrap.Popover.getInstance(activeDeleteBtn).hide();
+      }
+      bootstrap.Popover.getInstance(e.target).show();
+      return false;
+    });
+  }
 };
 // END: 'apply_button_confirmation' coffeescript to javascript conversion
 
@@ -105,6 +113,7 @@ $(document).on('keydown', function (e) {
       $('.btn-confirmation').popover('hide');
       // Restore focus to the active delete button
       if (activeDeleteBtn) {
+        bootstrap.Popover.getInstance(activeDeleteBtn).hide();
         activeDeleteBtn.focus();
       }
     }
