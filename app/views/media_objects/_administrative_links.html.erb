@@ -26,7 +26,7 @@ Unless required by applicable law or agreed to in writing, software distributed
     <% end %>
 
     <% if Settings.intercom.present? and can? :intercom_push, @media_object %>
-    <%= button_tag(Settings.intercom['default']['push_label'], class: 'btn btn-outline text-nowrap', data: {toggle:"modal", target:"#intercom_push"}) %>
+    <%= button_tag(Settings.intercom['default']['push_label'], class: 'btn btn-outline text-nowrap', data: {"bs-toggle":"modal", "bs-target":"#intercom_push"}) %>
     <%= render "intercom_push_modal" %>
     <% end %>
   </div>

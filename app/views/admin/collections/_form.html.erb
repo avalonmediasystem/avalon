@@ -17,19 +17,19 @@ Unless required by applicable law or agreed to in writing, software distributed
   <% raise Avalon::VocabularyNotFound.new "Units vocabulary not found." %>
 <% end %>
 
-<div id="new_collection" class="modal fade" role="dialog" data-backdrop="true" data-submit_url="<%= 'create' %>">
+<div id="new_collection" class="modal fade" role="dialog" data-bs-backdrop="true" data-submit_url="<%= 'create' %>">
   <div class="modal-dialog modal-lg">
     <div class="modal-content">
       <div class="modal-header">
         <h4 class='modal-title'><%= modal_title %></h4>
-        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span
+        <button type="button" class="close" data-bs-dismiss="modal"><span aria-hidden="true">&times;</span><span
             class="sr-only">Close</span></button>
       </div>
       <%= bootstrap_form_for @collection, remote: true, html: { modal: true }, format: 'json' do |f| %>
       <div class="modal-body">
         <%= f.text_field :name, 'data-testid': 'collection-update-name' %>
         <% if @collection.new_record? || can?(:update_unit, @collection)%>
-          <%= f.select(:unit, Admin::Collection.units, {}, {:class => 'form-control', 'data-testid': 'collection-update-unit'} ) %>
+          <%= f.select(:unit, Admin::Collection.units, {}, {'data-testid': 'collection-update-unit'} ) %>
         <% end %>
         <%= f.text_area :description, rows: 3 ,'data-testid':'collection-update-description' %>
         <%= f.text_field :contact_email, 'data-testid': 'collection-update-contact-email' %>
@@ -37,7 +37,7 @@ Unless required by applicable law or agreed to in writing, software distributed
         <%= f.text_field :website_label, 'data-testid':'collection-update-website-label' %>
       </div>
       <div class="modal-footer">
-        <a href="#" data-dismiss="modal" aria-hidden="true" class="btn btn-outline">Cancel</a>
+        <a href="#" data-bs-dismiss="modal" aria-hidden="true" class="btn btn-outline">Cancel</a>
         <%= f.submit class: 'btn btn-primary btn-stateful-loading', data: { loading_text: 'Saving...' } , 'data-testid': 'collection-update-collection-btn' %>
       </div>
       <% end %>
@@ -55,7 +55,7 @@ Unless required by applicable law or agreed to in writing, software distributed
       alertElement.remove();
     }
     $('.page-title').closest('.page-title-wrapper').before(
-      '<div class="container-fluid" id="alerts"><div class="alert alert-danger"><button type="button" class="close" data-dismiss="alert">&times;</button>' +
+      '<div class="container-fluid" id="alerts"><div class="alert alert-danger"><button type="button" class="close" data-bs-dismiss="alert">&times;</button>' +
       message + '</div></div>');
   }
 

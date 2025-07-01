@@ -55,7 +55,7 @@ Unless required by applicable law or agreed to in writing, software distributed
             <%= number_to_human_size(section.file_size) %>
           </li>
           <li>
-            <button class="btn btn-outline btn-struct" type="button" data-toggle="collapse" data-target="#structure_<%= index %>" aria-expanded="false" aria-controls="structure_<%= index %>" data-testid="media-object-edit-structure-btn-<%= index %>">
+            <button class="btn btn-outline btn-struct" type="button" data-bs-toggle="collapse" data-bs-target="#structure_<%= index %>" aria-expanded="false" aria-controls="structure_<%= index %>" data-testid="media-object-edit-structure-btn-<%= index %>">
               Edit Structure
             </button>
           </li>
@@ -74,8 +74,8 @@ Unless required by applicable law or agreed to in writing, software distributed
               <% else %>
                 <%= react_component("ReactButtonContainer", {canvasIndex: index, mediaObjectID: @media_object.id, masterFileID: section.id, baseURL: request.protocol+request.host_with_port, initStructure: { label: "#{item_label}", type: "div", items: [] }}, html_options={ class: 'react-button-container' }) %>
               <% end %>
-              <button type="button" class="btn btn-primary btn-struct mr-1" value="Advanced Edit" data-toggle="modal"
-                data-target="#advanced_edit_structure_<%= index %>" data-testid="media-object-struct-adv-edit-btn-<%= index %>" >Advanced Edit</button>
+              <button type="button" class="btn btn-primary btn-struct mr-1" value="Advanced Edit" data-bs-toggle="modal"
+                data-bs-target="#advanced_edit_structure_<%= index %>" data-testid="media-object-struct-adv-edit-btn-<%= index %>" >Advanced Edit</button>
               <% if section.structuralMetadata.content.present? %>
                 <%= link_to 'Remove', structure_master_file_path(section.id), method: :delete, class: 'btn btn-danger btn-struct btn-confirmation', data: {placement: 'top'} %>
               <% end %>
@@ -99,13 +99,13 @@ Unless required by applicable law or agreed to in writing, software distributed
 
 <% @masterFiles.each_with_index do |section, index| %>
 <% default_structure="<Item label='#{html_escape(stream_label_for(section))}'></Item>" %>
-<div id="advanced_edit_structure_<%= index %>" class="structure_edit modal fade" data-backdrop="static"
+<div id="advanced_edit_structure_<%= index %>" class="structure_edit modal fade" data-bs-backdrop="static"
   data-submit_url="<%= attach_structure_master_file_path(section.id) %>">
   <div class="modal-dialog modal-xl" style="width:65%">
     <div class="modal-content col-md-12">
       <div class="modal-header">
         <h4 class="modal-title">Advanced Edit Structure</h4>
-        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <button type="button" class="close" data-bs-dismiss="modal" aria-hidden="true">&times;</button>
       </div>
       <div class="modal-body structure_edit col-md-12" style="height:40vh">
         <textarea rows=20 class="col-md-12 original_textarea" id="structure_<%= index %>" data-testid="advanced-edit-structure-textarea-<%= index %>"
