@@ -17,14 +17,14 @@
 // Copied from bootstrap-sass
 $line-height-computed:    floor(($font-size-base * $line-height-base)) !default; // ~20px
 $gray-base:              #000 !default;
-$gray-lighter:           lighten($gray-base, 93.5%) !default; // #eee
-$gray-darker:            lighten($gray-base, 13.5%) !default; // #222
+$gray-lighter:           tint-color($gray-base, 93.5%) !default; // #eee
+$gray-darker:            tint-color($gray-base, 13.5%) !default; // #222
 $state-success-text:             #3c763d !default;
 $state-success-bg:               #dff0d8 !default;
-$state-success-border:           darken(adjust-hue($state-success-bg, -10), 5%) !default;
+$state-success-border:           shade-color(adjust-hue($state-success-bg, -10), 5%) !default;
 $state-info-text:                #31708f !default;
 $state-info-bg:                  #d9edf7 !default;
-$state-info-border:              darken(adjust-hue($state-info-bg, -10), 7%) !default;
+$state-info-border:              shade-color(adjust-hue($state-info-bg, -10), 7%) !default;
 
 /**
  *  Overridding Blacklight's brand logo
@@ -39,7 +39,7 @@ $state-info-border:              darken(adjust-hue($state-info-bg, -10), 7%) !de
   }
 
   .navbar-toggler {
-    @include media-breakpoint-down(sm) {
+    @include media-breakpoint-down(md) {
       background: $primary;
       margin: 0.5rem 1rem 0.5rem 0.5rem;
     }
@@ -63,10 +63,10 @@ $state-info-border:              darken(adjust-hue($state-info-bg, -10), 7%) !de
 }
 
 .navbar-nav .nav-item .nav-link {
-  @include media-breakpoint-up(md) {
+  @include media-breakpoint-up(sm) {
     padding: 0.85rem 0.9rem;
   }
-  @include media-breakpoint-down(sm) {
+  @include media-breakpoint-down(md) {
     padding-left: 10px;
     padding-right: 10px;
   }
@@ -81,7 +81,7 @@ $state-info-border:              darken(adjust-hue($state-info-bg, -10), 7%) !de
 }
 
 .navbar-light {
-  @include media-breakpoint-down(xs) {
+  @include media-breakpoint-down(sm) {
     background: $secondary;
   }
 }
@@ -93,13 +93,13 @@ $state-info-border:              darken(adjust-hue($state-info-bg, -10), 7%) !de
 }
 
 .navbar-header {
-  @include media-breakpoint-down(md) {
+  @include media-breakpoint-down(lg) {
     .row {
       display: flex;
     }
   }
 
-  @include media-breakpoint-down(sm) {
+  @include media-breakpoint-down(md) {
     width: 100%;
     background: white;
     box-shadow: 0 0 5px;
@@ -220,7 +220,7 @@ $state-info-border:              darken(adjust-hue($state-info-bg, -10), 7%) !de
     background-color: $yellow;
   }
 
-  @include media-breakpoint-down(sm) {
+  @include media-breakpoint-down(md) {
     width: 100%;
   }
 }
@@ -230,7 +230,7 @@ $state-info-border:              darken(adjust-hue($state-info-bg, -10), 7%) !de
   display: block;
 }
 
-@include media-breakpoint-down(sm) {
+@include media-breakpoint-down(md) {
   .manage-btn {
     height: 38px;
     padding: 0 0.9rem;
