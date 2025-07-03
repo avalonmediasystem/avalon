@@ -120,10 +120,12 @@ div[id*='facet-panel-'] {
   padding-right: 20px;
 
   .remove {
-    position: absolute;
-    top: 0;
-    right: 0.5em;
     text-indent: 0;
+
+    svg {
+      scale: 1.5;
+      vertical-align: middle;
+    }
   }
 }
 
@@ -142,6 +144,6 @@ div[id*='facet-panel-'] {
   }
 }
 
-:not(.facet_limit-active).facet_limit > .facets-header {
+:not(.facet_limit-active).facet_limit>.facets-header {
   background-color: $white;
 }
