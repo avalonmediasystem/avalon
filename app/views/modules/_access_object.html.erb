@@ -18,8 +18,8 @@ Unless required by applicable law or agreed to in writing, software distributed
   <%= bootstrap_form_for object do |form| %>
   <input id="step" name="step" type="hidden" value="access-control" />
   <input id="donot_advance" name="donot_advance" type="hidden" value="true" />
-  <div class="form-group">
-    <div class="form-row">
+  <div class="mb-3">
+    <div class="row">
       <% if is_leasable %>
         <div class="col-5">
       <% else %>

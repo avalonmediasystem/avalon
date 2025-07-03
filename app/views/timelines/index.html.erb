@@ -25,7 +25,7 @@ Unless required by applicable law or agreed to in writing, software distributed
           <div class="col-sm-6">
             <h1 class="page-title">Timelines <small>(<%= timelines.size %> total)</small></h1>
           </div>
-          <div class="<% if !timelines.empty? %>col-sm-6 text-right<% end %>">
+          <div class="<% if !timelines.empty? %>col-sm-6 text-end<% end %>">
             <div class="create-buttons">
               <% if Settings['variations'].present? %>
                 <%= form_tag(import_variations_timeline_timelines_path, method:"post", enctype:"multipart/form-data", style:"display:inline") do %>
@@ -55,7 +55,7 @@ Unless required by applicable law or agreed to in writing, software distributed
                 <th>Visibility</th>
                 <th>Last Updated</th>
                 <th>Tags</th>
-                <th class="text-right" data-orderable="false">Actions</th>
+                <th class="text-end" data-orderable="false">Actions</th>
               </tr>
             </thead>
             <tbody data-testid="timeline-table-body">
@@ -96,7 +96,7 @@ Unless required by applicable law or agreed to in writing, software distributed
           null,
           null,
           null,
-          { className: "text-right" }
+          { className: "text-end" }
         ]
       }).on( 'draw', function () {
         // hide any active popovers on table refresh

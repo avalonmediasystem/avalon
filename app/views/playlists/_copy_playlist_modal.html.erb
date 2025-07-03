@@ -26,22 +26,20 @@ Unless required by applicable law or agreed to in writing, software distributed
 
       <div class="modal-header">
         <h4 class="modal-title">Copy Playlist</h4>
-        <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"/>
       </div>
 
       <div class="modal-body">
-        <div class="form-group">
-          <%= f.label "Name", class: "font-weight-bold" %>
+        <div class="mb-3">
+          <%= f.label "Name", class: "fw-bold" %>
           <%= f.text_field :title, class: 'form-control', required: true %>
         </div>
         <p><em id="title_error" class="text-danger" style="display:none;">Name is required</em></p>
-        <div class="form-group">
-          <%= f.label :comment, 'Description', class: "font-weight-bold" %>
+        <div class="mb-3">
+          <%= f.label :comment, 'Description', class: "fw-bold" %>
           <%= f.text_area :comment, class: 'form-control', rows: '4' %>
         </div>
-        <div class="form-group">
+        <div class="mb-3">
           <div class="form-check">
             <label>
               <%= f.radio_button(:visibility, Playlist::PUBLIC) %>

@@ -14,18 +14,18 @@ Unless required by applicable law or agreed to in writing, software distributed
 ---  END LICENSE_HEADER BLOCK  ---
 %>
 <% if section=='tab-content' %>
-  <div class="tab-pane text-left" id="link-tab">
+  <div class="tab-pane text-start" id="link-tab">
     <% if @playlist.visibility == Playlist::PUBLIC %>
     <p class="muted">Copy the link below to share this playlist</p>
     <form role="form">
-      <div class="form-group">
+      <div class="mb-3">
         <input type="text" class="form-control" id="link-object" value="<%= playlist_url(@playlist) %>" placeholder="<%= playlist_url(@playlist) %>" onClick="this.select();" readonly="readonly" data-testid="playlist-link">
       </div>
     </form>
     <% elsif @playlist.visibility == Playlist::PRIVATE_WITH_TOKEN %>
     <p class="muted">Copy the link below to share this playlist.  It can only be seen and shared by people with this link.</p>
     <form role="form">
-      <div class="form-group">
+      <div class="mb-3">
         <input type="text" class="form-control" id="link-object" value="<%= access_token_url(@playlist) %>" placeholder="<%= access_token_url(@playlist) %>" onClick="this.select();" readonly="readonly">
       </div>
     </form>

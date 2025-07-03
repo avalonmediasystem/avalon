@@ -21,7 +21,7 @@ Unless required by applicable law or agreed to in writing, software distributed
         <h3 class="card-title">Controlled Digital Lending </h3>
       </div>
       <div class="card-body">
-        <div class="form-group">
+        <div class="mb-3">
           <div class="form-check">
             <%= label_tag :cdl do %>
             <%= check_box_tag :cdl, '1', (cdl) %>
@@ -43,10 +43,10 @@ Unless required by applicable law or agreed to in writing, software distributed
         <h3 class="card-title">Item lending period</h3>
       </div>
       <div class="card-body">
-        <div class="form-group">
+        <div class="mb-3">
           <%=  render partial: "modules/tooltip", locals: { form: vid, field: :lending_period, tooltip: t("access_control.#{:lending_period}"), options: {display_label: (t("access_control.#{:lending_period}label")+'*').html_safe} } %><br />
           <% d, h = (lending_period/3600).divmod(24) %>
-          <div class='form-row'>
+          <div class='row'>
             <div class="col-1">
               <label class="col-form-label" for="add_lending_period_days">
                 <span data-title="Days">Days</span>
@@ -78,7 +78,7 @@ Unless required by applicable law or agreed to in writing, software distributed
         <h3 class="card-title">Item lending period</h3>
       </div>
       <div class="card-body">
-        <div class="form-group">
+        <div class="mb-3">
           Item is available to be checked out for
           <%= ActiveSupport::Duration.build(lending_period).to_day_hour_s %>
         </div>

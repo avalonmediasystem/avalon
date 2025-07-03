@@ -20,16 +20,16 @@ Unless required by applicable law or agreed to in writing, software distributed
   <h3 align='center'>Sign up</h3>
 
   <%= bootstrap_form_for(resource, as: resource_name, url: registration_path(resource_name), inline_errors: false) do |f| %>
-    <%= f.text_field :username, label_class: 'font-weight-bold', autofocus: true, autocomplete: 'username', data:{testid:'sign-up-username'} %>
-    <%= f.email_field :email, label_class: 'font-weight-bold', autofocus: true, autocomplete: 'email', data:{testid:'sign-up-email'} %>
+    <%= f.text_field :username, label_class: 'fw-bold', autofocus: true, autocomplete: 'username', data:{testid:'sign-up-username'} %>
+    <%= f.email_field :email, label_class: 'fw-bold', autofocus: true, autocomplete: 'email', data:{testid:'sign-up-email'} %>
 
     <% if @minimum_password_length %>
-      <%= f.password_field :password, label_class: 'font-weight-bold', help: "#{@minimum_password_length} characters minimum", autocomplete: 'off', data:{testid:'sign-up-password'} %>
+      <%= f.password_field :password, label_class: 'fw-bold', help: "#{@minimum_password_length} characters minimum", autocomplete: 'off', data:{testid:'sign-up-password'} %>
     <% else %>
-      <%= f.password_field :password, label_class: 'font-weight-bold', autocomplete: 'off' %>
+      <%= f.password_field :password, label_class: 'fw-bold', autocomplete: 'off' %>
     <% end %>
     
-    <%= f.password_field :password_confirmation, label_class: 'font-weight-bold', autocomplete: 'off', data:{testid:'sign-up-password-confirm'} %>
+    <%= f.password_field :password_confirmation, label_class: 'fw-bold', autocomplete: 'off', data:{testid:'sign-up-password-confirm'} %>
     <%= f.submit "Sign up", class: 'btn btn-primary', data:{testid:'sign-up-btn'} %>
   <% end %>
 

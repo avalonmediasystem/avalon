@@ -53,7 +53,7 @@ Unless required by applicable law or agreed to in writing, software distributed
       </div>
       <div class="card-body">
         <%= form_tag(admin_groups_path) do -%>
-        <div class="form-group">
+        <div class="mb-3">
           <div class="input-group">
             <%= text_field_tag 'admin_group', nil, :placeholder => 'Enter group name here...', class: 'form-control' %>
             <%= button_tag 'Create Group', type: 'submit', class: 'btn btn-primary' %>

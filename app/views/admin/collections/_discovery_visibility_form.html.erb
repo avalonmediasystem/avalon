@@ -22,7 +22,7 @@ Unless required by applicable law or agreed to in writing, software distributed
     <h3 class="card-title">Item discovery</h3>
   </div>
   <div class="card-body">
-    <div class="form-group">
+    <div class="mb-3">
       <div class="form-check">
         <%= label_tag :hidden do %>
         <%= check_box_tag :hidden, '1', (hidden) %>
@@ -45,7 +45,7 @@ Unless required by applicable law or agreed to in writing, software distributed
     <h3 class="card-title">Item access</h3>
   </div>
   <div class="card-body">
-    <div class="form-group">
+    <div class="mb-3">
       <div class="form-check">
         <label>
           <%= radio_button_tag :visibility, 'public', (@visibility == 'public'),  'data-testid': 'collection-checkbox-general-public' %>
@@ -81,7 +81,7 @@ Unless required by applicable law or agreed to in writing, software distributed
     <h3 class="card-title">Item discovery</h3>
   </div>
   <div class="card-body">
-    <div class="form-group">
+    <div class="mb-3">
       <%= hidden ? "Item is hidden from search results" :
         "Item is not hidden from search results" %>
     </div>
@@ -93,7 +93,7 @@ Unless required by applicable law or agreed to in writing, software distributed
     <h3 class="card-title">Item access</h3>
   </div>
   <div class="card-body">
-    <div class="form-group">
+    <div class="mb-3">
       Item is viewable by
       <%= case @visibility
           when "public"

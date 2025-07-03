@@ -17,7 +17,7 @@ $ ->
   add_button_html = '<button type="button" class="add-dynamic-field btn btn-outline btn-light"><span class="fa fa-plus"></span></button>'
   remove_button_html = '<button type="button" class="remove-dynamic-field btn btn-outline btn-light"><span class="fa fa-minus"></span></button>'
   
-  $('.form-group.multivalued').each ->
+  $('.mb-3.multivalued').each ->
     t = $(this)
     t.find('.input-group').each (igIndex, e) ->
       $(e).find('input[id]').each (inIndex, e2) ->

@@ -23,19 +23,19 @@ Unless required by applicable law or agreed to in writing, software distributed
     <div class="card-body">
       <% unless @masterFiles.blank? %>
         <div class="collapse form-tooltip" id="title-tooltip">
-          <button class="close">&times;</button>
+          <button class="btn-close"/>
           <p><%= t("file_upload_tip.title").html_safe %></p>
         </div>
         <div class="collapse form-tooltip" id="permalink-tooltip">
-          <button class="close">&times;</button>
+          <button class="btn-close"/>
           <p><%= t("file_upload_tip.permalink").html_safe %></p>
         </div>
         <div class="collapse form-tooltip" id="datedigitized-tooltip">
-          <button class="close">&times;</button>
+          <button class="btn-close"/>
           <p><%= t("file_upload_tip.datedigitized").html_safe %></p>
         </div>
         <div class="collapse form-tooltip" id="thumbnail-tooltip">
-          <button class="close">&times;</button>
+          <button class="btn-close"/>
           <p><%= t("file_upload_tip.thumbnail").html_safe %></p>
         </div>
 
@@ -109,7 +109,7 @@ Unless required by applicable law or agreed to in writing, software distributed
                 <%= form_with model: section, class: "master-file-form" do |form| %>
                   <div class="row">
                     <div class="col-sm-4">
-                      <div class="form-group">
+                      <div class="mb-3">
                         <label>
                           Section Label
                           <span class="tooltip-label">
@@ -128,13 +128,13 @@ Unless required by applicable law or agreed to in writing, software distributed
                       </div>
                     </div>
                     <div class="col-sm-2">
-                      <div class="form-group">
+                      <div class="mb-3">
                         <label>Date Digitized</label>
                         <%= form.text_field :date_digitized, class: 'date-input', id: "master_file_date_digitized_#{section.id}" %>
                       </div>
                     </div>
                     <div class="col-sm-2">
-                      <div class="form-group">
+                      <div class="mb-3">
                         <label>Thumbnail</label>
                         <% if section.is_video? %>
                         <%= form.text_field :poster_offset, value: section.poster_offset.to_i.to_hms, class: 'input-small' %>
@@ -144,7 +144,7 @@ Unless required by applicable law or agreed to in writing, software distributed
                       </div>
                     </div>
                     <div class="col-sm-4">
-                      <div class="form-group">
+                      <div class="mb-3">
                         <label>Permalink</label>
                         <%= form.text_field :permalink %>
                       </div>
@@ -212,7 +212,7 @@ Unless required by applicable law or agreed to in writing, software distributed
                 <input type="file" name="Filedata[]" data-testid="media-object-edit-select-file-btn">
               </span>
               <span class="fileinput-filename"></span>
-              <a href="#" class="close fileinput-exists fileinput-close" data-bs-dismiss="fileinput">&times;</a>
+              <a href="#" class="btn-close fileinput-exists fileinput-close" data-bs-dismiss="fileinput"/>
             </div>
 
             <%= hidden_field_tag(:new_asset, true, :id => "files_new_asset") if params[:new_asset] %>
@@ -222,7 +222,7 @@ Unless required by applicable law or agreed to in writing, software distributed
           </fieldset>
 
           <div class="collapse form-tooltip equal-height" id="skip-transcoding-tooltip">
-            <button class="close">&times;</button>
+            <button class="btn-close"/>
             <p><%= t("file_upload_tip.skip_transcoding").html_safe %></p>
           </div>
 
@@ -263,7 +263,7 @@ Unless required by applicable law or agreed to in writing, software distributed
           <%= form_tag(master_files_path, id: 'dropbox_form', method: 'post') do %>
             <%= hidden_field_tag("workflow") %>
             <input type="hidden" name="container_id" value="<%= @media_object.id %>" />
-            <div class="form-group">
+            <div class="mb-3">
               <%= button_tag("Open Dropbox", type: 'button', class: 'btn btn-outline', id: "browse-btn",
               'data-bs-toggle' => 'browse-everything', 'data-route' => browse_everything_engine.root_path,
               'data-bs-target' => '#dropbox_form', 'data-context' => @media_object.collection.id ) %>
@@ -292,17 +292,16 @@ Unless required by applicable law or agreed to in writing, software distributed
     <div class="modal-content">
       <div class="modal-header">
         <h3 class='modal-title'>Move Section</h3>
-        <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close"><span
-            aria-hidden="true">×</span></button>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"/>
       </div>
       <div class="modal-body">
         <%= form_tag move_master_file_path, id: 'move_form', method: 'POST' do %>
-          <div class="form-group row">
+          <div class="mb-3 row">
             <label for="target" class="col-sm-4 col-form-label">Target Item Identifier: </label>
             <div class="col-sm-8">
               <%= text_field_tag :target, nil, class: 'form-control', style: 'width: 50%;', type: 'text', onkeyup: 'previewTargetItem(this)' %>
             </div>
-            <div id="show_target_object" class="ml-3"></div>
+            <div id="show_target_object" class="ms-3"></div>
           </div>
       </div>
       <div class="modal-footer">

@@ -19,9 +19,7 @@ Unless required by applicable law or agreed to in writing, software distributed
     <div class="modal-content">
       <div class="modal-header">
         <h4 class="modal-title">Copy Timeline</h4>
-        <button type="button" class="close" data-bs-dismiss="modal" aria-lable="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-lable="Close"/>
       </div>
       <div class="modal-body">
         <%= form_for(Timeline.new, remote: true, format: 'json',
@@ -30,27 +28,27 @@ Unless required by applicable law or agreed to in writing, software distributed
           <%= hidden_field_tag 'old_timeline_id' %>
           <%= hidden_field_tag 'with_refresh', with_refresh %>
           <%= hidden_field_tag 'token' %>
-          <div class="form-group row">
-            <%= f.label "Name", class: 'col-sm-2 col-form-label font-weight-bold' %>
+          <div class="mb-3 row">
+            <%= f.label "Name", class: 'col-sm-2 col-form-label fw-bold' %>
             <div class="col-sm-10"><%= f.text_field :title, class: 'form-control', required: true %></div>
             <p class="offset-2"><em id="title_error" class="text-danger" style="display:none;">Name is required</em></p>
           </div>
-          <div class="form-group row">
-            <%= f.label :description, 'Description', class: 'col-sm-2 col-form-label font-weight-bold' %>
+          <div class="mb-3 row">
+            <%= f.label :description, 'Description', class: 'col-sm-2 col-form-label fw-bold' %>
             <div class="col-sm-10"><%= f.text_area :description, class: 'form-control', rows: '4' %></div>
           </div>
-          <div class="r form-group row">
-            <%= label_tag nil, t("timeline.visibility"), class: 'col-sm-2 col-form-label font-weight-bold' %>
+          <div class="r mb-3 row">
+            <%= label_tag nil, t("timeline.visibility"), class: 'col-sm-2 col-form-label fw-bold' %>
             <div class="col-sm-10 mt-2">
               <label>
                 <%= f.radio_button(:visibility, Timeline::PUBLIC) %>
                 <%= timeline_human_friendly_visibility Timeline::PUBLIC %>
               </label>
-              <label class="ml-2">
+              <label class="ms-2">
                 <%= f.radio_button(:visibility, Timeline::PRIVATE) %>
                 <%= timeline_human_friendly_visibility Timeline::PRIVATE %>
               </label>
-              <label class="ml-2">
+              <label class="ms-2">
                 <%= f.radio_button(:visibility, Timeline::PRIVATE_WITH_TOKEN) %>
                 <%= timeline_human_friendly_visibility Timeline::PRIVATE_WITH_TOKEN %>
               </label>

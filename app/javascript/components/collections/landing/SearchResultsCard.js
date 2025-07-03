@@ -80,7 +80,7 @@ const SearchResultsCard = props => {
   return (
     <CollectionCardShell>
       <CollectionCardThumbnail>
-        <span className="timestamp badge badge-dark">
+        <span className="timestamp badge bg-dark">
           {duration(doc.attributes['duration_ssi'].attributes.value)}
         </span>
         <a href={baseUrl + 'media_objects/' + doc['id']}>

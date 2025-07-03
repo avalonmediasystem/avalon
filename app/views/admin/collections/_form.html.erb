@@ -22,8 +22,7 @@ Unless required by applicable law or agreed to in writing, software distributed
     <div class="modal-content">
       <div class="modal-header">
         <h4 class='modal-title'><%= modal_title %></h4>
-        <button type="button" class="close" data-bs-dismiss="modal"><span aria-hidden="true">&times;</span><span
-            class="sr-only">Close</span></button>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"><span class="visually-hidden">Close</span></button>
       </div>
       <%= bootstrap_form_for @collection, remote: true, html: { modal: true }, format: 'json' do |f| %>
       <div class="modal-body">
@@ -55,7 +54,7 @@ Unless required by applicable law or agreed to in writing, software distributed
       alertElement.remove();
     }
     $('.page-title').closest('.page-title-wrapper').before(
-      '<div class="container-fluid" id="alerts"><div class="alert alert-danger"><button type="button" class="close" data-bs-dismiss="alert">&times;</button>' +
+      '<div class="container-fluid" id="alerts"><div class="alert alert-danger"><button type="button" class="btn-close" data-bs-dismiss="alert"/>' +
       message + '</div></div>');
   }
 

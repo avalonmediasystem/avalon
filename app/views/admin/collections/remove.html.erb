@@ -50,12 +50,12 @@ Unless required by applicable law or agreed to in writing, software distributed
         delete it, you must select a new collection to move <%=content_pronoun%>
         into.
       </p>
-      <div class="form-group">
+      <div class="mb-3">
         <%= select_tag :target_collection_id, options_from_collection_for_select(@candidates, "id", "name"), class: "form-control" %>
       </div>
     <% end %>
 
-    <div class="form-group">
+    <div class="mb-3">
       <%= f.submit 'Yes, I am sure', class: 'btn btn-danger', 'data-testid': "collection-delete-confirm-btn" %>
       <%= link_to 'No, go back', admin_collections_path, class: 'btn btn-outline' %>
     </div>
