@@ -21,11 +21,11 @@ import {
   StructuredNavigation,
   MetadataDisplay,
   AutoAdvanceToggle,
-  MarkersDisplay
+  Annotations
 } from "@samvera/ramp";
 import 'video.js/dist/video-js.css';
 import "@samvera/ramp/dist/ramp.css";
-import { Accordion, Card, Col, Row } from 'react-bootstrap';
+import { Accordion, Button, Card, Col, Row } from 'react-bootstrap';
 import './Ramp.scss';
 
 const ExpandCollapseArrow = () => {
@@ -82,9 +82,11 @@ const Ramp = ({
      */
     descriptionCheck = setInterval(prepInitialDescription, 100);
 
-    // Clear interval upon component unmounting
-    return () => clearInterval(interval);
-    return () => clearInterval(descriptionCheck);
+    // Clear intervals upon component unmounting
+    return () => {
+      clearInterval(interval);
+      clearInterval(descriptionCheck);
+    };
   }, []);
 
   /**
@@ -96,7 +98,7 @@ const Ramp = ({
     if (player && player.player != undefined && !player.player.isDisposed()) {
       let playerInst = player.player;
       playerInst.ready(() => {
-        let activeElement = document.getElementsByClassName('ramp--structured-nav__list-item active');
+        let activeElement = document.getElementsByClassName('ramp--structured-nav__tree-item active');
         if (activeElement != undefined && activeElement?.length > 0) {
           setActiveItemTitle(activeElement[0]?.dataset.label);
           setActiveItemSummary(activeElement[0]?.dataset.summary);
@@ -170,24 +172,28 @@ const Ramp = ({
               <Card.Body>
                 <Accordion>
                   <Card>
+                    <Card.Header>
+                      <Accordion.Toggle as={Button} variant="link" eventKey="0" className="ramp--playlist-accordion-header">
+                        <ExpandCollapseArrow /> Markers
+                      </Accordion.Toggle>
+                    </Card.Header>
                     <Accordion.Collapse eventKey="0" id="markers">
                       <Card.Body>
-                        <MarkersDisplay showHeading={false} />
+                        <Annotations showHeading={false} />
                       </Card.Body>
                     </Accordion.Collapse>
-                    <Accordion.Toggle as={Card.Header} variant="link" eventKey="0" className="ramp--playlist-accordion-header">
-                      <ExpandCollapseArrow /> Markers
-                    </Accordion.Toggle>
                   </Card>
                   <Card>
+                    <Card.Header>
+                      <Accordion.Toggle as={Button} variant="link" eventKey="1" className="ramp--playlist-accordion-header">
+                        <ExpandCollapseArrow /> Source Item Details
+                      </Accordion.Toggle>
+                    </Card.Header>
                     <Accordion.Collapse eventKey="1">
                       <Card.Body className="p-3">
                         <MetadataDisplay displayOnlyCanvasMetadata={true} showHeading={false} />
                       </Card.Body>
                     </Accordion.Collapse>
-                    <Accordion.Toggle as={Card.Header} variant="link" eventKey="1" className="ramp--playlist-accordion-header">
-                      <ExpandCollapseArrow /> Source Item Details
-                    </Accordion.Toggle>
                   </Card>
                 </Accordion>
               </Card.Body>

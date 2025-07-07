@@ -12,16 +12,16 @@
 #   specific language governing permissions and limitations under the License.
 # ---  END LICENSE_HEADER BLOCK  ---
 
-  class StructureStep < Avalon::Workflow::BasicStep
-    def initialize(step = 'structure', title = "Structure", summary = "Organization of resources", template = 'structure')
-      super
-    end
-
-    def execute context
-      media_object = context[:media_object]
-      if context[:master_file_ids].present?
-        media_object.section_ids = context[:master_file_ids]
-      end
-      context
-    end
+class StructureStep < BasicStep
+  def initialize(step = 'structure', title = "Structure", summary = "Organization of resources", template = 'structure')
+    super
   end
+
+  def execute context
+    media_object = context[:media_object]
+    if context[:master_file_ids].present?
+      media_object.section_ids = context[:master_file_ids]
+    end
+    context
+  end
+end

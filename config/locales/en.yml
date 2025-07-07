@@ -38,6 +38,7 @@ en:
       expire:
         heading: "Check Out Expired!"
         message: "Your lending period has been expired. Please return the item, and check for availability later."
+    accessibility_request_text: 'Need an accessible version? <a href="%{a11y_link}">Contact us</a>'
   metadata_tip:
     abstract: |
       Summary provides a space for describing the contents of the item. Examples
@@ -45,6 +46,12 @@ en:
       is not meant for cataloger's descriptions but for descriptions that
       accompany the item. Depending on the length of the summary it may be
       truncated in search results.
+    alternative_title: |
+      Alternative title is used for display in search results and single item views.
+      Only the first 32 characters of a title are included in search result listings.
+      Recommended use is to reflect the content captured in digitized media files (such 
+      as the title of the piece performed or a short description of the content of a
+      home movie).
     collection: |
       Collection defines the source or host of the item (for example, the source
       of the original record or the collection responsible for entering
@@ -83,7 +90,7 @@ en:
       href="http://metadataregistry.org/concept/list/vocabulary_id/148.html"
       target="_blank">Open Metadata Registry labels for PBCore: pbcoreGenre</a>.
     geographic_subject: |
-      Location should be used for the geographic subject of the content. For
+      The geographic subject of the content. For
       consistency and to allow for sorting and aggregating, use terms from the
       <a href="http://www.getty.edu/research/tools/vocabularies/tgn/index.html"
       target="_blank">Getty Thesaurus of Geographic Names</a>.
@@ -180,10 +187,8 @@ en:
     class: |
       Enter an external group to grant it access to an item or collection. This group might represent students in a course or members of an institution-specific group. Start and end dates are not required; if included, access for the specified group will start at the beginning of the start date and end at the beginning of the end date. Otherwise, access will be open ended for the specified group.
     ipaddress: |
-      An IP Address or subnet. Eg. 255.0.1.10 or 255.0.1.10/21 or 255.0.1.10/255.255.255.0
-      or ffaa:aaff:bbcc:ddee:1122:3344:5566:7777
-      or ffaa:aaff:bbcc:ddee:1122:3344:5566:7777/ffff:ffff:ffff:ffff:ffff:ffff:ffff:ff00
-      Start and end dates are not required; if included, access for the specified IP Address(es) will start at the beginning of the start date and end at the beginning of the end date. Otherwise, access will be open ended for the specified IP Address(es).
+      An IP Address in dot-decimal or CIDR notation, e.g. 255.0.1.10 or 255.0.1.10/21.
+      Start and end dates are optional.
     lending_period: |
       Lending Period is the length of time that an item may be checked out for.
       Day and Hour values must be positive integers.

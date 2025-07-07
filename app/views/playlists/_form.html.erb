@@ -16,7 +16,7 @@ Unless required by applicable law or agreed to in writing, software distributed
 <div id="playlist_edit_div" class="collapse <%= 'show' if !@playlist.persisted? || !@playlist.errors.empty? %>">
   <%= form_for(@playlist, html: { id: 'playlist_form', class: 'playlist_actions' }) do |f| %>
   <div class="form-group">
-    <%= f.label "Name", class: "font-weight-bold" %>
+    <%= f.label "title", class: "font-weight-bold" %>
     <%= f.text_field :title, class: (@playlist.errors[:title].any? ? 'is-invalid form-control' : 'form-control') , 'data-testid': 'playlist-title' %>
   </div>
 

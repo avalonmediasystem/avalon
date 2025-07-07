@@ -272,4 +272,11 @@ module BulkActionJobs
       [successes, errors]
     end
   end
+
+  class ReturnCheckouts < ActiveJob::Base
+    def perform(collection_id)
+      collection = Admin::Collection.find(collection_id)
+      Checkout.active_for_media_object(collection.media_object_ids).update_all(return_time: DateTime.current, updated_at: DateTime.current)
+    end
+  end
 end

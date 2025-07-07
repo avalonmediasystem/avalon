@@ -13,14 +13,29 @@ Unless required by applicable law or agreed to in writing, software distributed
   specific language governing permissions and limitations under the License.
 ---  END LICENSE_HEADER BLOCK  ---
 %>
-      <% file_section=tag.empty? ? "supplemental_#{section.id}" : "#{tag}_#{section.id}" %>
-      <div id="<%= file_section %>" class="section_files_tool">
-        <span class="tool_label"><%= label %></span>
-        <%= form_for :supplemental_file, :url => object_supplemental_files_path(section), html: { method: "post" } do |form| %>
-          <%= form.hidden_field(:tags, multiple: true, value: tag) if tag.present? %>
-          <%= form.file_field :file, class: "filedata", data: { testid: "media-object-upload-button-#{tag}" }%>
-          <input type="button" class="btn btn-primary btn-sm" onclick="$('#<%= file_section %> .filedata').click();"
-            value="Upload"/>
-        <% end %>
-        <%= render partial: "supplemental_files_list", locals: { section: section, tag: tag, supplemental_files: section.supplemental_files } %>
+<% file_section=tag.empty? ? "supplemental_#{section.id}" : "#{tag}_#{section.id}" %>
+<div id="<%= file_section %>" class="section_files_tool">
+  <span class="tool_label"><%= label %></span>
+  <%= form_for :supplemental_file, :url => object_supplemental_files_path(section), html: { method: "post" } do |form| %>
+    <%= form.hidden_field(:tags, multiple: true, value: tag) if tag.present? %>
+    <%= form.file_field :file, class: "filedata", data: { testid: "media-object-upload-button-#{tag}" } %>
+    <input type="button" class="btn btn-primary btn-sm" onclick="$('#<%= file_section %> .filedata').click();"
+      value="Upload" />
+  <% end %>
+  <% if file_section.include?("caption") && !section.finished_processing? %>
+    <% encode = ActiveEncode::EncodeRecord.find_by(master_file_id: section.id)&.raw_object %>
+    <% caption_count = JSON.parse(encode)["input"]["subtitles"].count rescue nil %>
+    <% if caption_count.present? %>
+      <% if caption_count.positive? %>
+        <div>
+          <%= caption_count %> embedded captions will be available once processing is complete.
+        </div>
+      <% end %>
+    <% else %>
+      <div>
+        This file is currently processing. Embedded captions may be added during processing. Refresh the page to check for additions.
       </div>
+    <% end %>
+  <% end %>
+  <%= render partial: "supplemental_files_list", locals: { section: section, tag: tag, supplemental_files: section.supplemental_files } %>
+</div>

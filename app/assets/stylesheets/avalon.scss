@@ -717,12 +717,14 @@ h5.card-title {
   min-height: 1em;
 }
 
-.card-header .accordion-toggle:before {
+.card-header .accordion-toggle:before,
+.facets-header .accordion-toggle:before {
   font-family: 'FontAwesome';
   content: '\f078';
 }
 
-.card-header .accordion-toggle.collapsed:before {
+.card-header .accordion-toggle.collapsed:before,
+.facets-header .accordion-toggle.collapsed:before {
   content: '\f054';
 }
 
@@ -789,6 +791,8 @@ h5.card-title {
 .twitter-typeahead {
   z-index: auto !important;
   background-color: $white;
+  display: inline-flex !important;
+  flex-grow: 2;
 }
 
 /**
@@ -1306,3 +1310,12 @@ td {
   position: relative;
 }
 /* End of CDL controls on view page styles */
+
+/* Align thumbnail with item title */
+.documents-list .document .document-thumbnail {
+  padding-left: 1rem;
+}
+
+.document-metadata {
+  margin-bottom: 3rem;
+}

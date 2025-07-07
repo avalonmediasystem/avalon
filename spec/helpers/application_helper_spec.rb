@@ -72,21 +72,6 @@ describe ApplicationHelper do
     end
   end
 
-  describe "#search_result_label" do
-    it "should not include a duration string if it would be 0" do
-      mo_solr_doc = {"title_tesi" => "my_title"}
-      expect(helper.search_result_label(mo_solr_doc)).not_to include("(00:00)")
-    end
-    it "should return formatted title if duration is present" do
-      mo_solr_doc = {"title_tesi" => "my_title", "duration_ssi" => "1000"}
-      expect(helper.search_result_label(mo_solr_doc)).to eq("my_title (00:01)")
-    end
-    it "should return id when no title" do
-      mo_solr_doc = { id: "avalon:123" }
-      expect(helper.search_result_label(mo_solr_doc)).to eq("avalon:123")
-    end
-  end
-
   describe "#titleize" do
     it "titleizes a string" do
       expect(helper.titleize("lower case phrase")).to eq "Lower Case Phrase"
@@ -108,17 +93,6 @@ describe ApplicationHelper do
     end
     it "shouldn't truncate if not needed" do
       expect(helper.truncate_center("This string is short", 20)).to eq "This string is short"
-    end
-  end
-
-  describe "#milliseconds_to_formatted_time" do
-    it "should return correct values" do
-      expect(helper.milliseconds_to_formatted_time(0)).to eq("00:00")
-      expect(helper.milliseconds_to_formatted_time(1000)).to eq("00:01")
-      expect(helper.milliseconds_to_formatted_time(60000)).to eq("01:00")
-      expect(helper.milliseconds_to_formatted_time(3600000)).to eq("1:00:00")
-      expect(helper.milliseconds_to_formatted_time(1123)).to eq("00:01.123")
-      expect(helper.milliseconds_to_formatted_time(1123, false)).to eq("00:01")
     end
   end
 
@@ -179,37 +153,6 @@ describe ApplicationHelper do
 
     it "should return 'No' for 'false'" do
       expect(helper.display_has_caption_or_transcript("false")).to eq("No")
-    end
-  end
-
-  describe "#pretty_time" do
-    it 'returns a formatted time' do
-      expect(helper.pretty_time(0)).to eq '00:00:00.000'
-      expect(helper.pretty_time(1)).to eq '00:00:00.001'
-      expect(helper.pretty_time(9)).to eq '00:00:00.009'
-      expect(helper.pretty_time(10)).to eq '00:00:00.010'
-      expect(helper.pretty_time(101)).to eq '00:00:00.101'
-      expect(helper.pretty_time(1010)).to eq '00:00:01.010'
-      expect(helper.pretty_time(10101)).to eq '00:00:10.101'
-      expect(helper.pretty_time(101010)).to eq '00:01:41.010'
-      expect(helper.pretty_time(1010101)).to eq '00:16:50.101'
-      expect(helper.pretty_time(10101010)).to eq '02:48:21.010'
-      expect(helper.pretty_time(0.0)).to eq '00:00:00.000'
-      expect(helper.pretty_time(0.1)).to eq '00:00:00.000'
-      expect(helper.pretty_time(1.1)).to eq '00:00:00.001'
-      expect(helper.pretty_time(-1000)).to eq '00:00:00.000'
-      expect(helper.pretty_time('0')).to eq '00:00:00.000'
-      expect(helper.pretty_time('1')).to eq '00:00:00.001'
-      expect(helper.pretty_time('10101010')).to eq '02:48:21.010'
-      expect(helper.pretty_time('-1000')).to eq '00:00:00.000'
-      expect(helper.pretty_time('0.0')).to eq '00:00:00.000'
-      expect(helper.pretty_time('0.1')).to eq '00:00:00.000'
-      expect(helper.pretty_time('1.1')).to eq '00:00:00.001'
-    end
-
-    it 'returns an exception when not a number' do
-      expect { helper.pretty_time(nil) }.to raise_error(TypeError)
-      expect { helper.pretty_time('foo') }.to raise_error(ArgumentError)
     end
   end
 

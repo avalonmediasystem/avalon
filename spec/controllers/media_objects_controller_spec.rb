@@ -75,7 +75,7 @@ describe MediaObjectsController, type: :controller do
           expect(get :tree, params: { id: media_object.id }).to render_template('errors/restricted_pid')
           expect(get :deliver_content, params: { id: media_object.id, file: 'descMetadata' }).to render_template('errors/restricted_pid')
           expect(delete :destroy, params: { id: media_object.id }).to render_template('errors/restricted_pid')
-          expect(post :add_to_playlist, params: { id: media_object.id }).to render_template('errors/restricted_pid')
+          expect(post :add_to_playlist, params: { id: media_object.id, post: {} }).to render_template('errors/restricted_pid')
         end
         it "json routes should return 401" do
           expect(post :create, format: 'json').to have_http_status(401)
@@ -102,7 +102,7 @@ describe MediaObjectsController, type: :controller do
           expect(put :update, params: { id: media_object.id }).to render_template('errors/restricted_pid')
           expect(get :tree, params: { id: media_object.id }).to render_template('errors/restricted_pid')
           expect(get :deliver_content, params: { id: media_object.id, file: 'descMetadata' }).to render_template('errors/restricted_pid')
-          expect(post :add_to_playlist, params: { id: media_object.id }).to render_template('errors/restricted_pid')
+          expect(post :add_to_playlist, params: { id: media_object.id, post: { masterfile_id: nil } }).to render_template('errors/restricted_pid')
         end
         it "json routes should return 401" do
           expect(post :create, format: 'json').to have_http_status(401)

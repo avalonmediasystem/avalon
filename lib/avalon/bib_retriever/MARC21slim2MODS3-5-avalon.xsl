@@ -6,7 +6,8 @@
 	<xsl:strip-space elements="*"/>
 
 	<!-- Avalon Media System changes:
-		
+
+Added Notes element: 382 (note@type="instruments") mab 20250522
 Changed XSL version to 1.0 since that is what Nokogiri gem supports. jlh 20170630
 Changing checks for $controlField008-35-37 to make sure value is both not an empty string and not 'N/A' instead of true/false boolean. jlh 20170630
 Removed check for 'N/A' from variable value since that turned variable into true/false boolean. jlh 20170630
@@ -2212,7 +2213,7 @@ Revision 1.02 - Added Log Comment  2003/03/24 19:37:42  ckeith
 		</xsl:for-each>
 		-->
 
-		<!-- 245c 362az 502-585 5XX-->
+		<!-- 245c 362az 382abn 502-585 5XX-->
 
 		<xsl:for-each select="marc:datafield[@tag=245]">
 			<xsl:call-template name="createNoteFrom245c"/>
@@ -2221,6 +2222,8 @@ Revision 1.02 - Added Log Comment  2003/03/24 19:37:42  ckeith
 		<xsl:for-each select="marc:datafield[@tag=362]">
 			<xsl:call-template name="createNoteFrom362"/>
 		</xsl:for-each>
+		
+		<xsl:call-template name="createNoteFrom382"/>
 
 		<xsl:for-each select="marc:datafield[@tag=500]">
 			<xsl:call-template name="createNoteFrom500"/>
@@ -4984,6 +4987,32 @@ Revision 1.02 - Added Log Comment  2003/03/24 19:37:42  ckeith
 				</xsl:for-each>
 			</xsl:variable>
 			<xsl:value-of select="substring($str,1,string-length($str)-1)"/>
+		</note>
+	</xsl:template>
+	
+	<xsl:template name="createNoteFrom382">
+		<note type="instruments">
+			<xsl:call-template name="xxx880"/>
+			<xsl:call-template name="uri"/>
+			<xsl:for-each select="marc:datafield[@tag=382]">
+				<xsl:variable name="str">
+					<xsl:for-each select="marc:subfield[@code='a' or @code='b' or @code='n']">
+						<xsl:choose>
+							<xsl:when test="@code='n'">
+								<xsl:text>(</xsl:text>
+								<xsl:value-of select="."/>
+								<xsl:text>) </xsl:text>
+							</xsl:when>
+							<xsl:otherwise>
+								<xsl:value-of select="."/>
+								<xsl:text> </xsl:text>
+							</xsl:otherwise>
+						</xsl:choose>
+					</xsl:for-each>
+				</xsl:variable>
+				<xsl:value-of select="substring($str,1,string-length($str)-1)"/>
+				<xsl:text>&#xa;</xsl:text>
+			</xsl:for-each>
 		</note>
 	</xsl:template>
 

@@ -69,6 +69,7 @@ class StructuralMetadata < ActiveFedora::File
       new_node.set_attribute('label', sanitize(item[:label]))
       new_node.set_attribute('begin', item[:begin])
       new_node.set_attribute('end', item[:end])
+      item[:items].each { |i| node_json_to_xml(i, new_node, document) } if item[:items].present?
       node.add_child(new_node)
     end
   end
@@ -77,18 +78,21 @@ class StructuralMetadata < ActiveFedora::File
 
     def node_xml_to_json(node)
       if node.name.casecmp("div").zero? || node.name.casecmp('item').zero?
+        items = node.children.reject(&:blank?).collect { |n| node_xml_to_json n }
         {
           type: 'div',
           label: node.attribute('label').value,
-          items: node.children.reject(&:blank?).collect { |n| node_xml_to_json n }
+          items: items
         }
       elsif node.name.casecmp('span').zero?
+        items = node.children.reject(&:blank?).collect { |n| node_xml_to_json n }
         {
           type: 'span',
           label: node.attribute('label').value,
           begin: node.attribute('begin').present? ? node.attribute('begin').value : '0',
-          end: node.attribute('end').present? ? node.attribute('end').value : '0'
-        }
+          end: node.attribute('end').present? ? node.attribute('end').value : '0',
+          items: items
+        }.delete_if { |k,v| v.blank? }
       end
     end
 end

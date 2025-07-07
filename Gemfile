@@ -5,12 +5,16 @@ gem 'bootsnap', require: false
 gem 'listen'
 gem 'net-smtp', require: false
 gem 'psych', '< 4'
-gem 'rails', '~>7.2.2'
+gem 'rails', '~>8.0'
 gem 'sprockets', '~>3.7.2'
 #gem 'sprockets-rails', require: 'sprockets/railtie'
 gem 'sqlite3'
 # Force newer version of mail for compatibility with rails 6.0.6.1
 gem 'mail', '> 2.8.0.1'
+gem 'puma', '>= 6.4.2'
+gem 'puma-status'
+gem 'resolv-replace'
+gem 'csv'
 
 # Assets
 gem 'bootstrap', '4.6.2'
@@ -30,7 +34,7 @@ gem 'shakapacker'
 
 # Core Samvera
 #gem 'active-fedora', '~> 15.0'
-gem 'active-fedora', git: 'https://github.com/samvera/active_fedora.git', ref: '0f5ccb1536224efec750941ce9a1f58f2e09cd3c'
+gem 'active-fedora', git: 'https://github.com/samvera/active_fedora.git', ref: '7f91e09e630f7e3c1eb3d355e5a016ae8af44778'
 gem 'active_fedora-datastreams', '~> 0.5'
 gem 'hydra-head', '~> 13.0'
 gem 'ldp', '~> 1.1.0'
@@ -39,14 +43,14 @@ gem 'om', git: 'https://github.com/avalonmediasystem/om.git', tag: 'v3.2.0-ruby3
 gem 'rdf-rdfxml'
 
 # Samvera version pins
-gem 'blacklight', '~> 7.25'
-gem 'blacklight-access_controls', '>= 6.0.1' # ensure rails 6 support
+gem 'blacklight', '~> 8.10'
+gem 'blacklight-access_controls', '~> 6.1'
 gem 'rdf', '~> 3.1'
 gem 'rsolr', '~> 2.0'
 
 # Rails & Samvera Plugins
 gem 'about_page', git: 'https://github.com/avalonmediasystem/about_page.git', tag: 'avalon-r6.5'
-gem 'active_annotations', '~> 0.5.0'
+gem 'active_annotations', '~> 0.6'
 gem 'activerecord-session_store', '>= 2.0.0'
 gem 'acts_as_list'
 gem 'api-pagination'
@@ -58,11 +62,8 @@ gem 'iiif_manifest', '~> 1.6'
 gem 'rack-cors', require: 'rack/cors'
 gem 'rails_same_site_cookie'
 gem 'recaptcha', require: 'recaptcha/rails'
-gem 'samvera-persona', '~> 0.5.0'
+gem 'samvera-persona', '~> 0.6'
 gem 'speedy-af', '~> 0.4.0'
-
-# Avalon Components
-gem 'avalon-workflow', git: "https://github.com/avalonmediasystem/avalon-workflow.git", tag: 'avalon-r8.0'
 
 # Authentication & Authorization
 gem 'devise', '~> 4.8'
@@ -75,9 +76,9 @@ gem 'omniauth-lti', git: "https://github.com/avalonmediasystem/omniauth-lti.git"
 gem "omniauth-saml", "~> 2.0", ">= 2.2.3"
 
 # Media Access & Transcoding
-gem 'active_encode', '~> 1.2'
+gem 'active_encode', git: "https://github.com/samvera-labs/active_encode.git", branch: 'main'
 gem 'audio_waveform-ruby', '~> 1.0.7', require: 'audio_waveform'
-gem 'browse-everything', git: "https://github.com/avalonmediasystem/browse-everything.git", branch: 'v1.4-avalon'
+gem 'browse-everything', git: "https://github.com/avalonmediasystem/browse-everything.git", branch: 'v1.5-avalon'
 gem 'fastimage'
 gem 'rest-client', '~> 2.0'
 gem 'roo'
@@ -91,7 +92,6 @@ gem 'marc'
 # Jobs
 gem 'activejob-traffic_control'
 gem 'activejob-uniqueness'
-gem 'redis-rails'
 gem 'sidekiq', '~> 6.2'
 gem 'sidekiq-cron', '~> 1.9'
 
@@ -105,6 +105,12 @@ gem 'with_locking'
 # Reindexing script
 gem 'sequel'
 gem 'httpx'
+
+# Profiling tools - enable via AVALON_PROFILING environment variable
+gem 'rack-mini-profiler'
+gem 'flamegraph'
+gem 'stackprof'
+gem 'memory_profiler'
 
 group :development do
   gem 'capistrano', '~>3.6'
@@ -155,12 +161,11 @@ group :production do
   gem 'google-analytics-rails', '1.1.0'
   gem 'lograge'
   gem 'okcomputer'
-  gem 'puma', '>= 6.4.2'
 end
 
 # Install the bundle --with aws when running on Amazon Elastic Beanstalk
 group :aws, optional: true do
-  gem 'active_elastic_job'
+  gem 'aws-activejob-sqs'
   gem 'aws-partitions'
   gem 'aws-sdk-rails'
   gem 'aws-sdk-cloudfront'

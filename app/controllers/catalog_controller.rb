@@ -26,6 +26,7 @@ class CatalogController < ApplicationController
   before_action :load_home_page_collections, only: :index, if: proc { helpers.current_page? root_path }
 
   configure_blacklight do |config|
+    config.show.route = { controller: "media_objects" }
 
     # Default component configuration
     config.add_results_document_tool(:bookmark, partial: 'bookmark_control', if: :render_bookmarks_control?)
@@ -51,6 +52,14 @@ class CatalogController < ApplicationController
       qt: 'search',
       rows: 10
     }
+
+    # Component overrides for Avalon specific customizations
+    config.index.document_component = IndexMediaObjectComponent
+    config.index.title_component = IndexHeaderMediaObjectComponent
+    config.index.metadata_component = IndexMetadataMediaObjectComponent
+    config.index.thumbnail_component = ThumbnailMediaObjectComponent
+    config.view.atom.summary_component = IndexAtomComponent
+    config.index.facet_group_component = FacetGroupComponent
 
     # solr field configuration for search results/index views
     config.index.title_field = 'title_tesi'
@@ -88,19 +97,21 @@ class CatalogController < ApplicationController
     config.add_facet_field 'collection_ssim', label: 'Collection', limit: 5
     config.add_facet_field 'unit_ssim', label: 'Unit', limit: 5
     config.add_facet_field 'language_ssim', label: 'Language', limit: 5
+    config.add_facet_field 'rights_statement_ssi', label: 'Rights Statement', limit: 5, helper_method: :rights_statement_facet_display, solr_params: { "facet.contains" => "http"}
+
     # Hide these facets if not a Collection Manager
-    config.add_facet_field 'workflow_published_sim', label: 'Published', limit: 5, if: Proc.new {|context, config, opts| context.current_ability.can? :create, MediaObject}, group: "workflow"
-    config.add_facet_field 'avalon_uploader_ssi', label: 'Created by', limit: 5, if: Proc.new {|context, config, opts| context.current_ability.can? :create, MediaObject}, group: "workflow"
-    config.add_facet_field 'read_access_group_ssim', label: 'Item access', if: Proc.new {|context, config, opts| context.current_ability.can? :create, MediaObject}, group: "workflow", query: {
+    config.add_facet_field 'workflow_published_sim', label: 'Published', limit: 5, if: Proc.new {|context, config, opts| context.current_ability.can?(:read, :administrative_facets)}, group: "workflow"
+    config.add_facet_field 'avalon_uploader_ssi', label: 'Created by', limit: 5, if: Proc.new {|context, config, opts| context.current_ability.can?(:read, :administrative_facets)}, group: "workflow"
+    config.add_facet_field 'read_access_group_ssim', label: 'Item access', if: Proc.new {|context, config, opts| context.current_ability.can?(:read, :administrative_facets)}, group: "workflow", query: {
       public: { label: "Public", fq: "has_model_ssim:MediaObject AND read_access_group_ssim:#{Hydra::AccessControls::AccessRight::PERMISSION_TEXT_VALUE_PUBLIC}" },
       restricted: { label: "Authenticated", fq: "has_model_ssim:MediaObject AND read_access_group_ssim:#{Hydra::AccessControls::AccessRight::PERMISSION_TEXT_VALUE_AUTHENTICATED}" },
       private: { label: "Private", fq: "has_model_ssim:MediaObject AND NOT read_access_group_ssim:#{Hydra::AccessControls::AccessRight::PERMISSION_TEXT_VALUE_PUBLIC} AND NOT read_access_group_ssim:#{Hydra::AccessControls::AccessRight::PERMISSION_TEXT_VALUE_AUTHENTICATED}" }
     }
-    config.add_facet_field 'read_access_virtual_group_ssim', label: 'External Group', limit: 5, if: Proc.new {|context, config, opts| context.current_ability.can? :create, MediaObject}, group: "workflow", helper_method: :vgroup_display
-    config.add_facet_field 'date_digitized_ssim', label: 'Date Digitized', limit: 5, if: Proc.new {|context, config, opts| context.current_ability.can? :create, MediaObject}, group: "workflow"#, partial: 'blacklight/hierarchy/facet_hierarchy'
-    config.add_facet_field 'date_ingested_ssim', label: 'Date Ingested', limit: 5, if: Proc.new {|context, config, opts| context.current_ability.can? :create, MediaObject}, group: "workflow"
-    config.add_facet_field 'has_captions_bsi', label: 'Has Captions', if: Proc.new {|context, config, opts| context.current_ability.can? :create, MediaObject}, group: "workflow", helper_method: :display_has_caption_or_transcript
-    config.add_facet_field 'has_transcripts_bsi', label: 'Has Transcripts', if: Proc.new {|context, config, opts| context.current_ability.can? :create, MediaObject}, group: "workflow", helper_method: :display_has_caption_or_transcript
+    config.add_facet_field 'read_access_virtual_group_ssim', label: 'External Group', limit: 5, if: Proc.new {|context, config, opts| context.current_ability.can?(:read, :administrative_facets)}, group: "workflow", helper_method: :vgroup_display
+    config.add_facet_field 'date_digitized_ssim', label: 'Date Digitized', limit: 5, if: Proc.new {|context, config, opts| context.current_ability.can?(:read, :administrative_facets)}, group: "workflow"#, partial: 'blacklight/hierarchy/facet_hierarchy'
+    config.add_facet_field 'date_ingested_ssim', label: 'Date Ingested', limit: 5, if: Proc.new {|context, config, opts| context.current_ability.can?(:read, :administrative_facets)}, group: "workflow"
+    config.add_facet_field 'has_captions_bsi', label: 'Has Captions', if: Proc.new {|context, config, opts| context.current_ability.can?(:read, :administrative_facets)}, group: "workflow", helper_method: :display_has_caption_or_transcript
+    config.add_facet_field 'has_transcripts_bsi', label: 'Has Transcripts', if: Proc.new {|context, config, opts| context.current_ability.can?(:read, :administrative_facets)}, group: "workflow", helper_method: :display_has_caption_or_transcript
 
     config.add_facet_field 'subject_ssim', label: 'Subject', if: false
 
@@ -115,10 +126,12 @@ class CatalogController < ApplicationController
     # solr fields to be displayed in the index (search results) view
     #   The ordering of the field names is the order of the display
     config.add_index_field 'title_tesi', label: 'Title', if: Proc.new {|context, _field_config, _document| context.request.format == :json }
+    # TODO: Add helper_method for alternative title display after #6301 is resolved
+    config.add_index_field 'alternative_title_ssim', label: 'Alternative title', helper_method: :alternative_title_index_display
     config.add_index_field 'date_issued_ssi', label: 'Date', if: Proc.new {|_context, _field_config, document| document[:date_issued_ssi].present? }
     config.add_index_field 'date_created_ssi', label: 'Date', if: Proc.new {|_context, _field_config, document| document[:date_created_ssi].present? && document[:date_issued_ssi].blank? }
     config.add_index_field 'creator_ssim', label: 'Main contributors', helper_method: :contributor_index_display
-    config.add_index_field 'abstract_ssi', label: 'Summary', helper_method: :description_index_display
+    config.add_index_field 'abstract_ssi', label: 'Summary', helper_method: :description_index_display, if: Proc.new {|_context, _field_config, document| document[:abstract_ssi].present? }
     config.add_index_field 'duration_ssi', label: 'Duration', if: Proc.new {|context, _field_config, _document| context.request.format == :json }
     config.add_index_field 'section_id_ssim', label: 'Sections', if: Proc.new {|context, _field_config, _document| context.request.format == :json }, helper_method: :section_id_json_index_display
 
@@ -130,7 +143,7 @@ class CatalogController < ApplicationController
     config.add_show_field 'language_ssim', label: 'Language'
     config.add_show_field 'date_issued_ssi', label: 'Date'
     config.add_show_field 'abstract_ssim', label: 'Abstract'
-    config.add_show_field 'location_ssim', label: 'Locations'
+    config.add_show_field 'geographic_subject_ssim', label: 'Geographic Subjects'
     config.add_show_field 'contributor_ssim', label: 'Contributors'
     config.add_show_field 'publisher_ssim', label: 'Publisher'
     config.add_show_field 'genre_ssim', label: 'Genre'
@@ -204,6 +217,9 @@ class CatalogController < ApplicationController
     config.spell_max = 5
 
     config.fetch_many_document_params = { fl: "*" }
+
+    # Continue to use Bootstrap 4 for the time being
+    config.bootstrap_version = 4
   end
 
   private

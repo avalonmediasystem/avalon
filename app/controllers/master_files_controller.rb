@@ -12,7 +12,6 @@
 #   specific language governing permissions and limitations under the License.
 # ---  END LICENSE_HEADER BLOCK  ---
 
-# require 'avalon/controller/controller_behavior'
 require 'avalon/transcript_search'
 
 include SecurityHelper

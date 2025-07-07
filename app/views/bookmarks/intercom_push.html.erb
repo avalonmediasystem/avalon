@@ -13,5 +13,8 @@ Unless required by applicable law or agreed to in writing, software distributed
   specific language governing permissions and limitations under the License.
 ---  END LICENSE_HEADER BLOCK  ---
 %>
-<%= form_tag url_for(:controller => "bookmarks", :action => "intercom_push"), :id => 'intercom_push_form', :method => :post %></form>
-<%= render '/media_objects/intercom_push_form' %>
+
+<div data-blacklight-modal="container">
+  <%= form_tag url_for(:controller => "bookmarks", :action => "intercom_push"), :id => 'intercom_push_form', :method => :post %></form>
+  <%= render '/media_objects/intercom_push_form' %>
+</div>

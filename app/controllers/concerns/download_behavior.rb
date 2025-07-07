@@ -12,26 +12,22 @@
 #   specific language governing permissions and limitations under the License.
 # ---  END LICENSE_HEADER BLOCK  ---
 
-module Avalon
-  module Controller
-    module ControllerBehavior
+module DownloadBehavior
 
-      def deliver_content
-        @obj = ActiveFedora::Base.find(params[:id], :cast => true)
-        authorize! :inspect, @obj
-        whitelist = ["descMetadata"]
-        if whitelist.include? params[:file]
-          file = @obj.send(params[:file])
-          if file.nil? or file.new_record?
-            render plain: 'Not Found', status: :not_found
-          else
-            render plain: file.content, content_type: file.mime_type
-          end
-        else
-          head :method_not_allowed
-        end
+  def deliver_content
+    @obj = ActiveFedora::Base.find(params[:id], :cast => true)
+    authorize! :inspect, @obj
+    allowlist = ["descMetadata"]
+    if allowlist.include? params[:file]
+      file = @obj.send(params[:file])
+      if file.nil? or file.new_record?
+        render plain: 'Not Found', status: :not_found
+      else
+        render plain: file.content, content_type: file.mime_type
       end
-
+    else
+      head :method_not_allowed
     end
   end
+
 end

@@ -1,4 +1,4 @@
-# Copyright 2011-2025, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2024, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 #
@@ -12,10 +12,9 @@
 #   specific language governing permissions and limitations under the License.
 # ---  END LICENSE_HEADER BLOCK  ---
 
-# Mark each item on page as bookmarks when 'Select All' is clicked
-$("#bookmarks_selectall").on "change", (e) ->
-  if @checked
-    $("label.toggle-bookmark:not(.checked) input.toggle-bookmark").click()
-  else
-    $("label.toggle-bookmark.checked input.toggle-bookmark").click()
-  return
+# frozen_string_literal: true
+class CleanupStreamTokenJob < ActiveJob::Base
+  def perform
+    StreamToken.delete_expired
+  end
+end

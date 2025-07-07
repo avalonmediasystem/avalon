@@ -22,6 +22,8 @@ let firstLoad = true;
 let streamId = '';
 let isMobile = false;
 let isPlaying = false;
+let reloadInterval = false;
+let currentTime;
 
 /**
  * Bind action buttons on the page with player events and re-populate details
@@ -538,4 +540,31 @@ function handleCreateTimelineModalShow() {
     $('#new-timeline-source')[0].value = '/master_files/' + id + '?' + t;
     $('#new-timeline-form')[0].submit();
   });
+}
+
+/**
+ * Handler to refresh stream tokens via reloading the m3u8 file
+ */
+function initM3U8Reload(player, mediaObjectId, sectionIds, sectionShareInfos) {
+  if (player && player.player != undefined) {
+    if (firstLoad === true) {
+      player.player.on('pause', () => {
+        currentTime = player.player.currentTime();
+        // How long to wait before resetting stream tokens: default 5 minutes
+        intervalLength = 5*60*1000
+        reloadInterval = setInterval(m3u8Reload, intervalLength);
+      });
+
+      player.player.on('play', () => {
+        if (reloadInterval !== false) {
+          clearInterval(reloadInterval);
+          reloadInterval = false;
+        }
+      });
+
+      player.player.on('waiting', () => {
+        m3u8Reload();
+      });
+    }
+  }
 }

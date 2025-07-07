@@ -22,32 +22,18 @@
 function getActiveItem(checkSection = true) {
   let currentPlayer = document.getElementById('iiif-media-player');
   let duration = currentPlayer.player.duration();
-  let currentStructureItem = $('li[class="ramp--structured-nav__list-item active"]');
-  let currentSection = $('div[class="ramp--structured-nav__section active"]');
-
+  let currentStructureItem = $('li[class="ramp--structured-nav__tree-item active"]');
+  // Get active section with class starting with 'ramp--structured-nav__section' and ending with 'active'
+  let activeSection = $('div[class^="ramp--structured-nav__section"][class$="active"]');
+  // Get parent list item for the active section
+  let currentSection = activeSection.parents('li');
   if (currentStructureItem?.length > 0) {
     /**
      * When there's an active timespan in the structured navigation
      * use its details to populate the create timeline and add to
-     * playlist optioins
+     * playlist options
      */
     let label = currentStructureItem[0].dataset.label;
-    let activeCanvasOnly = currentSection.parent().is(currentStructureItem);
-    // When canvas item is the only active structure item, add it as an option
-    if (activeCanvasOnly) {
-      let { mediafrag, label } = currentSection[0].dataset;
-      let [itemId, timeHash] = mediafrag.split('#t=');
-      return {
-        label,
-        times: {
-          begin: parseFloat(timeHash.split(',')[0]) || 0,
-          end: parseFloat(timeHash.split(',')[1]) || duration
-        },
-        tags: ['current-track', 'current-section'],
-        streamId: itemId.split('/').pop(),
-        sectionLabel: label,
-      };
-    }
 
     // When structure has an active timespan child
     if (currentStructureItem.find('a').length > 0) {
@@ -66,12 +52,13 @@ function getActiveItem(checkSection = true) {
         sectionLabel: currentSection[0].dataset.label,
       };
     }
-  } else if (currentSection?.length > 0 && checkSection) {
+  } else if (activeSection.length > 0 && currentSection?.length > 0 && checkSection) {
     /** When the structured navigation doesn't have an active timespan
      * get the current active section to populate the timeline and add
      * to playlist options */
-    let { mediafrag, label } = currentSection[0].dataset;
-    let [itemId, timeHash] = mediafrag.split('#t=');
+    let { mediafrag } = activeSection[0].dataset;
+    let { label } = currentSection[0].dataset;
+    let [itemId, _] = mediafrag.split('#t=');
     return {
       label,
       times: {
@@ -94,9 +81,12 @@ function getActiveItem(checkSection = true) {
 function getTimelineScopes() {
   let scopes = new Array();
   let trackCount = 1;
-  let currentStructureItem = $('li[class="ramp--structured-nav__list-item active"]') ||
+  let currentStructureItem = $('li[class="ramp--structured-nav__tree-item active"]') ||
     $('div[class="ramp--structured-nav__section active"]');
-  let currentSection = $('div[class="ramp--structured-nav__section active"]');
+  // Get active section with class starting with 'ramp--structured-nav__section' and ending with 'active'
+  let activeSection = $('div[class^="ramp--structured-nav__section"][class$="active"]');
+  // Get parent list item for the active section
+  let currentSection = activeSection.parents('li');
   let activeItem = getActiveItem();
   let streamId = '';
 
@@ -110,7 +100,6 @@ function getTimelineScopes() {
 
   let parent = currentStructureItem.closest('ul').closest('li');
   if (parent.length === 0) {
-    let begin = 0;
     let end = activeItem.times.end;
     scopes[0].times = { begin: 0, end: end };
   }
@@ -131,17 +120,10 @@ function getTimelineScopes() {
       label: label,
       tracks: trackCount,
       times: { begin, end },
-      tags: [], 
+      // mark the outermost item representing the current section
+      tags: parent[0] == currentSection[0] ? ['current-section'] : [],
     });
     parent = next;
-  }
-  // mark the outermost item representing the current section
-  if (currentStructureItem !== currentSection) {
-    scopes.push({
-      label: currentSection[0].dataset.label,
-      times: { begin: 0, end: parseFloat(currentSection[0].dataset.mediafrag.split('#t=').reverse()[0].split(',')[1]) || '' },
-      tags: ['current-section']
-    });
   }
   return { scopes: scopes.reverse(), streamId };
 }
@@ -360,3 +342,9 @@ function closeAlert() {
     $('#playlistitem_scope_track').prop('checked', true);
   }
 }
+
+/** Refresh stream token by reloading active m3u8 */
+function m3u8Reload() {
+  player = document.getElementById('iiif-media-player');
+  fetch(player.player.currentSources()[0]["src"]);
+};
