@@ -46,8 +46,13 @@ $border-radius-base: 4px !default;
   font-size: 100%;
 }
 
-.form-text .close {
-  cursor: pointer;
+.form-text {
+  display: block;
+
+  .btn-close {
+    cursor: pointer;
+    float: right;
+  }
 }
 
 .mb-3 .input-group.typed-textarea {
@@ -119,6 +124,13 @@ label {
 #resource-description {
   .input-group {
     flex-wrap: nowrap;
+
+    // Override Bootstrap for resource description dropdown menus
+    #media_object_other_identifier_type_,
+    #media_object_bibliographic_id_label {
+      border-top-right-radius: revert;
+      border-bottom-right-radius: revert;
+    }
   }
 }
 

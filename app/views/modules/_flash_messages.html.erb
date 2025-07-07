@@ -37,7 +37,7 @@ Unless required by applicable law or agreed to in writing, software distributed
       -%>
       <% if flash[type] %>
         <div class="alert <%=alert_class %>" data-testid="alert">
-          <button type="button" class="btn-close" data-bs-dismiss="alert"/>
+          <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
           <% Array(flash[type]).each do |msg| %>
             <p><%= msg %></p>
           <% end %>

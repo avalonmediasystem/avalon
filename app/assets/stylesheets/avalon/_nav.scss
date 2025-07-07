@@ -24,7 +24,7 @@ $state-success-bg:               #dff0d8 !default;
 $state-success-border:           shade-color(adjust-hue($state-success-bg, -10), 5%) !default;
 $state-info-text:                #31708f !default;
 $state-info-bg:                  #d9edf7 !default;
-$state-info-border:              shade-color(adjust-hue($state-info-bg, -10), 7%) !default;
+$state-info-border:              shade-color(adjust-hue($state-info-bg, -10), 7%) !default; 
 
 /**
  *  Overridding Blacklight's brand logo
@@ -115,6 +115,10 @@ $state-info-border:              shade-color(adjust-hue($state-info-bg, -10), 7%
  * might need some tweaking to work right
  */
 .nav-wizard {
+  --bs-nav-link-padding-y: 0.5rem;
+  --bs-nav-link-padding-x:1rem;
+  --bs-nav-link-color: #2a5459;
+
   li {
     padding-top: 0;
     padding-right: $line-height-base;
@@ -175,6 +179,11 @@ $state-info-border:              shade-color(adjust-hue($state-info-bg, -10), 7%
   &.btn-danger {
     @extend .btn-danger;
   }
+}
+
+// Override BS5 so active item has different text color
+.nav-item.active {
+  --bs-nav-link-color: $link-hover-color;
 }
 
 /* Manage menu in the nav-bar */

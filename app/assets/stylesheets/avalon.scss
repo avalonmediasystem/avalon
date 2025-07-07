@@ -133,6 +133,12 @@ div.alert-danger {
   }
 }
 
+// Force bootstrap grid to display poster buttons next to each other
+.row .edit_admin_collection {
+  width: unset;
+  max-width: 50%
+}
+
 // TODO: We should find and replace these usages
 .danger-color {
   color: $brand-danger;
@@ -235,7 +241,7 @@ div.alert-danger {
   cursor: pointer;
 }
 
-.tooltip-block .close {
+.tooltip-block .btn-close {
   font-size: 14px;
 }
 
@@ -259,6 +265,7 @@ div.alert-danger {
 
   td.access_list_remove {
     min-width: 3rem;
+    text-align: right;
   }
 }
 
