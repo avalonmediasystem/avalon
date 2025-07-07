@@ -235,7 +235,7 @@ Unless required by applicable law or agreed to in writing, software distributed
         success: function(response) {
           // alert success
           var alert = "<div class='alert alert-success' style='padding:0 10px; margin-bottom: 0;'>";
-          alert += "<button type='button' class='btn-close' data-bs-dismiss='alert'/>";
+          alert += "<button type='button' class='btn-close' data-bs-dismiss='alert'></button";
           alert += "<span>"+response.message+"</span></div>";
 	        $('#playlist_item_edit_alert_'+id).html(alert);
           // update original values with those newly saved in case of future cancel
@@ -251,7 +251,7 @@ Unless required by applicable law or agreed to in writing, software distributed
         error: function(response) {
           // alert failure
           var alert = "<div class='alert alert-danger' style='padding:0 10px; margin-bottom: 0;'>";
-          alert += "<button type='button' class='btn-close' data-bs-dismiss='alert'/>";
+          alert += "<button type='button' class='btn-close' data-bs-dismiss='alert'></button>";
           alert += "<span>"+response.responseJSON.message+"</span></div>";
 	        $('#playlist_item_edit_alert_'+id).html(alert);
           setTimeout(function() {

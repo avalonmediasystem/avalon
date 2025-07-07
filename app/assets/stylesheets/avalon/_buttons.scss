@@ -22,6 +22,10 @@ button.btn-close {
   display: block;
 }
 
+.alert .btn-close {
+  float: right;
+}
+
 .btn-danger,
 .btn-danger:hover,
 .btn-danger:visited {

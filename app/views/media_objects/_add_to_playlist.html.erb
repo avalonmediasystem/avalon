@@ -19,7 +19,7 @@ Unless required by applicable law or agreed to in writing, software distributed
 
 <div id="add_to_playlist_panel">
   <div id="add_to_playlist_alert" class="alert">
-    <button type="button" class="btn-close" onclick="closeAlert()"/>
+    <button type="button" class="btn-close" onclick="closeAlert()"><span class="visually-hidden">Close</span></button>
     <p id="add_to_playlist_result_message" data-testid="media-object-playlist-result-msg"></p>
   </div>
   <div id="add_to_playlist_form_group">
@@ -107,7 +107,7 @@ Unless required by applicable law or agreed to in writing, software distributed
     <div class="modal-content">
       <div class="modal-header">
         <h4 class="modal-title">Create Playlist</h4>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"/>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
         <%= form_for(Playlist.new, remote: true, format: 'json', html: { id: 'playlist_form', class: 'playlist_actions' }) do |f| %>
