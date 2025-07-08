@@ -38,7 +38,7 @@ describe LanguageTerm, type: :model do
     end
   end
 
-  context ".find" do
+  describe ".find" do
     it "returns correct entry for plain text search" do
       expect(described_class.find("Scottish Gaelic").instance_variable_get(:@term)).to eq({ :code=>"gla", :text=>"Scottish Gaelic", :uri=>"http://id.loc.gov/vocabulary/languages/gla" })
     end
@@ -50,6 +50,17 @@ describe LanguageTerm, type: :model do
 
     it "raises LookupError for terms not in the vocabulary" do
       expect { described_class.find("zebra") }.to raise_error(LanguageTerm::LookupError)
+    end
+  end
+
+  describe ".autocomplete" do
+    it "returns an array of results" do
+      result = described_class.autocomplete("Eng")
+      expect(result).to be_a Array
+      expect(result.length).to eq 5
+      result.each do |r|
+        expect(r[:display].downcase).to include("eng")
+      end
     end
   end
 end
