@@ -86,6 +86,7 @@ gem 'wavefile', '~> 1.0.1'
 
 # Data Translation & Normalization
 gem 'edtf', '>= 3.1.1'
+gem 'edtf-humanize'
 gem 'iconv', '~> 1.0.6'
 gem 'marc'
 
