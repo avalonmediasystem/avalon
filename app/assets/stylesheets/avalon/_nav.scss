@@ -199,9 +199,11 @@ $state-info-border:              shade-color(adjust-hue($state-info-bg, -10), 7%
   &:hover {
     background-color: $yellow !important;
     color: $primary;
-
-
   }
+}
+
+#manage-dropdown.btn-group {
+  --bs-border-radius: 0 0 0.375rem 0.375rem;
 }
 
 #manage-dropdown:hover .manage-dropdown-menu {
