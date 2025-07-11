@@ -23,13 +23,15 @@ Unless required by applicable law or agreed to in writing, software distributed
 
   <div class="card-body">
     <% @user ||= User.new %>
-    <%= form_for(:user, url: main_app.user_invitation_path, html: { method: :post , class: 'simple-form form-inline'}) do |f| %>
+    <%= form_for(:user, url: main_app.user_invitation_path, html: { method: :post , class: 'row row-cols-lg-auto g-3 align-items-center'}) do |f| %>
       <%= render "devise/shared/error_messages", resource: @user %>
 
       <% @user.class.invite_key_fields.each do |field| -%>
-        <div class="form-group mr-2">
-          <%= f.label field, t('.invite_users'), for: field, class: 'col-form-label font-weight-bold required' %>
-          <%= f.text_field field, class: 'form-control ml-2 required' %>
+        <div class="col-12">
+          <div class="input-group">
+            <%= f.label field, t('.invite_users'), for: field, class: 'col-form-label fw-bold required' %>
+            <%= f.text_field field, class: 'form-control ms-2 required' %>
+          </div>
         </div>
       <% end -%>
 
@@ -51,7 +53,7 @@ Unless required by applicable law or agreed to in writing, software distributed
         <% if User.column_names.include? 'provider' %>
           <th><%= t('.auth_label') %></th>
         <% end %>
-        <th class="text-right" data-orderable="false"><%= t('.action_label') %></th>
+        <th class="text-end" data-orderable="false"><%= t('.action_label') %></th>
       </tr>
     </thead>
     <tbody>
@@ -71,29 +73,28 @@ Unless required by applicable law or agreed to in writing, software distributed
           url: '/persona/users/paged_index',
           type: 'POST'
         },
-        order: [ <%= "[#{session[:users_sort][0]}, '#{session[:users_sort][1]}']".html_safe if session[:users_sort] %>
-      ],
-      "columnDefs": [{
-        'targets': 3,
-        'createdCell': function (td, cellData, rowData, row, col) {
-          $(td).attr('data-sort', cellData.match(/(?<=datetime=').*Z/))
+        order: [ 
+          <%= "[#{session[:users_sort][0]}, '#{session[:users_sort][1]}']".html_safe if session[:users_sort] %>
+        ],
+        "columnDefs": [{
+          'targets': 3,
+          'createdCell': function (td, cellData, rowData, row, col) {
+            $(td).attr('data-sort', cellData.match(/(?<=datetime=').*Z/))
+          }
+        }],
+        "columns": [
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          { className: "text-end"}
+        ],
+        initComplete: function () {
+          $('div.dataTableToolsTop input[type="search"]').attr('data-testid', 'users-search-field');
         }
-      }],
-      "columns": [
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        { className: "text-right"}
-      ],
-      initComplete: function () {
-      $('div.dataTableToolsTop input[type="search"]').attr('data-testid', 'users-search-field');
-    }
-    }).on('draw', function () {
-      window.apply_button_confirmation()
-    });
+      });
     });
   </script>
 <% end %>

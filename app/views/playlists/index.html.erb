@@ -25,7 +25,7 @@ Unless required by applicable law or agreed to in writing, software distributed
         <div class="col-sm-6">
           <h1 class="page-title">Playlists <small>(<%= playlists.size %> total)</small></h1>
         </div>
-          <div class="<% if !playlists.empty? %>col-sm-6 text-right<% end %>">
+          <div class="<% if !playlists.empty? %>col-sm-6 text-end<% end %>">
             <div class="create-buttons">
               <%= link_to('<span class="btn btn-primary headline-button" data-testid="playlist-create-new-btn">Create New Playlist</span>'.html_safe, new_playlist_path) %>
               <% if Settings['variations'].present? %>
@@ -59,7 +59,7 @@ Unless required by applicable law or agreed to in writing, software distributed
             <th>Created</th>
             <th>Updated</th>
             <th>Tags</th>
-            <th class="text-right" data-orderable="false">Actions</th>
+            <th class="text-end" data-orderable="false">Actions</th>
           </tr>
         </thead>
         <tbody data-testid="playlist-table-body">
@@ -95,7 +95,7 @@ Unless required by applicable law or agreed to in writing, software distributed
         null,
         null,
         {
-          className: "text-right"
+          className: "text-end"
         }
       ]
     }).on('draw', function () {

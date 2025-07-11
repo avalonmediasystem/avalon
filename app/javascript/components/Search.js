@@ -132,7 +132,7 @@ class Search extends Component {
       <div className="search-wrapper">
         <div className="row">
           <form onSubmit={this.handleSubmit} className="search-bar col-sm-6 offset-3">
-            <label htmlFor="q" className="sr-only">
+            <label htmlFor="q" className="visually-hidden">
               search for
             </label>
             <input

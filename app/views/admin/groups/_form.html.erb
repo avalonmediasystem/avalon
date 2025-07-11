@@ -26,15 +26,13 @@ Unless required by applicable law or agreed to in writing, software distributed
         <% if @group.class.name_is_static? @group.name %>
         <p><%= @group.name %></p>
         <% else %>
-        <div class="form-group">
+        <div class="mb-3">
           <div class="input-group">
             <%= text_field_tag :group_name, "Group name", value: @group.name, class: 'form-control' %>
-            <span class="input-group-append">
-              <%= button_tag "Save", type: "submit", class: "btn btn-primary" %>
-              <%= link_to "Delete Group", admin_group_path(@group.name),
-          method: :delete, confirm: "Deleted group cannot be recovered. Are you sure?",
-          class: "btn btn-danger" %>
-            </span>
+            <%= button_tag "Save", type: "submit", class: "btn btn-primary" %>
+            <%= link_to "Delete Group", admin_group_path(@group.name),
+              method: :delete, confirm: "Deleted group cannot be recovered. Are you sure?",
+              class: "btn btn-danger" %>
           </div>
         </div>
         <% end %>
@@ -54,7 +52,7 @@ Unless required by applicable law or agreed to in writing, software distributed
 
       <div class="card-body">
         <%= bootstrap_form_for @group  do |f| %>
-        <div class="form-group">
+        <div class="mb-3">
           <div class="input-group">
             <%= text_field_tag :new_user, nil, class: 'typeahead from-model form-control',
                 data: { model: 'user' }, placeholder: 'Enter a username' %>

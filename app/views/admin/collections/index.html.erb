@@ -52,7 +52,7 @@ Unless required by applicable law or agreed to in writing, software distributed
         </td>
         <td> <%= pluralize(collection.manager_count, 'manager') %> </td>
         <td> <%= collection.description&.truncate(100, separator: ' ') %> </td>
-        <td class="text-right">
+        <td class="text-end">
           <% if can?(:destroy, collection) %>
           <div class="btn-group">
             <%= link_to('Delete', remove_admin_collection_path(collection.id), class: 'btn btn-danger btn-sm', 'data-testid': 'collection-delete-collection-btn')%>

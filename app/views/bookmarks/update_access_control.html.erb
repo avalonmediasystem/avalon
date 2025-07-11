@@ -15,10 +15,7 @@ Unless required by applicable law or agreed to in writing, software distributed
 %>
 
 <div data-blacklight-modal="container">
-  <div class="modal-header">
-    <h1><%= t('blacklight.update_access_control.form.title') %></h1>
-    <button type="button" class="close" data-bl-dismiss="modal" aria-hidden="true">×</button>
-  </div>
+  <%= render partial: 'modal_header', locals: { label: 'update_access_control' } %>
 
   <% if (@documents.empty?)%>
     <div class="modal-body">

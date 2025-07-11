@@ -35,12 +35,12 @@ Unless required by applicable law or agreed to in writing, software distributed
         <%= form_for :supplemental_file, url: object_supplemental_file_path(section, file), remote: true,
           html: { method: "put", class: "supplemental-file-form edit-item", id: "form-#{file.id}" },
           data: { file_id: file.id, masterfile_id: section.id } do |form| %>
-          <div class="col-sm-9 col-md-8 col-9 form-row p-0">
-            <div class="form-group col-md-6 col-sm-6 col-6">
+          <div class="col-sm-9 col-md-8 col-9 row p-0">
+            <div class="mb-3 col-md-6 col-sm-6 col-6">
               <%= form.text_field :label, id: "supplemental_file_input_#{section.id}_#{file.id}", value: file.label %>
             </div>
             <% if tag == 'transcript' %>
-              <div class="form-group col-md-6 col p-0">
+              <div class="mb-3 col-md-6 col p-0">
                 <%= form.text_field :language, 
                     id: "supplemental_file_language_#{section.id}_#{file.id}", 
                     value: display_supplemental_file_language(file.language),
@@ -57,7 +57,7 @@ Unless required by applicable law or agreed to in writing, software distributed
               </div>
             <% end %>
             <% if tag == 'caption' %>
-              <div class="form-group col-md-6 col p-0">
+              <div class="mb-3 col-md-6 col p-0">
                 <%= form.text_field :language, 
                     id: "supplemental_file_language_#{section.id}_#{file.id}", 
                     value: display_supplemental_file_language(file.language),
@@ -72,7 +72,7 @@ Unless required by applicable law or agreed to in writing, software distributed
                   <% end %>
                 </div>
                 <div class="form-check-inline col-md-3 col-sm-3 col-3 p-0">
-                  <%= label_tag "machine_generated_#{file.id}", class: "ml-3 checkbox", style: "white-space: nowrap; padding-left: 2.6rem;" do %>
+                  <%= label_tag "machine_generated_#{file.id}", class: "ms-3 checkbox", style: "white-space: nowrap; padding-left: 2.6rem;" do %>
                     <%= check_box_tag "machine_generated_#{file.id}", '1', file.machine_generated? %>
                     <span>Machine Generated</span>
                   <% end %>

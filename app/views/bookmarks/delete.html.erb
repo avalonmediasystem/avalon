@@ -15,10 +15,7 @@ Unless required by applicable law or agreed to in writing, software distributed
 %>
 
 <div data-blacklight-modal="container">
-  <div class="modal-header">
-    <h1><%= t('blacklight.delete.form.title') %></h1>
-    <button type="button" class="close" data-bl-dismiss="modal" aria-hidden="true">×</button>
-  </div>
+  <%= render partial: 'modal_header', locals: { label: 'delete' } %>
   <%= form_tag url_for(:controller => "bookmarks", :action => "delete"), :id => 'delete_form', :method => :post do %>
     <div class="modal-body">
       <div class="row-fluid">

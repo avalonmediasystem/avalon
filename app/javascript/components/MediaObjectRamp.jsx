@@ -98,10 +98,10 @@ const Ramp = ({
                       {timeline.canCreate &&
                         <button
                           id="timelineBtn"
-                          className="btn btn-outline mr-1 text-nowrap"
+                          className="btn btn-outline me-1 text-nowrap"
                           type="button"
-                          data-toggle="modal"
-                          data-target="#timelineModal"
+                          data-bs-toggle="modal"
+                          data-bs-target="#timelineModal"
                           aria-expanded="false"
                           aria-controls="timelineModal"
                           disabled={true}
@@ -112,10 +112,10 @@ const Ramp = ({
                       }
                       {share.canShare &&
                         <button
-                          className="btn btn-outline mr-1 text-nowrap"
+                          className="btn btn-outline me-1 text-nowrap"
                           type="button"
-                          data-toggle="collapse"
-                          data-target="#shareResourcePanel"
+                          data-bs-toggle="collapse"
+                          data-bs-target="#shareResourcePanel"
                           aria-expanded="false"
                           aria-controls="shareResourcePanel"
                           id="shareBtn"
@@ -126,11 +126,11 @@ const Ramp = ({
                         </button>
                       }
                       {playlist.canCreate &&
-                        <button className="btn btn-outline text-nowrap mr-1"
+                        <button className="btn btn-outline text-nowrap me-1"
                           id="addToPlaylistBtn"
                           type="button"
-                          data-toggle="collapse"
-                          data-target="#addToPlaylistPanel"
+                          data-bs-toggle="collapse"
+                          data-bs-target="#addToPlaylistPanel"
                           aria-expanded="false"
                           aria-controls="addToPlaylistPanel"
                           disabled={true}
@@ -146,7 +146,7 @@ const Ramp = ({
                       }
                     </Col>
                     {accessibility_text &&
-                      <Col className='accessibility-request text-right' sm={6} xs={a11yWithOnlyShare ? 8 : 12}>
+                      <Col className='accessibility-request text-end' sm={6} xs={a11yWithOnlyShare ? 8 : 12}>
                         <span dangerouslySetInnerHTML={{ __html: accessibility_text }} />
                       </Col>
                     }

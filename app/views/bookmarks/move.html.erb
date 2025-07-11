@@ -21,10 +21,7 @@ Unless required by applicable law or agreed to in writing, software distributed
     });
   </script>
   <% @candidates = get_user_collections %>
-  <div class="modal-header">
-    <h1><%= t('blacklight.move.form.title') %></h1>
-    <button type="button" class="close" data-bl-dismiss="modal" aria-hidden="true">×</button>
-  </div>
+  <%= render partial: 'modal_header', locals: { label: 'move' } %>
 
   <%= form_tag url_for(:controller => "bookmarks", :action => "move"), :id => 'move_form', :method => :post do %>
     <div class="modal-body">
