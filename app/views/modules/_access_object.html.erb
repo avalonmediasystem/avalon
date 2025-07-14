@@ -83,7 +83,7 @@ Unless required by applicable law or agreed to in writing, software distributed
           <td class='access_list_dates'></td>
           <% if !input_disabled %>
           <td class='access_list_remove'>
-            <%= link_to "×",
+            <%= link_to "",
                 polymorphic_path(object, "remove_#{access_object}".to_sym => member_object, step: @active_step, donot_advance: true),
                 method: "put",
                 class: "btn btn-sm btn-close remove" %>
@@ -109,7 +109,7 @@ Unless required by applicable law or agreed to in writing, software distributed
           </td>
           <% if !input_disabled %>
           <td class='access_list_remove'>
-            <%= link_to "×",
+            <%= link_to "",
                 polymorphic_path(object, "remove_lease".to_sym => lease_object, step: @active_step, donot_advance: true),
                 method: "put",
                 class: "btn btn-sm btn-close remove" %>
