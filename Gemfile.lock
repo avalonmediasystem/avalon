@@ -16,8 +16,8 @@ GIT
 
 GIT
   remote: https://github.com/avalonmediasystem/browse-everything.git
-  revision: 3d03380a73b2bf97cb94ea987f725d15bc71af12
-  branch: v1.5-avalon
+  revision: 393973155257b0597df4b8f23568ca01cd548522
+  branch: bootstrap5
   specs:
     browse-everything (1.5.0)
       addressable (~> 2.5)
@@ -191,8 +191,6 @@ GEM
     ast (2.4.3)
     audio_waveform-ruby (1.0.7)
       json (~> 2.3)
-    autoprefixer-rails (10.4.21.0)
-      execjs (~> 2)
     aws-activejob-sqs (1.0.2)
       activejob (>= 7.1.0)
       aws-sdk-sqs (~> 1, >= 1.56.0)
@@ -261,10 +259,8 @@ GEM
       deprecation (~> 1.0)
     bootsnap (1.18.6)
       msgpack (~> 1.2)
-    bootstrap (4.6.2)
-      autoprefixer-rails (>= 9.1.0)
-      popper_js (>= 1.16.1, < 2)
-      sassc-rails (>= 2.0.0)
+    bootstrap (5.3.5)
+      popper_js (>= 2.11.8, < 3)
     bootstrap-toggle-rails (2.2.1.0)
     bootstrap_form (5.4.0)
       actionpack (>= 6.1)
@@ -367,6 +363,10 @@ GEM
       unicode-types (~> 1.8)
     edtf (3.2.0)
       activesupport (>= 3.0, < 9.0)
+    edtf-humanize (2.3.0)
+      activesupport (>= 4)
+      edtf (>= 2.3, < 4)
+      roman (~> 0.2.0)
     email_spec (2.3.0)
       htmlentities (~> 4.3.3)
       launchy (>= 2.1, < 4.0)
@@ -493,7 +493,7 @@ GEM
       rack (>= 2.2, < 4)
       rdf (~> 3.3)
       rexml (~> 3.2)
-    jwt (2.10.1)
+    jwt (2.10.2)
       base64
     kaminari (1.2.2)
       activesupport (>= 4.1.0)
@@ -621,7 +621,7 @@ GEM
       ast (~> 2.4.1)
       racc
     pg (1.5.9)
-    popper_js (1.16.1)
+    popper_js (2.11.8)
     pp (0.6.2)
       prettyprint
     pretender (0.6.0)
@@ -763,6 +763,7 @@ GEM
       netrc (~> 0.8)
     retriable (3.1.2)
     rexml (3.4.1)
+    roman (0.2.0)
     roo (2.10.1)
       nokogiri (~> 1)
       rubyzip (>= 1.3.0, < 3.0.0)
@@ -830,7 +831,6 @@ GEM
       paranoia (~> 3.0)
       pretender
       rails (>= 5.2.4.3, < 8.1)
-    sass (3.4.22)
     sassc (2.4.0)
       ffi (~> 1.9)
     sassc-rails (2.1.2)
@@ -1007,7 +1007,7 @@ DEPENDENCIES
   blacklight (~> 8.10)
   blacklight-access_controls (~> 6.1)
   bootsnap
-  bootstrap (= 4.6.2)
+  bootstrap (~> 5.0)
   bootstrap-toggle-rails
   bootstrap_form
   browse-everything!
@@ -1029,6 +1029,7 @@ DEPENDENCIES
   devise_invitable (~> 2.0)
   dotenv-rails
   edtf (>= 3.1.1)
+  edtf-humanize
   email_spec
   equivalent-xml
   factory_bot_rails
@@ -1092,7 +1093,7 @@ DEPENDENCIES
   rspec-retry
   rspec_junit_formatter
   samvera-persona (~> 0.6)
-  sass (= 3.4.22)
+  sassc-rails
   selenium-webdriver
   sequel
   shakapacker

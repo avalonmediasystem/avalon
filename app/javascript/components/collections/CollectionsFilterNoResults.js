@@ -17,7 +17,7 @@
 import React from 'react';
 
 const CollectionsFilterNoResults = () => (
-  <p className="alert alert-info text-left">
+  <p className="alert alert-info text-start">
     <i className="fa fa-exclamation-circle"></i> No results returned
     for your search
   </p>

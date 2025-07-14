@@ -700,10 +700,10 @@
 .fileinput .btn {
   vertical-align: middle;
 }
-.fileinput .form-group {
+.fileinput .mb-3 {
   overflow: hidden;
 }
-.fileinput .form-group .fileinput-filename {
+.fileinput .mb-3 .fileinput-filename {
   width: 90%;
   width: calc(80%);
 }
@@ -747,26 +747,26 @@
 .fileinput.input-group > .btn-file {
   z-index: 1;
 }
-.fileinput .input-group-append .input-group-text:hover {
+.fileinput .input-group-text:hover {
   background: #d9dcdf;
   cursor: pointer;
 }
-.form-group.has-warning .fileinput .fileinput-preview {
+.mb-3.has-warning .fileinput .fileinput-preview {
   color: #8a6d3b;
 }
-.form-group.has-warning .fileinput .img-thumbnail {
+.mb-3.has-warning .fileinput .img-thumbnail {
   border-color: #faebcc;
 }
-.form-group.has-error .fileinput .fileinput-preview {
+.mb-3.has-error .fileinput .fileinput-preview {
   color: #a94442;
 }
-.form-group.has-error .fileinput .img-thumbnail {
+.mb-3.has-error .fileinput .img-thumbnail {
   border-color: #ebccd1;
 }
-.form-group.has-success .fileinput .fileinput-preview {
+.mb-3.has-success .fileinput .fileinput-preview {
   color: #3c763d;
 }
-.form-group.has-success .fileinput .img-thumbnail {
+.mb-3.has-success .fileinput .img-thumbnail {
   border-color: #d6e9c6;
 }
 .input-group-addon:not(:first-child) {

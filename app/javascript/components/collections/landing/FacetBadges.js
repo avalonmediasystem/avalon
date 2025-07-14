@@ -28,7 +28,7 @@ function FacetBadges(props) {
     <div className="mb-3 facet-badges">
       { props.facets.map((facet, index) => {
         return (
-          <div className="btn-group mr-2" role="group" aria-label="Facet badge" key={facet.facetLabel}>
+          <div className="btn-group me-2" role="group" aria-label="Facet badge" key={facet.facetLabel}>
             <button className="btn btn-outline disabled">{facet.facetLabel}: {facet.facetValue}</button>
             <button className="btn btn-outline" onClick={event => handleClick(index, event)}>&times;</button>
           </div>

@@ -37,8 +37,8 @@ Unless required by applicable law or agreed to in writing, software distributed
       -%>
       <% if flash[type] %>
         <div class="alert <%=alert_class %>" data-testid="alert">
-          <button type="button" class="close" data-dismiss="alert" >&times;</button>
-            <% Array(flash[type]).each do |msg| %>
+          <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+          <% Array(flash[type]).each do |msg| %>
             <p><%= msg %></p>
           <% end %>
         </div>
@@ -47,7 +47,7 @@ Unless required by applicable law or agreed to in writing, software distributed
   <% end %>
 
   <div class="alert alert-danger" style="display: none;" id="cookieless">
-    <button type="button" class="close" data-dismiss="alert">&times;</button>
+    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
     <p>Could not complete log in. Possible causes and solutions are:</p>
     <ul>
       <li>Cookies are not set, which might happen if you've never visited this website before.<br/>

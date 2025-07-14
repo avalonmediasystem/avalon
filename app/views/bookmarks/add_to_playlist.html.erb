@@ -23,10 +23,7 @@ Unless required by applicable law or agreed to in writing, software distributed
 
   <% @candidates = Playlist.where(user: current_user) %>
 
-  <div class="modal-header">
-    <h1><%= t('blacklight.add_to_playlist.form.title') %></h1>
-    <button type="button" class="close" data-bl-dismiss="modal" aria-hidden="true">×</button>
-  </div>
+  <%= render partial: 'modal_header', locals: { label: "add_to_playlist"} %>
 
   <%= form_tag url_for(:controller => "bookmarks", :action => "add_to_playlist"), :id => 'add_to_playlist_form', :method => :post do %>
     <div class="modal-body">

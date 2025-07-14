@@ -210,8 +210,8 @@ const Ramp = ({
                 <button
                   className="btn btn-outline text-nowrap float-right"
                   type="button"
-                  data-toggle="collapse"
-                  data-target="#shareList"
+                  data-bs-toggle="collapse"
+                  data-bs-target="#shareList"
                   aria-expanded="false"
                   aria-controls="shareList"
                   id="share-button"

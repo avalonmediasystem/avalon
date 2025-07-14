@@ -16,7 +16,7 @@ Unless required by applicable law or agreed to in writing, software distributed
 <!-- <%= field.to_s.humanize %> field -->
 <% selected_value ||= options[:dropdown_options].keys.first %>
 
-  <div class="form-group <% if options[:multivalued] %>multivalued<% end %> <% if @media_object.errors[field].any? %>invalid-feedback<% end %>">
+  <div class="mb-3 <% if options[:multivalued] %>multivalued<% end %> <% if @media_object.errors[field].any? %>invalid-feedback<% end %>">
     <%= render partial: "modules/tooltip", locals: { form: form, field: field, tooltip: t("metadata_tip.#{field.to_s}"), options: options } %>
     <% if @media_object.errors[field].any? %>
       <%= content_tag :span, @media_object.errors[field].join(", "), class: (@media_object.errors[field].any? ? 'form-text invalid-feedback' : 'form-text') %>
@@ -32,9 +32,7 @@ Unless required by applicable law or agreed to in writing, software distributed
     <% count = [1, values.length].max %>
     <% count.times do |i| %>
       <% value = values[i] %>
-      <div class="input-group-prepend <%=options[:extra_classes]%>">
-        <% option_hash = (options[:dropdown_options].values).zip(options[:dropdown_options].keys) %>
-        <%= select_tag fieldname.to_s, options_for_select(option_hash, value), class: "form-control" %>
-      </div>
+      <% option_hash = (options[:dropdown_options].values).zip(options[:dropdown_options].keys) %>
+      <%= select_tag fieldname.to_s, options_for_select(option_hash, value), class: "form-control" %>
     <% end %>
   </div>

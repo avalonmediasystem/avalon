@@ -124,7 +124,6 @@ div[id*='facet-panel-'] {
 
     svg {
       scale: 1.5;
-      vertical-align: middle;
     }
   }
 }
@@ -135,7 +134,7 @@ div[id*='facet-panel-'] {
 }
 
 .facets .facets-collapse {
-  @include media-breakpoint-up(md) {
+  @include media-breakpoint-up(sm) {
     display: block;
   }
 

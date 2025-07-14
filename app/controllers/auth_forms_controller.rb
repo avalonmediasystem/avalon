@@ -43,7 +43,7 @@ class AuthFormsController < ApplicationController
       form = doc.at_xpath('//form')
       form.xpath('label|input').to_a.in_groups_of(2).each do |label, input|
         input['class'] = 'form-control'
-        label.replace('<div class="form-group"/>').first.add_child(label).add_next_sibling(input)
+        label.replace('<div class="mb-3"/>').first.add_child(label).add_next_sibling(input)
       end
       form.xpath('button').each { |btn| btn['class'] = 'btn btn-primary' }
       %{<div class="omniauth-form container">#{form.to_html}</div>}

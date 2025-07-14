@@ -17,16 +17,14 @@ gem 'resolv-replace'
 gem 'csv'
 
 # Assets
-gem 'bootstrap', '4.6.2'
+gem 'bootstrap', '~> 5.0'
 gem 'coffee-rails', '~> 5.0'
 gem "font-awesome-rails"
 gem 'jquery-datatables'
 gem 'jquery-rails'
 gem 'jquery-ui-rails'
 gem 'react-rails'
-#gem 'sass-rails', '>= 6'
-# Use the last known good version of sass
-gem 'sass', '3.4.22'
+gem 'sassc-rails'
 gem 'sprockets-es6'
 gem 'twitter-typeahead-rails', '0.11.1.pre.corejavascript'
 gem 'terser'
@@ -78,7 +76,7 @@ gem "omniauth-saml", "~> 2.0", ">= 2.2.3"
 # Media Access & Transcoding
 gem 'active_encode', git: "https://github.com/samvera-labs/active_encode.git", branch: 'main'
 gem 'audio_waveform-ruby', '~> 1.0.7', require: 'audio_waveform'
-gem 'browse-everything', git: "https://github.com/avalonmediasystem/browse-everything.git", branch: 'v1.5-avalon'
+gem 'browse-everything', git: "https://github.com/avalonmediasystem/browse-everything.git", branch: 'bootstrap5'
 gem 'fastimage'
 gem 'rest-client', '~> 2.0'
 gem 'roo'
@@ -86,6 +84,7 @@ gem 'wavefile', '~> 1.0.1'
 
 # Data Translation & Normalization
 gem 'edtf', '>= 3.1.1'
+gem 'edtf-humanize'
 gem 'iconv', '~> 1.0.6'
 gem 'marc'
 

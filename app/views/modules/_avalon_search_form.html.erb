@@ -20,15 +20,13 @@ Unless required by applicable law or agreed to in writing, software distributed
   </div>
   <input name="search_field" type="hidden" value="all_fields">
   <div>
-    <label class="sr-only" for=<%= "searchField-#{form_id}"%>>Search</label>
+    <label class="visually-hidden" for=<%= "searchField-#{form_id}"%>>Search</label>
     <div class="input-group input-group-lg global-search-wrapper">
       <input class="search-query q form-control global-search-input" id=<%= "searchField-#{form_id}"%> name="q"
         placeholder="Search this site" type="text" value="<%= params[:q] %>" data-testid='browse-global-search-input' >
-      <span class="input-group-append">
-        <button type="submit" class="btn btn-primary global-search-submit" aria-label="Submit search" data-testid= 'browse-global-search-submit-button' >
-          <i class="fa fa-search icon-white"></i>
-        </button>
-      </span>
+      <button type="submit" class="btn btn-primary global-search-submit" aria-label="Submit search" data-testid= 'browse-global-search-submit-button' >
+        <i class="fa fa-search icon-white"></i>
+      </button>
     </div>
   </div>
 </form>

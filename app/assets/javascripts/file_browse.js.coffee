@@ -13,7 +13,7 @@
 # ---  END LICENSE_HEADER BLOCK  ---
 
 $ ->
-  $(document).on 'click', 'a[data-trigger="submit"]', (event) ->
+  $(document).on 'click', 'a[data-bs-trigger="submit"]', (event) ->
     $(this).closest('form').submit()
 
   initialized = false
@@ -28,6 +28,7 @@ $ ->
       initialized = true
     .done (data) ->
       if data.length > 0
-        $('#uploading').modal('show')
+        uploadModal = new bootstrap.Modal($('#uploading'))
+        uploadModal.show()
         $('#dropbox_form input[name=workflow]').val($('#browse-everything input[name=workflow]:checked').val())
         $('#dropbox_form').submit()

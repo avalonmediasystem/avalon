@@ -44,7 +44,7 @@ footer {
     float: right;
   }
 
-  @include media-breakpoint-down(xs) {
+  @include media-breakpoint-down(sm) {
     font-size: 12px;
 
     ul {

@@ -102,6 +102,10 @@ class LanguageTerm
       end
       language_map
     end
+
+    def map
+      Iso6392.map
+    end
   end
 
   def initialize(term)

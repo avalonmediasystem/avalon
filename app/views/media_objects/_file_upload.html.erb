@@ -23,19 +23,19 @@ Unless required by applicable law or agreed to in writing, software distributed
     <div class="card-body">
       <% unless @masterFiles.blank? %>
         <div class="collapse form-tooltip" id="title-tooltip">
-          <button class="close">&times;</button>
+          <button class="btn-close"></button>
           <p><%= t("file_upload_tip.title").html_safe %></p>
         </div>
         <div class="collapse form-tooltip" id="permalink-tooltip">
-          <button class="close">&times;</button>
+          <button class="btn-close"></button>
           <p><%= t("file_upload_tip.permalink").html_safe %></p>
         </div>
         <div class="collapse form-tooltip" id="datedigitized-tooltip">
-          <button class="close">&times;</button>
+          <button class="btn-close"></button>
           <p><%= t("file_upload_tip.datedigitized").html_safe %></p>
         </div>
         <div class="collapse form-tooltip" id="thumbnail-tooltip">
-          <button class="close">&times;</button>
+          <button class="btn-close"></button>
           <p><%= t("file_upload_tip.thumbnail").html_safe %></p>
         </div>
 
@@ -87,7 +87,7 @@ Unless required by applicable law or agreed to in writing, software distributed
                     </span>
                     <span>
                       <button class="btn btn-sm btn-outline show_move_modal" data-id="<%= section.id %>"
-                        data-toggle="modal" data-target="#move_modal">
+                        data-bs-toggle="modal" data-bs-target="#move_modal">
                         Move
                       </button>
                     </span>
@@ -97,8 +97,8 @@ Unless required by applicable law or agreed to in writing, software distributed
                     </span>
                     <% end %>
                     <span>
-                      <button id="<%="edit_section_#{section.id}"%>" class="btn btn-sm btn-primary" onclick="return false;" data-toggle="collapse"
-                              data-target="<%="#collapseExample#{section.id}"%>" data-section-id="<%= section.id %>" aria-expanded="false" aria-controls="collapseExample" data-testid="media-object-manage-files-edit-btn">
+                      <button id="<%="edit_section_#{section.id}"%>" class="btn btn-sm btn-primary" onclick="return false;" data-bs-toggle="collapse"
+                              data-bs-target="<%="#collapseExample#{section.id}"%>" data-section-id="<%= section.id %>" aria-expanded="false" aria-controls="collapseExample" data-testid="media-object-manage-files-edit-btn">
                         Edit
                       </button>
                     </span>
@@ -109,16 +109,16 @@ Unless required by applicable law or agreed to in writing, software distributed
                 <%= form_with model: section, class: "master-file-form" do |form| %>
                   <div class="row">
                     <div class="col-sm-4">
-                      <div class="form-group">
+                      <div class="mb-3">
                         <label>
                           Section Label
                           <span class="tooltip-label">
-                            <span class='fa fa-question-circle' type="button" data-toggle="collapse" data-target="#section_label_tooltip" aria-expanded="false" aria-controls="section_label_tooltip"></span>
+                            <span class='fa fa-question-circle' type="button" data-bs-toggle="collapse" data-bs-target="#section_label_tooltip" aria-expanded="false" aria-controls="section_label_tooltip"></span>
                           </span>
                         </label>
 
                         <span class="form-text tooltip-block collapse" id="section_label_tooltip">
-                          <%= content_tag :span, '', class: 'close fa fa-times' %>
+                          <%= content_tag :span, '', class: 'btn-close' %>
                           <p class="text-muted">
                             A label displayed to users. Users will click on these labels to switch between files.
                           </p>
@@ -128,13 +128,13 @@ Unless required by applicable law or agreed to in writing, software distributed
                       </div>
                     </div>
                     <div class="col-sm-2">
-                      <div class="form-group">
+                      <div class="mb-3">
                         <label>Date Digitized</label>
                         <%= form.text_field :date_digitized, class: 'date-input', id: "master_file_date_digitized_#{section.id}" %>
                       </div>
                     </div>
                     <div class="col-sm-2">
-                      <div class="form-group">
+                      <div class="mb-3">
                         <label>Thumbnail</label>
                         <% if section.is_video? %>
                         <%= form.text_field :poster_offset, value: section.poster_offset.to_i.to_hms, class: 'input-small' %>
@@ -144,7 +144,7 @@ Unless required by applicable law or agreed to in writing, software distributed
                       </div>
                     </div>
                     <div class="col-sm-4">
-                      <div class="form-group">
+                      <div class="mb-3">
                         <label>Permalink</label>
                         <%= form.text_field :permalink %>
                       </div>
@@ -153,7 +153,7 @@ Unless required by applicable law or agreed to in writing, software distributed
                   <div class="row">
                     <div class="col-sm-12">
                       <%= form.submit "Save", class: "btn btn-primary btn-sm" %>
-                      <a class="btn btn-outline btn-sm" data-toggle="collapse" data-target="<%="#collapseExample#{section.id}"%>">Cancel</a>
+                      <a class="btn btn-outline btn-sm" data-bs-toggle="collapse" data-bs-target="<%="#collapseExample#{section.id}"%>">Cancel</a>
                       <small class="flash-message visible-inline"></small>
                     </div>
                   </div>
@@ -205,14 +205,14 @@ Unless required by applicable law or agreed to in writing, software distributed
 
             <div class="fileinput fileinput-new" id="file-upload" data-provides="fileinput"  style="height: 33px">
               <a href="#" class="fileinput-submit fileinput-exists btn btn-outline btn-file file-upload-buttons"
-                data-trigger="submit" data-toggle="modal" data-target="#uploading" data-testid="media-object-edit-upload-btn">Upload</a>
+                data-trigger="submit" data-bs-toggle="modal" data-bs-target="#uploading" data-testid="media-object-edit-upload-btn">Upload</a>
               <span class="btn btn-outline btn-file file-upload-buttons">
                 <span class="fileinput-new">Select file</span>
                 <span class="fileinput-exists">Change</span>
                 <input type="file" name="Filedata[]" data-testid="media-object-edit-select-file-btn">
               </span>
               <span class="fileinput-filename"></span>
-              <a href="#" class="close fileinput-exists fileinput-close" data-dismiss="fileinput">&times;</a>
+              <a href="#" class="btn-close fileinput-exists fileinput-close" data-bs-dismiss="fileinput"></a>
             </div>
 
             <%= hidden_field_tag(:new_asset, true, :id => "files_new_asset") if params[:new_asset] %>
@@ -222,11 +222,11 @@ Unless required by applicable law or agreed to in writing, software distributed
           </fieldset>
 
           <div class="collapse form-tooltip equal-height" id="skip-transcoding-tooltip">
-            <button class="close">&times;</button>
+            <button class="btn-close"></button>
             <p><%= t("file_upload_tip.skip_transcoding").html_safe %></p>
           </div>
 
-          <div id="uploading" class="modal fade" role="dialog" data-backdrop="true" data-keyboard="false">
+          <div id="uploading" class="modal fade" role="dialog" data-bs-backdrop="true" data-bs-keyboard="false">
             <div class="modal-dialog modal-sm">
               <div class="modal-content">
                 <div class="modal-header">
@@ -245,12 +245,12 @@ Unless required by applicable law or agreed to in writing, software distributed
               <p class="muted">
                 Use the dropbox to import large files.
                 <span class="tooltip-label">
-                  <span class='fa fa-question-circle' type="button" data-toggle="collapse" data-target="#dropbox_tooltip" aria-expanded="false" aria-controls="dropbox_tooltip"></span>
+                  <span class='fa fa-question-circle' type="button" data-bs-toggle="collapse" data-bs-target="#dropbox_tooltip" aria-expanded="false" aria-controls="dropbox_tooltip"></span>
                 </span>
               </p>
 
               <span class="form-text tooltip-block collapse" id="dropbox_tooltip">
-                <%= content_tag :span, '', class: 'close fa fa-times' %>
+                <%= content_tag :span, '', class: 'btn-close' %>
                 <p class="text-muted">
                   Attach selected files after uploading. Files will begin
                   processing when you click <strong>"Save and continue"</strong>.
@@ -263,10 +263,10 @@ Unless required by applicable law or agreed to in writing, software distributed
           <%= form_tag(master_files_path, id: 'dropbox_form', method: 'post') do %>
             <%= hidden_field_tag("workflow") %>
             <input type="hidden" name="container_id" value="<%= @media_object.id %>" />
-            <div class="form-group">
+            <div class="mb-3">
               <%= button_tag("Open Dropbox", type: 'button', class: 'btn btn-outline', id: "browse-btn",
-              'data-toggle' => 'browse-everything', 'data-route' => browse_everything_engine.root_path,
-              'data-target' => '#dropbox_form', 'data-context' => @media_object.collection.id ) %>
+              'data-bs-toggle' => 'browse-everything', 'data-route' => browse_everything_engine.root_path,
+              'data-bs-target' => '#dropbox_form', 'data-context' => @media_object.collection.id ) %>
             </div>
           <% end %>
         </div>
@@ -287,27 +287,26 @@ Unless required by applicable law or agreed to in writing, software distributed
   </div>
 </div>
 
-<div id="move_modal" class="modal fade" role="dialog" data-backdrop="true">
+<div id="move_modal" class="modal fade" role="dialog" data-bs-backdrop="true">
   <div class="modal-dialog modal-md">
     <div class="modal-content">
       <div class="modal-header">
         <h3 class='modal-title'>Move Section</h3>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
-            aria-hidden="true">×</span></button>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"/>
       </div>
       <div class="modal-body">
         <%= form_tag move_master_file_path, id: 'move_form', method: 'POST' do %>
-          <div class="form-group row">
+          <div class="mb-3 row">
             <label for="target" class="col-sm-4 col-form-label">Target Item Identifier: </label>
             <div class="col-sm-8">
               <%= text_field_tag :target, nil, class: 'form-control', style: 'width: 50%;', type: 'text', onkeyup: 'previewTargetItem(this)' %>
             </div>
-            <div id="show_target_object" class="ml-3"></div>
+            <div id="show_target_object" class="ms-3"></div>
           </div>
       </div>
       <div class="modal-footer">
         <%= submit_tag "Move", class: "btn btn-large btn-primary", disabled: true, id: "move_action_btn" %>
-        <a href="#" data-dismiss="modal" aria-hidden="true" class="btn">Cancel</a>
+        <a href="#" data-bs-dismiss="modal" aria-hidden="true" class="btn">Cancel</a>
         <% end %>
       </div>
     </div>

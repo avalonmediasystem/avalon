@@ -26,6 +26,10 @@ module Blacklight::LocalBlacklightHelper
     args[:document][args[:field]].first(3).join("; ")
   end
 
+  def humanized_date_index_display args
+    Date.edtf(args[:document][args[:field]]).humanize
+  end
+
   def description_index_display args
     field = args[:document][args[:field]]
     truncate(field, length: 200) unless field.blank?

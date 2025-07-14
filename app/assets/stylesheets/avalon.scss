@@ -48,7 +48,7 @@ body {
 html {
   font-size: 14px;
 
-  @include media-breakpoint-down(md) {
+  @include media-breakpoint-down(lg) {
     font-size: 12px;
   }
 }
@@ -81,6 +81,10 @@ tr.active-false td {
   border-color: $state-info-border;
 }
 
+.form-control {
+  appearance: auto;
+}
+
 pre {
   background-color: #f5f5f5;
   border: 1px solid #ccc;
@@ -107,7 +111,8 @@ div.alert-danger {
 
 .info-text-gray {
   font-style: italic;
-  color: #767676;
+  color: #6c757d;
+  /* Bootstrap secondary color with 4.5:1 contrast ratio */
 }
 
 .nowrap {
@@ -123,9 +128,15 @@ div.alert-danger {
   display: flex;
   flex-wrap: wrap;
 
-  > [class*='col-'] {
+  >[class*='col-'] {
     flex-grow: 1;
   }
+}
+
+// Force bootstrap grid to display poster buttons next to each other
+.row .edit_admin_collection {
+  width: unset;
+  max-width: 50%
 }
 
 // TODO: We should find and replace these usages
@@ -143,7 +154,7 @@ div.alert-danger {
     margin-top: 0;
   }
 
-  @include media-breakpoint-down(md) {
+  @include media-breakpoint-down(lg) {
     h1 {
       font-size: 2rem;
     }
@@ -182,19 +193,19 @@ div.alert-danger {
 }
 
 .mobile-hidden {
-  @include media-breakpoint-down(sm) {
+  @include media-breakpoint-down(md) {
     display: none !important;
   }
 }
 
 .sm-hidden {
-  @include media-breakpoint-down(sm) {
+  @include media-breakpoint-down(md) {
     display: none !important;
   }
 }
 
 .desktop-hidden {
-  @include media-breakpoint-up(md) {
+  @include media-breakpoint-up(sm) {
     display: none !important;
   }
 }
@@ -208,7 +219,6 @@ div.alert-danger {
   margin-left: -40%;
 }
 
-// Custom file preview field for Jasny bootstrap
 .uneditable-input-exists {
   //@extend .uneditable-input;
   width: 45%;
@@ -231,7 +241,7 @@ div.alert-danger {
   cursor: pointer;
 }
 
-.tooltip-block .close {
+.tooltip-block .btn-close {
   font-size: 14px;
 }
 
@@ -255,6 +265,7 @@ div.alert-danger {
 
   td.access_list_remove {
     min-width: 3rem;
+    text-align: right;
   }
 }
 
@@ -348,12 +359,12 @@ span.constraints-label {
 }
 
 .role-popover-help {
-  & + .popover .arrow {
+  &+.popover .arrow {
     left: 10%;
   }
 }
 
-.btn-confirmation + .popover .popover-content {
+.btn-confirmation+.popover .popover-content {
   white-space: nowrap;
 }
 
@@ -400,7 +411,7 @@ a[data-trigger='submit'] {
     margin-bottom: 10px;
   }
 
-  @include media-breakpoint-down(sm) {
+  @include media-breakpoint-down(md) {
     margin-top: 1rem;
     padding: 0;
   }
@@ -413,7 +424,7 @@ a[data-trigger='submit'] {
   font-weight: 700 !important;
 }
 
-.tab-content > .tab-pane {
+.tab-content>.tab-pane {
   padding: 10px;
   border-bottom: 1px solid #ddd;
   border-left: 1px solid #ddd;
@@ -456,7 +467,7 @@ a[data-trigger='submit'] {
   }
 }
 
-@include media-breakpoint-down(xs) {
+@include media-breakpoint-down(sm) {
   #content {
     .btn {
       margin-top: 2px;
@@ -472,7 +483,7 @@ a[data-trigger='submit'] {
   }
 }
 
-.edit_media_object .form-group {
+.edit_media_object .mb-3 {
   margin-bottom: 0;
 }
 
@@ -534,13 +545,13 @@ div.status-detail {
 #mediaobject_structure {
   overflow-x: auto;
 
-  @include media-breakpoint-between (md, xl) {
+  @include media-breakpoint-between (sm, xxl) {
     ul {
       width: 100%;
     }
   }
 
-  @include media-breakpoint-down (sm) {
+  @include media-breakpoint-down (md) {
     ul {
       width: 730px;
     }
@@ -661,12 +672,12 @@ div.structure_edit {
       background-color: $state-danger-bg;
     }
 
-    .attribute_container > textarea {
+    .attribute_container>textarea {
       resize: both;
     }
 
-    .attribute_container > a,
-    .attribute_container > label {
+    .attribute_container>a,
+    .attribute_container>label {
       vertical-align: top;
     }
   }
@@ -761,11 +772,9 @@ h5.card-title {
     font-weight: bold;
   }
 
-  .clip_start_time {
-  }
+  .clip_start_time {}
 
-  .clip_end_time {
-  }
+  .clip_end_time {}
 
   .clip_position {
     text-align: center;
@@ -795,6 +804,32 @@ h5.card-title {
   flex-grow: 2;
 }
 
+.twitter-typeahead .tt-menu {
+  float: left;
+  width: 100%;
+  min-width: 10rem;
+  padding: 0.5rem 0;
+  margin: 0.125rem 0 0;
+  font-size: 1rem;
+  color: #212529;
+  text-align: left;
+  list-style: none;
+  background-color: white;
+  background-clip: padding-box;
+  border: 1px solid rgba(51, 51, 51, 0.15);
+  border-radius: 0.25rem;
+
+  .tt-suggestion.tt-selectable {
+    padding: 0.25rem 0.5rem;
+
+    &:hover {
+      cursor: pointer;
+      background-color: #e9ecef;
+      color: #16181b;
+    }
+  }
+}
+
 /**
  * Associated Files - Edit - Manage Files
  */
@@ -821,7 +856,7 @@ h5.card-title {
     padding-bottom: 10px;
     justify-content: space-between;
 
-    > span {
+    >span {
       padding: 0 5px;
     }
 
@@ -936,7 +971,7 @@ h5.card-title {
         .file-remove {
           display: none;
         }
-        .form-group {
+        .mb-3 {
           margin-bottom: 0.2rem;
         }
         .fa-gears {
@@ -949,7 +984,8 @@ h5.card-title {
       .visible-inline {
         display: none;
 
-        .icon-success, .icon-error {
+        .icon-success,
+        .icon-error {
           font-size: 1.2rem;
         }
       }
@@ -959,7 +995,7 @@ h5.card-title {
       }
     }
 
-    div.supplemental-file-data.is-editing:not(.edit-item) + div.supplemental-file-data {
+    div.supplemental-file-data.is-editing:not(.edit-item)+div.supplemental-file-data {
       margin-top: 2.5rem;
     }
 
@@ -985,7 +1021,8 @@ h5.card-title {
       height: 25px;
     }
 
-    &.captions, &.transcripts {
+    &.captions,
+    &.transcripts {
       div.supplemental-file-data.is-editing:last-child {
         margin-bottom: 1.75rem;
       }
@@ -1161,7 +1198,7 @@ h5.card-title {
 }
 
 // Make table body scrollable in mobile devices
-@include media-breakpoint-down(md) {
+@include media-breakpoint-down(lg) {
   .dataTableBody {
     width: 100%;
     overflow-x: scroll;
@@ -1225,14 +1262,14 @@ td {
 
 /* CDL controls on view page styles */
 .cdl-controls {
-  @include media-breakpoint-down(sm) {
+  @include media-breakpoint-down(md) {
     margin-top: 1rem;
   }
   .remaining-time {
     display: flex;
     text-align: center;
 
-    @include media-breakpoint-down(sm) {
+    @include media-breakpoint-down(md) {
       margin: 0;
     }
   }
@@ -1261,7 +1298,7 @@ td {
   }
 
   #return-btn {
-    @include media-breakpoint-down(sm) {
+    @include media-breakpoint-down(md) {
       float: right;
     }
   }
@@ -1274,7 +1311,7 @@ td {
   p {
     position: relative;
     text-align: center;
-    @include media-breakpoint-down(md) {
+    @include media-breakpoint-down(lg) {
       margin-bottom: 0;
     }
   }

@@ -16,8 +16,6 @@ Unless required by applicable law or agreed to in writing, software distributed
 <% selected_value ||= options[:dropdown_options].keys.first %>
 <% fieldarray = options[:multivalued]? "[]" : "" %>
 
-<div class="input-group-prepend">
-  <% fieldname = "media_object[#{options[:dropdown_field]}]#{fieldarray}" %>
-  <% option_hash = (options[:dropdown_options].values).zip(options[:dropdown_options].keys) %>
-  <%= select_tag fieldname.to_s, options_for_select(option_hash, selected_value) %>
-</div>
+<% fieldname = "media_object[#{options[:dropdown_field]}]#{fieldarray}" %>
+<% option_hash = (options[:dropdown_options].values).zip(options[:dropdown_options].keys) %>
+<%= select_tag fieldname.to_s, options_for_select(option_hash, selected_value) %>

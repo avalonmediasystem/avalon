@@ -15,6 +15,10 @@
 @initialize_typeahead = ($t) ->
   $validate = $t.data('validate') || false
   $t.attr('autocomplete','off')
+  # Get the closest 'Add' button related to the input text field
+  add_button = ($t.closest 'div').next().first().children()
+  # Disable the 'Add' button
+  add_button.prop 'disabled', true
   mySource = new Bloodhound(
     datumTokenizer: Bloodhound.tokenizers.whitespace('display')
     queryTokenizer: Bloodhound.tokenizers.whitespace
@@ -38,11 +42,23 @@
     target = $("##{$t.data('target')}")
     target.val suggestion["id"] || suggestion["display"]
     $t.data('matched_val',suggestion["display"])
+    # Enable 'Add' button when input is completed
+    add_button.prop 'disabled', false
     return
+  ).on("keydown", (e) ->
+    # Disable 'Add' button when selected value is partially cleared
+    # by pressing 'Backspace' key
+    if e.which is 8
+      add_button.prop 'disabled', true
   ).on("keypress", (e) ->
     if e.which is 13
       e.preventDefault
       return false
+  ).on("input", (e) ->
+    # Disable 'Add' button when input field is fully cleared without using backspace
+    # Example: Ctrl + X
+    if $(this).val().trim() is ''
+      add_button.prop 'disabled', true
   ).blur ->
     target = $("##{$t.data('target')}")
     typed = $(this).val()

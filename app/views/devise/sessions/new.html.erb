@@ -31,21 +31,21 @@ Unless required by applicable law or agreed to in writing, software distributed
   <div <%= visible_providers ? "class=hidden" : "" %> id='email-box'>
     <%= bootstrap_form_for resource, as: resource_name, url: session_path(resource_name, admin: true, email: true) do |f| %>
 
-      <div class="form-group">
+      <div class="mb-3">
         <%= f.text_field :login, autofocus: true, autocomplete: "username" %>
       </div>
 
-      <div class="form-group">
+      <div class="mb-3">
         <%= f.password_field :password, autocomplete: "off" %>
       </div>
 
       <% if devise_mapping.rememberable? -%>
-        <div class="form-group">
+        <div class="mb-3">
           <%= f.check_box :remember_me %>
         </div>
       <% end -%>
 
-      <div class="actions form-group">
+      <div class="actions mb-3">
         <%= f.submit "Connect", class: 'btn btn-primary' %>
       </div>
     <% end %>
