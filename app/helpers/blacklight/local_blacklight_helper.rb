@@ -27,7 +27,10 @@ module Blacklight::LocalBlacklightHelper
   end
 
   def humanized_date_index_display args
-    Date.edtf(args[:document][args[:field]]).humanize
+    field = args[:document][args[:field]]
+    return "unknown" if field == "unknown/unknown"
+
+    Date.edtf(field).humanize
   end
 
   def description_index_display args
