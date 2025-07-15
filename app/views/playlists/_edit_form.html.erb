@@ -91,9 +91,9 @@ Unless required by applicable law or agreed to in writing, software distributed
               <div class="col-sm-8 title" style="margin-top:5px">
                 <%= link_to clip.title, clip.mediafragment_uri, id: "playlist_item_title_label_#{i.id}" %>
               </div>
-              <div class="col-sm-2 text-end" style="margin-top:5px">
-                <button id="playlist_item_edit_button" class="btn btn-sm fa fa-edit" aria-label="Edit playlist item" <%= i.clip.master_file.nil? ? 'disabled' : '' %>
-                  data-bs-toggle="collapse" href="#playlist_item_edit_<%= i.id %>" aria-expanded="false" type="button">
+              <div class="col-sm-2 text-right" style="margin-top:5px">
+                <button id="playlist_item_edit_button" class="btn btn-sm fa fa-edit" <%= clip.master_file.nil? ? 'disabled' : '' %>
+                  data-toggle="collapse" href="#playlist_item_edit_<%= i.id %>" aria-expanded="false" type="button" aria-label="Edit playlist item <%= index + 1 %>">
                 </button>
                 <label>
                   <%= check_box_tag 'clip_ids[]', i.id, false, form:"edit_playlist_#{@playlist.id}", class:"playlist_item_select" , data: { testid: "playlist-item-checkbox" }   %>
@@ -125,28 +125,28 @@ Unless required by applicable law or agreed to in writing, software distributed
                 <div class="mb-3 row">
                   <%= pif.label :title, class: 'col-sm-2 col-form-label' %>
                   <div class="col-sm-10">
-                    <%= text_field_tag :title, i.title, class: 'form-control', id: "avalon_clip_title_#{i.id}", form:"playlist_item_form_#{i.id}" %>
+                    <%= text_field_tag :title, i.title, class: 'form-control', id: "avalon_clip_title_#{i.id}", form:"playlist_item_form_#{i.id}", aria: { label: 'Playlist item title' } %>
                     <span style='display:none' class='title_original' data-value="<%= i.title %>"></span>
                   </div>
                 </div>
                 <div class="mb-3 row">
                   <div class="col-sm-2" style="text-align:right;margin-top:2pt"><%= pif.label :start_time, class: 'col-form-label' %></div>
                   <div class="col-sm-4">
-                    <%= text_field_tag :start_time, pretty_time(i.start_time), class: 'form-control', id: "avalon_clip_start_time_#{i.id}", form:"playlist_item_form_#{i.id}" %>
+                    <%= text_field_tag :start_time, pretty_time(i.start_time), class: 'form-control', id: "avalon_clip_start_time_#{i.id}", form:"playlist_item_form_#{i.id}", aria: { label: 'Playlist item start time' } %>
                     <span style='display:none' class='start_time_original' data-value="<%= pretty_time(i.start_time) %>"></span>
                   </div>
                   <div class="col-sm-2" style="text-align:right;margin-top:2pt">
                     <%= pif.label :end_time, class: 'col-form-label' %>
                   </div>
                   <div class="col-sm-4">
-                    <%= text_field_tag :end_time, pretty_time(i.end_time), class: 'form-control', id: "avalon_clip_end_time_#{i.id}", form:"playlist_item_form_#{i.id}" %>
+                    <%= text_field_tag :end_time, pretty_time(i.end_time), class: 'form-control', id: "avalon_clip_end_time_#{i.id}", form:"playlist_item_form_#{i.id}", aria: { label: 'Playlist item end time' } %>
                     <span style='display:none' class='end_time_original' data-value="<%= pretty_time(i.end_time) %>"></span>
                   </div>
                 </div>
                 <div class="mb-3 row">
                   <%= pif.label :comment, class: 'col-sm-2 col-form-label' %>
                   <div class="col-sm-10">
-                    <%= text_area_tag :comment, i.comment, class: 'form-control', id: "avalon_clip_comment_#{i.id}", form:"playlist_item_form_#{i.id}" %>
+                    <%= text_area_tag :comment, i.comment, class: 'form-control', id: "avalon_clip_comment_#{i.id}", form:"playlist_item_form_#{i.id}", aria: { label: 'Playlist item comment' } %>
                     <span style='display:none' class='comment_original' data-value="<%= i.comment %>"></span>
                   </div>
                 </div>
