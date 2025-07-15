@@ -24,7 +24,8 @@ class MediaObject < ActiveFedora::Base
   include MigrationTarget
   include SpeedyAF::OrderedAggregationIndex
   include MediaObjectIntercom
-  include SupplementalFileBehavior
+  include SupplementalFileReadBehavior
+  include SupplementalFileWriteBehavior
   include MediaObjectBehavior
   require 'avalon/controlled_vocabulary'
 

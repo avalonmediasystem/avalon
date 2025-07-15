@@ -508,7 +508,7 @@ RSpec.shared_examples 'a nested controller for' do |object_class|
             if object.is_a?(MasterFile)
               expect{
                 put :update, params: { class_id => object.id, id: supplemental_file.id, supplemental_file:valid_update_attributes, format: :html}, session: valid_session
-              }.to change { object.media_object.to_solr(include_child_fields: true)['has_transcripts_bsi'] }.from(true).to(false)
+              }.to change { object.reload.media_object.to_solr(include_child_fields: true)['has_transcripts_bsi'] }.from(true).to(false)
             end
           end
         end
@@ -654,7 +654,7 @@ RSpec.shared_examples 'a nested controller for' do |object_class|
         if object.is_a?(MasterFile)
           expect{
             delete :destroy, params: { class_id => object.id, id: supplemental_file.id, format: :html}, session: valid_session
-          }.to change { object.media_object.to_solr(include_child_fields: true)['has_transcripts_bsi'] }.from(true).to(false)
+          }.to change { object.reload.media_object.to_solr(include_child_fields: true)['has_transcripts_bsi'] }.from(true).to(false)
         end
       end
     end

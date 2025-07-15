@@ -134,7 +134,6 @@ class SupplementalFilesController < ApplicationController
 
   def destroy
     find_supplemental_file
-
     @object.supplemental_files -= [@supplemental_file]
     raise Avalon::SaveError, "An error occurred when deleting the supplemental file: #{@object.errors[:supplemental_files_json]}" unless @object.save
     # FIXME: also wrap this in a transaction
