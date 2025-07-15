@@ -63,6 +63,10 @@ streaming:
   rtmp_base: 'rtmp://localhost/avalon'
   http_base: 'http://localhost:3000/streams'
   default_quality: 'auto'
+  # Referer header to use when making m3u8 requests to the streaming server which the streaming
+  # server then uses to make auth callbacks.  This is useful to allow the streaming server to use
+  # an alternate address (like an internal firewalled address) for avalon than the public address
+  # auth_referer: http://127.0.0.1:3000
 redis:
   url: 'redis://localhost:6379/0'
 groups:
