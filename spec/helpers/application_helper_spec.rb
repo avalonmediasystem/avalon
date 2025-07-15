@@ -188,5 +188,56 @@ describe ApplicationHelper do
         )
       end
     end
+
+    context 'SpeedyAF(MediaObject)' do
+      let(:presenter) { SpeedyAF::Proxy::MediaObject.find(media_object.id) }
+
+      it 'returns media_object_supplemental_file_path' do
+        expect(helper.object_supplemental_file_path(presenter, supplemental_file)).to eq(
+          "/media_objects/#{media_object.id}/supplemental_files/#{supplemental_file.id}"
+        )
+      end
+    end
+  end
+
+  describe "#object_supplemental_files_path" do
+    let(:master_file) { FactoryBot.create(:master_file) }
+    let(:media_object) { FactoryBot.create(:media_object) }
+
+    context 'MasterFile' do
+      it 'returns masterfile_supplemental_files_path' do
+        expect(helper.object_supplemental_files_path(master_file)).to eq(
+          "/master_files/#{master_file.id}/supplemental_files"
+        )
+      end
+    end
+
+    context 'SpeedyAF(MasterFile)' do
+      let(:presenter) { SpeedyAF::Proxy::MasterFile.find(master_file.id) }
+
+      it 'returns masterfile_supplemental_files_path' do
+        expect(helper.object_supplemental_files_path(presenter)).to eq(
+          "/master_files/#{master_file.id}/supplemental_files"
+        )
+      end
+    end
+
+    context 'MediaObject' do
+      it 'returns mediaobject_supplemental_files_path' do
+        expect(helper.object_supplemental_files_path(media_object)).to eq(
+          "/media_objects/#{media_object.id}/supplemental_files"
+        )
+      end
+    end
+
+    context 'SpeedyAF(MediaObject)' do
+      let(:presenter) { SpeedyAF::Proxy::MediaObject.find(media_object.id) }
+
+      it 'returns media_object_supplemental_files_path' do
+        expect(helper.object_supplemental_files_path(presenter)).to eq(
+          "/media_objects/#{media_object.id}/supplemental_files"
+        )
+      end
+    end
   end
 end
