@@ -29,11 +29,7 @@ module SupplementalFileReadBehavior
     # encountered in a live environment but came up in automated
     # testing. Adding a rescue on fail to locate allows us to skip
     # these out of sync files.
-    @supplemental_files ||= begin
-                              GlobalID::Locator.locate_many(JSON.parse(supplemental_files_json))
-                            rescue ActiveRecord::RecordNotFound
-                              nil
-                            end.compact
+    @supplemental_files ||= GlobalID::Locator.locate_many(JSON.parse(supplemental_files_json), ignore_missing: true)
     return [] if @supplemental_files.blank?
 
     case tag
