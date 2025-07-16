@@ -14,7 +14,7 @@
 
 FactoryBot.define do
   factory :group, class: Admin::Group do
-    name {Faker::Lorem.word}
+    name { Faker::Lorem.unique.word }
     after(:create) do |g|
       group = Admin::Group.find(g.name)
       group.users = [FactoryBot.build(:user).user_key]

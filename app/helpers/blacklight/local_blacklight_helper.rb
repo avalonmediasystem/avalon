@@ -27,7 +27,12 @@ module Blacklight::LocalBlacklightHelper
   end
 
   def humanized_date_index_display args
-    Date.edtf(args[:document][args[:field]]).humanize
+    field = args[:document][args[:field]]
+    return "unknown" if field == "unknown/unknown"
+
+    Date.edtf(field).humanize
+  rescue
+    nil
   end
 
   def description_index_display args
@@ -41,7 +46,7 @@ module Blacklight::LocalBlacklightHelper
 
   def constraints_filters_string filters
     return if filters.nil?
-    filters.map {|facet, values| contstraints_filter_string(facet, values)}.join(' / ')
+    filters.map { |facet, values| contstraints_filter_string(facet, values) }.join(' / ')
   end
 
   def contstraints_filter_string(facet, values)
@@ -50,9 +55,9 @@ module Blacklight::LocalBlacklightHelper
     case values.size
     when 1
       "#{facet_field_label(facet_config.key)}: #{facet_display_value(facet, values.first)}"
-    when 2 #if multiple facet selection enabled
+    when 2 # if multiple facet selection enabled
       "#{facet_field_label(facet_config.key)}: #{facet_display_value(facet, values.first)} or #{facet_display_value(facet, values.last)}"
-    else #if multiple facet selection enabled
+    else # if multiple facet selection enabled
       "#{facet_field_label(facet_config.key)}: #{values.size} selected"
     end
   end
