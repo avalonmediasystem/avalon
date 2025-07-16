@@ -17,7 +17,7 @@
 let canvasIndex = -1;
 let currentSectionLabel = undefined;
 let addToPlaylistListenersAdded = false;
-let searchFieldListenerAdded = false
+let searchFieldListenerAdded = false;
 let firstLoad = true;
 let streamId = '';
 let isMobile = false;
@@ -345,13 +345,13 @@ function addToPlaylistListeners(sectionIds, mediaObjectId) {
     const IS_TOUCH_ONLY = navigator.maxTouchPoints && navigator.maxTouchPoints > 2 && !window.matchMedia("(pointer: fine").matches;
     let searchField = $('.select2-search__field');
     if ((/Mobi|iPhone/i.test(window.navigator.userAgent) || IS_TOUCH_ONLY) && searchField.length > 0) {
-      searchField.attr('readonly', 'readonly')
+      searchField.attr('readonly', 'readonly');
       if (!searchFieldListenerAdded) {
-        searchField.on('click', function(e) {
+        searchField.on('click', function (e) {
           searchField.removeAttr('readonly').select();
         });
 
-        searchFieldListenerAdded = true
+        searchFieldListenerAdded = true;
       }
     }
   });
@@ -371,7 +371,7 @@ function setUpCreateThumbnail(player, sectionIds) {
 
   // Leave 'Create Thumbnail' button disabled when item is audio
   if (thumbnailBtn && thumbnailBtn.disabled
-    && (player.player?.readyState() >= 2 || isMobile) && !player.player.isAudio()) {
+    && (player.player?.readyState() >= 2 || isMobile) && !player.player.audioOnlyMode()) {
     thumbnailBtn.disabled = false;
 
     /*
@@ -551,7 +551,7 @@ function initM3U8Reload(player, mediaObjectId, sectionIds, sectionShareInfos) {
       player.player.on('pause', () => {
         currentTime = player.player.currentTime();
         // How long to wait before resetting stream tokens: default 5 minutes
-        intervalLength = 5*60*1000
+        intervalLength = 5 * 60 * 1000;
         reloadInterval = setInterval(m3u8Reload, intervalLength);
       });
 
