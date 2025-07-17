@@ -32,19 +32,19 @@ class SearchBuilder < Blacklight::SearchBuilder
   end
 
   def limit_to_non_hidden_items(_permission_types = discovery_permissions, _ability = current_ability)
-    [policy_clauses,"(*:* NOT hidden_bsi:true)"].compact.join(" OR ")
+    [policy_clauses, "(*:* NOT hidden_bsi:true)"].compact.join(" OR ")
   end
 
   # Overridden to skip for admin users
   def add_access_controls_to_solr_params(solr_parameters)
-    if current_ability.cannot? :discover_everything, MediaObject
-      solr_parameters[:fq] ||= []
-      solr_parameters[:fq] << gated_discovery_filters.reject(&:blank?).join(' OR ')
-      avalon_solr_access_filters_logic.each do |filter|
-        solr_parameters[:fq] << send(filter, discovery_permissions, current_ability)
-      end
-      Rails.logger.debug("Solr parameters: #{solr_parameters.inspect}")
+    return unless current_ability.cannot? :discover_everything, MediaObject
+
+    solr_parameters[:fq] ||= []
+    solr_parameters[:fq] << gated_discovery_filters.reject(&:blank?).join(' OR ')
+    avalon_solr_access_filters_logic.each do |filter|
+      solr_parameters[:fq] << send(filter, discovery_permissions, current_ability)
     end
+    Rails.logger.debug("Solr parameters: #{solr_parameters.inspect}")
   end
 
   def search_section_transcripts(solr_parameters)
