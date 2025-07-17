@@ -333,4 +333,18 @@ describe SupplementalFile do
       end
     end
   end
+
+  describe '#download_filename' do
+    let(:file) { FactoryBot.create(:supplemental_file, :with_transcript_file, tags: ['transcript']) }
+    it 'returns the filename' do
+      expect(file.download_filename).to eq "captions.vtt"
+    end
+
+    context 'with machine generated file' do
+      let(:file) { FactoryBot.create(:supplemental_file, :with_transcript_file, tags: ['transcript', 'machine_generated']) }
+      it 'returns the filename with "(machine generated)" inserted' do
+        expect(file.download_filename).to eq "captions (machine generated).vtt"
+      end
+    end
+  end
 end

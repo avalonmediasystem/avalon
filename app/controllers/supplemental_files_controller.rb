@@ -85,11 +85,11 @@ class SupplementalFilesController < ApplicationController
       format.html { 
         # Redirect or proxy the content
         if Settings.supplemental_files.proxy
-          send_data @supplemental_file.file.download, filename: @supplemental_file.file.filename.to_s, type: @supplemental_file.file.content_type, disposition: 'attachment'
+          send_data @supplemental_file.file.download, filename: @supplemental_file.download_filename, type: @supplemental_file.file.content_type, disposition: "inline; filename=#{@supplemental_file.download_filename}"
         else
           # Rails 7.0 adds a config option to protect against "open redirects". We override
           # that here in case the active storage db is not local.
-          redirect_to rails_blob_path(@supplemental_file.file, disposition: "attachment"), allow_other_host: true
+          redirect_to rails_blob_path(@supplemental_file.file, disposition: "inline; filename=#{@supplemental_file.download_filename}"), allow_other_host: true
         end
       }
       format.json { render json: @supplemental_file.as_json }
@@ -152,7 +152,7 @@ class SupplementalFilesController < ApplicationController
     file_content = @supplemental_file.file.download
     content = @supplemental_file.file.content_type == 'text/srt' ? SupplementalFile.convert_from_srt(file_content) : file_content
 
-    send_data content, filename: @supplemental_file.file.filename.to_s, type: 'text/vtt', disposition: 'attachment'
+    send_data content, filename: @supplemental_file.download_filename, type: 'text/vtt', disposition: "inline; filename=#{@supplemental_file.download_filename}"
   end
 
   private
