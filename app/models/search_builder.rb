@@ -50,9 +50,12 @@ class SearchBuilder < Blacklight::SearchBuilder
   def search_section_transcripts(solr_parameters)
     return unless solr_parameters[:q].present? && SupplementalFile.with_tag('transcript').any? && !(blacklight_params[:controller] == 'bookmarks')
 
-    return if solr_parameters[:q].match?(/[\{\}]/)
-    # In order for the multi-word query to work we need to NOT escape the query AND replace the spaces as +; this is also true for quoted phrase searches
-    transcript_subquery = "transcript_tsim:#{solr_parameters[:q].gsub(/ /, '+')}"
+    # In order for the multi-word query to work we need to NOT RSolr.solr_escape the query AND replace the spaces as +; this is also true for quoted phrase searches
+    # We can manually escape solr special characters that cause issues.
+    query = solr_parameters[:q].gsub(/([(){}\[\]\^\*?:])/, "\\\\\1").tr(' ', '+')
+    # Quotes need special handling to allow phrase searches.
+    query = query.gsub(/"/, "\\\\\1") if query.count('"').odd?
+    transcript_subquery = "transcript_tsim:#{query}"
     solr_parameters[:defType] = "lucene"
     solr_parameters[:q] = "({!edismax v=\"#{RSolr.solr_escape(solr_parameters[:q])}\"}) {!join to=id from=isPartOf_ssim}{!join to=id from=isPartOf_ssim}#{transcript_subquery}"
   end
@@ -75,9 +78,9 @@ class SearchBuilder < Blacklight::SearchBuilder
     solr_parameters["sections.rows"] = 1_000_000
     sections_fl = ['id']
     transcripts_fl = ['id'] if transcripts_present
-   
-    # Add fields for each term in the query 
-    terms = solr_parameters[:q].split
+
+    # Add fields for each term in the query, explictly escape closing parenthesis to prevent error
+    terms = solr_parameters[:q].gsub(/(\))/, "\\\\\1").split
     terms.each_with_index do |term, i|
       fl << "metadata_tf_#{i}:termfreq(mods_tesim,#{RSolr.solr_escape(term)})"
       fl << "structure_tf_#{i}:termfreq(section_label_tesim,#{RSolr.solr_escape(term)})"

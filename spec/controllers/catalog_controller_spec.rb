@@ -217,6 +217,13 @@ describe CatalogController do
         expect(assigns(:response).documents.count).to eq 2
         expect(assigns(:response).documents.collect(&:id)).to eq [media_object_1.id, @media_object.id]
       end
+      it 'should not error when special characters are in the query' do
+        ['+', '-', '&', '|', '"', '(', ')', '{', '}', '[', ']', '^', '~', '*', '?', ':', '/'].each do |char|
+          expect { get 'index', params: { q: "#{char} Test Label" } }.to_not raise_error
+          expect(assigns(:response).documents.count).to eq 1
+          expect(assigns(:response).documents.collect(&:id)).to eq [@media_object.id]
+        end
+      end
     end
     describe "search transcripts" do
       before(:each) do
@@ -231,7 +238,7 @@ describe CatalogController do
       end
 
       it "should find results based upon transcripts" do
-        get 'index', params: { q: 'Example' }
+        get 'index', params: { q: 'Example captions' }
         expect(assigns(:response).documents.count).to eq 1
         expect(assigns(:response).documents.collect(&:id)).to eq [@media_object.id]
       end
@@ -247,6 +254,16 @@ describe CatalogController do
           get 'index', params: { q: '"Example quote"' }
           expect(assigns(:response).documents.count).to eq 0
           expect(assigns(:response).documents.collect(&:id)).not_to include @media_object.id
+        end
+      end
+
+      context "special characters" do
+        it 'should not error when special characters are in the query' do
+          ['+', '-', '&', '|', '"', '(', ')', '{', '}', '[', ']', '^', '~', '*', '?', ':', '/'].each do |char|
+            expect { get 'index', params: { q: "Example #{char}" } }.to_not raise_error
+            expect(assigns(:response).documents.count).to eq 1
+            expect(assigns(:response).documents.collect(&:id)).to eq [@media_object.id]
+          end
         end
       end
     end
