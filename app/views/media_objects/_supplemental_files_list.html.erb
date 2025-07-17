@@ -102,7 +102,7 @@ Unless required by applicable law or agreed to in writing, software distributed
         <%= button_tag name: 'edit_label', class:'btn btn-outline btn-sm edit_label display-item', type: 'button' do %>
           <i class="fa fa-edit" title="Edit"></i> <span class="sm-hidden">Edit</span>
         <% end %>
-        <%= link_to(object_supplemental_file_path(section, file), title: 'Remove', method: :delete, class: "btn btn-danger btn-sm file-remove btn-confirmation") do %>
+        <%= link_to(object_supplemental_file_path(section, file), title: 'Remove', method: :delete, class: "btn btn-danger btn-sm file-remove btn-confirmation", data: { confirm: "Are you sure?" }) do %>
           <i class="fa fa-trash" title="Delete"></i> <span class="sm-hidden">Delete</span>
         <% end %>
         </div>

@@ -69,7 +69,7 @@ Unless required by applicable law or agreed to in writing, software distributed
 
         <% end # playlists.present?%>
         <%= f.submit "Delete Selected", id: 'delete_selected_playlist_items', class: 'btn btn-danger btn-confirmation btn-sm',
-          form:"edit_playlist_#{@playlist.id}", data: { placement: 'bottom', testid: 'playlist-delete-selected-btn' }, disabled:'disabled', sanitize: false %>
+          form:"edit_playlist_#{@playlist.id}", data: { placement: 'bottom', testid: 'playlist-delete-selected-btn', confirm: 'Are you sure?' }, disabled:'disabled', sanitize: false %>
       </div>
     </div>
     <% end #form_for update_multiple %>
