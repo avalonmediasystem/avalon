@@ -39,6 +39,9 @@ $state-info-border:              shade-color(adjust-hue($state-info-bg, -10), 7%
   }
 
   .navbar-toggler {
+    // Override Bootstrap's hamburger menu SVG to make the horizontal lines to use color white
+    --bs-navbar-toggler-icon-bg: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='white' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+    border-radius: 0.25em;
     @include media-breakpoint-down(md) {
       background: $primary;
       margin: 0.5rem 1rem 0.5rem 0.5rem;
@@ -46,6 +49,10 @@ $state-info-border:              shade-color(adjust-hue($state-info-bg, -10), 7%
   }
 
   padding: 0;
+}
+
+.navbar-logo {
+  display: inline-block !important;
 }
 
 .navbar {
@@ -116,7 +123,7 @@ $state-info-border:              shade-color(adjust-hue($state-info-bg, -10), 7%
  */
 .nav-wizard {
   --bs-nav-link-padding-y: 0.5rem;
-  --bs-nav-link-padding-x:1rem;
+  --bs-nav-link-padding-x: 1rem;
   --bs-nav-link-color: #2a5459;
 
   li {

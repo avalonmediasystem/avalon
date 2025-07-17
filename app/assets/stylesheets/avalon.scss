@@ -205,7 +205,7 @@ div.alert-danger {
 }
 
 .desktop-hidden {
-  @include media-breakpoint-up(sm) {
+  @include media-breakpoint-up(md) {
     display: none !important;
   }
 }
