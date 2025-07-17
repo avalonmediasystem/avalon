@@ -142,14 +142,15 @@ Unless required by applicable law or agreed to in writing, software distributed
 
       function transcriptCheck(canvasindex) {
         let sectionId = sectionIds[canvasindex];
-        let transcriptTab = document.evaluate('//a[text()="Transcripts"]', document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
-        let detailTab = document.evaluate('//a[text()="Details"]', document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
-
+        let transcriptButton = document.evaluate('//button[text()="Transcripts"]', document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+        let transcriptTab = transcriptButton?.parentElement
+        let detailTab = document.evaluate('//button[text()="Details"]', document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+        
         if(!transcriptSections.includes(sectionId)) {
           // If transcript tab is the active tab when it is hidden, the tab goes away but the box still displays
           // the missing transcript file message. Force change over to a different tab to avoid this case.
           if(transcriptTab) {
-            if (transcriptTab.getAttribute('aria-selected') === "true") { detailTab.click(); }
+            if (transcriptButton.getAttribute('aria-selected') === "true") { detailTab.click(); }
             transcriptTab.style.display = 'none';
             transcriptTab.classList.add("disabled");
           }
