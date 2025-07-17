@@ -138,6 +138,12 @@ class SupplementalFile < ApplicationRecord
     chunked_transcript.map(&:strip).map { |cue| cue.gsub("\n", " ").squeeze(' ') }.compact
   end
 
+  def download_filename
+    filename = file.filename.to_s
+
+    machine_generated? ? "#{File.basename(filename, File.extname(filename))} (machine generated)#{File.extname(filename)}" : filename
+  end
+
   private
 
   def validate_file_type

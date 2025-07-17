@@ -142,7 +142,7 @@ RSpec.shared_examples 'a nested controller for' do |object_class|
 
     it "returns the supplemental file content" do
       get :show, params: { class_id => object.id, id: supplemental_file.id }, session: valid_session
-      expect(response).to redirect_to Rails.application.routes.url_helpers.rails_blob_path(supplemental_file.file, disposition: "attachment")
+      expect(response).to redirect_to Rails.application.routes.url_helpers.rails_blob_path(supplemental_file.file, disposition: "inline; filename=#{supplemental_file.download_filename}")
     end
 
     context '.json' do

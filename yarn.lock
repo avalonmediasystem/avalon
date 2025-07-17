@@ -1423,6 +1423,11 @@
   resolved "https://registry.yarnpkg.com/@iiif/vocabulary/-/vocabulary-1.0.26.tgz#557fab623100ca860daeddf6e4de46a8f94aaf86"
   integrity sha512-yOsMDg5C90iMfD5HSydoTDzmOM/ki5zGiu4DbHpzRueM7D+12IcDHeai2A8QvEroS8HCJl5M1Edbju5rOlPIpg==
 
+"@iiif/vocabulary@^1.0.28":
+  version "1.0.28"
+  resolved "https://registry.yarnpkg.com/@iiif/vocabulary/-/vocabulary-1.0.28.tgz#04069f9636a17c6bb0eecc6ee59cb32a8d382439"
+  integrity sha512-+6D5FYv5fHvYpJHZKOoX0FYsU/w+cOLKcIrL2lFKkrCoD2LfMf5JzdxvgrAqdcBbwIa3AGJwWaHhXPhYbS40iQ==
+
 "@jest/schemas@^29.6.0":
   version "29.6.0"
   resolved "https://registry.yarnpkg.com/@jest/schemas/-/schemas-29.6.0.tgz#0f4cb2c8e3dca80c135507ba5635a4fd755b0040"
@@ -1677,9 +1682,9 @@
     estree-walker "^2.0.2"
     picomatch "^4.0.2"
 
-"@samvera/ramp@https://github.com/samvera-labs/ramp.git#691015e":
+"@samvera/ramp@https://github.com/samvera-labs/ramp.git#browser-determined-download":
   version "4.0.0"
-  resolved "https://github.com/samvera-labs/ramp.git#691015e4d3436d8a0cc3fd05c5f58c46571c3773"
+  resolved "https://github.com/samvera-labs/ramp.git#fd6e8ef9c217f2812252427113821b1d2a51f2c2"
   dependencies:
     "@rollup/plugin-json" "^6.0.1"
     "@silvermine/videojs-quality-selector" "^1.3.1"
@@ -5706,12 +5711,12 @@ mammoth@^1.4.19:
     xmlbuilder "^10.0.0"
 
 manifesto.js@^4.1.0:
-  version "4.2.21"
-  resolved "https://registry.yarnpkg.com/manifesto.js/-/manifesto.js-4.2.21.tgz#a62e9c7673467f7dd832a4fe27fe1c97a7b62d6c"
-  integrity sha512-C14J8zMSXlQaQjKR7KpIYEAXWquS2DtdxL8cFj1P2kc/ZJ5nWWmDUrthysVoQlRIzks5HtUNf5bStOwzhzarag==
+  version "4.2.22"
+  resolved "https://registry.yarnpkg.com/manifesto.js/-/manifesto.js-4.2.22.tgz#39f251ea2711e9df088655077bf2776895bd84dd"
+  integrity sha512-Rl7nKFzJ7kiotWCrFkqTnY6xfdGr7KtaHo+QovRXe4WGizoH1QaF6kHodNPIOsi2L5LCgX/RVoNqOryLKEuNrg==
   dependencies:
     "@edsilv/http-status-codes" "^1.0.3"
-    "@iiif/vocabulary" "^1.0.26"
+    "@iiif/vocabulary" "^1.0.28"
     isomorphic-unfetch "^3.0.0"
     lodash "^4.17.21"
 
