@@ -17,7 +17,7 @@ Unless required by applicable law or agreed to in writing, software distributed
   <div>
     <%= link_to "View Playlist", @playlist, { class: 'btn btn-primary'} %>
     <% if can?(:destroy, @playlist) %>
-    <%= link_to "Delete Playlist", @playlist, method: :delete, class: 'btn btn-link btn-confirmation', data: {placement: 'bottom', testid:'playlist-delete-playlist-form'} %>
+    <%= link_to "Delete Playlist", @playlist, method: :delete, class: 'btn btn-link btn-confirmation', data: { placement: 'bottom', testid:'playlist-delete-playlist-form', confirm: 'Are you sure?' } %>
     <% end %>
   </div>
 
