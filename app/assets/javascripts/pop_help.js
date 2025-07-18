@@ -31,7 +31,3 @@ $('.form-text .btn-close').click(function(event) {
   event.preventDefault();
   return $(this).parent().collapse('toggle');
 });
-
-$('.typeahead.from-model').each(function() {
-  initialize_typeahead($(this));
-});
