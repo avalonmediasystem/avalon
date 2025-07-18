@@ -139,18 +139,5 @@ Unless required by applicable law or agreed to in writing, software distributed
     <% end %>
   <% end %>
 
-  <script>
-  $('.tooltip-label').on("click", function(event){
-      event.preventDefault()
-      targetNode = $(this).data('tooltip')
-      $(targetNode).collapse('toggle')
-  });
-  $('.form-text .close').on("click", function(event){
-    event.preventDefault()
-    $(this).parent().collapse('toggle')
-  });
-  $('.typeahead.from-model').each(function() {
-    initialize_typeahead($(this));
-  });
-  </script>
+  <script src="<%= asset_path('pop_help.js') %>"></script>
 </div>
