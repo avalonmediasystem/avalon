@@ -287,7 +287,9 @@ class MediaObject < ActiveFedora::Base
   end
 
   def section_labels
-    all_labels = sections.collect{ |section| section.structural_metadata_labels << section.title}
+    # Need to add both title and display_title to avoid a regression because it is possible to have a title different than
+    # the section's structrualMetadata.section_title which is preferred in display_title
+    all_labels = sections.collect { |section| (section.structural_metadata_labels << section.title << section.display_title).uniq }
     all_labels.flatten.uniq.compact
   end
 

@@ -820,11 +820,13 @@ describe MediaObject do
   describe '#section_labels' do
     before do
       mf = FactoryBot.create(:master_file, :with_structure, title: 'Test Label', media_object: media_object)
+      mf2 = FactoryBot.create(:master_file, media_object: media_object)
       media_object.reload
     end
     it 'should return correct list of labels' do
       expect(media_object.section_labels.first).to eq 'CD 1'
       expect(media_object.section_labels).to include 'Test Label'
+      expect(media_object.section_labels).to include 'video.mp4'
     end
   end
 
