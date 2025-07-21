@@ -2,11 +2,22 @@ const { defineConfig } = require('cypress');
 const path = require('path');
 const fs = require('fs');
 
+// Determine which env file to load
+const environmentName = process.env.CYPRESS_ENV || 'dev';
+const envFilename = `cypress.env.${environmentName}.json`;
+const envPath = path.resolve(__dirname, envFilename);
+let envSettings = {};
+if (fs.existsSync(envPath)) {
+  envSettings = require(envPath);
+}
+// PROJECT_ROOT in each env file controls where specs, fixtures,etc
+const projectRoot = envSettings.PROJECT_ROOT || '';
+
 module.exports = defineConfig({
-  downloadsFolder: 'spec/cypress/downloads',
-  fixturesFolder: 'spec/cypress/fixtures',
-  screenshotsFolder: 'spec/cypress/screenshots',
-  videosFolder: 'spec/cypress/videos',
+  downloadsFolder: path.resolve(__dirname, projectRoot, 'downloads'),
+  fixturesFolder: path.resolve(__dirname, projectRoot, 'fixtures'),
+  screenshotsFolder: path.resolve(__dirname, projectRoot, 'screenshots'),
+  videosFolder: path.resolve(__dirname, projectRoot, 'videos'),
   browser: process.env.BROWSER || 'electron',
 
   e2e: {
@@ -54,7 +65,14 @@ module.exports = defineConfig({
       return config;
     },
 
-    supportFile: 'spec/cypress/support/e2e.js',
-    specPattern: 'spec/cypress/integration/**/*.js',
+    // Derive support file & spec pattern from projectRoot
+    supportFile: path.resolve(__dirname, projectRoot, 'support', 'e2e.js'),
+    specPattern: path.resolve(
+      __dirname,
+      projectRoot,
+      'integration',
+      '**',
+      '*.js'
+    ),
   },
 });

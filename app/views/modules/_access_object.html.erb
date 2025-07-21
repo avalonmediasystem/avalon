@@ -86,7 +86,8 @@ Unless required by applicable law or agreed to in writing, software distributed
             <%= link_to "",
                 polymorphic_path(object, "remove_#{access_object}".to_sym => member_object, step: @active_step, donot_advance: true),
                 method: "put",
-                class: "btn btn-sm btn-close remove" %>
+                class: "btn btn-sm btn-close remove" ,
+                data: { testid: "collection-access-remove-#{access_object}" } %>
           </td>
           <% end %>
         </tr>

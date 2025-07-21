@@ -1,11 +1,12 @@
-<Item label="Short Documentary.mp3">
-  <Div label="Opening">
-    <Span label="Intro 1" begin="00:00:00" end="00:00:10"/>
-    <Span label="Intro 2" begin="00:00:11" end="00:00:20"/>
+<?xml version="1.0"?>
+<Item label="Documentary.mp3">
+  <Div label="Starting act">
+    <Span label="Part 1" begin="00:00:00" end="00:00:10"/>
+    <Span label="Part 2" begin="00:00:11" end="00:00:20"/>
   </Div>
-  <Div label="Main Content">
-    <Span label="Segment A" begin="00:00:20" end="00:00:30"/>
-    <Span label="Segment B" begin="00:00:30" end="00:00:45"/>
+  <Div label="Body">
+    <Span label="Content 1" begin="00:00:20" end="00:00:30"/>
+    <Span label="Content 2" begin="00:00:30" end="00:00:45"/>
   </Div>
-  <Span label="Wrap-up" begin="00:00:45" end="00:00:53"/>
+  <Span label="The end" begin="00:00:45" end="00:00:53"/>
 </Item>

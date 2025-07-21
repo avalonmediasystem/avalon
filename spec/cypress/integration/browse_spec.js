@@ -101,4 +101,38 @@ context('Browse', () => {
         });
     }
   );
+
+  it(
+    'Selects the "Sort by" dropdown and chooses "Date"',
+    { tags: '@high' },
+    () => {
+      cy.login('administrator');
+      homePage.getBrowseNavButton().click();
+      // Click the Sort by dropdown toggle button
+      cy.get('#sort-dropdown button').should('be.visible').click();
+
+      // Make sure the dropdown menu appears
+      cy.get('#sort-dropdown .dropdown-menu').should('be.visible');
+
+      // Click the "Date" option
+      cy.get('#sort-dropdown .dropdown-menu').contains('Date').click();
+
+      // Verify the URL now includes the sort parameter for Date
+      cy.url().should('include', 'sort=date_issued_ssi');
+
+      // Get all date elements
+      cy.get('[data-testid="browse-value-date_issued_ssi"]').then(($dates) => {
+        // Extract date text, convert to number, store in array
+        const dateNumbers = [...$dates].map((el) =>
+          parseInt(el.innerText.trim())
+        );
+
+        // Make a sorted copy to compare
+        const sortedDates = [...dateNumbers].sort((a, b) => b - a);
+
+        // Assert the dates are sorted DESC
+        expect(dateNumbers).to.deep.equal(sortedDates);
+      });
+    }
+  );
 });

@@ -26,11 +26,11 @@ Unless required by applicable law or agreed to in writing, software distributed
     <p class="muted">Copy the link below to share this playlist.  It can only be seen and shared by people with this link.</p>
     <form role="form">
       <div class="mb-3">
-        <input type="text" class="form-control" id="link-object" value="<%= access_token_url(@playlist) %>" placeholder="<%= access_token_url(@playlist) %>" onClick="this.select();" readonly="readonly">
+        <input type="text" class="form-control" id="link-object" value="<%= access_token_url(@playlist) %>" placeholder="<%= access_token_url(@playlist) %>" onClick="this.select();" readonly="readonly" data-testid="playlist-link">
       </div>
     </form>
     <% else %>
-    <p class="muted">This playlist is private.  To enable sharing, change the visibility setting within the <%= link_to "Edit Playlist", edit_playlist_url(@playlist) %> page.</p>
+    <p class="muted" data-testid="playlist-link">This playlist is private.  To enable sharing, change the visibility setting within the <%= link_to "Edit Playlist", edit_playlist_url(@playlist) %> page.</p>
     <% end %>
   </div>
 <% elsif section=='share-tabs' %>

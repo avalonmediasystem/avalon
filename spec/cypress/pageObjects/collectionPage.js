@@ -2,6 +2,7 @@ import {
   navigateToManageContent,
   selectCollectionUnit,
 } from '../support/navigation.js';
+import { getFixturePath } from '../support/utils';
 class CollectionPage {
   navigateToCollection(collection_title) {
     navigateToManageContent();
@@ -214,7 +215,7 @@ class CollectionPage {
     cy.intercept('GET', '**/edit?step=file-upload').as('fileuploadredirect');
     cy.get("[data-testid='media-object-edit-select-file-btn']")
       .click()
-      .selectFile(`spec/cypress/fixtures/${videoName}`);
+      .selectFile(getFixturePath(videoName));
     cy.get("[data-testid='media-object-edit-upload-btn']").click();
     cy.wait('@fileuploadredirect').its('response.statusCode').should('eq', 200);
 
@@ -294,7 +295,7 @@ class CollectionPage {
     cy.intercept('GET', '**/edit?step=file-upload').as('fileuploadredirect1');
     cy.get("[data-testid='media-object-edit-select-file-btn']")
       .click()
-      .selectFile(`spec/cypress/fixtures/${config.videoFile}`);
+      .selectFile(getFixturePath(config.videoFile));
     cy.get("[data-testid='media-object-edit-upload-btn']").click();
     cy.wait('@fileuploadredirect1')
       .its('response.statusCode')
@@ -307,7 +308,7 @@ class CollectionPage {
     // Add caption to first video
     cy.get('[data-testid="media-object-manage-files-edit-btn"]').click();
     cy.get('[data-testid="media-object-upload-button-caption"]').selectFile(
-      `spec/cypress/fixtures/${config.captionFile}`,
+      getFixturePath(config.captionFile),
       { force: true }
     );
     cy.get('[data-testid="alert"]').contains(
@@ -318,7 +319,7 @@ class CollectionPage {
     cy.intercept('GET', '**/edit?step=file-upload').as('fileuploadredirect2');
     cy.get("[data-testid='media-object-edit-select-file-btn']")
       .click()
-      .selectFile(`spec/cypress/fixtures/${config.audioFile}`);
+      .selectFile(getFixturePath(config.audioFile));
     cy.get("[data-testid='media-object-edit-upload-btn']").click();
     cy.wait('@fileuploadredirect2')
       .its('response.statusCode')
@@ -332,7 +333,7 @@ class CollectionPage {
     cy.intercept('GET', '**/edit?step=file-upload').as('fileuploadredirect3');
     cy.get("[data-testid='media-object-edit-select-file-btn']")
       .click()
-      .selectFile(`spec/cypress/fixtures/${config.videoFile}`);
+      .selectFile(getFixturePath(config.videoFile));
     cy.get("[data-testid='media-object-edit-upload-btn']").click();
     cy.wait('@fileuploadredirect3')
       .its('response.statusCode')
