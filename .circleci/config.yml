@@ -106,15 +106,6 @@ jobs:
             curl -H "Content-type:application/octet-stream" --data-binary @solr_conf.zip "http://solr:SolrRocks@127.0.0.1:<< parameters.solr_port >>/solr/admin/configs?action=UPLOAD&name=solrconfig"
             curl "http://solr:SolrRocks@127.0.0.1:<< parameters.solr_port >>/solr/admin/collections?action=CREATE&name=hydra-test&numShards=1&collection.configName=solrconfig"
 
-      - run:
-          command: |
-            if [[ $(command -v cc-test-reporter) == "" ]]; then
-              curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
-              chmod +x ./cc-test-reporter
-            fi
-      - run:
-          command: ./cc-test-reporter before-build
-
       # Pull in the parallel_rspec step and modify it to ensure that test results get stored
       # - samvera/parallel_rspec
       - run: mkdir /tmp/test-results
@@ -129,39 +120,6 @@ jobs:
           path: /tmp/test-results
           destination: test-results
 
-      - run:
-          command: ./cc-test-reporter format-coverage -t simplecov -o "coverage/codeclimate.$CIRCLE_NODE_INDEX.json"
-
-      - persist_to_workspace:
-          root: coverage
-          paths:
-            - codeclimate.*.json
-
-  upload-coverage:
-    parameters:
-      parallelism:
-        type: integer
-        default: 4
-    docker:
-      # Primary container image where all steps run.
-      - image: avalonmediasystem/avalon:develop
-
-    working_directory: /home/app/avalon
-
-    steps:
-      - attach_workspace:
-          at: /home/app/avalon
-
-      - run:
-          name: Install Code Climate Test Reporter
-          command: |
-            curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
-            chmod +x ./cc-test-reporter
-
-      - deploy:
-          # CC_TEST_REPORTER_ID set within the circleci web interface
-          command: ./cc-test-reporter sum-coverage --output - --parts << parameters.parallelism >> codeclimate.*.json | ./cc-test-reporter upload-coverage --debug --input -
-
 workflows:
   version: 2
   build_test_report:
@@ -170,7 +128,3 @@ workflows:
           ruby_ver: '3.4'
           name: 'Ruby3-4'
           parallelism: 4
-      - upload-coverage:
-          parallelism: 4
-          requires:
-            - Ruby3-4

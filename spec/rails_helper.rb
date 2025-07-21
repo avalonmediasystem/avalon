@@ -17,7 +17,6 @@ ENV['RAILS_ENV'] = 'test'
 
 if ENV['COVERAGE'] || ENV['CI']
   require 'simplecov'
-  require 'codeclimate-test-reporter'
 
   SimpleCov.start('rails') do
     add_filter '/spec'

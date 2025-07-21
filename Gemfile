@@ -139,7 +139,6 @@ end
 
 group :test do
   gem 'capybara'
-  gem 'codeclimate-test-reporter'
   gem 'database_cleaner'
   gem 'email_spec'
   gem 'factory_bot_rails'
