@@ -876,10 +876,10 @@ context('Collections Test', () => {
       cy.login('administrator');
       homePage.getBrowseNavButton().click();
 
-      // Step 1: Expand "Published" facet section
+      // Expand "Published" facet section
       cy.contains('button', 'Published').should('be.visible').click();
 
-      // Step 2: Get the facet count first (before clicking the link)
+      // Get the count first
       cy.contains('li', 'Published')
         .should('be.visible')
         .find('span.facet-count')
@@ -887,14 +887,14 @@ context('Collections Test', () => {
         .then((facetCount) => {
           const trimmedFacetCount = facetCount.trim();
 
-          // Step 3: Click the link to apply the filter
+          // Click the link to apply the filter
           cy.contains('li', 'Published').find('a.facet-select').click();
 
-          // Step 4: Wait for the page to update
+          // Wait for the page to update
           cy.url().should('include', '/catalog');
           cy.wait(1000); // Let the results load
 
-          // Step 5: Now get the total count from result page
+          // Now get the total count from result page
           cy.get('span.page-entries')
             .find('strong')
             .last()
@@ -906,10 +906,10 @@ context('Collections Test', () => {
               expect(trimmedFacetCount).to.eq(resultCount.trim());
             });
 
-          // Step 6: Click on the first result
+          //  Click on the first result
           cy.get('[data-testid^="browse-document-title-"]').first().click();
 
-          // Step 7: Validate you're on the detail page and see the Unpublish button
+          // Validate you're on the detail page and see the Unpublish button
           cy.url().should('include', '/media_objects/');
           cy.waitForVideoReady();
           cy.get('[data-testid="media-object-unpublish-btn"]').should(

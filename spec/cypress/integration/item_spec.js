@@ -652,7 +652,7 @@ context('Item', () => {
         .click();
       cy.wait('@getManageFile').its('response.statusCode').should('eq', 302);
 
-      // Step 2: Upload file
+      // Upload file
       cy.intercept('GET', '**/edit?step=file-upload').as('fileuploadredirect');
       cy.get("[data-testid='media-object-edit-select-file-btn']")
         .click()

@@ -78,8 +78,6 @@ context('Playlists', () => {
       media_object_id = id;
     });
   });
-
-  // Clean up after all tests - ITEM FIRST, THEN COLLECTION
   // Clean up after all tests - ITEM FIRST, THEN COLLECTION
   after(() => {
     cy.login('administrator');
