@@ -28,11 +28,7 @@ module Blacklight::LocalBlacklightHelper
 
   def humanized_date_index_display args
     field = args[:document][args[:field]]
-    return "unknown" if field == "unknown/unknown"
-
-    Date.edtf(field).humanize
-  rescue
-    nil
+    Avalon::Configuration.humanize_edtf.call(field)
   end
 
   def description_index_display args

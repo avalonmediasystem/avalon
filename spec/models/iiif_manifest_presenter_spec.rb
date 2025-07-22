@@ -62,9 +62,10 @@ describe IiifManifestPresenter do
     it 'provides metadata' do
       allow_any_instance_of(IiifManifestPresenter).to receive(:lending_enabled).and_return(false)
 
-      ['Title', 'Alternative title', 'Publication date', 'Creation date', 'Main contributor', 'Summary', 'Contributor', 'Publisher', 'Genre', 'Subject', 
-       'Time period', 'Geographic Subject', 'Collection', 'Unit', 'Language', 'Rights Statement', 'Terms of Use', 'Physical Description', 'Series',
-       'Related Item', 'Notes', 'Table of Contents', 'Local Note', 'Other Identifier', 'Access Restrictions', 'Bibliographic ID'
+      [
+        'Title', 'Alternative title', 'Publication date', 'Creation date', 'Main contributor', 'Summary', 'Contributor', 'Publisher', 'Genre', 'Subject',
+        'Time period', 'Geographic Subject', 'Collection', 'Unit', 'Language', 'Rights Statement', 'Terms of Use', 'Physical Description', 'Series',
+        'Related Item', 'Notes', 'Table of Contents', 'Local Note', 'Other Identifier', 'Access Restrictions', 'Bibliographic ID'
       ].each do |field|
         expect(subject).to include(field)
       end
@@ -76,7 +77,6 @@ describe IiifManifestPresenter do
         FactoryBot.build(:fully_searchable_media_object).tap do |mo|
           mo.other_identifier += mo.other_identifier
           mo.other_identifier += [mo.bibliographic_id]
-          mo
         end
       end
 
@@ -93,9 +93,10 @@ describe IiifManifestPresenter do
       it 'provides metadata' do
         allow_any_instance_of(IiifManifestPresenter).to receive(:lending_enabled).and_return(true)
 
-        ['Title', 'Publication date', 'Creation date', 'Main contributor', 'Summary', 'Contributor', 'Publisher', 'Genre', 'Subject',
-         'Time period', 'Geographic Subject', 'Collection', 'Unit', 'Language', 'Rights Statement', 'Terms of Use', 'Physical Description', 'Series',
-         'Related Item', 'Notes', 'Table of Contents', 'Local Note', 'Other Identifier', 'Access Restrictions', 'Bibliographic ID', 'Lending Period'
+        [
+          'Title', 'Publication date', 'Creation date', 'Main contributor', 'Summary', 'Contributor', 'Publisher', 'Genre', 'Subject',
+          'Time period', 'Geographic Subject', 'Collection', 'Unit', 'Language', 'Rights Statement', 'Terms of Use', 'Physical Description', 'Series',
+          'Related Item', 'Notes', 'Table of Contents', 'Local Note', 'Other Identifier', 'Access Restrictions', 'Bibliographic ID', 'Lending Period'
         ].each do |field|
           expect(subject).to include(field)
         end
@@ -112,11 +113,38 @@ describe IiifManifestPresenter do
 
     context 'values with search links' do
       it 'includes appropriate link tags' do
-        search_url = Rails.application.routes.url_helpers.blacklight_url.gsub('/','\/')
+        search_url = Rails.application.routes.url_helpers.blacklight_url.gsub('/', '\/')
         ['Subject'].each do |field|
           subject[field].each do |value|
-            expect(value).to match /^<a href="#{search_url}\?f%5B.+%5D%5B%5D=.*">.*<\/a>$/
+            expect(value).to match(/^<a href="#{search_url}\?f%5B.+%5D%5B%5D=.*">.*<\/a>$/)
           end
+        end
+      end
+    end
+
+    context 'date handling' do
+      let(:media_object) { FactoryBot.build(:media_object, date_issued: '2025-07-22', date_created: '2025-07-01') }
+
+      it 'returns human readable date' do
+        expect(subject['Publication date'].first).to eq 'July 22, 2025'
+        expect(subject['Creation date'].first).to eq 'July 1, 2025'
+      end
+
+      context 'unknown/unknown' do
+        let(:media_object) { FactoryBot.build(:media_object, date_issued: 'unknown/unknown', date_created: 'unknown/unknown') }
+
+        it 'returns "unknown"' do
+          expect(subject['Publication date'].first).to eq 'unknown'
+          expect(subject['Creation date'].first).to eq 'unknown'
+        end
+      end
+
+      context 'invalid date' do
+        let(:media_object) { FactoryBot.build(:media_object, date_issued: 'not_a date', date_created: false) }
+
+        it 'returns nil' do
+          expect(subject['Publication date']).to be_nil
+          expect(subject['Creation date']).to be_nil
         end
       end
     end
