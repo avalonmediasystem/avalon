@@ -93,7 +93,7 @@ Unless required by applicable law or agreed to in writing, software distributed
               </div>
               <div class="col-sm-2 text-right" style="margin-top:5px">
                 <button id="playlist_item_edit_button" class="btn btn-sm" <%= clip.master_file.nil? ? 'disabled' : '' %>
-                  data-toggle="collapse" href="#playlist_item_edit_<%= i.id %>" aria-expanded="false" type="button" aria-label="Edit playlist item <%= index + 1 %>">
+                  data-bs-toggle="collapse" href="#playlist_item_edit_<%= i.id %>" aria-expanded="false" type="button" aria-label="Edit playlist item <%= index + 1 %>">
                   <i class="fa fa-edit"></i>
                 </button>
                 <label>
@@ -154,7 +154,7 @@ Unless required by applicable law or agreed to in writing, software distributed
                 <div class="mb-3 row">
                   <div class="col-sm-3 offset-2">
                     <button class='btn btn-sm btn-primary playlist_item_form_submit' data-id="<%= i.id %>" form="playlist_item_form_<%= i.id %>">Save Item</button>
-                    <button id="playlist_item_edit_cancel_<%= i.id %>" type="button" class="btn btn-outline btn-sm playlist_item_edit_cancel" data-id="<%= i.id %>" data-bs-target="playlist_item_edit_<%= i.id %>">Cancel</button>
+                    <button id="playlist_item_edit_cancel_<%= i.id %>" type="button" class="btn btn-outline btn-sm playlist_item_edit_cancel" data-id="<%= i.id %>" data-bs-toggle="collapse" data-bs-target="#playlist_item_edit_<%= i.id %>">Cancel</button>
                   </div>
                   <div class="col-sm-7" id="playlist_item_edit_alert_<%= i.id %>"></div>
                 </div>
@@ -236,7 +236,7 @@ Unless required by applicable law or agreed to in writing, software distributed
         success: function(response) {
           // alert success
           var alert = "<div class='alert alert-success' style='padding:0 10px; margin-bottom: 0;'>";
-          alert += "<button type='button' class='btn-close' data-bs-dismiss='alert'></button";
+          alert += "<button type='button' class='btn-close' data-bs-dismiss='alert'></button>";
           alert += "<span>"+response.message+"</span></div>";
 	        $('#playlist_item_edit_alert_'+id).html(alert);
           // update original values with those newly saved in case of future cancel
