@@ -120,6 +120,33 @@ describe IiifManifestPresenter do
         end
       end
     end
+
+    context 'date handling' do
+      let(:media_object) { FactoryBot.build(:media_object, date_issued: '2025-07-22', date_created: '2025-07-01') }
+
+      it 'returns human readable date' do
+        expect(subject['Publication date'].first).to eq 'July 22, 2025'
+        expect(subject['Creation date'].first).to eq 'July 1, 2025'
+      end
+
+      context 'unknown/unknown' do
+        let(:media_object) { FactoryBot.build(:media_object, date_issued: 'unknown/unknown', date_created: 'unknown/unknown') }
+
+        it 'returns "unknown"' do
+          expect(subject['Publication date'].first).to eq 'unknown'
+          expect(subject['Creation date'].first).to eq 'unknown'
+        end
+      end
+
+      context 'invalid date' do
+        let(:media_object) { FactoryBot.build(:media_object, date_issued: 'not_a date', date_created: false) }
+
+        it 'returns nil' do
+          expect(subject['Publication date']).to be_nil
+          expect(subject['Creation date']).to be_nil
+        end
+      end
+    end
   end
 
   context 'viewing_hint' do

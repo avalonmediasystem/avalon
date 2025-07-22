@@ -94,6 +94,20 @@ module Avalon
       end
     end
 
+    attr_writer :humanize_edtf
+    def humanize_edtf
+      @humanize_edtf ||= lambda do |date|
+        begin
+          return if date.blank?
+          return "unknown" if date == "unknown/unknown"
+          # `date_issued` and `date_created` return as String, so convert to Date/EDTF class before humanization
+          Date.edtf(date).humanize
+        rescue
+          nil
+        end
+      end
+    end
+
     # To be called as Avalon::Configuration.controlled_digital_lending_enabled?
     def controlled_digital_lending_enabled?
       !!Settings.controlled_digital_lending&.enable

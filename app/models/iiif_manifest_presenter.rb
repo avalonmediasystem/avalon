@@ -180,9 +180,7 @@ class IiifManifestPresenter
   end
 
   def display_date(date)
-    return unless date.present?
-    # `date_issued` and `date_created` return as String, so convert to Date/EDTF class before humanization
-    Date.edtf(date).humanize
+    Avalon::Configuration.humanize_edtf.call(date)
   end
 
   def iiif_metadata_fields
