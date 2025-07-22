@@ -136,6 +136,7 @@ FROM        base as assets
 LABEL       stage=build
 LABEL       project=avalon
 COPY        --from=bundle-prod --chown=app:app /usr/local/bundle /usr/local/bundle
+COPY        --from=bundle-prod --chown=app:app /usr/local/lib/ruby/gems /usr/local/lib/ruby/gems
 COPY        --chown=app:app . .
 COPY        --from=node-modules --chown=app:app /node_modules ./node_modules
 
@@ -152,6 +153,7 @@ LABEL       stage=final
 LABEL       project=avalon
 COPY        --from=assets --chown=app:app /home/app/avalon /home/app/avalon
 COPY        --from=bundle-prod --chown=app:app /usr/local/bundle /usr/local/bundle
+COPY        --from=bundle-prod --chown=app:app /usr/local/lib/ruby/gems /usr/local/lib/ruby/gems
 
 USER        app
 ENV         RAILS_ENV=production
