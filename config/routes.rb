@@ -1,6 +1,7 @@
 require 'avalon/routing/can_constraint'
 
 Rails.application.routes.draw do
+  concern :range_searchable, BlacklightRangeLimit::Routes::RangeSearchable.new
   mount Samvera::Persona::Engine => '/'
   mount Blacklight::Engine => '/catalog'
   concern :searchable, Blacklight::Routes::Searchable.new
@@ -8,6 +9,8 @@ Rails.application.routes.draw do
 
   resource :catalog, only: [], as: 'catalog', path: '/catalog', controller: 'catalog' do
     concerns :searchable
+    concerns :range_searchable
+
   end
 
   # For some reason this needs to be after `resource :catalog` otherwise Blacklight will generate links to / instead of /catalog

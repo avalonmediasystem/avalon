@@ -18,6 +18,7 @@ require 'blacklight/catalog'
 class CatalogController < ApplicationController
 
   include Hydra::Catalog
+  include BlacklightRangeLimit::ControllerOverride
   include Hydra::MultiplePolicyAwareAccessControlsEnforcement
   include BlacklightHelperReloadFix
 
@@ -108,8 +109,8 @@ class CatalogController < ApplicationController
       private: { label: "Private", fq: "has_model_ssim:MediaObject AND NOT read_access_group_ssim:#{Hydra::AccessControls::AccessRight::PERMISSION_TEXT_VALUE_PUBLIC} AND NOT read_access_group_ssim:#{Hydra::AccessControls::AccessRight::PERMISSION_TEXT_VALUE_AUTHENTICATED}" }
     }
     config.add_facet_field 'read_access_virtual_group_ssim', label: 'External Group', limit: 5, if: Proc.new {|context, config, opts| context.current_ability.can?(:read, :administrative_facets)}, group: "workflow", helper_method: :vgroup_display
-    config.add_facet_field 'date_digitized_ssim', label: 'Date Digitized', limit: 5, if: Proc.new {|context, config, opts| context.current_ability.can?(:read, :administrative_facets)}, group: "workflow"#, partial: 'blacklight/hierarchy/facet_hierarchy'
-    config.add_facet_field 'date_ingested_ssim', label: 'Date Ingested', limit: 5, if: Proc.new {|context, config, opts| context.current_ability.can?(:read, :administrative_facets)}, group: "workflow"
+    config.add_facet_field 'date_digitized_ssim', label: 'Date Digitized', limit: 5, if: Proc.new {|context, config, opts| context.current_ability.can?(:read, :administrative_facets)}, group: "workflow", range: true #, partial: 'blacklight/hierarchy/facet_hierarchy'
+    config.add_facet_field 'date_ingested_ssim', label: 'Date Ingested', limit: 5, if: Proc.new {|context, config, opts| context.current_ability.can?(:read, :administrative_facets)}, group: "workflow", range: true
     config.add_facet_field 'has_captions_bsi', label: 'Has Captions', if: Proc.new {|context, config, opts| context.current_ability.can?(:read, :administrative_facets)}, group: "workflow", helper_method: :display_has_caption_or_transcript
     config.add_facet_field 'has_transcripts_bsi', label: 'Has Transcripts', if: Proc.new {|context, config, opts| context.current_ability.can?(:read, :administrative_facets)}, group: "workflow", helper_method: :display_has_caption_or_transcript
 

@@ -1237,6 +1237,11 @@
   resolved "https://registry.yarnpkg.com/@jsonjoy.com/util/-/util-1.6.0.tgz#23991b2fe12cb3a006573d9dc97c768d3ed2c9f1"
   integrity sha512-sw/RMbehRhN68WRtcKCpQOPfnH6lLP4GJfqzi3iYej8tnzpZUDr6UkZYJjcjjC0FWEJOJbyM3PTIwxucUmDG2A==
 
+"@kurkle/color@^0.3.0":
+  version "0.3.4"
+  resolved "https://registry.yarnpkg.com/@kurkle/color/-/color-0.3.4.tgz#4d4ff677e1609214fc71c580125ddddd86abcabf"
+  integrity sha512-M5UknZPHRu3DEDWoipU6sE8PdkZ6Z/S+v4dD+Ke8IaNlpdSQah50lz1KtcFBa2vsdOnwbbnxJwVM4wty6udA5w==
+
 "@leichtgewicht/ip-codec@^2.0.1":
   version "2.0.5"
   resolved "https://registry.yarnpkg.com/@leichtgewicht/ip-codec/-/ip-codec-2.0.5.tgz#4fc56c15c580b9adb7dc3c333a134e540b44bfb1"
@@ -2702,6 +2707,13 @@ bindings@^1.5.0:
   dependencies:
     file-uri-to-path "1.0.0"
 
+blacklight-range-limit@^9.0.0:
+  version "9.0.0"
+  resolved "https://registry.yarnpkg.com/blacklight-range-limit/-/blacklight-range-limit-9.0.0.tgz#89e1e7d36cef7fef205d0266fa0591006801f05d"
+  integrity sha512-Qr+3Rr0jOeoSNN5kN3fmZYqggAgpPpu3LX7HAHkCtrkHG5gPKqV+TK8BLvila9zueAs77dbWV7AmucZEvE+IBg==
+  dependencies:
+    chart.js "^ 4.4.1"
+
 blob-util@^2.0.2:
   version "2.0.2"
   resolved "https://registry.yarnpkg.com/blob-util/-/blob-util-2.0.2.tgz#3b4e3c281111bb7f11128518006cdc60b403a1eb"
@@ -3100,6 +3112,13 @@ chalk@^4.0.0, chalk@^4.1.0, chalk@^4.1.2:
   dependencies:
     ansi-styles "^4.1.0"
     supports-color "^7.1.0"
+
+"chart.js@^ 4.4.1":
+  version "4.5.0"
+  resolved "https://registry.yarnpkg.com/chart.js/-/chart.js-4.5.0.tgz#11a1ef6c4befc514b1b0b613ebac226c4ad2740b"
+  integrity sha512-aYeC/jDgSEx8SHWZvANYMioYMZ2KX02W6f6uVfyteuCGcadDLcYVHdfdygsTQkQ4TKn5lghoojAsPj5pu0SnvQ==
+  dependencies:
+    "@kurkle/color" "^0.3.0"
 
 check-more-types@^2.24.0:
   version "2.24.0"

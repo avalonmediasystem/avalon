@@ -34,6 +34,7 @@
 //= require bootstrap
 //= require jquery-ui
 //= require blacklight/blacklight
+//= require blacklight-range-limit
 //= require browse_everything
 //= require modernizr
 //= require bootstrap-toggle

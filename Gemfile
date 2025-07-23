@@ -43,6 +43,7 @@ gem 'rdf-rdfxml'
 # Samvera version pins
 gem 'blacklight', '~> 8.10'
 gem 'blacklight-access_controls', '~> 6.1'
+gem 'blacklight_range_limit'
 gem 'rdf', '~> 3.1'
 gem 'rsolr', '~> 2.0'
 

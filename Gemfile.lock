@@ -266,6 +266,9 @@ GEM
       blacklight (> 6.0, < 9)
       cancancan (>= 1.8)
       deprecation (~> 1.0)
+    blacklight_range_limit (9.0.0)
+      blacklight (>= 7.25.2, < 9)
+      view_component (>= 2.54, < 4)
     bootsnap (1.18.6)
       msgpack (~> 1.2)
     bootstrap (5.3.5)
@@ -1012,6 +1015,7 @@ DEPENDENCIES
   bixby
   blacklight (~> 8.10)
   blacklight-access_controls (~> 6.1)
+  blacklight_range_limit
   bootsnap
   bootstrap (~> 5.0)
   bootstrap-toggle-rails
