@@ -14,9 +14,26 @@
  * ---  END LICENSE_HEADER BLOCK  ---
 */
 
+// By default, this is used by react_on_rails for rendering the React components.
+
 import ReactOnRails from 'react-on-rails';
+
+import CollectionList from '../components/CollectionList';
+import CollectionCarousel from '../components/CollectionCarousel';
+import CollectionDetails from '../components/CollectionDetails';
 import EmbeddedRamp from '../components/embeds/EmbeddedRamp';
+import Search from '../components/Search';
+import MediaObjectRamp from '../components/MediaObjectRamp';
+import ReactButtonContainer from '../components/ReactButtonContainer';
+import PlaylistRamp from '../components/PlaylistRamp';
 
 ReactOnRails.register({
+  CollectionList,
+  CollectionCarousel,
+  CollectionDetails,
+  Search,
   EmbeddedRamp,
+  MediaObjectRamp,
+  ReactButtonContainer,
+  PlaylistRamp,
 });

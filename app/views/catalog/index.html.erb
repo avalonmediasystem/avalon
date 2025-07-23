@@ -50,7 +50,7 @@ Unless required by applicable law or agreed to in writing, software distributed
         </h3>
       </div>
       <div class="container-fluid">
-        <%= react_component("CollectionCarousel", { baseUrl: collections_url(format: :json, only: :carousel, limit: 10) }) %>
+        <%= react_component("CollectionCarousel", { props: { baseUrl: collections_url(format: :json, only: :carousel, limit: 10) }}) %>
       </div>
     </section>
     <% end %>

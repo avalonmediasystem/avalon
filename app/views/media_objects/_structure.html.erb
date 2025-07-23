@@ -70,9 +70,26 @@ Unless required by applicable law or agreed to in writing, software distributed
             <div class="btn-toolbar">
               <label class="btn btn-primary btn-struct me-1 file-upload-label" for="structure_<%= index %>_filedata" data-testid="media-object-struct-upload-btn-<%= index %>" ><%= section.structuralMetadata.content.present? ? 'Replace' : 'Upload'%></label>
               <% if section.structuralMetadata.valid? %>
-                <%= react_component("ReactButtonContainer", {canvasIndex: index, mediaObjectID: @media_object.id, masterFileID: section.id, baseURL: request.protocol+request.host_with_port, initStructure: section.structuralMetadata.as_json}, html_options={ class: 'react-button-container' }) %>
+                <%= react_component("ReactButtonContainer", {
+                  props: {
+                    canvasIndex: index,
+                    mediaObjectID: @media_object.id,
+                    masterFileID: section.id,
+                    baseURL: request.protocol+request.host_with_port,
+                    initStructure: section.structuralMetadata.as_json
+                  },
+                  html_options: { class: 'react-button-container' }
+                }) %>
               <% else %>
-                <%= react_component("ReactButtonContainer", {canvasIndex: index, mediaObjectID: @media_object.id, masterFileID: section.id, baseURL: request.protocol+request.host_with_port, initStructure: { label: "#{item_label}", type: "div", items: [] }}, html_options={ class: 'react-button-container' }) %>
+                <%= react_component("ReactButtonContainer", {
+                  props: {
+                    canvasIndex: index,
+                    mediaObjectID: @media_object.id,
+                    masterFileID: section.id,
+                    baseURL: request.protocol+request.host_with_port,
+                    initStructure: { label: "#{item_label}", type: "div", items: [] }
+                  }, html_options: { class: 'react-button-container' }
+                }) %>
               <% end %>
               <button type="button" class="btn btn-primary btn-struct me-1" value="Advanced Edit" data-bs-toggle="modal"
                 data-bs-target="#advanced_edit_structure_<%= index %>" data-testid="media-object-struct-adv-edit-btn-<%= index %>" >Advanced Edit</button>

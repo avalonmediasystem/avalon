@@ -25,7 +25,7 @@ import {
 } from "@samvera/ramp";
 import 'video.js/dist/video-js.css';
 import "@samvera/ramp/dist/ramp.css";
-import { Accordion, Button, Card, Col, Row } from 'react-bootstrap';
+import { Accordion, Card, Col, Row } from 'react-bootstrap';
 import './Ramp.scss';
 
 const ExpandCollapseArrow = () => {
@@ -38,7 +38,7 @@ const ExpandCollapseArrow = () => {
     </svg>);
 };
 
-const Ramp = ({
+const PlaylistRamp = ({
   urls,
   playlist_id,
   playlist_item_ids,
@@ -169,32 +169,22 @@ const Ramp = ({
                 <h4>{activeItemTitle}</h4>
                 {activeItemSummary && <div>{activeItemSummary}</div>}
               </Card.Header>
-              <Card.Body>
-                <Accordion>
-                  <Card>
-                    <Card.Header>
-                      <Accordion.Toggle as={Button} variant="link" eventKey="0" className="ramp--playlist-accordion-header">
-                        <ExpandCollapseArrow /> Markers
-                      </Accordion.Toggle>
-                    </Card.Header>
-                    <Accordion.Collapse eventKey="0" id="markers">
-                      <Card.Body>
-                        <Annotations showHeading={false} />
-                      </Card.Body>
-                    </Accordion.Collapse>
-                  </Card>
-                  <Card>
-                    <Card.Header>
-                      <Accordion.Toggle as={Button} variant="link" eventKey="1" className="ramp--playlist-accordion-header">
-                        <ExpandCollapseArrow /> Source Item Details
-                      </Accordion.Toggle>
-                    </Card.Header>
-                    <Accordion.Collapse eventKey="1">
-                      <Card.Body className="p-3">
-                        <MetadataDisplay displayOnlyCanvasMetadata={true} showHeading={false} />
-                      </Card.Body>
-                    </Accordion.Collapse>
-                  </Card>
+              <Card.Body className='p-0'>
+                <Accordion flush>
+                  <Accordion.Item eventKey='0'>
+                    <Accordion.Header>
+                      <ExpandCollapseArrow /> Markers
+                    </Accordion.Header>
+                    <Accordion.Body>
+                      <Annotations showHeading={false} />
+                    </Accordion.Body>
+                  </Accordion.Item>
+                  <Accordion.Item eventKey='1'>
+                    <Accordion.Header><ExpandCollapseArrow /> Source Item Details</Accordion.Header>
+                    <Accordion.Body>
+                      <MetadataDisplay displayOnlyCanvasMetadata={true} showHeading={false} />
+                    </Accordion.Body>
+                  </Accordion.Item>
                 </Accordion>
               </Card.Body>
             </Card>
@@ -264,8 +254,8 @@ const Ramp = ({
           )}
         </Col>
       </Row>
-    </IIIFPlayer>
+    </IIIFPlayer >
   );
 };
 
-export default Ramp;
+export default PlaylistRamp;

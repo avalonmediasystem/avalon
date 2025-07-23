@@ -27,7 +27,6 @@
 // about supported directives.
 //
 //= require jquery
-//= require rails-ujs
 
 // Required by Blacklight
 //= require popper

@@ -28,7 +28,7 @@ import "@samvera/ramp/dist/ramp.css";
 import { Col, Row, Tab, Tabs } from 'react-bootstrap';
 import './Ramp.scss';
 
-const Ramp = ({
+const MediaObjectRamp = ({
   urls,
   has_sections,
   title,
@@ -199,4 +199,4 @@ const Ramp = ({
   );
 };
 
-export default Ramp;
+export default MediaObjectRamp;

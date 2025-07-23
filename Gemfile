@@ -23,7 +23,7 @@ gem "font-awesome-rails"
 gem 'jquery-datatables'
 gem 'jquery-rails'
 gem 'jquery-ui-rails'
-gem 'react-rails'
+gem 'react_on_rails'
 gem 'sassc-rails'
 gem 'sprockets-es6'
 gem 'twitter-typeahead-rails', '0.11.1.pre.corejavascript'
