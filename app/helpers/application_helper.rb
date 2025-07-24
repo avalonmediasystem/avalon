@@ -14,10 +14,6 @@
 
 
 module ApplicationHelper
-  def application_name
-    Settings.name || 'Avalon Media System'
-  end
-
   def release_text
     "#{application_name} #{t(:release_label)} #{Avalon::VERSION}"
   end
