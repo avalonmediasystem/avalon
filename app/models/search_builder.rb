@@ -53,7 +53,7 @@ class SearchBuilder < Blacklight::SearchBuilder
     # In order for the multi-word query to work we need to NOT RSolr.solr_escape the query AND replace the spaces as +; this is also true for quoted phrase searches
     # We can manually escape solr special characters that cause issues.
     query = solr_parameters[:q].gsub(/([(){}\[\]\^\*?:])/, "\\\\\1").tr(' ', '+')
-    transcript_subquery = "transcript_tsim:#{query}"
+    transcript_subquery = "transcript_tsim:\"#{query.gsub(/"/, '\\\\"')}\""
     solr_parameters[:defType] = "lucene"
     solr_parameters[:q] = "({!edismax v=\"#{RSolr.solr_escape(solr_parameters[:q])}\"}) {!join to=id from=isPartOf_ssim}{!join to=id from=isPartOf_ssim}#{transcript_subquery}"
   end
