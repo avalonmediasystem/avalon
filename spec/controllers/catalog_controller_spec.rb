@@ -257,13 +257,31 @@ describe CatalogController do
         end
       end
 
-      context "special characters" do
+      context "handling special characters" do
         it 'should not error when special characters are in the query' do
-          ['+', '-', '&', '|', '"', '(', ')', '{', '}', '[', ']', '^', '~', '*', '?', ':', '/'].each do |char|
+          ['+', '-', '&', '|', '(', ')', '{', '}', '[', ']', '^', '~', '*', '?', ':', '/'].each do |char|
             expect { get 'index', params: { q: "Example #{char}" } }.to_not raise_error
             expect(assigns(:response).documents.count).to eq 1
             expect(assigns(:response).documents.collect(&:id)).to eq [@media_object.id]
           end
+        end
+
+        context 'unmatched double quotes' do
+          it 'should not error' do
+            expect { get 'index', params: { q: '"Example" test"' } }.to_not raise_error
+          end
+
+          it 'should display a message to the user' do
+            get 'index', params: { q: '"Example" test"' }
+            expect(response).to redirect_to(search_catalog_path)
+            expect(flash[:error]).to be_present
+            expect(flash[:error]).to match(/Invalid search: Odd number of quotation marks. Quotation marks must be matched in search queries./)
+          end
+        end
+
+        it 'should raise error on other non-quote related invalid request' do
+          allow_any_instance_of(Blacklight::SearchService).to receive(:search_results).and_raise(Blacklight::Exceptions::InvalidRequest)
+          expect { get 'index', params: { q: 'Test' } }.to raise_error(Blacklight::Exceptions::InvalidRequest)
         end
       end
     end
