@@ -470,3 +470,9 @@
 .vjs-svg-icon>svg {
   vertical-align: baseline;
 }
+
+// Remove focusable elements from DOM in VideoJS modals when modal is closed
+.vjs-theme-ramp>.vjs-modal-dialog[aria-hidden=true] select,
+.vjs-theme-ramp>.vjs-modal-dialog[aria-hidden=true] button {
+  display: none;
+}
