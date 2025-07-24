@@ -74,7 +74,7 @@ $('.supplemental-file-form')
     var $row = $(event.currentTarget.parentElement);
     const { masterfileId, fileId } = event.currentTarget.dataset;
     // Get machine-generated checkbox input on form submission
-    var isMachineGen = $row.find(`input[id="machine_generated_${fileId}"]`)[0].checked;
+    var isMachineGen = $row.find(`input[id="machine_generated_${fileId}"]`)[0]?.checked;
 
     // Set the label to the new value
     var newLabel = $row
