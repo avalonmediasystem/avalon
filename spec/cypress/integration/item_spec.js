@@ -31,12 +31,10 @@ const heading = 'Heading Example';
 const timespan = 'Introduction';
 context('Item', () => {
   //Create dynamic ite
-  var collection_title = `Automation collection title ${
-    Math.floor(Math.random() * 10000) + 1
-  }`;
-  var item_title = `Automation Item title ${
-    Math.floor(Math.random() * 100000) + 1
-  }`;
+  var collection_title = `Automation collection title ${Math.floor(Math.random() * 10000) + 1
+    }`;
+  var item_title = `Automation Item title ${Math.floor(Math.random() * 100000) + 1
+    }`;
 
   let item_id;
   let createdItems = []; // Track all created items for cleanup
@@ -100,9 +98,8 @@ context('Item', () => {
     'Verify creating an item under a collection - Editor',
     { tags: '@high' },
     () => {
-      var item_title_editor = `Automation Item title ${
-        Math.floor(Math.random() * 100000) + 1
-      }`;
+      var item_title_editor = `Automation Item title ${Math.floor(Math.random() * 100000) + 1
+        }`;
 
       let item_id_editor;
       cy.login('manager');
@@ -144,9 +141,8 @@ context('Item', () => {
     'Verify that multiple media objects (section files) can be added during item creation',
     { tags: '@high' },
     () => {
-      var item_title_multiple_section = `Automation Item title ${
-        Math.floor(Math.random() * 100000) + 1
-      }`;
+      var item_title_multiple_section = `Automation Item title ${Math.floor(Math.random() * 100000) + 1
+        }`;
 
       let item_id_multiple_section;
       cy.login('manager');
@@ -632,7 +628,7 @@ context('Item', () => {
     }
   );
 
-  it.skip(
+  it(
     'Verify creating item by importing data through bibliographic ID - @T139381b0',
     { tags: '@high' },
     () => {
@@ -860,7 +856,7 @@ context('Item', () => {
     });
   });
 
-  it.skip(
+  it(
     'Verify selecting items from the browse page',
     { tags: '@high' },
     () => {
@@ -1487,7 +1483,7 @@ context('Item', () => {
     }
   );
 
-  it.skip('Verify adding item supplemental files ', { tags: '@high' }, () => {
+  it('Verify adding item supplemental files ', { tags: '@high' }, () => {
     cy.login('administrator');
     cy.visit('/media_objects/' + item_id);
     cy.waitForVideoReady();
@@ -1521,7 +1517,7 @@ context('Item', () => {
     cy.readFile(getDownloadPath(sectionSupplementalFileName)).should('exist');
   });
 
-  it.skip('Verify removing item supplemental files ', { tags: '@high' }, () => {
+  it('Verify removing item supplemental files ', { tags: '@high' }, () => {
     cy.login('administrator');
     cy.visit('/media_objects/' + item_id);
     cy.waitForVideoReady();

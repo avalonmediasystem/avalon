@@ -22,24 +22,20 @@ const homePage = new HomePage();
 context('Playlists', () => {
   const collectionPage = new CollectionPage();
 
-  var collection_title = `Automation collection title ${
-    Math.floor(Math.random() * 10000) + 1
-  }`;
-  var media_object_title = `Automation Item title ${
-    Math.floor(Math.random() * 100000) + 1
-  }`;
+  var collection_title = `Automation collection title ${Math.floor(Math.random() * 10000) + 1
+    }`;
+  var media_object_title = `Automation Item title ${Math.floor(Math.random() * 100000) + 1
+    }`;
   var media_object_id;
   var share_by_link_playlist;
 
   //Playlist names start with '_' character for easy navigation without pagination
-  var playlist_title = `_Automation playlist title ${
-    Math.floor(Math.random() * 10000) + 1
-  }`;
+  var playlist_title = `_Automation playlist title ${Math.floor(Math.random() * 10000) + 1
+    }`;
   // var playlist_title = '_Automation playlist title 20765';
   var playlist_description = `${playlist_title} description`;
-  var playlist_title_public = `_Automation public playlist title ${
-    Math.floor(Math.random() * 10000) + 1
-  }`;
+  var playlist_title_public = `_Automation public playlist title ${Math.floor(Math.random() * 10000) + 1
+    }`;
   var playlist_description_public = `${playlist_title_public} description`;
   Cypress.on('uncaught:exception', (err, runnable) => {
     if (
@@ -487,7 +483,7 @@ context('Playlists', () => {
       cy.get('video').scrollIntoView().trigger('mouseover');
       cy.get('button[title="Play"]').click();
 
-      // Wait 10 seconds and confirm section does not auto-advance
+      // Wait 20 seconds and confirm section does not auto-advance
       cy.wait(20000);
       cy.get('[data-testid="tree-item"]').eq(1).should('have.class', 'active');
 
