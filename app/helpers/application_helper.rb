@@ -216,4 +216,15 @@ module ApplicationHelper
       media_object_supplemental_files_path(object.id)
     end
   end
+
+  # Set href for 'Skip to main content' to 
+  # - media-player on playlist/:id and media_objects/ pages
+  # - <main> container on other pages
+  def skip_to_content_href
+    if (params[:controller] == 'media_objects') || (params[:controller] == 'playlists' && params[:id].present?)
+      "#iiif-media-player"
+    else
+      "#main-content"
+    end
+  end
 end
