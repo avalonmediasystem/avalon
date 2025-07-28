@@ -34,15 +34,15 @@ Unless required by applicable law or agreed to in writing, software distributed
               </div>
               <div class="form-check">
                 <label>
-                  <%= radio_button_tag :overwrite, 'true', false %>
+                  <%= radio_button_tag :overwrite, 'true', false,  data: { testid:"collection-replace-exiting-special-access-chkbox"}%>
                   No, replace existing Special Access entries
                 </label>
               </div>
             </div>
           </div>
-          <div class="modal-footer">
+          <div class="modal-footer" data-testid="collection-modal-footer">
             <a href="#" data-bs-dismiss="modal" aria-hidden="true" class="btn btn-outline">Cancel</a>
-            <%= submit_tag "Apply", name: "apply_to_existing", class: "btn btn-primary", form: 'special_access_form' %>
+            <%= submit_tag "Apply", name: "apply_to_existing", class: "btn btn-primary", form: 'special_access_form' ,  data: { testid:"collection-apply-to-existing-btn"}%>
           </div>
         </div>
     </div>

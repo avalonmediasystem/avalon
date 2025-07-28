@@ -15,7 +15,7 @@ Unless required by applicable law or agreed to in writing, software distributed
 %>
 <div class="col-md-12">
   <div>
-    <%= link_to "View Playlist", @playlist, { class: 'btn btn-primary'} %>
+    <%= link_to "View Playlist", @playlist, class: 'btn btn-primary', data:{testid: 'playlist-view-playlist-btn'} %>
     <% if can?(:destroy, @playlist) %>
     <%= link_to "Delete Playlist", @playlist, method: :delete, class: 'btn btn-link btn-confirmation', data: { placement: 'bottom', testid:'playlist-delete-playlist-form', confirm: 'Are you sure?' } %>
     <% end %>
@@ -52,9 +52,9 @@ Unless required by applicable law or agreed to in writing, software distributed
             <div class="input-group">
               <input type="text" class="form-control" id="playlist-share-link"
                 value="<%= access_token_url(@playlist) %>" placeholder="<%= access_token_url(@playlist) %>"
-                onClick="this.select();" readonly="readonly">
+                onClick="this.select();" readonly="readonly" data-testid="playlist-share-link">
               <%= button_tag "Copy", id: 'playlist-share-btn',
-                  class: "btn btn-success" %>
+                  class: "btn btn-success", data:{testid:'playlist-copy-share-link-button'} %>
             </div>
           </div>
           <div class="col-sm-3">

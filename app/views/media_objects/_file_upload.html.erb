@@ -82,12 +82,12 @@ Unless required by applicable law or agreed to in writing, software distributed
                         master_file_path(section.id),
                         title: 'Delete',
                         class: 'btn btn-sm btn-outline btn-confirmation',
-                          data: { placement: 'left', confirm: 'Are you sure?' },
+                          data: { placement: 'left', confirm: 'Are you sure?' , testid: 'media-object-delete-button'},
                           method: :delete %>
                     </span>
                     <span>
                       <button class="btn btn-sm btn-outline show_move_modal" data-id="<%= section.id %>"
-                        data-bs-toggle="modal" data-bs-target="#move_modal">
+                        data-bs-toggle="modal" data-bs-target="#move_modal" data-testid="media-object-move-button">
                         Move
                       </button>
                     </span>
@@ -299,13 +299,13 @@ Unless required by applicable law or agreed to in writing, software distributed
           <div class="mb-3 row">
             <label for="target" class="col-sm-4 col-form-label">Target Item Identifier: </label>
             <div class="col-sm-8">
-              <%= text_field_tag :target, nil, class: 'form-control', style: 'width: 50%;', type: 'text', onkeyup: 'previewTargetItem(this)' %>
+              <%= text_field_tag :target, nil, class: 'form-control', style: 'width: 50%;', type: 'text', onkeyup: 'previewTargetItem(this)', data:{testid: "media-object-target-item-id"} %>
             </div>
             <div id="show_target_object" class="ms-3"></div>
           </div>
       </div>
       <div class="modal-footer">
-        <%= submit_tag "Move", class: "btn btn-large btn-primary", disabled: true, id: "move_action_btn" %>
+        <%= submit_tag "Move", class: "btn btn-large btn-primary", disabled: true, id: "move_action_btn" ,data:{testid:"media-object-move-button-modal"}%>
         <a href="#" data-bs-dismiss="modal" aria-hidden="true" class="btn">Cancel</a>
         <% end %>
       </div>

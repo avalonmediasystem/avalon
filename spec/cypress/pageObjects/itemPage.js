@@ -37,7 +37,7 @@ class ItemPage {
 
     //login as a user who is a staff to the collection and verify that the item is accessible
     cy.login('manager');
-    cy.visit('/');
+
     cy.intercept('GET', '/media_objects/*').as('getmediaobject');
     cy.visit('/media_objects/' + item_id);
     cy.wait('@getmediaobject').then((interception) => {
@@ -47,7 +47,7 @@ class ItemPage {
     homePage.logout();
     //Login as a user who is not a staff to collection to validate the result
     cy.login('user');
-    cy.visit('/');
+
     cy.intercept('GET', '/media_objects/*').as('getmediaobject1');
     cy.visit('/media_objects/' + item_id);
     cy.wait('@getmediaobject1').then((interception) => {
@@ -64,21 +64,16 @@ class ItemPage {
   }
 
   verifyGeneralPublicAccess(item_id) {
-    homePage.logout();
-
     //login as a user who is a staff to the collection and verify that the item is accessible
     cy.login('manager');
-    cy.visit('/');
     cy.intercept('GET', '/media_objects/*').as('getmediaobject');
     cy.visit('/media_objects/' + item_id);
     cy.wait('@getmediaobject').then((interception) => {
       expect(interception.response.statusCode).to.eq(200);
     });
 
-    homePage.logout();
     //Login as a user who is not a staff to collection to validate the result
     cy.login('user');
-    cy.visit('/');
     cy.intercept('GET', '/media_objects/*').as('getmediaobject');
     cy.visit('/media_objects/' + item_id);
     cy.wait('@getmediaobject').then((interception) => {
