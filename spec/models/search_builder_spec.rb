@@ -53,7 +53,7 @@ RSpec.describe SearchBuilder do
 
         it "should only match transcripts with the phrase" do
           subject.search_section_transcripts(solr_parameters)
-          expect(solr_parameters[:q]).to eq "has_model_ssim:MediaObject AND (\\\"Example captions\\\" _query_:\"{!join to=id from=isPartOf_ssim}{!join to=id from=isPartOf_ssim}transcript_tsim:(\\\\\"Example captions\\\\\")\")"
+          expect(solr_parameters[:q]).to eq "has_model_ssim:MediaObject AND (\\\"Example captions\\\" _query_:\"{!join to=id from=isPartOf_ssim}{!join to=id from=isPartOf_ssim}transcript_tsim:(\\\"Example captions\\\")\")"
         end
       end
     end
