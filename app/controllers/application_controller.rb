@@ -28,6 +28,8 @@ class ApplicationController < ActionController::Base
   protect_from_forgery with: :exception, unless: proc{|c| request.headers['Avalon-Api-Key'].present? }
 
   helper_method :render_bookmarks_control?
+  # Define application_name here to override Blacklight's implementation
+  helper_method :application_name
 
   around_action :handle_api_request, if: proc{|c| request.format.json? || request.format.atom? || request.headers['Avalon-Api-Key'].present? }
   before_action :rewrite_v4_ids, if: proc{|c| request.method_symbol == :get && [params[:id], params[:content]].flatten.compact.any? { |i| i =~ /^[a-z]+:[0-9]+$/}}
@@ -235,6 +237,10 @@ class ApplicationController < ActionController::Base
   end
 
   private
+
+    def application_name
+      Settings.name || 'Avalon Media System'
+    end
 
     def remove_zero_width_chars
       # params is a ActionController::Parameters
