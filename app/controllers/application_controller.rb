@@ -287,15 +287,4 @@ class ApplicationController < ActionController::Base
         render '/errors/fedora_connection', status: 503
       end
     end
-
-    # Handle unmatched double quotes in searches
-    def handle_invalid_request_error(exception)
-      if params[:q].count('"').odd? && exception.message.include?('Cannot parse')
-        flash[:error] = "Invalid search: Odd number of quotation marks. Quotation marks must be matched in search queries."
-        return redirect_to(search_catalog_url)
-      end
-
-      # Reraise error if triggered by something besides quotes to prevent suppressing unhandled issues
-      raise Blacklight::Exceptions::InvalidRequest, exception.message
-    end
 end

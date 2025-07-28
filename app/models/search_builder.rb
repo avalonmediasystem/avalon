@@ -50,12 +50,17 @@ class SearchBuilder < Blacklight::SearchBuilder
   def search_section_transcripts(solr_parameters)
     return unless solr_parameters[:q].present? && SupplementalFile.with_tag('transcript').any? && !(blacklight_params[:controller] == 'bookmarks')
 
-    # In order for the multi-word query to work we need to NOT RSolr.solr_escape the query AND replace the spaces as +; this is also true for quoted phrase searches
+    # In order for the multi-word query to work we need to NOT RSolr.solr_escape the query; this is also true for quoted phrase searches
     # We can manually escape solr special characters that cause issues.
-    query = solr_parameters[:q].gsub(/([(){}\[\]\^\*?:])/, "\\\\\1").tr(' ', '+')
-    transcript_subquery = "transcript_tsim:\"#{query.gsub(/"/, '\\\\"')}\""
-    solr_parameters[:defType] = "lucene"
-    solr_parameters[:q] = "({!edismax v=\"#{RSolr.solr_escape(solr_parameters[:q])}\"}) {!join to=id from=isPartOf_ssim}{!join to=id from=isPartOf_ssim}#{transcript_subquery}"
+    query = solr_parameters[:q].gsub(/([(){}\[\]\^\*?:])/, "\\\\\1")
+    # Wrap transcript query in parenthesis so phrase and non-phrase terms can be mixed together and parse correctly
+    transcript_subquery = "transcript_tsim:(#{query.gsub(/"/, '\\\\"')})"
+    # Enable subqueries that are disabled by default in edismax
+    solr_parameters[:uf]="* _query_"
+    # Subquery needs to be in quotes in order to parse correctly
+    # For some reason solr appears to require the first term in the query.  This causes problems if the search only matches in the transcript and not the metadata.
+    # To workaround this we added the has_model_ssim clause which shouldn't affect query results since it already exists as a filter query in #only_wanted_model.
+    solr_parameters[:q] = "has_model_ssim:MediaObject AND (#{RSolr.solr_escape(solr_parameters[:q])} _query_:\"{!join to=id from=isPartOf_ssim}{!join to=id from=isPartOf_ssim}#{transcript_subquery}\")"
   end
 
   def term_frequency_counts(solr_parameters)
