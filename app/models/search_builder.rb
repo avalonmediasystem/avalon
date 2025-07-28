@@ -52,9 +52,9 @@ class SearchBuilder < Blacklight::SearchBuilder
 
     # In order for the multi-word query to work we need to NOT RSolr.solr_escape the query; this is also true for quoted phrase searches
     # We can manually escape solr special characters that cause issues.
-    query = solr_parameters[:q].gsub(/([(){}\[\]\^\*?:])/, "\\\\\1")
+    query = solr_parameters[:q].gsub(/([\(\)\{\}\[\]\^\*\?\:\$\+\-\"\/])/, '\\\\\\\\\1')
     # Wrap transcript query in parenthesis so phrase and non-phrase terms can be mixed together and parse correctly
-    transcript_subquery = "transcript_tsim:(#{query.gsub(/"/, '\\\\"')})"
+    transcript_subquery = "transcript_tsim:(#{query})"
     # Enable subqueries that are disabled by default in edismax
     solr_parameters[:uf]="* _query_"
     # Subquery needs to be in quotes in order to parse correctly

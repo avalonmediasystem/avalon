@@ -40,7 +40,6 @@ class ApplicationController < ActionController::Base
   rescue_from RSolr::Error::Timeout, :with => :handle_solr_connection_error
   rescue_from Blacklight::Exceptions::ECONNREFUSED, :with => :handle_solr_connection_error
   rescue_from Faraday::ConnectionFailed, :with => :handle_fedora_connection_error
-  rescue_from Blacklight::Exceptions::InvalidRequest, :with => :handle_invalid_request_error
 
   # Enable profiling
   if ActiveModel::Type::Boolean.new.cast(ENV['AVALON_PROFILING'])

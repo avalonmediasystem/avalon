@@ -218,7 +218,7 @@ describe CatalogController do
         expect(assigns(:response).documents.collect(&:id)).to eq [media_object_1.id, @media_object.id]
       end
       it 'should not error when special characters are in the query' do
-        ['+', '-', '&', '|', '"', '(', ')', '{', '}', '[', ']', '^', '~', '*', '?', ':', '/'].each do |char|
+        ['+', '-', '&', '|', '"', '(', ')', '{', '}', '[', ']', '^', '~', '*', '?', ':', '/', '$'].each do |char|
           expect { get 'index', params: { q: "#{char} Test Label" } }.to_not raise_error
           expect(assigns(:response).documents.count).to eq 1
           expect(assigns(:response).documents.collect(&:id)).to eq [@media_object.id]
@@ -259,7 +259,7 @@ describe CatalogController do
 
       context "handling special characters" do
         it 'should not error when special characters are in the query' do
-          ['+', '-', '&', '|', '(', ')', '{', '}', '[', ']', '^', '~', '*', '?', ':', '/'].each do |char|
+          ['+', '-', '&', '|', '(', ')', '{', '}', '[', ']', '^', '~', '*', '?', ':', '/', '$'].each do |char|
             expect { get 'index', params: { q: "Example #{char}" } }.to_not raise_error
             expect(assigns(:response).documents.count).to eq 1
             expect(assigns(:response).documents.collect(&:id)).to eq [@media_object.id]
@@ -268,14 +268,9 @@ describe CatalogController do
 
         context 'unmatched double quotes' do
           it 'should not error' do
-            expect { get 'index', params: { q: '"Example" test"' } }.to_not raise_error
-          end
-
-          it 'should display a message to the user' do
             get 'index', params: { q: '"Example" test"' }
-            expect(response).to redirect_to(search_catalog_path)
-            expect(flash[:error]).to be_present
-            expect(flash[:error]).to match(/Invalid search: Odd number of quotation marks. Quotation marks must be matched in search queries./)
+            expect(response).to be_ok
+            expect(flash[:error]).not_to be_present
           end
         end
 
