@@ -192,7 +192,7 @@ Unless required by applicable law or agreed to in writing, software distributed
 
             <%- field_tag_options = defined?(uploader_options) ? uploader_options : {multiple: true} %>
 
-            <span class="fileinput fileinput-exists"
+            <span class="fileinput"
               style="background-color: white; padding-top: 8px; padding-bottom: 2px; border: none;">
               <%= check_box_tag(:workflow, 'skip_transcoding', false, id: 'skip_transcoding')%>
               <%= label_tag(:skip_transcoding) do %>
@@ -203,16 +203,10 @@ Unless required by applicable law or agreed to in writing, software distributed
               <% end %>
             </span>
 
-            <div class="fileinput fileinput-new" id="file-upload" data-provides="fileinput"  style="height: 33px">
-              <a href="#" class="fileinput-submit fileinput-exists btn btn-outline btn-file file-upload-buttons"
-                data-trigger="submit" data-bs-toggle="modal" data-bs-target="#uploading" data-testid="media-object-edit-upload-btn">Upload</a>
-              <span class="btn btn-outline btn-file file-upload-buttons">
-                <span class="fileinput-new">Select file</span>
-                <span class="fileinput-exists">Change</span>
-                <input type="file" name="Filedata[]" data-testid="media-object-edit-select-file-btn">
-              </span>
-              <span class="fileinput-filename"></span>
-              <a href="#" class="btn-close fileinput-exists fileinput-close" data-bs-dismiss="fileinput"></a>
+            <div class="fileinput input-group mb-3" id="file-upload" data-provides="fileinput"  style="height: 33px">
+              <input type="file" class="form-control" id="file-input" name="Filedata[]" data-testid="media-object-edit-select-file-btn">
+              <button href="#" class="fileinput-submit btn btn-outline btn-file file-upload-buttons"
+                data-trigger="submit" data-bs-toggle="modal" data-bs-target="#uploading" data-testid="media-object-edit-upload-btn" disabled='true'>Upload</button>
             </div>
 
             <%= hidden_field_tag(:new_asset, true, :id => "files_new_asset") if params[:new_asset] %>
