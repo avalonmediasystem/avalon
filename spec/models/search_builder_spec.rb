@@ -45,8 +45,7 @@ RSpec.describe SearchBuilder do
 
       it "should add section transcript searching to the solr query" do
         subject.search_section_transcripts(solr_parameters)
-        expect(solr_parameters[:defType]).to eq "lucene"
-        expect(solr_parameters[:q]).to eq "({!edismax v=\"Example\"}) {!join to=id from=isPartOf_ssim}{!join to=id from=isPartOf_ssim}transcript_tsim:Example"
+        expect(solr_parameters[:q]).to eq "has_model_ssim:MediaObject AND (Example _query_:\"{!join to=id from=isPartOf_ssim}{!join to=id from=isPartOf_ssim}transcript_tsim:(Example)\")"
       end
 
       context "phrase searching" do
@@ -54,8 +53,7 @@ RSpec.describe SearchBuilder do
 
         it "should only match transcripts with the phrase" do
           subject.search_section_transcripts(solr_parameters)
-          expect(solr_parameters[:defType]).to eq "lucene"
-          expect(solr_parameters[:q]).to eq "({!edismax v=\"\\\"Example captions\\\"\"}) {!join to=id from=isPartOf_ssim}{!join to=id from=isPartOf_ssim}transcript_tsim:\"Example+captions\""
+          expect(solr_parameters[:q]).to eq "has_model_ssim:MediaObject AND (\\\"Example captions\\\" _query_:\"{!join to=id from=isPartOf_ssim}{!join to=id from=isPartOf_ssim}transcript_tsim:(\\\"Example captions\\\")\")"
         end
       end
     end

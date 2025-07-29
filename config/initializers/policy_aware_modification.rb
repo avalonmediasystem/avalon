@@ -22,7 +22,7 @@ module RSolr
   def self.solr_escape(str)
     # note that the gsub will parse the escaped backslashes, as will the ruby code sending the query to Solr
     # so the result sent to Solr is ultimately a single backslash in front of the particular character
-    str.gsub(/([+\-&|!\(\)\{\}\[\]\^"'~\*\?:\\\/])/, '\\\\\1')
+    str.gsub(/([+\-&|!\(\)\{\}\[\]\^"'~\*\?:\\\/\$])/, '\\\\\1')
   end
 end
 

@@ -40,7 +40,6 @@ class ApplicationController < ActionController::Base
   rescue_from RSolr::Error::Timeout, :with => :handle_solr_connection_error
   rescue_from Blacklight::Exceptions::ECONNREFUSED, :with => :handle_solr_connection_error
   rescue_from Faraday::ConnectionFailed, :with => :handle_fedora_connection_error
-  rescue_from Blacklight::Exceptions::InvalidRequest, :with => :handle_invalid_request_error
 
   # Enable profiling
   if ActiveModel::Type::Boolean.new.cast(ENV['AVALON_PROFILING'])
@@ -286,16 +285,5 @@ class ApplicationController < ActionController::Base
       else
         render '/errors/fedora_connection', status: 503
       end
-    end
-
-    # Handle unmatched double quotes in searches
-    def handle_invalid_request_error(exception)
-      if params[:q].count('"').odd? && exception.message.include?('Cannot parse')
-        flash[:error] = "Invalid search: Odd number of quotation marks. Quotation marks must be matched in search queries."
-        return redirect_to(search_catalog_url)
-      end
-
-      # Reraise error if triggered by something besides quotes to prevent suppressing unhandled issues
-      raise Blacklight::Exceptions::InvalidRequest, exception.message
     end
 end
