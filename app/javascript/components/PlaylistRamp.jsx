@@ -187,9 +187,8 @@ const PlaylistRamp = ({
           <MediaPlayer enableFileDownload={false} enablePlaybackRate={true} />
           {playlist_item_ids?.length > 0 && (
             <Card
-              className={`ramp--playlist-accordion ${
-                IS_MOBILE ? 'mobile-view' : ''
-              }`}
+              className={`ramp--playlist-accordion ${IS_MOBILE ? 'mobile-view' : ''
+                }`}
             >
               <Card.Header>
                 <h4>{activeItemTitle}</h4>
@@ -219,9 +218,8 @@ const PlaylistRamp = ({
         <Col
           sm={12}
           md={4}
-          className={`ramp--playlist-items-column ${
-            IS_MOBILE ? 'mobile-view' : ''
-          }`}
+          className={`ramp--playlist-items-column ${IS_MOBILE ? 'mobile-view' : ''
+            }`}
         >
           <Row>
             <Col sm={6}>
@@ -230,7 +228,7 @@ const PlaylistRamp = ({
             <Col sm={6}>
               {share.canShare && (
                 <button
-                  className="btn btn-outline text-nowrap float-right"
+                  className="btn btn-outline text-nowrap float-end"
                   type="button"
                   data-bs-toggle="collapse"
                   data-bs-target="#shareList"
