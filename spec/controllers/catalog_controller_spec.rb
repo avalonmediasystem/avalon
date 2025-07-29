@@ -257,6 +257,60 @@ describe CatalogController do
         end
       end
 
+      context "with mixed phrase and non-phrase searches" do
+        it "finds full phrase in transcripts" do
+          get 'index', params: { q: 'quote "Example captions"' }
+          expect(assigns(:response).documents.count).to eq 1
+          expect(assigns(:response).documents.collect(&:id)).to eq [@media_object.id]
+          get 'index', params: { q: '"Example captions" quote' }
+          expect(assigns(:response).documents.count).to eq 1
+          expect(assigns(:response).documents.collect(&:id)).to eq [@media_object.id]
+        end
+        it "finds non-phrase in transcripts" do
+          get 'index', params: { q: 'captions "Example quote"' }
+          expect(assigns(:response).documents.count).to eq 1
+          expect(assigns(:response).documents.collect(&:id)).to include @media_object.id
+          get 'index', params: { q: '"Example quote" captions' }
+          expect(assigns(:response).documents.count).to eq 1
+          expect(assigns(:response).documents.collect(&:id)).to include @media_object.id
+        end
+        it "finds full phrase in metadata" do
+          get 'index', params: { q: "quote \"#{@media_object.title}\"" }
+          expect(assigns(:response).documents.count).to eq 1
+          expect(assigns(:response).documents.collect(&:id)).to eq [@media_object.id]
+          get 'index', params: { q: "\"#{@media_object.title}\" quote" }
+          expect(assigns(:response).documents.count).to eq 1
+          expect(assigns(:response).documents.collect(&:id)).to eq [@media_object.id]
+        end
+        it "finds non-phrase in metadata" do
+          get 'index', params: { q: "#{@media_object.title.split.first} \"Example quote\"" }
+          expect(assigns(:response).documents.count).to eq 1
+          expect(assigns(:response).documents.collect(&:id)).to include @media_object.id
+          get 'index', params: { q: "\"Example quote\" #{@media_object.title.split.first}" }
+          expect(assigns(:response).documents.count).to eq 1
+          expect(assigns(:response).documents.collect(&:id)).to include @media_object.id
+        end
+
+        context "with multiple matching documents" do
+          before do
+            @media_object2 = FactoryBot.create(:fully_searchable_media_object)
+            @master_file2 = FactoryBot.create(:master_file, media_object: @media_object2)
+            @transcript2 = FactoryBot.create(:supplemental_file, :with_transcript_file, :with_transcript_tag, parent_id: @master_file2.id)
+            @master_file2.supplemental_files += [@transcript2]
+            @master_file2.save!
+            @media_object2.ordered_master_files += [@master_file2]
+            @media_object2.save!
+            MediaObjectIndexingJob.perform_now(@media_object2.id)
+          end
+
+          it "finds both phrase and non-phrase and ranks higher" do
+            get 'index', params: { q: "#{@media_object2.title.split.first} \"Example captions\"" }
+            expect(assigns(:response).documents.count).to eq 2
+            expect(assigns(:response).documents.collect(&:id)).to eq [@media_object2.id, @media_object.id]
+          end
+        end
+      end
+
       context "handling special characters" do
         it 'should not error when special characters are in the query' do
           ['+', '-', '&', '|', '(', ')', '{', '}', '[', ']', '^', '~', '*', '?', ':', '/', '$'].each do |char|
