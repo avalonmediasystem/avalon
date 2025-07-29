@@ -29,6 +29,7 @@ window.apply_button_confirmation = function () {
       trigger: 'manual',
       html: true,
       sanitize: false,
+      container: '#main-content',
       content: function () {
         let button;
         if (typeof $(this).attr('form') === "undefined") {
