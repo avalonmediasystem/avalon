@@ -92,7 +92,7 @@ Unless required by applicable law or agreed to in writing, software distributed
                 <%= link_to clip.title, clip.mediafragment_uri, id: "playlist_item_title_label_#{i.id}" %>
               </div>
               <div class="col-sm-2 text-right" style="margin-top:5px">
-                <button id="playlist_item_edit_button" class="btn btn-sm" <%= clip.master_file.nil? ? 'disabled' : '' %>
+                <button id="playlist_item_edit_button" class="btn btn-sm edit-details-icon-btn" <%= clip.master_file.nil? ? 'disabled' : '' %>
                   data-bs-toggle="collapse" href="#playlist_item_edit_<%= i.id %>" aria-expanded="false" type="button" aria-label="Edit playlist item <%= index + 1 %>">
                   <i class="fa fa-edit"></i>
                 </button>
