@@ -40,7 +40,7 @@ Unless required by applicable law or agreed to in writing, software distributed
       <div>
         <% unless timelines.empty? %>
           <div class="tag_filter_container">
-            Filter: <select name="tag_filter" class="tag_filter form-control input-sm" style="width:auto">
+            Filter: <select name="tag_filter" class="tag_filter form-control input-sm" style="width:auto" aria-label="Filter">
               <option value="" selected="selected"></option>
               <% current_user.timeline_tags.each do |tag| %>
                 <option value="<%= tag %>"><%= tag %></option>
