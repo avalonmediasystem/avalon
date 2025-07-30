@@ -1240,6 +1240,12 @@ td {
   &:hover {
     background-color: $lightgray;
   }
+
+  // Override Bootstrap 5's default styling to remove button border on focus-visible
+  &:focus-visible {
+    border: 1px solid $btn-outline-border-color;
+    box-shadow: 0 0 0 0.2rem rgba($btn-outline-border-color, 0.25);
+  }
 }
 
 .ramp--rails-content {

@@ -54,7 +54,7 @@ Unless required by applicable law or agreed to in writing, software distributed
 
   <div class="mb-3">
     <%= f.submit id: 'submit-playlist-form', class: 'btn btn-primary', value: t("playlist.#{params[:action]}.action"), 'data-testid': 'playlist-submit-form' %>
-    <a id="playlist_edit_cancel" role="button" class="btn btn-outline" data-bs-toggle="collapse" data-bs-target="#playlist_edit_div, #playlist_view_div">Cancel</a>
+    <a id="playlist_edit_cancel" role="button" class="btn btn-outline" data-bs-toggle="collapse" href="#playlist_edit_div, #playlist_view_div">Cancel</a>
   </div>
   <% end # form_for playlist_form%>
 </div>
