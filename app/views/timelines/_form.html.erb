@@ -17,7 +17,7 @@ Unless required by applicable law or agreed to in writing, software distributed
   <%= form_for(@timeline, html: { id: 'timeline_form', class: 'timeline_actions' }) do |f| %>
   <div class="row mb-3">
     <%= f.label "Name", class: 'col-sm-2 fw-bold' %>
-    <div class="col-sm-10"><%= f.text_field :title, class: (@timeline.errors[:title].any? ? 'is-invalid form-control' : 'form-control') %></div>
+    <div class="col-sm-10"><%= f.text_field :title, class: (@timeline.errors[:title].any? ? 'is-invalid form-control' : 'form-control'), aria: { label: 'Timeline title' } %></div>
   </div>
   <div class="row mb-3">
     <%= f.label :description, 'Description', class: 'col-sm-2 fw-bold' %>
@@ -38,7 +38,7 @@ Unless required by applicable law or agreed to in writing, software distributed
         <%= f.radio_button(:visibility, Timeline::PRIVATE_WITH_TOKEN, class: 'share-timeline m-1') %>
         <%= timeline_human_friendly_visibility Timeline::PRIVATE_WITH_TOKEN %>
       </label>
-      <p class="text-info visibility-help-text" style="padding-top:5px;font-style:italic;">
+      <p class="text-info visibility-help-text">
         <%= timeline_visibility_description @timeline.visibility %>
       </p>
       <div id="timeline_token_row" class="row container collapse <%= 'show' if @timeline.visibility=='private-with-token' %>" style="margin-top:9px;">
@@ -58,9 +58,8 @@ Unless required by applicable law or agreed to in writing, software distributed
   <% if Avalon::Authentication.lti_configured? %>
     <div id="timeline_lti_share" class="row mb-3 collapse <%= 'show' if @timeline.visibility != 'private' %>">
       <%= label_tag nil, 'LTI URL', class: 'col-sm-2 fw-bold' %>
-
       <div class="col-sm-10">
-        <p class="text-info" style="padding-top:5px;font-style:italic;">
+        <p class="text-info">
           Copy the link below to share this timeline via LTI
         </p>
         <div class="row container" style="margin-top:9px;">
