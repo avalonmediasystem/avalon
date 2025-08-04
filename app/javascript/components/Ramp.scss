@@ -349,9 +349,6 @@
       }
     }
 
-    .accordion-button:focus {
-      box-shadow: none;
-    }
     .accordion-button::after {
       background-image: unset !important;
     }
