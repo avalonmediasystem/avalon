@@ -19,7 +19,7 @@ submit_edit = null
     () ->
       timeline = $(this).data('timeline')
       modal = $('#copy-timeline-modal')
-      modal.find('#timeline_title').val(timeline.title)
+      modal.find('#timeline-name').val(timeline.title)
       modal.find('#timeline_comment').val(timeline.comment)
       if (timeline.visibility == 'public')
         modal.find('#timeline_visibility_public').prop('checked', true)
