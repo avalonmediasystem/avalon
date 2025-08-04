@@ -26,3 +26,6 @@ $('input[type=text]',section_form).each () ->
 
 $('.date-input').datepicker
   dateFormat: 'yy-mm-dd'
+
+$('#file-input').change () ->
+  $('.fileinput-submit').attr('disabled', false)
