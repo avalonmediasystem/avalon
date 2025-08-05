@@ -1489,10 +1489,10 @@
     estree-walker "^2.0.2"
     picomatch "^4.0.2"
 
-"@samvera/ramp@^4.0.1":
-  version "4.0.1"
-  resolved "https://registry.yarnpkg.com/@samvera/ramp/-/ramp-4.0.1.tgz#6d188578ab2b253485ea67bca7c85263ca064ca2"
-  integrity sha512-Agcqk8W3MKMDPjI5Hw4N/P1POhDkN/4akQ2m5zGXNktadiXhRIPakO5EfSUJR3iquJBIY1OWMl88rm+Jd0YgpA==
+"@samvera/ramp@^4.0.2":
+  version "4.0.2"
+  resolved "https://registry.yarnpkg.com/@samvera/ramp/-/ramp-4.0.2.tgz#3e6c09dfe5cede044a7a41c0e8f73bdb496328fe"
+  integrity sha512-IYkcjK7uAh5k1Q5EWZeKx0cikFGvYcx30547++x2ppemxRqkqnk049kYKmPOFYdGoggOzaC7c0BOtVVkhfVd0w==
   dependencies:
     "@rollup/plugin-json" "^6.0.1"
     "@silvermine/videojs-quality-selector" "^1.3.1"
@@ -6951,9 +6951,9 @@ make-dir@^3.0.2, make-dir@^3.1.0:
     semver "^6.0.0"
 
 mammoth@^1.4.19:
-  version "1.9.1"
-  resolved "https://registry.yarnpkg.com/mammoth/-/mammoth-1.9.1.tgz#b544c26747a412b5b00a11aa80477c6796860eaf"
-  integrity sha512-4S2v1eP4Yo4so0zGNicJKcP93su3wDPcUk+xvkjSG75nlNjSkDJu8BhWQ+e54BROM0HfA6nPzJn12S6bq2Ko6w==
+  version "1.10.0"
+  resolved "https://registry.yarnpkg.com/mammoth/-/mammoth-1.10.0.tgz#88b4a76e6e6a636880cadee058daa7f244fe5da8"
+  integrity sha512-9HOmqt8uJ5rz7q8XrECU5gRjNftCq4GNG0YIrA6f9iQPCeLgpvgcmRBHi9NQWJQIpT/MAXeg1oKliAK1xoB3eg==
   dependencies:
     "@xmldom/xmldom" "^0.8.6"
     argparse "~1.0.3"
