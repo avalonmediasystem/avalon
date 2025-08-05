@@ -140,3 +140,12 @@ derivative:
 # This is useful when running long migrations
 repository_read_only_mode: false
 repository_read_only_mode_message: "🚧 Read-only mode: all content editing has been disabled 🚧"
+
+# Kaminari pagination options to be used on the Blacklight index/search page
+# Refer to https://www.rubydoc.info/gems/kaminari/1.2.2#helpers for possible options
+# Comment out or remove this block to use blacklight defaults
+search_pagination:
+  theme: 'blacklight'
+  window: 2
+  left: 2
+  right: 0

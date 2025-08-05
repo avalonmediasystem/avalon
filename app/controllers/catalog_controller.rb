@@ -66,6 +66,9 @@ class CatalogController < ApplicationController
     config.index.display_type_field = 'has_model_ssim'
     config.index.thumbnail_method = :avalon_image_tag
 
+    # pagination configuration for search results/index views
+    config.index.pagination_options = Settings.search_pagination.to_h || Blacklight::Engine.config.blacklight.default_pagination_options.dup
+
     # solr field configuration for document/show views
     config.show.title_field = 'title_tesi'
     config.show.display_type_field = 'has_model_ssim'
