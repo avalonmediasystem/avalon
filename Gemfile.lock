@@ -16,8 +16,8 @@ GIT
 
 GIT
   remote: https://github.com/avalonmediasystem/browse-everything.git
-  revision: 393973155257b0597df4b8f23568ca01cd548522
-  branch: bootstrap5
+  revision: d825059e43b711a8ff90c7be9b7692de99d86fab
+  tag: v1.5-Avalon
   specs:
     browse-everything (1.5.0)
       addressable (~> 2.5)
@@ -49,24 +49,6 @@ GIT
     omniauth-lti (0.0.2)
       ims-lti
       omniauth
-
-GIT
-  remote: https://github.com/samvera-labs/active_encode.git
-  revision: 2a81ba246d7d0ef11a7e531f965e761c5fc1bb63
-  branch: main
-  specs:
-    active_encode (1.2.3)
-      addressable (~> 2.8)
-      rails
-
-GIT
-  remote: https://github.com/samvera-labs/speedy_af.git
-  revision: 23fffc5f4b13850aba4c73138fcd86a2bf965daa
-  branch: filter_reflections
-  specs:
-    speedy-af (0.4.0)
-      active-fedora (>= 11.0.0)
-      activesupport (> 5.2)
 
 GIT
   remote: https://github.com/samvera/active_fedora.git
@@ -141,6 +123,9 @@ GEM
       json-ld
       rails (>= 5.2)
       rdf-vocab (>= 2.1.0)
+    active_encode (1.3.0)
+      addressable (~> 2.8)
+      rails
     active_fedora-datastreams (0.5.0)
       active-fedora (>= 11.0.0.pre)
       activemodel (>= 5.2)
@@ -425,7 +410,7 @@ GEM
       mutex_m
       representable (~> 3.0)
       retriable (>= 2.0, < 4.a)
-    google-apis-drive_v3 (0.66.0)
+    google-apis-drive_v3 (0.68.0)
       google-apis-core (>= 0.15.0, < 2.a)
     google-cloud-env (2.3.1)
       base64 (~> 0.2)
@@ -830,7 +815,7 @@ GEM
       multipart-post
       oauth2
     ruby-progressbar (1.13.0)
-    ruby-saml (1.18.0)
+    ruby-saml (1.18.1)
       nokogiri (>= 1.13.10)
       rexml
     rubyzip (1.3.0)
@@ -897,6 +882,9 @@ GEM
       nokogiri
       stomp
       xml-simple
+    speedy-af (0.5.0)
+      active-fedora (>= 11.0.0)
+      activesupport (> 5.2)
     sprockets (3.7.5)
       base64
       concurrent-ruby (~> 1.0)
@@ -991,7 +979,7 @@ DEPENDENCIES
   about_page!
   active-fedora!
   active_annotations (~> 0.6)
-  active_encode!
+  active_encode (~> 1.3.0)
   active_fedora-datastreams (~> 0.5)
   activejob-traffic_control
   activejob-uniqueness
@@ -1107,7 +1095,7 @@ DEPENDENCIES
   sidekiq-cron (~> 1.9)
   simplecov
   solr_wrapper (>= 0.16)
-  speedy-af!
+  speedy-af (~> 0.5.0)
   sprockets (~> 3.7.2)
   sprockets-es6
   sqlite3

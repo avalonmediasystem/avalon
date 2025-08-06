@@ -7,7 +7,7 @@ gem 'net-smtp', require: false
 gem 'psych', '< 4'
 gem 'rails', '~>8.0'
 gem 'sprockets', '~>3.7.2'
-#gem 'sprockets-rails', require: 'sprockets/railtie'
+# gem 'sprockets-rails', require: 'sprockets/railtie'
 gem 'sqlite3'
 # Force newer version of mail for compatibility with rails 6.0.6.1
 gem 'mail', '> 2.8.0.1'
@@ -31,7 +31,7 @@ gem 'terser'
 gem 'shakapacker'
 
 # Core Samvera
-#gem 'active-fedora', '~> 15.0'
+# gem 'active-fedora', '~> 15.0'
 gem 'active-fedora', git: 'https://github.com/samvera/active_fedora.git', ref: '7f91e09e630f7e3c1eb3d355e5a016ae8af44778'
 gem 'active_fedora-datastreams', '~> 0.5'
 gem 'hydra-head', '~> 13.0'
@@ -53,7 +53,7 @@ gem 'activerecord-session_store', '>= 2.0.0'
 gem 'acts_as_list'
 gem 'api-pagination'
 gem 'avalon-about', git: 'https://github.com/avalonmediasystem/avalon-about.git', tag: 'avalon-r8.0'
-#gem 'bootstrap-sass', '< 3.4.1' # Pin to less than 3.4.1 due to change in behavior with popovers
+# gem 'bootstrap-sass', '< 3.4.1' # Pin to less than 3.4.1 due to change in behavior with popovers
 gem 'bootstrap-toggle-rails'
 gem 'bootstrap_form'
 gem 'iiif_manifest', '~> 1.6'
@@ -61,8 +61,7 @@ gem 'rack-cors', require: 'rack/cors'
 gem 'rails_same_site_cookie'
 gem 'recaptcha', require: 'recaptcha/rails'
 gem 'samvera-persona', '~> 0.6'
-#gem 'speedy-af', '~> 0.4.0'
-gem 'speedy-af', git: 'https://github.com/samvera-labs/speedy_af.git', branch: 'filter_reflections'
+gem 'speedy-af', '~> 0.5.0'
 
 # Authentication & Authorization
 gem 'devise', '~> 4.8'
@@ -75,9 +74,9 @@ gem 'omniauth-lti', git: "https://github.com/avalonmediasystem/omniauth-lti.git"
 gem "omniauth-saml", "~> 2.0", ">= 2.2.3"
 
 # Media Access & Transcoding
-gem 'active_encode', git: "https://github.com/samvera-labs/active_encode.git", branch: 'main'
+gem 'active_encode', '~> 1.3.0'
 gem 'audio_waveform-ruby', '~> 1.0.7', require: 'audio_waveform'
-gem 'browse-everything', git: "https://github.com/avalonmediasystem/browse-everything.git", branch: 'bootstrap5'
+gem 'browse-everything', git: "https://github.com/avalonmediasystem/browse-everything.git", tag: 'v1.5-Avalon'
 gem 'fastimage'
 gem 'rest-client', '~> 2.0'
 gem 'roo'
