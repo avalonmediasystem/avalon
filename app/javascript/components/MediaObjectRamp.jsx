@@ -39,7 +39,7 @@ const MediaObjectRamp = ({
   has_files,
   has_transcripts,
   accessibility_text = '',
-  transcript_tab_title,
+  transcript_tab_title = 'Transcripts',
 }) => {
   const [manifestUrl, setManifestUrl] = React.useState('');
   const [startCanvasId, setStartCanvasId] = React.useState();

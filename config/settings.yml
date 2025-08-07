@@ -140,6 +140,3 @@ derivative:
 # This is useful when running long migrations
 repository_read_only_mode: false
 repository_read_only_mode_message: "🚧 Read-only mode: all content editing has been disabled 🚧"
-
-# EVIADA collection ID
-eviada_collection_id: ''
