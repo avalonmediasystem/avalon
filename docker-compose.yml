@@ -25,11 +25,11 @@ services:
     volumes: []
 
   fedora: &fedora
-    image: fcrepo/fcrepo:6.4.0
+    image: fcrepo/fcrepo:6.5.1-tomcat9
     depends_on:
       - createbuckets
     environment:
-      - CATALINA_OPTS=-Dfcrepo.autoversioning.enabled=false -Dfcrepo.aws.access-key=minio -Dfcrepo.aws.secret-key=minio123 -Dfcrepo.storage=ocfl-s3 -Dfcrepo.ocfl.s3.bucket=fcrepo -Dfcrepo.s3.endpoint=http://minio:9000 -Dfcrepo.aws.region=us-east-1
+      - CATALINA_OPTS=-Dfcrepo.autoversioning.enabled=false -Dfcrepo.aws.access-key=minio -Dfcrepo.aws.secret-key=minio123 -Dfcrepo.storage=ocfl-s3 -Dfcrepo.ocfl.s3.bucket=fcrepo -Dfcrepo.s3.endpoint=http://minio:9000 -Dfcrepo.aws.region=us-east-1 -Dfcrepo.s3.path.style.access=true
     networks:
       internal:
     ulimits:
@@ -174,8 +174,8 @@ services:
     image: minio/minio
     command: minio server /data --console-address ":9090"
     environment:
-      MINIO_ACCESS_KEY: minio
-      MINIO_SECRET_KEY: minio123
+      MINIO_ROOT_USER: minio
+      MINIO_ROOT_PASSWORD: minio123
     volumes:
       - data:/data
     ports:
@@ -197,7 +197,7 @@ services:
         condition: service_healthy
     entrypoint: >
       /bin/sh -c "
-      /usr/bin/mc config host add myminio http://minio:9000 minio minio123;
+      /usr/bin/mc alias set myminio http://minio:9000 minio minio123;
       /usr/bin/mc mb -p myminio/fcrepo myminio/masterfiles myminio/derivatives myminio/supplementalfiles myminio/preserves;
       /usr/bin/mc anonymous set download myminio/derivatives;
       /usr/bin/mc anonymous set download myminio/supplementalfiles;
