@@ -118,6 +118,12 @@ module Avalon
       Settings.email&.accessibility_request_link || ''
     end
 
+    # To be called as Avalon::Configuration.is_eviada_collection?(collection_id)
+    # Returns true if the relevant collection is EVIADA
+    def is_eviada_collection?(collection_id)
+      collection_id == Settings&.eviada_collection_id
+    end
+
     private
     class << self
       def coerce(value, method)

@@ -39,6 +39,7 @@ const MediaObjectRamp = ({
   has_files,
   has_transcripts,
   accessibility_text = '',
+  transcript_tab_title,
 }) => {
   const [manifestUrl, setManifestUrl] = React.useState('');
   const [startCanvasId, setStartCanvasId] = React.useState();
@@ -180,7 +181,7 @@ const MediaObjectRamp = ({
               <MetadataDisplay showHeading={false} displayTitle={false} />
             </Tab>
             {(cdl.can_stream && has_sections && has_transcripts) &&
-              <Tab eventKey="transcripts" title="Transcripts" className="ramp--transcripts_tab">
+              <Tab eventKey="transcripts" title={transcript_tab_title} className="ramp--transcripts_tab">
                 <Transcript
                   playerID="iiif-media-player"
                   manifestUrl={manifestUrl}

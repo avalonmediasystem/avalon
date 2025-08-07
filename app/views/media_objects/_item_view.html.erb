@@ -52,6 +52,7 @@ Unless required by applicable law or agreed to in writing, software distributed
           has_files: @media_object.supplemental_files.present? || @media_object.sections_with_rendering_files?([nil, 'caption']),
           has_transcripts: @media_object.sections_with_files(tag: 'transcript').present?,
           accessibility_text: t('media_object.accessibility_request_text', :a11y_link => Avalon::Configuration.accessibility_request_link),
+          transcript_tab_title: t("media_object.transcript_tab_title.#{Avalon::Configuration.is_eviada_collection?(@media_object.collection_id) ? 'collection_outline' : 'transcripts'}")
         }
       }
     ) %>
