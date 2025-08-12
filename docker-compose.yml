@@ -1,6 +1,5 @@
 volumes:
   database:
-  fedora:
   solr:
   npms:
   data:
@@ -26,28 +25,25 @@ services:
     volumes: []
 
   fedora: &fedora
-    image: fcrepo/fcrepo:6.4.0
+    image: fcrepo/fcrepo:6.5.1-tomcat9
     depends_on:
-      - db
-    volumes:
-      - fedora:/usr/local/tomcat/fcrepo-home
+      - createbuckets
     environment:
-      - CATALINA_OPTS=-Dfcrepo.autoversioning.enabled=false
+      - CATALINA_OPTS=-Dfcrepo.autoversioning.enabled=false -Dfcrepo.aws.access-key=minio -Dfcrepo.aws.secret-key=minio123 -Dfcrepo.storage=ocfl-s3 -Dfcrepo.ocfl.s3.bucket=fcrepo -Dfcrepo.s3.endpoint=http://minio:9000 -Dfcrepo.aws.region=us-east-1 -Dfcrepo.s3.path.style.access=true
     networks:
-      external:
       internal:
-    ports:
-      - '8080:8080'
     ulimits:
       nofile:
-        soft: "65536"
-        hard: "65536"
+        soft: '65536'
+        hard: '65536'
   fedora-test:
     <<: *fedora
-    volumes: []
+    depends_on: []
+    environment:
+      - CATALINA_OPTS=-Dfcrepo.autoversioning.enabled=false
 
   solr: &solr
-    image: solr:9.7
+    image: solr:9
     volumes:
       - ./solr/conf:/opt/solr/avalon_conf
       - solr:/var/solr
@@ -55,12 +51,14 @@ services:
       - solr-precreate
       - avalon
       - /opt/solr/avalon_conf
+    environment:
+      - SOLR_MODULES=analysis-extras,extraction
     networks:
       internal:
     ulimits:
       nofile:
-        soft: "65536"
-        hard: "65536"
+        soft: '65536'
+        hard: '65536'
   solr-test:
     <<: *solr
     volumes:
@@ -106,19 +104,16 @@ services:
       - CONTROLLED_VOCABULARY=config/controlled_vocabulary.yml
       - DATABASE_URL=postgres://postgres:password@db/avalon
       - DATABASE_CLEANER_ALLOW_REMOTE_DATABASE_URL=true
-      - FEDORA_NAMESPACE=avalon
       - FEDORA_URL=http://fedoraAdmin:fedoraAdmin@fedora:8080/fcrepo/rest
-      - FEDORA_BASE_PATH=/test
+      - FEDORA_BASE_PATH=/dev
       - RAILS_ENV=development
       - RAILS_ADDITIONAL_HOSTS=avalon
-      - SETTINGS__REDIS__HOST=redis
-      - SETTINGS__REDIS__PORT=6379
+      - SETTINGS__REDIS__URL=redis://redis:6379/0
       - SECRET_KEY_BASE=abcd
       - SOLR_URL=http://solr:8983/solr/avalon
       - AWS_REGION=us-east-1
       - SETTINGS__ACTIVE_STORAGE__BUCKET=supplementalfiles
       - SETTINGS__ACTIVE_STORAGE__SERVICE=generic_s3
-      - SETTINGS__FFMPEG__PATH=/usr/bin/ffmpeg
       - SETTINGS__MINIO__ENDPOINT=http://minio:9000
       - SETTINGS__MINIO__PUBLIC_HOST=http://localhost:9000
       - SETTINGS__MINIO__ACCESS=minio
@@ -135,6 +130,9 @@ services:
       - SETTINGS__STREAMING__SERVER=nginx
       - SETTINGS__STREAMING__STREAM_TOKEN_TTL=20
       - SYSTEM_GROUPS=administrator,group_manager,manager
+      - PIDFILE=tmp/pids/server.pid
+      - PUMA_STATE_PATH=tmp/puma.state
+      - AVALON_PROFILING=true
     volumes:
       - .:/home/app/avalon
       - npms:/home/app/avalon/node_modules
@@ -158,8 +156,7 @@ services:
     environment:
       - DATABASE_URL=postgresql://postgres:password@db-test/avalon
       - SETTINGS__FFMPEG__PATH=/usr/bin/ffmpeg
-      - SETTINGS__REDIS__HOST=redis-test
-      - SETTINGS__REDIS__PORT=6379
+      - SETTINGS__REDIS__URL=redis://redis-test:6379/0
       - FEDORA_URL=http://fedoraAdmin:fedoraAdmin@fedora-test:8080/fcrepo/rest
       - FEDORA_BASE_PATH=/test
       - SOLR_URL=http://solr-test:8983/solr/avalon
@@ -174,11 +171,11 @@ services:
     ports: []
 
   minio:
-    image: minio/minio:RELEASE.2024-01-29T03-56-32Z
+    image: minio/minio
     command: minio server /data --console-address ":9090"
     environment:
-      MINIO_ACCESS_KEY: minio
-      MINIO_SECRET_KEY: minio123
+      MINIO_ROOT_USER: minio
+      MINIO_ROOT_PASSWORD: minio123
     volumes:
       - data:/data
     ports:
@@ -188,7 +185,7 @@ services:
       internal:
       external:
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      test: ['CMD', 'curl', '-f', 'http://localhost:9000/minio/health/live']
       interval: 30s
       timeout: 20s
       retries: 3
@@ -196,10 +193,11 @@ services:
   createbuckets:
     image: minio/mc
     depends_on:
-      - minio
+      minio:
+        condition: service_healthy
     entrypoint: >
       /bin/sh -c "
-      /usr/bin/mc config host add myminio http://minio:9000 minio minio123;
+      /usr/bin/mc alias set myminio http://minio:9000 minio minio123;
       /usr/bin/mc mb -p myminio/fcrepo myminio/masterfiles myminio/derivatives myminio/supplementalfiles myminio/preserves;
       /usr/bin/mc anonymous set download myminio/derivatives;
       /usr/bin/mc anonymous set download myminio/supplementalfiles;
@@ -213,11 +211,14 @@ services:
     image: cypress/included:latest
     depends_on:
       - avalon
-    entrypoint: cypress run -C spec/cypress/cypress.config.js
+    entrypoint:
+      - sh
+      - -c
+      - 'yarn install --dev && cypress run -C spec/cypress/cypress.config.js'
     working_dir: /e2e
     volumes:
       - ./:/e2e
       - npms:/e2e/node_modules
     environment:
-      - CYPRESS_ENV=${CYPRESS_ENV:-local}
-      - CYPRESS_grep=${CYPRESS_grep:-@critical}
+      CYPRESS_ENV: ${CYPRESS_ENV:-local}
+      grepTags: ${CYPRESS_grep:-@critical}

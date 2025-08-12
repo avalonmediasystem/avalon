@@ -99,13 +99,6 @@ class IiifManifestPresenter
     { 'label' => label, 'value' => sanitized_values }
   end
 
-  def combined_display_date(media_object)
-    #FIXME Does this need to change now that date_issued is not required and thus could be nil
-    result = media_object.date_issued
-    result += " (Creation date: #{media_object.date_created})" if media_object.date_created.present?
-    result
-  end
-
   def display_other_identifiers(media_object)
     # bibliographic_id has form [:type,"value"], other_identifier has form [[:type,"value],[:type,"value"],...]
     ids = Array(media_object.other_identifier) - [media_object.bibliographic_id]
@@ -186,11 +179,16 @@ class IiifManifestPresenter
     ActiveSupport::Duration.build(media_object.lending_period).to_day_hour_s
   end
 
+  def display_date(date)
+    Avalon::Configuration.humanize_edtf.call(date)
+  end
+
   def iiif_metadata_fields
     fields = [
       metadata_field('Title', media_object.title, media_object.id),
-      metadata_field('Publication date', media_object.date_issued),
-      metadata_field('Creation date', media_object.date_created),
+      metadata_field('Alternative title', media_object.alternative_title),
+      metadata_field('Publication date', display_date(media_object.date_issued)),
+      metadata_field('Creation date', display_date(media_object.date_created)),
       metadata_field('Main contributor', media_object.creator),
       metadata_field('Summary', display_summary(media_object)),
       metadata_field('Contributor', media_object.contributor),
@@ -198,7 +196,7 @@ class IiifManifestPresenter
       metadata_field('Genre', media_object.genre),
       metadata_field('Subject', display_search_linked("subject_ssim", media_object.topical_subject)),
       metadata_field('Time period', media_object.temporal_subject),
-      metadata_field('Location', media_object.geographic_subject),
+      metadata_field('Geographic Subject', media_object.geographic_subject),
       metadata_field('Collection', display_collection(media_object)),
       metadata_field('Unit', display_unit(media_object)),
       metadata_field('Language', display_language(media_object)),

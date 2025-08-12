@@ -33,6 +33,7 @@ describe WatchedEncode do
       e.state = :completed
       output = double(url: 'file://' + Rails.root.join('spec', 'fixtures', fixture_file).to_s)
       allow(output).to receive(:url=)
+      allow(output).to receive(:format)
       e.output = [output]
     end
   end
@@ -99,6 +100,65 @@ describe WatchedEncode do
         encode_record = ActiveEncode::EncodeRecord.last
         expect(encode_record.title).to eq fixture_file
         expect(encode_record.display_title).to eq fixture_file
+      end
+
+      context 'with embedded captions' do
+        let(:caption_file) { 'captions.vtt' }
+        let(:sup_file) { double(url: 'file://supplemental_files' + Rails.root.join('spec', 'fixtures', caption_file).to_s, format: "vtt", label: "Test Caption", language: nil) }
+        let(:completed_encode) do
+          running_encode.clone.tap do |e| 
+            e.state = :completed
+            output = double(url: 'file://' + Rails.root.join('spec', 'fixtures', fixture_file).to_s)
+            allow(output).to receive(:url=)
+            allow(output).to receive(:format)
+            allow(sup_file).to receive(:url=)
+            allow(sup_file).to receive(:id=)
+            e.output = [output, sup_file]
+          end
+        end
+
+        before do
+          allow_any_instance_of(ActiveStorage::Blob).to receive(:url).and_return("https://example.com")
+        end
+
+        it 'creates a SupplementalFile and attaches caption file' do
+          expect { encode.create! }.to change { SupplementalFile.all.count }.by(1)
+          supplemental_file = SupplementalFile.last
+          expect(supplemental_file.file).to be_attached
+          expect(supplemental_file.file.byte_size).to be_positive
+          expect(supplemental_file.label).to eq "Test Caption"
+          expect(master_file).to have_received(:update_progress_on_success!)
+        end
+
+        it 'creates an encode record' do
+          encode.create!
+          encode_record = ActiveEncode::EncodeRecord.last
+          expect(encode_record.title).to eq fixture_file
+          expect(encode_record.display_title).to eq fixture_file
+        end
+
+        context "language processing" do
+          it "accepts two letter codes" do
+            allow(sup_file).to receive(:language).and_return("es")
+            encode.create!
+            supplemental_file = SupplementalFile.last
+            expect(supplemental_file.language).to eq "spa"
+          end
+
+          it "accepts three letter codes" do
+            allow(sup_file).to receive(:language).and_return("fre")
+            encode.create!
+            supplemental_file = SupplementalFile.last
+            expect(supplemental_file.language).to eq "fre"
+          end
+
+          it "defaults to English when there is an issue with the language code" do
+            allow(sup_file).to receive(:language).and_return("error")
+            encode.create!
+            supplemental_file = SupplementalFile.last
+            expect(supplemental_file.language).to eq "eng"
+          end
+        end 
       end
 
       after do

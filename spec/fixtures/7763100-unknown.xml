@@ -56,6 +56,13 @@
     <subfield code="b">300 B ;</subfield>
     <subfield code="c">300 C.</subfield>
   </datafield>
+  <datafield tag="382">
+    <subfield code="a">horn</subfield>
+    <subfield code="n">1</subfield>
+  </datafield>
+  <datafield tag="382">
+    <subfield code="b">orchestra</subfield>
+  </datafield>
   <datafield tag="600" ind1="1" ind2="0">
     <subfield code="a">600 (100) A</subfield>
     <subfield code="b">B</subfield>

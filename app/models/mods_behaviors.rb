@@ -55,7 +55,7 @@ module ModsBehaviors
     solr_doc['series_ssim'] = gather_terms(self.find_by_terms(:series))
     #filter formats based upon whitelist
     solr_doc['resource_type_ssim'] = (gather_terms(self.find_by_terms(:resource_type)) & ['moving image', 'sound recording' ])
-    solr_doc['location_ssim'] = gather_terms(self.find_by_terms(:geographic_subject))
+    # solr_doc['location_ssim'] = gather_terms(self.find_by_terms(:geographic_subject))
 
     # Blacklight facets - these are the same facet fields used in our Blacklight app
     # for consistency and so they'll show up when we export records from Hydra into BL:

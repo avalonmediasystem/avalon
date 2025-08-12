@@ -14,6 +14,9 @@
  * ---  END LICENSE_HEADER BLOCK  ---
 */
 
-var embedRequireContext = require.context("components/embeds", false)
-var ReactRailsUJS = require("react_ujs")
-ReactRailsUJS.useContext(embedRequireContext)
+import ReactOnRails from 'react-on-rails';
+import EmbeddedRamp from '../components/embeds/EmbeddedRamp';
+
+ReactOnRails.register({
+  EmbeddedRamp,
+});

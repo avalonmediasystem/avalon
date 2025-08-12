@@ -35,12 +35,12 @@ Unless required by applicable law or agreed to in writing, software distributed
         <%= form_for :supplemental_file, url: object_supplemental_file_path(section, file), remote: true,
           html: { method: "put", class: "supplemental-file-form edit-item", id: "form-#{file.id}" },
           data: { file_id: file.id, masterfile_id: section.id } do |form| %>
-          <div class="col-sm-9 col-md-8 col-9 form-row p-0">
-            <div class="form-group col-md-6 col-sm-6 col-6">
+          <div class="col-sm-9 col-md-8 col-9 row p-0">
+            <div class="mb-3 col-md-6 col-sm-6 col-6">
               <%= form.text_field :label, id: "supplemental_file_input_#{section.id}_#{file.id}", value: file.label %>
             </div>
             <% if tag == 'transcript' %>
-              <div class="form-group col-md-6 col p-0">
+              <div class="mb-3 col-md-6 col p-0">
                 <%= form.text_field :language, 
                     id: "supplemental_file_language_#{section.id}_#{file.id}", 
                     value: display_supplemental_file_language(file.language),
@@ -57,7 +57,7 @@ Unless required by applicable law or agreed to in writing, software distributed
               </div>
             <% end %>
             <% if tag == 'caption' %>
-              <div class="form-group col-md-6 col p-0">
+              <div class="mb-3 col-md-6 col p-0">
                 <%= form.text_field :language, 
                     id: "supplemental_file_language_#{section.id}_#{file.id}", 
                     value: display_supplemental_file_language(file.language),
@@ -67,12 +67,12 @@ Unless required by applicable law or agreed to in writing, software distributed
               <div class="row-col-sm-9 row-col-md-8 row-col-9 p-0">
                 <div class="form-check-inline col-md-6 col-sm-6 col-6 p-0">
                   <%= label_tag "treat_as_transcript_#{file.id}", class: "checkbox", style: "white-space: nowrap; padding-left: 0.45rem;" do %>
-                    <%= check_box_tag "treat_as_transcript_#{file.id}", '1', file.caption_transcript? %>
+                    <%= check_box_tag "treat_as_transcript_#{file.id}", '1', file.caption_transcript? , data: { testid: "media-object-treat-as-transcript-checkbox" }%>
                     <span>Treat as Transcript</span>
                   <% end %>
                 </div>
                 <div class="form-check-inline col-md-3 col-sm-3 col-3 p-0">
-                  <%= label_tag "machine_generated_#{file.id}", class: "ml-3 checkbox", style: "white-space: nowrap; padding-left: 2.6rem;" do %>
+                  <%= label_tag "machine_generated_#{file.id}", class: "ms-3 checkbox", style: "white-space: nowrap; padding-left: 2.6rem;" do %>
                     <%= check_box_tag "machine_generated_#{file.id}", '1', file.machine_generated? %>
                     <span>Machine Generated</span>
                   <% end %>
@@ -82,7 +82,7 @@ Unless required by applicable law or agreed to in writing, software distributed
           </div>
           <div class="col-sm-3 col-md-4 col-3 p-0" style="margin-left: 10px;">
             <div class="btn-toolbar">
-              <%= button_tag name: 'save_label', :class => "btn btn-outline btn-sm edit-item" do %>
+              <%= button_tag name: 'save_label', :class => "btn btn-outline btn-sm edit-item", data:{testid:"media-object-supplemental-file-save-btn"} do %>
                 <i class="fa fa-check" title="Save"></i> <span class="sm-hidden">Save</span>
               <% end %>
               <%= button_tag name: 'cancel_edit_label', class:'btn btn-danger btn-sm edit-item', type: 'button' do%>
@@ -99,10 +99,10 @@ Unless required by applicable law or agreed to in writing, software distributed
       <div class="btn-toolbar float-right">
         <%# Update button %>
         <i class="fa fa-gears align-content-center<%= file.machine_generated? ? '' : ' d-none' %>" title="Machine generated file"></i>
-        <%= button_tag name: 'edit_label', class:'btn btn-outline btn-sm edit_label display-item', type: 'button' do %>
+        <%= button_tag name: 'edit_label', class:'btn btn-outline btn-sm edit_label display-item',data:{testid:"media-object-supplemenatl-file-edit-btn"}, type: 'button' do %>
           <i class="fa fa-edit" title="Edit"></i> <span class="sm-hidden">Edit</span>
         <% end %>
-        <%= link_to(object_supplemental_file_path(section, file), title: 'Remove', method: :delete, class: "btn btn-danger btn-sm file-remove btn-confirmation") do %>
+        <%= link_to(object_supplemental_file_path(section, file), title: 'Remove', method: :delete, class: "btn btn-danger btn-sm file-remove btn-confirmation", data: { confirm: "Are you sure?", testid:"media-object-supplemenatl-file-delete-btn" }) do %>
           <i class="fa fa-trash" title="Delete"></i> <span class="sm-hidden">Delete</span>
         <% end %>
         </div>

@@ -28,7 +28,7 @@ const CollectionCard = ({ attributes, showUnit }) => {
     <CollectionCardShell>
       <CollectionCardThumbnail>
         {attributes.poster_url && (
-          <a href={attributes.url} aria-hidden="true" tabindex="-1">
+          <a href={attributes.url} aria-hidden="true" tabIndex="-1">
             <img src={attributes.poster_url} alt=""></img>
           </a>
         )}

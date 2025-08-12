@@ -19,7 +19,7 @@ Unless required by applicable law or agreed to in writing, software distributed
 
 <div id="add_to_playlist_panel">
   <div id="add_to_playlist_alert" class="alert">
-    <button type="button" class="close" onclick="closeAlert()">&times;</button>
+    <button type="button" class="btn-close" onclick="closeAlert()"><span class="visually-hidden">Close</span></button>
     <p id="add_to_playlist_result_message" data-testid="media-object-playlist-result-msg"></p>
   </div>
   <div id="add_to_playlist_form_group">
@@ -30,7 +30,7 @@ Unless required by applicable law or agreed to in writing, software distributed
             <h4 for="playlist">Add to Playlist</h4>
           </div>
           <div class="col">
-            <div class="form-group">
+            <div class="mb-3">
               <%= collection_select(:post, :playlist_id, @add_playlist_item_playlists, :id, :title, {}, {class: "form-control form-model",'data-testid': 'media-object-playlist-dropdown', style: 'width:100%;'}) %>
             </div>
           </div>
@@ -78,11 +78,11 @@ Unless required by applicable law or agreed to in writing, software distributed
           </div>
           <div class="col-12">
             <div class="collapse mx-4 mt-4" id="moreDetails" data-parent="#moreInfo">
-              <div class="form-group">
+              <div class="mb-3">
                 <label for="playlist_item_title">Title</label>
                 <input type="text" name="playlist_item_title" id="playlist_item_title" class="form-control form-model" required>
               </div>
-              <div class="form-group">
+              <div class="mb-3">
                 <label for="playlist_item_description">Description</label>
                 <textarea name="playlist_item_description" id="playlist_item_description" class="form-control form-model"></textarea>
               </div>
@@ -90,8 +90,8 @@ Unless required by applicable law or agreed to in writing, software distributed
           </div>
         </div>
         <div class="add-to-playlist-form-buttons">
-          <input type="submit" name="commit" value="Add" class="btn btn-primary mr-2" id="addToPlaylistSave" data-testid="media-object-playlist-save-btn"/>
-          <button type="button" class="btn btn-outline" onclick="resetAddToPlaylistForm()" data-toggle="collapse" data-target="#addToPlaylistPanel">Cancel</button>
+          <input type="submit" name="commit" value="Add" class="btn btn-primary me-2" id="addToPlaylistSave" data-testid="media-object-playlist-save-btn"/>
+          <button type="button" class="btn btn-outline" onclick="resetAddToPlaylistForm()" data-bs-toggle="collapse" data-bs-target="#addToPlaylistPanel">Cancel</button>
         </div>
       </form>
     <% end %>
@@ -107,30 +107,30 @@ Unless required by applicable law or agreed to in writing, software distributed
     <div class="modal-content">
       <div class="modal-header">
         <h4 class="modal-title">Create Playlist</h4>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
         <%= form_for(Playlist.new, remote: true, format: 'json', html: { id: 'playlist_form', class: 'playlist_actions' }) do |f| %>
-          <div class="form-group">
+          <div class="mb-3">
             <%= f.label "Name" %>
             <%= f.text_field :title, class: 'form-control' %>
           </div>
-          <div class="form-group">
+          <div class="mb-3">
             <%= f.label :comment, 'Description' %>
             <%= f.text_area :comment, class: 'form-control' %>
           </div>
-          <div class="form-group playlist-visibility-form-group">
+          <div class="mb-3 playlist-visibility-form-group">
             <%= label_tag nil, t("playlist.visibility") %>
             <label>
               <%= f.radio_button(:visibility, Playlist::PUBLIC) %>
               <%= human_friendly_visibility Playlist::PUBLIC %>
             </label>
-            <label class="ml-2">
+            <label class="ms-2">
               <%= f.radio_button(:visibility, Playlist::PRIVATE) %>
               <%= human_friendly_visibility Playlist::PRIVATE %>
             </label>
           </div>
-          <div class="form-group text-right">
+          <div class="mb-3 text-end">
             <%= f.submit id: 'new_playlist_submit', class: 'btn btn-primary', value: t("playlist.create.action") %>
           </div>
         </div><!-- /.modal-body -->

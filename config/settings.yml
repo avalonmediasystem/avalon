@@ -16,7 +16,7 @@ encoding:
 mediainfo:
   path: '/usr/bin/mediainfo --urlencode' # Fixes mediainfo v20.03 bug with S3 presigned URL
 ffmpeg:
-  path: '/usr/local/bin/ffmpeg'
+  path: '/usr/bin/ffmpeg'
 ffprobe:
   path: '/usr/bin/ffprobe'
 email:
@@ -28,6 +28,8 @@ email:
   comments: 'avalon-comments@example.edu'
   notification: 'avalon-notifications@example.edu'
   support: 'avalon-support@example.edu'
+  # Accessibility request form link
+  accessibility_request_link: 'https://iublib-fireform.eas.iu.edu/online/form/index/libacc'
 solr:
   configset: avalon
   configset_source_path: <%= File.join(Rails.root, 'solr', 'config') %>
@@ -61,10 +63,12 @@ streaming:
   rtmp_base: 'rtmp://localhost/avalon'
   http_base: 'http://localhost:3000/streams'
   default_quality: 'auto'
+  # Referer header to use when making m3u8 requests to the streaming server which the streaming
+  # server then uses to make auth callbacks.  This is useful to allow the streaming server to use
+  # an alternate address (like an internal firewalled address) for avalon than the public address
+  # auth_referer: http://127.0.0.1:3000
 redis:
-  host: localhost
-  port: 6379
-  db: 0
+  url: 'redis://localhost:6379/0'
 groups:
   system_groups: [administrator, group_manager, manager]
 master_file_management:
@@ -85,7 +89,7 @@ encode_throttling:
   update_jobs_throttle_threshold: 3
   update_jobs_spacing: 10
 auth:
-  registerable: true
+  registerable: true # Set to false to disable new user registrations
 #   configuration:
 #     - :name: Avalon Lti OAuth
 #       :provider: :lti
@@ -130,3 +134,9 @@ derivative:
 # Leave commented out to use the system default.
 # tempfile:
 #   location: '/tmp'
+
+# Enable read-only mode for disabling all save interactions with fedora and solr
+# Does not affect actions that only affect the database
+# This is useful when running long migrations
+repository_read_only_mode: false
+repository_read_only_mode_message: "🚧 Read-only mode: all content editing has been disabled 🚧"

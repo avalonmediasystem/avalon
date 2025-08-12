@@ -58,15 +58,16 @@ class AvalonProgress
         bar.data('status',info)
 
     if !info?
-      info = @data['overall']
-      setActive($('#overall'), info.success + info.error < 100)
+      if @data['overall']?
+        info = @data['overall']
+        setActive($('#overall'), info.success + info.error < 100)
 
-      updateBar($('#overall'), {success: info.success, danger: info.error})
-      $('#overall').data('status',info)
-      if info.success == 100
-        location.reload()
+        updateBar($('#overall'), {success: info.success, danger: info.error})
+        $('#overall').data('status',info)
+        if info.success == 100
+          location.reload()
 
-      return info.success + info.error < 100
+        return info.success + info.error < 100
 
 $(document).ready ->
   if $('.progress-bar').length == 0

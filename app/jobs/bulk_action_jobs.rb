@@ -136,6 +136,7 @@ module BulkActionJobs
         media_object = MediaObject.find(id)
         supplemental_files = media_object.supplemental_files
         DeleteChildFiles.perform_now(supplemental_files, nil)
+        media_object.supplemental_files = []
 
         if media_object.destroy
           successes += [media_object]
@@ -270,6 +271,13 @@ module BulkActionJobs
       end
 
       [successes, errors]
+    end
+  end
+
+  class ReturnCheckouts < ActiveJob::Base
+    def perform(collection_id)
+      collection = Admin::Collection.find(collection_id)
+      Checkout.active_for_media_object(collection.media_object_ids).update_all(return_time: DateTime.current, updated_at: DateTime.current)
     end
   end
 end

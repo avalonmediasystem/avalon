@@ -48,7 +48,7 @@ module Avalon
                    when :generic, :adobe
                      url.gsub(/(?:#{Regexp.escape(http_base)}\/)(?:audio-only\/)?(.*)(?:\.m3u8)/, '\1')
                    when :nginx
-                     url.gsub(/(?:#{Regexp.escape(Settings.streaming.http_base)}\/)(.*)(?:\/index\.m3u8)/, '\1')
+                     url.gsub(/(?:#{Regexp.escape(Settings.streaming.http_base)}\/)(.*(mp4|mp3))(?:\/index\.m3u8|$)/, '\1')
                    when :wowza
                      # Wowza HLS urls include the extension between the base and relative path.
                      # "http_base/extension:path/filename.extension/playlist.m3u8"
@@ -94,9 +94,28 @@ module Avalon
       end
     end
 
+    attr_writer :humanize_edtf
+    def humanize_edtf
+      @humanize_edtf ||= lambda do |date|
+        begin
+          return if date.blank?
+          return "unknown" if date == "unknown/unknown"
+          # `date_issued` and `date_created` return as String, so convert to Date/EDTF class before humanization
+          Date.edtf(date).humanize
+        rescue
+          nil
+        end
+      end
+    end
+
     # To be called as Avalon::Configuration.controlled_digital_lending_enabled?
     def controlled_digital_lending_enabled?
       !!Settings.controlled_digital_lending&.enable
+    end
+
+    # To be called as Avalon::Configuration.accessibility_request_link
+    def accessibility_request_link
+      Settings.email&.accessibility_request_link || ''
     end
 
     private

@@ -33,6 +33,15 @@ img.no-icon {
   @extend .btn-outline;
 }
 
+// Only show facet pagination on the bottom of the modal
+.facet-pagination.top {
+  display: none !important;
+}
+
+.facet-pagination .btn-outline-secondary.active {
+  @extend .btn-primary;
+}
+
 #sort-dropdown,
 #per_page-dropdown {
   .dropdown-item.active {

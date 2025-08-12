@@ -15,7 +15,7 @@
 */
 
 import React from 'react';
-import { render } from 'react-dom';
+import { createRoot } from "react-dom/client";
 import Search from './Search';
 
 const props = {
@@ -23,4 +23,5 @@ const props = {
   collection: 'Chris Test'
 };
 
-render(<Search {...props} />, document.getElementById('root'));
+const root = createRoot(document.getElementById('root'));
+root.render(<Search {...props} />);

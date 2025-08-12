@@ -37,7 +37,7 @@ function Facets(props) {
 
   return docsLength > 0 ? (
     <div className="inline">
-      <button href="#search-within-facets" data-toggle="collapse" role="button" aria-expanded="false" aria-controls="object_tree" className="btn btn-primary search-within-facets-btn">
+      <button href="#search-within-facets" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="object_tree" className="btn btn-primary search-within-facets-btn">
         Toggle Filters
       </button>
       <div id="search-within-facets" className="search-within-facets collapse">

@@ -32,29 +32,35 @@ class SearchBuilder < Blacklight::SearchBuilder
   end
 
   def limit_to_non_hidden_items(_permission_types = discovery_permissions, _ability = current_ability)
-    [policy_clauses,"(*:* NOT hidden_bsi:true)"].compact.join(" OR ")
+    [policy_clauses, "(*:* NOT hidden_bsi:true)"].compact.join(" OR ")
   end
 
   # Overridden to skip for admin users
   def add_access_controls_to_solr_params(solr_parameters)
-    if current_ability.cannot? :discover_everything, MediaObject
-      solr_parameters[:fq] ||= []
-      solr_parameters[:fq] << gated_discovery_filters.reject(&:blank?).join(' OR ')
-      avalon_solr_access_filters_logic.each do |filter|
-        solr_parameters[:fq] << send(filter, discovery_permissions, current_ability)
-      end
-      Rails.logger.debug("Solr parameters: #{solr_parameters.inspect}")
+    return unless current_ability.cannot? :discover_everything, MediaObject
+
+    solr_parameters[:fq] ||= []
+    solr_parameters[:fq] << gated_discovery_filters.reject(&:blank?).join(' OR ')
+    avalon_solr_access_filters_logic.each do |filter|
+      solr_parameters[:fq] << send(filter, discovery_permissions, current_ability)
     end
+    Rails.logger.debug("Solr parameters: #{solr_parameters.inspect}")
   end
 
   def search_section_transcripts(solr_parameters)
     return unless solr_parameters[:q].present? && SupplementalFile.with_tag('transcript').any? && !(blacklight_params[:controller] == 'bookmarks')
 
-    terms = solr_parameters[:q].split
-    return if terms.any? { |term| term.match?(/[\{\}]/) }
-    term_subquery = terms.map { |term| "transcript_tsim:#{RSolr.solr_escape(term)}" }.join(" OR ")
-    solr_parameters[:defType] = "lucene"
-    solr_parameters[:q] = "({!edismax v=\"#{RSolr.solr_escape(solr_parameters[:q])}\"}) {!join to=id from=isPartOf_ssim}{!join to=id from=isPartOf_ssim}#{term_subquery}"
+    # In order for the multi-word query to work we need to NOT RSolr.solr_escape the query; this is also true for quoted phrase searches
+    # We can manually escape solr special characters that cause issues.
+    query = solr_parameters[:q].gsub(/([\(\)\{\}\[\]\^\*\?\:\$\+\-\/])/, '\\\\\\\\\1')
+    # Wrap transcript query in parenthesis so phrase and non-phrase terms can be mixed together and parse correctly
+    transcript_subquery = "transcript_tsim:(#{query.gsub(/"/, '\\\\"')})"
+    # Enable subqueries that are disabled by default in edismax
+    solr_parameters[:uf]="* _query_"
+    # Subquery needs to be in quotes in order to parse correctly
+    # For some reason solr appears to require the first term in the query.  This causes problems if the search only matches in the transcript and not the metadata.
+    # To workaround this we added the has_model_ssim clause which shouldn't affect query results since it already exists as a filter query in #only_wanted_model.
+    solr_parameters[:q] = "has_model_ssim:MediaObject AND (#{RSolr.solr_escape(solr_parameters[:q])} _query_:\"{!join to=id from=isPartOf_ssim}{!join to=id from=isPartOf_ssim}#{transcript_subquery}\")"
   end
 
   def term_frequency_counts(solr_parameters)
@@ -65,7 +71,7 @@ class SearchBuilder < Blacklight::SearchBuilder
     transcripts_present = SupplementalFile.with_tag('transcript').any?
 
     # List of fields for displaying on search results (Blacklight index fields)
-    fl = ['id', 'has_model_ssim', 'title_tesi', 'date_issued_ssi', 'creator_ssim', 'abstract_ssi', 'duration_ssi', 'section_id_ssim', 'avalon_resource_type_ssim',
+    fl = ['id', 'has_model_ssim', 'title_tesi', 'alternative_title_ssim', 'date_issued_ssi', 'creator_ssim', 'abstract_ssi', 'duration_ssi', 'section_id_ssim', 'avalon_resource_type_ssim',
           'descMetadata_modified_dtsi', 'timestamp']
 
     # Add a field for matching child sections
@@ -75,9 +81,9 @@ class SearchBuilder < Blacklight::SearchBuilder
     solr_parameters["sections.rows"] = 1_000_000
     sections_fl = ['id']
     transcripts_fl = ['id'] if transcripts_present
-   
-    # Add fields for each term in the query 
-    terms = solr_parameters[:q].split
+
+    # Add fields for each term in the query, explictly escape closing parenthesis to prevent error
+    terms = solr_parameters[:q].gsub(/(\))/, "\\\\\1").split
     terms.each_with_index do |term, i|
       fl << "metadata_tf_#{i}:termfreq(mods_tesim,#{RSolr.solr_escape(term)})"
       fl << "structure_tf_#{i}:termfreq(section_label_tesim,#{RSolr.solr_escape(term)})"

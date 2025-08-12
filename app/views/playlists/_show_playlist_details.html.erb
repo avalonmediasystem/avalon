@@ -15,16 +15,18 @@ Unless required by applicable law or agreed to in writing, software distributed
 %>
 <div class="col-md-12">
   <div>
-    <%= link_to "View Playlist", @playlist, { class: 'btn btn-primary'} %>
+    <%= link_to "View Playlist", @playlist, class: 'btn btn-primary', data:{testid: 'playlist-view-playlist-btn'} %>
     <% if can?(:destroy, @playlist) %>
-    <%= link_to "Delete Playlist", @playlist, method: :delete, class: 'btn btn-link btn-confirmation', data: {placement: 'bottom', testid:'playlist-delete-playlist-form'} %>
+    <%= link_to "Delete Playlist", @playlist, method: :delete, class: 'btn btn-link btn-confirmation', data: { placement: 'bottom', testid:'playlist-delete-playlist-form', confirm: 'Are you sure?' } %>
     <% end %>
   </div>
 
   <div class="playlist-details-headline-wrapper">
     <h2 class="headline" style="display:inline-block"><%= t("playlist.details") %></h2>
-    <a id="playlist_edit_button" data-toggle="collapse" data-target="#playlist_edit_div, #playlist_view_div"
-    class="fa fa-edit btn btn-lg" data-testid="playlist-edit-icon-btn"></a>
+    <button id="playlist_edit_button" class="ms-2 btn btn-lg edit-details-icon-btn" data-bs-toggle="collapse" data-bs-target="#playlist_edit_div, #playlist_view_div" aria-expanded="false" 
+      aria-label="Edit playlist details" data-testid="playlist-edit-icon-btn">
+      <i class="fa fa-edit"></i>
+    </button>
   </div>
 
   <div id="playlist_view_div" class="container collapse <%= 'show' if @playlist.errors.empty? %>" data-testid="playlist-details">
@@ -49,11 +51,9 @@ Unless required by applicable law or agreed to in writing, software distributed
             <div class="input-group">
               <input type="text" class="form-control" id="playlist-share-link"
                 value="<%= access_token_url(@playlist) %>" placeholder="<%= access_token_url(@playlist) %>"
-                onClick="this.select();" readonly="readonly">
-              <span class="input-group-append" id="playlist-share-btn-result">
-                <%= button_tag "Copy", id: 'playlist-share-btn',
-                    class: "btn btn-success" %>
-              </span>
+                onClick="this.select();" readonly="readonly" data-testid="playlist-share-link">
+              <%= button_tag "Copy", id: 'playlist-share-btn',
+                  class: "btn btn-success", data:{testid:'playlist-copy-share-link-button'} %>
             </div>
           </div>
           <div class="col-sm-3">
@@ -78,23 +78,21 @@ Unless required by applicable law or agreed to in writing, software distributed
 
   <% content_for :page_scripts do %>
   <script>
-    $('#playlist-share-btn').popover({
-      trigger: 'hover',
-      placement: 'top',
-      content: 'Copy share link'
-    });
+    function setPopoverContent(target, new_content) {
+      target._config.content = new_content;
+      target.setContent();
+    }
 
-    var playlist_share_btn_result_content_default = "Copied to clipboard";
-    var playlist_share_btn_result_content_error = "Please press Ctrl/Cmd+C to copy";
-    $('#playlist-share-btn-result').popover({
-      trigger: 'manual',
-      placement: 'top',
-      content: playlist_share_btn_result_content_default
-    });
+    if (!!document.querySelector('#playlist-share-btn')) {
+      var playlistShareBtn = new bootstrap.Popover(document.querySelector("#playlist-share-btn"), {
+        trigger: 'hover',
+        placement: 'top',
+        content: 'Copy share link'
+      });
+    }
 
     $('#playlist-share-btn').click(function (event) {
       var copytarget = $('#playlist-share-link');
-      $(this).popover('hide');
 
       // select text
       copytarget.select();
@@ -102,13 +100,13 @@ Unless required by applicable law or agreed to in writing, software distributed
         // copy text
         document.execCommand('copy');
         copytarget.blur();
-        $('#playlist-share-btn-result').attr('data-content', playlist_share_btn_result_content_default);
+        setPopoverContent(playlistShareBtn, "Copied to clipboard");
       } catch (err) {
-        $('#playlist-share-btn-result').attr('data-content', playlist_share_btn_result_content_error);
+        setPopoverContent(playlistShareBtn, "Please press Ctrl/Cmd+C to copy");
       }
-      $('#playlist-share-btn-result').popover('show');
       setTimeout(function () {
-        $('#playlist-share-btn-result').popover('hide');
+        playlistShareBtn.hide();
+        setPopoverContent(playlistShareBtn, "Copy share link");
       }, 3000);
     });
 
@@ -123,7 +121,7 @@ Unless required by applicable law or agreed to in writing, software distributed
       '<div class="popover-body"></div>' +
       '</div>'
 
-    $('#get-new-link').popover({
+    var getNewLink = new bootstrap.Popover('#get-new-link', {
       trigger: 'click',
       html: true,
       sanitize: false,
@@ -134,7 +132,7 @@ Unless required by applicable law or agreed to in writing, software distributed
     });
 
     var new_link_cancel = function (event) {
-      $('#get-new-link').popover('hide');
+      getNewLink.hide();
     }
 
     var new_link_confirm = function (event) {
@@ -145,7 +143,7 @@ Unless required by applicable law or agreed to in writing, software distributed
           $('#playlist-share-link').attr('value', data.access_token_url)
         },
         complete: function () {
-          $('#get-new-link').popover('hide');
+          getNewLink.hide()
         }
       });
     }

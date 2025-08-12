@@ -18,8 +18,8 @@ Unless required by applicable law or agreed to in writing, software distributed
   <%= bootstrap_form_for object do |form| %>
   <input id="step" name="step" type="hidden" value="access-control" />
   <input id="donot_advance" name="donot_advance" type="hidden" value="true" />
-  <div class="form-group">
-    <div class="form-row">
+  <div class="mb-3">
+    <div class="row">
       <% if is_leasable %>
         <div class="col-5">
       <% else %>
@@ -83,10 +83,11 @@ Unless required by applicable law or agreed to in writing, software distributed
           <td class='access_list_dates'></td>
           <% if !input_disabled %>
           <td class='access_list_remove'>
-            <%= link_to "×",
+            <%= link_to "",
                 polymorphic_path(object, "remove_#{access_object}".to_sym => member_object, step: @active_step, donot_advance: true),
                 method: "put",
-                class: "btn btn-sm close remove" %>
+                class: "btn btn-sm btn-close remove" ,
+                data: { testid: "collection-access-remove-#{access_object}" } %>
           </td>
           <% end %>
         </tr>
@@ -109,10 +110,10 @@ Unless required by applicable law or agreed to in writing, software distributed
           </td>
           <% if !input_disabled %>
           <td class='access_list_remove'>
-            <%= link_to "×",
+            <%= link_to "",
                 polymorphic_path(object, "remove_lease".to_sym => lease_object, step: @active_step, donot_advance: true),
                 method: "put",
-                class: "btn btn-sm close remove" %>
+                class: "btn btn-sm btn-close remove" %>
           </td>
           <% end %>
         </tr>

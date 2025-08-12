@@ -16,6 +16,7 @@
 
 [class*="ramp--"] {
   font-family: Arial, Helvetica, sans-serif;
+  font-size: 1em;
 }
 
 .ramp--all-components {
@@ -61,6 +62,7 @@
     margin: 14px 0;
     display: flex;
     justify-content: space-between;
+    flex-wrap: wrap;
 
     #shareBtn {
       i {
@@ -75,10 +77,18 @@
       padding: 0;
     }
 
-    .ramp-button-group-2 {
-      display: flex;
-      justify-content: flex-end;
+    .accessibility-request {
       padding: 0;
+      // Align text to left when wrapped to a new line in smaller screens
+      @media (max-width: 575px) {
+        &:not(.col-8) {
+          text-align: left !important;
+        }
+      }
+      span {
+        vertical-align: -moz-middle-with-baseline;
+        vertical-align: -webkit-baseline-middle;
+      }
     }
   }
 
@@ -127,6 +137,12 @@
     -ms-flex-wrap: wrap;
     flex-wrap: wrap;
 
+    a.nav-link {
+      padding: 1em;
+    }
+    li.nav-item {
+      border-bottom: none;
+    }
     .nav-item {
       border: none;
       background-color: transparent;
@@ -136,20 +152,27 @@
       -ms-flex-positive: 1;
       flex-grow: 1;
       line-height: 1;
-      padding: 1rem;
       position: relative;
       z-index: 100;
+
+      button {
+        border: none;
+        width: 100%;
+        height: 100%;
+        padding: 1rem;
+        border-radius: 0;
+      }
     }
     .nav-item:not(:first-child) {
       border-left: 1px solid #e2e7e9;
       margin-left: -1px;
       border-radius: 0;
     }
-    .nav-item:hover {
+    .nav-link:hover {
       background-color: #f8f9fa;
       color: #0e1825;
     }
-    .nav-item:hover:after {
+    .nav-link:hover:after {
       background-color: #e2e7e9;
       bottom: 0;
       content: "";
@@ -159,19 +182,19 @@
       position: absolute;
       width: 100%;
     }
-    .nav-item:focus {
+    .nav-link:focus {
       outline: .125rem solid #80a590;
       outline-offset: 0.125rem;
       background-color: rgba(128, 165, 144, .3);
     }
-    .nav-item:focus:not(:focus-visible) {
+    .nav-link:focus:not(:focus-visible) {
       outline: none;
     }
-    .nav-item[aria-selected=true] {
+    .nav-link[aria-selected=true] {
       background-color: #f8f9fa;
     }
-    .nav-item[aria-selected=true]:after {
-      bottom: 0;
+    .nav-link[aria-selected=true]:after {
+      bottom: -1px;
       background-color: #2a5459;
       content: "";
       display: block;
@@ -296,34 +319,16 @@
 
   .ramp--auto-advance {
     height: fit-content;
-    max-height: 33.5px;
+    max-height: 34.5px;
     align-items: center;
 
+    .slider {
+      height: 30px;
+      width: 55px;
+    }
     .ramp--auto-advance-label {
       font-weight: bold;
       padding: 0px;
-    }
-
-    .ramp--auto-advance-toggle {
-      width: 2.5rem;
-      height: 1.45rem;
-
-      .slider:before {
-        height: 1.1rem;
-        width: 1rem;
-        left: 0.16rem;
-        bottom: 0.16rem;
-      }
-
-      input:checked+.slider:before {
-        -webkit-transform: translateX(1.1rem);
-        -ms-transform: translateX(1.1rem);
-        transform: translateX(1.1rem);
-      }
-    }
-
-    label.ramp--auto-advance-toggle {
-      margin-bottom: 0px;
     }
   }
 
@@ -337,19 +342,18 @@
     border-radius: 0 0 0.25em 0.25em;
     border-top: none;
 
-    .accordion .card {
-      border: none;
-      border-bottom: 1px solid rgba(0, 0, 0, 0.125);
-      display: flex;
-      flex-direction: column-reverse;
-      cursor: pointer;
+    .accordion-header {
+      font-family: inherit;
+      button svg {
+        margin-right: 0.25em;
+      }
     }
 
-    .card-body {
-      padding: 0;
+    .accordion-button::after {
+      background-image: unset !important;
     }
 
-    .card-header .accordion-arrow {
+    .accordion-button svg.accordion-arrow {
       transition: all 0.3s ease;
       -o-transition: all 0.3s ease;
       -moz-transition: all 0.3s ease;
@@ -360,7 +364,7 @@
       -webkit-transform: rotate(270deg);
     }
 
-    div[class~="show"]+.card-header .accordion-arrow {
+    .accordion-button[aria-expanded="true"] .accordion-arrow {
       transform: rotate(360deg);
       -o-transform: rotate(360deg);
       -ms-transform: rotate(360deg);
@@ -418,6 +422,12 @@
       overflow: auto;
       max-height: inherit;
     }
+
+    .ramp--structured-nav__content.playlist-items:focus,
+    .ramp--structured-nav__border:focus {
+      outline: 0.125rem solid #2a5459;
+      outline-offset: -0.125rem;
+    }
   }
 
   /* CSS for playlist items column height in landscape mode for mobile devices */
@@ -426,4 +436,40 @@
       height: 109vh !important;
     }
   }
+}
+
+.ramp--playlist-accordion-header {
+  padding: 0;
+  width: 100%;
+  text-align: left;
+  text-decoration: none;
+  &:focus,
+  &:hover,
+  &:active {
+    text-decoration: none;
+  }
+  // Remove default focus ring for mouse users
+  &:focus {
+    outline: none;
+    box-shadow: none;
+  }
+  // Allow focus ring to be visible on the accordion header for keyboard users
+  &:focus-visible {
+    box-shadow: 0 0 0 0.2rem rgba(42, 84, 89, 0.25);
+  }
+
+  svg.accordion-arrow {
+    vertical-align: text-bottom;
+  }
+}
+
+// Align volume slider thumb and big play icon
+.vjs-svg-icon>svg {
+  vertical-align: baseline;
+}
+
+// Remove focusable elements from DOM in VideoJS modals when modal is closed
+.vjs-theme-ramp>.vjs-modal-dialog[aria-hidden=true] select,
+.vjs-theme-ramp>.vjs-modal-dialog[aria-hidden=true] button {
+  display: none;
 }

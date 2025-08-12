@@ -13,8 +13,6 @@
 # ---  END LICENSE_HEADER BLOCK  ---
 
 require 'iconv'
-require 'avalon/workflow/workflow_controller_behavior'
-require 'avalon/controller/controller_behavior'
 require 'avalon/dropbox'
 
 module Avalon

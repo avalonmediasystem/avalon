@@ -1,0 +1,12 @@
+<Item label="Lunchroom Manners">
+    <Div label="Introduction">
+        <Span label="Part 1" begin="0" end="1:00"/>
+        <Span label="Part 2" begin="1:00" end="2:00"/>
+    </Div>
+    <Div label="Manners">
+        <Span label="Wash Hands" begin="2:00" end="2:30"/>
+        <Span label="No Elbows" begin="2:30" end="3:30"/>
+        <Span label="Inside Voices" begin="3:30" end="5:00"/>
+    </Div>
+    <Span label="Conclusion" begin="5:00"/>
+</Item>

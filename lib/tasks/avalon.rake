@@ -64,6 +64,17 @@ namespace :avalon do
     ActiveEncode::EngineAdapters::FfmpegAdapter.remove_old_files!(options)
   end
 
+  desc 'clean out orphaned checkout records'
+  task checkout_record_cleanup: :environment do
+    orphans = Checkout.all.select { |co| !MediaObject.exists?(co.media_object_id) }
+    orphans.destroy_all
+  end
+
+  desc 'clean out expired stream tokens'
+  task stream_token_cleanup: :environment do
+    CleanupStreamTokenJob.perform_now
+  end
+
   namespace :services do
     services = ["jetty", "felix", "delayed_job"]
     desc "Start Avalon's dependent services"

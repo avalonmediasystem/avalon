@@ -17,14 +17,14 @@
 // Copied from bootstrap-sass
 $line-height-computed:    floor(($font-size-base * $line-height-base)) !default; // ~20px
 $gray-base:              #000 !default;
-$gray-lighter:           lighten($gray-base, 93.5%) !default; // #eee
-$gray-darker:            lighten($gray-base, 13.5%) !default; // #222
+$gray-lighter:           tint-color($gray-base, 93.5%) !default; // #eee
+$gray-darker:            tint-color($gray-base, 13.5%) !default; // #222
 $state-success-text:             #3c763d !default;
 $state-success-bg:               #dff0d8 !default;
-$state-success-border:           darken(adjust-hue($state-success-bg, -10), 5%) !default;
+$state-success-border:           shade-color(adjust-hue($state-success-bg, -10), 5%) !default;
 $state-info-text:                #31708f !default;
 $state-info-bg:                  #d9edf7 !default;
-$state-info-border:              darken(adjust-hue($state-info-bg, -10), 7%) !default;
+$state-info-border:              shade-color(adjust-hue($state-info-bg, -10), 7%) !default; 
 
 /**
  *  Overridding Blacklight's brand logo
@@ -39,13 +39,20 @@ $state-info-border:              darken(adjust-hue($state-info-bg, -10), 7%) !de
   }
 
   .navbar-toggler {
-    @include media-breakpoint-down(sm) {
+    // Override Bootstrap's hamburger menu SVG to make the horizontal lines to use color white
+    --bs-navbar-toggler-icon-bg: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='white' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+    border-radius: 0.25em;
+    @include media-breakpoint-down(md) {
       background: $primary;
       margin: 0.5rem 1rem 0.5rem 0.5rem;
     }
   }
 
   padding: 0;
+}
+
+.navbar-logo {
+  display: inline-block !important;
 }
 
 .navbar {
@@ -63,10 +70,10 @@ $state-info-border:              darken(adjust-hue($state-info-bg, -10), 7%) !de
 }
 
 .navbar-nav .nav-item .nav-link {
-  @include media-breakpoint-up(md) {
+  @include media-breakpoint-up(sm) {
     padding: 0.85rem 0.9rem;
   }
-  @include media-breakpoint-down(sm) {
+  @include media-breakpoint-down(md) {
     padding-left: 10px;
     padding-right: 10px;
   }
@@ -81,7 +88,7 @@ $state-info-border:              darken(adjust-hue($state-info-bg, -10), 7%) !de
 }
 
 .navbar-light {
-  @include media-breakpoint-down(xs) {
+  @include media-breakpoint-down(sm) {
     background: $secondary;
   }
 }
@@ -93,13 +100,13 @@ $state-info-border:              darken(adjust-hue($state-info-bg, -10), 7%) !de
 }
 
 .navbar-header {
-  @include media-breakpoint-down(md) {
+  @include media-breakpoint-down(lg) {
     .row {
       display: flex;
     }
   }
 
-  @include media-breakpoint-down(sm) {
+  @include media-breakpoint-down(md) {
     width: 100%;
     background: white;
     box-shadow: 0 0 5px;
@@ -115,6 +122,10 @@ $state-info-border:              darken(adjust-hue($state-info-bg, -10), 7%) !de
  * might need some tweaking to work right
  */
 .nav-wizard {
+  --bs-nav-link-padding-y: 0.5rem;
+  --bs-nav-link-padding-x: 1rem;
+  --bs-nav-link-color: #2a5459;
+
   li {
     padding-top: 0;
     padding-right: $line-height-base;
@@ -177,6 +188,11 @@ $state-info-border:              darken(adjust-hue($state-info-bg, -10), 7%) !de
   }
 }
 
+// Override BS5 so active item has different text color
+.nav-item.active {
+  --bs-nav-link-color: $link-hover-color;
+}
+
 /* Manage menu in the nav-bar */
 .manage-btn {
   height: inherit;
@@ -190,9 +206,11 @@ $state-info-border:              darken(adjust-hue($state-info-bg, -10), 7%) !de
   &:hover {
     background-color: $yellow !important;
     color: $primary;
-
-
   }
+}
+
+#manage-dropdown.btn-group {
+  --bs-border-radius: 0 0 0.375rem 0.375rem;
 }
 
 #manage-dropdown:hover .manage-dropdown-menu {
@@ -220,7 +238,7 @@ $state-info-border:              darken(adjust-hue($state-info-bg, -10), 7%) !de
     background-color: $yellow;
   }
 
-  @include media-breakpoint-down(sm) {
+  @include media-breakpoint-down(md) {
     width: 100%;
   }
 }
@@ -230,7 +248,7 @@ $state-info-border:              darken(adjust-hue($state-info-bg, -10), 7%) !de
   display: block;
 }
 
-@include media-breakpoint-down(sm) {
+@include media-breakpoint-down(md) {
   .manage-btn {
     height: 38px;
     padding: 0 0.9rem;

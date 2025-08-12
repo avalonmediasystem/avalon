@@ -13,8 +13,8 @@ Unless required by applicable law or agreed to in writing, software distributed
   specific language governing permissions and limitations under the License.
 ---  END LICENSE_HEADER BLOCK  ---
 %>
-<div class="embed-responsive embed-responsive-16by9 timeliner-contianer" id="content" style="max-width: 100%;">
-    <iframe class="embed-responsive-item" src="<%= @timeliner_iframe_url %>"></iframe>
+<div class="ratio ratio-16x9 timeliner-contianer" id="content" style="max-width: 100%;max-height: 90%;">
+    <iframe src="<%= @timeliner_iframe_url %>" aria-label='timeline display'></iframe>
 </div>
 
 <% content_for :page_scripts do %>

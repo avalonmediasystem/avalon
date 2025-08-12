@@ -12,7 +12,11 @@
 #   specific language governing permissions and limitations under the License.
 # ---  END LICENSE_HEADER BLOCK  ---
 
+require 'active_model'
+
 class SpeedyAF::Proxy::MediaObject < SpeedyAF::Base
+  extend ActiveModel::Translation
+
   SINGULAR_FIELDS = [:title, :statement_of_responsibility, :date_created, :date_issued, :copyright_date, :abstract, :terms_of_use, :rights_statement]
   HASH_FIELDS = [:note, :other_identifier, :related_item_url]
 
@@ -44,7 +48,11 @@ class SpeedyAF::Proxy::MediaObject < SpeedyAF::Base
     end
     # Convert empty strings to nil
     @attrs.transform_values! { |value| value == "" ? nil : value }
+    @errors = ActiveModel::Errors.new(self)
   end
+
+  attr_accessor :name
+  attr_accessor :errors
 
   def to_model
     self
@@ -66,26 +74,12 @@ class SpeedyAF::Proxy::MediaObject < SpeedyAF::Base
     [id]
   end
 
-  # @return [SupplementalFile]
-  def supplemental_files(tag: '*')
-    return [] if supplemental_files_json.blank?
-    files = JSON.parse(supplemental_files_json).collect { |file_gid| GlobalID::Locator.locate(file_gid) }
-    case tag
-    when '*'
-      files
-    when nil
-      files.select { |file| file.tags.empty? }
-    else
-      files.select { |file| Array(tag).all? { |t| file.tags.include?(t) } }
-    end
-  end
-
   def sections
     return [] unless section_ids.present?
     query = "id:" + section_ids.join(" id:")
     @sections ||= SpeedyAF::Proxy::MasterFile.where(query,
                                                     order: -> { section_ids },
-                                                    load_reflections: true)
+                                                    load_reflections: [:derivatives, :structuralMetadata, :media_object])
   end
 
   def collection
@@ -144,12 +138,20 @@ class SpeedyAF::Proxy::MediaObject < SpeedyAF::Base
     sections.select { |master_file| master_file.supplemental_files(tag: tag).present? }.map(&:id)
   end
 
+  def sections_with_rendering_files?(tags)
+    tags.any? { |t| sections_with_files(tag: t).present? }
+  end
+
   def permalink_with_query(query_vars = {})
     val = permalink
     if val && query_vars.present?
       val = "#{val}?#{query_vars.to_query}"
     end
     val ? val.to_s : nil
+  end
+
+  def workflow
+    WorkflowDatastream.find("#{id}/workflow")
   end
 
   protected

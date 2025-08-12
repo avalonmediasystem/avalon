@@ -12,7 +12,7 @@
 #   specific language governing permissions and limitations under the License.
 # ---  END LICENSE_HEADER BLOCK  ---
 
-class ResourceDescriptionStep < Avalon::Workflow::BasicStep
+class ResourceDescriptionStep < BasicStep
   def initialize(step = 'resource-description', title = "Resource description", summary = "Metadata about the item", template = 'resource_description')
     super
   end
