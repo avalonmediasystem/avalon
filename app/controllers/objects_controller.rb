@@ -13,6 +13,8 @@
 # ---  END LICENSE_HEADER BLOCK  ---
 
 class ObjectsController < ApplicationController
+  layout false, only: [:autocomplete]
+
   def show
     obj = fetch_object params[:id]
     if obj.blank?
@@ -28,17 +30,17 @@ class ObjectsController < ApplicationController
   def autocomplete
     expires_now
     model = Module.const_get(params[:t].to_s.classify)
-    render json: model.send(:autocomplete, params[:q].strip, params[:id])
+    @results = model.send(:autocomplete, params[:q].strip, params[:id])
   end
 
   private
 
-    def determine_redirect_url(obj)
-      url = Addressable::URI.join(polymorphic_url(obj)+'/', params[:urlappend].sub(/^[\/]/,'')) if params[:urlappend]
-      Rails.application.routes.recognize_path(url.to_s) # This will raise an error if it doesn't match
-      raise ActionController::RoutingError if url.host != request.host # urls without paths incorrectly pass the above check
-      url
-    rescue
-      Addressable::URI.parse(polymorphic_url(obj))
-    end
+  def determine_redirect_url(obj)
+    url = Addressable::URI.join(polymorphic_url(obj) + '/', params[:urlappend].sub(/^[\/]/, '')) if params[:urlappend]
+    Rails.application.routes.recognize_path(url.to_s) # This will raise an error if it doesn't match
+    raise ActionController::RoutingError if url.host != request.host # urls without paths incorrectly pass the above check
+    url
+  rescue
+    Addressable::URI.parse(polymorphic_url(obj))
+  end
 end

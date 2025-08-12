@@ -32,6 +32,9 @@ Unless required by applicable law or agreed to in writing, software distributed
   <%= stylesheet_link_tag "application", media: "all" %>
   <%= stylesheet_pack_tag 'application' %>
   <%= javascript_pack_tag 'application' %>
+  <script type="module">
+    import githubAutoCompleteElement from 'https://cdn.skypack.dev/@github/auto-complete-element';
+  </script>
   <%= yield :page_styles %>
   <%= yield :additional_head_content %>
   <%= render "modules/google_analytics" %>

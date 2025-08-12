@@ -32,6 +32,7 @@ Unless required by applicable law or agreed to in writing, software distributed
       <% value = values[i] %>
       <div class="input-group <%=options[:extra_classes]%>">
         <% if options[:autocomplete_model] and options[:autocomplete_model].present? %>
+          <% options[:multiple_field] = fieldname + "_#{i}" %>
           <%= render partial: "typeahead_field", locals: {fieldname: fieldname, value: value, options: options} %>
         <% elsif options[:secondary_field] and options[:secondary_field].present? %>
           <%= render partial: "two_part_field", locals: {fieldname: fieldname, value: value, options: options} %>
