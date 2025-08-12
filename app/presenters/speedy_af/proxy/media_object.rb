@@ -25,7 +25,7 @@ class SpeedyAF::Proxy::MediaObject < SpeedyAF::Base
     instance_defaults ||= {}
     @model = SpeedyAF::Base.model_for(solr_document)
     @attrs = self.class.defaults.merge(instance_defaults)
-    solr_document.each_pair do |k, v|
+    solr_document.to_h.each_pair do |k, v|
       attr_name, value = parse_solr_field(k, v)
       @attrs[attr_name.to_sym] = value
     end
