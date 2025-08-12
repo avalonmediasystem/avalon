@@ -56,7 +56,7 @@ describe ObjectsController do
     it "should call autocomplete on the specified model" do
       user = FactoryBot.create(:user, email: "test@example.com")
       get :autocomplete, params: { t: 'user', q: 'test' }
-      expect(response.body).to include user.user_key
+      expect(assigns(:results).first[:display]).to eq user.user_key
     end
   end
 end
