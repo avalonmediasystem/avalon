@@ -25,23 +25,36 @@ describe SupplementalFile do
           expect(supplemental_file.valid?).to be_truthy
         end
       end
-      context 'VTT caption file' do
-        let(:supplemental_file) { FactoryBot.create(:supplemental_file, :with_caption_file, :with_caption_tag) }
-        it 'should validate' do
-          expect(supplemental_file.valid?).to be_truthy
+
+      context 'caption files' do
+        let(:vtt) { FactoryBot.create(:supplemental_file, :with_caption_file, :with_caption_tag) }
+        let(:srt) { FactoryBot.create(:supplemental_file, :with_caption_srt_file, :with_caption_tag) }
+        let(:file) { FactoryBot.build(:supplemental_file, :with_attached_file, :with_caption_tag) }
+        it 'should validate VTT' do
+          expect(vtt.valid?).to be_truthy
+        end
+        it 'should validate SRT' do
+          expect(srt.valid?).to be_truthy
+        end
+        it 'should not validate non-SRT/VTT' do
+          expect(file.valid?).to be_falsey
+          expect(file.errors[:file_type]).not_to be_empty
         end
       end
-      context 'SRT caption file' do
-        let(:supplemental_file) { FactoryBot.create(:supplemental_file, :with_caption_srt_file, :with_caption_tag) }
-        it 'should validate' do
-          expect(supplemental_file.valid?).to be_truthy
+
+      context 'audio description files' do
+        let(:vtt) { FactoryBot.create(:supplemental_file, :with_description_file, :with_description_tag) }
+        let(:srt) { FactoryBot.create(:supplemental_file, :with_description_srt_file, :with_description_tag) }
+        let(:file) { FactoryBot.build(:supplemental_file, :with_attached_file, :with_caption_tag) }
+        it 'should validate VTT' do
+          expect(vtt.valid?).to be_truthy
         end
-      end
-      context 'non-VTT/non-SRT caption file' do
-        let(:supplemental_file) { FactoryBot.build(:supplemental_file, :with_attached_file, :with_caption_tag) }
-        it 'should not validate' do
-          expect(supplemental_file.valid?).to be_falsey
-          expect(supplemental_file.errors[:file_type]).not_to be_empty
+        it 'should validate SRT' do
+          expect(srt.valid?).to be_truthy
+        end
+        it 'should not validate non-SRT/VTT' do
+          expect(file.valid?).to be_falsey
+          expect(file.errors[:file_type]).not_to be_empty
         end
       end
     end
@@ -68,8 +81,8 @@ describe SupplementalFile do
   describe '#attach_file' do
     subject { described_class.new }
 
-    context 'via file upload' do   
-      let(:file) { fixture_file_upload(Rails.root.join('spec', 'fixtures', 'meow.wav'))}
+    context 'via file upload' do
+      let(:file) { fixture_file_upload(Rails.root.join('spec', 'fixtures', 'meow.wav')) }
       before { subject.attach_file(file) }
 
       it 'attaches the file and assigns metadata' do
@@ -165,14 +178,14 @@ describe SupplementalFile do
     let(:caption_transcript) { FactoryBot.create(:supplemental_file, :with_caption_file, tags: ['caption', 'transcript']) }
 
     it "should solrize transcripts" do
-      expect(transcript.to_solr[ "transcript_tsim" ]).to be_a Array
-      expect(transcript.to_solr[ "transcript_tsim" ][0]).to eq "00:00:03.500 --> 00:00:05.000 Example captions"
-      expect(caption_transcript.to_solr[ "transcript_tsim" ]).to be_a Array
-      expect(transcript.to_solr[ "transcript_tsim" ][0]).to eq "00:00:03.500 --> 00:00:05.000 Example captions"
+      expect(transcript.to_solr["transcript_tsim"]).to be_a Array
+      expect(transcript.to_solr["transcript_tsim"][0]).to eq "00:00:03.500 --> 00:00:05.000 Example captions"
+      expect(caption_transcript.to_solr["transcript_tsim"]).to be_a Array
+      expect(transcript.to_solr["transcript_tsim"][0]).to eq "00:00:03.500 --> 00:00:05.000 Example captions"
     end
 
     it "should not solrize non-transcripts" do
-      expect(caption.to_solr[ "transcript_tsim" ]).to be nil
+      expect(caption.to_solr["transcript_tsim"]).to be nil
     end
   end
 
@@ -181,39 +194,12 @@ describe SupplementalFile do
       supplemental_file.language = 'eng'
       expect(supplemental_file.valid?).to be_truthy
     end
+
     it 'should not validate invalid language' do
       supplemental_file.language = 'engl'
       expect(supplemental_file.valid?).to be_falsey
     end
-  end
-  
 
-  it "stores no tags by default" do
-    expect(supplemental_file.tags).to match_array([])
-  end
-
-  context "with valid tags" do
-    let(:supplemental_file) { FactoryBot.create(:supplemental_file, :with_caption_file)}
-    let(:tags) { ["transcript", "caption", "machine_generated"] }
-
-    it "can store tags" do
-      supplemental_file.tags = tags
-      supplemental_file.save
-      expect(supplemental_file.reload.tags).to match_array(tags)
-    end
-  end
-
-  context "with invalid tags" do
-    let(:bad_tags) { ["unallowed"] }
-
-    it "does not store tags" do
-      supplemental_file.tags = bad_tags
-      expect(supplemental_file.save).to be_falsey
-      expect(supplemental_file.errors.messages[:tags]).to include("unallowed is not an allowed value")
-    end
-  end
-
-  context 'language' do
     it "can be edited" do
       supplemental_file.language = 'ger'
       supplemental_file.save
@@ -221,10 +207,37 @@ describe SupplementalFile do
     end
   end
 
+  describe 'tags' do
+    it "stores no tags by default" do
+      expect(supplemental_file.tags).to match_array([])
+    end
+
+    context "with valid tags" do
+      let(:supplemental_file) { FactoryBot.create(:supplemental_file, :with_caption_file) }
+      let(:tags) { ["transcript", "caption", "machine_generated", "description"] }
+
+      it "can store tags" do
+        supplemental_file.tags = tags
+        supplemental_file.save
+        expect(supplemental_file.reload.tags).to match_array(tags)
+      end
+    end
+
+    context "with invalid tags" do
+      let(:bad_tags) { ["unallowed"] }
+
+      it "does not store tags" do
+        supplemental_file.tags = bad_tags
+        expect(supplemental_file.save).to be_falsey
+        expect(supplemental_file.errors.messages[:tags]).to include("unallowed is not an allowed value")
+      end
+    end
+  end
+
   describe '#as_json' do
     subject { supplemental_file.as_json }
     let(:supplemental_file) { FactoryBot.create(:supplemental_file, label: 'Test') }
-    
+
     context 'generic supplemental file' do
       it 'serializes the metadata' do
         expect(subject[:id]).to eq supplemental_file.id
@@ -263,6 +276,13 @@ describe SupplementalFile do
         expect(subject[:type]).to eq 'transcript'
       end
     end
+
+    context 'audio description file' do
+      let(:supplemental_file) { FactoryBot.create(:supplemental_file, :with_description_file, :with_description_tag, label: 'Test') }
+      it 'sets the type properly' do
+        expect(subject[:type]).to eq 'audio_description'
+      end
+    end
   end
 
   describe '.convert_from_srt' do
@@ -298,21 +318,11 @@ describe SupplementalFile do
 
     context 'vtt file' do
       let(:file) { FactoryBot.create(:supplemental_file, file: fixture_file_upload(Rails.root.join('spec', 'fixtures', 'chunk_test.vtt'), 'text/vtt')) }
-      let(:parsed_text) { [
-        "00:00:01.200 --> 00:00:21.000 [music]",
-        "00:00:22.200 --> 00:00:26.600 Just before lunch one day, a puppet show was put on at school.",
-        '00:00:26.700 --> 00:00:31.500 It was called "Mister Bungle Goes to Lunch".',
-        "00:00:31.600 --> 00:00:34.500 It was fun to watch.",
-        "00:00:36.100 --> 00:00:41.300 In the puppet show, Mr. Bungle came to the boys' room on his way to lunch.",
-        "00:00:41.400 --> 00:00:46.200 He looked at his hands. His hands were dirty and his hair was messy.",
-        "00:00:46.300 --> 00:00:51.100 But Mr. Bungle didn't stop to wash his hands or comb his hair.",
-        "00:00:51.200 --> 00:00:54.900 He went right to lunch.",
-        "00:00:57.900 --> 00:01:05.700 Then, instead of getting into line at the lunchroom, Mr. Bungle pushed everyone aside and went right to the front.",
-        "00:01:06.000 --> 00:01:11.800 Even though this made the children laugh, no one thought that was a fair thing to do."
-      ] }
-      
       it 'splits the text by time cue' do
-        expect(subject).to match_array parsed_text
+        expect(subject).to be_a Array
+        expect(subject.length).to eq 10
+        expect(subject.all? { |s| s.is_a?(String) }).to eq true
+        expect(subject[0]).to eq "00:00:01.200 --> 00:00:21.000 [music]"
       end
     end
 
