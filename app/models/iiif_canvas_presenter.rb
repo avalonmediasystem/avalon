@@ -41,7 +41,7 @@ class IiifCanvasPresenter
   end
 
   def annotation_content
-    supplemental_captions_transcripts.uniq.collect { |file| supplementing_content_data(file) }.flatten
+    supplemental_accessibility_files.uniq.collect { |file| supplementing_content_data(file) }.flatten
   end
 
   def sequence_rendering
@@ -132,6 +132,9 @@ class IiifCanvasPresenter
       when ['transcript']
         url = Rails.application.routes.url_helpers.transcripts_master_file_supplemental_file_url(master_file.id, file.id)
         IIIFManifest::V3::AnnotationContent.new(body_id: url, **supplemental_attributes(file, type: 'transcript'))
+      when ['description']
+        url = Rails.application.routes.url_helpers.descriptions_master_file_supplemental_file_url(master_file.id, file.id)
+        IIIFManifest::V3::AnnotationContent.new(body_id: url, **supplemental_attributes(file, type: 'description'))
       when ['caption', 'transcript']
         caption_url = Rails.application.routes.url_helpers.captions_master_file_supplemental_file_url(master_file.id, file.id)
         transcript_url = Rails.application.routes.url_helpers.transcripts_master_file_supplemental_file_url(master_file.id, file.id)
@@ -153,8 +156,12 @@ class IiifCanvasPresenter
       !master_file.succeeded?
     end
 
-    def supplemental_captions_transcripts
-      master_file.supplemental_files(tag: 'caption') + master_file.supplemental_files(tag: 'transcript')
+    def supplemental_accessibility_files
+      files = []
+      ['caption', 'transcript', 'description'].each do |tag|
+        files.concat(master_file.supplemental_files(tag: tag))
+      end
+      files
     end
 
     def simple_iiif_range(label = stream_info[:label])
@@ -241,7 +248,7 @@ class IiifCanvasPresenter
     def supplemental_attributes(file, type: nil)
       if file.is_a?(SupplementalFile)
         label = file.tags.include?('machine_generated') ? file.label + ' (machine generated)' : file.label
-        format = if file.file.content_type == 'text/srt' && type == 'caption'
+        format = if file.file.content_type == 'text/srt' && (type == 'caption' || type == 'description')
                    'text/vtt'
                  else
                    file.file.content_type
