@@ -31,7 +31,7 @@ FactoryBot.define do
     end
 
     trait :with_caption_srt_file do
-      file { fixture_file_upload(Rails.root.join('spec', 'fixtures', 'captions.srt'), 'text/srt')}
+      file { fixture_file_upload(Rails.root.join('spec', 'fixtures', 'captions.srt'), 'text/srt') }
     end
 
     trait :with_description_file do
@@ -39,7 +39,7 @@ FactoryBot.define do
     end
 
     trait :with_description_srt_file do
-      file { fixture_file_upload(Rails.root.join('spec', 'fixtures', 'captions.srt'), 'text/srt')}
+      file { fixture_file_upload(Rails.root.join('spec', 'fixtures', 'captions.srt'), 'text/srt') }
     end
 
     trait :with_transcript_tag do
