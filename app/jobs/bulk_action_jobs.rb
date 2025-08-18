@@ -280,4 +280,16 @@ module BulkActionJobs
       Checkout.active_for_media_object(collection.media_object_ids).update_all(return_time: DateTime.current, updated_at: DateTime.current)
     end
   end
+
+  class RemoveManagers < ActiveJob::Base
+    def perform(user_ids)
+      collections = Admin::Collection.where("collection_managers_ssim: (#{user_ids.join(' OR ')})")
+      collections.each do |collection|
+        collection.managers = collection.managers - user_ids
+      rescue ArgumentError
+        logger.error("At least one manager is required: #{collection.id}")
+        next
+      end
+    end
+  end
 end

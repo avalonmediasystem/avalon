@@ -191,3 +191,29 @@ describe BulkActionJobs::ReturnCheckouts do
     expect(checkout_3.return_time).to be >= DateTime.current.to_time
   end
 end
+
+describe BulkActionJobs::RemoveManagers do
+  let(:users) { FactoryBot.create_list(:manager, 2) }
+  let(:admin) { FactoryBot.create(:admin) }
+  let!(:collection1) { FactoryBot.create(:collection, managers: users.map(&:user_key)) }
+  let!(:collection2) { FactoryBot.create(:collection, managers: users.map(&:user_key) + [admin.user_key]) }
+
+  it 'removes provided users from collection management' do
+    BulkActionJobs::RemoveManagers.perform_now([users.first.user_key, admin.user_key])
+    collection1.reload
+    collection2.reload
+    expect(collection1.managers).to eq([users[1].user_key])
+    expect(collection2.managers).to eq([users[1].user_key])
+  end
+
+  context 'sole manager' do
+    let!(:collection2) { FactoryBot.create(:collection, managers: [users.first.user_key]) }
+
+    it 'does not remove the manager' do
+      expect(Rails.logger).to receive(:error).with("At least one manager is required: #{collection2.id}")
+      BulkActionJobs::RemoveManagers.perform_now([users.first.user_key])
+      collection2.reload
+      expect(collection2.managers).to eq([users.first.user_key])
+    end
+  end
+end
