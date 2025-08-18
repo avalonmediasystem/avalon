@@ -20,10 +20,10 @@ class SupplementalFile < ApplicationRecord
   scope :with_tag, ->(tag_filter) { where("tags LIKE ?", "%\n- #{tag_filter}\n%") }
 
   # TODO: the empty tag should represent a generic supplemental file
-  validates :tags, array_inclusion: ['transcript', 'caption', 'machine_generated', '', nil]
+  validates :tags, array_inclusion: ['transcript', 'caption', 'description', 'machine_generated', '', nil]
   validates :language, inclusion: { in: LanguageTerm::Iso6392.map.keys }
   validates :parent_id, presence: true
-  validate  :validate_file_type, if: :caption?
+  validate  :validate_file_type, if: proc { |file| file.caption? || file.description? }
 
   serialize :tags, type: Array
 
@@ -58,6 +58,10 @@ class SupplementalFile < ApplicationRecord
     tags.include?('transcript')
   end
 
+  def description?
+    tags.include?('description')
+  end
+
   def machine_generated?
     tags.include?('machine_generated')
   end
@@ -66,11 +70,13 @@ class SupplementalFile < ApplicationRecord
     tags.include?('caption') && tags.include?('transcript')
   end
 
-  def as_json(options={})
+  def as_json(_options = {})
     type = if tags.include?('caption')
              'caption'
            elsif tags.include?('transcript')
              'transcript'
+           elsif tags.include?('description')
+             'audio_description'
            else
              'generic'
            end

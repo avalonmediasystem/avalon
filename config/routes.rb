@@ -174,6 +174,7 @@ Rails.application.routes.draw do
       member do
         get 'captions'
         get 'transcripts', :to => redirect('/master_files/%{master_file_id}/supplemental_files/%{id}')
+        get 'descriptions', :to => redirect('master_files/%{master_file_id}/supplemental_files/%{id}')
       end
       get :index, constraints: { format: 'json' }, on: :collection
     end

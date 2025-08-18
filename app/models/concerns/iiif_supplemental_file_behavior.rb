@@ -16,7 +16,7 @@ module IiifSupplementalFileBehavior
   private
 
   def supplemental_files_rendering(object)
-    tags = ['caption', nil]
+    tags = ['caption', 'description', nil]
     supplemental_files = []
     tags.each do |tag|
       supplemental_files += object.supplemental_files(tag: tag).collect do |sf|
