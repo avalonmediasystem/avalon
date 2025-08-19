@@ -84,8 +84,9 @@ describe IiifManifestPresenter do
         allow_any_instance_of(IiifManifestPresenter).to receive(:lending_enabled).and_return(false)
         expect(subject['Bibliographic ID'].first).to include media_object.bibliographic_id[:id]
         expect(subject['Other Identifier'].size).to eq 1
-        expect(subject['Other Identifier'].first).not_to include media_object.bibliographic_id[:id]
-        expect(subject['Other Identifier'].first).to include media_object.other_identifier.first[:id]
+        other_id = subject['Other Identifier'].first.match(/.+: (.+)/)[1]
+        expect(other_id).not_to eq media_object.bibliographic_id[:id]
+        expect(other_id).to eq media_object.other_identifier.first[:id]
       end
     end
 
