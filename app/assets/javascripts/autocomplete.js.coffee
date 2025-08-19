@@ -15,8 +15,9 @@
 @initialize_typeahead = ($t) ->
   $validate = $t.data('validate') || false
   $t.attr('autocomplete','off')
-  # Get the closest 'Add' button related to the input text field
-  add_button = ($t.closest 'div').next().first().children()
+  # Get the closest 'Add' button in the form row
+  add_button = $t.closest('div[class="row"]')
+    .find('button').filter((i, btn) -> $(btn).text().trim() == 'Add').first()
   # Disable the 'Add' button
   add_button.prop 'disabled', true
   mySource = new Bloodhound(
