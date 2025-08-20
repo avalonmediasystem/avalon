@@ -28,7 +28,8 @@ button.btn-close {
 
 .btn-danger,
 .btn-danger:hover,
-.btn-danger:visited {
+.btn-danger:visited,
+.btn-danger:disabled {
   color: $white;
 }
 
