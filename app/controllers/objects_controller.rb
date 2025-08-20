@@ -31,6 +31,11 @@ class ObjectsController < ApplicationController
     expires_now
     model = Module.const_get(params[:t].to_s.classify)
     @results = model.send(:autocomplete, params[:q].strip, params[:id])
+
+    respond_to do |format|
+      format.html
+      format.json { render json: @results }
+    end
   end
 
   private

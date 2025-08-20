@@ -16,7 +16,7 @@ Unless required by applicable law or agreed to in writing, software distributed
 
 <%# locals: (model:, id: 'undefined', field_id: nil, field_name:, for_field: field_name, value: nil, data: nil, disabled: false, placeholder: nil) %>
 
-<auto-complete class='typeahead' src='/autocomplete?t=<%= "#{model}" %>&id=<%= "#{id}" %>' for=<%= "#{for_field}-popup" %>>
+<auto-complete class='typeahead' src='/autocomplete?t=<%= "#{model}" %>&id=<%= "#{id}" %>&format=html' for=<%= "#{for_field}-popup" %>>
   <%= text_field_tag field_name, value,
     id: field_id,
     class: "form-control typeahead-input",
