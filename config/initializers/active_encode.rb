@@ -21,5 +21,16 @@ Rails.application.config.to_prepare do
     if Settings.dropbox.upload_uri.nil?
       ENV['SETTINGS__DROPBOX__UPLOAD_URI'] = Settings.dropbox.upload_uri = "s3://#{Settings.encoding.masterfile_bucket}/dropbox/"
     end
+  when :media_convert
+    require 'avalon/media_convert_encode'
+
+    MasterFile.default_encoder_class = MediaConvertEncode
+
+    if Settings.dropbox.path.nil?
+      ENV['SETTINGS__DROPBOX__PATH'] = Settings.dropbox.path = "s3://#{Settings.encoding.masterfile_bucket}/dropbox/"
+    end
+    if Settings.dropbox.upload_uri.nil?
+      ENV['SETTINGS__DROPBOX__UPLOAD_URI'] = Settings.dropbox.upload_uri = "s3://#{Settings.encoding.masterfile_bucket}/dropbox/"
+    end
   end
 end
