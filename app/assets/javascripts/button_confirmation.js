@@ -44,6 +44,8 @@ window.apply_button_confirmation = function () {
   });
 
   if (popoverList.length !== 0) {
+    // Remove event before adding it to avoid duplicate event handling
+    $(document).off('click', '#special_button_color');
     $(document).on('click', '#special_button_color', function (e) {
       // Stop page from scrolling up on 'Cancel' click
       e.preventDefault();
@@ -55,6 +57,8 @@ window.apply_button_confirmation = function () {
       return true;
     });
 
+    // Remove event before adding it to avoid duplicate event handling
+    $(document).off('confirm', '.btn-confirmation')
     $(document).on('confirm', '.btn-confirmation', function(e) {
       if (activeDeleteBtn) {
         bootstrap.Popover.getInstance(activeDeleteBtn).hide();
