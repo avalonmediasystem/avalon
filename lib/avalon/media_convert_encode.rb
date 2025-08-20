@@ -16,9 +16,11 @@ require 'avalon/elastic_transcoder'
 
 class MediaConvertEncode < WatchedEncode
   self.engine_adapter = :media_convert
-  self.engine_adapter.direct_output_lookup = true
   self.engine_adapter.role = Settings.encoding.mediaconvert_role
   self.engine_adapter.output_bucket = Settings.encoding.derivative_bucket
+
+  self.engine_adapter.setup!
+  #self.engine_adapter.direct_output_lookup = true
 
   before_create prepend: true do |encode|
     encode.options.merge!(use_original_url: true,
@@ -31,12 +33,12 @@ class MediaConvertEncode < WatchedEncode
     def mediaconvert_outputs(options)
       case options[:preset]
       when 'fullaudio'
-        [{ modifier: "_medium", preset: 'audio_medium' },
-        { modifier: "_high", preset: 'audio_high' }]
+        [{ modifier: "quality-medium", preset: 'audio_medium' },
+        { modifier: "quality-high", preset: 'audio_high' }]
       when 'avalon'
-        [{ modifier: "_low", preset: 'video_low' },
-        { modifier: "_medium", preset: 'video_medium' },
-        { modifier: "_high", preset: 'video_high' }]
+        [{ modifier: "quality-low", preset: 'video_low' },
+        { modifier: "quality-medium", preset: 'video_medium' },
+        { modifier: "quality-high", preset: 'video_high' }]
       else
         []
       end
