@@ -388,6 +388,21 @@ RSpec.describe TimelinesController, type: :controller do
         expect(response_json["manifest"]).to eq timeline.manifest
       end
     end
+
+    context 'deleted/missing timeline' do
+      it 'provides missing item error page' do
+        get :show, params: { id: 'missing' }, session: valid_session
+        expect(response.status).to eq 404
+        expect(response).to render_template("errors/unknown_pid")
+      end
+
+      it 'provides json error response' do
+        get :show, params: { id: 'missing' }, session: valid_session, format: :json
+        expect(response.status).to eq 404
+        result = JSON.parse(response.body)
+        expect(result).to eq({ "errors" => ["missing could not be found"] })
+      end
+    end
   end
 
   describe "GET #new" do
