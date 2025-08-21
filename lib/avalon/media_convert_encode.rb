@@ -16,7 +16,7 @@ require 'avalon/elastic_transcoder'
 
 class MediaConvertEncode < WatchedEncode
   self.engine_adapter = :media_convert
-  self.engine_adapter.role = Settings.encoding.mediaconvert_role
+  self.engine_adapter.role = Settings.encoding.media_convert_role
   self.engine_adapter.output_bucket = Settings.encoding.derivative_bucket
 
   #self.engine_adapter.setup!
@@ -25,6 +25,7 @@ class MediaConvertEncode < WatchedEncode
   before_create prepend: true do |encode|
     encode.options.merge!(use_original_url: true,
                           output_type: :file,
+                          output_prefix: "#{SecureRandom.uuid}/",
                           outputs: mediaconvert_outputs(encode.options))
   end
 
