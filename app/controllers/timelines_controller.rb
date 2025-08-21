@@ -381,4 +381,12 @@ class TimelinesController < ApplicationController
       new_params[:tags] = JSON.parse(new_params[:tags]) if new_params[:tags].present?
       new_params
     end
+
+    rescue_from ActiveRecord::RecordNotFound do |exception|
+      if request.format == :json
+        render json: { errors: ["#{params[:id]} could not be found"] }, status: :not_found
+      elsif request.format == :html
+        render '/errors/unknown_pid', status: :not_found
+      end
+    end
 end

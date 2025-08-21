@@ -150,6 +150,21 @@ RSpec.describe PlaylistsController, type: :controller do
     end
     # TODO: write tests for public/private playists
 
+    context 'deleted/missing playlist' do
+      it 'provides missing item error page' do
+        get :show, params: { id: 'missing' }, session: valid_session
+        expect(response.status).to eq 404
+        expect(response).to render_template("errors/unknown_pid")
+      end
+
+      it 'provides json error response' do
+        get :show, params: { id: 'missing' }, session: valid_session, format: :json
+        expect(response.status).to eq 404
+        result = JSON.parse(response.body)
+        expect(result).to eq({ "errors" => ["missing could not be found"] })
+      end
+    end
+
     context 'read from solr' do
       render_views
 
