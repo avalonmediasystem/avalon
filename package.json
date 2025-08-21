@@ -5,6 +5,7 @@
     "@babel/plugin-proposal-object-rest-spread": "^7.20.7",
     "@babel/preset-react": "^7.0.0",
     "@babel/runtime": "^7.21.1",
+    "@github/auto-complete-element": "^3.8.0",
     "@rails/webpacker": "^5.4.4",
     "@samvera/ramp": "^4.0.2",
     "babel-plugin-macros": "^3.1.0",

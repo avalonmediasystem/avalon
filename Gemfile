@@ -26,7 +26,6 @@ gem 'jquery-ui-rails'
 gem 'react_on_rails'
 gem 'sassc-rails'
 gem 'sprockets-es6'
-gem 'twitter-typeahead-rails', '0.11.1.pre.corejavascript'
 gem 'terser'
 gem 'shakapacker'
 

@@ -67,7 +67,6 @@ Unless required by applicable law or agreed to in writing, software distributed
              locals: {form: form, field: :language,
                       options: {multivalued: true,
                                 autocomplete_model: 'languageTerm',
-                                autocomplete_validate: false,
                                 autocomplete_display_key: :text,
                                 autocomplete_id_key: :code,
                                 data:{testid:'resource-description-language'}}} 
@@ -82,8 +81,7 @@ Unless required by applicable law or agreed to in writing, software distributed
              locals: {form: form, field: :series,
                       options: {display_label: "Series",
                                 multivalued: true,
-                                autocomplete_model: 'mediaObject',
-                                autocomplete_validate: false}} %>
+                                autocomplete_model: 'mediaObject'}} %>
 
   <%= render partial: 'text_field',
              locals: {form: form, field: :related_item_url,

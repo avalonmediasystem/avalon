@@ -74,10 +74,8 @@ Unless required by applicable law or agreed to in writing, software distributed
               <%= label_tag "user" do %>
                 <%= render partial: "modules/tooltip", locals: { form: form, field: 'user', tooltip: t("access_control.user"), options: {display_label: t("access_control.userlabel").html_safe} } %>
                 <div class="d-flex flex-column flex-sm-row mb-1">
-                  <%= hidden_field_tag "user" %>
-                  <%= text_field_tag "user_display", nil,
-                        class: "typeahead from-model form-control",
-                        data: { model: 'user', target: "user" } %>
+                  <%= render partial: 'modules/autocomplete_input', locals: { field_name: 'user',
+                                                                              model: 'user' } %>
                   <%= text_field_tag "add_user_begin", nil, placeholder: 'Begin Date (yyyy-mm-dd)', class: 'form-control date-input access_date', autocomplete: 'off' %>
                   <%= text_field_tag "add_user_end", nil, placeholder: 'End Date (yyyy-mm-dd)', class: 'form-control date-input access_date', autocomplete: 'off' %>
                 </div>
@@ -105,10 +103,8 @@ Unless required by applicable law or agreed to in writing, software distributed
               <%= label_tag "class" do %>
                 <%= render partial: "modules/tooltip", locals: { form: form, field: 'class', tooltip: t("access_control.class"), options: {display_label: t("access_control.classlabel").html_safe} } %>
                 <div class="d-flex flex-column flex-sm-row mb-1">
-                  <%= hidden_field_tag "class" %>
-                  <%= text_field_tag "class_display", nil,
-                        class: "typeahead from-model form-control",
-                        data: { model: 'externalGroup', target: "class" } %>
+                  <%= render partial: 'modules/autocomplete_input', locals: { field_name: 'class',
+                                                                              model: 'externalGroup' } %>
                   <%= text_field_tag "add_class_begin", nil, placeholder: 'Begin Date (yyyy-mm-dd)', class: 'form-control date-input access_date', autocomplete: 'off' %>
                   <%= text_field_tag "add_class_end", nil, placeholder: 'End Date (yyyy-mm-dd)', class: 'form-control date-input access_date', autocomplete: 'off' %>
                 </div>
@@ -140,5 +136,4 @@ Unless required by applicable law or agreed to in writing, software distributed
   <% end %>
 
   <script src="<%= asset_path('pop_help.js') %>"></script>
-  <script src="<%= asset_path('autocomplete.js') %>"></script>
 </div>

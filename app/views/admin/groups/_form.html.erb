@@ -54,8 +54,9 @@ Unless required by applicable law or agreed to in writing, software distributed
         <%= bootstrap_form_for @group  do |f| %>
         <div class="mb-3">
           <div class="input-group">
-            <%= text_field_tag :new_user, nil, class: 'typeahead from-model form-control',
-                data: { model: 'user' }, placeholder: 'Enter a username' %>
+            <%= render partial: 'modules/autocomplete_input', locals: { field_name: :new_user,
+                                                                        model: 'user',
+                                                                        placeholder: 'Enter a username' } %>
             <span class="input-group-append">
               <%= button_tag "Add user", type: "submit", class: "btn btn-primary" %>
             </span>

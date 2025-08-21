@@ -31,12 +31,14 @@ Unless required by applicable law or agreed to in writing, software distributed
               options_from_collection_for_select(*dropdown_values),
               { include_blank: true, disabled: input_disabled, class: "form-control"} %>
           <% elsif defined?(autocomplete_model) && autocomplete_model.present? %>
-            <%= hidden_field_tag "add_#{access_object}" %>
-            <%= text_field_tag "add_#{access_object}_display", nil,
-              class: "typeahead from-model form-control",
-              style: "width: 100%;",
-              data: { model: autocomplete_model, target: "add_#{access_object}", testid: "media-object-#{access_object}" },
-              disabled: input_disabled %>
+            <%# This div is necessary for proper rendering of the typeahead dropdown 
+              without screwing up styling in the rest of the form %>
+            <div style='display: flex;'>
+              <%= render partial: 'modules/autocomplete_input', locals: { field_name: "add_#{access_object}",
+                                                                          model: autocomplete_model,
+                                                                          id: object.id,
+                                                                          data: { testid: "media-object-#{access_object}" } } %>
+            </div>
           <% else %>
             <%= text_field_tag "add_#{access_object}", nil,
               class: "form-control",

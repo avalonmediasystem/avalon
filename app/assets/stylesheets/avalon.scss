@@ -250,10 +250,6 @@ div.alert-danger {
     margin-right: 0;
   }
 
-  span.twitter-typeahead {
-    width: 100%;
-  }
-
   .remove:hover,
   .remove:active {
     @extend .btn-danger;
@@ -797,37 +793,9 @@ h5.card-title {
   padding: 8px;
 }
 
-.twitter-typeahead {
-  z-index: auto !important;
-  background-color: $white;
-  display: inline-flex !important;
-  flex-grow: 2;
-}
-
-.twitter-typeahead .tt-menu {
-  float: left;
+.autocomplete_popup {
+  z-index: 100;
   width: 100%;
-  min-width: 10rem;
-  padding: 0.5rem 0;
-  margin: 0.125rem 0 0;
-  font-size: 1rem;
-  color: #212529;
-  text-align: left;
-  list-style: none;
-  background-color: white;
-  background-clip: padding-box;
-  border: 1px solid rgba(51, 51, 51, 0.15);
-  border-radius: 0.25rem;
-
-  .tt-suggestion.tt-selectable {
-    padding: 0.25rem 0.5rem;
-
-    &:hover {
-      cursor: pointer;
-      background-color: #e9ecef;
-      color: #16181b;
-    }
-  }
 }
 
 /**

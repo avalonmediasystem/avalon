@@ -118,12 +118,13 @@ class Admin::GroupsController < ApplicationController
   def update_users
     group_name = params[:id]
     sole_managers = check_for_sole_managers if group_name == "manager"
-    if !sole_managers.blank?
-      flash[:error] = "Cannot remove users #{sole_managers.join(",")} because they are sole managers of collections."
+    if sole_managers.present?
+      flash[:error] = "Cannot remove users #{sole_managers.join(', ')} because they are sole managers of collections."
     else
       users = Avalon::RoleControls.users(group_name) - params[:user_ids]
       Avalon::RoleControls.assign_users(users, group_name)
       Avalon::RoleControls.save_changes
+      BulkActionJobs::RemoveManagers.perform_later(params[:user_ids])
     end
     redirect_back(fallback_location: edit_admin_group_path(group_name))
   end
@@ -135,7 +136,7 @@ class Admin::GroupsController < ApplicationController
       Admin::Group.find(group_name).delete
     end
 
-    flash[:notice] = "Successfully deleted groups: #{params[:group_ids].join(", ")}"
+    flash[:notice] = "Successfully deleted groups: #{params[:group_ids].join(', ')}"
     redirect_to admin_groups_path
   end
 
