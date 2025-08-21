@@ -19,8 +19,8 @@ class MediaConvertEncode < WatchedEncode
   self.engine_adapter.role = Settings.encoding.mediaconvert_role
   self.engine_adapter.output_bucket = Settings.encoding.derivative_bucket
 
-  self.engine_adapter.setup!
-  #self.engine_adapter.direct_output_lookup = true
+  #self.engine_adapter.setup!
+  self.engine_adapter.direct_output_lookup = true
 
   before_create prepend: true do |encode|
     encode.options.merge!(use_original_url: true,
