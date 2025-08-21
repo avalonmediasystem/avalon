@@ -31,7 +31,6 @@
 
 // Required by Blacklight
 //= require popper
-//= require twitter/typeahead
 //= require bootstrap
 //= require jquery-ui
 //= require blacklight/blacklight

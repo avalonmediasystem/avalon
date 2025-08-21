@@ -41,6 +41,10 @@ Unless required by applicable law or agreed to in writing, software distributed
             </div>
             <% if tag == 'transcript' %>
               <div class="mb-3 col-md-6 col p-0">
+                <%= render partial: 'modules/autocomplete_input', locals: { field_name: :language,
+                                                                            field_id: "supplemental_file_language_#{section.id}_#{file.id}",
+                                                                            value: display_supplemental_file_language(file.language),
+                                                                            model: 'languageTerm'} %>
                 <%= form.text_field :language, 
                     id: "supplemental_file_language_#{section.id}_#{file.id}", 
                     value: display_supplemental_file_language(file.language),

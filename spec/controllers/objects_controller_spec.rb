@@ -53,10 +53,20 @@ describe ObjectsController do
   end
 
   describe "#autocomplete" do
+    let!(:user) { FactoryBot.create(:user, email: "test@example.com") }
+
     it "should call autocomplete on the specified model" do
-      user = FactoryBot.create(:user, email: "test@example.com")
       get :autocomplete, params: { t: 'user', q: 'test' }
-      expect(response.body).to include user.user_key
+      expect(assigns(:results).first[:display]).to eq user.user_key
+    end
+
+    context 'json request' do
+      it 'should return a json response' do
+        get :autocomplete, format: :json, params: { t: 'user', q: 'test' }
+        expect(response.content_type).to eq("application/json; charset=utf-8")
+        result = JSON.parse(response.body)
+        expect(result).to eq([{ "display" => user.user_key, "id" => user.user_key }])
+      end
     end
   end
 end
