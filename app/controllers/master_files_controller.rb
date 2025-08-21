@@ -82,8 +82,8 @@ class MasterFilesController < ApplicationController
   def oembed
     render json: { errors: ['Invalid request. Missing "url" parameter.'] }, status: :bad_request and return if params[:url].blank?
     id = params[:url].split('?')[0].split('/').last
-    mf = MasterFile.where(identifier_ssim: id.downcase).first
-    mf ||= MasterFile.find(id) rescue nil
+    mf = SpeedyAF::Proxy::MasterFile.where("identifier_ssim: #{id.downcase}").first
+    mf ||= SpeedyAF::Proxy::MasterFile.find(id) rescue nil
     if mf.present?
       authorize! :read, mf
       hash = oembed_hash(mf)
