@@ -400,48 +400,45 @@ class MediaObjectsController < ApplicationController
         success_ids << id
         success_count += 1
       else
-        errors += [ "#{media_object.title} (#{params[:id]}) permission denied" ]
+        errors += ["#{media_object.title} (#{params[:id]}) permission denied"]
       end
     end
     message = "#{success_count} #{'media object'.pluralize(success_count)} deleted."
     message += "These objects were not deleted:</br> #{ errors.join('<br/> ') }" if errors.count > 0
     BulkActionJobs::Delete.perform_later success_ids, nil
-    redirect_to params[:previous_view]=='/bookmarks'? '/bookmarks' : root_path, flash: { notice: message }
+    redirect_to params[:previous_view] == '/bookmarks' ? '/bookmarks' : root_path, flash: { notice: message }
   end
 
-  # Sets the published status for the object. If no argument is given then
-  # it will just toggle the state.
   def update_status
     status = params[:status]
     errors = []
     success_count = 0
-    Array(params[:id]).each do |id|
-      media_object = MediaObject.find(id)
-      if cannot? :update, media_object
-        errors += ["#{media_object&.title} (#{id}) (permission denied)."]
-      else
-        begin
-          case status
-          when 'publish'
-            unless media_object.title.present?
-              errors += ["#{media_object&.title} (#{id}) (missing required fields)"]
-              next
-            end
-            media_object.publish!(user_key)
-            # additional save to set permalink
-            media_object.save( validate: false )
-            success_count += 1
-          when 'unpublish'
-            if can? :unpublish, media_object
-              media_object.publish!(nil, validate: false)
-              success_count += 1
-            else
-              errors += ["#{media_object&.title} (#{id}) (permission denied)."]
-            end
+    media_objects = MediaObject.find(Array(params[:id]))
+    media_objects.each do |media_object|
+      id = media_object.id
+      begin
+        case status
+        when 'publish'
+          if cannot? :update, media_object
+            errors += ["#{media_object&.title} (#{id}) (permission denied)."]
+            next
+          elsif media_object.title.blank?
+            errors += ["#{media_object&.title} (#{id}) (missing required fields)"]
+            next
           end
-        rescue ActiveFedora::RecordInvalid => e
-          errors += [e.message]
+          media_object.avalon_publisher = user_key.presence
+          media_object.save!
+          success_count += 1
+        when 'unpublish'
+          if can? :unpublish, media_object
+            media_object.publish!(nil, validate: false)
+            success_count += 1
+          else
+            errors += ["#{media_object&.title} (#{id}) (permission denied)."]
+          end
         end
+      rescue ActiveFedora::RecordInvalid => e
+        errors += [e.message]
       end
     end
     message = if errors.count.positive?
