@@ -444,8 +444,13 @@ class MediaObjectsController < ApplicationController
         end
       end
     end
-    message = "#{success_count} #{'media object'.pluralize(success_count)} successfully #{status}ed." if success_count.positive?
-    message = "Unable to #{status} #{'item'.pluralize(errors.count)}: #{ errors.join('<br/> ') }" if errors.count > 0
+    message = if errors.count.positive?
+                "Unable to #{status} #{'item'.pluralize(errors.count)}: #{errors.join('<br/> ')}"
+              elsif success_count == 1
+                "Media object successfully #{status}ed."
+              elsif success_count > 1
+                "#{success_count} #{'media object'.pluralize(success_count)} successfully #{status}ed."
+              end
     redirect_back(fallback_location: root_path, flash: {notice: message.html_safe})
   end
 
