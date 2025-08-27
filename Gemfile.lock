@@ -59,7 +59,7 @@ GIT
 
 GIT
   remote: https://github.com/samvera-labs/active_encode.git
-  revision: 6a98c805c5b7e93469b1d588a20b733bc475df77
+  revision: c6db586d05ed8f881681443a12fdf1b30a51c682
   tag: mediaconvert-avalon
   specs:
     active_encode (1.3.0)
