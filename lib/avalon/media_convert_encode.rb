@@ -18,8 +18,6 @@ class MediaConvertEncode < WatchedEncode
   self.engine_adapter = :media_convert
   self.engine_adapter.role = Settings.encoding.media_convert_role
   self.engine_adapter.output_bucket = Settings.encoding.derivative_bucket
-
-  #self.engine_adapter.setup!
   self.engine_adapter.direct_output_lookup = true
 
   before_create prepend: true do |encode|
@@ -34,12 +32,12 @@ class MediaConvertEncode < WatchedEncode
     def mediaconvert_outputs(options)
       case options[:preset]
       when 'fullaudio'
-        [{ modifier: "quality-medium", preset: 'audio_medium' },
-        { modifier: "quality-high", preset: 'audio_high' }]
+        [{ modifier: "quality-medium", preset: 'avalon_audio_medium' },
+        { modifier: "quality-high", preset: 'avalon_audio_high' }]
       when 'avalon'
-        [{ modifier: "quality-low", preset: 'video_low' },
-        { modifier: "quality-medium", preset: 'video_medium' },
-        { modifier: "quality-high", preset: 'video_high' }]
+        [{ modifier: "quality-low", preset: 'avalon_video_low' },
+        { modifier: "quality-medium", preset: 'avalon_video_medium' },
+        { modifier: "quality-high", preset: 'avalon_video_high' }]
       else
         []
       end
