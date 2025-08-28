@@ -80,34 +80,23 @@ class MasterFilesController < ApplicationController
   end
 
   def oembed
-    if params[:url].present?
-      id = params[:url].split('?')[0].split('/').last
-      mf = MasterFile.where(identifier_ssim: id.downcase).first
-      mf ||= MasterFile.find(id) rescue nil
-      if mf.present?
-        width = params[:maxwidth] || MasterFile::EMBED_SIZE[:medium]
-        height = mf.is_video? ? (width.to_f/mf.display_aspect_ratio.to_f).floor : MasterFile::AUDIO_HEIGHT
-        maxheight = params['maxheight'].to_f
-        if 0<maxheight && maxheight<height
-          width = (maxheight*mf.display_aspect_ratio.to_f).floor
-          height = maxheight.to_i
-        end
-        width = width.to_i
-        hash = {
-          "version" => "1.0",
-          "type" => mf.is_video? ? "video" : "rich",
-          "provider_name" => Settings.name || 'Avalon Media System',
-          "provider_url" => request.base_url,
-          "width" => width,
-          "height" => height,
-          "html" => mf.embed_code(width, {urlappend: '/embed'})
-        }
-        respond_to do |format|
-          format.xml  { render xml: hash.to_xml({root: 'oembed'}) }
-          format.json { render json: hash }
-        end
+    render json: { errors: ['Invalid request. Missing "url" parameter.'] }, status: :bad_request and return if params[:url].blank?
+    id = params[:url].split('?')[0].split('/').last
+    mf = SpeedyAF::Proxy::MasterFile.where("identifier_ssim: #{id.downcase}").first
+    mf ||= SpeedyAF::Proxy::MasterFile.find(id) rescue nil
+    if mf.present?
+      authorize! :read, mf
+      hash = oembed_hash(mf)
+      respond_to do |format|
+        format.html { render json: hash }
+        format.xml  { render xml: hash.to_xml({ root: 'oembed' }) }
+        format.json { render json: hash }
       end
+    else
+      render json: { errors: ["#{id} not found"] }, status: :not_found
     end
+  rescue CanCan::AccessDenied
+    render json: { errors: ['You do not have sufficient privileges'] }, status: :unauthorized
   end
 
   def attach_structure
@@ -431,5 +420,31 @@ private
 
   def search_response_json
     Avalon::TranscriptSearch.new(query: params[:q], master_file: @master_file, request_url: request.url).iiif_content_search.to_json
+  end
+
+  def oembed_hash(master_file)
+    width, height = oembed_dimensions(master_file)
+    {
+      "version" => "1.0",
+      "type" => master_file.is_video? ? "video" : "rich",
+      "provider_name" => Settings.name || 'Avalon Media System',
+      "provider_url" => request.base_url,
+      "width" => width,
+      "height" => height,
+      "title" => master_file.display_title,
+      "html" => master_file.embed_code(width, { urlappend: '/embed' })
+    }
+  end
+
+  def oembed_dimensions(master_file)
+    width = params[:maxwidth] || MasterFile::EMBED_SIZE[:medium]
+    height = master_file.is_video? ? (width.to_f / master_file.display_aspect_ratio.to_f).floor : MasterFile::AUDIO_HEIGHT
+    maxheight = params['maxheight'].to_f
+    if maxheight.positive? && maxheight < height
+      width = (maxheight * master_file.display_aspect_ratio.to_f).floor
+      height = maxheight.to_i
+    end
+    width = width.to_i
+    [width, height]
   end
 end
