@@ -416,29 +416,30 @@ class MediaObjectsController < ApplicationController
     media_objects = MediaObject.find(Array(params[:id]))
     media_objects.each do |media_object|
       id = media_object.id
-      begin
-        case status
-        when 'publish'
-          if cannot? :update, media_object
-            errors += ["#{media_object&.title} (#{id}) (permission denied)."]
-            next
-          elsif media_object.title.blank?
-            errors += ["#{media_object&.title} (#{id}) (missing required fields)"]
-            next
-          end
-          media_object.avalon_publisher = user_key.presence
-          media_object.save!
-          success_count += 1
-        when 'unpublish'
-          if can? :unpublish, media_object
-            media_object.publish!(nil, validate: false)
+      if cannot? :update, media_object
+        errors += ["#{media_object&.title} (#{id}) (permission denied)."]
+      else
+        begin
+          case status
+          when 'publish'
+            if media_object.title.blank?
+              errors += ["#{media_object&.title} (#{id}) (missing required fields)"]
+              next
+            end
+            media_object.avalon_publisher = user_key.presence
+            media_object.save!
             success_count += 1
-          else
-            errors += ["#{media_object&.title} (#{id}) (permission denied)."]
+          when 'unpublish'
+            if can? :unpublish, media_object
+              media_object.publish!(nil, validate: false)
+              success_count += 1
+            else
+              errors += ["#{media_object&.title} (#{id}) (permission denied)."]
+            end
           end
+        rescue ActiveFedora::RecordInvalid => e
+          errors += [e.message]
         end
-      rescue ActiveFedora::RecordInvalid => e
-        errors += [e.message]
       end
     end
     message = if errors.count.positive?
