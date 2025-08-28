@@ -21,7 +21,7 @@ class SupplementalFile < ApplicationRecord
 
   # TODO: the empty tag should represent a generic supplemental file
   validates :tags, array_inclusion: ['transcript', 'caption', 'machine_generated', '', nil]
-  validates :language, inclusion: { in: LanguageTerm.map.keys }
+  validates :language, inclusion: { in: LanguageTerm::Iso6392.map.keys }
   validates :parent_id, presence: true
   validate  :validate_file_type, if: :caption?
 
@@ -33,9 +33,14 @@ class SupplementalFile < ApplicationRecord
   after_update_commit :update_index, prepend: true
   after_destroy_commit :remove_from_index
 
-  def attach_file(new_file)
-    file.attach(new_file)
-    extension = File.extname(new_file.original_filename)
+  def attach_file(new_file, io: false)
+    if io
+      file.attach(io: File.open(new_file), filename: File.basename(new_file))
+      extension = File.extname(new_file)
+    else
+      file.attach(new_file)
+      extension = File.extname(new_file.original_filename)
+    end
     self.file.content_type = Mime::Type.lookup_by_extension(extension.slice(1..-1)).to_s if extension == '.srt'
     self.label = file.filename.to_s if label.blank?
     self.language ||= Settings.caption_default.language
@@ -131,6 +136,12 @@ class SupplementalFile < ApplicationRecord
     chunked_transcript = normalized_transcript.split(/\n\n+/)
 
     chunked_transcript.map(&:strip).map { |cue| cue.gsub("\n", " ").squeeze(' ') }.compact
+  end
+
+  def download_filename
+    filename = file.filename.to_s
+
+    machine_generated? ? "#{File.basename(filename, File.extname(filename))} (machine generated)#{File.extname(filename)}" : filename
   end
 
   private

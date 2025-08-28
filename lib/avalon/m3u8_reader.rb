@@ -24,7 +24,7 @@ module Avalon
         new(io.read, recursive: recursive)
       elsif io.is_a?(String)
         if io =~ /^https?:/
-          URI.open(io, "Referer" => Rails.application.routes.url_helpers.root_url) { |resp| new(resp, Addressable::URI.parse(io), recursive: recursive) }
+          URI.open(io, "Referer" => Settings.streaming.auth_referer || Rails.application.routes.url_helpers.root_url) { |resp| new(resp, Addressable::URI.parse(io), recursive: recursive) }
         elsif io =~ /\.m3u8?$/i
           new(File.read(io), io, recursive: recursive)
         else

@@ -41,15 +41,18 @@ Unless required by applicable law or agreed to in writing, software distributed
   <div class="col-sm-12">
     <%= react_component("MediaObjectRamp",
       {
-        urls: { base_url: request.protocol + request.host_with_port, fullpath_url: request.fullpath },
-        sections_count: @media_object.sections.size,
-        title: { content: render('title') },
-        share: { canShare: (will_partial_list_render? :share), content: lending_enabled?(@media_object) ? (render('share') if can_stream) : render('share') },
-        timeline: { canCreate: (current_ability.can? :create, Timeline), content: lending_enabled?(@media_object) ? (render('timeline') if can_stream) : render('timeline') },
-        playlist: { canCreate: (current_ability.can? :create, Playlist), tab: render('add_to_playlist') },
-        cdl: { enabled: lending_enabled?(@media_object), can_stream: can_stream, embed: render('embed_checkout'), destroy: render('destroy_checkout') },
-        has_files: @media_object.supplemental_files.present? || @media_object.sections_with_files.present?,
-        has_transcripts: @media_object.sections_with_files(tag: 'transcript').present?
+        props: {
+          urls: { base_url: request.protocol + request.host_with_port, fullpath_url: request.fullpath },
+          has_sections: @media_object.section_ids.present?,
+          title: { content: render('title') },
+          share: { canShare: (will_partial_list_render? :share), content: lending_enabled?(@media_object) ? (render('share') if can_stream) : render('share') },
+          timeline: { canCreate: (current_ability.can? :create, Timeline), content: lending_enabled?(@media_object) ? (render('timeline') if can_stream) : render('timeline') },
+          playlist: { canCreate: (current_ability.can? :create, Playlist), tab: render('add_to_playlist') },
+          cdl: { enabled: lending_enabled?(@media_object), can_stream: can_stream, embed: render('embed_checkout'), destroy: render('destroy_checkout') },
+          has_files: @media_object.supplemental_files.present? || @media_object.sections_with_rendering_files?([nil, 'caption']),
+          has_transcripts: @media_object.sections_with_files(tag: 'transcript').present?,
+          accessibility_text: Avalon::Configuration.accessibility_request_link.present? ? t('media_object.accessibility_request_text', :a11y_link => Avalon::Configuration.accessibility_request_link) : '',
+        }
       }
     ) %>
   </div>
@@ -65,12 +68,13 @@ Unless required by applicable law or agreed to in writing, software distributed
       const sectionShareInfos = <%= @media_object.section_share_infos.to_json.html_safe %>;
       const transcriptSections = <%= @media_object.sections_with_files(tag: 'transcript').to_json.html_safe %>;
 
-      // Enable action buttons after derivative is loaded
-      setInterval(initActionButtons, 500);
-      function initActionButtons() {
+      // Enable action buttons and token refresh after derivative is loaded
+      setInterval(initPlayerListeners, 500);
+      function initPlayerListeners() {
         let player = document.getElementById('iiif-media-player');
         if (player) {
           addActionButtonListeners(player, mediaObjectId, sectionIds, sectionShareInfos);
+          initM3U8Reload(player, mediaObjectId, sectionIds, sectionShareInfos);
         }
       } 
 
@@ -138,14 +142,15 @@ Unless required by applicable law or agreed to in writing, software distributed
 
       function transcriptCheck(canvasindex) {
         let sectionId = sectionIds[canvasindex];
-        let transcriptTab = document.evaluate('//a[text()="Transcripts"]', document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
-        let detailTab = document.evaluate('//a[text()="Details"]', document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
-
+        let transcriptButton = document.evaluate('//button[text()="Transcripts"]', document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+        let transcriptTab = transcriptButton?.parentElement
+        let detailTab = document.evaluate('//button[text()="Details"]', document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+        
         if(!transcriptSections.includes(sectionId)) {
           // If transcript tab is the active tab when it is hidden, the tab goes away but the box still displays
           // the missing transcript file message. Force change over to a different tab to avoid this case.
           if(transcriptTab) {
-            if (transcriptTab.getAttribute('aria-selected') === "true") { detailTab.click(); }
+            if (transcriptButton.getAttribute('aria-selected') === "true") { detailTab.click(); }
             transcriptTab.style.display = 'none';
             transcriptTab.classList.add("disabled");
           }

@@ -32,6 +32,7 @@ describe 'item catalog' do
         expect(page).to have_selector(:id, "facet-#{field}_ssim-header")
       end
       expect(page).to have_selector(:id, "facet-date_sim-header")
+      expect(page).to have_selector(:id, "facet-rights_statement_ssi-header")
       ['workflow_published_sim', 'avalon_uploader_ssi', 'read_access_group_ssim', 'read_access_virtual_group_ssim', 'date_digitized_ssim', 'date_ingested_ssim'].each do |field|
         expect(page).to_not have_selector(:id, "facet-#{field}-header")
       end

@@ -138,10 +138,17 @@
       padding-right: 10px;
       flex-grow: 1;
       width: 33%;
-  
+      max-width: 33%;
+
       &:last-child {
         padding-right: 0;
       }
+    }
+  }
+
+  @media screen and (min-width: 992px) {
+    li {
+      flex: 0 0 25%;
     }
   }
 
@@ -165,7 +172,7 @@
   }
 }
 
-.badge-dark {
+.bg-dark {
   background-color: #1e1e1e;
 }
 
@@ -184,7 +191,7 @@
   margin-top: 7px;
 }
 
-.mr-2 {
+.me-2 {
   margin-right: 2px;
 }
 

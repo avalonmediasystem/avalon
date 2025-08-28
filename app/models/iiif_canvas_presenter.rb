@@ -179,13 +179,7 @@ class IiifCanvasPresenter
     end
 
     def div_to_iiif_range(div_node)
-      items = div_node.children.select(&:element?).collect do |node|
-        if node.name == "Div"
-          div_to_iiif_range(node)
-        elsif node.name == "Span"
-          span_to_iiif_range(node)
-        end
-      end
+      items = div_node.children.select(&:element?).collect { |n| node_walk(n) }
 
       IiifManifestRange.new(
         label: { "none" => [div_node[:label]] },
@@ -194,13 +188,25 @@ class IiifCanvasPresenter
     end
 
     def span_to_iiif_range(span_node)
-      fragment = "t=#{parse_hour_min_sec(span_node[:begin])},#{parse_hour_min_sec(span_node[:end])}"
+      items = span_node.children.select(&:element?).collect { |n| node_walk(n) }.prepend(build_range_item(span_node))
+      
       IiifManifestRange.new(
         label: { "none" => [span_node[:label]] },
-        items: [
-          IiifCanvasPresenter.new(master_file: master_file, stream_info: stream_info, media_fragment: fragment)
-        ]
+        items: items
       )
+    end
+
+    def node_walk(node)
+      if node.name == "Div"
+        div_to_iiif_range(node)
+      elsif node.name == "Span"
+        span_to_iiif_range(node)
+      end
+    end
+
+    def build_range_item(node)
+      fragment = "t=#{parse_hour_min_sec(node[:begin])},#{parse_hour_min_sec(node[:end])}"
+      IiifCanvasPresenter.new(master_file: master_file, stream_info: stream_info, media_fragment: fragment)
     end
 
     FLOAT_PATTERN = Regexp.new(/^\d+([.]\d*)?$/).freeze

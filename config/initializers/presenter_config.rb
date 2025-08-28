@@ -22,6 +22,7 @@ Rails.application.config.to_prepare do
                       }
       include MasterFileIntercom
       include MasterFileBehavior
+      include SupplementalFileReadBehavior
       include Rails.application.routes.url_helpers
     end
 
@@ -66,6 +67,7 @@ Rails.application.config.to_prepare do
       include VirtualGroups
       include MediaObjectIntercom
       include MediaObjectBehavior
+      include SupplementalFileReadBehavior
       include Rails.application.routes.url_helpers
     end
 

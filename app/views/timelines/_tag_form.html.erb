@@ -14,14 +14,14 @@ Unless required by applicable law or agreed to in writing, software distributed
 ---  END LICENSE_HEADER BLOCK  ---
 %>
 <% user_tags = current_user.timeline_tags %>
-<select name="tagcollection[]" id="tag-select" class="form-control form-model" multiple="multiple" style="width: 100%;" >
+<select name="tagcollection[]" id="tag-select" class="form-control form-model" multiple="multiple" style="width: 100%;" aria-describedby="helpTags">
   <% user_tags.each do |tag| %>
     <% selected = @timeline.tags.include?(tag) ? ' selected="selected"' : '' %>
     <option value="<%= tag %>" <%= selected %>><%= tag %></option>
   <% end %>
 </select>
-<p class="text-info" style="padding-top:5px;font-style:italic;">Separate multiple tags with commas.</p>
-<input id="taglist" name="timeline[tags]" type="hidden" />
+<p id="helpTags" class="text-info" style="padding-top:5px;font-style:italic;">Separate multiple tags with commas.</p>
+<input id="taglist" name="timeline[tags]" type="hidden" aria-label="timeline tags" />
 
 <% content_for :page_scripts do %>
   <%= javascript_include_tag 'select2.min' %>
@@ -42,5 +42,10 @@ Unless required by applicable law or agreed to in writing, software distributed
       $('#timeline_form').submit();
     });
 
+    $(document).ready(function() {
+      // Set ARIA attributes for select2 elements used for creating timeline tags
+      $(".select2-selection[role='combobox']").attr('aria-label', 'timeline tag selection');
+      $("input.select2-search__field").attr('aria-label', 'search timeline tags');
+    });
   </script>
 <% end %>

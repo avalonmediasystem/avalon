@@ -78,6 +78,7 @@ class Admin::Collection < ActiveFedora::Base
   has_subresource 'poster', class_name: 'IndexedFile'
 
   around_save :reindex_members, if: Proc.new{ |c| c.name_changed? or c.unit_changed? }
+  around_save :return_checkouts, if: Proc.new{ |c| c.cdl_enabled_changed? && c.cdl_enabled == false }
   before_create :create_dropbox_directory!
 
   before_destroy :destroy_dropbox_directory!
@@ -170,6 +171,11 @@ class Admin::Collection < ActiveFedora::Base
   def reindex_members
     yield
     ReindexJob.perform_later(self.media_object_ids)
+  end
+
+  def return_checkouts
+    yield
+    BulkActionJobs::ReturnCheckouts.perform_later(self.id)
   end
 
   def to_solr
@@ -323,7 +329,7 @@ class Admin::Collection < ActiveFedora::Base
         obj = FileLocator::S3File.new(base_uri.join(n).to_s + '/').object
         obj.exists?
       end
-      absolute_path = base_uri.join(name).to_s + '/'
+      absolute_path = base_uri.join(name).to_s + '/.keep'
       obj = FileLocator::S3File.new(absolute_path).object
       Aws::S3::Client.new.put_object(bucket: obj.bucket_name, key: obj.key)
       self.dropbox_directory_name = name

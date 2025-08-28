@@ -17,7 +17,6 @@ ENV['RAILS_ENV'] = 'test'
 
 if ENV['COVERAGE'] || ENV['CI']
   require 'simplecov'
-  require 'codeclimate-test-reporter'
 
   SimpleCov.start('rails') do
     add_filter '/spec'
@@ -46,6 +45,8 @@ require 'noid/rails/rspec'
 require "email_spec"
 require "email_spec/rspec"
 require 'webdrivers'
+require "view_component/test_helpers"
+require "view_component/system_test_helpers"
 # require 'equivalent-xml/rspec_matchers'
 # require 'fakefs/safe'
 # require 'fileutils'
@@ -102,6 +103,10 @@ Shoulda::Matchers.configure do |config|
 end
 
 RSpec.configure do |config|
+  # Ensure that if we are running js tests, we are using latest webpack assets
+  # This will use the defaults of :js and :server_rendering meta tags
+  ReactOnRails::TestHelper.configure_rspec_to_compile_assets(config)
+  
   include Noid::Rails::RSpec
 
   # Remove this line if you're not using ActiveRecord or ActiveRecord fixtures
@@ -192,6 +197,8 @@ RSpec.configure do |config|
   config.include FixtureMacros, type: :controller
   config.include OptionalExample
   config.include Features::SessionHelpers, type: :feature
+  config.include ViewComponent::TestHelpers, type: :component
+  config.include ViewComponent::SystemTestHelpers, type: :component
 end
 
 FactoryBot::SyntaxRunner.class_eval do

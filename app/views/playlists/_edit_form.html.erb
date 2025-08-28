@@ -27,7 +27,7 @@ Unless required by applicable law or agreed to in writing, software distributed
       <div class="col-sm-6">
         <h3>Playlist Items</h3>
       </div>
-      <div class="col-sm-6 form-group text-right manage-playlist-item">
+      <div class="col-sm-6 mb-3 text-end manage-playlist-item">
         <% if @playlists.present? %>
           <%= hidden_field_tag "new_playlist_id", @playlist.id, form:"edit_playlist_#{@playlist.id}" %>
           <%= hidden_field_tag "action_type", '', form:"edit_playlist_#{@playlist.id}" %>
@@ -39,7 +39,7 @@ Unless required by applicable law or agreed to in writing, software distributed
 
           <div class="dropdown" >
             <%= button_tag( { type: 'button', class: "move_to btn btn-outline btn-sm dropdown-toggle",
-              data: { toggle: "dropdown"}, disabled:'disabled' } ) do %>
+              data: { 'bs-toggle': "dropdown"}, disabled:'disabled' } ) do %>
               <span class="filter-option">Move to... </span>
             <% end # button_tag %>
             <ul class="dropdown-menu dropdown-menu-right">
@@ -54,7 +54,7 @@ Unless required by applicable law or agreed to in writing, software distributed
 
           <div class="dropdown">
             <%= button_tag( { type: 'button', class: "copy_to btn btn-outline btn-sm dropdown-toggle",
-              data: { toggle: "dropdown"}, disabled:'disabled' } ) do %>
+              data: { 'bs-toggle': "dropdown"}, disabled:'disabled' } ) do %>
               <span class="filter-option">Copy to... </span>
             <% end # button_tag %>
             <ul class="dropdown-menu dropdown-menu-right">
@@ -69,7 +69,7 @@ Unless required by applicable law or agreed to in writing, software distributed
 
         <% end # playlists.present?%>
         <%= f.submit "Delete Selected", id: 'delete_selected_playlist_items', class: 'btn btn-danger btn-confirmation btn-sm',
-          form:"edit_playlist_#{@playlist.id}", data: { placement: 'bottom' }, disabled:'disabled', sanitize: false %>
+          form:"edit_playlist_#{@playlist.id}", data: { placement: 'bottom', testid: 'playlist-delete-selected-btn', confirm: 'Are you sure?' }, disabled:'disabled', sanitize: false %>
       </div>
     </div>
     <% end #form_for update_multiple %>
@@ -77,38 +77,41 @@ Unless required by applicable law or agreed to in writing, software distributed
     <%= form_for(@playlist, html: { id: 'playlist_sort_form', class: 'playlist_actions' }) do |fs| %>
     <div class="dd" data-playlist_id="<%= @playlist.id %>">
       <ol id="items" class="dd-list" style="list-style: none">
+        <% clips = @playlist.clips_with_section_proxies %>
         <% @playlist.items.each_with_index do |i, index| %>
+          <% clip = clips[index] %>
         <li class="container dd-item" data-id="<%= i.id %>">
           <div class="row">
             <div class="col-sm-2">
               <span class="fa fa-arrows-v float-left dd-handle"></span>
-              <%= text_field_tag "playlist[items_attributes[#{index}[position]]]", i.position, class: 'form-control position-input', form: 'playlist_sort_form' %>
+              <%= text_field_tag "playlist[items_attributes[#{index}[position]]]", i.position, class: 'form-control position-input', form: 'playlist_sort_form', 'aria-label': 'Playlist item position' %>
               <%= hidden_field_tag "playlist[items_attributes[#{index}[id]]]", i.id, form: 'playlist_sort_form' %>
             </div>
-            <% if can? :read, i.clip.master_file %>
+            <% if can? :read, clip.master_file %>
               <div class="col-sm-8 title" style="margin-top:5px">
-                <%= link_to i.clip.title, i.clip.mediafragment_uri, id: "playlist_item_title_label_#{i.id}" %>
+                <%= link_to clip.title, clip.mediafragment_uri, id: "playlist_item_title_label_#{i.id}" %>
               </div>
               <div class="col-sm-2 text-right" style="margin-top:5px">
-                <button id="playlist_item_edit_button" class="btn btn-sm fa fa-edit" <%= i.clip.master_file.nil? ? 'disabled' : '' %>
-                  data-toggle="collapse" href="#playlist_item_edit_<%= i.id %>" aria-expanded="false" type="button">
+                <button id="playlist_item_edit_button" class="btn btn-sm edit-details-icon-btn" <%= clip.master_file.nil? ? 'disabled' : '' %>
+                  data-bs-toggle="collapse" href="#playlist_item_edit_<%= i.id %>" aria-expanded="false" type="button" aria-label="Edit playlist item <%= index + 1 %>">
+                  <i class="fa fa-edit"></i>
                 </button>
                 <label>
-                  <%= check_box_tag 'clip_ids[]', i.id, false, form:"edit_playlist_#{@playlist.id}", class:"playlist_item_select" %>
+                  <%= check_box_tag 'clip_ids[]', i.id, false, form:"edit_playlist_#{@playlist.id}", class:"playlist_item_select" , data: { testid: "playlist-item-checkbox" }   %>
                   Select
                 </label>
               </div>
             <% else %>
               <div class="col-sm-9 title" style="margin-top:5px">
-                <% if i.clip.master_file.nil? %>
+                <% if clip.master_file.nil? %>
                   <i class="fa fa-times-circle" title="The source for this item has been deleted"></i>
                   <span class="playlist_item_denied">[deleted item]</span>
                 <% else %>
                   <i class="fa fa-lock" title="You don't have permission to view this item"></i>
-                  <span class="playlist_item_denied">[inaccessible item] <%= i.clip.master_file.media_object.id %></span>
+                  <span class="playlist_item_denied">[inaccessible item] <%= clip.master_file.media_object_id %></span>
                 <% end %>
               </div>
-              <div class="col-sm-1 form-check text-right">
+              <div class="col-sm-1 form-check text-end">
                 <label>
                   <%= check_box_tag 'clip_ids[]', i.id, false, form:"edit_playlist_#{@playlist.id}", class:"playlist_item_select" %>
                   Select
@@ -120,38 +123,38 @@ Unless required by applicable law or agreed to in writing, software distributed
             <div class="col-sm-9 offset-2 playlist_item_edit">
               <%= bootstrap_form_for i, remote: true, html: { id: "playlist_item_form_#{i.id}", class: "playlist_item_edit_form" }, format: 'json' do |pif| %>
                 <%= hidden_field_tag "playlist_id", @playlist.id, form: "playlist_item_form_#{i.id}" %>
-                <div class="form-group form-row">
+                <div class="mb-3 row">
                   <%= pif.label :title, class: 'col-sm-2 col-form-label' %>
                   <div class="col-sm-10">
-                    <%= text_field_tag :title, i.title, class: 'form-control', id: "avalon_clip_title_#{i.id}", form:"playlist_item_form_#{i.id}" %>
+                    <%= text_field_tag :title, i.title, class: 'form-control', id: "avalon_clip_title_#{i.id}", form:"playlist_item_form_#{i.id}", aria: { label: 'Playlist item title' } %>
                     <span style='display:none' class='title_original' data-value="<%= i.title %>"></span>
                   </div>
                 </div>
-                <div class="form-group form-row">
+                <div class="mb-3 row">
                   <div class="col-sm-2" style="text-align:right;margin-top:2pt"><%= pif.label :start_time, class: 'col-form-label' %></div>
                   <div class="col-sm-4">
-                    <%= text_field_tag :start_time, pretty_time(i.start_time), class: 'form-control', id: "avalon_clip_start_time_#{i.id}", form:"playlist_item_form_#{i.id}" %>
+                    <%= text_field_tag :start_time, pretty_time(i.start_time), class: 'form-control', id: "avalon_clip_start_time_#{i.id}", form:"playlist_item_form_#{i.id}", aria: { label: 'Playlist item start time' } %>
                     <span style='display:none' class='start_time_original' data-value="<%= pretty_time(i.start_time) %>"></span>
                   </div>
                   <div class="col-sm-2" style="text-align:right;margin-top:2pt">
                     <%= pif.label :end_time, class: 'col-form-label' %>
                   </div>
                   <div class="col-sm-4">
-                    <%= text_field_tag :end_time, pretty_time(i.end_time), class: 'form-control', id: "avalon_clip_end_time_#{i.id}", form:"playlist_item_form_#{i.id}" %>
+                    <%= text_field_tag :end_time, pretty_time(i.end_time), class: 'form-control', id: "avalon_clip_end_time_#{i.id}", form:"playlist_item_form_#{i.id}", aria: { label: 'Playlist item end time' } %>
                     <span style='display:none' class='end_time_original' data-value="<%= pretty_time(i.end_time) %>"></span>
                   </div>
                 </div>
-                <div class="form-group form-row">
+                <div class="mb-3 row">
                   <%= pif.label :comment, class: 'col-sm-2 col-form-label' %>
                   <div class="col-sm-10">
-                    <%= text_area_tag :comment, i.comment, class: 'form-control', id: "avalon_clip_comment_#{i.id}", form:"playlist_item_form_#{i.id}" %>
+                    <%= text_area_tag :comment, i.comment, class: 'form-control', id: "avalon_clip_comment_#{i.id}", form:"playlist_item_form_#{i.id}", aria: { label: 'Playlist item comment' } %>
                     <span style='display:none' class='comment_original' data-value="<%= i.comment %>"></span>
                   </div>
                 </div>
-                <div class="form-group form-row">
+                <div class="mb-3 row">
                   <div class="col-sm-3 offset-2">
                     <button class='btn btn-sm btn-primary playlist_item_form_submit' data-id="<%= i.id %>" form="playlist_item_form_<%= i.id %>">Save Item</button>
-                    <span id="playlist_item_edit_cancel_<%= i.id %>" class="btn btn-outline btn-sm playlist_item_edit_cancel" data-id="<%= i.id %>" data-target="playlist_item_edit_<%= i.id %>">Cancel</span>
+                    <button id="playlist_item_edit_cancel_<%= i.id %>" type="button" class="btn btn-outline btn-sm playlist_item_edit_cancel" data-id="<%= i.id %>" data-bs-toggle="collapse" data-bs-target="#playlist_item_edit_<%= i.id %>">Cancel</button>
                   </div>
                   <div class="col-sm-7" id="playlist_item_edit_alert_<%= i.id %>"></div>
                 </div>
@@ -233,7 +236,7 @@ Unless required by applicable law or agreed to in writing, software distributed
         success: function(response) {
           // alert success
           var alert = "<div class='alert alert-success' style='padding:0 10px; margin-bottom: 0;'>";
-          alert += "<button type='button' class='close' data-dismiss='alert'>&times;</button>";
+          alert += "<button type='button' class='btn-close' data-bs-dismiss='alert'></button>";
           alert += "<span>"+response.message+"</span></div>";
 	        $('#playlist_item_edit_alert_'+id).html(alert);
           // update original values with those newly saved in case of future cancel
@@ -249,7 +252,7 @@ Unless required by applicable law or agreed to in writing, software distributed
         error: function(response) {
           // alert failure
           var alert = "<div class='alert alert-danger' style='padding:0 10px; margin-bottom: 0;'>";
-          alert += "<button type='button' class='close' data-dismiss='alert'>&times;</button>";
+          alert += "<button type='button' class='btn-close' data-bs-dismiss='alert'></button>";
           alert += "<span>"+response.responseJSON.message+"</span></div>";
 	        $('#playlist_item_edit_alert_'+id).html(alert);
           setTimeout(function() {

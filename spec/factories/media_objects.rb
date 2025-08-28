@@ -30,6 +30,7 @@ FactoryBot.define do
       factory :fully_searchable_media_object do
         # with_collection
         visibility { 'public' }
+        alternative_title { ['Alternative'] }
         abstract { Faker::Lorem.paragraph }
         contributor { [Faker::Name.name] }
         date_created { Time.zone.today.edtf.to_s }
@@ -41,10 +42,10 @@ FactoryBot.define do
         physical_description { [Faker::Lorem.word] }
         table_of_contents { [Faker::Lorem.paragraph] }
         note { [{ note: Faker::Lorem.paragraph, type: 'general' }, { note: Faker::Lorem.paragraph, type: 'local' }] }
-        other_identifier { [{ id: Faker::Lorem.word, source: 'local' }] }
+        other_identifier { [{ id: Faker::Lorem.unique.word, source: 'local' }] }
         language { ['eng'] }
         related_item_url { [{ url: Faker::Internet.url, label: Faker::Lorem.sentence }]}
-        bibliographic_id { { id: Faker::Lorem.word, source: 'local' } }
+        bibliographic_id { { id: Faker::Lorem.unique.word, source: 'local' } }
         comment { ['MO comment'] }
         rights_statement { ['http://rightsstatements.org/vocab/InC-EDU/1.0/'] }
         terms_of_use { [ 'Terms of Use: Be kind. Rewind.' ] }

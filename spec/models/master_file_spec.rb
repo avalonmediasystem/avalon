@@ -120,7 +120,7 @@ describe MasterFile do
     end
 
     it 'creates an encode' do
-      expect(master_file.encoder_class).to receive(:create).with("file://" + Addressable::URI.escape(master_file.file_location), { master_file_id: master_file.id, preset: master_file.workflow_name, headers: nil })
+      expect(master_file.encoder_class).to receive(:create).with("file://" + Addressable::URI.escape(master_file.file_location), { master_file_id: master_file.id, preset: master_file.workflow_name, headers: nil, extract_subtitles: true })
       master_file.process
     end
 
@@ -155,8 +155,8 @@ describe MasterFile do
         end
 
         it 'creates an encode' do
-	  expect(master_file.encoder_class).to receive(:create).with("file://" + Rails.root.join(high_file).to_path, { outputs: outputs_hash, master_file_id: master_file.id, preset: master_file.workflow_name })
-	  master_file.process(files)
+      	  expect(master_file.encoder_class).to receive(:create).with("file://" + Rails.root.join(high_file).to_path, { outputs: outputs_hash, master_file_id: master_file.id, preset: master_file.workflow_name, extract_subtitles: true })
+          master_file.process(files)
         end
       end
 
@@ -165,8 +165,8 @@ describe MasterFile do
         let(:outputs_hash) { [{ label: 'high', url: input_url }] }
 
         it 'creates an encode' do
-          expect(master_file.encoder_class).to receive(:create).with(input_url, { outputs: outputs_hash, master_file_id: master_file.id, preset: master_file.workflow_name })
-	  master_file.process
+          expect(master_file.encoder_class).to receive(:create).with(input_url, { outputs: outputs_hash, master_file_id: master_file.id, preset: master_file.workflow_name, extract_subtitles: true })
+          master_file.process
         end
       end
     end
@@ -309,6 +309,7 @@ describe MasterFile do
           master_file.setContent(derivative_hash)
           expect(master_file.file_location).to eq(filename_high)
           expect(master_file.file_size).to eq("199160")
+          expect(master_file.original_filename).to eq("videoshort.high.mp4")
         end
       end
       describe "quality-high does not exist" do
@@ -317,6 +318,7 @@ describe MasterFile do
           master_file.setContent(derivative_hash.except("quality-high"))
           expect(master_file.file_location).to eq(filename_medium)
           expect(master_file.file_size).to eq("199160")
+          expect(master_file.original_filename).to eq("videoshort.medium.mp4")
         end
       end
 
@@ -359,6 +361,12 @@ describe MasterFile do
         Settings.encoding.working_file_path = media_path
         subject.setContent(upload, dropbox_dir: collection.dropbox_absolute_path)
         expect(File.fnmatch("#{media_path}/*/#{original}", subject.working_file_path.first)).to be true
+      end
+
+      it "should set the original filename" do
+        Settings.encoding.working_file_path = nil
+        subject.setContent(upload, file_name: original, dropbox_dir: collection.dropbox_absolute_path)
+        expect(subject.original_filename).to eq("videoshort.mp4")
       end
 
       context "when file with same name already exists in the collection's dropbox" do
@@ -416,6 +424,12 @@ describe MasterFile do
         subject.setContent(File.new(dropbox_file_path), dropbox_dir: collection.dropbox_absolute_path)
         expect(File.fnmatch("#{media_path}/*/#{original}", subject.working_file_path.first)).to be true
       end
+
+      it "should set the original filename" do
+        Settings.encoding.working_file_path = nil
+        subject.setContent(File.new(dropbox_file_path), file_name: original, dropbox_dir: collection.dropbox_absolute_path)
+        expect(subject.original_filename).to eq("videoshort.mp4")
+      end
     end
 
     context "google drive" do
@@ -468,6 +482,7 @@ describe MasterFile do
         subject.setContent(file, file_name: file_name, file_size: file_size, auth_header: auth_header, dropbox_dir: collection.dropbox_absolute_path)
         expect(subject.file_size).to eq(file_size)
         expect(subject.instance_variable_get(:@auth_header)).to be_nil
+        expect(subject.original_filename).to eq(file_name)
       end
     end
   end
@@ -851,11 +866,13 @@ describe MasterFile do
 
     before do
       allow(master_file).to receive(:update_derivatives)
+      allow(master_file).to receive(:add_supplemental_files)
       allow(master_file).to receive(:run_hook)
     end
 
     it 'calls update_derivatives' do
       expect(master_file).to receive(:update_derivatives).with(array_including(hash_including(label: 'quality-high')))
+      expect(master_file).to receive(:save)
       expect(master_file).to receive(:run_hook).with(:after_transcoding)
       master_file.update_progress_on_success!(encode_succeeded)
     end
@@ -867,6 +884,18 @@ describe MasterFile do
     it 'should set the digitized date' do
       master_file.update_progress_on_success!(encode_succeeded)
       expect(master_file.date_digitized).to_not be_empty
+    end
+
+    context 'with embedded captions' do
+      let(:encode_succeeded) { FactoryBot.build(:encode, :embedded_captions) }
+
+      it 'calls add_supplemental_files' do
+        expect(master_file).to receive(:update_derivatives).with(array_including(hash_including(label: 'quality-high')))
+        expect(master_file).to receive(:add_supplemental_files).with(array_including("gid://avalon/SupplementalFile/1"))
+        expect(master_file).to receive(:save)
+        expect(master_file).to receive(:run_hook).with(:after_transcoding)
+        master_file.update_progress_on_success!(encode_succeeded)
+      end
     end
   end
 
@@ -893,6 +922,15 @@ describe MasterFile do
         expect(master_file_with_derivative.reload.derivative_ids).not_to include(existing_derivative.id)
         expect(master_file_with_derivative.reload.derivative_ids).not_to be_empty
       end
+    end
+  end
+
+  describe 'add_supplemental_files' do
+    let(:master_file) { FactoryBot.create(:master_file) }
+    let(:caption_file) { FactoryBot.create(:supplemental_file, :with_caption_file, :with_caption_tag, parent_id: master_file.id) }
+
+    it 'adds the supplemental file to the master file record' do
+      expect { master_file.add_supplemental_files([caption_file.to_global_id.to_s]) }.to change { master_file.supplemental_files.count }.by(1)
     end
   end
 

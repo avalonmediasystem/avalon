@@ -17,22 +17,22 @@ Unless required by applicable law or agreed to in writing, software distributed
 
 <% if can_update %>
 <%= bootstrap_form_for object, html: { id: 'discovery_form' }  do |vid| %>
-<div class="card item-discovery">
+<div class="card item-discovery" data-testid="collection-item-discovery">
   <div class="card-header">
     <h3 class="card-title">Item discovery</h3>
   </div>
   <div class="card-body">
-    <div class="form-group">
+    <div class="mb-3">
       <div class="form-check">
         <%= label_tag :hidden do %>
-        <%= check_box_tag :hidden, '1', (hidden) %>
+        <%= check_box_tag :hidden, '1', (hidden) , data: { testid: 'collection-hide-checkbox' }%>
         Hide this item from search results
         <% end %>
       </div>
       <%= hidden_field_tag :save_field, "discovery" %>
       <%= hidden_field_tag :overwrite, false %>
-      <%= submit_tag "Save Setting", class: "btn btn-primary", form: 'discovery_form' %>
-      <%= submit_tag "Apply to All Existing Items", name: "apply_to_existing", class: "btn btn-outline", data: { confirm: I18n.t('access_control.apply_to_all_warning') % [object.media_objects.count] }, form: 'discovery_form' %>
+      <%= submit_tag "Save Setting", class: "btn btn-primary", form: 'discovery_form', data: { testid: 'collection-save-setting-btn' } %>
+      <%= submit_tag "Apply to All Existing Items", name: "apply_to_existing", class: "btn btn-outline", data: { confirm: I18n.t('access_control.apply_to_all_warning') % [object.media_objects.count] , testid: "collection-apply-to-all-btn"}, form: 'discovery_form' %>
     </div>
   </div>
 </div>
@@ -45,16 +45,16 @@ Unless required by applicable law or agreed to in writing, software distributed
     <h3 class="card-title">Item access</h3>
   </div>
   <div class="card-body">
-    <div class="form-group">
+    <div class="mb-3">
       <div class="form-check">
         <label>
-          <%= radio_button_tag :visibility, 'public', (@visibility == 'public') %>
+          <%= radio_button_tag :visibility, 'public', (@visibility == 'public'),  'data-testid': 'collection-checkbox-general-public' %>
           Available to the general public
         </label>
       </div>
       <div class="form-check">
         <label>
-          <%= radio_button_tag :visibility, 'restricted', (@visibility == 'restricted') %>
+          <%= radio_button_tag :visibility, 'restricted', (@visibility == 'restricted'), 'data-testid': 'collection-checkbox-logged-in-user'  %>
           Logged in users only
         </label>
       </div>
@@ -81,7 +81,7 @@ Unless required by applicable law or agreed to in writing, software distributed
     <h3 class="card-title">Item discovery</h3>
   </div>
   <div class="card-body">
-    <div class="form-group">
+    <div class="mb-3">
       <%= hidden ? "Item is hidden from search results" :
         "Item is not hidden from search results" %>
     </div>
@@ -93,7 +93,7 @@ Unless required by applicable law or agreed to in writing, software distributed
     <h3 class="card-title">Item access</h3>
   </div>
   <div class="card-body">
-    <div class="form-group">
+    <div class="mb-3">
       Item is viewable by
       <%= case @visibility
           when "public"

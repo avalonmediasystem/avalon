@@ -142,7 +142,7 @@ RSpec.shared_examples 'a nested controller for' do |object_class|
 
     it "returns the supplemental file content" do
       get :show, params: { class_id => object.id, id: supplemental_file.id }, session: valid_session
-      expect(response).to redirect_to Rails.application.routes.url_helpers.rails_blob_path(supplemental_file.file, disposition: "attachment")
+      expect(response).to redirect_to Rails.application.routes.url_helpers.rails_blob_path(supplemental_file.file, disposition: "inline; filename=#{supplemental_file.download_filename}")
     end
 
     context '.json' do
@@ -508,7 +508,7 @@ RSpec.shared_examples 'a nested controller for' do |object_class|
             if object.is_a?(MasterFile)
               expect{
                 put :update, params: { class_id => object.id, id: supplemental_file.id, supplemental_file:valid_update_attributes, format: :html}, session: valid_session
-              }.to change { object.media_object.to_solr(include_child_fields: true)['has_transcripts_bsi'] }.from(true).to(false)
+              }.to change { object.reload.media_object.to_solr(include_child_fields: true)['has_transcripts_bsi'] }.from(true).to(false)
             end
           end
         end
@@ -654,7 +654,7 @@ RSpec.shared_examples 'a nested controller for' do |object_class|
         if object.is_a?(MasterFile)
           expect{
             delete :destroy, params: { class_id => object.id, id: supplemental_file.id, format: :html}, session: valid_session
-          }.to change { object.media_object.to_solr(include_child_fields: true)['has_transcripts_bsi'] }.from(true).to(false)
+          }.to change { object.reload.media_object.to_solr(include_child_fields: true)['has_transcripts_bsi'] }.from(true).to(false)
         end
       end
     end

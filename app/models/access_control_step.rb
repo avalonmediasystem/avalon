@@ -12,7 +12,7 @@
 #   specific language governing permissions and limitations under the License.
 # ---  END LICENSE_HEADER BLOCK  ---
 
-class AccessControlStep < Avalon::Workflow::BasicStep
+class AccessControlStep < BasicStep
   def initialize(step = 'access-control',
                  title = "Access Control",
                  summary = "Who can access the item",

@@ -18,12 +18,28 @@
   margin: 0.5em 0;
 }
 
-button.close {
+button.btn-close {
   display: block;
 }
 
-.btn-danger:visited {
+.alert .btn-close {
+  float: right;
+}
+
+.btn-danger,
+.btn-danger:hover,
+.btn-danger:visited,
+.btn-danger:disabled {
   color: $white;
+}
+
+.btn-danger:hover {
+  background-color: #b92d02;
+  border-color: #ad2a02;
+}
+
+.btn-outline:hover {
+  border: 1px solid #999;
 }
 
 #share-button {

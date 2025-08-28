@@ -90,7 +90,7 @@ class PlaylistsController < ApplicationController
         edit_button = view_context.link_to(edit_playlist_path(playlist), class: 'btn btn-outline btn-sm') do
           "<i class='fa fa-edit' aria-hidden='true'></i> Edit".html_safe
         end
-        delete_button = view_context.link_to(playlist_path(playlist), method: :delete, class: 'btn btn-sm btn-danger btn-confirmation', data: {placement: 'bottom', testid: 'playlist-delete-table-view'}) do
+        delete_button = view_context.link_to(playlist_path(playlist), method: :delete, class: 'btn btn-sm btn-danger btn-confirmation', data: {placement: 'bottom', testid: 'playlist-delete-table-view', confirm: "Are you sure?"}) do
           "<i class='fa fa-times' aria-hidden='true'></i> Delete".html_safe
         end
         [
@@ -99,7 +99,7 @@ class PlaylistsController < ApplicationController
           view_context.human_friendly_visibility(playlist.visibility),
           "<span title='#{playlist.created_at.utc.iso8601}'>#{view_context.time_ago_in_words(playlist.created_at)} ago</span>",
           "<span title='#{playlist.updated_at.utc.iso8601}'>#{view_context.time_ago_in_words(playlist.updated_at)} ago</span>",
-          playlist.tags.join(', '),
+          Array(playlist.tags).join(', '),
           "#{copy_button} #{edit_button} #{delete_button}"
         ]
       end
@@ -247,7 +247,7 @@ class PlaylistsController < ApplicationController
     authorize! :read, @playlist
 
     # Fetch all master files related to the playlist items in a single SpeedyAF::Base.where
-    master_file_ids = @playlist.items.collect { |item| item.clip.master_file_id }
+    master_file_ids = @playlist.clips.collect(&:master_file_id)
     master_files = []
     master_files = SpeedyAF::Proxy::MasterFile.where("id:#{master_file_ids.join(' id:')}", load_reflections: true) if master_file_ids.present?
     media_objects = master_files.collect(&:media_object).uniq(&:id)

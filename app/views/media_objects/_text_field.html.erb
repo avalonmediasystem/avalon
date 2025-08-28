@@ -14,7 +14,7 @@ Unless required by applicable law or agreed to in writing, software distributed
 ---  END LICENSE_HEADER BLOCK  ---
 %>
 <!-- <%= field.to_s.humanize %> field -->
-  <div class="form-group <% if options[:multivalued] %>multivalued<% end %> <% if @media_object.errors[field].any? %>invalid-feedback<% end %>">
+  <div class="mb-3 <% if options[:multivalued] %>multivalued<% end %> <% if @media_object.errors[field].any? %>invalid-feedback<% end %>">
     <%= render partial: "modules/tooltip", locals: { form: form, field: field, tooltip: t("metadata_tip.#{field.to_s}"), error: @media_object.errors[field].any?, options: options } %>
     <% if @media_object.errors[field].any? %>
       <%= content_tag :span, @media_object.errors[field].join(", "), class: (@media_object.errors[field].any? ? 'form-text invalid-feedback' : 'form-text') %>
@@ -32,6 +32,7 @@ Unless required by applicable law or agreed to in writing, software distributed
       <% value = values[i] %>
       <div class="input-group <%=options[:extra_classes]%>">
         <% if options[:autocomplete_model] and options[:autocomplete_model].present? %>
+          <% options[:multiple_field] = fieldname + "_#{i}" %>
           <%= render partial: "typeahead_field", locals: {fieldname: fieldname, value: value, options: options} %>
         <% elsif options[:secondary_field] and options[:secondary_field].present? %>
           <%= render partial: "two_part_field", locals: {fieldname: fieldname, value: value, options: options} %>

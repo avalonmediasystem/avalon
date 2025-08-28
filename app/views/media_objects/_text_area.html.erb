@@ -14,7 +14,7 @@ Unless required by applicable law or agreed to in writing, software distributed
 ---  END LICENSE_HEADER BLOCK  ---
 %>
 
-  <div class="form-group <% if options[:multivalued] %>multivalued<% end %> <% if @media_object.errors[field].any? %>invalid-feedback<% end %>">
+  <div class="mb-3 <% if options[:multivalued] %>multivalued<% end %> <% if @media_object.errors[field].any? %>invalid-feedback<% end %>">
     <%= render partial: "modules/tooltip", locals: { form: form, field: field, tooltip: t("metadata_tip.#{field.to_s}"), options: options } %>
     <% if @media_object.errors[field].any? %>
       <%= content_tag :span, @media_object.errors[field].join(", "), class: (@media_object.errors[field].any? ? 'form-text invalid-feedback' : 'form-text') %>

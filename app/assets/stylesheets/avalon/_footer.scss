@@ -20,7 +20,7 @@
   bottom: 0;
   width: 100%;
   min-height: 2.5rem;
-  color: #999999;
+  color: #767676;
   z-index: 0;
 }
 
@@ -44,7 +44,7 @@ footer {
     float: right;
   }
 
-  @include media-breakpoint-down(xs) {
+  @include media-breakpoint-down(sm) {
     font-size: 12px;
 
     ul {

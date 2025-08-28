@@ -20,8 +20,7 @@ Unless required by applicable law or agreed to in writing, software distributed
     <option value="<%= tag %>" <%= selected %>><%= tag %></option>
   <% end %>
 </select>
-<span id="helpTags"
-  class="form-text text-muted">Separate multiple tags with commas.</span>
+<span id="helpTags" class="form-text text-muted">Separate multiple tags with commas.</span>
 <input id="taglist" name="playlist[tags]" type="hidden" />
 
 <% content_for :page_scripts do %>
@@ -43,5 +42,10 @@ Unless required by applicable law or agreed to in writing, software distributed
       $('#playlist_form').submit();
     });
 
+    $(document).ready(function() {
+      // Set ARIA attributes for select2 elements used for creating playlist tags
+      $(".select2-selection[role='combobox']").attr('aria-label', 'playlist tag selection');
+      $("input.select2-search__field").attr('aria-label', 'search playlist tags');
+    });
   </script>
 <% end %>

@@ -16,8 +16,10 @@ Unless required by applicable law or agreed to in writing, software distributed
 
 <%= react_component("EmbeddedRamp",
   {
-    urls: { base_url: request.protocol+request.host_with_port, fullpath_url: request.fullpath },
-    media_object_id: @master_file.media_object_id,
-    is_video: @master_file.is_video?
+    props: {
+      urls: { base_url: request.protocol+request.host_with_port, fullpath_url: request.fullpath },
+      media_object_id: @master_file.media_object_id,
+      is_video: @master_file.is_video?
+    }
   }
 ) %>

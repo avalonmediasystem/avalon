@@ -99,6 +99,14 @@ class Playlist < ActiveRecord::Base
     access_token == token && visibility == Playlist::PRIVATE_WITH_TOKEN
   end
 
+  def clips_with_section_proxies
+    cached_clips = clips.to_a
+    section_ids = cached_clips.collect(&:master_file_id).uniq
+    sections = SpeedyAF::Proxy::MasterFile.where("id:#{section_ids.join(' id:')}")
+    cached_clips.map {|c| c.master_file = sections.find { |mf| mf.id == c.master_file_id }}
+    cached_clips
+  end
+
   class << self
     # Find the i18n default playlist name
     def default_folder_name

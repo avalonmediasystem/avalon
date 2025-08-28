@@ -14,4 +14,6 @@ Unless required by applicable law or agreed to in writing, software distributed
 ---  END LICENSE_HEADER BLOCK  ---
 %>
 
-<%= link_to "Delete this item", confirm_remove_media_object_path(@media_object), id: "special_button_color", class: "btn btn-outline btn-block", data:{testid: 'media-object-delete-btn'} %>
+<div class="d-grid gap-2">
+  <%= link_to "Delete this item", confirm_remove_media_object_path(@media_object), id: "media-object-delete-btn", class: "btn btn-outline", data:{testid: 'media-object-delete-btn'} %>
+</div>
