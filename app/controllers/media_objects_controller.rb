@@ -449,7 +449,7 @@ class MediaObjectsController < ApplicationController
               elsif success_count == 1
                 "Media object successfully #{status}ed."
               elsif success_count > 1
-                "#{success_count} #{'media object'.pluralize(success_count)} successfully #{status}ed."
+                "#{success_count} media objects successfully #{status}ed."
               end
     redirect_back(fallback_location: root_path, flash: {notice: message.html_safe})
   end
