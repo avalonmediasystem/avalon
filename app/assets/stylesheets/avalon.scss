@@ -909,7 +909,7 @@ h5.card-title {
   div.file_view {
     margin: 10px 0 5px 20px;
 
-    ul {
+    ul:not(.autocomplete_popup) {
       padding-left: 20px;
 
       li {
