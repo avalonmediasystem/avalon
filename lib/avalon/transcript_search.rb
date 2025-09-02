@@ -25,6 +25,8 @@ module Avalon
     end
 
     def perform_search(phrase_searching: true)
+      return {} if query.blank?
+
       subquery = if phrase_searching
                    "transcript_tsim:\"#{RSolr.solr_escape(query)}\""
                  else
@@ -56,13 +58,13 @@ module Avalon
 
     def items_builder search_results
       formatted_response = []
-      search_results["highlighting"].each do |result|
-        transcript_id = result.first.split('/').last.to_i
-        mime_type = search_results["response"]["docs"].filter { |doc| doc["id"] == result.first }.first["mime_type_ssi"]
+      search_results["highlighting"]&.each do |id, matches|
+        transcript_id = id.split('/').last.to_i
+        mime_type = search_results["response"]["docs"].filter { |doc| doc["id"] == id }.first["mime_type_ssi"]
         canvas = "#{Rails.application.routes.url_helpers.media_object_url(master_file.media_object_id).to_s}/manifest/canvas/#{master_file.id}"
         target = Rails.application.routes.url_helpers.transcripts_master_file_supplemental_file_url(master_file.id, transcript_id)
 
-        text_matches = result[1]["transcript_tsim"]
+        text_matches = matches["transcript_tsim"]
 
         formatted_response += process_items(text_matches, mime_type, canvas, target)
       end
