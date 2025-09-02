@@ -901,5 +901,16 @@ describe MasterFilesController do
       expect(items[0]["body"]["value"]).to eq "Just <em>before</em> <em>lunch</em> one day, a puppet show was put on at school."
       expect(items[0]["target"]).to eq "#{Rails.application.routes.url_helpers.transcripts_master_file_supplemental_file_url(parent_master_file.id, transcript_1.id)}#t=00:00:22.200,00:00:26.600"
     end
+
+    context 'with empty search' do
+      it 'returns an empty valid IIIF content search response' do
+        get('search', params: { id: parent_master_file.id })
+        result = JSON.parse(response.body)
+        expect(result["@context"]).to eq "http://iiif.io/api/search/2/context.json"
+        expect(result["id"]).to eq "#{Rails.application.routes.url_helpers.search_master_file_url(parent_master_file.id)}"
+        expect(result["type"]).to eq "AnnotationPage"
+        expect(result["items"]).to be_blank
+      end
+    end
   end
 end
