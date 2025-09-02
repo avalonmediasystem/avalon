@@ -64,6 +64,16 @@ describe Avalon::TranscriptSearch do
         end
       end
     end
+
+    context 'with empty search' do
+      subject { described_class.new(query: '', master_file: parent_master_file) }
+
+      it 'returns an empty hash' do
+        search = subject.perform_search
+        expect(search).to be_a Hash
+        expect(search).to be_blank
+      end
+    end
   end
 
   describe '#iiif_content_search' do
@@ -115,6 +125,19 @@ describe Avalon::TranscriptSearch do
           item = subject.iiif_content_search[:items].first
           expect(item[:target]).to include '#t=00:00:22.200,00:00:26.600'
         end
+      end
+    end
+
+    context 'with empty search' do
+      subject { described_class.new(query: '', master_file: parent_master_file) }
+
+      it 'returns valid empty IIIF content search response' do
+        allow(SecureRandom).to receive(:uuid).and_return('abc1234')
+        search = subject.iiif_content_search
+        expect(search["@context".to_sym]).to eq "http://iiif.io/api/search/2/context.json"
+        expect(search[:id]).to eq "#{Rails.application.routes.url_helpers.search_master_file_url(parent_master_file.id)}?q="
+        expect(search[:type]).to eq "AnnotationPage"
+        expect(search[:items]).to be_blank
       end
     end
   end
