@@ -142,20 +142,20 @@ RSpec.describe PlaylistItemsController, type: :controller do
   end
   describe 'PATCH #update' do
     let!(:video_master_file) { FactoryBot.create(:master_file, duration: "200000") }
-    let!(:clip) { AvalonClip.create(master_file: video_master_file, title: Faker::Lorem.word, comment: Faker::Lorem.sentence, start_time: 1000, end_time: 2000) }
+    let!(:clip) { AvalonClip.create(master_file: video_master_file, title: Faker::Lorem.unique.word, comment: Faker::Lorem.sentence, start_time: 1000, end_time: 2000) }
     let!(:playlist_item) { PlaylistItem.create!(playlist: playlist, clip: clip) }
 
     context 'with valid params' do
       it 'updates Playlist Item' do
         expect do
-          patch :update, params: { playlist_id: playlist.id, id: playlist_item.id, playlist_item: { title: Faker::Lorem.word, start_time:'00:20', end_time:'1:20' } }, session: valid_session
+          patch :update, params: { playlist_id: playlist.id, id: playlist_item.id, playlist_item: { title: Faker::Lorem.unique.word, start_time:'00:20', end_time:'1:20' } }, session: valid_session
         end.to change{ playlist_item.reload.title }
       end
     end
     context 'with invalid params' do
       it 'fails to update Playlist Item' do
         expect do
-          patch :update, params: { playlist_id: playlist.id, id: playlist_item.id, playlist_item: { title: Faker::Lorem.word, start_time:'00:20', end_time:'not-a-time' } }, session: valid_session
+          patch :update, params: { playlist_id: playlist.id, id: playlist_item.id, playlist_item: { title: Faker::Lorem.unique.word, start_time:'00:20', end_time:'not-a-time' } }, session: valid_session
         end.not_to change{ playlist_item.reload.title }
       end
     end
