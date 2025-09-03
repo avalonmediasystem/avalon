@@ -390,12 +390,13 @@ RSpec.shared_examples 'a nested controller for' do |object_class|
         request.headers['Content-Type'] = 'application/json'
       end
       context "with valid metadata params" do
-        let(:valid_update_attributes) { { label: 'new label', type: 'transcript', machine_generated: true }.to_json }
+        let(:valid_update_attributes) { { label: 'new label', type: 'transcript', machine_generated: true, language: 'French' }.to_json }
         it "updates the SupplementalFile metadata for #{object_class}" do
           expect {
             put :update, params: { class_id => object.id, id: supplemental_file.id, metadata: valid_update_attributes, format: :json }, session: valid_session
           }.to change { object.reload.supplemental_files.first.label }.from('label').to('new label')
            .and change { object.reload.supplemental_files.first.tags }.from([]).to(['transcript', 'machine_generated'])
+           .and change { object.reload.supplemental_files.first.language }.from('eng').to('fre')
 
           expect(response).to have_http_status(:ok)
           expect(response.body).to eq({ "id": supplemental_file.id }.to_json)
@@ -507,10 +508,26 @@ RSpec.shared_examples 'a nested controller for' do |object_class|
             # so we only test against the MasterFile case.
             if object.is_a?(MasterFile)
               expect{
-                put :update, params: { class_id => object.id, id: supplemental_file.id, supplemental_file:valid_update_attributes, format: :html}, session: valid_session
+                put :update, params: { class_id => object.id, id: supplemental_file.id, supplemental_file: valid_update_attributes, format: :html}, session: valid_session
               }.to change { object.reload.media_object.to_solr(include_child_fields: true)['has_transcripts_bsi'] }.from(true).to(false)
             end
           end
+        end
+      end
+
+      context 'language handling' do
+        it 'recognizes language_#{id} param and updates language accordingly' do
+          expect {
+            put :update, params: { class_id => object.id, id: supplemental_file.id, language_1: 'French', supplemental_file: valid_update_attributes, format: :html }, session: valid_session
+          }.to change { master_file.reload.supplemental_files.first.language }.from('eng').to('fre')
+        end
+
+        it 'does not allow arbitary language params' do
+          expect {
+            put :update, params: { class_id => object.id, id: supplemental_file.id, language_1_exploit: 'French',
+                                   exploit_language: 'French', exploit_language_1: 'French', language123: 'French',
+                                   supplemental_file: valid_update_attributes, format: :html }, session: valid_session
+          }.to_not change { master_file.reload.supplemental_files.first.language }
         end
       end
 
