@@ -938,6 +938,24 @@ h5.card-title {
           display: none;
         }
         display: flex;
+
+        .mb-3 {
+          margin-bottom: 0.5rem !important;
+        }
+
+        .ms-3 {
+          margin-left: 0 !important;
+        }
+
+        .form-check-inline {
+          margin-right: 0;
+          white-space: nowrap;
+
+          &:first-of-type {
+            margin-left: 0.5rem;
+            margin-right: -0.5rem;
+          }
+        }
       }
       margin-top: 0.75rem;
 
@@ -956,7 +974,7 @@ h5.card-title {
     }
 
     div.supplemental-file-data.is-editing:not(.edit-item)+div.supplemental-file-data {
-      margin-top: 2.5rem;
+      margin-top: 2.75rem;
     }
 
     .supplemental-file-form {
@@ -981,11 +999,9 @@ h5.card-title {
       height: 25px;
     }
 
-    &.captions,
-    &.transcripts {
-      div.supplemental-file-data.is-editing:last-child {
-        margin-bottom: 1.75rem;
-      }
+    
+    div.supplemental-file-data.is-editing:last-child {
+      margin-bottom: 2rem;
     }
   }
 }
