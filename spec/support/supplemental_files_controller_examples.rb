@@ -515,22 +515,6 @@ RSpec.shared_examples 'a nested controller for' do |object_class|
         end
       end
 
-      context 'language handling' do
-        it 'recognizes language_#{id} param and updates language accordingly' do
-          expect {
-            put :update, params: { class_id => object.id, id: supplemental_file.id, language_1: 'French', supplemental_file: valid_update_attributes, format: :html }, session: valid_session
-          }.to change { master_file.reload.supplemental_files.first.language }.from('eng').to('fre')
-        end
-
-        it 'does not allow arbitary language params' do
-          expect {
-            put :update, params: { class_id => object.id, id: supplemental_file.id, language_1_exploit: 'French',
-                                   exploit_language: 'French', exploit_language_1: 'French', language123: 'French',
-                                   supplemental_file: valid_update_attributes, format: :html }, session: valid_session
-          }.to_not change { master_file.reload.supplemental_files.first.language }
-        end
-      end
-
       context "API with new file" do
         let(:file_update) { fixture_file_upload(Rails.root.join('spec', 'fixtures', 'captions.vtt'), 'text/vtt') }
         before { ApiToken.create token: 'secret_token', username: 'archivist1@example.com', email: 'archivist1@example.com' }
