@@ -41,7 +41,8 @@ Unless required by applicable law or agreed to in writing, software distributed
             </div>
             <% if tag == 'transcript' %>
               <div class="mb-3 col-md-6 col p-0" style='display: flex;'>
-                <%= render partial: 'modules/autocomplete_input', locals: { field_name: "transcript_language_#{file.id}",
+                <%= render partial: 'modules/autocomplete_input', locals: { field_name: "supplemental_file[language]",
+                                                                            for_field: "language_#{file.id}",
                                                                             field_id: "supplemental_file_language_#{section.id}_#{file.id}",
                                                                             value: display_supplemental_file_language(file.language),
                                                                             model: 'languageTerm'} %>
@@ -57,7 +58,8 @@ Unless required by applicable law or agreed to in writing, software distributed
             <% end %>
             <% if tag == 'caption' %>
               <div class="mb-3 col-md-6 col p-0" style='display: flex;'>
-                <%= render partial: 'modules/autocomplete_input', locals: { field_name: "caption_language_#{file.id}",
+                <%= render partial: 'modules/autocomplete_input', locals: { field_name: "supplemental_file[language]",
+                                                                            for_field: "language_#{file.id}",
                                                                             field_id: "supplemental_file_language_#{section.id}_#{file.id}",
                                                                             value: display_supplemental_file_language(file.language),
                                                                             model: 'languageTerm'} %>
