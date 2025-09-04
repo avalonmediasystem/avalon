@@ -166,13 +166,6 @@ class SupplementalFilesController < ApplicationController
     end
 
     def supplemental_file_params
-      # Typeahead field requires a unique name for proper association between input and dropdown.
-      # This param is part of the regular params hash, not the child supplemental_file hash.
-      # Requests should still only contain one language param, filter for it to include in sup_file_params.
-      if params[:supplemental_file].present? && params[:supplemental_file][:language].blank?
-        language_param = params.keys.select { |key| key.match?(/^language_\d+$/) }
-        params[:supplemental_file][:language] = params[language_param.first]
-      end
       # TODO: Add parameters for minio and s3
       sup_file_params = params.fetch(:supplemental_file, {}).permit(:label, :language, :file, tags: [])
       return sup_file_params unless metadata_upload?
