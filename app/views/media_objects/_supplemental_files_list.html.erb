@@ -40,16 +40,12 @@ Unless required by applicable law or agreed to in writing, software distributed
               <%= form.text_field :label, id: "supplemental_file_input_#{section.id}_#{file.id}", value: file.label %>
             </div>
             <% if tag == 'transcript' %>
-              <div class="mb-3 col-md-6 col p-0">
-                <%= render partial: 'modules/autocomplete_input', locals: { field_name: :language,
+              <div class="mb-3 col-md-6 col p-0" style='display: flex;'>
+                <%= render partial: 'modules/autocomplete_input', locals: { field_name: "supplemental_file[language]",
+                                                                            for_field: "language_#{file.id}",
                                                                             field_id: "supplemental_file_language_#{section.id}_#{file.id}",
                                                                             value: display_supplemental_file_language(file.language),
                                                                             model: 'languageTerm'} %>
-                <%= form.text_field :language, 
-                    id: "supplemental_file_language_#{section.id}_#{file.id}", 
-                    value: display_supplemental_file_language(file.language),
-                    class: "typeahead from-model form-control",
-                    data: { model: 'languageTerm', validate: false } %>
               </div>
               <div class="row-col-sm-9 row-col-md-8 row-col-9 p-0">
                 <span class="form-check-inline col-md-6 col-sm-6 col-6 p-0">
@@ -61,12 +57,12 @@ Unless required by applicable law or agreed to in writing, software distributed
               </div>
             <% end %>
             <% if tag == 'caption' %>
-              <div class="mb-3 col-md-6 col p-0">
-                <%= form.text_field :language, 
-                    id: "supplemental_file_language_#{section.id}_#{file.id}", 
-                    value: display_supplemental_file_language(file.language),
-                    class: "typeahead from-model form-control",
-                    data: { model: 'languageTerm', validate: false } %>
+              <div class="mb-3 col-md-6 col p-0" style='display: flex;'>
+                <%= render partial: 'modules/autocomplete_input', locals: { field_name: "supplemental_file[language]",
+                                                                            for_field: "language_#{file.id}",
+                                                                            field_id: "supplemental_file_language_#{section.id}_#{file.id}",
+                                                                            value: display_supplemental_file_language(file.language),
+                                                                            model: 'languageTerm'} %>
               </div>
               <div class="row-col-sm-9 row-col-md-8 row-col-9 p-0">
                 <div class="form-check-inline col-md-6 col-sm-6 col-6 p-0">
