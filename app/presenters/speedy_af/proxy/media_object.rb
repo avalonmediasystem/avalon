@@ -154,6 +154,12 @@ class SpeedyAF::Proxy::MediaObject < SpeedyAF::Base
     WorkflowDatastream.find("#{id}/workflow")
   end
 
+  def cache_key_with_version
+    # Proxy has two potential values for last updated, use the latest one for version number
+    version = [@attrs[:system_modified], @attrs[:descMetadata_modified]].max
+    "media_object/#{id}-#{version.to_fs(:number)}"
+  end
+
   protected
 
   # Overrides from SpeedyAF::Base
