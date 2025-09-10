@@ -155,9 +155,7 @@ class SpeedyAF::Proxy::MediaObject < SpeedyAF::Base
   end
 
   def cache_key_with_version
-    # Proxy has two potential values for last updated, use the latest one for version number
-    version = [@attrs[:system_modified], @attrs[:descMetadata_modified]].max
-    "media_object/#{id}-#{version.to_fs(:number)}"
+    "media_object/#{id}-#{@attrs[:_version_]}"
   end
 
   protected

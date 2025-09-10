@@ -1932,14 +1932,7 @@ describe MediaObjectsController, type: :controller do
         get 'manifest', params: { id: media_object.id, format: 'json' }
         old_manifest = subject.to_json
         media_object.title = 'Test'
-        # Update timestamps available from the SpeedyAF proxy are whole second values.
-        # This should typically not be an issue in production, but the test can run
-        # quick enough that the version number remains the same. Explicitly jump forward
-        # in time to make sure the update timestamp is different. Using travel_to is
-        # hopefully more performant than `sleep 1`.
-        travel_to(Time.current + 1.second) do
-          media_object.save!
-        end
+        media_object.save!
         new_presenter = IiifManifestPresenter.new(media_object: media_object, master_files: [])
         new_manifest = IIIFManifest::V3::ManifestFactory.new(new_presenter).to_h.to_json
         get 'manifest', params: { id: media_object.id, format: 'json' }
