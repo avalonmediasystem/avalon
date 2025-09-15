@@ -40,7 +40,7 @@ import Search from '../components/Search';
 import MediaObjectRamp from '../components/MediaObjectRamp';
 import ReactButtonContainer from '../components/ReactButtonContainer';
 import PlaylistRamp from '../components/PlaylistRamp';
-import '../auto-complete-oninputblur.js';
+import '../auto-complete-open.js';
 import '@github/auto-complete-element';
 
 ReactOnRails.register({
