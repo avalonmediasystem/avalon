@@ -1501,10 +1501,9 @@
     estree-walker "^2.0.2"
     picomatch "^4.0.2"
 
-"@samvera/ramp@^4.0.2":
+"@samvera/ramp@https://github.com/samvera-labs/ramp.git#a0b3ebf":
   version "4.0.2"
-  resolved "https://registry.yarnpkg.com/@samvera/ramp/-/ramp-4.0.2.tgz#3e6c09dfe5cede044a7a41c0e8f73bdb496328fe"
-  integrity sha512-IYkcjK7uAh5k1Q5EWZeKx0cikFGvYcx30547++x2ppemxRqkqnk049kYKmPOFYdGoggOzaC7c0BOtVVkhfVd0w==
+  resolved "https://github.com/samvera-labs/ramp.git#a0b3ebf5d0dba825c68209017f2931a737585065"
   dependencies:
     "@rollup/plugin-json" "^6.0.1"
     "@silvermine/videojs-quality-selector" "^1.3.1"
@@ -2220,10 +2219,15 @@
   resolved "https://registry.yarnpkg.com/@webpack-cli/serve/-/serve-2.0.5.tgz#325db42395cd49fe6c14057f9a900e427df8810e"
   integrity sha512-lqaoKnRYBdo1UgDX8uF24AfGMifWK19TxPmM5FHc2vAGxrJ/qtyUyFBWoY1tISZdelsQ5fBcOusifo5o5wSJxQ==
 
-"@xmldom/xmldom@^0.8.3", "@xmldom/xmldom@^0.8.6":
+"@xmldom/xmldom@^0.8.3":
   version "0.8.10"
   resolved "https://registry.yarnpkg.com/@xmldom/xmldom/-/xmldom-0.8.10.tgz#a1337ca426aa61cef9fe15b5b28e340a72f6fa99"
   integrity sha512-2WALfTl4xo2SkGCYRt6rDTFfk9R1czmBvUQy12gK2KuRKIpWEhcbbzy8EZXtz/jkRqHX8bFEc6FC1HjX4TUWYw==
+
+"@xmldom/xmldom@^0.8.6":
+  version "0.8.11"
+  resolved "https://registry.yarnpkg.com/@xmldom/xmldom/-/xmldom-0.8.11.tgz#b79de2d67389734c57c52595f7a7305e30c2d608"
+  integrity sha512-cQzWCtO6C8TQiYl1ruKNn2U6Ao4o4WBBcbL61yJl84x+j5sOWWFU9X7DpND8XZG3daDppSsigMdfAIl2upQBRw==
 
 "@xtuc/ieee754@^1.2.0":
   version "1.2.0"
