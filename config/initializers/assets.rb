@@ -16,4 +16,4 @@ Rails.application.config.assets.paths << Rails.root.join('node_modules')
 # MediaElement 4 files
 # autocomplete and pop_help need to be explicitly precompiled for inclusion in update_access_control.html.erb
 # Possibly this is only necessary in dev and test envs.
-Rails.application.config.assets.precompile += %w(select2.min.js select2.min.css autocomplete.js pop_help.js)
+Rails.application.config.assets.precompile += %w(select2.min.js select2.min.css pop_help.js)
