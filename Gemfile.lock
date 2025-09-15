@@ -185,6 +185,10 @@ GEM
     ast (2.4.3)
     audio_waveform-ruby (1.0.7)
       json (~> 2.3)
+    aws-actionmailer-ses (1.0.0)
+      actionmailer (>= 7.1.0)
+      aws-sdk-ses (~> 1, >= 1.50.0)
+      aws-sdk-sesv2 (~> 1, >= 1.34.0)
     aws-activejob-sqs (1.0.2)
       activejob (>= 7.1.0)
       aws-sdk-sqs (~> 1, >= 1.56.0)
@@ -215,6 +219,9 @@ GEM
       aws-sdk-kms (~> 1)
       aws-sigv4 (~> 1.5)
     aws-sdk-ses (1.85.0)
+      aws-sdk-core (~> 3, >= 3.225.0)
+      aws-sigv4 (~> 1.5)
+    aws-sdk-sesv2 (1.79.0)
       aws-sdk-core (~> 3, >= 3.225.0)
       aws-sigv4 (~> 1.5)
     aws-sdk-sqs (1.96.0)
@@ -987,13 +994,13 @@ DEPENDENCIES
   api-pagination
   audio_waveform-ruby (~> 1.0.7)
   avalon-about!
+  aws-actionmailer-ses
   aws-activejob-sqs
   aws-partitions
   aws-sdk-cloudfront
   aws-sdk-elastictranscoder
   aws-sdk-rails
   aws-sdk-s3
-  aws-sdk-ses
   aws-sdk-sqs
   aws-sigv4
   bixby
