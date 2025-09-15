@@ -798,6 +798,12 @@ h5.card-title {
   width: 100%;
 }
 
+#blacklight-modal{
+  auto-complete {
+    flex-grow: 0;
+  }
+}
+
 /**
  * Associated Files - Edit - Manage Files
  */
