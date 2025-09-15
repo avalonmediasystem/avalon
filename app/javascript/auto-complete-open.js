@@ -16,11 +16,16 @@
 
 import Autocomplete from '@github/auto-complete-element/dist/autocomplete.js'
 
-Autocomplete.prototype.onInputBlur = function(event) {
-  let target = event.explicitOriginalTarget
-  // Target will either be the <li> element or the text node of the typeahead result.
-  // The text nodes are wrapped in a span, so we need to look at the grandparent element
-  // to get the <li> role.
-  if ('option' === (target.role || target.parentElement.parentElement.role) ) return;
-  this.close();
+Autocomplete.prototype.open = function(event) {
+  const isHidden = this.results.popover ? !this.results.matches(':popover-open') : this.results.hidden
+  if (isHidden) {
+    this.combobox.start()
+    if (this.results.popover) {
+      this.results.showPopover()
+    } else {
+      this.results.hidden = false
+    }
+  }
+  this.container.open = true
+  this.interactingWithList = false
 };
