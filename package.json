@@ -15,6 +15,7 @@
     "cropperjs": "^1.5.5",
     "css-loader": "^6.8.1",
     "css-minimizer-webpack-plugin": "^5.0.1",
+    "gridjs": "^6.2.0",
     "hls.js": "https://github.com/avalonmediasystem/hls.js#stricter_ts_probing",
     "mini-css-extract-plugin": "^2.7.6",
     "moment": "^2.29.4",
