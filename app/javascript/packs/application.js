@@ -40,7 +40,8 @@ import Search from '../components/Search';
 import MediaObjectRamp from '../components/MediaObjectRamp';
 import ReactButtonContainer from '../components/ReactButtonContainer';
 import PlaylistRamp from '../components/PlaylistRamp';
-import IndexTable from '../components/tables/IndexTable';
+import PlaylistsTable from '../components/tables/PlaylistsTable';
+import TimelinesTable from '../components/tables/TimelinesTable.jsx';
 import '../auto-complete-open.js';
 import '@github/auto-complete-element';
 
@@ -52,5 +53,6 @@ ReactOnRails.register({
   MediaObjectRamp,
   ReactButtonContainer,
   PlaylistRamp,
-  IndexTable
+  PlaylistsTable,
+  TimelinesTable
 });

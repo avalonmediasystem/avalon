@@ -45,29 +45,9 @@ class TimelinesController < ApplicationController
     # requests the html for only a limited set of rows at a time.
     records_total = @timelines.count
     columns = ['title', 'description', 'visibility', 'updated_at', 'tags', 'actions']
-
-    # Filter title and description
-    filter = params['search']['value']
-    @timelines = @timelines.title_like(filter).or(@timelines.desc_like(filter)) if filter.present?
-
-    # Apply tag filter if requested
-    tag_filter = params['columns']['4']['search']['value']
-    @timelines = @timelines.with_tag(tag_filter) if tag_filter.present?
-    timelines_filtered_total = @timelines.count
-    sort_column = params['order']['0']['column'].to_i rescue 0
-    sort_direction = params['order']['0']['dir'] rescue 'asc'
-
-    session[:timeline_sort] = [sort_column, sort_direction]
-    @timelines = if columns[sort_column] == 'updated_at'
-                   @timelines.order("#{columns[sort_column].downcase} #{sort_direction}")
-                 else
-                   @timelines.order("lower(#{columns[sort_column].downcase}) #{sort_direction}, #{columns[sort_column].downcase} #{sort_direction}")
-                 end
-    @timelines = @timelines.offset(params['start']).limit(params['length'])
     response = {
       "draw": params['draw'],
       "recordsTotal": records_total,
-      "recordsFiltered": timelines_filtered_total,
       "data": @timelines.collect do |timeline|
         copy_button = view_context.button_tag(type: 'button',
                                               data: { timeline: timeline },

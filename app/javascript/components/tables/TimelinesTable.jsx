@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useMemo } from 'react';
 
-const IndexTable = ({ url, tags }) => {
-  const [data, setData] = useState([]);
-  const [rowsToShow, setRowsToShow] = useState(data);
+const TimelinesTable = ({ url, tags }) => {
+  const [dataRows, setDataRows] = useState([]);
+  const [sortedRows, setSortedRows] = useState([]);
+  const [rowsToShow, setRowsToShow] = useState(dataRows);
   const [loading, setLoading] = useState(false);
   const [pagination, setPagination] = useState({
     pageIndex: 0,
@@ -12,15 +13,14 @@ const IndexTable = ({ url, tags }) => {
   const [sorting, setSorting] = useState({ column: 0, direction: 'asc' });
   const [titleFilter, setTitleFilter] = useState('');
   const [tagFilter, setTagFilter] = useState('');
-  const [totalRows, setTotalRows] = useState(0);
-  const [filteredRows, setFilteredRows] = useState(0);
+  const [totalRowCount, setTotalRowCount] = useState(0);
+  const [filteredRowCount, setFilteredRowCount] = useState(0);
 
   const columns = [
     { key: 'title', label: 'Name', sortable: true },
-    { key: 'size', label: 'Size', sortable: true },
+    { key: 'description', label: 'Description', sortable: true },
     { key: 'visibility', label: 'Visibility', sortable: true },
-    { key: 'created_at', label: 'Created', sortable: true },
-    { key: 'updated_at', label: 'Updated', sortable: true },
+    { key: 'updated_at', label: 'Last Updated', sortable: true },
     { key: 'tags', label: 'Tags', sortable: true },
     { key: 'actions', label: 'Actions', sortable: false },
   ];
@@ -28,15 +28,15 @@ const IndexTable = ({ url, tags }) => {
   const fetchData = async () => {
     setLoading(true);
 
-    const payload = {
-      draw: Date.now(),
-      start: pagination.pageIndex * pagination.pageSize,
-      search: { value: titleFilter },
-      order: { '0': { column: sorting.column, dir: sorting.direction } },
-      columns: {
-        '5': { search: { value: tagFilter } }
-      }
-    };
+    // const payload = {
+    //   draw: Date.now(),
+    //   start: pagination.pageIndex * pagination.pageSize,
+    //   search: { value: titleFilter },
+    //   order: { '0': { column: sorting.column, dir: sorting.direction } },
+    //   columns: {
+    //     '5': { search: { value: tagFilter } }
+    //   }
+    // };
 
     try {
       const response = await fetch(url, {
@@ -45,44 +45,57 @@ const IndexTable = ({ url, tags }) => {
           'Content-Type': 'application/json',
           'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content'),
         },
-        body: JSON.stringify(payload)
+        // body: JSON.stringify(payload)
       });
 
       const result = await response.json();
 
       // Parse the Rails response data
       const parsedData = result.data.map((row, index) => {
-        // Extract title from link HTML
-        const titleMatch = row[0].match(/<a[^>]*href="[^"]*\/playlists\/(\d+)"[^>]*title="([^"]*)"[^>]*>([^<]*)<\/a>/);
-        const playlistId = titleMatch ? titleMatch[1] : index;
-        const title = titleMatch ? titleMatch[3] : row[0];
-        const titleTooltip = titleMatch ? titleMatch[2] : '';
+        // Extract timeline id, tooltip, and name from link HTML
+        const timelineIdMatch = row[0].match(/\/timelines\/(\d+)/);
+        const toolTipMatch = row[0].match(/title="([^"]*)"/);
+        const titleMatch = row[0].match(/>([^<]*)<\/a>/);
+
+        // Extract clean visibility text from HTML for sorting
+        const visibilityText = row[2].replace(/<[^>]*>/g, '').trim();
+
+        // Regex to extract time and text from last updated field
+        const regex = /<span[^>]*title=['"]([^'"]*?)['"][^>]*>([^<]*)<\/span>/;
+        const updatedAtMatch = row[3].match(regex);
+        const updatedAgo = updatedAtMatch ? updatedAtMatch[2] : '';
+        // Ideally this would not resolve to the else condition
+        const updatedAtTime = updatedAtMatch ? new Date(updatedAtMatch[1]) : new Date.now();
 
         return {
-          id: playlistId,
-          title: title,
-          titleTooltip: titleTooltip,
+          id: timelineIdMatch ? timelineIdMatch[1] : index,
+          title: titleMatch ? titleMatch[1] : '',
+          titleTooltip: toolTipMatch ? toolTipMatch[1] : '',
           titleHtml: row[0],
-          size: parseInt(row[1].split(' ')[0]) || 0,
-          sizeText: row[1],
+          description: row[1],
+          visibility: visibilityText,
           visibilityHtml: row[2],
-          createdAt: row[3].match(/title='(.*?)'/)?.[1] || '',
-          createdAgo: row[3].match(/>(.*?) ago</)?.[1] + ' ago' || row[3],
-          createdHtml: row[3],
-          updatedAt: row[4].match(/title='(.*?)'/)?.[1] || '',
-          updatedAgo: row[4].match(/>(.*?) ago</)?.[1] + ' ago' || row[4],
-          updatedHtml: row[4],
-          tags: row[5],
-          actionsHtml: row[6]
+          updatedAt: updatedAtTime,
+          updatedAgo: updatedAgo,
+          updatedHtml: row[3],
+          tags: row[4],
+          actionsHtml: row[5]
         };
       });
 
-      setData(parsedData);
-      setRowsToShow(parsedData);
-      setTotalRows(result.recordsTotal);
-      setFilteredRows(result.recordsTotal);
-      // setFilteredRows(result.recordsFiltered);
-      setPagination(prev => ({ ...prev, pages: Array.from({ length: Math.ceil(parsedData / prev.pageSize) }, (_, i) => i + 1) }));
+      setTotalRowCount(result.recordsTotal);
+      setFilteredRowCount(result.recordsTotal);
+
+      setDataRows(parsedData);
+
+      // Sort the initial data set by 'title' from A-Z
+      const sortedData = sortRows(parsedData, 'title', 'asc');
+      setSortedRows(sortedData);
+
+      // Apply initial pagination to show first page
+      const { pageSize } = pagination;
+      const end = Math.min(pageSize, sortedData.length);
+      setRowsToShow(sortedData.slice(0, end));
     } catch (error) {
       console.error('Error fetching data:', error);
     } finally {
@@ -90,62 +103,152 @@ const IndexTable = ({ url, tags }) => {
     }
   };
 
-  useEffect(() => {
-    fetchData();
-  }, [pagination.pageIndex, pagination.pageSize, sorting]);
+  // Fetch data from the given API-endpoint on load
+  useEffect(() => { fetchData(); }, []);
+
+  /**
+   * Sort rows by a given column key and direction (asc/desc)
+   * @param {Array} rows 
+   * @param {String} columnKey column name to be used for sorting
+   * @param {String} direction sorting direction (asc/desc)
+   * @returns {Array}
+   */
+  const sortRows = (rows, columnKey, direction) => {
+    if (columnKey === 'last_updated' || columnKey === 'created_at' || columnKey === 'updated_at') {
+      // Sort by actual date values from the parsed timestamps
+      const sorted = [...rows].sort((a, b) => {
+        const dateField = columnKey === 'created_at' ? 'createdAt' : 'updatedAt';
+        const dateA = new Date(a[dateField]);
+        const dateB = new Date(b[dateField]);
+        return dateA - dateB;
+      });
+      return direction === 'asc' ? sorted : sorted.reverse();
+    } else if (columnKey === 'size') {
+      // Decorate: add size as sort key
+      const sizeText = rows.map(row => [row.size, row]);
+
+      // Sort by size (first element of decorated array)
+      sizeText.sort((a, b) => a[0] - b[0]);
+
+      // Undecorate: extract original rows
+      const sorted = sizeText.map(item => item[1]);
+
+      return direction === 'asc' ? sorted : sorted.reverse();
+    } else {
+      // Case-insensitive sort with stable fallback
+      const sorted = [...rows].sort((a, b) => {
+        const aVal = (a[columnKey] || '').toString().toLowerCase();
+        const bVal = (b[columnKey] || '').toString().toLowerCase();
+
+        // Primary sort: case-insensitive comparison
+        if (aVal < bVal) return -1;
+        if (aVal > bVal) return 1;
+
+        // Secondary sort: original case-sensitive value for stable sort
+        const aOriginal = (a[columnKey] || '').toString();
+        const bOriginal = (b[columnKey] || '').toString();
+        if (aOriginal < bOriginal) return -1;
+        if (aOriginal > bOriginal) return 1;
+        return 0;
+      });
+      return direction === 'asc' ? sorted : sorted.reverse();
+    }
+  };
 
   const handleSort = (columnIndex) => {
     if (!columns[columnIndex].sortable) return;
 
-    setSorting(prev => ({
-      column: columnIndex,
-      direction: prev.column === columnIndex && prev.direction === 'asc' ? 'desc' : 'asc'
-    }));
+    const columnKey = columns[columnIndex].key;
+
+    let sortDirection;
+    if (sorting.column === columnIndex) {
+      // Same column clicked - toggle direction
+      sortDirection = sorting.direction === 'asc' ? 'desc' : 'asc';
+    } else {
+      // Different column clicked - choose appropriate default direction
+      if (columnKey === 'created_at' || columnKey === 'updated_at') {
+        // Date columns: start with oldest first
+        sortDirection = 'asc';
+      } else if (columnKey === 'size') {
+        // Size column: start with smallest first
+        sortDirection = 'asc';
+      } else {
+        // Text columns: start with A-Z
+        sortDirection = 'asc';
+      }
+    }
+
+    // Sort the current working dataset (sortedRows contains filtered data if filters are active)
+    const sortedData = sortRows(dataRows, columnKey, sortDirection);
+    setSortedRows(sortedData);
+
+    // Apply pagination to the sorted data
+    const { pageSize } = pagination;
+    const start = 0; // Reset to first page when sorting
+    const end = Math.min(pageSize, sortedData.length);
+    setRowsToShow(sortedData.slice(start, end));
+
+    setSorting({ column: columnIndex, direction: sortDirection });
     setPagination(prev => ({ ...prev, pageIndex: 0 }));
   };
 
   const handlePageChange = (newPageIndex) => {
     setPagination(prev => ({ ...prev, pageIndex: newPageIndex }));
+    const { pageSize } = pagination;
+    const start = newPageIndex * pageSize;
+    const end = Math.min(start + pageSize, sortedRows.length);
+    setRowsToShow(sortedRows.slice(start, end));
   };
 
   const handlePageSizeChange = (newPageSize) => {
-    setSelectedRows(data[0..newPageSize]);
+    setRowsToShow(sortedRows.slice(0, newPageSize));
     setPagination({ pageIndex: 0, pageSize: newPageSize });
   };
 
   const handleSearch = (e) => {
     const filter = e.target.value;
     setTitleFilter(filter);
-    setFilteredData(filter, tagFilter);
+    filterRows(filter, tagFilter);
   };
 
   const handleTagFilter = (e) => {
     const filter = e.target.value;
     setTagFilter(filter);
-    setFilteredData(titleFilter, filter);
+    filterRows(titleFilter, filter);
   };
 
-  const setFilteredData = (title, tag) => {
-    let filtered = data;
-
-    // Apply title filter first
+  const filterRows = (title, tag) => {
+    let filtered = sortedRows;
+    // Filter on search from title
     if (title.trim() !== '') {
       filtered = filtered.filter(row =>
         row.title.toLowerCase().includes(title.toLowerCase())
       );
     }
 
-    // Then apply tag filter on top of title-filtered data
+    // Filter on tag filter values
     if (tag.trim() !== '') {
-      filtered = filtered.filter(row =>
-        Array.isArray(row.tags)
-          ? row.tags.includes(tag)
-          : (typeof row.tags === 'string' && row.tags.split(',').map(t => t.trim()).includes(tag))
-      );
+      filtered = filtered.filter(row => {
+        if (Array.isArray(row.tags)) {
+          return row.tags.includes(tag);
+        } else if (typeof row.tags === 'string') {
+          // Parse comma-separated tags and check for exact match
+          const tags = row.tags.split(',').map(t => t.trim());
+          return tags.includes(tag);
+        }
+        return false;
+      });
     }
+    // Set filteredRowCount to be used in the text
+    setFilteredRowCount(filtered?.length);
 
-    setFilteredRows(filtered?.length);
-    setRowsToShow(filtered);
+    // Apply pagination to filtered (and potentially sorted) data
+    const pageSize = pagination.pageSize;
+    // Reset to first page when filtering
+    const start = 0;
+    const end = Math.min(pageSize, filtered.length);
+    setRowsToShow(filtered.slice(start, end));
+
     setPagination(prev => ({
       ...prev,
       pageIndex: 0,
@@ -153,8 +256,13 @@ const IndexTable = ({ url, tags }) => {
     }));
   };
 
-  const totalPages = Math.ceil(filteredRows / pagination.pageSize);
-  const currentPage = pagination.pageIndex + 1;
+  const totalPages = useMemo(() => {
+    return Math.ceil(filteredRowCount / pagination.pageSize);
+  }, [pagination.pageSize, filteredRowCount]);
+
+  const currentPage = useMemo(() => {
+    return pagination.pageIndex + 1;
+  }, [pagination.pageIndex]);
 
   const getSortIcon = (columnIndex) => {
     if (!columns[columnIndex].sortable) return null;
@@ -178,14 +286,10 @@ const IndexTable = ({ url, tags }) => {
         return (
           <div dangerouslySetInnerHTML={{ __html: item.titleHtml }} />
         );
-      case 'size':
-        return item.sizeText;
+      case 'description':
+        return item.description;
       case 'visibility':
         return <span dangerouslySetInnerHTML={{ __html: item.visibilityHtml }} />;
-      case 'created_at':
-        return (
-          <div dangerouslySetInnerHTML={{ __html: item.createdHtml }} />
-        );
       case 'updated_at':
         return (
           <div dangerouslySetInnerHTML={{ __html: item.updatedHtml }} />
@@ -217,20 +321,46 @@ const IndexTable = ({ url, tags }) => {
         window.apply_button_confirmation();
       }
 
-      // Add copy playlist button events if function exists
-      if (window.add_copy_playlist_button_event) {
-        window.add_copy_playlist_button_event();
+      // Add copy timeline button event if function exists
+      if (window.add_copy_button_event) {
+        window.add_copy_button_event();
       }
 
-      // File data change handlers
-      document.querySelectorAll('.filedata').forEach(input => {
-        input.addEventListener('change', function () {
-          this.closest('form').submit();
-        });
-      });
+      // // File data change handlers
+      // document.querySelectorAll('.filedata').forEach(input => {
+      //   input.addEventListener('change', function () {
+      //     this.closest('form').submit();
+      //   });
+      // });
     }
   }, [loading, rowsToShow]);
 
+  /**
+   * Build pagination page numbers list based on the currentPage and totalPages
+   * count
+   * @returns {Object}
+   */
+  const getPaginationPages = () => {
+    // Do not build '...' element for page counts smaller than 5
+    if (totalPages <= 5) {
+      return Array.from({ length: totalPages }, (_, i) => i + 1);
+    }
+
+    // Build page numbers with '...' in the middle for larger page counts
+    const pages = [];
+    if (currentPage <= 3) {
+      pages.push(1, 2, 3, 4, '...', totalPages);
+    } else if (currentPage >= totalPages - 2) {
+      pages.push(1, '...', totalPages - 3, totalPages - 2, totalPages - 1, totalPages);
+    } else {
+      pages.push(1, '...', currentPage, currentPage + 1, '...', totalPages);
+    }
+    return pages;
+  };
+
+  /**
+   * Build search and filter for the header of the table
+   */
   const searchAndFilter = useMemo(() => {
     return (
       <div className="d-flex justify-content-between align-items-center mb-3 flex-sm-wrap">
@@ -238,9 +368,9 @@ const IndexTable = ({ url, tags }) => {
           {(rowsToShow?.length === 0 && !loading)
             ? 'Showing 0 to 0 of 0 entries'
             : `Showing ${pagination.pageIndex * pagination.pageSize + 1} to${' '}
-          ${Math.min((pagination.pageIndex + 1) * pagination.pageSize, filteredRows)} of${' '}
-          ${filteredRows} entries`}
-          {filteredRows < totalRows && ` (filtered from ${totalRows} total entries)`}
+          ${Math.min((pagination.pageIndex + 1) * pagination.pageSize, filteredRowCount)} of${' '}
+          ${filteredRowCount} entries`}
+          {filteredRowCount < totalRowCount && ` (filtered from ${totalRowCount} total entries)`}
         </div>
         <div className='d-flex justify-content-end gap-2 flex-sm-wrap'>
           <div className="d-flex align-items-center">
@@ -249,7 +379,6 @@ const IndexTable = ({ url, tags }) => {
               id="search-playlist"
               type="text"
               className="form-control"
-              placeholder="Search playlists..."
               value={titleFilter}
               onChange={handleSearch}
               style={{ width: '200px' }}
@@ -273,27 +402,10 @@ const IndexTable = ({ url, tags }) => {
         </div>
       </div>
     );
-  }, [tags, filteredRows, pagination, totalRows]);
-
-  const getPaginationPages = (currentPage, totalPages) => {
-    if (totalPages <= 5) {
-      return Array.from({ length: totalPages }, (_, i) => i + 1);
-    }
-
-    const pages = [];
-    if (currentPage <= 3) {
-      pages.push(1, 2, 3, 4, '...', totalPages);
-    } else if (currentPage >= totalPages - 2) {
-      pages.push(1, '...', totalPages - 3, totalPages - 2, totalPages - 1, totalPages);
-    } else {
-      pages.push(1, '...', currentPage, currentPage + 1, '...', totalPages);
-    }
-    return pages;
-  };
-
+  }, [tags, filteredRowCount, pagination, totalRowCount]);
 
   return (
-    <div className="playlist-table-container">
+    <div className="timeline-table-container">
       {searchAndFilter}
       {loading ?
         (<div className="text-center py-3">
@@ -305,7 +417,7 @@ const IndexTable = ({ url, tags }) => {
         (<>
           <div className="table-responsive">
             <table className="table table-striped">
-              <thead data-testid="playlist-table-head">
+              <thead data-testid="timeline-table-head">
                 <tr>
                   {columns.map((column, index) => (
                     <th
@@ -320,10 +432,10 @@ const IndexTable = ({ url, tags }) => {
                   ))}
                 </tr>
               </thead>
-              <tbody data-testid="playlist-table-body">
+              <tbody data-testid="timeline-table-body">
                 {rowsToShow.length === 0 && !loading ? (
                   <tr>
-                    <td colSpan={columns.length} className="text-center py-1">
+                    <td colSpan={columns.length} className="text-center py-2">
                       No matching records found
                     </td>
                   </tr>
@@ -368,7 +480,7 @@ const IndexTable = ({ url, tags }) => {
                     Previous
                   </button>
                 </li>
-                {getPaginationPages(currentPage, totalPages).map((page, idx) =>
+                {getPaginationPages().map((page, idx) =>
                   page === '...' ? (
                     <li key={`ellipsis-${idx}`} className="page-item disabled">
                       <span className="page-link">...</span>
@@ -398,4 +510,4 @@ const IndexTable = ({ url, tags }) => {
   );
 };
 
-export default IndexTable;
+export default TimelinesTable;

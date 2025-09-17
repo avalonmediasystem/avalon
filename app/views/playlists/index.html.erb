@@ -41,10 +41,10 @@ Unless required by applicable law or agreed to in writing, software distributed
     </div>
 
     <% unless playlists.empty? %>
-      <%= react_component("IndexTable", { props: { 
-        url: '/playlists/paged_index', 
-        tags: current_user.playlist_tags,
-      }
+      <%= react_component("PlaylistsTable", { props: { 
+          url: '/playlists/paged_index', 
+          tags: current_user.playlist_tags,
+        }
       }) %>
     <% end %>
   </div>
