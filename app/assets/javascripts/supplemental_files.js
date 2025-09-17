@@ -110,7 +110,7 @@ $('.supplemental-file-form')
 
 /* Store collapsed section ids in localStorage if available */
 $('button[id^=edit_section').on('click', (e) => {
-  if (!Modernizr.localStorage) {
+  if (!(Modernizr.localStorage || Modernizr.localstorage)) {
     return;
   }
 
@@ -119,21 +119,21 @@ $('button[id^=edit_section').on('click', (e) => {
 
   var currentSection = e.target.dataset['sectionId'];
   var isCollapsed = e.target.getAttribute('aria-expanded') == 'true';
-  if (isCollapsed) {
+  if (!isCollapsed) {
     for (var i = 0; i < activeSections.length; i++) {
       if (activeSections[i] == currentSection) {
         activeSections.splice(i, 1);
       }
     }
-  } else {
+  } else if (!activeSections.includes(currentSection)) {
     activeSections.push(currentSection);
   }
   localStorage.setItem('activeSections', JSON.stringify(activeSections));
 });
 
 /* On page reload; collapse sections which were collapsed previously */
-$(document).ready(function () {
-  if (!Modernizr.localStorage) {
+window.addEventListener("load", function () {
+  if (!(Modernizr.localStorage || Modernizr.localstorage)) {
     return;
   }
 
