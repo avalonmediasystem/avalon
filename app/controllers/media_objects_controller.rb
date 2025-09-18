@@ -476,17 +476,22 @@ class MediaObjectsController < ApplicationController
     @media_object = SpeedyAF::Proxy::MediaObject.find(params[:id])
     authorize! :read, @media_object
 
-    stream_info_hash = secure_stream_infos(master_file_presenters, [@media_object])
-    canvas_presenters = master_file_presenters.collect { |mf| IiifCanvasPresenter.new(master_file: mf, stream_info: stream_info_hash[mf.id]) }
-    presenter = IiifManifestPresenter.new(media_object: @media_object, master_files: canvas_presenters, lending_enabled: lending_enabled?(@media_object))
+    # TODO: Add a rake task to clear expired items from the cache?
+    cached_manifest = Rails.cache.fetch([@media_object.cache_key_with_version, 'iiif_manifest'], expires_in: 1.week) do
+      stream_info_hash = secure_stream_infos(master_file_presenters, [@media_object])
+      canvas_presenters = master_file_presenters.collect { |mf| IiifCanvasPresenter.new(master_file: mf, stream_info: stream_info_hash[mf.id]) }
+      presenter = IiifManifestPresenter.new(media_object: @media_object, master_files: canvas_presenters, lending_enabled: lending_enabled?(@media_object))
 
-    manifest = IIIFManifest::V3::ManifestFactory.new(presenter).to_h
-    # TODO: implement thumbnail in iiif_manifest
-    manifest["thumbnail"] = [{ "id" => presenter.thumbnail, "type" => 'Image' }] if presenter.thumbnail
+      manifest = IIIFManifest::V3::ManifestFactory.new(presenter).to_h
+      # TODO: implement thumbnail in iiif_manifest
+      manifest["thumbnail"] = [{ "id" => presenter.thumbnail, "type" => 'Image' }] if presenter.thumbnail
+
+      manifest
+    end
 
     respond_to do |wants|
-      wants.json { render json: manifest.to_json }
-      wants.html { render json: manifest.to_json }
+      wants.json { render json: cached_manifest.to_json }
+      wants.html { render json: cached_manifest.to_json }
     end
   end
 

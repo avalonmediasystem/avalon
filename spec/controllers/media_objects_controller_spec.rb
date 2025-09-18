@@ -1903,6 +1903,44 @@ describe MediaObjectsController, type: :controller do
         expect(a_request(:any, /#{ActiveFedora.fedora.base_uri}/)).not_to have_been_made
       end
     end
+
+    context 'caching' do
+      let!(:media_object) { FactoryBot.create(:published_media_object, visibility: 'public') }
+      let(:memory_store) { ActiveSupport::Cache.lookup_store(:memory_store) }
+      subject { Rails.cache.read("#{SpeedyAF::Proxy::MediaObject.find(media_object.id).cache_key_with_version}/iiif_manifest") }
+
+      before do
+        allow(Rails).to receive(:cache).and_return(memory_store)
+        # Range ids are randomly generated. Force the id to a known value so we can equality match.
+        allow_any_instance_of(IIIFManifest::V3::ManifestBuilder::RangeBuilder).to receive(:path).and_return('range')
+        presenter = IiifManifestPresenter.new(media_object: media_object, master_files: [])
+        @manifest = IIIFManifest::V3::ManifestFactory.new(presenter).to_h
+      end
+
+      after do
+        Rails.cache.clear
+      end
+
+      it 'should cache the iiif manifest' do
+        get 'manifest', params: { id: media_object.id, format: 'json' }
+        expect(subject).to be_a(IIIFManifest::V3::ManifestBuilder::IIIFManifest)
+        expect(subject.to_json).to eq(@manifest.to_json)
+      end
+
+      it 'should update the cache when the media object is updated' do
+        get 'manifest', params: { id: media_object.id, format: 'json' }
+        old_manifest = subject.to_json
+        media_object.title = 'Test'
+        media_object.save!
+        new_presenter = IiifManifestPresenter.new(media_object: media_object, master_files: [])
+        new_manifest = IIIFManifest::V3::ManifestFactory.new(new_presenter).to_h.to_json
+        get 'manifest', params: { id: media_object.id, format: 'json' }
+        new_cache = Rails.cache.read("#{SpeedyAF::Proxy::MediaObject.find(media_object.id).cache_key_with_version}/iiif_manifest")
+        expect(new_cache).to be_a(IIIFManifest::V3::ManifestBuilder::IIIFManifest)
+        expect(new_cache.to_json).to_not eq(old_manifest)
+        expect(new_cache.to_json).to eq(new_manifest)
+      end
+    end
   end
 
   describe '#tree' do
