@@ -16,7 +16,6 @@ require 'rails_helper'
 
 describe MediaObjectsController, type: :controller do
   include ActiveJob::TestHelper
-  include ActiveSupport::Testing::TimeHelpers
 
   render_views
 
