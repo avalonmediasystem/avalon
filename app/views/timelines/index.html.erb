@@ -52,3 +52,10 @@ Unless required by applicable law or agreed to in writing, software distributed
 
 <%= render partial: 'copy_timeline_modal', locals: { with_refresh: true } %>
 
+<% content_for :page_scripts do %>
+  <script>
+    $( '.filedata' ).change(function() {
+      $(this).closest('form').submit();
+    });
+  </script>
+<% end %>

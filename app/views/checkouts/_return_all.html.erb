@@ -13,17 +13,9 @@ Unless required by applicable law or agreed to in writing, software distributed
   specific language governing permissions and limitations under the License.
 ---  END LICENSE_HEADER BLOCK  ---
 %>
-<h1>Checkouts</h1>
 
-<div class="Checkout-index">
-  <% if @checkouts.any? %>
-    <%= react_component("CheckoutsTable", { props: {
-        url: '/checkouts.json',
-        isAdmin: current_ability.is_administrator?,
-        returnAll: render('return_all'),
-      }
-    }) %>
-  <% else %>
-    <p>No matching records found.</p>
-  <% end %>
-</div>
+<% if Checkout.active_for_user(current_user.id).count > 1 || current_ability.is_administrator? %>
+  <div class="text-start">
+    <%= link_to 'Return All', main_app.return_all_checkouts_path , class: 'btn btn-primary btn-md', method: :patch, data: { confirm: 'Are you sure you want to return all items?' } %>
+  </div>
+<% end %>

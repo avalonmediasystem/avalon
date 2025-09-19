@@ -784,7 +784,7 @@ h5.card-title {
   width: 100%;
 }
 
-#blacklight-modal{
+#blacklight-modal {
   auto-complete {
     flex-grow: 0;
   }
@@ -1088,30 +1088,25 @@ h5.card-title {
 }
 
 /*Encode dashboard progress bar */
-#encode-records {
-  .progress {
+.encoding_jobs-table-container {
+  .progress-bar {
     background-color: #bcbebf;
     text-align: left;
     position: relative;
     height: 13px;
     margin: 4px 0px;
-    .completed {
-      background-color: $success;
-    }
-    .failed {
-      background-color: $danger;
-    }
-    .cancelled {
-      background-color: $gray;
-    }
-    .running {
-      background-color: $lightblue;
-    }
-    .progress-bar {
-      text-align: left;
-      line-height: 13px;
-      padding: 1px 10px 2px;
-    }
+  }
+  .completed {
+    background-color: $success;
+  }
+  .failed {
+    background-color: $danger;
+  }
+  .cancelled {
+    background-color: $gray;
+  }
+  .running {
+    background-color: $lightblue;
   }
 }
 

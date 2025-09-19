@@ -42,6 +42,9 @@ import ReactButtonContainer from '../components/ReactButtonContainer';
 import PlaylistRamp from '../components/PlaylistRamp';
 import PlaylistsTable from '../components/tables/PlaylistsTable';
 import TimelinesTable from '../components/tables/TimelinesTable.jsx';
+import EncodingJobsTable from '../components/tables/EncodingJobsTable';
+import CheckoutsTable from '../components/tables/CheckoutsTable';
+import UsersTable from '../components/tables/UsersTable.jsx';
 import '../auto-complete-open.js';
 import '@github/auto-complete-element';
 
@@ -54,5 +57,8 @@ ReactOnRails.register({
   ReactButtonContainer,
   PlaylistRamp,
   PlaylistsTable,
-  TimelinesTable
+  TimelinesTable,
+  EncodingJobsTable,
+  CheckoutsTable,
+  UsersTable,
 });

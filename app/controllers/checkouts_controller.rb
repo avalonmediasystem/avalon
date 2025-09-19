@@ -29,7 +29,8 @@ class CheckoutsController < ApplicationController
             else
               user_array(checkout)
             end
-          end.compact
+          end.compact,
+          "recordsTotal": @checkouts.count
         }
         render json: response
       end
