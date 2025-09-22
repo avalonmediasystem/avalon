@@ -100,21 +100,10 @@ var AvalonProgress = (function() {
 })();
 
 $(document).ready(function() {
-  if ($('.progress-bar').length === 0) {
+  if ($('.progress-bar', $('#progress[data-progress-url]')).length === 0) {
     return;
   }
 
   const progress_controller = new AvalonProgress();
-
-  $('.progress-indented').prepend(`\
-<span class="progress progress-inline"> \
-<div class="progress-bar bg-success" style="width:0%"></div> \
-<div class="progress-bar bg-danger" style="width:0%"></div> \
-<div class="progress-bar bg-warning" style="width:0%"></div> \
-</span>`);
-  $('.status-detail').hide();
   progress_controller.retrieve(true);
-  return $('.progress-inline').click(function() {
-    return $(this).nextAll('.status-detail').slideToggle();
-  });
 });

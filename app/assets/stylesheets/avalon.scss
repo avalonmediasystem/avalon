@@ -311,15 +311,6 @@ span.constraints-label {
   margin-top: 2em;
 }
 
-.progress-inline {
-  display: inline-block;
-  height: 9pt;
-  width: 36pt;
-  margin-right: 2pt;
-  margin-bottom: 0;
-  cursor: pointer;
-}
-
 .control-group .controls {
   &.error {
     input:first-child {
@@ -520,11 +511,6 @@ a[data-trigger='submit'] {
   &:visited {
     @include hidden-disabled-link;
   }
-}
-
-div.status-detail {
-  margin-bottom: 0;
-  font-size: 0.9em;
 }
 
 /* MediaObject structure page */
