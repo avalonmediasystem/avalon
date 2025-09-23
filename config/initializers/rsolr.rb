@@ -15,6 +15,11 @@ RSolr::Client.class_eval do
       opts[:data] = RSolr::Uri.params_to_solr opts[:data]
       opts[:headers] ||= {}
       opts[:headers]['Content-Type'] ||= 'application/x-www-form-urlencoded; charset=UTF-8'
+    elsif opts[:data].blank? && opts[:method] == :post
+      opts[:data] = opts.delete(:query)
+      query = nil
+      opts[:headers] ||= {}
+      opts[:headers]['Content-Type'] ||= 'application/x-www-form-urlencoded; charset=UTF-8'
     end
     opts[:path] = path
     opts[:uri] = base_uri.merge(path.to_s + (query ? "?#{query}" : "")) if base_uri

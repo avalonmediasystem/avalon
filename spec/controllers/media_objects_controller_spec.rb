@@ -722,6 +722,15 @@ describe MediaObjectsController, type: :controller do
           expect(json.first["files"][0]["structure"]).not_to eq master_file.structuralMetadata.content
         end
       end
+
+      context 'read from solr' do
+        it 'should not read from fedora' do
+          WebMock.reset_executed_requests!
+          get 'index', params: { format:'json', per_page: '2' }
+          expect(a_request(:post, /#{ActiveFedora.solr.conn.uri.to_s}/)).to have_been_made.at_least_once
+          expect(a_request(:post, /#{ActiveFedora.solr.conn.uri.to_s}.*\?fl=id&q=/)).not_to have_been_made
+        end
+      end
     end
 
     context 'user is not an administrator' do
@@ -744,24 +753,42 @@ describe MediaObjectsController, type: :controller do
         expect(json.first['published']).to eq(media_object.published?)
         expect(json.first['summary']).to eq(media_object.abstract)
       end
+
+      context 'read from solr' do
+        it 'should not read from fedora' do
+          WebMock.reset_executed_requests!
+          get 'index', params: { format:'json', per_page: '2' }
+          expect(a_request(:post, /#{ActiveFedora.solr.conn.uri.to_s}/)).to have_been_made.at_least_once
+          expect(a_request(:post, /#{ActiveFedora.solr.conn.uri.to_s}.*\?fl=id&q=/)).not_to have_been_made
+        end
+      end
     end
   end
 
   describe 'pagination' do
-      let(:collection) { FactoryBot.create(:collection) }
-      let(:administrator) { FactoryBot.create(:administrator) }
-      subject(:json) { JSON.parse(response.body) }
-      before do
-        5.times { FactoryBot.create(:published_media_object, visibility: 'public', collection: collection) }
-        ApiToken.create token: 'secret_token', username: administrator.username, email: administrator.email
-        request.headers['Avalon-Api-Key'] = 'secret_token'
+    let(:collection) { FactoryBot.create(:collection) }
+    let(:administrator) { FactoryBot.create(:administrator) }
+    subject(:json) { JSON.parse(response.body) }
+    before do
+      5.times { FactoryBot.create(:published_media_object, visibility: 'public', collection: collection) }
+      ApiToken.create token: 'secret_token', username: administrator.username, email: administrator.email
+      request.headers['Avalon-Api-Key'] = 'secret_token'
+      get 'index', params: { format:'json', per_page: '2' }
+    end
+    it 'should paginate' do
+      expect(json.count).to eq(2)
+      expect(response.headers['Per-Page']).to eq('2')
+      expect(response.headers['Total']).to eq('5')
+    end
+
+    context 'read from solr' do
+      it 'should not read from fedora' do
+        WebMock.reset_executed_requests!
         get 'index', params: { format:'json', per_page: '2' }
+        expect(a_request(:post, /#{ActiveFedora.solr.conn.uri.to_s}/)).to have_been_made.at_least_once
+        expect(a_request(:post, /#{ActiveFedora.solr.conn.uri.to_s}.*\?fl=id&q=/)).not_to have_been_made
       end
-      it 'should paginate' do
-        expect(json.count).to eq(2)
-        expect(response.headers['Per-Page']).to eq('2')
-        expect(response.headers['Total']).to eq('5')
-      end
+    end
   end
 
   describe "#show" do
