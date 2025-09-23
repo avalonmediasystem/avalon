@@ -1,3 +1,4 @@
+// Entry point for the build script in your package.json
 /* 
  * Copyright 2011-2025, The Trustees of Indiana University and Northwestern
  *   University.  Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,8 +16,23 @@
 */
 
 import ReactOnRails from 'react-on-rails';
-import EmbeddedRamp from '../components/embeds/EmbeddedRamp';
+
+import CollectionList from './components/CollectionList';
+import CollectionCarousel from './components/CollectionCarousel';
+import CollectionDetails from './components/CollectionDetails';
+import Search from './components/Search';
+import MediaObjectRamp from './components/MediaObjectRamp';
+import ReactButtonContainer from './components/ReactButtonContainer';
+import PlaylistRamp from './components/PlaylistRamp';
+import './auto-complete-open.js';
+import '@github/auto-complete-element';
 
 ReactOnRails.register({
-  EmbeddedRamp,
+  CollectionList,
+  CollectionCarousel,
+  CollectionDetails,
+  Search,
+  MediaObjectRamp,
+  ReactButtonContainer,
+  PlaylistRamp,
 });

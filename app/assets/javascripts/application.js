@@ -36,7 +36,6 @@
 //= require blacklight/blacklight
 //= require browse_everything
 //= require modernizr
-//= require bootstrap-toggle
 //= require cropperjs/dist/cropper.min
 //= require url-search-params-polyfill/index.js
 

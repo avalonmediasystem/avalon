@@ -6,7 +6,7 @@ gem 'listen'
 gem 'net-smtp', require: false
 gem 'psych', '< 4'
 gem 'rails', '~>8.0'
-gem 'sprockets', '~>3.7.2'
+gem 'sprockets', '>= 4'
 # gem 'sprockets-rails', require: 'sprockets/railtie'
 gem 'sqlite3'
 # Force newer version of mail for compatibility with rails 6.0.6.1
@@ -20,13 +20,12 @@ gem 'csv'
 gem 'bootstrap', '~> 5.0'
 gem 'coffee-rails', '~> 5.0'
 gem "font-awesome-rails"
+gem 'jsbundling-rails'
 gem 'jquery-rails'
 gem 'jquery-ui-rails'
 gem 'react_on_rails'
 gem 'sassc-rails'
 gem 'sprockets-es6'
-gem 'terser'
-gem 'shakapacker'
 
 # Core Samvera
 # gem 'active-fedora', '~> 15.0'
@@ -52,7 +51,7 @@ gem 'acts_as_list'
 gem 'api-pagination'
 gem 'avalon-about', git: 'https://github.com/avalonmediasystem/avalon-about.git', branch: 'main'
 # gem 'bootstrap-sass', '< 3.4.1' # Pin to less than 3.4.1 due to change in behavior with popovers
-gem 'bootstrap-toggle-rails'
+# gem 'bootstrap-toggle-rails'
 gem 'bootstrap_form'
 gem 'iiif_manifest', '~> 1.6'
 gem 'rack-cors', require: 'rack/cors'
