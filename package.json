@@ -62,8 +62,9 @@
   "scripts": {
     "cypress:open": "cypress open -C spec/cypress/cypress.config.js",
     "cypress:run": "cypress run -C spec/cypress/cypress.config.js",
-    "build": "webpack --config ./config/webpack/webpack.config.js",
-    "build:dev": "webpack --config ./config/webpack/webpack.config.js --mode=development --watch"
+    "build": "webpack --config ./config/webpack/webpack.config.js --mode production",
+    "build:dev": "webpack --config ./config/webpack/webpack.config.js --mode development --watch",
+    "build:test": "webpack --config ./config/webpack/webpack.config.js --mode development"
   },
   "packageManager": "yarn@1.22.19",
   "browserslist": [

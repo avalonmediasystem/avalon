@@ -146,6 +146,8 @@ RSpec.configure do |config|
 
   config.before :each do
     DatabaseCleaner.strategy = :truncation
+    # Clear out faker unique generator between tests
+    Faker::UniqueGenerator.clear
     # Clear out the job queue to ensure tests run with clean environment
     ActiveJob::Base.queue_adapter.enqueued_jobs = []
     ActiveJob::Base.queue_adapter.performed_jobs = []
