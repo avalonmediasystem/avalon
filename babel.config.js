@@ -30,6 +30,7 @@ module.exports = function(api) {
         {
           forceAllTransforms: true,
           useBuiltIns: 'entry',
+          corejs: '3.45',
           modules: false,
           exclude: ['transform-typeof-symbol']
         }
@@ -38,6 +39,7 @@ module.exports = function(api) {
         require('@babel/preset-react').default,
         {
           development: isDevelopmentEnv || isTestEnv,
+          runtime: 'automatic',
           useBuiltIns: true
         }
       ]
@@ -48,7 +50,19 @@ module.exports = function(api) {
       isTestEnv && require('babel-plugin-dynamic-import-node'),
       require('@babel/plugin-transform-destructuring').default,
       [
-        require('@babel/plugin-proposal-class-properties').default,
+        require('@babel/plugin-transform-class-properties').default,
+        {
+          loose: true
+        }
+      ],
+      [
+        require("@babel/plugin-transform-private-property-in-object").default,
+        { 
+          loose: true
+        }
+      ],
+      [
+        require("@babel/plugin-transform-private-methods").default,
         {
           loose: true
         }

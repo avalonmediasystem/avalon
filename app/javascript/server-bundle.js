@@ -41,9 +41,4 @@ ReactOnRails.register({
   MediaObjectRamp,
   ReactButtonContainer,
   PlaylistRamp,
-  PlaylistsTable,
-  TimelinesTable,
-  EncodingJobsTable,
-  CheckoutsTable,
-  UsersTable,
 });
