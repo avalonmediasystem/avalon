@@ -68,6 +68,14 @@ GIT
       rsolr (>= 1.1.2, < 3)
       ruby-progressbar (~> 1.0)
 
+GIT
+  remote: https://github.com/samvera/iiif_manifest.git
+  revision: a3c1c504e9ac36eedb23f39e908ab86593e670a4
+  branch: v3_collections
+  specs:
+    iiif_manifest (1.6.0)
+      activesupport (>= 4)
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -471,8 +479,6 @@ GEM
     i18n (1.14.7)
       concurrent-ruby (~> 1.0)
     iconv (1.0.8)
-    iiif_manifest (1.6.0)
-      activesupport (>= 4)
     ims-lti (1.1.13)
       builder
       oauth (>= 0.4.5, < 0.6)
@@ -1057,7 +1063,7 @@ DEPENDENCIES
   httpx
   hydra-head (~> 13.0)
   iconv (~> 1.0.6)
-  iiif_manifest (~> 1.6)
+  iiif_manifest!
   ims-lti (~> 1.1.13)
   jbuilder (~> 2.0)
   jquery-datatables
