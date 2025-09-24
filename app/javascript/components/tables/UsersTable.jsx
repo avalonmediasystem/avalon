@@ -9,7 +9,7 @@ const UsersTable = ({ url, hasProvider = false }) => {
     testId: 'playlist-table',
     hasTagFilter: false,
 
-    // Table sorting and filtering keys from parsed data
+    // Table sorting and filtering keys from parsed data (keys match column keys and parsed data keys)
     initialSort: { columnKey: 'user' },
     searchableFields: ['user', 'email'],
 
@@ -39,41 +39,41 @@ const UsersTable = ({ url, hasProvider = false }) => {
       const lastAccessDateDoc = parser.parseFromString(row[3], 'text/html');
       const lastAccessDateAttr = lastAccessDateDoc.querySelector('relative-time').getAttribute('datetime');
 
-      let result = {
+      let userData = {
         id: userIdMatch ? userIdMatch[1] : index,
-        userHtml: row[0], user: userDoc ? userDoc.querySelector('a').textContent : '',
-        emailHtml: row[1], email: emailDoc ? emailDoc.querySelector('a').textContent : '',
-        rolesHtml: row[2], roles: rolesLi?.length > 0 ? rolesLi.forEach((r) => { return r.textContent; }) : [],
-        lastAccessHtml: row[3], lastAccess: lastAccessDateAttr ? new Date(lastAccessDateAttr) : new Date.now(),
-        statusText: row[4], actionsHtml: row[hasProvider ? 6 : 5]
+        user_html: row[0], user: userDoc ? userDoc.querySelector('a').textContent : '',
+        email_html: row[1], email: emailDoc ? emailDoc.querySelector('a').textContent : '',
+        roles_html: row[2], roles: rolesLi?.length > 0 ? rolesLi.forEach((r) => { return r.textContent; }) : [],
+        lastaccess_html: row[3], last_access: lastAccessDateAttr ? new Date(lastAccessDateAttr) : new Date.now(),
+        status: row[4], actions_html: row[hasProvider ? 6 : 5]
       };
 
-      console.log(row, hasProvider);
-      if (hasProvider) { result.provider = row[5]; }
+      // Add provider column data if present
+      if (hasProvider) { userData.provider = row[5]; }
 
-      return result;
+      return userData;
     },
 
-    // Cell rendering function - how to display each cell type
+    // Cell rendering function for each column key
     renderCell: (item, columnKey) => {
       switch (columnKey) {
         case 'user':
-          return <div dangerouslySetInnerHTML={{ __html: item.userHtml }} />;
+          return <div dangerouslySetInnerHTML={{ __html: item.user_html }} />;
         case 'email':
-          return <div dangerouslySetInnerHTML={{ __html: item.emailHtml }} />;
+          return <div dangerouslySetInnerHTML={{ __html: item.email_html }} />;
         case 'roles':
-          return <div dangerouslySetInnerHTML={{ __html: item.rolesHtml }} />;
+          return <div dangerouslySetInnerHTML={{ __html: item.roles_html }} />;
         case 'last_access':
-          return <div dangerouslySetInnerHTML={{ __html: item.lastAccessHtml }} />;
+          return <div dangerouslySetInnerHTML={{ __html: item.lastaccess_html }} />;
         case 'status':
-          return item.statusText;
+          return item.status;
         case 'provider':
           return item.provider;
         case 'actions':
           return (
             <div
               className="text-end"
-              dangerouslySetInnerHTML={{ __html: item.actionsHtml }}
+              dangerouslySetInnerHTML={{ __html: item.actions_html }}
             />
           );
         default:

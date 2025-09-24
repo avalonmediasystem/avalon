@@ -1,6 +1,12 @@
 import React from 'react';
 import GenericTable from './GenericTable';
 
+/**
+ * Render a table displaying playlists of the current user.
+ * @param {Object} props
+ * @param {String} props.url API endpoint URL for fetching playlists data
+ * @param {Array} props.tags array of available tags for filtering 
+ */
 const PlaylistsTable = ({ url, tags }) => {
   const playlistConfig = {
     // Table metadata
@@ -9,7 +15,7 @@ const PlaylistsTable = ({ url, tags }) => {
     testId: 'playlist-table',
     hasTagFilter: true,
 
-    // Table sorting and filtering keys from parsed data
+    // Table sorting and filtering keys from parsed data (keys match column keys and parsed data keys)
     initialSort: { columnKey: 'title' },
     searchableFields: ['title'],
 
@@ -26,65 +32,50 @@ const PlaylistsTable = ({ url, tags }) => {
 
     // Data parsing function to extract data from Rails API response
     parseDataRow: (row, index) => {
-      // Extract playlist id, tooltip, and name from link HTML
-      const playlistIdMatch = row[0].match(/\/playlists\/(\d+)/);
-      const toolTipMatch = row[0].match(/title="([^"]*)"/);
-      const titleMatch = row[0].match(/>([^<]*)<\/a>/);
+      const parser = new DOMParser();
+      // Extract playlist id and name from title link HTML
+      const titleDoc = parser.parseFromString(row[0], 'text/html').querySelector('a');
+      const titleLink = titleDoc.getAttribute('href');
 
-      // Extract clean visibility text from HTML for sorting
-      const visibilityText = row[2].replace(/<[^>]*>/g, '').trim();
+      // Extract visibility text from HTML for sorting
+      const visibilityDoc = parser.parseFromString(row[2], 'text/html').querySelector('span');
 
-      // Regex to extract time and text from created and updated fields
-      const regex = /<span[^>]*title=['"]([^'"]*?)['"][^>]*>([^<]*)<\/span>/;
+      // Extract and parse created and last updated datetime into Date object for sorting
+      const createdAtDoc = parser.parseFromString(row[3], 'text/html').querySelector('span');
+      const createdAtTime = createdAtDoc.getAttribute('title');
 
-      const createdAtMatch = row[3].match(regex);
-      const createdAgo = createdAtMatch ? createdAtMatch[2] : '';
-      // Ideally this would not resolve to the else condition
-      const createdAtTime = createdAtMatch ? new Date(createdAtMatch[1]) : new Date.now();
-
-      const updatedAtMatch = row[4].match(regex);
-      const updatedAgo = updatedAtMatch ? updatedAtMatch[2] : '';
-      // Ideally this would not resolve to the else condition
-      const updatedAtTime = updatedAtMatch ? new Date(updatedAtMatch[1]) : new Date.now();
+      const updatedAtDoc = parser.parseFromString(row[4], 'text/html').querySelector('span');
+      const updatedAtTime = updatedAtDoc.getAttribute('title');
 
       return {
-        id: playlistIdMatch ? playlistIdMatch[1] : index,
-        title: titleMatch ? titleMatch[1] : '',
-        titleTooltip: toolTipMatch ? toolTipMatch[1] : '',
-        titleHtml: row[0],
-        size: parseInt(row[1].split(' ')[0]) || 0,
-        sizeText: row[1],
-        visibility: visibilityText,
-        visibilityHtml: row[2],
-        created_at: createdAtTime,
-        createdAgo: createdAgo,
-        createdHtml: row[3],
-        updated_at: updatedAtTime,
-        updatedAgo: updatedAgo,
-        updatedHtml: row[4],
-        tags: row[5],
-        actionsHtml: row[6]
+        id: titleLink ? titleLink.split('/').pop() : index,
+        title_html: row[0], title: titleDoc ? titleDoc.textContent : '',
+        size: parseInt(row[1].split(' ')[0]) || 0, size_text: row[1],
+        visibility: visibilityDoc ? visibilityDoc.textContent : '', visibility_html: row[2],
+        created_at: new Date(createdAtTime), created_html: row[3],
+        updated_at: new Date(updatedAtTime), udated_html: row[4],
+        tags: row[5], actions_html: row[6]
       };
     },
 
-    // Cell rendering function - how to display each cell type
+    // Cell rendering function for each column key
     renderCell: (item, columnKey) => {
       switch (columnKey) {
         case 'title':
           return (
-            <div dangerouslySetInnerHTML={{ __html: item.titleHtml }} />
+            <div dangerouslySetInnerHTML={{ __html: item.title_html }} />
           );
         case 'size':
-          return item.sizeText;
+          return item.size_text;
         case 'visibility':
-          return <span dangerouslySetInnerHTML={{ __html: item.visibilityHtml }} />;
+          return <span dangerouslySetInnerHTML={{ __html: item.visibility_html }} />;
         case 'created_at':
           return (
-            <div dangerouslySetInnerHTML={{ __html: item.createdHtml }} />
+            <div dangerouslySetInnerHTML={{ __html: item.created_html }} />
           );
         case 'updated_at':
           return (
-            <div dangerouslySetInnerHTML={{ __html: item.updatedHtml }} />
+            <div dangerouslySetInnerHTML={{ __html: item.udated_html }} />
           );
         case 'tags':
           return item.tags;
@@ -92,7 +83,7 @@ const PlaylistsTable = ({ url, tags }) => {
           return (
             <div
               className="text-end"
-              dangerouslySetInnerHTML={{ __html: item.actionsHtml }}
+              dangerouslySetInnerHTML={{ __html: item.actions_html }}
             />
           );
         default:

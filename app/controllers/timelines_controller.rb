@@ -44,9 +44,8 @@ class TimelinesController < ApplicationController
     # Timelines for index page are loaded dynamically by jquery datatables javascript which
     # requests the html for only a limited set of rows at a time.
     records_total = @timelines.count
-    columns = ['title', 'description', 'visibility', 'updated_at', 'tags', 'actions']
+    
     response = {
-      "draw": params['draw'],
       "recordsTotal": records_total,
       "data": @timelines.collect do |timeline|
         copy_button = view_context.button_tag(type: 'button',

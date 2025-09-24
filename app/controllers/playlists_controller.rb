@@ -50,10 +50,8 @@ class PlaylistsController < ApplicationController
     # Playlists for index page are loaded dynamically by jquery datatables javascript which
     # requests the html for only a limited set of rows at a time.
     recordsTotal = @playlists.count
-    columns = ['title','size','visibility','created_at','updated_at','tags','actions']
 
     response = {
-      "draw": params['draw'],
       "recordsTotal": recordsTotal,
       "data": @playlists.collect do |playlist|
         copy_button = view_context.button_tag( type: 'button', data: { playlist: playlist },

@@ -2,10 +2,12 @@ import React, { useState } from 'react';
 
 /**
  * Custom hook for managing table sorting and filtering functionalities
- * @param {Array} columns column configuration array
- * @param {Object} dataState data state from useTableData
- * @param {Object} initialSort data for initial sorting on data load
- * @param {Object} pagination pagination state from useTablePagination
+ * @param {Object} params
+ * @param {Array} params.columns column configuration array
+ * @param {Object} params.dataState data state from useTableData
+ * @param {Object} params.initialSort data for initial sorting on data load
+ * @param {Object} params.pagination pagination state from useTablePagination
+ * @param {Array} params.searchableFields list of fields to be searched in the search filter
  * @returns {Object} sorting and filtering related state and functions
  */
 const useTableSortingAndFiltering = ({ columns, dataState, initialSort, pagination, searchableFields }) => {
@@ -50,7 +52,7 @@ const useTableSortingAndFiltering = ({ columns, dataState, initialSort, paginati
       });
     }
 
-    // Set filteredRowCount to be used in the text
+    // Set filteredRowCount to be used in the text on top of the table
     setFilteredRowCount(filtered?.length);
 
     // Apply pagination to filtered data
@@ -59,7 +61,6 @@ const useTableSortingAndFiltering = ({ columns, dataState, initialSort, paginati
     const start = 0;
     const end = Math.min(pageSize, filtered.length);
     setRowsToShow(filtered.slice(start, end));
-
     setPagination(prev => ({
       ...prev,
       pageIndex: 0,
@@ -67,12 +68,20 @@ const useTableSortingAndFiltering = ({ columns, dataState, initialSort, paginati
     }));
   };
 
+  /**
+   * Handle search input change
+   * @param {Object} e change event from the search input field
+   */
   const handleSearch = (e) => {
     const filter = e.target.value;
     setSearchFilter(filter);
     filterRows(filter, tagFilter);
   };
 
+  /**
+   * Handle tag filter changes
+   * @param {Object} e change event from the tag filter drop-down
+   */
   const handleTagFilter = (e) => {
     const filter = e.target.value;
     setTagFilter(filter);
@@ -131,6 +140,11 @@ const useTableSortingAndFiltering = ({ columns, dataState, initialSort, paginati
     return direction === 'asc' ? sorted : sorted.reverse();
   };
 
+  /**
+   * Handl sorting when a column header is clicked
+   * @param {Number} columnIndex column index of the sorting column
+   * @returns 
+   */
   const handleSort = (columnIndex) => {
     if (!columns[columnIndex].sortable) return;
 
@@ -140,18 +154,18 @@ const useTableSortingAndFiltering = ({ columns, dataState, initialSort, paginati
 
     let sortDirection;
     if (sorting.column === columnIndex) {
-      // Same column clicked - toggle direction
+      // Toggle direction if the same column is clicked
       sortDirection = sorting.direction === 'asc' ? 'desc' : 'asc';
     } else {
-      // Different column clicked - choose appropriate default direction
+      // Choose appropriate initial direction based on data type
       if (dataType === 'date') {
-        // Date columns: start with oldest first
+        // Date columns: starts with oldest first
         sortDirection = 'asc';
       } else if (dataType === 'number') {
-        // Number columns: start with smallest first
+        // Number columns: starts with smallest first
         sortDirection = 'asc';
       } else {
-        // Text columns: start with A-Z
+        // Text columns: starts with A-Z
         sortDirection = 'asc';
       }
     }

@@ -33,12 +33,8 @@ class EncodeRecordsController < ApplicationController
   def paged_index
     authorize! :read, :encode_dashboard
 
-    # Encode records for index page are loaded dynamically by jquery datatables javascript which
-    # requests the html for only a limited set of rows at a time.
-    columns = %w[state id progress display_title master_file_id media_object_id created_at].freeze
-
     @encode_records = ::ActiveEncode::EncodeRecord.all
-    records_total = @encode_records.count
+    records_total = ::ActiveEncode::EncodeRecord.count
 
     response = {
       "recordsTotal": records_total,

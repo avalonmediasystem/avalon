@@ -17,5 +17,9 @@ Unless required by applicable law or agreed to in writing, software distributed
 
 <div class="container-md">
   <h1>Encoding Dashboard</h1>
-  <%= react_component("EncodingJobsTable", { props: { url: '/encode_records/paged_index' }}) %>
+  <% progress_url = progress_encode_records_path(format: :json) %>
+  <%= react_component("EncodingJobsTable", { props: { 
+    url: '/encode_records/paged_index',
+    progressUrl: progress_url,
+  }}) %>
 </div>

@@ -1,18 +1,19 @@
-import React, { useState, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 
 /**
- * Custom hook for managing table pagination functionality
- * @param {Object} dataState data state from useTableData
+ * Custom hook for managing table pagination functionality and state
+ * @param {Object} params required data state from useTableData hook
+ * @param {Array} params.sortedRows sorted rows from useTableData hook
+ * @param {Function} params.setRowsToShow function to set the rows to show in the table
+ * @param {Number} params.filteredRowCount number of rows after filtering
  * @returns {Object} pagination state and functions
  */
-const useTablePagination = (dataState) => {
+const useTablePagination = ({ sortedRows, setRowsToShow, filteredRowCount }) => {
   const [pagination, setPagination] = useState({
     pageIndex: 0,
     pageSize: 10,
     pages: [],
   });
-
-  const { sortedRows, setRowsToShow, filteredRowCount } = dataState;
 
   const totalPages = useMemo(() => {
     return Math.ceil(filteredRowCount / pagination.pageSize);

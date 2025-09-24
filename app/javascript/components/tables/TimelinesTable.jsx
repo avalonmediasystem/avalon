@@ -1,6 +1,12 @@
 import React from 'react';
 import GenericTable from './GenericTable';
 
+/**
+ * Render a table displaying timelines of the current user.
+ * @param {Object} props
+ * @param {String} props.url API endpoint URL for fetching timelines data
+ * @param {Array} props.tags array of available tags for filtering 
+ */
 const TimelinesTable = ({ url, tags }) => {
   const timelineConfig = {
     // Table metadata
@@ -9,7 +15,7 @@ const TimelinesTable = ({ url, tags }) => {
     testId: 'timeline-table',
     hasTagFilter: true,
 
-    // Table sorting and filtering keys from parsed data
+    // Table sorting and filtering keys from parsed data (keys match column keys and parsed data keys)
     initialSort: { columnKey: 'title' },
     searchableFields: ['title', 'description'],
 
@@ -25,51 +31,42 @@ const TimelinesTable = ({ url, tags }) => {
 
     // Data parsing function to extract data from Rails API response
     parseDataRow: (row, index) => {
-      // Extract timeline id, tooltip, and name from link HTML
-      const timelineIdMatch = row[0].match(/\/timelines\/(\d+)/);
-      const toolTipMatch = row[0].match(/title="([^"]*)"/);
-      const titleMatch = row[0].match(/>([^<]*)<\/a>/);
+      const parser = new DOMParser();
+      // Extract timeline id name from title link HTML
+      const titleDoc = parser.parseFromString(row[0], 'text/html').querySelector('a');
+      const titleLink = titleDoc.getAttribute('href');
 
       // Extract clean visibility text from HTML for sorting
-      const visibilityText = row[2].replace(/<[^>]*>/g, '').trim();
+      const visibilityDoc = parser.parseFromString(row[2], 'text/html').querySelector('span');
 
-      // Regex to extract time and text from last updated field
-      const regex = /<span[^>]*title=['"]([^'"]*?)['"][^>]*>([^<]*)<\/span>/;
-      const updatedAtMatch = row[3].match(regex);
-      const updatedAgo = updatedAtMatch ? updatedAtMatch[2] : '';
-      // Ideally this would not resolve to the else condition
-      const updatedAtTime = updatedAtMatch ? new Date(updatedAtMatch[1]) : new Date.now();
+      // Extract and parse last updated datetime into Date object for sorting
+      const lastUpdatedDoc = parser.parseFromString(row[3], 'text/html').querySelector('span');
+      const lastUpdateTime = lastUpdatedDoc.getAttribute('title');
 
       return {
-        id: timelineIdMatch ? timelineIdMatch[1] : index,
-        title: titleMatch ? titleMatch[1] : '',
-        titleTooltip: toolTipMatch ? toolTipMatch[1] : '',
-        titleHtml: row[0],
+        id: titleLink ? titleLink.split('/').pop() : index,
+        title_html: row[0], title: titleDoc ? titleDoc.textContent : '',
         description: row[1],
-        visibility: visibilityText,
-        visibilityHtml: row[2],
-        updated_at: updatedAtTime,
-        updatedAgo: updatedAgo,
-        updatedHtml: row[3],
-        tags: row[4],
-        actionsHtml: row[5]
+        visibility: visibilityDoc ? visibilityDoc.textContent : '', visibility_html: row[2],
+        udated_html: row[3], updated_at: new Date(lastUpdateTime),
+        tags: row[4], actions_html: row[5]
       };
     },
 
-    // Cell rendering function - how to display each cell type
+    // Cell rendering function for each column key
     renderCell: (item, columnKey) => {
       switch (columnKey) {
         case 'title':
           return (
-            <div dangerouslySetInnerHTML={{ __html: item.titleHtml }} />
+            <div dangerouslySetInnerHTML={{ __html: item.title_html }} />
           );
         case 'description':
           return item.description;
         case 'visibility':
-          return <span dangerouslySetInnerHTML={{ __html: item.visibilityHtml }} />;
+          return <span dangerouslySetInnerHTML={{ __html: item.visibility_html }} />;
         case 'updated_at':
           return (
-            <div dangerouslySetInnerHTML={{ __html: item.updatedHtml }} />
+            <div dangerouslySetInnerHTML={{ __html: item.udated_html }} />
           );
         case 'tags':
           return item.tags;
@@ -77,7 +74,7 @@ const TimelinesTable = ({ url, tags }) => {
           return (
             <div
               className="text-end"
-              dangerouslySetInnerHTML={{ __html: item.actionsHtml }}
+              dangerouslySetInnerHTML={{ __html: item.actions_html }}
             />
           );
         default:

@@ -7,31 +7,33 @@ const PAGE_SIZES = [10, 25, 50, 100];
 
 const GenericTable = ({ config, url, tags = [], httpMethod = 'POST' }) => {
   const {
-    tableType,
+    columns,
+    containerClass,
+    displayReturnedItemsHTML = null,
     hasTagFilter,
     initialSort,
-    containerClass,
-    testId,
-    columns,
+    onDataParsed = null,
     parseDataRow,
     renderCell,
-    displayReturnedItemsHTML = null,
-    searchableFields = ['title']
+    searchableFields = ['title'],
+    tableType,
+    testId,
   } = config;
 
   // Initial setup of pagination and sorting
   const pagination = useTablePagination({});
   const sorting = useTableSortingAndFiltering({ columns, dataState: {}, initialSort, pagination, searchableFields });
-  // Read and parse data from the server response
-  const dataState = useTableData(
-    url, parseDataRow, pagination.pagination, sorting.sortRows, initialSort, httpMethod
-  );
 
+  // Read and parse data from the server response
+  let dataState = useTableData(
+    { url, parseDataRow, pagination: pagination.pagination, sortRows: sorting.sortRows, initialSort, httpMethod }
+  );
   // Update pagination, sorting and filtering from the parsed data
   const paginationWithData = useTablePagination(dataState);
   const sortingWithData = useTableSortingAndFiltering({ columns, dataState, initialSort, pagination: paginationWithData, searchableFields });
 
-  const { rowsToShow, loading, totalRowCount, filteredRowCount } = dataState;
+  const { dataRows, rowsToShow, loading, totalRowCount, filteredRowCount } = dataState;
+
   const {
     pagination: paginationState,
     totalPages,
@@ -40,8 +42,18 @@ const GenericTable = ({ config, url, tags = [], httpMethod = 'POST' }) => {
     handlePageSizeChange,
     getPaginationPages,
   } = paginationWithData;
-  const { handleSort, getSortIcon,
-    searchFilter, tagFilter, handleSearch, handleTagFilter } = sortingWithData;
+
+  const { handleSort, getSortIcon, searchFilter, tagFilter, handleSearch, handleTagFilter } = sortingWithData;
+
+  /**
+   * Call onDataParsed callback (if provided) when data is updated. This helps to update the table
+   * when data is changed outside of the table (e.g. progress updates in encoding jobs table).
+   */
+  useEffect(() => {
+    if (onDataParsed && dataRows.length > 0) {
+      onDataParsed(dataRows);
+    }
+  }, [dataRows, onDataParsed]);
 
   /**
    * Add event listeners for post-load events
@@ -95,8 +107,8 @@ const GenericTable = ({ config, url, tags = [], httpMethod = 'POST' }) => {
               <input
                 id={`search-${tableType}`}
                 type="text"
-                className="form-control"
                 value={searchFilter}
+                className="form-control"
                 onChange={handleSearch}
               />
             </div>
@@ -118,7 +130,7 @@ const GenericTable = ({ config, url, tags = [], httpMethod = 'POST' }) => {
         </div>
       </>
     );
-  }, [tags, filteredRowCount, paginationState, totalRowCount, searchFilter,
+  }, [tags, filteredRowCount, paginationState, totalRowCount,
     tagFilter, handleSearch, handleTagFilter, rowsToShow, loading]);
 
   return (

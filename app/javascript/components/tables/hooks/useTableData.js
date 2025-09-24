@@ -1,16 +1,17 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 
 /**
  * Custom hook for managing table data i.e. fetching, parsing, and state management
- * @param {String} url API endpoint URL
- * @param {Function} parseDataRow  function to parse each data row from API response
- * @param {Object} pagination pagination state from useTablePagination
- * @param {Function} sortRows sort function from useTableSorting
- * @param {String} initialSort { columnKey, dataType, direction } for initial sort on load
- * @param {String} method HTTP method to use for requests (default: 'POST')
+ * @param {Object} params
+ * @param {String} params.url API endpoint URL
+ * @param {Function} params.parseDataRow  function to parse each data row from API response
+ * @param {Object} params.pagination { currentPage, pageSize } for pagination
+ * @param {Array} params.sortRows function to sort rows
+ * @param {String} params.initialSort { columnKey, dataType, direction } for initial sort on load
+ * @param {String} params.httpMethod HTTP method to use for requests (default: 'POST')
  * @returns {Object} data state and functions
  */
-const useTableData = (url, parseDataRow, pagination, sortRows, initialSort, method = 'POST') => {
+const useTableData = ({ url, parseDataRow, pagination, sortRows, initialSort, httpMethod = 'POST' }) => {
   const [dataRows, setDataRows] = useState([]);
   const [sortedRows, setSortedRows] = useState([]);
   const [rowsToShow, setRowsToShow] = useState([]);
@@ -23,7 +24,7 @@ const useTableData = (url, parseDataRow, pagination, sortRows, initialSort, meth
 
     try {
       const response = await fetch(url, {
-        method: method,
+        method: httpMethod,
         headers: {
           'Content-Type': 'application/json',
           'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content'),
@@ -47,6 +48,7 @@ const useTableData = (url, parseDataRow, pagination, sortRows, initialSort, meth
       // Apply initial pagination to show first page
       const { pageSize } = pagination;
       const end = Math.min(pageSize, sortedData.length);
+
       setRowsToShow(sortedData.slice(0, end));
     } catch (error) {
       console.error('Error fetching data:', error);
@@ -55,7 +57,7 @@ const useTableData = (url, parseDataRow, pagination, sortRows, initialSort, meth
     }
   };
 
-  useEffect(() => { fetchData(); }, [url]);
+  useEffect(() => { fetchData(); }, []);
 
   return {
     // State
@@ -65,12 +67,11 @@ const useTableData = (url, parseDataRow, pagination, sortRows, initialSort, meth
     loading,
     totalRowCount,
     filteredRowCount,
+
     // Setters
     setSortedRows,
     setRowsToShow,
     setFilteredRowCount,
-    // Functions
-    fetchData
   };
 };
 

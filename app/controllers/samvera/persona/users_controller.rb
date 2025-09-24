@@ -47,7 +47,6 @@ module Samvera
       @presenter = Samvera::Persona::UsersPresenter.new
       records_total = @presenter.user_count
       @presenter = @presenter.users
-      columns = ['username', 'email', 'entry', 'last_sign_in_at', 'invitation_token', 'provider', 'actions']
 
       # Build json response
       response = {

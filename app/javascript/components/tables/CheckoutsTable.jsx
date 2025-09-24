@@ -2,6 +2,13 @@ import React, { useMemo, useState } from 'react';
 import GenericTable from './GenericTable';
 import { Col } from 'react-bootstrap';
 
+/**
+ * Render a table displaying checkout records.
+ * @param {Object} props
+ * @param {String} props.url API endpoint URL for fetching checkouts data
+ * @param {Boolean} props.isAdmin flag indicating if the current user is an admin
+ * @param {String} props.returnAll HTML string for the "Return All" action link
+ */
 const CheckoutsTable = ({ url, isAdmin, returnAll }) => {
   const [indexUrl, setIndexUrl] = useState(url);
   const [showReturned, setShowReturned] = useState(false);
@@ -26,7 +33,7 @@ const CheckoutsTable = ({ url, isAdmin, returnAll }) => {
       testId: 'checkouts-table',
       hasTagFilter: false,
 
-      // Table sorting and filtering keys from parsed data
+      // Table sorting and filtering keys from parsed data (keys match column keys and parsed data keys)
       initialSort: isAdmin ? { columnKey: 'user' } : { columnKey: 'media_object_title' },
       searchableFields: isAdmin ? ['user', 'media_object_title'] : ['media_object_title'],
 
@@ -80,18 +87,18 @@ const CheckoutsTable = ({ url, isAdmin, returnAll }) => {
         };
 
         // Parse checkout and return times
-        const { html: checkoutTimeHtml, datetime: checkout_time } = rebuildAndFormatTimes(row[dataIndex++]);
-        const { html: returnTimeHtml, datetime: return_time } = rebuildAndFormatTimes(row[dataIndex++]);
+        const { html: checkouttime_html, datetime: checkout_time } = rebuildAndFormatTimes(row[dataIndex++]);
+        const { html: returntime_html, datetime: return_time } = rebuildAndFormatTimes(row[dataIndex++]);
 
         const mediaObjectMatch = result.mediaObjectHtml.match(/<a[^>]*>(.*?)<\/a>/);
 
         return {
           ...result,
           media_object_title: mediaObjectMatch ? mediaObjectMatch[1] : '',
-          checkoutTimeHtml, checkout_time,
-          returnTimeHtml, return_time,
-          timeRemaining: row[dataIndex++],
-          actionsHtml: row[dataIndex],
+          checkouttime_html, checkout_time,
+          returntime_html, return_time,
+          time_remaining: row[dataIndex++],
+          actions_html: row[dataIndex],
           id: getId(row[dataIndex])
         };
       },
@@ -107,17 +114,17 @@ const CheckoutsTable = ({ url, isAdmin, returnAll }) => {
             );
           case 'checkout_time':
             return (
-              <div dangerouslySetInnerHTML={{ __html: item.checkoutTimeHtml }} />
+              <div dangerouslySetInnerHTML={{ __html: item.checkouttime_html }} />
             );
           case 'return_time':
             return (
-              <div dangerouslySetInnerHTML={{ __html: item.returnTimeHtml }} />
+              <div dangerouslySetInnerHTML={{ __html: item.returntime_html }} />
             );
           case 'time_remaining':
-            return item.timeRemaining;
+            return item.time_remaining;
           case 'actions':
             return (
-              <div dangerouslySetInnerHTML={{ __html: item.actionsHtml }} />
+              <div dangerouslySetInnerHTML={{ __html: item.actions_html }} />
             );
           default:
             return item[columnKey];
