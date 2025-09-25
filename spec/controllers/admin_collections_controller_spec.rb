@@ -291,10 +291,10 @@ describe Admin::CollectionsController, type: :controller do
       let!(:mf_1) { FactoryBot.create(:master_file, :with_structure, media_object: collection.media_objects[0]) }
       let!(:mf_2) { FactoryBot.create(:master_file, :with_structure, media_object: collection.media_objects[1]) }
 
-      it "should not return structure by default" do
+      it "should return structure URI by default" do
         get 'items', params: { id: collection.id, format: 'json' }
-        expect(JSON.parse(response.body)[collection.media_objects[0].id]["files"][0]["structure"]).to be_blank
-        expect(JSON.parse(response.body)[collection.media_objects[1].id]["files"][0]["structure"]).to be_blank
+        expect(JSON.parse(response.body)[collection.media_objects[0].id]["files"][0]["structure"]).to eq structure_master_file_url(mf_1.id)
+        expect(JSON.parse(response.body)[collection.media_objects[1].id]["files"][0]["structure"]).to eq structure_master_file_url(mf_2.id)
       end
       it "should return structure if requested" do
         get 'items', params: { id: collection.id, format: 'json', include_structure: true }
