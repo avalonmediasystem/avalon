@@ -935,7 +935,7 @@ describe MasterFile do
   end
 
   describe '#to_ingest_api_hash' do
-    let(:master_file) { FactoryBot.build(:master_file, identifier: ['ABCDE12345']) }
+    let(:master_file) { FactoryBot.create(:master_file, identifier: ['ABCDE12345']) }
 
     context 'remove_identifiers parameter' do
       it 'removes identifiers if parameter is true' do
