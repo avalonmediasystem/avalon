@@ -3,15 +3,16 @@ import { useState, useMemo } from 'react';
 /**
  * Custom hook for managing table pagination functionality and state
  * @param {Object} params required data state from useTableData hook
+ * @param {Number} params.initPageSize initial page size for the table
  * @param {Array} params.sortedRows sorted rows from useTableData hook
  * @param {Function} params.setRowsToShow function to set the rows to show in the table
  * @param {Number} params.filteredRowCount number of rows after filtering
  * @returns {Object} pagination state and functions
  */
-const useTablePagination = ({ sortedRows, setRowsToShow, filteredRowCount }) => {
+const useTablePagination = ({ initPageSize, sortedRows, setRowsToShow, filteredRowCount }) => {
   const [pagination, setPagination] = useState({
     pageIndex: 0,
-    pageSize: 10,
+    pageSize: initPageSize,
     pages: [],
   });
 

@@ -47,11 +47,15 @@ const EncodingJobsTable = ({ url, progressUrl }) => {
   }, []);
 
   const encodingTableConfig = {
-    // Table metadata
+    // Table metadata and configuration
     tableType: 'encoding_jobs',
     containerClass: 'encoding_jobs-table-container',
     testId: 'encoding_jobs-table',
     hasTagFilter: false,
+
+    // Pagination options
+    pageSizeOptions: [10, 20, 50, 100],
+    initPageSize: 20,
 
     // Table sorting and filtering keys from parsed data
     // Order by 'Job Started' date with the latest on top

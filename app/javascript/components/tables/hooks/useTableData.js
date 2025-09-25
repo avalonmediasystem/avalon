@@ -57,7 +57,10 @@ const useTableData = ({ url, parseDataRow, pagination, sortRows, initialSort, ht
     }
   };
 
-  useEffect(() => { fetchData(); }, []);
+  /**
+   * Fetch data when the URL changes
+   */
+  useEffect(() => { fetchData(); }, [url]);
 
   return {
     // State

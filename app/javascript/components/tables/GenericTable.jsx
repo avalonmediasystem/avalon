@@ -3,8 +3,6 @@ import useTableData from './hooks/useTableData';
 import useTableSortingAndFiltering from './hooks/useTableSortingAndFiltering';
 import useTablePagination from './hooks/useTablePagination';
 
-const PAGE_SIZES = [10, 25, 50, 100];
-
 const GenericTable = ({ config, url, tags = [], httpMethod = 'POST' }) => {
   const {
     columns,
@@ -12,7 +10,9 @@ const GenericTable = ({ config, url, tags = [], httpMethod = 'POST' }) => {
     displayReturnedItemsHTML = null,
     hasTagFilter,
     initialSort,
+    initPageSize = 10,
     onDataParsed = null,
+    pageSizeOptions = [10, 25, 50, 100],
     parseDataRow,
     renderCell,
     searchableFields = ['title'],
@@ -21,18 +21,18 @@ const GenericTable = ({ config, url, tags = [], httpMethod = 'POST' }) => {
   } = config;
 
   // Initial setup of pagination and sorting
-  const pagination = useTablePagination({});
+  const pagination = useTablePagination({ initPageSize });
   const sorting = useTableSortingAndFiltering({ columns, dataState: {}, initialSort, pagination, searchableFields });
 
   // Read and parse data from the server response
   let dataState = useTableData(
     { url, parseDataRow, pagination: pagination.pagination, sortRows: sorting.sortRows, initialSort, httpMethod }
   );
-  // Update pagination, sorting and filtering from the parsed data
-  const paginationWithData = useTablePagination(dataState);
-  const sortingWithData = useTableSortingAndFiltering({ columns, dataState, initialSort, pagination: paginationWithData, searchableFields });
+  const { dataRows, rowsToShow, loading, totalRowCount, filteredRowCount, setRowsToShow, sortedRows } = dataState;
 
-  const { dataRows, rowsToShow, loading, totalRowCount, filteredRowCount } = dataState;
+  // Update pagination, sorting and filtering from parsed data
+  const paginationWithData = useTablePagination({ initPageSize, sortedRows, setRowsToShow, filteredRowCount });
+  const sortingWithData = useTableSortingAndFiltering({ columns, dataState, initialSort, pagination: paginationWithData, searchableFields });
 
   const {
     pagination: paginationState,
@@ -194,7 +194,7 @@ const GenericTable = ({ config, url, tags = [], httpMethod = 'POST' }) => {
                   value={paginationState.pageSize}
                   onChange={e => handlePageSizeChange(Number(e.target.value))}
                 >
-                  {PAGE_SIZES.map(size => (
+                  {pageSizeOptions.map(size => (
                     <option key={size} value={size}>{size}</option>
                   ))}
                 </select>
