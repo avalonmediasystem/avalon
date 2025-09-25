@@ -21,7 +21,7 @@ module MasterFileIntercom
       # percent_succeeded: percent_succeeded,
       # percent_failed: percent_failed,
       status_code: status_code,
-      structure:  include_structure ? structuralMetadata.content : nil,
+      structure:  include_structure ? structuralMetadata.content : Rails.application.routes.url_helpers.structure_master_file_url(id),
       label: title,
       thumbnail_offset: thumbnail_offset,
       poster_offset: poster_offset,

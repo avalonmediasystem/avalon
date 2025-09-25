@@ -709,9 +709,9 @@ describe MediaObjectsController, type: :controller do
 
       context "with structure" do
         let!(:master_file) { FactoryBot.create(:master_file, :with_structure, media_object: media_object) }
-        it "should not return structure by default" do
+        it "should return structure URI by default" do
           get 'index', params: {  format: 'json' }
-          expect(json.first["files"][0]["structure"]).to be_blank
+          expect(json.first["files"][0]["structure"]).to eq structure_master_file_url(master_file.id)
         end
         it "should return structure if requested" do
           get 'index', params: { format: 'json', include_structure: true }
@@ -1264,9 +1264,9 @@ describe MediaObjectsController, type: :controller do
           login_as(:administrator)
         end
 
-        it "should not return structure by default" do
+        it "should return structure URI by default" do
           get 'show', params: { id: media_object.id, format:'json' }
-          expect(json['files'].first['structure']).to be_blank
+          expect(json['files'].first['structure']).to eq structure_master_file_url(master_file.id)
         end
 
         it "should return structure inline if requested" do
