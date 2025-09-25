@@ -33,6 +33,8 @@ class EncodeRecordsController < ApplicationController
   def paged_index
     authorize! :read, :encode_dashboard
 
+    # EncodeJobs for index page are loaded via /javascript/componenets/tables/EncodeJobsTable.jsx
+    # which requests the json for all records on initial page load.
     @encode_records = ::ActiveEncode::EncodeRecord.all
     records_total = ::ActiveEncode::EncodeRecord.count
 

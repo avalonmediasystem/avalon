@@ -20,7 +20,6 @@ gem 'csv'
 gem 'bootstrap', '~> 5.0'
 gem 'coffee-rails', '~> 5.0'
 gem "font-awesome-rails"
-gem 'jquery-datatables'
 gem 'jquery-rails'
 gem 'jquery-ui-rails'
 gem 'react_on_rails'

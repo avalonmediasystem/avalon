@@ -19,6 +19,8 @@ class CheckoutsController < ApplicationController
 
   # GET /checkouts or /checkouts.json
   def index
+    # Checkouts for index page are loaded via /javascript/componenets/tables/CheckoutsTable.jsx
+    # which requests the json for all records on initial page load.
     respond_to do |format|
       format.html { render :index }
       format.json do

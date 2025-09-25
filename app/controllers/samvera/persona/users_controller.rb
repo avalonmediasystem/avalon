@@ -44,6 +44,8 @@ module Samvera
 
     # POST /persona/users/paged_index
     def paged_index
+      # Users for index page are loaded via /javascript/componenets/tables/UsersTable.jsx
+      # which requests the json for all on initial page load.
       @presenter = Samvera::Persona::UsersPresenter.new
       records_total = @presenter.user_count
       @presenter = @presenter.users

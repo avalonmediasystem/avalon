@@ -47,8 +47,8 @@ class PlaylistsController < ApplicationController
 
   # POST /playlists/paged_index
   def paged_index
-    # Playlists for index page are loaded dynamically by jquery datatables javascript which
-    # requests the html for only a limited set of rows at a time.
+    # Playlists for index page are loaded via /javascript/componenets/tables/PlaylistsTable.jsx
+    # which requests the json for all records on initial page load.
     recordsTotal = @playlists.count
 
     response = {

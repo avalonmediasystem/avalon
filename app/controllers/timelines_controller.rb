@@ -41,8 +41,8 @@ class TimelinesController < ApplicationController
 
   # POST /timelines/paged_index
   def paged_index
-    # Timelines for index page are loaded dynamically by jquery datatables javascript which
-    # requests the html for only a limited set of rows at a time.
+    # Timelines for index page are loaded via /javascript/componenets/tables/TimelinesTable.jsx
+    # which requests the json for all records on initial page load.
     records_total = @timelines.count
     
     response = {
