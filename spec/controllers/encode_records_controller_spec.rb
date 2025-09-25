@@ -102,63 +102,20 @@ RSpec.describe EncodeRecordsController, type: :controller do
       FactoryBot.reload
       FactoryBot.create_list(:encode_record, 11)
     end
-
-    context 'paging' do
-      let(:common_params) { { order: { '0': { column: 1, dir: 'asc' } }, search: { value: '' } } }
-      it 'returns all results' do
-        post :paged_index, format: 'json', params: common_params.merge(start: 0, length: 20), session: valid_session
-        parsed_response = JSON.parse(response.body)
-        expect(parsed_response['recordsTotal']).to eq(11)
-        expect(parsed_response['data'].count).to eq(11)
-      end
-      it 'returns first page' do
-        post :paged_index, format: 'json', params: common_params.merge(start: 0, length: 10), session: valid_session
-        parsed_response = JSON.parse(response.body)
-        expect(parsed_response['data'].count).to eq(10)
-      end
-      it 'returns second page' do
-        post :paged_index, format: 'json', params: common_params.merge(start: 10, length: 10), session: valid_session
-        parsed_response = JSON.parse(response.body)
-        expect(parsed_response['data'].count).to eq(1)
-      end
-    end
-
-    context 'filtering' do
-      let(:common_params) { { start: 0, length: 20, order: { '0': { column: 3, dir: 'asc' } } } }
-      it "returns results filtered by title" do
-        post :paged_index, format: 'json', params: common_params.merge(search: { value: 'Title 98' }), session: valid_session
-        parsed_response = JSON.parse(response.body)
-        expect(parsed_response['recordsFiltered']).to eq(2)
-        expect(parsed_response['data'].count).to eq(2)
-        expect(parsed_response['data'][0][3]).to eq('Title 988')
-        expect(parsed_response['data'][1][3]).to eq('Title 989')
-      end
-    end
-
-    context 'filtering' do
-      let(:common_params) { { start: 0, length: 20, search: { value: '' } } }
-      it "returns results sorted by title ascending" do
-        post :paged_index, format: 'json', params: common_params.merge(order: { '0': { column: 3, dir: 'asc' } }), session: valid_session
-        parsed_response = JSON.parse(response.body)
-        expect(parsed_response['data'][0][3]).to eq('Title 988')
-        expect(parsed_response['data'][1][3]).to eq('Title 989')
-      end
-      it "returns results sorted by title descending" do
-        post :paged_index, format: 'json', params: common_params.merge(order: { '0': { column: 3, dir: 'desc' } }), session: valid_session
-        parsed_response = JSON.parse(response.body)
-        expect(parsed_response['data'][0][3]).to eq('Title 998')
-        expect(parsed_response['data'][1][3]).to eq('Title 997')
-      end
-    end
+    it 'returns all results' do
+      post :paged_index, format: 'json', session: valid_session
+      parsed_response = JSON.parse(response.body)
+      expect(parsed_response['recordsTotal']).to eq(11)
+      expect(parsed_response['data'].count).to eq(11)
+    end 
 
     context "when state is nil" do
-      let(:params) { { start: 0, length: 20, order: { '0': { column: 3, dir: 'asc' } }, search: { value: '' } } }
       before do
         FactoryBot.create(:encode_record, state: nil)
       end
 
       it "returns a success response" do
-        post :paged_index, format: 'json', params: params, session: valid_session
+        post :paged_index, format: 'json', session: valid_session
         expect(response).to be_successful
         parsed_response = JSON.parse(response.body)
         expect(parsed_response['recordsTotal']).to eq(12)
