@@ -46,12 +46,12 @@ gem 'rdf', '~> 3.1'
 gem 'rsolr', '~> 2.0'
 
 # Rails & Samvera Plugins
-gem 'about_page', git: 'https://github.com/avalonmediasystem/about_page.git', tag: 'avalon-r6.5'
+gem 'about_page', git: 'https://github.com/avalonmediasystem/about_page.git', branch: 'main'
 gem 'active_annotations', '~> 0.6'
 gem 'activerecord-session_store', '>= 2.0.0'
 gem 'acts_as_list'
 gem 'api-pagination'
-gem 'avalon-about', git: 'https://github.com/avalonmediasystem/avalon-about.git', tag: 'avalon-r8.0'
+gem 'avalon-about', git: 'https://github.com/avalonmediasystem/avalon-about.git', branch: 'main'
 # gem 'bootstrap-sass', '< 3.4.1' # Pin to less than 3.4.1 due to change in behavior with popovers
 gem 'bootstrap-toggle-rails'
 gem 'bootstrap_form'
