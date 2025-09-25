@@ -9,10 +9,10 @@ module.exports = (env, argv) => {
     mode: argv.mode,
     devtool: isProd ? false : 'eval-source-map',
     entry: {
-      application: '/home/app/avalon/app/javascript/application.js',
-      embed: '/home/app/avalon/app/javascript/embed.js',
-      'iiif-timeliner': '/home/app/avalon/app/javascript/iiif-timeliner.js',
-      'server-bundle': '/home/app/avalon/app/javascript/server-bundle.js',
+      application: path.resolve(__dirname, '..', '..', 'app/javascript/application.js'),
+      embed: path.resolve(__dirname, '..', '..', 'app/javascript/embed.js'),
+      'iiif-timeliner': path.resolve(__dirname, '..', '..', 'app/javascript/iiif-timeliner.js'),
+      'server-bundle': path.resolve(__dirname, '..', '..', 'app/javascript/server-bundle.js'),
     },
     module: {
       rules: [
@@ -97,7 +97,7 @@ module.exports = (env, argv) => {
     ],
     resolve: {
       extensions: ['.js', '.jsx'],
-      modules: ["/home/app/avalon/app/javascript", "node_modules"],
+      modules: [path.resolve(__dirname, '..', '..', 'app/javascript'), "node_modules"],
     },
   };
 

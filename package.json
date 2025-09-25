@@ -10,7 +10,7 @@
     "@github/auto-complete-element": "^3.8.0",
     "@popperjs/core": "^2.11.8",
     "@samvera/ramp": "https://github.com/samvera-labs/ramp.git#a0b3ebf",
-    "babel": "^6.23.0",
+    "babel-cli": "^6.26.0",
     "babel-plugin-dynamic-import-node": "^2.3.3",
     "babel-plugin-macros": "^3.1.0",
     "babel-plugin-transform-react-remove-prop-types": "^0.4.24",

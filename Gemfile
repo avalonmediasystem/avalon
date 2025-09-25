@@ -18,7 +18,6 @@ gem 'csv'
 
 # Assets
 gem 'bootstrap', '~> 5.0'
-gem 'coffee-rails', '~> 5.0'
 gem "font-awesome-rails"
 gem 'jsbundling-rails'
 gem 'jquery-rails'
@@ -50,8 +49,6 @@ gem 'activerecord-session_store', '>= 2.0.0'
 gem 'acts_as_list'
 gem 'api-pagination'
 gem 'avalon-about', git: 'https://github.com/avalonmediasystem/avalon-about.git', branch: 'main'
-# gem 'bootstrap-sass', '< 3.4.1' # Pin to less than 3.4.1 due to change in behavior with popovers
-# gem 'bootstrap-toggle-rails'
 gem 'bootstrap_form'
 gem 'iiif_manifest', '~> 1.6'
 gem 'rack-cors', require: 'rack/cors'
