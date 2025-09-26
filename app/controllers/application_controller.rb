@@ -269,10 +269,10 @@ class ApplicationController < ActionController::Base
       raise if Settings.app_controller.solr_and_fedora.raise_on_connection_error
       Rails.logger.error(exception.class.to_s + ': ' + exception.message + '\n' + exception.backtrace.join('\n'))
 
-      if request.format == :json
-        render json: {errors: [exception.message]}, status: 503
+      if request.format == :html
+        render '/errors/solr_connection', layout: false, status: :service_unavailable
       else
-        render '/errors/solr_connection', layout: false, status: 503
+        render json: { errors: [exception.message] }, status: :service_unavailable
       end
     end
 
@@ -280,10 +280,10 @@ class ApplicationController < ActionController::Base
       raise if Settings.app_controller.solr_and_fedora.raise_on_connection_error
       Rails.logger.error(exception.class.to_s + ': ' + exception.message + '\n' + exception.backtrace.join('\n'))
 
-      if request.format == :json
-        render json: {errors: [exception.message]}, status: 503
+      if request.format == :html
+        render '/errors/fedora_connection', status: :service_unavailable
       else
-        render '/errors/fedora_connection', status: 503
+        render json: { errors: [exception.message] }, status: :service_unavailable
       end
     end
 end
