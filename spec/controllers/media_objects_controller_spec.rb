@@ -1860,6 +1860,13 @@ describe MediaObjectsController, type: :controller do
       expect(json_preview.keys).to eq ['id', 'title', 'collection', 'main_contributors', 'publication_date', 'published_by', 'published']
     end
 
+    context 'fails to find' do
+      it 'returns a 404' do
+        get :move_preview, params: { id: 'invalid-id', format: 'json' }
+        expect(response.status).to eq 404
+      end
+    end
+
     context 'as manager' do
       before do
         login_user media_object.collection.managers.first

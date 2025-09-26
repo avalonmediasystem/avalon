@@ -27,7 +27,7 @@ $('#move_modal').on('shown.bs.modal', function() {
 
 function previewTargetItem(obj) {
   var container = $('#show_target_object');
-  var moid = obj.value;
+  var moid = obj.value.trim();
   if (moid.length < 8) {
     toggleCSS($('#target'), 'is-invalid', '');
   } else {
