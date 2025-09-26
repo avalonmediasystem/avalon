@@ -69,7 +69,7 @@ const PlaylistsTable = ({ url, tags }) => {
         size: parseInt(row[1].split(' ')[0]) || 0, size_text: row[1],
         visibility: visibilityDoc ? visibilityDoc.textContent : '', visibility_html: row[2],
         created_at: new Date(createdAtTime), created_html: row[3],
-        updated_at: new Date(updatedAtTime), udated_html: row[4],
+        updated_at: new Date(updatedAtTime), updated_html: row[4],
         tags: row[5], actions_html: row[6]
       };
     },
@@ -91,7 +91,7 @@ const PlaylistsTable = ({ url, tags }) => {
           );
         case 'updated_at':
           return (
-            <div dangerouslySetInnerHTML={{ __html: item.udated_html }} />
+            <div dangerouslySetInnerHTML={{ __html: item.updated_html }} />
           );
         case 'tags':
           return item.tags;

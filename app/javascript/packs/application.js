@@ -41,10 +41,10 @@ import MediaObjectRamp from '../components/MediaObjectRamp';
 import ReactButtonContainer from '../components/ReactButtonContainer';
 import PlaylistRamp from '../components/PlaylistRamp';
 import PlaylistsTable from '../components/tables/PlaylistsTable';
-import TimelinesTable from '../components/tables/TimelinesTable.jsx';
+import TimelinesTable from '../components/tables/TimelinesTable';
 import EncodingJobsTable from '../components/tables/EncodingJobsTable';
 import CheckoutsTable from '../components/tables/CheckoutsTable';
-import UsersTable from '../components/tables/UsersTable.jsx';
+import UsersTable from '../components/tables/UsersTable';
 import '../auto-complete-open.js';
 import '@github/auto-complete-element';
 

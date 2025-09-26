@@ -157,7 +157,7 @@ const useTableSortingAndFiltering = ({ columns, dataState, initialSort, paginati
   };
 
   /**
-   * Handl sorting when a column header is clicked
+   * Handle sorting when a column header is clicked
    * @param {Number} columnIndex column index of the sorting column
    * @returns 
    */
@@ -175,8 +175,8 @@ const useTableSortingAndFiltering = ({ columns, dataState, initialSort, paginati
     } else {
       // Choose appropriate initial direction based on data type
       if (dataType === 'date') {
-        // Date columns: starts with oldest first
-        sortDirection = 'asc';
+        // Date columns: starts with most recent first
+        sortDirection = 'desc';
       } else if (dataType === 'number') {
         // Number columns: starts with smallest first
         sortDirection = 'asc';

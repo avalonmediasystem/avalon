@@ -64,7 +64,7 @@ const TimelinesTable = ({ url, tags }) => {
         title_html: row[0], title: titleDoc ? titleDoc.textContent : '',
         description: row[1],
         visibility: visibilityDoc ? visibilityDoc.textContent : '', visibility_html: row[2],
-        udated_html: row[3], updated_at: new Date(lastUpdateTime),
+        updated_html: row[3], updated_at: new Date(lastUpdateTime),
         tags: row[4], actions_html: row[5]
       };
     },
@@ -82,7 +82,7 @@ const TimelinesTable = ({ url, tags }) => {
           return <span dangerouslySetInnerHTML={{ __html: item.visibility_html }} />;
         case 'updated_at':
           return (
-            <div dangerouslySetInnerHTML={{ __html: item.udated_html }} />
+            <div dangerouslySetInnerHTML={{ __html: item.updated_html }} />
           );
         case 'tags':
           return item.tags;

@@ -133,8 +133,9 @@ class CheckoutsController < ApplicationController
     end
 
     def user_array(checkout)
+      checkout_title = checkout.media_object.title ? checkout.media_object.title : checkout.media_object.id
       [
-        view_context.link_to(checkout.media_object.title, main_app.media_object_url(checkout.media_object)),
+        view_context.link_to(checkout_title, main_app.media_object_url(checkout.media_object)),
         "<span data-utc-time='#{checkout.checkout_time.iso8601}' />",
         "<span data-utc-time='#{checkout.return_time.iso8601}' />",
         time_remaining(checkout),
