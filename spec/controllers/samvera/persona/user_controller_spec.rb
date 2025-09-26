@@ -37,7 +37,7 @@ RSpec.describe Samvera::Persona::UsersController, type: :controller do
     end
 
     it 'returns all results' do
-      post :paged_index, format: 'json', params: common_params.merge(start: 0, length: 20)
+      post :paged_index, format: 'json'
       parsed_response = JSON.parse(response.body)
       expect(parsed_response['recordsTotal']).to eq(12)
       expect(parsed_response['data'].count).to eq(12)
