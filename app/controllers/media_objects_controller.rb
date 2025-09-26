@@ -526,6 +526,8 @@ class MediaObjectsController < ApplicationController
     respond_to do |wants|
       wants.json { render json: preview }
     end
+  rescue URI::InvalidURIError
+    render json: { errors: 'Unknown ID' }, status: :not_found
   end
 
   rescue_from Avalon::VocabularyNotFound do |exception|

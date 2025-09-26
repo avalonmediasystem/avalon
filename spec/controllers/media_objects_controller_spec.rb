@@ -1860,9 +1860,9 @@ describe MediaObjectsController, type: :controller do
       expect(json_preview.keys).to eq ['id', 'title', 'collection', 'main_contributors', 'publication_date', 'published_by', 'published']
     end
 
-    context 'fails to find' do
+    context 'extra whitespace in id' do
       it 'returns a 404' do
-        get :move_preview, params: { id: 'invalid-id', format: 'json' }
+        get :move_preview, params: { id: 'invalid-id ', format: 'json' }
         expect(response.status).to eq 404
       end
     end
