@@ -47,41 +47,12 @@ class PlaylistsController < ApplicationController
 
   # POST /playlists/paged_index
   def paged_index
-    # Playlists for index page are loaded dynamically by jquery datatables javascript which
-    # requests the html for only a limited set of rows at a time.
+    # Playlists for index page are loaded via /javascript/componenets/tables/PlaylistsTable.jsx
+    # which requests the json for all records on initial page load.
     recordsTotal = @playlists.count
-    columns = ['title','size','visibility','created_at','updated_at','tags','actions']
 
-    #Filter title
-    title_filter = params['search']['value']
-    @playlists = @playlists.title_like(title_filter) if title_filter.present?
-
-    # Apply tag filter if requested
-    tag_filter = params['columns']['5']['search']['value']
-    @playlists = @playlists.with_tag(tag_filter) if tag_filter.present?
-    playlistsFilteredTotal = @playlists.count
-
-    sort_column = params['order']['0']['column'].to_i rescue 0
-    sort_direction = params['order']['0']['dir'] rescue 'asc'
-    session[:playlist_sort] = [sort_column, sort_direction]
-    if columns[sort_column] == 'created_at' || columns[sort_column] == 'updated_at'
-      @playlists = @playlists.order("#{columns[sort_column].downcase} #{sort_direction}")
-      @playlists = @playlists.offset(params['start']).limit(params['length'])
-    elsif columns[sort_column] != 'size'
-      @playlists = @playlists.order("lower(#{columns[sort_column].downcase}) #{sort_direction}, #{columns[sort_column].downcase} #{sort_direction}")
-      @playlists = @playlists.offset(params['start']).limit(params['length'])
-    else
-      # sort by size (item count): decorate list with playlistitem count then sort and undecorate
-      decorated = @playlists.collect{|p| [ p.items.size, p ]}
-      decorated.sort!
-      @playlists = decorated.collect{|p| p[1]}
-      @playlists.reverse! if sort_direction=='desc'
-      @playlists = @playlists.slice(params['start'].to_i, params['length'].to_i)
-    end
     response = {
-      "draw": params['draw'],
       "recordsTotal": recordsTotal,
-      "recordsFiltered": playlistsFilteredTotal,
       "data": @playlists.collect do |playlist|
         copy_button = view_context.button_tag( type: 'button', data: { playlist: playlist },
           class: 'copy-playlist-button btn btn-outline btn-sm') do

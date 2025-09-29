@@ -26,6 +26,11 @@ import Search from '../components/Search';
 import MediaObjectRamp from '../components/MediaObjectRamp';
 import ReactButtonContainer from '../components/ReactButtonContainer';
 import PlaylistRamp from '../components/PlaylistRamp';
+import PlaylistsTable from '../components/tables/PlaylistsTable';
+import TimelinesTable from '../components/tables/TimelinesTable';
+import EncodingJobsTable from '../components/tables/EncodingJobsTable';
+import CheckoutsTable from '../components/tables/CheckoutsTable';
+import UsersTable from '../components/tables/UsersTable';
 
 ReactOnRails.register({
   CollectionList,
@@ -36,4 +41,9 @@ ReactOnRails.register({
   MediaObjectRamp,
   ReactButtonContainer,
   PlaylistRamp,
+  PlaylistsTable,
+  TimelinesTable,
+  EncodingJobsTable,
+  CheckoutsTable,
+  UsersTable,
 });
