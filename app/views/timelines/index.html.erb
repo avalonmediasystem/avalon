@@ -39,83 +39,23 @@ Unless required by applicable law or agreed to in writing, software distributed
       </div>
       <div>
         <% unless timelines.empty? %>
-          <div class="tag_filter_container">
-            Filter: <select name="tag_filter" class="tag_filter form-control input-sm" style="width:auto" aria-label="Filter">
-              <option value="" selected="selected"></option>
-              <% current_user.timeline_tags.each do |tag| %>
-                <option value="<%= tag %>"><%= tag %></option>
-              <% end %>
-            </select>
-          </div>
-          <table id="Timelines" class="table table-striped">
-            <thead>
-              <tr>
-                <th>Name</th>
-                <th>Description</th>
-                <th>Visibility</th>
-                <th>Last Updated</th>
-                <th>Tags</th>
-                <th class="text-end" data-orderable="false">Actions</th>
-              </tr>
-            </thead>
-            <tbody data-testid="timeline-table-body">
-            </tbody>
-          </table>
-          <div> </div>
+          <%= react_component("TimelinesTable", { props: { 
+              url: '/timelines/paged_index', 
+              tags: current_user.timeline_tags,
+            }
+          }) %>
         <% end %>
       </div>
     </div>
   </div>
-  <% unless timelines.empty? %>
-  <% end %>
 <% end %>
 
 <%= render partial: 'copy_timeline_modal', locals: { with_refresh: true } %>
 
 <% content_for :page_scripts do %>
   <script>
-    $(document).ready( function () {
-      $('#Timelines').on('draw.dt', function () {
-          $('.dataTables_filter input[type="search"]').attr('data-testid', 'timeline-search-input');
-      });
-      $('#Timelines').DataTable({
-        processing: true,
-        serverSide: true,
-        dom: '<"dataTableToolsTop"if><"dataTableBody"t><"dataTableToolsBottom"rlp>',
-        autoWidth: true,
-        ajax: {
-          url: '/timelines/paged_index',
-          type: 'POST'
-        },
-        order: [<%= "[#{session[:timeline_sort][0]}, '#{session[:timeline_sort][1]}']".html_safe if session[:timeline_sort] %>],
-        "columns": [
-          null,
-          { render: function ( data, type, row ) {
-              return data != null && type === 'display' && data.length > 150 ? data.substr( 0, 150 ) +'…' : data;
-          }},
-          null,
-          null,
-          null,
-          { className: "text-end" }
-        ]
-      }).on( 'draw', function () {
-        // hide any active popovers on table refresh
-        $('.popover.show').hide();
-        window.apply_button_confirmation()
-        window.add_copy_button_event()
-        // move the tag filter into the datatables layout
-        $('.tag_filter_container').insertBefore('.dataTables_filter');
-      });
-    });
-
-    $('.tag_filter').change(function() {
-      $.fn.dataTable.tables( { api: true } ).columns(4).search( $(this).val() ).draw();
-    })
-
     $( '.filedata' ).change(function() {
       $(this).closest('form').submit();
     });
   </script>
 <% end %>
-
-<%# link_to 'New Timeline', new_timeline_path %>

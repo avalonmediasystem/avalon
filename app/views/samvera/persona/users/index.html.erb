@@ -40,61 +40,10 @@ Unless required by applicable law or agreed to in writing, software distributed
   </div>
 </div>
 
-
 <div class="users-listing">
-  <table id="users-table" class="table table-striped datatable">
-    <thead>
-      <tr>
-        <th><%= t('.id_label') %></th>
-        <th><%= t('.email_label') %></th>
-        <th data-orderable="false"><%= t('.role_label') %></th>
-        <th><%= t('.access_label') %></th>
-        <th><%= t('.status_label') %></th>
-        <% if User.column_names.include? 'provider' %>
-          <th><%= t('.auth_label') %></th>
-        <% end %>
-        <th class="text-end" data-orderable="false"><%= t('.action_label') %></th>
-      </tr>
-    </thead>
-    <tbody>
-    </tbody>
-  </table>
+  <%= react_component("UsersTable", { props: { 
+      url: '/persona/users/paged_index', 
+      hasProvider: User.column_names.include?('provider'),
+    }
+  }) %>
 </div>
-
-<% content_for :page_scripts do %>
-  <script>
-    $(document).ready( function () {
-      $('#users-table').DataTable({
-        processing: true,
-        serverSide: true,
-        dom: '<"dataTableToolsTop"lf><"dataTableBody"t><"dataTableToolsBottom"ip>',
-        autoWidth: true,
-        ajax: {
-          url: '/persona/users/paged_index',
-          type: 'POST'
-        },
-        order: [ 
-          <%= "[#{session[:users_sort][0]}, '#{session[:users_sort][1]}']".html_safe if session[:users_sort] %>
-        ],
-        "columnDefs": [{
-          'targets': 3,
-          'createdCell': function (td, cellData, rowData, row, col) {
-            $(td).attr('data-sort', cellData.match(/(?<=datetime=').*Z/))
-          }
-        }],
-        "columns": [
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          { className: "text-end"}
-        ],
-        initComplete: function () {
-          $('div.dataTableToolsTop input[type="search"]').attr('data-testid', 'users-search-field');
-        }
-      });
-    });
-  </script>
-<% end %>

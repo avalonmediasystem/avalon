@@ -44,41 +44,15 @@ module Samvera
 
     # POST /persona/users/paged_index
     def paged_index
+      # Users for index page are loaded via /javascript/componenets/tables/UsersTable.jsx
+      # which requests the json for all on initial page load.
       @presenter = Samvera::Persona::UsersPresenter.new
       records_total = @presenter.user_count
       @presenter = @presenter.users
-      columns = ['username', 'email', 'entry', 'last_sign_in_at', 'invitation_token', 'provider', 'actions']
-
-      # Filtering
-      search_value = params['search']['value']
-      @presenter = if search_value.present?
-                     @presenter.where(%(
-                                username LIKE :search_value OR
-                                email LIKE :search_value
-                              ), search_value: "%#{search_value}%")
-                   else
-                     @presenter
-                   end
-
-      # Count
-      presenter_filtered_total = @presenter.count
-
-      # Sort
-      sort_column = params['order']['0']['column'].to_i rescue 0
-      sort_direction = params['order']['0']['dir'] == 'desc' ? 'desc' : 'asc' rescue 'asc'
-      session[:presenter_sort] = [sort_column, sort_direction]
-      @presenter = if columns[sort_column] == 'last_sign_in_at'
-                     @presenter.order("#{columns[sort_column].downcase} #{sort_direction}")
-                   elsif columns[sort_column] != 'entry'
-                     @presenter.order("lower(#{columns[sort_column].downcase}) #{sort_direction}, #{columns[sort_column].downcase} #{sort_direction}")
-                   end
-      @presenter = @presenter.offset(params['start']).limit(params['length'])
 
       # Build json response
       response = {
-        "draw": params['draw'],
         "recordsTotal": records_total,
-        "recordsFiltered": presenter_filtered_total,
         "data": @presenter.collect do |presenter|
           edit_button =
             if presenter.has_attribute?(:provider) && !presenter.provider.nil?

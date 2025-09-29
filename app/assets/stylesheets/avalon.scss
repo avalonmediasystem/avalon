@@ -784,7 +784,7 @@ h5.card-title {
   width: 100%;
 }
 
-#blacklight-modal{
+#blacklight-modal {
   auto-complete {
     flex-grow: 0;
   }
@@ -1088,30 +1088,25 @@ h5.card-title {
 }
 
 /*Encode dashboard progress bar */
-#encode-records {
-  .progress {
+.encoding_jobs-table-container {
+  .progress-bar {
     background-color: #bcbebf;
     text-align: left;
     position: relative;
     height: 13px;
     margin: 4px 0px;
-    .completed {
-      background-color: $success;
-    }
-    .failed {
-      background-color: $danger;
-    }
-    .cancelled {
-      background-color: $gray;
-    }
-    .running {
-      background-color: $lightblue;
-    }
-    .progress-bar {
-      text-align: left;
-      line-height: 13px;
-      padding: 1px 10px 2px;
-    }
+  }
+  .completed {
+    background-color: $success;
+  }
+  .failed {
+    background-color: $danger;
+  }
+  .cancelled {
+    background-color: $gray;
+  }
+  .running {
+    background-color: $lightblue;
   }
 }
 
@@ -1147,28 +1142,6 @@ h5.card-title {
   display: flex;
 }
 
-/* DataTables in Playlists, Timelines, Persona Users, and Encode Dashboard */
-.dataTableToolsTop {
-  text-align: right;
-}
-
-@include media-breakpoint-up(xs) {
-  .dataTables_length {
-    float: left;
-  }
-}
-
-// Make table body scrollable in mobile devices
-@include media-breakpoint-down(lg) {
-  .dataTableBody {
-    width: 100%;
-    overflow-x: scroll;
-  }
-  .pagination {
-    justify-content: center !important;
-  }
-}
-
 // Action column of each table
 #Playlists,
 #Timelines,
@@ -1176,11 +1149,6 @@ h5.card-title {
   td:last-child {
     white-space: nowrap;
   }
-}
-
-#users-table th,
-td {
-  padding-right: 6px !important;
 }
 
 .create-buttons {

@@ -41,30 +41,11 @@ Unless required by applicable law or agreed to in writing, software distributed
     </div>
 
     <% unless playlists.empty? %>
-      <div class="tag_filter_container">
-        <label for="tag-filter">Filter:</label>
-        <select id="tag-filter" name="tag_filter" class="tag_filter form-control input-sm" style="width:auto">
-          <option value="" selected="selected"></option>
-          <% current_user.playlist_tags.each do |tag| %>
-          <option value="<%= tag %>"><%= tag %></option>
-          <% end %>
-        </select>
-      </div>
-      <table id="Playlists" class="table table-striped dataTable">
-        <thead data-testid="playlist-table-head">
-          <tr>
-            <th>Name</th>
-            <th>Size</th>
-            <th>Visibility</th>
-            <th>Created</th>
-            <th>Updated</th>
-            <th>Tags</th>
-            <th class="text-end" data-orderable="false">Actions</th>
-          </tr>
-        </thead>
-        <tbody data-testid="playlist-table-body">
-        </tbody>
-      </table>
+      <%= react_component("PlaylistsTable", { props: { 
+          url: '/playlists/paged_index', 
+          tags: current_user.playlist_tags,
+        }
+      }) %>
     <% end %>
   </div>
   <% unless !playlists.empty? %>
@@ -74,48 +55,9 @@ Unless required by applicable law or agreed to in writing, software distributed
 <%= render partial: 'copy_playlist_modal', locals: { with_refresh: true } %>
 
 <% content_for :page_scripts do %>
-<script>
-  $(document).ready(function () {
-    $('#Playlists').DataTable({
-      processing: true,
-      serverSide: true,
-      dom: '<"dataTableToolsTop"if><"dataTableBody"t><"dataTableToolsBottom"rlp>',
-      autoWidth: true,
-      ajax: {
-        url: '/playlists/paged_index',
-        type: 'POST'
-      },
-      order: [ <%= "[#{session[:playlist_sort][0]}, '#{session[:playlist_sort][1]}']".html_safe if session[:playlist_sort] %>
-      ],
-      "columns": [
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        {
-          className: "text-end"
-        }
-      ]
-    }).on('draw', function () {
-      // hide any active popovers on table refresh
-      $('.popover.show').hide();
-      window.apply_button_confirmation()
-      window.add_copy_playlist_button_event()
-      // move the tag filter into the datatables layout
-      $('.tag_filter_container').insertBefore('.dataTables_filter');
+  <script>
+    $('.filedata').change(function () {
+      $(this).closest('form').submit();
     });
-  });
-
-  $('.tag_filter').change(function () {
-    $.fn.dataTable.tables({
-      api: true
-    }).columns(5).search($(this).val()).draw();
-  })
-
-  $('.filedata').change(function () {
-    $(this).closest('form').submit();
-  });
-</script>
+  </script>
 <% end %>
