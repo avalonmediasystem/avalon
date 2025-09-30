@@ -164,6 +164,11 @@ Unless required by applicable law or agreed to in writing, software distributed
         </li>
         <% end #playlist.items.each %>
       </ol>
+      <div class="playlist-loading-overlay">
+        <div class="playlist-items-loader">
+          <span class="visually-hidden">Loading...</span>
+        </div>
+      </div>
     </div>
     <%= fs.submit class: 'btn btn-primary btn-sm', value: 'Save Changes', form: 'playlist_sort_form', style: 'visibility:hidden' %>
     <% end #form_for playlist_sort_form %>

@@ -111,27 +111,27 @@ Unless required by applicable law or agreed to in writing, software distributed
   </div>
   <br class="clear" />
   <%= bootstrap_form_for @media_object do |media| %>
-  <%= render "workflow_buttons" %>
-<% end %>
+    <%= render "workflow_buttons" %>
+  <% end %>
 
-<% @masterFiles.each_with_index do |section, index| %>
-<% default_structure="<Item label='#{html_escape(stream_label_for(section))}'></Item>" %>
-<div id="advanced_edit_structure_<%= index %>" class="structure_edit modal fade" data-bs-backdrop="static"
-  data-submit_url="<%= attach_structure_master_file_path(section.id) %>">
-  <div class="modal-dialog modal-xl" style="width:65%">
-    <div class="modal-content col-md-12">
-      <div class="modal-header">
-        <h4 class="modal-title">Advanced Edit Structure</h4>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-hidden="true"></button>
-      </div>
-      <div class="modal-body structure_edit col-md-12" style="height:40vh">
-        <textarea rows=20 class="col-md-12 original_textarea" id="structure_<%= index %>" data-testid="advanced-edit-structure-textarea-<%= index %>"
-          style="visibility:hidden"><%= section.structuralMetadata.valid? ? section.structuralMetadata.to_xml : default_structure %></textarea>
+  <% @masterFiles.each_with_index do |section, index| %>
+    <% default_structure="<Item label='#{html_escape(stream_label_for(section))}'></Item>" %>
+    <div id="advanced_edit_structure_<%= index %>" class="structure_edit modal fade" data-bs-backdrop="static"
+      data-submit_url="<%= attach_structure_master_file_path(section.id) %>">
+      <div class="modal-dialog modal-xl" style="width:65%">
+        <div class="modal-content col-md-12">
+          <div class="modal-header">
+            <h4 class="modal-title">Advanced Edit Structure</h4>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-hidden="true"></button>
+          </div>
+          <div class="modal-body structure_edit col-md-12" style="height:40vh">
+            <textarea rows=20 class="col-md-12 original_textarea" id="structure_<%= index %>" data-testid="advanced-edit-structure-textarea-<%= index %>"
+              style="visibility:hidden"><%= section.structuralMetadata.valid? ? section.structuralMetadata.to_xml : default_structure %></textarea>
+          </div>
+        </div>
       </div>
     </div>
-  </div>
-</div>
-<% end %>
+  <% end %>
 <% end %>
 
 <% content_for :page_scripts do %>
