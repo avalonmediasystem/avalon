@@ -32,7 +32,7 @@
     "react-dom": "^19.1.0",
     "react-on-rails": "^14.2.1",
     "react-structural-metadata-editor": "https://github.com/avalonmediasystem/react-structural-metadata-editor#avalon-8.1",
-    "sass": "^1.92.1",
+    "sass": "^1.93.2",
     "sass-loader": "^13.3.2",
     "sortablejs": "^1.15.3",
     "stream-browserify": "^3.0.0",
@@ -65,7 +65,8 @@
     "cypress:run": "cypress run -C spec/cypress/cypress.config.js",
     "build": "webpack --config ./config/webpack/webpack.config.js --mode production",
     "build:dev": "webpack --config ./config/webpack/webpack.config.js --mode development --watch",
-    "build:test": "webpack --config ./config/webpack/webpack.config.js --mode development"
+    "build:test": "webpack --config ./config/webpack/webpack.config.js --mode development",
+    "build:css": "sass --quiet-deps ./app/assets/stylesheets/application.sass.scss:./app/assets/builds/application.css --no-source-map --load-path=node_modules --load-path=$(bundle show 'bootstrap')/assets/stylesheets --load-path=$(bundle show 'browse-everything')/app/assets/stylesheets --load-path=$(bundle show 'browse-everything')/vendor/assets/stylesheets --load-path=$(bundle show 'about_page')/app/assets/stylesheets --load-path=$(bundle show 'blacklight')/app/assets/stylesheets --load-path=$(bundle show 'jquery-datatables')/app/assets/stylesheets"
   },
   "packageManager": "yarn@1.22.19",
   "browserslist": [

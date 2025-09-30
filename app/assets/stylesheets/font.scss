@@ -14,16 +14,7 @@
  * ---  END LICENSE_HEADER BLOCK  ---
 */
 
-@mixin current-stream-indicator($margin, $left: -6px) {
-  @extend #{'.fa', '.fa-arrow-circle-right'} !optional;
-  position: relative;
-  left: $left;
-  margin-left: $margin;
-}
-
-@mixin hidden-disabled-link {
-  text-decoration: none !important;
-  color: $dark !important;
-  cursor: default !important;
-  pointer-events: none !important;
-}
+// font-awesome-rails uses a .css.erb file which is not compatible
+// with the modern css gems. We cannot move forward with removing
+// sprockets until this is handled.
+@import 'font-awesome';
