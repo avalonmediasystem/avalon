@@ -9,7 +9,7 @@ GIT
 GIT
   remote: https://github.com/avalonmediasystem/avalon-about.git
   revision: 3b6d7f157ca0b8c53957f6cbe436b0fcdd698ae9
-  branch: main
+  tag: main
   specs:
     avalon-about (0.1.0)
       about_page
@@ -321,6 +321,8 @@ GEM
       bigdecimal
       rexml
     crass (1.0.6)
+    cssbundling-rails (1.4.3)
+      railties (>= 6.0.0)
     csv (3.3.5)
     daemons (1.4.1)
     dalli (3.2.8)
@@ -1014,6 +1016,7 @@ DEPENDENCIES
   capybara
   cloudfront-signer
   config
+  cssbundling-rails (~> 1.4)
   csv
   database_cleaner
   devise (~> 4.8)
@@ -1095,6 +1098,7 @@ DEPENDENCIES
   speedy-af (~> 0.5.0)
   sprockets (>= 4)
   sprockets-es6
+  sprockets-rails
   sqlite3
   stackprof
   wavefile (~> 1.0.1)
