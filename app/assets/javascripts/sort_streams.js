@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2011-2025, The Trustees of Indiana University and Northwestern
  *   University.  Licensed under the Apache License, Version 2.0 (the "License");
  *   you may not use this file except in compliance with the License.
@@ -14,29 +14,44 @@
  * ---  END LICENSE_HEADER BLOCK  ---
 */
 
-$('.sortable').sortable({ 
-  disabled: false,
-  update: function(e, ui) {
-    $('form > [name="master_file_ids[]"]').remove();
+document.addEventListener('DOMContentLoaded', function () {
+  const sortableElement = document.querySelector('.sortable');
 
-    $(this).find('li.section').each(function(){     
-      $('<input>').attr({ 
-        type: 'hidden', 
-        name: 'master_file_ids[]',
-        value: $(this).data('segment')
-      }).appendTo('form');
+  if (sortableElement) {
+    // Find the media object form associated with the workflow button
+    const mediaObjectForm = document.querySelector('form[action*="media_objects"]');
+
+    // Helper function to update master file IDs in the correct form
+    function updateMasterFileIds() {
+      if (!mediaObjectForm) return;
+
+      // Remove existing hidden inputs from the media object form only
+      const existingInputs = mediaObjectForm.querySelectorAll('[name="master_file_ids[]"]');
+      existingInputs.forEach(input => input.remove());
+
+      // Add hidden inputs in new order
+      const sections = sortableElement.querySelectorAll('li.section');
+      sections.forEach(function (section) {
+        const input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = 'master_file_ids[]';
+        input.value = section.getAttribute('data-segment');
+        mediaObjectForm.appendChild(input);
+      });
+    }
+
+    // Initialize master file IDs on page load
+    updateMasterFileIds();
+
+    // Initialize SortableJS on the sortable element
+    Sortable.create(sortableElement, {
+      handle: 'li.section',
+      animation: 150,
+      // Forces sortablejs to use its fallback mode, which gives 
+      // us better control over the cursor style
+      forceFallback: true,
+      fallbackClass: 'sortable-fallback',
+      onEnd: updateMasterFileIds,
     });
-
   }
-}).disableSelection().css('cursor', 'move');
-
-$(".sortable").nestedSortable({
-  forcePlaceholderSize:true,
-  handle: 'li.section',
-  helper: 'clone',
-  opacity: .6,
-  revert: 250,
-  tabSize: 25,
-  tolerance: 'pointer',
-  toleranceElement: 'ul'
-}).disableSelection();
+});

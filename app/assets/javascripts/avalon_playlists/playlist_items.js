@@ -14,39 +14,85 @@
  * ---  END LICENSE_HEADER BLOCK  ---
 */
 
-// This is for the playlists edit page
-Blacklight.onLoad(function(){
-
+// This is for the playlists edit page for sorting playlist items
+document.addEventListener('DOMContentLoaded', function () {
   // Display the drag handle
-  $('.dd-handle').removeClass('hidden');
+  var dragHandles = document.querySelectorAll('.dd-handle');
+  dragHandles.forEach(function (handle) {
+    handle.classList.remove('hidden');
+  });
 
-  // Initialize drag-and-drop behavior
-  $('.dd').nestable({ maxDepth: 1, dropCallback: function(data){
-    allItemsData = $('.dd').nestable('serialize');
-    itemsContainer = $('.dd');
-    reorderItems(allItemsData, itemsContainer);
-  } });
-
-  var reorderItems = function(data, container) {
-    var playlistId = container.data('playlist_id');
-    var items = data;
-    for(var i in data){
-      items[i]['position'] = (parseInt(i) + 1).toString();
-    }
-
-    $.ajax({
-      type: "PATCH",
-      url: '/playlists/' + playlistId + '.json',
-      data: { playlist: {items_attributes: items}},
-      success: function(data, status){
+  var playlistContainer = document.querySelector('.dd');
+  // Initialize drag-and-drop behavior with SortableJS
+  var playlistListContainer = document.querySelector('.dd .dd-list');
+  if (playlistListContainer) {
+    Sortable.create(playlistListContainer, {
+      handle: '.dd-handle',
+      animation: 150,
+      forceFallback: true,
+      fallbackClass: 'sortable-fallback',
+      onEnd: function (evt) {
+        var items = [];
+        var listItems = playlistListContainer.querySelectorAll('.dd-item');
+        listItems.forEach(function (item, index) {
+          items.push({
+            id: item.getAttribute('data-id'),
+            position: (index + 1).toString()
+          });
+        });
+        var container = document.querySelector('.dd');
+        reorderItems(items, container);
       }
     });
+  }
 
-    // Update the position text in the form
-    var textElements = $('.dd .position-input');
-    for(var i in textElements) {
-      textElements[i].value = parseInt(i) + 1;
-    }
+  var reorderItems = function (data, container) {
+    var playlistId = container.getAttribute('data-playlist_id');
+    var items = data;
+
+    /**
+     * Show loading overlay while saving the changes.
+     * If the user has a slow connection, this provides feedback for the save operation.
+     * Without this, if the user navigates to the playlist show page too quickly, the changes
+     * may not be persisted and the user will see the old order of items on the edit page on back
+     * navigation.
+     */
+    var overlay = container.querySelector('.playlist-loading-overlay');
+    overlay.classList.add('is-loading');
+    playlistContainer.classList.add('is-loading');
+
+    fetch('/playlists/' + playlistId + '.json', {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+      },
+      body: JSON.stringify({ playlist: { items_attributes: items } })
+    })
+      .then(function (response) {
+        return response.json();
+      })
+      .then(function (data) {
+        playlistContainer.classList.remove('is-loading');
+        overlay.classList.remove('is-loading');
+      })
+      .catch(function (error) {
+        playlistContainer.classList.remove('is-loading');
+        overlay.classList.remove('is-loading');
+        console.error('Error updating playlist:', error);
+      });
+
+    setItemPositions();
   };
 
+  // Update the position text in the form
+  var setItemPositions = function () {
+    var textElements = document.querySelectorAll('.dd .position-input');
+    textElements.forEach(function (element, index) {
+      element.value = index + 1;
+    });
+  };
+
+  // Initial setting of item positions
+  setItemPositions();
 });
