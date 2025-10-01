@@ -82,6 +82,11 @@ jobs:
           paths:
             - .cache/yarn
 
+      # Build assets before running tests
+      - run: 
+          name: Build assets
+          command: bundle exec rails assets:precompile
+
       # Copy solr 8 compliant step from unreleased version of orb
       #- samvera/install_solr_core:
       #    solr_config_path: << parameters.solr_config_path >>

@@ -89,7 +89,7 @@ services:
     build:
       context: .
       target: dev
-    command: bash -c "/docker_init.sh && bundle exec rails server -b 0.0.0.0"
+    command: bash -c "/docker_init.sh && bin/dev"
     depends_on:
       - db
       - fedora
