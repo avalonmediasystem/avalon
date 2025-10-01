@@ -14,14 +14,9 @@
  * ---  END LICENSE_HEADER BLOCK  ---
 */
 
-import React from 'react';
-import { createRoot } from "react-dom/client";
-import Search from './Search';
+import ReactOnRails from 'react-on-rails';
+import EmbeddedRamp from './components/embeds/EmbeddedRamp';
 
-const props = {
-  baseUrl: 'https://spruce.dlib.indiana.edu',
-  collection: 'Chris Test'
-};
-
-const root = createRoot(document.getElementById('root'));
-root.render(<Search {...props} />);
+ReactOnRails.register({
+  EmbeddedRamp,
+});

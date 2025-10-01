@@ -1,21 +1,27 @@
 {
   "dependencies": {
     "@babel/core": "^7.21.1",
-    "@babel/plugin-proposal-class-properties": "^7.18.6",
     "@babel/plugin-proposal-object-rest-spread": "^7.20.7",
+    "@babel/plugin-syntax-dynamic-import": "^7.8.3",
+    "@babel/plugin-transform-class-properties": "^7.27.1",
+    "@babel/plugin-transform-nullish-coalescing-operator": "^7.27.1",
     "@babel/preset-react": "^7.0.0",
     "@babel/runtime": "^7.21.1",
     "@github/auto-complete-element": "^3.8.0",
-    "@rails/webpacker": "^5.4.4",
+    "@popperjs/core": "^2.11.8",
     "@samvera/ramp": "https://github.com/samvera-labs/ramp.git#a0b3ebf",
+    "babel-cli": "^6.26.0",
+    "babel-plugin-dynamic-import-node": "^2.3.3",
     "babel-plugin-macros": "^3.1.0",
     "babel-plugin-transform-react-remove-prop-types": "^0.4.24",
     "buffer": "^6.0.3",
     "compression-webpack-plugin": "9",
+    "core-js": "3",
     "cropperjs": "^1.5.5",
     "css-loader": "^6.8.1",
     "css-minimizer-webpack-plugin": "^5.0.1",
     "hls.js": "https://github.com/avalonmediasystem/hls.js#stricter_ts_probing",
+    "jquery": "^3.7.1",
     "mini-css-extract-plugin": "^2.7.6",
     "moment": "^2.29.4",
     "path-browserify": "^1.0.1",
@@ -26,16 +32,15 @@
     "react-dom": "^19.1.0",
     "react-on-rails": "^14.2.1",
     "react-structural-metadata-editor": "https://github.com/avalonmediasystem/react-structural-metadata-editor#avalon-8.1",
-    "sass": "^1.65.1",
+    "sass": "^1.92.1",
     "sass-loader": "^13.3.2",
-    "shakapacker": "^8.3.0",
     "stream-browserify": "^3.0.0",
     "style-loader": "^3.3.3",
     "terser-webpack-plugin": "5",
     "url-search-params-polyfill": "^7.0.1",
     "util": "^0.12.5",
     "video.js": "^8.10.0",
-    "webpack": "5",
+    "webpack": "^5.101.3",
     "webpack-assets-manifest": "5",
     "webpack-merge": "^5.9.0"
   },
@@ -48,18 +53,21 @@
     "cypress-file-upload": "^5.0",
     "html-webpack-plugin": "^5.3.2",
     "prop-types": "^15.7.2",
-    "webpack-cli": "5",
-    "webpack-dev-server": "5"
+    "webpack-cli": "^6.0.1"
   },
   "resolutions": {
     "glob-parent": "^6.0.2",
     "path-to-regexp": "^0.1.12"
   },
   "scripts": {
-    "start-collection-index": "webpack-dev-server --mode development --config config/webpack/collection_index.js --host 0.0.0.0",
-    "start-collection-view": "webpack-dev-server --mode development --config config/webpack/collection_view.js --host 0.0.0.0",
     "cypress:open": "cypress open -C spec/cypress/cypress.config.js",
-    "cypress:run": "cypress run -C spec/cypress/cypress.config.js"
+    "cypress:run": "cypress run -C spec/cypress/cypress.config.js",
+    "build": "webpack --config ./config/webpack/webpack.config.js --mode production",
+    "build:dev": "webpack --config ./config/webpack/webpack.config.js --mode development --watch",
+    "build:test": "webpack --config ./config/webpack/webpack.config.js --mode development"
   },
-  "packageManager": "yarn@1.22.19"
+  "packageManager": "yarn@1.22.19",
+  "browserslist": [
+    "defaults"
+  ]
 }

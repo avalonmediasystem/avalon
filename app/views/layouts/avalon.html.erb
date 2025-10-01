@@ -29,9 +29,8 @@ Unless required by applicable law or agreed to in writing, software distributed
   <%= csrf_meta_tags %>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <%= favicon_link_tag %>
-  <%= stylesheet_link_tag "application", media: "all" %>
-  <%= stylesheet_pack_tag 'application' %>
-  <%= javascript_pack_tag 'application' %>
+  <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+  <%= javascript_include_tag "application_webpack", "data-turbo-track": "reload", type: "module", defer: false %>
   <%= yield :page_styles %>
   <%= yield :additional_head_content %>
   <%= render "modules/google_analytics" %>
