@@ -3,7 +3,6 @@ require_relative '../lib/tempfile_factory'
 
 require 'rails/all'
 require 'resolv-replace'
-require 'sprockets/railtie'
 
 # Require the gems listed in Gemfile, including any gems
 # you've limited to :test, :development, or :production.
