@@ -34,6 +34,7 @@
     "react-structural-metadata-editor": "https://github.com/avalonmediasystem/react-structural-metadata-editor#avalon-8.1",
     "sass": "^1.92.1",
     "sass-loader": "^13.3.2",
+    "sortablejs": "^1.15.3",
     "stream-browserify": "^3.0.0",
     "style-loader": "^3.3.3",
     "terser-webpack-plugin": "5",

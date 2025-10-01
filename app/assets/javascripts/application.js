@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2011-2025, The Trustees of Indiana University and Northwestern
  *   University.  Licensed under the Apache License, Version 2.0 (the "License");
  *   you may not use this file except in compliance with the License.
@@ -38,6 +38,7 @@
 //= require modernizr
 //= require cropperjs/dist/cropper.min
 //= require url-search-params-polyfill/index.js
+//= require sortablejs/Sortable.min.js
 
 //= require moment/min/moment-with-locales.min.js
 //= require hls.js/dist/hls.min.js
