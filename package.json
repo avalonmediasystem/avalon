@@ -7,6 +7,7 @@
     "@babel/plugin-transform-nullish-coalescing-operator": "^7.27.1",
     "@babel/preset-react": "^7.0.0",
     "@babel/runtime": "^7.21.1",
+    "@fortawesome/fontawesome-free": "6.7.2",
     "@github/auto-complete-element": "^3.8.0",
     "@popperjs/core": "^2.11.8",
     "@samvera/ramp": "https://github.com/samvera-labs/ramp.git#a0b3ebf",
@@ -66,7 +67,7 @@
     "build": "webpack --config ./config/webpack/webpack.config.js --mode production",
     "build:dev": "webpack --config ./config/webpack/webpack.config.js --mode development --watch",
     "build:test": "webpack --config ./config/webpack/webpack.config.js --mode development",
-    "build:css": "sass --quiet-deps ./app/assets/stylesheets/application.sass.scss:./app/assets/builds/application.css --no-source-map --load-path=node_modules --load-path=$(bundle show 'bootstrap')/assets/stylesheets --load-path=$(bundle show 'browse-everything')/app/assets/stylesheets --load-path=$(bundle show 'browse-everything')/vendor/assets/stylesheets --load-path=$(bundle show 'about_page')/app/assets/stylesheets --load-path=$(bundle show 'blacklight')/app/assets/stylesheets --load-path=$(bundle show 'jquery-datatables')/app/assets/stylesheets"
+    "build:css": "sass --quiet-deps ./app/assets/stylesheets/application.sass.scss:./app/assets/builds/application.css --no-source-map --load-path=node_modules --load-path=$(bundle show 'bootstrap')/assets/stylesheets --load-path=$(bundle show 'browse-everything')/app/assets/stylesheets --load-path=$(bundle show 'browse-everything')/vendor/assets/stylesheets --load-path=$(bundle show 'about_page')/app/assets/stylesheets --load-path=$(bundle show 'blacklight')/app/assets/stylesheets"
   },
   "packageManager": "yarn@1.22.19",
   "browserslist": [

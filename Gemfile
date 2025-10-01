@@ -7,7 +7,7 @@ gem 'net-smtp', require: false
 gem 'psych', '< 4'
 gem 'rails', '~>8.0'
 gem 'sprockets', '>= 4'
-gem 'sprockets-rails'
+# gem 'sprockets-rails'
 gem 'sqlite3'
 # Force newer version of mail for compatibility with rails 6.0.6.1
 gem 'mail', '> 2.8.0.1'
@@ -18,11 +18,13 @@ gem 'csv'
 
 # Assets
 gem 'bootstrap', '~> 5.0'
-gem "font-awesome-rails"
-gem 'jsbundling-rails'
+gem "cssbundling-rails", "~> 1.4"
 gem 'jquery-rails'
 gem 'jquery-ui-rails'
+gem 'jsbundling-rails', '~> 1.3'
 gem 'react_on_rails'
+# sassc is required by Sprockets, but theoretically nothing should be
+# getting processed by it. Should be removed as soon as we are able to.
 gem 'sassc-rails'
 gem 'sprockets-es6'
 
@@ -190,5 +192,3 @@ end
 
 extra_gems = File.expand_path("../Gemfile.local", __FILE__)
 eval File.read(extra_gems) if File.exist?(extra_gems)
-
-gem "cssbundling-rails", "~> 1.4"

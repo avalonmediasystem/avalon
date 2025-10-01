@@ -8,6 +8,10 @@ Rails.application.config.assets.version = "1.0"
 # Add Yarn node_modules folder to the asset load path.
 Rails.application.config.assets.paths << Rails.root.join('node_modules')
 
+# For proper import of font-awesome, we need to explicitly add the fonts folder
+# to the asset path. See discussion at https://github.com/rails/cssbundling-rails/issues/22.
+Rails.application.config.assets.paths << Rails.root.join('node_modules', '@fortawesome', 'fontawesome-free', 'webfonts')
+
 # Precompile additional assets.
 # application.js, application.css, and all non-JS/CSS in the app/assets
 # folder are already added.

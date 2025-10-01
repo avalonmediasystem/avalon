@@ -14,10 +14,15 @@
  * ---  END LICENSE_HEADER BLOCK  ---
 */
 
+// Set variable needed for font-awesome.
+$fa-font-path: '.';
+
 // Entry point for your Sass build
 @import 'branding';
 @import '_bootstrap';
-// @import 'font-awesome';
+@import '@fortawesome/fontawesome-free/scss/fontawesome';
+@import '@fortawesome/fontawesome-free/scss/regular';
+@import '@fortawesome/fontawesome-free/scss/solid';
 @import 'browse_everything/browse_everything_bootstrap5';
 
 @import 'cropperjs/dist/cropper.min';
