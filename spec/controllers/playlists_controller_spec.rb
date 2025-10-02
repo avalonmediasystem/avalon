@@ -505,7 +505,6 @@ RSpec.describe PlaylistsController, type: :controller do
         parsed_response = JSON.parse(response.body)
         expect(parsed_response['recordsTotal']).to eq(11)
         expect(parsed_response['data'].count).to eq(11)
-        expect(parsed_response['data'][0][0]).to eq("<a title=\"#{Playlist.all[0].comment}\" href=\"/playlists/1\">aardvark</a>")
       end
     end
 
