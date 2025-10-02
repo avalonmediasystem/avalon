@@ -16,7 +16,6 @@ Unless required by applicable law or agreed to in writing, software distributed
 
 <div class="log-in-out text-muted header-user">
   <center>
-    <% session[:previous_url] = request.fullpath unless request.xhr? %>
     <%= link_to 'Sign in', main_app.new_user_session_path, :class=> "btn btn-info" %>
   </center>
 </div>
