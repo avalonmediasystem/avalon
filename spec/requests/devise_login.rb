@@ -29,13 +29,24 @@ describe 'devise login', type: :request do
       expect(response).to redirect_to(root_path)
     end
 
-    context 'when previous_url is in the session' do
+    context 'when user_return_to is in the session' do
       let!(:media_object) { FactoryBot.create(:published_media_object, visibility: 'restricted') }
 
       it 'redirects to url' do
         get "/media_objects/#{media_object.id}"
         post '/users/sign_in', params: { user: { login: user.username, password: user.password }, admin: true, email: true }
         expect(response).to redirect_to("/media_objects/#{media_object.id}")
+      end
+
+      context 'when public item is requested first' do
+        let!(:public_media_object) { FactoryBot.create(:published_media_object, :with_master_file, visibility: 'public') }
+
+        it 'redirects to correct media object' do
+          get "/media_objects/#{public_media_object.id}"
+          get "/media_objects/#{media_object.id}"
+          post '/users/sign_in', params: { user: { login: user.username, password: user.password }, admin: true, email: true }
+          expect(response).to redirect_to("/media_objects/#{media_object.id}")
+        end
       end
     end
   end
