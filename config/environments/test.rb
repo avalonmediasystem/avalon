@@ -65,4 +65,8 @@ Rails.application.configure do
 
   # Raise error when a before_action's only/except options reference missing actions.
   config.action_controller.raise_on_missing_callback_actions = true
+
+  # Sprockets was attempting to compress the css bundle with sassc which caused a syntax error.
+  # Explicitly set css to not be compressed outside the bundler.
+  config.assets.css_compressor = nil
 end

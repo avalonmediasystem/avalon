@@ -30,7 +30,7 @@ Unless required by applicable law or agreed to in writing, software distributed
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <%= favicon_link_tag %>
   <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
-  <%= javascript_include_tag "application_webpack", "data-turbo-track": "reload", type: "module", defer: false %>
+  <%= javascript_include_tag "application_bundle", "data-turbo-track": "reload", type: "module", defer: false %>
   <%= yield :page_styles %>
   <%= yield :additional_head_content %>
   <%= render "modules/google_analytics" %>
@@ -81,7 +81,7 @@ Unless required by applicable law or agreed to in writing, software distributed
          if they are included here. That means the important content will
          load first; the page will not gag on trying to pull down files
          from a CDN -->
-  <%= javascript_include_tag "application" %>
+  <%= javascript_include_tag 'application' %>
   <%= yield :page_scripts %>
 </body>
 

@@ -23,10 +23,12 @@ Rails.application.configure do
   config.public_file_server.enabled = ENV["RAILS_SERVE_STATIC_FILES"].present?
 
   # Compress JavaScripts and CSS.
-  config.assets.js_compressor = :terser
+  # config.assets.js_compressor = nil
 
   # Compress CSS using a preprocessor.
-  # config.assets.css_compressor = :sass
+  # Sprockets was attempting to compress the css bundle with sassc which caused a syntax error.
+  # Explicitly set css to not be compressed outside the bundler.
+  config.assets.css_compressor = nil
 
   # Do not fall back to assets pipeline if a precompiled asset is missed.
   config.assets.compile = true

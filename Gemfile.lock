@@ -321,6 +321,8 @@ GEM
       bigdecimal
       rexml
     crass (1.0.6)
+    cssbundling-rails (1.4.3)
+      railties (>= 6.0.0)
     csv (3.3.5)
     daemons (1.4.1)
     dalli (3.2.8)
@@ -403,8 +405,6 @@ GEM
       ruby-progressbar
     ffi (1.17.2)
     flamegraph (0.9.5)
-    font-awesome-rails (4.7.0.9)
-      railties (>= 3.2, < 9.0)
     fugit (1.11.1)
       et-orbi (~> 1, >= 1.2.11)
       raabro (~> 1.4)
@@ -1014,6 +1014,7 @@ DEPENDENCIES
   capybara
   cloudfront-signer
   config
+  cssbundling-rails (~> 1.4)
   csv
   database_cleaner
   devise (~> 4.8)
@@ -1029,7 +1030,6 @@ DEPENDENCIES
   fastimage
   fcrepo_wrapper
   flamegraph
-  font-awesome-rails
   google-analytics-rails (= 1.1.0)
   hashdiff (>= 1.0)
   hooks
@@ -1041,7 +1041,7 @@ DEPENDENCIES
   jbuilder (~> 2.0)
   jquery-rails
   jquery-ui-rails
-  jsbundling-rails
+  jsbundling-rails (~> 1.3)
   ldp (~> 1.1.0)
   listen
   lograge

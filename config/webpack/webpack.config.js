@@ -82,7 +82,7 @@ module.exports = (env, argv) => {
     },
     output: {
       filename: (pathData) => {
-        return pathData.chunk.name === 'application' ? '[name]_webpack.js' : '[name].js';
+        return pathData.chunk.name === 'application' ? '[name]_bundle.js' : '[name].js';
       },
       chunkFilename: "[name]-[contenthash].digested.js",
       sourceMapFilename: "[file]-[fullhash].map",
