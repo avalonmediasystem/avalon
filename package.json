@@ -22,7 +22,6 @@
     "css-loader": "^6.8.1",
     "css-minimizer-webpack-plugin": "^5.0.1",
     "hls.js": "https://github.com/avalonmediasystem/hls.js#stricter_ts_probing",
-    "jquery": "^3.7.1",
     "mini-css-extract-plugin": "^2.7.6",
     "moment": "^2.29.4",
     "path-browserify": "^1.0.1",
