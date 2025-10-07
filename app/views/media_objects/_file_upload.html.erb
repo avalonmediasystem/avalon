@@ -313,15 +313,20 @@ Unless required by applicable law or agreed to in writing, software distributed
 
 <% content_for :page_scripts do %>
   <script>
-    $('.filedata').change(function (e) {
-      e.preventDefault();
-      $(this).closest('form').submit();
+    document.querySelectorAll('.filedata').forEach(fileInput => {
+      fileInput.addEventListener('change', function(e) {
+        e.preventDefault();
+        this.closest('form').submit();
+      });
     });
 
-    $('.master-file-form').on("ajax:success", (event, data, status, xhr) => {
-      $(event.currentTarget).find('.flash-message').html("Successfully updated.")
-    }).on("ajax:error", (event, xhr, status, error) => {
-      $(event.currentTarget).find('.flash-message').html("Failed to update.")
+    document.querySelectorAll('.master-file-form').forEach(form => {
+      form.addEventListener('ajax:success', (event) => {
+        event.currentTarget.querySelector('.flash-message').innerHTML = "Successfully updated.";
+      });
+      form.addEventListener('ajax:error', (event) => {
+        event.currentTarget.querySelector('.flash-message').innerHTML = "Failed to update.";
+      });
     });
   </script>
 <% end %>

@@ -1108,6 +1108,10 @@ h5.card-title {
   .running {
     background-color: $lightblue;
   }
+  /* Break long filenames */
+  td {
+    word-break: break-all;
+  }
 }
 
 /* File upload step */
