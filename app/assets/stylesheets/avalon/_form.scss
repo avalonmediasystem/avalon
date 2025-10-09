@@ -183,3 +183,40 @@ label {
   background: $primary;
   color: $white;
 }
+
+/* Override styling for tom-select dropdown */
+.ts-wrapper.single.input-active .ts-control,
+.ts-wrapper.form-control {
+  cursor: pointer !important;
+}
+
+// Selected playlist item styling in dropdown list
+.ts-dropdown .selected-option {
+  color: $white;
+  transition: background-color 0.2s ease;
+  &:has(.active) {
+    background-color: $primary;
+  }
+  background-color: $gray;
+}
+// Green background by on hover on option
+.ts-dropdown .active {
+  background-color: $primary;
+  color: $white !important;
+}
+
+.ts-option-custom.option {
+  padding: 8px 12px !important;
+}
+
+// Styling for tags forms using tom-select
+.ts-wrapper.multi .ts-control>div.item {
+  background-image: none;
+  background-color: #e4e4e4;
+  border: 1px solid #aaa;
+  color: $dark;
+  text-shadow: none;
+  >a.remove {
+    border-left: 1px solid $dark;
+  }
+}

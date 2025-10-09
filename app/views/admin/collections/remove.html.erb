@@ -14,10 +14,30 @@ Unless required by applicable law or agreed to in writing, software distributed
 ---  END LICENSE_HEADER BLOCK  ---
 %>
 <% content_for :page_scripts do %>
-<%= javascript_include_tag 'select2.min' %>
-<%= stylesheet_link_tag 'select2.min' %>
 <script type="text/javascript">
-  $('#target_collection_id').select2();
+  new TomSelect('#target_collection_id', {
+    searchField: ['text'],
+    sortField: [
+      { field: '$order' },
+      { field: 'text', direction: 'asc' }
+    ],
+    hideSelected: false,
+    closeAfterSelect: true,
+    placeholder: 'Search collections...',
+    // Prevent clearing selection with backspace/delete
+    onDelete: function () { return false; },
+    // Hide search in control and use plugin to show search in dropdown
+    controlInput: null,
+    // Use 'Drodown Input' to add search at the top of the list
+    plugins: ['dropdown_input'],
+    render: {
+      option: function (data, escape) {
+        const isSelected = this.items.indexOf(data.value) !== -1;
+        const selectedClass = isSelected ? 'ts-option-custom selected-option' : 'ts-option-custom';
+        return `<div class="${selectedClass}" data-value="${escape(data.value)}">${escape(data.text)}</div>`;
+      },
+    },
+  });
 </script>
 <% end %>
 
@@ -51,7 +71,7 @@ Unless required by applicable law or agreed to in writing, software distributed
         into.
       </p>
       <div class="mb-3">
-        <%= select_tag :target_collection_id, options_from_collection_for_select(@candidates, "id", "name"), class: "form-control" %>
+        <%= select_tag :target_collection_id, options_from_collection_for_select(@candidates, "id", "name"), class: "form-control p-0" %>
       </div>
     <% end %>
 
