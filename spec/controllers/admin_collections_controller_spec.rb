@@ -169,7 +169,7 @@ describe Admin::CollectionsController, type: :controller do
       expect(json.count).to eq(2)
       expect(json.first['id']).to eq(collection.id)
       expect(json.first['name']).to eq(collection.name)
-      expect(json.first['unit']).to eq(collection.unit)
+      expect(json.first['unit']).to eq(collection.unit.name)
       expect(json.first['description']).to eq(collection.description)
       expect(json.first['object_count']['total']).to eq(collection.media_objects.count)
       expect(json.first['object_count']['published']).to eq(collection.media_objects.reject{|mo| !mo.published?}.count)
@@ -240,7 +240,7 @@ describe Admin::CollectionsController, type: :controller do
         get 'show', params: { id: collection.id, format:'json' }
         expect(json['id']).to eq(collection.id)
         expect(json['name']).to eq(collection.name)
-        expect(json['unit']).to eq(collection.unit)
+        expect(json['unit']).to eq(collection.unit.name)
         expect(json['description']).to eq(collection.description)
         expect(json['object_count']['total']).to eq(collection.media_objects.count)
         expect(json['object_count']['published']).to eq(collection.media_objects.reject{|mo| !mo.published?}.count)
@@ -339,7 +339,8 @@ describe Admin::CollectionsController, type: :controller do
   end
 
   describe "#create" do
-    let!(:collection) { FactoryBot.build(:collection) }
+    let(:unit) { FactoryBot.create(:unit) }
+    let(:collection) { FactoryBot.build(:collection, unit: unit) }
     let(:administrator) { FactoryBot.create(:administrator) }
 
     before(:each) do
@@ -353,11 +354,11 @@ describe Admin::CollectionsController, type: :controller do
       # allow(mock_email).to receive(:deliver_later)
       # expect(NotificationsMailer).to receive(:new_collection).and_return(mock_email)
       # FIXME: This delivers two instead of one for some reason
-      expect {post 'create', params: { format:'json', admin_collection: {name: collection.name, description: collection.description, unit: collection.unit, managers: collection.managers} }}.to have_enqueued_job(ActionMailer::MailDeliveryJob).twice
+      expect { post 'create', params: { format: 'json', admin_collection: { name: collection.name, description: collection.description, unit_id: collection.unit.id, managers: collection.managers } } }.to have_enqueued_job(ActionMailer::MailDeliveryJob).twice
       # post 'create', format:'json', admin_collection: {name: collection.name, description: collection.description, unit: collection.unit, managers: collection.managers}
     end
     it "should create a new collection" do
-      post 'create', params: { format:'json', admin_collection: {name: collection.name, description: collection.description, unit: collection.unit, contact_email: collection.contact_email, website_label: collection.website_label, website_url: collection.website_url, managers: collection.managers} }
+      post 'create', params: { format: 'json', admin_collection: { name: collection.name, description: collection.description, unit_id: collection.unit.id, contact_email: collection.contact_email, website_label: collection.website_label, website_url: collection.website_url, managers: collection.managers } }
       expect(JSON.parse(response.body)['id'].class).to eq String
       expect(JSON.parse(response.body)).not_to include('errors')
       new_collection = Admin::Collection.find(JSON.parse(response.body)['id'])
@@ -366,7 +367,7 @@ describe Admin::CollectionsController, type: :controller do
       expect(new_collection.website_url).to eq collection.website_url
     end
     it "should create a new collection with default manager list containing current API user" do
-      post 'create', params: { format:'json', admin_collection: { name: collection.name, description: collection.description, unit: collection.unit } }
+      post 'create', params: { format: 'json', admin_collection: { name: collection.name, description: collection.description, unit_id: collection.unit.id } }
       expect(JSON.parse(response.body)['id'].class).to eq String
       collection = Admin::Collection.find(JSON.parse(response.body)['id'])
       expect(collection.managers).to eq([administrator.username])
@@ -378,7 +379,6 @@ describe Admin::CollectionsController, type: :controller do
       expect(JSON.parse(response.body)["errors"].class).to eq Array
       expect(JSON.parse(response.body)["errors"].first.class).to eq String
     end
-
   end
 
   describe "#update" do

@@ -24,18 +24,16 @@ class Admin::Collection < ActiveFedora::Base
   include MigrationTarget
   include AdminCollectionBehavior
 
+  belongs_to :unit, class_name: 'Admin::Unit', predicate: Avalon::RDFVocab::Bibframe.heldBy
   has_many :media_objects, class_name: 'MediaObject', predicate: ActiveFedora::RDF::Fcrepo::RelsExt.isMemberOfCollection
 
-  validates :name, :uniqueness => { :solr_name => 'name_uniq_si'}, presence: true
-  validates :unit, presence: true, inclusion: { in: Proc.new{ Admin::Collection.units } }
-  validates :managers, length: {minimum: 1, message: "list can't be empty."}
+  validates :name, uniqueness: { solr_name: 'name_uniq_si' }, presence: true
+  validates :unit, presence: true
+  validates :managers, length: { minimum: 1, message: "list can't be empty." }
   validates :contact_email, format: { with: URI::MailTo::EMAIL_REGEXP }, allow_blank: true
   validates :website_url, format: { with: URI.regexp }, allow_blank: true
 
   property :name, predicate: ::RDF::Vocab::DC.title, multiple: false do |index|
-    index.as :stored_sortable
-  end
-  property :unit, predicate: Avalon::RDFVocab::Bibframe.heldBy, multiple: false do |index|
     index.as :stored_sortable
   end
   property :description, predicate: ::RDF::Vocab::DC.description, multiple: false do |index|
@@ -77,15 +75,11 @@ class Admin::Collection < ActiveFedora::Base
 
   has_subresource 'poster', class_name: 'IndexedFile'
 
-  around_save :reindex_members, if: Proc.new{ |c| c.name_changed? or c.unit_changed? }
-  around_save :return_checkouts, if: Proc.new{ |c| c.cdl_enabled_changed? && c.cdl_enabled == false }
+  around_save :reindex_members, if: Proc.new { |c| c.name_changed? or c.unit_changed? }
+  around_save :return_checkouts, if: Proc.new { |c| c.cdl_enabled_changed? && c.cdl_enabled == false }
   before_create :create_dropbox_directory!
 
   before_destroy :destroy_dropbox_directory!
-
-  def self.units
-    Avalon::ControlledVocabulary.find_by_name(:units, sort: true) || []
-  end
 
   def created_at
     @created_at ||= create_date
@@ -180,6 +174,7 @@ class Admin::Collection < ActiveFedora::Base
 
   def to_solr
     super.tap do |solr_doc|
+      solr_doc["unit_ssi"] = self.unit.name if self.unit.present?
       solr_doc["name_uniq_si"] = self.name.downcase.gsub(/\s+/,'') if self.name.present?
       solr_doc["has_poster_bsi"] = !(poster.content.nil? || poster.content == '')
     end
@@ -193,7 +188,7 @@ class Admin::Collection < ActiveFedora::Base
     {
       id: id,
       name: name,
-      unit: unit,
+      unit: unit.name,
       description: description,
       object_count: {
         total: total_count,

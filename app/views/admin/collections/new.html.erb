@@ -19,7 +19,7 @@ Unless required by applicable law or agreed to in writing, software distributed
 <%= bootstrap_form_for @collection, action: 'create' do |f| %>
   <%= f.text_field :name, 'data-testid': 'collection-name' %>
   <% if @collection.new_record? || can?(:update_unit, @collection)%>
-    <%= f.select(:unit, Admin::Collection.units, {}, { 'data-testid': 'collection-unit' }) %>
+    <%= f.select(:unit_id, Admin::Unit.all.map { |u| [u.name, u.id] }, {}, { 'data-testid': 'collection-unit' }) %>
   <% end %>
   <%= f.text_area :description, rows: 3, 'data-testid':'collection-description'  %>
   <%= f.text_field :contact_email, 'data-testid':'collection-contact-email' %>

@@ -119,11 +119,12 @@ describe Admin::Collection do
   describe 'validations' do
     subject {wells_collection}
     let(:wells_collection) do
-      FactoryBot.create(:collection, name: 'Herman B. Wells Collection', unit: "Default Unit",
+      FactoryBot.create(:collection, name: 'Herman B. Wells Collection', unit: unit,
                         description: "Collection about our 11th university president, 1938-1962",
                         managers: [manager.user_key], editors: [editor.user_key], depositors: [depositor.user_key],
                         contact_email: contact_email, website_url: website_url, website_label: website_label)
     end
+    let(:unit) { FactoryBot.create(:unit) }
     let(:manager) {FactoryBot.create(:manager)}
     let(:editor) {FactoryBot.create(:user)}
     let(:depositor) {FactoryBot.create(:user)}
@@ -153,8 +154,7 @@ describe Admin::Collection do
       FactoryBot.create(:collection, name: "This little piggy went to market")
       expect { FactoryBot.create(:collection, name: "This little piggy") }.not_to raise_error
     end
-    it {is_expected.to validate_presence_of(:unit)}
-    it {is_expected.to validate_inclusion_of(:unit).in_array(Admin::Collection.units)}
+    it { is_expected.to validate_presence_of(:unit) }
     it { is_expected.to allow_value('collection@example.com').for(:contact_email) }
     it { is_expected.not_to allow_value('collection@').for(:contact_email) }
     it { is_expected.to allow_value('https://collection.example.com').for(:website_url) }
@@ -163,7 +163,7 @@ describe Admin::Collection do
 
     it "should have attributes" do
       expect(subject.name).to eq("Herman B. Wells Collection")
-      expect(subject.unit).to eq("Default Unit")
+      expect(subject.unit).to eq(unit)
       expect(subject.description).to eq("Collection about our 11th university president, 1938-1962")
       expect(subject.created_at).to eq(wells_collection.create_date)
       expect(subject.managers).to eq([manager.user_key])
@@ -175,14 +175,6 @@ describe Admin::Collection do
       # expect(subject.rightsMetadata).to be_kind_of Hydra::Datastream::RightsMetadata
       # expect(subject.inheritedRights).to be_kind_of Hydra::Datastream::InheritableRightsMetadata
       # expect(subject.defaultRights).to be_kind_of Hydra::Datastream::NonIndexedRightsMetadata
-    end
-  end
-
-  describe "Admin::Collection.units" do
-    it "should return an array of units" do
-      allow(Avalon::ControlledVocabulary).to receive(:find_by_name).with(:units, sort: true).and_return ["Black Film Center/Archive", "University Archives"]
-      expect(Admin::Collection.units).to be_an_instance_of Array
-      expect(Admin::Collection.units).to eq(["Black Film Center/Archive", "University Archives"])
     end
   end
 
@@ -509,7 +501,8 @@ describe Admin::Collection do
 
   describe "callbacks" do
     describe "after_save reindex if name or unit has changed" do
-      let!(:collection) {FactoryBot.create(:collection)}
+      let!(:collection) { FactoryBot.create(:collection) }
+      let(:new_unit) { FactoryBot.create(:unit) }
       it 'should call reindex_members if name has changed' do
         collection.name = "New name"
         expect(collection).to be_name_changed
@@ -518,8 +511,7 @@ describe Admin::Collection do
       end
 
       it 'should call reindex_members if unit has changed' do
-        allow(Admin::Collection).to receive(:units).and_return ["Default Unit", "Some Other Unit"]
-        collection.unit = Admin::Collection.units.last
+        collection.unit = new_unit
         expect(collection).to be_unit_changed
         expect(collection).to receive("reindex_members").and_return(nil)
         collection.save
