@@ -15,7 +15,7 @@
 FactoryBot.define do
   factory :collection, class: Admin::Collection do
     sequence(:name) { |n| "Collection #{n}" }
-    association :unit
+    unit { FactoryBot.create(:unit) }
     description { Faker::Lorem.sentence }
     contact_email { Faker::Internet.email }
     website_label { Faker::Lorem.words.join(' ') }

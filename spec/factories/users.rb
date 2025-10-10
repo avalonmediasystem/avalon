@@ -26,6 +26,14 @@ FactoryBot.define do
         end
       end
     end
+    factory :unit_administrator, aliases: [:unit_admin] do
+      after(:create) do |user|
+        begin
+          Avalon::RoleControls.add_user_role(user.user_key, 'unit_administrator')
+        rescue
+        end
+      end
+    end
     factory :manager do
       after(:create) do |user|
         begin
