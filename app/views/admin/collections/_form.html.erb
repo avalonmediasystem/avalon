@@ -28,7 +28,7 @@ Unless required by applicable law or agreed to in writing, software distributed
       <div class="modal-body">
         <%= f.text_field :name, 'data-testid': 'collection-update-name' %>
         <% if @collection.new_record? || can?(:update_unit, @collection)%>
-          <%= f.select(:unit, Admin::Collection.units, {}, {'data-testid': 'collection-update-unit'} ) %>
+          <%= f.select(:unit_id, Admin::Unit.all.map { |u| [u.name, u.id] }, {}, {'data-testid': 'collection-update-unit'} ) %>
         <% end %>
         <%= f.text_area :description, rows: 3 ,'data-testid':'collection-update-description' %>
         <%= f.text_field :contact_email, 'data-testid': 'collection-update-contact-email' %>
