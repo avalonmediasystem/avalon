@@ -271,6 +271,11 @@ en:
     tags:
       label: "Tags"
 
+  units:
+    title: 'Units - %{application_name}'
+    show:
+      title: '%{unit_name} - Units - %{application_name}'
+
   activerecord:
     attributes:
       playlist:
