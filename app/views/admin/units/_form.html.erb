@@ -1,0 +1,86 @@
+<%#
+Copyright 2011-2025, The Trustees of Indiana University and Northwestern
+  University.  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+
+You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+  under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+  CONDITIONS OF ANY KIND, either express or implied. See the License for the
+  specific language governing permissions and limitations under the License.
+---  END LICENSE_HEADER BLOCK  ---
+%>
+
+<div id="new_unit" class="modal fade" role="dialog" data-bs-backdrop="true" data-submit_url="<%= 'create' %>">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class='modal-title'><%= modal_title %></h4>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"><span class="visually-hidden">Close</span></button>
+      </div>
+      <%= bootstrap_form_for @unit, remote: true, html: { modal: true }, format: 'json' do |f| %>
+      <div class="modal-body">
+        <%= f.text_field :name, 'data-testid': 'unit-update-name' %>
+        <%= f.text_area :description, rows: 3 ,'data-testid':'unit-update-description' %>
+        <%= f.text_field :contact_email, 'data-testid': 'unit-update-contact-email' %>
+        <%= f.text_field :website_url, 'data-testid':'unit-update-website-url' %>
+        <%= f.text_field :website_label, 'data-testid':'unit-update-website-label' %>
+      </div>
+      <div class="modal-footer">
+        <a href="#" data-bs-dismiss="modal" aria-hidden="true" class="btn btn-outline">Cancel</a>
+        <%= f.submit class: 'btn btn-primary btn-stateful-loading', data: { loading_text: 'Saving...' } , 'data-testid': 'unit-update-unit-btn' %>
+      </div>
+      <% end %>
+    </div>
+  </div>
+</div>
+
+
+<% content_for :page_scripts do %>
+<script>
+  function inject_alert(message) {
+    let alertElement = $('#alerts');
+    // Remove alert with previous errors
+    if(alertElement) {
+      alertElement.remove();
+    }
+    $('.page-title').closest('.page-title-wrapper').before(
+      '<div class="container-fluid" id="alerts"><div class="alert alert-danger"><button type="button" class="btn-close" data-bs-dismiss="alert"></button>' +
+      message + '</div></div>');
+  }
+
+  function resetButton(btnName) {
+    let $btn = $(btnName)
+    const disableWith = $btn[0].dataset['disableWith'];
+    $btn.val(disableWith);
+  }
+
+  $('form[data-remote][modal]').on('ajax:success', function(event) {
+    const [data, status, xhr]= event.detail;
+    resetButton('.btn-stateful-loading');
+    window.location = '/admin/units/' + encodeURIComponent(data['id']);
+  }).on('ajax:error',function(event) {
+    const [data, status, xhr]= event.detail;
+    const responseJSON = $.parseJSON(xhr.response);
+    if (responseJSON.hasOwnProperty('errors')) {
+      $(this).closest('.modal').modal('hide')
+      if(responseJSON['errors'].length > 2) {
+        // When there are multiple errors
+        let markup = responseJSON['errors'][0];
+        responseJSON['errors'].shift();
+        responseJSON['errors'].forEach(msg => {
+          markup += "<li>" + msg + "</li>"
+        })
+        inject_alert(markup);
+      } else {
+        // When there is one error
+        inject_alert(responseJSON['errors'].join(' '));
+      }
+    }
+    resetButton('.btn-stateful-loading');
+  });
+</script>
+<% end %>
