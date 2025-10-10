@@ -14,16 +14,16 @@
 
 FactoryBot.define do
   factory :collection, class: Admin::Collection do
-    sequence(:name) {|n| "Collection #{n}" }
-    unit {"Default Unit"}
-    description {Faker::Lorem.sentence}
+    sequence(:name) { |n| "Collection #{n}" }
+    association :unit
+    description { Faker::Lorem.sentence }
     contact_email { Faker::Internet.email }
     website_label { Faker::Lorem.words.join(' ') }
     website_url { Faker::Internet.url }
-    managers {[FactoryBot.create(:manager).user_key]}
-    editors {[FactoryBot.create(:user).user_key]}
-    depositors {[FactoryBot.create(:user).user_key]}
-    media_objects {[]}
+    managers { [FactoryBot.create(:manager).user_key] }
+    editors { [FactoryBot.create(:user).user_key] }
+    depositors { [FactoryBot.create(:user).user_key] }
+    media_objects { [] }
 
     transient { items { 0 } }
     after(:create) do |c, env|

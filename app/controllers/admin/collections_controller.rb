@@ -380,7 +380,7 @@ class Admin::CollectionsController < ApplicationController
   end
 
   def collection_params
-    params.permit(:admin_collection => [:name, :description, :unit, :contact_email, :website_label, :website_url, :managers => []])[:admin_collection]
+    params.permit(:admin_collection => [:name, :description, :unit_id, :contact_email, :website_label, :website_url, :managers => []])[:admin_collection]
   end
 
   def check_image_compliance(poster_path)

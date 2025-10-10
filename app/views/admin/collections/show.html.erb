@@ -42,7 +42,7 @@ Unless required by applicable law or agreed to in writing, software distributed
   <div class="row">
     <div class="col-md-9">
       <p><strong>Unit:</strong></p>
-      <p><%= @collection.unit %></p>
+      <p><%= @collection.unit.name %></p>
       <p><strong>Description:</strong></p>
       <p id="collectionDescription", class="collection-description", data-testid="collection-description"><%= @collection.description %></p>
       <% if @collection.contact_email.present? %>
