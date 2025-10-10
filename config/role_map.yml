@@ -5,6 +5,8 @@ development:
     - archivist1@example.com
   group_manager:
     - archivist1@example.com
+  unit_administrator:
+    - archivist1@example.com
 
 test:
   administrator:
@@ -16,6 +18,8 @@ test:
   group_manager:
     - archivist1@example.com
     -
+  unit_administrator:
+    - archivist1@example.com
 
 production:
   # Add roles for users here.
@@ -24,4 +28,6 @@ production:
   manager:
     - <%= Settings.initial_user %>
   group_manager:
+    - <%= Settings.initial_user %>
+  unit_administrator:
     - <%= Settings.initial_user %>

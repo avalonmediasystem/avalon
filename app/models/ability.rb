@@ -109,7 +109,7 @@ class Ability
         end
 
         can [:read, :items], [Admin::Unit, SpeedyAF::Proxy::Admin::Unit] do |unit|
-          is_member_of?(unit)
+          is_admin_of?(unit)
         end
 
         unless has_administrative_access?
@@ -155,31 +155,31 @@ class Ability
         end
 
         can :update, [Admin::Unit, SpeedyAF::Proxy::Admin::Unit] do |unit|
-          is_editor_of?(unit)
+          is_editor_of_unit?(unit)
         end
 
         can :update_access_control, [Admin::Unit, SpeedyAF::Proxy::Admin::Unit] do |unit|
-          @user.in?(unit.unit_administrators)
+          @user.in?(unit.unit_admins)
         end
 
         can :update_unit_admins, [Admin::Unit, SpeedyAF::Proxy::Admin::Unit] do |unit|
-          @user.in?(unit.unit_administrators)
+          @user.in?(unit.unit_admins)
         end
 
         can :update_managers, [Admin::Unit, SpeedyAF::Proxy::Admin::Unit] do |unit|
-          @user.in?(unit.unit_administrators)
+          @user.in?(unit.unit_admins)
         end
 
         can :update_editors, [Admin::Unit, SpeedyAF::Proxy::Admin::Unit] do |unit|
-          @user.in?(unit.unit_administrators)
+          @user.in?(unit.unit_admins)
         end
 
         can :update_depositors, [Admin::Unit, SpeedyAF::Proxy::Admin::Unit] do |unit|
-          is_editor_of?(unit)
+          is_editor_of_unit?(unit)
         end
 
         can :destroy, ::Admin::UnitPresenter do |unit|
-          @user.in?(unit.unit_administrators)
+          @user.in?(unit.unit_admins)
         end
 
         can :inspect, [MediaObject, SpeedyAF::Proxy::MediaObject] do |media_object|
@@ -224,7 +224,7 @@ class Ability
       end
 
       cannot :destroy, [Admin::Unit, SpeedyAF::Proxy::Admin::Unit] do |unit|
-        (not (full_login? || is_api_request? || !@user.in?(unit.unit_administrators)))
+        (not (full_login? || is_api_request?)) || !@user.in?(unit.unit_admins)
       end
 
       can :intercom_push, [MediaObject, SpeedyAF::Proxy::MediaObject] do |media_object|
@@ -335,6 +335,11 @@ class Ability
     @user_groups.include?("unit_administrator")
   end
 
+  def is_admin_of?(unit)
+    is_administrator? ||
+      @user.in?(unit.unit_admins)
+  end
+
   def is_member_of?(collection)
      is_administrator? ||
        @user.in?(collection.managers, collection.editors, collection.depositors)
@@ -345,8 +350,17 @@ class Ability
        @user.in?(collection.editors_and_managers)
   end
 
+  def is_editor_of_unit?(unit)
+    is_administrator? ||
+      @user.in?(unit.editors_and_unit_admins)
+  end
+
   def is_member_of_any_collection?
     @user.id.present? && Admin::Collection.exists?("inheritable_edit_access_person_ssim" => @user.user_key)
+  end
+
+  def is_member_of_any_unit?
+    @user.id.present? && Admin::Unit.exists?("inheritable_edit_access_person_ssim" => @user.user_key)
   end
 
   def full_login?
@@ -362,6 +376,6 @@ class Ability
   end
 
   def has_administrative_access?
-    is_administrator? || is_manager? || is_member_of_any_collection?
+    is_administrator? || is_unit_admin? || is_manager? || is_member_of_any_unit? || is_member_of_any_collection?
   end
 end

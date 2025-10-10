@@ -22,7 +22,7 @@ class Admin::Unit < ActiveFedora::Base
   include MigrationTarget
   include AdminUnitBehavior
 
-  has_many :collections, class_name: 'Admin::Collection', predicate: ActiveFedora::RDF::Fcrepo::RelsExt.isMemberOfCollection
+  has_many :collections, class_name: 'Admin::Collection', predicate: Avalon::RDFVocab::Bibframe.heldBy
 
   validates :name, uniqueness: { solr_name: 'name_uniq_si' }, presence: true
   validates :unit_administrators, length: { minimum: 1, message: "list can't be empty." }
@@ -56,6 +56,9 @@ class Admin::Unit < ActiveFedora::Base
   property :identifier, predicate: ::RDF::Vocab::Identifiers.local, multiple: true do |index|
     index.as :symbol
   end
+  property :collection_managers, predicate: Avalon::RDFVocab::Unit.collection_managers, multiple: true do |index|
+    index.as :symbol
+  end
   property :unit_administrators, predicate: Avalon::RDFVocab::Unit.unit_administrators, multiple: true do |index|
     index.as :symbol
   end
@@ -68,24 +71,46 @@ class Admin::Unit < ActiveFedora::Base
     @created_at ||= create_date
   end
 
-  def managers=(users)
-    old_managers = managers
-    users.each { |u| add_manager u }
-    (old_managers - users).each { |u| remove_manager u }
+  def unit_admins=(users)
+    old_admins = unit_admins
+    users.each { |u| add_unit_admin u }
+    (old_admins - users).each { |u| remove_unit_admin u }
   end
 
-  def add_manager(user)
-    raise ArgumentError, "User #{user} does not belong to the manager group." unless (Avalon::RoleControls.users("manager") + (Avalon::RoleControls.users("administrator") || [])).include?(user)
+  def add_unit_admin(user)
+    raise ArgumentError, "User #{user} does not belong to the unit administrator group." unless (Avalon::RoleControls.users("unit_administrator") + (Avalon::RoleControls.users("administrator") || [])).include?(user)
     self.unit_administrators += [user]
     self.edit_users += [user]
     self.inherited_edit_users += [user]
   end
 
-  def remove_manager(user)
-    return unless managers.include? user
-    raise ArgumentError, "At least one unit administrator is required." if self.managers.size == 1
+  def remove_unit_admin(user)
+    return unless unit_admins.include? user
+    raise ArgumentError, "At least one unit administrator is required." if self.unit_administrators.size == 1
 
     self.unit_administrators = self.unit_administrators.to_a - [user]
+    self.edit_users -= [user]
+    self.inherited_edit_users -= [user]
+  end
+
+  def managers= users
+    old_managers = managers
+    users.each { |u| add_manager u }
+    (old_managers - users).each { |u| remove_manager u }
+  end
+
+  def add_manager user
+    raise ArgumentError, "User #{user} does not belong to the manager group." unless (Avalon::RoleControls.users("manager") + (Avalon::RoleControls.users("administrator") || []) ).include?(user)
+    self.collection_managers += [user]
+    self.edit_users += [user]
+    self.inherited_edit_users += [user]
+  end
+
+  def remove_manager user
+    return unless managers.include? user
+    raise ArgumentError, "At least one manager is required." if self.managers.size == 1
+
+    self.collection_managers = self.collection_managers.to_a - [user]
     self.edit_users -= [user]
     self.inherited_edit_users -= [user]
   end

@@ -18,8 +18,12 @@ module AdminUnitBehavior
     edit_users & unit_administrators.to_a
   end
 
+  def managers
+    edit_users & collection_managers.to_a
+  end
+
   def editors
-    edit_users - unit_admins
+    edit_users - unit_admins - managers
   end
 
   def editors_and_unit_admins
