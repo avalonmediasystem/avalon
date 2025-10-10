@@ -77,6 +77,10 @@ class Ability
       if is_manager?
         can :create, Admin::Collection
       end
+
+      if is_unit_admin?
+        can :create, Admin::Unit
+      end
     end
   end
 
@@ -97,13 +101,20 @@ class Ability
 
       cannot :read, [Admin::Collection, SpeedyAF::Proxy::Admin::Collection] unless (full_login? || is_api_request?)
 
+      cannot :read, [Admin::Unit, SpeedyAF::Proxy::Admin::Unit] unless (full_login? || is_api_request?)
+
       if full_login? || is_api_request?
         can [:read, :items], [Admin::Collection, SpeedyAF::Proxy::Admin::Collection] do |collection|
           is_member_of?(collection)
         end
 
+        can [:read, :items], [Admin::Unit, SpeedyAF::Proxy::Admin::Unit] do |unit|
+          is_member_of?(unit)
+        end
+
         unless has_administrative_access?
           cannot :read, [Admin::Collection, SpeedyAF::Proxy::Admin::Collection]
+          cannot :read, [Admin::Unit, SpeedyAF::Proxy::Admin::Unit]
         end
 
         can :update_access_control, [MediaObject, SpeedyAF::Proxy::MediaObject] do |media_object|
@@ -141,6 +152,34 @@ class Ability
 
         can :destroy, ::Admin::CollectionPresenter do |collection|
           @user.in?(collection.managers)
+        end
+
+        can :update, [Admin::Unit, SpeedyAF::Proxy::Admin::Unit] do |unit|
+          is_editor_of?(unit)
+        end
+
+        can :update_access_control, [Admin::Unit, SpeedyAF::Proxy::Admin::Unit] do |unit|
+          @user.in?(unit.unit_administrators)
+        end
+
+        can :update_unit_admins, [Admin::Unit, SpeedyAF::Proxy::Admin::Unit] do |unit|
+          @user.in?(unit.unit_administrators)
+        end
+
+        can :update_managers, [Admin::Unit, SpeedyAF::Proxy::Admin::Unit] do |unit|
+          @user.in?(unit.unit_administrators)
+        end
+
+        can :update_editors, [Admin::Unit, SpeedyAF::Proxy::Admin::Unit] do |unit|
+          @user.in?(unit.unit_administrators)
+        end
+
+        can :update_depositors, [Admin::Unit, SpeedyAF::Proxy::Admin::Unit] do |unit|
+          is_editor_of?(unit)
+        end
+
+        can :destroy, ::Admin::UnitPresenter do |unit|
+          @user.in?(unit.unit_administrators)
         end
 
         can :inspect, [MediaObject, SpeedyAF::Proxy::MediaObject] do |media_object|
@@ -182,6 +221,10 @@ class Ability
 
       cannot :destroy, [Admin::Collection, SpeedyAF::Proxy::Admin::Collection] do |collection, other_user_collections=[]|
         (not (full_login? || is_api_request?)) || !@user.in?(collection.managers)
+      end
+
+      cannot :destroy, [Admin::Unit, SpeedyAF::Proxy::Admin::Unit] do |unit|
+        (not (full_login? || is_api_request? || !@user.in?(unit.unit_administrators)))
       end
 
       can :intercom_push, [MediaObject, SpeedyAF::Proxy::MediaObject] do |media_object|
@@ -276,6 +319,7 @@ class Ability
       cannot [:create, :edit, :update, :destroy], [Derivative, SpeedyAF::Proxy::Derivative]
       cannot [:create, :edit, :update, :destroy, :update_unit, :update_access_control, :update_managers, :update_editors, :update_depositors], [Admin::Collection, SpeedyAF::Proxy::Admin::Collection, Admin::CollectionPresenter]
       cannot [:create, :edit, :update, :destroy], SpeedyAF::Base
+      cannot [:create, :edit, :update, :destroy, :update_access_control, :update_unit_admins, :update_managers, :update_editors, :update_depositors], [Admin::Unit, SpeedyAF::Proxy::Admin::Unit, Admin::UnitPresenter]
     end
   end
 
@@ -285,6 +329,10 @@ class Ability
 
   def is_manager?
     @user_groups.include?("manager")
+  end
+
+  def is_unit_admin?
+    @user_groups.include?("unit_administrator")
   end
 
   def is_member_of?(collection)
