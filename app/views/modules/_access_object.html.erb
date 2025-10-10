@@ -13,7 +13,7 @@ Unless required by applicable law or agreed to in writing, software distributed
   specific language governing permissions and limitations under the License.
 ---  END LICENSE_HEADER BLOCK  ---
 %>
-<% is_leasable = !(object.class==Admin::Collection) %>
+<% is_leasable = !(object.class==Admin::Collection) && !(object.class == Admin::Unit) %>
 <div class="access-block col-lg-10" id="<%= access_object %>_management">
   <%= bootstrap_form_for object do |form| %>
   <input id="step" name="step" type="hidden" value="access-control" />
