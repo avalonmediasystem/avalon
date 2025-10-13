@@ -14,13 +14,7 @@ Unless required by applicable law or agreed to in writing, software distributed
 ---  END LICENSE_HEADER BLOCK  ---
 %>
 
-<div data-blacklight-modal="container">
-  <script type="text/javascript">
-    $('#target_collection_id').select2({
-      dropdownParent: $('#blacklight-modal')
-    });
-  </script>
-
+<div data-blacklight-modal="container">7
   <% @candidates = @documents %>
   <%= render partial: 'modal_header', locals: { label: 'merge' } %>
 
@@ -37,8 +31,8 @@ Unless required by applicable law or agreed to in writing, software distributed
               <p><%= t('blacklight.merge.confirm') %></p>
               <% @documents.each do |d| %>
                 <div class="form-check">
-                  <%= radio_button_tag :media_object, d.id, style: 'width:100%;' %>
-                  <%= label_tag "media_object_#{d.id}", "#{d["title_tesi"] || "No title"} - #{d.id}" %>
+                  <%= radio_button_tag :media_object, d.id, class: 'ms-3' %>
+                  <%= label_tag "media_object_#{d.id}", "#{d["title_tesi"] || "No title"} - #{d.id}" , class: 'ms-3' %>
                   <% t('blacklight.merge.insufficient_rights') if cannot? :destroy, SpeedyAF::Proxy::MediaObject.find(d.id) %>
                 </div>
               <% end %>

@@ -15,11 +15,6 @@ Unless required by applicable law or agreed to in writing, software distributed
 %>
 
 <div data-blacklight-modal="container">
-  <script type="text/javascript">
-    $('#target_collection_id').select2({
-      dropdownParent: $('#blacklight-modal')
-    });
-  </script>
   <% @candidates = get_user_collections %>
   <%= render partial: 'modal_header', locals: { label: 'move' } %>
 
