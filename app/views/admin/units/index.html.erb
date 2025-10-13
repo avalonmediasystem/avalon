@@ -43,7 +43,7 @@ Unless required by applicable law or agreed to in writing, software distributed
         <td>
           <%= link_to(pluralize(unit.collection_count, 'collection'), collections_path(filter: unit.name)) %>
         </td>
-        <td> <%= pluralize(unit.manager_count, 'manager') %> </td>
+        <td> <%= pluralize(unit.admin_count, 'unit administrator') %> </td>
         <td> <%= unit.description&.truncate(100, separator: ' ') %> </td>
         <td class="text-end">
           <% if can?(:destroy, unit) %>
