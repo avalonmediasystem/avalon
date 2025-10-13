@@ -53,7 +53,7 @@ class UnitsController < CatalogController
 
     file = @unit.poster
     if file.blank?
-      render plain: 'Collection Poster Not Found', status: :not_found
+      render plain: 'Unit Poster Not Found', status: :not_found
     else
       render plain: file.content, content_type: file.mime_type
     end

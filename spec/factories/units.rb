@@ -20,7 +20,7 @@ FactoryBot.define do
     website_label { Faker::Lorem.words.join(' ') }
     website_url { Faker::Internet.url }
     unit_admins { [FactoryBot.create(:unit_admin).user_key] }
-    # managers { [FactoryBot.create(:manager).user_key] }
+    managers { [FactoryBot.create(:manager).user_key] }
     editors { [FactoryBot.create(:user).user_key] }
     depositors { [FactoryBot.create(:user).user_key] }
     collections { [] }

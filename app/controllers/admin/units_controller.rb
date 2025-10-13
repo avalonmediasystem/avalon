@@ -95,7 +95,7 @@ class Admin::UnitsController < ApplicationController
 
   # POST /units
   def create
-    @unit = Admin::Unit.create(unit_params.merge(managers: [current_user.user_key]))
+    @unit = Admin::Unit.create(unit_params.merge(unit_admins: [current_user.user_key]))
     if @unit.persisted?
       User.where(Devise.authentication_keys.first => [Avalon::RoleControls.users('administrator')].flatten).each do |admin_user|
         NotificationsMailer.new_unit(
@@ -110,7 +110,7 @@ class Admin::UnitsController < ApplicationController
           redirect_to @unit, notice: 'unit was successfully created.'
         end
         format.json do
-          render json: {id: @unit.id}, status: 200
+          render json: { id: @unit.id }, status: 200
         end
       end
     else
@@ -121,7 +121,7 @@ class Admin::UnitsController < ApplicationController
           render action: 'new'
         end
         format.json do
-          render json: { errors: ['Failed to create unit:']+@unit.errors.full_messages}, status: 422
+          render json: { errors: ['Failed to create unit:'] + @unit.errors.full_messages }, status: 422
         end
       end
     end
@@ -139,7 +139,7 @@ class Admin::UnitsController < ApplicationController
         end
       end
     end
-    ["manager", "editor"].each do |title|
+    ["unit_admin", "manager", "editor", "depositor"].each do |title|
       if params["submit_add_#{title}"].present?
         if params["add_#{title}"].present? && can?("update_#{title.pluralize}".to_sym, @unit)
           begin
@@ -280,12 +280,6 @@ class Admin::UnitsController < ApplicationController
     end
   end
 
-  rescue_from Avalon::VocabularyNotFound do |exception|
-    support_email = Settings.email.support
-    notice_text = I18n.t('errors.controlled_vocabulary_error') % [exception.message, support_email, support_email]
-    redirect_to root_path, flash: { error: notice_text.html_safe }
-  end
-
   private
 
   def update_access(unit, params)
@@ -294,10 +288,10 @@ class Admin::UnitsController < ApplicationController
       if params["submit_add_#{title}"].present?
         if params["add_#{title}"].present?
           val = params["add_#{title}"].strip
-          if title=='user'
+          if title == 'user'
             unit.default_read_users += [val]
-          elsif title=='ipaddress'
-            if ( IPAddr.new(val) rescue false )
+          elsif title == 'ipaddress'
+            if (IPAddr.new(val) rescue false)
               unit.default_read_groups += [val]
             else
               flash[:notice] = "IP Address #{val} is invalid. Valid examples: 124.124.10.10, 124.124.0.0/16, 124.124.0.0/255.255.0.0"
@@ -330,11 +324,10 @@ class Admin::UnitsController < ApplicationController
 
   def update_access_settings(unit, params)
     if params[:save_field] == "visibility"
-      unit.default_visibility = params[:visibility] unless params[:visibility].blank?
+      unit.default_visibility = params[:visibility] if params[:visibility].present?
     end
-    if params[:save_field] == "discovery"
-      unit.default_hidden = params[:hidden] == "1"
-    end
+    return unless params[:save_field] == "discovery"
+    unit.default_hidden = params[:hidden] == "1"
   end
 
   def apply_access(unit, params)
@@ -342,7 +335,7 @@ class Admin::UnitsController < ApplicationController
   end
 
   def unit_params
-    params.permit(:admin_unit => [:name, :description, :contact_email, :website_label, :website_url, :managers => []])[:admin_unit]
+    params.permit(:admin_unit => [:name, :description, :contact_email, :website_label, :website_url, :unit_admins => []])[:admin_unit]
   end
 
   def check_image_compliance(poster_path)
