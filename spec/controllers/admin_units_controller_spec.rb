@@ -169,9 +169,9 @@ describe Admin::UnitsController, type: :controller do
       expect(json.count).to eq(2)
       expect(json.first['id']).to eq(unit.id)
       expect(json.first['name']).to eq(unit.name)
-      expect(json.first['unit']).to eq(unit.unit)
       expect(json.first['description']).to eq(unit.description)
       expect(json.first['object_count']['total']).to eq(unit.collections.count)
+      expect(json.first['roles']['unit_admins']).to eq(unit.unit_admins)
       expect(json.first['roles']['managers']).to eq(unit.managers)
       expect(json.first['roles']['editors']).to eq(unit.editors)
       expect(json.first['roles']['depositors']).to eq(unit.depositors)
@@ -183,16 +183,6 @@ describe Admin::UnitsController, type: :controller do
     it "should return no units for bad user" do
       get 'index', params: { user: 'foobar', format: 'json' }
       expect(json.count).to eq(0)
-    end
-
-    context 'information is missing from the controlled vocabulary file' do
-      it 'should redirect to the homepage' do
-        allow(Avalon::ControlledVocabulary).to receive(:vocabulary).and_return({})
-        login_as(:administrator)
-        get 'index'
-        expect(response).to redirect_to(root_path)
-        expect(flash[:error]).to be_present
-      end
     end
   end
 
@@ -275,37 +265,16 @@ describe Admin::UnitsController, type: :controller do
       ApiToken.create token: 'secret_token', username: administrator.username, email: administrator.email
       request.headers['Avalon-Api-Key'] = 'secret_token'
     end
-    it "should return json for specific unit's media objects" do
+    it "should return json for specific unit's collections" do
       get 'items', params: { id: unit.id, format: 'json' }
       expect(JSON.parse(response.body)).to include(unit.collections[0].id, unit.collections[1].id)
       # TODO: add check that mediaobject is serialized to json properly
     end
 
-    context "with structure" do
-      let!(:mf_1) { FactoryBot.create(:master_file, :with_structure, media_object: unit.collections[0]) }
-      let!(:mf_2) { FactoryBot.create(:master_file, :with_structure, media_object: unit.collections[1]) }
-
-      it "should return structure URI by default" do
-        get 'items', params: { id: unit.id, format: 'json' }
-        expect(JSON.parse(response.body)[unit.collections[0].id]["files"][0]["structure"]).to eq structure_master_file_url(mf_1.id)
-        expect(JSON.parse(response.body)[unit.collections[1].id]["files"][0]["structure"]).to eq structure_master_file_url(mf_2.id)
-      end
-      it "should return structure if requested" do
-        get 'items', params: { id: unit.id, format: 'json', include_structure: true }
-        expect(JSON.parse(response.body)[unit.collections[0].id]["files"][0]["structure"]).to eq mf_1.structuralMetadata.content
-        expect(JSON.parse(response.body)[unit.collections[1].id]["files"][0]["structure"]).to eq mf_2.structuralMetadata.content
-      end
-      it "should not return structure if requested" do
-        get 'items', params: { id: unit.id, format: 'json', include_structure: false }
-        expect(JSON.parse(response.body)[unit.collections[0].id]["files"][0]["structure"]).not_to eq mf_1.structuralMetadata.content
-        expect(JSON.parse(response.body)[unit.collections[1].id]["files"][0]["structure"]).not_to eq mf_2.structuralMetadata.content
-      end
-    end
-
-    context 'user is a unit manager' do
-      let(:manager) { FactoryBot.create(:manager) }
+    context 'user is a unit admin' do
+      let(:unit_admin) { FactoryBot.create(:unit_admin) }
       before(:each) do
-        ApiToken.create token: 'manager_token', username: manager.username, email: manager.email
+        ApiToken.create token: 'manager_token', username: unit_admin.username, email: unit_admin.email
         request.headers['Avalon-Api-Key'] = 'manager_token'
       end
       context 'user does not manage this unit' do
@@ -319,7 +288,7 @@ describe Admin::UnitsController, type: :controller do
         end
       end
       context 'user manages this unit' do
-        let!(:unit) { FactoryBot.create(:unit, items: 2, managers: [manager.username]) }
+        let!(:unit) { FactoryBot.create(:unit, items: 2, unit_admins: [unit_admin.username]) }
         it "should not return a 401 response code" do
           get 'items', params: { id: unit.id, format: 'json' }
           expect(response.status).not_to eq(401)
@@ -347,11 +316,11 @@ describe Admin::UnitsController, type: :controller do
       # allow(mock_email).to receive(:deliver_later)
       # expect(NotificationsMailer).to receive(:new_unit).and_return(mock_email)
       # FIXME: This delivers two instead of one for some reason
-      expect { post 'create', params: { format: 'json', admin_unit: { name: unit.name, description: unit.description, unit: unit.unit, managers: unit.managers } } }.to have_enqueued_job(ActionMailer::MailDeliveryJob).twice
+      expect { post 'create', params: { format: 'json', admin_unit: { name: unit.name, description: unit.description, unit_admins: unit.unit_admins } } }.to have_enqueued_job(ActionMailer::MailDeliveryJob).twice
       # post 'create', format:'json', admin_unit: {name: unit.name, description: unit.description, unit: unit.unit, managers: unit.managers}
     end
     it "should create a new unit" do
-      post 'create', params: { format: 'json', admin_unit: { name: unit.name, description: unit.description, unit: unit.unit, contact_email: unit.contact_email, website_label: unit.website_label, website_url: unit.website_url, managers: unit.managers } }
+      post 'create', params: { format: 'json', admin_unit: { name: unit.name, description: unit.description, contact_email: unit.contact_email, website_label: unit.website_label, website_url: unit.website_url, unit_admins: unit.unit_admins } }
       expect(JSON.parse(response.body)['id'].class).to eq String
       expect(JSON.parse(response.body)).not_to include('errors')
       new_unit = Admin::Unit.find(JSON.parse(response.body)['id'])
@@ -360,13 +329,13 @@ describe Admin::UnitsController, type: :controller do
       expect(new_unit.website_url).to eq unit.website_url
     end
     it "should create a new unit with default manager list containing current API user" do
-      post 'create', params: { format: 'json', admin_unit: { name: unit.name, description: unit.description, unit: unit.unit } }
+      post 'create', params: { format: 'json', admin_unit: { name: unit.name, description: unit.description } }
       expect(JSON.parse(response.body)['id'].class).to eq String
       unit = Admin::Unit.find(JSON.parse(response.body)['id'])
-      expect(unit.managers).to eq([administrator.username])
+      expect(unit.unit_admins).to eq([administrator.username])
     end
     it "should return 422 if unit creation failed" do
-      post 'create', params: { format: 'json', admin_unit: { name: unit.name, description: unit.description } }
+      post 'create', params: { format: 'json', admin_unit: { description: unit.description } }
       expect(response.status).to eq(422)
       expect(JSON.parse(response.body)).to include('errors')
       expect(JSON.parse(response.body)["errors"].class).to eq Array
@@ -382,7 +351,7 @@ describe Admin::UnitsController, type: :controller do
       # expect(mock_delay).to receive(:update_unit)
       @unit = FactoryBot.create(:unit)
       # put 'update', id: @unit.id, admin_unit: {name: "#{@unit.name}-new", description: @unit.description, unit: @unit.unit}
-      expect { put 'update', params: { id: @unit.id, admin_unit: { name: "#{@unit.name}-new", description: @unit.description, unit: @unit.unit } } }.to have_enqueued_job(ActionMailer::MailDeliveryJob).once
+      expect { put 'update', params: { id: @unit.id, admin_unit: { name: "#{@unit.name}-new", description: @unit.description } } }.to have_enqueued_job(ActionMailer::MailDeliveryJob).once
     end
 
     context "update REST API" do
@@ -422,7 +391,7 @@ describe Admin::UnitsController, type: :controller do
     let(:unit) { FactoryBot.create(:unit) }
 
     before do
-      login_user(unit.managers.first)
+      login_user(unit.unit_admins.first)
     end
 
     context "should not allow empty" do
@@ -431,7 +400,7 @@ describe Admin::UnitsController, type: :controller do
       end
 
       it "class" do
-        expect { put 'update', params: { id: unit.id, submit_add_class: "Add", add_class: "", add_class_display: "" } }.not_to change { it.reload.default_read_groups.size }
+        expect { put 'update', params: { id: unit.id, submit_add_class: "Add", add_class: "", add_class_display: "" } }.not_to change { unit.reload.default_read_groups.size }
       end
     end
 
@@ -491,27 +460,28 @@ describe Admin::UnitsController, type: :controller do
     end
   end
 
-  describe "#apply_access" do
-    let(:unit) { FactoryBot.create(:unit) }
+  # TODO: Implement bulk job
+  # describe "#apply_access" do
+  #   let(:unit) { FactoryBot.create(:unit) }
 
-    before do
-      login_user(unit.managers.first)
-    end
+  #   before do
+  #     login_user(unit.unit_admins.first)
+  #   end
 
-    context "replacing existing Special Access" do
-      let(:overwrite) { true }
-      it "enqueues a BulkActionJobs::ApplyunitAccessControl job" do
-        expect { put 'update', params: { id: unit.id, apply_to_existing: "Apply to All Existing Items", overwrite: overwrite } }.to have_enqueued_job(BulkActionJobs::ApplyUnitAccessControl).with(unit.id, overwrite, nil).once
-      end
-    end
+  #   context "replacing existing Special Access" do
+  #     let(:overwrite) { true }
+  #     it "enqueues a BulkActionJobs::ApplyUnitAccessControl job" do
+  #       expect { put 'update', params: { id: unit.id, apply_to_existing: "Apply to All Existing Items", overwrite: overwrite } }.to have_enqueued_job(BulkActionJobs::ApplyUnitAccessControl).with(unit.id, overwrite, nil).once
+  #     end
+  #   end
 
-    context "adding to existing Special Access" do
-      let(:overwrite) { false }
-      it "enqueues a BulkActionJobs::ApplyunitAccessControl job" do
-        expect { put 'update', params: { id: unit.id, apply_to_existing: "Apply to All Existing Items", overwrite: overwrite } }.to have_enqueued_job(BulkActionJobs::ApplyUnitAccessControl).with(unit.id, overwrite, nil).once
-      end
-    end
-  end
+  #   context "adding to existing Special Access" do
+  #     let(:overwrite) { false }
+  #     it "enqueues a BulkActionJobs::ApplyUnitAccessControl job" do
+  #       expect { put 'update', params: { id: unit.id, apply_to_existing: "Apply to All Existing Items", overwrite: overwrite } }.to have_enqueued_job(BulkActionJobs::ApplyUnitAccessControl).with(unit.id, overwrite, nil).once
+  #     end
+  #   end
+  # end
 
   describe "#remove" do
     let!(:unit) { FactoryBot.create(:unit) }
@@ -522,7 +492,7 @@ describe Admin::UnitsController, type: :controller do
       expect(get :remove, params: { id: unit.id }).to render_template('errors/restricted_pid')
     end
     it "displays confirmation form for managers" do
-      login_user unit.managers.first
+      login_user unit.unit_admins.first
       expect(controller.current_ability.can? :destroy, unit).to be_truthy
       expect(get :remove, params: { id: unit.id }).to render_template(:remove)
     end
@@ -611,7 +581,7 @@ describe Admin::UnitsController, type: :controller do
     let(:unit) { FactoryBot.create(:unit, :with_poster) }
 
     before do
-      login_user unit.managers.first
+      login_user unit.unit_admins.first
     end
 
     it 'returns the poster' do

@@ -38,7 +38,7 @@ class UnitSearchBuilder < Blacklight::SearchBuilder
     temp_solr_parameters = {}
     add_access_controls_to_solr_params_if_not_admin(temp_solr_parameters)
 
-    query =  "{!join from=isMemberOfCollection_ssim to=id}"
+    query =  "{!join from=heldBy_ssim to=id}"
     subquery = temp_solr_parameters[:fq].present? ? "(#{temp_solr_parameters[:fq].join(') AND (')})" : "*:*"
     solr_parameters[:q] = query + subquery
     solr_parameters[:defType] = "lucene"

@@ -12,12 +12,12 @@
 #   specific language governing permissions and limitations under the License.
 # ---  END LICENSE_HEADER BLOCK  ---
 
-class Admin::UnitPresenter
-  attr_reader :document
+class UnitPresenter
+  attr_reader :document, :view_context
 
-  def initialize(solr_doc, collection_count: nil)
+  def initialize(solr_doc, view_context)
     @document = solr_doc
-    @collection_count = collection_count
+    @view_context = view_context
   end
 
   delegate :id, to: :document
@@ -30,44 +30,35 @@ class Admin::UnitPresenter
     document["description_tesim"]&.first
   end
 
-  def collection_count
-    @collection_count ||= Admin::Collection.where("unit_ssi" => name).count
+  def has_poster?
+    document["has_poster_bsi"].present?
   end
 
-  def unit_admins
-    @unit_admins ||= Array(document["edit_access_person_ssim"]) & Array(document["unit_administrators_ssim"])
+  def poster_url
+    return ActionController::Base.helpers.asset_url('collection_icon.png') unless has_poster?
+    Rails.application.routes.url_helpers.poster_unit_url(id)
   end
 
-  def managers
-    @managers ||= Array(document["edit_access_person_ssim"]) & Array(document["collection_managers_ssim"])
+  def unit_url
+    Rails.application.routes.url_helpers.unit_url(id)
   end
 
-  def editors
-    @editors ||= Array(document["edit_access_person_ssim"]) - unit_admins - managers
+  def contact_email
+    document["contact_email_ssi"]
   end
 
-  def depositors
-    Array(document["read_access_person_ssim"])
+  def website_link
+    label = document["website_label_ssi"].presence || document["website_url_ssi"]
+    view_context.link_to label, document["website_url_ssi"] if document["website_url_ssi"].present?
   end
 
-  def admin_count
-    unit_admins.size
-  end
-
-  def as_json(_)
+  def as_json(*)
     {
       id: id,
       name: name,
       description: description,
-      object_count: {
-        total: collection_count
-      },
-      roles: {
-        unit_admins: unit_admins,
-        managers: managers,
-        editors: editors,
-        depositors: depositors
-      }
+      poster_url: poster_url,
+      url: collection_url
     }
   end
 end

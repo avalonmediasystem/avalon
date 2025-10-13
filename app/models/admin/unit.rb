@@ -229,7 +229,10 @@ class Admin::Unit < ActiveFedora::Base
         total: collections.count
       },
       roles: {
-        managers: managers
+        unit_admins: unit_admins,
+        managers: managers,
+        editors: editors,
+        depositors: depositors
       }
     }
   end
