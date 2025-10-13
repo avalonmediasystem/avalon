@@ -74,10 +74,9 @@ Unless required by applicable law or agreed to in writing, software distributed
               <%= label_tag "user" do %>
                 <%= render partial: "modules/tooltip", locals: { form: form, field: 'user', tooltip: t("access_control.user"), options: {display_label: t("access_control.userlabel").html_safe} } %>
                 <div class="d-flex flex-column flex-sm-row mb-1">
-                  <%= render partial: 'modules/autocomplete_input', locals: { field_name: 'user',
-                                                                              model: 'user' } %>
-                  <%= text_field_tag "add_user_begin", nil, placeholder: 'Begin Date (yyyy-mm-dd)', class: 'form-control date-input access_date', autocomplete: 'off', type: 'date' %>
-                  <%= text_field_tag "add_user_end", nil, placeholder: 'End Date (yyyy-mm-dd)', class: 'form-control date-input access_date', autocomplete: 'off', type: 'date' %>
+                  <%= render partial: 'modules/autocomplete_input', locals: { field_name: 'user', model: 'user' } %>
+                  <%= text_field_tag "add_user_begin", nil, placeholder: 'Begin Date (yyyy-mm-dd)', class: 'form-control date-input access_date', autocomplete: 'off' %>
+                  <%= text_field_tag "add_user_end", nil, placeholder: 'End Date (yyyy-mm-dd)', class: 'form-control date-input access_date', autocomplete: 'off' %>
                 </div>
                 <div class="d-flex justify-content-start">
                   <%= button_tag "Add", name: 'submit_add_user', class:'btn btn-outline', value: 'Add' %>
@@ -92,8 +91,8 @@ Unless required by applicable law or agreed to in writing, software distributed
                   <%= select_tag "group",
                         dropdown_values,
                         { include_blank: true, class: "form-control"}%>
-                  <%= text_field_tag "add_group_begin", nil, placeholder: 'Begin Date (yyyy-mm-dd)', class: 'form-control date-input access_date', autocomplete: 'off', type: 'date' %>
-                  <%= text_field_tag "add_group_end", nil, placeholder: 'End Date (yyyy-mm-dd)', class: 'form-control date-input access_date', autocomplete: 'off', type: 'date' %>
+                  <%= text_field_tag "add_group_begin", nil, placeholder: 'Begin Date (yyyy-mm-dd)', class: 'form-control date-input access_date', autocomplete: 'off' %>
+                  <%= text_field_tag "add_group_end", nil, placeholder: 'End Date (yyyy-mm-dd)', class: 'form-control date-input access_date', autocomplete: 'off' %>
                 </div>
                 <div class="d-flex justify-content-start">
                   <%= button_tag "Add", name: 'submit_add_group', class:'btn btn-outline', value: 'Add'  %>
@@ -105,8 +104,8 @@ Unless required by applicable law or agreed to in writing, software distributed
                 <div class="d-flex flex-column flex-sm-row mb-1">
                   <%= render partial: 'modules/autocomplete_input', locals: { field_name: 'class',
                                                                               model: 'externalGroup' } %>
-                  <%= text_field_tag "add_class_begin", nil, placeholder: 'Begin Date (yyyy-mm-dd)', class: 'form-control date-input access_date', autocomplete: 'off', type: 'date' %>
-                  <%= text_field_tag "add_class_end", nil, placeholder: 'End Date (yyyy-mm-dd)', class: 'form-control date-input access_date', autocomplete: 'off', type: 'date' %>
+                  <%= text_field_tag "add_class_begin", nil, placeholder: 'Begin Date (yyyy-mm-dd)', class: 'form-control date-input access_date', autocomplete: 'off' %>
+                  <%= text_field_tag "add_class_end", nil, placeholder: 'Begin Date (yyyy-mm-dd)', class: 'form-control date-input access_date', autocomplete: 'off' %>
                 </div>
                 <div class="d-flex justify-content-start">
                   <%= button_tag "Add", name: 'submit_add_class', class:'btn btn-outline', value: 'Add'  %>
@@ -117,8 +116,8 @@ Unless required by applicable law or agreed to in writing, software distributed
                 <%= render partial: "modules/tooltip", locals: { form: form, field: 'ipaddress', tooltip: t("access_control.ipaddress"), options: {display_label: t("access_control.ipaddresslabel").html_safe} } %>
                 <div class="d-flex flex-column flex-sm-row mb-1">
                 <%= text_field_tag "ipaddress", nil, class: "form-control" %>
-                  <%= text_field_tag "add_ipaddress_begin", nil, placeholder: 'Begin Date (yyyy-mm-dd)', class: 'form-control date-input access_date', autocomplete: 'off', type: 'date' %>
-                  <%= text_field_tag "add_ipaddress_end", nil, placeholder: 'End Date (yyyy-mm-dd)', class: 'form-control date-input access_date', autocomplete: 'off', type: 'date' %>
+                  <%= text_field_tag "add_ipaddress_begin", nil, placeholder: 'Begin Date (yyyy-mm-dd)', class: 'form-control date-input access_date', autocomplete: 'off' %>
+                  <%= text_field_tag "add_ipaddress_end", nil, placeholder: 'End Date (yyyy-mm-dd)', class: 'form-control date-input access_date', autocomplete: 'off' %>
                 </div>
                 <div class="d-flex justify-content-start">
                   <%= button_tag "Add", name: 'submit_add_ipaddress', class:'btn btn-outline', value: 'Add'  %>
