@@ -95,6 +95,12 @@ Unless required by applicable law or agreed to in writing, software distributed
   <div class="card-body">
     <div class='staff-roles-section'>
       <%= render "modules/access_object",
+            access_object: "unit_admin",
+            members: @unit.unit_admins,
+            autocomplete_model: 'user',
+            object: @unit,
+            input_disabled: cannot?(:update_unit_admins, @unit) %>
+      <%= render "modules/access_object",
             access_object: "manager",
             members: @unit.managers,
             autocomplete_model: 'user',
@@ -106,6 +112,12 @@ Unless required by applicable law or agreed to in writing, software distributed
             autocomplete_model: 'user',
             object: @unit,
             input_disabled: cannot?( :update_editors, @unit ) %>
+      <%= render "modules/access_object",
+            access_object: "depositor",
+            members: @unit.depositors,
+            autocomplete_model: 'user',
+            object: @unit,
+            input_disabled: cannot?( :update_depositors, @unit ) %>
     </div>
   </div>
 </div>
