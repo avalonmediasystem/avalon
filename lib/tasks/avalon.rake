@@ -101,15 +101,6 @@ namespace :avalon do
      FileUtils.rm(Dir['public/stylesheets/cache/[^.]*'])
    end
   end
-  namespace :derivative do
-   desc "Sets streaming urls for derivatives based on configured content_path in avalon.yml"
-   task :set_streams => :environment do
-     Derivative.find_each({},{batch_size:5}) do |derivative|
-       derivative.set_streaming_locations!
-       derivative.save!
-     end
-   end
-  end
   namespace :batch do
     desc "Starts Avalon batch ingest"
     task :ingest => :environment do

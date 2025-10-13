@@ -60,8 +60,8 @@ describe Derivative do
     let(:http_base)  { Settings.streaming.http_base    }
     let(:root)       { Settings.streaming.content_path }
     let(:location)   { "file://#{root}/c5e0f8b8-3f69-40de-9524-604f03b5f867/8c871d4b-a9a6-4841-8e2a-dd98cf2ee625/content.mp4" }
-    let(:audio_derivative) { Derivative.new(audio_codec: 'AAC').tap { |d| d.absolute_location = location } }
-    let(:video_derivative) { Derivative.new(video_codec: 'AVC').tap { |d| d.absolute_location = location } }
+    let(:audio_derivative) { Derivative.new(audio_codec: 'AAC', derivativeFile: location) }
+    let(:video_derivative) { Derivative.new(video_codec: 'AVC', derivativeFile: location) }
 
     around :each do |example|
       old_value = Avalon::StreamMapper.streaming_server
@@ -111,6 +111,33 @@ describe Derivative do
 
       it "HTTP audio" do
         expect(audio_derivative.streaming_url(true)).to eq("#{http_base}/mp4:c5e0f8b8-3f69-40de-9524-604f03b5f867/8c871d4b-a9a6-4841-8e2a-dd98cf2ee625/content.mp4/playlist.m3u8")
+      end
+    end
+
+    describe "unmanaged" do
+      let(:audio_derivative) { Derivative.new(audio_codec: 'AAC', derivativeFile: location, managed: false, hls_url: hls_url) }
+      let(:video_derivative) { Derivative.new(video_codec: 'AVC', derivativeFile: location, managed: false, hls_url: hls_url) }
+      let(:hls_url) { 'http://streaming.server/hls.m3u8' }
+
+      it "does not map stored hls_url" do
+        expect(video_derivative.streaming_url(true)).to eq hls_url
+        expect(audio_derivative.streaming_url(true)).to eq hls_url
+      end
+    end
+
+    describe "dynamic based on config" do
+      it "HTTP video" do
+        Avalon::StreamMapper.streaming_server = :wowza
+        expect(video_derivative.streaming_url(true)).to eq("#{http_base}/mp4:c5e0f8b8-3f69-40de-9524-604f03b5f867/8c871d4b-a9a6-4841-8e2a-dd98cf2ee625/content.mp4/playlist.m3u8")
+        Avalon::StreamMapper.streaming_server = :generic
+        expect(video_derivative.streaming_url(true)).to eq("#{http_base}/c5e0f8b8-3f69-40de-9524-604f03b5f867/8c871d4b-a9a6-4841-8e2a-dd98cf2ee625/content.mp4.m3u8")
+      end
+
+      it "HTTP audio" do
+        Avalon::StreamMapper.streaming_server = :wowza
+        expect(audio_derivative.streaming_url(true)).to eq("#{http_base}/mp4:c5e0f8b8-3f69-40de-9524-604f03b5f867/8c871d4b-a9a6-4841-8e2a-dd98cf2ee625/content.mp4/playlist.m3u8")
+        Avalon::StreamMapper.streaming_server = :generic
+        expect(audio_derivative.streaming_url(true)).to eq("#{http_base}/c5e0f8b8-3f69-40de-9524-604f03b5f867/8c871d4b-a9a6-4841-8e2a-dd98cf2ee625/content.mp4.m3u8")
       end
     end
   end
