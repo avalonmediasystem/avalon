@@ -119,6 +119,12 @@ Rails.application.routes.draw do
     end
   end
 
+  resources :units, only: [:index, :show] do
+    member do
+      get :poster
+    end
+  end
+
   resources :media_objects, except: [:create, :update] do
     member do
       put :update, action: :update, defaults: { format: 'html' }, constraints: { format: 'html' }
