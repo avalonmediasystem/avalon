@@ -91,7 +91,7 @@ describe IiifCanvasPresenter do
 
       context 'with mp3 file' do
         let(:mp3_url) { 'https://streaming.example.com/dir/file.mp3' }
-        let(:derivative) { FactoryBot.build(:derivative, hls_url: mp3_url, mime_type: 'audio/mpeg' ) }
+        let(:derivative) { FactoryBot.build(:derivative, hls_url: mp3_url, managed: false, mime_type: 'audio/mpeg' ) }
 
         it 'has format' do
           expect(subject.format).to eq 'audio/mpeg'
@@ -115,7 +115,7 @@ describe IiifCanvasPresenter do
 
       context 'with mp4 file' do
         let(:mp4_url) { 'https://streaming.example.com/dir/file.mp4' }
-        let(:derivative) { FactoryBot.build(:derivative, hls_url: mp4_url, mime_type: 'video/mp4' ) }
+        let(:derivative) { FactoryBot.build(:derivative, hls_url: mp4_url, managed: false, mime_type: 'video/mp4' ) }
 
         it 'has format' do
           expect(subject.format).to eq 'video/mp4'

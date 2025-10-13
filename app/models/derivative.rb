@@ -74,12 +74,36 @@ class Derivative < ActiveFedora::Base
     self.managed = true
   end
 
-  def set_streaming_locations!
+  alias_method :'_hls_url', :'hls_url'
+  def hls_url
     if managed
       path = Addressable::URI.parse(absolute_location).path
-      self.location_url = Avalon::StreamMapper.stream_path(path)
-      self.hls_url = Avalon::StreamMapper.map(path, 'http', format)
+      Avalon::StreamMapper.map(path, 'http', format)
+    else
+      _hls_url
     end
+  rescue
+    nil
+  end
+
+  alias_method :'_location_url', :'location_url'
+  def location_url
+    if managed
+      path = Addressable::URI.parse(absolute_location).path
+      Avalon::StreamMapper.stream_path(path)
+    else
+      _location_url
+    end
+  rescue
+    nil
+  end
+
+  def set_streaming_locations!
+#    if managed
+#      path = Addressable::URI.parse(absolute_location).path
+#      self.location_url = Avalon::StreamMapper.stream_path(path)
+#      self.hls_url = Avalon::StreamMapper.map(path, 'http', format)
+#    end
     self
   end
 
