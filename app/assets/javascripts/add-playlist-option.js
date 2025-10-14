@@ -60,7 +60,9 @@ this.add_new_playlist_option = function () {
     }
   });
   if (!has_new_opt) {
-    select_element.appendChild(new Option(addnew));
+    // Insert 'Add new playlist' option at the top of the list
+    const newOption = new Option(addnew);
+    select_element.insertBefore(newOption, select_element.firstChild);
   }
 
   // Initialize TomSelect
@@ -148,6 +150,15 @@ this.add_new_playlist_option = function () {
               dropdownContainer.scrollTop = selectedOptionEl.offsetTop - (containerHeight / 2) + (selectedOptionEl.offsetHeight / 2);
             }
           }
+        },
+        onInitialize: function () {
+          // Set ARIA attributes for tom-select controls flagged by SiteImprove
+          const dropdownList = document.querySelector('#post_playlist_id-ts-dropdown');
+          if (dropdownList) {
+            dropdownList.setAttribute('aria-label', 'list of playlists');
+          }
+          const playlistsCombobox = document.querySelector('#post_playlist_id-ts-control');
+          if (playlistsCombobox) playlistsCombobox.setAttribute('aria-labelledby', 'post_playlist_id');
         },
         render: {
           item: function (data, escape) {
