@@ -828,7 +828,8 @@ describe MasterFilesController do
     it 'should display a flash message if file is not found' do
       allow(ENV).to receive(:[]).and_call_original
       allow(ENV).to receive(:[]).with("ENCODE_WORK_DIR").and_return(Rails.root.join('spec').to_s)
-      allow(high_derivative).to receive(:hls_url).and_return('missing')
+      high_derivative.absolute_location = 'missing'
+      high_derivative.save!
       get :download_derivative, params: { id: master_file.id }
       expect(response).to redirect_to(edit_media_object_path(media_object))
       expect(flash[:error]).to be_present

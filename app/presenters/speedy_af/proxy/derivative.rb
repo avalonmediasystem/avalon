@@ -18,4 +18,26 @@ class SpeedyAF::Proxy::Derivative < SpeedyAF::Base
   def bitrate
     audio_bitrate.to_i + video_bitrate.to_i
   end
+
+  def hls_url
+    if managed
+      path = Addressable::URI.parse(absolute_location).path
+      Avalon::StreamMapper.map(path, 'http', format)
+    else
+      @attrs[:hls_url]
+    end
+  rescue
+    nil
+  end
+
+  def location_url
+    if managed
+      path = Addressable::URI.parse(absolute_location).path
+      Avalon::StreamMapper.stream_path(path)
+    else
+      @attrs[:location_url]
+    end
+  rescue
+    nil
+  end
 end
