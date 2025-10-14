@@ -39,6 +39,7 @@
 //= require cropperjs/dist/cropper.min
 //= require url-search-params-polyfill/index.js
 //= require sortablejs/Sortable.min.js
+//= require js-datepicker/dist/datepicker.min.js
 
 //= require moment/min/moment-with-locales.min.js
 //= require hls.js/dist/hls.min.js
