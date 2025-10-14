@@ -31,7 +31,8 @@ Unless required by applicable law or agreed to in writing, software distributed
           </div>
           <div class="col">
             <div class="mb-3">
-              <%= collection_select(:post, :playlist_id, @add_playlist_item_playlists, :id, :title, {}, {class: "form-control form-model",'data-testid': 'media-object-playlist-dropdown', style: 'width:100%;'}) %>
+              <%= collection_select(:post, :playlist_id, @add_playlist_item_playlists, :id, :title, {}, 
+              { class: "form-control form-model p-0", 'data-testid': 'media-object-playlist-dropdown', style: 'width:100%;', 'aria-label': "Select or create playlist to add item" }) %>
             </div>
           </div>
         </div>

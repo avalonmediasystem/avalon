@@ -355,7 +355,7 @@ context('Playlists', () => {
       cy.get('[data-testid="media-object-playlist-search-input"]')
         .parent()
         .next()
-        .find('li.select2-results__option:not(:first-child)')
+        .find('div.ts-option-custom option:not(:first-child)')
         .contains(playlist_title)
         .should('be.visible')
         .click();
@@ -411,7 +411,7 @@ context('Playlists', () => {
       cy.get('[data-testid="media-object-playlist-search-input"]')
         .parent()
         .next()
-        .find('li.select2-results__option:not(:first-child)')
+        .find('div.ts-option-custom option:not(:first-child)')
         .contains(playlist_title_public)
         .should('be.visible')
         .click();

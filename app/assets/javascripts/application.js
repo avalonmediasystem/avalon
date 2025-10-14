@@ -46,5 +46,6 @@
 
 // include all of our vendored js
 //= require_tree ../../../vendor/assets/javascripts/.
+//= require tom-select/dist/js/tom-select.complete.min.js
 
 //= require_tree .
