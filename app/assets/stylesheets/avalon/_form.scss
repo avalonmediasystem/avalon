@@ -64,7 +64,7 @@ $border-radius-base: 4px !default;
     border-radius: 0;
     border-top-left-radius: 0.25rem;
   }
-  
+
   button {
     border-bottom-right-radius: 0;
   }
@@ -101,14 +101,14 @@ label {
 }
 
 .fileinput-submit {
-  background-color: $blue  !important;
-  border-color: $blue  !important;
+  background-color: $blue !important;
+  border-color: $blue !important;
 
   &:hover {
     background-color: shade-color($blue, 15%) !important;
   }
 
-  color: $white  !important;
+  color: $white !important;
 }
 
 .upload-file-wrapper {
@@ -149,7 +149,8 @@ label {
     }
   }
 
-  #playlist_item_end, #playlist_item_start {
+  #playlist_item_end,
+  #playlist_item_start {
     border-radius: 0.25rem;
     border: 1px solid $gray;
     padding: 0 0.5rem;
@@ -168,4 +169,17 @@ label {
     box-shadow: none;
     border: 1px solid $gray;
   }
+}
+
+/* Override styling for js-datepicker */
+.qs-square {
+  padding: 1rem;
+}
+.qs-square.qs-day {
+  color: $dark;
+}
+
+.qs-square:not(.qs-empty):not(.qs-disabled):not(.qs-day):not(.qs-active):hover {
+  background: $primary;
+  color: $white;
 }

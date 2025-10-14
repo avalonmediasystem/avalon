@@ -12,22 +12,43 @@
 //   specific language governing permissions and limitations under the License.
 // ---  END LICENSE_HEADER BLOCK  ---
 
-const section_form = $('#associated_files form');
-const button_form = $('#workflow_buttons form');
-$('input[type=text]',section_form).each(function() {
-  return $(this).change(function() {
-    const double_id = `${$(this).attr('id')}_double'`;
-    let double = $(`input[id='${double_id}']`,button_form);
-    if (!(double.length > 0)) {
-      double = $(`<input type='hidden' id='${double_id}' \
-name='${$(this).attr('name')}' \
-value='${$(this).val()}'/>`).appendTo(button_form);
-    }
-    return double.val($(this).val());
-  });
+document.addEventListener('DOMContentLoaded', function() {
+  const section_form = document.querySelector('#associated_files form');
+  const button_form = document.querySelector('#workflow_buttons form');
+
+  if (section_form && button_form) {
+    const textInputs = section_form.querySelectorAll('input[type=text]');
+
+    textInputs.forEach(function(input) {
+      input.addEventListener('change', function() {
+        const inputId = this.getAttribute('id');
+        const inputName = this.getAttribute('name');
+        const inputValue = this.value;
+        const double_id = `${inputId}_double`;
+
+        let double = button_form.querySelector(`input[id='${double_id}']`);
+
+        if (!double) {
+          double = document.createElement('input');
+          double.type = 'hidden';
+          double.id = double_id;
+          double.name = inputName;
+          double.value = inputValue;
+          button_form.appendChild(double);
+        } else {
+          double.value = inputValue;
+        }
+      });
+    });
+  }
+
+  const fileInput = document.getElementById('file-input');
+  if (fileInput) {
+    fileInput.addEventListener('change', function() {
+      const submitButtons = document.querySelectorAll('.fileinput-submit');
+      submitButtons.forEach(function(button) {
+        button.disabled = false;
+      });
+    });
+  }
 });
-
-$('.date-input').datepicker({
-  dateFormat: 'yy-mm-dd'});
-
-$('#file-input').change(() => $('.fileinput-submit').attr('disabled', false));
