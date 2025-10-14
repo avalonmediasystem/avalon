@@ -127,5 +127,33 @@ namespace :avalon do
 
       puts("Backfill complete. #{count} records updated.")
     end
+    # TODO: Test
+    desc "Migrate existing units to new Admin::Unit model and associate them with the appropriate Admin::Collections"
+    task admin_units: :environment do
+      if ENV['unit_admin_username'].nil?
+        abort "You must specify a username. This user must be part of the Unit Administrator group. Example: rake avalon:migration:admin_units unit_admin_username=user@example.edu"
+      end
+
+      units = {}
+      units_cv = Avalon::ControlledVocabulary.find_by_name('units', sort: true)
+      units_cv.each do |unit|
+        unit_model = Admin::Unit.new(name: unit, unit_admins: [ENV['unit_admin_username']])
+        unit_model.save!
+        units[unit] = unit_model.id
+        puts "Object successfully created for #{unit}: #{unit_model.id}"
+      rescue ActiveFedora::RecordInvalid => e
+        puts "Creation failed for #{unit}: #{e.message}"
+      end
+
+      units.each do |k, v|
+        collections = Admin::Collection.where(unit: k)
+        collection_ids = collections.map(&:id)
+        # update_all inserts straight into the database, skipping validations
+        # and callbacks. Manually call ReindexJob to ensure that solr is updated.
+        collections.update_all(unit_id: v)
+        ReindexJob.perform_later(collection_ids)
+        puts "Unit #{v} added to #{collection_ids.join("\n")}"
+      end
+    end
   end
 end
