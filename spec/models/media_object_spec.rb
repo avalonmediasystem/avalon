@@ -1162,15 +1162,11 @@ describe MediaObject do
   end
 
   describe ".autocomplete" do
-    before :each do
-      allow(Admin::Collection).to receive(:units).and_return(['Default', 'Test'])
-    end
     let!(:mo1) { FactoryBot.create(:media_object, collection: collection1, series: ['Test 1', 'Alpha']) }
     let!(:mo2) { FactoryBot.create(:media_object, collection: collection1, series: ['Test 1', 'Test 2']) }
     let!(:mo3) { FactoryBot.create(:media_object, collection: collection2, series: ['Test 3']) }
-    let(:collection1) { FactoryBot.create(:collection, unit: 'Default') }
-    let(:collection2) { FactoryBot.create(:collection, unit: 'Test') }
-
+    let(:collection1) { FactoryBot.create(:collection, unit: FactoryBot.create(:unit, name: 'Default')) }
+    let(:collection2) { FactoryBot.create(:collection, unit: FactoryBot.create(:unit, name: 'Test')) }
 
     it "should return all series within the parent collection's unit that include the query string" do
       expect(MediaObject.autocomplete('Test', mo1.id)).to include({ id: 'Test 1', display: 'Test 1' })
