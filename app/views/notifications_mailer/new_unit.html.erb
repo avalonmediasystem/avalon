@@ -13,8 +13,8 @@ Unless required by applicable law or agreed to in writing, software distributed
   specific language governing permissions and limitations under the License.
 ---  END LICENSE_HEADER BLOCK  ---
 %>
-<h3> New Collection Notification </h3>
-<%= link_to @collection.name, admin_collection_url(@collection) %>
+<h3> New Unit Notification </h3>
+<%= link_to @unit.name, admin_unit_url(@unit) %>
 <hr/>
 
 <dl class="row">
@@ -22,11 +22,5 @@ Unless required by applicable law or agreed to in writing, software distributed
   <dd><%= mail_to(@creator.email, @creator.username) %></dd>
 
   <dt>Description:</dt>
-  <dd><%= @collection.description.present? ? @collection.description : '(empty)'%></dd>
-
-  <dt>Unit:</dt>
-  <dd><%= @collection.unit.name %></dd>
-
-  <dt>Dropbox Path:</dt>
-  <dd><%= @collection.dropbox_absolute_path %></dd>
+  <dd><%= @unit.description.present? ? @unit.description : '(empty)'%></dd>
 </dl>
