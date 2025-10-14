@@ -105,7 +105,7 @@ Unless required by applicable law or agreed to in writing, software distributed
                   <%= render partial: 'modules/autocomplete_input', locals: { field_name: 'class',
                                                                               model: 'externalGroup' } %>
                   <%= text_field_tag "add_class_begin", nil, placeholder: 'Begin Date (yyyy-mm-dd)', class: 'form-control date-input access_date', autocomplete: 'off' %>
-                  <%= text_field_tag "add_class_end", nil, placeholder: 'Begin Date (yyyy-mm-dd)', class: 'form-control date-input access_date', autocomplete: 'off' %>
+                  <%= text_field_tag "add_class_end", nil, placeholder: 'End Date (yyyy-mm-dd)', class: 'form-control date-input access_date', autocomplete: 'off' %>
                 </div>
                 <div class="d-flex justify-content-start">
                   <%= button_tag "Add", name: 'submit_add_class', class:'btn btn-outline', value: 'Add'  %>

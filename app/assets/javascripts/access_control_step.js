@@ -30,20 +30,24 @@ window.initializeDatepickers = function (container) {
     };
 
     let setupRange = (id, isBeginDate) => {
+      if (!id) return;
       let pairedInput = null;
       const pairedDateId = isBeginDate ? id.replace('_begin', '_end') : id.replace('_end', '_begin');
       pairedInput = root.querySelector(`#${pairedDateId}, [name="${pairedDateId}"]`);
 
       if (pairedInput) {
-        isBeginDate ? pickerOptions.onSelect = function (instance, date) {
-          if (pairedInput.datepicker) {
-            pairedInput.datepicker.setMin(date);
-          }
-        } : pickerOptions.onSelect = function (instance, date) {
-          if (pairedInput.datepicker) {
-            pairedInput.datepicker.setMax(date);
-          }
-        };
+        switch (isBeginDate) {
+          case true:
+            pickerOptions.onSelect = function (instance, date) {
+              pairedInput.datepicker?.setMin(date);
+            };
+            break;
+          case false:
+            pickerOptions.onSelect = function (instance, date) {
+              pairedInput.datepicker?.setMax(date);
+            };
+            break;
+        }
       }
     };
 
