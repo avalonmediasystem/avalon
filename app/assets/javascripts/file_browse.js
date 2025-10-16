@@ -12,27 +12,49 @@
 //   specific language governing permissions and limitations under the License.
 // ---  END LICENSE_HEADER BLOCK  ---
 
-$(function() {
-  $(document).on('click', 'a[data-bs-trigger="submit"]', function(event) {
-    return $(this).closest('form').submit();
+document.addEventListener('DOMContentLoaded', function () {
+  document.addEventListener('click', function (event) {
+    if (event.target.matches('a[data-bs-trigger="submit"]')) {
+      const form = event.target.closest('form');
+      if (form) form.submit();
+    }
   });
 
-  let initialized = false;
-  return $('#browse-btn').browseEverything()
-    .show(function() {
-      if (!($('#browse-everything input[name=workflow]').length > 0)) {
-        const skip_box = $('#web_upload input[name=workflow]').closest('span')
-          .clone().removeClass().css('margin-right','10px');
-        $('.ev-cancel').before(skip_box);
+  const browseBtn = document.getElementById('browse-btn');
+  if (browseBtn) {
+    const browseEverythingInst = window.jQuery(browseBtn).browseEverything();
+    browseEverythingInst.show(function () {
+      const browseEverythingWorkflow = document.querySelector('#browse-everything input[name=workflow]');
+      if (!browseEverythingWorkflow) {
+        const webUploadWorkflow = document.querySelector('#web_upload input[name=workflow]');
+        if (webUploadWorkflow) {
+          const skip_box = webUploadWorkflow.closest('span').cloneNode(true);
+          skip_box.className = '';
+          skip_box.style.marginRight = '10px';
+          const evCancel = document.querySelector('.ev-cancel');
+          if (evCancel) {
+            evCancel.parentNode.insertBefore(skip_box, evCancel);
+          }
+        }
       }
 
-      $('.ev-providers .ev-container a').click();
-      return initialized = true;}).done(function(data) {
+      const providerLink = document.querySelector('.ev-providers .ev-container a');
+      if (providerLink) providerLink.click();
+    }).done(function (data) {
       if (data.length > 0) {
-        const uploadModal = new bootstrap.Modal($('#uploading'));
-        uploadModal.show();
-        $('#dropbox_form input[name=workflow]').val($('#browse-everything input[name=workflow]:checked').val());
-        return $('#dropbox_form').submit();
+        const uploadModal = document.getElementById('uploading');
+        if (uploadModal) {
+          const uploadModal = new bootstrap.Modal(uploadModal);
+          uploadModal.show();
+        }
+        const dropboxWorkflowInput = document.querySelector('#dropbox_form input[name=workflow]');
+        const browseWorkflowChecked = document.querySelector('#browse-everything input[name=workflow]:checked');
+        if (dropboxWorkflowInput && browseWorkflowChecked) {
+          dropboxWorkflowInput.value = browseWorkflowChecked.value;
+        }
+        const dropboxForm = document.getElementById('dropbox_form');
+        if (dropboxForm) dropboxForm.submit();
       }
-  });
+    });
+  }
 });

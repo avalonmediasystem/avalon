@@ -15,17 +15,19 @@
 */
 
 function add_cropper_handler(upload_path) {
-  let $image = $('#image');
-  let $input = $('#poster_input');
-  let $modal = $('#modal');
+  const image = document.getElementById('image');
+  const input = document.getElementById('poster_input');
+  const modal = document.getElementById('modal');
   let cropper;
   let width = 700;
   let aspectRatio = 5 / 4;
-  $input.on('change', function (e) {
+
+  input.addEventListener('change', function (e) {
     let files = e.target.files;
     let done = function (url) {
-      $image.prop("src", url);
-      $modal.modal('show');
+      image.src = url;
+      const modalInstance = new bootstrap.Modal(modal);
+      modalInstance.show();
     };
     let reader;
     let file;
@@ -42,20 +44,25 @@ function add_cropper_handler(upload_path) {
       }
     }
   });
-  $modal.on('shown.bs.modal', function () {
-    cropper = new Cropper($image[0], {
+
+  modal.addEventListener('shown.bs.modal', function () {
+    cropper = new Cropper(image, {
       aspectRatio: aspectRatio,
       viewMode: 2,
     });
-  }).on('hidden.bs.modal', function () {
-    $input.val("");
+  });
+
+  modal.addEventListener('hidden.bs.modal', function () {
+    input.value = "";
     cropper.destroy();
     cropper = null;
   });
-  $('#crop').on('click', function () {
+
+  document.getElementById('crop').addEventListener('click', function () {
     let canvas;
-    let inputfile = $input.val().split('\\').pop();
-    $modal.modal('hide');
+    let inputfile = input.value.split('\\').pop();
+    const modalInstance = bootstrap.Modal.getInstance(modal);
+    modalInstance.hide();
     if (cropper) {
       canvas = cropper.getCroppedCanvas({
         width: width,
@@ -63,14 +70,19 @@ function add_cropper_handler(upload_path) {
       });
       canvas.toBlob(function (blob) {
         let formData = new FormData();
-        $input.val("")
+        input.value = "";
         formData.append('admin_collection[poster]', blob, inputfile);
-        formData.append('authenticity_token', $('input[name=authenticity_token]').val());
+        formData.append('authenticity_token', document.querySelector('input[name=authenticity_token]').value);
 
+        // Display uploading in-progress
+        const cropperProgress = document.getElementById('cropper-progress');
+        cropperProgress.style.display = 'block';
         fetch(upload_path, {
           method: "POST",
           body: formData
         }).then(() => {
+          // Hide uploading in-progress
+          cropperProgress.style.display = 'none';
           // Page reload to show the flash message
           location.reload();
         });
