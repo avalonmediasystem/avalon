@@ -14,7 +14,7 @@ Unless required by applicable law or agreed to in writing, software distributed
 ---  END LICENSE_HEADER BLOCK  ---
 %>
 <% user_tags = current_user.timeline_tags %>
-<select multiple name="tagcollection[]" id="tag-select" class="form-control form-model p-0" style="width: 100%;" aria-label="timeline tag selection" aria-describedby="helpTags">
+<select multiple name="tagcollection[]" id="tag-select" class="form-control form-model p-0" style="width: 100%; display: none;" aria-label="timeline tag selection" aria-describedby="helpTags">
   <% user_tags.each do |tag| %>
     <% selected = @timeline.tags.include?(tag) ? ' selected="selected"' : '' %>
     <option value="<%= tag %>" <%= selected %>><%= tag %></option>
@@ -50,18 +50,13 @@ Unless required by applicable law or agreed to in writing, software distributed
           option_create: function(data, escape) {
             // Customize the HTML and text for the create new tag message
             return '<div class="create">Create new tag: <strong>' + escape(data.input) + '</strong></div>';
-        }
+          }
         },
         onChange: function(values) {
           // Update hidden input with updated list for form submission
           document.getElementById('taglist').value = JSON.stringify(values);
         }
       });
-
-      // Initialize hidden input with current values as JSON array
-      const initialTags = tagSelect.getValue();
-      const tagsArray = Array.isArray(initialTags) ? initialTags : [initialTags];
-      document.getElementById('taglist').value = JSON.stringify(tagsArray);
     });
   </script>
 <% end %>

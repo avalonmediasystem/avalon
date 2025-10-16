@@ -12,10 +12,10 @@
 //   specific language governing permissions and limitations under the License.
 // ---  END LICENSE_HEADER BLOCK  ---
 
-// This script will enable support for the html5 form attribute
-// This should only be needed for IE but is currently applied wholesale
-// to all disjointed submit elements as is needed in some of the workflow steps
-
+/**
+ * This script will enable support adding 'Add new playlist' and search functionality in
+ * add to playlist dropdown menu via tom-select JS library.
+ */
 document.addEventListener('DOMContentLoaded', () => add_new_playlist_option());
 
 this.add_new_playlist_option = function () {
@@ -36,7 +36,7 @@ this.add_new_playlist_option = function () {
     return iconHtml + '<b>' + addnew + termText + '</b>';
   };
 
-  // Helper function to update "Add new playlist" option in dropdown
+  // Helper function to update "Add new playlist" option with typed search term
   const updateAddNewPlaylistOption = function (dropdown_content, searchTerm) {
     const addNewOption = dropdown_content.querySelector('[data-value="' + addnew + '"]');
     if (addNewOption) {

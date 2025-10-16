@@ -57,18 +57,6 @@ Unless required by applicable law or agreed to in writing, software distributed
           document.getElementById('taglist').value = JSON.stringify(values);
         }
       });
-
-      // Handle form submission
-      const submitButton = document.getElementById('submit-playlist-form');
-      if (submitButton) {
-        submitButton.addEventListener('click', function(e) {
-          e.preventDefault();
-          const initialTags = tagSelect.getValue();
-          const tagsArray = Array.isArray(initialTags) ? initialTags : [initialTags];
-          document.getElementById('taglist').value = JSON.stringify(tagsArray);
-          document.getElementById('playlist_form').submit();
-        });
-      }
     });
   </script>
 <% end %>
