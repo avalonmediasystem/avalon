@@ -20,24 +20,24 @@
  * @returns {Object} active track information
  */
 function getActiveItem(checkSection = true) {
-  let currentPlayer = document.getElementById('iiif-media-player');
+  let currentPlayer = getById('iiif-media-player');
   let duration = currentPlayer.player.duration();
-  let currentStructureItem = $('li[class="ramp--structured-nav__tree-item active"]');
+  let currentStructureItem = query('li[class="ramp--structured-nav__tree-item active"]');
   // Get active section with class starting with 'ramp--structured-nav__section' and ending with 'active'
-  let activeSection = $('div[class^="ramp--structured-nav__section"][class$="active"]');
+  let activeSection = query('div[class^="ramp--structured-nav__section"][class$="active"]');
   // Get parent list item for the active section
-  let currentSection = activeSection.parents('li');
-  if (currentStructureItem?.length > 0) {
+  let currentSection = activeSection ? activeSection.closest('li') : null;
+  if (currentStructureItem) {
     /**
      * When there's an active timespan in the structured navigation
      * use its details to populate the create timeline and add to
      * playlist options
      */
-    let label = currentStructureItem[0].dataset.label;
+    let label = currentStructureItem.dataset.label;
 
     // When structure has an active timespan child
-    if (currentStructureItem.find('a').length > 0) {
-      let item = currentStructureItem.find('a')[0];
+    if (queryAll('a', currentStructureItem).length > 0) {
+      let item = query('a', currentStructureItem);
       let timeHash = item.hash.split('#t=').pop();
       let times = {
         begin: parseFloat(timeHash.split(',')[0]) || 0,
@@ -49,15 +49,15 @@ function getActiveItem(checkSection = true) {
         times,
         tags: ['current-track'],
         streamId,
-        sectionLabel: currentSection[0].dataset.label,
+        sectionLabel: currentSection ? currentSection.dataset.label : '',
       };
     }
-  } else if (activeSection.length > 0 && currentSection?.length > 0 && checkSection) {
+  } else if (activeSection && currentSection && checkSection) {
     /** When the structured navigation doesn't have an active timespan
      * get the current active section to populate the timeline and add
      * to playlist options */
-    let { mediafrag } = activeSection[0].dataset;
-    let { label } = currentSection[0].dataset;
+    let { mediafrag } = activeSection.dataset;
+    let { label } = currentSection.dataset;
     let [itemId, _] = mediafrag.split('#t=');
     return {
       label,
@@ -81,12 +81,12 @@ function getActiveItem(checkSection = true) {
 function getTimelineScopes() {
   let scopes = new Array();
   let trackCount = 1;
-  let currentStructureItem = $('li[class="ramp--structured-nav__tree-item active"]') ||
-    $('div[class="ramp--structured-nav__section active"]');
+  let currentStructureItem = query('li[class="ramp--structured-nav__tree-item active"]') ||
+    query('div[class^="ramp--structured-nav__section"][class$="active"]');
   // Get active section with class starting with 'ramp--structured-nav__section' and ending with 'active'
-  let activeSection = $('div[class^="ramp--structured-nav__section"][class$="active"]');
+  let activeSection = query('div[class^="ramp--structured-nav__section"][class$="active"]');
   // Get parent list item for the active section
-  let currentSection = activeSection.parents('li');
+  let currentSection = activeSection ? activeSection.closest('li') : null;
   let activeItem = getActiveItem();
   let streamId = '';
 
@@ -99,29 +99,29 @@ function getTimelineScopes() {
   }
 
   let parent = currentStructureItem.closest('ul').closest('li');
-  if (parent.length === 0) {
+  if (!parent) {
     let end = activeItem.times.end;
     scopes[0].times = { begin: 0, end: end };
   }
-  while (parent.length > 0) {
+  while (parent) {
     let next = parent.closest('ul').closest('li');
     let begin = 0;
     let end = '';
-    let tracks = parent.find('li a');
+    let tracks = queryAll('li a', parent);
     trackCount = tracks.length;
     // Only assign begin/end when structure item is a subsection, not a top level section
-    if (next.length >= 0) {
+    if (next) {
       begin = parseFloat(tracks[0].hash.split('#t=').reverse()[0].split(',')[0]) || 0;
       end = parseFloat(tracks[trackCount - 1].hash.split('#t=').reverse()[0].split(',')[1]) || '';
     }
     streamId = tracks[0].pathname.split('/').reverse()[0];
-    let label = parent[0].dataset.label;
+    let label = parent.dataset.label;
     scopes.push({
       label: label,
       tracks: trackCount,
       times: { begin, end },
       // mark the outermost item representing the current section
-      tags: parent[0] == currentSection[0] ? ['current-section'] : [],
+      tags: parent == currentSection ? ['current-section'] : [],
     });
     parent = next;
   }
@@ -175,22 +175,32 @@ function timeToS(time) {
  * the selected scope
  */
 function collapseMultiItemCheck() {
-  $('#multiItemCheck').collapse('show');
-  $('#moreDetails').collapse('hide');
+  const multiItemCheck = getById('multiItemCheck');
+  const moreDetails = getById('moreDetails');
+  if (multiItemCheck) showOrCollapse(multiItemCheck, true);
+  if (moreDetails && moreDetails.classList.contains('show')) {
+    showOrCollapse(moreDetails, false);
+  }
 }
 
 /** Collapse title and description forms */
 function collapseMoreDetails() {
-  if (!$('#moreDetails').hasClass('show')) {
-    $('#moreDetails').collapse('show');
-    $('#multiItemCheck').collapse('hide');
+  const moreDetails = getById('moreDetails');
+  if (moreDetails && !moreDetails.classList.contains('show')) {
+    showOrCollapse(moreDetails, true);
+
+    const multiItemCheck = getById('multiItemCheck');
+    if (multiItemCheck && multiItemCheck.classList.contains('show')) {
+      showOrCollapse(multiItemCheck, false);
+    }
+
     // When the title field is empty fill it with either
     // current track or current section name
-    if ($('#playlist_item_title').val() == '') {
-      $('#playlist_item_title').val(
-        $('#current-track-name').text() || $('#current-section-name').text()
-      );
-    }
+    const playlistItemTitle = getById('playlist_item_title');
+    const currentTrackName = getById('current-track-name');
+    const currentSectionName = getById('current-section-name');
+    playlistItemTitle.value = (currentTrackName ? currentTrackName.textContent : '')
+      || (currentSectionName ? currentSectionName.textContent : '');
   }
 }
 
@@ -205,146 +215,184 @@ function collapseMoreDetails() {
  */
 function disableEnableCurrentTrack(activeTrack, currentTime, isPlaying, sectionTitle) {
   // Return when add to playlist form is not visible
-  let playlistForm = $('#add_to_playlist')[0];
+  let playlistForm = getById('add_to_playlist');
   if (!playlistForm) {
     return;
   }
   let title = sectionTitle;
+  const trackRadio = getById('playlistitem_scope_track');
+  const trackText = getById('current-track-text');
+  const trackName = getById('current-track-name');
   if (activeTrack != undefined) {
     streamId = activeTrack.streamId;
     let { label, times, sectionLabel } = activeTrack;
     // Update starttime when media is not playing
     let starttime = isPlaying ? times.begin : currentTime || times.begin;
-    $('#playlist_item_start').val(createTimestamp(starttime, true));
-    $('#playlist_item_end').val(createTimestamp(times.end, true));
+    getById('playlist_item_start').value = createTimestamp(starttime, true);
+    getById('playlist_item_end').value = createTimestamp(times.end, true);
     title = `${sectionLabel} - ${label}`;
-    $('#current-track-name').text(title);
+    trackName.textContent = title;
     // When player's currentTime is in between the activeTrack's begin and
     // end times, enable the current track option
     if (times.begin <= starttime && starttime <= times.end) {
-      $('#playlistitem_scope_track')[0].disabled = false;
-      $('#current-track-text').removeClass('disabled-option');
-      $('#playlistitem_scope_track').closest('label').css('cursor', 'pointer');
+      if (trackRadio) {
+        trackRadio.disabled = false;
+        if (trackRadio.closest('label')) trackRadio.closest('label').style.cursor = 'pointer';
+      }
+      if (trackText) trackText.classList.remove('disabled-option');
     }
   } else {
     // When activeTrack is undefined, disable the current track option
-    $('#playlistitem_scope_track')[0].disabled = true;
-    $('#current-track-name').text('');
-    $('#current-track-text').addClass('disabled-option');
-    $('#playlistitem_scope_track').closest('label').css('cursor', 'not-allowed');
-    if ($('#playlistitem_scope_track')[0].checked) {
-      $('#moreDetails').collapse('hide');
-      $('#playlistitem_scope_track').prop('checked', false);
+    if (trackRadio) {
+      trackRadio.disabled = true;
+      if (trackRadio.closest('label')) trackRadio.closest('label').style.cursor = 'not-allowed';
+
+      if (trackRadio.checked) {
+        const moreDetails = getById('moreDetails');
+        if (moreDetails) showOrCollapse(moreDetails, false);
+        trackRadio.checked = false;
+      }
     }
+    if (trackName) trackName.textContent = '';
+    if (trackText) trackText.classList.add('disabled-option');
   }
   if (sectionTitle != undefined) {
-    $('#playlist_item_title').val(title);
+    getById('playlist_item_title').value = title;
   }
 }
 
-/** AJAX request for add to playlist for submission for playlist item for
+/** Fetch request for add to playlist for submission for playlist item for
  * a selected clip
  */
 function addPlaylistItem(playlistId, masterfileId, starttime, endtime) {
-  $.ajax({
-    url: '/playlists/' + playlistId + '/items',
-    type: 'POST',
-    data: {
-      playlist_item: {
-        master_file_id: masterfileId,
-        title: $('#playlist_item_title').val(),
-        comment: $('#playlist_item_description').val(),
-        start_time: starttime,
-        end_time: endtime,
-      }
+  const formData = new FormData();
+  formData.append('playlist_item[master_file_id]', masterfileId);
+  formData.append('playlist_item[title]', getById('playlist_item_title').value);
+  formData.append('playlist_item[comment]', getById('playlist_item_description').value);
+  formData.append('playlist_item[start_time]', starttime);
+  formData.append('playlist_item[end_time]', endtime);
+
+  fetch('/playlists/' + playlistId + '/items', {
+    method: 'POST',
+    headers: {
+      'X-Requested-With': 'XMLHttpRequest',
+      'X-CSRF-Token': query('meta[name="csrf-token"]').content
     },
-    success: function (res) {
+    body: formData
+  })
+    .then(response => response.json())
+    .then(res => {
       handleAddSuccess(res);
-    },
-    error: function (err) {
+    })
+    .catch(err => {
       handleAddError(err);
-    }
-  });
+    });
 }
 
-/** AJAX request for add to playlist for submission for playlist items for
+/** Fetch request for add to playlist for submission for playlist items for
  * section(s)
  */
 function addToPlaylist(playlistId, scope, masterfileId, moId) {
-  $.ajax({
-    url: '/media_objects/' + moId + '/add_to_playlist',
-    type: 'POST',
-    data: {
-      post: {
-        masterfile_id: masterfileId,
-        playlist_id: playlistId,
-        playlistitem_scope: scope
-      }
+  const formData = new FormData();
+  formData.append('post[masterfile_id]', masterfileId);
+  formData.append('post[playlist_id]', playlistId);
+  formData.append('post[playlistitem_scope]', scope);
+
+  fetch('/media_objects/' + moId + '/add_to_playlist', {
+    method: 'POST',
+    headers: {
+      'X-Requested-With': 'XMLHttpRequest',
+      'X-CSRF-Token': query('meta[name="csrf-token"]').content
     },
-    success: function (res) {
+    body: formData
+  })
+    .then(response => response.json())
+    .then(res => {
       handleAddSuccess(res);
-    },
-    error: function (err) {
+    })
+    .catch(err => {
       handleAddError(err);
-    }
-  });
+    });
 }
 
 /** Show success message for add to playlist */
 function handleAddSuccess(response) {
-  let alertEl = $('#add_to_playlist_alert');
+  let alertEl = getById('add_to_playlist_alert');
+  let messageEl = getById('add_to_playlist_result_message');
+  let formGroup = getById('add_to_playlist_form_group');
 
-  alertEl.removeClass('alert-danger');
-  alertEl.addClass('alert-success');
-  alertEl.find('#add_to_playlist_result_message').html(response.message);
+  if (!alertEl || !messageEl || !formGroup) return;
 
-  alertEl.slideDown();
-  $('#add_to_playlist_form_group').slideUp();
+  alertEl.classList.remove('alert-danger');
+  alertEl.classList.add('alert-success');
+  alertEl.style.display = 'block';
+  messageEl.innerHTML = response.message;
+  formGroup.style.display = 'none';
+
   resetAddToPlaylistForm();
 }
 
 /** Show error message for add to playlist */
 function handleAddError(error) {
-  let alertEl = $('#add_to_playlist_alert');
+  let alertEl = getById('add_to_playlist_alert');
+  let messageEl = getById('add_to_playlist_result_message');
+  let formGroup = getById('add_to_playlist_form_group');
+
+  if (!alertEl || !messageEl || !formGroup) return;
+
   let message = error.statusText || 'There was an error adding to playlist';
 
   if (error.responseJSON && error.responseJSON.message) {
     message = error.responseJSON.message.join('<br/>');
   }
 
-  alertEl.removeClass('alert-success');
-  alertEl.addClass('alert-danger add_to_playlist_alert_error');
-  alertEl.find('#add_to_playlist_result_message').html('ERROR: ' + message);
+  alertEl.classList.remove('alert-success');
+  alertEl.classList.add('alert-danger', 'add_to_playlist_alert_error');
+  alertEl.style.display = 'block';
+  messageEl.innerHTML = 'ERROR: ' + message;
+  formGroup.style.display = 'none';
 
-  alertEl.slideDown();
-  $('#add_to_playlist_form_group').slideUp();
   resetAddToPlaylistForm();
 }
 
 /** Reset add to playlist form */
 function resetAddToPlaylistForm() {
-  $('#playlist_item_description').val('');
-  $('#playlist_item_title').val('');
-  $('input[name="post[playlistitem_scope]"]').prop('checked', false);
-  $('#playlistitem_scope_structure').prop('checked', true);
-  $('#moreDetails').collapse('hide');
-  $('#multiItemCheck').collapse('hide');
+  const description = getById('playlist_item_description');
+  const title = getById('playlist_item_title');
+  const scopeInput = query('input[name="post[playlistitem_scope]"]');
+  const structureRadio = getById('playlistitem_scope_structure');
+  const moreDetails = getById('moreDetails');
+  const multiItemCheck = getById('multiItemCheck');
+
+  if (description) description.value = '';
+  if (title) title.value = '';
+  if (scopeInput) scopeInput.checked = false;
+  if (structureRadio) structureRadio.checked = true;
+
+  if (moreDetails) showOrCollapse(moreDetails, false);
+  if (multiItemCheck) showOrCollapse(multiItemCheck, false);
 }
 
 /** Reset add to playlist panel when alert is closed */
 function closeAlert() {
-  $('#add_to_playlist_alert').slideUp();
-  $('#add_to_playlist_form_group').slideDown();
+  const alertEl = getById('add_to_playlist_alert');
+  const formGroup = getById('add_to_playlist_form_group');
+  const trackRadio = getById('playlistitem_scope_track');
+  const sectionRadio = getById('playlistitem_scope_section');
+
+  if (alertEl) alertEl.style.display = 'none';
+  if (formGroup) formGroup.style.display = 'block';
+
   // Set default selection in options list when alert is closed
-  if ($('#playlistitem_scope_track')[0].disabled) {
-    $('#playlistitem_scope_section').prop('checked', true);
+  if (trackRadio && trackRadio.disabled) {
+    if (sectionRadio) sectionRadio.checked = true;
   } else {
-    $('#playlistitem_scope_track').prop('checked', true);
+    if (trackRadio) trackRadio.checked = true;
   }
 }
 
 /** Refresh stream token by reloading active m3u8 */
 function m3u8Reload() {
-  player = document.getElementById('iiif-media-player');
+  player = getById('iiif-media-player');
   fetch(player.player.currentSources()[0]["src"]);
 };

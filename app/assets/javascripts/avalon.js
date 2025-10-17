@@ -35,10 +35,10 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  const showObjectTree = document.getElementById('show_object_tree');
+  const showObjectTree = getById('show_object_tree');
   if (showObjectTree) {
     showObjectTree.addEventListener('click', function () {
-      const objectTree = document.getElementById('object_tree');
+      const objectTree = getById('object_tree');
       if (objectTree) {
         fetch(objectTree.dataset.src)
           .then(response => response.text())
@@ -56,7 +56,7 @@ document.addEventListener('DOMContentLoaded', () => {
     return false;
   }
   if (iOS) {
-    const readonlyInputs = document.querySelectorAll('input[readonly], textarea[readonly]');
+    const readonlyInputs = queryAll('input[readonly], textarea[readonly]');
     readonlyInputs.forEach(function (input) {
       input.addEventListener('cut', preventDefaultAndStop);
       input.addEventListener('paste', preventDefaultAndStop);
@@ -66,7 +66,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   window.addEventListener('hashchange', function () {
-    var element = document.getElementById(location.hash.substring(1));
+    var element = getById(location.hash.substring(1));
     if (element) {
       if (!/^(?:a|select|input|button|textarea)$/i.test(element.tagName)) {
         element.tabIndex = -1;
@@ -76,8 +76,8 @@ document.addEventListener('DOMContentLoaded', () => {
   }, false);
 
   // Set CSS to push the page content above footer
-  const contentWrapper = document.querySelector('.content-wrapper');
-  const footer = document.getElementById('footer');
+  const contentWrapper = query('.content-wrapper');
+  const footer = getById('footer');
 
   window.addEventListener('resize', () => {
     if (contentWrapper && footer) { }
@@ -94,8 +94,8 @@ document.addEventListener('DOMContentLoaded', () => {
   adjustFooterPadding();
 
   /* Toggle CSS classes for global search form */
-  const searchWrapper = document.querySelector('.global-search-wrapper');
-  const searchSubmit = document.querySelector('.global-search-submit');
+  const searchWrapper = query('.global-search-wrapper');
+  const searchSubmit = query('.global-search-submit');
 
   function toggleSearchClasses() {
     if (searchWrapper && searchSubmit) {

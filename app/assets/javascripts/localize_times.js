@@ -14,25 +14,28 @@
  * ---  END LICENSE_HEADER BLOCK  ---
 */
 
-// Requires moment.js
-function localize_times() {
-  $('*[data-utc-time]').each(function() {
-    $(this).text(moment($(this).data('utc-time')).format('LLL'))
-  });
-}
+document.addEventListener('DOMContentLoaded', function () {
+  // Localize UTC times on page load
+  localize_times();
 
-$(document).ready(localize_times);
-$(document).on('draw.dt', localize_times);
-// This interval is necessary to make sure CDL return time is calculated
-// and displayed on pages that have a Ramp player. The message renders in Ramp so 
-// we need to wait until it is initialized to run localize_times.
-$(document).ready(function () {
-  let timeCheck = setInterval(initLocalizeTimes, 500);
+  // This interval is necessary to make sure CDL return time is calculated
+  // and displayed on pages that have a Ramp player. The message renders in Ramp so 
+  // we need to wait until it is initialized to run localize_times.
+  let timeCheck = setInterval(initLocalizeTimes, 1000);
   function initLocalizeTimes() {
     // Check readyState to avoid constant interval polling on non-Ramp pages.
     if (document.readyState === 'complete') {
+      // Clear interval once page is loaded
       clearInterval(timeCheck);
       localize_times();
     }
   }
 });
+
+// Requires moment.js
+function localize_times() {
+  const utcTimes = queryAll('*[data-utc-time]');
+  utcTimes.forEach((t) => {
+    t.textContent = moment(t.dataset['utc-time']).format('LLL');
+  });
+}

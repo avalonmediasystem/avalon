@@ -12,21 +12,21 @@
 //   specific language governing permissions and limitations under the License.
 // ---  END LICENSE_HEADER BLOCK  ---
 
-document.addEventListener('DOMContentLoaded', function() {
-  const section_form = document.querySelector('#associated_files form');
-  const button_form = document.querySelector('#workflow_buttons form');
+document.addEventListener('DOMContentLoaded', function () {
+  const section_form = query('#associated_files form');
+  const button_form = query('#workflow_buttons form');
 
   if (section_form && button_form) {
-    const textInputs = section_form.querySelectorAll('input[type=text]');
+    const textInputs = queryAll('input[type=text]', section_form);
 
-    textInputs.forEach(function(input) {
-      input.addEventListener('change', function() {
+    textInputs.forEach(function (input) {
+      input.addEventListener('change', function () {
         const inputId = this.getAttribute('id');
         const inputName = this.getAttribute('name');
         const inputValue = this.value;
         const double_id = `${inputId}_double`;
 
-        let double = button_form.querySelector(`input[id='${double_id}']`);
+        let double = query(`input[id='${double_id}']`, button_form);
 
         if (!double) {
           double = document.createElement('input');
@@ -42,11 +42,11 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
 
-  const fileInput = document.getElementById('file-input');
+  const fileInput = getById('file-input');
   if (fileInput) {
-    fileInput.addEventListener('change', function() {
-      const submitButtons = document.querySelectorAll('.fileinput-submit');
-      submitButtons.forEach(function(button) {
+    fileInput.addEventListener('change', function () {
+      const submitButtons = queryAll('.fileinput-submit');
+      submitButtons.forEach(function (button) {
         button.disabled = false;
       });
     });

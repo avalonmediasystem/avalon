@@ -23,7 +23,7 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 window.apply_button_confirmation = function () {
-  var btnList = [].slice.call(document.querySelectorAll('.btn-confirmation'));
+  var btnList = [].slice.call(queryAll('.btn-confirmation'));
   btnList.map(function (btn) {
     return new bootstrap.Popover(btn, {
       trigger: 'manual',
@@ -38,12 +38,10 @@ window.apply_button_confirmation = function () {
         } else {
           const formId = this.getAttribute('form');
           button = `<input class="btn btn-sm btn-danger btn-confirm" role="button" form="${formId}" type="submit" value="Yes, Delete">`;
-          const form = document.getElementById(formId);
+          const form = getById(formId);
           if (form) {
-            const methodInput = form.querySelector('[name="_method"]');
-            if (methodInput) {
-              methodInput.value = 'delete';
-            }
+            const methodInput = query('[name="_method"]', form);
+            if (methodInput) methodInput.value = 'delete';
           }
         }
         return '<p>Are you sure?</p> ' + button + ' <a href="#" class="btn btn-sm btn-primary" role="button" id="special_button_color">No, Cancel</a>';
@@ -87,9 +85,9 @@ document.addEventListener('shown.bs.popover', function (e) {
     // Get the popover id
     let popoverId = e.target.getAttribute('aria-describedby');
     if (popoverId) {
-      let popover = document.getElementById(popoverId);
+      let popover = getById(popoverId);
       if (popover) {
-        let firstBtn = popover.querySelector('.btn');
+        let firstBtn = query('.btn', popover);
         if (firstBtn) {
           firstBtn.focus();
         }
@@ -101,10 +99,10 @@ document.addEventListener('shown.bs.popover', function (e) {
 // Trap focus within the popover when it is opened
 document.addEventListener('keydown', function (e) {
   // Only proceed if a popover is open
-  let popoverIsOpen = document.querySelector('.popover.show');
+  let popoverIsOpen = query('.popover.show');
   if (popoverIsOpen) {
     // Find all focusable elements inside the popover
-    let focusableEls = Array.from(popoverIsOpen.querySelectorAll('a[role="button"]'))
+    let focusableEls = Array.from(queryAll('a[role="button"]', popoverIsOpen))
       .filter(el => { return el.offsetWidth > 0 && el.offsetHeight > 0; });
     if (!focusableEls.length) return;
 
@@ -130,7 +128,7 @@ document.addEventListener('keydown', function (e) {
     if (e.key === 'Escape') {
       e.preventDefault();
       // Hide all confirmation button popovers
-      document.querySelectorAll('.btn-confirmation').forEach(btn => {
+      queryAll('.btn-confirmation').forEach(btn => {
         const popoverInstance = bootstrap.Popover.getInstance(btn);
         if (popoverInstance) {
           popoverInstance.hide();

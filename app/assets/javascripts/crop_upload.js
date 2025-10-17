@@ -15,9 +15,9 @@
 */
 
 function add_cropper_handler(upload_path) {
-  const image = document.getElementById('image');
-  const input = document.getElementById('poster_input');
-  const modal = document.getElementById('modal');
+  const image = getById('image');
+  const input = getById('poster_input');
+  const modal = getById('modal');
   let cropper;
   let width = 700;
   let aspectRatio = 5 / 4;
@@ -58,7 +58,7 @@ function add_cropper_handler(upload_path) {
     cropper = null;
   });
 
-  document.getElementById('crop').addEventListener('click', function () {
+  getById('crop').addEventListener('click', function () {
     let canvas;
     let inputfile = input.value.split('\\').pop();
     const modalInstance = bootstrap.Modal.getInstance(modal);
@@ -72,10 +72,10 @@ function add_cropper_handler(upload_path) {
         let formData = new FormData();
         input.value = "";
         formData.append('admin_collection[poster]', blob, inputfile);
-        formData.append('authenticity_token', document.querySelector('input[name=authenticity_token]').value);
+        formData.append('authenticity_token', query('input[name=authenticity_token]').value);
 
         // Display uploading in-progress
-        const cropperProgress = document.getElementById('cropper-progress');
+        const cropperProgress = getById('cropper-progress');
         cropperProgress.style.display = 'block';
         fetch(upload_path, {
           method: "POST",

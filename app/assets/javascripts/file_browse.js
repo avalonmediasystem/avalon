@@ -20,39 +20,39 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   });
 
-  const browseBtn = document.getElementById('browse-btn');
+  const browseBtn = getById('browse-btn');
   if (browseBtn) {
     const browseEverythingInst = window.jQuery(browseBtn).browseEverything();
     browseEverythingInst.show(function () {
-      const browseEverythingWorkflow = document.querySelector('#browse-everything input[name=workflow]');
+      const browseEverythingWorkflow = query('#browse-everything input[name=workflow]');
       if (!browseEverythingWorkflow) {
-        const webUploadWorkflow = document.querySelector('#web_upload input[name=workflow]');
+        const webUploadWorkflow = query('#web_upload input[name=workflow]');
         if (webUploadWorkflow) {
           const skip_box = webUploadWorkflow.closest('span').cloneNode(true);
           skip_box.className = '';
           skip_box.style.marginRight = '10px';
-          const evCancel = document.querySelector('.ev-cancel');
+          const evCancel = query('.ev-cancel');
           if (evCancel) {
             evCancel.parentNode.insertBefore(skip_box, evCancel);
           }
         }
       }
 
-      const providerLink = document.querySelector('.ev-providers .ev-container a');
+      const providerLink = query('.ev-providers .ev-container a');
       if (providerLink) providerLink.click();
     }).done(function (data) {
       if (data.length > 0) {
-        const uploadModal = document.getElementById('uploading');
+        const uploadModal = getById('uploading');
         if (uploadModal) {
           const uploadModal = new bootstrap.Modal(uploadModal);
           uploadModal.show();
         }
-        const dropboxWorkflowInput = document.querySelector('#dropbox_form input[name=workflow]');
-        const browseWorkflowChecked = document.querySelector('#browse-everything input[name=workflow]:checked');
+        const dropboxWorkflowInput = query('#dropbox_form input[name=workflow]');
+        const browseWorkflowChecked = query('#browse-everything input[name=workflow]:checked');
         if (dropboxWorkflowInput && browseWorkflowChecked) {
           dropboxWorkflowInput.value = browseWorkflowChecked.value;
         }
-        const dropboxForm = document.getElementById('dropbox_form');
+        const dropboxForm = getById('dropbox_form');
         if (dropboxForm) dropboxForm.submit();
       }
     });

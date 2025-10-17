@@ -16,13 +16,13 @@ document.addEventListener('DOMContentLoaded', function () {
   const add_button_html = '<button type="button" class="add-dynamic-field btn btn-outline btn-light"><span class="fa fa-plus"></span></button>';
   const remove_button_html = '<button type="button" class="remove-dynamic-field btn btn-outline btn-light"><span class="fa fa-minus"></span></button>';
 
-  document.querySelectorAll('.mb-3.multivalued').forEach(function (multivalued) {
-    const inputGroups = multivalued.querySelectorAll('.input-group');
+  queryAll('.mb-3.multivalued').forEach(function (multivalued) {
+    const inputGroups = queryAll('.input-group', multivalued);
     inputGroups.forEach(function (inputGroup, igIndex) {
-      inputGroup.querySelectorAll('input[id]').forEach(input => {
+      queryAll('input[id]', inputGroup).forEach(input => {
         input.id = input.id + igIndex;
       });
-      inputGroup.querySelectorAll('input[data-bs-target]').forEach(input => {
+      queryAll('input[data-bs-target]', inputGroup).forEach(input => {
         input.setAttribute('data-bs-target', input.getAttribute('data-bs-target') + igIndex);
       });
     });
@@ -46,55 +46,55 @@ document.addEventListener('DOMContentLoaded', function () {
       // Clone the current input group for the next value
       const new_input_group = current_input_group.cloneNode(true);
 
-      new_input_group.querySelectorAll('input, textarea').forEach(el => el.value = '');
-      new_input_group.querySelectorAll('input[id], textarea[id]').forEach(function (el) {
+      queryAll('input, textarea', new_input_group).forEach(el => el.value = '');
+      queryAll('input[id], textarea[id]', new_input_group).forEach(function (el) {
         const idArray = el.id.split('_');
         idArray.push(parseInt(idArray.pop()) + 1);
         el.id = idArray.join('_');
       });
 
       // Update targets for the cloned input group
-      new_input_group.querySelectorAll('input[data-bs-target], textarea[data-bs-target]').forEach(function (el) {
+      queryAll('input[data-bs-target], textarea[data-bs-target]', new_input_group).forEach(function (el) {
         const target = el.getAttribute('data-bs-target').split('_');
         target.push(parseInt(target.pop()) + 1);
         el.setAttribute('data-bs-target', target.join('_'));
       });
 
-      if (current_input_group.querySelector('.typeahead')) {
+      if (query('.typeahead'), current_input_group) {
         // Add new input group for typeahead field, e.g. Language(s)
-        current_input_group.querySelector('.typeahead').setAttribute('open', false);
-        const new_autocomplete = new_input_group.querySelector('.typeahead');
+        query('.typeahead', current_input_group).setAttribute('open', false);
+        const new_autocomplete = query('.typeahead', new_input_group);
         const for_attr = new_autocomplete.getAttribute('for');
         let target = for_attr.split('-')[0].split('_');
         target.push(parseInt(target.pop()) + 1);
         target = target.join('_');
         new_autocomplete.setAttribute('for', target + '-popup');
-        const ul = new_autocomplete.querySelector(".autocomplete_popup");
+        const ul = query(".autocomplete_popup", new_autocomplete);
         ul.id = target + '-popup';
-        const feedback = new_autocomplete.querySelector(".autocomplete_feedback");
+        const feedback = query(".autocomplete_feedback", new_autocomplete);
         feedback.id = target + '-popup-feedback';
-      } else if (current_input_group.querySelector('.dropdown-menu')) {
+      } else if (query('.dropdown-menu', current_input_group)) {
         // Add new input group for dropdown field, e.g. Rights Statement
-        const firstLink = current_input_group.querySelector('.dropdown-menu li:first-child a');
-        const firstSpan = current_input_group.querySelector('.dropdown-menu li:first-child span');
+        const firstLink = query('.dropdown-menu li:first-child a', current_input_group);
+        const firstSpan = query('.dropdown-menu li:first-child span', current_input_group);
         const dropdown_default_label = firstLink ? firstLink.textContent : '';
         const dropdown_default_value = firstSpan ? firstSpan.textContent : '';
 
-        const dropdownToggleSpan = new_input_group.querySelector('.dropdown-toggle span');
+        const dropdownToggleSpan = query('.dropdown-toggle span', new_input_group);
         if (dropdownToggleSpan) dropdownToggleSpan.textContent = dropdown_default_label;
-        const hiddenInput = new_input_group.querySelector('input[type="hidden"]');
+        const hiddenInput = query('input[type="hidden"]', new_input_group);
         if (hiddenInput) hiddenInput.value = dropdown_default_value;
       }
 
       // Swap + icon for - icon for the current input group
-      const addBtn = current_input_group.querySelector('button.add-dynamic-field');
+      const addBtn = query('button.add-dynamic-field', current_input_group);
       if (addBtn) addBtn.remove();
       current_input_group.insertAdjacentHTML('beforeend', remove_button_html);
 
       const textarea = current_input_group.dataset.textarea;
       if (typeof (textarea) !== "undefined") {
         // Add new input group with textarea, e.g. Note(s) field
-        const current_textarea = document.getElementById(textarea);
+        const current_textarea = getById(textarea);
         if (current_textarea) {
           const new_textarea = current_textarea.cloneNode(true);
           new_textarea.value = '';
@@ -121,7 +121,7 @@ document.addEventListener('DOMContentLoaded', function () {
       const textarea = current_input_group.dataset.textarea;
       // Remove textarea associated with the current input group
       if (typeof (textarea) !== "undefined") {
-        const textareaEl = document.getElementById(textarea);
+        const textareaEl = getById(textarea);
         if (textareaEl) textareaEl.remove();
       }
       // Remove the current input group

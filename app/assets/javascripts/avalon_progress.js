@@ -19,7 +19,7 @@ var AvalonProgress = (function () {
       updateBar = (bar, attrs) => {
         for (let type in attrs) {
           const percent = attrs[type];
-          const targetProgressbar = bar.querySelector(`.progress-bar.bg-${type}`);
+          const targetProgressbar = query(`.progress-bar.bg-${type}`, bar);
           if (targetProgressbar) {
             targetProgressbar.style.width = `${percent}%`;
           }
@@ -31,7 +31,7 @@ var AvalonProgress = (function () {
 
     retrieve(auto) {
       if (auto == null) { auto = false; }
-      const progressElement = document.getElementById('progress');
+      const progressElement = getById('progress');
       if (!progressElement) return;
 
       const progressUrl = progressElement.dataset.progressUrl;
@@ -56,7 +56,7 @@ var AvalonProgress = (function () {
       // Update progress for media-object ingest in item view page
       if (this.data['overall'] != null) {
         const info = this.data['overall'];
-        const overallBar = document.getElementById('overall');
+        const overallBar = getById('overall');
 
         if (overallBar) {
           updateBar(overallBar, { success: info.success, danger: info.error });
@@ -76,11 +76,11 @@ var AvalonProgress = (function () {
 
 document.addEventListener('DOMContentLoaded', function () {
   // Do nothing if there are no progress element(s) or progress-url in progress element's dataset
-  const container = document.querySelector('#progress[data-progress-url]');
+  const container = query('#progress[data-progress-url]');
   if (!container) {
     return;
   }
-  if (container.querySelectorAll('.progress-bar').length === 0) {
+  if (queryAll('.progress-bar', container).length === 0) {
     return;
   }
 
