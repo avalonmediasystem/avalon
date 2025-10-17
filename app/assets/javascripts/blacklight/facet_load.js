@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2011-2025, The Trustees of Indiana University and Northwestern
  *   University.  Licensed under the Apache License, Version 2.0 (the "License");
  *   you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
 
 /*global Blacklight */
 
-(function($) {
+(function() {
   'use strict';
 
   Blacklight.doResizeFacetLabelsAndCounts = function() {
@@ -25,17 +25,17 @@
       return b.textContent.length - a.textContent.length;
     }
 
-    $('ul.facet-values, ul.pivot-facet').each(function() {
-      var longest = $(this)
-        .find('span.facet-count')
-        .sort(longer)[0];
+    const facetLists = queryAll('ul.facet-values, ul.pivot-facet');
+    facetLists.forEach(function(list) {
+      const facetCounts = Array.from(list.querySelectorAll('span.facet-count'));
+      const longest = facetCounts.sort(longer)[0];
 
       if (longest && longest.textContent) {
-        var width = longest.textContent.length + 1 + 'ch';
-        $(this)
-          .find('.facet-count')
-          .first()
-          .width(width);
+        const width = longest.textContent.length + 1 + 'ch';
+        const firstFacetCount = list.querySelector('.facet-count');
+        if (firstFacetCount) {
+          firstFacetCount.style.width = width;
+        }
       }
     });
   };
@@ -43,4 +43,4 @@
   Blacklight.onLoad(function() {
     Blacklight.doResizeFacetLabelsAndCounts();
   });
-}(jQuery));
+})();
