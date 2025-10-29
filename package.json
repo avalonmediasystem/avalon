@@ -39,6 +39,7 @@
     "stream-browserify": "^3.0.0",
     "style-loader": "^3.3.3",
     "terser-webpack-plugin": "5",
+    "tom-select": "^2.4.3",
     "url-search-params-polyfill": "^7.0.1",
     "util": "^0.12.5",
     "video.js": "^8.10.0",
