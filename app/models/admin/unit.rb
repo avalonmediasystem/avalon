@@ -211,6 +211,7 @@ class Admin::Unit < ActiveFedora::Base
   def reindex_members
     yield
     ReindexJob.perform_later(self.collection_ids)
+    # TODO Also need to reindex all media objects in the collections of this unit
   end
 
   def to_solr
