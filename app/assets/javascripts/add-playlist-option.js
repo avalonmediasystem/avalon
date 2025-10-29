@@ -12,144 +12,343 @@
 //   specific language governing permissions and limitations under the License.
 // ---  END LICENSE_HEADER BLOCK  ---
 
-// This script will enable support for the html5 form attribute
-// This should only be needed for IE but is currently applied wholesale
-// to all disjointed submit elements as is needed in some of the workflow steps
+/**
+ * This script will enable support adding 'Add new playlist' and search functionality in
+ * add to playlist dropdown menu via tom-select JS library.
+ */
+document.addEventListener('DOMContentLoaded', () => add_new_playlist_option());
 
-$(() => add_new_playlist_option());
-
-this.add_new_playlist_option = function() {
+this.add_new_playlist_option = function () {
   const addnew = 'Add new playlist';
-  const select_element = $('#post_playlist_id');
-  const select_options = $('#post_playlist_id > option');
+  const select_element = document.getElementById('post_playlist_id');
+  if (!select_element) return;
+
+  const select_options = select_element.querySelectorAll('option');
   let add_success = false;
   let has_new_opt = false;
+  let tomSelectInstance = null;
+  let lastSearchTerm = '';
 
-  // Prepend 'Add new playlist' option only when not present
-  select_options.each(function() {
-    if (this.value === addnew) {
-      return has_new_opt = true;
+  // Helper function to render "Add new playlist" option text
+  const renderAddNewPlaylistOption = function (searchTerm) {
+    const iconHtml = '<i class="fa fa-plus" aria-hidden="true"></i> ';
+    const termText = searchTerm && searchTerm.trim() ? ' "' + searchTerm + '"' : '';
+    return iconHtml + '<b>' + addnew + termText + '</b>';
+  };
+
+  // Helper function to update "Add new playlist" option with typed search term
+  const updateAddNewPlaylistOption = function (dropdown_content, searchTerm) {
+    const addNewOption = dropdown_content.querySelector('[data-value="' + addnew + '"]');
+    if (addNewOption) {
+      const escapedTerm = searchTerm ? escapeHtml(searchTerm) : searchTerm;
+      addNewOption.innerHTML = renderAddNewPlaylistOption(escapedTerm);
+    }
+  };
+
+  const escapeHtml = function (str) {
+    return (str + '')
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
+  };
+
+  // Add 'Add new playlist' option only when not present
+  select_options.forEach(function (option) {
+    if (option.value === addnew) {
+      has_new_opt = true;
     }
   });
-  
   if (!has_new_opt) {
-    select_element.append(new Option(addnew));
+    // Insert 'Add new playlist' option at the top of the list
+    const newOption = new Option(addnew);
+    select_element.insertBefore(newOption, select_element.firstChild);
   }
 
-  const getSearchTerm = () => $('span.select2-search--dropdown input').attr('data-testid', 'media-object-playlist-search-input').val();
+  // Initialize TomSelect
+  function initTomSelectWithRetry() {
+    if (typeof TomSelect !== 'undefined') {
+      const selectEl = document.getElementById('post_playlist_id');
+      if (!selectEl || selectEl.tomselect) return;
 
-  const matchWithNew = function(params, data) {
-    let term = params.term || '';
-    term = term.toLowerCase();
-    const text = data.text.toLowerCase();
-    if (text.includes(addnew.toLowerCase()) || text.includes(term)) {
-      return data;
-    }
-    return null;
-  };
+      // Get first playlist option and identify it as default
+      const firstRealOption = Array.from(selectEl.options).find(opt => opt.value !== addnew);
+      const defaultValue = firstRealOption ? firstRealOption.value : null;
 
-  const sortWithNew = data => data.sort(function(a, b) {
-    if (b.text.trim() === addnew) {
-      return 1;
-    }
-    if ((a.text < b.text) || (a.text.trim() === addnew)) {
-      return -1;
-    }
-    if (a.text > b.text) {
-      return 1;
-    }
-    return 0;});
+      tomSelectInstance = new TomSelect(selectEl, {
+        searchField: ['text'],
+        sortField: [
+          { field: '$order' },
+          { field: 'text', direction: 'asc' }
+        ],
+        // Override the scoring function for searching
+        score: function (search) {
+          const searchLower = search.toLowerCase().trim();
+          return function (item) {
+            const itemTextLower = item.text.toLowerCase();
+            // Always show "Add new playlist" option with highest priority
+            if (item.text === addnew) return 2;
+            // Show playlists that start with the search term
+            if (itemTextLower.startsWith(searchLower)) return 1;
+            // Hide non-matching playlists
+            return 0;
+          };
+        },
+        onInitialize: function () {
+          const self = this;
+          // Set $order property on options after initialization
+          Object.keys(self.options).forEach(function (key) {
+            const option = self.options[key];
+            // Set "Add new playlist" order 0 to make it appear on top of playlists
+            option.$order = (option.text === addnew) ? 0 : 1;
+          });
+        },
+        allowEmptyOption: false,
+        hideSelected: false,
+        closeAfterSelect: true,
+        placeholder: 'Search playlists',
+        // Prevent clearing selection with backspace/delete
+        onDelete: function () { return false; },
+        // Hide search in control and use plugin to show search in dropdown
+        controlInput: null,
+        // Use 'Drodown Input' to add search at the top of the list
+        plugins: ['dropdown_input'],
+        onType: function (str) {
+          // Remember the search term as user types
+          lastSearchTerm = str;
+          // Update the "Add new playlist" option text dynamically
+          updateAddNewPlaylistOption(this.dropdown_content, str);
+        },
+        onDropdownOpen: function () {
+          // Reset "Add new playlist" option text
+          lastSearchTerm = '';
+          updateAddNewPlaylistOption(this.dropdown_content, '');
 
-  const formatAddNew = function(data) {
-    let term = getSearchTerm() || '';
-    if (data.text === addnew ) {
-      if (term !== '') {
-        term = addnew + ' "' + term + '"';
-      } else {
-        term = addnew;
-      }
-      return `<a> \
-<i class="fa fa-plus" aria-hidden="true"></i> <b>`+term+`</b> \
-</a>`;
-    } else {
-      const start = data.text.toLowerCase().indexOf(term.toLowerCase());
-      if (start !== -1) {
-        const end = (start+term.length)-1;
-        return data.text.substring(0,start) + '<b>' + data.text.substring(start, end+1) + '</b>' + data.text.substring(end+1);
-      }
-    }
-    return data.text;
-  };
-    
-  select_element.select2({
-    templateResult: formatAddNew,
-    escapeMarkup(markup) { return markup; },
-    matcher: matchWithNew,
-    sorter: sortWithNew
-    })
-    .on('select2:selecting',
-      function(evt) {
-        const choice = evt.params.args.data.text;
-        if (choice.indexOf(addnew) !== -1) {
-          return showNewPlaylistModal(getSearchTerm());
+          // Mark search field as readonly to prevent from keyboard popping up for mobile devices
+          const IS_TOUCH_ONLY = navigator.maxTouchPoints && navigator.maxTouchPoints > 2 && !window.matchMedia("(pointer: fine").matches;
+          if (/Mobi|iPhone/i.test(window.navigator.userAgent) || IS_TOUCH_ONLY) {
+            this.control_input.setAttribute('readonly', true);
+            // Remove readonly after a short delay to allow typing if user focuses manually
+            setTimeout(() => {
+              this.control_input.removeAttribute('readonly');
+            }, 100);
+          }
+
+          // Update selected-option class when dropdown opens
+          const currentValue = this.getValue();
+          const dropdownOptions = this.dropdown_content.querySelectorAll('.selected-option');
+          dropdownOptions.forEach(opt => opt.classList.remove('selected-option'));
+
+          if (currentValue) {
+            const selectedOptionEl = this.dropdown_content.querySelector('[data-value="' + currentValue + '"]');
+            if (selectedOptionEl) {
+              selectedOptionEl.classList.add('selected-option');
+              // Scroll the selected option into view within the dropdown container
+              const dropdownContainer = this.dropdown_content;
+              const containerHeight = dropdownContainer.clientHeight;
+              // Center the selected option in the dropdown
+              dropdownContainer.scrollTop = selectedOptionEl.offsetTop - (containerHeight / 2) + (selectedOptionEl.offsetHeight / 2);
+            }
+          }
+        },
+        onInitialize: function () {
+          // Set ARIA attributes for tom-select controls flagged by SiteImprove
+          const dropdownList = document.querySelector('#post_playlist_id-ts-dropdown');
+          if (dropdownList) {
+            dropdownList.setAttribute('aria-label', 'list of playlists');
+          }
+          const playlistsCombobox = document.querySelector('#post_playlist_id-ts-control');
+          if (playlistsCombobox) playlistsCombobox.setAttribute('aria-labelledby', 'post_playlist_id');
+        },
+        render: {
+          item: function (data, escape) {
+            return `<div>${escape(data.text)}</div>`;
+          },
+          option: function (data, escape) {
+            const isSelected = this.items.indexOf(data.value) !== -1;
+            const selectedClass = isSelected ? 'ts-option-custom selected-option' : 'ts-option-custom';
+            let content;
+            if (data.text === addnew) {
+              content = renderAddNewPlaylistOption('');
+            } else {
+              content = escape(data.text);
+            }
+            return `<div class="${selectedClass}" data-value="${escape(data.value)}">${content}</div>`;
+          },
+          no_results: function (data, escape) {
+            const searchTerm = escape(data.input);
+            return `<div class="ts-option-custom option" data-selectable data-value="${addnew}">
+              ${renderAddNewPlaylistOption(searchTerm)}</div>`;
+          },
+        },
+        onChange: function (value) {
+          // Remove selected-option class from all options
+          const dropdownOptions = this.dropdown_content.querySelectorAll('.selected-option');
+          dropdownOptions.forEach(opt => opt.classList.remove('selected-option'));
+
+          // Add selected-option class to the newly selected option
+          const selectedOptionEl = this.dropdown_content.querySelector('[data-value="' + value + '"]');
+          if (selectedOptionEl) {
+            selectedOptionEl.classList.add('selected-option');
+
+            // Scroll the selected option into view within the dropdown container
+            const dropdownContainer = this.dropdown_content;
+            const optionTop = selectedOptionEl.offsetTop;
+            const optionHeight = selectedOptionEl.offsetHeight;
+            const containerHeight = dropdownContainer.clientHeight;
+
+            // Center the selected option in the dropdown
+            dropdownContainer.scrollTop = optionTop - (containerHeight / 2) + (optionHeight / 2);
+          }
+
+          const option = this.options[value];
+          if (option && option.text === addnew) {
+            showNewPlaylistModal(lastSearchTerm);
+            lastSearchTerm = '';
+          }
         }
-    });
+      });
 
-  var showNewPlaylistModal = function(playlistName) {
-    //set to defaults first
-    $('#new_playlist_submit').val('Create');
-    $('#new_playlist_submit').prop("disabled", false);
-    $('#playlist_title').val(playlistName);
-    $('#playlist_comment').val("");
-    $('#playlist_visibility_private').prop('checked', true);
-    //remove any possible old errors
-    $('#title_error').remove();
-    $('#playlist_title').parent().removeClass('has-error');
+      // Set the first playlist as default selection
+      if (defaultValue && tomSelectInstance) {
+        tomSelectInstance.setValue(defaultValue, true);
+      }
+
+      // Add click handler to toggle dropdown
+      if (tomSelectInstance && tomSelectInstance.control) {
+        let wasOpen = false;
+
+        // Capture state before TomSelect processes events
+        tomSelectInstance.on('dropdown_open', function () { wasOpen = true; });
+        tomSelectInstance.on('dropdown_close', function () { wasOpen = false; });
+
+        tomSelectInstance.control.addEventListener('click', function () {
+          if (wasOpen) {
+            setTimeout(() => {
+              tomSelectInstance.close();
+            }, 0);
+          }
+        });
+      }
+    } else {
+      // Retry if TomSelect not loaded yet
+      setTimeout(initTomSelectWithRetry, 50);
+    }
+  }
+
+  // Start initialization
+  initTomSelectWithRetry();
+
+  var showNewPlaylistModal = function (playlistName) {
+    // Set to defaults first
+    const submitBtn = document.getElementById('new_playlist_submit');
+    const titleInput = document.getElementById('playlist_title');
+    const commentInput = document.getElementById('playlist_comment');
+    const visibilityPrivate = document.getElementById('playlist_visibility_private');
+    const titleError = document.getElementById('title_error');
+    const modal = document.getElementById('add-playlist-modal');
+    if (submitBtn) {
+      submitBtn.value = 'Create';
+      submitBtn.disabled = false;
+    }
+    if (commentInput) {
+      commentInput.value = '';
+    }
+    if (visibilityPrivate) {
+      visibilityPrivate.checked = true;
+    }
+
+    // Remove any possible old errors
+    if (titleError) {
+      titleError.remove();
+    }
+    if (titleInput) {
+      titleInput.value = playlistName;
+      titleInput.parentElement.classList.remove('has-error');
+    }
     add_success = false;
-    //finally show
-    $('#add-playlist-modal').modal('show');
+
+    // Finally show modal
+    if (modal) {
+      const bsModal = new bootstrap.Modal(modal);
+      bsModal.show();
+    }
     return true;
   };
 
-  $('#add-playlist-modal').on('hidden.bs.modal', function() {
-    if (!add_success) {
-      let newval;
-      const op = select_element.children()[0];
-      if (op) {
-        newval = op.value;
-      } else {
-        newval = -1;
-      }
-      return select_element.val(newval).trigger('change.select2');
-    }
-  });
+  const addPlaylistModal = document.getElementById('add-playlist-modal');
+  if (addPlaylistModal) {
+    addPlaylistModal.addEventListener('hidden.bs.modal', function () {
+      if (!add_success && tomSelectInstance) {
+        // Reset to first option that's not "Add new playlist"
+        const options = Object.values(tomSelectInstance.options)
+          .sort((a, b) => a.text.localeCompare(b.text));
+        const firstNonAddNew = options.find(opt => opt.text !== addnew);
 
-  $('#playlist_form').submit(
-    function() {
-      if($('#playlist_title').val()) {
-        $('#new_playlist_submit').val('Saving...');
-        $('#new_playlist_submit').prop("disabled", true);
-        return true;
-      }
-      if($('#title_error').length === 0) {
-        $('#playlist_title')
-          .after('<h5 id="title_error" class="error text-danger">Name is required</h5>');
-        $('#playlist_title').parent().addClass('has-error');
-      }
-      return false;
-  });
-
-  return $("#playlist_form").bind('ajax:success',
-    function(event) {
-      const [data, status, xhr] = Array.from(event.detail);
-      $('#add-playlist-modal').modal('hide');
-      if (data.errors) {
-        return console.log(data.errors.title[0]);
-      } else {
-        add_success = true;
-        return select_element
-          .append(new Option(data.title, data.id.toString(), true, true))
-          .trigger('change');
+        if (firstNonAddNew) {
+          tomSelectInstance.setValue(firstNonAddNew.value);
+        } else {
+          // If no other option, just clear
+          tomSelectInstance.clear();
+        }
       }
     });
+  }
+
+  const playlistForm = document.getElementById('playlist_form');
+  if (playlistForm) {
+    playlistForm.addEventListener('submit', function (e) {
+      const titleInput = document.getElementById('playlist_title');
+      const submitBtn = document.getElementById('new_playlist_submit');
+
+      if (titleInput && titleInput.value) {
+        if (submitBtn) {
+          submitBtn.value = 'Saving...';
+          submitBtn.disabled = true;
+        }
+        return true;
+      }
+
+      // Prevent submission if no title
+      e.preventDefault();
+
+      const titleError = document.getElementById('title_error');
+      if (!titleError && titleInput) {
+        const errorMsg = document.createElement('h5');
+        errorMsg.id = 'title_error';
+        errorMsg.className = 'error text-danger';
+        errorMsg.textContent = 'Name is required';
+        titleInput.insertAdjacentElement('afterend', errorMsg);
+        titleInput.parentElement.classList.add('has-error');
+      }
+      return false;
+    });
+
+    // Handle AJAX success
+    playlistForm.addEventListener('ajax:success', function (event) {
+      const [data, status, xhr] = Array.from(event.detail);
+      const modal = document.getElementById('add-playlist-modal');
+
+      if (modal) {
+        const bsModal = bootstrap.Modal.getInstance(modal);
+        if (bsModal) {
+          bsModal.hide();
+        }
+      }
+
+      if (data.errors) {
+        console.log(data.errors.title[0]);
+      } else {
+        add_success = true;
+        if (tomSelectInstance) {
+          // Set the new playlist option
+          tomSelectInstance.addOption({
+            value: data.id.toString(),
+            text: data.title
+          });
+          tomSelectInstance.setValue(data.id.toString());
+        }
+      }
+    });
+  }
 };

@@ -17,7 +17,6 @@
 let canvasIndex = -1;
 let currentSectionLabel = undefined;
 let addToPlaylistListenersAdded = false;
-let searchFieldListenerAdded = false;
 let firstLoad = true;
 let streamId = '';
 let isMobile = false;
@@ -336,23 +335,6 @@ function addToPlaylistListeners(sectionIds, mediaObjectId) {
     // of conflicting actions when populating panel.
     if ($('#addToPlaylistPanel.show').length > 0) {
       resetAddToPlaylistForm();
-    }
-  });
-
-  // Set playlist search box to readonly in mobile browsers to prevent
-  // keyboard from popping up when opening playlist dropdown.
-  $('.select2-selection').on("click", function () {
-    const IS_TOUCH_ONLY = navigator.maxTouchPoints && navigator.maxTouchPoints > 2 && !window.matchMedia("(pointer: fine").matches;
-    let searchField = $('.select2-search__field');
-    if ((/Mobi|iPhone/i.test(window.navigator.userAgent) || IS_TOUCH_ONLY) && searchField.length > 0) {
-      searchField.attr('readonly', 'readonly');
-      if (!searchFieldListenerAdded) {
-        searchField.on('click', function (e) {
-          searchField.removeAttr('readonly').select();
-        });
-
-        searchFieldListenerAdded = true;
-      }
     }
   });
 

@@ -14,7 +14,7 @@ Unless required by applicable law or agreed to in writing, software distributed
 ---  END LICENSE_HEADER BLOCK  ---
 %>
 <% user_tags = current_user.playlist_tags %>
-<select name="tagcollection[]" id="tag-select" class="form-control form-model" multiple="multiple" style="width: 100%;" aria-describedby="helpTags" >
+<select multiple name="tagcollection[]" id="tag-select" class="form-control form-model p-0" style="width: 100%;" aria-label="playlist tag selection" aria-describedby="helpTags">
   <% user_tags.each do |tag| %>
     <% selected = @playlist.tags.include?(tag) ? ' selected="selected"' : '' %>
     <option value="<%= tag %>" <%= selected %>><%= tag %></option>
@@ -24,28 +24,39 @@ Unless required by applicable law or agreed to in writing, software distributed
 <input id="taglist" name="playlist[tags]" type="hidden" />
 
 <% content_for :page_scripts do %>
-  <%= javascript_include_tag 'select2.min' %>
-  <%= stylesheet_link_tag 'select2.min' %>
   <script>
-    $('#tag-select').select2( {
-      tags: true,
-      tokenSeparators: [',']
-    });
-
-    $('#submit-playlist-form').click( function (e) {
-      e.preventDefault();
-      taglist = [];
-      $.each($('#tag-select').select2('data'), function (i, tag) {
-        taglist.push(tag.text);
+    document.addEventListener('DOMContentLoaded', function() {
+      const tagSelect = new TomSelect('#tag-select', {
+        plugins: ['remove_button'],
+        closeAfterSelect: true,
+        create: true,
+        delimiter: ',',
+        persist: false,
+        placeholder: 'Select or create tags...',
+         // Don't show dropdown on focus
+        openOnFocus: false,
+        shouldOpen: function(e) {
+          // Only open dropdown if user has typed something
+          return this.lastQuery && this.lastQuery.length > 0;
+        },
+        onItemAdd: function() {
+          // Clear the input field after an item is added
+          this.setTextboxValue('');
+        },
+        render: {
+          no_results: function(data, escape) {
+            return null;
+          },
+          option_create: function(data, escape) {
+            // Customize the HTML and text for the create new tag message
+            return '<div class="create">Create new tag: <strong>' + escape(data.input) + '</strong></div>';
+          }
+        },
+        onChange: function(values) {
+          // Update hidden input with updated list for form submission
+          document.getElementById('taglist').value = JSON.stringify(values);
+        }
       });
-      $('#taglist').val(JSON.stringify(taglist));
-      $('#playlist_form').submit();
-    });
-
-    $(document).ready(function() {
-      // Set ARIA attributes for select2 elements used for creating playlist tags
-      $(".select2-selection[role='combobox']").attr('aria-label', 'playlist tag selection');
-      $("input.select2-search__field").attr('aria-label', 'search playlist tags');
     });
   </script>
 <% end %>
