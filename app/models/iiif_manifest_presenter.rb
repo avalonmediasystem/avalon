@@ -136,7 +136,7 @@ class IiifManifestPresenter
   def display_unit(media_object)
     # The proxy object returns the string of the unit name, the actual MediaObject
     # returns the Unit itself so we have to specifically request the name in that case.
-    unit = media_object.is_a?(SpeedyAF::Proxy::MediaObject) ? media_object.collection.unit : media_object.collection.unit.name
+    unit = media_object.is_a?(SpeedyAF::Proxy::MediaObject) ? media_object.unit.first : media_object.collection.unit.name
     "<a href='#{Rails.application.routes.url_helpers.collections_url(filter: unit)}'>#{unit}</a>"
   end
 
