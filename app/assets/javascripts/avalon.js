@@ -79,10 +79,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const contentWrapper = query('.content-wrapper');
   const footer = getById('footer');
 
-  window.addEventListener('resize', () => {
-    if (contentWrapper && footer) { }
-  });
-
   function adjustFooterPadding() {
     if (contentWrapper && footer) {
       const footerHeight = window.getComputedStyle(footer).height;

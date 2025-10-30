@@ -45,10 +45,20 @@ function queryAll(selector, source = document) {
 
 /**
  * Helper function to show/hide collapsible Bootstrap elements
- * @param {Object} element Collapsible HTML element
+ * @param {Object} element HTML collapsible element
  * @param {Boolean} toShow 
  */
 function showOrCollapse(element, toShow) {
   const collapse = bootstrap.Collapse.getOrCreateInstance(element);
   toShow ? collapse.show() : collapse.hide();
+}
+
+/**
+ * Helper function to show/hide modal Bootstrap elements
+ * @param {Object} element HTML modal element
+ * @param {Boolean} toShow 
+ */
+function toggleModal(element, toShow) {
+  const modal = bootstrap.Modal.getOrCreateInstance(element);
+  toShow ? modal.show() : modal.hide();
 }

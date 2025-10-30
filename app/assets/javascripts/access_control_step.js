@@ -77,7 +77,7 @@ document.addEventListener('DOMContentLoaded', function () {
             if (node.classList && node.classList.contains('date-input')) {
               window.initializeDatepickers(node.parentElement);
             } else if (node.querySelectorAll) {
-              const dateInputs = node.querySelectorAll('.date-input');
+              const dateInputs = queryAll('.date-input', node);
               if (dateInputs.length > 0) {
                 window.initializeDatepickers(node);
               }

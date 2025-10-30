@@ -165,8 +165,7 @@ function buildActionButtons(player, mediaObjectId, sectionIds, sectionShareInfos
 /**
  * Populate the relevant share links for the current section (masterfile) loaded into
  * the player on page
- * @param {Array<Object>} sectionShareInfos 
- * @param {Array<String>} sectionIds array of ordered masterfile id in the mediaobject
+ * @param {Array<Object>} sectionShareInfos
  */
 function setUpShareLinks(sectionShareInfos) {
   const sectionShareInfo = sectionShareInfos[canvasIndex];
@@ -480,7 +479,7 @@ function handleUpdateThumbnail(sectionIds, offset, baseUrl) {
   }
 
   if (thumbnailModal) {
-    const buttons = thumbnailModal.querySelectorAll('button');
+    const buttons = queryAll('button', thumbnailModal);
     buttons.forEach(btn => btn.disabled = true);
   }
 
@@ -489,7 +488,7 @@ function handleUpdateThumbnail(sectionIds, offset, baseUrl) {
   formData.append('offset', offset);
 
   // Get CSRF token for Rails
-  const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+  const csrfToken = query('meta[name="csrf-token"]')?.getAttribute('content');
 
   fetch(baseUrl + '/still', {
     method: 'POST',
@@ -499,12 +498,7 @@ function handleUpdateThumbnail(sectionIds, offset, baseUrl) {
     body: formData
   })
     .then(response => {
-      if (thumbnailModal) {
-        const modal = bootstrap.Modal.getInstance(thumbnailModal);
-        if (modal) {
-          modal.hide();
-        }
-      }
+      if (thumbnailModal) toggleModal(thumbnailModal, false);
     })
     .catch(error => {
       console.log(error);
@@ -514,7 +508,7 @@ function handleUpdateThumbnail(sectionIds, offset, baseUrl) {
         modalBody.classList.remove('spinner');
       }
       if (thumbnailModal) {
-        const buttons = thumbnailModal.querySelectorAll('button');
+        const buttons = queryAll('button', thumbnailModal);
         buttons.forEach(btn => btn.disabled = false);
       }
     });

@@ -93,7 +93,7 @@ queryAll('.supplemental-file-form').forEach(form => {
     const row = event.currentTarget.parentElement;
     const { masterfileId, fileId } = event.currentTarget.dataset;
     // Get machine-generated checkbox input on form submission
-    const machineGenInput = row.querySelector(`input[id="machine_generated_${fileId}"]`);
+    const machineGenInput = query(`input[id="machine_generated_${fileId}"]`, row);
     const isMachineGen = machineGenInput?.checked;
 
     // Set the label to the new value

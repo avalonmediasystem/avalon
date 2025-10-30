@@ -16,23 +16,23 @@
 
 /*global Blacklight */
 
-(function() {
+(function () {
   'use strict';
 
-  Blacklight.doResizeFacetLabelsAndCounts = function() {
+  Blacklight.doResizeFacetLabelsAndCounts = function () {
     // adjust width of facet columns to fit their contents
     function longer(a, b) {
       return b.textContent.length - a.textContent.length;
     }
 
     const facetLists = queryAll('ul.facet-values, ul.pivot-facet');
-    facetLists.forEach(function(list) {
-      const facetCounts = Array.from(list.querySelectorAll('span.facet-count'));
+    facetLists.forEach(function (list) {
+      const facetCounts = Array.from(queryAll('span.facet-count', list));
       const longest = facetCounts.sort(longer)[0];
 
       if (longest && longest.textContent) {
         const width = longest.textContent.length + 1 + 'ch';
-        const firstFacetCount = list.querySelector('.facet-count');
+        const firstFacetCount = query('.facet-count', list);
         if (firstFacetCount) {
           firstFacetCount.style.width = width;
         }
@@ -40,7 +40,7 @@
     });
   };
 
-  Blacklight.onLoad(function() {
+  Blacklight.onLoad(function () {
     Blacklight.doResizeFacetLabelsAndCounts();
   });
 })();

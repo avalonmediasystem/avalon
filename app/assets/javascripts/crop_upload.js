@@ -61,8 +61,7 @@ function add_cropper_handler(upload_path) {
   getById('crop').addEventListener('click', function () {
     let canvas;
     let inputfile = input.value.split('\\').pop();
-    const modalInstance = bootstrap.Modal.getInstance(modal);
-    modalInstance.hide();
+    if (modal) toggleModal(modal, false);
     if (cropper) {
       canvas = cropper.getCroppedCanvas({
         width: width,

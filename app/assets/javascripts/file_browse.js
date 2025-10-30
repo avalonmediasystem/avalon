@@ -22,6 +22,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
   const browseBtn = getById('browse-btn');
   if (browseBtn) {
+    //  TODO: Remove this dependency on jquery
     const browseEverythingInst = window.jQuery(browseBtn).browseEverything();
     browseEverythingInst.show(function () {
       const browseEverythingWorkflow = query('#browse-everything input[name=workflow]');

@@ -22,37 +22,38 @@ this.add_copy_playlist_button_event = () => {
 
       if (!modal) return;
 
-      const playlistTitle = query('#playlist_title', modal);
+      console.log(playlist);
+      const playlistTitle = getById('playlist_title');
       if (playlistTitle) playlistTitle.value = playlist.title;
 
-      const playlistComment = query('#playlist_comment', modal);
+      const playlistComment = getById('playlist_comment');
       if (playlistComment) playlistComment.value = playlist.comment;
 
       if (playlist.visibility === 'public') {
-        const publicRadio = query('#playlist_visibility_public', modal);
+        const publicRadio = getById('playlist_visibility_public');
         if (publicRadio) publicRadio.checked = true;
       } else if (playlist.visibility === 'private') {
-        const privateRadio = query('#playlist_visibility_private', modal);
+        const privateRadio = getById('playlist_visibility_private');
         if (privateRadio) privateRadio.checked = true;
       } else {
-        const privateTokenRadio = query('#playlist_visibility_private-with-token', modal);
+        const privateTokenRadio = getById('playlist_visibility_private-with-token', modal);
         if (privateTokenRadio) privateTokenRadio.checked = true;
       }
 
-      const oldPlaylistId = query('#old_playlist_id', modal);
+      const oldPlaylistId = getById('old_playlist_id');
       if (oldPlaylistId) oldPlaylistId.value = playlist.id;
 
-      const token = query('#token', modal);
+      const token = getById('token', modal);
       if (token) token.value = playlist.access_token;
 
-      const submitButton = query('#copy-playlist-submit', modal);
+      const submitButton = getById('copy-playlist-submit');
       if (submitButton) submitButton.disabled = false;
 
-      const submitEditButton = query('#copy-playlist-submit-edit', modal);
+      const submitEditButton = getById('copy-playlist-submit-edit');
       if (submitEditButton) submitEditButton.disabled = false;
 
       // toggle title error off
-      const titleError = query('#title_error', modal);
+      const titleError = getById('title_error');
       if (titleError) titleError.style.display = 'none';
 
       const modalInstance = bootstrap.Modal.getOrCreateInstance(modal);
@@ -72,9 +73,9 @@ if (playlistTitleInput) {
     const modal = getById('copy-playlist-modal');
     if (!modal) return;
 
-    const titleError = query('#title_error', modal);
-    const submitButton = query('#copy-playlist-submit', modal);
-    const submitEditButton = query('#copy-playlist-submit-edit', modal);
+    const titleError = getById('title_error');
+    const submitButton = getById('copy-playlist-submit');
+    const submitEditButton = getById('copy-playlist-submit-edit');
 
     if (this.value === '') {
       if (titleError) titleError.style.display = 'block';

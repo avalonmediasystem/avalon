@@ -297,6 +297,7 @@ function addToPlaylist(playlistId, scope, masterfileId, moId) {
   formData.append('post[masterfile_id]', masterfileId);
   formData.append('post[playlist_id]', playlistId);
   formData.append('post[playlistitem_scope]', scope);
+  console.log(formData);
 
   fetch('/media_objects/' + moId + '/add_to_playlist', {
     method: 'POST',
@@ -325,10 +326,10 @@ function handleAddSuccess(response) {
 
   alertEl.classList.remove('alert-danger');
   alertEl.classList.add('alert-success');
-  alertEl.style.display = 'block';
   messageEl.innerHTML = response.message;
-  formGroup.style.display = 'none';
+  alertEl.style.display = 'block';
 
+  formGroup.style.display = 'none';
   resetAddToPlaylistForm();
 }
 
@@ -361,16 +362,11 @@ function resetAddToPlaylistForm() {
   const title = getById('playlist_item_title');
   const scopeInput = query('input[name="post[playlistitem_scope]"]');
   const structureRadio = getById('playlistitem_scope_structure');
-  const moreDetails = getById('moreDetails');
-  const multiItemCheck = getById('multiItemCheck');
 
   if (description) description.value = '';
   if (title) title.value = '';
   if (scopeInput) scopeInput.checked = false;
   if (structureRadio) structureRadio.checked = true;
-
-  if (moreDetails) showOrCollapse(moreDetails, false);
-  if (multiItemCheck) showOrCollapse(multiItemCheck, false);
 }
 
 /** Reset add to playlist panel when alert is closed */
