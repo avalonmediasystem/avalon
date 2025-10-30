@@ -23,7 +23,7 @@ class BatchScanJob < ActiveJob::Base
   # @param [String] the path to the manifest in the form of S3://...
   def perform
     Rails.logger.info "<< Scanning for new batch packages in existing collections >>"
-    Admin::Collection.all.each do |collection|
+    SpeedyAF::Base.where('has_model_ssim:"Admin::Collection"').each do |collection|
       Avalon::Batch::Ingest.new(collection).scan_for_packages
     end
   end
