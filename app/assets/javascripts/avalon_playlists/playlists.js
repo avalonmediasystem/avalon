@@ -22,7 +22,6 @@ this.add_copy_playlist_button_event = () => {
 
       if (!modal) return;
 
-      console.log(playlist);
       const playlistTitle = getById('playlist_title');
       if (playlistTitle) playlistTitle.value = playlist.title;
 

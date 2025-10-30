@@ -297,7 +297,6 @@ function addToPlaylist(playlistId, scope, masterfileId, moId) {
   formData.append('post[masterfile_id]', masterfileId);
   formData.append('post[playlist_id]', playlistId);
   formData.append('post[playlistitem_scope]', scope);
-  console.log(formData);
 
   fetch('/media_objects/' + moId + '/add_to_playlist', {
     method: 'POST',
