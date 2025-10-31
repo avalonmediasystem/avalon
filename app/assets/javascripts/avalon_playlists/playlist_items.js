@@ -17,14 +17,14 @@
 // This is for the playlists edit page for sorting playlist items
 document.addEventListener('DOMContentLoaded', function () {
   // Display the drag handle
-  var dragHandles = document.querySelectorAll('.dd-handle');
+  var dragHandles = queryAll('.dd-handle');
   dragHandles.forEach(function (handle) {
     handle.classList.remove('hidden');
   });
 
-  var playlistContainer = document.querySelector('.dd');
+  var playlistContainer = query('.dd');
   // Initialize drag-and-drop behavior with SortableJS
-  var playlistListContainer = document.querySelector('.dd .dd-list');
+  var playlistListContainer = query('.dd .dd-list');
   if (playlistListContainer) {
     Sortable.create(playlistListContainer, {
       handle: '.dd-handle',
@@ -33,14 +33,14 @@ document.addEventListener('DOMContentLoaded', function () {
       fallbackClass: 'sortable-fallback',
       onEnd: function (evt) {
         var items = [];
-        var listItems = playlistListContainer.querySelectorAll('.dd-item');
+        var listItems = queryAll('.dd-item', playlistListContainer);
         listItems.forEach(function (item, index) {
           items.push({
             id: item.getAttribute('data-id'),
             position: (index + 1).toString()
           });
         });
-        var container = document.querySelector('.dd');
+        var container = query('.dd');
         reorderItems(items, container);
       }
     });
@@ -57,7 +57,7 @@ document.addEventListener('DOMContentLoaded', function () {
      * may not be persisted and the user will see the old order of items on the edit page on back
      * navigation.
      */
-    var overlay = container.querySelector('.playlist-loading-overlay');
+    var overlay = query('.playlist-loading-overlay', container);
     overlay.classList.add('is-loading');
     playlistContainer.classList.add('is-loading');
 
@@ -65,7 +65,7 @@ document.addEventListener('DOMContentLoaded', function () {
       method: 'PATCH',
       headers: {
         'Content-Type': 'application/json',
-        'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+        'X-CSRF-Token': query('meta[name="csrf-token"]').getAttribute('content')
       },
       body: JSON.stringify({ playlist: { items_attributes: items } })
     })
@@ -87,7 +87,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
   // Update the position text in the form
   var setItemPositions = function () {
-    var textElements = document.querySelectorAll('.dd .position-input');
+    var textElements = queryAll('.dd .position-input');
     textElements.forEach(function (element, index) {
       element.value = index + 1;
     });

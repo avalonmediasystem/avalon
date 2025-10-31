@@ -12,86 +12,61 @@
 //   specific language governing permissions and limitations under the License.
 // ---  END LICENSE_HEADER BLOCK  ---
 
-var AvalonProgress = (function() {
-  let setActive = undefined;
+var AvalonProgress = (function () {
   let updateBar = undefined;
   AvalonProgress = class AvalonProgress {
     static initClass() {
-      setActive = function(target, active) {
-        if (active) { return target.addClass('progress-striped active'); } else { return target.removeClass('progress-striped active'); }
-      };
-  
-      updateBar = (bar, attrs) => (() => {
-        const result = [];
+      updateBar = (bar, attrs) => {
         for (let type in attrs) {
           const percent = attrs[type];
-          const target = $(`.progress-bar.bg-${type}`,bar);
-          result.push(target.css('width',`${percent}%`));
+          const targetProgressbar = query(`.progress-bar.bg-${type}`, bar);
+          if (targetProgressbar) {
+            targetProgressbar.style.width = `${percent}%`;
+          }
         }
-        return result;
-      })();
-  
+      };
+
       this.prototype.data = {};
     }
 
     retrieve(auto) {
       if (auto == null) { auto = false; }
-      return $.ajax($('#progress').data('progress-url'), {
-        dataType: 'json',
-        success: data => {
+      const progressElement = getById('progress');
+      if (!progressElement) return;
+
+      const progressUrl = progressElement.dataset.progressUrl;
+
+      return fetch(progressUrl, {
+        headers: { 'Accept': 'application/json' }
+      }).then(response => response.json())
+        .then(data => {
           this.data = data;
           if (this.update() && auto) {
-            return setTimeout(() => {
-              return this.retrieve(auto);
-            }
-            , 10000);
+            setTimeout(() => {
+              this.retrieve(auto);
+            }, 10000);
           }
-        }
-      }
-      );
+        })
+        .catch(error => {
+          console.error('Error fetching progress:', error);
+        });
     }
 
     update() {
-      const sections = $('a[data-segment]');
-      sections.each((i,sec) => {
-        const id = $(sec).data('segment');
-        const section_node = $(sec).closest('.card-title');
-        const bar = section_node.find('span.progress');
-        const info_box = section_node.find('div.alert');
+      // Update progress for media-object ingest in item view page
+      if (this.data['overall'] != null) {
+        const info = this.data['overall'];
+        const overallBar = getById('overall');
 
-        const info = this.data[id];
-        if (info != null) {
-          setActive(bar, (info.complete < 100) && ((info.status === 'RUNNING') || (info.status === 'WAITING')));
-
-          if (info.operation != null) { info_box.html(info.operation); }
-          if (info.complete === 100) {
-            info_box.html(info.status);
-          }
-          updateBar(bar, {success: info.success, danger: info.error});
-          if (info.status === 'FAILED') {
-            info_box.html(`ERROR: ${info.message}`);
-            info_box.addClass('alert-error');
-            info_box.show();
-          }
-  //         else
-  //           updateBar(bar, 'bar-warning', 100)
-          return bar.data('status',info);
+        if (overallBar) {
+          updateBar(overallBar, { success: info.success, danger: info.error });
+          overallBar.dataset.status = JSON.stringify(info);
         }
-      });
-
-      if ((info == null)) {
-        if (this.data['overall'] != null) {
-          var info = this.data['overall'];
-          setActive($('#overall'), (info.success + info.error) < 100);
-
-          updateBar($('#overall'), {success: info.success, danger: info.error});
-          $('#overall').data('status',info);
-          if (info.success === 100) {
-            location.reload();
-          }
-
-          return (info.success + info.error) < 100;
+        if (info.success === 100) {
+          location.reload();
         }
+
+        return (info.success + info.error) < 100;
       }
     }
   };
@@ -99,8 +74,13 @@ var AvalonProgress = (function() {
   return AvalonProgress;
 })();
 
-$(document).ready(function() {
-  if ($('.progress-bar', $('#progress[data-progress-url]')).length === 0) {
+document.addEventListener('DOMContentLoaded', function () {
+  // Do nothing if there are no progress element(s) or progress-url in progress element's dataset
+  const container = query('#progress[data-progress-url]');
+  if (!container) {
+    return;
+  }
+  if (queryAll('.progress-bar', container).length === 0) {
     return;
   }
 

@@ -15,22 +15,22 @@
 */
 
 document.addEventListener('DOMContentLoaded', function () {
-  const sortableElement = document.querySelector('.sortable');
+  const sortableElement = query('.sortable');
 
   if (sortableElement) {
     // Find the media object form associated with the workflow button
-    const mediaObjectForm = document.querySelector('form[action*="media_objects"]');
+    const mediaObjectForm = query('form[action*="media_objects"]');
 
     // Helper function to update master file IDs in the correct form
     function updateMasterFileIds() {
       if (!mediaObjectForm) return;
 
       // Remove existing hidden inputs from the media object form only
-      const existingInputs = mediaObjectForm.querySelectorAll('[name="master_file_ids[]"]');
+      const existingInputs = queryAll('[name="master_file_ids[]"]', mediaObjectForm);
       existingInputs.forEach(input => input.remove());
 
       // Add hidden inputs in new order
-      const sections = sortableElement.querySelectorAll('li.section');
+      const sections = queryAll('li.section', sortableElement);
       sections.forEach(function (section) {
         const input = document.createElement('input');
         input.type = 'hidden';

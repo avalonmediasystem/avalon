@@ -14,40 +14,60 @@
  * ---  END LICENSE_HEADER BLOCK  ---
 */
 
-$('#intercom_push').on('shown.bs.modal', function(e) {
-  getIntercomCollections(false);
+document.addEventListener('DOMContentLoaded', function () {
+  const intercomPushModal = getById('intercom_push');
+  if (intercomPushModal) {
+    intercomPushModal.addEventListener('shown.bs.modal', function () {
+      getIntercomCollections(false);
+    });
+  }
 });
 function getIntercomCollections(force, collections_path) {
-  select = $('#collection_id');
-  if (force || select.find('option').length === 0) {
-    $('#intercom_push_submit_button').prop('disabled', true);
-    select.find('option').remove();
-    select.append(
-      '<option value="" disabled="disabled" selected="selected">Fetching Collections from Target...</option>'
-    );
-    $.ajax({
-      type: 'GET',
-      url: collections_path,
-      format: 'json',
-      data: { reload: force },
-      success: function(result) {
-        select.find('option').remove();
-        $.each(result, function(i, c) {
-          var option = $('<option></option')
-            .attr('value', c['id'])
-            .text(c['name']);
-          if (c['default']) {
-            option.prop('selected', true);
-          }
-          select.append(option);
-        });
-        $('#intercom_push_submit_button').prop('disabled', false);
-      },
-      error: function(result) {
-        $('#intercom_push #collection_id')
-          .find('option')
-          .text('There was an error communicating with the target.');
+  const select = getById('collection_id');
+  if (!select) return;
+
+  const options = queryAll('option', select);
+  if (force || options.length === 0) {
+    const submitButton = getById('intercom_push_submit_button');
+    submitButton.disabled = true;
+
+    // Remove all existing options
+    select.innerHTML = '';
+
+    // Add loading option
+    const loadingOption = document.createElement('option');
+    loadingOption.value = '';
+    loadingOption.disabled = true;
+    loadingOption.selected = true;
+    loadingOption.textContent = 'Fetching Collections from Target...';
+    select.appendChild(loadingOption);
+
+    // Make AJAX request
+    fetch(`${collections_path}?reload=${force ? 'true' : 'false'}`, {
+      method: 'GET',
+      headers: {
+        'Accept': 'application/json',
+        'X-Requested-With': 'XMLHttpRequest'
       }
-    });
+    })
+      .then(response => response.json())
+      .then(result => {
+        // Remove all options and add new options from response
+        select.innerHTML = '';
+        result.forEach((c) => {
+          const option = document.createElement('option');
+          option.value = c['id'];
+          option.textContent = c['name'];
+          if (c['default']) option.selected = true;
+          select.appendChild(option);
+        });
+        submitButton.disabled = false;
+      })
+      .catch(() => {
+        const firstOption = query('option', select);
+        if (firstOption) {
+          firstOption.textContent = 'There was an error communicating with the target.';
+        }
+      });
   }
 }
