@@ -15,7 +15,7 @@
 // Helper function to initialize js-datepicker on date input fields
 window.initializeDatepickers = function (container) {
   const root = container || document;
-  const dateInputs = root.querySelectorAll('.date-input:not([data-datepicker-initialized])');
+  const dateInputs = queryAll('.date-input:not([data-datepicker-initialized])', root);
 
   dateInputs.forEach(function (input) {
     const inputId = input.id || input.name;
@@ -33,7 +33,7 @@ window.initializeDatepickers = function (container) {
       if (!id) return;
       let pairedInput = null;
       const pairedDateId = isBeginDate ? id.replace('_begin', '_end') : id.replace('_end', '_begin');
-      pairedInput = root.querySelector(`#${pairedDateId}, [name="${pairedDateId}"]`);
+      pairedInput = query(`#${pairedDateId}, [name="${pairedDateId}"]`, root);
 
       if (pairedInput) {
         switch (isBeginDate) {
@@ -77,7 +77,7 @@ document.addEventListener('DOMContentLoaded', function () {
             if (node.classList && node.classList.contains('date-input')) {
               window.initializeDatepickers(node.parentElement);
             } else if (node.querySelectorAll) {
-              const dateInputs = node.querySelectorAll('.date-input');
+              const dateInputs = queryAll('.date-input', node);
               if (dateInputs.length > 0) {
                 window.initializeDatepickers(node);
               }

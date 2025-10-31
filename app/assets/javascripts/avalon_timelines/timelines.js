@@ -14,83 +14,133 @@
 
 let timeline_edit = null;
 
-this.add_copy_button_event = () => $('.copy-timeline-button').on('click',
-  function() {
-    const timeline = $(this).data('timeline');
-    const modal = $('#copy-timeline-modal');
-    modal.find('#timeline-name').val(timeline.title);
-    modal.find('#timeline_comment').val(timeline.comment);
-    if (timeline.visibility === 'public') {
-      modal.find('#timeline_visibility_public').prop('checked', true);
-    } else if (timeline.visibility === 'private') {
-      modal.find('#timeline_visibility_private').prop('checked', true);
-    } else {
-      modal.find('#timeline_visibility_private-with-token').prop('checked', true);
-    }
-    modal.find('#old_timeline_id').val(timeline.id);
-    modal.find('#token').val(timeline.access_token);
-    modal.find('#copy-timeline-submit').prop("disabled", false);
-    modal.find('#copy-timeline-submit-edit').prop("disabled", false);
+this.add_copy_button_event = () => {
+  queryAll('.copy-timeline-button').forEach(button => {
+    button.addEventListener('click', function () {
+      const timeline = JSON.parse(this.dataset.timeline);
+      const modal = getById('copy-timeline-modal');
 
-    // toggle title error off
-    modal.find('#title_error').hide();
+      if (!modal) return;
 
-    return modal.modal('show');
+      const timelineName = query('#timeline-name', modal);
+      if (timelineName) timelineName.value = timeline.title;
+
+      const timelineComment = query('#timeline_comment', modal);
+      if (timelineComment) timelineComment.value = timeline.comment;
+
+      if (timeline.visibility === 'public') {
+        const publicRadio = query('#timeline_visibility_public', modal);
+        if (publicRadio) publicRadio.checked = true;
+      } else if (timeline.visibility === 'private') {
+        const privateRadio = query('#timeline_visibility_private', modal);
+        if (privateRadio) privateRadio.checked = true;
+      } else {
+        const privateTokenRadio = query('#timeline_visibility_private-with-token', modal);
+        if (privateTokenRadio) privateTokenRadio.checked = true;
+      }
+
+      const oldTimelineId = query('#old_timeline_id', modal);
+      if (oldTimelineId) oldTimelineId.value = timeline.id;
+
+      const token = query('#token', modal);
+      if (token) token.value = timeline.access_token;
+
+      const submitButton = query('#copy-timeline-submit', modal);
+      if (submitButton) submitButton.disabled = false;
+
+      const submitEditButton = query('#copy-timeline-submit-edit', modal);
+      if (submitEditButton) submitEditButton.disabled = false;
+
+      // toggle title error off
+      const titleError = query('#title_error', modal);
+      if (titleError) titleError.style.display = 'none';
+
+      const modalInstance = bootstrap.Modal.getOrCreateInstance(modal);
+      modalInstance.show();
+    });
   });
+};
 
-$('#copy-timeline-submit-edit').on('click',
-  () => timeline_edit = true);
+const copyTimelineSubmitEdit = getById('copy-timeline-submit-edit');
+if (copyTimelineSubmitEdit) {
+  copyTimelineSubmitEdit.addEventListener('click', () => timeline_edit = true);
+}
 
-$('#timeline_title').on('keyup',
-  function() {
-    const modal = $('#copy-timeline-modal');
-    if($(this).val() === '') {
-      modal.find('#title_error').show();
-      modal.find('#copy-timeline-submit').prop("disabled", true);
-      return modal.find('#copy-timeline-submit-edit').prop("disabled", true);
+const timelineTitleInput = getById('timeline_title');
+if (timelineTitleInput) {
+  timelineTitleInput.addEventListener('keyup', function () {
+    const modal = getById('copy-timeline-modal');
+    if (!modal) return;
+
+    const titleError = query('#title_error', modal);
+    const submitButton = query('#copy-timeline-submit', modal);
+    const submitEditButton = query('#copy-timeline-submit-edit', modal);
+
+    if (this.value === '') {
+      if (titleError) titleError.style.display = 'block';
+      if (submitButton) submitButton.disabled = true;
+      if (submitEditButton) submitEditButton.disabled = true;
     } else {
-      modal.find('#title_error').hide();
-      modal.find('#copy-timeline-submit').prop("disabled", false);
-      return modal.find('#copy-timeline-submit-edit').prop("disabled", false);
+      if (titleError) titleError.style.display = 'none';
+      if (submitButton) submitButton.disabled = false;
+      if (submitEditButton) submitEditButton.disabled = false;
     }
-});
+  });
+}
 
-$('#copy-timeline-form').submit(
-  function() {
-    const modal = $('#copy-timeline-modal');
-    if(modal.find('#timeline_title').val()) {
-      modal.find('#copy-timeline-submit').prop("disabled", true);
+const copyTimelineForm = getById('copy-timeline-form');
+if (copyTimelineForm) {
+  copyTimelineForm.addEventListener('submit', function () {
+    const modal = getById('copy-timeline-modal');
+    if (!modal) return true;
+
+    const timelineTitle = query('#timeline_title', modal);
+    if (timelineTitle && timelineTitle.value) {
+      const submitButton = query('#copy-timeline-submit', modal);
+      if (submitButton) submitButton.disabled = true;
       return true;
     }
-});
+  });
 
-$('#copy-timeline-form').bind('ajax:success',
-  function(event) {
+  copyTimelineForm.addEventListener('ajax:success', function (event) {
     const [data, status, xhr] = Array.from(event.detail);
     if (data.errors) {
-      return console.log(data.errors.title[0]);
+      console.log(data.errors.title[0]);
     } else {
       if (timeline_edit) {
-        return window.location.href = data.path;
+        window.location.href = data.path;
       } else {
-        if ( $('#with_refresh').val() ) {
-          return location.reload();
+        const withRefresh = getById('with_refresh');
+        if (withRefresh && withRefresh.value) {
+          location.reload();
         }
       }
     }
-}).bind('ajax:error',
-  function(event) {
-    const [data, status, xhr] = Array.from(event.detail);
-    return console.log(xhr.responseJSON.errors);
-});
+  });
 
-$('input[name="timeline[visibility]"]').on('click', function() {
-  const new_val = $(this).val();
-  const new_text = $('.human_friendly_visibility_'+new_val).attr('title');
-  $('.visibility-help-text').text(new_text);
-  if (new_val === 'private') {
-    return $('#timeline_lti_share').hide();
-  } else {
-    return $('#timeline_lti_share').show();
-  }
+  copyTimelineForm.addEventListener('ajax:error', function (event) {
+    const [data, status, xhr] = Array.from(event.detail);
+    console.log(xhr.responseJSON.errors);
+  });
+}
+
+queryAll('input[name="timeline[visibility]"]').forEach(input => {
+  input.addEventListener('click', function () {
+    const newVal = this.value;
+    const helpTextElement = query('.human_friendly_visibility_' + newVal);
+    const newText = helpTextElement ? helpTextElement.getAttribute('title') : '';
+    const visibilityHelpText = query('.visibility-help-text');
+    if (visibilityHelpText) {
+      visibilityHelpText.textContent = newText;
+    }
+
+    const timelineLtiShare = getById('timeline_lti_share');
+    if (timelineLtiShare) {
+      if (newVal === 'private') {
+        timelineLtiShare.style.display = 'none';
+      } else {
+        timelineLtiShare.style.display = 'block';
+      }
+    }
+  });
 });

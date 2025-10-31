@@ -14,37 +14,47 @@
  * ---  END LICENSE_HEADER BLOCK  ---
 */
 
-$(document).ready(function() {
-  var form = $('div.import-button').closest('form').prop('id');
-  var import_button_html = '<button id="media_object_bibliographic_id_btn" type="submit" name="media_object[import_bib_record]" class="btn btn-outline" value="yes" >Import</button>';
-  $('div.import-button').append(import_button_html);
-  if (!!document.querySelector('#media_object_bibliographic_id_btn')) {
-    var importPopover = new bootstrap.Popover(document.querySelector('#media_object_bibliographic_id_btn'), {
-      trigger: 'manual',
-      html: true,
-      sanitize: false,
-      placement: 'top',
-      container: 'body',
-      content: function() {
-        var button = `<button id="media_object_bibliographic_id_confirm_btn" class="btn btn-sm btn-danger btn-confirm" type="submit" name="media_object[import_bib_record]" value="yes" data-original-title="" title="" form="${form}" >Import</button>`
-        return `<p>Note: this will replace all metadata except for Other Identifiers</p> ${button} <button id=\'cancel_bibimport\' class=\'btn btn-sm btn-primary\'>No, Cancel</button>`
-      }
-    });
-  }
+document.addEventListener('DOMContentLoaded', function () {
+  const importButton = query('div.import-button');
+  if (!importButton) return;
 
-  $('#media_object_bibliographic_id_btn').on('click', function() {
-    import_val = document.getElementById('media_object_bibliographic_id').value;
+  const form = importButton.closest('form').id;
+  const import_button_html = '<button id="media_object_bibliographic_id_btn" type="submit" name="media_object[import_bib_record]" class="btn btn-outline" value="yes">Import</button>';
+  importButton.innerHTML += import_button_html;
 
-    if ($('input#media_object_title').val() != '' && import_val != '') {
+  const bibImportButton = getById('media_object_bibliographic_id_btn');
+  if (!bibImportButton) return;
+
+  const importPopover = new bootstrap.Popover(bibImportButton, {
+    trigger: 'manual',
+    html: true,
+    sanitize: false,
+    placement: 'top',
+    container: 'body',
+    content: function () {
+      const button = `<button id="media_object_bibliographic_id_confirm_btn" class="btn btn-sm btn-danger btn-confirm" type="submit" name="media_object[import_bib_record]" value="yes" data-original-title="" title="" form="${form}">Import</button>`;
+      return `<p>Note: this will replace all metadata except for Other Identifiers</p> ${button} <button id='cancel_bibimport' class='btn btn-sm btn-primary'>No, Cancel</button>`;
+    }
+  });
+
+  bibImportButton.addEventListener('click', function (e) {
+    const import_val = getById('media_object_bibliographic_id').value;
+    const title_val = query('input#media_object_title').value;
+
+    if (title_val !== '' && import_val !== '') {
       importPopover.show();
-      form_attribute_fix('#media_object_bibliographic_id_confirm_btn');
+      e.preventDefault();
       return false;
-    } else if (import_val == '') {
+    } else if (import_val === '') {
+      e.preventDefault();
       return false;
     }
   });
-  $(document).on('click', '#cancel_bibimport', function() {
-    importPopover.hide();
-    return true;
+
+  document.addEventListener('click', function (e) {
+    if (e.target && e.target.id === 'cancel_bibimport') {
+      importPopover.hide();
+    }
   });
 });
+

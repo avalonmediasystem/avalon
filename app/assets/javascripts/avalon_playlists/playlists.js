@@ -14,69 +14,112 @@
 
 let playlist_edit = null;
 
-this.add_copy_playlist_button_event = () => $('.copy-playlist-button').on('click',
-  function() {
-    const playlist = $(this).data('playlist');
-    const modal = $('#copy-playlist-modal');
-    modal.find('#playlist_title').val(playlist.title);
-    modal.find('#playlist_comment').val(playlist.comment);
-    if (playlist.visibility === 'public') {
-      modal.find('#playlist_visibility_public').prop('checked', true);
-    } else if (playlist.visibility === 'private') {
-      modal.find('#playlist_visibility_private').prop('checked', true);
-    } else {
-      modal.find('#playlist_visibility_private-with-token').prop('checked', true);
-    }
-    modal.find('#old_playlist_id').val(playlist.id);
-    modal.find('#token').val(playlist.access_token);
-    modal.find('#copy-playlist-submit').prop("disabled", false);
-    modal.find('#copy-playlist-submit-edit').prop("disabled", false);
+this.add_copy_playlist_button_event = () => {
+  queryAll('.copy-playlist-button').forEach(button => {
+    button.addEventListener('click', function () {
+      const playlist = JSON.parse(this.dataset.playlist);
+      const modal = getById('copy-playlist-modal');
 
-    // toggle title error off
-    modal.find('#title_error').hide();
+      if (!modal) return;
 
-    return modal.modal('show');
+      const playlistTitle = getById('playlist_title');
+      if (playlistTitle) playlistTitle.value = playlist.title;
+
+      const playlistComment = getById('playlist_comment');
+      if (playlistComment) playlistComment.value = playlist.comment;
+
+      if (playlist.visibility === 'public') {
+        const publicRadio = getById('playlist_visibility_public');
+        if (publicRadio) publicRadio.checked = true;
+      } else if (playlist.visibility === 'private') {
+        const privateRadio = getById('playlist_visibility_private');
+        if (privateRadio) privateRadio.checked = true;
+      } else {
+        const privateTokenRadio = getById('playlist_visibility_private-with-token', modal);
+        if (privateTokenRadio) privateTokenRadio.checked = true;
+      }
+
+      const oldPlaylistId = getById('old_playlist_id');
+      if (oldPlaylistId) oldPlaylistId.value = playlist.id;
+
+      const token = getById('token', modal);
+      if (token) token.value = playlist.access_token;
+
+      const submitButton = getById('copy-playlist-submit');
+      if (submitButton) submitButton.disabled = false;
+
+      const submitEditButton = getById('copy-playlist-submit-edit');
+      if (submitEditButton) submitEditButton.disabled = false;
+
+      // toggle title error off
+      const titleError = getById('title_error');
+      if (titleError) titleError.style.display = 'none';
+
+      const modalInstance = bootstrap.Modal.getOrCreateInstance(modal);
+      modalInstance.show();
+    });
   });
+};
 
-$('#copy-playlist-submit-edit').on('click',
-  () => playlist_edit = true);
+const copyPlaylistSubmitEdit = getById('copy-playlist-submit-edit');
+if (copyPlaylistSubmitEdit) {
+  copyPlaylistSubmitEdit.addEventListener('click', () => playlist_edit = true);
+}
 
-$('#playlist_title').on('keyup',
-  function() {
-    const modal = $('#copy-playlist-modal');
-    if($(this).val() === '') {
-      modal.find('#title_error').show();
-      modal.find('#copy-playlist-submit').prop("disabled", true);
-      return modal.find('#copy-playlist-submit-edit').prop("disabled", true);
+const playlistTitleInput = getById('playlist_title');
+if (playlistTitleInput) {
+  playlistTitleInput.addEventListener('keyup', function () {
+    const modal = getById('copy-playlist-modal');
+    if (!modal) return;
+
+    const titleError = getById('title_error');
+    const submitButton = getById('copy-playlist-submit');
+    const submitEditButton = getById('copy-playlist-submit-edit');
+
+    if (this.value === '') {
+      if (titleError) titleError.style.display = 'block';
+      if (submitButton) submitButton.disabled = true;
+      if (submitEditButton) submitEditButton.disabled = true;
     } else {
-      modal.find('#title_error').hide();
-      modal.find('#copy-playlist-submit').prop("disabled", false);
-      return modal.find('#copy-playlist-submit-edit').prop("disabled", false);
+      if (titleError) titleError.style.display = 'none';
+      if (submitButton) submitButton.disabled = false;
+      if (submitEditButton) submitEditButton.disabled = false;
     }
-});
+  });
+}
 
-$('#copy-playlist-form').bind('ajax:success',
-  function(event) {
+const copyPlaylistForm = getById('copy-playlist-form');
+if (copyPlaylistForm) {
+  copyPlaylistForm.addEventListener('ajax:success', function (event) {
     const [data, status, xhr] = Array.from(event.detail);
     if (data.errors) {
-      return console.log(data.errors.title[0]);
+      console.log(data.errors.title[0]);
     } else {
       if (playlist_edit) {
-        return window.location.href = data.path;
+        window.location.href = data.path;
       } else {
-        if ( $('#with_refresh').val() ) {
-          return location.reload();
+        const withRefresh = getById('with_refresh');
+        if (withRefresh && withRefresh.value) {
+          location.reload();
         }
       }
     }
-}).bind('ajax:error',
-  function(event) {
-    const [data, status, xhr] = Array.from(event.detail);
-    return console.log(xhr.responseJSON.errors);
-});
+  });
 
-$('input[name="playlist[visibility]"]').on('click', function() {
-  const new_val = $(this).val();
-  const new_text = $('.human_friendly_visibility_'+new_val).attr('title');
-  return $('.visibility-help-text').text(new_text);
+  copyPlaylistForm.addEventListener('ajax:error', function (event) {
+    const [data, status, xhr] = Array.from(event.detail);
+    console.log(xhr.responseJSON.errors);
+  });
+}
+
+queryAll('input[name="playlist[visibility]"]').forEach(input => {
+  input.addEventListener('click', function () {
+    const newVal = this.value;
+    const helpTextElement = query('.human_friendly_visibility_' + newVal);
+    const newText = helpTextElement ? helpTextElement.getAttribute('title') : '';
+    const visibilityHelpText = query('.visibility-help-text');
+    if (visibilityHelpText) {
+      visibilityHelpText.textContent = newText;
+    }
+  });
 });

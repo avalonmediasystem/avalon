@@ -16,7 +16,7 @@ class DirectUpload {
   constructor(fileInput, form) {
     this.fileInput = fileInput;
     this.form = form;
-    this.submitButton = form.querySelector('input[type="submit"], *[data-trigger="submit"]');
+    this.submitButton = query('input[type="submit"], *[data-trigger="submit"]', form);
     this.progressBar = null;
     this.uploadUrl = form.dataset.url;
     this.formData = form.dataset.formData ? JSON.parse(form.dataset.formData) : {};
@@ -33,7 +33,7 @@ class DirectUpload {
     progressBarContainer.className = 'progress';
     progressBarContainer.appendChild(this.progressBar);
 
-    const fileinputDiv = document.querySelector('div.fileinput');
+    const fileinputDiv = query('div.fileinput');
     fileinputDiv.insertAdjacentElement('afterend', progressBarContainer);
 
     // Disable upload button on load
@@ -111,8 +111,8 @@ class DirectUpload {
     this.progressBar.textContent = 'Uploading done';
 
     // Extract key and generate URL from response
-    const key = responseXML.querySelector('Key').textContent;
-    const bucket = responseXML.querySelector('Bucket').textContent;
+    const key = query('Key', responseXML).textContent;
+    const bucket = query('Bucket', responseXML).textContent;
     const url = `s3://${bucket}/${key}`;
 
     // Create hidden input
@@ -136,10 +136,10 @@ class DirectUpload {
 
 // Initialize on DOM ready
 document.addEventListener('DOMContentLoaded', () => {
-  const directUploadForms = document.querySelectorAll('.directupload');
+  const directUploadForms = queryAll('.directupload');
 
   directUploadForms.forEach(form => {
-    const fileInput = form.querySelector('input[type="file"]');
+    const fileInput = query('input[type="file"]', form);
     if (fileInput) {
       new DirectUpload(fileInput, form);
     }

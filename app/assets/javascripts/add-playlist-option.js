@@ -20,10 +20,10 @@ document.addEventListener('DOMContentLoaded', () => add_new_playlist_option());
 
 this.add_new_playlist_option = function () {
   const addnew = 'Add new playlist';
-  const select_element = document.getElementById('post_playlist_id');
+  const select_element = getById('post_playlist_id');
   if (!select_element) return;
 
-  const select_options = select_element.querySelectorAll('option');
+  const select_options = queryAll('option', select_element);
   let add_success = false;
   let has_new_opt = false;
   let tomSelectInstance = null;
@@ -38,7 +38,7 @@ this.add_new_playlist_option = function () {
 
   // Helper function to update "Add new playlist" option with typed search term
   const updateAddNewPlaylistOption = function (dropdown_content, searchTerm) {
-    const addNewOption = dropdown_content.querySelector('[data-value="' + addnew + '"]');
+    const addNewOption = query('[data-value="' + addnew + '"]', dropdown_content);
     if (addNewOption) {
       const escapedTerm = searchTerm ? escapeHtml(searchTerm) : searchTerm;
       addNewOption.innerHTML = renderAddNewPlaylistOption(escapedTerm);
@@ -68,7 +68,7 @@ this.add_new_playlist_option = function () {
   // Initialize TomSelect
   function initTomSelectWithRetry() {
     if (typeof TomSelect !== 'undefined') {
-      const selectEl = document.getElementById('post_playlist_id');
+      const selectEl = getById('post_playlist_id');
       if (!selectEl || selectEl.tomselect) return;
 
       // Get first playlist option and identify it as default
@@ -136,11 +136,11 @@ this.add_new_playlist_option = function () {
 
           // Update selected-option class when dropdown opens
           const currentValue = this.getValue();
-          const dropdownOptions = this.dropdown_content.querySelectorAll('.selected-option');
+          const dropdownOptions = queryAll('.selected-option', this.dropdown_content);
           dropdownOptions.forEach(opt => opt.classList.remove('selected-option'));
 
           if (currentValue) {
-            const selectedOptionEl = this.dropdown_content.querySelector('[data-value="' + currentValue + '"]');
+            const selectedOptionEl = query('[data-value="' + currentValue + '"]', this.dropdown_content);
             if (selectedOptionEl) {
               selectedOptionEl.classList.add('selected-option');
               // Scroll the selected option into view within the dropdown container
@@ -153,11 +153,11 @@ this.add_new_playlist_option = function () {
         },
         onInitialize: function () {
           // Set ARIA attributes for tom-select controls flagged by SiteImprove
-          const dropdownList = document.querySelector('#post_playlist_id-ts-dropdown');
+          const dropdownList = query('#post_playlist_id-ts-dropdown');
           if (dropdownList) {
             dropdownList.setAttribute('aria-label', 'list of playlists');
           }
-          const playlistsCombobox = document.querySelector('#post_playlist_id-ts-control');
+          const playlistsCombobox = query('#post_playlist_id-ts-control');
           if (playlistsCombobox) playlistsCombobox.setAttribute('aria-labelledby', 'post_playlist_id');
         },
         render: {
@@ -183,11 +183,11 @@ this.add_new_playlist_option = function () {
         },
         onChange: function (value) {
           // Remove selected-option class from all options
-          const dropdownOptions = this.dropdown_content.querySelectorAll('.selected-option');
+          const dropdownOptions = queryAll('.selected-option', this.dropdown_content);
           dropdownOptions.forEach(opt => opt.classList.remove('selected-option'));
 
           // Add selected-option class to the newly selected option
-          const selectedOptionEl = this.dropdown_content.querySelector('[data-value="' + value + '"]');
+          const selectedOptionEl = query('[data-value="' + value + '"]', this.dropdown_content);
           if (selectedOptionEl) {
             selectedOptionEl.classList.add('selected-option');
 
@@ -241,12 +241,12 @@ this.add_new_playlist_option = function () {
 
   var showNewPlaylistModal = function (playlistName) {
     // Set to defaults first
-    const submitBtn = document.getElementById('new_playlist_submit');
-    const titleInput = document.getElementById('playlist_title');
-    const commentInput = document.getElementById('playlist_comment');
-    const visibilityPrivate = document.getElementById('playlist_visibility_private');
-    const titleError = document.getElementById('title_error');
-    const modal = document.getElementById('add-playlist-modal');
+    const submitBtn = getById('new_playlist_submit');
+    const titleInput = getById('playlist_title');
+    const commentInput = getById('playlist_comment');
+    const visibilityPrivate = getById('playlist_visibility_private');
+    const titleError = getById('title_error');
+    const modal = getById('add-playlist-modal');
     if (submitBtn) {
       submitBtn.value = 'Create';
       submitBtn.disabled = false;
@@ -276,7 +276,7 @@ this.add_new_playlist_option = function () {
     return true;
   };
 
-  const addPlaylistModal = document.getElementById('add-playlist-modal');
+  const addPlaylistModal = getById('add-playlist-modal');
   if (addPlaylistModal) {
     addPlaylistModal.addEventListener('hidden.bs.modal', function () {
       if (!add_success && tomSelectInstance) {
@@ -295,11 +295,11 @@ this.add_new_playlist_option = function () {
     });
   }
 
-  const playlistForm = document.getElementById('playlist_form');
+  const playlistForm = getById('playlist_form');
   if (playlistForm) {
     playlistForm.addEventListener('submit', function (e) {
-      const titleInput = document.getElementById('playlist_title');
-      const submitBtn = document.getElementById('new_playlist_submit');
+      const titleInput = getById('playlist_title');
+      const submitBtn = getById('new_playlist_submit');
 
       if (titleInput && titleInput.value) {
         if (submitBtn) {
@@ -312,7 +312,7 @@ this.add_new_playlist_option = function () {
       // Prevent submission if no title
       e.preventDefault();
 
-      const titleError = document.getElementById('title_error');
+      const titleError = getById('title_error');
       if (!titleError && titleInput) {
         const errorMsg = document.createElement('h5');
         errorMsg.id = 'title_error';
@@ -327,14 +327,9 @@ this.add_new_playlist_option = function () {
     // Handle AJAX success
     playlistForm.addEventListener('ajax:success', function (event) {
       const [data, status, xhr] = Array.from(event.detail);
-      const modal = document.getElementById('add-playlist-modal');
+      const modal = getById('add-playlist-modal');
 
-      if (modal) {
-        const bsModal = bootstrap.Modal.getInstance(modal);
-        if (bsModal) {
-          bsModal.hide();
-        }
-      }
+      if (modal) toggleModal(modal, false);
 
       if (data.errors) {
         console.log(data.errors.title[0]);
