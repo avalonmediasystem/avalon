@@ -137,6 +137,12 @@ namespace :avalon do
       units = {}
       units_cv = Avalon::ControlledVocabulary.find_by_name('units', sort: true)
       units_cv.each do |unit|
+        existing_unit = Admin::Unit.where(name_ssi: unit).first
+        if existing_unit.present?
+          units[unit] = existing_unit.id
+          next
+        end
+
         unit_model = Admin::Unit.new(name: unit, unit_admins: [ENV['unit_admin_username']])
         unit_model.save!
         units[unit] = unit_model.id
@@ -145,14 +151,17 @@ namespace :avalon do
         puts "Creation failed for #{unit}: #{e.message}"
       end
 
-      units.each do |k, v|
-        collections = Admin::Collection.where(unit: k)
-        collection_ids = collections.map(&:id)
-        # update_all inserts straight into the database, skipping validations
-        # and callbacks. Manually call ReindexJob to ensure that solr is updated.
-        collections.update_all(unit_id: v)
-        ReindexJob.perform_later(collection_ids)
-        puts "Unit #{v} added to #{collection_ids.join("\n")}"
+      Admin::Collection.all.each do |collection|
+        # Find unit name from RDF stored in Fedora
+        unit_name = collection.ldp_source.graph.query([nil,RDF::URI("http://bibframe.org/vocab/heldBy"),nil]).first&.object&.to_s
+        unless unit_name.present? && units[unit_name].present?
+          puts "Collection (#{collection.id}) skipped because unit (#{unit_name}) not found."
+          next
+        end
+
+        collection.unit_id = units[unit_name]
+        collection.save!
+        ReindexJob.perform_later(collection.media_object_ids)
       end
     end
   end
