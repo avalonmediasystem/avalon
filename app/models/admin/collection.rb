@@ -75,7 +75,7 @@ class Admin::Collection < ActiveFedora::Base
 
   has_subresource 'poster', class_name: 'IndexedFile'
 
-  around_save :reindex_members, if: Proc.new { |c| c.name_changed? }
+  around_save :reindex_members, if: Proc.new { |c| c.name_changed? or c.unit_changed? }
   around_save :return_checkouts, if: Proc.new { |c| c.cdl_enabled_changed? && c.cdl_enabled == false }
   before_create :create_dropbox_directory!
 
