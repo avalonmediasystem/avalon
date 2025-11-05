@@ -24,7 +24,7 @@ module Hydra::MultiplePolicyAwareAbility
   def policy_ids_for(object_id)
     policy_ids = policy_id_cache[object_id]
     return policy_ids if policy_ids
-    solr_results = ActiveFedora::Base.search_with_conditions({id: object_id}, fl: governed_by_solr_field)
+    solr_results = ActiveFedora::SolrService.query("id:#{object_id} OR _query_:\"{!join to=id from=isGovernedBy_ssim}id:#{object_id}\"", fl: [governed_by_solr_field])
     return unless solr_results.any?(&:present?)
     policy_id_cache[object_id] = policy_ids = solr_results.collect {|solr_result| solr_result[governed_by_solr_field] }.flatten
   end
