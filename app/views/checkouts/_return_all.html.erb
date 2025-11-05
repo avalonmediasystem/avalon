@@ -13,9 +13,17 @@ Unless required by applicable law or agreed to in writing, software distributed
   specific language governing permissions and limitations under the License.
 ---  END LICENSE_HEADER BLOCK  ---
 %>
+<<<<<<< HEAD:app/views/checkouts/_return_all.html.erb
 
 <% if Checkout.active_for_user(current_user.id).count > 1 || current_ability.is_administrator? %>
   <div class="text-start">
     <%= link_to 'Return All', main_app.return_all_checkouts_path , class: 'btn btn-primary btn-md', method: :patch, data: { confirm: 'Are you sure you want to return all items?' } %>
   </div>
 <% end %>
+=======
+<% # container for display inactive checkouts checkbox -%>
+<div class="col-sm-3 offset-9 col-lg-3 offset-lg-10">
+  <%= check_box_tag :inactive_checkouts, data: { testid: 'inactive-checkouts-toggle' } %>
+  <%= label_tag :inactive_checkouts, 'Display Returned Items', class: 'fw-bold' %>
+</div>
+>>>>>>> d2a17bdeb (high priority test cases):app/views/checkouts/_inactive_checkout.html.erb

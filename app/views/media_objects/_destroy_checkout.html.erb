@@ -23,7 +23,7 @@ Unless required by applicable law or agreed to in writing, software distributed
     </div>
     <div class="col-5 col-sm-3 col-md-4">
       <%= link_to 'Return now', return_checkout_url(current_checkout), class: 'btn btn-outline', method: :patch,
-        id: "return-btn", data: { checkout_returntime: current_checkout.return_time } %>
+        id: "return-btn", data: { checkout_returntime: current_checkout.return_time, testid: 'media-object-return-now-btn' } %>
     </div>
     <div id="check-out-expired" class="modal fade" role="dialog" data-bs-backdrop="static">
       <div class="modal-dialog modal-lg">
