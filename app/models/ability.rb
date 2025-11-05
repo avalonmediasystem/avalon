@@ -70,7 +70,7 @@ class Ability
         end
       end
 
-      if is_member_of_any_collection?
+      if is_member_of_any_collection? || is_member_of_any_unit?
         can :create, MediaObject
       end
 

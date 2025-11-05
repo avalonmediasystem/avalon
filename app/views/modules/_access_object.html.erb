@@ -14,6 +14,7 @@ Unless required by applicable law or agreed to in writing, software distributed
 ---  END LICENSE_HEADER BLOCK  ---
 %>
 <% is_leasable = !(object.class==Admin::Collection) && !(object.class == Admin::Unit) %>
+<% inherited_roles ||= [] %>
 <div class="access-block col-lg-10" id="<%= access_object %>_management">
   <%= bootstrap_form_for object do |form| %>
   <input id="step" name="step" type="hidden" value="access-control" />
@@ -81,9 +82,13 @@ Unless required by applicable law or agreed to in writing, software distributed
             <%= member_object %>
             <% end %>
             <% end %>
+            <% if inherited_roles.include?(member_object) %>
+              <div style="float: right;"><%= t('access_control.inherited_role', unit_name: object.unit.name) %></div>
+            <% end %>
           </td>
           <td class='access_list_dates'></td>
           <% if !input_disabled %>
+            <% unless inherited_roles.include?(member_object) %>
           <td class='access_list_remove'>
             <%= link_to "",
                 polymorphic_path(object, "remove_#{access_object}".to_sym => member_object, step: @active_step, donot_advance: true),
@@ -91,6 +96,7 @@ Unless required by applicable law or agreed to in writing, software distributed
                 class: "btn btn-sm btn-close remove" ,
                 data: { testid: "collection-access-remove-#{access_object}" } %>
           </td>
+            <% end %>
           <% end %>
         </tr>
         <% end %>
