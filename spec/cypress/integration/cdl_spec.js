@@ -233,7 +233,9 @@ it('Verify that the checkouts page displays the list of borrowed items - @T33474
   cy.login('administrator');
   cy.visit(`/checkouts`);
   // Click on display returned items checkbox
-  cy.get('[data-testid="inactive-checkouts-toggle"]').click();
+  cy.contains('label', 'Display Returned Items')
+    .prev('input[type="checkbox"]')
+    .click();
   //search for the returned item
   cy.get('input[type="search"][aria-controls="checkouts-table"]')
     .clear()
