@@ -149,7 +149,7 @@ const CheckoutsTable = ({ url, isAdmin, returnAll }) => {
 
       displayReturnedItemsHTML: (
         <Col span={3} offset={9} className='mb-2 text-end text-nowrap'>
-          <input type='checkbox' checked={showReturned} id='inactive_checkouts' onChange={refreshData} />
+          <input type='checkbox' checked={showReturned} id='inactive_checkouts' data-testid='bookmark-display-returned-items-chkbox' onChange={refreshData} />
           <label className='fw-bold ms-1' htmlFor='inactive_checkouts'>Display Returned Items</label>
         </Col>
       )
