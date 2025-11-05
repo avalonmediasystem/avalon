@@ -149,25 +149,21 @@ it('Verify returning items from checkouts page - @T73acc852', () => {
   cy.login('administrator');
   // Checkout option exists
   cy.visit(`/checkouts`);
-  // find the row for this media object
-  cy.get('[data-testid="checkout-row"]')
-    .contains('[data-testid="checkout-media-title"]', media_object_title)
+  //find the row with the media object title
+  cy.get('[data-testid="checkouts-table-body"]')
+    .contains('a', media_object_title)
     .should('be.visible')
-    .closest('[data-testid="checkout-row"]')
+    .closest('tr')
     .as('row');
 
-  // verify Return exists in that row, then click it
-  cy.get('@row')
-    .find('[data-testid="checkout-return"]')
-    .should('be.visible')
-    .click();
-  // Verify that the item is no longer in the checkouts list
-  cy.get('[data-testid="checkouts-table"]').within(() => {
-    cy.contains(
-      '[data-testid="checkout-media-title"]',
-      media_object_title
-    ).should('not.exist');
-  });
+  // Verify "Return" button exists and click it
+  cy.get('@row').find('a[href*="/return"]').should('be.visible').click();
+
+  // Verify the item is no longer listed in the table
+  cy.get('[data-testid="checkouts-table-body"]').should(
+    'not.contain',
+    media_object_title
+  );
 
   // Verify the counter on the checkouts nav link is updated
   cy.get('[data-testid="checkout-counter"]')
@@ -233,16 +229,17 @@ it('Verify that the checkouts page displays the list of borrowed items - @T33474
   cy.login('administrator');
   cy.visit(`/checkouts`);
   // Click on display returned items checkbox
-  cy.contains('label', 'Display Returned Items')
-    .prev('input[type="checkbox"]')
+  cy.get('[data-testid="bookmark-display-returned-items-chkbox"]')
+    .should('exist')
     .click();
   //search for the returned item
   cy.get('input[type="search"][aria-controls="checkouts-table"]')
     .clear()
     .type(media_object_title);
   // Verify that the returned item is displayed
-  cy.get('[data-testid="checkout-row"]')
-    .contains('[data-testid="checkout-media-title"]', media_object_title)
+  cy.get('[data-testid="checkouts-table-body"]')
+    .contains('a', media_object_title)
     .should('be.visible')
-    .closest('[data-testid="checkout-row"]');
+    .closest('tr')
+    .as('row');
 });
