@@ -15,18 +15,18 @@
 # This module contains methods which transform stored values for use either on Admin::Collection or the SpeedyAF presenter
 module AdminCollectionBehavior
   def managers
-    edit_users & collection_managers.to_a
+    ((edit_users & collection_managers.to_a) + unit.managers.to_a + unit.unit_admins.to_a).uniq
   end
 
   def editors
-    edit_users - managers
+    ((edit_users - managers) + unit.editors.to_a).uniq
   end
 
   def editors_and_managers
-    edit_users
+    (edit_users + unit.unit_admins.to_a + unit.managers.to_a + unit.editors.to_a).uniq
   end
 
   def depositors
-    read_users
+    (read_users + unit.depositors.to_a).uniq
   end
 end
