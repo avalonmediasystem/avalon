@@ -16,7 +16,7 @@ Unless required by applicable law or agreed to in writing, software distributed
 <% if can?(:update_access_control, object) %>
 <%= bootstrap_form_for object, html: { id: 'cdl_form' }  do |vid| %>
   <% if Avalon::Configuration.controlled_digital_lending_enabled? && object.is_a?(Admin::Collection) %>
-    <div class="card enable-cdl">
+    <div class="card enable-cdl" data-testid="collection-enable-cdl-card">
       <div class="card-header">
         <h3 class="card-title">Controlled Digital Lending </h3>
       </div>
@@ -24,13 +24,13 @@ Unless required by applicable law or agreed to in writing, software distributed
         <div class="mb-3">
           <div class="form-check">
             <%= label_tag :cdl do %>
-            <%= check_box_tag :cdl, '1', (cdl) %>
+            <%= check_box_tag :cdl, '1', (cdl), data: { testid: 'cdl-enable-checkbox' }%>
             Enable controlled digital lending for this collection
             <% end %>
           </div>
         </div>
         <%= hidden_field_tag :save_field, "cdl" %>
-        <%= submit_tag "Save Setting", class: "btn btn-primary", form: 'cdl_form' %>
+        <%= submit_tag "Save Setting", class: "btn btn-primary", form: 'cdl_form', data:{testid: 'cdl-save-setting'} %>
       </div>
     </div>
   <% end %>
@@ -38,7 +38,7 @@ Unless required by applicable law or agreed to in writing, software distributed
 
 <%= bootstrap_form_for object, html: { id: 'lending_form' }  do |vid| %>
   <% if lending_enabled?(object) %>
-    <div class="card item-lending-period">
+    <div class="card item-lending-period" data-testid="collection-item-lending-period-card">
       <div class="card-header">
         <h3 class="card-title">Item lending period</h3>
       </div>
@@ -51,7 +51,7 @@ Unless required by applicable law or agreed to in writing, software distributed
               <label class="col-form-label" for="add_lending_period_days">
                 <span data-title="Days">Days</span>
               </label>
-              <%= text_field_tag "add_lending_period_days", d ? d : 0, class: 'form-control' %>
+              <%= text_field_tag "add_lending_period_days", d ? d : 0, class: 'form-control' , data: { testid: 'add-lending-period-days' }%>
             </div>
             <div class="col-1">
               <label class="col-form-label" for="add_lending_period_hours">
@@ -63,8 +63,8 @@ Unless required by applicable law or agreed to in writing, software distributed
         </div>
         <%= hidden_field_tag :save_field, "lending_period" %>
         <%= hidden_field_tag :overwrite, false %>
-        <%= submit_tag "Save Setting", class: "btn btn-primary", form: 'lending_form' %>
-        <%= submit_tag "Apply to All Existing Items", name: "apply_to_existing", class: "btn btn-outline", data: { confirm: I18n.t('access_control.apply_to_all_warning') % [object.media_objects.count] }, form: 'lending_form' %>
+        <%= submit_tag "Save Setting", class: "btn btn-primary", form: 'lending_form', data:{testid: 'lending-period-save-setting'}%>
+        <%= submit_tag "Apply to All Existing Items", name: "apply_to_existing", class: "btn btn-outline", data: { confirm: I18n.t('access_control.apply_to_all_warning') % [object.media_objects.count], testid: 'lending-period-apply-to-all' }, form: 'lending_form' %>
       </div>
     </div>
   <% end %>

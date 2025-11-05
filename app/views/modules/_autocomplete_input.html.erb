@@ -21,8 +21,9 @@ Unless required by applicable law or agreed to in writing, software distributed
     id: field_id,
     class: "form-control typeahead-input",
     data: data,
+    data: { testid: "autocomplete-user-input" },
     disabled: disabled,
     placeholder: placeholder %>
-  <ul class='autocomplete_popup' id=<%= "#{for_field}-popup" %>></ul>
+  <ul class='autocomplete_popup' data-testid="user-popup" id=<%= "#{for_field}-popup" %>></ul>
   <div class='visually-hidden autocomplete_feedback'id=<%= "#{for_field}-popup-feedback" %>></div>
 </auto-complete>

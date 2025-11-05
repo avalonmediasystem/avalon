@@ -37,7 +37,7 @@ Unless required by applicable law or agreed to in writing, software distributed
     <li class="nav-item <%= active_for_controller('checkouts') %>">
       <%= link_to main_app.checkouts_path, id:'checkouts_nav', class: 'nav-link' do %>
         Checkouts
-        (<span data-role='checkout-counter'><%= Checkout.active_for_user(current_or_guest_user.id).count %></span>)
+        (<span data-role='checkout-counter' data-testid='checkout-counter'><%= Checkout.active_for_user(current_or_guest_user.id).count %></span>)
       <% end %>
     </li>
     <% end %>
@@ -46,7 +46,7 @@ Unless required by applicable law or agreed to in writing, software distributed
   <li class="nav-item <%= active_for_controller('bookmarks') %>">
     <%= link_to main_app.bookmarks_path, id:'bookmarks_nav', class: 'nav-link' do %>
       <%= t('blacklight.header_links.bookmarks') %>
-      (<span data-role='bookmark-counter'><%= current_or_guest_user.bookmarks.count %></span>)
+      (<span data-role='bookmark-counter' data-testid='bookmark-counter'><%= current_or_guest_user.bookmarks.count %></span>)
     <% end %>
   </li>
   <% end %>

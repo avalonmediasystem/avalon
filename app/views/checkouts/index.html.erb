@@ -26,4 +26,45 @@ Unless required by applicable law or agreed to in writing, software distributed
   <% else %>
     <p>No matching records found.</p>
   <% end %>
+<<<<<<< HEAD
+=======
+
+  <table id="checkouts-table" class="table table-striped datatable" data-testid="checkouts-table">
+    <thead>
+      <tr>
+        <% if current_ability.is_administrator? %>
+          <th>User</th>
+        <% end %>
+        <th>Media object</th>
+        <th>Checkout time</th>
+        <th>Return time</th>
+        <th>Time remaining</th>
+        <th data-orderable="false">
+          <% if Checkout.active_for_user(current_user.id).count > 1 || current_ability.is_administrator? %>
+              <%= link_to 'Return All', main_app.return_all_checkouts_path , class: 'btn btn-primary btn-xs', method: :patch, data: { confirm: 'Are you sure you want to return all items?' } %>
+          <% end %>
+        </th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <% @checkouts.each do |checkout| %>
+        <tr data-testid="checkout-row">
+          <% if current_ability.is_administrator? %>
+            <td><%= checkout.user.user_key %></td>
+          <% end %>
+          <td><%= link_to checkout.media_object.title, main_app.media_object_url(checkout.media_object) ,data: { testid: "checkout-media-title" }%></td>
+          <td><span data-utc-time="<%= checkout.checkout_time.iso8601 %>" /></td>
+          <td><span data-utc-time="<%= checkout.return_time.iso8601 %>" /></td>
+          <td><%= distance_of_time_in_words(checkout.return_time - DateTime.current) %></td>
+          <td>
+            <% if checkout.return_time > DateTime.current %>
+              <%= link_to 'Return', return_checkout_url(checkout), class: 'btn btn-outline btn-xs', method: :patch, data: { testid: 'checkout-return' } %>
+            <% end %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+>>>>>>> d2a17bdeb (high priority test cases)
 </div>

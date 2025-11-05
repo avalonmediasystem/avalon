@@ -33,11 +33,11 @@ Unless required by applicable law or agreed to in writing, software distributed
                 <div class="alert">
             <fieldset>
               <p><%= t('blacklight.move.confirm') %></p>
-              <%= select_tag :target_collection_id, options_from_collection_for_select(@candidates, "id", "name"), style: 'width:100%;' %>
+              <%= select_tag :target_collection_id, options_from_collection_for_select(@candidates, "id", "name"), style: 'width:100%;' , data: { testid: "bookmark-collection-dropdown" } %>
             </fieldset>
                 </div>
           <div class="modal-footer">
-            <button type="submit" class="btn btn-primary"><%= t('blacklight.move.button') %></button>
+            <button type="submit" class="btn btn-primary" data-testid = "bookmark-move"><%= t('blacklight.move.button') %></button>
           </div>
         <% end %>
       </div>
