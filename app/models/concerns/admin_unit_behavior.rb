@@ -22,6 +22,10 @@ module AdminUnitBehavior
     edit_users & collection_managers.to_a
   end
 
+  def unit_admins_and_managers
+    unit_admins + managers
+  end
+
   def editors
     edit_users - unit_admins - managers
   end
