@@ -69,8 +69,25 @@ Unless required by applicable law or agreed to in writing, software distributed
 
     <%#----------- Access item list --------------- %>
     <table class="table table-striped table-hover">
-      <% if members.present? || defined?(leases) && leases.present? %>
+      <% if members.present? || inherited_roles.present? || defined?(leases) && leases.present? %>
       <tbody>
+        <% if inherited_roles.present? %>
+        <% inherited_roles.each do |member_object| %>
+        <tr>
+          <td class='access_list_label' data-testid="<%= 'collection-access-label-' + access_object %>">
+            <%= label_tag do %>
+              <% if defined?(display_helper) && display_helper.present? %>
+                <%= self.send(display_helper, member_object) %>
+              <% else %>
+                <%= member_object %>
+              <% end %>
+            <% end %>
+            <div style="float: right;"><%= t('access_control.inherited_role', unit_name: object.unit.name) %></div>
+          </td>
+        </tr>
+       <% end %>
+       <% end %>
+
         <% if members.present? %>
         <% members.each do |member_object| %>
         <tr>
@@ -82,13 +99,9 @@ Unless required by applicable law or agreed to in writing, software distributed
             <%= member_object %>
             <% end %>
             <% end %>
-            <% if inherited_roles.include?(member_object) %>
-              <div style="float: right;"><%= t('access_control.inherited_role', unit_name: object.unit.name) %></div>
-            <% end %>
           </td>
           <td class='access_list_dates'></td>
           <% if !input_disabled %>
-            <% unless inherited_roles.include?(member_object) %>
           <td class='access_list_remove'>
             <%= link_to "",
                 polymorphic_path(object, "remove_#{access_object}".to_sym => member_object, step: @active_step, donot_advance: true),
@@ -96,7 +109,6 @@ Unless required by applicable law or agreed to in writing, software distributed
                 class: "btn btn-sm btn-close remove" ,
                 data: { testid: "collection-access-remove-#{access_object}" } %>
           </td>
-            <% end %>
           <% end %>
         </tr>
         <% end %>

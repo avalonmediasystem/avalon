@@ -30,7 +30,7 @@ module AdminUnitBehavior
     edit_users - unit_admins - managers
   end
 
-  def editors_and_unit_admins
+  def editors_managers_and_unit_admins
     edit_users
   end
 
