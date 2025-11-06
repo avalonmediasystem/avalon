@@ -32,8 +32,7 @@ class SpeedyAF::Proxy::Admin::Collection < SpeedyAF::Base
   end
 
   def unit
-    # TODO: memoize this
-    SpeedyAF::Base.find(unit_id)
+    @unit ||= SpeedyAF::Proxy::Admin::Unit.find(unit_id)
   end
 
   def dropbox
