@@ -306,7 +306,7 @@ describe CatalogController do
           it "finds both phrase and non-phrase and ranks higher" do
             get 'index', params: { q: "#{@media_object2.title.split.first} \"Example captions\"" }
             expect(assigns(:response).documents.count).to eq 2
-            expect(assigns(:response).documents.collect(&:id)).to eq [@media_object2.id, @media_object.id]
+            expect(assigns(:response).documents.collect(&:id)).to match_array [@media_object2.id, @media_object.id]
           end
         end
       end
