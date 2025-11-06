@@ -690,4 +690,11 @@ describe Admin::Collection do
       end
     end
   end
+
+  describe '#unit=' do
+    it 'sets governing_policy as well' do
+      new_unit = FactoryBot.create(:unit)
+      expect { collection.unit = new_unit }.to change { collection.governing_policy_id }.to(new_unit.id).and change { collection.unit_id }.to(new_unit.id)
+    end
+  end
 end
