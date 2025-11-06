@@ -342,17 +342,19 @@ class Ability
 
   def is_member_of?(collection)
      is_administrator? ||
-       @user.in?(collection.managers, collection.editors, collection.depositors)
+       @user.in?(collection.managers, collection.editors, collection.depositors) ||
+       @user.in?(collection.unit.unit_admins, collection.unit.managers, collection.unit.editors, collection.unit.depositors)
   end
 
   def is_editor_of?(collection)
      is_administrator? ||
-       @user.in?(collection.editors_and_managers)
+       @user.in?(collection.editors_and_managers) ||
+       @user.in?(collection.unit.editors_managers_and_unit_admins)
   end
 
   def is_editor_of_unit?(unit)
     is_administrator? ||
-      @user.in?(unit.editors_and_unit_admins)
+      @user.in?(unit.editors_managers_and_unit_admins)
   end
 
   def is_member_of_any_collection?

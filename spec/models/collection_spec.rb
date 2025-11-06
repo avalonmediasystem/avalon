@@ -188,21 +188,21 @@ describe Admin::Collection do
   end
 
   describe "managers" do
-    let!(:user) {FactoryBot.create(:manager)}
-    let!(:collection) {Admin::Collection.new}
+    let!(:user) { FactoryBot.create(:manager) }
+    let!(:collection) { Admin::Collection.new(unit: FactoryBot.create(:unit)) }
 
     describe "#managers" do
       it "should return the intersection of edit_users and collection_managers property" do
         collection.edit_users = [user.user_key, "pdinh"]
         collection.collection_managers = [user.user_key]
-        expect(collection.managers).to eq([user.user_key])
+        expect(collection.managers).to match_array([user.user_key])
       end
     end
     describe "#managers=" do
       it "should add managers to the collection" do
         manager_list = [FactoryBot.create(:manager).user_key, FactoryBot.create(:manager).user_key]
         collection.managers = manager_list
-        expect(collection.managers).to eq(manager_list)
+        expect(collection.managers).to match_array(manager_list)
       end
       it "should call add_manager" do
         manager_list = [FactoryBot.create(:manager).user_key, FactoryBot.create(:manager).user_key]
@@ -213,9 +213,9 @@ describe Admin::Collection do
       it "should remove managers from the collection" do
         manager_list = [FactoryBot.create(:manager).user_key, FactoryBot.create(:manager).user_key]
         collection.managers = manager_list
-        expect(collection.managers).to eq(manager_list)
+        expect(collection.managers).to match_array(manager_list)
         collection.managers -= [manager_list[1]]
-        expect(collection.managers).to eq([manager_list[0]])
+        expect(collection.managers).to match_array([manager_list[0]])
       end
       it "should call remove_manager" do
         collection.managers = [user.user_key]
@@ -225,7 +225,7 @@ describe Admin::Collection do
       it "should fail to remove only manager" do
         manager_list = [FactoryBot.create(:manager).user_key]
         collection.managers = manager_list
-        expect(collection.managers).to eq(manager_list)
+        expect(collection.managers).to match_array(manager_list)
         expect{collection.managers=[]}.to raise_error(ArgumentError)
       end
     end
@@ -273,7 +273,7 @@ describe Admin::Collection do
   end
   describe "editors" do
     let!(:user) {FactoryBot.create(:user)}
-    let!(:collection) {Admin::Collection.new}
+    let!(:collection) {Admin::Collection.new(unit: FactoryBot.create(:unit))}
 
     describe "#editors" do
       it "should not return managers" do
@@ -359,7 +359,7 @@ describe Admin::Collection do
 
   describe "depositors" do
     let!(:user) {FactoryBot.create(:user)}
-    let!(:collection) {Admin::Collection.new}
+    let!(:collection) {Admin::Collection.new(unit: FactoryBot.create(:unit))}
 
     describe "#depositors" do
       it "should return the read_users" do
