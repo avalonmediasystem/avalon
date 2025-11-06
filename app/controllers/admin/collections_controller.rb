@@ -172,8 +172,10 @@ class Admin::CollectionsController < ApplicationController
 
     update_access(@collection, params) if can?(:update_access_control, @collection)
 
-    # FIXME? Update governing_policy_id if unit_id changes?
-    @collection.update_attributes collection_params if collection_params.present?
+    # Update governing_policy_id if unit_id changes
+    update_params = collection_params.to_h
+    update_params.merge!(governing_policy_id: update_params[:unit_id]) if update_params[:unit_id].present?
+    @collection.update_attributes update_params if update_params.present?
     saved = @collection.save
     if saved
       if name_changed

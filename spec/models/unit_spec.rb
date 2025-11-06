@@ -344,11 +344,11 @@ describe Admin::Unit do
     end
     describe "#editors_managers_and_unit_admins" do
       it "should return all unit editors, managers, and unit admins" do
-        # FIXME: use different users to fully test this
         editor = FactoryBot.create(:user)
-        unit.edit_users = [user.user_key, "pdinh", editor.user_key]
+        manager = FactoryBot.create(:manager)
+        unit.edit_users = [user.user_key, manager, editor.user_key]
         unit.unit_administrators = [user.user_key]
-        unit.managers = ["pdinh"]
+        unit.managers = [manager.user_key]
         expect(unit.editors_managers_and_unit_admins).to include(unit.editors.first)
         expect(unit.editors_managers_and_unit_admins).to include(unit.unit_admins.first)
         expect(unit.editors_managers_and_unit_admins).to include(unit.managers.first)
