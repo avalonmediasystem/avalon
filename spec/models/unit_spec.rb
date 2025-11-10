@@ -525,4 +525,36 @@ describe Admin::Unit do
       expect(ReindexJob).to have_been_enqueued.with(@unit.collection_ids)
     end
   end
+
+  describe ".autocomplete" do
+    let!(:unit) { FactoryBot.create(:unit, name: 'test unit') }
+
+    it "returns an array of hashes" do
+      resp = Admin::Unit.autocomplete("test")
+      expect(resp).to be_a Array
+      expect(resp.first).to match(a_hash_including(id: unit.id))
+      expect(resp.first).to match(a_hash_including(display: 'test unit'))
+    end
+
+    it "returns partial matches" do
+      resp = Admin::Unit.autocomplete("te")
+      expect(resp).to be_a Array
+      expect(resp.first).to match(a_hash_including(id: unit.id))
+      expect(resp.first).to match(a_hash_including(display: 'test unit'))
+    end
+
+    it "is not case sensitive" do
+      resp = Admin::Unit.autocomplete("Te")
+      expect(resp).to be_a Array
+      expect(resp.first).to match(a_hash_including(id: unit.id))
+      expect(resp.first).to match(a_hash_including(display: 'test unit'))
+    end
+
+    it 'successfully returns when there is whitespace' do
+      resp = Admin::Unit.autocomplete("Test un")
+      expect(resp).to be_a Array
+      expect(resp.first).to match(a_hash_including(id: unit.id))
+      expect(resp.first).to match(a_hash_including(display: 'test unit'))
+    end
+  end
 end
