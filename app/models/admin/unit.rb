@@ -238,6 +238,20 @@ class Admin::Unit < ActiveFedora::Base
     }
   end
 
+  def self.autocomplete(query, _id = nil)
+    # Search name_uniq_si for case insensitivity since that field is downcased
+    # name_uniq_si has no whitespace, so remove whitespace from the query
+    solr_query = "name_uniq_si: (#{query.downcase.gsub(/\s+/, '')}*)"
+    # To take advantage of solr automagically escaping characters the query has to be in single quotes.
+    # This runs counter to ruby's string interpolation which requires the string to be in double quotes.
+    # We can get around this by using format.
+    filter = format('has_model_ssim: "%s"', "Admin::Unit")
+
+    search_array = ActiveFedora::SolrService.query(solr_query, rows: 1000, fq: filter)
+
+    search_array.map { |value| { id: value[:id], display: value[:name_ssi] } }
+  end
+
   private
 
   def remove_edit_user(name)
