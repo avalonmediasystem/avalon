@@ -14,7 +14,7 @@
  * ---  END LICENSE_HEADER BLOCK  ---
 */
 
-import React, { useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import GenericTable from './GenericTable';
 import { Col } from 'react-bootstrap';
 

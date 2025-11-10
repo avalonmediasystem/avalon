@@ -14,8 +14,6 @@
  * ---  END LICENSE_HEADER BLOCK  ---
 */
 
-import React from 'react';
-
 function Pagination(props) {
   const handleClick = (page, event) => {
     event.preventDefault();

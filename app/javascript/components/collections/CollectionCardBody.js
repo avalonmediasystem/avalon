@@ -14,8 +14,6 @@
  * ---  END LICENSE_HEADER BLOCK  ---
 */
 
-import React from 'react';
-
 const CollectionCardBody = ({ children }) => (
   <div className="card-body" data-testid="collection-card-body">
     <div className="collection-card-description">{children}</div>

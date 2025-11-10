@@ -14,7 +14,7 @@
  * ---  END LICENSE_HEADER BLOCK  ---
 */
 
-import React, { useState } from 'react';
+import { useState } from 'react';
 import CollectionCard from './CollectionCard';
 import ButtonCollectionListShowAll from './ButtonCollectionListShowAll';
 import '../Collection.scss';
