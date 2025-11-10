@@ -14,8 +14,6 @@
  * ---  END LICENSE_HEADER BLOCK  ---
 */
 
-import React from 'react';
-
 const CollectionCardShell = ({ children }) => (
   <div className="collection-card card mb-4">{children}</div>
 );

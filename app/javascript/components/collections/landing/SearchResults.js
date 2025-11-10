@@ -14,7 +14,6 @@
  * ---  END LICENSE_HEADER BLOCK  ---
 */
 
-import React from 'react';
 import '../Collection.scss';
 import SearchResultsCard from './SearchResultsCard';
 import CollectionFilterNoResults from '../CollectionsFilterNoResults';

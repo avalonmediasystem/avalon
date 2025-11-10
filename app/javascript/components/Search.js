@@ -14,7 +14,7 @@
  * ---  END LICENSE_HEADER BLOCK  ---
 */
 
-import React, { Component } from 'react';
+import { Component } from 'react';
 import axios from 'axios';
 import SearchResults from './collections/landing/SearchResults';
 import Pagination from './collections/landing/Pagination';

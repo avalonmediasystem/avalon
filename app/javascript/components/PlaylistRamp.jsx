@@ -14,7 +14,11 @@
  * ---  END LICENSE_HEADER BLOCK  ---
  */
 
-import React from 'react';
+import {
+  Fragment,
+  useEffect,
+  useState
+} from 'react';
 import {
   IIIFPlayer,
   MediaPlayer,
@@ -56,12 +60,12 @@ const PlaylistRamp = ({
   comment,
   tags,
 }) => {
-  const [manifestUrl, setManifestUrl] = React.useState('');
-  const [activeItemTitle, setActiveItemTitle] = React.useState();
-  const [activeItemSummary, setActiveItemSummary] = React.useState();
-  const [startCanvasId, setStartCanvasId] = React.useState();
-  const [expanded, setExpanded] = React.useState(false);
-  const [description, setDescription] = React.useState();
+  const [manifestUrl, setManifestUrl] = useState('');
+  const [activeItemTitle, setActiveItemTitle] = useState();
+  const [activeItemSummary, setActiveItemSummary] = useState();
+  const [startCanvasId, setStartCanvasId] = useState();
+  const [expanded, setExpanded] = useState(false);
+  const [description, setDescription] = useState();
 
   let interval;
   let descriptionCheck;
@@ -69,7 +73,7 @@ const PlaylistRamp = ({
   const USER_AGENT = window.navigator.userAgent;
   const IS_MOBILE = /Mobi/i.test(USER_AGENT);
 
-  React.useEffect(() => {
+  useEffect(() => {
     const { base_url, fullpath_url } = urls;
     let url = `${base_url}/playlists/${playlist_id}/manifest.json`;
     if (token) url += `?token=${token}`;
@@ -288,10 +292,10 @@ const PlaylistRamp = ({
             )}
           </Row>
           {playlist_item_ids?.length > 0 && (
-            <React.Fragment>
+            <Fragment>
               <h4 className="mt-3 mx-1 mx-sm-0">Playlist Items</h4>
               <StructuredNavigation />
-            </React.Fragment>
+            </Fragment>
           )}
         </Col>
       </Row>

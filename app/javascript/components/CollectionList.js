@@ -14,7 +14,7 @@
  * ---  END LICENSE_HEADER BLOCK  ---
 */
 
-import React, { Component } from 'react';
+import { Component } from 'react';
 import Axios from 'axios';
 import './collections/Collection.scss';
 import CollectionListStickyUtils from './collections/list/CollectionListStickyUtils';

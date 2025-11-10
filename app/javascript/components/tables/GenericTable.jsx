@@ -14,7 +14,7 @@
  * ---  END LICENSE_HEADER BLOCK  ---
 */
 
-import React, { useEffect, useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import useTableData from './hooks/useTableData';
 import useTableSortingAndFiltering from './hooks/useTableSortingAndFiltering';
 import useTablePagination from './hooks/useTablePagination';

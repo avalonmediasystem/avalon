@@ -14,8 +14,6 @@
  * ---  END LICENSE_HEADER BLOCK  ---
 */
 
-import React from 'react';
-
 function FacetBadges(props) {
   const handleClick = (index, event) => {
     event.preventDefault();
