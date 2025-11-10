@@ -1407,26 +1407,27 @@
     "@rollup/pluginutils" "^5.1.0"
 
 "@rollup/pluginutils@^5.1.0":
-  version "5.2.0"
-  resolved "https://registry.yarnpkg.com/@rollup/pluginutils/-/pluginutils-5.2.0.tgz#eac25ca5b0bdda4ba735ddaca5fbf26bd435f602"
-  integrity sha512-qWJ2ZTbmumwiLFomfzTyt5Kng4hwPi9rwCYN4SHb6eaRU1KNO4ccxINHr/VhH4GgPlt1XfSTLX2LBTme8ne4Zw==
+  version "5.3.0"
+  resolved "https://registry.yarnpkg.com/@rollup/pluginutils/-/pluginutils-5.3.0.tgz#57ba1b0cbda8e7a3c597a4853c807b156e21a7b4"
+  integrity sha512-5EdhGZtnu3V88ces7s53hhfK5KSASnJZv8Lulpc04cWO3REESroJXg73DFsOmgbU2BhwV0E20bu2IDZb3VKW4Q==
   dependencies:
     "@types/estree" "^1.0.0"
     estree-walker "^2.0.2"
     picomatch "^4.0.2"
 
-"@samvera/ramp@https://github.com/samvera-labs/ramp.git#a0b3ebf":
+"@samvera/ramp@https://github.com/samvera-labs/ramp.git#821e8ce":
   version "4.0.2"
-  resolved "https://github.com/samvera-labs/ramp.git#a0b3ebf5d0dba825c68209017f2931a737585065"
+  resolved "https://github.com/samvera-labs/ramp.git#821e8ce2afe24fdafc0eeb398804d25280aae26b"
   dependencies:
     "@rollup/plugin-json" "^6.0.1"
     "@silvermine/videojs-quality-selector" "^1.3.1"
     classnames "^2.5.1"
-    mammoth "^1.4.19"
+    mammoth "^1.11.0"
     manifesto.js "^4.1.0"
     mime-db "^1.52.0"
     react-error-boundary "^4.0.11"
     sanitize-html "^2.10.0"
+    video.js "^8.23.4"
     videojs-markers-plugin "^1.0.2"
 
 "@silvermine/videojs-quality-selector@^1.3.1":
@@ -1618,6 +1619,20 @@
   version "3.17.0"
   resolved "https://registry.yarnpkg.com/@videojs/http-streaming/-/http-streaming-3.17.0.tgz#58433aa72206afae2bb65462f023d21afd766bf4"
   integrity sha512-Ch1P3tvvIEezeZXyK11UfWgp4cWKX4vIhZ30baN/lRinqdbakZ5hiAI3pGjRy3d+q/Epyc8Csz5xMdKNNGYpcw==
+  dependencies:
+    "@babel/runtime" "^7.12.5"
+    "@videojs/vhs-utils" "^4.1.1"
+    aes-decrypter "^4.0.2"
+    global "^4.4.0"
+    m3u8-parser "^7.2.0"
+    mpd-parser "^1.3.1"
+    mux.js "7.1.0"
+    video.js "^7 || ^8"
+
+"@videojs/http-streaming@^3.17.2":
+  version "3.17.2"
+  resolved "https://registry.yarnpkg.com/@videojs/http-streaming/-/http-streaming-3.17.2.tgz#264eaf23980f4f0e3ad918a665ac60f178f01ff8"
+  integrity sha512-VBQ3W4wnKnVKb/limLdtSD2rAd5cmHN70xoMf4OmuDd0t2kfJX04G+sfw6u2j8oOm2BXYM9E1f4acHruqKnM1g==
   dependencies:
     "@babel/runtime" "^7.12.5"
     "@videojs/vhs-utils" "^4.1.1"
@@ -5157,10 +5172,10 @@ make-dir@^3.0.2, make-dir@^3.1.0:
   dependencies:
     semver "^6.0.0"
 
-mammoth@^1.4.19:
-  version "1.10.0"
-  resolved "https://registry.yarnpkg.com/mammoth/-/mammoth-1.10.0.tgz#88b4a76e6e6a636880cadee058daa7f244fe5da8"
-  integrity sha512-9HOmqt8uJ5rz7q8XrECU5gRjNftCq4GNG0YIrA6f9iQPCeLgpvgcmRBHi9NQWJQIpT/MAXeg1oKliAK1xoB3eg==
+mammoth@^1.11.0:
+  version "1.11.0"
+  resolved "https://registry.yarnpkg.com/mammoth/-/mammoth-1.11.0.tgz#f6c68624eaffcf56728a792fcccd3495d688bac5"
+  integrity sha512-BcEqqY/BOwIcI1iR5tqyVlqc3KIaMRa4egSoK83YAVrBf6+yqdAAbtUcFDCWX8Zef8/fgNZ6rl4VUv+vVX8ddQ==
   dependencies:
     "@xmldom/xmldom" "^0.8.6"
     argparse "~1.0.3"
@@ -5173,7 +5188,17 @@ mammoth@^1.4.19:
     underscore "^1.13.1"
     xmlbuilder "^10.0.0"
 
-manifesto.js@^4.1.0, manifesto.js@^4.2.14:
+manifesto.js@^4.1.0:
+  version "4.3.0"
+  resolved "https://registry.yarnpkg.com/manifesto.js/-/manifesto.js-4.3.0.tgz#98384ceffabf7343173b526f68ccb079ac808286"
+  integrity sha512-UhnJ/m4KrbVUrqjlJvURakAR68y3twBXecocRiWU8MIvDJdwA1clYTtHz+in0LeYIgb6yuLZ7vStQ7ixtkkEAw==
+  dependencies:
+    "@edsilv/http-status-codes" "^1.0.3"
+    "@iiif/vocabulary" "^1.0.28"
+    isomorphic-unfetch "^3.0.0"
+    lodash "^4.17.21"
+
+manifesto.js@^4.2.14:
   version "4.2.22"
   resolved "https://registry.yarnpkg.com/manifesto.js/-/manifesto.js-4.2.22.tgz#39f251ea2711e9df088655077bf2776895bd84dd"
   integrity sha512-Rl7nKFzJ7kiotWCrFkqTnY6xfdGr7KtaHo+QovRXe4WGizoH1QaF6kHodNPIOsi2L5LCgX/RVoNqOryLKEuNrg==
@@ -7466,6 +7491,24 @@ verror@1.10.0:
   dependencies:
     "@babel/runtime" "^7.12.5"
     "@videojs/http-streaming" "^3.17.0"
+    "@videojs/vhs-utils" "^4.1.1"
+    "@videojs/xhr" "2.7.0"
+    aes-decrypter "^4.0.2"
+    global "4.4.0"
+    m3u8-parser "^7.2.0"
+    mpd-parser "^1.3.1"
+    mux.js "^7.0.1"
+    videojs-contrib-quality-levels "4.1.0"
+    videojs-font "4.2.0"
+    videojs-vtt.js "0.15.5"
+
+video.js@^8.23.4:
+  version "8.23.4"
+  resolved "https://registry.yarnpkg.com/video.js/-/video.js-8.23.4.tgz#65876174dfcee1057102a03a847fdaa8cf346c66"
+  integrity sha512-qI0VTlYmKzEqRsz1Nppdfcaww4RSxZAq77z2oNSl3cNg2h6do5C8Ffl0KqWQ1OpD8desWXsCrde7tKJ9gGTEyQ==
+  dependencies:
+    "@babel/runtime" "^7.12.5"
+    "@videojs/http-streaming" "^3.17.2"
     "@videojs/vhs-utils" "^4.1.1"
     "@videojs/xhr" "2.7.0"
     aes-decrypter "^4.0.2"
