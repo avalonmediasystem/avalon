@@ -346,7 +346,11 @@ class MasterFilesController < ApplicationController
   end
 
   def search
+    authorize! :read, @master_file, message: "You do not have sufficient privileges"
     render json: search_response_json
+  # Supercede the application level handling to avoid rendering restricted_pid template
+  rescue CanCan::AccessDenied
+    head :unauthorized
   end
 
 protected
