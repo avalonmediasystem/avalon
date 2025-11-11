@@ -876,23 +876,24 @@ describe MasterFilesController do
       end
     end
   end
-  
+
   describe "search" do
     let(:transcript_1) { FactoryBot.create(:supplemental_file, :with_transcript_tag, parent_id: parent_master_file.id, file: fixture_file_upload(Rails.root.join('spec', 'fixtures', 'chunk_test.vtt'), 'text/vtt')) }
     let(:transcript_2) { FactoryBot.create(:supplemental_file, :with_transcript_tag, parent_id: parent_master_file.id, file: fixture_file_upload(Rails.root.join('spec', 'fixtures', 'chunk_test.txt'), 'text/plain')) }
     let(:other_transcript) { FactoryBot.create(:supplemental_file, :with_transcript_tag, parent_id: other_master_file.id, file: fixture_file_upload(Rails.root.join('spec', 'fixtures', 'chunk_test.txt'), 'text/plain')) }
     let(:parent_master_file) { FactoryBot.create(:master_file, :with_media_object) }
-    let(:other_master_file) { FactoryBot.create(:master_file, :with_media_object)}
+    let(:other_master_file) { FactoryBot.create(:master_file, :with_media_object) }
 
     before :each do
       parent_master_file.supplemental_files += [transcript_1, transcript_2]
       other_master_file.supplemental_files += [other_transcript]
       parent_master_file.save
       other_master_file.save
+      login_as :administrator
     end
 
     it "returns a list of matches from all of a master file's transcripts" do
-      get('search', params: { id: parent_master_file.id, q: 'before' } )
+      get('search', params: { id: parent_master_file.id, q: 'before' })
       result = JSON.parse(response.body)
       items = result["items"]
       expect(items.count).to eq 2
@@ -903,13 +904,13 @@ describe MasterFilesController do
     end
 
     it 'does not return matches from other master files' do
-      get('search', params: { id: parent_master_file.id, q: 'before' } )
+      get('search', params: { id: parent_master_file.id, q: 'before' })
       result = JSON.parse(response.body)
       expect(result['items'].any? { |item| item["id"].include?(other_master_file.id) }).to eq false
     end
 
     it 'does phrase searches' do
-      get('search', params: { id: parent_master_file.id, q: 'before lunch' } )
+      get('search', params: { id: parent_master_file.id, q: 'before lunch' })
       result = JSON.parse(response.body)
       items = result["items"]
       expect(items.count).to eq 1
@@ -922,9 +923,17 @@ describe MasterFilesController do
         get('search', params: { id: parent_master_file.id })
         result = JSON.parse(response.body)
         expect(result["@context"]).to eq "http://iiif.io/api/search/2/context.json"
-        expect(result["id"]).to eq "#{Rails.application.routes.url_helpers.search_master_file_url(parent_master_file.id)}"
+        expect(result["id"]).to eq Rails.application.routes.url_helpers.search_master_file_url(parent_master_file.id).to_s
         expect(result["type"]).to eq "AnnotationPage"
         expect(result["items"]).to be_blank
+      end
+    end
+
+    context 'unauthorized user' do
+      it 'receives a 401 response' do
+        login_as :user
+        get('search', params: { id: parent_master_file.id })
+        expect(response.status).to eq 401
       end
     end
   end
