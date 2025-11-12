@@ -25,20 +25,9 @@
   }
 
   .ramp--media_player {
-    .video-js .vjs-big-play-button {
-      left: 55% !important;
-    }
+    // reduce player height to match with adjusted font-size
+    // for smaller screens
     @media (max-width: 585px) {
-      .video-js .vjs-big-play-button {
-        scale: 1.5;
-      }
-
-      .video-js .vjs-control-bar {
-        font-size: 90% !important;
-      }
-
-      // reduce player height to match with adjusted font-size
-      // for smaller screens
       .video-js.vjs-audio {
         min-height: 2.9em;
       }
