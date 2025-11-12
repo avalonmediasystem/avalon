@@ -24,7 +24,7 @@ module Hydra::MultiplePolicyAwareAbility
   def policy_ids_for(object_id)
     policy_ids = policy_id_cache[object_id]
     return policy_ids if policy_ids
-    solr_results = ActiveFedora::SolrService.query("id:#{object_id} OR _query_:\"{!join to=id from=isGovernedBy_ssim}id:#{object_id}\"", fl: [governed_by_solr_field])
+    solr_results = ActiveFedora::SolrService.query("id:#{object_id} OR _query_:\"{!join to=id from=isGovernedBy_ssim}id:#{object_id}\"", fl: [governed_by_solr_field], rows: 1000)
     return unless solr_results.any?(&:present?)
     policy_id_cache[object_id] = policy_ids = solr_results.collect {|solr_result| solr_result[governed_by_solr_field] }.flatten.compact
   end
@@ -46,7 +46,7 @@ module Hydra::MultiplePolicyAwareAbility
   def test_edit_from_policy(object_id)
     policy_ids = active_policy_ids_for(object_id)
     return false if policy_ids.nil?
-    Rails.logger.debug("[CANCAN] -policy- Do the POLICIES #{policy_ids} provide READ permissions for #{current_user.user_key}?")
+    Rails.logger.debug("[CANCAN] -policy- Do the POLICIES #{policy_ids} provide EDIT permissions for #{current_user.user_key}?")
     results = policy_ids.collect do |policy_id|
       group_intersection = user_groups & edit_groups_from_policy( policy_id )
       result = !group_intersection.empty? || edit_users_from_policy( policy_id ).include?(current_user.user_key)
