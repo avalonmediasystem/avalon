@@ -62,7 +62,7 @@ Unless required by applicable law or agreed to in writing, software distributed
   <script>
     // When viewing video on smaller devices scroll to page content to fully
     // display the video player
-    $(document).ready(function () {
+    document.addEventListener('DOMContentLoaded', function () {
       const mediaObjectId = <%= @media_object.id.to_json.html_safe %>;
       const sectionIds = <%= @media_object.section_ids.to_json.html_safe %>;
       const sectionShareInfos = <%= @media_object.section_share_infos.to_json.html_safe %>;
@@ -71,7 +71,7 @@ Unless required by applicable law or agreed to in writing, software distributed
       // Enable action buttons and token refresh after derivative is loaded
       setInterval(initPlayerListeners, 500);
       function initPlayerListeners() {
-        let player = document.getElementById('iiif-media-player');
+        let player = getById('iiif-media-player');
         if (player) {
           addActionButtonListeners(player, mediaObjectId, sectionIds, sectionShareInfos);
           initM3U8Reload(player, mediaObjectId, sectionIds, sectionShareInfos);
@@ -86,9 +86,10 @@ Unless required by applicable law or agreed to in writing, software distributed
           const screenHeight = screen.height;
           const playerHeight = player[0].style.height.replace(/[^-\d\.]/g, '');
           if(screenHeight - playerHeight < 200) {
-            $('html, body').animate({
-                scrollTop: $('#user-util-collapse').offset().top
-            }, 1000);
+            const userUtilCollapse = getById('user-util-collapse');
+            if (userUtilCollapse) {
+              userUtilCollapse.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
           }
           clearInterval(scrollInterval);
         }
@@ -96,7 +97,7 @@ Unless required by applicable law or agreed to in writing, software distributed
 
       let timeCheck = setInterval(initTranscriptCheck, 500);
       function initTranscriptCheck() {
-        let player = document.getElementById('iiif-media-player');
+        let player = getById('iiif-media-player');
         if(player) {
           addPlayerEventListeners(player, () => {
             clearInterval(timeCheck);
@@ -118,24 +119,24 @@ Unless required by applicable law or agreed to in writing, software distributed
         Set tabbed nav column height based on the content
       */
       function setColumnHeights() {
-        let activeTab = $('.tab-pane.active.show');
-        let tabsPanel = $('.ramp--tabs-panel');
+        let activeTab = query('.tab-pane.active.show');
+        let tabsPanel = query('.ramp--tabs-panel');
         // When the active tab is transcripts, check the transcript content height to
         // check there is overflowing content to set the column height. This is handled
         // seperately because the height check in the else block doesn't identify this since
         // since this content is set dynamically based on user selection in dropdown menu. 
-        if(activeTab.hasClass('ramp--transcripts_tab')) {
-          let transcriptContent = $('.transcript_content');
-          if(transcriptContent[0].scrollHeight > transcriptContent[0].clientHeight) {
-            activeTab[0].style.height = 'unset';
+        if(activeTab.classList.contains('ramp--transcripts_tab')) {
+          let transcriptContent = query('.transcript_content');
+          if(transcriptContent && transcriptContent.scrollHeight > transcriptContent.clientHeight) {
+            activeTab.style.height = 'unset';
           }
         } else {
           // Compare the active tab's scrollHeight and tab panel's height to identify overflowing content.
           // And set tab height to either 'unset' or 'fit-content' accordingly.
-          if (activeTab[0].scrollHeight > tabsPanel[0].clientHeight) {
-            activeTab[0].style.height = 'unset';
+          if (activeTab.scrollHeight > tabsPanel.clientHeight) {
+            activeTab.style.height = 'unset';
           } else {
-            activeTab[0].style.height = 'fit-content';
+            activeTab.style.height = 'fit-content';
           }
         }
       }
@@ -145,7 +146,7 @@ Unless required by applicable law or agreed to in writing, software distributed
         let transcriptButton = document.evaluate('//button[text()="Transcripts"]', document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
         let transcriptTab = transcriptButton?.parentElement
         let detailTab = document.evaluate('//button[text()="Details"]', document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
-        
+
         if(!transcriptSections.includes(sectionId)) {
           // If transcript tab is the active tab when it is hidden, the tab goes away but the box still displays
           // the missing transcript file message. Force change over to a different tab to avoid this case.
