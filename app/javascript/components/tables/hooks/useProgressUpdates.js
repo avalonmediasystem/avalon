@@ -59,7 +59,7 @@ const useProgressUpdates = ({ currentJobs, onProgressUpdate, progressUrl }) => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content'),
+          'X-CSRF-Token': query('meta[name="csrf-token"]')?.getAttribute('content'),
         },
         body: JSON.stringify({ ids: jobIds })
       });

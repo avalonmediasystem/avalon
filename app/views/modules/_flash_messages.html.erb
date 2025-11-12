@@ -62,7 +62,10 @@ Unless required by applicable law or agreed to in writing, software distributed
 <script>
   document.cookie = 'test_cookie=true'
   if(!document.cookie.match(/^(.*;)?\s*test_cookie\s*=\s*[^;]+(.*)?$/)){
-    $('#cookieless').css("display", "block")
+    const cookielessAlert = getById('cookieless');
+    if (cookielessAlert) {
+      cookielessAlert.style.display = 'block';
+    }
   } else{
     document.cookie = 'test_cookie=;expires=Thu, 01 Jan 1970 00:00:01 GMT;';
   }
