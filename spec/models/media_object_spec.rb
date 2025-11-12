@@ -146,102 +146,164 @@ describe MediaObject do
     let (:collection) { media_object.collection.reload }
 
     context 'when manager' do
-      subject{ ability}
-      let(:ability){ Ability.new(User.where(Devise.authentication_keys.first => collection.managers.first).first) }
+      let(:ability) { Ability.new(User.where(Devise.authentication_keys.first => collection.managers.first).first) }
 
-      it{ is_expected.to be_able_to(:create, MediaObject) }
-      it{ is_expected.to be_able_to(:read, media_object) }
-      it{ is_expected.to be_able_to(:update, media_object) }
-      it{ is_expected.to be_able_to(:destroy, media_object) }
-      it{ is_expected.to be_able_to(:inspect, media_object) }
+      it "should be able to perform all actions" do
+        expect(ability).to be_able_to(:create, MediaObject)
+        expect(ability).to be_able_to(:read, media_object)
+        expect(ability).to be_able_to(:update, media_object)
+        expect(ability).to be_able_to(:destroy, media_object)
+        expect(ability).to be_able_to(:inspect, media_object)
+      end
+
       it "should be able to destroy and unpublish published item" do
         media_object.publish! "someone"
-        expect(subject).to be_able_to(:destroy, media_object)
-        expect(subject).to be_able_to(:unpublish, media_object)
+        expect(ability).to be_able_to(:destroy, media_object)
+        expect(ability).to be_able_to(:unpublish, media_object)
       end
 
       context 'and logged in through LTI' do
         let(:ability){ Ability.new(User.where(Devise.authentication_keys.first => collection.managers.first).first, {full_login: false, virtual_groups: [Faker::Lorem.word]}) }
 
-        it{ is_expected.not_to be_able_to(:share, MediaObject) }
-        it{ is_expected.not_to be_able_to(:update, media_object) }
-        it{ is_expected.not_to be_able_to(:destroy, media_object) }
+        it "can read but cannot modify the item" do
+          expect(ability).to be_able_to(:read, media_object)
+          expect(ability).not_to be_able_to(:share, MediaObject)
+          expect(ability).not_to be_able_to(:update, media_object)
+          expect(ability).not_to be_able_to(:destroy, media_object)
+        end
+      end
+
+      context 'inherited from unit' do
+        let(:ability){ Ability.new(User.where(Devise.authentication_keys.first => collection.inherited_managers.first).first) }
+
+        it "should be able to perform all actions" do
+          expect(ability).to be_able_to(:create, MediaObject)
+          expect(ability).to be_able_to(:read, media_object)
+          expect(ability).to be_able_to(:update, media_object)
+          expect(ability).to be_able_to(:destroy, media_object)
+          expect(ability).to be_able_to(:inspect, media_object)
+        end
+
+        it "should be able to destroy and unpublish published item" do
+          media_object.publish! "someone"
+          expect(ability).to be_able_to(:destroy, media_object)
+          expect(ability).to be_able_to(:unpublish, media_object)
+        end
       end
     end
 
     context 'when editor' do
-      subject{ ability}
-      let(:ability){ Ability.new(User.where(Devise.authentication_keys.first => collection.editors.first).first) }
+      let(:ability) { Ability.new(User.where(Devise.authentication_keys.first => collection.editors.first).first) }
 
-      it{ is_expected.to be_able_to(:create, MediaObject) }
-      it{ is_expected.to be_able_to(:read, media_object) }
-      it{ is_expected.to be_able_to(:update, media_object) }
-      it{ is_expected.to be_able_to(:destroy, media_object) }
-      it{ is_expected.to be_able_to(:update_access_control, media_object) }
+      it "should be able to perform actions on unpublished item" do
+        expect(ability).to be_able_to(:create, MediaObject)
+        expect(ability).to be_able_to(:read, media_object)
+        expect(ability).to be_able_to(:update, media_object)
+        expect(ability).to be_able_to(:destroy, media_object)
+        expect(ability).to be_able_to(:update_access_control, media_object)
+      end
+
       it "should not be able to destroy and unpublish published item" do
         media_object.publish! "someone"
-        expect(subject).not_to be_able_to(:destroy, media_object)
-        expect(subject).not_to be_able_to(:update, media_object)
-        expect(subject).not_to be_able_to(:update_access_control, media_object)
-        expect(subject).not_to be_able_to(:unpublish, media_object)
+        expect(ability).not_to be_able_to(:destroy, media_object)
+        expect(ability).not_to be_able_to(:update, media_object)
+        expect(ability).not_to be_able_to(:update_access_control, media_object)
+        expect(ability).not_to be_able_to(:unpublish, media_object)
+      end
+
+      context 'inherited from unit' do
+        let(:ability) { Ability.new(User.where(Devise.authentication_keys.first => collection.inherited_editors.first).first) }
+
+        it "should be able to perform actions on unpublished item" do
+          expect(ability).to be_able_to(:create, MediaObject)
+          expect(ability).to be_able_to(:read, media_object)
+          expect(ability).to be_able_to(:update, media_object)
+          expect(ability).to be_able_to(:destroy, media_object)
+          expect(ability).to be_able_to(:update_access_control, media_object)
+        end
+
+        it "should not be able to destroy and unpublish published item" do
+          media_object.publish! "someone"
+          expect(ability).not_to be_able_to(:destroy, media_object)
+          expect(ability).not_to be_able_to(:update, media_object)
+          expect(ability).not_to be_able_to(:update_access_control, media_object)
+          expect(ability).not_to be_able_to(:unpublish, media_object)
+        end
       end
     end
 
     context 'when depositor' do
-      subject{ ability }
-      let(:ability){ Ability.new(User.where(Devise.authentication_keys.first => collection.depositors.first).first) }
+      let(:ability) { Ability.new(User.where(Devise.authentication_keys.first => collection.depositors.first).first) }
 
-      it{ is_expected.to be_able_to(:create, MediaObject) }
-      it{ is_expected.to be_able_to(:read, media_object) }
-      it{ is_expected.to be_able_to(:update, media_object) }
-      it{ is_expected.to be_able_to(:destroy, media_object) }
+      it "should be able to perform limited actions on unpublished item" do
+        expect(ability).to be_able_to(:create, MediaObject)
+        expect(ability).to be_able_to(:read, media_object)
+        expect(ability).to be_able_to(:update, media_object)
+        expect(ability).to be_able_to(:destroy, media_object)
+        expect(ability).not_to be_able_to(:update_access_control, media_object)
+      end
+
       it "should not be able to destroy and unpublish published item" do
         media_object.publish! "someone"
-        expect(subject).not_to be_able_to(:destroy, media_object)
-        expect(subject).not_to be_able_to(:unpublish, media_object)
+        expect(ability).not_to be_able_to(:destroy, media_object)
+        expect(ability).not_to be_able_to(:unpublish, media_object)
       end
-      it{ is_expected.not_to be_able_to(:update_access_control, media_object) }
+
+      context 'inherited from unit' do
+        let(:ability) { Ability.new(User.where(Devise.authentication_keys.first => collection.inherited_depositors.first).first) }
+
+        it "should be able to perform limited actions on unpublished item" do
+          expect(ability).to be_able_to(:create, MediaObject)
+          expect(ability).to be_able_to(:read, media_object)
+          expect(ability).to be_able_to(:update, media_object)
+          expect(ability).to be_able_to(:destroy, media_object)
+          expect(ability).not_to be_able_to(:update_access_control, media_object)
+        end
+
+        it "should not be able to destroy and unpublish published item" do
+          media_object.publish! "someone"
+          expect(ability).not_to be_able_to(:destroy, media_object)
+          expect(ability).not_to be_able_to(:unpublish, media_object)
+        end
+      end
     end
 
     context 'when end-user' do
-      subject{ ability }
-      let(:ability){ Ability.new(user) }
-      let(:user){FactoryBot.create(:user)}
-      before do
-        media_object.save!
+      let(:ability) { Ability.new(user) }
+      let(:user) { FactoryBot.create(:user) }
+
+      it "should be able to share" do
+        expect(ability).to be_able_to(:share, MediaObject)
       end
 
-      it{ is_expected.to be_able_to(:share, MediaObject) }
       it "should not be able to read unauthorized, published MediaObject" do
         media_object.publish! "random"
-        media_object.reload
-        expect(subject.can?(:read, media_object)).to be false
+        expect(ability).not_to be_able_to(:read, media_object)
       end
 
       it "should not be able to read authorized, unpublished MediaObject" do
         media_object.read_users += [user.user_key]
         expect(media_object).not_to be_published
-        expect(subject.can?(:read, media_object)).to be false
+        expect(ability).not_to be_able_to(:read, media_object)
       end
 
       it "should be able to read authorized, published MediaObject" do
         media_object.read_users += [user.user_key]
         media_object.publish! "random"
-        media_object.reload
-        expect(subject.can?(:read, media_object)).to be true
+        expect(ability).to be_able_to(:read, media_object)
       end
     end
 
     context 'when lti user' do
-      subject{ ability }
-      let(:user){ FactoryBot.create(:user_lti) }
-      let(:ability){ Ability.new(user, {full_login: false, virtual_groups: [Faker::Lorem.word]}) }
+      let(:user) { FactoryBot.create(:user_lti) }
+      let(:ability) { Ability.new(user, {full_login: false, virtual_groups: [Faker::Lorem.word]}) }
 
-      it{ is_expected.not_to be_able_to(:share, MediaObject) }
+      it "should be able to share" do
+        expect(ability).not_to be_able_to(:share, MediaObject)
+      end
     end
 
     context 'when ip address' do
-      subject{ ability }
       let(:user) { FactoryBot.create(:user) }
       let(:ip_addr) { Faker::Internet.ip_v4_address }
       let(:ability) { Ability.new(user, {remote_ip: ip_addr}) }
@@ -252,23 +314,20 @@ describe MediaObject do
       it 'should not be able to read unauthorized, published MediaObject' do
         media_object.read_groups += [Faker::Internet.ip_v4_address]
         media_object.publish! "random"
-        media_object.reload
         perform_enqueued_jobs(only: MediaObjectIndexingJob)
-        expect(subject.can?(:read, media_object)).to be_falsey
+        expect(ability).not_to be_able_to(:read, media_object)
       end
       it 'should be able to read single-ip authorized, published MediaObject' do
         media_object.read_groups += [ip_addr]
         media_object.publish! "random"
-        media_object.reload
         perform_enqueued_jobs(only: MediaObjectIndexingJob)
-        expect(subject.can?(:read, media_object)).to be_truthy
+        expect(ability).to be_able_to(:read, media_object)
       end
       it 'should be able to read ip-range authorized, published MediaObject' do
         media_object.read_groups += ["#{ip_addr}/30"]
         media_object.publish! "random"
-        media_object.reload
         perform_enqueued_jobs(only: MediaObjectIndexingJob)
-        expect(subject.can?(:read, media_object)).to be_truthy
+        expect(ability).to be_able_to(:read, media_object)
       end
     end
   end
