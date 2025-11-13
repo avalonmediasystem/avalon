@@ -15,7 +15,5 @@ Unless required by applicable law or agreed to in writing, software distributed
 %>
 
 <% @results.each do |result| %>
-  <%# Admin::Unit needs the id as the submit value, other autocompletes are fine with the string entered %>
-  <% value = result[:id] if params[:t] == 'Admin::Unit' %>
-  <li role="option" <% if value.present? %> data-autocomplete-value=<%= value %><% end %>><span><%= result[:display] %></span></li>
+  <li role="option"><span><%= result[:display] %></span></li>
 <% end %>

@@ -82,6 +82,8 @@ class Admin::Collection < ActiveFedora::Base
 
   before_destroy :destroy_dropbox_directory!
 
+  attr_accessor :unit_name
+  
   alias_method :'_unit=', :'unit='
   def unit= u
     self._unit = u

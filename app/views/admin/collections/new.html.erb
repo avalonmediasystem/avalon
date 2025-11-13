@@ -21,7 +21,7 @@ Unless required by applicable law or agreed to in writing, software distributed
   <% if @collection.new_record? || can?(:update_unit, @collection)%>
   <div class='mb-3'>
     <label class='form-label' for='admin_unit_typeahead'>Unit</label>
-    <%= render partial: 'modules/autocomplete_input', locals: { field_name: 'admin_collection[unit_id]',
+    <%= render partial: 'modules/autocomplete_input', locals: { field_name: 'admin_collection[unit_name]',
                                                                 field_id: 'admin_unit_typeahead',
                                                                 value: @collection.unit&.name || '',
                                                                 model: :"Admin::Unit",

@@ -783,11 +783,11 @@ h5.card-title {
 .autocomplete_popup {
   z-index: 100;
 
-  &#admin_collection\[unit_id\]-popup {
+  &#admin_collection\[unit_name\]-popup {
     white-space: nowrap;
   }
 
-  &:not(#admin_collection\[unit_id\]-popup) {
+  &:not(#admin_collection\[unit_name\]-popup) {
     width: 100%;
   }
 }
