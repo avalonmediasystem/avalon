@@ -14,7 +14,12 @@
  * ---  END LICENSE_HEADER BLOCK  ---
 */
 
-import React from 'react';
+import {
+  Fragment,
+  useEffect,
+  useMemo,
+  useState
+} from 'react';
 import {
   Transcript,
   IIIFPlayer,
@@ -41,11 +46,11 @@ const MediaObjectRamp = ({
   accessibility_text = '',
   transcript_tab_title = 'Transcripts',
 }) => {
-  const [manifestUrl, setManifestUrl] = React.useState('');
-  const [startCanvasId, setStartCanvasId] = React.useState();
-  const [startCanvasTime, setStartCanvasTime] = React.useState();
+  const [manifestUrl, setManifestUrl] = useState('');
+  const [startCanvasId, setStartCanvasId] = useState();
+  const [startCanvasTime, setStartCanvasTime] = useState();
 
-  React.useEffect(() => {
+  useEffect(() => {
     const { base_url, fullpath_url } = urls;
     // Split the current path from the time fragment in the format .../:id?t=time
     let [fullpath, start_time] = fullpath_url.split('?t=');
@@ -68,7 +73,7 @@ const MediaObjectRamp = ({
     setManifestUrl(url);
   }, []);
 
-  const a11yWithOnlyShare = React.useMemo(() => {
+  const a11yWithOnlyShare = useMemo(() => {
     return accessibility_text && !(timeline.canCreate && playlist.canCreate);
   }, [accessibility_text, timeline.canCreate, playlist.canCreate]);
 
@@ -80,16 +85,16 @@ const MediaObjectRamp = ({
       <Row className="ramp--all-components ramp--itemview">
         <Col sm={12} md={12} xl={8}>
           {(cdl.enabled && !cdl.can_stream)
-            ? (<React.Fragment>
+            ? (<Fragment>
               <div dangerouslySetInnerHTML={{ __html: cdl.embed }} />
               <div className="ramp--rails-title">
                 {<div className="object-title" dangerouslySetInnerHTML={{ __html: title.content }} />}
               </div>
-            </React.Fragment>
+            </Fragment>
             )
-            : (<React.Fragment>
+            : (<Fragment>
               {has_sections &&
-                <React.Fragment>
+                <Fragment>
                   <MediaPlayer enableFileDownload={false} enablePlaybackRate={true} />
                   <div className="ramp--rails-title">
                     {<div className="object-title" dangerouslySetInnerHTML={{ __html: title.content }} />}
@@ -168,9 +173,9 @@ const MediaObjectRamp = ({
                     </Col>
                   </Row>
                   <StructuredNavigation showAllSectionsButton={true} />
-                </React.Fragment>
+                </Fragment>
               }
-            </React.Fragment>
+            </Fragment>
             )
           }
         </Col>
