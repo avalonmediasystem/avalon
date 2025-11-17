@@ -171,7 +171,7 @@ class Ability
         end
 
         can :update_editors, [Admin::Unit, SpeedyAF::Proxy::Admin::Unit] do |unit|
-          @user.in?(unit.unit_admins)
+          is_manager_of_unit?(unit)
         end
 
         can :update_depositors, [Admin::Unit, SpeedyAF::Proxy::Admin::Unit] do |unit|
@@ -361,6 +361,12 @@ class Ability
      is_administrator? ||
        @user.in?(collection.editors_and_managers) ||
        @user.in?(collection.unit.editors_managers_and_unit_admins)
+  end
+
+  def is_manager_of_unit?(unit)
+    is_administrator? ||
+      @user.in?(unit.unit_admins) ||
+      @user.in?(unit.managers)
   end
 
   def is_editor_of_unit?(unit)
