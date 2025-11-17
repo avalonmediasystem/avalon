@@ -357,7 +357,7 @@ describe Admin::CollectionsController, type: :controller do
       expect { post 'create', params: { format: 'json', admin_collection: { name: collection.name, description: collection.description, unit_id: collection.unit.id, managers: collection.managers } } }.to have_enqueued_job(ActionMailer::MailDeliveryJob).twice
       # post 'create', format:'json', admin_collection: {name: collection.name, description: collection.description, unit: collection.unit, managers: collection.managers}
     end
-    it "should create a new collection" do
+    it "should create a new collection with unit id provided" do
       post 'create', params: { format: 'json', admin_collection: { name: collection.name, description: collection.description, unit_id: collection.unit.id, contact_email: collection.contact_email, website_label: collection.website_label, website_url: collection.website_url, managers: collection.managers } }
       expect(JSON.parse(response.body)['id'].class).to eq String
       expect(JSON.parse(response.body)).not_to include('errors')
@@ -367,6 +367,15 @@ describe Admin::CollectionsController, type: :controller do
       expect(new_collection.website_url).to eq collection.website_url
       expect(new_collection.unit_id).to eq collection.unit.id
       expect(new_collection.governing_policy_id).to eq collection.unit.id
+    end
+    it "should create a new collection with unit name provided" do
+      post 'create', params: { format: 'json', admin_collection: { name: collection.name, description: collection.description, unit_name: collection.unit.name, contact_email: collection.contact_email, website_label: collection.website_label, website_url: collection.website_url, managers: collection.managers } }
+      expect(JSON.parse(response.body)['id'].class).to eq String
+      expect(JSON.parse(response.body)).not_to include('errors')
+      new_collection = Admin::Collection.find(JSON.parse(response.body)['id'])
+      expect(new_collection.contact_email).to eq collection.contact_email
+      expect(new_collection.website_label).to eq collection.website_label
+      expect(new_collection.website_url).to eq collection.website_url
     end
     it "should create a new collection with default manager list containing current API user" do
       post 'create', params: { format: 'json', admin_collection: { name: collection.name, description: collection.description, unit_id: collection.unit.id } }

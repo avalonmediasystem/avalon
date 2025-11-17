@@ -103,7 +103,8 @@ class Admin::CollectionsController < ApplicationController
 
   # POST /collections
   def create
-    @collection = Admin::Collection.create(collection_params.merge(managers: [current_user.user_key], governing_policy_id: collection_params[:unit_id]))
+    unit_id = collection_params['unit_id'].presence || convert_unit(collection_params["unit_name"])
+    @collection = Admin::Collection.create(collection_params.merge(managers: [current_user.user_key], unit_id: unit_id, governing_policy_id: unit_id))
     if @collection.persisted?
       User.where(Devise.authentication_keys.first => [Avalon::RoleControls.users('administrator')].flatten).each do |admin_user|
         NotificationsMailer.new_collection(
@@ -172,10 +173,12 @@ class Admin::CollectionsController < ApplicationController
 
     update_access(@collection, params) if can?(:update_access_control, @collection)
 
-    # Update governing_policy_id if unit_id changes
-    update_params = collection_params.to_h
-    update_params.merge!(governing_policy_id: update_params[:unit_id]) if update_params[:unit_id].present?
-    @collection.update_attributes update_params if update_params.present?
+    if collection_params.present?
+      unit_id = collection_params['unit_id'].presence
+      unit_id ||= convert_unit(collection_params["unit_name"]) if collection_params["unit_name"].present?
+      update_unit_params = { unit_id: unit_id, governing_policy_id: unit_id } if unit_id.present?
+      @collection.update_attributes collection_params.merge(update_unit_params)
+    end
     saved = @collection.save
     if saved
       if name_changed
@@ -383,12 +386,16 @@ class Admin::CollectionsController < ApplicationController
   end
 
   def collection_params
-    params.permit(:admin_collection => [:name, :description, :unit_id, :contact_email, :website_label, :website_url, :managers => []])[:admin_collection]
+    params.permit(:admin_collection => [:name, :description, :unit_id, :unit_name, :contact_email, :website_label, :website_url, :managers => []])[:admin_collection]
   end
 
   def check_image_compliance(poster_path)
     fastimage = FastImage.new(poster_path)
     # Size derived from width and aspect ratio from JS code, assets/javascript/crop_upload.js:60-63
     fastimage.type == :png && fastimage.size == [700, 560] # [width, height]
+  end
+
+  def convert_unit(unit_name)
+    Admin::Unit.where(name_ssi: unit_name).first&.id
   end
 end

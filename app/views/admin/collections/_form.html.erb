@@ -27,9 +27,18 @@ Unless required by applicable law or agreed to in writing, software distributed
       <%= bootstrap_form_for @collection, remote: true, html: { modal: true }, format: 'json' do |f| %>
       <div class="modal-body">
         <%= f.text_field :name, 'data-testid': 'collection-update-name' %>
-        <% if @collection.new_record? || can?(:update_unit, @collection)%>
-          <%# FIXME: Make this an autocomplete that queries solr? Need to check that user has access to create a collection in the unit. %>
-          <%= f.select(:unit_id, Admin::Unit.all.map { |u| [u.name, u.id] }, {}, {'data-testid': 'collection-update-unit'} ) %>
+        <% if @collection.new_record? || can?(:update_unit, @collection) %>
+          <div class='mb-3'>
+            <label class='form-label' for='admin_unit_typeahead'>Unit</label>
+            <%= render partial: 'modules/autocomplete_input', locals: { field_name: 'admin_collection[unit_name]',
+                                                                        field_id: 'admin_unit_typeahead',
+                                                                        value: @collection.unit&.name || '',
+                                                                        model: :"Admin::Unit",
+                                                                        data: { 
+                                                                                testid: 'collection-update-unit'
+                                                                              },
+                                                                        disabled: !can?(:update, @collection) } %>
+          <div>
         <% end %>
         <%= f.text_area :description, rows: 3 ,'data-testid':'collection-update-description' %>
         <%= f.text_field :contact_email, 'data-testid': 'collection-update-contact-email' %>
