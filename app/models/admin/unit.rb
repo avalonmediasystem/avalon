@@ -247,7 +247,7 @@ class Admin::Unit < ActiveFedora::Base
     # We can get around this by using format.
     filter = format('has_model_ssim: "%s"', "Admin::Unit")
 
-    search_array = ActiveFedora::SolrService.query(solr_query, rows: 1000, fq: filter)
+    search_array = ActiveFedora::SolrService.query(solr_query, rows: 1000, fq: filter, fl: [:id, :name_ssi])
 
     search_array.map { |value| { id: value[:id], display: value[:name_ssi] } }
   end
