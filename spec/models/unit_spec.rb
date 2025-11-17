@@ -47,6 +47,24 @@ describe Admin::Unit do
       end
     end
 
+    context 'when manager' do
+      let(:ability) { Ability.new(user) }
+      let(:user) { User.where(Devise.authentication_keys.first => unit.managers.first).first }
+
+      it "can perform limited actions on the unit" do
+        expect(ability).not_to be_able_to(:create, Admin::Unit)
+        expect(ability).to be_able_to(:read, Admin::Unit)
+        expect(ability).to be_able_to(:read, unit)
+        expect(ability).to be_able_to(:update, unit)
+        expect(ability).not_to be_able_to(:update_unit_admins, unit)
+        expect(ability).not_to be_able_to(:update_managers, unit)
+        expect(ability).to be_able_to(:update_editors, unit)
+        expect(ability).to be_able_to(:update_depositors, unit)
+        expect(ability).not_to be_able_to(:update_access_control, unit)
+        expect(ability).not_to be_able_to(:destroy, unit)
+      end
+    end
+
     context 'when editor' do
       let(:ability) { Ability.new(user) }
       let(:user) { User.where(Devise.authentication_keys.first => unit.editors.first).first }
