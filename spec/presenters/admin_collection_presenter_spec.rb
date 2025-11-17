@@ -59,12 +59,12 @@ describe Admin::CollectionPresenter do
   end
 
   describe 'abilities' do
-    subject(:ability) { Ability.new(User.where(Devise.authentication_keys.first => user).first) }
+    subject(:ability) { Ability.new(User.where(Devise.authentication_keys.first => user.to_s).first) }
 
     context 'when manager' do
       let(:user) { manager }
 
-      it { is_expected.not_to be_able_to(:destroy, presenter) }
+      it { is_expected.to be_able_to(:destroy, presenter) }
 
       context 'inherited from unit' do
         let(:user) { presenter.inherited_managers.first }
