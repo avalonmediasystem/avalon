@@ -81,6 +81,8 @@ class Admin::Collection < ActiveFedora::Base
 
   before_destroy :destroy_dropbox_directory!
 
+  attr_accessor :unit_name
+
   def created_at
     @created_at ||= create_date
   end

@@ -31,7 +31,7 @@ describe 'Admin Collection' do
     expect(page).to have_content('Name')
     expect(page).to have_content('Description')
     expect(page).to have_content('Unit')
-    expect(page).to have_content(@unit.name)
+    expect(page).to_not have_content(@unit.name)
     expect(page).to have_link('Cancel')
   end
   it 'is able to create a new collection' do
@@ -39,7 +39,7 @@ describe 'Admin Collection' do
     visit '/admin/collections/'
     click_link('Create Collection')
     fill_in('admin_collection_name', with: 'Test Collection')
-    select(@unit.name, from: 'admin_collection_unit_id')
+    fill_in('admin_collection[unit_name]', with: @unit.name)
     click_on('Create Collection')
     visit '/admin/collections'
     expect(page).to have_content('Test Collection')
@@ -54,7 +54,7 @@ describe 'Admin Collection' do
     visit '/admin/collections'
     click_link('Create Collection')
     fill_in('admin_collection_name', with: 'Test Collection')
-    select(@unit.name, from: 'admin_collection_unit_id')
+    fill_in('admin_collection[unit_name]', with: @unit.name)
     click_on('Create Collection')
     visit '/admin/collections'
     click_on('Test Collection')
@@ -69,7 +69,7 @@ describe 'Admin Collection' do
     visit '/admin/collections'
     click_link('Create Collection')
     fill_in('admin_collection_name', with: 'Test Collection')
-    select(@unit.name, from: 'admin_collection_unit_id')
+    fill_in('admin_collection[unit_name]', with: @unit.name)
     click_on('Create Collection')
     visit '/admin/collections'
     click_link('Delete')
