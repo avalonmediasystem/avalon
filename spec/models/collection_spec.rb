@@ -34,7 +34,7 @@ describe Admin::Collection do
       let(:ability) { Ability.new(user) }
       let(:user) { User.where(Devise.authentication_keys.first => collection.managers.first).first }
 
-      it "can perform all actions on an existing collection" do
+      it "can perform all actions on an existing collection but cannot create collections" do
         expect(ability).not_to be_able_to(:create, Admin::Collection)
         expect(ability).to be_able_to(:read, Admin::Collection)
         expect(ability).to be_able_to(:read, collection)
