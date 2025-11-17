@@ -81,4 +81,10 @@ class Admin::CollectionPresenter
       }
     }
   end
+
+  def to_proxy
+    SpeedyAF::Proxy::Admin::Collection.for(document.to_h.with_indifferent_access)
+  end
+
+  delegate :inherited_managers, :inherited_editors, :inherited_depositors, to: :to_proxy
 end

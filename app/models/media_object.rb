@@ -462,7 +462,7 @@ class MediaObject < ActiveFedora::Base
     # To take advantage of solr automagically escaping characters the query has to be in single quotes.
     # This runs counter to ruby's string interpolation which requires the string to be in double quotes.
     # We can get around this by using the format_string construction.
-    solr_query = { q: 'unit_ssim:"%{collection_unit}"' % { collection_unit: collection_unit } }
+    solr_query = { q: 'unit_ssim:"%{collection_unit}"' % { collection_unit: collection_unit.name } }
     query_params = {
       fl: ["series_ssim"],
       facet: "on",

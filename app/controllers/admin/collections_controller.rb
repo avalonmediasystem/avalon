@@ -104,7 +104,7 @@ class Admin::CollectionsController < ApplicationController
   # POST /collections
   def create
     unit_id = collection_params['unit_id'].presence || convert_unit(collection_params["unit_name"])
-    @collection = Admin::Collection.create(collection_params.merge(managers: [current_user.user_key], unit_id: unit_id))
+    @collection = Admin::Collection.create(collection_params.merge(managers: [current_user.user_key], unit_id: unit_id, governing_policy_id: unit_id))
     if @collection.persisted?
       User.where(Devise.authentication_keys.first => [Avalon::RoleControls.users('administrator')].flatten).each do |admin_user|
         NotificationsMailer.new_collection(
@@ -174,8 +174,10 @@ class Admin::CollectionsController < ApplicationController
     update_access(@collection, params) if can?(:update_access_control, @collection)
 
     if collection_params.present?
-      update_params = collection_params['unit_name'].present? ? collection_params.merge({ unit_id: convert_unit(collection_params['unit_name']) }) : collection_params
-      @collection.update_attributes update_params
+      unit_id = collection_params['unit_id'].presence
+      unit_id ||= convert_unit(collection_params["unit_name"]) if collection_params["unit_name"].present?
+      update_unit_params = { unit_id: unit_id, governing_policy_id: unit_id } if unit_id.present?
+      @collection.update_attributes collection_params.merge(update_unit_params)
     end
     saved = @collection.save
     if saved

@@ -18,38 +18,30 @@ require 'cancan/matchers'
 describe Admin::CollectionPresenter do
   let(:id) {  "abcd12345" }
   let(:name) { "Sample Collection" }
-  let(:unit) { "Default Unit" }
+  let(:unit_name) { "Default Unit" }
   let(:description) { "The long form description of this collection." }
   let(:managers) { [manager.to_s] }
-  let(:editors) { [editor.to_s, FactoryBot.create(:manager)] }
+  let(:editors) { [editor.to_s, FactoryBot.create(:manager).to_s] }
   let(:depositors) { [depositor.to_s] }
   let(:manager) { FactoryBot.create(:manager) }
   let(:editor) { FactoryBot.create(:user) }
   let(:depositor) { FactoryBot.create(:user) }
-  let(:solr_doc) do
-    SolrDocument.new(
-      id: id,
-      "name_ssi": name,
-      "unit_ssi": unit,
-      "description_tesim": [description],
-      "edit_access_person_ssim": managers + editors,
-      "read_access_person_ssim": depositors,
-      "collection_managers_ssim": managers
-    )
-  end
+  let(:unit) { FactoryBot.create(:unit, name: unit_name) }
+  let(:collection) { FactoryBot.create(:collection, id: id, name: name, unit: unit, description: description, managers: managers, editors: editors, depositors: depositors) }
+  let(:solr_doc) { SolrDocument.new(collection.to_solr) }
   subject(:presenter) { described_class.new(solr_doc) }
 
   it 'provides getters for descriptive fields' do
     expect(presenter.id).to eq id
     expect(presenter.name).to eq name
-    expect(presenter.unit).to eq unit
+    expect(presenter.unit).to eq unit_name
     expect(presenter.description).to eq description
   end
 
   it 'provides access control information' do
-    expect(presenter.managers).to eq managers
-    expect(presenter.editors).to eq editors
-    expect(presenter.depositors).to eq depositors
+    expect(presenter.managers).to match_array managers
+    expect(presenter.editors).to match_array editors
+    expect(presenter.depositors).to match_array depositors
   end
 
   describe '#as_json' do
@@ -57,34 +49,52 @@ describe Admin::CollectionPresenter do
     it 'returns json' do
       expect(presenter_json[:id]).to eq id
       expect(presenter_json[:name]).to eq name
-      expect(presenter_json[:unit]).to eq unit
+      expect(presenter_json[:unit]).to eq unit_name
       expect(presenter_json[:description]).to eq description
       expect(presenter_json[:object_count]).to be_present
-      expect(presenter_json[:roles][:managers]).to eq managers
-      expect(presenter_json[:roles][:editors]).to eq editors
-      expect(presenter_json[:roles][:depositors]).to eq depositors
+      expect(presenter_json[:roles][:managers]).to match_array managers
+      expect(presenter_json[:roles][:editors]).to match_array editors
+      expect(presenter_json[:roles][:depositors]).to match_array depositors
     end
   end
 
   describe 'abilities' do
-    subject(:ability) { Ability.new(user, {}) }
+    subject(:ability) { Ability.new(User.where(Devise.authentication_keys.first => user.to_s).first) }
 
     context 'when manager' do
       let(:user) { manager }
 
       it { is_expected.to be_able_to(:destroy, presenter) }
+
+      context 'inherited from unit' do
+        let(:user) { presenter.inherited_managers.first }
+
+        it { is_expected.to be_able_to(:destroy, presenter) }
+      end
     end
 
     context 'when editor' do
       let(:user) { editor }
 
       it { is_expected.not_to be_able_to(:destroy, presenter) }
+
+      context 'inherited from unit' do
+        let(:user) { presenter.inherited_editors.first }
+
+        it { is_expected.not_to be_able_to(:destroy, presenter) }
+      end
     end
 
     context 'when depositor' do
       let(:user) { depositor }
 
       it { is_expected.not_to be_able_to(:destroy, presenter) }
+
+      context 'inherited from unit' do
+        let(:user) { presenter.inherited_depositors.first }
+
+        it { is_expected.not_to be_able_to(:destroy, presenter) }
+      end
     end
   end
 end

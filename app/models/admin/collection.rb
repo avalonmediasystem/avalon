@@ -24,6 +24,7 @@ class Admin::Collection < ActiveFedora::Base
   include MigrationTarget
   include AdminCollectionBehavior
 
+  belongs_to :governing_policy, class_name: 'ActiveFedora::Base', predicate: ActiveFedora::RDF::ProjectHydra.isGovernedBy
   belongs_to :unit, class_name: 'Admin::Unit', predicate: Avalon::RDFVocab::Bibframe.heldBy
   has_many :media_objects, class_name: 'MediaObject', predicate: ActiveFedora::RDF::Fcrepo::RelsExt.isMemberOfCollection
 
@@ -82,6 +83,12 @@ class Admin::Collection < ActiveFedora::Base
   before_destroy :destroy_dropbox_directory!
 
   attr_accessor :unit_name
+  
+  alias_method :'_unit=', :'unit='
+  def unit= u
+    self._unit = u
+    self.governing_policy = u
+  end
 
   def created_at
     @created_at ||= create_date

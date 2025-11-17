@@ -365,6 +365,8 @@ describe Admin::CollectionsController, type: :controller do
       expect(new_collection.contact_email).to eq collection.contact_email
       expect(new_collection.website_label).to eq collection.website_label
       expect(new_collection.website_url).to eq collection.website_url
+      expect(new_collection.unit_id).to eq collection.unit.id
+      expect(new_collection.governing_policy_id).to eq collection.unit.id
     end
     it "should create a new collection with unit name provided" do
       post 'create', params: { format: 'json', admin_collection: { name: collection.name, description: collection.description, unit_name: collection.unit.name, contact_email: collection.contact_email, website_label: collection.website_label, website_url: collection.website_url, managers: collection.managers } }
@@ -403,6 +405,7 @@ describe Admin::CollectionsController, type: :controller do
 
     context "update REST API" do
       let!(:collection) { FactoryBot.create(:collection)}
+      let(:unit) { FactoryBot.create(:unit)}
       let(:contact_email) { Faker::Internet.email }
       let(:website_label) { Faker::Lorem.words.join(' ') }
       let(:website_url) { Faker::Internet.url }
@@ -414,7 +417,7 @@ describe Admin::CollectionsController, type: :controller do
 
       it "should update a collection via API" do
         old_description = collection.description
-        put 'update', params: { format: 'json', id: collection.id, admin_collection: { description: collection.description+'new', contact_email: contact_email, website_label: website_label, website_url: website_url }}
+        put 'update', params: { format: 'json', id: collection.id, admin_collection: { description: collection.description+'new', contact_email: contact_email, website_label: website_label, website_url: website_url, unit_id: unit.id }}
         expect(JSON.parse(response.body)['id'].class).to eq String
         expect(JSON.parse(response.body)).not_to include('errors')
         collection.reload
@@ -422,6 +425,8 @@ describe Admin::CollectionsController, type: :controller do
         expect(collection.contact_email).to eq contact_email
         expect(collection.website_label).to eq website_label
         expect(collection.website_url).to eq website_url
+        expect(collection.unit_id).to eq unit.id
+        expect(collection.governing_policy_id).to eq unit.id
       end
       it "should return 422 if collection update via API failed" do
         allow_any_instance_of(Admin::Collection).to receive(:save).and_return false

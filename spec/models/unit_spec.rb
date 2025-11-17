@@ -21,96 +21,120 @@ describe Admin::Unit do
 
   describe 'abilities' do
     context 'when administrator' do
-      subject { ability }
       let(:ability) { Ability.new(user) }
       let(:user) { FactoryBot.create(:administrator) }
 
-      it { is_expected.to be_able_to(:manage, unit) }
+      it "can manage the unit" do
+        expect(ability).to be_able_to(:manage, unit)
+      end
     end
 
     context 'when unit administrator' do
-      subject { ability }
       let(:ability) { Ability.new(user) }
       let(:user) { User.where(Devise.authentication_keys.first => unit.unit_administrators.first).first }
 
-      it { is_expected.to be_able_to(:create, Admin::Unit) }
-      it { is_expected.to be_able_to(:read, Admin::Unit) }
-      it { is_expected.to be_able_to(:update, unit) }
-      it { is_expected.to be_able_to(:read, unit) }
-      it { is_expected.to be_able_to(:update_unit_admins, unit) }
-      it { is_expected.to be_able_to(:update_editors, unit) }
-      it { is_expected.to be_able_to(:update_depositors, unit) }
-      it { is_expected.to be_able_to(:destroy, unit) }
-      it { is_expected.to be_able_to(:update_access_control, unit) }
+      it "can perform all actions on the unit" do
+        expect(ability).to be_able_to(:create, Admin::Unit)
+        expect(ability).to be_able_to(:read, Admin::Unit)
+        expect(ability).to be_able_to(:read, unit)
+        expect(ability).to be_able_to(:update, unit)
+        expect(ability).to be_able_to(:update_unit_admins, unit)
+        expect(ability).to be_able_to(:update_managers, unit)
+        expect(ability).to be_able_to(:update_editors, unit)
+        expect(ability).to be_able_to(:update_depositors, unit)
+        expect(ability).to be_able_to(:update_access_control, unit)
+        expect(ability).to be_able_to(:destroy, unit)
+      end
+    end
+
+    context 'when manager' do
+      let(:ability) { Ability.new(user) }
+      let(:user) { User.where(Devise.authentication_keys.first => unit.managers.first).first }
+
+      it "can perform limited actions on the unit" do
+        expect(ability).not_to be_able_to(:create, Admin::Unit)
+        expect(ability).to be_able_to(:read, Admin::Unit)
+        expect(ability).to be_able_to(:read, unit)
+        expect(ability).to be_able_to(:update, unit)
+        expect(ability).not_to be_able_to(:update_unit_admins, unit)
+        expect(ability).not_to be_able_to(:update_managers, unit)
+        expect(ability).to be_able_to(:update_editors, unit)
+        expect(ability).to be_able_to(:update_depositors, unit)
+        expect(ability).not_to be_able_to(:update_access_control, unit)
+        expect(ability).not_to be_able_to(:destroy, unit)
+      end
     end
 
     context 'when editor' do
-      subject { ability }
       let(:ability) { Ability.new(user) }
       let(:user) { User.where(Devise.authentication_keys.first => unit.editors.first).first }
 
-      # Will need to define new action that covers just the things that an editor is allowed to edit
-      it { is_expected.to be_able_to(:read, Admin::Unit) }
-      it { is_expected.to be_able_to(:read, unit) }
-      it { is_expected.to be_able_to(:update, unit) }
-      it { is_expected.not_to be_able_to(:update_unit, unit) }
-      it { is_expected.not_to be_able_to(:update_managers, unit) }
-      it { is_expected.not_to be_able_to(:update_editors, unit) }
-      it { is_expected.to be_able_to(:update_depositors, unit) }
-      it { is_expected.not_to be_able_to(:create, Admin::Unit) }
-      it { is_expected.not_to be_able_to(:destroy, unit) }
-      it { is_expected.not_to be_able_to(:update_access_control, unit) }
+      it "can perform limited actions on the unit" do
+        expect(ability).not_to be_able_to(:create, Admin::Unit)
+        expect(ability).to be_able_to(:read, Admin::Unit)
+        expect(ability).to be_able_to(:read, unit)
+        expect(ability).to be_able_to(:update, unit)
+        expect(ability).not_to be_able_to(:update_unit_admins, unit)
+        expect(ability).not_to be_able_to(:update_managers, unit)
+        expect(ability).not_to be_able_to(:update_editors, unit)
+        expect(ability).to be_able_to(:update_depositors, unit)
+        expect(ability).not_to be_able_to(:update_access_control, unit)
+        expect(ability).not_to be_able_to(:destroy, unit)
+      end
     end
 
     context 'when depositor' do
-      subject { ability }
       let(:ability) { Ability.new(user) }
       let(:user) { User.where(Devise.authentication_keys.first => unit.depositors.first).first }
 
-      it { is_expected.to be_able_to(:read, Admin::Unit) }
-      it { is_expected.to be_able_to(:read, unit) }
-      it { is_expected.not_to be_able_to(:update_unit, unit) }
-      it { is_expected.not_to be_able_to(:update_managers, unit) }
-      it { is_expected.not_to be_able_to(:update_editors, unit) }
-      it { is_expected.not_to be_able_to(:update_depositors, unit) }
-      it { is_expected.not_to be_able_to(:create, unit) }
-      it { is_expected.not_to be_able_to(:update, unit) }
-      it { is_expected.not_to be_able_to(:destroy, unit) }
-      it { is_expected.not_to be_able_to(:update_access_control, unit) }
+      it "can perform limited actions on the unit" do
+        expect(ability).not_to be_able_to(:create, Admin::Unit)
+        expect(ability).to be_able_to(:read, Admin::Unit)
+        expect(ability).to be_able_to(:read, unit)
+        expect(ability).not_to be_able_to(:update, unit)
+        expect(ability).not_to be_able_to(:update_unit_admins, unit)
+        expect(ability).not_to be_able_to(:update_managers, unit)
+        expect(ability).not_to be_able_to(:update_editors, unit)
+        expect(ability).not_to be_able_to(:update_depositors, unit)
+        expect(ability).not_to be_able_to(:update_access_control, unit)
+        expect(ability).not_to be_able_to(:destroy, unit)
+      end
     end
 
     context 'when end user' do
-      subject { ability }
       let(:ability) { Ability.new(user) }
       let(:user) { FactoryBot.create(:user) }
 
-      it { is_expected.not_to be_able_to(:read, Admin::Unit) }
-      it { is_expected.not_to be_able_to(:read, unit) }
-      it { is_expected.not_to be_able_to(:update_unit, unit) }
-      it { is_expected.not_to be_able_to(:update_managers, unit) }
-      it { is_expected.not_to be_able_to(:update_editors, unit) }
-      it { is_expected.not_to be_able_to(:update_depositors, unit) }
-      it { is_expected.not_to be_able_to(:create, unit) }
-      it { is_expected.not_to be_able_to(:update, unit) }
-      it { is_expected.not_to be_able_to(:destroy, unit) }
-      it { is_expected.not_to be_able_to(:update_access_control, unit) }
+      it "cannot perform actions on the unit" do
+        expect(ability).not_to be_able_to(:create, Admin::Unit)
+        expect(ability).not_to be_able_to(:read, Admin::Unit)
+        expect(ability).not_to be_able_to(:read, unit)
+        expect(ability).not_to be_able_to(:update, unit)
+        expect(ability).not_to be_able_to(:update_unit_admins, unit)
+        expect(ability).not_to be_able_to(:update_managers, unit)
+        expect(ability).not_to be_able_to(:update_editors, unit)
+        expect(ability).not_to be_able_to(:update_depositors, unit)
+        expect(ability).not_to be_able_to(:update_access_control, unit)
+        expect(ability).not_to be_able_to(:destroy, unit)
+      end
     end
 
     context 'when lti user' do
-      subject { ability }
       let(:ability) { Ability.new(user) }
       let(:user) { FactoryBot.create(:user_lti) }
 
-      it { is_expected.not_to be_able_to(:read, Admin::Unit) }
-      it { is_expected.not_to be_able_to(:read, unit) }
-      it { is_expected.not_to be_able_to(:update_unit, unit) }
-      it { is_expected.not_to be_able_to(:update_managers, unit) }
-      it { is_expected.not_to be_able_to(:update_editors, unit) }
-      it { is_expected.not_to be_able_to(:update_depositors, unit) }
-      it { is_expected.not_to be_able_to(:create, unit) }
-      it { is_expected.not_to be_able_to(:update, unit) }
-      it { is_expected.not_to be_able_to(:destroy, unit) }
-      it { is_expected.not_to be_able_to(:update_access_control, unit) }
+      it "cannot perform actions on the unit" do
+        expect(ability).not_to be_able_to(:create, Admin::Unit)
+        expect(ability).not_to be_able_to(:read, Admin::Unit)
+        expect(ability).not_to be_able_to(:read, unit)
+        expect(ability).not_to be_able_to(:update, unit)
+        expect(ability).not_to be_able_to(:update_unit_admins, unit)
+        expect(ability).not_to be_able_to(:update_managers, unit)
+        expect(ability).not_to be_able_to(:update_editors, unit)
+        expect(ability).not_to be_able_to(:update_depositors, unit)
+        expect(ability).not_to be_able_to(:update_access_control, unit)
+        expect(ability).not_to be_able_to(:destroy, unit)
+      end
     end
   end
 
@@ -342,12 +366,16 @@ describe Admin::Unit do
         expect(unit.inherited_edit_users).not_to include(user.user_key)
       end
     end
-    describe "#editors_and_unit_admins" do
-      it "should return all unit editors and unit admins" do
-        unit.edit_users = [user.user_key, "pdinh"]
+    describe "#editors_managers_and_unit_admins" do
+      it "should return all unit editors, managers, and unit admins" do
+        editor = FactoryBot.create(:user)
+        manager = FactoryBot.create(:manager)
+        unit.edit_users = [user.user_key, manager, editor.user_key]
         unit.unit_administrators = [user.user_key]
-        expect(unit.editors_and_unit_admins).to include(unit.editors.first)
-        expect(unit.editors_and_unit_admins).to include(unit.unit_admins.first)
+        unit.managers = [manager.user_key]
+        expect(unit.editors_managers_and_unit_admins).to include(unit.editors.first)
+        expect(unit.editors_managers_and_unit_admins).to include(unit.unit_admins.first)
+        expect(unit.editors_managers_and_unit_admins).to include(unit.managers.first)
       end
     end
   end
@@ -411,9 +439,10 @@ describe Admin::Unit do
     end
   end
 
-  describe "#inherited_edit_users" do
-  end
-  describe "#inherited_edit_users=" do
+  describe "#unit_admins_and_managers" do
+    it "includes unit admins and unit managers" do
+      expect(unit.unit_admins_and_managers).to match_array(unit.unit_admins + unit.managers)
+    end
   end
 
   describe "default rights delegators" do

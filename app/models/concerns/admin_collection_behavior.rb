@@ -18,8 +18,16 @@ module AdminCollectionBehavior
     edit_users & collection_managers.to_a
   end
 
+  def inherited_managers
+    unit.unit_admins_and_managers
+  end
+
   def editors
     edit_users - managers
+  end
+
+  def inherited_editors
+    unit.editors
   end
 
   def editors_and_managers
@@ -28,5 +36,9 @@ module AdminCollectionBehavior
 
   def depositors
     read_users
+  end
+
+  def inherited_depositors
+    unit.depositors
   end
 end
