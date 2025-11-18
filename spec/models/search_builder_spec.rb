@@ -79,6 +79,34 @@ RSpec.describe SearchBuilder do
         expect(solr_parameters["sections.transcripts.fl"]).to eq "id,transcript_tf_0:termfreq(transcript_tsim,Example)"
         expect(solr_parameters["sections.transcripts.q"]).to eq "{!terms f=isPartOf_ssim v=$row.id}{!join to=id from=isPartOf_ssim}"
       end
+
+      context 'with multiple terms' do
+        let(:solr_parameters) { { q: 'Example query' } }
+
+        it "should add transcript options to query" do
+          subject.term_frequency_counts(solr_parameters)
+          expect(solr_parameters[:fl]).to include "metadata_tf_0:termfreq(mods_tesim,Example),structure_tf_0:termfreq(section_label_tesim,Example),transcript_tf_0"
+          expect(solr_parameters[:fl]).to include "metadata_tf_1:termfreq(mods_tesim,query),structure_tf_1:termfreq(section_label_tesim,query),transcript_tf_1"
+          expect(solr_parameters["sections.fl"]).to eq "id,transcript_tf_0,transcript_tf_1,transcripts:[subquery]"
+          expect(solr_parameters["sections.transcripts.fl"]).to include "transcript_tf_0:termfreq(transcript_tsim,Example)"
+          expect(solr_parameters["sections.transcripts.fl"]).to include "transcript_tf_1:termfreq(transcript_tsim,query)"
+          expect(solr_parameters["sections.transcripts.q"]).to eq "{!terms f=isPartOf_ssim v=$row.id}{!join to=id from=isPartOf_ssim}"
+        end
+
+        context 'with CJK whitespace' do
+          let(:solr_parameters) { { q: 'Example　query' } }
+
+          it "should add transcript options to query" do
+            subject.term_frequency_counts(solr_parameters)
+            expect(solr_parameters[:fl]).to include "metadata_tf_0:termfreq(mods_tesim,Example),structure_tf_0:termfreq(section_label_tesim,Example),transcript_tf_0"
+            expect(solr_parameters[:fl]).to include "metadata_tf_1:termfreq(mods_tesim,query),structure_tf_1:termfreq(section_label_tesim,query),transcript_tf_1"
+            expect(solr_parameters["sections.fl"]).to eq "id,transcript_tf_0,transcript_tf_1,transcripts:[subquery]"
+            expect(solr_parameters["sections.transcripts.fl"]).to include "transcript_tf_0:termfreq(transcript_tsim,Example)"
+            expect(solr_parameters["sections.transcripts.fl"]).to include "transcript_tf_1:termfreq(transcript_tsim,query)"
+            expect(solr_parameters["sections.transcripts.q"]).to eq "{!terms f=isPartOf_ssim v=$row.id}{!join to=id from=isPartOf_ssim}"
+          end
+        end
+      end
     end
   end
 end
