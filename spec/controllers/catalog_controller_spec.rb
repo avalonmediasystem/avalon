@@ -218,7 +218,7 @@ describe CatalogController do
         expect(assigns(:response).documents.collect(&:id)).to eq [media_object_1.id, @media_object.id]
       end
       it 'should not error when special characters are in the query' do
-        ['+', '-', '&', '|', '"', '(', ')', '{', '}', '[', ']', '^', '~', '*', '?', ':', '/', '$'].each do |char|
+        ['+', '-', '&', '|', '"', '(', ')', '{', '}', '[', ']', '^', '~', '*', '?', ':', '/', '$', ' ', "\u3000"].each do |char|
           expect { get 'index', params: { q: "#{char} Test Label" } }.to_not raise_error
           expect(assigns(:response).documents.count).to eq 1
           expect(assigns(:response).documents.collect(&:id)).to eq [@media_object.id]
