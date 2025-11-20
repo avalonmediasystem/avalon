@@ -41,4 +41,24 @@ module AdminCollectionBehavior
   def inherited_depositors
     unit.depositors
   end
+
+  def inherited_read_users
+    unit.default_read_users
+  end
+
+  def inherited_read_groups
+    unit.default_read_groups
+  end
+
+  def inherited_local_read_groups
+    unit.default_local_read_groups
+  end
+
+  def inherited_ip_read_groups
+    unit.default_ip_read_groups
+  end
+
+  def inherited_virtual_read_groups
+    unit.default_virtual_read_groups
+  end
 end
