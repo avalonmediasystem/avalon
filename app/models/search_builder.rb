@@ -83,7 +83,7 @@ class SearchBuilder < Blacklight::SearchBuilder
     transcripts_fl = ['id'] if transcripts_present
 
     # Add fields for each term in the query, explictly escape closing parenthesis to prevent error
-    terms = solr_parameters[:q].gsub(/(\))/, "\\\\\1").split
+    terms = solr_parameters[:q].gsub(/(\))/, "\\\\\1").split(/[\s\u3000]/).compact_blank
     terms.each_with_index do |term, i|
       fl << "metadata_tf_#{i}:termfreq(mods_tesim,#{RSolr.solr_escape(term)})"
       fl << "structure_tf_#{i}:termfreq(section_label_tesim,#{RSolr.solr_escape(term)})"
