@@ -72,6 +72,7 @@ end
 describe BulkActionJobs::ApplyCollectionAccessControl do
   let(:mo) { FactoryBot.create(:media_object) }
   let(:co) { mo.collection }
+  let(:unit) { co.unit }
 
   describe "perform" do
     before do
@@ -166,6 +167,44 @@ describe BulkActionJobs::ApplyCollectionAccessControl do
         expect(solr_doc["read_access_group_ssim"]).to contain_exactly("mo_group", "co_group", "registered")
       end
     end
+
+    context "parent unit has special access settings" do
+      before do
+        unit.default_read_users = ["unit_user"]
+        unit.default_read_groups = ["unit_group"]
+        unit.save!
+      end
+
+      context "overwrite is true" do
+        it "replaces existing Special Access but affects no other fields" do
+          BulkActionJobs::ApplyCollectionAccessControl.perform_now co.id, true, 'special_access'
+          mo.reload
+          expect(mo.read_users).to contain_exactly("co_user", "unit_user")
+          expect(mo.read_groups).to contain_exactly("co_group", "unit_group", "registered")
+          expect(mo.hidden?).to be_falsey
+          expect(mo.visibility).to eq('restricted')
+          expect(mo.lending_period).to eq(1209600)
+          solr_doc = ActiveFedora::SolrService.query("id:#{mo.id}").first
+          expect(solr_doc["read_access_person_ssim"]).to contain_exactly("co_user", "unit_user")
+          expect(solr_doc["read_access_group_ssim"]).to contain_exactly("co_group", "unit_group", "registered")
+        end
+      end
+
+      context "overwrite is false" do
+        it "adds to existing Special Access but affects no other fields" do
+          BulkActionJobs::ApplyCollectionAccessControl.perform_now co.id, false, 'special_access'
+          mo.reload
+          expect(mo.read_users).to contain_exactly("mo_user", "co_user", "unit_user")
+          expect(mo.read_groups).to contain_exactly("mo_group", "co_group", "unit_group", "registered")
+          expect(mo.hidden?).to be_falsey
+          expect(mo.visibility).to eq('restricted')
+          expect(mo.lending_period).to eq(1209600)
+          solr_doc = ActiveFedora::SolrService.query("id:#{mo.id}").first
+          expect(solr_doc["read_access_person_ssim"]).to contain_exactly("mo_user", "co_user", "unit_user")
+          expect(solr_doc["read_access_group_ssim"]).to contain_exactly("mo_group", "co_group", "unit_group", "registered")
+        end
+      end      
+    end
   end
 end
 
@@ -177,7 +216,6 @@ describe BulkActionJobs::ReturnCheckouts do
   let!(:checkout_3) { FactoryBot.create(:checkout, media_object_id: collection_2.media_object_ids[0]) }
 
   it 'returns checkouts for the input collection' do
-    # byebug
     BulkActionJobs::ReturnCheckouts.perform_now(collection_1.id)
     checkout_1.reload
     checkout_2.reload

@@ -490,6 +490,26 @@ describe Admin::Collection do
     end
   end
 
+  describe "inherited read users and groups" do
+    let(:unit) { collection.unit }
+    before do
+      unit.default_read_users = ['test']
+      unit.default_read_groups = ['123.234.211.1', 'virtual', 'group_manager']
+      unit.save!
+    end
+
+    it "includes read users" do
+      expect(collection.inherited_read_users).to match_array(unit.default_read_users)
+    end
+
+    it "includes read groups" do
+      expect(collection.inherited_read_groups).to match_array(unit.default_read_groups)
+      expect(collection.inherited_ip_read_groups).to match_array(unit.default_ip_read_groups)
+      expect(collection.inherited_local_read_groups).to match_array(unit.default_local_read_groups)
+      expect(collection.inherited_virtual_read_groups).to match_array(unit.default_virtual_read_groups)
+    end
+  end
+
   describe "#reassign_media_objects" do
     before do
       @source_collection = FactoryBot.create(:collection)

@@ -239,7 +239,9 @@ module BulkActionJobs
           collection_read_groups = collection.default_read_groups.to_a - [Hydra::AccessControls::AccessRight::PERMISSION_TEXT_VALUE_AUTHENTICATED,
                                                                           Hydra::AccessControls::AccessRight::PERMISSION_TEXT_VALUE_PUBLIC,
                                                                           Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_PRIVATE]
-
+          collection_read_groups += collection.inherited_read_groups.to_a - [Hydra::AccessControls::AccessRight::PERMISSION_TEXT_VALUE_AUTHENTICATED,
+                                                                             Hydra::AccessControls::AccessRight::PERMISSION_TEXT_VALUE_PUBLIC,
+                                                                             Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_PRIVATE]
           # When overwriting the read group, we have to add the media object visibility back into the array,
           # otherwise the media object will default to private.
           media_object_visibility_group = if media_object.visibility == Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_PUBLIC
@@ -254,11 +256,11 @@ module BulkActionJobs
           if overwrite
             media_object.read_groups = collection_read_groups
             media_object.read_groups += media_object_visibility_group
-            media_object.read_users = collection.default_read_users.to_a
+            media_object.read_users = collection.default_read_users.to_a + collection.inherited_read_users.to_a
           else
             media_object.read_groups += collection_read_groups
             media_object.read_groups.uniq!
-            media_object.read_users += collection.default_read_users.to_a
+            media_object.read_users += collection.default_read_users.to_a + collection.inherited_read_users.to_a
             media_object.read_users.uniq!
           end
         end

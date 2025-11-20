@@ -460,29 +460,6 @@ describe Admin::UnitsController, type: :controller do
     end
   end
 
-  # TODO: Implement bulk job
-  # describe "#apply_access" do
-  #   let(:unit) { FactoryBot.create(:unit) }
-
-  #   before do
-  #     login_user(unit.unit_admins.first)
-  #   end
-
-  #   context "replacing existing Special Access" do
-  #     let(:overwrite) { true }
-  #     it "enqueues a BulkActionJobs::ApplyUnitAccessControl job" do
-  #       expect { put 'update', params: { id: unit.id, apply_to_existing: "Apply to All Existing Items", overwrite: overwrite } }.to have_enqueued_job(BulkActionJobs::ApplyUnitAccessControl).with(unit.id, overwrite, nil).once
-  #     end
-  #   end
-
-  #   context "adding to existing Special Access" do
-  #     let(:overwrite) { false }
-  #     it "enqueues a BulkActionJobs::ApplyUnitAccessControl job" do
-  #       expect { put 'update', params: { id: unit.id, apply_to_existing: "Apply to All Existing Items", overwrite: overwrite } }.to have_enqueued_job(BulkActionJobs::ApplyUnitAccessControl).with(unit.id, overwrite, nil).once
-  #     end
-  #   end
-  # end
-
   describe "#remove" do
     let!(:unit) { FactoryBot.create(:unit) }
 

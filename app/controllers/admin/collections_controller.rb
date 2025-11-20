@@ -67,10 +67,10 @@ class Admin::CollectionsController < ApplicationController
     respond_to do |format|
       format.json { render json: @collection.to_json }
       format.html {
-        @groups = @collection.default_local_read_groups
-        @users = @collection.default_read_users
-        @virtual_groups = @collection.default_virtual_read_groups
-        @ip_groups = @collection.default_ip_read_groups
+        @groups = { inherited: @collection.inherited_local_read_groups, default: @collection.default_local_read_groups }
+        @users = { inherited: @collection.inherited_read_users, default: @collection.default_read_users }
+        @virtual_groups = { inherited: @collection.inherited_virtual_read_groups, default: @collection.default_virtual_read_groups }
+        @ip_groups = { inherited: @collection.inherited_ip_read_groups, default: @collection.default_ip_read_groups }
         @visibility = @collection.default_visibility
         @default_lending_period = @collection.default_lending_period
 
