@@ -178,8 +178,6 @@ class Admin::UnitsController < ApplicationController
           ).deliver_later
         end
       end
-
-      apply_access(@unit, params) if can?(:update_access_control, @unit)
     end
 
     respond_to do |format|
@@ -328,10 +326,6 @@ class Admin::UnitsController < ApplicationController
     end
     return unless params[:save_field] == "discovery"
     unit.default_hidden = params[:hidden] == "1"
-  end
-
-  def apply_access(unit, params)
-    BulkActionJobs::ApplyUnitAccessControl.perform_later(unit.id, params[:overwrite] == "true", params[:save_field]) if params["apply_to_existing"].present?
   end
 
   def unit_params
