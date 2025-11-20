@@ -35,92 +35,106 @@ Unless required by applicable law or agreed to in writing, software distributed
       target.setContent();
     }
 
-    if (!!document.querySelector('#timeline-share-btn')) {
-      var startingVisiblity = "<%= @timeline.visibility %>";
-      $('input[type=radio][name="timeline[visibility]"]').change( function (event) {
-        if (event.target.value == 'private-with-token' && startingVisiblity == 'private-with-token') {
-          $('#timeline_token_row').collapse('show')
-        } else {
-          $('#timeline_token_row').collapse('hide')
-        }
-      })
-
-      if (!!document.querySelector('#timeline-share-btn')) {
-        var timelineShareBtn = new bootstrap.Popover('#timeline-share-btn', {
-          trigger: 'hover',
-          placement: 'top',
-          content: 'Copy share link'
-        });
-      }
-
-      if (!!document.querySelector('#timeline-lti-share-btn')) {
-        var timelineLtiShareBtn = new bootstrap.Popover('#timeline-lti-share-btn', {
-          trigger: 'hover',
-          placement: 'top',
-          content: 'Copy share link'
-        });
-      }
-
-      $('#timeline-share-btn, #timeline-lti-share-btn').click( function (event) {
-        var targetid = event.target.id
-        var copytarget = $('#'+targetid.replace('-btn','-link'));
-        var copyresult = $('#'+targetid)
-        var copypopover = bootstrap.Popover.getInstance(copyresult);
-
-        // select text
-        copytarget.select();
-        try {
-          // copy text
-          document.execCommand('copy');
-          copytarget.blur();
-          setPopoverContent(copypopover, "Copied to clipboard");
-        }
-        catch (err) {
-          setPopoverContent(copypopover, "Please press Ctrl/Cmd+C to copy");
-        }
-        setTimeout(function() {
-          copypopover.hide();
-          setPopoverContent(copypopover, "Copy share link");
-        }, 3000);
-      });
-
-      var popover_content = '<p>If you get a new link, the previous link will stop working.<p>' +
-        '<div>' +
-        '<button type="submit" onclick="new_link_confirm()" class="btn btn-danger btn-confirm" style="margin-right:5px;">Yes</button>' +
-        '<button type="submit" onclick="new_link_cancel()" class="btn btn-primary btn-confirm">Cancel</button>' +
-        '</div>'
-      var popover_template = '<div class="popover" role="tooltip" style="width: 12em;">' +
-        '<div class="arrow"></div>' +
-        '<h3 class="popover-header"></h3>' +
-        '<div class="popover-body"></div>' +
-        '</div>'
-
-      var getNewLink = new bootstrap.Popover('#get-new-link', {
-        trigger: 'click',
-        html: true,
-        sanitize: false,
-        placement: 'top',
-        title: 'Get a new link?',
-        template: popover_template,
-        content: popover_content
-      });
-
-      var new_link_cancel = function (event) {
-        getNewLink.hide();
-      }
-
-      var new_link_confirm = function (event) {
-        $.ajax({
-          type: "PATCH",
-          url: '/timelines/' + $('#get-new-link').data().timelineId + '/regenerate_access_token',
-          success: function (data, status) {
-            $('#timeline-share-link').attr('value', data.access_token_url)
-          },
-          complete: function () {
-              getNewLink.hide();
+    const timelineShareBtnElement = getById('timeline-share-btn');
+    if (timelineShareBtnElement) {
+      let startingVisiblity = "<%= @timeline.visibility %>";
+      let visibilityRadioSelect = query('input[type=radio][name="timeline[visibility]"]')
+      if (visibilityRadioSelect) {
+        visibilityRadioSelect.addEventListener('change', function (event) {
+          if (event.target.value == 'private-with-token' && startingVisiblity == 'private-with-token') {
+            showOrCollapse(getById('timeline_token_row'), true);
+          } else {
+            showOrCollapse(getById('timeline_token_row'), false);
           }
         });
       }
+
+      new bootstrap.Popover(getById('timeline-share-btn'), {
+        trigger: 'hover',
+        placement: 'top',
+        content: 'Copy share link'
+      });
+
+      const timelineLTIShareBtnElement = getById('timeline-lti-share-btn');
+      if (timelineLTIShareBtnElement) {
+        new bootstrap.Popover(getById('timeline-lti-share-btn'), {
+          trigger: 'hover',
+          placement: 'top',
+          content: 'Copy share link'
+        });
+      }
+
+      const timelineShareButtons = queryAll('#timeline-share-btn, #timeline-lti-share-btn');
+      timelineShareButtons.forEach(function(button) {
+        button.addEventListener('click', function(event) {
+          const targetid = event.target.id;
+          const copytarget = getById(targetid.replace('-btn', '-link'));
+          const copyresult = getById(targetid);
+          const copypopover = bootstrap.Popover.getInstance(copyresult);
+
+          // select text
+          copytarget.select();
+          try {
+            // copy text
+            document.execCommand('copy');
+            copytarget.blur();
+            setPopoverContent(copypopover, "Copied to clipboard");
+          }
+          catch (err) {
+            setPopoverContent(copypopover, "Please press Ctrl/Cmd+C to copy");
+          }
+          setTimeout(function() {
+            copypopover.hide();
+            setPopoverContent(copypopover, "Copy share link");
+          }, 3000);
+        });
+      });
+    }
+
+    const popover_content = '<p>If you get a new link, the previous link will stop working.<p>' +
+      '<div>' +
+      '<button type="submit" onclick="new_link_confirm()" class="btn btn-danger btn-confirm" style="margin-right:5px;">Yes</button>' +
+      '<button type="submit" onclick="new_link_cancel()" class="btn btn-primary btn-confirm">Cancel</button>' +
+      '</div>'
+    const popover_template = '<div class="popover" role="tooltip" style="width: 15em;">' +
+      '<div class="arrow"></div>' +
+      '<h3 class="popover-header"></h3>' +
+      '<div class="popover-body"></div>' +
+      '</div>'
+
+    const getNewLink = new bootstrap.Popover(getById('get-new-link'), {
+      trigger: 'click',
+      html: true,
+      sanitize: false,
+      placement: 'top',
+      title: 'Get a new link?',
+      template: popover_template,
+      content: popover_content
+    });
+
+    const new_link_cancel = function (event) {
+      getNewLink.hide();
+    }
+
+    const new_link_confirm = function (event) {
+      const getNewLinkButton = getById('get-new-link');
+      const timelineId = getNewLinkButton.dataset.timelineId;
+
+      fetch('/timelines/' + timelineId + '/regenerate_access_token', {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-Token': query('meta[name="csrf-token"]').content
+        }
+      })
+      .then(response => response.json())
+      .then(function(data) {
+        const timelineShareLink = getById('timeline-share-link');
+        timelineShareLink.value = data.access_token_url;
+      })
+      .finally(function() {
+        getNewLink.hide();
+      });
     }
   </script>
 <% end %>

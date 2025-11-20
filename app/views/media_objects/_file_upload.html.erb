@@ -313,19 +313,19 @@ Unless required by applicable law or agreed to in writing, software distributed
 
 <% content_for :page_scripts do %>
   <script>
-    document.querySelectorAll('.filedata').forEach(fileInput => {
+    queryAll('.filedata').forEach(fileInput => {
       fileInput.addEventListener('change', function(e) {
         e.preventDefault();
         this.closest('form').submit();
       });
     });
 
-    document.querySelectorAll('.master-file-form').forEach(form => {
+    queryAll('.master-file-form').forEach(form => {
       form.addEventListener('ajax:success', (event) => {
-        event.currentTarget.querySelector('.flash-message').innerHTML = "Successfully updated.";
+        query('.flash-message', event.currentTarget).innerHTML = "Successfully updated.";
       });
       form.addEventListener('ajax:error', (event) => {
-        event.currentTarget.querySelector('.flash-message').innerHTML = "Failed to update.";
+        query('.flash-message', event.currentTarget).innerHTML = "Failed to update.";
       });
     });
   </script>

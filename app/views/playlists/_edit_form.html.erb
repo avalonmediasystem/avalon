@@ -179,105 +179,175 @@ Unless required by applicable law or agreed to in writing, software distributed
   <script>
 
     function toggleState(ele, text, state) {
-      ele.html(text);
-      ele.prop('disabled', state);
+      ele.innerHTML = text;
+      ele.setAttribute('disabled', state);
     }
     
-    // Handle move selected items to new playlist
-    $('.move_to_playlist, .copy_to_playlist').click(function(event) {
-      event.preventDefault();
-      $('#new_playlist_id').val($(this).data('id'));
-      $('#action_type').val(event.target.getAttribute('class'));
-      $('#'+$(this).attr('form')).submit();
-    });
-
-    // Handle playlist edit cancel
-    $('#playlist_edit_cancel').click(function(event) {
-      $('#playlist_form #playlist_title').val('<%= j @playlist.title %>');
-      $('#playlist_form #playlist_comment').val('<%= j @playlist.comment %>');
-
-      <% if @playlist.visibility==Playlist::PRIVATE %>
-        $('#playlist_form #playlist_visibility_private').prop('checked', true);
-      <% elsif @playlist.visibility==Playlist::PUBLIC %>
-        $('#playlist_form #playlist_visibility_public').prop('checked', true);
-      <% else %>
-        $('#playlist_form #playlist_visibility_private-with-token').prop('checked', true);
-      <% end %>
-    });
-
-    // Handle select all checkbox (enable/disable move and delete buttons)
-    $('#select_all').click(function(event) {
-      $('input:checkbox').prop('checked', $(this).prop('checked'))
-      $('#edit_playlist_<%= @playlist.id %> :submit').prop('disabled', !$(this).prop('checked') );
-      $('.copy_to, .move_to').prop('disabled', !$(this).prop('checked') )
-    });
-
-    // Handle selection of playlist item (enable/disable move and delete buttons)
-    $('.playlist_item_select').click(function(event) {
-      $('#edit_playlist_<%= @playlist.id %> :submit').prop('disabled',  $( ".playlist_item_select:checked" ).length < 1  );
-      $('.copy_to, .move_to').prop('disabled', $( ".playlist_item_select:checked" ).length < 1 );
-      $('#select_all').prop('checked', $( ".playlist_item_select:checked" ).length == <%= @playlist.items.length %> );
-    });
-
-    // Handle playlist item edit form submission
-    $('.playlist_item_form_submit').click(function(event) {
-      event.preventDefault();
-      var $button = $(this);
-      toggleState($button, 'Saving...', true);
-      var $form = $(this).closest('form');
-      var id = $(this).data('id');
-      return $.ajax({
-        url: '/playlist_items/' + id + '.json',
-        type: 'PATCH',
-        data: {
-          playlist_id: $('#playlist_id').val(),
-          playlist_item: {
-            title: $('#avalon_clip_title_'+id).val(),
-            comment: $('#avalon_clip_comment_'+id).val(),
-            start_time: $('#avalon_clip_start_time_'+id).val(),
-            end_time: $('#avalon_clip_end_time_'+id).val(),
-          }
-        },
-        success: function(response) {
-          // alert success
-          var alert = "<div class='alert alert-success' style='padding:0 10px; margin-bottom: 0;'>";
-          alert += "<button type='button' class='btn-close' data-bs-dismiss='alert'></button>";
-          alert += "<span>"+response.message+"</span></div>";
-	        $('#playlist_item_edit_alert_'+id).html(alert);
-          // update original values with those newly saved in case of future cancel
-          $form.find('.title_original').data('value',$('#avalon_clip_title_'+id).val());
-          $form.find('.comment_original').data('value',$('#avalon_clip_comment_'+id).val());
-          $form.find('.start_time_original').data('value',$('#avalon_clip_start_time_'+id).val());
-          $form.find('.end_time_original').data('value',$('#avalon_clip_end_time_'+id).val());
-          $('#playlist_item_title_label_'+id).html($('#avalon_clip_title_'+id).val());
-          setTimeout(function() {
-            toggleState($button, 'Save Item', false)
-          }, 500);
-        },
-        error: function(response) {
-          // alert failure
-          var alert = "<div class='alert alert-danger' style='padding:0 10px; margin-bottom: 0;'>";
-          alert += "<button type='button' class='btn-close' data-bs-dismiss='alert'></button>";
-          alert += "<span>"+response.responseJSON.message+"</span></div>";
-	        $('#playlist_item_edit_alert_'+id).html(alert);
-          setTimeout(function() {
-            toggleState($button, 'Save Item', false)
-          }, 500);
-        }
+    document.addEventListener('DOMContentLoaded', function() {
+      // Handle move selected items to new playlist
+      const moveAndCopyLinks = queryAll('.move_to_playlist, .copy_to_playlist');
+      moveAndCopyLinks.forEach(function(link) {
+        link.addEventListener('click', function(event) {
+          event.preventDefault();
+          const newPlaylistIdField = getById('new_playlist_id');
+          const actionTypeField = getById('action_type');
+          newPlaylistIdField.value = this.dataset.id;
+          actionTypeField.value = event.target.getAttribute('class');
+          const formId = this.getAttribute('form');
+          getById(formId).submit();
+        });
       });
-    });
 
-    // Cancel playlist item editing
-    $('.playlist_item_edit_cancel').click(function(event){
-      var $form = $(this).closest('form');
-      var id = $(this).data('id');
-      // reset form to original values
-      $('#avalon_clip_title_'+id).val($form.find('.title_original').data('value'));
-      $('#avalon_clip_comment_'+id).val($form.find('.comment_original').data('value'));
-      $('#avalon_clip_start_time_'+id).val($form.find('.start_time_original').data('value'));
-      $('#avalon_clip_end_time_'+id).val($form.find('.end_time_original').data('value'));
-      $('#playlist_item_edit_alert_'+id).html('');
-      $('#'+$(this).data('target')).removeClass('show');
+      // Handle playlist edit cancel
+      const editCancelButton = getById('playlist_edit_cancel');
+      if (editCancelButton) {
+        editCancelButton.addEventListener('click', function(e) {
+          const playlistForm = getById('playlist_form');
+          const playlistTitle = query('#playlist_title', playlistForm);
+          playlistTitle.value = '<%= j @playlist.title %>';
+          const playlistComment = query('#playlist_comment', playlistForm);
+          playlistComment.value = '<%= j @playlist.comment %>';
+
+          <% if @playlist.visibility==Playlist::PRIVATE %>
+            query('#playlist_visibility_private', playlistForm).checked = true;
+          <% elsif @playlist.visibility==Playlist::PUBLIC %>
+            query('#playlist_visibility_public', playlistForm).checked = true;
+          <% else %>
+            query('#playlist_visibility_private-with-token', playlistForm).checked = true;
+          <% end %>
+        });
+      }
+
+      // Handle select all checkbox (enable/disable move and delete buttons)
+      const selectAllCheckbox = getById('select_all');
+      if (selectAllCheckbox) {
+        selectAllCheckbox.addEventListener('click', function(event) {
+          const isChecked = this.checked;
+          const allCheckboxes = queryAll('input[type="checkbox"]');
+          allCheckboxes.forEach(checkbox => checkbox.checked = isChecked);
+
+          const editPlaylistForm = getById('edit_playlist_<%= @playlist.id %>');
+          const submitButtons = queryAll('input[type="submit"], button[type="submit"]', editPlaylistForm);
+          submitButtons.forEach(btn => btn.disabled = !isChecked);
+
+          const moveAndCopyButtons = queryAll('.copy_to, .move_to');
+          moveAndCopyButtons.forEach(btn => btn.disabled = !isChecked);
+        });
+      }
+
+      // Handle selection of playlist item (enable/disable move and delete buttons)
+      const playlistItemCheckboxes = queryAll('.playlist_item_select');
+      playlistItemCheckboxes.forEach(function(checkbox) {
+        checkbox.addEventListener('click', function(event) {
+          const checkedItems = queryAll('.playlist_item_select:checked');
+          const hasCheckedItems = checkedItems.length > 0;
+
+          const editPlaylistForm = getById('edit_playlist_<%= @playlist.id %>');
+          const submitButtons = queryAll('input[type="submit"], button[type="submit"]', editPlaylistForm);
+          submitButtons.forEach(btn => btn.disabled = !hasCheckedItems);
+
+          const moveAndCopyButtons = queryAll('.copy_to, .move_to');
+          moveAndCopyButtons.forEach(btn => btn.disabled = !hasCheckedItems);
+
+          const selectAll = getById('select_all');
+          if (selectAll) {
+            selectAll.checked = checkedItems.length === <%= @playlist.items.length %>;
+          }
+        });
+      });
+
+      // Handle playlist item edit form submission
+      const playlistItemFormSubmitButtons = queryAll('.playlist_item_form_submit');
+      playlistItemFormSubmitButtons.forEach(function(button) {
+        button.addEventListener('click', function(event) {
+          event.preventDefault();
+          toggleState(button, 'Saving...', true);
+          const form = this.closest('form');
+          const id = this.dataset.id;
+
+          const playlistIdField = getById('playlist_id');
+          const requestData = {
+            playlist_id: playlistIdField.value,
+            playlist_item: {
+              title: getById('avalon_clip_title_' + id).value,
+              comment: getById('avalon_clip_comment_' + id).value,
+              start_time: getById('avalon_clip_start_time_' + id).value,
+              end_time: getById('avalon_clip_end_time_' + id).value,
+            }
+          };
+
+          fetch('/playlist_items/' + id + '.json', {
+            method: 'PATCH',
+            headers: {
+              'Content-Type': 'application/json',
+              'X-CSRF-Token': query('meta[name="csrf-token"]').content
+            },
+            body: JSON.stringify(requestData)
+          })
+          .then(response => response.json())
+          .then(function(response) {
+            // alert success
+            let alert = "<div class='alert alert-success' style='padding:0 10px; margin-bottom: 0;'>";
+            alert += "<button type='button' class='btn-close' data-bs-dismiss='alert'></button>";
+            alert += "<span>" + response.message + "</span></div>";
+            getById('playlist_item_edit_alert_' + id).innerHTML = alert;
+
+            // update original values with those newly saved in case of future cancel
+            const titleValue = getById('avalon_clip_title_' + id).value;
+            const commentValue = getById('avalon_clip_comment_' + id).value;
+            const startTimeValue = getById('avalon_clip_start_time_' + id).value;
+            const endTimeValue = getById('avalon_clip_end_time_' + id).value;
+
+            query('.title_original', form).dataset.value = titleValue;
+            query('.comment_original', form).dataset.value = commentValue;
+            query('.start_time_original', form).dataset.value = startTimeValue;
+            query('.end_time_original', form).dataset.value = endTimeValue;
+
+            getById('playlist_item_title_label_' + id).innerHTML = titleValue;
+
+            setTimeout(function() {
+              toggleState(button, 'Save Item', false);
+            }, 500);
+          })
+          .catch(function(error) {
+            // alert failure
+            let alert = "<div class='alert alert-danger' style='padding:0 10px; margin-bottom: 0;'>";
+            alert += "<button type='button' class='btn-close' data-bs-dismiss='alert'></button>";
+            alert += "<span>" + (error.message || 'An error occurred') + "</span></div>";
+            getById('playlist_item_edit_alert_' + id).innerHTML = alert;
+
+            setTimeout(function() {
+              toggleState(button, 'Save Item', false);
+            }, 500);
+          });
+        });
+      });
+
+      // Cancel playlist item editing
+      const playlistItemEditCancelButtons = queryAll('.playlist_item_edit_cancel');
+      playlistItemEditCancelButtons.forEach(function(button) {
+        button.addEventListener('click', function(event) {
+          const form = this.closest('form');
+          const id = this.dataset.id;
+
+          // reset form to original values
+          const titleOriginal = query('.title_original', form);
+          const commentOriginal = query('.comment_original', form);
+          const startTimeOriginal = query('.start_time_original', form);
+          const endTimeOriginal = query('.end_time_original', form);
+
+          getById('avalon_clip_title_' + id).value = titleOriginal.dataset.value;
+          getById('avalon_clip_comment_' + id).value = commentOriginal.dataset.value;
+          getById('avalon_clip_start_time_' + id).value = startTimeOriginal.dataset.value;
+          getById('avalon_clip_end_time_' + id).value = endTimeOriginal.dataset.value;
+          getById('playlist_item_edit_alert_' + id).innerHTML = '';
+
+          const targetElement = getById(this.dataset.target);
+          if (targetElement) {
+            targetElement.classList.remove('show');
+          }
+        });
+      });
     });
   </script>
 

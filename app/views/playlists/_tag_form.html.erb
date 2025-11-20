@@ -26,7 +26,7 @@ Unless required by applicable law or agreed to in writing, software distributed
 <% content_for :page_scripts do %>
   <script>
     document.addEventListener('DOMContentLoaded', function() {
-      const tagSelect = new TomSelect('#tag-select', {
+      const tagSelect = new TomSelect(getById('tag-select'), {
         plugins: ['remove_button'],
         closeAfterSelect: true,
         create: true,
