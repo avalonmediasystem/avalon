@@ -922,12 +922,12 @@ describe MediaObject do
     it 'sets visibility based upon collection for new media objects' do
       expect {new_media_object.collection = collection}.to change {new_media_object.visibility}.to('public').from('private')
     end
-    it 'sets read_users based upon collection for new media objects' do
-      expect {new_media_object.collection = collection}.to change {new_media_object.read_users}.to(['archivist1@example.com']).from([])
+    it 'new media objects inherited_read_users is based upon collection' do
+      expect {new_media_object.collection = collection}.to change {new_media_object.inherited_read_users}.to(['archivist1@example.com']).from([])
     end
-    it 'sets read_groups based upon collection for new media objects' do
+    it 'new media objects inherited_read_groups is based upon collection' do
       expect(new_media_object.read_groups).not_to include "TestGroup"
-      expect {new_media_object.collection = collection}.to change {new_media_object.read_groups}.to include 'TestGroup'
+      expect {new_media_object.collection = collection}.to change {new_media_object.inherited_read_groups}.to include 'TestGroup'
     end
     it 'sets lending_period based upon collection for new media objects' do
       expect {new_media_object.collection = collection}.to change {new_media_object.lending_period}.to(86400).from(nil)

@@ -76,15 +76,11 @@ describe BulkActionJobs::ApplyCollectionAccessControl do
 
   describe "perform" do
     before do
-      co.default_read_users = ["co_user"]
-      co.default_read_groups = ["co_group"]
       co.default_hidden = true
       co.default_visibility = 'public'
       co.default_lending_period = 129600
       co.save!
 
-      mo.read_users = ["mo_user"]
-      mo.read_groups = ["mo_group"]
       mo.hidden = false
       mo.visibility = 'restricted'
       mo.lending_period = 1209600
@@ -95,8 +91,6 @@ describe BulkActionJobs::ApplyCollectionAccessControl do
       BulkActionJobs::ApplyCollectionAccessControl.perform_now co.id, true, 'discovery'
       mo.reload
       expect(mo.hidden?).to be_truthy
-      expect(mo.read_users).to contain_exactly('mo_user')
-      expect(mo.read_groups).to contain_exactly('mo_group', 'registered')
       expect(mo.visibility).to eq('restricted')
       expect(mo.lending_period).to eq(1209600)
     end
@@ -105,8 +99,6 @@ describe BulkActionJobs::ApplyCollectionAccessControl do
       BulkActionJobs::ApplyCollectionAccessControl.perform_now co.id, true, 'visibility'
       mo.reload
       expect(mo.visibility).to eq('public')
-      expect(mo.read_users).to contain_exactly('mo_user')
-      expect(mo.read_groups).to contain_exactly('mo_group', 'public')
       expect(mo.hidden?).to be_falsey
       expect(mo.lending_period).to eq(1209600)
     end
@@ -119,8 +111,6 @@ describe BulkActionJobs::ApplyCollectionAccessControl do
         mo.reload
         expect(mo.lending_period).to eq(co.default_lending_period)
         expect(mo.hidden?).to be_falsey
-        expect(mo.read_users).to contain_exactly('mo_user')
-        expect(mo.read_groups).to contain_exactly('mo_group', 'registered')
         expect(mo.visibility).to eq('restricted')
       end
     end
@@ -132,78 +122,8 @@ describe BulkActionJobs::ApplyCollectionAccessControl do
         mo.reload
         expect(mo.lending_period).not_to eq(co.default_lending_period)
         expect(mo.hidden?).to be_falsey
-        expect(mo.read_users).to contain_exactly('mo_user')
-        expect(mo.read_groups).to contain_exactly('mo_group', 'registered')
         expect(mo.visibility).to eq('restricted')
       end
-    end
-
-    context "overwrite is true" do
-      it "replaces existing Special Access but affects no other fields" do
-        BulkActionJobs::ApplyCollectionAccessControl.perform_now co.id, true, 'special_access'
-        mo.reload
-        expect(mo.read_users).to contain_exactly("co_user")
-        expect(mo.read_groups).to contain_exactly("co_group", "registered")
-        expect(mo.hidden?).to be_falsey
-        expect(mo.visibility).to eq('restricted')
-        expect(mo.lending_period).to eq(1209600)
-        solr_doc = ActiveFedora::SolrService.query("id:#{mo.id}").first
-        expect(solr_doc["read_access_person_ssim"]).to contain_exactly("co_user")
-        expect(solr_doc["read_access_group_ssim"]).to contain_exactly("co_group", "registered")
-      end
-    end
-
-    context "overwrite is false" do
-      it "adds to existing Special Access but affects no other fields" do
-        BulkActionJobs::ApplyCollectionAccessControl.perform_now co.id, false, 'special_access'
-        mo.reload
-        expect(mo.read_users).to contain_exactly("mo_user", "co_user")
-        expect(mo.read_groups).to contain_exactly("mo_group", "co_group", "registered")
-        expect(mo.hidden?).to be_falsey
-        expect(mo.visibility).to eq('restricted')
-        expect(mo.lending_period).to eq(1209600)
-        solr_doc = ActiveFedora::SolrService.query("id:#{mo.id}").first
-        expect(solr_doc["read_access_person_ssim"]).to contain_exactly("mo_user", "co_user")
-        expect(solr_doc["read_access_group_ssim"]).to contain_exactly("mo_group", "co_group", "registered")
-      end
-    end
-
-    context "parent unit has special access settings" do
-      before do
-        unit.default_read_users = ["unit_user"]
-        unit.default_read_groups = ["unit_group"]
-        unit.save!
-      end
-
-      context "overwrite is true" do
-        it "replaces existing Special Access but affects no other fields" do
-          BulkActionJobs::ApplyCollectionAccessControl.perform_now co.id, true, 'special_access'
-          mo.reload
-          expect(mo.read_users).to contain_exactly("co_user", "unit_user")
-          expect(mo.read_groups).to contain_exactly("co_group", "unit_group", "registered")
-          expect(mo.hidden?).to be_falsey
-          expect(mo.visibility).to eq('restricted')
-          expect(mo.lending_period).to eq(1209600)
-          solr_doc = ActiveFedora::SolrService.query("id:#{mo.id}").first
-          expect(solr_doc["read_access_person_ssim"]).to contain_exactly("co_user", "unit_user")
-          expect(solr_doc["read_access_group_ssim"]).to contain_exactly("co_group", "unit_group", "registered")
-        end
-      end
-
-      context "overwrite is false" do
-        it "adds to existing Special Access but affects no other fields" do
-          BulkActionJobs::ApplyCollectionAccessControl.perform_now co.id, false, 'special_access'
-          mo.reload
-          expect(mo.read_users).to contain_exactly("mo_user", "co_user", "unit_user")
-          expect(mo.read_groups).to contain_exactly("mo_group", "co_group", "unit_group", "registered")
-          expect(mo.hidden?).to be_falsey
-          expect(mo.visibility).to eq('restricted')
-          expect(mo.lending_period).to eq(1209600)
-          solr_doc = ActiveFedora::SolrService.query("id:#{mo.id}").first
-          expect(solr_doc["read_access_person_ssim"]).to contain_exactly("mo_user", "co_user", "unit_user")
-          expect(solr_doc["read_access_group_ssim"]).to contain_exactly("mo_group", "co_group", "unit_group", "registered")
-        end
-      end      
     end
   end
 end

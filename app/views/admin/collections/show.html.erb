@@ -136,9 +136,7 @@ Unless required by applicable law or agreed to in writing, software distributed
                                             visibility: @collection.default_visibility,
                                             hidden: @collection.default_hidden } %>
 
-  <%= render "modules/special_access", { object: @collection,
-                                         modal: { partial: "apply_special_access",
-                                                  title: "Apply current Special Access settings to all existing Items" } } %>
+  <%= render "modules/special_access", { object: @collection } %>
 
 </div>
 

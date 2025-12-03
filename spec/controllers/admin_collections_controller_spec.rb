@@ -376,6 +376,8 @@ describe Admin::CollectionsController, type: :controller do
       expect(new_collection.contact_email).to eq collection.contact_email
       expect(new_collection.website_label).to eq collection.website_label
       expect(new_collection.website_url).to eq collection.website_url
+      expect(new_collection.unit_id). to eq collection.unit.id
+      expect(new_collection.governing_policy_id).to eq collection.unit.id
     end
     it "should create a new collection with default manager list containing current API user" do
       post 'create', params: { format: 'json', admin_collection: { name: collection.name, description: collection.description, unit_id: collection.unit.id } }

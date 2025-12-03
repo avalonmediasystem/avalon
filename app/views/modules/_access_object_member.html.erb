@@ -14,6 +14,8 @@ Unless required by applicable law or agreed to in writing, software distributed
 ---  END LICENSE_HEADER BLOCK  ---
 %>
 
+<% is_media_object = object.is_a?(SpeedyAF::Proxy::MediaObject) || object.is_a?(MediaObject) %>
+
 <tr>
   <td class='access_list_label' data-testid="<%= 'collection-access-label-' + access_object %>">
     <%= label_tag do %>
@@ -23,8 +25,10 @@ Unless required by applicable law or agreed to in writing, software distributed
     <%= member_object %>
     <% end %>
     <% end %>
-    <% if inherited %>
-      <div style="float: right;"><%= t('access_control.inherited_role', unit_name: object.unit.name) %></div>
+    <% if inherited && is_media_object %>
+      <div style="float: right;"><%= t('access_control.media_object_inherited_role', collection_name: object.collection.name) %></div>
+    <% elsif inherited %>
+      <div style="float: right;"><%= t('access_control.collection_inherited_role', unit_name: object.unit.name) %></div>
     <% end %>
   </td>
   <td class='access_list_dates'></td>
