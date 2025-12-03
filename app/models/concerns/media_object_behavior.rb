@@ -87,4 +87,16 @@ module MediaObjectBehavior
   def section_share_infos
     @share_infos ||= sections.collect { |section| section.share_info }
   end
+
+  def inherited_read_users
+    return [] unless collection
+    users = collection.default_read_users.to_a + collection.inherited_read_users.to_a
+    users.uniq
+  end
+
+  def inherited_read_groups
+    return [] unless collection
+    groups = collection.default_read_groups.to_a + collection.inherited_read_groups.to_a
+    groups.uniq
+  end
 end

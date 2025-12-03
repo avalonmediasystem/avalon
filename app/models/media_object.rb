@@ -217,8 +217,6 @@ class MediaObject < ActiveFedora::Base
     if self.new_record?
       self.hidden = co.default_hidden
       self.visibility = co.default_visibility
-      self.read_users = co.default_read_users.to_a
-      self.read_groups = co.default_read_groups.to_a + self.read_groups #Make sure to include any groups added by visibility
       self.lending_period = co.default_lending_period
     end
   end
