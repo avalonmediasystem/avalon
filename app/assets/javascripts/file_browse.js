@@ -43,9 +43,9 @@ document.addEventListener('DOMContentLoaded', function () {
       if (providerLink) providerLink.click();
     }).done(function (data) {
       if (data.length > 0) {
-        const uploadModal = getById('uploading');
-        if (uploadModal) {
-          const uploadModal = new bootstrap.Modal(uploadModal);
+        const uploadModalElement = getById('uploading');
+        if (uploadModalElement) {
+          const uploadModal = new bootstrap.Modal(uploadModalElement);
           uploadModal.show();
         }
         const dropboxWorkflowInput = query('#dropbox_form input[name=workflow]');
