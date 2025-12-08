@@ -29,8 +29,7 @@ gem 'sassc-rails'
 gem 'sprockets-es6'
 
 # Core Samvera
-# gem 'active-fedora', '~> 15.0'
-gem 'active-fedora', git: 'https://github.com/samvera/active_fedora.git', ref: '7f91e09e630f7e3c1eb3d355e5a016ae8af44778'
+gem 'active-fedora', '~> 16.0'
 gem 'active_fedora-datastreams', '~> 0.5'
 gem 'hydra-head', '~> 13.0'
 gem 'ldp', '~> 1.1.0'
