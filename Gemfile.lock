@@ -50,24 +50,6 @@ GIT
       ims-lti
       omniauth
 
-GIT
-  remote: https://github.com/samvera/active_fedora.git
-  revision: 7f91e09e630f7e3c1eb3d355e5a016ae8af44778
-  ref: 7f91e09e630f7e3c1eb3d355e5a016ae8af44778
-  specs:
-    active-fedora (15.0.1)
-      active-triples (>= 0.11.0, < 2.0.0)
-      activemodel (>= 6.1)
-      activesupport (>= 6.1)
-      deprecation
-      faraday (>= 2.0)
-      faraday-encoding (>= 0.0.5)
-      faraday-follow_redirects
-      ldp (>= 0.7.0, < 2)
-      mutex_m
-      rsolr (>= 1.1.2, < 3)
-      ruby-progressbar (~> 1.0)
-
 GEM
   remote: https://rubygems.org/
   specs:
@@ -114,6 +96,18 @@ GEM
       erubi (~> 1.11)
       rails-dom-testing (~> 2.2)
       rails-html-sanitizer (~> 1.6)
+    active-fedora (16.0.0)
+      active-triples (>= 0.11.0, < 2.0.0)
+      activemodel (>= 6.1)
+      activesupport (>= 6.1)
+      deprecation
+      faraday (>= 2.0)
+      faraday-encoding (>= 0.0.5)
+      faraday-follow_redirects
+      ldp (>= 0.7.0, < 2)
+      mutex_m
+      rsolr (>= 1.1.2, < 3)
+      ruby-progressbar (~> 1.0)
     active-triples (1.2.0)
       activemodel (>= 3.0.0)
       activesupport (>= 3.0.0)
@@ -974,7 +968,7 @@ PLATFORMS
 
 DEPENDENCIES
   about_page!
-  active-fedora!
+  active-fedora (~> 16.0)
   active_annotations (~> 0.6)
   active_encode (~> 2.0)
   active_fedora-datastreams (~> 0.5)
