@@ -134,7 +134,18 @@ class FileLocator
     when 's3'
       S3File.new(uri).object.get.body
     when 'file'
-      File.open(location,'r')
+      File.open(location, 'r')
+    else
+      open_uri
+    end
+  end
+
+  def magic_bytes
+    case uri.scheme
+    when 's3'
+      S3File.new(uri).object.get(range: '0-16').body
+    when 'file'
+      File.open(location, 'r')
     else
       open_uri
     end
