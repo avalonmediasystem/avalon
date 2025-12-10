@@ -128,9 +128,7 @@ Unless required by applicable law or agreed to in writing, software distributed
                                             visibility: @unit.default_visibility,
                                             hidden: @unit.default_hidden } %>
 
-  <%= render "modules/special_access", { object: @unit,
-                                         modal: { partial: "apply_special_access",
-                                                  title: "Apply current Special Access settings to all existing Items" } } %>
+  <%= render "modules/special_access", { object: @unit } %>
 
 </div>
 

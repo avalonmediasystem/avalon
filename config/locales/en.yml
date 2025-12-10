@@ -200,7 +200,8 @@ en:
       Lending Period is the length of time that an item may be checked out for.
       Day and Hour values must be positive integers.
     apply_to_all_warning: "This action will affect %s items. Do you wish to proceed?"
-    inherited_role: 'This role is inherited from Unit "%{unit_name}" and cannot be removed.'
+    unit_inherited_role: 'This role is inherited from Unit "%{unit_name}" and cannot be removed.'
+    collection_inherited_role: 'This role is inherited from Collection "%{collection_name}"'
 
   contact:
     title: 'Contact Us - %{application_name}'
