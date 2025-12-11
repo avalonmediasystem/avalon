@@ -18,6 +18,72 @@ require 'equivalent-xml'
 describe MasterFilesController do
   include ActiveJob::TestHelper
 
+  render_views
+
+  describe 'security' do
+    let(:master_file) { FactoryBot.create(:master_file, :with_media_object, :with_derivative) }
+
+    describe 'normal auth' do
+      context 'with unauthenticated user' do
+        it "all routes should redirect to sign in" do
+          # Show redirects to the media object without auth checking
+          #expect(get :show, params: { id: master_file.id }).to render_template('errors/restricted_pid')
+          expect(put :update, params: { id: master_file.id }).to render_template('errors/restricted_pid')
+          expect(get :get_frame, params: { id: master_file.id, type: 'thumbnail' }).to render_template('errors/restricted_pid')
+          expect(post :set_frame, params: { id: master_file.id, type: 'thumbnail', format: 'html' }).to render_template('errors/restricted_pid')
+          expect(get :get_frame, params: { id: master_file.id, type: 'poster' }).to render_template('errors/restricted_pid')
+          expect(post :set_frame, params: { id: master_file.id, type: 'poster', format: 'html' }).to render_template('errors/restricted_pid')
+          expect(post :set_frame, params: { id: master_file.id, format: 'html' }).to render_template('errors/restricted_pid')
+          # Embed does it's own auth in the iframe
+          #expect(get :embed, params: { id: master_file.id }).to render_template('errors/restricted_pid')
+          expect(get :captions, params: { id: master_file.id }).to render_template('errors/restricted_pid')
+          expect(get :waveform, params: { id: master_file.id }).to render_template('errors/restricted_pid')
+          expect(post :attach_structure, params: { id: master_file.id }).to render_template('errors/restricted_pid')
+          expect(get :transcript, params: { id: master_file.id, t_id: '1' }).to render_template('errors/restricted_pid')
+          expect(post :move, params: { id: master_file.id }).to render_template('errors/restricted_pid')
+        end
+        it "json routes should return 401" do
+          expect(get :search, params: { id: master_file.id }).to have_http_status(401)
+          expect(get :structure, params: { id: master_file.id, format: 'json' }).to have_http_status(401)
+          expect(post :set_structure, params: { id: master_file.id, format: 'json' }).to have_http_status(401)
+          expect(delete :delete_structure, params: { id: master_file.id, format: 'json' }).to have_http_status(401)
+          expect(head :hls_manifest, params: { id: master_file.id, quality: 'high', format: 'm3u8' }).to have_http_status(401)
+          expect(get :hls_manifest, params: { id: master_file.id, quality: 'high', format: 'm3u8' }).to have_http_status(401)
+        end
+      end
+      context 'with end-user' do
+        before do
+          login_as :user
+        end
+        it "all routes should redirect to sign in" do
+          # Show redirects to the media object without auth checking
+          #expect(get :show, params: { id: master_file.id }).to render_template('errors/restricted_pid')
+          expect(put :update, params: { id: master_file.id }).to render_template('errors/restricted_pid')
+          expect(get :get_frame, params: { id: master_file.id, type: 'thumbnail' }).to render_template('errors/restricted_pid')
+          expect(post :set_frame, params: { id: master_file.id, type: 'thumbnail', format: 'html' }).to render_template('errors/restricted_pid')
+          expect(get :get_frame, params: { id: master_file.id, type: 'poster' }).to render_template('errors/restricted_pid')
+          expect(post :set_frame, params: { id: master_file.id, type: 'poster', format: 'html' }).to render_template('errors/restricted_pid')
+          expect(post :set_frame, params: { id: master_file.id, format: 'html' }).to render_template('errors/restricted_pid')
+          # Embed does it's own auth in the iframe
+          #expect(get :embed, params: { id: master_file.id }).to render_template('errors/restricted_pid')
+          expect(get :captions, params: { id: master_file.id }).to render_template('errors/restricted_pid')
+          expect(get :waveform, params: { id: master_file.id }).to render_template('errors/restricted_pid')
+          expect(post :attach_structure, params: { id: master_file.id }).to render_template('errors/restricted_pid')
+          expect(get :transcript, params: { id: master_file.id, t_id: '1' }).to render_template('errors/restricted_pid')
+          expect(post :move, params: { id: master_file.id }).to render_template('errors/restricted_pid')
+        end
+        it "json routes should return 401" do
+          expect(get :search, params: { id: master_file.id }).to have_http_status(401)
+          expect(get :structure, params: { id: master_file.id, format: 'json' }).to have_http_status(401)
+          expect(post :set_structure, params: { id: master_file.id, format: 'json' }).to have_http_status(401)
+          expect(delete :delete_structure, params: { id: master_file.id, format: 'json' }).to have_http_status(401)
+          expect(head :hls_manifest, params: { id: master_file.id, quality: 'high', format: 'm3u8' }).to have_http_status(401)
+          expect(get :hls_manifest, params: { id: master_file.id, quality: 'high', format: 'm3u8' }).to have_http_status(401)
+        end
+      end
+    end
+  end
+
   describe "#create" do
     let(:media_object) { FactoryBot.create(:media_object) }
 
