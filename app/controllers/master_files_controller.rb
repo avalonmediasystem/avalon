@@ -266,8 +266,7 @@ class MasterFilesController < ApplicationController
   end
 
   def set_structure
-    # Bypass authorization check for now
-    # authorize! :edit, @master_file, message: "You do not have sufficient privileges"
+    authorize! :edit, @master_file, message: "You do not have sufficient privileges"
     @master_file.structuralMetadata.content = StructuralMetadata.from_json(params[:json])
     @master_file.save
   end
