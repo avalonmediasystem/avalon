@@ -74,6 +74,7 @@ Rails.application.routes.draw do
   match "/authorize/:path", to: 'derivatives#authorize', via: [:get, :post]
 
   namespace :admin do
+    get '/dashboard', to: 'dashboard#index'
     resources :groups, except: [:show] do
       collection do
         put 'update_multiple'
