@@ -190,6 +190,14 @@ class ApplicationController < ActionController::Base
     end
   end
 
+  rescue_from ActiveFedora::ModelMismatch do |exception|
+    if request.format == :json
+      render json: { errors: ["Requested resource type does not match type of #{params[:id]}"] }, status: 422
+    else
+      render '/errors/model_mismatch', status: 422
+    end
+  end
+
   rescue_from Ldp::Gone do |exception|
     if request.format == :json
       render json: {errors: ["#{params[:id]} has been deleted"]}, status: 410

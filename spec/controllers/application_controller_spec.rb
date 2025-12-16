@@ -81,6 +81,15 @@ describe ApplicationController do
       expect(response).to render_template("errors/deleted_pid")
     end
 
+    context 'model mismatch' do
+      it 'renders model_mismatch template' do
+        allow(controller).to receive(:show).and_raise(ActiveFedora::ModelMismatch)
+        expect { get :show, params: { id: 'abc1234' } }.to_not raise_error
+        expect(response.status).to be 422
+        expect(response).to render_template("errors/model_mismatch")
+      end
+    end
+
     context 'raise_on_connection_error disabled' do
       let(:request_context) { { uri: Addressable::URI.parse("http://example.com"), body: "request_context" } }
       let(:e) { { body: "error_response" } }
