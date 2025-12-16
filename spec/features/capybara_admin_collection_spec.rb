@@ -24,7 +24,7 @@ describe 'Admin Collection' do
     login_as @user, scope: :user
     visit '/'
     click_link('Manage Content')
-    expect(page).to have_current_path('/admin/collections')
+    expect(page).to have_current_path('/admin/dashboard')
     expect(page).to have_link('Create Collection')
     click_link('Create Collection')
     expect(page).to have_current_path('/admin/collections/new')
