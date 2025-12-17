@@ -81,6 +81,16 @@ describe ApplicationController do
       expect(response).to render_template("errors/deleted_pid")
     end
 
+    context 'model mismatch' do
+      it 'renders redirects to homepage' do
+        allow(controller).to receive(:show).and_raise(ActiveFedora::ModelMismatch)
+        expect { get :show, params: { id: 'abc1234' } }.to_not raise_error
+        expect(response.status).to be 302
+        expect(response).to redirect_to(root_path)
+        expect(flash[:error]).to eq("Requested resource type does not match type of abc1234.")
+      end
+    end
+
     context 'raise_on_connection_error disabled' do
       let(:request_context) { { uri: Addressable::URI.parse("http://example.com"), body: "request_context" } }
       let(:e) { { body: "error_response" } }
