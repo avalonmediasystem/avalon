@@ -41,7 +41,7 @@ class IiifCanvasPresenter
   end
 
   def annotation_content
-    supplemental_captions_transcripts.uniq.collect { |file| supplementing_content_data(file) }.flatten
+    supplemental_accessibility_files.uniq.collect { |file| supplementing_content_data(file) }.flatten
   end
 
   def sequence_rendering
@@ -96,225 +96,232 @@ class IiifCanvasPresenter
 
   private
 
-    def video_content
-      # @see https://github.com/samvera-labs/iiif_manifest
-      stream_urls.collect { |quality, url, mimetype| video_display_content(quality, url, mimetype) }
+  def video_content
+    # @see https://github.com/samvera-labs/iiif_manifest
+    stream_urls.collect { |quality, url, mimetype| video_display_content(quality, url, mimetype) }
+  end
+
+  def video_display_content(quality, url, mimetype)
+    if mimetype.present? && mimetype != 'application/x-mpegURL'
+      IIIFManifest::V3::DisplayContent.new(url, **manifest_attributes(quality, 'Video', mimetype: mimetype))
+    else
+      IIIFManifest::V3::DisplayContent.new(Rails.application.routes.url_helpers.hls_manifest_master_file_url(master_file.id, quality: quality),
+                                           **manifest_attributes(quality, 'Video'))
     end
+  end
 
-    def video_display_content(quality, url, mimetype)
-      if mimetype.present? && mimetype != 'application/x-mpegURL'
-        IIIFManifest::V3::DisplayContent.new(url, **manifest_attributes(quality, 'Video', mimetype: mimetype))
-      else
-        IIIFManifest::V3::DisplayContent.new(Rails.application.routes.url_helpers.hls_manifest_master_file_url(master_file.id, quality: quality),
-                                             **manifest_attributes(quality, 'Video'))
-      end
+  def audio_content
+    stream_urls.collect { |quality, url, mimetype| audio_display_content(quality, url, mimetype) }
+  end
+
+  def audio_display_content(quality, url, mimetype)
+    if mimetype.present? && mimetype != 'application/x-mpegURL'
+      IIIFManifest::V3::DisplayContent.new(url, **manifest_attributes(quality, 'Sound', mimetype: mimetype))
+    else
+      IIIFManifest::V3::DisplayContent.new(Rails.application.routes.url_helpers.hls_manifest_master_file_url(master_file.id, quality: quality),
+                                           **manifest_attributes(quality, 'Sound'))
     end
+  end
 
-    def audio_content
-      stream_urls.collect { |quality, url, mimetype| audio_display_content(quality, url, mimetype) }
+  def supplementing_content_data(file)
+    tags = file.tags.reject { |t| t == 'machine_generated' }.compact
+    case tags
+    when ['caption']
+      url = Rails.application.routes.url_helpers.captions_master_file_supplemental_file_url(master_file.id, file.id)
+      IIIFManifest::V3::AnnotationContent.new(body_id: url, **supplemental_attributes(file, type: 'caption'))
+    when ['transcript']
+      url = Rails.application.routes.url_helpers.transcripts_master_file_supplemental_file_url(master_file.id, file.id)
+      IIIFManifest::V3::AnnotationContent.new(body_id: url, **supplemental_attributes(file, type: 'transcript'))
+    when ['description']
+      url = Rails.application.routes.url_helpers.descriptions_master_file_supplemental_file_url(master_file.id, file.id)
+      IIIFManifest::V3::AnnotationContent.new(body_id: url, **supplemental_attributes(file, type: 'description'))
+    when ['caption', 'transcript']
+      caption_url = Rails.application.routes.url_helpers.captions_master_file_supplemental_file_url(master_file.id, file.id)
+      transcript_url = Rails.application.routes.url_helpers.transcripts_master_file_supplemental_file_url(master_file.id, file.id)
+      [IIIFManifest::V3::AnnotationContent.new(body_id: caption_url, **supplemental_attributes(file, type: 'caption')),
+       IIIFManifest::V3::AnnotationContent.new(body_id: transcript_url, **supplemental_attributes(file, type: 'transcript'))]
+    else
+      url = Rails.application.routes.url_helpers.master_file_supplemental_file_url(master_file.id, file.id)
+      IIIFManifest::V3::AnnotationContent.new(body_id: url, **supplemental_attributes(file))
     end
+  end
 
-    def audio_display_content(quality, url, mimetype)
-      if mimetype.present? && mimetype != 'application/x-mpegURL'
-        IIIFManifest::V3::DisplayContent.new(url, **manifest_attributes(quality, 'Sound', mimetype: mimetype))
-      else
-        IIIFManifest::V3::DisplayContent.new(Rails.application.routes.url_helpers.hls_manifest_master_file_url(master_file.id, quality: quality),
-                                             **manifest_attributes(quality, 'Sound'))
-      end
+  def stream_urls
+    stream_info[:stream_hls].collect do |d|
+      [d[:quality], d[:url], d[:mimetype]]
     end
+  end
 
-    def supplementing_content_data(file)
-      tags = file.tags.reject { |t| t == 'machine_generated' }.compact
-      case tags
-      when ['caption']
-        url = Rails.application.routes.url_helpers.captions_master_file_supplemental_file_url(master_file.id, file.id)
-        IIIFManifest::V3::AnnotationContent.new(body_id: url, **supplemental_attributes(file, type: 'caption'))
-      when ['transcript']
-        url = Rails.application.routes.url_helpers.transcripts_master_file_supplemental_file_url(master_file.id, file.id)
-        IIIFManifest::V3::AnnotationContent.new(body_id: url, **supplemental_attributes(file, type: 'transcript'))
-      when ['caption', 'transcript']
-        caption_url = Rails.application.routes.url_helpers.captions_master_file_supplemental_file_url(master_file.id, file.id)
-        transcript_url = Rails.application.routes.url_helpers.transcripts_master_file_supplemental_file_url(master_file.id, file.id)
-        [IIIFManifest::V3::AnnotationContent.new(body_id: caption_url, **supplemental_attributes(file, type: 'caption')),
-         IIIFManifest::V3::AnnotationContent.new(body_id: transcript_url, **supplemental_attributes(file, type: 'transcript'))]
-      else
-        url = Rails.application.routes.url_helpers.master_file_supplemental_file_url(master_file.id, file.id)
-        IIIFManifest::V3::AnnotationContent.new(body_id: url, **supplemental_attributes(file))
-      end
+  def section_processing?(master_file)
+    !master_file.succeeded?
+  end
+
+  def supplemental_accessibility_files
+    files = []
+    ['caption', 'transcript', 'description'].each do |tag|
+      files.concat(master_file.supplemental_files(tag: tag))
     end
+    files
+  end
 
-    def stream_urls
-      stream_info[:stream_hls].collect do |d|
-        [d[:quality], d[:url], d[:mimetype]]
-      end
+  def simple_iiif_range(label = stream_info[:label])
+    IiifManifestRange.new(
+      label: { "none" => [label] },
+      items: [
+        IiifCanvasPresenter.new(master_file: master_file, stream_info: stream_info, media_fragment: "t=0,#{stream_info[:duration]}")
+      ]
+    )
+  end
+
+  def structure_to_iiif_range
+    root_to_iiif_range(structure_ng_xml.root)
+  end
+
+  def root_to_iiif_range(root_node)
+    range = div_to_iiif_range(root_node)
+
+    range.items.prepend(IiifCanvasPresenter.new(master_file: master_file, stream_info: stream_info, media_fragment: "t=0,#{stream_info[:duration]}"))
+
+    range
+  end
+
+  def div_to_iiif_range(div_node)
+    items = div_node.children.select(&:element?).collect { |n| node_walk(n) }
+
+    IiifManifestRange.new(
+      label: { "none" => [div_node[:label]] },
+      items: items
+    )
+  end
+
+  def span_to_iiif_range(span_node)
+    items = span_node.children.select(&:element?).collect { |n| node_walk(n) }.prepend(build_range_item(span_node))
+
+    IiifManifestRange.new(
+      label: { "none" => [span_node[:label]] },
+      items: items
+    )
+  end
+
+  def node_walk(node)
+    if node.name == "Div"
+      div_to_iiif_range(node)
+    elsif node.name == "Span"
+      span_to_iiif_range(node)
     end
+  end
 
-    def section_processing?(master_file)
-      !master_file.succeeded?
+  def build_range_item(node)
+    fragment = "t=#{parse_hour_min_sec(node[:begin])},#{parse_hour_min_sec(node[:end])}"
+    IiifCanvasPresenter.new(master_file: master_file, stream_info: stream_info, media_fragment: fragment)
+  end
+
+  FLOAT_PATTERN = Regexp.new(/^\d+([.]\d*)?$/).freeze
+
+  def parse_hour_min_sec(s)
+    return nil if s.nil?
+    smh = s.split(':').reverse
+    (0..2).each do |i|
+      # Use Regexp.match? when we drop ruby 2.3 support
+      smh[i] = FLOAT_PATTERN.match?(smh[i]) ? Float(smh[i]) : 0
     end
+    smh[0] + (60 * smh[1]) + (3600 * smh[2])
+  end
 
-    def supplemental_captions_transcripts
-      master_file.supplemental_files(tag: 'caption') + master_file.supplemental_files(tag: 'transcript')
+  def manifest_attributes(quality, media_type, mimetype: 'application/x-mpegURL')
+    media_hash = {
+      label: quality,
+      width: (master_file.width || '1280').to_i,
+      height: (master_file.height || MasterFile::AUDIO_HEIGHT).to_i,
+      duration: stream_info[:duration],
+      type: media_type,
+      format: mimetype,
+      thumbnail: [{ id: thumbnail_url, type: 'Image' }]
+    }.compact
+
+    if master_file.media_object.visibility == 'public'
+      media_hash
+    else
+      media_hash.merge!(auth_service: auth_service(quality))
     end
+  end
 
-    def simple_iiif_range(label = stream_info[:label])
-      IiifManifestRange.new(
-        label: { "none" => [label] },
-        items: [
-          IiifCanvasPresenter.new(master_file: master_file, stream_info: stream_info, media_fragment: "t=0,#{stream_info[:duration]}")
-        ]
-      )
+  def supplemental_attributes(file, type: nil)
+    if file.is_a?(SupplementalFile)
+      label = file.tags.include?('machine_generated') ? file.label + ' (machine generated)' : file.label
+      format = if file.file.content_type == 'text/srt' && (type == 'caption' || type == 'description')
+                 'text/vtt'
+               else
+                 file.file.content_type
+               end
+      language = file.language || 'en'
+      filename = file.file.filename.to_s
+    else
+      label = 'English'
+      format = file.mime_type
+      language = 'en'
+      filename = file.original_name.to_s
     end
+    {
+      motivation: 'supplementing',
+      label: { language => [label], 'none' => [filename] },
+      type: 'Text',
+      format: format,
+      language: language
+    }
+  end
 
-    def structure_to_iiif_range
-      root_to_iiif_range(structure_ng_xml.root)
+  # Note that the method returns empty Nokogiri Document instead of nil when structure_tesim doesn't exist or is empty.
+  def structure_ng_xml
+    # TODO: The XML parser should handle invalid XML files, for ex, if a non-leaf node has no valid "Div" or "Span" children,
+    # in which case SyntaxError shall be prompted to the user during file upload.
+    # This can be done by defining some XML schema to require that at least one Div/Span child node exists
+    # under root or each Div node, otherwise Nokogiri::XML parser will report error, and raise exception here.
+    @structure_ng_xml ||= if master_file.has_structuralMetadata?
+                            Nokogiri::XML(master_file.structuralMetadata.content)
+                          else
+                            Nokogiri::XML(nil)
+                          end
+  end
+
+  def auth_service(quality)
+    {
+      "context": "http://iiif.io/api/auth/1/context.json",
+      "@id": Rails.application.routes.url_helpers.new_user_session_url(login_popup: 1),
+      "@type": "AuthCookieService1",
+      "confirmLabel": I18n.t('iiif.auth.confirmLabel'),
+      "description": I18n.t('iiif.auth.description'),
+      "failureDescription": I18n.t('iiif.auth.failureDescription'),
+      "failureHeader": I18n.t('iiif.auth.failureHeader'),
+      "header": I18n.t('iiif.auth.header'),
+      "label": I18n.t('iiif.auth.label'),
+      "profile": "http://iiif.io/api/auth/1/login",
+      "service": [
+        {
+          "@id": Rails.application.routes.url_helpers.hls_manifest_master_file_url(master_file.id, quality: quality),
+          "@type": "AuthProbeService1",
+          "profile": "http://iiif.io/api/auth/1/probe"
+        },
+        {
+          "@id": Rails.application.routes.url_helpers.iiif_auth_token_url(id: master_file.id),
+          "@type": "AuthTokenService1",
+          "profile": "http://iiif.io/api/auth/1/token"
+        },
+        {
+          "@id": Rails.application.routes.url_helpers.destroy_user_session_url,
+          "@type": "AuthLogoutService1",
+          "label": I18n.t('iiif.auth.logoutLabel'),
+          "profile": "http://iiif.io/api/auth/1/logout"
+        }
+      ]
+    }
+  end
+
+  def thumbnail_url
+    if master_file.is_video?
+      Rails.application.routes.url_helpers.thumbnail_master_file_url(master_file.id)
+    else
+      ActionController::Base.helpers.asset_url('audio_icon.png')
     end
-
-    def root_to_iiif_range(root_node)
-      range = div_to_iiif_range(root_node)
-
-      range.items.prepend(IiifCanvasPresenter.new(master_file: master_file, stream_info: stream_info, media_fragment: "t=0,#{stream_info[:duration]}"))
-
-      return range
-    end
-
-    def div_to_iiif_range(div_node)
-      items = div_node.children.select(&:element?).collect { |n| node_walk(n) }
-
-      IiifManifestRange.new(
-        label: { "none" => [div_node[:label]] },
-        items: items
-      )
-    end
-
-    def span_to_iiif_range(span_node)
-      items = span_node.children.select(&:element?).collect { |n| node_walk(n) }.prepend(build_range_item(span_node))
-      
-      IiifManifestRange.new(
-        label: { "none" => [span_node[:label]] },
-        items: items
-      )
-    end
-
-    def node_walk(node)
-      if node.name == "Div"
-        div_to_iiif_range(node)
-      elsif node.name == "Span"
-        span_to_iiif_range(node)
-      end
-    end
-
-    def build_range_item(node)
-      fragment = "t=#{parse_hour_min_sec(node[:begin])},#{parse_hour_min_sec(node[:end])}"
-      IiifCanvasPresenter.new(master_file: master_file, stream_info: stream_info, media_fragment: fragment)
-    end
-
-    FLOAT_PATTERN = Regexp.new(/^\d+([.]\d*)?$/).freeze
-
-    def parse_hour_min_sec(s)
-      return nil if s.nil?
-      smh = s.split(':').reverse
-      (0..2).each do |i|
-        # Use Regexp.match? when we drop ruby 2.3 support
-        smh[i] = smh[i] =~ FLOAT_PATTERN ? Float(smh[i]) : 0
-      end
-      smh[0] + (60 * smh[1]) + (3600 * smh[2])
-    end
-
-    def manifest_attributes(quality, media_type, mimetype: 'application/x-mpegURL')
-      media_hash = {
-        label: quality,
-        width: (master_file.width || '1280').to_i,
-        height: (master_file.height || MasterFile::AUDIO_HEIGHT).to_i,
-        duration: stream_info[:duration],
-        type: media_type,
-        format: mimetype,
-        thumbnail: [{ id: thumbnail_url, type: 'Image' }]
-      }.compact
-
-      if master_file.media_object.visibility == 'public'
-        media_hash
-      else
-        media_hash.merge!(auth_service: auth_service(quality))
-      end
-    end
-
-    def supplemental_attributes(file, type: nil)
-      if file.is_a?(SupplementalFile)
-        label = file.tags.include?('machine_generated') ? file.label + ' (machine generated)' : file.label
-        format = if file.file.content_type == 'text/srt' && type == 'caption'
-                   'text/vtt'
-                 else
-                   file.file.content_type
-                 end
-        language = file.language || 'en'
-        filename = file.file.filename.to_s
-      else
-        label = 'English'
-        format = file.mime_type
-        language = 'en'
-        filename = file.original_name.to_s
-      end
-      {
-        motivation: 'supplementing',
-        label: { language => [label], 'none' => [filename] },
-        type: 'Text',
-        format: format,
-        language: language
-      }
-    end
-
-    # Note that the method returns empty Nokogiri Document instead of nil when structure_tesim doesn't exist or is empty.
-    def structure_ng_xml
-      # TODO: The XML parser should handle invalid XML files, for ex, if a non-leaf node has no valid "Div" or "Span" children,
-      # in which case SyntaxError shall be prompted to the user during file upload.
-      # This can be done by defining some XML schema to require that at least one Div/Span child node exists
-      # under root or each Div node, otherwise Nokogiri::XML parser will report error, and raise exception here.
-      @structure_ng_xml ||= if master_file.has_structuralMetadata?
-                              Nokogiri::XML(master_file.structuralMetadata.content)
-                            else
-                              Nokogiri::XML(nil)
-                            end
-    end
-
-    def auth_service(quality)
-      {
-        "context": "http://iiif.io/api/auth/1/context.json",
-        "@id": Rails.application.routes.url_helpers.new_user_session_url(login_popup: 1),
-        "@type": "AuthCookieService1",
-        "confirmLabel": I18n.t('iiif.auth.confirmLabel'),
-        "description": I18n.t('iiif.auth.description'),
-        "failureDescription": I18n.t('iiif.auth.failureDescription'),
-        "failureHeader": I18n.t('iiif.auth.failureHeader'),
-        "header": I18n.t('iiif.auth.header'),
-        "label": I18n.t('iiif.auth.label'),
-        "profile": "http://iiif.io/api/auth/1/login",
-        "service": [
-          {
-            "@id": Rails.application.routes.url_helpers.hls_manifest_master_file_url(master_file.id, quality: quality),
-            "@type": "AuthProbeService1",
-            "profile": "http://iiif.io/api/auth/1/probe"
-          },
-          {
-            "@id": Rails.application.routes.url_helpers.iiif_auth_token_url(id: master_file.id),
-            "@type": "AuthTokenService1",
-            "profile": "http://iiif.io/api/auth/1/token"
-          },
-          {
-            "@id": Rails.application.routes.url_helpers.destroy_user_session_url,
-            "@type": "AuthLogoutService1",
-            "label": I18n.t('iiif.auth.logoutLabel'),
-            "profile": "http://iiif.io/api/auth/1/logout"
-          }
-        ]
-      }
-    end
-
-    def thumbnail_url
-      if master_file.is_video?
-        Rails.application.routes.url_helpers.thumbnail_master_file_url(master_file.id)
-      else
-        ActionController::Base.helpers.asset_url('audio_icon.png')
-      end
-    end
+  end
 end
