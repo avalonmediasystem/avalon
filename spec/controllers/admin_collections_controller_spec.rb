@@ -169,7 +169,7 @@ describe Admin::CollectionsController, type: :controller do
       expect(json.count).to eq(2)
       expect(json.first['id']).to eq(collection.id)
       expect(json.first['name']).to eq(collection.name)
-      expect(json.first['unit']).to eq(collection.unit)
+      expect(json.first['unit']).to eq(collection.unit.name)
       expect(json.first['description']).to eq(collection.description)
       expect(json.first['object_count']['total']).to eq(collection.media_objects.count)
       expect(json.first['object_count']['published']).to eq(collection.media_objects.reject{|mo| !mo.published?}.count)
@@ -185,16 +185,6 @@ describe Admin::CollectionsController, type: :controller do
     it "should return no collections for bad user" do
       get 'index', params: { user: 'foobar', format:'json' }
       expect(json.count).to eq(0)
-    end
-
-    context 'information is missing from the controlled vocabulary file' do
-      it 'should redirect to the homepage' do
-        allow(Avalon::ControlledVocabulary).to receive(:vocabulary).and_return({})
-        login_as(:administrator)
-        get 'index'
-        expect(response).to redirect_to(root_path)
-        expect(flash[:error]).to be_present
-      end
     end
   end
 
@@ -240,7 +230,7 @@ describe Admin::CollectionsController, type: :controller do
         get 'show', params: { id: collection.id, format:'json' }
         expect(json['id']).to eq(collection.id)
         expect(json['name']).to eq(collection.name)
-        expect(json['unit']).to eq(collection.unit)
+        expect(json['unit']).to eq(collection.unit.name)
         expect(json['description']).to eq(collection.description)
         expect(json['object_count']['total']).to eq(collection.media_objects.count)
         expect(json['object_count']['published']).to eq(collection.media_objects.reject{|mo| !mo.published?}.count)
@@ -339,7 +329,8 @@ describe Admin::CollectionsController, type: :controller do
   end
 
   describe "#create" do
-    let!(:collection) { FactoryBot.build(:collection) }
+    let(:unit) { FactoryBot.create(:unit) }
+    let(:collection) { FactoryBot.build(:collection, unit: unit) }
     let(:administrator) { FactoryBot.create(:administrator) }
 
     before(:each) do
@@ -353,20 +344,33 @@ describe Admin::CollectionsController, type: :controller do
       # allow(mock_email).to receive(:deliver_later)
       # expect(NotificationsMailer).to receive(:new_collection).and_return(mock_email)
       # FIXME: This delivers two instead of one for some reason
-      expect {post 'create', params: { format:'json', admin_collection: {name: collection.name, description: collection.description, unit: collection.unit, managers: collection.managers} }}.to have_enqueued_job(ActionMailer::MailDeliveryJob).twice
+      expect { post 'create', params: { format: 'json', admin_collection: { name: collection.name, description: collection.description, unit_id: collection.unit.id, managers: collection.managers } } }.to have_enqueued_job(ActionMailer::MailDeliveryJob).twice
       # post 'create', format:'json', admin_collection: {name: collection.name, description: collection.description, unit: collection.unit, managers: collection.managers}
     end
-    it "should create a new collection" do
-      post 'create', params: { format:'json', admin_collection: {name: collection.name, description: collection.description, unit: collection.unit, contact_email: collection.contact_email, website_label: collection.website_label, website_url: collection.website_url, managers: collection.managers} }
+    it "should create a new collection with unit id provided" do
+      post 'create', params: { format: 'json', admin_collection: { name: collection.name, description: collection.description, unit_id: collection.unit.id, contact_email: collection.contact_email, website_label: collection.website_label, website_url: collection.website_url, managers: collection.managers } }
       expect(JSON.parse(response.body)['id'].class).to eq String
       expect(JSON.parse(response.body)).not_to include('errors')
       new_collection = Admin::Collection.find(JSON.parse(response.body)['id'])
       expect(new_collection.contact_email).to eq collection.contact_email
       expect(new_collection.website_label).to eq collection.website_label
       expect(new_collection.website_url).to eq collection.website_url
+      expect(new_collection.unit_id).to eq collection.unit.id
+      expect(new_collection.governing_policy_id).to eq collection.unit.id
+    end
+    it "should create a new collection with unit name provided" do
+      post 'create', params: { format: 'json', admin_collection: { name: collection.name, description: collection.description, unit_name: collection.unit.name, contact_email: collection.contact_email, website_label: collection.website_label, website_url: collection.website_url, managers: collection.managers } }
+      expect(JSON.parse(response.body)['id'].class).to eq String
+      expect(JSON.parse(response.body)).not_to include('errors')
+      new_collection = Admin::Collection.find(JSON.parse(response.body)['id'])
+      expect(new_collection.contact_email).to eq collection.contact_email
+      expect(new_collection.website_label).to eq collection.website_label
+      expect(new_collection.website_url).to eq collection.website_url
+      expect(new_collection.unit_id). to eq collection.unit.id
+      expect(new_collection.governing_policy_id).to eq collection.unit.id
     end
     it "should create a new collection with default manager list containing current API user" do
-      post 'create', params: { format:'json', admin_collection: { name: collection.name, description: collection.description, unit: collection.unit } }
+      post 'create', params: { format: 'json', admin_collection: { name: collection.name, description: collection.description, unit_id: collection.unit.id } }
       expect(JSON.parse(response.body)['id'].class).to eq String
       collection = Admin::Collection.find(JSON.parse(response.body)['id'])
       expect(collection.managers).to eq([administrator.username])
@@ -378,7 +382,6 @@ describe Admin::CollectionsController, type: :controller do
       expect(JSON.parse(response.body)["errors"].class).to eq Array
       expect(JSON.parse(response.body)["errors"].first.class).to eq String
     end
-
   end
 
   describe "#update" do
@@ -394,6 +397,7 @@ describe Admin::CollectionsController, type: :controller do
 
     context "update REST API" do
       let!(:collection) { FactoryBot.create(:collection)}
+      let(:unit) { FactoryBot.create(:unit)}
       let(:contact_email) { Faker::Internet.email }
       let(:website_label) { Faker::Lorem.words.join(' ') }
       let(:website_url) { Faker::Internet.url }
@@ -405,7 +409,7 @@ describe Admin::CollectionsController, type: :controller do
 
       it "should update a collection via API" do
         old_description = collection.description
-        put 'update', params: { format: 'json', id: collection.id, admin_collection: { description: collection.description+'new', contact_email: contact_email, website_label: website_label, website_url: website_url }}
+        put 'update', params: { format: 'json', id: collection.id, admin_collection: { description: collection.description+'new', contact_email: contact_email, website_label: website_label, website_url: website_url, unit_id: unit.id }}
         expect(JSON.parse(response.body)['id'].class).to eq String
         expect(JSON.parse(response.body)).not_to include('errors')
         collection.reload
@@ -413,6 +417,8 @@ describe Admin::CollectionsController, type: :controller do
         expect(collection.contact_email).to eq contact_email
         expect(collection.website_label).to eq website_label
         expect(collection.website_url).to eq website_url
+        expect(collection.unit_id).to eq unit.id
+        expect(collection.governing_policy_id).to eq unit.id
       end
       it "should return 422 if collection update via API failed" do
         allow_any_instance_of(Admin::Collection).to receive(:save).and_return false

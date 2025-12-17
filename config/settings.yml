@@ -70,7 +70,7 @@ streaming:
 redis:
   url: 'redis://localhost:6379/0'
 groups:
-  system_groups: [administrator, group_manager, manager]
+  system_groups: [administrator, group_manager, manager, unit_administrator]
 master_file_management:
   strategy: 'none' #'delete', or 'move' (for move uncomment and configure next line)
   #path: '/path/to/move/to'

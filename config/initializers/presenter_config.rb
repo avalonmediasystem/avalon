@@ -78,6 +78,10 @@ Rails.application.config.to_prepare do
       include AdminCollectionBehavior
     end
 
+    sp.config Admin::Unit do
+      include AdminUnitBehavior
+    end
+
     sp.config Derivative do
       self.defaults = {
                         track_id: nil,

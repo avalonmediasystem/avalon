@@ -21,17 +21,17 @@ describe RoleMap do
     end
 
     after :each do
-      RoleMap.all.each &:destroy
+      RoleMap.all.each(&:destroy)
     end
 
-    let(:expected_role_map) { {"administrator"=>["archivist1@example.com"], "group_manager"=>["archivist1@example.com"], "manager"=>["archivist1@example.com"]} }
+    let(:expected_role_map) { { "administrator" => ["archivist1@example.com"], "group_manager" => ["archivist1@example.com"], "manager" => ["archivist1@example.com"], "unit_administrator" => ["archivist1@example.com"] } }
 
     it "should properly initialize the map" do
       expect(RoleMapper.map).to eq expected_role_map
     end
 
     it "should properly persist a hash" do
-      new_hash = { 'archivist' => ['alice.archivist@example.edu'], 'registered' => ['bob.user@example.edu','charlie.user@example.edu'] }
+      new_hash = { 'archivist' => ['alice.archivist@example.edu'], 'registered' => ['bob.user@example.edu', 'charlie.user@example.edu'] }
       RoleMap.replace_with!(new_hash)
       expect(RoleMapper.map).to eq(new_hash)
       expect(RoleMap.load).to eq(new_hash)
@@ -39,7 +39,7 @@ describe RoleMap do
   end
 
   describe '#set_entries' do
-    let!(:role) { RoleMap.create!(entry: 'group')}
+    let!(:role) { RoleMap.create!(entry: 'group') }
 
     it 'should not create entries for nils' do
       expect { role.set_entries([nil]) }.not_to change { RoleMap.count }

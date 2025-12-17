@@ -1,0 +1,84 @@
+<%#
+Copyright 2011-2025, The Trustees of Indiana University and Northwestern
+  University.  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+
+You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+  under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+  CONDITIONS OF ANY KIND, either express or implied. See the License for the
+  specific language governing permissions and limitations under the License.
+---  END LICENSE_HEADER BLOCK  ---
+%>
+<% content_for :page_scripts do %>
+<script type="text/javascript">
+  new TomSelect('#target_unit_id', {
+    searchField: ['text'],
+    sortField: [
+      { field: '$order' },
+      { field: 'text', direction: 'asc' }
+    ],
+    hideSelected: false,
+    closeAfterSelect: true,
+    placeholder: 'Search units...',
+    // Prevent clearing selection with backspace/delete
+    onDelete: function () { return false; },
+    // Hide search in control and use plugin to show search in dropdown
+    controlInput: null,
+    // Use 'Drodown Input' to add search at the top of the list
+    plugins: ['dropdown_input'],
+    render: {
+      option: function (data, escape) {
+        const isSelected = this.items.indexOf(data.value) !== -1;
+        const selectedClass = isSelected ? 'ts-option-custom selected-option' : 'ts-option-custom';
+        return `<div class="${selectedClass}" data-value="${escape(data.value)}">${escape(data.text)}</div>`;
+      },
+    },
+  });
+</script>
+<% end %>
+
+<div class="row" style="padding-top: 3rem;">
+  <div class="col-md-8 offset-2">
+    <%
+    item_count = "#{@objects.count} #{'item'.pluralize(@objects.count)}"
+    content_pronoun = @objects.count > 1 ? 'them' : 'it'
+    %>
+
+    <% if @unit.collections.count == 0 or @candidates.count > 0 %>
+      <div class="alert alert-danger">
+        <span class="fa fa-warning" aria-hidden="true"></span>
+        <span>Are you certain you want to remove the unit <b><%=@unit.name%></b>?</span>
+      </div>
+
+      <%= bootstrap_form_for @unit, method: :delete do |f| %>
+      <% if @objects.count > 0 %>
+
+      <h2>Reassign Existing Items</h2>
+      <p>
+        <b><%=@unit.name%></b> currently contains <%=item_count%>. Before you can
+        delete it, you must select a new unit to move <%=content_pronoun%>
+        into.
+      </p>
+      <div class="mb-3">
+        <%= select_tag :target_unit_id, options_from_unit_for_select(@candidates, "id", "name"), class: "form-control p-0" %>
+      </div>
+    <% end %>
+
+    <div class="mb-3">
+      <%= f.submit 'Yes, I am sure', class: 'btn btn-danger', 'data-testid': "unit-delete-confirm-btn" %>
+      <%= link_to 'No, go back', admin_units_path, class: 'btn btn-outline' %>
+    </div>
+    <% end %>
+    <% else %>
+    <div class="alert alert-danger">
+      The unit "<%=@unit.name%>" cannot be deleted. It contains <%=item_count%>,
+      but you do not have sufficient rights to any other units to reassign <%=content_pronoun%>.
+    </div>
+    <%= link_to 'Go back', :back, class: 'btn btn-primary' %>
+    <% end %>
+  </div>
+</div>

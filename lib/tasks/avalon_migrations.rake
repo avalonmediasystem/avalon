@@ -127,5 +127,42 @@ namespace :avalon do
 
       puts("Backfill complete. #{count} records updated.")
     end
+    # TODO: Test
+    desc "Migrate existing units to new Admin::Unit model and associate them with the appropriate Admin::Collections"
+    task admin_units: :environment do
+      if ENV['unit_admin_username'].nil?
+        abort "You must specify a username. This user must be part of the Unit Administrator group. Example: rake avalon:migration:admin_units unit_admin_username=user@example.edu"
+      end
+
+      units = {}
+      units_cv = Avalon::ControlledVocabulary.find_by_name('units', sort: true)
+      units_cv.each do |unit|
+        existing_unit = Admin::Unit.where(name_ssi: unit).first
+        if existing_unit.present?
+          units[unit] = existing_unit.id
+          next
+        end
+
+        unit_model = Admin::Unit.new(name: unit, unit_admins: [ENV['unit_admin_username']])
+        unit_model.save!
+        units[unit] = unit_model.id
+        puts "Object successfully created for #{unit}: #{unit_model.id}"
+      rescue ActiveFedora::RecordInvalid => e
+        puts "Creation failed for #{unit}: #{e.message}"
+      end
+
+      Admin::Collection.all.each do |collection|
+        # Find unit name from RDF stored in Fedora
+        unit_name = collection.ldp_source.graph.query([nil,RDF::URI("http://bibframe.org/vocab/heldBy"),nil]).first&.object&.to_s
+        unless unit_name.present? && units[unit_name].present?
+          puts "Collection (#{collection.id}) skipped because unit (#{unit_name}) not found."
+          next
+        end
+
+        collection.unit_id = units[unit_name]
+        collection.save!
+        ReindexJob.perform_later(collection.media_object_ids)
+      end
+    end
   end
 end

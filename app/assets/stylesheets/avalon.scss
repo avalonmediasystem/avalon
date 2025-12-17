@@ -134,7 +134,8 @@ div.alert-danger {
 }
 
 // Force bootstrap grid to display poster buttons next to each other
-.row .edit_admin_collection {
+.row .edit_admin_collection,
+.row .edit_admin_unit {
   width: unset;
   max-width: 50%
 }
@@ -781,7 +782,14 @@ h5.card-title {
 
 .autocomplete_popup {
   z-index: 100;
-  width: 100%;
+
+  &#admin_collection\[unit_name\]-popup {
+    white-space: nowrap;
+  }
+
+  &:not(#admin_collection\[unit_name\]-popup) {
+    width: 100%;
+  }
 }
 
 #blacklight-modal {
@@ -1040,7 +1048,8 @@ h5.card-title {
   white-space: pre-wrap;
 }
 
-.admin-collection-details {
+.admin-collection-details,
+.admin-unit-details {
   border-radius: 4px;
   border: 1px solid #e3e3e3;
   background-color: #f5f5f5;

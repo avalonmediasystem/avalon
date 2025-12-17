@@ -1,0 +1,44 @@
+<%#
+Copyright 2011-2025, The Trustees of Indiana University and Northwestern
+  University.  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+
+You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+  under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+  CONDITIONS OF ANY KIND, either express or implied. See the License for the
+  specific language governing permissions and limitations under the License.
+---  END LICENSE_HEADER BLOCK  ---
+%>
+
+<% is_media_object = object.is_a?(SpeedyAF::Proxy::MediaObject) || object.is_a?(MediaObject) %>
+
+<tr>
+  <td class='access_list_label' data-testid="<%= 'collection-access-label-' + access_object %>">
+    <%= label_tag do %>
+    <% if defined?(display_helper) && display_helper.present? %>
+    <%= self.send(display_helper, member_object) %>
+    <% else %>
+    <%= member_object %>
+    <% end %>
+    <% end %>
+    <% if inherited && is_media_object %>
+      <div style="float: right;"><%= t('access_control.collection_inherited_role', collection_name: object.collection.name) %></div>
+    <% elsif inherited %>
+      <div style="float: right;"><%= t('access_control.unit_inherited_role', unit_name: object.unit.name) %></div>
+    <% end %>
+  </td>
+  <td class='access_list_dates'></td>
+  <% if !input_disabled && !inherited %>
+  <td class='access_list_remove'>
+    <%= link_to "",
+        polymorphic_path(object, "remove_#{access_object}".to_sym => member_object, step: @active_step, donot_advance: true),
+        method: "put",
+        class: "btn btn-sm btn-close remove" ,
+        data: { testid: "collection-access-remove-#{access_object}" } %>
+  </td>
+  <% end %>
+</tr>

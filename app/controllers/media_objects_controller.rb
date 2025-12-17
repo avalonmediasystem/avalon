@@ -301,13 +301,13 @@ class MediaObjectsController < ApplicationController
     end
 
     if 'access-control' == @active_step
-      @groups = @media_object.local_read_groups
+      @groups = { base: @media_object.local_read_groups, inherited: @media_object.inherited_read_groups }
       @group_leases = @media_object.leases('local')
-      @users = @media_object.read_users
+      @users = { base: @media_object.read_users, inherited: @media_object.inherited_read_users }
       @user_leases = @media_object.leases('user')
-      @virtual_groups = @media_object.virtual_read_groups
+      @virtual_groups = { base: @media_object.virtual_read_groups, inherited: @media_object.inherited_virtual_read_groups }
       @virtual_leases = @media_object.leases('external')
-      @ip_groups = @media_object.ip_read_groups
+      @ip_groups = { base: @media_object.ip_read_groups, inherited: @media_object.inherited_ip_read_groups }
       @ip_leases = @media_object.leases('ip')
       @visibility = @media_object.visibility
 

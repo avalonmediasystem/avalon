@@ -31,6 +31,10 @@ class SpeedyAF::Proxy::Admin::Collection < SpeedyAF::Base
     self
   end
 
+  def unit
+    @unit ||= SpeedyAF::Proxy::Admin::Unit.find(unit_id)
+  end
+
   def dropbox
     Avalon::Dropbox.new( dropbox_absolute_path, self )
   end

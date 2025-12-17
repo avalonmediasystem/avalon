@@ -57,9 +57,9 @@ Unless required by applicable law or agreed to in writing, software distributed
           Manage
         </button>
         <ul class="dropdown-menu manage-dropdown-menu bg-primary" aria-labelledby="manageDropdown">
-          <% if can? :read, Admin::Collection %>
-          <li class="nav-item <%= active_for_controller('admin/collections') %>">
-            <%= link_to 'Manage Content', main_app.admin_collections_path, class: 'nav-link' %></li>
+          <% if (can? :manage, Admin::Unit) || (can? :read, Admin::Collection) %>
+          <li class="nav-item <%= active_for_controller('admin/dashboard') %>">
+            <%= link_to 'Manage Content', main_app.admin_dashboard_path, class: 'nav-link' %></li>
           <% end %>
           <% if can? :read, :encode_dashboard %>
           <li class="nav-item <%= active_for_controller('encode_records') %>">

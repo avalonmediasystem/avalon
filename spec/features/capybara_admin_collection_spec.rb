@@ -15,29 +15,31 @@
 require 'rails_helper'
 
 describe 'Admin Collection' do
+  before do
+    @user = FactoryBot.create(:administrator)
+    @unit = FactoryBot.create(:unit)
+  end
   after { Warden.test_reset! }
   it 'checks navigation when create new collection is accessed' do
-    user = FactoryBot.create(:administrator)
-    login_as user, scope: :user
+    login_as @user, scope: :user
     visit '/'
     click_link('Manage Content')
-    expect(page).to have_current_path('/admin/collections')
+    expect(page).to have_current_path('/admin/dashboard')
     expect(page).to have_link('Create Collection')
     click_link('Create Collection')
     expect(page).to have_current_path('/admin/collections/new')
     expect(page).to have_content('Name')
     expect(page).to have_content('Description')
     expect(page).to have_content('Unit')
-    expect(page).to have_content('Default Unit')
+    expect(page).to_not have_content(@unit.name)
     expect(page).to have_link('Cancel')
   end
   it 'is able to create a new collection' do
-    user = FactoryBot.create(:administrator)
-    login_as user, scope: :user
+    login_as @user, scope: :user
     visit '/admin/collections/'
     click_link('Create Collection')
     fill_in('admin_collection_name', with: 'Test Collection')
-    select('Default Unit', from: 'admin_collection_unit')
+    fill_in('admin_collection[unit_name]', with: @unit.name)
     click_on('Create Collection')
     visit '/admin/collections'
     expect(page).to have_content('Test Collection')
@@ -48,12 +50,11 @@ describe 'Admin Collection' do
     expect(page).to have_link('Delete')
   end
   it 'is able to view collection by clicking on collection name' do
-    user = FactoryBot.create(:administrator)
-    login_as user, scope: :user
+    login_as @user, scope: :user
     visit '/admin/collections'
     click_link('Create Collection')
     fill_in('admin_collection_name', with: 'Test Collection')
-    select('Default Unit', from: 'admin_collection_unit')
+    fill_in('admin_collection[unit_name]', with: @unit.name)
     click_on('Create Collection')
     visit '/admin/collections'
     click_on('Test Collection')
@@ -61,15 +62,14 @@ describe 'Admin Collection' do
     expect(page).to have_link('Create An Item')
     expect(page).to have_link('List All Items')
     expect(page).to have_button('Edit Collection Info')
-    expect(page).to have_content('Default Unit')
+    expect(page).to have_content(@unit.name)
   end
   it 'is able to delete a collection' do
-    user = FactoryBot.create(:administrator)
-    login_as user, scope: :user
+    login_as @user, scope: :user
     visit '/admin/collections'
     click_link('Create Collection')
     fill_in('admin_collection_name', with: 'Test Collection')
-    select('Default Unit', from: 'admin_collection_unit')
+    fill_in('admin_collection[unit_name]', with: @unit.name)
     click_on('Create Collection')
     visit '/admin/collections'
     click_link('Delete')

@@ -15,6 +15,7 @@
 */
 
 function add_cropper_handler(upload_path) {
+  const model = upload_path.includes('unit') ? 'unit' : 'collection'
   const image = getById('image');
   const input = getById('poster_input');
   const modal = getById('modal');
@@ -70,7 +71,7 @@ function add_cropper_handler(upload_path) {
       canvas.toBlob(function (blob) {
         let formData = new FormData();
         input.value = "";
-        formData.append('admin_collection[poster]', blob, inputfile);
+        formData.append(`admin_${model}[poster]`, blob, inputfile);
         formData.append('authenticity_token', query('input[name=authenticity_token]').value);
 
         // Display uploading in-progress

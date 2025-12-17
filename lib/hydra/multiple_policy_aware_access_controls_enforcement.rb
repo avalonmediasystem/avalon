@@ -28,7 +28,8 @@ module Hydra::MultiplePolicyAwareAccessControlsEnforcement
   def policy_clauses
     policy_ids = policies_with_access
     return nil if policy_ids.empty?
-    '(' + policy_ids.map {|id| ActiveFedora::SolrQueryBuilder.construct_query_for_rel(isGovernedBy: id)}.join(' OR '.freeze) + ')'
+    # find objects with policies connected to the object or once removed (Units -> Collections -> MediaObjects)
+    '(' + policy_ids.map {|id| [ActiveFedora::SolrQueryBuilder.construct_query_for_rel(isGovernedBy: id), "_query_:\"{!join from=id to=isGovernedBy_ssim}{!raw f=isGovernedBy_ssim}#{id}\""].join(' OR '.freeze) }.join(' OR '.freeze) + ')'
   end
 
   # find all the policies that grant discover/read/edit permissions to this user or any of its groups
