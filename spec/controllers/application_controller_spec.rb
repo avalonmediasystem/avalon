@@ -82,11 +82,12 @@ describe ApplicationController do
     end
 
     context 'model mismatch' do
-      it 'renders model_mismatch template' do
+      it 'renders redirects to homepage' do
         allow(controller).to receive(:show).and_raise(ActiveFedora::ModelMismatch)
         expect { get :show, params: { id: 'abc1234' } }.to_not raise_error
-        expect(response.status).to be 422
-        expect(response).to render_template("errors/model_mismatch")
+        expect(response.status).to be 302
+        expect(response).to redirect_to(root_path)
+        expect(flash[:error]).to eq("Requested resource type does not match type of abc1234.")
       end
     end
 

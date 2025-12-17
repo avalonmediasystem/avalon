@@ -194,7 +194,8 @@ class ApplicationController < ActionController::Base
     if request.format == :json
       render json: { errors: ["Requested resource type does not match type of #{params[:id]}"] }, status: 422
     else
-      render '/errors/model_mismatch', status: 422
+      flash[:error] = "Requested resource type does not match type of #{params[:id]}."
+      redirect_to(root_path)
     end
   end
 
