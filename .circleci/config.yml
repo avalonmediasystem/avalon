@@ -1,6 +1,7 @@
 version: 2.1
 orbs:
   samvera: samvera/circleci-orb@1
+  ruby: circleci/ruby@2.6.0
 jobs:
   build:
     docker:
@@ -65,10 +66,15 @@ jobs:
 
       - run: cp config/controlled_vocabulary.yml.example config/controlled_vocabulary.yml
 
+      - ruby/install:
+          version: << parameters.ruby_ver >>
+
       - run:
           command: |
             unset BUNDLE_APP_CONFIG
-            bundle install --with aws development test postgres --without production --jobs=4 --retry=3
+            bundle config set --local with aws development test postgres
+            bundle config set --local without production
+            bundle install --jobs=4 --retry=3
             bundle exec rake db:migrate
 
       - restore_cache:
@@ -130,6 +136,6 @@ workflows:
   build_test_report:
     jobs:
       - build:
-          ruby_ver: '3.4'
-          name: 'Ruby3-4'
+          ruby_ver: '4.0'
+          name: 'Ruby4-0'
           parallelism: 4
