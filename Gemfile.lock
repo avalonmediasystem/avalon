@@ -360,10 +360,9 @@ GEM
       unicode-types (~> 1.8)
     edtf (3.2.0)
       activesupport (>= 3.0, < 9.0)
-    edtf-humanize (2.3.0)
+    edtf-humanize (1.0.0)
       activesupport (>= 4)
       edtf (>= 2.3, < 4)
-      roman (~> 0.2.0)
     email_spec (2.3.0)
       htmlentities (~> 4.3.3)
       launchy (>= 2.1, < 4.0)
@@ -390,7 +389,7 @@ GEM
       logger
     faraday-encoding (0.0.6)
       faraday
-    faraday-follow_redirects (0.3.0)
+    faraday-follow_redirects (0.5.0)
       faraday (>= 1, < 3)
     faraday-net_http (3.4.1)
       net-http (>= 0.5.0)
@@ -548,7 +547,8 @@ GEM
     mini_mime (1.1.5)
     mini_portile2 (2.8.9)
     minitar (1.0.2)
-    minitest (5.25.5)
+    minitest (6.0.1)
+      prism (~> 1.5)
     msgpack (1.8.0)
     multi_json (1.17.0)
     multi_xml (0.7.2)
@@ -622,7 +622,7 @@ GEM
     pretender (0.6.0)
       actionpack (>= 7.1)
     prettyprint (0.2.0)
-    prism (1.4.0)
+    prism (1.7.0)
     pry (0.15.2)
       coderay (~> 1.1)
       method_source (~> 1.0)
@@ -761,7 +761,6 @@ GEM
       netrc (~> 0.8)
     retriable (3.1.2)
     rexml (3.4.1)
-    roman (0.2.0)
     roo (2.10.1)
       nokogiri (~> 1)
       rubyzip (>= 1.3.0, < 3.0.0)
@@ -1100,4 +1099,4 @@ DEPENDENCIES
   zoom
 
 BUNDLED WITH
-   2.3.6
+  4.0.3
