@@ -15,6 +15,7 @@ gem 'puma', '>= 6.4.2'
 gem 'puma-status'
 gem 'resolv-replace'
 gem 'csv'
+gem 'net-imap', '>= 0.6.2'
 
 # Assets
 gem 'bootstrap', '~> 5.0'
