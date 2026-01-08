@@ -53,6 +53,7 @@ jobs:
 
     working_directory: /home/app/avalon
 
+    resource_class: large
     parallelism: << parameters.parallelism >>
 
     steps:
