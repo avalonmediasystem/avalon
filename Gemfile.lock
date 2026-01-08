@@ -326,7 +326,7 @@ GEM
       activerecord (>= 5.a)
       database_cleaner-core (~> 2.0.0)
     database_cleaner-core (2.0.1)
-    date (3.4.1)
+    date (3.5.1)
     declarative (0.0.20)
     deep_merge (1.2.2)
     deprecation (1.1.0)
@@ -558,7 +558,7 @@ GEM
     mysql2 (0.5.6)
     net-http (0.6.0)
       uri
-    net-imap (0.5.9)
+    net-imap (0.6.2)
       date
       net-protocol
     net-ldap (0.19.0)
@@ -1042,6 +1042,7 @@ DEPENDENCIES
   marc
   memory_profiler
   mysql2
+  net-imap (>= 0.6.2)
   net-ldap
   net-smtp
   noid-rails (~> 3.2)
