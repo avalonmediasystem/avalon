@@ -10,8 +10,8 @@
         "Codec": "H_264",
         "H264Settings": {
           "Bitrate": 1024000,
-          "CodecProfile": "MAIN",
-          "CodecLevel": "LEVEL_3_1"
+          "CodecProfile": "HIGH",
+          "CodecLevel": "AUTO"
         }
       }
     },
