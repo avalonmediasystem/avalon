@@ -165,7 +165,6 @@ group :aws, optional: true do
   gem 'aws-sdk-cloudfront'
   gem 'aws-sdk-cloudwatchevents'
   gem 'aws-sdk-cloudwatchlogs'
-  gem 'aws-sdk-elastictranscoder'
   gem 'aws-sdk-mediaconvert', ">= 1.157.0"
   gem 'aws-sdk-s3'
   gem 'aws-sdk-sqs'
