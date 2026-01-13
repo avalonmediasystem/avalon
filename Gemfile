@@ -30,8 +30,7 @@ gem 'terser'
 gem 'shakapacker'
 
 # Core Samvera
-# gem 'active-fedora', '~> 15.0'
-gem 'active-fedora', git: 'https://github.com/samvera/active_fedora.git', ref: '7f91e09e630f7e3c1eb3d355e5a016ae8af44778'
+gem 'active-fedora', '~> 16.0'
 gem 'active_fedora-datastreams', '~> 0.5'
 gem 'hydra-head', '~> 13.0'
 gem 'ldp', '~> 1.1.0'
@@ -73,8 +72,7 @@ gem 'omniauth-lti', git: "https://github.com/avalonmediasystem/omniauth-lti.git"
 gem "omniauth-saml", "~> 2.0", ">= 2.2.3"
 
 # Media Access & Transcoding
-#gem 'active_encode', '~> 1.3.0'
-gem 'active_encode', git: "https://github.com/samvera-labs/active_encode.git", branch: "mediaconvert_file"
+gem 'active_encode', '~> 2.0'
 gem 'audio_waveform-ruby', '~> 1.0.7', require: 'audio_waveform'
 gem 'browse-everything', git: "https://github.com/avalonmediasystem/browse-everything.git", tag: 'v1.5-Avalon'
 gem 'fastimage'

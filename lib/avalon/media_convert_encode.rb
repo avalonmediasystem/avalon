@@ -12,8 +12,6 @@
 #   specific language governing permissions and limitations under the License.
 # ---  END LICENSE_HEADER BLOCK  ---
 
-require 'avalon/elastic_transcoder'
-
 class MediaConvertEncode < WatchedEncode
   self.engine_adapter = :media_convert
   self.engine_adapter.role = Settings.encoding.media_convert_role

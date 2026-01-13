@@ -134,9 +134,22 @@ class FileLocator
     when 's3'
       S3File.new(uri).object.get.body
     when 'file'
-      File.open(location,'r')
+      File.open(location, 'r')
     else
       open_uri
+    end
+  end
+
+  def magic_bytes
+    # Magic bytes for relevant file types should max out at 16, so only request
+    # that range when checking mimetype.
+    case uri.scheme
+    when 's3'
+      S3File.new(uri).object.get(range: 'bytes=0-15').body
+    when 'file'
+      File.read(location, 16)
+    else
+      open_uri.read(16)
     end
   end
 

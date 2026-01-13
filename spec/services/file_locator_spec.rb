@@ -45,7 +45,7 @@ describe FileLocator, type: :service do
           allow(ENV).to receive(:[]).with('AWS_REGION').and_return('us-east-2')
           expect(subject.host).to eq 'mybucket.domain'
           expect(subject.path).to eq '/mykey.mp4'
-          expect(subject.query).to include('response-content-disposition=attachment%3B%20filename%3Dmykey.mp4', 'X-Amz-Algorithm', 
+          expect(subject.query).to include('response-content-disposition=attachment%3B%20filename%3Dmykey.mp4', 'X-Amz-Algorithm',
                                            'X-Amz-Credential', 'X-Amz-Expires', 'X-Amz-SignedHeaders', 'X-Amz-Signature')
         end
 
@@ -60,7 +60,7 @@ describe FileLocator, type: :service do
           allow(ENV).to receive(:[]).with('AWS_REGION').and_return('us-east-2')
           expect(subject.host).to eq 'mybucket.s3.us-stubbed-1.amazonaws.com'
           expect(subject.path).to eq '/mykey.mp4'
-          expect(subject.query).to include('response-content-disposition=attachment%3B%20filename%3Dmykey.mp4', 'X-Amz-Algorithm', 
+          expect(subject.query).to include('response-content-disposition=attachment%3B%20filename%3Dmykey.mp4', 'X-Amz-Algorithm',
                                            'X-Amz-Credential', 'X-Amz-Expires', 'X-Amz-SignedHeaders', 'X-Amz-Signature')
         end
       end
@@ -168,7 +168,7 @@ describe FileLocator, type: :service do
     describe '#remove_fs_dir' do
       let(:file_path) { "/tmp/dropbox/test/mykey.mp4" }
       let(:locator) { FileLocator.new(file_path) }
-  
+
       it 'deletes fs dir' do
         allow(File).to receive(:exist?).with(file_path) { true }
         expect(locator.exist?).to be_truthy
@@ -177,14 +177,14 @@ describe FileLocator, type: :service do
         expect(locator.exist?).to be_falsey
       end
     end
-  
+
     describe '#remove_s3_dir' do
       let(:old_bucket) { Settings.encoding.masterfile_bucket }
       let(:old_path) { Settings.dropbox.path }
 
       let(:dropbox_path) { "s3://#{test_bucket}/dropbox/test_collection" }
       let(:test_bucket) { "test_bucket" }
-      let(:dropbox_prefix) { "/dropbox/test_collection/"}
+      let(:dropbox_prefix) { "/dropbox/test_collection/" }
       let(:s3_res) { Aws::S3::Resource.new }
       let(:s3_bucket) { Aws::S3::Bucket.new(test_bucket) }
 
@@ -222,6 +222,60 @@ describe FileLocator, type: :service do
 
       after do
         Settings.encoding.masterfile_bucket = old_bucket
+      end
+    end
+  end
+
+  describe "#magic_bytes" do
+    let(:locator) { FileLocator.new(source) }
+    let(:source) { "file://#{Rails.root.join('spec', 'fixtures', 'videoshort.mp4')}" }
+
+    context "local file" do
+      it "returns the first 16 bytes" do
+        expect(locator.magic_bytes.length).to eq 16
+      end
+
+      it 'successfully returns correct mimetype' do
+        expect(Marcel::MimeType.for(locator.magic_bytes)).to eq 'video/mp4'
+      end
+    end
+
+    context "s3 file" do
+      let(:client) { Aws::S3::Client.new(stub_responses: true) }
+      let(:bucket) { "mybucket" }
+      let(:key) { "meow.wav" }
+      let(:source) { "s3://#{bucket}/#{key}" }
+      let(:object_body) { File.read(Rails.root.join('spec', 'fixtures', 'videoshort.mp4')) }
+
+      before do
+        client.stub_responses(:get_object, lambda { |context|
+          range = context.params[:range]
+          from, to = range.match(/bytes=(\d+)-(\d+)/)[1..2].map(&:to_i)
+          # Return the specific byte range of the content
+          { body: object_body[from..to], content_range: "bytes #{from}-#{to}/#{object_body.length}" }
+        })
+
+        allow(Aws::S3::Client).to receive(:new).and_return(client)
+      end
+
+      it "returns the first 16 bytes" do
+        expect(locator.magic_bytes.length).to eq 16
+      end
+
+      it 'successfully returns correct mimetype' do
+        expect(Marcel::MimeType.for(locator.magic_bytes)).to eq 'video/mp4'
+      end
+    end
+
+    context "other file" do
+      let(:file_path) { "bogus://#{source}" }
+      it "returns the first 16 bytes" do
+        allow(URI).to receive(:open).with(file_path).and_return(URI.open(Rails.root.join('spec', 'fixtures', 'videoshort.mp4').to_s))
+        expect(locator.magic_bytes.length).to eq 16
+      end
+
+      it 'successfully returns correct mimetype' do
+        expect(Marcel::MimeType.for(locator.magic_bytes)).to eq 'video/mp4'
       end
     end
   end
