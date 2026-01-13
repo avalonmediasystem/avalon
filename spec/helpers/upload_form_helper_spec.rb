@@ -23,7 +23,7 @@ describe UploadFormHelper, type: :helper do
 
     context 'with media convert' do
       let(:transcoder) { :media_convert }
-      it 'returns true if using Elastic Transcoder' do
+      it 'returns true if using MediaConvert' do
         expect(helper.direct_upload?).to be true
       end
     end
