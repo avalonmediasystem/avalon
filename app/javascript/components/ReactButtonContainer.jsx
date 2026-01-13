@@ -89,7 +89,11 @@ class ReactButtonContainer extends Component {
             <Modal.Title>Edit Structure</Modal.Title>
           </Modal.Header>
           <Modal.Body>
-            <ReactSME {...this.state.smeProps} structureIsSaved={this.getStructureStatus} />
+            <ReactSME
+              {...this.state.smeProps}
+              structureIsSaved={this.getStructureStatus}
+              /* Enable text editor for JSON structure */
+              showTextEditor={true} />
           </Modal.Body>
         </Modal>
       </div>
