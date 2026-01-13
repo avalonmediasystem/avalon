@@ -21,8 +21,8 @@ describe UploadFormHelper, type: :helper do
       allow(Settings.encoding).to receive(:engine_adapter).and_return(transcoder)
     end
 
-    context 'with elastic transcoder' do
-      let(:transcoder) { :elastic_transcoder }
+    context 'with media convert' do
+      let(:transcoder) { :media_convert }
       it 'returns true if using Elastic Transcoder' do
         expect(helper.direct_upload?).to be true
       end
