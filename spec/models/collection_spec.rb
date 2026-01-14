@@ -215,7 +215,6 @@ describe Admin::Collection do
     it { is_expected.not_to allow_value('collection@').for(:contact_email) }
     it { is_expected.to allow_value('https://collection.example.com').for(:website_url) }
     it { is_expected.not_to allow_value('collection.example.com').for(:website_url) }
-    it "should ensure length of :managers is_at_least(1)"
 
     it "should have attributes" do
       expect(subject.name).to eq("Herman B. Wells Collection")
