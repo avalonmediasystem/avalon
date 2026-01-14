@@ -154,13 +154,17 @@ namespace :avalon do
       Admin::Collection.all.each do |collection|
         # Find unit name from RDF stored in Fedora
         unit_name = collection.ldp_source.graph.query([nil,RDF::URI("http://bibframe.org/vocab/heldBy"),nil]).first&.object&.to_s
+        if unit_name.start_with? ActiveFedora.fedora_config.credentials[:url]
+          puts "Collection (#{collection.id}) skipped because it has already been migrated."
+          next
+        end
         unless unit_name.present? && units[unit_name].present?
           puts "Collection (#{collection.id}) skipped because unit (#{unit_name}) not found."
           next
         end
 
         collection.unit_id = units[unit_name]
-        collection.save!
+        collection.save!(validate: false)
         ReindexJob.perform_later(collection.media_object_ids)
       end
     end
