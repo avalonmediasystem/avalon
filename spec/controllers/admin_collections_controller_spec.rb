@@ -369,11 +369,11 @@ describe Admin::CollectionsController, type: :controller do
       expect(new_collection.unit_id). to eq collection.unit.id
       expect(new_collection.governing_policy_id).to eq collection.unit.id
     end
-    it "should create a new collection with default manager list containing current API user" do
+    it "should create a new collection with manager list empty" do
       post 'create', params: { format: 'json', admin_collection: { name: collection.name, description: collection.description, unit_id: collection.unit.id } }
       expect(JSON.parse(response.body)['id'].class).to eq String
       collection = Admin::Collection.find(JSON.parse(response.body)['id'])
-      expect(collection.managers).to eq([administrator.username])
+      expect(collection.managers).to eq([])
     end
     it "should return 422 if collection creation failed" do
       post 'create', params: { format:'json', admin_collection: { name: collection.name, description: collection.description } }
