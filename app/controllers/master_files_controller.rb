@@ -266,8 +266,7 @@ class MasterFilesController < ApplicationController
   end
 
   def set_structure
-    # Bypass authorization check for now
-    # authorize! :edit, @master_file, message: "You do not have sufficient privileges"
+    authorize! :edit, @master_file, message: "You do not have sufficient privileges"
     @master_file.structuralMetadata.content = StructuralMetadata.from_json(params[:json])
     @master_file.save
   end
@@ -346,7 +345,11 @@ class MasterFilesController < ApplicationController
   end
 
   def search
+    authorize! :read, @master_file, message: "You do not have sufficient privileges"
     render json: search_response_json
+  # Supercede the application level handling to avoid rendering restricted_pid template
+  rescue CanCan::AccessDenied
+    head :unauthorized
   end
 
 protected

@@ -99,24 +99,34 @@ Unless required by applicable law or agreed to in writing, software distributed
 
 <% content_for :page_scripts do %>
 <script>
-  $('.select-groups').change(function () {
-    $('input[id^=user_ids_]').prop('checked', $(this).is(':checked')).trigger('change');
-  })
+  query('.select-groups').addEventListener('change', function () {
+    const isChecked = this.checked;
+    queryAll('input[id^=user_ids_]').forEach(function(checkbox) {
+      checkbox.checked = isChecked;
+      checkbox.dispatchEvent(new Event('change'));
+    });
+  });
 
-  $('input[id^=user_ids_]').change(function () {
-    if ($(this).is(':checked')) {
-      enableButtons();
-    } else if ($(':checked').length == 0) {
-      disableButtons();
-    }
-  })
+  queryAll('input[id^=user_ids_]').forEach(function(checkbox) {
+    checkbox.addEventListener('change', function () {
+      if (this.checked) {
+        enableButtons();
+      } else if (queryAll('input[id^=user_ids_]:checked').length === 0) {
+        disableButtons();
+      }
+    });
+  });
 
   function enableButtons() {
-    $('.delete').removeAttr('disabled');
+    queryAll('.delete').forEach(function(button) {
+      button.removeAttribute('disabled');
+    });
   }
 
   function disableButtons() {
-    $('.delete').attr('disabled', 'disabled');
+    queryAll('.delete').forEach(function(button) {
+      button.setAttribute('disabled', 'disabled');
+    });
   }
 </script>
 <% end %>

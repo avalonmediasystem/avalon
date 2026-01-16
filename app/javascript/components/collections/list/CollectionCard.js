@@ -14,7 +14,6 @@
  * ---  END LICENSE_HEADER BLOCK  ---
 */
 
-import React from 'react';
 import '../Collection.scss';
 import PropTypes from 'prop-types';
 import CollectionCardShell from '../CollectionCardShell';

@@ -14,7 +14,6 @@
  * ---  END LICENSE_HEADER BLOCK  ---
 */
 
-import React from 'react';
 import FacetPanel from './FacetPanel';
 import '../Collection.scss';
 

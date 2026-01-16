@@ -26,7 +26,7 @@ Unless required by applicable law or agreed to in writing, software distributed
 <% content_for :page_scripts do %>
   <script>
     document.addEventListener('DOMContentLoaded', function() {
-      const tagSelect = new TomSelect('#tag-select', {
+      const tagSelect = new TomSelect(getById('tag-select'), {
         plugins: ['remove_button'],
         closeAfterSelect: true,
         create: true,
@@ -57,6 +57,14 @@ Unless required by applicable law or agreed to in writing, software distributed
           document.getElementById('taglist').value = JSON.stringify(values);
         }
       });
+
+      /*
+        Initialize hidden input with current tag values as a JSON array to be used
+        for form submission, if the user doesn't interact with tag selection element.
+      */
+      const initialTags = tagSelect.getValue();
+      const tagsArray = Array.isArray(initialTags) ? initialTags : [initialTags];
+      document.getElementById('taglist').value = JSON.stringify(tagsArray);
     });
   </script>
 <% end %>

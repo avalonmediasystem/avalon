@@ -1,0 +1,143 @@
+<%#
+Copyright 2011-2025, The Trustees of Indiana University and Northwestern
+  University.  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+
+You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+  under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+  CONDITIONS OF ANY KIND, either express or implied. See the License for the
+  specific language governing permissions and limitations under the License.
+---  END LICENSE_HEADER BLOCK  ---
+%>
+<% @page_title = t('units.show.title', :unit_name => @unit.name, :application_name => application_name) %>
+
+<div class="page-title-wrapper">
+  <h1 class="page-title">Manage Units</h1>
+</div>
+<div class="modal fade" id="modal" data-bs-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="modalLabel"
+  aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title" id="modalLabel">Crop the image</h1>
+      </div>
+      <div class="modal-body">
+        <div class="img-container">
+          <img id="image" src="" style="max-width: 100%;">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline" data-bs-dismiss="modal" id="crop-cancel">Cancel</button>
+        <button type="button" class="btn btn-primary" id="crop" data-testid="unit-upload-poster">Upload</button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="admin-unit-details mb-2" data-testid="unit-unit-details">
+  <h2><%= @unit.name %></h2>
+  <div class="row">
+    <div class="col-md-9">
+      <p><strong>Description:</strong></p>
+      <p id="unitDescription", class="unit-description", data-testid="unit-description"><%= @unit.description %></p>
+      <% if @unit.contact_email.present? %>
+        <p><strong>Contact email:</strong></p>
+        <p data-testid="unit-contact-email"><%= mail_to(@unit.contact_email) %></p>
+      <% end %>
+      <% if @unit.website_url.present? %>
+        <p><strong>Website:</strong></p>
+        <p><%= link_to(@unit.website_label.presence || @unit.website_url, @unit.website_url)%></p>
+      <% end %>
+    </div>
+    <div class="col-md-3">
+      <p><strong>Poster:</strong></p>
+      <p id="poster_original_name"><%= @unit.poster.original_name if @unit.poster.present? %></p>
+      <div class="well-vertical-spacer">
+        <% if @unit.poster.present? %>
+        <%= image_tag(poster_admin_unit_path(@unit), class: 'img-fluid', id: 'poster-image') %>
+        <% else %>
+        <img src="" class="img-fluid" id="poster-image">
+        <% end %>
+      </div>
+      <div class="row">
+        <%= form_for @unit, url: attach_poster_admin_unit_path(@unit.id), html: {method: "post"} do |form| %>
+          <%= form.file_field :poster, id: 'poster_input', class: "filedata", style: "height:0px;width:0px;", 'data-testid': "unit-poster-input" %>
+          <input type="button" class="btn btn-primary btn-sm me-2" onclick="$('.filedata').click();" value="<% if @unit.poster.present? %>Change Poster<%else%>Upload Poster<%end%>"
+            <% if cannot?(:edit, @unit) %>disabled<%end%> />
+        <% end %>
+        <%= form_for @unit, url: remove_poster_admin_unit_path(@unit.id), html: {method: "delete"} do |form| %>
+          <input type="submit" class="btn btn-danger btn-sm" value="Remove Poster" <% if @unit.poster.blank? || cannot?(:edit, @unit) %>disabled<%end%> />
+        <% end %>
+      </div>
+      <div class="well-vertical-spacer">
+        <div id='cropper-alert' class="alert" role="alert" style="display: none; padding: 5px; margin-top: 5px"></div>
+        <div id="cropper-progress" class="progress" style="display: none; margin-top: 7px;">
+          <div id="cropper-progress-bar" class="progress-bar progress-bar-striped progress-bar-animated"
+            role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">0%</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="well-vertical-spacer">
+    <%= link_to('Create A Collection', new_admin_collection_path(unit_id: @unit.id), class: 'btn btn-primary', data: { testid: 'unit-create-item-btn' }) if can? :create, Admin::Collection %>
+    <%= link_to('List All Collections', collections_path(filter: @unit.name), class: 'btn btn-outline') %>
+    <%= button_tag('Edit Unit Info', class: 'btn btn-outline', data: {"bs-toggle": "modal", "bs-target": "#new_unit", testid:"unit-edit-unit-info"}) if can? :update, @unit %>
+  </div>
+</div><!-- /well -->
+
+<div class="card">
+  <div class="card-header">
+    <h3 class="card-title">Assign Staff Roles</h3>
+  </div>
+  <div class="card-body">
+    <div class='staff-roles-section'>
+      <%= render "modules/access_object",
+            access_object: "unit_admin",
+            members: @unit.unit_admins,
+            autocomplete_model: 'user',
+            object: @unit,
+            input_disabled: cannot?(:update_unit_admins, @unit) %>
+      <%= render "modules/access_object",
+            access_object: "manager",
+            members: @unit.managers,
+            autocomplete_model: 'user',
+            object: @unit,
+            input_disabled: cannot?( :update_managers, @unit ) %>
+      <%= render "modules/access_object",
+            access_object: "editor",
+            members: @unit.editors,
+            autocomplete_model: 'user',
+            object: @unit,
+            input_disabled: cannot?( :update_editors, @unit ) %>
+      <%= render "modules/access_object",
+            access_object: "depositor",
+            members: @unit.depositors,
+            autocomplete_model: 'user',
+            object: @unit,
+            input_disabled: cannot?( :update_depositors, @unit ) %>
+    </div>
+  </div>
+</div>
+
+<div class="content-block" style="padding-top: 2rem;">
+  <h3 style="padding-top: 3rem;">Set Default Access Control for New Items</h3>
+  <%= render "discovery_visibility_form", { object: @unit,
+                                            visibility: @unit.default_visibility,
+                                            hidden: @unit.default_hidden } %>
+
+  <%= render "modules/special_access", { object: @unit } %>
+
+</div>
+
+<%= render "form", modal_title: "Edit Unit Information" %>
+
+<% content_for :page_scripts do %>
+<script>
+  window.addEventListener('DOMContentLoaded', function () {
+    add_cropper_handler('<%= attach_poster_admin_unit_path(@unit.id) %>');
+  });
+</script>
+<% end %>

@@ -18,10 +18,12 @@ let canvasIndex = -1;
 let currentSectionLabel = undefined;
 let addToPlaylistListenersAdded = false;
 let firstLoad = true;
+let reloadAdded = false;
 let streamId = '';
 let isMobile = false;
 let isPlaying = false;
 let reloadInterval = false;
+let seeking = false;
 let currentTime;
 
 /**
@@ -629,7 +631,7 @@ function handleCreateTimelineModalShow() {
  */
 function initM3U8Reload(player) {
   if (player && player.player != undefined) {
-    if (firstLoad === true) {
+    if (reloadAdded === false) {
       player.player.on('pause', () => {
         currentTime = player.player.currentTime();
         // How long to wait before resetting stream tokens: default 5 minutes
@@ -644,9 +646,19 @@ function initM3U8Reload(player) {
         }
       });
 
-      player.player.on('waiting', () => {
-        m3u8Reload();
+      player.player.on('seeking', () => {
+        seeking = true
       });
+
+      player.player.on('waiting', () => {
+        if (seeking === true) {
+          seeking = false;
+        } else {
+          m3u8Reload();
+        }
+      });
+
+      reloadAdded = true;
     }
   }
 }

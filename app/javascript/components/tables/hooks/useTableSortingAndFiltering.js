@@ -14,7 +14,7 @@
  * ---  END LICENSE_HEADER BLOCK  ---
 */
 
-import React, { useState } from 'react';
+import { useState } from 'react';
 
 /**
  * Custom hook for managing table sorting and filtering functionalities

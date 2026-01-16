@@ -14,14 +14,22 @@
 
 FactoryBot.define do
   factory :user do
-    email { Faker::Internet.email }
-    username { [Faker::Name.last_name.gsub("'",""),Faker::Name.first_name.gsub("'","")].join('.').downcase }
+    email { Faker::Internet.unique.email }
+    username { Faker::Internet.unique.username }
     password { 'testing123' }
 
     factory :administrator, aliases: [:admin] do
       after(:create) do |user|
         begin
           Avalon::RoleControls.add_user_role(user.user_key, 'administrator')
+        rescue
+        end
+      end
+    end
+    factory :unit_administrator, aliases: [:unit_admin] do
+      after(:create) do |user|
+        begin
+          Avalon::RoleControls.add_user_role(user.user_key, 'unit_administrator')
         rescue
         end
       end

@@ -16,114 +16,171 @@ require 'rails_helper'
 require 'cancan/matchers'
 
 describe Admin::Collection do
-  subject {collection}
-  let(:collection) {FactoryBot.create(:collection)}
+  subject { collection }
+  let(:collection) { FactoryBot.create(:collection) }
 
   describe 'abilities' do
 
     context 'when administrator' do
-      subject{ ability }
-      let(:ability){ Ability.new(user) }
-      let(:user){ FactoryBot.create(:administrator) }
+      let(:ability) { Ability.new(user) }
+      let(:user) { FactoryBot.create(:administrator) }
 
-      it{ is_expected.to be_able_to(:manage, collection) }
+      it "can manage the collection" do
+        expect(ability).to be_able_to(:manage, collection)
+      end
     end
 
     context 'when manager' do
-      subject{ ability}
-      let(:ability){ Ability.new(user) }
-      let(:user){ User.where(Devise.authentication_keys.first => collection.managers.first).first }
+      let(:ability) { Ability.new(user) }
+      let(:user) { User.where(Devise.authentication_keys.first => collection.managers.first).first }
 
-      it{ is_expected.to be_able_to(:create, Admin::Collection) }
-      it{ is_expected.to be_able_to(:read, Admin::Collection) }
-      it{ is_expected.to be_able_to(:update, collection) }
-      it{ is_expected.to be_able_to(:read, collection) }
-      it{ is_expected.to be_able_to(:update_unit, collection) }
-      it{ is_expected.to be_able_to(:update_managers, collection) }
-      it{ is_expected.to be_able_to(:update_editors, collection) }
-      it{ is_expected.to be_able_to(:update_depositors, collection) }
-      it{ is_expected.to be_able_to(:destroy, collection) }
-      it{ is_expected.to be_able_to(:update_access_control, collection) }
+      it "can perform all actions on an existing collection but cannot create collections" do
+        expect(ability).not_to be_able_to(:create, Admin::Collection)
+        expect(ability).to be_able_to(:read, Admin::Collection)
+        expect(ability).to be_able_to(:read, collection)
+        expect(ability).to be_able_to(:update, collection)
+        expect(ability).to be_able_to(:update_unit, collection)
+        expect(ability).to be_able_to(:update_managers, collection)
+        expect(ability).to be_able_to(:update_editors, collection)
+        expect(ability).to be_able_to(:update_depositors, collection)
+        expect(ability).to be_able_to(:update_access_control, collection)
+        expect(ability).to be_able_to(:destroy, collection)
+      end
+
+      context 'inherited from unit' do
+        let(:user) { User.where(Devise.authentication_keys.first => collection.inherited_managers.first).first }
+
+        it "can perform all actions on collection" do
+          expect(ability).to be_able_to(:create, Admin::Collection)
+          expect(ability).to be_able_to(:read, Admin::Collection)
+          expect(ability).to be_able_to(:read, collection)
+          expect(ability).to be_able_to(:update, collection)
+          expect(ability).to be_able_to(:update_unit, collection)
+          expect(ability).to be_able_to(:update_managers, collection)
+          expect(ability).to be_able_to(:update_editors, collection)
+          expect(ability).to be_able_to(:update_depositors, collection)
+          expect(ability).to be_able_to(:update_access_control, collection)
+          expect(ability).to be_able_to(:destroy, collection)
+        end
+      end
     end
 
     context 'when editor' do
-      subject{ ability}
-      let(:ability){ Ability.new(user) }
-      let(:user){ User.where(Devise.authentication_keys.first => collection.editors.first).first }
+      let(:ability) { Ability.new(user) }
+      let(:user) { User.where(Devise.authentication_keys.first => collection.editors.first).first }
 
-      #Will need to define new action that covers just the things that an editor is allowed to edit
-      it{ is_expected.to be_able_to(:read, Admin::Collection) }
-      it{ is_expected.to be_able_to(:read, collection) }
-      it{ is_expected.to be_able_to(:update, collection) }
-      it{ is_expected.not_to be_able_to(:update_unit, collection) }
-      it{ is_expected.not_to be_able_to(:update_managers, collection) }
-      it{ is_expected.not_to be_able_to(:update_editors, collection) }
-      it{ is_expected.to be_able_to(:update_depositors, collection) }
-      it{ is_expected.not_to be_able_to(:create, Admin::Collection) }
-      it{ is_expected.not_to be_able_to(:destroy, collection) }
-      it{ is_expected.not_to be_able_to(:update_access_control, collection) }
+      it "can perform limited actions on collection" do
+        expect(ability).not_to be_able_to(:create, Admin::Collection)
+        expect(ability).to be_able_to(:read, Admin::Collection)
+        expect(ability).to be_able_to(:read, collection)
+        expect(ability).to be_able_to(:update, collection)
+        expect(ability).not_to be_able_to(:update_unit, collection)
+        expect(ability).not_to be_able_to(:update_managers, collection)
+        expect(ability).not_to be_able_to(:update_editors, collection)
+        expect(ability).to be_able_to(:update_depositors, collection)
+        expect(ability).not_to be_able_to(:update_access_control, collection)
+        expect(ability).not_to be_able_to(:destroy, collection)
+      end
+
+      context 'inherited from unit' do
+        let(:user) { User.where(Devise.authentication_keys.first => collection.inherited_editors.first).first }
+
+        it "can perform limited actions on collection" do
+          expect(ability).not_to be_able_to(:create, Admin::Collection)
+          expect(ability).to be_able_to(:read, Admin::Collection)
+          expect(ability).to be_able_to(:read, collection)
+          expect(ability).to be_able_to(:update, collection)
+          expect(ability).not_to be_able_to(:update_unit, collection)
+          expect(ability).not_to be_able_to(:update_managers, collection)
+          expect(ability).not_to be_able_to(:update_editors, collection)
+          expect(ability).to be_able_to(:update_depositors, collection)
+          expect(ability).not_to be_able_to(:update_access_control, collection)
+          expect(ability).not_to be_able_to(:destroy, collection)
+        end
+      end
     end
 
     context 'when depositor' do
-      subject{ ability}
-      let(:ability){ Ability.new(user) }
-      let(:user){ User.where(Devise.authentication_keys.first => collection.depositors.first).first }
+      let(:ability) { Ability.new(user) }
+      let(:user) { User.where(Devise.authentication_keys.first => collection.depositors.first).first }
 
-      it{ is_expected.to be_able_to(:read, Admin::Collection) }
-      it{ is_expected.to be_able_to(:read, collection) }
-      it{ is_expected.not_to be_able_to(:update_unit, collection) }
-      it{ is_expected.not_to be_able_to(:update_managers, collection) }
-      it{ is_expected.not_to be_able_to(:update_editors, collection) }
-      it{ is_expected.not_to be_able_to(:update_depositors, collection) }
-      it{ is_expected.not_to be_able_to(:create, collection) }
-      it{ is_expected.not_to be_able_to(:update, collection) }
-      it{ is_expected.not_to be_able_to(:destroy, collection) }
-      it{ is_expected.not_to be_able_to(:update_access_control, collection) }
+      it "can perform read actions on collection" do
+        expect(ability).not_to be_able_to(:create, Admin::Collection)
+        expect(ability).to be_able_to(:read, Admin::Collection)
+        expect(ability).to be_able_to(:read, collection)
+        expect(ability).not_to be_able_to(:update, collection)
+        expect(ability).not_to be_able_to(:update_unit, collection)
+        expect(ability).not_to be_able_to(:update_managers, collection)
+        expect(ability).not_to be_able_to(:update_editors, collection)
+        expect(ability).not_to be_able_to(:update_depositors, collection)
+        expect(ability).not_to be_able_to(:update_access_control, collection)
+        expect(ability).not_to be_able_to(:destroy, collection)
+      end
+
+      context 'inherited from unit' do
+        let(:user) { User.where(Devise.authentication_keys.first => collection.inherited_depositors.first).first }
+
+        it "can perform read actions on collection" do
+          expect(ability).not_to be_able_to(:create, Admin::Collection)
+          expect(ability).to be_able_to(:read, Admin::Collection)
+          expect(ability).to be_able_to(:read, collection)
+          expect(ability).not_to be_able_to(:update, collection)
+          expect(ability).not_to be_able_to(:update_unit, collection)
+          expect(ability).not_to be_able_to(:update_managers, collection)
+          expect(ability).not_to be_able_to(:update_editors, collection)
+          expect(ability).not_to be_able_to(:update_depositors, collection)
+          expect(ability).not_to be_able_to(:update_access_control, collection)
+          expect(ability).not_to be_able_to(:destroy, collection)
+        end
+      end
     end
 
     context 'when end user' do
-      subject{ ability}
-      let(:ability){ Ability.new(user) }
-      let(:user){ FactoryBot.create(:user) }
+      let(:ability) { Ability.new(user) }
+      let(:user) { FactoryBot.create(:user) }
 
-      it{ is_expected.not_to be_able_to(:read, Admin::Collection) }
-      it{ is_expected.not_to be_able_to(:read, collection) }
-      it{ is_expected.not_to be_able_to(:update_unit, collection) }
-      it{ is_expected.not_to be_able_to(:update_managers, collection) }
-      it{ is_expected.not_to be_able_to(:update_editors, collection) }
-      it{ is_expected.not_to be_able_to(:update_depositors, collection) }
-      it{ is_expected.not_to be_able_to(:create, collection) }
-      it{ is_expected.not_to be_able_to(:update, collection) }
-      it{ is_expected.not_to be_able_to(:destroy, collection) }
-      it{ is_expected.not_to be_able_to(:update_access_control, collection) }
+      it "cannot perform actions on collection" do
+        expect(ability).not_to be_able_to(:create, Admin::Collection)
+        expect(ability).not_to be_able_to(:read, Admin::Collection)
+        expect(ability).not_to be_able_to(:read, collection)
+        expect(ability).not_to be_able_to(:update, collection)
+        expect(ability).not_to be_able_to(:update_unit, collection)
+        expect(ability).not_to be_able_to(:update_managers, collection)
+        expect(ability).not_to be_able_to(:update_editors, collection)
+        expect(ability).not_to be_able_to(:update_depositors, collection)
+        expect(ability).not_to be_able_to(:update_access_control, collection)
+        expect(ability).not_to be_able_to(:destroy, collection)
+      end
     end
 
     context 'when lti user' do
-      subject { ability }
       let(:ability){ Ability.new(user) }
       let(:user){ FactoryBot.create(:user_lti) }
 
-      it{ is_expected.not_to be_able_to(:read, Admin::Collection) }
-      it{ is_expected.not_to be_able_to(:read, collection) }
-      it{ is_expected.not_to be_able_to(:update_unit, collection) }
-      it{ is_expected.not_to be_able_to(:update_managers, collection) }
-      it{ is_expected.not_to be_able_to(:update_editors, collection) }
-      it{ is_expected.not_to be_able_to(:update_depositors, collection) }
-      it{ is_expected.not_to be_able_to(:create, collection) }
-      it{ is_expected.not_to be_able_to(:update, collection) }
-      it{ is_expected.not_to be_able_to(:destroy, collection) }
-      it{ is_expected.not_to be_able_to(:update_access_control, collection) }
+      it "cannot perform actions on collection" do
+        expect(ability).not_to be_able_to(:create, Admin::Collection)
+        expect(ability).not_to be_able_to(:read, Admin::Collection)
+        expect(ability).not_to be_able_to(:read, collection)
+        expect(ability).not_to be_able_to(:update, collection)
+        expect(ability).not_to be_able_to(:update_unit, collection)
+        expect(ability).not_to be_able_to(:update_managers, collection)
+        expect(ability).not_to be_able_to(:update_editors, collection)
+        expect(ability).not_to be_able_to(:update_depositors, collection)
+        expect(ability).not_to be_able_to(:update_access_control, collection)
+        expect(ability).not_to be_able_to(:destroy, collection)
+      end
     end
   end
 
   describe 'validations' do
     subject {wells_collection}
     let(:wells_collection) do
-      FactoryBot.create(:collection, name: 'Herman B. Wells Collection', unit: "Default Unit",
+      FactoryBot.create(:collection, name: 'Herman B. Wells Collection', unit: unit,
                         description: "Collection about our 11th university president, 1938-1962",
                         managers: [manager.user_key], editors: [editor.user_key], depositors: [depositor.user_key],
                         contact_email: contact_email, website_url: website_url, website_label: website_label)
     end
+    let(:unit) { FactoryBot.create(:unit) }
     let(:manager) {FactoryBot.create(:manager)}
     let(:editor) {FactoryBot.create(:user)}
     let(:depositor) {FactoryBot.create(:user)}
@@ -153,8 +210,7 @@ describe Admin::Collection do
       FactoryBot.create(:collection, name: "This little piggy went to market")
       expect { FactoryBot.create(:collection, name: "This little piggy") }.not_to raise_error
     end
-    it {is_expected.to validate_presence_of(:unit)}
-    it {is_expected.to validate_inclusion_of(:unit).in_array(Admin::Collection.units)}
+    it { is_expected.to validate_presence_of(:unit) }
     it { is_expected.to allow_value('collection@example.com').for(:contact_email) }
     it { is_expected.not_to allow_value('collection@').for(:contact_email) }
     it { is_expected.to allow_value('https://collection.example.com').for(:website_url) }
@@ -163,7 +219,7 @@ describe Admin::Collection do
 
     it "should have attributes" do
       expect(subject.name).to eq("Herman B. Wells Collection")
-      expect(subject.unit).to eq("Default Unit")
+      expect(subject.unit).to eq(unit)
       expect(subject.description).to eq("Collection about our 11th university president, 1938-1962")
       expect(subject.created_at).to eq(wells_collection.create_date)
       expect(subject.managers).to eq([manager.user_key])
@@ -178,14 +234,6 @@ describe Admin::Collection do
     end
   end
 
-  describe "Admin::Collection.units" do
-    it "should return an array of units" do
-      allow(Avalon::ControlledVocabulary).to receive(:find_by_name).with(:units, sort: true).and_return ["Black Film Center/Archive", "University Archives"]
-      expect(Admin::Collection.units).to be_an_instance_of Array
-      expect(Admin::Collection.units).to eq(["Black Film Center/Archive", "University Archives"])
-    end
-  end
-
   describe "#to_solr" do
     it "should solrize important information" do
      collection.name = "Herman B. Wells Collection"
@@ -196,21 +244,21 @@ describe Admin::Collection do
   end
 
   describe "managers" do
-    let!(:user) {FactoryBot.create(:manager)}
-    let!(:collection) {Admin::Collection.new}
+    let!(:user) { FactoryBot.create(:manager) }
+    let!(:collection) { Admin::Collection.new(unit: FactoryBot.create(:unit)) }
 
     describe "#managers" do
       it "should return the intersection of edit_users and collection_managers property" do
         collection.edit_users = [user.user_key, "pdinh"]
         collection.collection_managers = [user.user_key]
-        expect(collection.managers).to eq([user.user_key])
+        expect(collection.managers).to match_array([user.user_key])
       end
     end
     describe "#managers=" do
       it "should add managers to the collection" do
         manager_list = [FactoryBot.create(:manager).user_key, FactoryBot.create(:manager).user_key]
         collection.managers = manager_list
-        expect(collection.managers).to eq(manager_list)
+        expect(collection.managers).to match_array(manager_list)
       end
       it "should call add_manager" do
         manager_list = [FactoryBot.create(:manager).user_key, FactoryBot.create(:manager).user_key]
@@ -221,9 +269,9 @@ describe Admin::Collection do
       it "should remove managers from the collection" do
         manager_list = [FactoryBot.create(:manager).user_key, FactoryBot.create(:manager).user_key]
         collection.managers = manager_list
-        expect(collection.managers).to eq(manager_list)
+        expect(collection.managers).to match_array(manager_list)
         collection.managers -= [manager_list[1]]
-        expect(collection.managers).to eq([manager_list[0]])
+        expect(collection.managers).to match_array([manager_list[0]])
       end
       it "should call remove_manager" do
         collection.managers = [user.user_key]
@@ -233,7 +281,7 @@ describe Admin::Collection do
       it "should fail to remove only manager" do
         manager_list = [FactoryBot.create(:manager).user_key]
         collection.managers = manager_list
-        expect(collection.managers).to eq(manager_list)
+        expect(collection.managers).to match_array(manager_list)
         expect{collection.managers=[]}.to raise_error(ArgumentError)
       end
     end
@@ -281,7 +329,7 @@ describe Admin::Collection do
   end
   describe "editors" do
     let!(:user) {FactoryBot.create(:user)}
-    let!(:collection) {Admin::Collection.new}
+    let!(:collection) {Admin::Collection.new(unit: FactoryBot.create(:unit))}
 
     describe "#editors" do
       it "should not return managers" do
@@ -367,7 +415,7 @@ describe Admin::Collection do
 
   describe "depositors" do
     let!(:user) {FactoryBot.create(:user)}
-    let!(:collection) {Admin::Collection.new}
+    let!(:collection) {Admin::Collection.new(unit: FactoryBot.create(:unit))}
 
     describe "#depositors" do
       it "should return the read_users" do
@@ -424,11 +472,43 @@ describe Admin::Collection do
     end
   end
 
-  describe "#inherited_edit_users" do
-  end
-  describe "#inherited_edit_users=" do
+  describe "#inherited_managers" do
+    it "includes unit admins and unit managers" do
+      expect(collection.inherited_managers).to match_array(collection.unit.unit_admins_and_managers)
+    end
   end
 
+  describe "#inherited_editors" do
+    it "includes unit editors" do
+      expect(collection.inherited_editors).to match_array(collection.unit.editors)
+    end
+  end
+
+  describe "#inherited_depositors" do
+    it "includes unit depositors" do
+      expect(collection.inherited_depositors).to match_array(collection.unit.depositors)
+    end
+  end
+
+  describe "inherited read users and groups" do
+    let(:unit) { collection.unit }
+    before do
+      unit.default_read_users = ['test']
+      unit.default_read_groups = ['123.234.211.1', 'virtual', 'group_manager']
+      unit.save!
+    end
+
+    it "includes read users" do
+      expect(collection.inherited_read_users).to match_array(unit.default_read_users)
+    end
+
+    it "includes read groups" do
+      expect(collection.inherited_read_groups).to match_array(unit.default_read_groups)
+      expect(collection.inherited_ip_read_groups).to match_array(unit.default_ip_read_groups)
+      expect(collection.inherited_local_read_groups).to match_array(unit.default_local_read_groups)
+      expect(collection.inherited_virtual_read_groups).to match_array(unit.default_virtual_read_groups)
+    end
+  end
 
   describe "#reassign_media_objects" do
     before do
@@ -509,7 +589,8 @@ describe Admin::Collection do
 
   describe "callbacks" do
     describe "after_save reindex if name or unit has changed" do
-      let!(:collection) {FactoryBot.create(:collection)}
+      let!(:collection) { FactoryBot.create(:collection) }
+      let(:new_unit) { FactoryBot.create(:unit) }
       it 'should call reindex_members if name has changed' do
         collection.name = "New name"
         expect(collection).to be_name_changed
@@ -518,8 +599,7 @@ describe Admin::Collection do
       end
 
       it 'should call reindex_members if unit has changed' do
-        allow(Admin::Collection).to receive(:units).and_return ["Default Unit", "Some Other Unit"]
-        collection.unit = Admin::Collection.units.last
+        collection.unit = new_unit
         expect(collection).to be_unit_changed
         expect(collection).to receive("reindex_members").and_return(nil)
         collection.save
@@ -696,6 +776,13 @@ describe Admin::Collection do
           expect(collection2.cdl_enabled?).to be true
         end
       end
+    end
+  end
+
+  describe '#unit=' do
+    it 'sets governing_policy as well' do
+      new_unit = FactoryBot.create(:unit)
+      expect { collection.unit = new_unit }.to change { collection.governing_policy_id }.to(new_unit.id).and change { collection.unit_id }.to(new_unit.id)
     end
   end
 end

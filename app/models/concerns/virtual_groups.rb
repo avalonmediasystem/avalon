@@ -28,6 +28,18 @@
       def virtual_read_groups
         self.read_groups - represented_visibility - local_read_groups - ip_read_groups
       end
+
+      def inherited_local_read_groups
+        self.inherited_read_groups.select {|g| Admin::Group.exists? g}
+      end
+
+      def inherited_ip_read_groups
+        self.inherited_read_groups.select {|g| IPAddr.new(g) rescue false }
+      end
+
+      def inherited_virtual_read_groups
+        self.inherited_read_groups - represented_visibility - local_read_groups - ip_read_groups
+      end
     end
 #   end
 # end

@@ -80,7 +80,7 @@ module Avalon
       # Remove S3 credentials or other params from extension output
       extension = File.extname(media_file.location)&.gsub(/[\?#].*/, '')
       # Fall back on file extension if magic bytes fail to identify file
-      Marcel::MimeType.for media_file.reader, extension: extension
+      @content_type ||= Marcel::MimeType.for media_file.magic_bytes, extension: extension
     end
 
     def valid_content_type? media_file

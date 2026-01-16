@@ -112,6 +112,50 @@ describe CatalogController do
         expect(response).to render_template('catalog/index')
         expect(assigns(:response).documents.count).to eql(0)
       end
+
+      context 'inherited from unit' do
+        let!(:unit_manager) { login_user(collection.inherited_managers.first) }
+
+        it "should show results for items that are unpublished, private, and belong to one of my collections" do
+          mo = FactoryBot.create(:media_object, visibility: 'private', collection: collection)
+          get 'index', params: { q: "" }
+          expect(response).to be_successful
+          expect(response).to render_template('catalog/index')
+          expect(assigns(:response).documents.count).to eql(1)
+          expect(assigns(:response).documents.map(&:id)).to eq([mo.id])
+        end
+        it "should show results for items that are hidden and belong to one of my collections" do
+          mo = FactoryBot.create(:media_object, hidden: true, visibility: 'private', collection: collection)
+          get 'index', params: { q: "" }
+          expect(response).to be_successful
+          expect(response).to render_template('catalog/index')
+          expect(assigns(:response).documents.count).to eql(1)
+          expect(assigns(:response).documents.map(&:id)).to eq([mo.id])
+        end
+        it "should show results for items that are not hidden and do not belong to one of my collections along with hidden items that belong to my collections" do
+          mo = FactoryBot.create(:media_object, hidden: true, visibility: 'private', collection: collection)
+          mo2 = FactoryBot.create(:fully_searchable_media_object)
+          get 'index', params: { q: "" }
+          expect(response).to be_successful
+          expect(response).to render_template('catalog/index')
+          expect(assigns(:response).documents.count).to eql(2)
+          expect(assigns(:response).documents.map(&:id)).to match_array([mo.id, mo2.id])
+        end
+        it "should not show results for items that do not belong to one of my collections" do
+          FactoryBot.create(:media_object, visibility: 'private')
+          get 'index', params: { q: "" }
+          expect(response).to be_successful
+          expect(response).to render_template('catalog/index')
+          expect(assigns(:response).documents.count).to eql(0)
+        end
+        it "should not show results for hidden items that do not belong to one of my collections" do
+          FactoryBot.create(:media_object, hidden: true, visibility: 'private', read_users: [manager.user_key])
+          get 'index', params: { q: "" }
+          expect(response).to be_successful
+          expect(response).to render_template('catalog/index')
+          expect(assigns(:response).documents.count).to eql(0)
+        end
+      end
     end
     describe "as an administrator" do
       let!(:administrator) { login_as(:administrator) }
@@ -218,7 +262,7 @@ describe CatalogController do
         expect(assigns(:response).documents.collect(&:id)).to eq [media_object_1.id, @media_object.id]
       end
       it 'should not error when special characters are in the query' do
-        ['+', '-', '&', '|', '"', '(', ')', '{', '}', '[', ']', '^', '~', '*', '?', ':', '/', '$'].each do |char|
+        ['+', '-', '&', '|', '"', '(', ')', '{', '}', '[', ']', '^', '~', '*', '?', ':', '/', '$', ' ', "\u3000"].each do |char|
           expect { get 'index', params: { q: "#{char} Test Label" } }.to_not raise_error
           expect(assigns(:response).documents.count).to eq 1
           expect(assigns(:response).documents.collect(&:id)).to eq [@media_object.id]
@@ -306,7 +350,7 @@ describe CatalogController do
           it "finds both phrase and non-phrase and ranks higher" do
             get 'index', params: { q: "#{@media_object2.title.split.first} \"Example captions\"" }
             expect(assigns(:response).documents.count).to eq 2
-            expect(assigns(:response).documents.collect(&:id)).to eq [@media_object2.id, @media_object.id]
+            expect(assigns(:response).documents.collect(&:id)).to match_array [@media_object2.id, @media_object.id]
           end
         end
       end

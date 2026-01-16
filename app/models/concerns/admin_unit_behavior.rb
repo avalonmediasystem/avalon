@@ -12,21 +12,29 @@
 #   specific language governing permissions and limitations under the License.
 # ---  END LICENSE_HEADER BLOCK  ---
 
-# frozen_string_literal: true
+# This module contains methods which transform stored values for use either on Admin::Collection or the SpeedyAF presenter
+module AdminUnitBehavior
+  def unit_admins
+    edit_users & unit_administrators.to_a
+  end
 
-namespace :avalon do
-  namespace :aws do
-    task create_presets: :environment do
-      require 'aws-sdk-elastictranscoder'
+  def managers
+    edit_users & collection_managers.to_a
+  end
 
-      et = Avalon::ElasticTranscoder.instance
-      templates = et.read_templates(Rails.root.join(Settings.encoding.presets_path))
-      templates.each do |template|
-        unless et.find_preset_by_name(template[:name]).present?
-          resp = et.create_preset(template)
-          Rails.logger.info "#{template[:name]}: #{resp.preset.id}"
-        end
-      end
-    end
+  def unit_admins_and_managers
+    unit_admins + managers
+  end
+
+  def editors
+    edit_users - unit_admins - managers
+  end
+
+  def editors_managers_and_unit_admins
+    edit_users
+  end
+
+  def depositors
+    read_users
   end
 end

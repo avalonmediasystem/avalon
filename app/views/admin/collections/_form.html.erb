@@ -27,8 +27,18 @@ Unless required by applicable law or agreed to in writing, software distributed
       <%= bootstrap_form_for @collection, remote: true, html: { modal: true }, format: 'json' do |f| %>
       <div class="modal-body">
         <%= f.text_field :name, 'data-testid': 'collection-update-name' %>
-        <% if @collection.new_record? || can?(:update_unit, @collection)%>
-          <%= f.select(:unit, Admin::Collection.units, {}, {'data-testid': 'collection-update-unit'} ) %>
+        <% if @collection.new_record? || can?(:update_unit, @collection) %>
+          <div class='mb-3'>
+            <label class='form-label' for='admin_unit_typeahead'>Unit</label>
+            <%= render partial: 'modules/autocomplete_input', locals: { field_name: 'admin_collection[unit_name]',
+                                                                        field_id: 'admin_unit_typeahead',
+                                                                        value: @collection.unit&.name || '',
+                                                                        model: :"Admin::Unit",
+                                                                        data: { 
+                                                                                testid: 'collection-update-unit'
+                                                                              },
+                                                                        disabled: !can?(:update, @collection) } %>
+          <div>
         <% end %>
         <%= f.text_area :description, rows: 3 ,'data-testid':'collection-update-description' %>
         <%= f.text_field :contact_email, 'data-testid': 'collection-update-contact-email' %>
@@ -48,31 +58,38 @@ Unless required by applicable law or agreed to in writing, software distributed
 <% content_for :page_scripts do %>
 <script>
   function inject_alert(message) {
-    let alertElement = $('#alerts');
+    let alertElement = getById('alerts');
     // Remove alert with previous errors
     if(alertElement) {
       alertElement.remove();
     }
-    $('.page-title').closest('.page-title-wrapper').before(
+    const pageTitle = query('.page-title');
+    const pageTitleWrapper = pageTitle.closest('.page-title-wrapper');
+    pageTitleWrapper.insertAdjacentHTML('beforebegin',
       '<div class="container-fluid" id="alerts"><div class="alert alert-danger"><button type="button" class="btn-close" data-bs-dismiss="alert"></button>' +
       message + '</div></div>');
   }
 
   function resetButton(btnName) {
-    let $btn = $(btnName)
-    const disableWith = $btn[0].dataset['disableWith'];
-    $btn.val(disableWith);
+    let btn = query(btnName);
+    const disableWith = btn.dataset['disableWith'];
+    btn.value = disableWith;
   }
 
-  $('form[data-remote][modal]').on('ajax:success', function(event) {
-    const [data, status, xhr]= event.detail;
+  const remoteForm = query('form[data-remote][modal]');
+
+  remoteForm.addEventListener('ajax:success', function(event) {
+    const [data, status, xhr] = event.detail;
     resetButton('.btn-stateful-loading');
     window.location = '/admin/collections/' + encodeURIComponent(data['id']);
-  }).on('ajax:error',function(event) {
-    const [data, status, xhr]= event.detail;
-    const responseJSON = $.parseJSON(xhr.response);
+  });
+
+  remoteForm.addEventListener('ajax:error', function(event) {
+    const [data, status, xhr] = event.detail;
+    const responseJSON = JSON.parse(xhr.response);
     if (responseJSON.hasOwnProperty('errors')) {
-      $(this).closest('.modal').modal('hide')
+      const modal = this.closest('.modal');
+      toggleModal(modal, false);
       if(responseJSON['errors'].length > 2) {
         // When there are multiple errors
         let markup = responseJSON['errors'][0];

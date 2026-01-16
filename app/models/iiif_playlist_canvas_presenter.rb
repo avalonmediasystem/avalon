@@ -201,7 +201,8 @@ class IiifPlaylistCanvasPresenter
         height: (master_file.height || MasterFile::AUDIO_HEIGHT).to_i,
         duration: stream_info[:duration],
         type: media_type,
-        format: mimetype
+        format: mimetype,
+        thumbnail: [{ id: thumbnail_url, type: 'Image' }]
       }.compact
 
       if master_file.media_object.visibility == 'public'
@@ -262,5 +263,13 @@ class IiifPlaylistCanvasPresenter
           }
         ]
       }
+    end
+
+    def thumbnail_url
+      if master_file.is_video?
+        Rails.application.routes.url_helpers.thumbnail_master_file_url(master_file.id)
+      else
+        ActionController::Base.helpers.asset_url('audio_icon.png')
+      end
     end
 end

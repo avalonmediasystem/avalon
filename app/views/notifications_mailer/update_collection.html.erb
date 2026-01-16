@@ -28,7 +28,7 @@ Unless required by applicable law or agreed to in writing, software distributed
   <dd><%= @collection.description.present? ? @collection.description : '(empty)'%></dd>
 
   <dt>Unit:</dt>
-  <dd><%= @collection.unit %></dd>
+  <dd><%= @collection.unit.name %></dd>
 
   <dt>Dropbox Path:</dt>
   <dd><%= @collection.dropbox_absolute_path %></dd>

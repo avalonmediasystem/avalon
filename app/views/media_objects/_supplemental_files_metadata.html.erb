@@ -1,0 +1,41 @@
+<%#
+Copyright 2011-2025, The Trustees of Indiana University and Northwestern
+  University.  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+
+You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+  under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+  CONDITIONS OF ANY KIND, either express or implied. See the License for the
+  specific language governing permissions and limitations under the License.
+---  END LICENSE_HEADER BLOCK  ---
+%>
+
+<%# locals: (tag:, file:, section_id:) %>
+
+<div class="mb-1 col-md-6 col p-0" style='display: flex;'>
+  <%= render partial: 'modules/autocomplete_input', locals: { field_name: "supplemental_file[language]",
+                                                              for_field: "language_#{file.id}",
+                                                              field_id: "supplemental_file_language_#{section_id}_#{file.id}",
+                                                              value: display_supplemental_file_language(file.language),
+                                                              model: 'languageTerm'} %>
+</div>
+<div class="row-col-sm-9 row-col-md-8 row-col-9 p-0">
+  <% if tag == 'caption' %>
+    <div class="form-check-inline col-md-6 col-sm-6 col-6 p-0">
+      <%= label_tag "treat_as_transcript_#{file.id}", class: "checkbox" do %>
+        <%= check_box_tag "treat_as_transcript_#{file.id}", '1', file.caption_transcript? , data: { testid: "media-object-treat-as-transcript-checkbox" }%>
+        <span>Treat as Transcript</span>
+      <% end %>
+    </div>
+  <% end %>
+  <div class="form-check-inline col-md-3 col-sm-3 col-3 p-0">
+    <%= label_tag "machine_generated_#{file.id}", class: "ms-3 checkbox" do %>
+      <%= check_box_tag "machine_generated_#{file.id}", '1', file.machine_generated? %>
+      <span>Machine Generated</span>
+    <% end %>
+  </div>
+</div>

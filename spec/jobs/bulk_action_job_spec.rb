@@ -72,18 +72,15 @@ end
 describe BulkActionJobs::ApplyCollectionAccessControl do
   let(:mo) { FactoryBot.create(:media_object) }
   let(:co) { mo.collection }
+  let(:unit) { co.unit }
 
   describe "perform" do
     before do
-      co.default_read_users = ["co_user"]
-      co.default_read_groups = ["co_group"]
       co.default_hidden = true
       co.default_visibility = 'public'
       co.default_lending_period = 129600
       co.save!
 
-      mo.read_users = ["mo_user"]
-      mo.read_groups = ["mo_group"]
       mo.hidden = false
       mo.visibility = 'restricted'
       mo.lending_period = 1209600
@@ -94,8 +91,6 @@ describe BulkActionJobs::ApplyCollectionAccessControl do
       BulkActionJobs::ApplyCollectionAccessControl.perform_now co.id, true, 'discovery'
       mo.reload
       expect(mo.hidden?).to be_truthy
-      expect(mo.read_users).to contain_exactly('mo_user')
-      expect(mo.read_groups).to contain_exactly('mo_group', 'registered')
       expect(mo.visibility).to eq('restricted')
       expect(mo.lending_period).to eq(1209600)
     end
@@ -104,8 +99,6 @@ describe BulkActionJobs::ApplyCollectionAccessControl do
       BulkActionJobs::ApplyCollectionAccessControl.perform_now co.id, true, 'visibility'
       mo.reload
       expect(mo.visibility).to eq('public')
-      expect(mo.read_users).to contain_exactly('mo_user')
-      expect(mo.read_groups).to contain_exactly('mo_group', 'public')
       expect(mo.hidden?).to be_falsey
       expect(mo.lending_period).to eq(1209600)
     end
@@ -118,8 +111,6 @@ describe BulkActionJobs::ApplyCollectionAccessControl do
         mo.reload
         expect(mo.lending_period).to eq(co.default_lending_period)
         expect(mo.hidden?).to be_falsey
-        expect(mo.read_users).to contain_exactly('mo_user')
-        expect(mo.read_groups).to contain_exactly('mo_group', 'registered')
         expect(mo.visibility).to eq('restricted')
       end
     end
@@ -131,39 +122,7 @@ describe BulkActionJobs::ApplyCollectionAccessControl do
         mo.reload
         expect(mo.lending_period).not_to eq(co.default_lending_period)
         expect(mo.hidden?).to be_falsey
-        expect(mo.read_users).to contain_exactly('mo_user')
-        expect(mo.read_groups).to contain_exactly('mo_group', 'registered')
         expect(mo.visibility).to eq('restricted')
-      end
-    end
-
-    context "overwrite is true" do
-      it "replaces existing Special Access but affects no other fields" do
-        BulkActionJobs::ApplyCollectionAccessControl.perform_now co.id, true, 'special_access'
-        mo.reload
-        expect(mo.read_users).to contain_exactly("co_user")
-        expect(mo.read_groups).to contain_exactly("co_group", "registered")
-        expect(mo.hidden?).to be_falsey
-        expect(mo.visibility).to eq('restricted')
-        expect(mo.lending_period).to eq(1209600)
-        solr_doc = ActiveFedora::SolrService.query("id:#{mo.id}").first
-        expect(solr_doc["read_access_person_ssim"]).to contain_exactly("co_user")
-        expect(solr_doc["read_access_group_ssim"]).to contain_exactly("co_group", "registered")
-      end
-    end
-
-    context "overwrite is false" do
-      it "adds to existing Special Access but affects no other fields" do
-        BulkActionJobs::ApplyCollectionAccessControl.perform_now co.id, false, 'special_access'
-        mo.reload
-        expect(mo.read_users).to contain_exactly("mo_user", "co_user")
-        expect(mo.read_groups).to contain_exactly("mo_group", "co_group", "registered")
-        expect(mo.hidden?).to be_falsey
-        expect(mo.visibility).to eq('restricted')
-        expect(mo.lending_period).to eq(1209600)
-        solr_doc = ActiveFedora::SolrService.query("id:#{mo.id}").first
-        expect(solr_doc["read_access_person_ssim"]).to contain_exactly("mo_user", "co_user")
-        expect(solr_doc["read_access_group_ssim"]).to contain_exactly("mo_group", "co_group", "registered")
       end
     end
   end
@@ -177,7 +136,6 @@ describe BulkActionJobs::ReturnCheckouts do
   let!(:checkout_3) { FactoryBot.create(:checkout, media_object_id: collection_2.media_object_ids[0]) }
 
   it 'returns checkouts for the input collection' do
-    # byebug
     BulkActionJobs::ReturnCheckouts.perform_now(collection_1.id)
     checkout_1.reload
     checkout_2.reload

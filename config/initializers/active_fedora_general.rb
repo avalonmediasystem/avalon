@@ -215,3 +215,54 @@ ActiveFedora::Common.module_eval do
     @readonly || Settings.repository_read_only_mode
   end
 end
+
+# Attempt to patch ActiveFedora to register when foreign key changes
+# See https://github.com/rails/rails/pull/42751 for ActiveRecord implementation
+ActiveFedora::Associations::BelongsToAssociation.class_eval do
+  def target_changed?
+    owner.attribute_changed?(reflection.foreign_key) || (!foreign_key_present? && target&.new_record?)
+  end
+
+  def target_previously_changed?
+    owner.attribute_previously_changed?(reflection.foreign_key)
+  end
+
+  def saved_change_to_target?
+    owner.saved_change_to_attribute?(reflection.foreign_key)
+  end
+end
+
+ActiveFedora::Associations::Builder::Association.class_eval do
+  def self.build(model, name, options, &block)
+    if model.dangerous_attribute_method?(name)
+      raise ArgumentError, "You tried to define an association named #{name} on the model #{model.name}, but " \
+                           "this will conflict with a method #{name} already defined by ActiveFedora. " \
+                           "Please choose a different association name."
+    end
+
+    extension = define_extensions model, name, &block
+    reflection = create_reflection model, name, nil, options, extension
+    define_accessors(model, reflection)
+    define_callbacks(model, reflection)
+    define_validations model, reflection
+    define_change_tracking_methods model, reflection
+    reflection
+  end
+
+  def self.define_change_tracking_methods(model, reflection)
+    # noop
+  end
+end
+
+ActiveFedora::Associations::Builder::BelongsTo.class_eval do
+  def self.define_change_tracking_methods(model, reflection)
+    model.generated_association_methods.class_eval <<-CODE, __FILE__, __LINE__ + 1
+      def #{reflection.name}_changed?
+        association(:#{reflection.name}).target_changed?
+      end
+      def #{reflection.name}_previously_changed?
+        association(:#{reflection.name}).target_previously_changed?
+      end
+    CODE
+  end
+end

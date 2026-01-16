@@ -32,7 +32,7 @@ Unless required by applicable law or agreed to in writing, software distributed
                 <%= form_tag(import_variations_playlist_playlists_path, method:"post", enctype:"multipart/form-data", style:"display:inline") do %>
                   <input type="file" name="Filedata" class="filedata" style="visibility:hidden; display:inline; width:0;" />
                   <input type="button" class="btn btn-primary" id="variations_import"
-                    onclick="$(this).closest('form').find('.filedata').click();" value="Import Variations Playlist" />
+                    onclick="this.closest('form').querySelector('.filedata').click();" value="Import Variations Playlist" />
                 <% end %>
               <% end %>
             </div>
@@ -56,8 +56,13 @@ Unless required by applicable law or agreed to in writing, software distributed
 
 <% content_for :page_scripts do %>
   <script>
-    $('.filedata').change(function () {
-      $(this).closest('form').submit();
+    document.addEventListener('DOMContentLoaded', function() {
+      const filedataElements = queryAll('.filedata');
+      filedataElements.forEach(function(filedata) {
+        filedata.addEventListener('change', function() {
+          this.closest('form').submit();
+        });
+      });
     });
   </script>
 <% end %>

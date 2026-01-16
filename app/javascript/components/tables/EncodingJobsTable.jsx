@@ -14,7 +14,7 @@
  * ---  END LICENSE_HEADER BLOCK  ---
 */
 
-import React, { useState, useCallback } from 'react';
+import { useState, useCallback } from 'react';
 import GenericTable from './GenericTable';
 import useProgressUpdates from './hooks/useProgressUpdates';
 

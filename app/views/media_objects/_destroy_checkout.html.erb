@@ -49,10 +49,11 @@ Unless required by applicable law or agreed to in writing, software distributed
 
 <% content_for :page_scripts do %>
   <script>
-    $(document).ready(function() {
+    document.addEventListener('DOMContentLoaded', function () {
+      let interval = null;
       /* Calculate remaining days and time for the lending perriod */
       function calcRemainingTime() {
-        var dateStr = $('#return-btn').data().checkoutReturntime.replace(/['"]+/g, '');
+        var dateStr = getById('return-btn').dataset.checkoutReturntime.replace(/['"]+/g, '');
         var returnDate = new Date(dateStr);
         var currentDate = new Date();
 
@@ -80,22 +81,22 @@ Unless required by applicable law or agreed to in writing, software distributed
         setTime();
 
         // Check for remaining time on a minute interval
-        var interval = setInterval(setTime, 60000);
-      }, 5000);
+        interval = setInterval(setTime, 60000);
+      }, 1000);
 
       /* Interval update remaining time in the lending period */
       function setTime() {
-        if($('#return-btn').length > 0) {
+        if(getById('return-btn')) {
           let remainingTime = calcRemainingTime();
-          if(remainingTime == 'expired') {
+          if(remainingTime == 'expired' && !interval) {
             clearInterval(interval);
-            $('#check-out-expired').modal('show');
+            toggleModal(getById('check-out-expired'), true);
           } else {
             const { days, hours, minutes } = remainingTime;
             var daysText = `${days}<br />day${days > 1 ? 's': ''}`;
-            $('.days').html(daysText);
+            query('.days').innerHTML = daysText;
             var timeText = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}<br />hh:mm`;
-            $('.time').html(timeText);
+            query('.time').innerHTML = timeText;
           }
         }
       }

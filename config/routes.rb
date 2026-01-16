@@ -74,6 +74,7 @@ Rails.application.routes.draw do
   match "/authorize/:path", to: 'derivatives#authorize', via: [:get, :post]
 
   namespace :admin do
+    get '/dashboard', to: 'dashboard#index'
     resources :groups, except: [:show] do
       collection do
         put 'update_multiple'
@@ -83,6 +84,16 @@ Rails.application.routes.draw do
       end
     end
     resources :collections do
+      member do
+        get 'edit'
+        get 'remove'
+        get 'items'
+        get 'poster'
+        post 'poster', action: :attach_poster, as: 'attach_poster'
+        delete 'poster', action: :remove_poster, as: 'remove_poster'
+      end
+    end
+    resources :units do
       member do
         get 'edit'
         get 'remove'
@@ -104,6 +115,12 @@ Rails.application.routes.draw do
   resources :vocabulary, except: [:create, :destroy, :new, :edit]
 
   resources :collections, only: [:index, :show] do
+    member do
+      get :poster
+    end
+  end
+
+  resources :units, only: [:index, :show] do
     member do
       get :poster
     end
@@ -174,6 +191,7 @@ Rails.application.routes.draw do
       member do
         get 'captions'
         get 'transcripts', :to => redirect('/master_files/%{master_file_id}/supplemental_files/%{id}')
+        get 'descriptions', :to => redirect('master_files/%{master_file_id}/supplemental_files/%{id}')
       end
       get :index, constraints: { format: 'json' }, on: :collection
     end

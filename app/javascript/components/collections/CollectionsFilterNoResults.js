@@ -14,8 +14,6 @@
  * ---  END LICENSE_HEADER BLOCK  ---
 */
 
-import React from 'react';
-
 const CollectionsFilterNoResults = () => (
   <p className="alert alert-info text-start">
     <i className="fa fa-exclamation-circle"></i> No results returned

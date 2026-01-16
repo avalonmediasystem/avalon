@@ -217,8 +217,6 @@ class MediaObject < ActiveFedora::Base
     if self.new_record?
       self.hidden = co.default_hidden
       self.visibility = co.default_visibility
-      self.read_users = co.default_read_users.to_a
-      self.read_groups = co.default_read_groups.to_a + self.read_groups #Make sure to include any groups added by visibility
       self.lending_period = co.default_lending_period
     end
   end
@@ -333,7 +331,7 @@ class MediaObject < ActiveFedora::Base
     descMetadata.to_solr(super).tap do |solr_doc|
       solr_doc[ActiveFedora.index_field_mapper.solr_name("workflow_published", :facetable, type: :string)] = published? ? 'Published' : 'Unpublished'
       solr_doc[ActiveFedora.index_field_mapper.solr_name("collection", :symbol, type: :string)] = collection.name if collection.present?
-      solr_doc[ActiveFedora.index_field_mapper.solr_name("unit", :symbol, type: :string)] = collection.unit if collection.present?
+      solr_doc[ActiveFedora.index_field_mapper.solr_name("unit", :symbol, type: :string)] = collection.unit.name if collection.present?
       solr_doc["title_ssort"] = self.title
       solr_doc["creator_ssort"] = Array(self.creator).join(', ')
       solr_doc["date_ingested_ssim"] = self.create_date.strftime "%F" if self.create_date.present?
@@ -462,7 +460,7 @@ class MediaObject < ActiveFedora::Base
     # To take advantage of solr automagically escaping characters the query has to be in single quotes.
     # This runs counter to ruby's string interpolation which requires the string to be in double quotes.
     # We can get around this by using the format_string construction.
-    solr_query = { q: 'unit_ssim:"%{collection_unit}"' % { collection_unit: collection_unit } }
+    solr_query = { q: 'unit_ssim:"%{collection_unit}"' % { collection_unit: collection_unit.name } }
     query_params = {
       fl: ["series_ssim"],
       facet: "on",

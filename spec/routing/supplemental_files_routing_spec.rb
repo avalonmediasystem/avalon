@@ -33,9 +33,16 @@ RSpec.describe MasterFilesController, type: :routing do
     end
     # Redirects are not testable from the routing spec out of the box.
     # Forcing the tests to `type: :request` to keep routing tests in one place.
-    it "redirects to supplemental_files#show", type: :request do
-      get "/master_files/abc1234/supplemental_files/edf567/transcripts"
-      expect(response).to redirect_to("/master_files/abc1234/supplemental_files/edf567")
+    context 'transcriptions and audio descriptions' do
+      it "redirects transcripts to supplemental_files#show", type: :request do
+        get "/master_files/abc1234/supplemental_files/edf567/transcripts"
+        expect(response).to redirect_to("/master_files/abc1234/supplemental_files/edf567")
+      end
+
+      it "redirects audio descriptions to supplemental_files#show", type: :request do
+        get "/master_files/abc1234/supplemental_files/edf567/descriptions"
+        expect(response).to redirect_to("/master_files/abc1234/supplemental_files/edf567")
+      end
     end
   end
 end

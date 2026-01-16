@@ -27,6 +27,8 @@ describe Ability, type: :model do
     let(:media_object_proxy) { SpeedyAF::Base.find(media_object.id) }
     let(:collection) { media_object.collection }
     let(:collection_proxy) { SpeedyAF::Base.find(collection.id) }
+    let(:unit) { collection.unit }
+    let(:unit_proxy) { SpeedyAF::Base.find(unit.id) }
     let(:admin) { FactoryBot.create(:administrator) }
     let(:session) { {} }
     subject(:admin_ability) { Ability.new(admin, session) }
@@ -45,6 +47,8 @@ describe Ability, type: :model do
         expect(subject.can?(:read, media_object_proxy)).to eq true
         expect(subject.can?(:read, collection)).to eq true
         expect(subject.can?(:read, collection_proxy)).to eq true
+        expect(subject.can?(:read, unit)).to eq true
+        expect(subject.can?(:read, unit_proxy)).to eq true
 
         expect(subject.can?(:create, MediaObject)).to eq false
         expect(subject.can?(:read, MediaObject)).to eq true
@@ -110,6 +114,30 @@ describe Ability, type: :model do
         expect(subject.can?(:update_depositors, SpeedyAF::Proxy::Admin::Collection)).to eq false
 
         expect(subject.can?(:destroy, Admin::CollectionPresenter)).to eq false
+
+        expect(subject.can?(:create, Admin::Unit)).to eq false
+        expect(subject.can?(:read, Admin::Unit)).to eq true
+        expect(subject.can?(:edit, Admin::Unit)).to eq false
+        expect(subject.can?(:update, Admin::Unit)).to eq false
+        expect(subject.can?(:destroy, Admin::Unit)).to eq false
+        expect(subject.can?(:update_unit_admins, Admin::Unit)).to eq false
+        expect(subject.can?(:update_access_control, Admin::Unit)).to eq false
+        expect(subject.can?(:update_managers, Admin::Unit)).to eq false
+        expect(subject.can?(:update_editors, Admin::Unit)).to eq false
+        expect(subject.can?(:update_depositors, Admin::Unit)).to eq false
+
+        expect(subject.can?(:create, SpeedyAF::Proxy::Admin::Unit)).to eq false
+        expect(subject.can?(:read, SpeedyAF::Proxy::Admin::Unit)).to eq true
+        expect(subject.can?(:edit, SpeedyAF::Proxy::Admin::Unit)).to eq false
+        expect(subject.can?(:update, SpeedyAF::Proxy::Admin::Unit)).to eq false
+        expect(subject.can?(:destroy, SpeedyAF::Proxy::Admin::Unit)).to eq false
+        expect(subject.can?(:update_unit_admins, SpeedyAF::Proxy::Admin::Unit)).to eq false
+        expect(subject.can?(:update_access_control, SpeedyAF::Proxy::Admin::Unit)).to eq false
+        expect(subject.can?(:update_managers, SpeedyAF::Proxy::Admin::Unit)).to eq false
+        expect(subject.can?(:update_editors, SpeedyAF::Proxy::Admin::Unit)).to eq false
+        expect(subject.can?(:update_depositors, SpeedyAF::Proxy::Admin::Unit)).to eq false
+
+        expect(subject.can?(:destroy, Admin::UnitPresenter)).to eq false
       end
     end
 
@@ -123,6 +151,7 @@ describe Ability, type: :model do
 
         expect(subject.can?(:read, media_object)).to eq true
         expect(subject.can?(:read, collection)).to eq true
+        expect(subject.can?(:read, unit)).to eq true
 
         expect(subject.can?(:create, MediaObject)).to eq true
         expect(subject.can?(:read, MediaObject)).to eq true
@@ -188,6 +217,30 @@ describe Ability, type: :model do
         expect(subject.can?(:update_depositors, SpeedyAF::Proxy::Admin::Collection)).to eq true
 
         expect(subject.can?(:destroy, Admin::CollectionPresenter)).to eq true
+
+        expect(subject.can?(:create, Admin::Unit)).to eq true
+        expect(subject.can?(:read, Admin::Unit)).to eq true
+        expect(subject.can?(:edit, Admin::Unit)).to eq true
+        expect(subject.can?(:update, Admin::Unit)).to eq true
+        expect(subject.can?(:destroy, Admin::Unit)).to eq true
+        expect(subject.can?(:update_access_control, Admin::Unit)).to eq true
+        expect(subject.can?(:update_unit_admins, Admin::Unit)).to eq true
+        expect(subject.can?(:update_managers, Admin::Unit)).to eq true
+        expect(subject.can?(:update_editors, Admin::Unit)).to eq true
+        expect(subject.can?(:update_depositors, Admin::Unit)).to eq true
+
+        expect(subject.can?(:create, SpeedyAF::Proxy::Admin::Unit)).to eq true
+        expect(subject.can?(:read, SpeedyAF::Proxy::Admin::Unit)).to eq true
+        expect(subject.can?(:edit, SpeedyAF::Proxy::Admin::Unit)).to eq true
+        expect(subject.can?(:update, SpeedyAF::Proxy::Admin::Unit)).to eq true
+        expect(subject.can?(:destroy, SpeedyAF::Proxy::Admin::Unit)).to eq true
+        expect(subject.can?(:update_access_control, SpeedyAF::Proxy::Admin::Unit)).to eq true
+        expect(subject.can?(:update_unit_admins, SpeedyAF::Proxy::Admin::Unit)).to eq true
+        expect(subject.can?(:update_managers, SpeedyAF::Proxy::Admin::Unit)).to eq true
+        expect(subject.can?(:update_editors, SpeedyAF::Proxy::Admin::Unit)).to eq true
+        expect(subject.can?(:update_depositors, SpeedyAF::Proxy::Admin::Unit)).to eq true
+
+        expect(subject.can?(:destroy, Admin::UnitPresenter)).to eq true
       end
     end
   end

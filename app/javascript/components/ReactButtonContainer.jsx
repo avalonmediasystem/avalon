@@ -14,7 +14,7 @@
  * ---  END LICENSE_HEADER BLOCK  ---
 */
 
-import React, { Component } from 'react';
+import { Component } from 'react';
 import { Modal } from 'react-bootstrap';
 import ReactSME from 'react-structural-metadata-editor';
 import './ReactButtonContainer.scss';

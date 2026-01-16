@@ -158,6 +158,7 @@ en:
     depositorlabel: "Depositor"
     editorlabel: "Editor"
     managerlabel: "Manager"
+    unit_adminlabel: "Unit Administrator"
     userlabel: "Avalon User"
     grouplabel: "Avalon Group"
     classlabel: "External Group"
@@ -180,6 +181,12 @@ en:
       the collection, and they also step in when a published item needs
       revising or deleting. Managers can also do anything an editor or
       depositor can do.
+    unit_admin: |
+      Unit administrators have overall accountability for the unit. Unit
+      administrators can create units and assign all other roles for those 
+      units. They set the default access controls for collections added to
+      the unit. Unit administrators can also do anything a manager, editor
+      or depositor can do.
     user: |
       Enter a username to grant them access to an item or collection. Start and end dates are not required; if included, access for the specified user will start at the beginning of the start date and end at the beginning of the end date. Otherwise, access will be open ended for the specified user.
     group: |
@@ -193,6 +200,8 @@ en:
       Lending Period is the length of time that an item may be checked out for.
       Day and Hour values must be positive integers.
     apply_to_all_warning: "This action will affect %s items. Do you wish to proceed?"
+    unit_inherited_role: 'This role is inherited from Unit "%{unit_name}" and cannot be removed.'
+    collection_inherited_role: 'This role is inherited from Collection "%{collection_name}"'
 
   contact:
     title: 'Contact Us - %{application_name}'
@@ -270,6 +279,11 @@ en:
       action: "Save Changes"
     tags:
       label: "Tags"
+
+  units:
+    title: 'Units - %{application_name}'
+    show:
+      title: '%{unit_name} - Units - %{application_name}'
 
   activerecord:
     attributes:

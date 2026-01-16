@@ -14,7 +14,10 @@
  * ---  END LICENSE_HEADER BLOCK  ---
 */
 
-import React from 'react';
+import {
+  useEffect,
+  useState
+} from 'react';
 import {
   IIIFPlayer,
   MediaPlayer
@@ -28,12 +31,12 @@ const EmbeddedRamp = ({
   media_object_id,
   is_video
 }) => {
-  const [manifestUrl, setManifestUrl] = React.useState('');
-  const [startCanvasId, setStartCanvasId] = React.useState();
-  const [startCanvasTime, setStartCanvasTime] = React.useState();
+  const [manifestUrl, setManifestUrl] = useState('');
+  const [startCanvasId, setStartCanvasId] = useState();
+  const [startCanvasTime, setStartCanvasTime] = useState();
   let interval;
 
-  React.useEffect(() => {
+  useEffect(() => {
     const { base_url, fullpath_url } = urls;
     // Split the current path from the time fragment in the format .../:id?t=time
     let [fullpath, start_time] = fullpath_url.split('?t=');

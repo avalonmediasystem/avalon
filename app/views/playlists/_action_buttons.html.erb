@@ -39,7 +39,7 @@ Unless required by applicable law or agreed to in writing, software distributed
 
 <% content_for :page_scripts do %>
 <script>
-  $(document).ready(function () {
+  document.addEventListener('DOMContentLoaded', function() {
     window.add_copy_playlist_button_event()
   });
 </script>

@@ -165,6 +165,10 @@ Unless required by applicable law or agreed to in writing, software distributed
                    <% end %>
                   <!-- transcripts -->
                   <%= render partial: "supplemental_files_upload", locals: { section: section, label: 'Transcripts', tag: 'transcript' } %>
+                  <!-- audio descriptions -->
+                  <% if section.is_video? %>
+                    <%= render partial: "supplemental_files_upload", locals: { section: section, label: 'Audio Description', tag: 'description' } %>
+                  <% end %>
                   <!-- supplemental files -->
                   <%= render partial: "supplemental_files_upload", locals: { section: section, label: 'Section Supplemental Files' } %>
                 </div>
@@ -206,7 +210,7 @@ Unless required by applicable law or agreed to in writing, software distributed
             <div class="fileinput input-group mb-3" id="file-upload" data-provides="fileinput"  style="height: 33px">
               <input type="file" class="form-control" id="file-input" name="Filedata[]" data-testid="media-object-edit-select-file-btn">
               <button href="#" class="fileinput-submit btn btn-outline btn-file file-upload-buttons"
-                data-trigger="submit" data-bs-toggle="modal" data-bs-target="#uploading" data-testid="media-object-edit-upload-btn" disabled='true'>Upload</button>
+                data-trigger="submit" data-testid="media-object-edit-upload-btn" disabled='true'>Upload</button>
             </div>
 
             <%= hidden_field_tag(:new_asset, true, :id => "files_new_asset") if params[:new_asset] %>
@@ -313,19 +317,19 @@ Unless required by applicable law or agreed to in writing, software distributed
 
 <% content_for :page_scripts do %>
   <script>
-    document.querySelectorAll('.filedata').forEach(fileInput => {
+    queryAll('.filedata').forEach(fileInput => {
       fileInput.addEventListener('change', function(e) {
         e.preventDefault();
         this.closest('form').submit();
       });
     });
 
-    document.querySelectorAll('.master-file-form').forEach(form => {
+    queryAll('.master-file-form').forEach(form => {
       form.addEventListener('ajax:success', (event) => {
-        event.currentTarget.querySelector('.flash-message').innerHTML = "Successfully updated.";
+        query('.flash-message', event.currentTarget).innerHTML = "Successfully updated.";
       });
       form.addEventListener('ajax:error', (event) => {
-        event.currentTarget.querySelector('.flash-message').innerHTML = "Failed to update.";
+        query('.flash-message', event.currentTarget).innerHTML = "Failed to update.";
       });
     });
   </script>
