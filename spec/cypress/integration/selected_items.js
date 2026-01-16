@@ -109,9 +109,7 @@ it('Verify the user is able to update Access Control for all selected items - Sp
     })
     .should('be.checked');
   // Update Access Control to Special Access - Avalon User
-  cy.get('[data-testid="autocomplete-user-input"]')
-    .clear()
-    .type('user@example.com');
+  cy.get('[data-testid="user-user-input"]').clear().type('user@example.com');
 
   // click the matching suggestion
   cy.get('[data-testid="user-popup"]')

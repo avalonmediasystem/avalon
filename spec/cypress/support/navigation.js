@@ -37,11 +37,9 @@ export function navigateToManageContent() {
 
 // Collection Unit Selection
 export function selectCollectionUnit() {
-  const unit = Cypress.env('defaultUnit') || 'Default Unit';
-
-  cy.get("[data-testid='collection-unit']")
-    .select(unit)
-    .should('have.value', unit);
+  cy.get("[data-testid='admin_collection[unit_name]-user-input']").type(
+    'Automation Unit'
+  ); // data-testid came from _autocomplete_input.html.erb
 }
 
 // Access Control
