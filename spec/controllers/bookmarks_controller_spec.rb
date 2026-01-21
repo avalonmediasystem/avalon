@@ -31,11 +31,12 @@ describe BookmarksController, type: :controller do
   end
 
   let!(:collection) { FactoryBot.create(:collection) }
+  let(:user) { collection.managers.first }
   let!(:media_objects) { [] }
 
   before(:each) do
     request.env["HTTP_REFERER"] = '/'
-    login_user collection.managers.first
+    login_user user
     3.times do
       media_objects << mo = FactoryBot.create(:media_object, collection: collection)
       post :create, params: { id: mo.id }
@@ -156,11 +157,13 @@ describe BookmarksController, type: :controller do
 
     context 'user has no permission on target collection' do
       it 'responds with error message' do
+        # Logged in as manager of a different collection
         post 'move', params: { target_collection_id: collection2.id }
-      	expect(flash[:error]).to eq( I18n.t("blacklight.move.error", collection_name: collection2.name))
+        expect(flash[:error]).to eq(I18n.t("blacklight.move.error", collection_name: collection2.name))
       end
     end
-    context 'user has permission on target collection' do
+
+    context 'user is manager of target collection' do
       it 'moves items to selected collection' do
         collection2.managers = collection.managers
         collection2.save
@@ -170,6 +173,28 @@ describe BookmarksController, type: :controller do
           mo.reload
           expect(mo.collection).to eq(collection2)
         end
+      end
+    end
+
+    context 'user is editor of target collection' do
+      let(:user) { collection.editors.first }
+
+      it 'responds with error message' do
+        collection2.editors = collection.editors
+        collection2.save
+        post 'move', params: { target_collection_id: collection2.id }
+        expect(flash[:alert]).to include(I18n.t("blacklight.move.alert", count: 3))
+      end
+    end
+
+    context 'user is depositor of target collection' do
+      let(:user) { collection.depositors.first }
+
+      it 'responds with error message' do
+        collection2.depositors = collection.depositors
+        collection2.save
+        post 'move', params: { target_collection_id: collection2.id }
+        expect(flash[:alert]).to include(I18n.t("blacklight.move.alert", count: 3))
       end
     end
 
