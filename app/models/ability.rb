@@ -77,7 +77,7 @@ class Ability
       if is_manager?
         can :create, Admin::Collection
       end
-      
+
       if is_manager_of_any_unit?
         can :create, Admin::Collection
       end
@@ -139,7 +139,7 @@ class Ability
         end
 
         can :update_unit, [Admin::Collection, SpeedyAF::Proxy::Admin::Collection] do |collection|
-          is_admin_of?(collection.unit)
+          is_manager_of?(collection)
         end
 
         can :update_access_control, [Admin::Collection, SpeedyAF::Proxy::Admin::Collection] do |collection|
