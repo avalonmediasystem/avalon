@@ -227,6 +227,12 @@ class CatalogController < ApplicationController
     config.fetch_many_document_params = { fl: "*" }
   end
 
+
+  # Override: Do not store searches for anyone since Avalon doesn't display them anyway
+  def find_search_session
+    return nil
+  end
+
   private
 
     def load_home_page_collections
