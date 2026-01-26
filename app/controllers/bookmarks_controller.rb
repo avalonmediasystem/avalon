@@ -74,7 +74,7 @@ class BookmarksController < CatalogController
       @valid_user_actions.delete :unpublish if @valid_user_actions.include? :unpublish and cannot? :unpublish, mo
       @valid_user_actions.delete :publish if @valid_user_actions.include? :publish and cannot? :update, mo
       @valid_user_actions.delete :merge if @valid_user_actions.include? :merge and cannot? :update, mo
-      @valid_user_actions.delete :move if @valid_user_actions.include? :move and cannot? :update, mo
+      @valid_user_actions.delete :move if @valid_user_actions.include? :move and cannot? :move, mo
       @valid_user_actions.delete :update_access_control if @valid_user_actions.include? :update_access_control and cannot? :update_access_control, mo
       @valid_user_actions.delete :intercom_push if @valid_user_actions.include? :intercom_push and cannot? :intercom_push, mo
     end
