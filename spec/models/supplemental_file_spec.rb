@@ -214,7 +214,7 @@ describe SupplementalFile do
 
     context "with valid tags" do
       let(:supplemental_file) { FactoryBot.create(:supplemental_file, :with_caption_file) }
-      let(:tags) { ["transcript", "caption", "machine_generated", "description"] }
+      let(:tags) { ["transcript", "caption", "machine_generated", "description", "private"] }
 
       it "can store tags" do
         supplemental_file.tags = tags
@@ -281,6 +281,13 @@ describe SupplementalFile do
       let(:supplemental_file) { FactoryBot.create(:supplemental_file, :with_description_file, :with_description_tag, label: 'Test') }
       it 'sets the type properly' do
         expect(subject[:type]).to eq 'audio_description'
+      end
+    end
+
+    context 'private file' do
+      let(:supplemental_file) { FactoryBot.create(:supplemental_file, tags: ['private'], label: 'Test') }
+      it 'includes "private" in JSON' do
+        expect(subject[:private]).to eq true
       end
     end
   end

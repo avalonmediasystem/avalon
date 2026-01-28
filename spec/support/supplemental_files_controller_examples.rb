@@ -515,6 +515,34 @@ RSpec.shared_examples 'a nested controller for' do |object_class|
         end
       end
 
+      context 'private' do
+        let(:private_param) { "private_#{supplemental_file.id}".to_sym }
+        context "missing private tag" do
+          let(:supplemental_file) { FactoryBot.create(:supplemental_file, :with_transcript_file, :with_transcript_tag, label: 'label') }
+          it "adds private note to tags" do
+            expect {
+              put :update, params: { class_id => object.id, id: supplemental_file.id, private_param => 1, supplemental_file: valid_update_attributes, format: :html }, session: valid_session
+            }.to change { master_file.reload.supplemental_files(include_private: true).first.tags }.from(['transcript']).to(['transcript', 'private'])
+          end
+        end
+        context "with private tag" do
+          let(:supplemental_file) { FactoryBot.create(:supplemental_file, :with_transcript_file, tags: ['transcript', 'private'], label: 'label') }
+          it "does not add more instances of machine generated note" do
+            expect {
+              put :update, params: { class_id => object.id, id: supplemental_file.id, private_param => 1, supplemental_file: valid_update_attributes, format: :html }, session: valid_session
+            }.to not_change { master_file.reload.supplemental_files(include_private: true).first.tags }.from(['transcript', 'private'])
+          end
+        end
+        context "removing private designation" do
+          let(:supplemental_file) { FactoryBot.create(:supplemental_file, :with_transcript_file, tags: ['transcript', 'private'], label: 'label') }
+          it "removes machine generated note from label and tags" do
+            expect {
+              put :update, params: { class_id => object.id, id: supplemental_file.id, supplemental_file: valid_update_attributes, format: :html }, session: valid_session
+            }.to change { master_file.reload.supplemental_files(include_private: true).first.tags }.from(['transcript', 'private']).to(['transcript'])
+          end
+        end
+      end
+
       context "API with new file" do
         let(:file_update) { fixture_file_upload(Rails.root.join('spec', 'fixtures', 'captions.vtt'), 'text/vtt') }
         before { ApiToken.create token: 'secret_token', username: 'archivist1@example.com', email: 'archivist1@example.com' }

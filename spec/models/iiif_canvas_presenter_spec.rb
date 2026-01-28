@@ -327,7 +327,8 @@ describe IiifCanvasPresenter do
     let(:transcript_file) { FactoryBot.create(:supplemental_file, :with_transcript_tag, :with_transcript_file) }
     let(:caption_file) { FactoryBot.create(:supplemental_file, :with_caption_file, :with_caption_tag) }
     let(:description_file) { FactoryBot.create(:supplemental_file, :with_description_file, :with_description_tag) }
-    let(:supplemental_files) { [supplemental_file, transcript_file, caption_file, description_file] }
+    let(:private_file) { FactoryBot.create(:supplemental_file, :with_transcript_file, tags: ['transcript', 'private']) }
+    let(:supplemental_files) { [supplemental_file, transcript_file, caption_file, description_file, private_file] }
     let(:supplemental_files_json) { supplemental_files.map(&:to_global_id).map(&:to_s).to_s }
 
     describe '#sequence_rendering' do
@@ -339,9 +340,10 @@ describe IiifCanvasPresenter do
         expect(subject.any? { |rendering| rendering["@id"] =~ /supplemental_files\/#{description_file.id}/ }).to eq true
       end
 
-      it 'does not include waveform or transcripts' do
+      it 'does not include waveform, transcripts, or private files' do
         expect(subject.any? { |rendering| rendering["label"]["en"] == ["waveform.json"] }).to eq false
         expect(subject.any? { |rendering| rendering["@id"] =~ /supplemental_files\/#{transcript_file.id}/ }).to eq false
+        expect(subject.any? { |rendering| rendering["@id"] =~ /supplemental_files\/#{private_file.id}/ }).to eq false
       end
     end
 
@@ -360,6 +362,10 @@ describe IiifCanvasPresenter do
         expect(subject.any? { |content| content.body_id =~ /supplemental_files\/#{transcript_file.id}/ }).to eq true
         expect(subject.any? { |content| content.body_id =~ /supplemental_files\/#{caption_file.id}/ }).to eq true
         expect(subject.any? { |content| content.body_id =~ /supplemental_files\/#{description_file.id}/ }).to eq true
+      end
+
+      it 'does not include private files' do
+        expect(subject.any? { |content| content.body_id =~ /supplemental_files\/#{private_file.id}/ }).to eq false
       end
 
       it 'includes original filenames' do
