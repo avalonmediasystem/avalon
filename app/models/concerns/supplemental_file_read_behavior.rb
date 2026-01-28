@@ -22,7 +22,7 @@ module SupplementalFileReadBehavior
   end
 
   # @return [SupplementalFile]
-  def supplemental_files(tag: '*')
+  def supplemental_files(tag: '*', include_private: false)
     return [] if supplemental_files_json.blank?
     # If the supplemental_files_json becomes out of sync with the
     # database after a delete, this check could fail. Have not
@@ -32,13 +32,16 @@ module SupplementalFileReadBehavior
     @supplemental_files ||= GlobalID::Locator.locate_many(JSON.parse(supplemental_files_json), ignore_missing: true)
     return [] if @supplemental_files.blank?
 
-    case tag
-    when '*'
-      @supplemental_files
-    when nil
-      @supplemental_files.select { |file| file.tags.empty? }
-    else
-      @supplemental_files.select { |file| Array(tag).all? { |t| file.tags.include?(t) } }
-    end
+    files = case tag
+            when '*'
+              @supplemental_files
+            when nil
+              @supplemental_files.select { |file| file.tags.empty? }
+            else
+              @supplemental_files.select { |file| Array(tag).all? { |t| file.tags.include?(t) } }
+            end
+            
+    files = files.reject { |file| file.tags.include?('private') } unless include_private
+    files
   end
 end

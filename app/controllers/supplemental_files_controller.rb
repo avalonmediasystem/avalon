@@ -58,7 +58,7 @@ class SupplementalFilesController < ApplicationController
 
     raise Avalon::SaveError, @supplemental_file.errors.full_messages unless @supplemental_file.save
 
-    @object.supplemental_files += [@supplemental_file]
+    @object.supplemental_files = @object.supplemental_files(include_private: true) + [@supplemental_file]
     raise Avalon::SaveError, @object.errors[:supplemental_files_json] unless @object.save
 
     flash[:success] = "Supplemental file successfully added."
@@ -134,7 +134,7 @@ class SupplementalFilesController < ApplicationController
 
   def destroy
     find_supplemental_file
-    @object.supplemental_files -= [@supplemental_file]
+    @object.supplemental_files = @object.supplemental_files(include_private: true) - [@supplemental_file]
     raise Avalon::SaveError, "An error occurred when deleting the supplemental file: #{@object.errors[:supplemental_files_json]}" unless @object.save
     # FIXME: also wrap this in a transaction
     raise Avalon::SaveError, "An error occurred when deleting the supplemental file: #{@supplemental_file.errors.full_messages}" unless @supplemental_file.destroy
@@ -182,12 +182,13 @@ class SupplementalFilesController < ApplicationController
              end
       treat_as_transcript = 'transcript' if meta_params[:treat_as_transcript] == true
       machine_generated = 'machine_generated' if meta_params[:machine_generated] == true
+      private_file = 'private' if meta_params[:private] == true
 
       sup_file_params[:label] ||= meta_params[:label].presence
       sup_file_params[:language] ||= meta_params[:language].presence
       # The uniq is to prevent multiple instances of 'transcript' tag if an update is performed with
       # `{ type: transcript, treat_as_transcript: 1}`
-      sup_file_params[:tags] ||= [type, treat_as_transcript, machine_generated].compact.uniq
+      sup_file_params[:tags] ||= [type, treat_as_transcript, machine_generated, private_file].compact.uniq
       sup_file_params
     end
 
@@ -197,7 +198,7 @@ class SupplementalFilesController < ApplicationController
       raise Avalon::NotFound, "Supplemental file: #{params[:id]} not found" unless SupplementalFile.exists? params[:id].to_s
 
       @supplemental_file = SupplementalFile.find(params[:id])
-      raise Avalon::NotFound, "Supplemental file: #{@supplemental_file.id} not found" unless @object.supplemental_files.any? { |f| f.id == @supplemental_file.id }
+      raise Avalon::NotFound, "Supplemental file: #{@supplemental_file.id} not found" unless @object.supplemental_files(include_private: true).any? { |f| f.id == @supplemental_file.id }
     end
 
 
@@ -236,9 +237,10 @@ class SupplementalFilesController < ApplicationController
         return
       end
 
-      file_params = [ 
+      file_params = [
         { param: "machine_generated_#{params[:id]}".to_sym, tag: "machine_generated", method: :machine_generated? },
-        { param: "treat_as_transcript_#{params[:id]}".to_sym, tag: "transcript", method: :caption_transcript? }
+        { param: "treat_as_transcript_#{params[:id]}".to_sym, tag: "transcript", method: :caption_transcript? },
+        { param: "private_#{params[:id]}".to_sym, tag: "private", method: :private? }
       ]
 
       file_params.each do |v|
