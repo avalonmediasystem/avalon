@@ -1,0 +1,51 @@
+<%#
+Copyright 2011-2025, The Trustees of Indiana University and Northwestern
+  University.  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+
+You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+  under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+  CONDITIONS OF ANY KIND, either express or implied. See the License for the
+  specific language governing permissions and limitations under the License.
+---  END LICENSE_HEADER BLOCK  ---
+%>
+<% view_config = local_assigns[:view_config] || blacklight_config&.view_config(document_index_view_type) %>
+<div id="documents" class="documents-<%= view_config&.key || document_index_view_type %> bookmarks-document-list" data-testid="bookmarks-results-list">
+  <% if documents.count > 1 %>
+    <div class="row">
+      <% if current_or_guest_user %>
+        <div class="col-sm-4 col-lg-3 d-flex align-items-center">
+          <div class="form-check">
+            <%= check_box_tag 'bookmarks_selectall', '', false, class: 'form-check-input bookmark-selection-all', id: 'bookmarks_selectall', data: { testid: 'bookmarks-select-all' } %>
+            <%= label_tag 'bookmarks_selectall', t('blacklight.bookmarks.addall.button'), class: 'form-check-label fw-bold align-middle' %>
+          </div>
+          <span id="selection-count" class="ms-2 text-muted d-none" data-testid="selection-count"></span>
+        </div>
+      <% end %>
+    </div>
+  <% end %>
+  <% documents.each_with_index do |document, index| %>
+    <div class="document-row row" data-document-id="<%= document.id %>">
+      <div class="col-auto d-flex align-items-start pt-3">
+        <div class="bookmark-selection-container">
+          <%= check_box_tag "bookmark_selection_#{document.id}",
+            document.id,
+            false,
+            class: 'bookmark-selection form-check-input',
+            data: { document_id: document.id, testid: "bookmark-selection-#{document.id}" },
+            'aria-label': t('blacklight.bookmarks.select_item', title: document.first(:title_tesi) || document.id) 
+          %>
+        </div>
+
+      </div>
+      <div class="col">
+        <% presenter = document_presenter(document) %>
+        <%= render view_config.document_component.new(presenter: presenter, counter: (@response&.start || 0) + index + 1, partials: view_config.partials) %>
+      </div>
+    </div>
+  <% end %>
+</div>
