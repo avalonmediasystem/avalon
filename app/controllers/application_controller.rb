@@ -139,14 +139,10 @@ class ApplicationController < ActionController::Base
       if user.blank?
         SpeedyAF::Proxy::Admin::Collection.where("has_model_ssim:Admin\\:\\:Collection").to_a
       else
-        unit_collections = SpeedyAF::Proxy::Admin::Unit.where("has_model_ssim:Admin\\:\\:Unit AND inheritable_edit_access_person_ssim:#{user}").to_a.map(&:collections).flatten
-        collections = unit_collections + SpeedyAF::Proxy::Admin::Collection.where("has_model_ssim:Admin\\:\\:Collection AND inheritable_edit_access_person_ssim:#{user}").to_a
-        collections.uniq
+        SpeedyAF::Proxy::Admin::Collection.where("has_model_ssim: Admin\\:\\:Collection AND (inheritable_edit_access_person_ssim: #{user} OR {!join from='id' to='heldBy_ssim'}inheritable_edit_access_person_ssim:#{user})")
       end
     else
-      unit_collections = SpeedyAF::Proxy::Admin::Unit.where("has_model_ssim:Admin\\:\\:Unit AND inheritable_edit_access_person_ssim:#{user_key}").to_a.map(&:collections).flatten
-      collections = unit_collections + SpeedyAF::Proxy::Admin::Collection.where("has_model_ssim:Admin\\:\\:Collection AND inheritable_edit_access_person_ssim:#{user_key}").to_a
-      collections.uniq
+      SpeedyAF::Proxy::Admin::Collection.where("has_model_ssim: Admin\\:\\:Collection AND (inheritable_edit_access_person_ssim: #{user_key} OR {!join from='id' to='heldBy_ssim'}inheritable_edit_access_person_ssim:#{user_key})")
     end
   end
   helper_method :get_user_collections

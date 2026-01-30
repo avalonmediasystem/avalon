@@ -479,7 +479,7 @@ describe Admin::UnitsController, type: :controller do
     let(:unit) { FactoryBot.create(:unit) }
 
     before do
-      login_user unit.managers.first
+      login_user unit.unit_admins.first
     end
 
     it 'adds the poster' do
@@ -532,7 +532,7 @@ describe Admin::UnitsController, type: :controller do
     let(:unit) { FactoryBot.create(:unit, :with_poster) }
 
     before do
-      login_user unit.managers.first
+      login_user unit.unit_admins.first
     end
 
     it 'removes the poster' do
