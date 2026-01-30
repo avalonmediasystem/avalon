@@ -240,6 +240,10 @@ class Ability
         (not (full_login? || is_api_request?)) || !is_manager_of?(collection)
       end
 
+      cannot :update, [Admin::Unit, SpeedyAF::Proxy::Admin::Unit] do |unit|
+        !is_admin_of?(unit)
+      end
+
       cannot :destroy, [Admin::Unit, SpeedyAF::Proxy::Admin::Unit] do |unit|
         (not (full_login? || is_api_request?)) || !@user.in?(unit.unit_admins)
       end
