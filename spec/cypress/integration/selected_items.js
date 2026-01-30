@@ -14,7 +14,6 @@
  * ---  END LICENSE_HEADER BLOCK  ---
  */
 
-import { navigateToManageContent } from '../support/navigation';
 import CollectionPage from '../pageObjects/collectionPage';
 import HomePage from '../pageObjects/homePage';
 const homePage = new HomePage();
@@ -27,18 +26,14 @@ import {
 context('Selected Items', () => {
   const collectionPage = new CollectionPage();
 
-  var collection_title = `Automation collection title ${
-    Math.floor(Math.random() * 10000) + 1
-  }`;
-  const new_collection_title = `Automation collection title ${
-    Math.floor(Math.random() * 10000) + 1
-  }`;
-  var media_object_title = `Automation Item title ${
-    Math.floor(Math.random() * 100000) + 1
-  }`;
-  var new_media_object_title = `Automation Item title ${
-    Math.floor(Math.random() * 100000) + 1
-  }`;
+  var collection_title = `Automation collection title ${Math.floor(Math.random() * 10000) + 1
+    }`;
+  const new_collection_title = `Automation collection title ${Math.floor(Math.random() * 10000) + 1
+    }`;
+  var media_object_title = `Automation Item title ${Math.floor(Math.random() * 100000) + 1
+    }`;
+  var new_media_object_title = `Automation Item title ${Math.floor(Math.random() * 100000) + 1
+    }`;
   var media_object_id;
   var new_media_object_id;
 
@@ -406,4 +401,45 @@ it('Verify if the user is able to delete items - @T47a94cdc', () => {
       'have.text',
       'The item you requested has been deleted from the system. If this is not expected, contact your support staff.'
     );
+});
+
+it('Verify bulk action buttons are disabled and re-enabled when selection changes', () => {
+  cy.login('administrator');
+  cy.visit('/bookmarks');
+
+  // Deselect all items
+  cy.get('#bookmarks_selectall').uncheck({ force: true });
+
+  // Verify buttons are disabled
+  cy.get('.bulk-actions a').first().should('have.class', 'disabled');
+
+  // Select all items again
+  cy.get('#bookmarks_selectall').check({ force: true });
+
+  // Verify buttons are enabled
+  cy.get('.bulk-actions a').each(($btn) => {
+    cy.wrap($btn).should('not.have.class', 'disabled');
+    cy.wrap($btn).should('not.have.attr', 'aria-disabled', 'true');
+  });
+});
+
+it('Verify selection count is displayed when items are selected', () => {
+  cy.login('administrator');
+  cy.visit('/bookmarks');
+
+  // Verify selection count is displayed
+  cy.get('#selection-count')
+    .should('be.visible')
+    .and('contain', 'selected');
+});
+
+it('Verify selection count is hidden when no items are selected', () => {
+  cy.login('administrator');
+  cy.visit('/bookmarks');
+
+  // Deselect all items
+  cy.get('#bookmarks_selectall').uncheck({ force: true });
+
+  // Verify selection count is hidden
+  cy.get('#selection-count').should('have.class', 'd-none');
 });

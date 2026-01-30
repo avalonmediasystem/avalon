@@ -518,4 +518,44 @@ describe BookmarksController, type: :controller do
       expect(JSON.parse(response.body)["count"]).to eq(3)
     end
   end
+
+  describe "#destroy_selected" do
+    it "should remove only the selected items from bookmarks" do
+      selected_ids = media_objects.first(2).map(&:id)
+      delete :destroy_selected, params: { id: selected_ids }
+      expect(flash[:success]).to eq(I18n.t("blacklight.bookmarks.remove_selected.success", count: 2))
+
+      # First two items are removed from bookmarks
+      expect(Bookmark.exists?(user: controller.current_user, document_id: media_objects.first.id)).to be_falsey
+      expect(Bookmark.exists?(user: controller.current_user, document_id: media_objects.second.id)).to be_falsey
+      # Last item is still bookmarked
+      expect(Bookmark.exists?(user: controller.current_user, document_id: media_objects.last.id)).to be_truthy
+    end
+
+    it "should show error when no items are selected" do
+      delete :destroy_selected, params: { id: [] }
+      expect(flash[:error]).to eq(I18n.t("blacklight.bookmarks.remove_selected.no_selection"))
+      
+      # Existing bookmarks are unaffected
+      media_objects.each { 
+        |mo| expect(Bookmark.exists?(user: controller.current_user, document_id: mo.id)).to be_truthy
+      }
+    end
+
+    it "should redirect to bookmarks path after removal" do
+      delete :destroy_selected, params: { id: media_objects.first.id }
+      expect(response).to redirect_to(bookmarks_path)
+    end
+
+    it "should not remove items that are not bookmarked" do
+      non_bookmarked_mo = FactoryBot.create(:media_object, collection: collection)
+      delete :destroy_selected, params: { id: [non_bookmarked_mo.id] }
+      expect(flash[:error]).to eq(I18n.t("blacklight.bookmarks.remove_selected.failure"))
+      
+      # Existing bookmarks are unaffected
+      media_objects.each { 
+        |mo| expect(Bookmark.exists?(user: controller.current_user, document_id: mo.id)).to be_truthy
+      }
+    end
+  end
 end
