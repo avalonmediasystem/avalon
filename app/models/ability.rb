@@ -233,7 +233,7 @@ class Ability
 
       cannot :update, [Admin::Collection, SpeedyAF::Proxy::Admin::Collection] do |collection|
         # Editors and Depositors should not be able to edit collection level information
-        !is_manager_of?(collection)
+        (not (full_login? || is_api_request?)) || !is_manager_of?(collection)
       end
 
       cannot :destroy, [Admin::Collection, SpeedyAF::Proxy::Admin::Collection] do |collection, other_user_collections=[]|
@@ -241,11 +241,11 @@ class Ability
       end
 
       cannot :update, [Admin::Unit, SpeedyAF::Proxy::Admin::Unit] do |unit|
-        !is_admin_of?(unit)
+        (not (full_login? || is_api_request?)) || !is_admin_of?(unit)
       end
 
       cannot :destroy, [Admin::Unit, SpeedyAF::Proxy::Admin::Unit] do |unit|
-        (not (full_login? || is_api_request?)) || !@user.in?(unit.unit_admins)
+        (not (full_login? || is_api_request?)) || !is_admin_of?(unit)
       end
 
       can :intercom_push, [MediaObject, SpeedyAF::Proxy::MediaObject] do |media_object|
