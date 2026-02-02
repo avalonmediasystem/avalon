@@ -13,13 +13,9 @@ Unless required by applicable law or agreed to in writing, software distributed
   specific language governing permissions and limitations under the License.
 ---  END LICENSE_HEADER BLOCK  ---
 %>
-<%= link_to t('blacklight.bookmarks.remove_selected.button'),
-              remove_selected_bookmarks_path,
-              method: :delete,
-              class: 'btn btn-outline-danger disabled',
-              data: {
-                requires_selection: true,
-                testid: 'remove-selected-btn',
-                confirm: t('blacklight.bookmarks.remove_selected.confirm')
-              },
-              'aria-disabled': 'true' %>
+<%= form_with url: remove_selected_bookmarks_path, method: :delete, local: true, data: { requires_selection: true } do %>
+  <%= submit_tag t('blacklight.bookmarks.remove_selected.button'),
+                 class: 'btn btn-outline-danger disabled',
+                 data: { testid: 'remove-selected-btn', confirm: t('blacklight.bookmarks.remove_selected.confirm') },
+                 'aria-disabled': 'true' %>
+<% end %>

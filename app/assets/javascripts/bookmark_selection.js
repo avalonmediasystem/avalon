@@ -105,9 +105,15 @@ class BookmarkSelectionManager {
   /**
    * Check if all items are selected before allowing actions. If all items are not
    * selected, show alert and prevent action.
+   * Skip for 'Clear selected items' button.
    * @param {Event} e click event on toolbar action
    */
   handleActionClick(e) {
+    // Allow 'Clear selected items' button to work on partial selection
+    if (e.target.dataset.testid === 'remove-selected-btn') {
+      return;
+    }
+
     const totalItemsCount = document.querySelectorAll('.bookmark-selection').length;
     // If not all items are selected, show alert and prevent action
     if (totalItemsCount > this.selectedIds.size) {
@@ -151,14 +157,20 @@ class BookmarkSelectionManager {
       }
     }
 
-    // Enable/disable buttons
-    document.querySelectorAll('[data-requires-selection], .bulk-actions[data-requires-selection] a').forEach(el => {
+    // Enable/disable buttons and form submit buttons
+    document.querySelectorAll('[data-requires-selection], .bulk-actions[data-requires-selection] a, form[data-requires-selection] input[type="submit"]').forEach(el => {
       if (hasSelection) {
         el.classList.remove('disabled');
         el.removeAttribute('aria-disabled');
+        el.removeAttribute('tabindex');
+        el.removeAttribute('disabled');
       } else {
         el.classList.add('disabled');
         el.setAttribute('aria-disabled', 'true');
+        el.setAttribute('tabindex', '-1');
+        if (el.tagName === 'INPUT') {
+          el.setAttribute('disabled', 'disabled');
+        }
       }
     });
   }

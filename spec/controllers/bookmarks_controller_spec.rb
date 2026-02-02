@@ -537,9 +537,7 @@ describe BookmarksController, type: :controller do
       expect(flash[:error]).to eq(I18n.t("blacklight.bookmarks.remove_selected.no_selection"))
       
       # Existing bookmarks are unaffected
-      media_objects.each { 
-        |mo| expect(Bookmark.exists?(user: controller.current_user, document_id: mo.id)).to be_truthy
-      }
+      media_objects.each { |mo| expect(Bookmark.exists?(user: controller.current_user, document_id: mo.id)).to be_truthy }
     end
 
     it "should redirect to bookmarks path after removal" do
@@ -551,11 +549,9 @@ describe BookmarksController, type: :controller do
       non_bookmarked_mo = FactoryBot.create(:media_object, collection: collection)
       delete :destroy_selected, params: { id: [non_bookmarked_mo.id] }
       expect(flash[:error]).to eq(I18n.t("blacklight.bookmarks.remove_selected.failure"))
-      
+
       # Existing bookmarks are unaffected
-      media_objects.each { 
-        |mo| expect(Bookmark.exists?(user: controller.current_user, document_id: mo.id)).to be_truthy
-      }
+      media_objects.each { |mo| expect(Bookmark.exists?(user: controller.current_user, document_id: mo.id)).to be_truthy }
     end
   end
 end
