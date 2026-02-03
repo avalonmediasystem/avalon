@@ -74,7 +74,7 @@ class BookmarksController < CatalogController
       @valid_user_actions.delete :unpublish if @valid_user_actions.include? :unpublish and cannot? :unpublish, mo
       @valid_user_actions.delete :publish if @valid_user_actions.include? :publish and cannot? :update, mo
       @valid_user_actions.delete :merge if @valid_user_actions.include? :merge and cannot? :update, mo
-      @valid_user_actions.delete :move if @valid_user_actions.include? :move and cannot? :update, mo
+      @valid_user_actions.delete :move if @valid_user_actions.include? :move and cannot? :move, mo
       @valid_user_actions.delete :update_access_control if @valid_user_actions.include? :update_access_control and cannot? :update_access_control, mo
       @valid_user_actions.delete :intercom_push if @valid_user_actions.include? :intercom_push and cannot? :intercom_push, mo
     end
@@ -193,23 +193,29 @@ class BookmarksController < CatalogController
   end
 
   def move_action documents
-    collection = SpeedyAF::Proxy::Admin::Collection.find( params[:target_collection_id] )
+    collection = SpeedyAF::Proxy::Admin::Collection.find(params[:target_collection_id])
     if cannot? :read, collection
-      flash[:error] =  t("blacklight.move.error", collection_name: collection.name)
+      flash[:error] = t("blacklight.move.error", collection_name: collection.name)
     else
       errors = []
       success_ids = []
       Array(documents.map(&:id)).each do |id|
         media_object = SpeedyAF::Proxy::MediaObject.find(id)
-        if cannot? :update, media_object
+        if cannot? :move, media_object
           errors += ["#{media_object.title} (#{id}) #{t('blacklight.messages.permission_denied')}."]
         else
           success_ids << id
         end
       end
       flash[:success] = t("blacklight.move.success", count: success_ids.count, collection_name: collection.name) if success_ids.count > 0
+      # Upstream logic in Blacklight creates a success message if one is not already set:
+      # https://github.com/projectblacklight/blacklight/blob/main/app/builders/blacklight/action_builder.rb
+      # This causes the full success message hash to be generated in the flash message because a count is not
+      # available to be passed in. Flash.now temporarily sets the message so blacklight does not create
+      # one, but clears itself out before the page actually renders.
+      flash.now[:success] = "" if success_ids.count.zero?
       flash[:alert] = "#{t('blacklight.move.alert', count: errors.count)}</br> #{ errors.join('<br/> ') }".html_safe if errors.count > 0
-      BulkActionJobs::Move.perform_later success_ids, params.permit(:target_collection_id).to_h
+      BulkActionJobs::Move.perform_later success_ids, params.permit(:target_collection_id).to_h if success_ids.count.positive?
     end
   end
 
