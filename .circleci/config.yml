@@ -67,8 +67,9 @@ jobs:
 
       - run: cp config/controlled_vocabulary.yml.example config/controlled_vocabulary.yml
 
-      - ruby/install:
-          version: << parameters.ruby_ver >>
+     # Uncomment this when submitting PRs that upgrade the version of ruby
+     #- ruby/install:
+     #     version: << parameters.ruby_ver >>
 
       - run:
           command: |
