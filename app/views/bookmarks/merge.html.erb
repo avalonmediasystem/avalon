@@ -31,7 +31,7 @@ Unless required by applicable law or agreed to in writing, software distributed
               <p><%= t('blacklight.merge.confirm') %></p>
               <% @documents.each do |d| %>
                 <div class="form-check">
-                  <%= radio_button_tag :media_object, d.id, class: 'ms-3' %>
+                  <%= radio_button_tag :media_object, d.id, class: 'ms-3',  data: { testid: "merge-media-object-#{d.id}" } %>
                   <%= label_tag "media_object_#{d.id}", "#{d["title_tesi"] || "No title"} - #{d.id}" , class: 'ms-3' %>
                   <% t('blacklight.merge.insufficient_rights') if cannot? :destroy, SpeedyAF::Proxy::MediaObject.find(d.id) %>
                 </div>

@@ -79,7 +79,7 @@ Unless required by applicable law or agreed to in writing, software distributed
                   <%= text_field_tag "add_user_end", nil, placeholder: 'End Date (yyyy-mm-dd)', class: 'form-control date-input access_date', autocomplete: 'off' %>
                 </div>
                 <div class="d-flex justify-content-start">
-                  <%= button_tag "Add", name: 'submit_add_user', class:'btn btn-outline', value: 'Add' %>
+                  <%= button_tag "Add", name: 'submit_add_user', class:'btn btn-outline', value: 'Add', data: { testid: 'bookmark-add-user' } %>
                   <%= button_tag "Remove", name: 'submit_remove_user', class:'btn btn-outline remove_access', value: 'Remove' %>
                 </div>
               <% end %>

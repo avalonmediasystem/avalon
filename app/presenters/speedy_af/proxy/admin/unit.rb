@@ -42,4 +42,8 @@ class SpeedyAF::Proxy::Admin::Unit < SpeedyAF::Base
   def to_param
     id
   end
+
+  def collections
+    SpeedyAF::Proxy::Admin::Collection.where("heldBy_ssim: #{id} AND has_model_ssim:Admin\\:\\:Collection").to_a
+  end
 end

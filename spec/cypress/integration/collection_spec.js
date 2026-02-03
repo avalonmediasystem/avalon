@@ -55,6 +55,11 @@ context('Collections Test', () => {
     // Delete main collection
     collectionPage.deleteCollectionByName(collection_title);
   });
+  it('Test Setup - Create unit ', { tags: '@critical' }, () => {
+    cy.login('administrator');
+    navigateToManageContent();
+    cy.get("[data-testid='unit-create-unit-button']").click();
+  });
 
   it(
     'Verify whether an admin user is able to create a collection - @T553cda51 ',
@@ -63,6 +68,30 @@ context('Collections Test', () => {
       cy.login('administrator');
       navigateToManageContent();
       collectionPage.createCollection({ title: collection_title });
+
+      //Fill Unit Form
+      cy.get('[data-testid="unit-name"]').type('Automation Unit');
+      cy.get('[data-testid="unit-description"]').type(
+        'Automation Unit Description'
+      );
+      cy.get('[data-testid="unit-contact-email"]').type(
+        'administrator@example.com'
+      );
+      cy.get('[data-testid="unit-website-url"]').type('http://www.example.com');
+      cy.get('[data-testid="unit-website-label"]').type('Website label');
+      cy.get('[data-testid="unit-new-unit-btn"]').click();
+
+      //Verify Unit created
+      cy.get('[data-testid="alert"]').contains(
+        'unit was successfully created.'
+      );
+      cy.get('[data-testid="unit-unit-details"]').contains('Automation Unit');
+      cy.get('[data-testid="unit-description"]').contains(
+        'Automation Unit Description'
+      );
+      cy.get('[data-testid="unit-contact-email"]').contains(
+        'administrator@example.com'
+      );
     }
   );
 

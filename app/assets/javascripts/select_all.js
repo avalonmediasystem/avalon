@@ -84,3 +84,12 @@ window.addEventListener('beforeunload', function () {
     selectAllAbortController.abort();
   }
 });
+
+//adding data-testid to select toggles for testing
+$(function () {
+  $('label.toggle-bookmark input.toggle-bookmark[type=checkbox]').each(function () {
+    const m = this.id && this.id.match(/^toggle-bookmark_(.+)$/);
+    $(this).attr('data-testid', m ? `bookmark-toggle-${m[1]}` : 'bookmark-toggle');
+  });
+});
+

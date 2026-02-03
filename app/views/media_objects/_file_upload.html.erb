@@ -210,7 +210,7 @@ Unless required by applicable law or agreed to in writing, software distributed
             <div class="fileinput input-group mb-3" id="file-upload" data-provides="fileinput"  style="height: 33px">
               <input type="file" class="form-control" id="file-input" name="Filedata[]" data-testid="media-object-edit-select-file-btn">
               <button href="#" class="fileinput-submit btn btn-outline btn-file file-upload-buttons"
-                data-trigger="submit" data-bs-toggle="modal" data-bs-target="#uploading" data-testid="media-object-edit-upload-btn" disabled='true'>Upload</button>
+                data-trigger="submit" data-testid="media-object-edit-upload-btn" disabled='true'>Upload</button>
             </div>
 
             <%= hidden_field_tag(:new_asset, true, :id => "files_new_asset") if params[:new_asset] %>

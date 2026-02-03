@@ -139,10 +139,10 @@ class ApplicationController < ActionController::Base
       if user.blank?
         SpeedyAF::Proxy::Admin::Collection.where("has_model_ssim:Admin\\:\\:Collection").to_a
       else
-        SpeedyAF::Proxy::Admin::Collection.where("has_model_ssim:Admin\\:\\:Collection AND inheritable_edit_access_person_ssim:#{user}").to_a
+        SpeedyAF::Proxy::Admin::Collection.where("has_model_ssim: Admin\\:\\:Collection AND (inheritable_edit_access_person_ssim: #{user} OR {!join from='id' to='heldBy_ssim'}inheritable_edit_access_person_ssim:#{user})")
       end
     else
-      SpeedyAF::Proxy::Admin::Collection.where("has_model_ssim:Admin\\:\\:Collection AND inheritable_edit_access_person_ssim:#{user_key}").to_a
+      SpeedyAF::Proxy::Admin::Collection.where("has_model_ssim: Admin\\:\\:Collection AND (inheritable_edit_access_person_ssim: #{user_key} OR {!join from='id' to='heldBy_ssim'}inheritable_edit_access_person_ssim:#{user_key})")
     end
   end
   helper_method :get_user_collections

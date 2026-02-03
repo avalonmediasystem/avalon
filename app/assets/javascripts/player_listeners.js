@@ -23,6 +23,7 @@ let streamId = '';
 let isMobile = false;
 let isPlaying = false;
 let reloadInterval = false;
+let seeking = false;
 let currentTime;
 
 /**
@@ -645,8 +646,16 @@ function initM3U8Reload(player) {
         }
       });
 
+      player.player.on('seeking', () => {
+        seeking = true
+      });
+
       player.player.on('waiting', () => {
-        m3u8Reload();
+        if (seeking === true) {
+          seeking = false;
+        } else {
+          m3u8Reload();
+        }
       });
 
       reloadAdded = true;

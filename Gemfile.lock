@@ -206,9 +206,6 @@ GEM
       base64
       jmespath (~> 1, >= 1.6.1)
       logger
-    aws-sdk-elastictranscoder (1.72.0)
-      aws-sdk-core (~> 3, >= 3.225.0)
-      aws-sigv4 (~> 1.5)
     aws-sdk-kms (1.103.0)
       aws-sdk-core (~> 3, >= 3.225.0)
       aws-sigv4 (~> 1.5)
@@ -986,7 +983,6 @@ DEPENDENCIES
   aws-sdk-cloudfront
   aws-sdk-cloudwatchevents
   aws-sdk-cloudwatchlogs
-  aws-sdk-elastictranscoder
   aws-sdk-mediaconvert (>= 1.157.0)
   aws-sdk-rails
   aws-sdk-s3

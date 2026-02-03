@@ -29,7 +29,7 @@ Unless required by applicable law or agreed to in writing, software distributed
             <label class="col-form-label" for="add_lending_period_days">
               <span data-title="Days">Days</span>
             </label>
-            <%= text_field_tag "add_lending_period_days", d ? d : 0, class: 'form-control' %>
+            <%= text_field_tag "add_lending_period_days", d ? d : 0, class: 'form-control', data:{testid: 'media-object-lending-period-days'} %>
           </div>
           <div class="col-1">
             <label class="col-form-label" for="add_lending_period_hours">

@@ -34,8 +34,8 @@ describe Admin::Collection do
       let(:ability) { Ability.new(user) }
       let(:user) { User.where(Devise.authentication_keys.first => collection.managers.first).first }
 
-      it "can perform all actions on an existing collection but cannot create collections" do
-        expect(ability).not_to be_able_to(:create, Admin::Collection)
+      it "can perform all actions on collection" do
+        expect(ability).to be_able_to(:create, Admin::Collection)
         expect(ability).to be_able_to(:read, Admin::Collection)
         expect(ability).to be_able_to(:read, collection)
         expect(ability).to be_able_to(:update, collection)
@@ -73,7 +73,7 @@ describe Admin::Collection do
         expect(ability).not_to be_able_to(:create, Admin::Collection)
         expect(ability).to be_able_to(:read, Admin::Collection)
         expect(ability).to be_able_to(:read, collection)
-        expect(ability).to be_able_to(:update, collection)
+        expect(ability).not_to be_able_to(:update, collection)
         expect(ability).not_to be_able_to(:update_unit, collection)
         expect(ability).not_to be_able_to(:update_managers, collection)
         expect(ability).not_to be_able_to(:update_editors, collection)
@@ -89,7 +89,7 @@ describe Admin::Collection do
           expect(ability).not_to be_able_to(:create, Admin::Collection)
           expect(ability).to be_able_to(:read, Admin::Collection)
           expect(ability).to be_able_to(:read, collection)
-          expect(ability).to be_able_to(:update, collection)
+          expect(ability).not_to be_able_to(:update, collection)
           expect(ability).not_to be_able_to(:update_unit, collection)
           expect(ability).not_to be_able_to(:update_managers, collection)
           expect(ability).not_to be_able_to(:update_editors, collection)
@@ -215,7 +215,6 @@ describe Admin::Collection do
     it { is_expected.not_to allow_value('collection@').for(:contact_email) }
     it { is_expected.to allow_value('https://collection.example.com').for(:website_url) }
     it { is_expected.not_to allow_value('collection.example.com').for(:website_url) }
-    it "should ensure length of :managers is_at_least(1)"
 
     it "should have attributes" do
       expect(subject.name).to eq("Herman B. Wells Collection")
