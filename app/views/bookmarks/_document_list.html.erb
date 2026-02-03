@@ -13,6 +13,20 @@ Unless required by applicable law or agreed to in writing, software distributed
   specific language governing permissions and limitations under the License.
 ---  END LICENSE_HEADER BLOCK  ---
 %>
+<%#
+This partial, overrides Blacklight's default document list rendering to add bookmarks-specific selection UI for bulk actions and clearing subset selections.
+
+Changes made;
+1. 'Select All' checkbox on top of the documents with a selection count. This allows select/desect all documents on the current page.
+2. Add individual selection checkboxes to the start of each document row, which allows selecting/deselecting individual documents.
+These checkboxes are independent of the native bookmark toggles in Blacklight. These checkboxes have event listeners in bookmark_selection.js,
+to manage the bulk action button and 'Clear selected items' button states based on the selection state on the page.
+3. Use custom CSS classes and data attributes for styling and event listeners.
+
+Other related files:
+- app/assets/javascripts/bookmark_selection.js
+- app/assets/stylesheets/avalon/bookmarks.scss
+%>
 <% view_config = local_assigns[:view_config] || blacklight_config&.view_config(document_index_view_type) %>
 <div id="documents" class="documents-<%= view_config&.key || document_index_view_type %> bookmarks-document-list" data-testid="bookmarks-results-list">
   <% if documents.count > 1 %>

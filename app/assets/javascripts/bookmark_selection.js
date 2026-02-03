@@ -20,8 +20,8 @@
 class BookmarkSelectionManager {
   constructor() {
     this.selectedIds = new Set();
-    this.initializeEventListeners();
     this.selectAllOnLoad();
+    this.initializeEventListeners();
     this.updateUI();
   }
 
@@ -54,11 +54,6 @@ class BookmarkSelectionManager {
     // Form submission for selected items
     document.querySelectorAll('form[data-requires-selection]').forEach(form => {
       form.addEventListener('submit', (e) => this.handleFormSubmit(e));
-    });
-
-    // Check for if all items on page are selected
-    document.querySelectorAll('a[data-requires-selection], button[data-requires-selection], .bulk-actions[data-requires-selection] a').forEach(el => {
-      el.addEventListener('click', (e) => this.handleActionClick(e));
     });
   }
 
@@ -103,28 +98,6 @@ class BookmarkSelectionManager {
   }
 
   /**
-   * Check if all items are selected before allowing actions. If all items are not
-   * selected, show alert and prevent action.
-   * Skip for 'Clear selected items' button.
-   * @param {Event} e click event on toolbar action
-   */
-  handleActionClick(e) {
-    // Allow 'Clear selected items' button to work on partial selection
-    if (e.target.dataset.testid === 'remove-selected-btn') {
-      return;
-    }
-
-    const totalItemsCount = document.querySelectorAll('.bookmark-selection').length;
-    // If not all items are selected, show alert and prevent action
-    if (totalItemsCount > this.selectedIds.size) {
-      window.alert("Please use 'Clear selected items' to remove deselected items before performing actions on a subset.");
-      e.preventDefault();
-      e.stopPropagation();
-      return false;
-    }
-  }
-
-  /**
    * When item selection changes;
    * - update 'Select All' checkbox state -> checked/unchecked/indeterminate
    * - update selection count display next to 'Select All' checkbox
@@ -157,9 +130,21 @@ class BookmarkSelectionManager {
       }
     }
 
+    // Determine if all items on page are selected
+    const allSelected = this.selectedIds.size === allCheckboxes.length;
+
     // Enable/disable buttons and form submit buttons
     document.querySelectorAll('[data-requires-selection], .bulk-actions[data-requires-selection] a, form[data-requires-selection] input[type="submit"]').forEach(el => {
-      if (hasSelection) {
+      const isRemoveSelectedBtn = el.dataset.testid === 'remove-selected-btn';
+
+      /**
+       * Determine if the current element should be enabled:
+       * - Bulk action buttons -> only when ALL items are selected
+       * - Clear selected items button -> when all/subset of items are selected
+       */
+      const shouldEnable = isRemoveSelectedBtn ? hasSelection : (hasSelection && allSelected);
+
+      if (shouldEnable) {
         el.classList.remove('disabled');
         el.removeAttribute('aria-disabled');
         el.removeAttribute('tabindex');
