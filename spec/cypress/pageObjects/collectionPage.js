@@ -369,30 +369,13 @@ class CollectionPage {
     cy.get('[data-testid="media-object-continue-btn"]').click();
     cy.wait('@structurepage').its('response.statusCode').should('eq', 200);
 
-    // Add structure if requested
+    // Add structure if requested (via file upload)
     if (config.addStructure) {
       cy.get('[data-testid="media-object-edit-structure-btn-0"]').click();
-      cy.get('[data-testid="media-object-struct-adv-edit-btn-0"]').click();
-      cy.wait(2000);
-
-      cy.window().then((win) => {
-        const editor = win.ace.edit('text_editor_0');
-        const xmlContent = `<Item label="Short Documentary.mp4">
-        <Div label="Opening">
-          <Span label="Intro 1" begin="00:00:00" end="00:00:10"/>
-          <Span label="Intro 2" begin="00:00:11" end="00:00:20"/>
-        </Div>
-        <Div label="Main Content">
-          <Span label="Segment A" begin="00:00:20" end="00:00:30"/>
-          <Span label="Segment B" begin="00:00:30" end="00:00:45"/>
-        </Div>
-        <Span label="Wrap-up" begin="00:00:45" end="00:00:53"/>
-      </Item>`;
-        editor.setValue(xmlContent, -1);
-      });
-
       cy.intercept('POST', '**/attach_structure').as('saveStructure');
-      cy.get('input[type="button"][value="Save and Exit"]').click();
+      cy.get('input[name="master_file[structure]"]')
+        .should('exist')
+        .selectFile('test-sample.mp4.structure.xml', { force: true });
       cy.wait('@saveStructure');
     }
 
