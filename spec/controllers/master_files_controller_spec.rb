@@ -920,16 +920,40 @@ describe MasterFilesController do
         Settings.encoding = double("encoding", engine_adapter: 'test', derivative_bucket: 'mybucket')
       end
 
-      it 'should redirect to a presigned url for AWS' do
-        allow(ENV).to receive(:[]).and_call_original
-        allow(ENV).to receive(:[]).with('AWS_REGION').and_return('us-east-2')
-        get :download_derivative, params: { id: master_file.id }
-        expect(response.status).to eq 302
-        expect(response.location).to include('s3.us-stubbed-1.amazonaws.com', 'X-Amz-Algorithm', 'X-Amz-Credential', 'X-Amz-Expires', 'X-Amz-SignedHeaders', 'X-Amz-Signature')
-      end
-
       after do
         Settings.encoding = @encoding_backup
+      end
+
+      context 'use_presigned_url = true' do
+        it 'should redirect to a presigned url for AWS' do
+          allow(Settings.derivative).to receive(:use_presigned_url).and_return(true)
+          allow(ENV).to receive(:[]).and_call_original
+          allow(ENV).to receive(:[]).with('AWS_REGION').and_return('us-east-2')
+          get :download_derivative, params: { id: master_file.id }
+          expect(response.status).to eq 302
+          expect(response.location).to include('s3.us-stubbed-1.amazonaws.com', 'X-Amz-Algorithm', 'X-Amz-Credential', 'X-Amz-Expires', 'X-Amz-SignedHeaders', 'X-Amz-Signature')
+        end
+      end
+
+      context 'use_presigned_url = false' do
+        let(:client) { Aws::S3::Client.new(stub_responses: true) }
+        # Weird encoding quirks from av files caused issue with the test so run the test with a regular
+        # text file to make sure response body is matching. Can manually confirm that av files are 
+        # being returned properly in real world context.
+        let(:object_body) { File.read(Rails.root.join('spec', 'fixtures', 'captions.vtt')) }
+
+        before do
+          client.stub_responses(:get_object, { body: object_body })
+          allow(Aws::S3::Client).to receive(:new).and_return(client)
+          allow(Settings.derivative).to receive(:use_presigned_url).and_return(false)
+        end
+
+        it 'should stream the file contents' do
+          get :download_derivative, params: { id: master_file.id }
+          expect(response.header['Content-Disposition']).to eq 'attachment; filename=fixtures/meow.wav'
+          expect(response.header['Content-Transfer-Encoding']).to eq 'binary'
+          expect(response.body).to eq object_body
+        end
       end
     end
 
