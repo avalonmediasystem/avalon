@@ -32,7 +32,7 @@
     "react-bootstrap": "^2.10.9",
     "react-dom": "^19.1.0",
     "react-on-rails": "^14.2.1",
-    "react-structural-metadata-editor": "https://github.com/avalonmediasystem/react-structural-metadata-editor",
+    "react-structural-metadata-editor": "https://github.com/avalonmediasystem/react-structural-metadata-editor.git#b12c4fb",
     "sass": "^1.93.2",
     "sass-loader": "^13.3.2",
     "sortablejs": "^1.15.3",
