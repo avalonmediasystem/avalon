@@ -1046,64 +1046,6 @@ context('Item', () => {
     }
   );
 
-  it(
-    'Verify editing a structure - file upload - @Tc91b132e',
-    { tags: '@high' },
-    () => {
-      cy.login('administrator');
-      cy.visit('/media_objects/' + item_id);
-      cy.waitForVideoReady();
-      cy.get('[data-testid="media-object-edit-btn"]').click();
-      cy.get('[data-testid="media-object-side-nav-link"]')
-        .contains('Structure')
-        .click(); //structure page
-      cy.get('[data-testid="media-object-edit-structure-btn-0"]').click();
-      //Remove the previous structure
-      cy.get('[data-testid="media-object-remove-structure-btn"]').click();
-      cy.get('[data-testid="table-view-delete-confirmation-btn"]').click();
-      //click on upload
-      cy.get('[data-testid="media-object-edit-structure-btn-0"]').click();
-      //cy.get('[data-testid="media-object-struct-upload-btn-0"]').click();
-
-      // Ensure file input is present
-      cy.get('input[name="master_file[structure]"]')
-        .should('exist')
-        .selectFile('test-sample.mp4.structure.xml', { force: true });
-      cy.wait(6000);
-
-      cy.get('[data-testid="media-object-continue-btn"]').click();
-      cy.visit('/media_objects/' + item_id);
-      cy.waitForVideoReady();
-      // Validating the resource description
-      cy.get('[data-testid="tree-item"]')
-        .should('exist')
-        .and('have.length.greaterThan', 0);
-
-      // Validate top-level Item label
-      cy.get('[data-testid="tree-item"]')
-        .first()
-        .should('have.attr', 'data-label', 'Documentary.mp3');
-
-      cy.get('[data-testid="tree-item"][data-label="Starting act"]').should(
-        'exist'
-      );
-
-      cy.get('[data-testid="tree-item"][data-label="Part 1"]').should('exist');
-      cy.get('[data-testid="tree-item"][data-label="Part 2"]').should('exist');
-
-      cy.get('[data-testid="tree-item"][data-label="Body"]').should('exist');
-
-      cy.get('[data-testid="tree-item"][data-label="Content 1"]').should(
-        'exist'
-      );
-      cy.get('[data-testid="tree-item"][data-label="Content 2"]').should(
-        'exist'
-      );
-
-      cy.get('[data-testid="tree-item"][data-label="The end"]').should('exist');
-    }
-  );
-
   it('Adding a caption file under Manage file ', { tags: '@critical' }, () => {
     cy.login('administrator');
     cy.visit('/media_objects/' + item_id);

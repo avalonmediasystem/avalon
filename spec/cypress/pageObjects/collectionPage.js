@@ -371,12 +371,24 @@ class CollectionPage {
 
     // Add structure if requested (via file upload)
     if (config.addStructure) {
-      cy.get('[data-testid="media-object-edit-structure-btn-0"]').click();
+      cy.get(`[data-testid="media-object-struct-upload-btn-0"]`)
+        .should('be.visible').and('contain.text', 'Upload');
+
       cy.intercept('POST', '**/attach_structure').as('saveStructure');
-      cy.get('input[name="master_file[structure]"]')
-        .should('exist')
-        .selectFile('test-sample.mp4.structure.xml', { force: true });
-      cy.wait('@saveStructure');
+
+      // Upload the file using the respective file input
+      cy.get(`#structure_0_filedata`).selectFile(
+        getFixturePath('test-sample.mp4.structure.xml'),
+        { force: true }
+      );
+
+      // Wait for the API call to complete
+      cy.wait('@saveStructure').its('response.statusCode').should('eq', 302);
+
+      // Verify the button text has changed to "Replace"
+      cy.get(`[data-testid="media-object-struct-upload-btn-0"]`)
+        .should('be.visible')
+        .and('contain.text', 'Replace');
     }
 
     // Continue to access control
