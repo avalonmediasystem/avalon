@@ -47,8 +47,12 @@ function processCheckboxes(checkboxes, selectAllCheckbox) {
   });
 }
 
+// Only attach to 'Select All' checkbox on catalog page
+// The bookmarks page uses bookmark_selection.js for its own selection management
 const bookmarksSelectAll = getById('bookmarks_selectall');
-if (bookmarksSelectAll) {
+const isBookmarksPage = document.querySelector('.bookmark-selection') !== null;
+
+if (bookmarksSelectAll && !isBookmarksPage) {
   bookmarksSelectAll.addEventListener('click', function () {
     // If a select all operation is already in progress, abort it and start a new one
     if (isSelectAllInProgress && selectAllAbortController) {
