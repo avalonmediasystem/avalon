@@ -14,7 +14,6 @@
  * ---  END LICENSE_HEADER BLOCK  ---
  */
 
-import { navigateToManageContent } from '../support/navigation';
 import CollectionPage from '../pageObjects/collectionPage';
 import HomePage from '../pageObjects/homePage';
 const homePage = new HomePage();
@@ -27,12 +26,10 @@ import {
 context('Selected Items', () => {
   const collectionPage = new CollectionPage();
 
-  var collection_title = `Automation collection title ${
-    Math.floor(Math.random() * 10000) + 1
-  }`;
-  var media_object_title = `Automation Item title ${
-    Math.floor(Math.random() * 100000) + 1
-  }`;
+  var collection_title = `Automation collection title ${Math.floor(Math.random() * 10000) + 1
+    }`;
+  var media_object_title = `Automation Item title ${Math.floor(Math.random() * 100000) + 1
+    }`;
   var media_object_id;
 
   Cypress.on('uncaught:exception', (err, runnable) => {

@@ -40,6 +40,9 @@ class BookmarksController < CatalogController
   blacklight_config.add_show_tools_partial( :intercom_push, callback: :intercom_push_action, if: Proc.new { |context, config, options| context.user_can? :intercom_push } )
 
   blacklight_config.add_show_tools_partial( :merge, callback: :merge_action, if: Proc.new { |context, config, options| context.user_can? :merge } )
+  
+  # Add a custom action to remove only selected bookmarks
+  blacklight_config.add_results_collection_tool(:remove_selected)
 
   before_action :verify_permissions, only: :index
 
@@ -116,6 +119,32 @@ class BookmarksController < CatalogController
     bookmarks = token_or_current_or_guest_user.bookmarks
     bookmark_ids = bookmarks.collect { |b| b.document_id.to_s }
     search_service.fetch(bookmark_ids, rows: bookmark_ids.count)
+  end
+
+  # DELETE /bookmarks/remove_selected
+  def destroy_selected
+    ids = Array(params[:id])
+
+    if ids.empty?
+      flash[:error] = t('blacklight.bookmarks.remove_selected.no_selection')
+      redirect_to bookmarks_path and return
+    end
+
+    removed_count = 0
+    ids.each do |id|
+      bookmark = current_or_guest_user.bookmarks.find_by(document_id: id)
+      if bookmark&.destroy
+        removed_count += 1
+      end
+    end
+
+    if removed_count > 0
+      flash[:success] = t('blacklight.bookmarks.remove_selected.success', count: removed_count)
+    else
+      flash[:error] = t('blacklight.bookmarks.remove_selected.failure')
+    end
+
+    redirect_to bookmarks_path
   end
 
   def access_control_action documents
