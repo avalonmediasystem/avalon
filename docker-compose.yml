@@ -65,11 +65,14 @@ services:
       - ./solr/conf:/opt/solr/avalon_conf
 
   hls:
-    image: avalonmediasystem/nginx:noble
+    image: avalonmediasystem/nginx:noble-s3auth
     environment:
       - AVALON_DOMAIN=http://avalon:3000
       - AVALON_STREAMING_BUCKET_URL=http://minio:9000/derivatives/
       - VOD_MODE=remote
+      - S3_BUCKET_NAME=derivatives
+      - AWS_ACCESS_KEY_ID=minio
+      - AWS_SECRET_ACCESS_KEY=minio123
     volumes:
       - ./log/nginx:/var/log/nginx
     ports:
@@ -268,7 +271,6 @@ services:
       /bin/sh -c "
       /usr/bin/mc alias set myminio http://minio:9000 minio minio123;
       /usr/bin/mc mb -p myminio/fcrepo myminio/masterfiles myminio/derivatives myminio/supplementalfiles myminio/preserves;
-      /usr/bin/mc anonymous set download myminio/derivatives;
       /usr/bin/mc anonymous set download myminio/supplementalfiles;
       exit 0;
       "
