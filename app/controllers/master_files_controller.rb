@@ -328,12 +328,27 @@ class MasterFilesController < ApplicationController
 
       case path
       when /^s3:/
+        locator = FileLocator::S3File.new(path)
         # Use an AWS presigned URL to facilitate direct download of the derivative to avoid
         # having to download the file to the server as a tmp file and then sending that to
         # the client. Doing this reduces latency and server load.
         # Rails 7.0 adds a config option to protect against "open redirects". We override
         # that here in case the s3 bucket is not local.
-        redirect_to FileLocator::S3File.new(path).download_url, allow_other_host: true
+        return redirect_to locator.download_url, allow_other_host: true if Settings.derivative.use_presigned_url
+        
+        # Directly stream file when S3 is locked behind a firewall or otherwise has limited
+        # access from outside clients
+        object = locator.object
+        self.status = 200
+        self.content_type = object.content_type
+        response.headers['Content-Disposition'] = "attachment; filename=#{object.key}"
+        response.headers['Content-Transfer-Encoding'] = 'binary'
+        response.headers['Content-Type'] = object.content_type
+        response.headers['Content-Length'] = object.content_length.to_s
+        response.headers['Last-Modified'] = object.last_modified
+        response.sending_file = true
+        object.get { |chunk| response.stream.write(chunk) }
+        response.stream.close
       else
         send_file path, filename: File.basename(path), disposition: 'attachment'
       end

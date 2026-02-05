@@ -127,6 +127,11 @@ recaptcha:
 derivative:
   # Choose whether collection managers and admins can download high quality derivatives
   allow_download: true
+  # For S3 APIs, it is preferred to use presigned urls if possible. There is a method
+  # for delivering these downloads via proxied stream if there are firewall rules or
+  # other limitations that block clients from directly accessing the S3 instance.
+  # See MasterFilesController#download_derivative
+  use_presigned_url: true
 # Maximum size for uploaded files in bytes (default is disabled)
 #max_upload_size: 2147483648 # Use :none or comment out to disable limit
 # Rack Multipart creates temporary files when processing multipart form data with a large payload.
