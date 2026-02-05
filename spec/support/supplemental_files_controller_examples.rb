@@ -527,7 +527,7 @@ RSpec.shared_examples 'a nested controller for' do |object_class|
         end
         context "with private tag" do
           let(:supplemental_file) { FactoryBot.create(:supplemental_file, :with_transcript_file, tags: ['transcript', 'private'], label: 'label') }
-          it "does not add more instances of machine generated note" do
+          it "does not add more instances of private note" do
             expect {
               put :update, params: { class_id => object.id, id: supplemental_file.id, private_param => 1, supplemental_file: valid_update_attributes, format: :html }, session: valid_session
             }.to not_change { master_file.reload.supplemental_files(include_private: true).first.tags }.from(['transcript', 'private'])
@@ -535,7 +535,7 @@ RSpec.shared_examples 'a nested controller for' do |object_class|
         end
         context "removing private designation" do
           let(:supplemental_file) { FactoryBot.create(:supplemental_file, :with_transcript_file, tags: ['transcript', 'private'], label: 'label') }
-          it "removes machine generated note from label and tags" do
+          it "removes private note from tags" do
             expect {
               put :update, params: { class_id => object.id, id: supplemental_file.id, supplemental_file: valid_update_attributes, format: :html }, session: valid_session
             }.to change { master_file.reload.supplemental_files(include_private: true).first.tags }.from(['transcript', 'private']).to(['transcript'])
