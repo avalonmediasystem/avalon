@@ -10,7 +10,7 @@
     "@fortawesome/fontawesome-free": "6.7.2",
     "@github/auto-complete-element": "^3.8.0",
     "@popperjs/core": "^2.11.8",
-    "@samvera/ramp": "https://github.com/samvera-labs/ramp.git#821e8ce",
+    "@samvera/ramp": "https://github.com/samvera-labs/ramp#ramp-build",
     "babel-cli": "^6.26.0",
     "babel-plugin-dynamic-import-node": "^2.3.3",
     "babel-plugin-macros": "^3.1.0",
