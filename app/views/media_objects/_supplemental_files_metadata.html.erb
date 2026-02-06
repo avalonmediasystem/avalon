@@ -25,13 +25,19 @@ Unless required by applicable law or agreed to in writing, software distributed
 </div>
 <div class="row-col-sm-9 row-col-md-8 row-col-9 p-0">
   <% if tag == 'caption' %>
-    <div class="form-check-inline col-md-6 col-sm-6 col-6 p-0">
+    <div class="form-check-inline col-md-3 col-sm-3 col-3 p-0">
       <%= label_tag "treat_as_transcript_#{file.id}", class: "checkbox" do %>
         <%= check_box_tag "treat_as_transcript_#{file.id}", '1', file.caption_transcript? , data: { testid: "media-object-treat-as-transcript-checkbox" }%>
         <span>Treat as Transcript</span>
       <% end %>
     </div>
   <% end %>
+  <div class="form-check-inline col-md-2 col-sm-2 col-2 p-0">
+    <%= label_tag "private_#{file.id}", class: "ms-3 checkbox" do %>
+      <%= check_box_tag "private_#{file.id}", '1', file.private? %>
+      <span>Private</span>
+    <% end %>
+  </div>
   <div class="form-check-inline col-md-3 col-sm-3 col-3 p-0">
     <%= label_tag "machine_generated_#{file.id}", class: "ms-3 checkbox" do %>
       <%= check_box_tag "machine_generated_#{file.id}", '1', file.machine_generated? %>
