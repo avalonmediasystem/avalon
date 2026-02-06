@@ -214,7 +214,7 @@ describe SupplementalFile do
 
     context "with valid tags" do
       let(:supplemental_file) { FactoryBot.create(:supplemental_file, :with_caption_file) }
-      let(:tags) { ["transcript", "caption", "machine_generated", "description", "private"] }
+      let(:tags) { ["transcript", "caption", "machine_generated", "description", "private", "forced"] }
 
       it "can store tags" do
         supplemental_file.tags = tags
@@ -266,6 +266,13 @@ describe SupplementalFile do
         let(:supplemental_file) { FactoryBot.create(:supplemental_file, :with_caption_file, tags: ['caption', 'transcript'], label: 'Test') }
         it 'includes treat_as_transcript in JSON' do
           expect(subject[:treat_as_transcript]).to eq true
+        end
+      end
+
+      context 'forced' do
+        let(:supplemental_file) { FactoryBot.create(:supplemental_file, :with_caption_file, tags: ['caption', 'forced'], label: 'Test') }
+        it 'includes forced in JSON' do
+          expect(subject[:forced]).to eq true
         end
       end
     end
