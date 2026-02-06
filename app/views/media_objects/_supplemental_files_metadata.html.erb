@@ -31,6 +31,12 @@ Unless required by applicable law or agreed to in writing, software distributed
         <span>Treat as Transcript</span>
       <% end %>
     </div>
+    <div class="form-check-inline col-md-2 col-sm-2 col-2 p-0">
+      <%= label_tag "forced_#{file.id}", class: "checkbox" do %>
+        <%= check_box_tag "forced_#{file.id}", '1', file.forced?, data: { testid: "media_object-forced-checkbox" } %>
+        <span>Forced</span>
+      <% end %>
+    </div>
   <% end %>
   <div class="form-check-inline col-md-2 col-sm-2 col-2 p-0">
     <%= label_tag "private_#{file.id}", class: "ms-3 checkbox" do %>

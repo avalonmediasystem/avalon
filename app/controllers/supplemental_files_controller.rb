@@ -18,6 +18,7 @@ class SupplementalFilesController < ApplicationController
 
   before_action :set_object
   before_action :authorize_object
+  after_action :deduplicate_forced, only: [:create, :update]
 
   rescue_from Avalon::SaveError do |exception|
     message = "An error occurred when saving the supplemental file: #{exception.message}"
@@ -183,12 +184,13 @@ class SupplementalFilesController < ApplicationController
       treat_as_transcript = 'transcript' if meta_params[:treat_as_transcript] == true
       machine_generated = 'machine_generated' if meta_params[:machine_generated] == true
       private_file = 'private' if meta_params[:private] == true
+      forced = 'forced' if meta_params[:forced] == true
 
       sup_file_params[:label] ||= meta_params[:label].presence
       sup_file_params[:language] ||= meta_params[:language].presence
       # The uniq is to prevent multiple instances of 'transcript' tag if an update is performed with
       # `{ type: transcript, treat_as_transcript: 1}`
-      sup_file_params[:tags] ||= [type, treat_as_transcript, machine_generated, private_file].compact.uniq
+      sup_file_params[:tags] ||= [type, treat_as_transcript, machine_generated, private_file, forced].compact.uniq
       sup_file_params
     end
 
@@ -240,7 +242,8 @@ class SupplementalFilesController < ApplicationController
       file_params = [
         { param: "machine_generated_#{params[:id]}".to_sym, tag: "machine_generated", method: :machine_generated? },
         { param: "treat_as_transcript_#{params[:id]}".to_sym, tag: "transcript", method: :caption_transcript? },
-        { param: "private_#{params[:id]}".to_sym, tag: "private", method: :private? }
+        { param: "private_#{params[:id]}".to_sym, tag: "private", method: :private? },
+        { param: "forced_#{params[:id]}".to_sym, tag: "forced", method: :forced? }
       ]
 
       file_params.each do |v|
@@ -252,6 +255,17 @@ class SupplementalFilesController < ApplicationController
         elsif !params[param_name] && @supplemental_file.send(method)
           @supplemental_file.tags -= [tag]
         end
+      end
+    end
+
+    def deduplicate_forced
+      forced_files = @object.reload.supplemental_files(tag: 'forced')
+      return unless forced_files.length > 1
+
+      old_forced = forced_files.reject { |f| f == forced_files.max_by(&:updated_at) }
+      old_forced.each do |file|
+        file.tags -= ['forced']
+        file.save
       end
     end
 
