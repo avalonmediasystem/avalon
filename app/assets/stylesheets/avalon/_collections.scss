@@ -14,7 +14,8 @@
  * ---  END LICENSE_HEADER BLOCK  ---
 */
 
-.collections-landing-wrapper {
+.collections-landing-wrapper,
+.units-landing-wrapper {
   .page-title {
     margin-top: 0px;
     @media screen and (max-width: 780px) {
@@ -22,9 +23,11 @@
     }
   }
 
-  .collection-details-wrapper {
+  .collection-details-wrapper,
+  .unit-details-wrapper {
     justify-content: space-between;
     flex-direction: row-reverse;
+    margin-bottom: 1rem;
   }
 
   .document-thumbnail img {

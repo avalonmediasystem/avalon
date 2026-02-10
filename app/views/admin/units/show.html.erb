@@ -83,7 +83,7 @@ Unless required by applicable law or agreed to in writing, software distributed
   </div>
   <div class="well-vertical-spacer">
     <%= link_to('Create A Collection', new_admin_collection_path(unit_id: @unit.id), class: 'btn btn-primary', data: { testid: 'unit-create-item-btn' }) if can? :create, Admin::Collection %>
-    <%= link_to('List All Collections', collections_path(filter: @unit.name), class: 'btn btn-outline') %>
+    <%= link_to('List All Collections', unit_path(@unit.id), class: 'btn btn-outline') %>
     <%= button_tag('Edit Unit Info', class: 'btn btn-outline', data: {"bs-toggle": "modal", "bs-target": "#new_unit", testid:"unit-edit-unit-info"}) if can? :update, @unit %>
   </div>
 </div><!-- /well -->

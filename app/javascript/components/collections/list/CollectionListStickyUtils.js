@@ -21,10 +21,11 @@ const CollectionListStickyUtils = ({
   handleFilterChange,
   handleSortChange,
   handleSubmit,
-  sort
+  sort,
+  showViewToggle,
 }) => {
   return (
-    <section className="row stickyUtils collection-list-sticky-utils">
+    <section className="row stickyUtils">
       <div className="col-sm-6">
         <form onSubmit={handleSubmit}>
           <div className="mb-3">
@@ -43,29 +44,32 @@ const CollectionListStickyUtils = ({
           </div>
         </form>
       </div>
-      <div className="col-sm-6">
-        <div className="text-end">
-          <span className="collection-list-view-toggle-label">View by:</span>
-          <div className="btn-group btn-group-toggle">
-            <label
-              className={
-                'btn btn-primary sort-btn' + (sort === 'unit' ? ' active' : '')
-              }
-              onClick={() => handleSortChange('unit')}
-            >
-              <input type="radio" className="btn-check" value="unit" /> Unit
-            </label>
-            <label
-              className={
-                'btn btn-primary sort-btn' + (sort === 'az' ? ' active' : '')
-              }
-              onClick={() => handleSortChange('az')}
-            >
-              <input type="radio" className="btn-check" value="az" /> A-Z
-            </label>
+      {/* Conditionally render view by toggle: display for Collections page and hide for unit show page */}
+      {showViewToggle && (
+        <div className="col-sm-6">
+          <div className="text-end">
+            <span className="collection-list-view-toggle-label">View by:</span>
+            <div className="btn-group btn-group-toggle">
+              <label
+                className={
+                  'btn btn-primary sort-btn' + (sort === 'unit' ? ' active' : '')
+                }
+                onClick={() => handleSortChange('unit')}
+              >
+                <input type="radio" className="btn-check" value="unit" /> Unit
+              </label>
+              <label
+                className={
+                  'btn btn-primary sort-btn' + (sort === 'az' ? ' active' : '')
+                }
+                onClick={() => handleSortChange('az')}
+              >
+                <input type="radio" className="btn-check" value="az" /> A-Z
+              </label>
+            </div>
           </div>
         </div>
-      </div>
+      )}
     </section>
   );
 };
@@ -75,7 +79,8 @@ CollectionListStickyUtils.propTypes = {
   handleFilterChange: PropTypes.func,
   handleSortChange: PropTypes.func,
   handleSubmit: PropTypes.func,
-  sort: PropTypes.string
+  sort: PropTypes.string,
+  showViewToggle: PropTypes.bool
 };
 
 export default CollectionListStickyUtils;
