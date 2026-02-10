@@ -19,7 +19,7 @@ import CollectionCard from './CollectionCard';
 import ButtonCollectionListShowAll from './ButtonCollectionListShowAll';
 import '../Collection.scss';
 
-const CollectionsListUnit = ({ unitArr, index, sortByAZ, maxItems }) => {
+const CollectionsListUnit = ({ unitArr, index, sortByAZ, maxItems, showUnitTitle }) => {
   const [showAll, setShowAll] = useState(false);
 
   let unit = unitArr[0];
@@ -31,7 +31,12 @@ const CollectionsListUnit = ({ unitArr, index, sortByAZ, maxItems }) => {
 
   return (
     <section className="collection-unit-wrapper">
-      <h2 className="headline collection-list-unit-headline">{unit}</h2>
+      {/* Conditionally render unit title: display collection page sorted by units and hide for unit show page */}
+      {showUnitTitle && (
+        <h2 className="headline collection-list-unit-headline">
+          {collections[0]?.unit_url ? <a href={collections[0].unit_url}>{unit}</a> : unit}
+        </h2>
+      )}
 
       <div className="row">
         {collections.slice(0, maxItems).map(col => {

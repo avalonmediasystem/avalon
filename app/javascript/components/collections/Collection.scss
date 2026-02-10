@@ -16,25 +16,20 @@
 
 /* Collection List */
 .collection-list {
-  margin-bottom: 3rem;
+  margin: 2rem 0;
 }
 
 .collection-unit-wrapper {
   border-top: 2px dotted #1f3f42;
-  margin-top: 6rem;
 
   &:first-of-type {
     border-top: none;
-    margin-top: inherit;
   }
 }
 
 .collection-list-unit-headline {
   font-size: 24px;
-}
-
-.collection-list-sticky-utils {
-  margin-bottom: 3rem;
+  margin: 1rem 0;
 }
 
 .collection-list-view-toggle-label {
@@ -43,7 +38,7 @@
 }
 
 .collection-details {
-  dd > a {
+  dd>a {
     vertical-align: middle;
   }
 }
@@ -94,7 +89,8 @@
 .card-text {
   font-size: 14px;
 
-  dt, dd {
+  dt,
+  dd {
     width: 100%;
     padding-right: 8px;
     padding-left: 8px;
@@ -115,17 +111,13 @@
 }
 
 /* Collection Search */
-.search-wrapper {
-  margin-top: 5rem;
-}
-
 .collection-search-results-wrapper {
   position: relative;
 }
 
 /* Search Results card */
 .search-within-search-results {
-  margin-top: 3rem;
+  margin-top: 1rem;
   padding-left: 0;
 
   // Using flexbox to adjust all card heights to match the tallest card height 
@@ -133,7 +125,7 @@
     display: flex;
     flex-direction: row;
     padding: 10px;
-  
+
     li {
       padding-right: 10px;
       flex-grow: 1;

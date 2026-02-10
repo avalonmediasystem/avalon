@@ -109,7 +109,7 @@ class CollectionList extends Component {
 
   handleSubmit = event => {
     event.preventDefault();
-  }
+  };
 
   render() {
     const { filter, sort, filteredResult = [], maxItems, isLoading } = this.state;
@@ -121,7 +121,8 @@ class CollectionList extends Component {
           handleFilterChange={this.handleFilterChange}
           sort={sort}
           handleSortChange={this.handleSortChange}
-	  handleSubmit={this.handleSubmit}
+          handleSubmit={this.handleSubmit}
+          showViewToggle={this.props.showUnitTitle}
         />
         {isLoading && <LoadingSpinner isLoading={isLoading} />}
         {(filteredResult.length === 0 && !isLoading) && <CollectionsFilterNoResults />}
@@ -137,6 +138,7 @@ class CollectionList extends Component {
               filteredResult={filteredResult}
               sortByAZ={this.sortByAZ}
               maxItems={maxItems}
+              showUnitTitle={this.props.showUnitTitle}
             />
           )}
         </div>
@@ -147,7 +149,13 @@ class CollectionList extends Component {
 
 CollectionList.propTypes = {
   baseUrl: PropTypes.string,
-  filter: PropTypes.string
+  filter: PropTypes.string,
+  showUnitTitle: PropTypes.bool
+};
+
+// Default to showing unit title
+CollectionList.defaultProps = {
+  showUnitTitle: true
 };
 
 export default CollectionList;

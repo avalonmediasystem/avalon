@@ -14,36 +14,26 @@ Unless required by applicable law or agreed to in writing, software distributed
 ---  END LICENSE_HEADER BLOCK  ---
 %>
 
-<% @page_title = t('collections.show.title', :collection_name => @doc_presenter.name, :application_name => application_name) %>
+<% @page_title = "#{@doc_presenter.name} - #{application_name}" %>
 <% @poster_url = @doc_presenter.poster_url %>
 
-<div class="collections-landing-wrapper">
+<div class="units-landing-wrapper">
   <ol class="breadcrumb">
     <li style="padding-bottom: 0px" class="breadcrumb-item"><%= link_to 'All Collections', collections_path %></li>
-    <li style="padding-bottom: 0px" class="breadcrumb-item"><%= link_to @doc_presenter.unit, unit_path(@doc_presenter.unit_id) %>
-    </li>
     <li class="breadcrumb-item active" style="padding-bottom: 0px"><%= @doc_presenter.name %></li>
   </ol>
 
-  <div class="collection-details-wrapper row">
+  <div class="unit-details-wrapper row">
     <div class="document-thumbnail col-sm-4 order-8">
       <%= image_tag @doc_presenter.poster_url, alt: '' %>
-      <div class="filter-collection-button-wrapper">
-        <a href="<%= search_catalog_path('f[collection_ssim][]' => @doc_presenter.name) %>"
-          class="btn btn-outline btn-block">
-          <span class="fa fa-filter" aria-hidden="true"></span>
-          Filter this collection
-        </a>
-      </div>
     </div>
     <div class="col-sm-7 order-4">
       <h1 class="page-title"><%= @doc_presenter.name %></h1>
       <div>
-        <h3 class="sub-headline"><strong>Unit:</strong> <%= @doc_presenter.unit %></h3>
         <p class="lead document-description"></p>
-        <%= react_component("CollectionDetails", 
+        <%= react_component("CollectionDetails",
           {
-            props: { 
+            props: {
               content: @doc_presenter.description,
               email: @doc_presenter.contact_email,
               website: @doc_presenter.website_link,
@@ -52,6 +42,5 @@ Unless required by applicable law or agreed to in writing, software distributed
       </div>
     </div>
   </div>
-
-  <%= react_component("Search", { props: { baseUrl: root_url, collection: @doc_presenter.name }}) %>
+  <%= react_component("CollectionList", { props: { baseUrl: collections_url(format: :json, unit: @doc_presenter.name), showUnitTitle: false }}) %>
 </div>

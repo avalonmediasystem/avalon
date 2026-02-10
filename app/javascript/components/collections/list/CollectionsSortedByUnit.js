@@ -18,7 +18,7 @@ import '../Collection.scss';
 import PropTypes from 'prop-types';
 import CollectionsListUnit from './Unit';
 
-const CollectionsSortedByUnit = ({ filteredResult, sortByAZ, maxItems }) => {
+const CollectionsSortedByUnit = ({ filteredResult, sortByAZ, maxItems, showUnitTitle }) => {
   const groupByUnit = list => {
     const map = new Map();
     list.forEach(item => {
@@ -49,6 +49,7 @@ const CollectionsSortedByUnit = ({ filteredResult, sortByAZ, maxItems }) => {
       index={index}
       sortByAZ={sortByAZ}
       maxItems={maxItems}
+      showUnitTitle={showUnitTitle}
     />
   ));
 };
@@ -56,7 +57,8 @@ const CollectionsSortedByUnit = ({ filteredResult, sortByAZ, maxItems }) => {
 CollectionsSortedByUnit.propTypes = {
   filteredResult: PropTypes.array,
   sortByAZ: PropTypes.func,
-  maxItems: PropTypes.number
+  maxItems: PropTypes.number,
+  showUnitTitle: PropTypes.bool
 };
 
 export default CollectionsSortedByUnit;

@@ -47,6 +47,15 @@ class CollectionPresenter
     Rails.application.routes.url_helpers.collection_url(id)
   end
 
+  def unit_id
+    document["heldBy_ssim"]&.first
+  end
+
+  def unit_url
+    return unless unit_id
+    Rails.application.routes.url_helpers.unit_url(unit_id)
+  end
+
   def contact_email
     document["contact_email_ssi"]
   end
@@ -61,6 +70,7 @@ class CollectionPresenter
       id: id,
       name: name,
       unit: unit,
+      unit_url: unit_url,
       description: description,
       poster_url: poster_url,
       url: collection_url
