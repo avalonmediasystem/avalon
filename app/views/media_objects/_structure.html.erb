@@ -91,8 +91,6 @@ Unless required by applicable law or agreed to in writing, software distributed
                   }, html_options: { class: 'react-button-container' }
                 }) %>
               <% end %>
-              <button type="button" class="btn btn-primary btn-struct me-1" value="Advanced Edit" data-bs-toggle="modal"
-                data-bs-target="#advanced_edit_structure_<%= index %>" data-testid="media-object-struct-adv-edit-btn-<%= index %>" >Advanced Edit</button>
               <% if section.structuralMetadata.content.present? %>
                 <%= link_to 'Remove', structure_master_file_path(section.id), method: :delete, class: 'btn btn-danger btn-struct btn-confirmation', data: { placement: 'top', confirm: 'Are you sure?', testid:"media-object-remove-structure-btn" } %>
               <% end %>
@@ -100,10 +98,6 @@ Unless required by applicable law or agreed to in writing, software distributed
             <% end %>
           </div>
           <div class="structure_view"></div>
-          <div style="margin-top: 5px; font-style: italic;">
-            Note: Any edits made with the Edit Structure tool will not be reflected here or in the Advanced Edit tool
-            until this page is refreshed.
-          </div>
         </div>
       </li>
       <% end %>
@@ -114,65 +108,11 @@ Unless required by applicable law or agreed to in writing, software distributed
     <%= render "workflow_buttons" %>
   <% end %>
 
-  <% @masterFiles.each_with_index do |section, index| %>
-    <% default_structure="<Item label='#{html_escape(stream_label_for(section))}'></Item>" %>
-    <div id="advanced_edit_structure_<%= index %>" class="structure_edit modal fade" data-bs-backdrop="static"
-      data-submit_url="<%= attach_structure_master_file_path(section.id) %>">
-      <div class="modal-dialog modal-xl" style="width:65%">
-        <div class="modal-content col-md-12">
-          <div class="modal-header">
-            <h4 class="modal-title">Advanced Edit Structure</h4>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-hidden="true"></button>
-          </div>
-          <div class="modal-body structure_edit col-md-12" style="height:40vh">
-            <textarea rows=20 class="col-md-12 original_textarea" id="structure_<%= index %>" data-testid="advanced-edit-structure-textarea-<%= index %>"
-              style="visibility:hidden"><%= section.structuralMetadata.valid? ? section.structuralMetadata.to_xml : default_structure %></textarea>
-          </div>
-        </div>
-      </div>
-    </div>
-  <% end %>
 <% end %>
 
 <% content_for :page_scripts do %>
 <script>
-  const extractor = new Xsd2Json('avalon_structure.xsd', {
-    'schemaURI': '/',
-    'rootElement': 'item'
-  });
-
   document.addEventListener('DOMContentLoaded', function() {
-    const structureEditModals = queryAll('.structure_edit.modal');
-    structureEditModals.forEach(function(modalElement) {
-      modalElement.addEventListener('shown.bs.modal', function() {
-        if (query('.xml_editor_container', modalElement)) return;
-
-        const te = query('.original_textarea', modalElement);
-        const modalBody = query('.modal-body', modalElement);
-
-        // TODO: xmlEditor is a jQuery plugin, this call still requires jQuery under the hood
-        $(te).xmlEditor({
-          schema: extractor.getSchema(),
-          floatingMenu: false,
-          confirmExitWhenUnsubmitted: false,
-          loadSchemaAsychronously: false,
-          xmlEditorLabel: 'Graphical',
-          textEditorLabel: 'Raw XML',
-          containerElement: {
-            element: $(modalBody),
-            fixedHeight: true,
-          },
-          submitButtonConfigs: [{
-            url: modalElement.dataset.submit_url,
-            responseHandler: attach_structure_response,
-            label: 'Save and Exit',
-            cssClass: 'btn btn-primary section_edit_submit',
-          }],
-          defaultView: 'text',
-        });
-      });
-    });
-
     const filedataElements = queryAll('.filedata');
     filedataElements.forEach(function(filedata) {
       filedata.addEventListener('change', function() {
@@ -180,88 +120,5 @@ Unless required by applicable law or agreed to in writing, software distributed
       });
     });
   });
-
-  function htmlDecode(value) {
-    const textarea = document.createElement('textarea');
-    textarea.innerHTML = value;
-    return textarea.value;
-  }
-
-  function parse_structure(xml, index) {
-    const parser = new DOMParser();
-    const xmlDoc = parser.parseFromString(xml, 'text/xml');
-    const item = xmlDoc.querySelector('Item');
-    if (item) {
-      if (item.children.length) {
-        return `<span>${item.getAttribute('label')}</span><ul>${parse_section(item, index)[0]}</ul>`;
-      } else {
-        return `<span>${index + 1}. ${item.getAttribute('label')}</span>`;
-      }
-    } else {
-      return "";
-    }
-  }
-
-  function parse_section(node, index) {
-    let contents = '';
-    let tracknumber;
-    let nodecontents;
-    if (node.children.length) {
-      tracknumber = 0;
-      Array.from(node.children).forEach(function (childNode) {
-        nodecontents = parse_node(childNode, tracknumber);
-        contents += nodecontents[0];
-        tracknumber = nodecontents[1];
-      });
-    } else {
-      nodecontents = parse_node(node, index);
-      contents = nodecontents[0];
-      tracknumber = nodecontents[1];
-    }
-    return [contents, tracknumber];
-  }
-
-  function parse_node(node, tracknumber) {
-    if (node.nodeName.toUpperCase() == "DIV") {
-      let contents = '';
-      Array.from(node.children).forEach(function (childNode) {
-        const nodecontents = parse_node(childNode, tracknumber);
-        contents += nodecontents[0];
-        tracknumber = nodecontents[1];
-      });
-      return [`<li>${node.getAttribute('label')}</li><li><ul>${contents}</ul></li>`, tracknumber];
-    } else if (['SPAN', 'ITEM'].includes(node.nodeName.toUpperCase())) {
-      tracknumber += 1;
-      return [`<li class='stream-li'>${tracknumber}.${node.getAttribute('label')}</li>`, tracknumber];
-    } else {
-      return ["", tracknumber];
-    }
-  }
-
-  function populate_structure_preview(index) {
-    const modal = getById('advanced_edit_structure_' + index);
-    const xmltextarea = query('textarea.original_textarea', modal);
-    const structureView = query('.structure_view', getById('structure_' + index));
-    structureView.innerHTML = parse_structure(htmlDecode(xmltextarea.innerHTML), index);
-  }
-
-  function attach_structure_response(r) {
-    if (r['flash'] && r['flash'].length) {
-      let msg = '';
-      for (let i = 0; i < r['flash'].length; i++) {
-        for (let j = 0; j < r['flash'][i][1].length; j++) {
-          msg += r['flash'][i][1][j] + '<br/>';
-        }
-      }
-      return msg;
-    } else {
-      const modal = query(`.structure_edit[data-submit_url='${this.url}']`);
-      const textarea = query('textarea.original_textarea', modal);
-      textarea.innerHTML = r['structure'];
-      const section_index = parseInt(modal.id.split('_').pop());
-      populate_structure_preview(section_index);
-      toggleModal(modal, false);
-    }
-  }
 </script>
 <% end %>
