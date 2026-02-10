@@ -65,7 +65,7 @@ services:
       - ./solr/conf:/opt/solr/avalon_conf
 
   hls:
-    image: avalonmediasystem/nginx:noble-s3auth
+    image: avalonmediasystem/nginx:noble-s3authv4
     environment:
       - AVALON_DOMAIN=http://avalon:3000
       - AVALON_STREAMING_BUCKET_URL=http://minio:9000/derivatives/
@@ -73,6 +73,7 @@ services:
       - S3_BUCKET_NAME=derivatives
       - AWS_ACCESS_KEY_ID=minio
       - AWS_SECRET_ACCESS_KEY=minio123
+      - S3_SERVER=localhost:9000
     volumes:
       - ./log/nginx:/var/log/nginx
     ports:
