@@ -133,6 +133,9 @@ services:
       - SETTINGS__STREAMING__HTTP_BASE=http://localhost:8880/avalon
       - SETTINGS__STREAMING__SERVER=nginx
       - SETTINGS__STREAMING__STREAM_TOKEN_TTL=20
+      - ACTIVE_RECORD_ENCRYPTION_PRIMARY_KEY=primarykey1234
+      - ACTIVE_RECORD_ENCRYPTION_DETERMINISTIC_KEY=deterministickey1234
+      - ACTIVE_RECORD_ENCRYPTION_KEY_DERIVATION_SALT=derivationsalt1234
       - SYSTEM_GROUPS=administrator,group_manager,manager
       - PIDFILE=tmp/pids/server.pid
       - PUMA_STATE_PATH=tmp/puma.state
@@ -164,6 +167,9 @@ services:
       - FEDORA_URL=http://fedoraAdmin:fedoraAdmin@fedora-test:8080/fcrepo/rest
       - FEDORA_BASE_PATH=/test
       - SOLR_URL=http://solr-test:8983/solr/avalon
+      - ACTIVE_RECORD_ENCRYPTION_PRIMARY_KEY=primarykey1234
+      - ACTIVE_RECORD_ENCRYPTION_DETERMINISTIC_KEY=deterministickey1234
+      - ACTIVE_RECORD_ENCRYPTION_KEY_DERIVATION_SALT=derivationsalt1234
       - RAILS_ENV=test
       - BUNDLE_FLAGS=--with aws test postgres --without production
       - DATABASE_CLEANER_ALLOW_REMOTE_DATABASE_URL=true
