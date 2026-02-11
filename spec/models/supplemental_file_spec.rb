@@ -150,6 +150,19 @@ describe SupplementalFile do
           expect(after_doc["transcript_tsim"]).to be_nil
         end
       end
+
+      context 'private transcript' do
+        let(:transcript) { FactoryBot.create(:supplemental_file, :with_transcript_file, :with_transcript_tag) }
+
+        it 'removes the transcript_tsim content when private tag is added' do
+          before_doc = ActiveFedora::SolrService.query("id:#{RSolr.solr_escape(transcript.to_global_id.to_s)}").first
+          expect(before_doc["transcript_tsim"].first).to eq "00:00:03.500 --> 00:00:05.000 Example captions"
+          transcript.tags = ['transcript', 'private']
+          transcript.save
+          after_doc = ActiveFedora::SolrService.query("id:#{RSolr.solr_escape(transcript.to_global_id.to_s)}").first
+          expect(after_doc["transcript_tsim"]).to be_nil
+        end
+      end
     end
   end
 

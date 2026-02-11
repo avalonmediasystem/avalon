@@ -135,7 +135,7 @@ class SupplementalFile < ApplicationRecord
     solr_doc["mime_type_ssi"] = mime_type
     solr_doc["label_ssi"] = label
     solr_doc["language_ssi"] = language
-    solr_doc["transcript_tsim"] = segment_transcript(file) if transcript?
+    solr_doc["transcript_tsim"] = segment_transcript(file) if transcript? && !private?
     solr_doc["isPartOf_ssim"] = [parent_id]
     solr_doc
   end
