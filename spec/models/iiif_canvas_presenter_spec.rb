@@ -387,6 +387,11 @@ describe IiifCanvasPresenter do
         expect(subject.any? { |content| content.label['eng'][0] =~ /#{caption_file.label} \(machine generated\)/ }).to eq false
       end
 
+      it 'does not add " [forced]" to label of non-forced files' do
+        expect(subject.any? { |content| content.label['eng'][0] =~ /#{transcript_file.label} \[forced\]/ }).to eq false
+        expect(subject.any? { |content| content.label['eng'][0] =~ /#{caption_file.label} \[forced\]/ }).to eq false
+      end
+
       it 'does not include generic supplemental files or waveform' do
         expect(subject.any? { |content| content.body_id =~ /supplemental_files\/#{supplemental_file.id}/ }).to eq false
         expect(subject.any? { |content| content.label == { "en" => ["waveform.json"] } }).to eq false
@@ -429,6 +434,14 @@ describe IiifCanvasPresenter do
 
         it "adds '(machine generated)' to the label" do
           expect(subject.any? { |content| content.label['eng'][0] =~ /#{transcript_file.label} \(machine generated\)/ }).to eq true
+        end
+      end
+
+      context 'forced caption' do
+        let(:caption_file) { FactoryBot.create(:supplemental_file, :with_caption_file, tags: ['caption', 'forced']) }
+
+        it "adds '[forced]' to the label" do
+          expect(subject.any? { |content| content.label['eng'][0] =~ /#{caption_file.label} \[forced\]/ }).to eq true
         end
       end
 
