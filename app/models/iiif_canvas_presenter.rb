@@ -249,6 +249,7 @@ class IiifCanvasPresenter
   def supplemental_attributes(file, type: nil)
     if file.is_a?(SupplementalFile)
       label = file.tags.include?('machine_generated') ? file.label + ' (machine generated)' : file.label
+      label = file.tags.include?('forced') ? label + ' [forced]' : label
       format = if file.file.content_type == 'text/srt' && (type == 'caption' || type == 'description')
                  'text/vtt'
                else
