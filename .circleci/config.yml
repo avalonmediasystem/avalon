@@ -12,6 +12,9 @@ jobs:
           - FEDORA_URL=http://fedoraAdmin:fedoraAdmin@localhost:8080/fcrepo/rest
           - FEDORA_BASE_PATH=/test
           - FEDORA_TIMEOUT=300
+          - ACTIVE_RECORD_ENCRYPTION_PRIMARY_KEY=primarykey1234
+          - ACTIVE_RECORD_ENCRYPTION_DETERMINISTIC_KEY=deterministickey1234
+          - ACTIVE_RECORD_ENCRYPTION_KEY_DERIVATION_SALT=derivationsalt1234
           - RAILS_ENV=test
       # Secondary container image on common network.
       - image: postgres:10-alpine
