@@ -24,6 +24,8 @@ class CollectionsController < CatalogController
     if params[:limit].present?
       collections = collections.sample(params[:limit].to_i)
     end
+    # If a unit filter is provided, only show collections that belong to that unit
+    collections = collections.select { |doc| doc["unit_ssi"] == params[:unit] } if params[:unit].present?
     @doc_presenters = collections.collect { |doc| CollectionPresenter.new(doc, view_context) }
 
     respond_to do |format|

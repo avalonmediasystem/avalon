@@ -52,7 +52,7 @@ Unless required by applicable law or agreed to in writing, software distributed
           <td> <%= pluralize(item.manager_count, 'manager') %> </td>
         <% elsif object == 'unit' %>
           <td>
-            <%= link_to(pluralize(item.collection_count, 'collection'), collections_path(filter: item.name)) %>
+            <%= link_to(pluralize(item.collection_count, 'collection'), unit_path(item.id)) %>
           </td>
           <td> <%= pluralize(item.admin_count, 'unit administrator') %> </td>
         <% end %>

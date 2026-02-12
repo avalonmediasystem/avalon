@@ -83,7 +83,8 @@ module MediaObjectsHelper
   end
 
   def display_unit(media_object)
-    link_to(media_object.collection.unit, collections_path(filter: media_object.collection.unit))
+    unit = media_object.collection.unit
+    link_to(unit.name, unit_path(unit.id))
   end
 
   def display_language media_object
