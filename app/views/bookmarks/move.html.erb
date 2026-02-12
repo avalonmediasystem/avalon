@@ -16,12 +16,15 @@ Unless required by applicable law or agreed to in writing, software distributed
 
 <div data-blacklight-modal="container">
   <% @candidates = get_user_collections %>
+  <% if @documents.length == 1 %>
+    <% @candidates = @candidates.reject { |c| c.id == @documents.first["isMemberOfCollection_ssim"].first } %>
+  <% end %>
   <%= render partial: 'modal_header', locals: { label: 'move' } %>
 
   <%= form_tag url_for(:controller => "bookmarks", :action => "move"), :id => 'move_form', :method => :post do %>
     <div class="modal-body">
       <div class="row-fluid">
-        <% if  @candidates.count == 0 || @documents.empty? %>
+        <% if  (@documents.length == 1 && @candidates.empty?) || (@documents.length > 1 && @candidates.count <= 1) || @documents.empty? %>
           <div class="alert alert-danger">
             <% if @documents.empty? %>
                     <p><%= t('blacklight.bookmarks.no_bookmarks') %></p>
