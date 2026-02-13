@@ -125,6 +125,7 @@ const GenericTable = ({ config, url, tags = [], httpMethod = 'POST' }) => {
                 type="text"
                 value={searchFilter}
                 className="form-control"
+                data-testid="users-search-field"
                 onChange={handleSearch}
               />
             </div>

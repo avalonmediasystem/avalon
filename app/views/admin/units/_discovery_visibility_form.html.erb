@@ -80,8 +80,8 @@ Unless required by applicable law or agreed to in writing, software distributed
   <div class="card-header">
     <h3 class="card-title">Item discovery</h3>
   </div>
-  <div class="card-body">
-    <div class="mb-3">
+  <div class="card-body" data-testid="unit-item-discovery">
+    <div class="mb-3" >
       <%= hidden ? "Item is hidden from search results" :
         "Item is not hidden from search results" %>
     </div>
@@ -92,8 +92,8 @@ Unless required by applicable law or agreed to in writing, software distributed
   <div class="card-header">
     <h3 class="card-title">Item access</h3>
   </div>
-  <div class="card-body">
-    <div class="mb-3">
+  <div class="card-body" data-testid="unit-item-access">
+    <div class="mb-3" >
       Item is viewable by
       <%= case @visibility
           when "public"

@@ -29,16 +29,16 @@ export function performSearch(query) {
 // Manage Content
 export function navigateToManageContent() {
   cy.contains('Manage').click();
-  cy.get('a[href="/admin/collections"]')
+  cy.get('a[href="/admin/dashboard"]')
     .contains('Manage Content')
     .should('be.visible')
     .click();
 }
 
 // Collection Unit Selection
-export function selectCollectionUnit() {
+export function selectCollectionUnit(unitName = 'Automation Unit') {
   cy.get("[data-testid='admin_collection[unit_name]-user-input']").type(
-    'Automation Unit'
+    unitName
   ); // data-testid came from _autocomplete_input.html.erb
 }
 
