@@ -479,14 +479,12 @@ RSpec.shared_examples 'a nested controller for' do |object_class|
           context "when another supplemental file has forced designation" do
             let(:forced_caption) { FactoryBot.create(:supplemental_file, :with_caption_file, tags: ['caption', 'forced'], label: 'label') }
             let(:master_file) { FactoryBot.create(:master_file, media_object_id: media_object.id, supplemental_files: [supplemental_file, forced_caption]) }
+            let(:media_object) { FactoryBot.create(:media_object, supplemental_files: [supplemental_file, forced_caption]) }
 
-            # Captions are only at MasterFile level, can skip the MediaObject test.
-            it 'removes forced note from other files' do
-              if object_class == MasterFile
-                expect {
-                  put :update, params: { class_id => object.id, id: supplemental_file.id, forced_param => 1, supplemental_file: valid_update_attributes, format: :html }, session: valid_session
-                }.to change { master_file.reload.supplemental_files.second.tags }.from(['caption', 'forced']).to(['caption'])
-              end
+            it 'error message to display' do
+              put :update, params: { class_id => object.id, id: supplemental_file.id, forced_param => 1, supplemental_file: valid_update_attributes, format: :html }, session: valid_session
+              expect(flash[:error]).not_to be_empty
+              expect(flash[:error]).to include 'Forced attribute is already assigned to another caption. Ensure no other captions are forced before setting attribute.'
             end
           end
         end
