@@ -20,6 +20,7 @@ class CollectionPage {
       contactEmail: 'admin@example.com',
       websiteUrl: 'https://www.google.com',
       websiteLabel: 'test label',
+      unitName: 'Automation Unit',
       setPublicAccess: false,
       addManager: false,
     };
@@ -38,7 +39,7 @@ class CollectionPage {
       .type(config.title)
       .should('have.value', config.title);
 
-    selectCollectionUnit();
+    selectCollectionUnit(config.unitName);
 
     cy.get("[data-testid='collection-description']")
       .type(config.description)
@@ -120,11 +121,11 @@ class CollectionPage {
   addManager(managerUsername) {
     cy.intercept('POST', '/admin/collections/*').as('updateCollectionManager');
 
-    cy.get('input[name="add_manager_display"]')
+    cy.get("[data-testid='add_manager-user-input']")
       .type(managerUsername)
       .should('have.value', managerUsername);
 
-    cy.get('.tt-menu .tt-suggestion')
+    cy.get("[data-testid='add_manager-popup']")
       .should('be.visible')
       .and('contain', managerUsername)
       .click();
@@ -425,7 +426,7 @@ class CollectionPage {
           .click();
         cy.wait('@publishmedia').its('response.statusCode').should('eq', 302);
         cy.get('[data-testid="alert"]').contains(
-          '1 media object successfully published.'
+          'Media object successfully published.'
         );
         cy.wait(2000);
         cy.get('[data-testid="media-object-unpublish-btn"]').contains(

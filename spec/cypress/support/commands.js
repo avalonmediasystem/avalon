@@ -30,8 +30,9 @@ import 'cypress-file-upload';
 Cypress.Commands.add('login', (role) => {
   cy.clearCookies();
   cy.clearLocalStorage();
-  const email = Cypress.env('USERS_' + role.toUpperCase() + '_EMAIL');
-  const password = Cypress.env('USERS_' + role.toUpperCase() + '_PASSWORD');
+  const normalizedRole = role.replace(/_/g, '').toUpperCase();
+  const email = Cypress.env('USERS_' + normalizedRole + '_EMAIL');
+  const password = Cypress.env('USERS_' + normalizedRole + '_PASSWORD');
 
   cy.request('/users/sign_in')
     .its('body')
@@ -43,6 +44,7 @@ Cypress.Commands.add('login', (role) => {
       cy.request({
         method: 'POST',
         url: '/users/sign_in',
+        form: true, 
         body: {
           user: {
             login: email,

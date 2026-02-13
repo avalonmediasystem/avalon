@@ -2,6 +2,7 @@ import HomePage from '../pageObjects/homePage.js';
 import CollectionPage from '../pageObjects/collectionPage';
 import ItemPage from '../pageObjects/itemPage.js';
 import { getFixturePath } from '../support/utils';
+import UnitPage from '../pageObjects/unitPage.js';
 
 import {
   navigateToManageContent,
@@ -12,7 +13,11 @@ import {
 const collectionPage = new CollectionPage();
 const homePage = new HomePage();
 const itemPage = new ItemPage();
+const unitPage = UnitPage;
 context('Collections Test', () => {
+  var unit_title = `Automation unit title ${
+    Math.floor(Math.random() * 10000) + 1
+  }`;
   //Admin created collection
   var collection_title = `Automation collection title ${
     Math.floor(Math.random() * 10000) + 1
@@ -40,6 +45,12 @@ context('Collections Test', () => {
     }
   });
 
+  before(() => {
+    // creating unit for collection
+    cy.login('administrator');
+    unitPage.createUnit({ title: unit_title });
+  });
+
   // Cleanup after all tests
   after(() => {
     cy.login('administrator');
@@ -54,11 +65,9 @@ context('Collections Test', () => {
 
     // Delete main collection
     collectionPage.deleteCollectionByName(collection_title);
-  });
-  it('Test Setup - Create unit ', { tags: '@critical' }, () => {
-    cy.login('administrator');
-    navigateToManageContent();
-    cy.get("[data-testid='unit-create-unit-button']").click();
+
+    // Delete unit
+    UnitPage.deleteUnitByName(unit_title);
   });
 
   it(
@@ -68,30 +77,6 @@ context('Collections Test', () => {
       cy.login('administrator');
       navigateToManageContent();
       collectionPage.createCollection({ title: collection_title });
-
-      //Fill Unit Form
-      cy.get('[data-testid="unit-name"]').type('Automation Unit');
-      cy.get('[data-testid="unit-description"]').type(
-        'Automation Unit Description'
-      );
-      cy.get('[data-testid="unit-contact-email"]').type(
-        'administrator@example.com'
-      );
-      cy.get('[data-testid="unit-website-url"]').type('http://www.example.com');
-      cy.get('[data-testid="unit-website-label"]').type('Website label');
-      cy.get('[data-testid="unit-new-unit-btn"]').click();
-
-      //Verify Unit created
-      cy.get('[data-testid="alert"]').contains(
-        'unit was successfully created.'
-      );
-      cy.get('[data-testid="unit-unit-details"]').contains('Automation Unit');
-      cy.get('[data-testid="unit-description"]').contains(
-        'Automation Unit Description'
-      );
-      cy.get('[data-testid="unit-contact-email"]').contains(
-        'administrator@example.com'
-      );
     }
   );
 
@@ -125,11 +110,23 @@ context('Collections Test', () => {
     { tags: '@high' },
     () => {
       var managerUsername = Cypress.env('USERS_MANAGER_USERNAME');
+      var adminUsername = Cypress.env('USERS_ADMINISTRATOR_USERNAME');
       cy.login('administrator');
       collectionPage.navigateToCollection(collection_title);
       cy.intercept('POST', '/admin/collections/*').as(
         'updateCollectionManager'
       );
+
+      // Quick fix - adding administrtor as manager even though its already added through unit
+      cy.get("[data-testid='add_manager-user-input']")
+        .type(adminUsername)
+        .should('have.value', adminUsername);
+      cy.get("[data-testid='add_manager-popup']")
+        .should('be.visible')
+        .and('contain', adminUsername)
+        .click();
+
+      cy.get("[data-testid='submit-add-manager']").click();
 
       // Verifying collection manager exists
       cy.get("[data-testid='collection-access-label-manager']")
@@ -174,6 +171,7 @@ context('Collections Test', () => {
       // Manager can create collection
       cy.login('manager');
       navigateToManageContent();
+
       collectionPage.createCollection({
         title: collectionNameManager,
         contactEmail: 'manager@example.com',
