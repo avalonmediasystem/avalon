@@ -22,14 +22,23 @@ import {
   selectLoggedInUsersOnlyAccess,
   performSearch,
 } from '../support/navigation';
+import UnitPage from '../pageObjects/unitPage.js';
+const unitPage = UnitPage;
+
+const collectionPage = new CollectionPage();
 
 context('Selected Items', () => {
   const collectionPage = new CollectionPage();
+  var unit_title = `Automation unit title ${
+    Math.floor(Math.random() * 10000) + 1
+  }`;
 
-  var collection_title = `Automation collection title ${Math.floor(Math.random() * 10000) + 1
-    }`;
-  var media_object_title = `Automation Item title ${Math.floor(Math.random() * 100000) + 1
-    }`;
+  var collection_title = `Automation collection title ${
+    Math.floor(Math.random() * 10000) + 1
+  }`;
+  var media_object_title = `Automation Item title ${
+    Math.floor(Math.random() * 100000) + 1
+  }`;
   var media_object_id;
 
   Cypress.on('uncaught:exception', (err, runnable) => {
@@ -48,6 +57,7 @@ context('Selected Items', () => {
   // Create collection and complex media object before all tests
   before(() => {
     cy.login('administrator');
+    unitPage.createUnit({ title: unit_title });
     navigateToManageContent();
 
     // Create collection with public access
