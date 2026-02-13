@@ -18,7 +18,6 @@ class SupplementalFilesController < ApplicationController
 
   before_action :set_object
   before_action :authorize_object
-  after_action :deduplicate_forced, only: [:create, :update]
 
   rescue_from Avalon::SaveError do |exception|
     message = "An error occurred when saving the supplemental file: #{exception.message}"
@@ -43,9 +42,10 @@ class SupplementalFilesController < ApplicationController
       raise Avalon::BadRequest, "Missing required Content-type headers" unless request.headers["Content-Type"] == 'application/json'
     end
     raise Avalon::BadRequest, "Missing required parameters" unless validate_params
+    raise Avalon::BadRequest, "Forced attribute is already assigned to another caption. Ensure no other captions are forced before setting attribute." unless validate_forced
 
     @supplemental_file = SupplementalFile.new(**metadata_from_params)
-    
+
     if attachment
       begin
         @supplemental_file.attach_file(attachment)
@@ -106,6 +106,7 @@ class SupplementalFilesController < ApplicationController
       raise Avalon::BadRequest, "Missing required Accept headers" unless request.headers["Accept"] == 'application/json'
     end
     raise Avalon::BadRequest, "Missing required parameters" unless validate_params
+    raise Avalon::BadRequest, "Forced attribute is already assigned to another caption. Ensure no other captions are forced before setting attribute." unless validate_forced
 
     find_supplemental_file
 
@@ -258,15 +259,12 @@ class SupplementalFilesController < ApplicationController
       end
     end
 
-    def deduplicate_forced
-      forced_files = @object.reload.supplemental_files(tag: 'forced')
-      return unless forced_files.length > 1
+    def validate_forced
+      return true unless params["forced_#{params[:id]}".to_sym]
+      forced_files = @object.supplemental_files(tag: 'forced')
+      return false if forced_files.length.positive?
 
-      old_forced = forced_files.reject { |f| f == forced_files.max_by(&:updated_at) }
-      old_forced.each do |file|
-        file.tags -= ['forced']
-        file.save
-      end
+      true
     end
 
     def metadata_from_params
