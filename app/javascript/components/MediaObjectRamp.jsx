@@ -182,11 +182,11 @@ const MediaObjectRamp = ({
         <Col sm={12} md={12} xl={4} className="ramp--tabs-panel">
           {cdl.enabled && <div dangerouslySetInnerHTML={{ __html: cdl.destroy }} />}
           <Tabs>
-            <Tab eventKey="details" title="Details" >
+            <Tab eventKey="details" title="Details" tabAttrs={{ 'data-testid': 'media-object-tab-details' }}>
               <MetadataDisplay showHeading={false} displayTitle={false} />
             </Tab>
             {(cdl.can_stream && has_sections && has_transcripts) &&
-              <Tab eventKey="transcripts" title={transcript_tab_title} className="ramp--transcripts_tab">
+              <Tab eventKey="transcripts" title={transcript_tab_title} className="ramp--transcripts_tab" tabAttrs={{ 'data-testid': 'media-object-tab-transcripts' }}>
                 <Transcript
                   playerID="iiif-media-player"
                   manifestUrl={manifestUrl}
@@ -194,7 +194,7 @@ const MediaObjectRamp = ({
               </Tab>
             }
             {(has_files) &&
-              <Tab eventKey="files" title="Files">
+              <Tab eventKey="files" title="Files" tabAttrs={{ 'data-testid': 'media-object-tab-files' }}>
                 <SupplementalFiles showHeading={false} />
               </Tab>
             }

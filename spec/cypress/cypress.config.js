@@ -3,7 +3,7 @@ const path = require('path');
 const fs = require('fs');
 
 // Determine which env file to load
-const environmentName = process.env.CYPRESS_ENV || 'dev';
+const environmentName = process.env.CYPRESS_ENV || 'local';
 const envFilename = `cypress.env.${environmentName}.json`;
 const envPath = path.resolve(__dirname, envFilename);
 let envSettings = {};
@@ -11,7 +11,7 @@ if (fs.existsSync(envPath)) {
   envSettings = require(envPath);
 }
 // PROJECT_ROOT in each env file controls where specs, fixtures,etc
-const projectRoot = envSettings.PROJECT_ROOT || '';
+const projectRoot = envSettings.env?.PROJECT_ROOT || '';
 
 module.exports = defineConfig({
   downloadsFolder: path.resolve(__dirname, projectRoot, 'downloads'),
@@ -28,7 +28,7 @@ module.exports = defineConfig({
 
     setupNodeEvents(on, config) {
       //node env variables
-      const environmentName = process.env.CYPRESS_ENV || 'dev';
+      const environmentName = process.env.CYPRESS_ENV || 'local';
       const environmentFilename = `cypress.env.${environmentName}.json`;
       const environmentPath = path.resolve(__dirname, environmentFilename);
       console.log('Environment name: %s', environmentName);
