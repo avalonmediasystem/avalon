@@ -22,18 +22,29 @@ import {
   selectLoggedInUsersOnlyAccess,
   performSearch,
 } from '../support/navigation';
+import UnitPage from '../pageObjects/unitPage.js';
+const unitPage = UnitPage;
+
+const collectionPage = new CollectionPage();
 
 context('Selected Items', () => {
   const collectionPage = new CollectionPage();
+  var unit_title = `Automation unit title ${
+    Math.floor(Math.random() * 10000) + 1
+  }`;
 
-  var collection_title = `Automation collection title ${Math.floor(Math.random() * 10000) + 1
-    }`;
-  const new_collection_title = `Automation collection title ${Math.floor(Math.random() * 10000) + 1
-    }`;
-  var media_object_title = `Automation Item title ${Math.floor(Math.random() * 100000) + 1
-    }`;
-  var new_media_object_title = `Automation Item title ${Math.floor(Math.random() * 100000) + 1
-    }`;
+  var collection_title = `Automation collection title ${
+    Math.floor(Math.random() * 10000) + 1
+  }`;
+  const new_collection_title = `Automation collection title ${
+    Math.floor(Math.random() * 10000) + 1
+  }`;
+  var media_object_title = `Automation Item title ${
+    Math.floor(Math.random() * 100000) + 1
+  }`;
+  var new_media_object_title = `Automation Item title ${
+    Math.floor(Math.random() * 100000) + 1
+  }`;
   var media_object_id;
   var new_media_object_id;
 
@@ -53,6 +64,7 @@ context('Selected Items', () => {
   // Create collection and complex media object before all tests
   before(() => {
     cy.login('administrator');
+    unitPage.createUnit({ title: unit_title });
     navigateToManageContent();
 
     // Create collection with public access
@@ -81,6 +93,8 @@ context('Selected Items', () => {
     // Then delete the collection
     collectionPage.deleteCollectionByName(collection_title);
     collectionPage.deleteCollectionByName(new_collection_title);
+    // Delete unit
+    UnitPage.deleteUnitByName(unit_title);
   });
 });
 
@@ -428,9 +442,7 @@ it('Verify selection count is displayed when items are selected', () => {
   cy.visit('/bookmarks');
 
   // Verify selection count is displayed
-  cy.get('#selection-count')
-    .should('be.visible')
-    .and('contain', 'selected');
+  cy.get('#selection-count').should('be.visible').and('contain', 'selected');
 });
 
 it('Verify selection count is hidden when no items are selected', () => {

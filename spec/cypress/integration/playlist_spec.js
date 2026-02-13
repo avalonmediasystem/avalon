@@ -18,24 +18,32 @@ import { navigateToManageContent } from '../support/navigation';
 import CollectionPage from '../pageObjects/collectionPage';
 import HomePage from '../pageObjects/homePage';
 const homePage = new HomePage();
+const unitPage = UnitPage;
 
 context('Playlists', () => {
   const collectionPage = new CollectionPage();
+  var unit_title = `Automation unit title ${
+    Math.floor(Math.random() * 10000) + 1
+  }`;
 
-  var collection_title = `Automation collection title ${Math.floor(Math.random() * 10000) + 1
-    }`;
-  var media_object_title = `Automation Item title ${Math.floor(Math.random() * 100000) + 1
-    }`;
+  var collection_title = `Automation collection title ${
+    Math.floor(Math.random() * 10000) + 1
+  }`;
+  var media_object_title = `Automation Item title ${
+    Math.floor(Math.random() * 100000) + 1
+  }`;
   var media_object_id;
   var share_by_link_playlist;
 
   //Playlist names start with '_' character for easy navigation without pagination
-  var playlist_title = `_Automation playlist title ${Math.floor(Math.random() * 10000) + 1
-    }`;
+  var playlist_title = `_Automation playlist title ${
+    Math.floor(Math.random() * 10000) + 1
+  }`;
   // var playlist_title = '_Automation playlist title 20765';
   var playlist_description = `${playlist_title} description`;
-  var playlist_title_public = `_Automation public playlist title ${Math.floor(Math.random() * 10000) + 1
-    }`;
+  var playlist_title_public = `_Automation public playlist title ${
+    Math.floor(Math.random() * 10000) + 1
+  }`;
   var playlist_description_public = `${playlist_title_public} description`;
   Cypress.on('uncaught:exception', (err, runnable) => {
     if (
@@ -53,6 +61,7 @@ context('Playlists', () => {
   // Create collection and complex media object before all tests
   before(() => {
     cy.login('administrator');
+    unitPage.createUnit({ title: unit_title });
     navigateToManageContent();
 
     // Create collection with public access
@@ -85,6 +94,8 @@ context('Playlists', () => {
 
     // Then delete the collection
     collectionPage.deleteCollectionByName(collection_title);
+    // Delete unit
+    UnitPage.deleteUnitByName(unit_title);
   });
 
   //is able to create a new playlist
