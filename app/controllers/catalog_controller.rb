@@ -224,6 +224,9 @@ class CatalogController < ApplicationController
     config.spell_max = 5
 
     config.fetch_many_document_params = { fl: "*" }
+
+    # Do not store searches for anyone since Avalon doesn't display them anyway
+    config.crawler_detector = ->(req) { true }
   end
 
   private
