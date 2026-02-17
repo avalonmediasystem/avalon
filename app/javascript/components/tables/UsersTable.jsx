@@ -19,9 +19,9 @@ import GenericTable from './GenericTable';
 const UsersTable = ({ url, hasProvider = false }) => {
   const usersConfig = {
     // Table metadata
-    tableType: 'playlist',
-    containerClass: 'playlist-table-container',
-    testId: 'playlist-table',
+    tableType: 'user',
+    containerClass: 'user-table-container',
+    testId: 'user-table',
     hasTagFilter: false,
 
     // Table sorting and filtering keys from parsed data (keys match column keys and parsed data keys)
