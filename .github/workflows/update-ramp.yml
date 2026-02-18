@@ -1,0 +1,59 @@
+name: Update Ramp Dependency
+
+on:
+  repository_dispatch:
+    types: [ramp-build-updated]
+  workflow_dispatch:
+
+jobs:
+  update-ramp:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: develop
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'yarn'
+      - name: Collect existing PR commits
+        id: collect-existing
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          EXISTING_COMMITS=""
+          # Check if there's already an open PR on the update branch
+          PR_NUM=$(gh pr list --head update-ramp-build --state open --json number --jq '.[0].number // empty')
+          if [ -n "$PR_NUM" ]; then
+            echo "Found existing PR #$PR_NUM"
+            # Extract previous commit hashes from the PR body
+            EXISTING_COMMITS=$(gh pr view $PR_NUM --json body --jq '.body' | grep -oE 'https://github.com/.*/commit/[a-f0-9]+' | sed 's/^/- /' || true)
+          fi
+          # Save output
+          EOF=$(dd if=/dev/urandom bs=15 count=1 status=none | base64)
+          echo "commits<<$EOF" >> $GITHUB_OUTPUT
+          echo -e "$EXISTING_COMMITS" >> $GITHUB_OUTPUT
+          echo "$EOF" >> $GITHUB_OUTPUT
+      - name: Update Ramp build
+        run: |
+          yarn remove @samvera/ramp
+          yarn cache clean
+          yarn add https://github.com/samvera-labs/ramp#ramp-build
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v6
+        with:
+          commit-message: "Update @samvera/ramp to latest build"
+          title: "Update @samvera/ramp to latest build"
+          body: |
+            Automated PR to update @samvera/ramp dependency.
+
+            ## Source commits
+            ${{ steps.collect-existing.outputs.commits }}
+            - https://github.com/samvera-labs/ramp/commit/${{ github.event.client_payload.ramp_commit }}
+
+          branch: update-ramp-build
+          base: develop
+          labels: dependencies
