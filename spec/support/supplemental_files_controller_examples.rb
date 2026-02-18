@@ -466,6 +466,46 @@ RSpec.shared_examples 'a nested controller for' do |object_class|
         end
       end
 
+      context "forced caption file" do
+        let(:forced_param) { "forced_#{supplemental_file.id}".to_sym }
+        context "missing forced tag" do
+          let(:supplemental_file) { FactoryBot.create(:supplemental_file, :with_caption_file, :with_caption_tag, label: 'label') }
+          it "adds forced note to tags" do
+            expect {
+              put :update, params: { class_id => object.id, id: supplemental_file.id, forced_param => 1, supplemental_file: valid_update_attributes, format: :html }, session: valid_session
+            }.to change { master_file.reload.supplemental_files.first.tags }.from(['caption']).to(['caption', 'forced'])
+          end
+
+          context "when another supplemental file has forced designation" do
+            let(:forced_caption) { FactoryBot.create(:supplemental_file, :with_caption_file, tags: ['caption', 'forced'], label: 'label') }
+            let(:master_file) { FactoryBot.create(:master_file, media_object_id: media_object.id, supplemental_files: [supplemental_file, forced_caption]) }
+            let(:media_object) { FactoryBot.create(:media_object, supplemental_files: [supplemental_file, forced_caption]) }
+
+            it 'error message to display' do
+              put :update, params: { class_id => object.id, id: supplemental_file.id, forced_param => 1, supplemental_file: valid_update_attributes, format: :html }, session: valid_session
+              expect(flash[:error]).not_to be_empty
+              expect(flash[:error]).to include 'Forced attribute is already assigned to another caption. Ensure no other captions are forced before setting attribute.'
+            end
+          end
+        end
+        context "with forced tag" do
+          let(:supplemental_file) { FactoryBot.create(:supplemental_file, :with_caption_file, tags: ['caption', 'forced'], label: 'label') }
+          it "does not add more instances of forced note" do
+            expect {
+              put :update, params: { class_id => object.id, id: supplemental_file.id, forced_param => 1, supplemental_file: valid_update_attributes, format: :html }, session: valid_session
+            }.to not_change { master_file.reload.supplemental_files.first.tags }.from(['caption', 'forced'])
+          end
+        end
+        context "removing forced designation" do
+          let(:supplemental_file) { FactoryBot.create(:supplemental_file, :with_transcript_file, tags: ['caption', 'forced'], label: 'label') }
+          it "removes forced note from tags" do
+            expect {
+              put :update, params: { class_id => object.id, id: supplemental_file.id, supplemental_file: valid_update_attributes, format: :html }, session: valid_session
+            }.to change { master_file.reload.supplemental_files.first.tags }.from(['caption', 'forced']).to(['caption'])
+          end
+        end
+      end
+
       context "caption treated as transcript" do
         let(:transcript_param) { "treat_as_transcript_#{supplemental_file.id}".to_sym }
         context "missing transcript tag" do

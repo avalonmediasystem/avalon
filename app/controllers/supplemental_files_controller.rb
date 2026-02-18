@@ -42,9 +42,10 @@ class SupplementalFilesController < ApplicationController
       raise Avalon::BadRequest, "Missing required Content-type headers" unless request.headers["Content-Type"] == 'application/json'
     end
     raise Avalon::BadRequest, "Missing required parameters" unless validate_params
+    raise Avalon::BadRequest, "Forced attribute is already assigned to another caption. Ensure no other captions are forced before setting attribute." unless validate_forced
 
     @supplemental_file = SupplementalFile.new(**metadata_from_params)
-    
+
     if attachment
       begin
         @supplemental_file.attach_file(attachment)
@@ -105,6 +106,7 @@ class SupplementalFilesController < ApplicationController
       raise Avalon::BadRequest, "Missing required Accept headers" unless request.headers["Accept"] == 'application/json'
     end
     raise Avalon::BadRequest, "Missing required parameters" unless validate_params
+    raise Avalon::BadRequest, "Forced attribute is already assigned to another caption. Ensure no other captions are forced before setting attribute." unless validate_forced
 
     find_supplemental_file
 
@@ -183,12 +185,13 @@ class SupplementalFilesController < ApplicationController
       treat_as_transcript = 'transcript' if meta_params[:treat_as_transcript] == true
       machine_generated = 'machine_generated' if meta_params[:machine_generated] == true
       private_file = 'private' if meta_params[:private] == true
+      forced = 'forced' if meta_params[:forced] == true
 
       sup_file_params[:label] ||= meta_params[:label].presence
       sup_file_params[:language] ||= meta_params[:language].presence
       # The uniq is to prevent multiple instances of 'transcript' tag if an update is performed with
       # `{ type: transcript, treat_as_transcript: 1}`
-      sup_file_params[:tags] ||= [type, treat_as_transcript, machine_generated, private_file].compact.uniq
+      sup_file_params[:tags] ||= [type, treat_as_transcript, machine_generated, private_file, forced].compact.uniq
       sup_file_params
     end
 
@@ -240,7 +243,8 @@ class SupplementalFilesController < ApplicationController
       file_params = [
         { param: "machine_generated_#{params[:id]}".to_sym, tag: "machine_generated", method: :machine_generated? },
         { param: "treat_as_transcript_#{params[:id]}".to_sym, tag: "transcript", method: :caption_transcript? },
-        { param: "private_#{params[:id]}".to_sym, tag: "private", method: :private? }
+        { param: "private_#{params[:id]}".to_sym, tag: "private", method: :private? },
+        { param: "forced_#{params[:id]}".to_sym, tag: "forced", method: :forced? }
       ]
 
       file_params.each do |v|
@@ -253,6 +257,14 @@ class SupplementalFilesController < ApplicationController
           @supplemental_file.tags -= [tag]
         end
       end
+    end
+
+    def validate_forced
+      return true unless params["forced_#{params[:id]}".to_sym]
+      forced_files = @object.supplemental_files(tag: 'forced')
+      return false if forced_files.length.positive?
+
+      true
     end
 
     def metadata_from_params

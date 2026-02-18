@@ -20,7 +20,7 @@ class SupplementalFile < ApplicationRecord
   scope :with_tag, ->(tag_filter) { where("tags LIKE ?", "%\n- #{tag_filter}\n%") }
 
   # TODO: the empty tag should represent a generic supplemental file
-  validates :tags, array_inclusion: ['transcript', 'caption', 'description', 'machine_generated', 'private', '', nil]
+  validates :tags, array_inclusion: ['transcript', 'caption', 'description', 'machine_generated', 'private', 'forced', '', nil]
   validates :language, inclusion: { in: LanguageTerm::Iso6392.map.keys }
   validates :parent_id, presence: true
   validate  :validate_file_type, if: proc { |file| file.caption? || file.description? }
@@ -74,6 +74,10 @@ class SupplementalFile < ApplicationRecord
     tags.include?('private')
   end
 
+  def forced?
+    tags.include?('forced')
+  end
+
   def as_json(_options = {})
     type = if tags.include?('caption')
              'caption'
@@ -92,7 +96,8 @@ class SupplementalFile < ApplicationRecord
       language: LanguageTerm.find(language).text,
       treat_as_transcript: caption_transcript?,
       machine_generated: machine_generated?,
-      private: private?
+      private: private?,
+      forced: forced?
     }.compact
   end
 
