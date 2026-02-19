@@ -1,9 +1,13 @@
 name: Update Ramp Dependency
 
 on:
-  repository_dispatch:
-    types: [ramp-build-updated]
   workflow_dispatch:
+    inputs:
+      ramp_commit:
+        description: 'The commit hash from Ramp'
+        required: true
+  repository_dispatch:
+    types: [update-ramp]
 
 jobs:
   update-ramp:
@@ -14,7 +18,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: develop
+          ref: ${{ github.ref }}
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
@@ -52,7 +56,7 @@ jobs:
 
             ## Source commits
             ${{ steps.collect-existing.outputs.commits }}
-            - https://github.com/samvera-labs/ramp/commit/${{ github.event.client_payload.ramp_commit }}
+            - https://github.com/samvera-labs/ramp/commit/${{ github.event.inputs.ramp_commit }}
 
           branch: update-ramp-build
           base: develop
