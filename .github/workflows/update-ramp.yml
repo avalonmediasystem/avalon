@@ -1,0 +1,19 @@
+name: Update Ramp Dependency
+
+# This file must exist on 'main' for the API to find the workflow name.
+# Once registered, the API can trigger the 'develop' version.
+
+on:
+  repository_dispatch:
+    types: [update-ramp]
+  workflow_dispatch:
+    inputs:
+      ramp_commit:
+        description: 'The commit hash from Ramp'
+        required: true
+
+jobs:
+  placeholder:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "This is a placeholder registering the workflow for updating Ramp dependency to the latest build."
