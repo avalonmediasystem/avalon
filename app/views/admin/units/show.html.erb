@@ -49,7 +49,7 @@ Unless required by applicable law or agreed to in writing, software distributed
       <% end %>
       <% if @unit.website_url.present? %>
         <p><strong>Website:</strong></p>
-        <p><%= link_to(@unit.website_label.presence || @unit.website_url, @unit.website_url)%></p>
+        <p><%= link_to(@unit.website_label.presence || @unit.website_url, @unit.website_url, 'data-testid': 'unit-website-url') %></p>
       <% end %>
     </div>
     <div class="col-md-3">
@@ -57,9 +57,9 @@ Unless required by applicable law or agreed to in writing, software distributed
       <p id="poster_original_name"><%= @unit.poster.original_name if @unit.poster.present? %></p>
       <div class="well-vertical-spacer">
         <% if @unit.poster.present? %>
-        <%= image_tag(poster_admin_unit_path(@unit), class: 'img-fluid', id: 'poster-image') %>
+        <%= image_tag(poster_admin_unit_path(@unit), class: 'img-fluid', id: 'poster-image', data: { testid: "unit-poster-image" }) %>
         <% else %>
-        <img src="" class="img-fluid" id="poster-image">
+        <img src="" class="img-fluid" id="poster-image" data-testid="unit-poster-image">
         <% end %>
       </div>
       <div class="row">
@@ -69,7 +69,7 @@ Unless required by applicable law or agreed to in writing, software distributed
             <% if cannot?(:edit, @unit) %>disabled<%end%> />
         <% end %>
         <%= form_for @unit, url: remove_poster_admin_unit_path(@unit.id), html: {method: "delete"} do |form| %>
-          <input type="submit" class="btn btn-danger btn-sm" value="Remove Poster" <% if @unit.poster.blank? || cannot?(:edit, @unit) %>disabled<%end%> />
+          <input type="submit" class="btn btn-danger btn-sm" value="Remove Poster" data-testid="unit-remove-poster-btn" <% if @unit.poster.blank? || cannot?(:edit, @unit) %>disabled<%end%> />
         <% end %>
       </div>
       <div class="well-vertical-spacer">
@@ -82,8 +82,8 @@ Unless required by applicable law or agreed to in writing, software distributed
     </div>
   </div>
   <div class="well-vertical-spacer">
-    <%= link_to('Create A Collection', new_admin_collection_path(unit_id: @unit.id), class: 'btn btn-primary', data: { testid: 'unit-create-item-btn' }) if can? :create, Admin::Collection %>
-    <%= link_to('List All Collections', unit_path(@unit.id), class: 'btn btn-outline') %>
+    <%= link_to('Create A Collection', new_admin_collection_path(unit_id: @unit.id), class: 'btn btn-primary', data: { testid: 'unit-create-collection-btn' }) if can? :create, Admin::Collection %>
+    <%= link_to('List All Collections', unit_path(@unit.id), class: 'btn btn-outline', 'data-testid': 'unit-list-collections-btn') %>
     <%= button_tag('Edit Unit Info', class: 'btn btn-outline', data: {"bs-toggle": "modal", "bs-target": "#new_unit", testid:"unit-edit-unit-info"}) if can? :update, @unit %>
   </div>
 </div><!-- /well -->
