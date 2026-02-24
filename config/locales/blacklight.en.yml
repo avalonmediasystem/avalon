@@ -23,16 +23,16 @@ en:
         failure: 'Sorry, there was a problem removing the selected items.'
         action_confirm: 'Remove the selected items?'
       remove_selected:
-        button: 'Clear selected items'
-        confirm: 'Clear your selected items?'
+        button: 'Remove from Selected Items'
+        confirm: 'Remove these from your list of Selected Items?'
         success:
           one: 'Cleared 1 item from your selections.'
           other: 'Cleared %{count} items from your selections.'
         failure: 'Sorry, there was a problem removing the selected items.'
         no_selection: 'Please select items to remove.'
       clear:
-        action_title: 'Clear all items'
-        action_confirm: 'Clear all your items?'
+        action_title: 'Clear all'
+        action_confirm: 'Clear all currently selected items?'
         success: 'Cleared all your items.'
         failure: 'Sorry, there was a problem clearing your selected items.'
       need_login: 'Please log in to manage and view your selected items.'
