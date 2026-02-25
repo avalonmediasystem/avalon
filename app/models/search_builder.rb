@@ -19,7 +19,7 @@ class SearchBuilder < Blacklight::SearchBuilder
   include Hydra::MultiplePolicyAwareAccessControlsEnforcement
 
   class_attribute :avalon_solr_access_filters_logic
-  self.avalon_solr_access_filters_logic = [:only_published_items, :limit_to_non_hidden_items]
+  self.avalon_solr_access_filters_logic = [:only_published_items, :limit_to_non_hidden_items, :limit_to_inheritance_enabled_items]
   self.default_processor_chain += [:only_wanted_models, :term_frequency_counts, :search_section_transcripts]
 
   def only_wanted_models(solr_parameters)
@@ -28,11 +28,15 @@ class SearchBuilder < Blacklight::SearchBuilder
   end
 
   def only_published_items(_permission_types = discovery_permissions, _ability = current_ability)
-    [policy_clauses, 'workflow_published_sim:"Published"'].compact.join(" OR ")
+    [policy_clauses(permission_types: [:edit]), 'workflow_published_sim:"Published"'].compact.join(" OR ")
   end
 
   def limit_to_non_hidden_items(_permission_types = discovery_permissions, _ability = current_ability)
     [policy_clauses, "(*:* NOT hidden_bsi:true)"].compact.join(" OR ")
+  end
+
+  def limit_to_inheritance_enabled_items(_permission_types = discovery_permissions, _ability = current_ability)
+    [policy_clauses(permission_types: [:edit]), '(*:* NOT disable_inheritance_bsi:true)'].compact.join(" OR ")
   end
 
   # Overridden to skip for admin users

@@ -671,6 +671,17 @@ describe MediaObjectsController, type: :controller do
           .not_to change { MediaObject.find(mo.id).hidden? }
       end
     end
+
+    context "Disable Inheritance" do
+      subject(:mo) { FactoryBot.create(:media_object, :with_completed_workflow, hidden: true) }
+      let!(:user) { Faker::Internet.email }
+      before(:each) { login_user mo.collection.managers.first }
+
+      it "should retain the inheritance status of an object when other access control settings change" do
+        expect { put 'update', params: { id: mo.id, step: 'access-control', donot_advance: 'true', add_user: user, add_user_display: user, submit_add_user: 'Add' } }
+          .not_to change { MediaObject.find(mo.id).disable_inheritance? }
+      end
+    end
   end
 
   describe "#index" do
@@ -762,6 +773,62 @@ describe MediaObjectsController, type: :controller do
           expect(a_request(:post, /#{ActiveFedora.solr.conn.uri.to_s}.*\?fl=id&q=/)).not_to have_been_made
         end
       end
+
+      context 'inherited read permissions' do
+        let!(:unpublished_media_object) { FactoryBot.create(:media_object, visibility: 'private', collection: collection) }
+        let!(:disabled_media_object) { FactoryBot.create(:published_media_object, visibility: 'private', collection: collection, disable_inheritance: true) }
+        let!(:inherited_media_object) { FactoryBot.create(:published_media_object, visibility: 'private', collection: collection) }
+        let(:collection) { FactoryBot.create(:collection, default_read_users: [user.username]) }
+        
+        context 'from collection level' do
+          it "should return list of media_objects that the user is authorized to view" do
+            get 'index', format: 'json'
+            expect(json.count).to eq(2)
+            expect(json.first['id']).to eq(media_object.id)
+            expect(json.first['title']).to eq(media_object.title)
+            expect(json.first['collection']).to eq(media_object.collection.name)
+            expect(json.first['main_contributors']).to eq(media_object.creator)
+            expect(json.first['publication_date']).to eq(media_object.date_created)
+            expect(json.first['published_by']).to eq(media_object.avalon_publisher)
+            expect(json.first['published']).to eq(media_object.published?)
+            expect(json.first['summary']).to eq(media_object.abstract)
+            expect(json.second['id']).to eq(inherited_media_object.id)
+            expect(json.second['title']).to eq(inherited_media_object.title)
+            expect(json.second['collection']).to eq(inherited_media_object.collection.name)
+            expect(json.second['main_contributors']).to eq(inherited_media_object.creator)
+            expect(json.second['publication_date']).to eq(inherited_media_object.date_created)
+            expect(json.second['published_by']).to eq(inherited_media_object.avalon_publisher)
+            expect(json.second['published']).to eq(inherited_media_object.published?)
+            expect(json.second['summary']).to eq(inherited_media_object.abstract)
+          end
+        end
+
+        context 'from unit level' do
+          let(:collection) { FactoryBot.create(:collection, unit: unit) }
+          let(:unit) { FactoryBot.create(:unit, default_read_users: [user.username]) }
+
+          it "should return list of media_objects that the user is authorized to view" do
+            get 'index', format: 'json'
+            expect(json.count).to eq(2)
+            expect(json.first['id']).to eq(media_object.id)
+            expect(json.first['title']).to eq(media_object.title)
+            expect(json.first['collection']).to eq(media_object.collection.name)
+            expect(json.first['main_contributors']).to eq(media_object.creator)
+            expect(json.first['publication_date']).to eq(media_object.date_created)
+            expect(json.first['published_by']).to eq(media_object.avalon_publisher)
+            expect(json.first['published']).to eq(media_object.published?)
+            expect(json.first['summary']).to eq(media_object.abstract)
+            expect(json.second['id']).to eq(inherited_media_object.id)
+            expect(json.second['title']).to eq(inherited_media_object.title)
+            expect(json.second['collection']).to eq(inherited_media_object.collection.name)
+            expect(json.second['main_contributors']).to eq(inherited_media_object.creator)
+            expect(json.second['publication_date']).to eq(inherited_media_object.date_created)
+            expect(json.second['published_by']).to eq(inherited_media_object.avalon_publisher)
+            expect(json.second['published']).to eq(inherited_media_object.published?)
+            expect(json.second['summary']).to eq(inherited_media_object.abstract)
+          end
+        end
+      end
     end
   end
 
@@ -821,6 +888,68 @@ describe MediaObjectsController, type: :controller do
         FactoryBot.create(:master_file, media_object: media_object)
         get 'show', params: { id: media_object.id }
         expect(response).not_to redirect_to new_user_session_path
+      end
+
+      context "inherited access" do
+        context "from collection" do
+          let(:user) { FactoryBot.create(:user) }
+          let(:mo_member) { FactoryBot.create(:user) }
+          let(:group_member) { FactoryBot.create(:user) }
+          let(:group) { FactoryBot.create(:group, users: [group_member]) }
+          let(:media_object) { FactoryBot.create(:published_media_object, visibility: 'private', collection: collection, read_users: [mo_member.username]) }
+          let(:collection) { FactoryBot.create(:collection, default_read_users: [user.username], default_read_groups: [group.name]) }
+
+          it "should be available to a user granted access at collection level" do
+            login_user user.username
+            get 'show', params: { id: media_object.id }
+            expect(response.response_code).to eq(200)
+          end
+
+          it "should be available to a group member granted access at collection level" do
+            # Stub responses to make sure user.groups is being properly set
+            allow(controller).to receive(:current_user).and_return(group_member)
+            allow(group_member).to receive(:groups).and_return([group.name])
+            login_user group_member.username
+            get 'show', params: { id: media_object.id }
+            expect(response.response_code).to eq(200)
+          end
+
+          it "should not block access for users granted access on the media object" do
+            login_user mo_member.username
+            get 'show', params: { id: media_object.id }
+            expect(response.response_code).to eq(200)
+          end
+        end
+
+        context "from unit" do
+          let(:user) { FactoryBot.create(:user) }
+          let(:mo_member) { FactoryBot.create(:user) }
+          let(:group_member) { FactoryBot.create(:user) }
+          let(:group) { FactoryBot.create(:group, users: [group_member]) }
+          let(:media_object) { FactoryBot.create(:published_media_object, visibility: 'private', collection: collection, read_users: [mo_member.username]) }
+          let(:collection) { FactoryBot.create(:collection, unit: unit) }
+          let(:unit) { FactoryBot.create(:unit, default_read_users: [user.username], default_read_groups: [group.name])}
+
+          it "should be available to a user granted access at unit level" do
+            login_user user.username
+            get 'show', params: { id: media_object.id }
+            expect(response.response_code).to eq(200)
+          end
+
+          it "should be available to a group member granted access at unit level" do
+            allow(controller).to receive(:current_user).and_return(group_member)
+            allow(group_member).to receive(:groups).and_return([group.name])
+            login_user group_member.username
+            get 'show', params: { id: media_object.id }
+            expect(response.response_code).to eq(200)
+          end
+
+          it "should not block access for users granted access on the media object" do
+            login_user mo_member.username
+            get 'show', params: { id: media_object.id }
+            expect(response.response_code).to eq(200)
+          end
+        end
       end
 
       it "should provide a JSON stream description to the client" do
