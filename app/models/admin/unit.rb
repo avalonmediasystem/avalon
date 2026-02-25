@@ -218,6 +218,8 @@ class Admin::Unit < ActiveFedora::Base
     super.tap do |solr_doc|
       solr_doc["name_uniq_si"] = self.name.downcase.gsub(/\s+/, '') if self.name.present?
       solr_doc["has_poster_bsi"] = !(poster.content.nil? || poster.content == '')
+      solr_doc["inheritable_read_access_person_ssim"] = default_read_users
+      solr_doc["inheritable_read_access_group_ssim"] = default_read_groups
     end
   end
 
