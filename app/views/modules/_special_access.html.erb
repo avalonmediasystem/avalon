@@ -20,6 +20,14 @@ Unless required by applicable law or agreed to in writing, software distributed
     <h3 class="card-title">Assign special access</h3>
   </div>
   <div class="card-body">
+    <% if object.class == (SpeedyAF::Proxy::MediaObject || MediaObject) %>
+      <%= bootstrap_form_for object do |form| %>
+      <input id="step" name="step" type="hidden" value="access-control" />
+      <input id="donot_advance" name="donot_advance" type="hidden" value="true" />
+      <%= check_box_tag 'disable_inheritance', '1', object.disable_inheritance?, class: 'form-check-input' %>
+      <label class='form-check-label' for='disable_inheritance'>Disable parent permissions</label>
+      <% end %>
+    <% end %>
     <%= render "modules/access_object", object: object,
           access_object: "user", members: @users, leases: @user_leases,
           autocomplete_model: 'user',
@@ -38,3 +46,9 @@ Unless required by applicable law or agreed to in writing, software distributed
           input_disabled: !can_update %>
   </div>
 </div>
+
+<script>
+  document.querySelector('#disable_inheritance').addEventListener('change', function() {
+    this.closest('form').submit();
+  })
+</script>
