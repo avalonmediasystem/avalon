@@ -98,6 +98,7 @@ class AccessControlStep < BasicStep
     unless limited_access_submit
       media_object.visibility = context[:visibility] unless context[:visibility].blank?
       media_object.hidden = context[:hidden] == "1"
+      media_object.disable_inheritance = context[:disable_inheritance] == "1"
       if media_object.cdl_enabled?
         lending_period = build_lending_period(context)
         if lending_period.positive?

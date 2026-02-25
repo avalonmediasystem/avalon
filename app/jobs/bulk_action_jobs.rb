@@ -22,6 +22,7 @@ module BulkActionJobs
         media_object = MediaObject.find(id)
         media_object.hidden = params[:hidden] if !params[:hidden].nil?
         media_object.visibility = params[:visibility] unless params[:visibility].blank?
+        media_object.disable_inheritance = params[:disable_inheritance] unless params[:disable_inheritance].blank?
         # Limited access stuff
         ["group", "class", "user", "ipaddress"].each do |title|
           if params["submit_add_#{title}"].present?

@@ -14,6 +14,7 @@
 
 class MediaObject < ActiveFedora::Base
   include Hydra::AccessControls::Permissions
+  include DisableInheritance
   include Hidden
   include VirtualGroups
   include ActiveFedora::Associations
