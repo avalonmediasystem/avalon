@@ -414,9 +414,9 @@ context('Item', () => {
     // Improved clear selected items handling
     cy.get('body').then(($body) => {
       if (
-        $body.find('a.clear-bookmarks:contains("Clear selected items")').length
+        $body.find('a.clear-bookmarks:contains("Remove from Selected Items")').length
       ) {
-        cy.get('a.clear-bookmarks:contains("Clear selected items")')
+        cy.get('a.clear-bookmarks:contains("Remove from Selected Items")')
           .should('be.visible')
           .click({ force: true });
       }
@@ -863,7 +863,7 @@ context('Item', () => {
       cy.login('administrator');
       // Uncheck all the bookmarks we have
       cy.visit('/bookmarks');
-      cy.contains('a', 'Clear selected items')
+      cy.contains('a', 'Remove from Selected Items')
         .should('be.visible')
         .click({ force: true });
 
