@@ -173,6 +173,8 @@ RSpec.describe PlaylistItemsController, type: :controller do
       render_views
       it 'should not read from fedora' do
         playlist_item
+        # Clear the memoized MasterFile so it can be reinitialized as a SpeedyAF::Proxy::MasterFile object
+        clip.instance_variable_set(:@master_file, nil)
         WebMock.reset_executed_requests!
         allow_any_instance_of(Playlist).to receive(:related_clips).and_return([clip]);
         get :related_items, params: { playlist_id: playlist.to_param, playlist_item_id: playlist_item.id }

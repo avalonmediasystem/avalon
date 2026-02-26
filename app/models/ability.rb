@@ -216,6 +216,10 @@ class Ability
       #   can :manage, Avalon::ControlledVocabulary
       # end
 
+      cannot :read, [MediaObject, SpeedyAF::Proxy::MediaObject] do |media_object|
+        media_object.disable_inheritance? && is_inherited_from_parent?(media_object)
+      end
+
       cannot :update, [MediaObject, SpeedyAF::Proxy::MediaObject] do |media_object|
         (not (full_login? || is_api_request?)) || (!is_member_of?(media_object.collection)) ||
           ( media_object.published? && !is_manager_of?(media_object.collection) )
@@ -388,6 +392,10 @@ class Ability
   def is_editor_of_unit?(unit)
     is_administrator? ||
       @user.in?(unit.editors_managers_and_unit_admins)
+  end
+
+  def is_inherited_from_parent?(media_object)
+    @user.in?(media_object.inherited_read_users) || !(@user_groups & media_object.inherited_read_groups).empty?
   end
 
   def is_member_of_any_collection?

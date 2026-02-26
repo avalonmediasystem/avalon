@@ -33,6 +33,7 @@ class SpeedyAF::Proxy::MediaObject < SpeedyAF::Base
     @attrs[:section_id] = solr_document["section_id_ssim"]
     @attrs[:section_ids] = solr_document["section_id_ssim"]
     @attrs[:hidden?] = solr_document["hidden_bsi"]
+    @attrs[:disable_inheritance?] = solr_document["disable_inheritance_bsi"]
     @attrs[:read_groups] = solr_document["read_access_group_ssim"] || []
     @attrs[:edit_groups] = solr_document["edit_access_group_ssim"] || []
     @attrs[:read_users] = solr_document["read_access_person_ssim"] || []
