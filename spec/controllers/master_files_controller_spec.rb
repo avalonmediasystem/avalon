@@ -345,6 +345,18 @@ describe MasterFilesController do
         expect(response.response_code).to eq(404)
       end
     end
+
+    context 'deleted master file' do
+      before do
+        master_file.destroy
+      end
+
+      it 'should redirect to deleted_pid page' do
+        get 'show', params: { id: master_file.id }
+        expect(response).to render_template("errors/deleted_pid")
+        expect(response.response_code).to eq(410)
+      end
+    end
   end
 
   describe "#embed" do
@@ -718,8 +730,8 @@ describe MasterFilesController do
         master_file.destroy
       end
 
-      it 'returns gone (403)' do
-        expect(get('hls_manifest', params: { id: master_file.id, quality: 'auto' })).to have_http_status(:unauthorized)
+      it 'returns gone (410)' do
+        expect(get('hls_manifest', params: { id: master_file.id, quality: 'auto' })).to have_http_status(:gone)
       end
     end
 
