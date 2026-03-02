@@ -22,7 +22,7 @@ jobs:
           - POSTGRES_USER=postgres
           - POSTGRES_DB=avalon
           - POSTGRES_PASSWORD=password
-      - image: fcrepo/fcrepo:6.5-tomcat9
+      - image: fcrepo/fcrepo:7.0-beta1-tomcat10
         environment:
           CATALINA_OPTS: -Dfcrepo.autoversioning.enabled=false
       - image: zookeeper:3.9
