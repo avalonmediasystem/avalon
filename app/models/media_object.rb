@@ -212,7 +212,7 @@ class MediaObject < ActiveFedora::Base
   def collection= co
     old_collection = self.collection
     self._collection= co
-    self.governing_policies.delete(old_collection) if old_collection
+    self.governing_policies -= [old_collection] if old_collection
     self.governing_policies += [co]
     if self.new_record?
       self.hidden = co.default_hidden
