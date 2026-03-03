@@ -369,24 +369,35 @@ class CollectionPage {
     cy.intercept('GET', '**/edit?step=structure').as('structurepage');
     cy.get('[data-testid="media-object-continue-btn"]').click();
     cy.wait('@structurepage').its('response.statusCode').should('eq', 200);
-
+    //Click on edit structure button for uploading structure to the first media object
+    cy.get('[data-testid="media-object-edit-structure-btn-0"]').click();
     // Add structure if requested (via file upload)
     if (config.addStructure) {
       cy.get(`[data-testid="media-object-struct-upload-btn-0"]`)
-        .should('be.visible').and('contain.text', 'Upload');
+        .should('be.visible')
+        .and('contain.text', 'Upload');
 
       cy.intercept('POST', '**/attach_structure').as('saveStructure');
 
       // Upload the file using the respective file input
-      cy.get(`#structure_0_filedata`).selectFile(
-        getFixturePath('test-sample.mp4.structure.xml'),
-        { force: true }
+      cy.readFile(getFixturePath('test-sample.mp4.structure.xml'), null).then(
+        (contents) => {
+          cy.get('#structure_0_filedata').selectFile(
+            {
+              contents,
+              fileName: 'test-sample.mp4.structure.xml',
+              mimeType: 'text/xml',
+            },
+            { force: true }
+          );
+        }
       );
 
       // Wait for the API call to complete
       cy.wait('@saveStructure').its('response.statusCode').should('eq', 302);
 
       // Verify the button text has changed to "Replace"
+      cy.get('[data-testid="media-object-edit-structure-btn-0"]').click();
       cy.get(`[data-testid="media-object-struct-upload-btn-0"]`)
         .should('be.visible')
         .and('contain.text', 'Replace');

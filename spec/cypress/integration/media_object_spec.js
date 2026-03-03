@@ -422,8 +422,6 @@ context('Media objects', () => {
       }
     );
 
-    //cy.get('[data-testid="media-object-share-btn"]').contains("Share").click();
-
     it(
       'TC002 - Validate embedded video player functionality (with stream buffering wait)',
       { tags: '@critical' },
@@ -1303,6 +1301,7 @@ context('Media objects', () => {
 
           cy.get('.vjs-fullscreen-control').click({ force: true });
 
+          cy.wait(durationMs);
           cy.get('[data-testid="structured-nav"]')
             .find('[data-testid="treeitem-section-button"].active')
             .should('exist');

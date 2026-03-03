@@ -19,7 +19,7 @@ module.exports = defineConfig({
   screenshotsFolder: path.resolve(__dirname, projectRoot, 'screenshots'),
   videosFolder: path.resolve(__dirname, projectRoot, 'videos'),
   browser: process.env.BROWSER || 'electron',
-
+  chromeWebSecurity: false,
   e2e: {
     defaultCommandTimeout: 100000, //timeout
     pageLoadTimeout: 100000,

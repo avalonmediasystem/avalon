@@ -1180,7 +1180,7 @@ context('Item', () => {
       // Validate top-level Item label
       cy.get('[data-testid="tree-item"]')
         .first()
-        .should('have.attr', 'data-label', 'Documentary.mp3');
+        .should('have.attr', 'data-label', 'Documentary.mp4');
 
       cy.get('[data-testid="tree-item"][data-label="Starting act"]').should(
         'exist'
@@ -1598,7 +1598,7 @@ context('Item', () => {
       cy.contains('Timeline information').should('exist');
       //Changing the default timeline title to a custom title for later search and validation.
       //iiif‑timeliner bundlle so cannot add data-testid, using ids for now
-      cy.contains('h3', 'Documentary.mp3').should('be.visible').click();
+      cy.contains('h3', 'Documentary.mp4').should('be.visible').click();
       cy.get('#manifestLabel')
         .clear()
         .type(item_title)
@@ -1619,7 +1619,7 @@ context('Item', () => {
       cy.login('administrator');
       cy.visit('/timelines');
 
-      cy.get('[data-testid="users-search-field"]')
+      cy.get('[data-testid="timeline-table-search-field"]')
         .type(item_title)
         .should('have.value', item_title);
 
@@ -1657,7 +1657,7 @@ context('Item', () => {
     cy.login('administrator');
     cy.visit('/timelines');
     cy.intercept('POST', '/timelines/*').as('deleteTimeline');
-    cy.get('[data-testid="users-search-field"]')
+    cy.get('[data-testid="timeline-table-search-field"]')
       .type(item_title)
       .should('have.value', item_title);
     cy.get('[data-testid="timeline-table-body"]')
