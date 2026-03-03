@@ -44,7 +44,7 @@ Cypress.Commands.add('login', (role) => {
       cy.request({
         method: 'POST',
         url: '/users/sign_in',
-        form: true, 
+        form: true,
         body: {
           user: {
             login: email,
@@ -61,8 +61,16 @@ Cypress.Commands.add('login', (role) => {
 
 //waits for the media player to be loaded completely
 Cypress.Commands.add('waitForVideoReady', () => {
-  cy.get('video').should(($video) => {
-    const videoEl = $video[0];
-    expect(videoEl.readyState).to.be.greaterThan(1);
-  });
+  cy.get('[data-testid="media-player"]')
+    .should('be.visible')
+    .within(() => {
+      cy.get(
+        'video[data-testid="videojs-video-element"], video[data-testid="videojs-audio-element"]'
+      )
+        .first()
+        .should(($el) => {
+          const media = $el[0];
+          expect(media.readyState, 'readyState').to.be.greaterThan(1);
+        });
+    });
 });

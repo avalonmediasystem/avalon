@@ -58,7 +58,9 @@ context('Authentication', () => {
   it('Deleting the user created ', { tags: '@critical' }, () => {
     cy.login('administrator');
     cy.visit('/persona/users');
-    cy.get("[data-testid='users-search-field']").type('test1@example.com');
+    cy.get("[data-testid='playlist-table-search-field']").type(
+      'test1@example.com'
+    );
     cy.get('tr')
       .contains('td', 'test1@example.com')
       .should('exist')

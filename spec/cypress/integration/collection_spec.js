@@ -117,17 +117,6 @@ context('Collections Test', () => {
         'updateCollectionManager'
       );
 
-      // Quick fix - adding administrtor as manager even though its already added through unit
-      cy.get("[data-testid='add_manager-user-input']")
-        .type(adminUsername)
-        .should('have.value', adminUsername);
-      cy.get("[data-testid='add_manager-popup']")
-        .should('be.visible')
-        .and('contain', adminUsername)
-        .click();
-
-      cy.get("[data-testid='submit-add-manager']").click();
-
       // Verifying collection manager exists
       cy.get("[data-testid='collection-access-label-manager']")
         .should('exist')
