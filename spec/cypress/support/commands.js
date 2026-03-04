@@ -61,16 +61,31 @@ Cypress.Commands.add('login', (role) => {
 
 //waits for the media player to be loaded completely
 Cypress.Commands.add('waitForVideoReady', () => {
+  cy.get('[data-testid="media-player"]', { timeout: 30000 }).should(
+    'be.visible'
+  );
+  cy.wait(5000);
   cy.get('[data-testid="media-player"]')
-    .should('be.visible')
-    .within(() => {
-      cy.get(
-        'video[data-testid="videojs-video-element"], video[data-testid="videojs-audio-element"]'
-      )
-        .first()
-        .should(($el) => {
-          const media = $el[0];
-          expect(media.readyState, 'readyState').to.be.greaterThan(1);
-        });
+    .find('video, audio')
+    .first()
+    .should(($el) => {
+      const media = $el[0];
+      expect(media.readyState, 'readyState').to.be.greaterThan(1);
     });
+});
+
+Cypress.Commands.add('stubFullscreenAPI', () => {
+  cy.window().then((win) => {
+    win.HTMLElement.prototype.requestFullscreen = () => Promise.resolve();
+    win.HTMLElement.prototype.webkitRequestFullscreen = () => Promise.resolve();
+    win.document.exitFullscreen = () => Promise.resolve();
+    win.document.webkitExitFullscreen = () => Promise.resolve();
+    Object.defineProperty(win.document, 'fullscreenElement', {
+      get: function () {
+        return win._fakeFullscreenElement || null;
+      },
+      configurable: true,
+    });
+    win._fakeFullscreenElement = null;
+  });
 });

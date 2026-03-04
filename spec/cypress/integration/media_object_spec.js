@@ -624,15 +624,7 @@ context('Media objects', () => {
       expectPlaying();
 
       // Stub fullscreen API BEFORE clicking fullscreen
-      cy.window().then((win) => {
-        if (win.HTMLElement?.prototype) {
-          win.HTMLElement.prototype.requestFullscreen = () => Promise.resolve();
-          win.HTMLElement.prototype.webkitRequestFullscreen = () =>
-            Promise.resolve();
-        }
-        win.document.exitFullscreen = () => Promise.resolve();
-        win.document.webkitExitFullscreen = () => Promise.resolve();
-      });
+      cy.stubFullscreenAPI();
 
       // Click fullscreen, then assert the UI toggled fullscreen mode (without forcing class)
       wakeControls();
@@ -724,13 +716,7 @@ context('Media objects', () => {
       cy.visit('/media_objects/' + media_object_id);
       cy.get('@playPauseBtn').click({ force: true });
       //fullscreen and repeat spacebar check - stubbing fullscreen API to avoid test instability due to fullscreen behavior in Cypress
-      cy.window().then((win) => {
-        win.HTMLElement.prototype.requestFullscreen = () => Promise.resolve();
-        win.HTMLElement.prototype.webkitRequestFullscreen = () =>
-          Promise.resolve();
-        win.document.exitFullscreen = () => Promise.resolve();
-        win.document.webkitExitFullscreen = () => Promise.resolve();
-      });
+      cy.stubFullscreenAPI();
 
       cy.get('@fullscreenBtn').click({ force: true });
 
@@ -874,13 +860,8 @@ context('Media objects', () => {
         });
 
       // Fullscreen — use class toggle to avoid Permissions check failed
-      cy.get('[data-testid="videojs-video-element"]').then(($el) => {
-        $el.addClass('vjs-fullscreen');
-      });
-      cy.get('[data-testid="videojs-video-element"]').should(
-        'have.class',
-        'vjs-fullscreen'
-      );
+      cy.stubFullscreenAPI();
+      cy.get('@player').find('.vjs-fullscreen-control').click({ force: true });
 
       // Seek in fullscreen using JS
       cy.get('@videoEl').then(($v) => {
@@ -927,13 +908,8 @@ context('Media objects', () => {
       cy.wait(300);
       cy.get('body').type('{downarrow}'); // decrease volume
       //Fullscreen for mute and unmute test
-      cy.get('[data-testid="videojs-video-element"]').then(($el) => {
-        $el.addClass('vjs-fullscreen');
-      });
-      cy.get('[data-testid="videojs-video-element"]').should(
-        'have.class',
-        'vjs-fullscreen'
-      );
+      cy.stubFullscreenAPI();
+      cy.get('@fullscreenBtn').click({ force: true });
       cy.get('body').type('m'); // mute
       cy.get('@muteBtn').should('have.class', 'vjs-vol-0');
       cy.get('body').type('m'); //unmute
@@ -955,23 +931,7 @@ context('Media objects', () => {
         .click({ force: true });
 
       //Stubing fullscreen API so Cypress doesn't throw error
-      cy.window().then((win) => {
-        if (win.HTMLElement?.prototype) {
-          win.HTMLElement.prototype.requestFullscreen = () => Promise.resolve();
-          win.HTMLElement.prototype.webkitRequestFullscreen = () =>
-            Promise.resolve();
-        }
-        win.document.exitFullscreen = () => Promise.resolve();
-        win.document.webkitExitFullscreen = () => Promise.resolve();
-        // Also stub the fullscreenElement property so VJS thinks it's in fullscreen
-        Object.defineProperty(win.document, 'fullscreenElement', {
-          get: function () {
-            return win._fakeFullscreenElement || null;
-          },
-          configurable: true,
-        });
-        win._fakeFullscreenElement = null;
-      });
+      cy.stubFullscreenAPI();
 
       //Enter/exit fullscreen with button click
       cy.get('@fullscreenBtn').click({ force: true });
@@ -1290,14 +1250,7 @@ context('Media objects', () => {
         // fullscreen test
         if (hasVideo) {
           // stub fullscreen API
-          cy.window().then((win) => {
-            win.HTMLElement.prototype.requestFullscreen = () =>
-              Promise.resolve();
-            win.HTMLElement.prototype.webkitRequestFullscreen = () =>
-              Promise.resolve();
-            win.document.exitFullscreen = () => Promise.resolve();
-            win.document.webkitExitFullscreen = () => Promise.resolve();
-          });
+          cy.stubFullscreenAPI();
 
           cy.get('.vjs-fullscreen-control').click({ force: true });
 
