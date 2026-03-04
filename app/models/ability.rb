@@ -217,7 +217,7 @@ class Ability
       # end
 
       cannot :read, [MediaObject, SpeedyAF::Proxy::MediaObject] do |media_object|
-        media_object.disable_inheritance? && is_inherited_from_parent?(media_object)
+        media_object.disable_inheritance? && is_exclusively_inherited_from_parent?(media_object)
       end
 
       cannot :update, [MediaObject, SpeedyAF::Proxy::MediaObject] do |media_object|
@@ -394,8 +394,9 @@ class Ability
       @user.in?(unit.editors_managers_and_unit_admins)
   end
 
-  def is_inherited_from_parent?(media_object)
-    @user.in?(media_object.inherited_read_users) || !(@user_groups & media_object.inherited_read_groups).empty?
+  def is_exclusively_inherited_from_parent?(media_object)
+    (!@user.in?(media_object.read_users) && @user.in?(media_object.inherited_read_users)) ||
+      ((@user_groups & media_object.read_groups).empty? && !(@user_groups & media_object.inherited_read_groups).empty?)
   end
 
   def is_member_of_any_collection?

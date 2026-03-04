@@ -35,8 +35,11 @@ class SearchBuilder < Blacklight::SearchBuilder
     [policy_clauses, "(*:* NOT hidden_bsi:true)"].compact.join(" OR ")
   end
 
-  def limit_to_inheritance_enabled_items(_permission_types = discovery_permissions, _ability = current_ability)
-    [policy_clauses(permission_types: [:edit]), '(*:* NOT disable_inheritance_bsi:true)'].compact.join(" OR ")
+  def limit_to_inheritance_enabled_items(_permission_types = discovery_permissions, ability = current_ability)
+    current_user = ability.current_user.username
+    user_groups = ability.user_groups
+    read_access_clause = "read_access_person_ssim:#{current_user} OR read_access_group_ssim:(#{user_groups.join(' OR ')})"
+    [policy_clauses(permission_types: [:edit]), read_access_clause, '(*:* NOT disable_inheritance_bsi:true)'].compact.join(" OR ")
   end
 
   # Overridden to skip for admin users
