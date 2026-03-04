@@ -38,7 +38,7 @@ class SearchBuilder < Blacklight::SearchBuilder
   def limit_to_inheritance_enabled_items(_permission_types = discovery_permissions, ability = current_ability)
     current_user = ability.current_user.username
     user_groups = ability.user_groups
-    read_access_clause = "read_access_person_ssim:#{current_user} OR read_access_group_ssim:(#{user_groups.join(' OR ')})"
+    read_access_clause = "read_access_person_ssim:#{RSolr.solr_escape(current_user)} OR read_access_group_ssim:(#{RSolr.solr_escape(user_groups.join(' OR '))})" if current_user.present?
     [policy_clauses(permission_types: [:edit]), read_access_clause, '(*:* NOT disable_inheritance_bsi:true)'].compact.join(" OR ")
   end
 
