@@ -369,17 +369,15 @@ class MasterFilesController < ApplicationController
 
 protected
   def set_masterfile
-    if params[:id].blank? || (not MasterFile.exists?(params[:id]))
-      flash[:notice] = "MasterFile #{params[:id]} does not exist"
-    end
     @master_file = MasterFile.find(params[:id])
+  rescue ArgumentError
+    flash[:notice] = "MasterFile #{params[:id]} does not exist"
   end
 
   def set_masterfile_proxy
     @master_file = SpeedyAF::Proxy::MasterFile.find(params[:id], load_reflections: true)
-    if params[:id].blank? || @master_file.nil?
-      flash[:notice] = "MasterFile #{params[:id]} does not exist"
-    end
+    set_masterfile if @master_file.nil?
+    @master_file
   end
 
   # return deflated waveform content. deflate only if necessary
