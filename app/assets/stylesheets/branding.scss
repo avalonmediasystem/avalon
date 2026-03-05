@@ -19,6 +19,8 @@
  * defaults. This should be included at the top of the application.scss file
  * so it is preferred over the defaults. */
 
+@use "sass:color";
+
 /**
   Custom variables (Non-bootstrap)
 */
@@ -41,7 +43,7 @@ $white: rgb(255, 255, 255);
 $blueGreen: #477076;
 
 // Colors not from the Styleguide
-$greenBG: scale-color($secondary, $saturation: -40%, $lightness: 60%);
+$greenBG: color.scale($secondary, $saturation: -40%, $lightness: 60%);
 $gray: #999;
 $lightgray: #f2f2f2;
 $red: #d9534f;
