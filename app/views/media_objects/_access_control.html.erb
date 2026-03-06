@@ -87,6 +87,22 @@ Unless required by applicable law or agreed to in writing, software distributed
   </div>
 </div>
 
+<div class="card special-access-inheritance" data-test-id="media-object-special-access-inheritance">
+  <div class="card-header">
+    <h3 class="card-title">Special access inheritance</h3>
+  </div>
+  <div class="card-body">
+    <div class="mb-3">
+      <div class="form-check">
+        <%= label_tag :disable_inheritance do %>
+        <%= check_box_tag :disable_inheritance, '1', (@media_object.disable_inheritance?) %>
+        Disable parent permissions
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>
+
 <% end %>
 
 <%= render 'modules/special_access', { object: @media_object } %>
