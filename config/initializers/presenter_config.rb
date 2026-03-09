@@ -64,7 +64,6 @@ Rails.application.config.to_prepare do
                         series: [],
                         format: []
                       }
-      include VirtualGroups
       include MediaObjectIntercom
       include MediaObjectBehavior
       include SupplementalFileReadBehavior
