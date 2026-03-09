@@ -88,6 +88,33 @@ module MediaObjectBehavior
     @share_infos ||= sections.collect { |section| section.share_info }
   end
 
+  def local_read_groups
+    read_groups.select {|g| Admin::Group.exists? g}
+  end
+
+  def ip_read_groups
+    read_groups.select {|g| IPAddr.new(g) rescue false }
+  end
+
+  def virtual_read_groups
+    read_groups - represented_visibility - local_read_groups - ip_read_groups
+  end
+
+  def inherited_local_read_groups
+    return [] unless collection
+    (collection.inherited_local_read_groups + collection.default_local_read_groups).select {|g| Admin::Group.exists? g}
+  end
+
+  def inherited_ip_read_groups
+    return [] unless collection
+    (collection.inherited_ip_read_groups + collection.default_ip_read_groups).select {|g| IPAddr.new(g) rescue false }
+  end
+
+  def inherited_virtual_read_groups
+    return [] unless collection
+    collection.inherited_virtual_read_groups + collection.default_virtual_read_groups
+  end
+
   def inherited_read_users
     return [] unless collection
     users = collection.default_read_users.to_a + collection.inherited_read_users.to_a

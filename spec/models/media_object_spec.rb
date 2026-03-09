@@ -1220,6 +1220,72 @@ describe MediaObject do
     end
   end
 
+  describe 'virtual groups' do
+    let!(:local_groups) {[FactoryBot.create(:group).name, FactoryBot.create(:group).name]}
+    let(:virtual_groups) {["vgroup1", "vgroup2"]}
+    let(:ip_groups) {[Faker::Internet.ip_v4_address, Faker::Internet.ip_v6_address, Faker::Internet.ip_v4_address + "/24"]}
+    before do
+      subject.read_groups = local_groups + virtual_groups + ip_groups
+    end
+
+    describe '#local_read_groups' do
+      it 'should have only local groups' do
+        expect(subject.local_read_groups).to eq(local_groups)
+      end
+    end
+
+    describe '#virtual_read_groups' do
+      it 'should have only non-local groups' do
+        expect(subject.virtual_read_groups).to eq(virtual_groups)
+      end
+    end
+
+    describe '#ip_read_groups' do
+      it 'should have only ip groups' do
+        expect(subject.ip_read_groups).to eq(ip_groups)
+      end
+    end
+
+    context 'inherited' do
+      let(:collection) { FactoryBot.build(:collection) }
+      let(:unit_local_groups) { ['unit_local'] }
+      let(:unit_virtual_groups) { ['unit_virtual'] }
+      let(:unit_ip_groups) { ['127.0.0.1'] }
+      let(:collection_local_groups) { ['collection_local'] }
+      let(:collection_virtual_groups) { ['collection_virtual'] }
+      let(:collection_ip_groups) { ['127.0.0.2'] }
+
+      before do
+        allow(collection).to receive(:inherited_local_read_groups).and_return(unit_local_groups)
+        allow(collection).to receive(:inherited_virtual_read_groups).and_return(unit_virtual_groups)
+        allow(collection).to receive(:inherited_ip_read_groups).and_return(unit_ip_groups)
+        allow(collection).to receive(:default_local_read_groups).and_return(collection_local_groups)
+        allow(collection).to receive(:default_virtual_read_groups).and_return(collection_virtual_groups)
+        allow(collection).to receive(:default_ip_read_groups).and_return(collection_ip_groups)
+        allow(Admin::Group).to receive(:exists?).and_return(true)
+        subject.collection = collection
+      end
+
+      describe '#inherited_local_read_groups' do
+        it 'should have only local groups' do
+          expect(subject.inherited_local_read_groups).to eq(unit_local_groups + collection_local_groups)
+        end
+      end
+
+      describe '#inherited_virtual_read_groups' do
+        it 'should have only non-local groups' do
+          expect(subject.inherited_virtual_read_groups).to eq(unit_virtual_groups + collection_virtual_groups)
+        end
+      end
+
+      describe '#inherited_ip_read_groups' do
+        it 'should have only ip groups' do
+          expect(subject.inherited_ip_read_groups).to eq(unit_ip_groups + collection_ip_groups)
+        end
+      end
+    end
+  end
+
   describe ".autocomplete" do
     let!(:mo1) { FactoryBot.create(:media_object, collection: collection1, series: ['Test 1', 'Alpha']) }
     let!(:mo2) { FactoryBot.create(:media_object, collection: collection1, series: ['Test 1', 'Test 2']) }

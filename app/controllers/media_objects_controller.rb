@@ -301,7 +301,7 @@ class MediaObjectsController < ApplicationController
     end
 
     if 'access-control' == @active_step
-      @groups = { base: @media_object.local_read_groups, inherited: @media_object.inherited_read_groups }
+      @groups = { base: @media_object.local_read_groups, inherited: @media_object.inherited_local_read_groups }
       @group_leases = @media_object.leases('local')
       @users = { base: @media_object.read_users, inherited: @media_object.inherited_read_users }
       @user_leases = @media_object.leases('user')
