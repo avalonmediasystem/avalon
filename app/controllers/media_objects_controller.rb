@@ -309,6 +309,8 @@ class MediaObjectsController < ApplicationController
       @virtual_leases = @media_object.leases('external')
       @ip_groups = { base: @media_object.ip_read_groups, inherited: @media_object.inherited_ip_read_groups }
       @ip_leases = @media_object.leases('ip')
+      @inherited_visibility = @media_object.inherited_visibility
+      @inherited_hidden = @media_object.inherited_hidden?
       @visibility = @media_object.visibility
 
       @addable_groups = Admin::Group.non_system_groups.reject { |g| @groups.include? g.name }

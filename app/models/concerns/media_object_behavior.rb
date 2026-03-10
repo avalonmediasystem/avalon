@@ -126,4 +126,14 @@ module MediaObjectBehavior
     groups = collection.default_read_groups.to_a + collection.inherited_read_groups.to_a
     groups.uniq
   end
+
+  def inherited_hidden?
+    return false unless collection
+    collection.default_hidden
+  end
+
+  def inherited_visibility
+    return false unless collection
+    collection.default_visibility
+  end
 end
