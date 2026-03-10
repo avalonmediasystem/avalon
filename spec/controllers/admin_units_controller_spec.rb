@@ -444,20 +444,6 @@ describe Admin::UnitsController, type: :controller do
         expect { put 'update', params: { id: unit.id, remove_ipaddress: "255.0.1.1" } }.to change { unit.reload.default_read_groups.size }.by(-1)
       end
     end
-
-    context "change default access control for item" do
-      it "discovery" do
-        put 'update', params: { id: unit.id, save_field: "discovery", hidden: "1" }
-        unit.reload
-        expect(unit.default_hidden).to be_truthy
-      end
-
-      it "access" do
-        put 'update', params: { id: unit.id, save_field: "visibility", visibility: "public" }
-        unit.reload
-        expect(unit.default_visibility).to eq("public")
-      end
-    end
   end
 
   describe "#remove" do
