@@ -64,7 +64,6 @@ class Admin::UnitsController < ApplicationController
         @users = @unit.default_read_users
         @virtual_groups = @unit.default_virtual_read_groups
         @ip_groups = @unit.default_ip_read_groups
-        @visibility = @unit.default_visibility
 
         @addable_groups = Admin::Group.non_system_groups.reject { |g| @groups.include? g.name }
         @addable_courses = Course.all.reject { |c| @virtual_groups.include? c.context_id }
@@ -316,16 +315,6 @@ class Admin::UnitsController < ApplicationController
         end
       end
     end
-
-    update_access_settings(unit, params)
-  end
-
-  def update_access_settings(unit, params)
-    if params[:save_field] == "visibility"
-      unit.default_visibility = params[:visibility] if params[:visibility].present?
-    end
-    return unless params[:save_field] == "discovery"
-    unit.default_hidden = params[:hidden] == "1"
   end
 
   def unit_params

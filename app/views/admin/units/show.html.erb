@@ -123,13 +123,9 @@ Unless required by applicable law or agreed to in writing, software distributed
 </div>
 
 <div class="content-block" style="padding-top: 2rem;">
-  <h3 style="padding-top: 3rem;">Set Default Access Control for New Items</h3>
-  <%= render "discovery_visibility_form", { object: @unit,
-                                            visibility: @unit.default_visibility,
-                                            hidden: @unit.default_hidden } %>
+  <h3 style="padding-top: 3rem;">Set Default Access Control for Unit Items</h3>
 
   <%= render "modules/special_access", { object: @unit } %>
-
 </div>
 
 <%= render "form", modal_title: "Edit Unit Information" %>

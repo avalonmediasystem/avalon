@@ -50,9 +50,6 @@ class Admin::Unit < ActiveFedora::Base
   property :default_read_groups, predicate: Avalon::RDFVocab::Unit.default_read_groups, multiple: true do |index|
     index.as :symbol
   end
-  property :default_hidden, predicate: Avalon::RDFVocab::Unit.default_hidden, multiple: false do |index|
-    index.as ActiveFedora::Indexing::Descriptor.new(:boolean, :stored, :indexed)
-  end
   property :identifier, predicate: ::RDF::Vocab::Identifiers.local, multiple: true do |index|
     index.as :symbol
   end
@@ -176,36 +173,7 @@ class Admin::Unit < ActiveFedora::Base
   end
 
   def default_virtual_read_groups
-    self.default_read_groups.to_a - represented_default_visibility - default_local_read_groups - default_ip_read_groups
-  end
-
-  def default_visibility=(value)
-    return if value.nil?
-    # only set explicit permissions
-    case value
-    when Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_PUBLIC
-      public_default_visibility!
-    when Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_AUTHENTICATED
-      registered_default_visibility!
-    when Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_PRIVATE
-      private_default_visibility!
-    else
-      raise ArgumentError, "Invalid default visibility: #{value.inspect}"
-    end
-  end
-
-  def default_visibility
-    if default_read_groups.include? Hydra::AccessControls::AccessRight::PERMISSION_TEXT_VALUE_PUBLIC
-      Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_PUBLIC
-    elsif default_read_groups.include? Hydra::AccessControls::AccessRight::PERMISSION_TEXT_VALUE_AUTHENTICATED
-      Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_AUTHENTICATED
-    else
-      Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_PRIVATE
-    end
-  end
-
-  def default_visibility_changed?
-    !!@default_visibility_will_change
+    self.default_read_groups.to_a - default_local_read_groups - default_ip_read_groups
   end
 
   def reindex_members
@@ -262,32 +230,5 @@ class Admin::Unit < ActiveFedora::Base
 
   def add_edit_user(name)
     self.default_permissions.build({ name: name, type: 'person', access: 'edit' })
-  end
-
-  # Override represented_visibility if you want to add another visibility that is
-  # represented as a read group (e.g. on-campus)
-  # @return [Array] a list of visibility types that are represented as read groups
-  def represented_default_visibility
-    [Hydra::AccessControls::AccessRight::PERMISSION_TEXT_VALUE_AUTHENTICATED,
-     Hydra::AccessControls::AccessRight::PERMISSION_TEXT_VALUE_PUBLIC]
-  end
-
-  def default_visibility_will_change!
-    @default_visibility_will_change = true
-  end
-
-  def public_default_visibility!
-    default_visibility_will_change! unless default_visibility == Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_PUBLIC
-    self.default_read_groups = self.default_read_groups.to_a - represented_visibility + [Hydra::AccessControls::AccessRight::PERMISSION_TEXT_VALUE_PUBLIC]
-  end
-
-  def registered_default_visibility!
-    default_visibility_will_change! unless default_visibility == Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_AUTHENTICATED
-    self.default_read_groups = self.default_read_groups.to_a - represented_default_visibility + [Hydra::AccessControls::AccessRight::PERMISSION_TEXT_VALUE_AUTHENTICATED]
-  end
-
-  def private_default_visibility!
-    default_visibility_will_change! unless default_visibility == Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_PRIVATE
-    self.default_read_groups = self.default_read_groups.to_a - represented_default_visibility
   end
 end

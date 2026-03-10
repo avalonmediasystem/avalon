@@ -485,16 +485,6 @@ describe Admin::Unit do
         expect(Admin::Unit.find(unit.id).default_read_groups).to eq([])
       end
     end
-
-    describe 'visiblity' do
-      it 'should default to private' do
-        expect(unit.default_visibility).to eq 'private'
-      end
-      it 'should not override on create' do
-        c = FactoryBot.create(:unit, default_visibility: 'public')
-        expect(c.default_visibility).to eq 'public'
-      end
-    end
   end
 
   describe "callbacks" do
