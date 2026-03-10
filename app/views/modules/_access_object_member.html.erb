@@ -16,19 +16,15 @@ Unless required by applicable law or agreed to in writing, software distributed
 
 <% is_media_object = object.is_a?(SpeedyAF::Proxy::MediaObject) || object.is_a?(MediaObject) %>
 
+<% if inherited && is_media_object && object.disable_inheritance? %>
+<% else %>
 <tr>
   <td class='access_list_label' data-testid="<%= 'collection-access-label-' + access_object %>">
     <%= label_tag do %>
-    <% if inherited && is_media_object && object.disable_inheritance? %>
-      <s>
-    <% end %>
     <% if defined?(display_helper) && display_helper.present? %>
     <%= self.send(display_helper, member_object) %>
     <% else %>
     <%= member_object %>
-    <% end %>
-    <% if inherited && is_media_object && object.disable_inheritance? %>
-      </s>
     <% end %>
     <% end %>
     <% if inherited %>
@@ -46,3 +42,4 @@ Unless required by applicable law or agreed to in writing, software distributed
   </td>
   <% end %>
 </tr>
+<% end %>
