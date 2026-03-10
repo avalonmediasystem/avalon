@@ -31,10 +31,8 @@ Unless required by applicable law or agreed to in writing, software distributed
       </s>
     <% end %>
     <% end %>
-    <% if inherited && is_media_object %>
-      <div style="float: right;"><%= t('access_control.collection_inherited_role', collection_name: object.collection.name) %></div>
-    <% elsif inherited %>
-      <div style="float: right;"><%= t('access_control.unit_inherited_role', unit_name: object.unit.name) %></div>
+    <% if inherited %>
+      <div style="float: right;"><%= t('access_control.inherited_role') %></div>
     <% end %>
   </td>
   <td class='access_list_dates'></td>
