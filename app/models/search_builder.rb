@@ -18,6 +18,8 @@ class SearchBuilder < Blacklight::SearchBuilder
   include Hydra::AccessControlsEnforcement
   include Hydra::MultiplePolicyAwareAccessControlsEnforcement
 
+  PERMISSION_GROUPS = [Hydra::AccessControls::AccessRight::PERMISSION_TEXT_VALUE_PUBLIC, Hydra::AccessControls::AccessRight::PERMISSION_TEXT_VALUE_AUTHENTICATED]
+
   class_attribute :avalon_solr_access_filters_logic
   self.avalon_solr_access_filters_logic = [:only_published_items, :limit_to_non_hidden_items, :limit_to_inheritance_enabled_items]
   self.default_processor_chain += [:only_wanted_models, :term_frequency_counts, :search_section_transcripts]
@@ -40,9 +42,8 @@ class SearchBuilder < Blacklight::SearchBuilder
 
   def limit_to_inheritance_enabled_items(_permission_types = discovery_permissions, ability = current_ability)
     current_user = ability.current_user.username
-    permission_groups = ["public", "restricted"]
-    user_groups = ability.user_groups - permission_groups
-    user_visibility_groups = ability.user_groups & permission_groups
+    user_groups = ability.user_groups - PERMISSION_GROUPS
+    user_visibility_groups = ability.user_groups & PERMISSION_GROUPS
     read_access_clauses = []
     read_access_clauses += ["read_access_person_ssim:#{RSolr.solr_escape(current_user)}"] if current_user.present?
     read_access_clauses += ["_query_:\"{!terms f=read_access_group_ssim}#{RSolr.solr_escape(user_groups.join(','))}\""] if user_groups.present?
