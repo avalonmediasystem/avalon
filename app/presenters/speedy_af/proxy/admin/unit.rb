@@ -25,6 +25,8 @@ class SpeedyAF::Proxy::Admin::Unit < SpeedyAF::Base
     # Handle this case here until a better fix can be found for multiple solr fields which don't have a model property
     @attrs[:read_users] = solr_document["read_access_person_ssim"] || []
     @attrs[:edit_users] = solr_document["edit_access_person_ssim"] || []
+    @attrs[:default_read_users] = solr_document["inheritable_read_access_person_ssim"] || []
+    @attrs[:default_read_groups] = solr_document["inheritable_read_access_group_ssim"] || []
   end
 
   def to_model
