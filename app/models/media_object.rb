@@ -215,8 +215,6 @@ class MediaObject < ActiveFedora::Base
     self.governing_policies -= [old_collection] if old_collection
     self.governing_policies += [co]
     if self.new_record?
-      self.hidden = co.default_hidden
-      self.visibility = co.default_visibility
       self.lending_period = co.default_lending_period
     end
   end

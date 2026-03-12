@@ -29,6 +29,7 @@ FactoryBot.define do
 
       factory :fully_searchable_media_object do
         # with_collection
+        disable_inheritance { true }
         visibility { 'public' }
         alternative_title { ['Alternative'] }
         abstract { Faker::Lorem.paragraph }

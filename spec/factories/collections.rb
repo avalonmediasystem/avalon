@@ -23,6 +23,8 @@ FactoryBot.define do
     managers { [FactoryBot.create(:manager).user_key] }
     editors { [FactoryBot.create(:user).user_key] }
     depositors { [FactoryBot.create(:user).user_key] }
+    default_visibility { 'private' }
+    default_hidden { false }
     media_objects { [] }
 
     transient { items { 0 } }
