@@ -92,5 +92,4 @@ module Hydra::MultiplePolicyAwareAccessControlsEnforcement
     end
     filters
   end
-
 end

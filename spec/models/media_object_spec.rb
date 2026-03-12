@@ -922,12 +922,6 @@ describe MediaObject do
     let(:new_media_object) { MediaObject.new }
     let(:collection) { FactoryBot.create(:collection, default_hidden: true, default_read_users: ['archivist1@example.com'], default_read_groups: ['TestGroup', 'public'], default_lending_period: 86400)}
 
-    it 'sets hidden based upon collection for new media objects' do
-      expect {new_media_object.collection = collection}.to change {new_media_object.hidden?}.to(true).from(false)
-    end
-    it 'sets visibility based upon collection for new media objects' do
-      expect {new_media_object.collection = collection}.to change {new_media_object.visibility}.to('public').from('private')
-    end
     it 'new media objects inherited_read_users is based upon collection' do
       expect {new_media_object.collection = collection}.to change {new_media_object.inherited_read_users}.to(['archivist1@example.com']).from([])
     end
@@ -942,7 +936,7 @@ describe MediaObject do
       expect {media_object.collection = collection}.not_to change {new_media_object.hidden?}
       expect {media_object.collection = collection}.not_to change {new_media_object.visibility}
       expect {media_object.collection = collection}.not_to change {new_media_object.read_users}
-      expect {media_object.collection = collection}.not_to change {new_media_object.read_users}
+      expect {media_object.collection = collection}.not_to change {new_media_object.read_groups}
       expect {media_object.collection = collection}.not_to change {new_media_object.lending_period}
     end
   end

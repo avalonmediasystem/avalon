@@ -20,7 +20,7 @@ describe CatalogController do
   describe "#index" do
     describe "as an un-authenticated user" do
       it "should show results for items that are public and published" do
-        mo = FactoryBot.create(:published_media_object, visibility: 'public')
+        mo = FactoryBot.create(:published_media_object, disable_inheritance: true, visibility: 'public')
         get 'index', params: { q: "" }
         expect(response).to be_successful
         expect(response).to render_template('catalog/index')
@@ -40,6 +40,64 @@ describe CatalogController do
         expect(response).to be_successful
         expect(response).to render_template('catalog/index')
         expect(assigns(:response).documents.count).to eql(0)
+      end
+      it "should not show results for items that are hidden" do
+        FactoryBot.create(:published_media_object, visibility: 'public', hidden: true)
+        get 'index', params: { q: "" }
+        expect(response).to be_successful
+        expect(response).to render_template('catalog/index')
+        expect(assigns(:response).documents.count).to eql(0)
+      end
+      context 'inherited hidden' do
+        let!(:collection) { FactoryBot.create(:collection, default_hidden: true) }
+
+        it "should not show results for items that are inherited hidden" do
+          FactoryBot.create(:published_media_object, visibility: 'public', collection: collection)
+          get 'index', params: { q: "" }
+          expect(response).to be_successful
+          expect(response).to render_template('catalog/index')
+          expect(assigns(:response).documents.count).to eql(0)
+        end
+        context 'disable inheritance' do
+          it "should show results for items" do
+            mo = FactoryBot.create(:published_media_object, visibility: 'public', disable_inheritance: true, collection: collection)
+            get 'index', params: { q: "" }
+            expect(response).to be_successful
+            expect(response).to render_template('catalog/index')
+            expect(assigns(:response).documents.count).to eql(1)
+            expect(assigns(:response).documents.map(&:id)).to eq([mo.id])
+          end
+        end
+      end
+      context 'inherited visibility' do
+        it "should show results for items that are inherited public" do
+          collection = FactoryBot.create(:collection, default_visibility: 'public')
+          mo = FactoryBot.create(:published_media_object, visibility: 'private', collection: collection)
+          get 'index', params: { q: "" }
+          expect(response).to be_successful
+          expect(response).to render_template('catalog/index')
+          expect(assigns(:response).documents.count).to eql(1)
+          expect(assigns(:response).documents.map(&:id)).to eq([mo.id])
+        end
+        it "should not show results for items that are inherited private" do
+          collection = FactoryBot.create(:collection, default_visibility: 'private')
+          mo = FactoryBot.create(:published_media_object, visibility: 'public', collection: collection)
+          get 'index', params: { q: "" }
+          expect(response).to be_successful
+          expect(response).to render_template('catalog/index')
+          expect(assigns(:response).documents.count).to eql(0)
+        end
+        context 'disable inheritance' do
+          it "should show results for items" do
+            collection = FactoryBot.create(:collection, default_visibility: 'private')
+            mo = FactoryBot.create(:published_media_object, visibility: 'public', disable_inheritance: true, collection: collection)
+            get 'index', params: { q: "" }
+            expect(response).to be_successful
+            expect(response).to render_template('catalog/index')
+            expect(assigns(:response).documents.count).to eql(1)
+            expect(assigns(:response).documents.map(&:id)).to eq([mo.id])
+          end
+        end
       end
     end
     describe "as an authenticated user" do
@@ -380,9 +438,9 @@ describe CatalogController do
     end
 
     describe "sort fields" do
-      let!(:m1) { FactoryBot.create(:published_media_object, title: 'Yabba', date_issued: '1960', creator: ['Fred'], visibility: 'public') }
-      let!(:m2) { FactoryBot.create(:published_media_object, title: 'Dabba', date_issued: '1970', creator: ['Betty'], visibility: 'public') }
-      let!(:m3) { FactoryBot.create(:published_media_object, title: 'Doo', date_issued: '1980', creator: ['Wilma'], visibility: 'public') }
+      let!(:m1) { FactoryBot.create(:published_media_object, title: 'Yabba', date_issued: '1960', creator: ['Fred'], visibility: 'public', disable_inheritance: true) }
+      let!(:m2) { FactoryBot.create(:published_media_object, title: 'Dabba', date_issued: '1970', creator: ['Betty'], visibility: 'public', disable_inheritance: true) }
+      let!(:m3) { FactoryBot.create(:published_media_object, title: 'Doo', date_issued: '1980', creator: ['Wilma'], visibility: 'public', disable_inheritance: true) }
 
       it "should sort correctly by title" do
         get :index, params: { sort: 'title_ssort asc, date_issued_ssi desc' }
@@ -444,7 +502,7 @@ describe CatalogController do
       render_views
 
       let!(:private_media_object) { FactoryBot.create(:media_object, visibility: 'private', other_identifier: [{ id: "GR12345678", source: 'local' }]) }
-      let!(:public_media_object) { FactoryBot.create(:published_media_object, visibility: 'public', other_identifier: [{ id: "GR12345678", source: 'local' }]) }
+      let!(:public_media_object) { FactoryBot.create(:published_media_object, visibility: 'public', disable_inheritance: true, other_identifier: [{ id: "GR12345678", source: 'local' }]) }
       let(:administrator) { FactoryBot.create(:administrator) }
 
       context "with an api key" do

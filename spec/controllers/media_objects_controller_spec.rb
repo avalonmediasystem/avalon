@@ -685,7 +685,7 @@ describe MediaObjectsController, type: :controller do
   end
 
   describe "#index" do
-    let!(:media_object) { FactoryBot.create(:published_media_object, visibility: 'public') }
+    let!(:media_object) { FactoryBot.create(:published_media_object, visibility: 'public', disable_inheritance: true) }
     let!(:private_media_object) { FactoryBot.create(:published_media_object, visibility: 'private') }
     subject(:json) { JSON.parse(response.body) }
 

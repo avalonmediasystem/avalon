@@ -32,14 +32,21 @@ class SearchBuilder < Blacklight::SearchBuilder
   end
 
   def limit_to_non_hidden_items(_permission_types = discovery_permissions, _ability = current_ability)
-    [policy_clauses, "(*:* NOT hidden_bsi:true)"].compact.join(" OR ")
+    media_object_hidden_clause = "hidden_bsi:true"
+    collection_hidden_clause = "{!join from=id to=isGovernedBy_ssim}default_hidden_bsi:true"
+
+    [policy_clauses(permission_types: [:edit]), "(*:* AND NOT hidden_bsi:true AND (disable_inheritance_bsi:true OR (*:* AND NOT {!join from=id to=isGovernedBy_ssim}default_hidden_bsi:true)))"].compact.join(" OR ")
   end
 
   def limit_to_inheritance_enabled_items(_permission_types = discovery_permissions, ability = current_ability)
     current_user = ability.current_user.username
-    user_groups = ability.user_groups
-    read_access_clause = "read_access_person_ssim:#{RSolr.solr_escape(current_user)} OR read_access_group_ssim:(#{RSolr.solr_escape(user_groups.join(' OR '))})" if current_user.present?
-    [policy_clauses(permission_types: [:edit]), read_access_clause, '(*:* NOT disable_inheritance_bsi:true)'].compact.join(" OR ")
+    permission_groups = ["public", "restricted"]
+    user_groups = ability.user_groups - permission_groups
+    user_visibility_groups = ability.user_groups & permission_groups
+    read_access_clauses = []
+    read_access_clauses += ["read_access_person_ssim:#{RSolr.solr_escape(current_user)}"] if current_user.present?
+    read_access_clauses += ["_query_:\"{!terms f=read_access_group_ssim}#{RSolr.solr_escape(user_groups.join(','))}\""] if user_groups.present?
+    [policy_clauses(permission_types: [:edit]), "(*:* AND NOT disable_inheritance_bsi:true AND (#{(Array(policy_clauses(permission_types: [:read])) + read_access_clauses).join(" OR ")}))", "(disable_inheritance_bsi:true AND (#{(read_access_clauses + ["read_access_group_ssim:(#{user_visibility_groups.join(" OR ")})"]).join(" OR ")}))"].compact.join(" OR ")
   end
 
   # Overridden to skip for admin users
