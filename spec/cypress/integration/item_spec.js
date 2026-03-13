@@ -50,7 +50,7 @@ context('Item', () => {
   Cypress.on('uncaught:exception', (err, runnable) => {
     if (
       err.message.includes(
-        "Cannot read properties of undefined (reading 'success')"
+        "Cannot read properties of undefined (reading 'success')",
       ) ||
       err.message.includes('scrollHeight') ||
       err.message.includes('e is not defined') ||
@@ -68,7 +68,7 @@ context('Item', () => {
     // Create collection with public access for item testing
     collectionPage.createCollection(
       { title: collection_title, unitName: unit_title },
-      { setPublicAccess: true, addManager: true }
+      { setPublicAccess: true, addManager: true },
     );
   });
 
@@ -84,8 +84,8 @@ context('Item', () => {
     UnitPage.deleteUnitByName(unit_title);
   });
 
-  it.only(
-    'Verify creating an item under a collection - @T139381a0 ',
+  it(
+    'Verify creating an item under a collection - Manager - @T139381a0 ',
     { tags: '@critical' },
     () => {
       cy.login('administrator');
@@ -99,82 +99,74 @@ context('Item', () => {
         // Verify item was created
         cy.get('[data-testid="media-object-title"]').should(
           'contain.text',
-          item_title
+          item_title,
         );
       });
-    }
+    },
   );
+
+  it('Verify creating an item under a collection - Editor - @T67dcdcce', () => {
+    var item_title_editor = `Automation Item title ${
+      Math.floor(Math.random() * 100000) + 1
+    }`;
+
+    let item_id_editor;
+    cy.login('manager');
+
+    collectionPage.navigateToCollection(collection_title);
+
+    collectionPage
+      .createItem(item_title_editor, 'test_sample.mp4')
+      .then((id) => {
+        item_id_editor = id;
+        createdItems.push(item_id_editor);
+
+        cy.intercept('POST', '**/update_status?status=publish').as(
+          'publishmedia',
+        );
+        cy.get('[data-testid="media-object-publish-btn"]')
+          .contains('Publish')
+          .click();
+        cy.wait('@publishmedia').its('response.statusCode').should('eq', 302);
+        cy.get('[data-testid="alert"]').contains(
+          'Media object successfully published.',
+        );
+        cy.wait(5000);
+        cy.get('[data-testid="media-object-unpublish-btn"]').contains(
+          'Unpublish',
+        );
+
+        // Verify item was created
+        cy.get('[data-testid="media-object-title"]').should(
+          'contain.text',
+          item_title_editor,
+        );
+      });
+  });
+
+  it('Verify that multiple media objects (section files) can be added during item creation - @T582e19fc', () => {
+    var item_title_multiple_section = `Automation Item title ${
+      Math.floor(Math.random() * 100000) + 1
+    }`;
+
+    let item_id_multiple_section;
+    cy.login('manager');
+    collectionPage.navigateToCollection(collection_title);
+
+    collectionPage
+      .createComplexMediaObject(item_title_multiple_section, {
+        publish: true,
+        addStructure: false,
+      })
+      .then((id) => {
+        item_id_multiple_section = id;
+        createdItems.push(item_id_multiple_section);
+      });
+    cy.waitForVideoReady();
+    cy.get('[data-testid="treeitem-section"]').should('have.length', 3);
+  });
 
   it(
-    'Verify creating an item under a collection - Editor',
-    { tags: '@high' },
-    () => {
-      var item_title_editor = `Automation Item title ${
-        Math.floor(Math.random() * 100000) + 1
-      }`;
-
-      let item_id_editor;
-      cy.login('manager');
-
-      collectionPage.navigateToCollection(collection_title);
-
-      collectionPage
-        .createItem(item_title_editor, 'test_sample.mp4')
-        .then((id) => {
-          item_id_editor = id;
-          createdItems.push(item_id_editor);
-
-          cy.intercept('POST', '**/update_status?status=publish').as(
-            'publishmedia'
-          );
-          cy.get('[data-testid="media-object-publish-btn"]')
-            .contains('Publish')
-            .click();
-          cy.wait('@publishmedia').its('response.statusCode').should('eq', 302);
-          cy.get('[data-testid="alert"]').contains(
-            'Media object successfully published.'
-          );
-          cy.wait(5000);
-          cy.get('[data-testid="media-object-unpublish-btn"]').contains(
-            'Unpublish'
-          );
-
-          // Verify item was created
-          cy.get('[data-testid="media-object-title"]').should(
-            'contain.text',
-            item_title_editor
-          );
-        });
-    }
-  );
-
-  it(
-    'Verify that multiple media objects (section files) can be added during item creation',
-    { tags: '@high' },
-    () => {
-      var item_title_multiple_section = `Automation Item title ${
-        Math.floor(Math.random() * 100000) + 1
-      }`;
-
-      let item_id_multiple_section;
-      cy.login('manager');
-      collectionPage.navigateToCollection(collection_title);
-
-      collectionPage
-        .createComplexMediaObject(item_title_multiple_section, {
-          publish: true,
-          addStructure: false,
-        })
-        .then((id) => {
-          item_id_multiple_section = id;
-          createdItems.push(item_id_multiple_section);
-        });
-      cy.waitForVideoReady();
-      cy.get('[data-testid="treeitem-section"]').should('have.length', 3);
-    }
-  );
-
-  it.only(
     'Verify whether a user can publish an item - @T1faa36d2',
     { tags: '@critical' },
     () => {
@@ -183,7 +175,7 @@ context('Item', () => {
 
       cy.visit('/media_objects/' + item_id);
       cy.intercept('POST', '**/update_status?status=publish').as(
-        'publishmedia'
+        'publishmedia',
       );
       cy.get('[data-testid="media-object-publish-btn"]')
         .contains('Publish')
@@ -193,66 +185,62 @@ context('Item', () => {
       });
       //validate success message
       cy.get('[data-testid="alert"]').contains(
-        'Media object successfully published.'
+        'Media object successfully published.',
       );
       cy.get('[data-testid="media-object-unpublish-btn"]').contains(
-        'Unpublish'
+        'Unpublish',
       );
-    }
+    },
   );
 
-  it(
-    'Verify uploading multiple section files to an item - @Tfaf95fbd',
-    { tags: '@high' },
-    () => {
-      const videoName = 'test_sample.mp4';
-      cy.login('administrator');
+  it('Verify uploading multiple section files to an item - @Tfaf95fbd', () => {
+    const videoName = 'test_sample.mp4';
+    cy.login('administrator');
 
-      cy.visit('/media_objects/' + item_id);
-      cy.waitForVideoReady();
+    cy.visit('/media_objects/' + item_id);
+    cy.waitForVideoReady();
 
-      //go to manage files page
-      cy.get('[data-testid="media-object-edit-btn"]').click(); //edit button
-      cy.get('[data-testid="media-object-side-nav-link"]')
-        .contains('Manage files')
-        .click();
-      // upload first video
-      cy.intercept('GET', '**/edit?step=file-upload').as('fileuploadredirect3');
-      cy.get("[data-testid='media-object-edit-select-file-btn']")
-        .click()
-        .selectFile(getFixturePath(videoName));
-      cy.get("[data-testid='media-object-edit-upload-btn']").click();
-      cy.wait('@fileuploadredirect3')
-        .its('response.statusCode')
-        .should('eq', 200);
-      cy.get("[data-testid='media-object-edit-associated-files-block']").should(
-        'contain',
-        '.mp4'
-      );
+    //go to manage files page
+    cy.get('[data-testid="media-object-edit-btn"]').click(); //edit button
+    cy.get('[data-testid="media-object-side-nav-link"]')
+      .contains('Manage files')
+      .click();
+    // upload first video
+    cy.intercept('GET', '**/edit?step=file-upload').as('fileuploadredirect3');
+    cy.get("[data-testid='media-object-edit-select-file-btn']")
+      .click()
+      .selectFile(getFixturePath(videoName));
+    cy.get("[data-testid='media-object-edit-upload-btn']").click();
+    cy.wait('@fileuploadredirect3')
+      .its('response.statusCode')
+      .should('eq', 200);
+    cy.get("[data-testid='media-object-edit-associated-files-block']").should(
+      'contain',
+      '.mp4',
+    );
 
-      // upload second video
-      cy.intercept('GET', '**/edit?step=file-upload').as('fileuploadredirect3');
-      cy.get("[data-testid='media-object-edit-select-file-btn']")
-        .click()
-        .selectFile(getFixturePath(videoName));
+    // upload second video
+    cy.intercept('GET', '**/edit?step=file-upload').as('fileuploadredirect3');
+    cy.get("[data-testid='media-object-edit-select-file-btn']")
+      .click()
+      .selectFile(getFixturePath(videoName));
 
-      cy.get("[data-testid='media-object-edit-upload-btn']").click();
-      cy.wait('@fileuploadredirect3')
-        .its('response.statusCode')
-        .should('eq', 200);
-      cy.get("[data-testid='media-object-edit-associated-files-block']").should(
-        'contain',
-        '.mp4'
-      );
+    cy.get("[data-testid='media-object-edit-upload-btn']").click();
+    cy.wait('@fileuploadredirect3')
+      .its('response.statusCode')
+      .should('eq', 200);
+    cy.get("[data-testid='media-object-edit-associated-files-block']").should(
+      'contain',
+      '.mp4',
+    );
 
-      //naviagte to preview page and validate
-      cy.visit('/media_objects/' + item_id);
-      cy.waitForVideoReady();
-      cy.get('[data-testid="treeitem-section"]').should('have.length', 3);
-    }
-  );
+    //naviagte to preview page and validate
+    cy.visit('/media_objects/' + item_id);
+    cy.waitForVideoReady();
+    cy.get('[data-testid="treeitem-section"]').should('have.length', 3);
+  });
 
-  it('Verify moving a section file - @@T92a9430a', { tags: '@high' }, () => {
+  it('Verify moving a section file - @T70fb29d0', () => {
     cy.login('administrator');
 
     cy.visit('/media_objects/' + item_id);
@@ -282,16 +270,18 @@ context('Item', () => {
 
     cy.visit('/media_objects/' + item_id);
     cy.waitForVideoReady();
+    cy.reload();
     cy.get('[data-testid="treeitem-section"]').should('have.length', 2);
 
     // Visit target item and check that structure exists
     cy.wait(4000);
     cy.visit('/media_objects/' + targetItemId);
     cy.waitForVideoReady();
+    cy.reload();
     cy.get('[data-testid="treeitem-section"]').should('have.length', 4);
   });
 
-  it('Verify deleting a section file - @@T92a9430a', { tags: '@high' }, () => {
+  it('Verify deleting a section file - @T92a9430a', () => {
     cy.login('administrator');
 
     cy.visit('/media_objects/' + item_id);
@@ -314,7 +304,7 @@ context('Item', () => {
           // Wait for and confirm the popover
           cy.get('[data-testid="table-view-delete-confirmation-btn"]').click();
         }
-      }
+      },
     );
 
     //naviagte to preview page and validate
@@ -352,7 +342,7 @@ context('Item', () => {
       });
       //checking the access with admin, manager and user
       itemPage.verifyCollecttionStaffAccess(item_id);
-    }
+    },
   );
 
   it(
@@ -377,13 +367,13 @@ context('Item', () => {
       });
       cy.get('[data-testid="media-object-item-access"]').within(() => {
         cy.get('[data-testid="media-object-logged-in-users"]').should(
-          'be.checked'
+          'be.checked',
         );
       });
 
       //checking the access with admin, manager and user
       itemPage.verifyLoggedInUserAccess(item_id);
-    }
+    },
   );
 
   it(
@@ -417,7 +407,7 @@ context('Item', () => {
 
       //checking the access with admin, manager and user
       itemPage.verifyGeneralPublicAccess(item_id);
-    }
+    },
   );
   it('Verify the selected item', { tags: '@critical' }, () => {
     cy.login('administrator');
@@ -427,14 +417,14 @@ context('Item', () => {
     cy.get('body').then(($body) => {
       if (
         $body.find(
-          '.alert.alert-info:contains("You have not selected any items")'
+          '.alert.alert-info:contains("You have not selected any items")',
         ).length === 0
       ) {
         cy.on('window:confirm', () => true);
         cy.get('.clear-bookmarks').click();
         cy.get('.alert.alert-info').should(
           'contain',
-          'You have not selected any items'
+          'You have not selected any items',
         );
       }
     });
@@ -452,7 +442,7 @@ context('Item', () => {
   });
 
   it(
-    'Verify and update access control for specific item',
+    'Verify the user is able to update Access Control for all selected items - Item Access - Collection staff only - @Tdb0a8c3b',
     { tags: '@critical' },
     () => {
       cy.login('administrator');
@@ -481,7 +471,7 @@ context('Item', () => {
 
       //verifying the access
       itemPage.verifyCollecttionStaffAccess(item_id);
-    }
+    },
   );
 
   it(
@@ -513,7 +503,7 @@ context('Item', () => {
       });
       //reload the page to ensure that the data is updated in the backend
       cy.get('[data-testid="collection-access-label-user"]').contains(
-        user_username
+        user_username,
       );
       // Additional assertion:: Login as the special access user and validate the result
       cy.login('user');
@@ -521,13 +511,13 @@ context('Item', () => {
       cy.waitForVideoReady();
       cy.get('[data-testid="media-object-title"]').should(
         'contain.text',
-        item_title
+        item_title,
       );
-    }
+    },
   );
 
   it(
-    'Verify that modifying the resource metadata fields are reflected properly in the preview section- @T16bc91af',
+    'Verify that modifying the resource metadata fields are reflected properly in the preview section. - @T16bc91af',
     { tags: '@critical' },
     () => {
       cy.login('administrator');
@@ -542,7 +532,7 @@ context('Item', () => {
       //Add some resource metadata fields in the resource description section
       //More fields can be added if required.
       const main_contributor = Cypress.env(
-        'MEDIA_OBJECT_FIELD_MAIN_CONTRIBUTOR'
+        'MEDIA_OBJECT_FIELD_MAIN_CONTRIBUTOR',
       );
       const language = Cypress.env('MEDIA_OBJECT_FIELD_LANGUAGE');
       const summary =
@@ -593,7 +583,7 @@ context('Item', () => {
           .next('dd')
           .should('have.text', main_contributor);
       });
-    }
+    },
   );
 
   it(
@@ -628,7 +618,7 @@ context('Item', () => {
       performSearch(item_title);
       //waiting for the results to load
       cy.get('[data-testid="browse-results-list"]', { timeout: 10000 }).should(
-        'exist'
+        'exist',
       );
 
       //Filter using the added resource meta data
@@ -643,15 +633,14 @@ context('Item', () => {
       cy.get('[data-testid="browse-results-list"]').within(() => {
         cy.contains(
           '[data-testid^="browse-document-title-"]',
-          item_title
+          item_title,
         ).should('exist');
       });
-    }
+    },
   );
   // Skkipping test due to some erro rs while importing bibliographic data. To be fixed later.
   it.skip(
-    'Verify creating item by importing data through bibliographic ID - @T139381b0',
-    { tags: '@high' },
+    'Verify creating item by importing data through bibliographic ID - @Te9e7d56f',
     () => {
       const item_title_bibliographic = 'Yellowstone';
       const videoName = 'test_sample.mp4';
@@ -662,7 +651,7 @@ context('Item', () => {
 
       // Create Item
       cy.intercept('GET', '/media_objects/new?collection_id=*').as(
-        'getManageFile'
+        'getManageFile',
       );
       cy.get("[data-testid='collection-create-item-btn']")
         .contains('Create An Item')
@@ -680,12 +669,12 @@ context('Item', () => {
         .should('eq', 200);
       cy.get("[data-testid='media-object-edit-associated-files-block']").should(
         'contain',
-        videoName
+        videoName,
       );
 
       // Go to Resource Description
       cy.intercept('GET', '**/edit?step=resource-description').as(
-        'resourcedescription'
+        'resourcedescription',
       );
       cy.get('[data-testid="media-object-continue-btn"]').click();
       cy.wait('@resourcedescription')
@@ -710,15 +699,15 @@ context('Item', () => {
       // Validate imported metadata
       cy.get('[data-testid="resource-description-title"]').should(
         'have.value',
-        'Yellowstone'
+        'Yellowstone',
       );
       cy.get('[data-testid="resource-description-alternative-title"]').should(
         'have.value',
-        'Yellowstone National Park'
+        'Yellowstone National Park',
       );
       cy.get('[data-testid="resource-description-date-issued"]').should(
         'have.value',
-        '2003'
+        '2003',
       );
       cy.get('[data-testid="resource-description-creator"]')
         .eq(0)
@@ -752,13 +741,13 @@ context('Item', () => {
       });
 
       cy.get(
-        '[data-testid="resource-description-media-object[language][]"]'
+        '[data-testid="resource-description-media-object[language][]"]',
       ).should('have.value', 'English');
       cy.get(
-        '[data-testid="resource-description-physical-description"]'
+        '[data-testid="resource-description-physical-description"]',
       ).should(
         'have.value',
-        '1 videocassette (50 min.) sd., col. with b&w sequences ; 1/2 in.'
+        '1 videocassette (50 min.) sd., col. with b&w sequences ; 1/2 in.',
       );
 
       const subjects = [
@@ -779,10 +768,10 @@ context('Item', () => {
 
       cy.get('[data-testid="resource-description-geographic-subject"]').should(
         'have.value',
-        'Yellowstone National Park'
+        'Yellowstone National Park',
       );
       cy.get('[data-testid="resource-description-note"]').contains(
-        'Originally broadcast as an episode'
+        'Originally broadcast as an episode',
       );
 
       // Structure Page
@@ -802,7 +791,7 @@ context('Item', () => {
       // Validate final display metadata and playback
       cy.get('[data-testid="media-object-title"]').should(
         'contain.text',
-        'Yellowstone'
+        'Yellowstone',
       );
       cy.get('[data-testid="metadata-display"]').within(() => {
         cy.get('dt')
@@ -820,10 +809,10 @@ context('Item', () => {
         createdItems.push(item_id);
         cy.log(`Item successfully created with ID: ${item_id}`);
       });
-    }
+    },
   );
 
-  it('Verify browsing items by Series ', { tags: '@high' }, () => {
+  it('Verify the fields in the resource metadata while editing an item - Series - @T10c013af ', () => {
     cy.login('administrator');
     cy.visit('/');
 
@@ -858,7 +847,7 @@ context('Item', () => {
 
     //waiting for the results to load
     cy.get('[data-testid="browse-results-list"]', { timeout: 10000 }).should(
-      'exist'
+      'exist',
     );
 
     //Filter using the added resource meta data
@@ -872,12 +861,12 @@ context('Item', () => {
     /// Validate that the item is indexed in the search results
     cy.get('[data-testid="browse-results-list"]').within(() => {
       cy.contains('[data-testid^="browse-document-title-"]', item_title).should(
-        'exist'
+        'exist',
       );
     });
   });
 
-  it('Verify selecting items from the browse page', { tags: '@high' }, () => {
+  it('Verify selecting items from the browse page - @T7181e994', () => {
     cy.login('administrator');
 
     // Clear all existing bookmarks
@@ -885,14 +874,14 @@ context('Item', () => {
     cy.get('body').then(($body) => {
       if (
         $body.find(
-          '.alert.alert-info:contains("You have not selected any items")'
+          '.alert.alert-info:contains("You have not selected any items")',
         ).length === 0
       ) {
         cy.on('window:confirm', () => true);
         cy.get('.clear-bookmarks').click();
         cy.get('.alert.alert-info').should(
           'contain',
-          'You have not selected any items'
+          'You have not selected any items',
         );
       }
     });
@@ -918,8 +907,8 @@ context('Item', () => {
       });
   });
 
-  it.only(
-    'Verify user is able to update structure of an item',
+  it(
+    'Verify editing the structure of an item - @Tfc60f26a',
     { tags: '@critical' },
     () => {
       cy.login('administrator');
@@ -1043,12 +1032,11 @@ context('Item', () => {
       cy.get('.current-time-display')
         .should('be.visible')
         .should('contain.text', expectedTime); //validating it starts from the right duration
-    }
+    },
   );
 
   it(
     'Verify that the created structure can be searched - @T5e5fd1da',
-    { tags: '@high' },
     () => {
       cy.login('administrator');
       cy.visit('/');
@@ -1061,12 +1049,12 @@ context('Item', () => {
       cy.get('[data-testid="browse-results-list"]').within(() => {
         cy.contains(item_title).should('exist');
       });
-    }
+    },
   );
 
-  it.only(
-    'Verify editing a structure by uploading a file - @Tc91b132e',
-    { tags: '@high' },
+  it(
+    'Verify editing the structure of an item using structure metadata file - @T10ee29a7',
+    { tags: '@critical' },
     () => {
       cy.login('administrator');
       cy.visit('/media_objects/' + item_id);
@@ -1092,9 +1080,9 @@ context('Item', () => {
               fileName: 'test-sample.mp4.structure.xml',
               mimeType: 'text/xml',
             },
-            { force: true }
+            { force: true },
           );
-        }
+        },
       );
 
       cy.wait(6000);
@@ -1113,7 +1101,7 @@ context('Item', () => {
         .should('have.attr', 'data-label', 'Documentary.mp4');
 
       cy.get('[data-testid="tree-item"][data-label="Starting act"]').should(
-        'exist'
+        'exist',
       );
 
       cy.get('[data-testid="tree-item"][data-label="Part 1"]').should('exist');
@@ -1122,17 +1110,66 @@ context('Item', () => {
       cy.get('[data-testid="tree-item"][data-label="Body"]').should('exist');
 
       cy.get('[data-testid="tree-item"][data-label="Content 1"]').should(
-        'exist'
+        'exist',
       );
       cy.get('[data-testid="tree-item"][data-label="Content 2"]').should(
-        'exist'
+        'exist',
       );
 
       cy.get('[data-testid="tree-item"][data-label="The end"]').should('exist');
-    }
+    },
   );
 
-  it('Adding a caption file under Manage file ', { tags: '@critical' }, () => {
+  it(
+    'Verify adding closed captions [cc] to a section file in an item - @T8592d721 ',
+    { tags: '@critical' },
+    () => {
+      cy.login('administrator');
+      cy.visit('/media_objects/' + item_id);
+      cy.waitForVideoReady();
+      cy.get('[data-testid="media-object-edit-btn"]').click(); //edit button
+      cy.get('[data-testid="media-object-side-nav-link"]')
+        .contains('Manage files')
+        .click();
+      cy.get('[data-testid="media-object-manage-files-edit-btn"]').click();
+      const captionFileName = 'captions-example.srt';
+      //added force: true because the element is not visible
+
+      cy.get('[data-testid="media-object-upload-button-caption"]').selectFile(
+        getFixturePath(captionFileName),
+        { force: true },
+      );
+
+      cy.get('[data-testid="alert"]').contains(
+        'Supplemental file successfully added.',
+      );
+
+      //Verifying on ramp video
+      cy.visit('/media_objects/' + item_id);
+      cy.waitForVideoReady();
+      cy.get('.vjs-big-play-button').should('exist').click();
+
+      cy.get('[data-testid="media-player"]').within(() => {
+        // Access the closed captions button
+        cy.get('button.vjs-subs-caps-button').as('ccButton');
+        cy.get('@ccButton').click();
+
+        // Select the caption
+        cy.get('.vjs-menu-content')
+          .first()
+          .within(() => {
+            cy.contains('li.vjs-menu-item', captionFileName).click();
+          });
+
+        // Assert that the captions are enabled
+        cy.get('@ccButton').should('have.class', 'captions-on');
+
+        // Additional verification that captions are displayed
+        cy.get('.vjs-text-track-cue-eng').should('exist');
+      });
+    },
+  );
+  it('Verify marking closed captions [cc] as a transcript - @Ta541356b', () => {
     cy.login('administrator');
     cy.visit('/media_objects/' + item_id);
     cy.waitForVideoReady();
@@ -1141,142 +1178,83 @@ context('Item', () => {
       .contains('Manage files')
       .click();
     cy.get('[data-testid="media-object-manage-files-edit-btn"]').click();
-    const captionFileName = 'captions-example.srt';
-    //added force: true because the element is not visible
-
-    cy.get('[data-testid="media-object-upload-button-caption"]').selectFile(
-      getFixturePath(captionFileName),
-      { force: true }
-    );
-
-    cy.get('[data-testid="alert"]').contains(
-      'Supplemental file successfully added.'
-    );
+    cy.get('[data-testid="media-object-supplemenatl-file-edit-btn"]').click();
+    cy.get('[data-testid="media-object-treat-as-transcript-checkbox"]').click();
+    cy.get('[data-testid="media-object-supplemental-file-save-btn"]').click();
+    cy.get('[data-testid="media-object-continue-btn"]').click();
 
     //Verifying on ramp video
     cy.visit('/media_objects/' + item_id);
     cy.waitForVideoReady();
+    //Verify that transcripts tab is present
+    cy.get('[data-testid="media-object-tab-transcripts"]').click();
+
+    //Downloading the captions file
+    cy.get('[data-testid="media-object-tab-files"]').click();
+    cy.get('[data-testid="supplemental-files-display-content"]')
+      .contains('captions-example.srt')
+      .should('have.attr', 'href')
+      .then((href) => {
+        expect(href).to.include('/supplemental_files/');
+        // optionally visit or request to confirm it's downloadable
+        cy.request(href).then((response) => {
+          expect(response.status).to.eq(200);
+          expect(response.headers['content-type']).to.include('text/srt');
+          expect(response.body).to.contain('1');
+        });
+      });
+
+    // verifying the browse page
+    homePage.getBrowseNavButton().click();
+    cy.contains('button', 'Has Transcripts').click();
+    cy.contains('#facet-has_transcripts_bsi .facet-select', 'Yes').click();
+    cy.contains('button', 'Has Captions').click();
+    cy.contains('#facet-has_captions_bsi .facet-select', 'Yes').click();
+    cy.get(`[data-testid="browse-document-title-${item_id}"]`)
+      .should('exist')
+      .and('contain.text', 'Automation Item title');
+
+    //searching the caption line and checking if we get results
+    performSearch('Hiring a transcriber saves time and resources.');
+    cy.get(`[data-testid="browse-document-title-${item_id}"]`)
+      .should('exist')
+      .and('contain.text', 'Automation Item title');
+    cy.get('[data-testid="browse-value-found-in"]')
+      .should('exist')
+      .and('contain.text', 'transcript');
+  });
+
+  it('Verify removing the closed captions [cc] in a section file - @T90417e4d', () => {
+    cy.login('administrator');
+    cy.visit('/media_objects/' + item_id);
+    cy.waitForVideoReady();
+    cy.get('[data-testid="media-object-edit-btn"]').click(); //edit button
+    cy.get('[data-testid="media-object-side-nav-link"]')
+      .contains('Manage files')
+      .click();
+    cy.get('[data-testid="media-object-manage-files-edit-btn"]').click();
+    cy.get('[data-testid="media-object-supplemenatl-file-delete-btn"]').click();
+    cy.get('[data-testid="table-view-delete-confirmation-btn"]').click();
+
+    //Verifying on ramp video
+    cy.visit('/media_objects/' + item_id);
+    cy.waitForVideoReady();
+    //Verify that transcripts tab should not exist from the above test case
+    cy.get('[data-testid="media-object-tab-transcripts"]').should('not.exist');
+
+    cy.visit('/media_objects/' + item_id);
+    cy.waitForVideoReady();
+
     cy.get('.vjs-big-play-button').should('exist').click();
 
+    // Ensure CC button is not visible or rendered
     cy.get('[data-testid="media-player"]').within(() => {
-      // Access the closed captions button
-      cy.get('button.vjs-subs-caps-button').as('ccButton');
-      cy.get('@ccButton').click();
-
-      // Select the caption
-      cy.get('.vjs-menu-content')
-        .first()
-        .within(() => {
-          cy.contains('li.vjs-menu-item', captionFileName).click();
-        });
-
-      // Assert that the captions are enabled
-      cy.get('@ccButton').should('have.class', 'captions-on');
-
-      // Additional verification that captions are displayed
-      cy.get('.vjs-text-track-cue-eng').should('exist');
+      cy.get('button.vjs-subs-caps-button').should('not.exist');
+      cy.get('.vjs-text-track-cue-eng').should('not.exist');
     });
   });
   it(
-    'Verify marking closed captions [cc] as a transcript',
-    { tags: '@high' },
-    () => {
-      cy.login('administrator');
-      cy.visit('/media_objects/' + item_id);
-      cy.waitForVideoReady();
-      cy.get('[data-testid="media-object-edit-btn"]').click(); //edit button
-      cy.get('[data-testid="media-object-side-nav-link"]')
-        .contains('Manage files')
-        .click();
-      cy.get('[data-testid="media-object-manage-files-edit-btn"]').click();
-      cy.get('[data-testid="media-object-supplemenatl-file-edit-btn"]').click();
-      cy.get(
-        '[data-testid="media-object-treat-as-transcript-checkbox"]'
-      ).click();
-      cy.get('[data-testid="media-object-supplemental-file-save-btn"]').click();
-      cy.get('[data-testid="media-object-continue-btn"]').click();
-
-      //Verifying on ramp video
-      cy.visit('/media_objects/' + item_id);
-      cy.waitForVideoReady();
-      //Verify that transcripts tab is present
-      cy.get('[data-testid="media-object-tab-transcripts"]').click();
-
-      //Downloading the captions file
-      cy.get('[data-testid="media-object-tab-files"]').click();
-      cy.get('[data-testid="supplemental-files-display-content"]')
-        .contains('captions-example.srt')
-        .should('have.attr', 'href')
-        .then((href) => {
-          expect(href).to.include('/supplemental_files/');
-          // optionally visit or request to confirm it's downloadable
-          cy.request(href).then((response) => {
-            expect(response.status).to.eq(200);
-            expect(response.headers['content-type']).to.include('text/srt');
-            expect(response.body).to.contain('1');
-          });
-        });
-
-      // verifying the browse page
-      homePage.getBrowseNavButton().click();
-      cy.contains('button', 'Has Transcripts').click();
-      cy.contains('#facet-has_transcripts_bsi .facet-select', 'Yes').click();
-      cy.contains('button', 'Has Captions').click();
-      cy.contains('#facet-has_captions_bsi .facet-select', 'Yes').click();
-      cy.get(`[data-testid="browse-document-title-${item_id}"]`)
-        .should('exist')
-        .and('contain.text', 'Automation Item title');
-
-      //searching the caption line and checking if we get results
-      performSearch('Hiring a transcriber saves time and resources.');
-      cy.get(`[data-testid="browse-document-title-${item_id}"]`)
-        .should('exist')
-        .and('contain.text', 'Automation Item title');
-      cy.get('[data-testid="browse-value-found-in"]')
-        .should('exist')
-        .and('contain.text', 'transcript');
-    }
-  );
-
-  it(
-    'Verify removing the closed captions [cc] in a section file',
-    { tags: '@high' },
-    () => {
-      cy.login('administrator');
-      cy.visit('/media_objects/' + item_id);
-      cy.waitForVideoReady();
-      cy.get('[data-testid="media-object-edit-btn"]').click(); //edit button
-      cy.get('[data-testid="media-object-side-nav-link"]')
-        .contains('Manage files')
-        .click();
-      cy.get('[data-testid="media-object-manage-files-edit-btn"]').click();
-      cy.get(
-        '[data-testid="media-object-supplemenatl-file-delete-btn"]'
-      ).click();
-      cy.get('[data-testid="table-view-delete-confirmation-btn"]').click();
-
-      //Verifying on ramp video
-      cy.visit('/media_objects/' + item_id);
-      cy.waitForVideoReady();
-      //Verify that transcripts tab should not exist from the above test case
-      cy.get('[data-testid="media-object-tab-transcripts"]').should(
-        'not.exist'
-      );
-
-      cy.visit('/media_objects/' + item_id);
-      cy.waitForVideoReady();
-
-      cy.get('.vjs-big-play-button').should('exist').click();
-
-      // Ensure CC button is not visible or rendered
-      cy.get('[data-testid="media-player"]').within(() => {
-        cy.get('button.vjs-subs-caps-button').should('not.exist');
-        cy.get('.vjs-text-track-cue-eng').should('not.exist');
-      });
-    }
-  );
-  it(
-    'Adding a transcript file under Manage file ',
+    'Verify adding transcripts to a section file in an item - @Tab7b8299 ',
     { tags: '@critical' },
     () => {
       cy.login('administrator');
@@ -1290,12 +1268,12 @@ context('Item', () => {
       const transcriptFileName = 'transcript-example.vtt';
       //added force: true because the element is not visible
       cy.get(
-        '[data-testid="media-object-upload-button-transcript"]'
+        '[data-testid="media-object-upload-button-transcript"]',
       ).selectFile(getFixturePath(transcriptFileName), {
         force: true,
       });
       cy.get('[data-testid="alert"]').contains(
-        'Supplemental file successfully added.'
+        'Supplemental file successfully added.',
       );
 
       //Verifying on ramp video
@@ -1330,10 +1308,10 @@ context('Item', () => {
         .then((currentTime) => {
           expect(currentTime).to.be.closeTo(expectedSeconds, 3);
         });
-    }
+    },
   );
 
-  it('Verify downloading a transcript ', { tags: '@high' }, () => {
+  it('Verify downloading a transcript - @Tac0d68aa', () => {
     cy.login('administrator');
     cy.visit('/media_objects/' + item_id);
     cy.waitForVideoReady();
@@ -1347,78 +1325,65 @@ context('Item', () => {
       .and('contain', 'WEBVTT');
   });
 
-  it(
-    'Verify removing a transcript in a section file',
-    { tags: '@high' },
-    () => {
-      cy.login('administrator');
-      cy.visit('/media_objects/' + item_id);
-      cy.waitForVideoReady();
-      cy.get('[data-testid="media-object-edit-btn"]').click(); //edit button
-      cy.get('[data-testid="media-object-side-nav-link"]')
-        .contains('Manage files')
-        .click();
-      cy.get('[data-testid="media-object-manage-files-edit-btn"]').click();
-      cy.get(
-        '[data-testid="media-object-supplemenatl-file-delete-btn"]'
-      ).click();
-      cy.get('[data-testid="table-view-delete-confirmation-btn"]').click();
+  it('Verify removing a transcript in a section file - @Tbfdcbbca', () => {
+    cy.login('administrator');
+    cy.visit('/media_objects/' + item_id);
+    cy.waitForVideoReady();
+    cy.get('[data-testid="media-object-edit-btn"]').click(); //edit button
+    cy.get('[data-testid="media-object-side-nav-link"]')
+      .contains('Manage files')
+      .click();
+    cy.get('[data-testid="media-object-manage-files-edit-btn"]').click();
+    cy.get('[data-testid="media-object-supplemenatl-file-delete-btn"]').click();
+    cy.get('[data-testid="table-view-delete-confirmation-btn"]').click();
 
-      //Verifying on ramp video
-      cy.visit('/media_objects/' + item_id);
-      cy.waitForVideoReady();
+    //Verifying on ramp video
+    cy.visit('/media_objects/' + item_id);
+    cy.waitForVideoReady();
 
-      // Transcript and files tab shoudl not exits because there are no other files too
-      cy.get('[data-testid="media-object-tab-transcripts"]').should(
-        'not.exist'
-      );
-      cy.get('[data-testid="media-object-tab-files"]').should('not.exist');
-    }
-  );
+    // Transcript and files tab shoudl not exits because there are no other files too
+    cy.get('[data-testid="media-object-tab-transcripts"]').should('not.exist');
+    cy.get('[data-testid="media-object-tab-files"]').should('not.exist');
+  });
 
-  it(
-    'Verify adding Section Supplemental Files to a section file ',
-    { tags: '@high' },
-    () => {
-      cy.login('administrator');
-      cy.visit('/media_objects/' + item_id);
-      cy.waitForVideoReady();
-      cy.get('[data-testid="media-object-edit-btn"]').click(); //edit button
-      cy.get('[data-testid="media-object-side-nav-link"]')
-        .contains('Manage files')
-        .click();
-      cy.get('[data-testid="media-object-manage-files-edit-btn"]').click();
+  it('Verify adding Section Supplemental Files to a section file - @Tdeaec3a6', () => {
+    cy.login('administrator');
+    cy.visit('/media_objects/' + item_id);
+    cy.waitForVideoReady();
+    cy.get('[data-testid="media-object-edit-btn"]').click(); //edit button
+    cy.get('[data-testid="media-object-side-nav-link"]')
+      .contains('Manage files')
+      .click();
+    cy.get('[data-testid="media-object-manage-files-edit-btn"]').click();
 
-      const sectionSupplementalFileName = 'example.json';
-      //added force: true because the element is not visible
-      cy.get('[data-testid="media-object-upload-button-supplemental"]')
-        .first()
-        .selectFile(getFixturePath(sectionSupplementalFileName), {
-          force: true,
-        });
-      cy.get('[data-testid="media-object-continue-btn"]').click();
+    const sectionSupplementalFileName = 'example.json';
+    //added force: true because the element is not visible
+    cy.get('[data-testid="media-object-upload-button-supplemental"]')
+      .first()
+      .selectFile(getFixturePath(sectionSupplementalFileName), {
+        force: true,
+      });
+    cy.get('[data-testid="media-object-continue-btn"]').click();
 
-      //Verifying on ramp video
-      cy.visit('/media_objects/' + item_id);
-      cy.waitForVideoReady();
+    //Verifying on ramp video
+    cy.visit('/media_objects/' + item_id);
+    cy.waitForVideoReady();
 
-      cy.get('[data-testid="media-object-tab-files"]').click();
+    cy.get('[data-testid="media-object-tab-files"]').click();
 
-      cy.get('[data-testid="supplemental-files-display-content"]')
-        .find('a')
-        .contains(sectionSupplementalFileName)
-        .should('have.attr', 'href')
-        .should('exist');
-      // Click the link to trigger download
+    cy.get('[data-testid="supplemental-files-display-content"]')
+      .find('a')
+      .contains(sectionSupplementalFileName)
+      .should('have.attr', 'href')
+      .should('exist');
+    // Click the link to trigger download
 
-      // Wait for file to appear in downloads folder and verify contents
-      //commented out because click for download does not exist
-      // cy.readFile(getDownloadPath(sectionSupplementalFileName)).should('exist');
-    }
-  );
+    // Wait for file to appear in downloads folder and verify contents
+    //commented out because click for download does not exist
+    // cy.readFile(getDownloadPath(sectionSupplementalFileName)).should('exist');
+  });
   it(
     'Verify removing Section Supplemental Files from a section file',
-    { tags: '@high' },
     () => {
       cy.login('administrator');
       cy.visit('/media_objects/' + item_id);
@@ -1429,7 +1394,7 @@ context('Item', () => {
         .click();
       cy.get('[data-testid="media-object-manage-files-edit-btn"]').click();
       cy.get(
-        '[data-testid="media-object-supplemenatl-file-delete-btn"]'
+        '[data-testid="media-object-supplemenatl-file-delete-btn"]',
       ).click();
       cy.get('[data-testid="table-view-delete-confirmation-btn"]').click();
 
@@ -1439,10 +1404,10 @@ context('Item', () => {
 
       // Transcript and files tab shoudl not exits because there are no other files too
       cy.get('[data-testid="media-object-tab-files"]').should('not.exist');
-    }
+    },
   );
 
-  it('Verify adding item supplemental files ', { tags: '@high' }, () => {
+  it('Verify adding item supplemental files - @T2cadd7c4', () => {
     cy.login('administrator');
     cy.visit('/media_objects/' + item_id);
     cy.waitForVideoReady();
@@ -1476,7 +1441,7 @@ context('Item', () => {
     //cy.readFile(getDownloadPath(sectionSupplementalFileName)).should('exist');
   });
 
-  it('Verify removing item supplemental files ', { tags: '@high' }, () => {
+  it('Verify removing item supplemental files - @Ta34a3925', () => {
     cy.login('administrator');
     cy.visit('/media_objects/' + item_id);
     cy.waitForVideoReady();
@@ -1497,7 +1462,7 @@ context('Item', () => {
 
   //This case and thus the following case may fail intermittently since the item sometimes takes too long to load,
   //and the timeline button is disabled
-  it.only(
+  it(
     'Verify if a user is able to create timelines under an item - @T9972f970 ',
     { tags: '@critical' },
     () => {
@@ -1535,12 +1500,16 @@ context('Item', () => {
         .should('have.value', item_title);
       cy.contains('button', 'Save').should('be.visible').click();
       cy.wait(2000);
+      //removes the leave site
+      cy.window().then((win) => {
+        win.onbeforeunload = null;
+      });
       cy.get('button[title="Save timeline"]').should('be.visible').click();
-    }
+    },
   );
 
-  it.only(
-    'Verify timeline playback by visiting timeliner directly ',
+  it(
+    'Verify is a user is able to play timelines  - @Tf3b6e254',
     { tags: '@critical' },
     () => {
       cy.login('administrator');
@@ -1577,58 +1546,50 @@ context('Item', () => {
         });
 
       cy.get('video').should('have.prop', 'paused', false);
-    }
+    },
   );
 
-  it.only(
-    'Verify deleting a timeline - @T89215320 ',
-    { tags: '@critical' },
-    () => {
-      cy.login('administrator');
-      cy.visit('/timelines');
-      cy.intercept('POST', '/timelines/*').as('deleteTimeline');
-      cy.get('[data-testid="timeline-table-search-field"]')
-        .type(item_title)
-        .should('have.value', item_title);
-      cy.get('[data-testid="timeline-table-body"]')
-        .contains('td', item_title)
-        .parent('tr')
-        .find('.btn-danger')
-        .click();
-      cy.get('[data-testid="table-view-delete-confirmation-btn"]')
-        .contains('Yes, Delete')
-        .click();
-      cy.wait('@deleteTimeline').then((interception) => {
-        expect(interception.response.statusCode).to.eq(200);
-      });
-      cy.get('[data-testid="alert"]').contains(
-        'Timeline was successfully destroyed.'
-      );
-    }
-  );
+  it('Verify deleting a timeline - @T89215320 ', { tags: '@critical' }, () => {
+    cy.login('administrator');
+    cy.visit('/timelines');
+    cy.intercept('POST', '/timelines/*').as('deleteTimeline');
+    cy.get('[data-testid="timeline-table-search-field"]')
+      .type(item_title)
+      .should('have.value', item_title);
+    cy.get('[data-testid="timeline-table-body"]')
+      .contains('td', item_title)
+      .parent('tr')
+      .find('.btn-danger')
+      .click();
+    cy.get('[data-testid="table-view-delete-confirmation-btn"]')
+      .contains('Yes, Delete')
+      .click();
+    cy.wait('@deleteTimeline').then((interception) => {
+      expect(interception.response.statusCode).to.eq(200);
+    });
+    cy.get('[data-testid="alert"]').contains(
+      'Timeline was successfully destroyed.',
+    );
+  });
 
   //teardown code: delete the created item
   // Final test to run at the end
-  it.only(
-    'Verify deleting an item - @Tf46071b7 ',
-    { tags: '@critical' },
-    () => {
-      cy.login('administrator');
+  it('Verify deleting an item - @Tf46071b7 ', { tags: '@critical' }, () => {
+    cy.login('administrator');
 
-      cy.visit('/media_objects/' + item_id);
-      cy.waitForVideoReady();
-      cy.get('[data-testid="media-object-edit-btn"]').contains('Edit').click();
-      cy.intercept('POST', '/media_objects/**').as('removeMediaObject');
-      cy.get('[data-testid="media-object-delete-btn"]')
-        .contains('Delete this item')
-        .click();
-      cy.get('[data-testid="media-object-delete-confirmation-btn"]')
-        .contains('Yes, I am sure')
-        .click();
-      cy.wait('@removeMediaObject').then((interception) => {
-        expect(interception.response.statusCode).to.eq(302);
-      });
-      cy.get('[data-testid="alert"]').contains('1 media object deleted.');
-    }
-  );
+    cy.visit('/media_objects/' + item_id);
+    cy.waitForVideoReady();
+    cy.get('[data-testid="media-object-edit-btn"]').contains('Edit').click();
+    cy.intercept('POST', '/media_objects/**').as('removeMediaObject');
+    cy.get('[data-testid="media-object-delete-btn"]')
+      .contains('Delete this item')
+      .click();
+    cy.get('[data-testid="media-object-delete-confirmation-btn"]')
+      .contains('Yes, I am sure')
+      .click();
+    cy.wait('@removeMediaObject').then((interception) => {
+      expect(interception.response.statusCode).to.eq(302);
+    });
+    cy.get('[data-testid="alert"]').contains('1 media object deleted.');
+  });
 });

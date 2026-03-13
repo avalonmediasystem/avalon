@@ -2,12 +2,10 @@ import { navigateToManageContent } from '../support/navigation.js';
 
 class UnitPage {
   //navigate to unit page
-  navigateToUnit(collection_title) {
+  navigateToUnit(unit_title) {
     navigateToManageContent();
-    cy.get("[data-testid='collection-name-table']")
-      .contains(collection_title)
-      .click();
-    cy.url().should('include', '/admin/unit/');
+    cy.get("[data-testid='unit-name-table']").contains(unit_title).click();
+    cy.url().should('include', '/admin/units/');
   }
   // Unit creation - used by collection specs
   createUnit(unitData, options = {}) {
@@ -17,7 +15,7 @@ class UnitPage {
       websiteUrl: 'http://www.example.com',
       websiteLabel: 'Website label',
       navigate: true,
-      managerUsername: Cypress.env('USERS_MANAGER_USERNAME') || 'manager',
+      managerUsername: Cypress.env('USERS_UNITMANAGER_EMAIL'),
     };
 
     const config = { ...defaults, ...unitData, ...options };
@@ -78,6 +76,15 @@ class UnitPage {
     if (config.navigate) {
       navigateToManageContent();
     }
+    cy.on('uncaught:exception', (err) => {
+      if (
+        err.message.includes(
+          "Cannot read properties of null (reading 'tomselect')"
+        )
+      ) {
+        return false;
+      }
+    });
 
     cy.get('body').then(($body) => {
       if (

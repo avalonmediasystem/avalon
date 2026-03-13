@@ -17,6 +17,7 @@
 import { navigateToManageContent } from '../support/navigation';
 import CollectionPage from '../pageObjects/collectionPage';
 import HomePage from '../pageObjects/homePage';
+import UnitPage from '../pageObjects/unitPage.js';
 const homePage = new HomePage();
 const unitPage = UnitPage;
 
@@ -48,10 +49,10 @@ context('Playlists', () => {
   Cypress.on('uncaught:exception', (err, runnable) => {
     if (
       err.message.includes(
-        "Cannot read properties of undefined (reading 'success')"
+        "Cannot read properties of undefined (reading 'success')",
       ) ||
       err.message.includes(
-        "Cannot read properties of undefined (reading 'times')"
+        "Cannot read properties of undefined (reading 'times')",
       )
     ) {
       return false;
@@ -66,8 +67,8 @@ context('Playlists', () => {
 
     // Create collection with public access
     collectionPage.createCollection(
-      { title: collection_title },
-      { setPublicAccess: false }
+      { title: collection_title, unitName: unit_title },
+      { setPublicAccess: false },
     );
 
     // Navigate to the collection and create complex media object
@@ -131,7 +132,7 @@ context('Playlists', () => {
       .within(() => {
         cy.get('[data-testid="inaccessible-message-content"]').should(
           'contain.text',
-          'This playlist currently has no playable items.'
+          'This playlist currently has no playable items.',
         );
       });
 
@@ -142,7 +143,7 @@ context('Playlists', () => {
       .should('be.visible')
       .and('have.attr', 'title', 'This playlist can only be viewed by you.');
     cy.get('[data-testid="playlist-ramp-description"]').contains(
-      playlist_description
+      playlist_description,
     );
     cy.get('[data-testid="playlist-copy-playlist-btn"]').should('be.visible');
     cy.get('[data-testid="auto-advance"]').should('be.visible');
@@ -161,9 +162,7 @@ context('Playlists', () => {
       expect(interception.response.statusCode).to.eq(200);
     });
 
-    cy.get('#Playlists_filter').within(() => {
-      cy.get('input[type="search"]').type(playlist_title);
-    });
+    cy.get('[data-testid="playlist-table-search-field"]').type(playlist_title);
     cy.get('[ data-testid="playlist-table-head"]')
       .should('be.visible')
       .within(() => {
@@ -198,7 +197,7 @@ context('Playlists', () => {
       .click();
     cy.get("[data-testid='playlist-title']").type(playlist_title_public);
     cy.get("[data-testid='playlist-comment']").type(
-      playlist_description_public
+      playlist_description_public,
     );
     cy.contains('Public').click();
     cy.intercept('POST', '**/playlists').as('createPlaylist'); //create api of playlists
@@ -216,33 +215,33 @@ context('Playlists', () => {
       .and(
         'have.attr',
         'title',
-        'This playlist can be viewed by anyone on the web.'
+        'This playlist can be viewed by anyone on the web.',
       );
   });
 
   //is able to share a public playlist
   it(
-    'Verify sharing a public playlist - @c89c89d0',
+    'Verify sharing a public playlist - @Tc89c89d0',
     { tags: '@critical' },
     () => {
       cy.login('administrator');
       cy.visit('/');
       cy.get('#playlists_nav').contains('Playlists').click();
       //if in case the created playlist goes on next page
-      cy.get('#Playlists_filter').within(() => {
-        cy.get('input[type="search"]').type(playlist_title_public);
-      });
+      cy.get('[data-testid="playlist-table-search-field"]').type(
+        playlist_title_public,
+      );
       cy.contains(playlist_title_public).click();
       cy.get('[data-testid="playlist-share-btn"]').click();
       cy.get('[data-testid="playlist-share-list"]').within(() => {
         cy.url().then((currentUrl) => {
           cy.get('[ data-testid="playlist-link"]').should(
             'have.value',
-            currentUrl
+            currentUrl,
           );
         });
       });
-    }
+    },
   );
 
   // is able to change public playlist to private
@@ -255,9 +254,9 @@ context('Playlists', () => {
 
       cy.get('#playlists_nav').contains('Playlists').click();
       //if in case it is on next page
-      cy.get('#Playlists_filter').within(() => {
-        cy.get('input[type="search"]').type(playlist_title_public);
-      });
+      cy.get('[data-testid="playlist-table-search-field"]').type(
+        playlist_title_public,
+      );
       cy.contains(playlist_title_public).click();
       cy.get('[data-testid="playlist-edit-playlist-btn"]')
         .should('be.visible')
@@ -272,10 +271,10 @@ context('Playlists', () => {
         expect(interception.response.headers.location).to.include('/edit');
       });
       cy.get('[data-testid="alert"]').contains(
-        'Playlist was successfully updated'
+        'Playlist was successfully updated',
       );
       cy.contains('Private');
-    }
+    },
   );
 
   // is able to edit playlist name and description
@@ -287,9 +286,9 @@ context('Playlists', () => {
       cy.visit('/');
       cy.get('#playlists_nav').contains('Playlists').click();
       //if in case the playlist goes on to the next page
-      cy.get('#Playlists_filter').within(() => {
-        cy.get('input[type="search"]').type(playlist_title_public);
-      });
+      cy.get('[data-testid="playlist-table-search-field"]').type(
+        playlist_title_public,
+      );
       cy.contains(playlist_title_public).click();
       cy.get('[data-testid="playlist-edit-playlist-btn"]')
         .should('be.visible')
@@ -316,7 +315,7 @@ context('Playlists', () => {
       });
 
       cy.get('[data-testid="alert"]').contains(
-        'Playlist was successfully updated'
+        'Playlist was successfully updated',
       );
       cy.get('[data-testid="playlist-details"]')
         .within(() => {
@@ -329,11 +328,11 @@ context('Playlists', () => {
           playlist_description_public = updatedDescription;
           cy.log(`Playlist title updated to: ${playlist_title_public}`); // Log the updated value
         });
-    }
+    },
   );
 
   it(
-    'Verify adding the current section of an item to a playlist - Create playlist items for each track/subsection - @T3e614dbc',
+    'Verify adding the current section of an item to a playlist - Create playlist items for each track/subsection - @T3e614dbc @T6b22e797',
     { tags: '@critical' },
     () => {
       cy.login('administrator');
@@ -353,9 +352,7 @@ context('Playlists', () => {
         .should('contain.text', 'Current Section (')
         .click();
       //Click on dropdown
-      cy.get('[data-testid="media-object-playlist-dropdown"]')
-        .should('exist')
-        .next('span')
+      cy.get('[data-testid="media-object-playlist-dropdown-control"]')
         .should('be.visible')
         .click();
       //search
@@ -366,7 +363,7 @@ context('Playlists', () => {
       cy.get('[data-testid="media-object-playlist-search-input"]')
         .parent()
         .next()
-        .find('div.ts-option-custom option:not(:first-child)')
+        .find('[data-testid="media-object-playlist-option"]:not(:first-child)')
         .contains(playlist_title)
         .should('be.visible')
         .click();
@@ -384,128 +381,117 @@ context('Playlists', () => {
       cy.get('[data-testid="media-object-playlist-result-msg"]')
         .should('be.visible')
         .contains('Playlist items created successfully.');
+      //playlist can be validated by link - in later tests the playlist is streamed
       cy.screenshot();
-    }
+    },
   );
 
-  it(
-    'Verify adding the track section of an item to a playlist - @T3e614dbc',
-    { tags: '@critical' },
-    () => {
-      cy.login('administrator');
-      cy.visit('/');
-      // The below code is hard-coded for a media object url. This needs to be changed with a valid object URL later for each website.
-      cy.visit('/media_objects/' + media_object_id);
-      cy.contains(media_object_title);
+  it('Verify adding the current track to a playlist - @Tecb6a8f7', () => {
+    cy.login('administrator');
+    cy.visit('/');
+    // The below code is hard-coded for a media object url. This needs to be changed with a valid object URL later for each website.
+    cy.visit('/media_objects/' + media_object_id);
+    cy.contains(media_object_title);
 
-      cy.get('[data-testid="media-object-add-to-playlist-btn"]')
-        .contains('Add to Playlist')
-        .click();
-      cy.intercept('POST', '**/items').as('addtoplaylist');
-      //Click on the "Current section" radio button
-      cy.get('[data-testid="media-object-current-track-radio-btn"]')
-        .should('exist')
-        .parent()
-        .should('contain.text', 'Current Track (')
-        .click();
-      //Click on dropdown
-      cy.get('[data-testid="media-object-playlist-dropdown"]')
-        .should('exist')
-        .next('span')
-        .should('be.visible')
-        .click();
-      //search
-      cy.get('[data-testid="media-object-playlist-search-input"]')
-        .should('be.visible')
-        .type(playlist_title_public);
-      //click the playlist
-      cy.get('[data-testid="media-object-playlist-search-input"]')
-        .parent()
-        .next()
-        .find('div.ts-option-custom option:not(:first-child)')
-        .contains(playlist_title_public)
-        .should('be.visible')
-        .click();
-      //submit button
-      cy.get('[data-testid="media-object-playlist-save-btn"]')
-        .should('have.attr', 'value', 'Add')
-        .click({ force: true });
+    cy.get('[data-testid="media-object-add-to-playlist-btn"]')
+      .contains('Add to Playlist')
+      .click();
+    cy.intercept('POST', '**/items').as('addtoplaylist');
+    //Click on the "Current section" radio button
+    cy.get('[data-testid="media-object-current-track-radio-btn"]')
+      .should('exist')
+      .parent()
+      .should('contain.text', 'Current Track (')
+      .click();
+    //Click on dropdown
+    cy.get('[data-testid="media-object-playlist-dropdown-control"]')
+      .should('be.visible')
+      .click();
+    //search
+    cy.get('[data-testid="media-object-playlist-search-input"]')
+      .should('be.visible')
+      .type(playlist_title_public);
+    //click the playlist
+    cy.get('[data-testid="media-object-playlist-search-input"]')
+      .parent()
+      .next()
+      .find('[data-testid="media-object-playlist-option"]:not(:first-child)')
+      .contains(playlist_title_public)
+      .should('be.visible')
+      .click();
+    //submit button
+    cy.get('[data-testid="media-object-playlist-save-btn"]')
+      .should('have.attr', 'value', 'Add')
+      .click({ force: true });
 
-      //api validation
-      cy.wait('@addtoplaylist').then((interception) => {
-        expect(interception.response.statusCode).to.eq(201);
-      });
+    //api validation
+    cy.wait('@addtoplaylist').then((interception) => {
+      expect(interception.response.statusCode).to.eq(201);
+    });
 
-      //verify playlist created success message
-      cy.get('[data-testid="media-object-playlist-result-msg"]')
-        .should('be.visible')
-        .contains('Add to playlist was successful.');
-      cy.screenshot();
-    }
-  );
+    //verify playlist created success message
+    cy.get('[data-testid="media-object-playlist-result-msg"]')
+      .should('be.visible')
+      .contains('Add to playlist was successful.');
+    cy.screenshot();
+  });
 
-  it(
-    'Verifies playlist autoplay toggle and playback behavior',
-    { tags: '@critical' },
-    () => {
-      cy.login('administrator');
-      cy.visit('/');
+  it('Verify the Auto-play option in playlist - @Tb8754a0d', () => {
+    cy.login('administrator');
+    cy.visit('/');
 
-      // Navigate to Playlists
-      cy.get('#playlists_nav').contains('Playlists').click();
+    // Navigate to Playlists
+    cy.get('#playlists_nav').contains('Playlists').click();
 
-      // Search and open a specific playlist
-      cy.get('#Playlists_filter').within(() => {
-        cy.get('input[type="search"]').type(playlist_title);
-      });
+    // Search and open a specific playlist
+    cy.get('[data-testid="playlist-table-search-field"]').type(playlist_title);
 
-      cy.contains(playlist_title).click();
-      cy.get('[data-testid="media-player"]').should('exist');
-      cy.waitForVideoReady();
+    cy.contains(playlist_title).click();
+    cy.get('[data-testid="media-player"]').should('exist');
+    cy.waitForVideoReady();
 
-      // Autoplay is turned on
-      cy.get('[data-testid="auto-advance"]').should(
-        'have.attr',
-        'aria-checked',
-        'true'
-      );
+    // Autoplay is turned on
+    cy.get('[data-testid="auto-advance"]').should(
+      'have.attr',
+      'aria-checked',
+      'true',
+    );
 
-      // Play first item
-      cy.get('[data-testid="tree-item"]').eq(0).click();
-      cy.waitForVideoReady();
+    // Play first item
+    cy.get('[data-testid="tree-item"]').eq(0).click();
+    cy.waitForVideoReady();
 
-      // Hover to expose controls, then Play
-      cy.get('button[title="Play"]').click();
-      cy.wait(10000);
-      // Wait for structured-nav to switch to 2nd item
-      cy.get('[data-testid="tree-item"]').eq(1).should('have.class', 'active');
+    // Hover to expose controls, then Play
+    cy.get('button[title="Play"]').click();
+    cy.wait(10000);
+    // Wait for structured-nav to switch to 2nd item
+    cy.get('[data-testid="tree-item"]').eq(1).should('have.class', 'active');
 
-      // autoplay turned off
-      cy.get('[data-testid="auto-advance-toggle"]').click();
-      cy.get('[data-testid="auto-advance"]').should(
-        'have.attr',
-        'aria-checked',
-        'false'
-      );
+    // autoplay turned off
+    cy.get('[data-testid="auto-advance-toggle"]').click();
+    cy.get('[data-testid="auto-advance"]').should(
+      'have.attr',
+      'aria-checked',
+      'false',
+    );
 
-      // Play second item
-      cy.get('[data-testid="tree-item"]').eq(1).click();
-      cy.waitForVideoReady();
-      cy.get('video').scrollIntoView().trigger('mouseover');
-      cy.get('button[title="Play"]').click();
+    // Play second item
+    cy.get('[data-testid="tree-item"]').eq(1).click();
+    cy.waitForVideoReady();
+    cy.get('video').scrollIntoView().trigger('mouseover');
+    cy.get('button[title="Play"]').click();
 
-      // Wait 20 seconds and confirm section does not auto-advance
-      cy.wait(20000);
-      cy.get('[data-testid="tree-item"]').eq(1).should('have.class', 'active');
+    // Wait 20 seconds and confirm section does not auto-advance
+    cy.wait(20000);
+    cy.get('[data-testid="tree-item"]').eq(1).should('have.class', 'active');
 
-      cy.get('[data-testid="tree-item"]')
-        .eq(2)
-        .should('not.have.class', 'active');
-    }
-  );
+    cy.get('[data-testid="tree-item"]')
+      .eq(2)
+      .should('not.have.class', 'active');
+  });
 
   it(
-    'Verify playlist playback and navigation works as expected',
+    'Verify media playback consistency in the playlist page- @Ta68aed2e',
     { tags: '@critical' },
     () => {
       cy.login('administrator');
@@ -513,23 +499,31 @@ context('Playlists', () => {
 
       cy.get('#playlists_nav').contains('Playlists').click();
 
-      cy.get('#Playlists_filter').within(() => {
-        cy.get('input[type="search"]').type(playlist_title);
-      });
+      cy.get('[data-testid="playlist-table-search-field"]').type(
+        playlist_title,
+      );
 
       cy.contains(playlist_title).click();
 
       cy.get('[data-testid="media-player"]').should('exist');
       cy.waitForVideoReady();
+
+      const showPlayerControls = () => {
+        cy.get('[data-testid="media-player"]').trigger('mouseover', {
+          force: true,
+        });
+        cy.get('.video-js').trigger('mousemove', { force: true });
+      };
 
       // Play the first item manually
       cy.get('.current-time-display')
         .should('be.visible')
         .invoke('text')
         .then((initialTime) => {
+          showPlayerControls();
           cy.get('button[title="Play"]').click();
           cy.wait(3000);
-          cy.get('.video-js').trigger('mousemove', { force: true });
+          showPlayerControls();
           cy.get('.current-time-display')
             .invoke('text')
             .should((currentTime) => {
@@ -546,12 +540,13 @@ context('Playlists', () => {
           .click();
 
         cy.waitForVideoReady();
+        showPlayerControls();
 
         cy.get('.current-time-display')
           .invoke('text')
           .then((initialTime) => {
             cy.wait(3000); // Let it autoplay a bit
-            cy.get('.video-js').trigger('mousemove', { force: true });
+            showPlayerControls();
             cy.get('.current-time-display')
               .invoke('text')
               .should((currentTime) => {
@@ -562,30 +557,32 @@ context('Playlists', () => {
 
       // Autoplay test for next 2 items
       clickAndAutoplayCheck(1); // "Part 2"
-      cy.get('.video-js').trigger('mousemove', { force: true });
+      showPlayerControls();
       // Next button
       cy.get('[data-testid="videojs-next-button"]').click();
       cy.waitForVideoReady();
+      showPlayerControls();
       cy.get('.current-time-display')
         .invoke('text')
         .then((initialTime) => {
           cy.wait(3000);
-          cy.get('.video-js').trigger('mousemove', { force: true });
+          showPlayerControls();
           cy.get('.current-time-display')
             .invoke('text')
             .should((currentTime) => {
               expect(currentTime).to.not.equal(initialTime);
             });
         });
-      cy.get('.video-js').trigger('mousemove', { force: true });
+      showPlayerControls();
       // Previous button
       cy.get('[data-testid="videojs-previous-button"]').click();
       cy.waitForVideoReady();
+      showPlayerControls();
       cy.get('.current-time-display')
         .invoke('text')
         .then((initialTime) => {
           cy.wait(3000);
-          cy.get('.video-js').trigger('mousemove', { force: true });
+          showPlayerControls();
           cy.get('.current-time-display')
             .invoke('text')
             .should((currentTime) => {
@@ -596,462 +593,430 @@ context('Playlists', () => {
       //Basic player button checks
       cy.get('button[title="Mute"]').should('exist');
       cy.get('button[title="Fullscreen"]').should('exist');
-    }
+    },
   );
 
-  it(
-    'Verifies adding a marker and playback behavior from marker position',
-    { tags: '@high' },
-    () => {
-      cy.login('administrator');
-      cy.visit('/');
+  it('Verify Adding markers to an item in the playlist - @T5ab55cc7', () => {
+    cy.login('administrator');
+    cy.visit('/');
 
-      // Navigate to Playlists
-      cy.get('#playlists_nav').contains('Playlists').click();
+    // Navigate to Playlists
+    cy.get('#playlists_nav').contains('Playlists').click();
 
-      // Search and open playlist
-      cy.get('#Playlists_filter').within(() => {
-        cy.get('input[type="search"]').type(playlist_title);
+    // Search and open playlist
+    cy.get('[data-testid="playlist-table-search-field"]').type(playlist_title);
+
+    cy.contains(playlist_title).click();
+    cy.get('[data-testid="media-player"]').should('exist');
+    cy.waitForVideoReady();
+
+    // Open Markers accordion and click "Add New Marker"
+    cy.contains('button', 'Markers').click();
+    cy.get('[data-testid="create-new-marker-button"]').click();
+
+    // Fill marker title and time
+    const markerTitle = 'Test Marker';
+    const markerTime = '00:00:05.000';
+    const markerTimeSec = 5;
+
+    cy.get('[data-testid="create-marker-title"]').clear().type(markerTitle);
+    cy.get('[data-testid="create-marker-timestamp"]').clear().type(markerTime);
+    cy.get('[data-testid="edit-save-button"]').click();
+
+    // Verify table header
+    cy.get('[data-testid="markers-display-table"] thead tr').within(() => {
+      cy.get('th').eq(1).should('have.text', 'Name');
+      cy.get('th').eq(0).should('have.text', 'Time');
+      cy.get('th').eq(2).should('have.text', 'Actions');
+    });
+
+    // Verify row content
+    cy.get('[data-testid="markers-display-table"] tbody tr')
+      .first()
+      .within(() => {
+        cy.get('td').eq(1).find('a').should('have.text', markerTitle);
+        cy.get('td').eq(0).should('have.text', markerTime);
+        cy.get('[data-testid="edit-button"]').should('exist');
+        cy.get('[data-testid="delete-button"]').should('exist');
       });
 
-      cy.contains(playlist_title).click();
-      cy.get('[data-testid="media-player"]').should('exist');
-      cy.waitForVideoReady();
+    // Verify marker on progress bar
+    cy.get('[data-testid="videojs-custom-seekbar"]')
+      .find(`[data-marker-time="${markerTimeSec}"]`)
+      .should('exist');
 
-      // Open Markers accordion and click "Add New Marker"
-      cy.contains('button', 'Markers').click();
-      cy.get('[data-testid="create-new-marker-button"]').click();
+    // Click marker on progress bar
+    cy.get(`[data-marker-time="${markerTimeSec}"]`).click({ force: true });
 
-      // Fill marker title and time
-      const markerTitle = 'Test Marker';
-      const markerTime = '00:00:05.000';
-      const markerTimeSec = 5;
+    // Unpause and confirm playhead moves near marker
+    cy.get('button[title="Play"]').click();
+    cy.get('video').then(($video) => {
+      const currentTime = $video[0].currentTime;
+      expect(currentTime).to.be.closeTo(markerTimeSec, 2);
+    });
 
-      cy.get('[data-testid="create-marker-title"]').clear().type(markerTitle);
-      cy.get('[data-testid="create-marker-timestamp"]')
-        .clear()
-        .type(markerTime);
-      cy.get('[data-testid="edit-save-button"]').click();
+    // Click marker in table and confirm playhead again
+    cy.get('[data-testid="markers-display-table"] tbody tr')
+      .first()
+      .find('td')
+      .eq(1)
+      .find('a')
+      .click();
 
-      // Verify table header
-      cy.get('[data-testid="markers-display-table"] thead tr').within(() => {
-        cy.get('th').eq(0).should('have.text', 'Name');
-        cy.get('th').eq(1).should('have.text', 'Time');
-        cy.get('th').eq(2).should('have.text', 'Actions');
+    cy.get('video').then(($video) => {
+      const currentTime = $video[0].currentTime;
+      expect(currentTime).to.be.closeTo(markerTimeSec, 2);
+    });
+  });
+  it('Verify editing markers to an item in playlist - @T72550101', () => {
+    const updatedTitle = 'Updated Marker Title';
+    const updatedOffset = '00:00:03.000';
+    const updatedSeconds = 3;
+
+    cy.login('administrator');
+    cy.visit('/');
+
+    // Navigate to Playlists
+    cy.get('#playlists_nav').contains('Playlists').click();
+
+    // Search and open playlist
+    cy.get('[data-testid="playlist-table-search-field"]').type(playlist_title);
+
+    cy.contains(playlist_title).click();
+    cy.get('[data-testid="media-player"]').should('exist');
+    cy.waitForVideoReady();
+
+    // Open Markers tile
+    cy.contains('button', 'Markers').click();
+
+    // Click edit button on first marker row
+    cy.get('[data-testid="markers-display-table"] tbody tr')
+      .first()
+      .within(() => {
+        cy.get('[data-testid="edit-button"]').click();
       });
 
-      // Verify row content
-      cy.get('[data-testid="markers-display-table"] tbody tr')
-        .first()
-        .within(() => {
-          cy.get('td').eq(0).find('a').should('have.text', markerTitle);
-          cy.get('td').eq(1).should('have.text', markerTime);
-          cy.get('[data-testid="edit-button"]').should('exist');
-          cy.get('[data-testid="delete-button"]').should('exist');
-        });
+    // Update marker title and time
+    cy.get('[data-testid="edit-label"]').clear().type(updatedTitle);
+    cy.get('[data-testid="edit-timestamp"]').clear().type(updatedOffset);
+    cy.get('[data-testid="edit-save-button"]').click();
 
-      // Verify marker on progress bar
-      cy.get('[data-testid="videojs-custom-seekbar"]')
-        .find(`[data-marker-time="${markerTimeSec}"]`)
-        .should('exist');
-
-      // Click marker on progress bar
-      cy.get(`[data-marker-time="${markerTimeSec}"]`).click({ force: true });
-
-      // Unpause and confirm playhead moves near marker
-      cy.get('button[title="Play"]').click();
-      cy.get('video').then(($video) => {
-        const currentTime = $video[0].currentTime;
-        expect(currentTime).to.be.closeTo(markerTimeSec, 2);
+    // Verify the updated row contents
+    cy.get('[data-testid="markers-display-table"] tbody tr')
+      .first()
+      .within(() => {
+        cy.get('td').eq(1).find('a').should('contain.text', updatedTitle);
+        cy.get('td').eq(0).should('contain.text', updatedOffset);
       });
 
-      // Click marker in table and confirm playhead again
-      cy.get('[data-testid="markers-display-table"] tbody tr')
-        .first()
-        .find('td')
-        .eq(0)
-        .find('a')
-        .click();
+    // Verify the visual marker dot exists with updated time
+    cy.get('[data-testid="videojs-custom-seekbar"]')
+      .find(`[data-marker-time="${updatedSeconds}"]`)
+      .should('exist')
+      .click({ force: true });
 
-      cy.get('video').then(($video) => {
-        const currentTime = $video[0].currentTime;
-        expect(currentTime).to.be.closeTo(markerTimeSec, 2);
-      });
-    }
-  );
-  it(
-    'Verify editing markers to an item in playlist - @T72550101',
-    { tags: '@critical' },
-    () => {
-      const updatedTitle = 'Updated Marker Title';
-      const updatedOffset = '00:00:03.000';
-      const updatedSeconds = 3;
+    // Trigger hover so controls are visible
+    cy.get('[data-testid="media-player"]').trigger('mouseover', {
+      force: true,
+    });
 
-      cy.login('administrator');
-      cy.visit('/');
+    // Click play
+    cy.get('button[title="Play"]').click();
 
-      // Navigate to Playlists
-      cy.get('#playlists_nav').contains('Playlists').click();
+    // Wait and verify playback started near 3s
 
-      // Search and open playlist
-      cy.get('#Playlists_filter').within(() => {
-        cy.get('input[type="search"]').type(playlist_title);
-      });
+    cy.get('video').then(($video) => {
+      const current = $video[0].currentTime;
+      expect(current).to.be.closeTo(updatedSeconds, 1.5);
+    });
 
-      cy.contains(playlist_title).click();
-      cy.get('[data-testid="media-player"]').should('exist');
-      cy.waitForVideoReady();
+    // Click on the marker title in the table to jump
+    cy.get('[data-testid="markers-display-table"] tbody tr')
+      .first()
+      .find('td')
+      .eq(1)
+      .find('a')
+      .click();
 
-      // Open Markers tile
-      cy.contains('button', 'Markers').click();
+    cy.get('video').then(($video) => {
+      const current = $video[0].currentTime;
+      expect(current).to.be.closeTo(updatedSeconds, 1.5);
+    });
+  });
 
-      // Click edit button on first marker row
-      cy.get('[data-testid="markers-display-table"] tbody tr')
-        .first()
-        .within(() => {
-          cy.get('[data-testid="edit-button"]').click();
-        });
+  it('Verify Deleting markers to an item in playlist - @T058c6ad3', () => {
+    cy.login('administrator');
+    cy.visit('/');
 
-      // Update marker title and time
-      cy.get('[data-testid="edit-label"]').clear().type(updatedTitle);
-      cy.get('[data-testid="edit-timestamp"]').clear().type(updatedOffset);
-      cy.get('[data-testid="edit-save-button"]').click();
+    // Go to Playlists
+    cy.get('#playlists_nav').contains('Playlists').click();
 
-      // Verify the updated row contents
-      cy.get('[data-testid="markers-display-table"] tbody tr')
-        .first()
-        .within(() => {
-          cy.get('td').eq(0).find('a').should('contain.text', updatedTitle);
-          cy.get('td').eq(1).should('contain.text', updatedOffset);
-        });
+    // Search for the playlist
+    cy.get('[data-testid="playlist-table-search-field"]').type(playlist_title);
 
-      // Verify the visual marker dot exists with updated time
-      cy.get('[data-testid="videojs-custom-seekbar"]')
-        .find(`[data-marker-time="${updatedSeconds}"]`)
-        .should('exist')
-        .click({ force: true });
+    // Open the playlist
+    cy.contains(playlist_title).click();
+    cy.get('[data-testid="media-player"]').should('exist');
+    cy.waitForVideoReady();
 
-      // Trigger hover so controls are visible
-      cy.get('[data-testid="media-player"]').trigger('mouseover', {
-        force: true,
-      });
+    // Open the Markers panel
+    cy.contains('button', 'Markers').click();
+    cy.get('[data-testid="delete-button"]').click();
+    // Confirm deletion by clicking "Yes"
+    cy.get('[data-testid="delete-confirm-button"]').click();
 
-      // Click play
-      cy.get('button[title="Play"]').click();
+    // Ensure the marker no longer appears in the table
+    // Confirm marker table no longer exists
+    cy.get('[data-testid="markers-display-table"]').should('not.exist');
 
-      // Wait and verify playback started near 3s
+    // Confirm the seekbar marker is also removed
+    cy.get('[data-marker-time]').should('not.exist');
 
-      cy.get('video').then(($video) => {
-        const current = $video[0].currentTime;
-        expect(current).to.be.closeTo(updatedSeconds, 1.5);
-      });
+    // Confirm that "Add New Marker" button still exists
+    cy.get('[data-testid="annotations-display"]').within(() => {
+      cy.get('[data-testid="create-new-marker-button"]').should('exist');
+    });
+  });
 
-      // Click on the marker title in the table to jump
-      cy.get('[data-testid="markers-display-table"] tbody tr')
-        .first()
-        .find('td')
-        .eq(0)
-        .find('a')
-        .click();
-
-      cy.get('video').then(($video) => {
-        const current = $video[0].currentTime;
-        expect(current).to.be.closeTo(updatedSeconds, 1.5);
-      });
-    }
-  );
-
-  it(
-    'Verify Deleting markers to an item in playlist - @T058c6ad3',
-    { tags: '@high' },
-    () => {
-      cy.login('administrator');
-      cy.visit('/');
-
-      // Go to Playlists
-      cy.get('#playlists_nav').contains('Playlists').click();
-
-      // Search for the playlist
-      cy.get('#Playlists_filter').within(() => {
-        cy.get('input[type="search"]').type(playlist_title);
-      });
-
-      // Open the playlist
-      cy.contains(playlist_title).click();
-      cy.get('[data-testid="media-player"]').should('exist');
-      cy.waitForVideoReady();
-
-      // Open the Markers panel
-      cy.contains('button', 'Markers').click();
-      cy.get('[data-testid="delete-button"]').click();
-      // Confirm deletion by clicking "Yes"
-      cy.get('[data-testid="delete-confirm-button"]').click();
-
-      // Ensure the marker no longer appears in the table
-      // Confirm marker table no longer exists
-      cy.get('[data-testid="markers-display-table"]').should('not.exist');
-
-      // Confirm the seekbar marker is also removed
-      cy.get('[data-marker-time]').should('not.exist');
-
-      // Confirm that "Add New Marker" button still exists
-      cy.get('[data-testid="annotations-display"]').within(() => {
-        cy.get('[data-testid="create-new-marker-button"]').should('exist');
-      });
-    }
-  );
-
-  it(
-    'Verify that private playlists cannot be shared - @Ta1984bd6',
-    { tags: '@high' },
-    () => {
-      cy.login('administrator');
-      cy.get('#playlists_nav').contains('Playlists').click();
-
-      // Search and open playlist
-      cy.get('#Playlists_filter').within(() => {
-        cy.get('input[type="search"]').type(playlist_title);
-      });
-      cy.contains(playlist_title).click();
-
-      // Share tab message saying that the playlist cannot be shared
-      cy.get('[data-testid="playlist-share-btn"]').click();
-      cy.get('[data-testid="playlist-link"]').should(
-        'contain.text',
-        'This playlist is private.  To enable sharing, change the visibility setting within the Edit Playlist page.'
-      );
-    }
-  );
-
-  it(
-    'Share playlist by link (set to "Share by link" under playlist details); then anyone should be able to view playlist - @Tc2ae4eb4',
-    { tags: '@high' },
-    () => {
-      cy.login('administrator');
-      cy.get('#playlists_nav').contains('Playlists').click();
-
-      // Search and open playlist
-      cy.get('#Playlists_filter').within(() => {
-        cy.get('input[type="search"]').type(playlist_title);
-      });
-      cy.contains(playlist_title).click();
-
-      // Go to edit playlist visibility
-      cy.get('[data-testid="playlist-edit-playlist-btn"]')
-        .should('be.visible')
-        .click();
-      cy.get('[data-testid="playlist-edit-icon-btn"]').click();
-
-      // Set visibility to "Share by link"
-      cy.get('input[type="radio"][value="private-with-token"]').check({
-        force: true,
-      });
-      cy.get('input[type="radio"][value="private-with-token"]').should(
-        'be.checked'
-      );
-
-      // Intercept and save
-      cy.intercept('POST', '**/playlists/*').as('updatePlaylist');
-      cy.get('[data-testid="playlist-submit-form"]')
-        .contains('Save Changes')
-        .click();
-
-      cy.wait('@updatePlaylist').then((interception) => {
-        expect(interception.response.statusCode).to.eq(302);
-        expect(interception.response.headers.location).to.include('/edit');
-      });
-
-      // Validate share link
-      cy.get('[data-testid="playlist-share-link"]')
-        .should('be.visible')
-        .and('have.attr', 'readonly');
-
-      cy.get('[data-testid="playlist-share-link"]')
-        .invoke('val')
-        .should('include', '?token=');
-
-      // Confirm copy button
-      cy.get('[data-testid="playlist-copy-share-link-button"]').should(
-        'contain.text',
-        'Copy'
-      );
-
-      // View playlist and open share menu again (for link re-check, optional)
-      cy.get('[data-testid="playlist-view-playlist-btn"]').click();
-      cy.get('[data-testid="playlist-share-btn"]').click();
-
-      //Saving the share link
-      cy.get('[data-testid="playlist-link"]')
-        .invoke('val')
-        .should('include', '?token=')
-        .as('playlistLink');
-
-      // Logout admin
-      homePage.logout();
-
-      // Validate access as manager
-      cy.login('manager');
-      cy.get('@playlistLink').then((link) => {
-        share_by_link_playlist = link;
-        cy.visit(link);
-        cy.get('[data-testid="playlist-title"]').should(
-          'contain.text',
-          playlist_title
-        );
-        cy.get('[data-testid="playlist-visibility-icon"]')
-          .should('exist')
-          .and(
-            'have.attr',
-            'title',
-            'This playlist can only be viewed by users who have the unique link.'
-          );
-      });
-      homePage.logout();
-
-      // Validate access as regular user
-      cy.login('user');
-      cy.get('@playlistLink').then((link) => {
-        cy.visit(link);
-        cy.get('[data-testid="playlist-title"]').should(
-          'contain.text',
-          playlist_title
-        );
-        cy.get('[data-testid="playlist-visibility-icon"]')
-          .should('exist')
-          .and(
-            'have.attr',
-            'title',
-            'This playlist can only be viewed by users who have the unique link.'
-          );
-      });
-      homePage.logout();
-
-      // Validate access as unauthenticated guest
-      cy.get('@playlistLink').then((link) => {
-        cy.visit(link);
-        cy.get('[data-testid="playlist-title"]').should(
-          'contain.text',
-          playlist_title
-        );
-        cy.get('[data-testid="playlist-visibility-icon"]')
-          .should('exist')
-          .and(
-            'have.attr',
-            'title',
-            'This playlist can only be viewed by users who have the unique link.'
-          );
-      });
-    }
-  );
-  it(
-    'Accessing a playlist with inaccessible items - @T5a36ed2c',
-    { tags: '@high' },
-    () => {
-      // Logging in as user and item added to playlist is collection staff only
-      cy.login('user');
-
-      cy.visit(share_by_link_playlist);
-
-      // Check that all playlist items have a lock icon
-      cy.get('[data-testid="tree-item"]').each(($item) => {
-        cy.wrap($item).find('svg.structure-item-locked').should('exist');
-      });
-
-      cy.get('[data-testid="tree-item"]').first().click();
-      cy.get('[data-testid="media-player"]').should('exist');
-      cy.get('[data-testid="inaccessible-message-display"]').should('exist');
-      cy.get('[data-testid="inaccessible-message-content"]').should(
-        'contain.text',
-        'You do not have permission to playback this item.'
-      );
-      // Validate Next button and timer (first item only)
-      cy.get('[data-testid="inaccessible-message-buttons"]')
-        .find('[data-testid="inaccessible-next-button"]')
-        .should('contain.text', 'Next')
-        .and('be.visible');
-
-      cy.get('[data-testid="inaccessible-message-timer"]')
-        .should('contain.text', 'Next item in')
-        .and('be.visible');
-
-      // Click Next to go to second item
-      cy.get('[data-testid="inaccessible-next-button"]').click();
-
-      // Wait for transition (adjust if necessary)
-      cy.wait(1000);
-
-      // Validate timer and both nav buttons
-      cy.get('[data-testid="inaccessible-message-buttons"]')
-        .should('contain.text', 'Next')
-        .and('contain.text', 'Previous');
-
-      cy.get('[data-testid="inaccessible-message-timer"]').should(
-        'contain.text',
-        'Next item in'
-      );
-
-      // Click Next again to go to third item
-      cy.get('[data-testid="inaccessible-next-button"]').click();
-      cy.wait(1000);
-
-      // Validate still both nav buttons present
-      cy.get('[data-testid="inaccessible-message-buttons"]')
-        .should('contain.text', 'Next')
-        .and('contain.text', 'Previous');
-
-      // Click Next again to go to fourth item
-      cy.get('[data-testid="inaccessible-next-button"]').click();
-      cy.wait(1000);
-
-      // Validate both buttons again
-      cy.get('[data-testid="inaccessible-message-buttons"]')
-        .should('contain.text', 'Next')
-        .and('contain.text', 'Previous');
-
-      // Click Next to go to last item
-      cy.get('[data-testid="inaccessible-next-button"]').click();
-      cy.wait(1000);
-
-      // Final item: should only show "Previous", no timer
-      cy.get('[data-testid="inaccessible-message-buttons"]')
-        .should('contain.text', 'Previous')
-        .and('not.contain.text', 'Next');
-
-      cy.get('[data-testid="inaccessible-message-timer"]').should('not.exist');
-
-      // Validate that there are no markers
-      cy.contains('button', 'Markers').click();
-      cy.get('[data-testid="annotations-display"]').should('be.empty');
-    }
-  );
-
-  it('Verify deleting items in the playlist', { tags: '@critical' }, () => {
+  it('Verify that private playlists cannot be shared - @Ta1984bd6', () => {
     cy.login('administrator');
     cy.get('#playlists_nav').contains('Playlists').click();
-    //if in case the playlist goes on to the next page
-    cy.get('#Playlists_filter').within(() => {
-      cy.get('input[type="search"]').type(playlist_title);
-    });
+
+    // Search and open playlist
+    cy.get('[data-testid="playlist-table-search-field"]').type(playlist_title);
     cy.contains(playlist_title).click();
+
+    // Share tab message saying that the playlist cannot be shared
+    cy.get('[data-testid="playlist-share-btn"]').click();
+    cy.get('[data-testid="playlist-link"]').should(
+      'contain.text',
+      'This playlist is private.  To enable sharing, change the visibility setting within the Edit Playlist page.',
+    );
+  });
+
+  it('Share playlist by link (set to "Share by link" under playlist details); then anyone should be able to view playlist - @Tc2ae4eb4 @T1ea08742', () => {
+    cy.login('administrator');
+    cy.get('#playlists_nav').contains('Playlists').click();
+
+    // Search and open playlist
+    cy.get('[data-testid="playlist-table-search-field"]').type(playlist_title);
+    cy.contains(playlist_title).click();
+
+    // Go to edit playlist visibility
     cy.get('[data-testid="playlist-edit-playlist-btn"]')
       .should('be.visible')
       .click();
+    cy.get('[data-testid="playlist-edit-icon-btn"]').click();
 
-    cy.get('[data-testid="playlist-edit-icon-btn"]').click(); //edit button on the playlist
-    cy.get('[data-testid^="playlist-item-checkbox"]').first().check(); //selecting the first item in the playlist
-    cy.get('[data-testid="playlist-delete-selected-btn"]')
-      .should('not.be.disabled')
-      .click(); // clicking on delete selected button
-    cy.intercept('POST', '**/update_multiple').as('deleteiteminplaylist');
-    cy.contains('Yes, Delete').should('be.visible').click();
-    cy.wait('@deleteiteminplaylist').then((interception) => {
-      expect(interception.response.statusCode).to.eq(302);
+    // Set visibility to "Share by link"
+    cy.get('input[type="radio"][value="private-with-token"]').check({
+      force: true,
     });
-    cy.get('[data-testid="alert"]')
-      .contains('Playlist was successfully updated.')
-      .should('be.visible');
-    //can check if the item was deleted
+    cy.get('input[type="radio"][value="private-with-token"]').should(
+      'be.checked',
+    );
+
+    // Intercept and save
+    cy.intercept('POST', '**/playlists/*').as('updatePlaylist');
+    cy.get('[data-testid="playlist-submit-form"]')
+      .contains('Save Changes')
+      .click();
+
+    cy.wait('@updatePlaylist').then((interception) => {
+      expect(interception.response.statusCode).to.eq(302);
+      expect(interception.response.headers.location).to.include('/edit');
+    });
+
+    // Validate share link
+    cy.get('[data-testid="playlist-share-link"]')
+      .should('be.visible')
+      .and('have.attr', 'readonly');
+
+    cy.get('[data-testid="playlist-share-link"]')
+      .invoke('val')
+      .should('include', '?token=');
+
+    // Confirm copy button
+    cy.get('[data-testid="playlist-copy-share-link-button"]').should(
+      'contain.text',
+      'Copy',
+    );
+
+    // View playlist and open share menu again (for link re-check, optional)
+    cy.get('[data-testid="playlist-view-playlist-btn"]').click();
+    cy.get('[data-testid="playlist-share-btn"]').click();
+
+    //Saving the share link
+    cy.get('[data-testid="playlist-link"]')
+      .invoke('val')
+      .should('include', '?token=')
+      .as('playlistLink');
+
+    // Logout admin
+    homePage.logout();
+
+    // Validate access as manager
+    cy.login('manager');
+    cy.get('@playlistLink').then((link) => {
+      share_by_link_playlist = link;
+      cy.visit(link);
+      cy.get('[data-testid="playlist-title"]').should(
+        'contain.text',
+        playlist_title,
+      );
+      cy.get('[data-testid="playlist-visibility-icon"]')
+        .should('exist')
+        .and(
+          'have.attr',
+          'title',
+          'This playlist can only be viewed by users who have the unique link.',
+        );
+    });
+    homePage.logout();
+
+    // Validate access as regular user
+    cy.login('user');
+    cy.get('@playlistLink').then((link) => {
+      cy.visit(link);
+      cy.get('[data-testid="playlist-title"]').should(
+        'contain.text',
+        playlist_title,
+      );
+      cy.get('[data-testid="playlist-visibility-icon"]')
+        .should('exist')
+        .and(
+          'have.attr',
+          'title',
+          'This playlist can only be viewed by users who have the unique link.',
+        );
+    });
+    homePage.logout();
+
+    // Validate access as unauthenticated guest
+    cy.get('@playlistLink').then((link) => {
+      cy.visit(link);
+      cy.get('[data-testid="playlist-title"]').should(
+        'contain.text',
+        playlist_title,
+      );
+      cy.get('[data-testid="playlist-visibility-icon"]')
+        .should('exist')
+        .and(
+          'have.attr',
+          'title',
+          'This playlist can only be viewed by users who have the unique link.',
+        );
+    });
   });
+  it('Accessing a playlist with inaccessible items - @T5a36ed2c', () => {
+    // Logging in as user and item added to playlist is collection staff only
+    cy.login('user');
+
+    cy.visit(share_by_link_playlist);
+
+    // Check that all playlist items have a lock icon
+    cy.get('[data-testid="tree-item"]').each(($item) => {
+      cy.wrap($item).find('svg.structure-item-locked').should('exist');
+    });
+
+    cy.get('[data-testid="tree-item"]').first().click();
+    cy.get('[data-testid="media-player"]').should('exist');
+    cy.get('[data-testid="inaccessible-message-display"]').should('exist');
+    cy.get('[data-testid="inaccessible-message-content"]').should(
+      'contain.text',
+      'You do not have permission to playback this item.',
+    );
+    // Validate Next button and timer (first item only)
+    cy.get('[data-testid="inaccessible-message-buttons"]')
+      .find('[data-testid="inaccessible-next-button"]')
+      .should('contain.text', 'Next')
+      .and('be.visible');
+
+    cy.get('[data-testid="inaccessible-message-timer"]')
+      .should('contain.text', 'Next item in')
+      .and('be.visible');
+
+    // Click Next to go to second item
+    cy.get('[data-testid="inaccessible-next-button"]').click();
+
+    // Wait for transition (adjust if necessary)
+    cy.wait(1000);
+
+    // Validate timer and both nav buttons
+    cy.get('[data-testid="inaccessible-message-buttons"]')
+      .should('contain.text', 'Next')
+      .and('contain.text', 'Previous');
+
+    cy.get('[data-testid="inaccessible-message-timer"]').should(
+      'contain.text',
+      'Next item in',
+    );
+
+    // Click Next again to go to third item
+    cy.get('[data-testid="inaccessible-next-button"]').click();
+    cy.wait(1000);
+
+    // Validate still both nav buttons present
+    cy.get('[data-testid="inaccessible-message-buttons"]')
+      .should('contain.text', 'Next')
+      .and('contain.text', 'Previous');
+
+    // Click Next again to go to fourth item
+    cy.get('[data-testid="inaccessible-next-button"]').click();
+    cy.wait(1000);
+
+    // Validate both buttons again
+    cy.get('[data-testid="inaccessible-message-buttons"]')
+      .should('contain.text', 'Next')
+      .and('contain.text', 'Previous');
+
+    // Click Next to go to last item
+    cy.get('[data-testid="inaccessible-next-button"]').click();
+    cy.wait(1000);
+
+    // Final item: should only show "Previous", no timer
+    cy.get('[data-testid="inaccessible-message-buttons"]')
+      .should('contain.text', 'Previous')
+      .and('not.contain.text', 'Next');
+
+    cy.get('[data-testid="inaccessible-message-timer"]').should('not.exist');
+
+    // Validate that there are no markers
+    cy.contains('button', 'Markers').click();
+    cy.get('[data-testid="annotations-display"]').should('be.empty');
+  });
+
+  it(
+    'Verify deleting Items from the playlist - @T553f50f0',
+    { tags: '@critical' },
+    () => {
+      cy.login('administrator');
+      cy.get('#playlists_nav').contains('Playlists').click();
+      //if in case the playlist goes on to the next page
+      cy.get('[data-testid="playlist-table-search-field"]').type(
+        playlist_title,
+      );
+      cy.contains(playlist_title).click();
+      cy.get('[data-testid="playlist-edit-playlist-btn"]')
+        .should('be.visible')
+        .click();
+
+      cy.get('[data-testid="playlist-edit-icon-btn"]').click(); //edit button on the playlist
+      cy.get('[data-testid^="playlist-item-checkbox"]').first().check(); //selecting the first item in the playlist
+      cy.get('[data-testid="playlist-delete-selected-btn"]')
+        .should('not.be.disabled')
+        .click(); // clicking on delete selected button
+      cy.intercept('POST', '**/update_multiple').as('deleteiteminplaylist');
+      cy.contains('Yes, Delete').should('be.visible').click();
+      cy.wait('@deleteiteminplaylist').then((interception) => {
+        expect(interception.response.statusCode).to.eq(302);
+      });
+      cy.get('[data-testid="alert"]')
+        .contains('Playlist was successfully updated.')
+        .should('be.visible');
+      //can check if the item was deleted
+    },
+  );
 
   it(
     'Verify the "add to playlist" button behavior - @Tcdb5ac47',
@@ -1084,13 +1049,11 @@ context('Playlists', () => {
             .should('exist')
             .parent()
             .should('contain.text', 'All Sections');
-        }
+        },
       );
 
       //Validate Playlist dropdown
-      cy.get('[data-testid="media-object-playlist-dropdown"]')
-        .next('span')
-        .click();
+      cy.get('[data-testid="media-object-playlist-dropdown-control"]').click();
 
       //Validate add new playlist option in the dropdown
       cy.get('[data-testid="media-object-playlist-search-input"]')
@@ -1101,14 +1064,14 @@ context('Playlists', () => {
 
       //Validate search for playlist within the playlist dropdown
       cy.get('[data-testid="media-object-playlist-search-input"]').type(
-        playlist_title
+        playlist_title,
       );
       cy.get('[data-testid="media-object-playlist-search-input"]')
         .parent()
         .next()
         .contains('b', playlist_title)
         .should('be.visible');
-    }
+    },
   );
 
   // Teardown codes  to delete playlist_title and playlist_title_public
@@ -1125,9 +1088,9 @@ context('Playlists', () => {
       cy.intercept('POST', '**/playlists/*').as('deleteplaylist');
 
       cy.visit('/playlists');
-      cy.get('#Playlists_filter').within(() => {
-        cy.get('input[type="search"]').type(playlist_title);
-      });
+      cy.get('[data-testid="playlist-table-search-field"]').type(
+        playlist_title,
+      );
       cy.get('[data-testid="playlist-table-body"] tr')
         .contains('td', playlist_title)
         .closest('tr')
@@ -1148,13 +1111,13 @@ context('Playlists', () => {
       //Add more assertions here
       //Handle pagination case - search for the playlist - it should not appear. Add  API validation
 
-      cy.get('#Playlists_filter').within(() => {
-        cy.get('input[type="search"]').type(playlist_title);
-      });
+      cy.get('[data-testid="playlist-table-search-field"]').type(
+        playlist_title,
+      );
       cy.get('[data-testid="playlist-table-body"] tr')
         .contains(playlist_title)
         .should('not.exist');
-    }
+    },
   );
 
   // is able to delete playlist from edit playlist page
@@ -1167,9 +1130,9 @@ context('Playlists', () => {
       cy.visit('/');
 
       cy.visit('/playlists');
-      cy.get('#Playlists_filter').within(() => {
-        cy.get('input[type="search"]').type(playlist_title_public);
-      });
+      cy.get('[data-testid="playlist-table-search-field"]').type(
+        playlist_title_public,
+      );
       cy.contains(playlist_title_public).click();
       cy.get('[data-testid="playlist-edit-playlist-btn"]').click();
       cy.intercept('POST', '**/playlists/*').as('deleteplaylist'); //delete api
@@ -1188,12 +1151,12 @@ context('Playlists', () => {
 
       //Add more assertions here
       //Handle pagination case - search for the playlist - it should not appear. Add  API validation
-      cy.get('#Playlists_filter').within(() => {
-        cy.get('input[type="search"]').type(playlist_title_public);
-      });
+      cy.get('[data-testid="playlist-table-search-field"]').type(
+        playlist_title_public,
+      );
       cy.get('[data-testid="playlist-table-body"] tr')
         .contains(playlist_title_public)
         .should('not.exist');
-    }
+    },
   );
 });

@@ -159,6 +159,9 @@ this.add_new_playlist_option = function () {
           }
           const playlistsCombobox = query('#post_playlist_id-ts-control');
           if (playlistsCombobox) playlistsCombobox.setAttribute('aria-labelledby', 'post_playlist_id');
+          // Add data-testid attributes for testing
+          if (this.control_input) this.control_input.setAttribute('data-testid', 'media-object-playlist-search-input');
+          if (this.control) this.control.setAttribute('data-testid', 'media-object-playlist-dropdown-control');
         },
         render: {
           item: function (data, escape) {
@@ -173,7 +176,7 @@ this.add_new_playlist_option = function () {
             } else {
               content = escape(data.text);
             }
-            return `<div class="${selectedClass}" data-value="${escape(data.value)}">${content}</div>`;
+            return `<div class="${selectedClass}" data-value="${escape(data.value)}" data-testid="media-object-playlist-option">${content}</div>`;
           },
           no_results: function (data, escape) {
             const searchTerm = escape(data.input);

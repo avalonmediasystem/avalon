@@ -79,7 +79,7 @@ Unless required by applicable law or agreed to in writing, software distributed
     <p>Would you like to create one?</p>
     <div class="whitespace"></div>
     <p>
-      <%= link_to("<span class='btn btn-primary btn-large'>Create #{object.capitalize}</span>".html_safe, send("new_admin_#{object}_path".to_sym)) %>
+      <%= link_to("<span class='btn btn-primary btn-large' data-testid='#{object}-create-#{object}-button'>Create #{object.capitalize}</span>".html_safe, send("new_admin_#{object}_path".to_sym)) %>
     </p>
     <% else %>
     <p>You'll need to be assigned to one</p>
