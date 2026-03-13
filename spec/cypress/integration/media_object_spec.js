@@ -42,11 +42,11 @@ context('Media objects', () => {
     if (
       err.message.includes('Permissions check failed') ||
       err.message.includes(
-        "Cannot read properties of undefined (reading 'success')"
+        "Cannot read properties of undefined (reading 'success')",
       ) ||
       err.message.includes('scrollHeight') ||
       err.message.includes(
-        "Cannot read properties of undefined (reading 'end')"
+        "Cannot read properties of undefined (reading 'end')",
       ) ||
       err.message === 'Script error.'
     ) {
@@ -61,8 +61,8 @@ context('Media objects', () => {
 
     // Create collection with public access
     collectionPage.createCollection(
-      { title: collection_title },
-      { setPublicAccess: true }
+      { title: collection_title, unitName: unit_title },
+      { setPublicAccess: true },
     );
 
     // Navigate to the collection and create complex media object
@@ -107,7 +107,7 @@ context('Media objects', () => {
       cy.contains('Unknown item').should('not.exist');
       cy.get('[data-testid="media-object-title"]').should(
         'contain',
-        media_object_title
+        media_object_title,
       );
       cy.contains('Publication date');
       // This below line is to play the video. If the video is not playable, this might return error. In that case, comment the below code.
@@ -155,7 +155,7 @@ context('Media objects', () => {
           // Validate the fullscreen button
           cy.get('.vjs-fullscreen-control').should('exist');
         });
-      }
+      },
     );
 
     it(
@@ -191,7 +191,7 @@ context('Media objects', () => {
                 .should('eq', '50');
             });
         });
-      }
+      },
     );
 
     it(
@@ -216,11 +216,11 @@ context('Media objects', () => {
           // Checking on media player
           cy.get('.vjs-text-track-display').should('exist');
         });
-      }
+      },
     );
 
     it(
-      'Verify video playback for all roles - admin, manager, user ',
+      'Verify that all users can stream the video files in an item - @T5c27ef4b ',
       { tags: '@critical' },
       () => {
         const roles = ['administrator', 'manager', 'user'];
@@ -262,11 +262,11 @@ context('Media objects', () => {
           // Logout user
           cy.visit('/users/sign_out');
         });
-      }
+      },
     );
 
     it(
-      'Verify that all users can stream the audio files in an item',
+      'Verify that all users can stream the audio files in an item - @T4d194154',
       { tags: '@critical' },
       () => {
         //Click the first mp3 audio in the tree and open it
@@ -300,7 +300,7 @@ context('Media objects', () => {
         cy.get('@player')
           .find(
             'button.vjs-play-control[title="Play"], button.vjs-play-control[title="Pause"]',
-            { timeout: 15000 }
+            { timeout: 15000 },
           )
           .first()
           .should('exist')
@@ -323,7 +323,7 @@ context('Media objects', () => {
               //either condition proves "playback is happening / started"
               expect(
                 media.currentTime > 0 || media.paused === false,
-                `currentTime=${media.currentTime}, paused=${media.paused}`
+                `currentTime=${media.currentTime}, paused=${media.paused}`,
               ).to.equal(true);
             });
           });
@@ -352,11 +352,11 @@ context('Media objects', () => {
                 expect(time2).to.not.equal(time1);
               });
           });
-      }
+      },
     );
 
     it(
-      'Verify that the user can stream different sections of the video/audio from structured nav',
+      'Verify that the user can stream different sections of the video from the media player - @Tb5a0baf1 ',
       { tags: '@critical' },
       () => {
         //Verifying sections exists
@@ -386,7 +386,7 @@ context('Media objects', () => {
                   cy.get('[data-testid="media-player"] video').should(
                     ($vid) => {
                       expect($vid[0].paused).to.be.false;
-                    }
+                    },
                   );
 
                   //Checking if progress bar advances through the style: width
@@ -419,11 +419,11 @@ context('Media objects', () => {
               });
           });
         });
-      }
+      },
     );
 
     it(
-      'TC002 - Validate embedded video player functionality (with stream buffering wait)',
+      'Verify the functionality of embedded players - video files - @Tdd57d9f0',
       { tags: '@critical' },
       () => {
         cy.contains('Share').click();
@@ -475,7 +475,7 @@ context('Media objects', () => {
             // Fullscreen toggle
             cy.get('.vjs-fullscreen-control').click();
           });
-      }
+      },
     );
 
     it('Verify the icons in a video player in fullscreen mode - @T503d2ee1', () => {
@@ -511,7 +511,7 @@ context('Media objects', () => {
       cy.get('@player')
         .find(
           'button.vjs-play-control[title="Play"], button.vjs-play-control[title="Pause"]',
-          { timeout: 15000 }
+          { timeout: 15000 },
         )
         .first()
         .should('exist')
@@ -587,7 +587,7 @@ context('Media objects', () => {
         cy.get('@vjsRoot')
           .find(
             'button.vjs-play-control[title="Play"], button.vjs-play-control[title="Pause"]',
-            { timeout: 15000 }
+            { timeout: 15000 },
           )
           .first()
           .should('be.visible')
@@ -637,7 +637,7 @@ context('Media objects', () => {
 
       cy.get('@vjsRoot', { timeout: 15000 }).should(
         'have.class',
-        'vjs-fullscreen'
+        'vjs-fullscreen',
       );
 
       // Play/Pause still works in fullscreen UI mode
@@ -658,7 +658,7 @@ context('Media objects', () => {
 
       cy.get('@player')
         .find(
-          'button.vjs-play-control[title="Play"], button.vjs-play-control[title="Pause"]'
+          'button.vjs-play-control[title="Play"], button.vjs-play-control[title="Pause"]',
         )
         .first()
         .as('playPauseBtn');
@@ -737,7 +737,7 @@ context('Media objects', () => {
       cy.get('video[data-testid="videojs-audio-element"]').as('audioEl');
       cy.get('@player')
         .find(
-          'button.vjs-play-control[title="Play"], button.vjs-play-control[title="Pause"]'
+          'button.vjs-play-control[title="Play"], button.vjs-play-control[title="Pause"]',
         )
         .first()
         .as('playPause');
@@ -772,7 +772,7 @@ context('Media objects', () => {
       cy.get('@player')
         .find(
           'button.vjs-play-control[title="Play"], button.vjs-play-control[title="Pause"]',
-          { timeout: 15000 }
+          { timeout: 15000 },
         )
         .first()
         .should('be.visible')
@@ -882,7 +882,7 @@ context('Media objects', () => {
       // Start play
       cy.get('@player')
         .find(
-          'button.vjs-play-control[title="Play"], button.vjs-play-control[title="Pause"]'
+          'button.vjs-play-control[title="Play"], button.vjs-play-control[title="Pause"]',
         )
         .first()
         .click({ force: true });
@@ -925,7 +925,7 @@ context('Media objects', () => {
       // Start play
       cy.get('@player')
         .find(
-          'button.vjs-play-control[title="Play"], button.vjs-play-control[title="Pause"]'
+          'button.vjs-play-control[title="Play"], button.vjs-play-control[title="Pause"]',
         )
         .first()
         .click({ force: true });
@@ -937,7 +937,7 @@ context('Media objects', () => {
       cy.get('@fullscreenBtn').click({ force: true });
       cy.get('@vjsContainer', { timeout: 5000 }).should(
         'have.class',
-        'vjs-fullscreen'
+        'vjs-fullscreen',
       );
 
       cy.get('@fullscreenBtn').click({ force: true });
@@ -950,7 +950,7 @@ context('Media objects', () => {
       cy.get('body').type('f');
       cy.get('@vjsContainer', { timeout: 5000 }).should(
         'have.class',
-        'vjs-fullscreen'
+        'vjs-fullscreen',
       );
 
       cy.wait(500);
@@ -965,7 +965,7 @@ context('Media objects', () => {
       cy.get('body').type('f');
       cy.get('@vjsContainer', { timeout: 5000 }).should(
         'have.class',
-        'vjs-fullscreen'
+        'vjs-fullscreen',
       );
 
       cy.get('@fullscreenBtn').click({ force: true });
@@ -976,7 +976,7 @@ context('Media objects', () => {
       //Adding the transcript to the first video section
       cy.get('[data-testid="media-object-edit-btn"]').click();
       cy.get(
-        '[data-testid="media-object-side-nav-link"][href*="file-upload"]'
+        '[data-testid="media-object-side-nav-link"][href*="file-upload"]',
       ).click();
 
       //Click Edit for the first section
@@ -993,7 +993,7 @@ context('Media objects', () => {
 
       // Wait for upload to complete
       cy.contains('transcript-example.vtt', { timeout: 15000 }).should(
-        'be.visible'
+        'be.visible',
       );
 
       cy.get('[data-testid="media-object-continue-btn"]').click();
@@ -1007,18 +1007,18 @@ context('Media objects', () => {
 
       // Verify the dropdown and transcripts
       cy.get('[data-testid="transcript_nav"]', { timeout: 15000 }).should(
-        'exist'
+        'exist',
       );
       cy.get('[data-testid="transcript-select-option"]').should('be.visible');
       cy.get('[data-testid="transcript_item"]').should(
         'have.length.greaterThan',
-        1
+        1,
       );
 
       //play
       cy.get('[data-testid="media-player"]')
         .find(
-          'button.vjs-play-control[title="Play"], button.vjs-play-control[title="Pause"]'
+          'button.vjs-play-control[title="Play"], button.vjs-play-control[title="Pause"]',
         )
         .first()
         .click({ force: true });
@@ -1049,7 +1049,7 @@ context('Media objects', () => {
 
       // verifying auto-scroll checked
       cy.get(
-        '[data-testid="transcript-auto-scroll-check"] input[type="checkbox"]'
+        '[data-testid="transcript-auto-scroll-check"] input[type="checkbox"]',
       )
         .as('autoScroll')
         .check({ force: true })
@@ -1058,7 +1058,7 @@ context('Media objects', () => {
       // play video
       cy.get('[data-testid="media-player"]')
         .find(
-          'button.vjs-play-control[title="Play"], button.vjs-play-control[title="Pause"]'
+          'button.vjs-play-control[title="Play"], button.vjs-play-control[title="Pause"]',
         )
         .first()
         .click({ force: true });
@@ -1161,7 +1161,7 @@ context('Media objects', () => {
       // play video
       cy.get('@player')
         .find(
-          'button.vjs-play-control[title="Play"], button.vjs-play-control[title="Pause"]'
+          'button.vjs-play-control[title="Play"], button.vjs-play-control[title="Pause"]',
         )
         .first()
         .click({ force: true });
@@ -1200,7 +1200,7 @@ context('Media objects', () => {
         .invoke('prop', 'currentTime')
         .should('be.lt', 5);
     });
-    it('Verify that media player (audio/video) automatically advances to the next section once the current section is played - @TPlayerAutoAdvanceUnified', () => {
+    it('Verify that media player (audio/video) automatically advances to the next section once the current section is played - @@T4f0721a7', () => {
       cy.get('[data-testid="media-player"]').as('player');
       cy.get('[data-testid="structured-nav"]').as('nav');
 
@@ -1226,7 +1226,7 @@ context('Media objects', () => {
         // click play button
         cy.get('@player')
           .find(
-            'button.vjs-play-control[title="Play"], button.vjs-play-control[title="Pause"]'
+            'button.vjs-play-control[title="Play"], button.vjs-play-control[title="Pause"]',
           )
           .first()
           .click({ force: true });
@@ -1281,18 +1281,18 @@ context('Media objects', () => {
 
         cy.get('[data-testid="media-player"]').should('be.visible');
         cy.get('video[data-testid="videojs-video-element"]').should(
-          'be.visible'
+          'be.visible',
         );
 
         //play video
         cy.get('[data-testid="media-player"]')
           .find(
-            'button.vjs-play-control[title="Play"], button.vjs-play-control[title="Pause"]'
+            'button.vjs-play-control[title="Play"], button.vjs-play-control[title="Pause"]',
           )
           .first()
           .click({ force: true });
         cy.get('video[data-testid="videojs-video-element"]').should(($v) =>
-          expect($v[0].paused).to.eq(false)
+          expect($v[0].paused).to.eq(false),
         );
 
         //Verify key controls are visible and not cut off
@@ -1310,18 +1310,18 @@ context('Media objects', () => {
       // play
       cy.get('[data-testid="media-player"]')
         .find(
-          'button.vjs-play-control[title="Play"], button.vjs-play-control[title="Pause"]'
+          'button.vjs-play-control[title="Play"], button.vjs-play-control[title="Pause"]',
         )
         .first()
         .click({ force: true });
       cy.get('video[data-testid="videojs-video-element"]').should(($v) =>
-        expect($v[0].paused).to.eq(false)
+        expect($v[0].paused).to.eq(false),
       );
 
       // playing continues in landscape
       cy.wait(2000);
       cy.get('video[data-testid="videojs-video-element"]').should(($v) =>
-        expect($v[0].currentTime).to.be.greaterThan(0)
+        expect($v[0].currentTime).to.be.greaterThan(0),
       );
     });
   });

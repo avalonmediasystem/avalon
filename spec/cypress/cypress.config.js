@@ -18,7 +18,7 @@ module.exports = defineConfig({
   fixturesFolder: path.resolve(__dirname, projectRoot, 'fixtures'),
   screenshotsFolder: path.resolve(__dirname, projectRoot, 'screenshots'),
   videosFolder: path.resolve(__dirname, projectRoot, 'videos'),
-  browser: process.env.BROWSER || 'electron',
+  browser: 'chrome',
   chromeWebSecurity: false,
   e2e: {
     defaultCommandTimeout: 100000, //timeout

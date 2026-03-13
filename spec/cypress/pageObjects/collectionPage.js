@@ -126,8 +126,9 @@ class CollectionPage {
       .should('have.value', managerUsername);
 
     cy.get("[data-testid='add_manager-popup']")
-      .should('be.visible')
-      .and('contain', managerUsername)
+      .children()
+      .filter((_, el) => el.textContent.trim() === managerUsername)
+      .first()
       .click();
 
     cy.get("[data-testid='submit-add-manager']").click();
@@ -141,7 +142,8 @@ class CollectionPage {
 
     cy.get("[data-testid='collection-access-label-manager']")
       .should('exist')
-      .contains('label', managerUsername)
+      .find('label')
+      .filter((_, el) => el.textContent.trim() === managerUsername)
       .should('be.visible');
   }
 
@@ -155,6 +157,26 @@ class CollectionPage {
           `[data-testid='collection-name-table']:contains("${collectionName}")`
         ).length > 0
       ) {
+        // Ensure the collection is empty before attempting deletion
+        cy.wait(2000); // Wait for the item to be deleted because it still shows up in collection list
+        cy.get("[data-testid='collection-name-table']")
+          .contains(collectionName)
+          .click();
+        cy.get('[data-testid="collection-list-all-item-btn"]').click();
+        cy.contains('No results found for your search', { timeout: 20000 });
+        navigateToManageContent();
+
+        // Suppress known jQuery null-reference error thrown by the app on this page transition
+        cy.on('uncaught:exception', (err) => {
+          if (
+            err.message.includes(
+              "Cannot read properties of null (reading 'jquery')"
+            )
+          ) {
+            return false;
+          }
+        });
+
         cy.get("[data-testid='collection-name-table']")
           .contains(collectionName)
           .closest('tr')

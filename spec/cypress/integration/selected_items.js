@@ -50,10 +50,10 @@ context('Selected Items', () => {
   Cypress.on('uncaught:exception', (err, runnable) => {
     if (
       err.message.includes(
-        "Cannot read properties of undefined (reading 'success')"
+        "Cannot read properties of undefined (reading 'success')",
       ) ||
       err.message.includes(
-        "Cannot read properties of undefined (reading 'times')"
+        "Cannot read properties of undefined (reading 'times')",
       )
     ) {
       return false;
@@ -62,50 +62,52 @@ context('Selected Items', () => {
 
   // Create collection and complex media object before all tests
   before(() => {
+    // Clear any existing selected items for administrator
     cy.login('administrator');
-    // Clear any existing selected items
     cy.visit('/bookmarks');
     cy.get('body').then(($body) => {
       if (
         $body.find(
-          '.alert.alert-info:contains("You have not selected any items")'
+          '.alert.alert-info:contains("You have not selected any items")',
         ).length === 0
       ) {
-        // There are selected items - clear them all
+        cy.get('.bookmark-selection').check({ force: true });
         cy.on('window:confirm', () => true);
-        cy.get('.clear-bookmarks').click();
+        cy.get('[data-testid="remove-selected-btn"]').click({ force: true });
         cy.get('.alert.alert-info').should(
           'contain',
-          'You have not selected any items'
+          'You have not selected any items',
         );
       }
     });
 
-    // Now do the same for user account
+    // Clear any existing selected items for user
     cy.login('user');
     cy.visit('/bookmarks');
     cy.get('body').then(($body) => {
       if (
         $body.find(
-          '.alert.alert-info:contains("You have not selected any items")'
+          '.alert.alert-info:contains("You have not selected any items")',
         ).length === 0
       ) {
+        cy.get('.bookmark-selection').check({ force: true });
         cy.on('window:confirm', () => true);
-        cy.get('[data-testid="remove-selected-btn"]').click();
+        cy.get('[data-testid="remove-selected-btn"]').click({ force: true });
         cy.get('.alert.alert-info').should(
           'contain',
-          'You have not selected any items'
+          'You have not selected any items',
         );
       }
     });
+
     cy.login('administrator');
     unitPage.createUnit({ title: unit_title });
     navigateToManageContent();
 
     // Create collection with public access
     collectionPage.createCollection(
-      { title: collection_title },
-      { setPublicAccess: false }
+      { title: collection_title, unitName: unit_title },
+      { setPublicAccess: false },
     );
 
     // Navigate to the collection and create media object
@@ -128,6 +130,7 @@ context('Selected Items', () => {
     // Delete unit
     UnitPage.deleteUnitByName(unit_title);
   });
+
   it('Verify if the user is able to publish items - @Tfd4e6b7b', () => {
     homePage.getBrowseNavButton().click();
     performSearch(media_object_title);
@@ -163,12 +166,8 @@ context('Selected Items', () => {
   it('Verify the user is able to update Access Control for all selected items - Special Access - Avalon User - @T64227f02', () => {
     // Select the created media object
     cy.login('administrator');
-    homePage.getBrowseNavButton().click();
-    performSearch(media_object_title);
-    cy.get('[data-testid="bookmark-toggle"]').first().click({ force: true });
     cy.visit('/bookmarks');
-    cy.visit('/bookmarks'); // sometimes it is not updated right away
-
+    cy.visit('/bookmarks');
     //check that the item is checked on bookmarks page
     cy.get(`[data-testid="browse-document-title-${media_object_id}"]`)
       .closest('article')
@@ -239,10 +238,9 @@ context('Selected Items', () => {
     // Create a new collection to move the item into
     navigateToManageContent();
     collectionPage.createCollection(
-      { title: new_collection_title },
-      { setPublicAccess: false }
+      { title: new_collection_title, unitName: unit_title },
+      { setPublicAccess: false },
     );
-    //
     cy.visit('/bookmarks');
     //check that the item is checked on bookmarks page
     cy.get(`[data-testid="browse-document-title-${media_object_id}"]`)
@@ -265,7 +263,7 @@ context('Selected Items', () => {
 
     cy.get('[data-testid="bookmark-collection-dropdown"]').select(
       new_collection_title,
-      { force: true }
+      { force: true },
     );
     cy.get('[data-testid="bookmark-move"]').click();
     // The alert
@@ -273,7 +271,7 @@ context('Selected Items', () => {
       .should('be.visible')
       .and(
         'contain',
-        `One item is being moved to collection ${new_collection_title}.`
+        `One item is being moved to collection ${new_collection_title}.`,
       );
     // Verify that the item is now in the new collection
     collectionPage.navigateToCollection(new_collection_title);
@@ -289,7 +287,6 @@ context('Selected Items', () => {
     cy.login('user');
     // Select the media object for which the access was given in previous test
     cy.visit('/bookmarks');
-
     performSearch(media_object_title);
     cy.get(`[data-testid="browse-document-title-${media_object_id}"]`)
       .closest('article')
@@ -356,7 +353,7 @@ context('Selected Items', () => {
 
     // Verify the item is gone from the list
     cy.get(`[data-testid="browse-document-title-${media_object_id}"]`).should(
-      'not.exist'
+      'not.exist',
     );
 
     // Verify the counter has decreased to 0
@@ -512,7 +509,7 @@ context('Selected Items', () => {
       });
 
     cy.visit('/bookmarks');
-
+    cy.reload();
     // Verify selection count shows 2 selected
     cy.get('[data-testid="selection-count"]')
       .should('be.visible')
