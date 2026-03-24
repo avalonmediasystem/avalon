@@ -5,7 +5,7 @@ gem 'bootsnap', require: false
 gem 'listen'
 gem 'net-smtp', require: false
 gem 'psych', '< 4'
-gem 'rails', '~>8.0'
+gem 'rails', '~>8.0', '>= 8.0.4.1'
 gem 'sprockets', '>= 4'
 # gem 'sprockets-rails'
 gem 'sqlite3'
