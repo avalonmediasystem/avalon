@@ -164,7 +164,7 @@ class SupplementalFile < ApplicationRecord
 
   def validate_file_type
     return unless file.present?
-    errors.add(:file_type, "Uploaded file is not a recognized captions file") unless ['text/vtt', 'text/srt'].include?(file.content_type)
+    errors.add(:file_type, "Uploaded file is not a recognized captions file") unless ['text/vtt', 'text/srt', 'application/x-subrip'].include?(file.content_type)
   end
 
   def c_time

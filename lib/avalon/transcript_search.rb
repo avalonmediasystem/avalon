@@ -76,7 +76,7 @@ module Avalon
       formatted_matches = []
 
       matches.each do |cue|
-        if mime_type == 'text/vtt' || mime_type == 'text/srt'
+        if ['text/vtt', 'text/srt', 'application/x-subrip'].include?(mime_type)
           time_cue, text = Avalon::TranscriptParser.extract_single_time_cue(cue)
         end
 

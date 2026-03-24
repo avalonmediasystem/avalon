@@ -250,7 +250,7 @@ class IiifCanvasPresenter
     if file.is_a?(SupplementalFile)
       label = file.tags.include?('machine_generated') ? file.label + ' (machine generated)' : file.label
       label = file.tags.include?('forced') ? label + ' [forced]' : label
-      format = if file.file.content_type == 'text/srt' && (type == 'caption' || type == 'description')
+      format = if ['text/srt', 'application/x-subrip'].include?(file.file.content_type) && (type == 'caption' || type == 'description')
                  'text/vtt'
                else
                  file.file.content_type

@@ -152,7 +152,7 @@ class SupplementalFilesController < ApplicationController
     find_supplemental_file
 
     file_content = @supplemental_file.file.download
-    content = @supplemental_file.file.content_type == 'text/srt' ? SupplementalFile.convert_from_srt(file_content) : file_content
+    content = ['text/srt', 'application/x-subrip'].include?(@supplemental_file.file.content_type) ? SupplementalFile.convert_from_srt(file_content) : file_content
 
     send_data content, filename: @supplemental_file.download_filename, type: 'text/vtt', disposition: "inline; filename=#{@supplemental_file.download_filename}"
   end
