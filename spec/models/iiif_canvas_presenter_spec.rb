@@ -457,7 +457,7 @@ describe IiifCanvasPresenter do
           expect(transcripts.count).to eq 2
           expect(captions.all? { |content| content.format == 'text/vtt' }).to eq true
           expect(transcripts.any? { |content| content.format == 'text/vtt' }).to eq true
-          expect(transcripts.any? { |content| content.format == 'text/srt' }).to eq true
+          expect(transcripts.any? { |content| content.format == 'application/x-subrip' }).to eq true
         end
       end
     end
