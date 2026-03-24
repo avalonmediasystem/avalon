@@ -33,6 +33,13 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   }
 
+  // Prevent tooltip 'click' event bubbling up into the form-label, which focuses the input
+  queryAll('.tooltip-label').forEach(function (element) {
+    element.addEventListener('click', function (event) {
+      event.preventDefault();
+    });
+  });
+
   queryAll('.form-text .btn-close').forEach(function (element) {
     element.addEventListener('click', function (event) {
       event.preventDefault();
