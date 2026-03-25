@@ -27,8 +27,8 @@ Unless required by applicable law or agreed to in writing, software distributed
                                                                 model: :"Admin::Unit",
                                                                 data: { 
                                                                         testid: 'collection-unit'
-                                                                      },
-                                                                disabled: !can?(:update, @collection) } %>
+                                                                      }
+                                                              } %>
   <div>
   <% end %>
   <%= f.text_area :description, rows: 3, 'data-testid':'collection-description'  %>
