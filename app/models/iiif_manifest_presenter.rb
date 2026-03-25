@@ -126,8 +126,9 @@ class IiifManifestPresenter
   end
 
   def gather_notes_of_type(media_object, type)
-    notes = media_object.note.present? ? media_object.note.select { |n| n[:type] == type }.collect { |n| n[:note] } : []
-    notes.map! { |note| "<a href='#{Rails.application.routes.url_helpers.search_catalog_url(utf8: true, search_field: 'all_fields', q: note)}'>#{note}</a>" } if notes.present? && type == 'acquisition'
+    return [] if media_object.note.blank?
+    notes = media_object.note.select { |n| n[:type] == type }.collect { |n| n[:note] }
+    notes = display_search_linked("donor_ssim", notes) if type == 'acquisition'
     notes
   end
 

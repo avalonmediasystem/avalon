@@ -399,13 +399,15 @@ describe CatalogController do
     end
 
     describe "facet fields" do
-      let(:media_object) { FactoryBot.create(:fully_searchable_media_object, :with_master_file, :with_completed_workflow, avalon_uploader: 'archivist1', governing_policies: [lease]) }
+      let(:media_object) { FactoryBot.create(:fully_searchable_media_object, :with_master_file, :with_completed_workflow, avalon_uploader: 'archivist1', governing_policies: [lease], note: [donor]) }
       let(:lease) { FactoryBot.create(:lease, inherited_read_groups: ['ExternalGroup']) }
+      let(:donor) { { note: 'Test donor', type: 'acquisition' } }
       before(:each) do
         MediaObjectIndexingJob.perform_now(media_object.id)
       end
       ["avalon_resource_type_ssim", "creator_ssim", "date_sim", "genre_ssim", "series_ssim", "collection_ssim", "unit_ssim", "language_ssim", "has_captions_bsi", "has_transcripts_bsi",
-       "workflow_published_sim", "avalon_uploader_ssi", "read_access_group_ssim", "read_access_virtual_group_ssim", "date_digitized_ssim", "date_ingested_ssim", "subject_ssim", "rights_statement_ssi"].each do |field|
+       "workflow_published_sim", "avalon_uploader_ssi", "read_access_group_ssim", "read_access_virtual_group_ssim", "date_digitized_ssim", "date_ingested_ssim", "subject_ssim", 
+       "donor_ssim", "rights_statement_ssi"].each do |field|
         it "should facet results on #{field}" do
           query = Array(media_object.to_solr(include_child_fields: true)[field]).first
           # The following line is to check that the test is using a valid solr field name
