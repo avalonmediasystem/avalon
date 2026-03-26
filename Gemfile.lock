@@ -750,7 +750,7 @@ GEM
     request_store (1.7.0)
       rack (>= 1.4)
     resolv (0.7.1)
-    resolv-replace (0.1.1)
+    resolv-replace (0.2.0)
       resolv
     responders (3.1.1)
       actionpack (>= 5.2)
@@ -1071,7 +1071,7 @@ DEPENDENCIES
   rdf-rdfxml
   react_on_rails
   recaptcha
-  resolv-replace
+  resolv-replace (>= 0.2.0)
   rest-client (~> 2.0)
   roo
   rsolr (~> 2.0)
