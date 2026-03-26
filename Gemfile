@@ -13,7 +13,7 @@ gem 'sqlite3'
 gem 'mail', '> 2.8.0.1'
 gem 'puma', '>= 6.4.2'
 gem 'puma-status'
-gem 'resolv-replace'
+gem 'resolv-replace', '>= 0.2.0'
 gem 'csv'
 gem 'net-imap', '>= 0.6.2'
 
