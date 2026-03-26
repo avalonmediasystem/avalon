@@ -340,6 +340,7 @@ class MediaObject < ActiveFedora::Base
       # Downcasing identifier allows for case-insensitive searching but has the side effect of causing all identiiers to be lower case in JSON responses
       solr_doc['identifier_ssim'] = self.identifier.map(&:downcase)
       solr_doc['note_ssm'] = self.note.collect { |n| n.to_json }
+      solr_doc['donor_ssim'] = self.note.collect { |n| n[:note] if n[:type] == 'acquisition' }
       solr_doc['other_identifier_ssm'] = self.other_identifier.collect { |oi| oi.to_json }
       solr_doc['related_item_url_ssm'] = self.related_item_url.collect { |r| r.to_json }
       solr_doc['section_id_ssim'] = section_ids

@@ -60,7 +60,7 @@ document.addEventListener('DOMContentLoaded', function () {
         el.setAttribute('data-bs-target', target.join('_'));
       });
 
-      if (query('.typeahead'), current_input_group) {
+      if (query('.typeahead', current_input_group)) {
         // Add new input group for typeahead field, e.g. Language(s)
         query('.typeahead', current_input_group).setAttribute('open', false);
         const new_autocomplete = query('.typeahead', new_input_group);

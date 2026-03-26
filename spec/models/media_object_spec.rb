@@ -131,6 +131,12 @@ describe MediaObject do
         expect(media_object.valid?).to be_falsey
         expect(media_object.errors[:note]).not_to be_empty
       end
+      it 'should index acquisition notes separately' do
+        media_object.descMetadata.note = ['Donor']
+        media_object.descMetadata.note.type = ['acquisition']
+        expect(media_object.valid?).to be_truthy
+        expect(media_object.to_solr['donor_ssim']).to include('Donor')
+      end
     end
   end
 

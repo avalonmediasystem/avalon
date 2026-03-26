@@ -11,6 +11,7 @@ identifier_types:
   other: Other
 note_types:
   general: General Note
+  acquisition: Donors
   awards: Awards
   biographical/historical: Bibliographical/Historical Note
   creation/production credits: Creation/Production Credits

@@ -126,7 +126,10 @@ class IiifManifestPresenter
   end
 
   def gather_notes_of_type(media_object, type)
-    media_object.note.present? ? media_object.note.select { |n| n[:type] == type }.collect { |n| n[:note] } : []
+    return [] if media_object.note.blank?
+    notes = media_object.note.select { |n| n[:type] == type }.collect { |n| n[:note] }
+    notes = display_search_linked("donor_ssim", notes) if type == 'acquisition'
+    notes
   end
 
   def display_collection(media_object)
