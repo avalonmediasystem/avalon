@@ -37,7 +37,7 @@ class SearchBuilder < Blacklight::SearchBuilder
     media_object_hidden_clause = "hidden_bsi:true"
     collection_hidden_clause = "{!join from=id to=isGovernedBy_ssim}default_hidden_bsi:true"
 
-    [policy_clauses(permission_types: [:edit]), "(*:* AND NOT hidden_bsi:true AND (disable_inheritance_bsi:true OR (*:* AND NOT {!join from=id to=isGovernedBy_ssim}default_hidden_bsi:true)))"].compact.join(" OR ")
+    [policy_clauses(permission_types: [:edit]), "(*:* AND NOT #{media_object_hidden_clause} AND (disable_inheritance_bsi:true OR (*:* AND NOT #{collection_hidden_clause})))"].compact.join(" OR ")
   end
 
   def limit_to_inheritance_enabled_items(_permission_types = discovery_permissions, ability = current_ability)
