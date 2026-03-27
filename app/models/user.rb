@@ -133,7 +133,7 @@ class User < ActiveRecord::Base
   end
 
   def self.autocomplete(query, _id = nil)
-    self.where("username LIKE :q OR email LIKE :q", q: "%#{query}%").collect { |user|
+    self.where("LOWER(username) LIKE LOWER(:q) OR LOWER(email) LIKE LOWER(:q)", q: "%#{query}%").collect { |user|
       { id: user.user_key, display: user.user_key }
     }
   end

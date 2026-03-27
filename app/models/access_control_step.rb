@@ -48,7 +48,7 @@ class AccessControlStep < BasicStep
                 context[:error] = e.message
               end
             else
-              media_object.read_users += [val]
+              media_object.read_users += [val.downcase]
             end
           elsif title=='ipaddress'
             if ( IPAddr.new(val) rescue false )
