@@ -389,8 +389,8 @@ class Ability
     # User isn't in item's read users and is inherited from parent (exclusively inherited user) OR
     # User isn't in item's read groups and is in a read group inherited from parent (exclusively inherited group)
     # Short form: NOT explicitly granted access to item AND (explicitly inherited user OR explicitly inherited group)
-    !(@user.in?(media_object.read_users) || !(@user_groups & media_object.read_groups).empty?) &&
-    ((!@user.in?(media_object.read_users) && @user.in?(media_object.inherited_read_users)) ||
+    !(@user.in?(media_object.read_users.map(&:downcase)) || !(@user_groups & media_object.read_groups).empty?) &&
+    ((!@user.in?(media_object.read_users.map(&:downcase)) && @user.in?(media_object.inherited_read_users.map(&:downcase))) ||
       ((@user_groups & media_object.read_groups).empty? && !(@user_groups & media_object.inherited_read_groups).empty?))
   end
 
