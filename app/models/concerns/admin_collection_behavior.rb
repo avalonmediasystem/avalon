@@ -43,7 +43,7 @@ module AdminCollectionBehavior
   end
 
   def inherited_read_users
-    unit.default_read_users
+    unit.default_read_users.map(&:downcase)
   end
 
   def inherited_read_groups
