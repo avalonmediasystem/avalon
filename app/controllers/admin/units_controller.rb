@@ -61,7 +61,7 @@ class Admin::UnitsController < ApplicationController
       format.json { render json: @unit.to_json }
       format.html {
         @groups = @unit.default_local_read_groups
-        @users = @unit.default_read_users
+        @users = @unit.default_read_users.map(&:downcase)
         @virtual_groups = @unit.default_virtual_read_groups
         @ip_groups = @unit.default_ip_read_groups
 
@@ -289,7 +289,7 @@ class Admin::UnitsController < ApplicationController
         if params["add_#{title}"].present?
           val = params["add_#{title}"].strip
           if title == 'user'
-            unit.default_read_users += [val]
+            unit.default_read_users += [val.downcase]
           elsif title == 'ipaddress'
             if (IPAddr.new(val) rescue false)
               unit.default_read_groups += [val]

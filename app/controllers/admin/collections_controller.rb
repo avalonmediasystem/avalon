@@ -71,7 +71,7 @@ class Admin::CollectionsController < ApplicationController
       format.json { render json: @collection.to_json }
       format.html {
         @groups = { inherited: @collection.inherited_local_read_groups, default: @collection.default_local_read_groups }
-        @users = { inherited: @collection.inherited_read_users, default: @collection.default_read_users }
+        @users = { inherited: @collection.inherited_read_users.map(&:downcase), default: @collection.default_read_users.map(&:downcase) }
         @virtual_groups = { inherited: @collection.inherited_virtual_read_groups, default: @collection.default_virtual_read_groups }
         @ip_groups = { inherited: @collection.inherited_ip_read_groups, default: @collection.default_ip_read_groups }
         @visibility = @collection.default_visibility
@@ -344,7 +344,7 @@ class Admin::CollectionsController < ApplicationController
         if params["add_#{title}"].present?
           val = params["add_#{title}"].strip
           if title=='user'
-            collection.default_read_users += [val]
+            collection.default_read_users += [val.downcase]
           elsif title=='ipaddress'
             if ( IPAddr.new(val) rescue false )
               collection.default_read_groups += [val]
