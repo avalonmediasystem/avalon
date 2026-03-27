@@ -141,7 +141,7 @@ module MediaObjectBehavior
   def inherited_read_users
     return [] unless collection
     users = collection.default_read_users.to_a + collection.inherited_read_users.to_a
-    users.uniq
+    users.uniq.map(&:downcase)
   end
 
   def inherited_read_groups
