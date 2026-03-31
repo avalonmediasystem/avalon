@@ -184,7 +184,7 @@ class IiifManifestPresenter
 
   def display_lending_period(media_object)
     return nil unless lending_enabled
-    ActiveSupport::Duration.build(media_object.lending_period).to_day_hour_s
+    ActiveSupport::Duration.build(media_object.active_lending_period).to_day_hour_s
   end
 
   def display_date(date)

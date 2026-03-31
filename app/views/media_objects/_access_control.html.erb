@@ -15,33 +15,6 @@ Unless required by applicable law or agreed to in writing, software distributed
 %>
 <%= bootstrap_form_for @media_object, html: { id: 'access_control_form' }  do |vid| %>
 <%= hidden_field_tag :step, @active_step %>
-<% if lending_enabled?(@media_object) %>
-  <div class="card item-lending-period">
-    <div class="card-header">
-      <h3 class="card-title">Item lending period</h3>
-    </div>
-    <div class="card-body">
-      <div class="mb-3">
-        <%=  render partial: "modules/tooltip", locals: { form: vid, field: :lending_period, tooltip: t("access_control.#{:lending_period}"), options: {display_label: (t("access_control.#{:lending_period}label")+'*').html_safe} } %><br />
-        <% d, h = (@media_object.lending_period/3600).divmod(24) %>
-        <div class='row'>
-          <div class="col-1">
-            <label class="col-form-label" for="add_lending_period_days">
-              <span data-title="Days">Days</span>
-            </label>
-            <%= text_field_tag "add_lending_period_days", d ? d : 0, class: 'form-control', data:{testid: 'media-object-lending-period-days'} %>
-          </div>
-          <div class="col-1">
-            <label class="col-form-label" for="add_lending_period_hours">
-              <span data-title="Hours">Hours</span>
-            </label>
-            <%= text_field_tag "add_lending_period_hours", h ? h : 0, class: 'form-control' %>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-<% end %>
 
 <div class="card special-access-inheritance" data-test-id="media-object-special-access-inheritance">
   <div class="card-header">
@@ -58,6 +31,39 @@ Unless required by applicable law or agreed to in writing, software distributed
     </div>
   </div>
 </div>
+
+<% if lending_enabled?(@media_object) %>
+  <div class="card item-lending-period">
+    <div class="card-header">
+      <h3 class="card-title">Item lending period</h3>
+    </div>
+    <div class="card-body">
+      <div class="mb-3">
+        <% if @media_object.disable_inheritance? %>
+        <%=  render partial: "modules/tooltip", locals: { form: vid, field: :lending_period, tooltip: t("access_control.#{:lending_period}"), options: {display_label: (t("access_control.#{:lending_period}label")+'*').html_safe} } %><br />
+        <% d, h = (@media_object.lending_period/3600).divmod(24) %>
+        <div class='row'>
+          <div class="col-1">
+            <label class="col-form-label" for="add_lending_period_days">
+              <span data-title="Days">Days</span>
+            </label>
+            <%= text_field_tag "add_lending_period_days", d ? d : 0, class: 'form-control', data:{testid: 'media-object-lending-period-days'} %>
+          </div>
+          <div class="col-1">
+            <label class="col-form-label" for="add_lending_period_hours">
+              <span data-title="Hours">Hours</span>
+            </label>
+            <%= text_field_tag "add_lending_period_hours", h ? h : 0, class: 'form-control' %>
+          </div>
+        </div>
+        <% else %>
+          <% d, h = (@media_object.inherited_lending_period/3600).divmod(24) %>
+          The lending period is <%= d %> Days and <%= h %> hours.
+        <% end %>
+      </div>
+    </div>
+  </div>
+<% end %>
 
 <div class="card item-discovery">
   <div class="card-header">

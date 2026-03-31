@@ -930,7 +930,7 @@ describe MediaObject do
       expect {new_media_object.collection = collection}.to change {new_media_object.inherited_read_groups}.to include 'TestGroup'
     end
     it 'sets lending_period based upon collection for new media objects' do
-      expect {new_media_object.collection = collection}.to change {new_media_object.lending_period}.to(86400).from(nil)
+      expect {new_media_object.collection = collection}.to change {new_media_object.inherited_lending_period}.to(86400).from(nil)
     end
     it 'does not change access control fields if not new media object' do
       expect {media_object.collection = collection}.not_to change {new_media_object.hidden?}
@@ -1170,22 +1170,33 @@ describe MediaObject do
   end
 
   describe 'lending_period' do
-    context 'there is not a custom lending period' do
-      it 'sets the lending period to the system default' do
-        expect(media_object.lending_period).to eq ActiveSupport::Duration.parse(Settings.controlled_digital_lending.default_lending_period).to_i
-      end
+    let(:media_object) { MediaObject.new }
+
+    it 'is nil for new objects' do
+      expect(media_object.lending_period).to eq nil
     end
-    context 'the parent collection has a custom lending period' do
-      let(:collection) { FactoryBot.create(:collection, default_lending_period: 86400) }
-      let(:media_object) { FactoryBot.create(:media_object, collection_id: collection.id) }
-      it "sets the lending period to equal the collection's default lending period" do
-        expect(media_object.lending_period).to eq collection.default_lending_period
-      end
-      context 'the media object has a custom lending period' do
-        let(:media_object) { FactoryBot.create(:media_object, collection_id: collection.id, lending_period: 172800)}
-        it "leaves the lending period equal to the custom value" do
-          expect(media_object.lending_period).to eq 172800
-        end
+
+    it 'stores the custom lending period for the object' do
+      expect { media_object.lending_period = 1234 }.to change { media_object.lending_period }.from(nil).to(1234)
+      media_object.save(validate: false)
+      media_object.reload
+      expect(media_object.lending_period).to eq 1234
+    end
+  end
+
+  describe 'active_lending_period' do
+    let(:collection) { FactoryBot.create(:collection, default_lending_period: 86400) }
+    let(:media_object) { FactoryBot.create(:media_object, collection_id: collection.id, lending_period: 1234) }
+
+    it 'returns the inherited lending period of the parend' do
+      expect(media_object.active_lending_period).to eq collection.default_lending_period
+    end
+
+    context 'with inheritance disabled' do
+      let(:media_object) { FactoryBot.create(:media_object, collection_id: collection.id, lending_period: 1234, disable_inheritance: true) }
+
+      it 'returns the lending period of the object' do
+        expect(media_object.active_lending_period).to eq media_object.lending_period
       end
     end
   end
