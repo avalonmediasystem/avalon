@@ -88,7 +88,7 @@ class SpeedyAF::Proxy::MediaObject < SpeedyAF::Base
   end
 
   def lending_period
-    attrs[:lending_period].presence || collection&.default_lending_period
+    attrs[:lending_period].presence
   end
 
   def format

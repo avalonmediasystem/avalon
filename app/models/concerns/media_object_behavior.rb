@@ -79,6 +79,14 @@ module MediaObjectBehavior
     collection&.cdl_enabled?
   end
 
+  def inherited_lending_period
+    collection&.default_lending_period
+  end
+
+  def active_lending_period
+    disable_inheritance? ? lending_period : inherited_lending_period
+  end
+
   def current_checkout(user_id)
     checkouts = Checkout.active_for_media_object(id)
     checkouts.select{ |ch| ch.user_id == user_id  }.first

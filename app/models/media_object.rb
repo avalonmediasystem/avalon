@@ -214,9 +214,6 @@ class MediaObject < ActiveFedora::Base
     self._collection= co
     self.governing_policies -= [old_collection] if old_collection
     self.governing_policies += [co]
-    if self.new_record?
-      self.lending_period = co.default_lending_period
-    end
   end
 
   # Sets the publication status. To unpublish an object set it to nil or
@@ -438,11 +435,6 @@ class MediaObject < ActiveFedora::Base
       end
     end
     [mergeds, faileds]
-  end
-
-  alias_method :'_lending_period', :'lending_period'
-  def lending_period
-    self._lending_period || collection&.default_lending_period
   end
 
   # Override to reset memoized fields
