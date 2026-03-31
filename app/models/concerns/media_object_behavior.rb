@@ -31,6 +31,7 @@ module MediaObjectBehavior
       read_groups: read_groups,
       lending_period: lending_period,
       lending_status: lending_status,
+      discover_groups: discover_groups
     }.merge(to_ingest_api_hash(options.fetch(:include_structure, false)))
   end
 
