@@ -1470,4 +1470,27 @@ describe MediaObject do
       expect(media_object.section_share_infos).to contain_exactly({lti_share_link: be_a(String), link_back_url: be_a(String), embed_code: be_a(String)})
     end
   end
+
+  describe '#as_json' do
+    let(:media_object) { FactoryBot.create(:all_fields_media_object) }
+    subject(:json_hash) { media_object.as_json }
+
+    it 'includes necessary fields not in api ingest hash' do
+      expect(subject[:id]).to eq media_object.id
+      expect(subject[:title]).to eq media_object.title
+      expect(subject[:main_contributors]).to eq media_object.creator
+      expect(subject[:publication_date]).to eq media_object.date_created
+      expect(subject[:published_by]).to eq media_object.avalon_publisher
+      expect(subject[:published]).to eq media_object.published?
+      expect(subject[:summary]).to eq media_object.abstract
+      expect(subject[:visibility]).to eq media_object.visibility
+      expect(subject[:read_groups]).to eq media_object.read_groups
+      expect(subject[:discover_groups]).to eq media_object.discover_groups
+      expect(subject[:lending_period]).to eq media_object.lending_period
+      expect(subject[:lending_status]).to eq media_object.lending_status
+      expect(subject[:collection]).to eq media_object.collection.name
+      expect(subject[:collection_id]).to eq media_object.collection.id
+      expect(subject[:unit]).to eq media_object.collection.unit
+    end
+  end
 end
