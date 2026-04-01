@@ -191,8 +191,6 @@ class Admin::CollectionsController < ApplicationController
           ).deliver_later
         end
       end
-
-      apply_access(@collection, params) if can?(:update_access_control, @collection)
     end
 
     respond_to do |format|
@@ -378,10 +376,6 @@ class Admin::CollectionsController < ApplicationController
     lending_period.to_i
   rescue
     0
-  end
-
-  def apply_access(collection, params)
-    BulkActionJobs::ApplyCollectionAccessControl.perform_later(collection.id, params[:overwrite] == "true", params[:save_field]) if params["apply_to_existing"].present?
   end
 
   def collection_params
