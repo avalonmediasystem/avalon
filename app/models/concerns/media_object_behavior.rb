@@ -85,7 +85,9 @@ module MediaObjectBehavior
   end
 
   def active_lending_period
-    disable_inheritance? ? lending_period : inherited_lending_period
+    active_period = disable_inheritance? ? lending_period : inherited_lending_period
+    active_period ||= ActiveSupport::Duration.parse(Settings.controlled_digital_lending.default_lending_period).to_i
+    active_period
   end
 
   def current_checkout(user_id)
