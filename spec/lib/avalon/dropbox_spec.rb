@@ -21,7 +21,6 @@ describe Avalon::Dropbox do
   describe "#delete" do
     before :each do
       FactoryBot.create(:user, username: 'frances.dickens@reichel.com', email: 'frances.dickens@reichel.com')
-      Avalon::RoleControls.add_user_role('frances.dickens@reichel.com','manager')
     end
 
     let(:collection) { FactoryBot.create(:collection, name: 'Ut minus ut accusantium odio autem odit.', managers: ['frances.dickens@reichel.com']) }

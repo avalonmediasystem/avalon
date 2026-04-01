@@ -31,16 +31,12 @@ describe Avalon::Batch::Ingest do
 
     FactoryBot.create(:user, username: 'frances.dickens@reichel.com', email: 'frances.dickens@reichel.com')
     FactoryBot.create(:user, username: 'jay@krajcik.org', email: 'jay@krajcik.org')
-    Avalon::RoleControls.add_user_role('frances.dickens@reichel.com','manager')
-    Avalon::RoleControls.add_user_role('jay@krajcik.org','manager')
     allow(IngestBatchEntryJob).to receive(:perform_later).and_return(nil)
   end
 
   after :each do
     Settings.dropbox.path = @saved_dropbox_path
     Dir['spec/fixtures/**/*.xlsx.process*','spec/fixtures/**/*.xlsx.error'].each { |file| File.delete(file) }
-    Avalon::RoleControls.remove_user_role('frances.dickens@reichel.com','manager')
-    Avalon::RoleControls.remove_user_role('jay@krajcik.org','manager')
 
     # this is a test environment, we don't want to kick off
     # generation jobs if possible

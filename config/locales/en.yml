@@ -175,18 +175,16 @@ en:
       controls for individual items in the collection. Editors can also do
       anything a depositor can do.
     manager: |
-      Managers have overall accountability for the collection. Managers can
-      create collections and assign editor and depositor roles for those
-      collections. They set the default access controls for items added to
-      the collection, and they also step in when a published item needs
-      revising or deleting. Managers can also do anything an editor or
+      Managers have overall accountability for the collection. Managers assign 
+      editor and depositor roles for collections, set the default access controls
+      for items added to the collection, and they also step in when a published
+      item needs revising or deleting. Managers can also do anything an editor or
       depositor can do.
     unit_admin: |
-      Unit administrators have overall accountability for the unit. Unit
-      administrators can create units and assign all other roles for those 
-      units. They set the default access controls for collections added to
-      the unit. Unit administrators can also do anything a manager, editor
-      or depositor can do.
+      Unit administrators have overall accountability for the unit. They assign 
+      roles for those units, create collections in the unit, and set the default
+      access controls for collections added to the unit. Unit administrators can 
+      also do anything a manager, editor or depositor can do.
     user: |
       Enter a username to grant them access to an item or collection. Start and end dates are not required; if included, access for the specified user will start at the beginning of the start date and end at the beginning of the end date. Otherwise, access will be open ended for the specified user.
     group: |

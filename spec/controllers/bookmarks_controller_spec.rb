@@ -133,7 +133,7 @@ describe BookmarksController, type: :controller do
         expect(response.body).to have_css('#deleteLink')
       end
       it 'are not displayed for unauthorized user' do
-        collection.managers = [FactoryBot.create(:manager).user_key]
+        collection.managers = [FactoryBot.create(:user).user_key]
         collection.save
         get 'index'
         expect(response.body).not_to have_css('#moveLink')

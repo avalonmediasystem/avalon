@@ -19,7 +19,7 @@ RSpec.describe SearchBuilder do
 
   let(:processor_chain) { [] }
   let(:scope) { CatalogController.new }
-  let(:manager) { FactoryBot.create(:manager) }
+  let(:manager) { FactoryBot.create(:user) }
   let(:ability) { Ability.new(manager) }
 
   describe "#only_published_items" do

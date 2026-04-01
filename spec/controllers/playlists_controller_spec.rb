@@ -452,7 +452,7 @@ RSpec.describe PlaylistsController, type: :controller do
           expect(response).to render_template(:_lti_url)
         end
         it "others: should include only lti" do
-          login_lti 'student'
+          login_lti 'user'
           lti_group = @controller.user_session[:virtual_groups].first
           get :show, params: { id: playlist.id }
           expect(response).to_not render_template(:_share_resource)

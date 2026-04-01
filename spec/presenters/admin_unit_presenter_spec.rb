@@ -21,10 +21,10 @@ describe Admin::UnitPresenter do
   let(:description) { "The long form description of this unit." }
   let(:unit_admins) { [unit_admin.to_s] }
   let(:managers) { [manager.to_s] }
-  let(:editors) { [editor.to_s, FactoryBot.create(:manager), FactoryBot.create(:unit_admin)] }
+  let(:editors) { [editor.to_s, FactoryBot.create(:user), FactoryBot.create(:user)] }
   let(:depositors) { [depositor.to_s] }
-  let(:unit_admin) { FactoryBot.create(:unit_admin) }
-  let(:manager) { FactoryBot.create(:manager) }
+  let(:unit_admin) { FactoryBot.create(:user) }
+  let(:manager) { FactoryBot.create(:user) }
   let(:editor) { FactoryBot.create(:user) }
   let(:depositor) { FactoryBot.create(:user) }
   let(:solr_doc) do

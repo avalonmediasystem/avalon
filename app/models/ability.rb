@@ -74,15 +74,11 @@ class Ability
         can :create, MediaObject
       end
 
-      if is_manager?
+      if is_unit_admin_of_any_unit?
         can :create, Admin::Collection
       end
 
-      if is_manager_of_any_unit?
-        can :create, Admin::Collection
-      end
-
-      if is_unit_admin?
+      if is_administrator?
         can :create, Admin::Unit
       end
     end
@@ -352,14 +348,6 @@ class Ability
     @user_groups.include?("administrator")
   end
 
-  def is_manager?
-    @user_groups.include?("manager")
-  end
-
-  def is_unit_admin?
-    @user_groups.include?("unit_administrator")
-  end
-
   def is_admin_of?(unit)
     is_administrator? ||
       @user.in?(unit.unit_admins)
@@ -403,12 +391,16 @@ class Ability
     @user.id.present? && Admin::Collection.exists?("inheritable_edit_access_person_ssim" => @user.user_key)
   end
 
+  def is_manager_of_any_collection?
+    @user.id.present? && (Admin::Collection.exists?("collection_managers_ssim" => @user.user_key) || Admin::Unit.exists?("collection_managers_ssim" => @user.user_key))
+  end
+
   def is_member_of_any_unit?
     @user.id.present? && Admin::Unit.exists?("inheritable_edit_access_person_ssim" => @user.user_key)
   end
 
-  def is_manager_of_any_unit?
-    @user.id.present? && (Admin::Unit.exists?("unit_administrators_ssim" => @user.user_key) || Admin::Unit.exists?("collection_managers_ssim" => @user.user_key))
+  def is_unit_admin_of_any_unit?
+    @user.id.present? && Admin::Unit.exists?("unit_administrators_ssim" => @user.user_key)
   end
 
   def full_login?
@@ -424,6 +416,6 @@ class Ability
   end
 
   def has_administrative_access?
-    is_administrator? || is_unit_admin? || is_manager? || is_member_of_any_unit? || is_member_of_any_collection?
+    is_administrator? || is_unit_admin_of_any_unit? || is_manager_of_any_collection? || is_member_of_any_unit? || is_member_of_any_collection?
   end
 end

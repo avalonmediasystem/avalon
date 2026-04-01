@@ -71,23 +71,14 @@ describe Admin::UnitsController, type: :controller do
     end
 
     it "should add users to manager role" do
-      manager = FactoryBot.create(:manager)
+      manager = FactoryBot.create(:user)
       put 'update', params: { id: unit.id, submit_add_manager: 'Add', add_manager: manager.user_key }
       unit.reload
       expect(manager).to be_in(unit.managers)
     end
 
-    it "should not add users to manager role" do
-      user = FactoryBot.create(:user)
-      put 'update', params: { id: unit.id, submit_add_manager: 'Add', add_manager: user.user_key }
-      unit.reload
-      expect(user).not_to be_in(unit.managers)
-      expect(flash[:error]).not_to be_empty
-    end
-
     it "should remove users from manager role" do
-      # initial_manager = FactoryBot.create(:manager).user_key
-      unit.managers += [FactoryBot.create(:manager).user_key, FactoryBot.create(:manager).user_key]
+      unit.managers += [FactoryBot.create(:user).user_key, FactoryBot.create(:user).user_key]
       unit.save!
       manager = User.where(Devise.authentication_keys.first => unit.managers.first).first
       put 'update', params: { id: unit.id, remove_manager: manager.user_key }
@@ -96,7 +87,7 @@ describe Admin::UnitsController, type: :controller do
     end
 
     context 'with zero-width characters' do
-      let(:manager) { FactoryBot.create(:manager) }
+      let(:manager) { FactoryBot.create(:user) }
       let(:manager_key) { "#{manager.user_key}\u200B" }
 
       it "should add users to manager role" do
@@ -272,7 +263,7 @@ describe Admin::UnitsController, type: :controller do
     end
 
     context 'user is a unit admin' do
-      let(:unit_admin) { FactoryBot.create(:unit_admin) }
+      let(:unit_admin) { FactoryBot.create(:user) }
       before(:each) do
         ApiToken.create token: 'manager_token', username: unit_admin.username, email: unit_admin.email
         request.headers['Avalon-Api-Key'] = 'manager_token'

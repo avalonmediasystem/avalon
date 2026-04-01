@@ -21,9 +21,9 @@ describe Admin::CollectionPresenter do
   let(:unit_name) { "Default Unit" }
   let(:description) { "The long form description of this collection." }
   let(:managers) { [manager.to_s] }
-  let(:editors) { [editor.to_s, FactoryBot.create(:manager).to_s] }
+  let(:editors) { [editor.to_s, FactoryBot.create(:user).to_s] }
   let(:depositors) { [depositor.to_s] }
-  let(:manager) { FactoryBot.create(:manager) }
+  let(:manager) { FactoryBot.create(:user) }
   let(:editor) { FactoryBot.create(:user) }
   let(:depositor) { FactoryBot.create(:user) }
   let(:unit) { FactoryBot.create(:unit, name: unit_name) }

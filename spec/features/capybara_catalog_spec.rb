@@ -63,7 +63,7 @@ describe 'item catalog' do
   end
 
   context 'user with collection manager permissions' do
-    let(:manager) { FactoryBot.create(:manager) }
+    let(:manager) { FactoryBot.create(:user) }
     let!(:collection) { FactoryBot.create(:collection, managers: [manager.user_key]) }
     let!(:media_object) { FactoryBot.create(:fully_searchable_media_object, :with_master_file, avalon_uploader: 'admin@example.edu', collection: collection) }
 

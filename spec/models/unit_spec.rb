@@ -34,7 +34,7 @@ describe Admin::Unit do
       let(:user) { User.where(Devise.authentication_keys.first => unit.unit_administrators.first).first }
 
       it "can perform all actions on the unit" do
-        expect(ability).to be_able_to(:create, Admin::Unit)
+        expect(ability).not_to be_able_to(:create, Admin::Unit)
         expect(ability).to be_able_to(:read, Admin::Unit)
         expect(ability).to be_able_to(:read, unit)
         expect(ability).to be_able_to(:update, unit)
@@ -147,7 +147,7 @@ describe Admin::Unit do
                         unit_admins: [unit_admin.user_key], editors: [editor.user_key], depositors: [depositor.user_key],
                         contact_email: contact_email, website_url: website_url, website_label: website_label)
     end
-    let(:unit_admin) { FactoryBot.create(:unit_admin) }
+    let(:unit_admin) { FactoryBot.create(:user) }
     let(:editor) { FactoryBot.create(:user) }
     let(:depositor) { FactoryBot.create(:user) }
     let(:contact_email) { Faker::Internet.email }
@@ -207,7 +207,7 @@ describe Admin::Unit do
   end
 
   describe "managers" do
-    let!(:user) { FactoryBot.create(:manager) }
+    let!(:user) { FactoryBot.create(:user) }
     let!(:unit) { Admin::Unit.new }
 
     describe "#managers" do
@@ -219,18 +219,18 @@ describe Admin::Unit do
     end
     describe "#managers=" do
       it "should add managers to the unit" do
-        manager_list = [FactoryBot.create(:manager).user_key, FactoryBot.create(:manager).user_key]
+        manager_list = [FactoryBot.create(:user).user_key, FactoryBot.create(:user).user_key]
         unit.managers = manager_list
         expect(unit.managers).to eq(manager_list)
       end
       it "should call add_manager" do
-        manager_list = [FactoryBot.create(:manager).user_key, FactoryBot.create(:manager).user_key]
+        manager_list = [FactoryBot.create(:user).user_key, FactoryBot.create(:user).user_key]
         expect(unit).to receive("add_manager").with(manager_list[0])
         expect(unit).to receive("add_manager").with(manager_list[1])
         unit.managers = manager_list
       end
       it "should remove managers from the unit" do
-        manager_list = [FactoryBot.create(:manager).user_key, FactoryBot.create(:manager).user_key]
+        manager_list = [FactoryBot.create(:user).user_key, FactoryBot.create(:user).user_key]
         unit.managers = manager_list
         expect(unit.managers).to eq(manager_list)
         unit.managers -= [manager_list[1]]
@@ -239,13 +239,7 @@ describe Admin::Unit do
       it "should call remove_manager" do
         unit.managers = [user.user_key]
         expect(unit).to receive("remove_manager").with(user.user_key)
-        unit.managers = [FactoryBot.create(:manager).user_key]
-      end
-      it "should fail to remove only manager" do
-        manager_list = [FactoryBot.create(:manager).user_key]
-        unit.managers = manager_list
-        expect(unit.managers).to eq(manager_list)
-        expect { unit.managers = [] }.to raise_error(ArgumentError)
+        unit.managers = [FactoryBot.create(:user).user_key]
       end
     end
     describe "#add_manager" do
@@ -267,10 +261,10 @@ describe Admin::Unit do
         unit.add_manager(administrator.user_key)
         expect(unit.editors).not_to include(administrator.user_key)
       end
-      it "should not add users who do not have the manager role" do
+      it "should add users who do not have the manager role" do
         not_manager = FactoryBot.create(:user)
-        expect { unit.add_manager(not_manager.user_key) }.to raise_error(ArgumentError)
-        expect(unit.managers).not_to include(not_manager.user_key)
+        expect { unit.add_manager(not_manager.user_key) }.not_to raise_error(ArgumentError)
+        expect(unit.managers).to include(not_manager.user_key)
       end
     end
     describe "#remove_manager" do
@@ -296,7 +290,7 @@ describe Admin::Unit do
 
     describe "#editors" do
       it "should not return managers" do
-        unit_admin = FactoryBot.create(:unit_admin)
+        unit_admin = FactoryBot.create(:user)
         unit.edit_users = [user.user_key, unit_admin.user_key]
         unit.unit_administrators = [unit_admin.user_key]
         expect(unit.editors).to eq([user.user_key])
@@ -326,12 +320,6 @@ describe Admin::Unit do
         expect(unit).to receive("remove_editor").with(user.user_key)
         unit.editors = [FactoryBot.create(:user).user_key]
       end
-      # it "can add users who belong to manager group" do
-      #   manager = FactoryBot.create(:manager)
-      #   unit.editors = [manager.user_key]
-      #   expect(unit.editors).to include(manager.user_key)
-      #   expect(unit.managers).not_to include(manager.user_key)
-      # end
       it "can add users who belong to administrator group" do
         admin = FactoryBot.create(:administrator)
         unit.editors = [admin.user_key]
@@ -357,7 +345,7 @@ describe Admin::Unit do
         expect(unit.editors).not_to include(user.user_key)
       end
       it "should not remove users who do not have the editor role" do
-        not_editor = FactoryBot.create(:unit_admin)
+        not_editor = FactoryBot.create(:user)
         unit.unit_admins = [not_editor.user_key]
         unit.edit_users = [not_editor.user_key]
         unit.inherited_edit_users = [not_editor.user_key]
@@ -369,7 +357,7 @@ describe Admin::Unit do
     describe "#editors_managers_and_unit_admins" do
       it "should return all unit editors, managers, and unit admins" do
         editor = FactoryBot.create(:user)
-        manager = FactoryBot.create(:manager)
+        manager = FactoryBot.create(:user)
         unit.edit_users = [user.user_key, manager, editor.user_key]
         unit.unit_administrators = [user.user_key]
         unit.managers = [manager.user_key]
@@ -431,7 +419,7 @@ describe Admin::Unit do
         expect(unit.depositors).not_to include(user.user_key)
       end
       it "should not remove users who do not have the depositor role" do
-        not_depositor = FactoryBot.create(:unit_admin)
+        not_depositor = FactoryBot.create(:user)
         unit.inherited_edit_users = [not_depositor.user_key]
         unit.remove_depositor(not_depositor.user_key)
         expect(unit.inherited_edit_users).to include(not_depositor.user_key)

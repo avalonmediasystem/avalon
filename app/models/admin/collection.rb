@@ -100,7 +100,6 @@ class Admin::Collection < ActiveFedora::Base
   end
 
   def add_manager user
-    raise ArgumentError, "User #{user} does not belong to the manager group." unless (Avalon::RoleControls.users("manager") + (Avalon::RoleControls.users("administrator") || []) ).include?(user)
     self.collection_managers += [user]
     self.edit_users += [user]
     self.inherited_edit_users += [user]
@@ -108,7 +107,6 @@ class Admin::Collection < ActiveFedora::Base
 
   def remove_manager user
     return unless managers.include? user
-    raise ArgumentError, "At least one manager is required." if self.managers.size == 1
 
     self.collection_managers = self.collection_managers.to_a - [user]
     self.edit_users -= [user]
