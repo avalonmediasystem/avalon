@@ -36,11 +36,7 @@ class FileUploadStep < BasicStep
   end
 
   def execute context
-    deleted_sections = update_master_files context
-    context[:notice] = "Several clean up jobs have been sent out. Their statuses can be viewed by your sysadmin at #{ Settings.matterhorn.cleanup_log }" unless deleted_sections.empty?
-
-    media = MediaObject.find(context[:media_object].id)
-    context[:media_object] = media
+    update_master_files context
     context[:media_object].override_accessibility = context[:override_accessibility] == "1"
 
     context
@@ -54,28 +50,21 @@ class FileUploadStep < BasicStep
   # id - Identifier for the masterFile to help with mapping
   def update_master_files(context)
     files = context[:master_files] || {}
-    deleted_sections = []
     if not files.blank?
       files.each_pair do |id,master_file|
         selected_master_file = MasterFile.find(id)
 
         if selected_master_file
-          if master_file[:remove]
-            deleted_sections << selected_master_file
-            selected_master_file.destroy
-          else
-            selected_master_file.title = master_file[:title] unless master_file[:title].nil?
-            selected_master_file.permalink = master_file[:permalink] unless master_file[:permalink].nil?
-            selected_master_file.poster_offset = master_file[:poster_offset] unless master_file[:poster_offset].nil?
-            selected_master_file.date_digitized = master_file[:date_digitized].blank? ? nil : master_file[:date_digitized] unless master_file[:date_digitized].nil?
-            unless selected_master_file.save
-              context[:error] ||= []
-              context[:error] << "#{selected_master_file.id}: #{selected_master_file.errors.to_a.first.gsub(/(\d+)/) { |m| m.to_i.to_hms }}"
-            end
+          selected_master_file.title = master_file[:title] unless master_file[:title].nil?
+          selected_master_file.permalink = master_file[:permalink] unless master_file[:permalink].nil?
+          selected_master_file.poster_offset = master_file[:poster_offset] unless master_file[:poster_offset].nil?
+          selected_master_file.date_digitized = master_file[:date_digitized].blank? ? nil : master_file[:date_digitized] unless master_file[:date_digitized].nil?
+          unless selected_master_file.save
+            context[:error] ||= []
+            context[:error] << "#{selected_master_file.id}: #{selected_master_file.errors.to_a.first.gsub(/(\d+)/) { |m| m.to_i.to_hms }}"
           end
         end
       end
     end
-    deleted_sections
   end
 end
