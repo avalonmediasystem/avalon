@@ -25,6 +25,9 @@ en:
       blank: "field is required."
       taken: "is taken."
       dateformat: "(%{date}) is in wrong format."
+    accessibility_enforcement_error: |
+      This item is unable to be published. Accessibility requirements such as a transcript or
+      caption file are missing.
   media_object:
     empty_share_link: ""
     empty_share_link_notice: "After processing has started the embedded link will be available."

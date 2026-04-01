@@ -274,8 +274,12 @@ class MediaObjectsController < ApplicationController
           error_messages += ['Failed to create media object:']+@media_object.errors.full_messages
         else
           if !!api_params[:publish]
-            @media_object.publish!('REST API')
-            @media_object.workflow.publish
+            begin
+              @media_object.publish!('REST API')
+              @media_object.workflow.publish
+            rescue Avalon::PublishingError => e
+              error_messages += ["Unable to create media object: #{e.message}"]
+            end
           else
             @media_object.publish!('')
           end
@@ -428,8 +432,12 @@ class MediaObjectsController < ApplicationController
               errors += ["#{media_object&.title} (#{id}) (missing required fields)"]
               next
             end
-            media_object.avalon_publisher = user_key.presence
-            media_object.save!
+            begin
+              media_object.publish!(user_key)
+            rescue Avalon::PublishingError => e
+              errors += ["#{media_object&.title} (#{id}) (#{e.message})"]
+              next
+            end
             success_count += 1
           when 'unpublish'
             if can? :unpublish, media_object

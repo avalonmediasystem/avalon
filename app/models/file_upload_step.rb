@@ -41,6 +41,7 @@ class FileUploadStep < BasicStep
 
     media = MediaObject.find(context[:media_object].id)
     context[:media_object] = media
+    context[:media_object].override_accessibility = context[:override_accessibility] == "1"
 
     context
   end

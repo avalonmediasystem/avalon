@@ -327,16 +327,38 @@ describe MediaObjectsController, type: :controller do
           expect(new_media_object.sections.first.derivatives.first.location_url).to eq(absolute_location)
           expect(new_media_object.workflow.last_completed_step).to eq([HYDRANT_STEPS.last.step])
         end
-        it "should create a new published media_object" do
-          media_object = FactoryBot.create(:published_media_object)
-          fields = {}
-          descMetadata_fields.each {|f| fields[f] = media_object.send(f) }
-          # fields = media_object.attributes.select {|k,v| descMetadata_fields.include? k.to_sym }
-          post 'create', params: { format: 'json', fields: fields, files: [master_file], collection_id: collection.id, publish: true }
-          expect(response.status).to eq(200)
-          new_media_object = MediaObject.find(JSON.parse(response.body)['id'])
-          expect(new_media_object.published?).to be_truthy
-          expect(new_media_object.workflow.last_completed_step).to eq([HYDRANT_STEPS.last.step])
+        context "accessibility enforcement disabled" do
+          before { allow(Settings.accessibility_compliance).to receive(:enforce).and_return(false) }
+          it "should create a new published media_object" do
+            media_object = FactoryBot.create(:published_media_object)
+            fields = {}
+            descMetadata_fields.each {|f| fields[f] = media_object.send(f) }
+            # fields = media_object.attributes.select {|k,v| descMetadata_fields.include? k.to_sym }
+            post 'create', params: { format: 'json', fields: fields, files: [master_file], collection_id: collection.id, publish: true }
+            expect(response.status).to eq(200)
+            new_media_object = MediaObject.find(JSON.parse(response.body)['id'])
+            expect(new_media_object.published?).to be_truthy
+            expect(new_media_object.workflow.last_completed_step).to eq([HYDRANT_STEPS.last.step])
+          end
+        end
+        context "accessibility enforcement enabled" do
+          before do
+            allow(Settings.accessibility_compliance).to receive(:enforce).and_return(true)
+            allow(Settings.accessibility_compliance).to receive(:compliance_date).and_return((DateTime.now - 1.week).strftime('%F'))
+            # media_object has an attached masterfile with a caption, so force a negative caption check
+            allow_any_instance_of(MediaObject).to receive(:has_captions).and_return(false)
+          end
+          it "should respond with 422" do
+            media_object = FactoryBot.create(:published_media_object)
+            fields = {}
+            descMetadata_fields.each {|f| fields[f] = media_object.send(f) }
+            # fields = media_object.attributes.select {|k,v| descMetadata_fields.include? k.to_sym }
+            post 'create', params: { format: 'json', fields: fields, files: [master_file], collection_id: collection.id, publish: true }
+            expect(response.status).to eq(422)
+            expect(JSON.parse(response.body)).to include('errors')
+            expect(JSON.parse(response.body)["errors"].class).to eq Array
+            expect(JSON.parse(response.body)["errors"].first.class).to eq String
+          end
         end
         it "should create a new media_object with successful bib import" do
           stub_request(:get, sru_url).to_return(body: sru_response)

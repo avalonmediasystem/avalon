@@ -16,6 +16,7 @@ module Avalon
   class AvalonError < StandardError; end
   class BadRequest < AvalonError; end
   class NotFound < AvalonError; end
+  class PublishingError < AvalonError; end
   class SaveError < AvalonError; end
   class VocabularyNotFound < AvalonError; end
 end
