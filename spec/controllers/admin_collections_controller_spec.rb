@@ -569,28 +569,6 @@ describe Admin::CollectionsController, type: :controller do
     end
   end
 
-  describe "#apply_access" do
-    let(:collection) { FactoryBot.create(:collection) }
-
-    before do
-      login_user(collection.managers.first)
-    end
-
-    context "replacing existing Special Access" do
-      let(:overwrite) { true }
-      it "enqueues a BulkActionJobs::ApplyCollectionAccessControl job" do
-        expect { put 'update', params: { id: collection.id, apply_to_existing: "Apply to All Existing Items", overwrite: overwrite } }.to have_enqueued_job(BulkActionJobs::ApplyCollectionAccessControl).with(collection.id, overwrite, nil).once
-      end
-    end
-
-    context "adding to existing Special Access" do
-      let(:overwrite) { false }
-      it "enqueues a BulkActionJobs::ApplyCollectionAccessControl job" do
-        expect { put 'update', params: { id: collection.id, apply_to_existing: "Apply to All Existing Items", overwrite: overwrite } }.to have_enqueued_job(BulkActionJobs::ApplyCollectionAccessControl).with(collection.id, overwrite, nil).once
-      end
-    end
-  end
-
   describe "#remove" do
     let!(:collection) { FactoryBot.create(:collection) }
 

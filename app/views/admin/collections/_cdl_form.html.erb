@@ -64,7 +64,6 @@ Unless required by applicable law or agreed to in writing, software distributed
         <%= hidden_field_tag :save_field, "lending_period" %>
         <%= hidden_field_tag :overwrite, false %>
         <%= submit_tag "Save Setting", class: "btn btn-primary", form: 'lending_form', data:{testid: 'lending-period-save-setting'}%>
-        <%= submit_tag "Apply to All Existing Items", name: "apply_to_existing", class: "btn btn-outline", data: { confirm: I18n.t('access_control.apply_to_all_warning') % [object.media_objects.count], testid: 'lending-period-apply-to-all' }, form: 'lending_form' %>
       </div>
     </div>
   <% end %>
