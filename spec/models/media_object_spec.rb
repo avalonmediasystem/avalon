@@ -132,6 +132,9 @@ describe MediaObject do
         expect(media_object.errors[:note]).not_to be_empty
       end
       it 'should index acquisition notes separately' do
+        # FactoryBot.build does not save the item so create_date is nil, which causes an issue
+        # with the accessibility check
+        allow(media_object).to receive(:create_date).and_return(DateTime.now)
         media_object.descMetadata.note = ['Donor']
         media_object.descMetadata.note.type = ['acquisition']
         expect(media_object.valid?).to be_truthy
@@ -1003,6 +1006,7 @@ describe MediaObject do
     end
 
     it 'is indexed' do
+      allow(media_object).to receive(:create_date).and_return(DateTime.now)
       media_object.rights_statement = rights_statement_uri
       expect(media_object.to_solr["rights_statement_ssi"]).to eq rights_statement_uri
     end
@@ -1038,6 +1042,7 @@ describe MediaObject do
     end
 
     it 'is indexed' do
+      allow(media_object).to receive(:create_date).and_return(DateTime.now)
       media_object.terms_of_use = terms_of_use_value
       expect(media_object.to_solr["terms_of_use_ssi"]).to eq terms_of_use_value
     end
