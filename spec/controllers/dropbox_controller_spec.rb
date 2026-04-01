@@ -42,7 +42,7 @@ describe DropboxController do
     expect(response.status).to be(200)
   end
 
-  [:group_manager, :student].each do |group|
+  [:group_manager, :user].each do |group|
     it "should not allow #{group} to delete" do
       login_as group
       delete :bulk_delete, params: { :collection_id => @collection.id, :filenames => @temp_files.map{|f| f[:name]} }

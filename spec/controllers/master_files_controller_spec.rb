@@ -781,7 +781,7 @@ describe MasterFilesController do
       end
       context 'as an end user' do
         before do
-          login_as :student
+          login_as :user
         end
         it 'redirects to restricted content page' do
           post('move', params: { id: master_file.id, target: target_media_object.id })

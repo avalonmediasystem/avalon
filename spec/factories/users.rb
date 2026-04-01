@@ -26,22 +26,6 @@ FactoryBot.define do
         end
       end
     end
-    factory :unit_administrator, aliases: [:unit_admin] do
-      after(:create) do |user|
-        begin
-          Avalon::RoleControls.add_user_role(user.user_key, 'unit_administrator')
-        rescue
-        end
-      end
-    end
-    factory :manager do
-      after(:create) do |user|
-        begin
-          Avalon::RoleControls.add_user_role(user.user_key, 'manager')
-        rescue
-        end
-      end
-    end
     factory :group_manager do
       after(:create) do |user|
         begin
@@ -58,35 +42,5 @@ FactoryBot.define do
         Identity.create!(email: user.email, password: user.password)
       end
     end
-  end
-
-  factory :cataloger, class: User  do
-    sequence(:username) {|n| "archivist#{n}" }
-    sequence(:email)    {|n| "archivist#{n}@example.com" }
-    password            { 'testing123' }
-  end
-
-  factory :content_provider, class: User  do
-    sequence(:username) {|n| "archivist#{n}" }
-    sequence(:email)    {|n| "archivist#{n}@example.com" }
-    password            { 'testing123' }
-    after(:create) do |user|
-      begin
-        Avalon::RoleControls.add_user_role(user.user_key, 'manager')
-      rescue
-      end
-    end
-  end
-
-  factory :student, class: User  do
-    sequence(:username) {|n| "ann.e.student#{n}" }
-    sequence(:email)    {|n| "student#{n}@example.com" }
-    password            { 'testing123' }
-  end
-
-  factory :public, class: User  do
-    sequence(:username) {|n| "average.joe#{n}" }
-    sequence(:email)    {|n| "average.joe#{n}@example.com" }
-    password            { 'testing123' }
   end
 end

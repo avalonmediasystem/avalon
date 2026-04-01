@@ -18,7 +18,7 @@ describe IngestBatchStatusEmailJobs do
   describe IngestBatchStatusEmailJobs::IngestFinished do
     let(:batch_registry) { FactoryBot.create(:batch_registries, user_id: manager.id) }
     let(:completed_batch_registry) { FactoryBot.create(:batch_registries, user_id: manager.id, complete: true, completed_email_sent: true) }
-    let(:manager) { FactoryBot.create(:manager, username: 'frances.dickens@reichel.com', email: 'frances.dickens@reichel.com') }
+    let(:manager) { FactoryBot.create(:user, username: 'frances.dickens@reichel.com', email: 'frances.dickens@reichel.com') }
     let(:batch_mailer) { double }
 
     before do

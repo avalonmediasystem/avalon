@@ -163,7 +163,7 @@ RSpec.describe TimelinesController, type: :controller do
   end
 
   describe "GET #show" do
-    let(:cataloger) { FactoryBot.create(:cataloger)}
+    let(:cataloger) { FactoryBot.create(:user)}
     let(:timeline) { FactoryBot.create(:timeline, user: cataloger) }
     let(:encoded_manifest_url) do
       [controller.default_url_options[:protocol],
@@ -189,7 +189,7 @@ RSpec.describe TimelinesController, type: :controller do
 
       context 'non-owner' do
         before do
-          login_as :student
+          login_as :user
         end
 
         it 'renders restricted content page' do

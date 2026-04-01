@@ -283,7 +283,7 @@ describe CatalogController do
       end
     end
     describe "as an lti user" do
-      let!(:user) { login_lti 'student' }
+      let!(:user) { login_lti 'user' }
       let!(:lti_group) { @controller.user_session[:virtual_groups].first }
       it "should show results for items visible to the lti virtual group" do
         mo = FactoryBot.create(:published_media_object, visibility: 'private', read_groups: [lti_group])
@@ -298,7 +298,7 @@ describe CatalogController do
 
     describe "as an unauthenticated user with a specific IP address" do
       before(:each) do
-        @user = login_as 'public'
+        @user = login_as 'user'
         @ip_address1 = Faker::Internet.ip_v4_address
         @mo = FactoryBot.create(:published_media_object, visibility: 'private', read_groups: [@ip_address1])
         perform_enqueued_jobs(only: MediaObjectIndexingJob)

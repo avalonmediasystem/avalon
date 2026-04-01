@@ -524,7 +524,7 @@ describe MediaObjectsController, type: :controller do
         end
 
         context "as an authorized non-admin user" do
-          let(:user) { FactoryBot.create(:manager) }
+          let(:user) { FactoryBot.create(:user) }
           let(:collection) { FactoryBot.create(:collection, managers: [user.username]) }
           let(:media_object) { FactoryBot.create(:media_object, collection: collection) }
 
@@ -1295,7 +1295,7 @@ describe MediaObjectsController, type: :controller do
               expect(response).to render_template(:_lti_url)
             end
             it "others: should include only lti" do
-              login_lti 'student'
+              login_lti 'user'
               lti_group = @controller.user_session[:virtual_groups].first
               FactoryBot.create(:published_media_object, visibility: 'private', read_groups: [lti_group])
               FactoryBot.create(:checkout, media_object_id: media_object.id, user_id: controller.current_user.id)
@@ -1373,7 +1373,7 @@ describe MediaObjectsController, type: :controller do
               expect(response).to render_template(:_embed_checkout)
             end
             it "others: should render checkout button in player, NOT share" do
-              login_lti 'student'
+              login_lti 'user'
               lti_group = @controller.user_session[:virtual_groups].first
               FactoryBot.create(:published_media_object, visibility: 'private', read_groups: [lti_group])
               get :show, params: { id: media_object.id }
@@ -1454,7 +1454,7 @@ describe MediaObjectsController, type: :controller do
             expect(response).to render_template(:_lti_url)
           end
           it "others: should include only lti" do
-            login_lti 'student'
+            login_lti 'user'
             lti_group = @controller.user_session[:virtual_groups].first
             FactoryBot.create(:published_media_object, visibility: 'private', read_groups: [lti_group])
             get :show, params: { id: media_object.id }
@@ -1923,7 +1923,7 @@ describe MediaObjectsController, type: :controller do
   describe "#save" do
     it 'removes bookmarks that are no longer viewable' do
       media_object = FactoryBot.create(:published_media_object)
-      user = FactoryBot.create(:public)
+      user = FactoryBot.create(:user)
       bookmark = Bookmark.create(document_id: media_object.id, user: user)
       login_user media_object.collection.managers.first
       request.env["HTTP_REFERER"] = '/'
@@ -2241,7 +2241,7 @@ describe MediaObjectsController, type: :controller do
 
     context 'as end user' do
       before do
-        login_as :student
+        login_as :user
       end
 
       let(:media_object) { FactoryBot.create(:published_media_object) }

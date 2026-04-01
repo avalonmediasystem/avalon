@@ -27,7 +27,7 @@ describe Admin::GroupsController do
     end
 
     it "index new should redirect to restricted content page when authenticated but unauthorized" do
-      login_as('student')
+      login_as('user')
       get 'index'
       expect(response).to render_template('errors/restricted_pid')
     end
@@ -40,7 +40,7 @@ describe Admin::GroupsController do
   	end
 
     it "new should redirect to restricted content page when authenticated but unauthorized" do
-      login_as('student')
+      login_as('user')
       expect { get 'new' }.not_to change {Admin::Group.all.count}
       expect(response).to render_template('errors/restricted_pid')
     end
@@ -51,7 +51,7 @@ describe Admin::GroupsController do
     end
 
     it "create should redirect to restricted content page when authenticated but unauthorized" do
-      login_as('student')
+      login_as('user')
 
       expect { post 'create', params: { admin_group: test_group } }.not_to change {Admin::Group.all.count }
       expect(response).to render_template('errors/restricted_pid')
@@ -91,7 +91,7 @@ describe Admin::GroupsController do
       end
 
       it "edit should redirect to restricted content page when authenticated but unauthorized" do
-        login_as('student')
+        login_as('user')
 
         get 'edit', params: { id: group.name }
         expect(response).to render_template('errors/restricted_pid')
@@ -104,7 +104,7 @@ describe Admin::GroupsController do
       end
 
       it "update should redirect to restricted content page when authenticated but unauthorized" do
-        login_as('student')
+        login_as('user')
         new_user = FactoryBot.build(:user).user_key
 
         put 'update', params: { group_name: group.name, id: group.name, new_user: new_user }
@@ -139,9 +139,9 @@ describe Admin::GroupsController do
 
       it "should not be able to rename system groups" do
         login_as('administrator')
-        put 'update', params: { group_name: Faker::Lorem.word, id: 'manager' }
+        put 'update', params: { group_name: Faker::Lorem.word, id: 'administrator' }
 
-        expect(Admin::Group.find('manager')).not_to be_nil
+        expect(Admin::Group.find('administrator')).not_to be_nil
         expect(flash[:error]).not_to be_nil
       end
 
@@ -153,33 +153,6 @@ describe Admin::GroupsController do
 
         expect(Admin::Group.find(group.name).users).to be_empty
         expect(flash[:error]).to be_nil
-      end
-
-      context 'manager group' do
-        it "should not remove users from the group if they are sole managers of a collection" do
-          login_as('group_manager')
-          request.env["HTTP_REFERER"] = '/admin/groups/manager/edit'
-
-          collection = FactoryBot.create(:collection)
-          manager_name = collection.managers.first
-          put 'update_users', params: { id: 'manager', user_ids: [manager_name] }
-
-          expect(Admin::Group.find('manager').users).to include(manager_name)
-          expect(flash[:error]).not_to be_nil
-        end
-
-        it 'should enqueue BulkActionJobs::RemoveManagers' do
-          login_as('group_manager')
-          request.env['HTTP_REFERER'] = '/admin/groups/manager/edit'
-
-          users = FactoryBot.create_list(:manager, 2)
-          collection = FactoryBot.create(:collection, managers: users.map(&:user_key))
-          manager_name = collection.managers.first
-
-          expect {
-            put 'update_users', params: { id: 'manager', user_ids: [manager_name] }
-          }.to have_enqueued_job(BulkActionJobs::RemoveManagers).with([manager_name])
-        end
       end
 
       ['administrator','group_manager'].each do |g|
@@ -215,7 +188,7 @@ describe Admin::GroupsController do
       end
 
       it "should redirect to restricted content page when authenticated but unauthorized" do
-        login_as('student')
+        login_as('user')
 
         expect { put 'update_multiple', params: { group_ids: [group.name] } }.not_to change { Avalon::RoleControls.users(group.name) }
         expect(response).to render_template('errors/restricted_pid')

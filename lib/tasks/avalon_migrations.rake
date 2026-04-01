@@ -131,7 +131,7 @@ namespace :avalon do
     desc "Migrate existing units to new Admin::Unit model and associate them with the appropriate Admin::Collections"
     task admin_units: :environment do
       if ENV['unit_admin_username'].nil?
-        abort "You must specify a username. This user must be part of the Unit Administrator group. Example: rake avalon:migration:admin_units unit_admin_username=user@example.edu"
+        abort "You must specify a username. Example: rake avalon:migration:admin_units unit_admin_username=user@example.edu"
       end
 
       units = {}

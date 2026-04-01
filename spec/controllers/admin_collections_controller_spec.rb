@@ -71,23 +71,14 @@ describe Admin::CollectionsController, type: :controller do
     end
 
     it "should add users to manager role" do
-      manager = FactoryBot.create(:manager)
+      manager = FactoryBot.create(:user)
       put 'update', params: { id: collection.id, submit_add_manager: 'Add', add_manager: manager.user_key }
       collection.reload
       expect(manager).to be_in(collection.managers)
     end
 
-    it "should not add users to manager role" do
-      user = FactoryBot.create(:user)
-      put 'update', params: { id: collection.id, submit_add_manager: 'Add', add_manager: user.user_key }
-      collection.reload
-      expect(user).not_to be_in(collection.managers)
-      expect(flash[:error]).not_to be_empty
-    end
-
     it "should remove users from manager role" do
-      #initial_manager = FactoryBot.create(:manager).user_key
-      collection.managers += [FactoryBot.create(:manager).user_key, FactoryBot.create(:manager).user_key]
+      collection.managers += [FactoryBot.create(:user).user_key, FactoryBot.create(:user).user_key]
       collection.save!
       manager = User.where(Devise.authentication_keys.first => collection.managers.first).first
       put 'update', params: { id: collection.id, remove_manager: manager.user_key }
@@ -96,7 +87,7 @@ describe Admin::CollectionsController, type: :controller do
     end
 
     context 'with zero-width characters' do
-      let(:manager) { FactoryBot.create(:manager) }
+      let(:manager) { FactoryBot.create(:user) }
       let(:manager_key) { "#{manager.user_key}\u200B" }
 
       it "should add users to manager role" do
@@ -299,7 +290,7 @@ describe Admin::CollectionsController, type: :controller do
     end
 
     context 'user is a collection manager' do
-      let(:manager) { FactoryBot.create(:manager) }
+      let(:manager) { FactoryBot.create(:user) }
       before(:each) do
         ApiToken.create token: 'manager_token', username: manager.username, email: manager.email
         request.headers['Avalon-Api-Key'] = 'manager_token'

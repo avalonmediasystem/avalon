@@ -15,7 +15,7 @@
 require 'rails_helper'
 
 describe Avalon::Batch::Ingest do
-  let(:manager) { FactoryBot.create(:manager, username: 'frances.dickens@reichel.com', email: 'frances.dickens@reichel.com') }
+  let(:manager) { FactoryBot.create(:user, username: 'frances.dickens@reichel.com', email: 'frances.dickens@reichel.com') }
   let(:collection) { FactoryBot.build(:collection, managers: [manager.user_key]) }
   let(:manifest_file) { File.new('spec/fixtures/dropbox/example_batch_ingest/batch_manifest.xlsx') }
   let(:package) { Avalon::Batch::Package.new(manifest_file, collection) }

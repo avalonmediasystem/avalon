@@ -30,12 +30,33 @@ describe Admin::Collection do
       end
     end
 
+    context 'when unit admin' do
+      let(:ability) { Ability.new(user) }
+
+      context 'inherited from unit' do
+        let(:user) { User.where(Devise.authentication_keys.first => collection.inherited_managers.first).first }
+
+        it "can perform all actions on collections" do
+          expect(ability).to be_able_to(:create, Admin::Collection)
+          expect(ability).to be_able_to(:read, Admin::Collection)
+          expect(ability).to be_able_to(:read, collection)
+          expect(ability).to be_able_to(:update, collection)
+          expect(ability).to be_able_to(:update_unit, collection)
+          expect(ability).to be_able_to(:update_managers, collection)
+          expect(ability).to be_able_to(:update_editors, collection)
+          expect(ability).to be_able_to(:update_depositors, collection)
+          expect(ability).to be_able_to(:update_access_control, collection)
+          expect(ability).to be_able_to(:destroy, collection)
+        end
+      end
+    end
+
     context 'when manager' do
       let(:ability) { Ability.new(user) }
       let(:user) { User.where(Devise.authentication_keys.first => collection.managers.first).first }
 
-      it "can perform all actions on collection" do
-        expect(ability).to be_able_to(:create, Admin::Collection)
+      it "can perform all actions on existing collections" do
+        expect(ability).not_to be_able_to(:create, Admin::Collection)
         expect(ability).to be_able_to(:read, Admin::Collection)
         expect(ability).to be_able_to(:read, collection)
         expect(ability).to be_able_to(:update, collection)
@@ -48,10 +69,10 @@ describe Admin::Collection do
       end
 
       context 'inherited from unit' do
-        let(:user) { User.where(Devise.authentication_keys.first => collection.inherited_managers.first).first }
+        let(:user) { User.where(Devise.authentication_keys.first => collection.unit.collection_managers.first).first }
 
-        it "can perform all actions on collection" do
-          expect(ability).to be_able_to(:create, Admin::Collection)
+        it "can perform all actions on existing collections" do
+          expect(ability).not_to be_able_to(:create, Admin::Collection)
           expect(ability).to be_able_to(:read, Admin::Collection)
           expect(ability).to be_able_to(:read, collection)
           expect(ability).to be_able_to(:update, collection)
@@ -181,7 +202,7 @@ describe Admin::Collection do
                         contact_email: contact_email, website_url: website_url, website_label: website_label)
     end
     let(:unit) { FactoryBot.create(:unit) }
-    let(:manager) {FactoryBot.create(:manager)}
+    let(:manager) {FactoryBot.create(:user)}
     let(:editor) {FactoryBot.create(:user)}
     let(:depositor) {FactoryBot.create(:user)}
     let(:contact_email) { Faker::Internet.email }
@@ -243,7 +264,7 @@ describe Admin::Collection do
   end
 
   describe "managers" do
-    let!(:user) { FactoryBot.create(:manager) }
+    let!(:user) { FactoryBot.create(:user) }
     let!(:collection) { Admin::Collection.new(unit: FactoryBot.create(:unit)) }
 
     describe "#managers" do
@@ -255,18 +276,18 @@ describe Admin::Collection do
     end
     describe "#managers=" do
       it "should add managers to the collection" do
-        manager_list = [FactoryBot.create(:manager).user_key, FactoryBot.create(:manager).user_key]
+        manager_list = [FactoryBot.create(:user).user_key, FactoryBot.create(:user).user_key]
         collection.managers = manager_list
         expect(collection.managers).to match_array(manager_list)
       end
       it "should call add_manager" do
-        manager_list = [FactoryBot.create(:manager).user_key, FactoryBot.create(:manager).user_key]
+        manager_list = [FactoryBot.create(:user).user_key, FactoryBot.create(:user).user_key]
         expect(collection).to receive("add_manager").with(manager_list[0])
         expect(collection).to receive("add_manager").with(manager_list[1])
         collection.managers = manager_list
       end
       it "should remove managers from the collection" do
-        manager_list = [FactoryBot.create(:manager).user_key, FactoryBot.create(:manager).user_key]
+        manager_list = [FactoryBot.create(:user).user_key, FactoryBot.create(:user).user_key]
         collection.managers = manager_list
         expect(collection.managers).to match_array(manager_list)
         collection.managers -= [manager_list[1]]
@@ -275,13 +296,7 @@ describe Admin::Collection do
       it "should call remove_manager" do
         collection.managers = [user.user_key]
         expect(collection).to receive("remove_manager").with(user.user_key)
-        collection.managers = [FactoryBot.create(:manager).user_key]
-      end
-      it "should fail to remove only manager" do
-        manager_list = [FactoryBot.create(:manager).user_key]
-        collection.managers = manager_list
-        expect(collection.managers).to match_array(manager_list)
-        expect{collection.managers=[]}.to raise_error(ArgumentError)
+        collection.managers = [FactoryBot.create(:user).user_key]
       end
     end
     describe "#add_manager" do
@@ -303,10 +318,10 @@ describe Admin::Collection do
         collection.add_manager(administrator.user_key)
         expect(collection.editors).not_to include(administrator.user_key)
       end
-      it "should not add users who do not have the manager role" do
+      it "should add users who do not have the manager role" do
         not_manager = FactoryBot.create(:user)
-        expect {collection.add_manager(not_manager.user_key)}.to raise_error(ArgumentError)
-        expect(collection.managers).not_to include(not_manager.user_key)
+        expect {collection.add_manager(not_manager.user_key)}.not_to raise_error(ArgumentError)
+        expect(collection.managers).to include(not_manager.user_key)
       end
     end
     describe "#remove_manager" do
@@ -332,7 +347,7 @@ describe Admin::Collection do
 
     describe "#editors" do
       it "should not return managers" do
-        manager = FactoryBot.create(:manager)
+        manager = FactoryBot.create(:user)
         collection.edit_users = [user.user_key, manager.user_key]
         collection.collection_managers = [manager.user_key]
         expect(collection.editors).to eq([user.user_key])
@@ -362,12 +377,6 @@ describe Admin::Collection do
         expect(collection).to receive("remove_editor").with(user.user_key)
         collection.editors = [FactoryBot.create(:user).user_key]
       end
-      it "can add users who belong to manager group" do
-        manager = FactoryBot.create(:manager)
-        collection.editors = [manager.user_key]
-        expect(collection.editors).to include(manager.user_key)
-        expect(collection.managers).not_to include(manager.user_key)
-      end
       it "can add users who belong to administrator group" do
         admin = FactoryBot.create(:administrator)
         collection.editors = [admin.user_key]
@@ -393,7 +402,7 @@ describe Admin::Collection do
         expect(collection.editors).not_to include(user.user_key)
       end
       it "should not remove users who do not have the editor role" do
-        not_editor = FactoryBot.create(:manager)
+        not_editor = FactoryBot.create(:user)
         collection.collection_managers = [not_editor.user_key]
         collection.edit_users = [not_editor.user_key]
         collection.inherited_edit_users = [not_editor.user_key]
@@ -463,7 +472,7 @@ describe Admin::Collection do
         expect(collection.depositors).not_to include(user.user_key)
       end
       it "should not remove users who do not have the depositor role" do
-        not_depositor = FactoryBot.create(:manager)
+        not_depositor = FactoryBot.create(:user)
         collection.inherited_edit_users = [not_depositor.user_key]
         collection.remove_depositor(not_depositor.user_key)
         expect(collection.inherited_edit_users).to include(not_depositor.user_key)
