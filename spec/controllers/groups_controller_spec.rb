@@ -59,15 +59,15 @@ describe Admin::GroupsController do
 
     it "create should redirect to group index page with a notice when group name is already taken" do
       group = FactoryBot.create(:group)
-      login_as('group_manager')
+      login_as('administrator')
       expect { post 'create', params: { admin_group: group.name } }.not_to change {Admin::Group.all.count }
       expect(response).to redirect_to(admin_groups_path)
       expect(flash[:error]).not_to be_nil
     end
 
     context "Default permissions should be applied" do
-      it "should be create-able by the group_manager" do
-        login_as('group_manager')
+      it "should be create-able by the administrator" do
+        login_as('administrator')
         expect { post 'create', params: { admin_group: test_group } }.to change { Admin::Group.all.count }
         g = Admin::Group.find(test_group)
         expect(g).not_to be_nil
@@ -112,7 +112,7 @@ describe Admin::GroupsController do
       end
 
       it "should be able to change group users when authenticated and authorized" do
-        login_as('group_manager')
+        login_as('administrator')
         new_user = FactoryBot.build(:user).user_key
 
         put 'update', params: { group_name: group.name, id: group.name, new_user: new_user }
@@ -125,7 +125,7 @@ describe Admin::GroupsController do
       end
 
       it "should be able to change group name when authenticated and authorized" do
-        login_as('group_manager')
+        login_as('administrator')
         new_group_name = Faker::Lorem.word
 
         put 'update', params: { group_name: new_group_name, id: group.name }
@@ -146,7 +146,7 @@ describe Admin::GroupsController do
       end
 
       it "should be able to remove users from a group" do
-        login_as('group_manager')
+        login_as('administrator')
         request.env["HTTP_REFERER"] = '/admin/groups/manager/edit'
 
         put 'update_users', params: { id: group.name, user_ids: Admin::Group.find(group.name).users }
@@ -155,28 +155,15 @@ describe Admin::GroupsController do
         expect(flash[:error]).to be_nil
       end
 
-      ['administrator','group_manager'].each do |g|
-        it "should be able to manage #{g} group as an administrator" do
-          login_as('administrator')
-          new_user = FactoryBot.build(:user).user_key
+      it "should be able to manage administrator group as an administrator" do
+        login_as('administrator')
+        new_user = FactoryBot.build(:user).user_key
 
-          put 'update', params: { id: g, new_user: new_user }
-          group = Admin::Group.find(g)
-          expect(group.users).to include(new_user)
-          expect(flash[:success]).not_to be_nil
-          expect(response).to redirect_to(edit_admin_group_path(Admin::Group.find(group.name)))
-        end
-
-        it "should not be able to manage #{g} group as a group_manager" do
-          login_as('group_manager')
-          new_user = FactoryBot.build(:user).user_key
-
-          put 'update', params: { id: g, new_user: new_user }
-          group = Admin::Group.find(g)
-          expect(group.users).not_to include(new_user)
-          expect(flash[:error]).not_to be_nil
-          expect(response).to redirect_to(admin_groups_path)
-        end
+        put 'update', params: { id: 'administrator', new_user: new_user }
+        group = Admin::Group.find('administrator')
+        expect(group.users).to include(new_user)
+        expect(flash[:success]).not_to be_nil
+        expect(response).to redirect_to(edit_admin_group_path(Admin::Group.find(group.name)))
       end
     end
 
@@ -195,7 +182,7 @@ describe Admin::GroupsController do
       end
 
       it "should be able to change group users when authenticated and authorized" do
-        login_as('group_manager')
+        login_as('administrator')
 
         expect { put 'update_multiple', params: { group_ids: [group.name] } }.to change { Avalon::RoleControls.users(group.name) }
         expect(flash[:notice]).not_to be_nil

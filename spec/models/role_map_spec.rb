@@ -24,7 +24,7 @@ describe RoleMap do
       RoleMap.all.each(&:destroy)
     end
 
-    let(:expected_role_map) { { "administrator" => ["archivist1@example.com"], "group_manager" => ["archivist1@example.com"], "manager" => ["archivist1@example.com"], "unit_administrator" => ["archivist1@example.com"] } }
+    let(:expected_role_map) { { "administrator" => ["archivist1@example.com"] } }
 
     it "should properly initialize the map" do
       expect(RoleMapper.map).to eq expected_role_map

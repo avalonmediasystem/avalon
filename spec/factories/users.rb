@@ -26,14 +26,6 @@ FactoryBot.define do
         end
       end
     end
-    factory :group_manager do
-      after(:create) do |user|
-        begin
-          Avalon::RoleControls.add_user_role(user.user_key, 'group_manager')
-        rescue
-        end
-      end
-    end
     factory :user_lti do
     end
 

@@ -43,9 +43,7 @@ describe 'checks navigation after logging in' do
     expect(page).to have_content('System Groups')
     expect(page).to have_content('Additional Groups')
     expect(page).to have_content('Group Name')
-    expect(page).to have_content('group_manager')
     expect(page).to have_content('administrator')
-    expect(page).to have_content('manager')
   end
   it 'checks naviagtion to Playlist' do
     user = FactoryBot.create(:administrator)

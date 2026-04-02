@@ -65,7 +65,7 @@ RSpec.describe Samvera::Persona::UsersController, type: :controller do
 
     describe 'DELETE #destroy' do
       before :each do
-        new_hash = {"administrator"=>[user.username], "group_manager"=>[user.username, "alice.archivist@example.edu"], "registered"=>["bob.user@example.edu"]}
+        new_hash = {"administrator"=>[user.username], "another_group"=>[user.username, "alice.archivist@example.edu"], "registered"=>["bob.user@example.edu"]}
         RoleMap.replace_with!(new_hash)
       end
       before { delete :destroy, params: { id: user.to_param } }

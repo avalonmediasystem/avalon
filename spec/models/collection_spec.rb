@@ -502,7 +502,7 @@ describe Admin::Collection do
     let(:unit) { collection.unit }
     before do
       unit.default_read_users = ['test']
-      unit.default_read_groups = ['123.234.211.1', 'virtual', 'group_manager']
+      unit.default_read_groups = ['123.234.211.1', 'virtual', 'another_group']
       unit.save!
     end
 
