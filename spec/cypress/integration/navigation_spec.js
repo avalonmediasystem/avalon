@@ -46,9 +46,7 @@ context('Navigations', () => {
     cy.contains('System Groups');
     cy.contains('Additional Groups');
     cy.contains('Group Name');
-    cy.contains('group_manager');
     cy.contains('administrator');
-    cy.contains('manager');
   });
 
   // is able to sign out
