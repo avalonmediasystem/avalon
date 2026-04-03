@@ -124,6 +124,10 @@ class Ability
           is_manager_of?(media_object.collection)
         end
 
+        can :override_accessibility, [MediaObject, SpeedyAF::Proxy::MediaObject] do |media_object|
+          is_manager_of?(media_object.collection)
+        end
+
         can :update, [Admin::Collection, SpeedyAF::Proxy::Admin::Collection] do |collection|
           is_manager_of?(collection)
         end

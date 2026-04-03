@@ -143,7 +143,9 @@ class MediaObject < ActiveFedora::Base
   property :lending_period, predicate: ::RDF::Vocab::SCHEMA.eligibleDuration, multiple: false do |index|
     index.as :stored_sortable
   end
-  property :override_accessibility, predicate: ::RDF::Vocab::EBUCore.RightsClearance, multiple: false
+  property :override_accessibility, predicate: ::RDF::Vocab::EBUCore.RightsClearance, multiple: false do |index|
+    index.as ActiveFedora::Indexing::Descriptor.new(:boolean, :stored, :indexed)
+  end
 
   #TODO: get rid of all ordered_* and indexed_* references, after everything is migrated then convert from `ordered_aggregation` to `has_many`
   # OR possibly remove the master_files relationship entirely?
@@ -343,7 +345,6 @@ class MediaObject < ActiveFedora::Base
       solr_doc['other_identifier_ssm'] = self.other_identifier.collect { |oi| oi.to_json }
       solr_doc['related_item_url_ssm'] = self.related_item_url.collect { |r| r.to_json }
       solr_doc['is_accessible_bsi'] = self.is_accessible?
-      solr_doc['override_accessibility_bsi'] = self.override_accessibility
       solr_doc['section_id_ssim'] = section_ids
       if include_child_fields
         fill_in_solr_fields_that_need_sections(solr_doc)

@@ -16,7 +16,7 @@ Unless required by applicable law or agreed to in writing, software distributed
 <%= hidden_field_tag :donot_advance, true %>
 <%= hidden_field_tag :step, 'file-upload' %>
 <%# Collection manager and higher roles should be only ones able to exempt items %>
-<% if current_ability.can? :create, Admin::Collection %>
+<% if can? :override_accessibility, @media_object %>
   <div class="card accessibility_override" data-test-id="media-object-accessibility-override">
     <div class="card-header">
       <h3 class="card-title">Accessibility Compliance</h3>
