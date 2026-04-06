@@ -39,4 +39,14 @@ describe Course do
     expect(first_media_object.read_groups).to include('sociology_101')
     expect(first_media_object.read_groups).to include('underwater_basketweaving_302')
   end
+
+  describe 'autocomplete' do
+    before do
+      10.times { Course.create(title: 'Test') }
+    end
+
+    it 'limits to 10 results' do
+      expect(Course.autocomplete('Test').size).to eq 10
+    end
+  end
 end
