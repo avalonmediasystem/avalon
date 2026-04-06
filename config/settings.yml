@@ -157,5 +157,5 @@ search_pagination:
 # Prevent publication of items ingested after compliance date if they lack
 # captions or transcripts
 accessibility_compliance:
-  enforce: true
+  enforce: false
   compliance_date: '2026-04-26'
