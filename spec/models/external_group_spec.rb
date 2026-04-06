@@ -30,4 +30,9 @@ describe ExternalGroup do
     expect( ExternalGroup.ldap_lookup('Group') ).to eq( [{id:'Group1',display:'Group1'},{id:'Group2',display:'Group2'}] )
     expect( ExternalGroup.autocomplete('Group') ). to eq( ExternalGroup.ldap_lookup('Group') )
   end
+  it "autocomplete limits to 10 results" do
+    results = (1..15).collect { |i| {id:'Group#{i}',display:'Group#{i}'} }
+    allow(ExternalGroup).to receive(:ldap_lookup).and_return(results)
+    expect(ExternalGroup.autocomplete('Test').size).to eq 10
+  end
 end

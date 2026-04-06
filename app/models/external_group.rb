@@ -29,7 +29,7 @@ class ExternalGroup
 
   def self.ldap_autocomplete(query)
     #Only wildcard the tail of the query to avoid long running queries
-    self.ldap_lookup("#{query}*", size: 10)
+    self.ldap_lookup("#{query}*").first(10)
   end
 
   def self.autocomplete(query, _id = nil)
