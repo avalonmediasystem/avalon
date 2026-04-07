@@ -202,6 +202,15 @@ describe SupplementalFile do
     end
   end
 
+  describe 'label' do
+    it 'defaults to original file if blank' do
+      expect(supplemental_file.label).not_to be_blank
+      supplemental_file.label = nil
+      supplemental_file.save
+      expect(supplemental_file.label).to eq supplemental_file.file.filename.to_s
+    end
+  end
+
   describe 'language' do
     it 'should validate valid language' do
       supplemental_file.language = 'eng'
@@ -372,15 +381,35 @@ describe SupplementalFile do
   end
 
   describe '#download_filename' do
-    let(:file) { FactoryBot.create(:supplemental_file, :with_transcript_file, tags: ['transcript']) }
-    it 'returns the filename' do
-      expect(file.download_filename).to eq "captions.vtt"
-    end
-
     context 'with machine generated file' do
       let(:file) { FactoryBot.create(:supplemental_file, :with_transcript_file, tags: ['transcript', 'machine_generated']) }
+
       it 'returns the filename with "(machine generated)" inserted' do
-        expect(file.download_filename).to eq "captions (machine generated).vtt"
+        expect(file.download_filename).to eq "#{file.label} (machine generated).vtt"
+      end
+    end
+
+    context 'with no extension' do
+      let(:file) { FactoryBot.create(:supplemental_file, :with_transcript_file, tags: ['transcript'], label: 'test') }
+
+      it 'returns the filename' do
+        expect(file.download_filename).to eq "#{file.label}.vtt"
+      end
+    end
+
+    context 'with same extension' do
+      let(:file) { FactoryBot.create(:supplemental_file, :with_transcript_file, tags: ['transcript'], label: 'test.vtt') }
+
+      it 'returns the filename with the correct suffix not duplicated' do
+        expect(file.download_filename).to eq "#{file.label}"
+      end
+    end
+
+    context 'with different extension' do
+      let(:file) { FactoryBot.create(:supplemental_file, :with_transcript_file, tags: ['transcript'], label: 'test.jpg') }
+
+      it 'returns the filename with the correct suffix appended' do
+        expect(file.download_filename).to eq "#{file.label}.vtt"
       end
     end
   end
