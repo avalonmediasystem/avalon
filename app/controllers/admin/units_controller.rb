@@ -106,7 +106,7 @@ class Admin::UnitsController < ApplicationController
       end
       respond_to do |format|
         format.html do
-          redirect_to @unit, notice: 'unit was successfully created.'
+          redirect_to @unit, notice: 'Unit was successfully created.'
         end
         format.json do
           render json: { id: @unit.id }, status: 200
@@ -200,6 +200,7 @@ class Admin::UnitsController < ApplicationController
     @unit = Admin::Unit.find(params['id'])
     authorize! :destroy, @unit
     @objects    = @unit.collections
+    @candidates = get_user_units.reject { |u| u.id == @unit.id }.sort_by { |u| u.name.downcase }
   end
 
   # DELETE /units/1
@@ -209,6 +210,8 @@ class Admin::UnitsController < ApplicationController
     if @source_unit.collections.count > 0
       if @source_unit.collections.all?(&:valid?)
         @target_unit = Admin::Unit.find(params[:target_unit_id])
+        # raise if user not admin of target unit
+        authorize! :update, @target_unit
         Admin::Unit.reassign_collections( @source_unit.collections, @source_unit, @target_unit )
         target_path = admin_unit_path(@target_unit)
         @source_unit.reload
@@ -325,5 +328,16 @@ class Admin::UnitsController < ApplicationController
     fastimage = FastImage.new(poster_path)
     # Size derived from width and aspect ratio from JS code, assets/javascript/crop_upload.js:60-63
     fastimage.type == :png && fastimage.size == [700, 560] # [width, height]
+  end
+
+  # Returns collections for current_user
+  # @return [Collection] Collections to which current_user has manage access
+  def get_user_units
+    # return all collections to admin
+    if can?(:manage, Admin::Unit)
+      SpeedyAF::Proxy::Admin::Unit.where("has_model_ssim: Admin\\:\\:Unit")
+    else
+      SpeedyAF::Proxy::Admin::Unit.where("has_model_ssim: Admin\\:\\:Unit AND unit_administrators_ssim: #{user_key}")
+    end
   end
 end

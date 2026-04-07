@@ -219,6 +219,13 @@ class Admin::Unit < ActiveFedora::Base
     search_array.map { |value| { id: value[:id], display: value[:name_ssi] } }
   end
 
+  def self.reassign_collections(collections, source_unit, target_unit)
+    collections.each do |collection|
+      collection.unit = target_unit
+      collection.save
+    end
+  end
+
   private
 
   def remove_edit_user(name)
