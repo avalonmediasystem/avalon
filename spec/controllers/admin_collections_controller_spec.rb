@@ -562,6 +562,7 @@ describe Admin::CollectionsController, type: :controller do
 
   describe "#remove" do
     let!(:collection) { FactoryBot.create(:collection) }
+    let!(:media_object) { FactoryBot.create(:media_object, collection: collection) }
 
     it "redirects to restricted content page when user does not have ability to delete collection" do
       login_as :user
@@ -572,6 +573,36 @@ describe Admin::CollectionsController, type: :controller do
       login_user collection.managers.first
       expect(controller.current_ability.can? :destroy, collection).to be_truthy
       expect(get :remove, params: { id: collection.id }).to render_template(:remove)
+      expect(response.body).to include "contains 1 item"
+    end
+  end
+
+  describe '#destroy' do
+    let!(:collection) { FactoryBot.create(:collection) }
+    let!(:target_collection) { FactoryBot.create(:collection, managers: [collection.managers.first]) }
+    let!(:media_object) { FactoryBot.create(:media_object, collection: collection) }
+
+    it "destroys collection and reassigns items to target collection" do
+      login_user collection.managers.first
+      expect(controller.current_ability.can? :destroy, collection).to eq true
+      expect(controller.current_ability.can? :update, target_collection).to eq true
+      expect { delete :destroy, params: { id: collection.id, target_collection_id: target_collection.id } }.to change { Admin::Collection.count }.by(-1)
+      expect(Admin::Collection.exists?(collection.id)).to eq false
+      expect(target_collection.reload.media_objects).to include media_object
+    end
+
+    context 'when not unit admin of target unit' do
+      let!(:target_collection) { FactoryBot.create(:collection) }
+
+      it "destroys collection and reassigns items to target collection" do
+        login_user collection.managers.first
+        expect(controller.current_ability.can? :destroy, collection).to eq true
+        expect(controller.current_ability.can? :update, target_collection).to eq false
+        expect { delete :destroy, params: { id: collection.id, target_collection_id: target_collection.id } }.not_to change { Admin::Collection.count }
+        expect(Admin::Collection.exists?(collection.id)).to eq true
+        expect(target_collection.reload.media_objects).not_to include media_object
+        expect(response).to have_rendered('errors/restricted_pid')
+      end
     end
   end
 

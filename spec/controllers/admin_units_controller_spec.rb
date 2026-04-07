@@ -439,6 +439,7 @@ describe Admin::UnitsController, type: :controller do
 
   describe "#remove" do
     let!(:unit) { FactoryBot.create(:unit) }
+    let!(:collection) { FactoryBot.create(:collection, unit: unit) }
 
     it "redirects to restricted content page when user does not have ability to delete unit" do
       login_as :user
@@ -449,6 +450,36 @@ describe Admin::UnitsController, type: :controller do
       login_user unit.unit_admins.first
       expect(controller.current_ability.can? :destroy, unit).to be_truthy
       expect(get :remove, params: { id: unit.id }).to render_template(:remove)
+      expect(response.body).to include "contains 1 collection"
+    end
+  end
+
+  describe '#destroy' do
+    let!(:unit) { FactoryBot.create(:unit) }
+    let!(:target_unit) { FactoryBot.create(:unit, unit_admins: [unit.unit_admins.first]) }
+    let!(:collection) { FactoryBot.create(:collection, unit: unit) }
+
+    it "destroys unit and reassigns collections to target unit" do
+      login_user unit.unit_admins.first
+      expect(controller.current_ability.can? :destroy, unit).to eq true
+      expect(controller.current_ability.can? :update, target_unit).to eq true
+      expect { delete :destroy, params: { id: unit.id, target_unit_id: target_unit.id } }.to change { Admin::Unit.count }.by(-1)
+      expect(Admin::Unit.exists?(unit.id)).to eq false
+      expect(target_unit.reload.collections).to include collection
+    end
+
+    context 'when not unit admin of target unit' do
+      let!(:target_unit) { FactoryBot.create(:unit) }
+
+      it 'redirects to restricted content page' do
+        login_user unit.unit_admins.first
+        expect(controller.current_ability.can? :destroy, unit).to eq true
+        expect(controller.current_ability.can? :update, target_unit).to eq false
+        expect { delete :destroy, params: { id: unit.id, target_unit_id: target_unit.id } }.not_to change { Admin::Unit.count }
+        expect(Admin::Unit.exists?(unit.id)).to eq true
+        expect(target_unit.reload.collections).not_to include collection
+        expect(response).to have_rendered('errors/restricted_pid')
+      end
     end
   end
 

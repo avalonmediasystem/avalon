@@ -214,7 +214,7 @@ class Admin::CollectionsController < ApplicationController
     @collection = Admin::Collection.find(params['id'])
     authorize! :destroy, @collection
     @objects    = @collection.media_objects
-    @candidates = get_user_collections.reject { |c| c == @collection }
+    @candidates = get_user_collections.reject { |c| c.id == @collection.id }.sort_by { |c| c.name.downcase }
   end
 
   # DELETE /collections/1
@@ -224,6 +224,7 @@ class Admin::CollectionsController < ApplicationController
     if @source_collection.media_objects.count > 0
       if @source_collection.media_objects.all?(&:valid?)
         @target_collection = Admin::Collection.find(params[:target_collection_id])
+        authorize! :update, @target_collection
         Admin::Collection.reassign_media_objects( @source_collection.media_objects, @source_collection, @target_collection )
         target_path = admin_collection_path(@target_collection)
         @source_collection.reload

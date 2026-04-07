@@ -44,7 +44,7 @@ Unless required by applicable law or agreed to in writing, software distributed
 <div class="row" style="padding-top: 3rem;">
   <div class="col-md-8 offset-2">
     <%
-    item_count = "#{@objects.count} #{'item'.pluralize(@objects.count)}"
+    collection_count = "#{@objects.count} #{'collection'.pluralize(@objects.count)}"
     content_pronoun = @objects.count > 1 ? 'them' : 'it'
     %>
 
@@ -57,14 +57,14 @@ Unless required by applicable law or agreed to in writing, software distributed
       <%= bootstrap_form_for @unit, method: :delete do |f| %>
       <% if @objects.count > 0 %>
 
-      <h2>Reassign Existing Items</h2>
+      <h2>Reassign Existing collections</h2>
       <p>
-        <b><%=@unit.name%></b> currently contains <%=item_count%>. Before you can
+        <b><%=@unit.name%></b> currently contains <%=collection_count%>. Before you can
         delete it, you must select a new unit to move <%=content_pronoun%>
         into.
       </p>
       <div class="mb-3">
-        <%= select_tag :target_unit_id, options_from_unit_for_select(@candidates, "id", "name"), class: "form-control p-0" %>
+        <%= select_tag :target_unit_id, options_from_collection_for_select(@candidates, "id", "name"), class: "form-control p-0" %>
       </div>
     <% end %>
 
@@ -75,7 +75,7 @@ Unless required by applicable law or agreed to in writing, software distributed
     <% end %>
     <% else %>
     <div class="alert alert-danger">
-      The unit "<%=@unit.name%>" cannot be deleted. It contains <%=item_count%>,
+      The unit "<%=@unit.name%>" cannot be deleted. It contains <%=collection_count%>,
       but you do not have sufficient rights to any other units to reassign <%=content_pronoun%>.
     </div>
     <%= link_to 'Go back', :back, class: 'btn btn-primary' %>
