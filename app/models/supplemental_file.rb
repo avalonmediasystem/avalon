@@ -32,6 +32,7 @@ class SupplementalFile < ApplicationRecord
   after_create_commit :index_file, prepend: true
   after_update_commit :update_index, prepend: true
   after_destroy_commit :remove_from_index
+  before_save :default_label
 
   def attach_file(new_file, io: false)
     if io
@@ -155,9 +156,11 @@ class SupplementalFile < ApplicationRecord
   end
 
   def download_filename
-    filename = file.filename.to_s
+    filename = label
+    extension = File.extname(file.filename.to_s)
+    basename = File.basename(filename, extension)
 
-    machine_generated? ? "#{File.basename(filename, File.extname(filename))} (machine generated)#{File.extname(filename)}" : filename
+    machine_generated? ? "#{basename} (machine generated)#{extension}" : "#{basename}#{extension}"
   end
 
   private
@@ -173,5 +176,9 @@ class SupplementalFile < ApplicationRecord
 
   def m_time
     updated_at&.to_datetime || DateTime.now
+  end
+
+  def default_label
+    self.label = file.filename.to_s if self.label.blank?
   end
 end
