@@ -75,3 +75,8 @@ img.no-icon {
 .page-item span.page-link {
   color: $dark !important;
 }
+
+// Active page item in pagination
+li.page-item.active a.page-link {
+  color: #6e6e6e; // Suggestion from ANDI a11y testing tool
+}
