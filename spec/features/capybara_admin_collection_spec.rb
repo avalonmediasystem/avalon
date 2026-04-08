@@ -31,7 +31,23 @@ describe 'Admin Collection' do
     expect(page).to have_content('Name')
     expect(page).to have_content('Description')
     expect(page).to have_content('Unit')
-    expect(page).to_not have_content(@unit.name)
+    expect(page).to have_link('Cancel')
+  end
+  it 'checks navigation when create new collection is accessed from unit page' do
+    login_as @user, scope: :user
+    visit '/'
+    click_link('Manage Content')
+    expect(page).to have_current_path('/admin/dashboard')
+    expect(page).to have_link(@unit.name)
+    click_link(@unit.name)
+    expect(page).to have_current_path("/admin/units/#{@unit.id}")
+    expect(page).to have_link('Create A Collection')
+    click_link('Create A Collection')
+    expect(page).to have_current_path("/admin/collections/new?unit_id=#{@unit.id}")
+    expect(page).to have_content('Name')
+    expect(page).to have_content('Description')
+    expect(page).to have_content('Unit')
+    expect(page).to have_content(@unit.name)
     expect(page).to have_link('Cancel')
   end
   it 'is able to create a new collection' do
@@ -39,7 +55,7 @@ describe 'Admin Collection' do
     visit '/admin/collections/'
     click_link('Create Collection')
     fill_in('admin_collection_name', with: 'Test Collection')
-    fill_in('admin_collection[unit_name]', with: @unit.name)
+    select(@unit.name, from: 'admin_collection[unit_id]')
     click_on('Create Collection')
     visit '/admin/collections'
     expect(page).to have_content('Test Collection')
@@ -54,7 +70,7 @@ describe 'Admin Collection' do
     visit '/admin/collections'
     click_link('Create Collection')
     fill_in('admin_collection_name', with: 'Test Collection')
-    fill_in('admin_collection[unit_name]', with: @unit.name)
+    select(@unit.name, from: 'admin_collection[unit_id]')
     click_on('Create Collection')
     visit '/admin/collections'
     click_on('Test Collection')
@@ -69,7 +85,7 @@ describe 'Admin Collection' do
     visit '/admin/collections'
     click_link('Create Collection')
     fill_in('admin_collection_name', with: 'Test Collection')
-    fill_in('admin_collection[unit_name]', with: @unit.name)
+    select(@unit.name, from: 'admin_collection[unit_id]')
     click_on('Create Collection')
     visit '/admin/collections'
     click_link('Delete')

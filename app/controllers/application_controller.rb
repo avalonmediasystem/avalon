@@ -147,6 +147,18 @@ class ApplicationController < ActionController::Base
   end
   helper_method :get_user_collections
 
+  # Returns collections for current_user
+  # @return [Collection] Collections to which current_user has manage access
+  def get_user_units
+    # return all collections to admin
+    if can?(:manage, Admin::Unit)
+      SpeedyAF::Proxy::Admin::Unit.where("has_model_ssim: Admin\\:\\:Unit")
+    else
+      SpeedyAF::Proxy::Admin::Unit.where("has_model_ssim: Admin\\:\\:Unit AND unit_administrators_ssim: #{user_key}")
+    end
+  end
+  helper_method :get_user_units
+
   # Returns milliseconds from a time string of format h:m:s.s or m:s.s or s.s
   # @param [String] The time string
   # @return [float] the time string converted to milliseconds
