@@ -225,7 +225,7 @@ class Admin::CollectionsController < ApplicationController
       if @source_collection.media_objects.all?(&:valid?)
         @target_collection = Admin::Collection.find(params[:target_collection_id])
         authorize! :update, @target_collection
-        Admin::Collection.reassign_media_objects( @source_collection.media_objects, @source_collection, @target_collection )
+        Admin::Collection.reassign_media_objects( @source_collection.media_objects, @target_collection )
         target_path = admin_collection_path(@target_collection)
         @source_collection.reload
       else
