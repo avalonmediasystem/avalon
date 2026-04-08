@@ -212,7 +212,7 @@ class Admin::UnitsController < ApplicationController
         @target_unit = Admin::Unit.find(params[:target_unit_id])
         # raise if user not admin of target unit
         authorize! :update, @target_unit
-        Admin::Unit.reassign_collections( @source_unit.collections, @source_unit, @target_unit )
+        Admin::Unit.reassign_collections( @source_unit.collections, @target_unit )
         target_path = admin_unit_path(@target_unit)
         @source_unit.reload
       else

@@ -161,7 +161,7 @@ class Admin::Collection < ActiveFedora::Base
     (users - inherited_edit_users).each { |u| add_edit_user(u) }
   end
 
-  def self.reassign_media_objects( media_objects, source_collection, target_collection)
+  def self.reassign_media_objects( media_objects, target_collection)
     media_objects.each do |media_object|
       media_object.collection = target_collection
       media_object.save

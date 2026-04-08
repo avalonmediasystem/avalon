@@ -527,7 +527,7 @@ describe Admin::Collection do
       # @media_objects << incomplete_object
       @media_objects.map { |mo| mo.save }
       @target_collection = FactoryBot.create(:collection)
-      Admin::Collection.reassign_media_objects(@media_objects, @source_collection, @target_collection)
+      Admin::Collection.reassign_media_objects(@media_objects, @target_collection)
     end
 
     it 'sets the new collection on media_object' do
