@@ -75,6 +75,25 @@ describe ApplicationController do
     end
   end
 
+  describe '#get_user_units' do
+    let!(:unit1) { FactoryBot.create(:unit) }
+    let!(:unit2) { FactoryBot.create(:unit) }
+
+    it 'returns all units for an administrator' do
+      login_as :administrator
+      expect(controller.get_user_units).to include(have_attributes(id: unit1.id), have_attributes(id: unit2.id))
+    end
+    it 'returns only relevant units for a unit admin' do
+      login_user unit1.unit_admins.first
+      expect(controller.get_user_units).to include(have_attributes(id: unit1.id))
+      expect(controller.get_user_units).not_to include(have_attributes(id: unit2.id))
+    end
+    it 'returns no collections for other users' do
+      login_as :user
+      expect(controller.get_user_units).to be_empty
+    end
+  end
+
   describe "exceptions handling" do
     it "renders deleted_pid template" do
       get :show, params: { id: 'deleted-id' }

@@ -329,15 +329,4 @@ class Admin::UnitsController < ApplicationController
     # Size derived from width and aspect ratio from JS code, assets/javascript/crop_upload.js:60-63
     fastimage.type == :png && fastimage.size == [700, 560] # [width, height]
   end
-
-  # Returns units for current_user
-  # @return [Unit] Units to which current_user has manage access
-  def get_user_units
-    # return all units to admin
-    if can?(:manage, Admin::Unit)
-      SpeedyAF::Proxy::Admin::Unit.where("has_model_ssim: Admin\\:\\:Unit")
-    else
-      SpeedyAF::Proxy::Admin::Unit.where("has_model_ssim: Admin\\:\\:Unit AND unit_administrators_ssim: #{user_key}")
-    end
-  end
 end

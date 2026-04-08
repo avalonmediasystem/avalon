@@ -64,6 +64,8 @@ class Admin::CollectionsController < ApplicationController
 
   # GET /collections/1
   def show
+    @candidate_units = get_user_units.sort_by { |u| u.name.downcase }
+
     respond_to do |format|
       format.json { render json: @collection.to_json }
       format.html {
@@ -82,6 +84,15 @@ class Admin::CollectionsController < ApplicationController
 
   # GET /collections/new
   def new
+    if params[:unit_id]
+      unit = Admin::Unit.find(params[:unit_id])
+      authorize! :update, unit
+      @candidate_units = [unit]
+      @collection.unit = unit
+    else
+      @candidate_units = get_user_units.sort_by { |u| u.name.downcase }
+    end
+
     respond_to do |format|
       format.js   { render json: modal_form_response(@collection) }
       format.html { render 'new' }
@@ -90,6 +101,7 @@ class Admin::CollectionsController < ApplicationController
 
   # GET /collections/1/edit
   def edit
+    @candidate_units = get_user_units.sort_by { |u| u.name.downcase }
     respond_to do |format|
       format.js   { render json: modal_form_response(@collection) }
     end
@@ -103,9 +115,11 @@ class Admin::CollectionsController < ApplicationController
 
   # POST /collections
   def create
-    unit_id = collection_params['unit_id'].presence || convert_unit(collection_params["unit_name"])
-    @collection = Admin::Collection.create(collection_params.merge(unit_id: unit_id, governing_policy_id: unit_id))
-    if @collection.persisted?
+    unit = Admin::Unit.find(collection_params["unit_id"]) rescue nil
+    @collection = Admin::Collection.new(collection_params.merge(unit_id: unit&.id, governing_policy_id: unit&.id))
+    @collection.errors.add(:unit, "Owning unit for collection not found") unless unit.present?
+    @collection.errors.add(:unit, "You do not have sufficient rights to create a collection in unit #{unit.id}") unless can? :update, unit
+    if @collection.errors.blank? && @collection.save
       User.where(Devise.authentication_keys.first => [Avalon::RoleControls.users('administrator')].flatten).each do |admin_user|
         NotificationsMailer.new_collection(
           creator_id: current_user.id,
@@ -127,6 +141,7 @@ class Admin::CollectionsController < ApplicationController
       respond_to do |format|
         format.html do
           flash.now[:error] = @collection.errors.full_messages.to_sentence
+          @candidate_units = get_user_units.sort_by { |u| u.name.downcase }
           render action: 'new'
         end
         format.json do
@@ -175,10 +190,24 @@ class Admin::CollectionsController < ApplicationController
 
     # Update governing_policy_id if unit_id changes
     update_params = collection_params.to_h
-    update_params = update_params['unit_name'].present? ? update_params.merge({ unit_id: convert_unit(update_params['unit_name']) }) : update_params
-    update_params.merge!(governing_policy_id: update_params[:unit_id]) if update_params[:unit_id].present?
-    @collection.update_attributes update_params if update_params.present?
-    saved = @collection.save
+    if update_params['unit_id'].present? && @collection.unit.id != update_params['unit_id']
+      new_unit = Admin::Unit.find(update_params['unit_id']) rescue nil
+      if new_unit.present? && can?(:update, new_unit)
+        update_params = update_params.merge({ unit_id: new_unit.id})
+        update_params.merge!(governing_policy_id: new_unit.id)
+      elsif new_unit.present?
+        not_authed_msg = "You do not have sufficient privileges to move this collection to unit #{update_params['unit_id']}"
+        @collection.errors.add(:unit, not_authed_msg)
+        skip_save = true
+      else
+        not_found_msg = "Could not find unit #{update_params['unit_id']}"
+        @collection.errors.add(:unit, not_found_msg)
+        skip_save = true
+      end
+    end
+
+    @collection.update_attributes update_params if !skip_save && update_params.present?
+    saved = @collection.save unless skip_save
     if saved
       if name_changed
         User.where(Devise.authentication_keys.first => [Avalon::RoleControls.users('administrator')].flatten).each do |admin_user|
@@ -195,7 +224,7 @@ class Admin::CollectionsController < ApplicationController
 
     respond_to do |format|
       format.html do
-        flash[:notice] = Array(flash[:notice]) + @collection.errors.full_messages unless @collection.valid?
+        flash[:notice] = Array(flash[:notice]) + @collection.errors.full_messages if @collection.errors.present? || !@collection.valid?
         redirect_to @collection
       end
       format.json do
@@ -387,9 +416,5 @@ class Admin::CollectionsController < ApplicationController
     fastimage = FastImage.new(poster_path)
     # Size derived from width and aspect ratio from JS code, assets/javascript/crop_upload.js:60-63
     fastimage.type == :png && fastimage.size == [700, 560] # [width, height]
-  end
-
-  def convert_unit(unit_name)
-    Admin::Unit.where(name_ssi: unit_name).first&.id
   end
 end

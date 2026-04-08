@@ -19,18 +19,16 @@ Unless required by applicable law or agreed to in writing, software distributed
 <%= bootstrap_form_for @collection, action: 'create' do |f| %>
   <%= f.text_field :name, 'data-testid': 'collection-name' %>
   <% if @collection.new_record? || can?(:update_unit, @collection)%>
-  <div class='mb-3'>
-    <label class='form-label' for='admin_unit_typeahead'>Unit</label>
-    <%= render partial: 'modules/autocomplete_input', locals: { field_name: 'admin_collection[unit_name]',
-                                                                field_id: 'admin_unit_typeahead',
-                                                                value: @collection.unit&.name || '',
-                                                                model: :"Admin::Unit",
-                                                                data: { 
-                                                                        testid: 'collection-unit'
-                                                                      }
-                                                              } %>
-  <div>
+    <div class="mb-3">
+       <label class='form-label' for='admin_unit_typeahead'>Unit</label>
+       <%= select_tag 'admin_collection[unit_id]',
+                      options_from_collection_for_select(@candidate_units, "id", "name", @collection.unit&.id),
+                      data: { testid: 'collection-unit' },
+                      class: "form-control p-0",
+                      disabled: !can?(:update, @collection) %>
+    </div>
   <% end %>
+
   <%= f.text_area :description, rows: 3, 'data-testid':'collection-description'  %>
   <%= f.text_field :contact_email, 'data-testid':'collection-contact-email' %>
   <%= f.text_field :website_url, 'data-testid': 'collection-website-url' %>
