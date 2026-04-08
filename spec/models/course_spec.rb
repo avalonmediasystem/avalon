@@ -42,7 +42,7 @@ describe Course do
 
   describe 'autocomplete' do
     before do
-      10.times { Course.create(title: 'Test') }
+      11.times { Course.create(title: 'Test') }
     end
 
     it 'limits to 10 results' do
