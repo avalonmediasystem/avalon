@@ -2367,4 +2367,51 @@ describe MediaObjectsController, type: :controller do
       end
     end
   end
+
+  describe 'accessibility override' do
+    let(:media_object) { FactoryBot.create(:media_object) }
+
+    context 'as manager' do
+      before do
+        login_user(media_object.collection.managers.first)
+      end
+      
+      it 'can enable override' do
+        patch 'update', params: { id: media_object.id, override_accessibility: '1', step: 'file-upload' }
+        expect(media_object.reload.accessibility_exempt?).to eq true
+      end
+
+      it 'can disable override' do
+        media_object.override_accessibility = true
+        media_object.save
+        patch 'update', params: { id: media_object.id, step: 'file-upload' }
+        expect(media_object.reload.accessibility_exempt?).to eq false
+      end
+    end
+
+    context 'as editor' do
+      let(:user) { FactoryBot.create(:user) }
+      before do
+        collection = media_object.collection
+        collection.editors += [user.user_key]
+        collection.save
+        login_as(:user)
+      end
+      context 'with override disabled' do
+        it 'does not enable override' do
+          patch 'update', params: { id: media_object.id, override_accessibility: '1', step: 'file-upload' }
+          expect(media_object.reload.accessibility_exempt?).to eq false
+        end
+      end
+
+      context 'with override enabled' do
+        let(:media_object) { FactoryBot.create(:media_object, override_accessibility: true) }
+
+        it 'does not disable override' do
+          patch 'update', params: { id: media_object.id, override_accessibility: '1', step: 'file-upload' }
+          expect(media_object.reload.accessibility_exempt?).to eq true
+        end
+      end
+    end
+  end
 end

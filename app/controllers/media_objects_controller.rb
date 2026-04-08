@@ -643,6 +643,10 @@ class MediaObjectsController < ApplicationController
     note = mo_parameters.delete(:note) || []
     note_type = mo_parameters.delete(:note_type) || []
     mo_parameters[:note] = note.zip(note_type).map{|a|{note: a[0],type: a[1]}}
+    # Accessibility Override. Non-managers/admin should not be able to enable, but it should
+    # stay enabled if already turned on
+    return mo_parameters if @media_object.accessibility_exempt?
+    params.delete(:override_accessibility) unless can? :override_accessibility, @media_object
 
     mo_parameters
   end
