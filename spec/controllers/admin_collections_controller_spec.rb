@@ -594,7 +594,7 @@ describe Admin::CollectionsController, type: :controller do
     context 'when not unit admin of target unit' do
       let!(:target_collection) { FactoryBot.create(:collection) }
 
-      it "destroys collection and reassigns items to target collection" do
+      it "redirects to restricted content page" do
         login_user collection.managers.first
         expect(controller.current_ability.can? :destroy, collection).to eq true
         expect(controller.current_ability.can? :update, target_collection).to eq false

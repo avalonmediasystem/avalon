@@ -57,7 +57,7 @@ Unless required by applicable law or agreed to in writing, software distributed
       <%= bootstrap_form_for @unit, method: :delete do |f| %>
       <% if @objects.count > 0 %>
 
-      <h2>Reassign Existing collections</h2>
+      <h2>Reassign Existing Collections</h2>
       <p>
         <b><%=@unit.name%></b> currently contains <%=collection_count%>. Before you can
         delete it, you must select a new unit to move <%=content_pronoun%>

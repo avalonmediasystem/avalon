@@ -330,10 +330,10 @@ class Admin::UnitsController < ApplicationController
     fastimage.type == :png && fastimage.size == [700, 560] # [width, height]
   end
 
-  # Returns collections for current_user
-  # @return [Collection] Collections to which current_user has manage access
+  # Returns units for current_user
+  # @return [Unit] Units to which current_user has manage access
   def get_user_units
-    # return all collections to admin
+    # return all units to admin
     if can?(:manage, Admin::Unit)
       SpeedyAF::Proxy::Admin::Unit.where("has_model_ssim: Admin\\:\\:Unit")
     else
