@@ -158,4 +158,4 @@ search_pagination:
 # captions or transcripts
 accessibility_compliance:
   enforce: false
-  compliance_date: '2026-04-26'
+  compliance_date: '2026-04-24'
