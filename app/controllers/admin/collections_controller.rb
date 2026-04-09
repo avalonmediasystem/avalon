@@ -190,7 +190,7 @@ class Admin::CollectionsController < ApplicationController
 
     # Update governing_policy_id if unit_id changes
     update_params = collection_params.to_h
-    if update_params['unit_id'].present? && @collection.unit.id != update_params['unit_id']
+    if update_params['unit_id'].present? && @collection.unit_id != update_params['unit_id']
       new_unit = Admin::Unit.find(update_params['unit_id']) rescue nil
       if new_unit.present? && can?(:update, new_unit)
         update_params = update_params.merge({ unit_id: new_unit.id})
@@ -206,8 +206,11 @@ class Admin::CollectionsController < ApplicationController
       end
     end
 
-    @collection.update_attributes update_params if !skip_save && update_params.present?
-    saved = @collection.save unless skip_save
+    unless skip_save
+      @collection.update_attributes update_params if update_params.present?
+      saved = @collection.save
+    end
+
     if saved
       if name_changed
         User.where(Devise.authentication_keys.first => [Avalon::RoleControls.users('administrator')].flatten).each do |admin_user|

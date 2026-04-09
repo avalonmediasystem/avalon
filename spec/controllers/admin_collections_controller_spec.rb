@@ -331,13 +331,8 @@ describe Admin::CollectionsController, type: :controller do
       end
 
       it "should notify administrators" do
-        login_as(:administrator) #otherwise, there are no administrators to mail
-        # mock_email = double('email')
-        # allow(mock_email).to receive(:deliver_later)
-        # expect(NotificationsMailer).to receive(:new_collection).and_return(mock_email)
-        # FIXME: This delivers two instead of one for some reason
+        login_as(:administrator)
         expect { post 'create', params: { format: 'json', admin_collection: { name: collection.name, description: collection.description, unit_id: collection.unit.id, managers: collection.managers } } }.to have_enqueued_job(ActionMailer::MailDeliveryJob).twice
-        # post 'create', format:'json', admin_collection: {name: collection.name, description: collection.description, unit: collection.unit, managers: collection.managers}
       end
       it "should create a new collection with unit id provided" do
         post 'create', params: { format: 'json', admin_collection: { name: collection.name, description: collection.description, unit_id: collection.unit.id, contact_email: collection.contact_email, website_label: collection.website_label, website_url: collection.website_url, managers: collection.managers } }
