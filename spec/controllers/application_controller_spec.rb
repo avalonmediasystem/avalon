@@ -76,12 +76,22 @@ describe ApplicationController do
   end
 
   describe '#get_user_units' do
-    let!(:unit1) { FactoryBot.create(:unit) }
-    let!(:unit2) { FactoryBot.create(:unit) }
+    let!(:unit1) { FactoryBot.create(:unit, name: 'Zelda') }
+    let!(:unit2) { FactoryBot.create(:unit, name: 'Battletoads') }
 
-    it 'returns all units for an administrator' do
+    it 'returns all units for an administrator (sorted by default)' do
       login_as :administrator
-      expect(controller.get_user_units).to include(have_attributes(id: unit1.id), have_attributes(id: unit2.id))
+      units = controller.get_user_units
+      expect(units).to include(have_attributes(id: unit1.id), have_attributes(id: unit2.id))
+      expect(units[0].id).to eq unit2.id
+      expect(units[1].id).to eq unit1.id
+    end
+    it 'returns all units for an administrator (unsorted)' do
+      login_as :administrator
+      units = controller.get_user_units(sort: false)
+      expect(units).to include(have_attributes(id: unit1.id), have_attributes(id: unit2.id))
+      expect(units[0].id).to eq unit1.id
+      expect(units[1].id).to eq unit2.id
     end
     it 'returns only relevant units for a unit admin' do
       login_user unit1.unit_admins.first
