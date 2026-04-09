@@ -102,6 +102,14 @@ describe ApplicationController do
       login_as :user
       expect(controller.get_user_units).to be_empty
     end
+
+    context 'with additional unit ids' do
+      it 'returns relevant units for a unit admin and passed in units' do
+        login_user unit1.unit_admins.first
+        expect(controller.get_user_units(with_ids: [unit2.id])).to include(have_attributes(id: unit1.id))
+        expect(controller.get_user_units(with_ids: [unit2.id])).to include(have_attributes(id: unit2.id))
+      end
+    end
   end
 
   describe "exceptions handling" do

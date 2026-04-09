@@ -148,14 +148,17 @@ class ApplicationController < ActionController::Base
   helper_method :get_user_collections
 
   # Returns units for current_user
+  # @param [Array <String>] with_ids list of unit ids to be included in final list
+  # @param [boolean] sort sort return list by unit name (default: true)
   # @return [units] Units in which current_user is a unit admin
-  def get_user_units(sort: true)
+  def get_user_units(with_ids: [], sort: true)
     units = []
     # return all units to admin
     if can?(:manage, Admin::Unit)
       units = SpeedyAF::Proxy::Admin::Unit.where("has_model_ssim: Admin\\:\\:Unit")
     else
-      units = SpeedyAF::Proxy::Admin::Unit.where("has_model_ssim: Admin\\:\\:Unit AND unit_administrators_ssim: #{user_key}")
+      id_query = with_ids.collect { |id| "id:#{id}" }.join(" OR ")
+      units = SpeedyAF::Proxy::Admin::Unit.where("has_model_ssim: Admin\\:\\:Unit AND (#{["unit_administrators_ssim: #{user_key}", id_query].compact_blank.join(" OR ")})")
     end
     sort ? units.sort_by { |u| u.name.downcase } : units
   end
