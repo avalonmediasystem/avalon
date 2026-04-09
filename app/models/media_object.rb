@@ -143,6 +143,9 @@ class MediaObject < ActiveFedora::Base
   property :lending_period, predicate: ::RDF::Vocab::SCHEMA.eligibleDuration, multiple: false do |index|
     index.as :stored_sortable
   end
+  property :override_accessibility, predicate: ::RDF::Vocab::EBUCore.RightsClearance, multiple: false do |index|
+    index.as ActiveFedora::Indexing::Descriptor.new(:boolean, :stored, :indexed)
+  end
 
   #TODO: get rid of all ordered_* and indexed_* references, after everything is migrated then convert from `ordered_aggregation` to `has_many`
   # OR possibly remove the master_files relationship entirely?
@@ -220,6 +223,10 @@ class MediaObject < ActiveFedora::Base
   # omit the status which will default to unpublished. This makes the act
   # of publishing _explicit_ instead of an accidental side effect.
   def publish!(user_key, validate: true)
+    if user_key.present? && !is_accessible?
+      raise Avalon::PublishingError.new(I18n.t('errors.accessibility_enforcement_error'))
+    end
+
     self.avalon_publisher = user_key.presence
     if validate
       save!
@@ -337,6 +344,7 @@ class MediaObject < ActiveFedora::Base
       solr_doc['donor_ssim'] = self.note.collect { |n| n[:note] if n[:type] == 'acquisition' }
       solr_doc['other_identifier_ssm'] = self.other_identifier.collect { |oi| oi.to_json }
       solr_doc['related_item_url_ssm'] = self.related_item_url.collect { |r| r.to_json }
+      solr_doc['is_accessible_bsi'] = self.is_accessible?
       solr_doc['section_id_ssim'] = section_ids
       if include_child_fields
         fill_in_solr_fields_that_need_sections(solr_doc)

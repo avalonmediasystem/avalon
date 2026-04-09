@@ -67,6 +67,17 @@ module MediaObjectBehavior
     sections.any? { |mf| mf.has_transcripts? }
   end
 
+  def is_accessible?
+    return true unless Settings.accessibility_compliance.enforce
+    return true if DateTime.parse(Settings.accessibility_compliance.compliance_date) > create_date
+    return true if accessibility_exempt?
+    has_captions || has_transcripts
+  end
+
+  def accessibility_exempt?
+    !!override_accessibility
+  end
+
   # CDL methods
   def lending_status
     Checkout.active_for_media_object(id).any? ? "checked_out" : "available"

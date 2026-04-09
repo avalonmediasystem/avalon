@@ -132,6 +132,9 @@ describe MediaObject do
         expect(media_object.errors[:note]).not_to be_empty
       end
       it 'should index acquisition notes separately' do
+        # FactoryBot.build does not save the item so create_date is nil, which causes an issue
+        # with the accessibility check
+        allow(media_object).to receive(:create_date).and_return(DateTime.now)
         media_object.descMetadata.note = ['Donor']
         media_object.descMetadata.note.type = ['acquisition']
         expect(media_object.valid?).to be_truthy
@@ -645,6 +648,7 @@ describe MediaObject do
 
   describe '#publish!' do
     describe 'facet' do
+      before { allow(Settings.accessibility_compliance).to receive(:enforce).and_return(false) }
       it 'publishes' do
         media_object.publish!('adam@adam.com')
         expect(media_object.to_solr["workflow_published_sim"]).to eq('Published')
@@ -666,6 +670,12 @@ describe MediaObject do
           allow_any_instance_of(MediaObject).to receive(:save).and_return(false)
           expect { media_object.publish!(nil, validate: false) }.to raise_error(RuntimeError)
         end
+      end
+    end
+    describe 'inaccessible' do
+      it 'does not publish' do
+        allow(media_object).to receive(:is_accessible?).and_return(false)
+        expect { media_object.publish!('adam@adam.com') }.to raise_error(Avalon::PublishingError)
       end
     end
   end
@@ -996,6 +1006,7 @@ describe MediaObject do
     end
 
     it 'is indexed' do
+      allow(media_object).to receive(:create_date).and_return(DateTime.now)
       media_object.rights_statement = rights_statement_uri
       expect(media_object.to_solr["rights_statement_ssi"]).to eq rights_statement_uri
     end
@@ -1031,6 +1042,7 @@ describe MediaObject do
     end
 
     it 'is indexed' do
+      allow(media_object).to receive(:create_date).and_return(DateTime.now)
       media_object.terms_of_use = terms_of_use_value
       expect(media_object.to_solr["terms_of_use_ssi"]).to eq terms_of_use_value
     end
@@ -1351,6 +1363,56 @@ describe MediaObject do
 
     it "returns true when any child master file contains a transcript" do
       expect(transcript_media_object.has_transcripts).to be true
+    end
+  end
+
+  describe "#is_accessible?" do
+    context 'accessibility enforcement disabled' do
+      it 'returns true' do
+        allow(Settings.accessibility_compliance).to receive(:enforce).and_return(false)
+        expect(media_object.is_accessible?).to be true
+      end
+    end
+    context 'accessibility enforcement enabled' do
+      let(:compliance_date) { DateTime.parse(Settings.accessibility_compliance.compliance_date) }
+      before do
+        allow(Settings.accessibility_compliance).to receive(:enforce).and_return(true)
+      end
+
+      context 'item older than compliance date' do
+        it 'returns true' do
+          allow(media_object).to receive(:create_date).and_return(compliance_date - 1.day)
+          expect(media_object.is_accessible?).to be true
+        end
+      end
+
+      context 'item younger than compliance date' do
+        before { allow(media_object).to receive(:create_date).and_return(compliance_date) }
+        it 'returns false if no captions or transcripts' do
+          expect(media_object.is_accessible?).to be false
+        end
+
+        context 'with captions' do
+          it 'returns true' do
+            allow(media_object).to receive(:has_captions).and_return(true)
+            expect(media_object.is_accessible?).to be true
+          end
+        end
+
+        context 'with transcripts' do
+          it 'returns true' do
+            allow(media_object).to receive(:has_transcripts).and_return(true)
+            expect(media_object.is_accessible?).to be true
+          end
+        end
+
+        context 'exempted from compliance' do
+          let(:media_object) { FactoryBot.create(:media_object, override_accessibility: true) }
+          it 'returns true' do
+            expect(media_object.is_accessible?).to be true
+          end
+        end
+      end
     end
   end
 
