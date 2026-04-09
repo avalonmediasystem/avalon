@@ -2384,7 +2384,7 @@ describe MediaObjectsController, type: :controller do
       it 'can disable override' do
         media_object.override_accessibility = true
         media_object.save
-        patch 'update', params: { id: media_object.id, step: 'file-upload' }
+        patch 'update', params: { id: media_object.id, override_accessibility: '0', step: 'file-upload' }
         expect(media_object.reload.accessibility_exempt?).to eq false
       end
     end
@@ -2395,7 +2395,7 @@ describe MediaObjectsController, type: :controller do
         collection = media_object.collection
         collection.editors += [user.user_key]
         collection.save
-        login_as(:user)
+        login_user(user.username)
       end
       context 'with override disabled' do
         it 'does not enable override' do

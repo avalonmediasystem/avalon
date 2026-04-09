@@ -37,7 +37,7 @@ class FileUploadStep < BasicStep
 
   def execute context
     update_master_files context
-    context[:media_object].override_accessibility = context[:override_accessibility] == "1"
+    context[:media_object].override_accessibility = context[:override_accessibility] == "1" if context[:override_accessibility].present? && context[:ability].can?(:override_accessibility, context[:media_object])
 
     context
   end
