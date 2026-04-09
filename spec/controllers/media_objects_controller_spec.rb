@@ -2408,7 +2408,7 @@ describe MediaObjectsController, type: :controller do
         let(:media_object) { FactoryBot.create(:media_object, override_accessibility: true) }
 
         it 'does not disable override' do
-          patch 'update', params: { id: media_object.id, override_accessibility: '1', step: 'file-upload' }
+          patch 'update', params: { id: media_object.id, override_accessibility: '0', step: 'file-upload' }
           expect(media_object.reload.accessibility_exempt?).to eq true
         end
       end
