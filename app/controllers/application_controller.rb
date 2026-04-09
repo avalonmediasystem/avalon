@@ -147,15 +147,17 @@ class ApplicationController < ActionController::Base
   end
   helper_method :get_user_collections
 
-  # Returns collections for current_user
-  # @return [Collection] Collections to which current_user has manage access
-  def get_user_units
-    # return all collections to admin
+  # Returns units for current_user
+  # @return [units] Units in which current_user is a unit admin
+  def get_user_units(sort: true)
+    units = []
+    # return all units to admin
     if can?(:manage, Admin::Unit)
-      SpeedyAF::Proxy::Admin::Unit.where("has_model_ssim: Admin\\:\\:Unit")
+      units = SpeedyAF::Proxy::Admin::Unit.where("has_model_ssim: Admin\\:\\:Unit")
     else
-      SpeedyAF::Proxy::Admin::Unit.where("has_model_ssim: Admin\\:\\:Unit AND unit_administrators_ssim: #{user_key}")
+      units = SpeedyAF::Proxy::Admin::Unit.where("has_model_ssim: Admin\\:\\:Unit AND unit_administrators_ssim: #{user_key}")
     end
+    sort ? units.sort_by { |u| u.name.downcase } : units
   end
   helper_method :get_user_units
 

@@ -64,7 +64,7 @@ class Admin::CollectionsController < ApplicationController
 
   # GET /collections/1
   def show
-    @candidate_units = get_user_units.sort_by { |u| u.name.downcase }
+    @candidate_units = get_user_units
 
     respond_to do |format|
       format.json { render json: @collection.to_json }
@@ -90,7 +90,7 @@ class Admin::CollectionsController < ApplicationController
       @candidate_units = [unit]
       @collection.unit = unit
     else
-      @candidate_units = get_user_units.sort_by { |u| u.name.downcase }
+      @candidate_units = get_user_units
     end
 
     respond_to do |format|
@@ -101,7 +101,7 @@ class Admin::CollectionsController < ApplicationController
 
   # GET /collections/1/edit
   def edit
-    @candidate_units = get_user_units.sort_by { |u| u.name.downcase }
+    @candidate_units = get_user_units
     respond_to do |format|
       format.js   { render json: modal_form_response(@collection) }
     end
@@ -141,7 +141,7 @@ class Admin::CollectionsController < ApplicationController
       respond_to do |format|
         format.html do
           flash.now[:error] = @collection.errors.full_messages.to_sentence
-          @candidate_units = get_user_units.sort_by { |u| u.name.downcase }
+          @candidate_units = get_user_units
           render action: 'new'
         end
         format.json do

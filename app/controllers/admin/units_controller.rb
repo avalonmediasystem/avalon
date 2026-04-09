@@ -200,7 +200,7 @@ class Admin::UnitsController < ApplicationController
     @unit = Admin::Unit.find(params['id'])
     authorize! :destroy, @unit
     @objects    = @unit.collections
-    @candidates = get_user_units.reject { |u| u.id == @unit.id }.sort_by { |u| u.name.downcase }
+    @candidates = get_user_units.reject { |u| u.id == @unit.id }
   end
 
   # DELETE /units/1
