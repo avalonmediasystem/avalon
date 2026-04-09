@@ -64,7 +64,8 @@ class Admin::CollectionsController < ApplicationController
 
   # GET /collections/1
   def show
-    @candidate_units = get_user_units
+    # Make sure to include current unit even if current user is not unit admin on that unit
+    @candidate_units = get_user_units(with_ids: [@collection.unit_id])
 
     respond_to do |format|
       format.json { render json: @collection.to_json }
@@ -101,7 +102,8 @@ class Admin::CollectionsController < ApplicationController
 
   # GET /collections/1/edit
   def edit
-    @candidate_units = get_user_units
+    # Make sure to include current unit even if current user is not unit admin on that unit
+    @candidate_units = get_user_units(with_ids: [@collection.unit_id])
     respond_to do |format|
       format.js   { render json: modal_form_response(@collection) }
     end
