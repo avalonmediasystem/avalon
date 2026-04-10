@@ -40,7 +40,7 @@ module BulkActionJobs
                     errors += [media_object]
                   end
                 else
-                  media_object.read_users += [val.downcase]
+                  media_object.read_users += [val]
                 end
               elsif title=='ipaddress'
                 if ( IPAddr.new(val) rescue false )
