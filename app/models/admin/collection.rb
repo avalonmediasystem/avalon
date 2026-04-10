@@ -78,6 +78,7 @@ class Admin::Collection < ActiveFedora::Base
   around_save :reindex_members, if: Proc.new { |c| c.name_changed? or c.unit_changed? }
   around_save :return_checkouts, if: Proc.new { |c| c.cdl_enabled_changed? && c.cdl_enabled == false }
   before_create :create_dropbox_directory!
+  before_save :normalize_read_users, if: proc { |c| c.default_read_users_changed? }
 
   before_destroy :destroy_dropbox_directory!
 
@@ -385,5 +386,9 @@ class Admin::Collection < ActiveFedora::Base
         addr.to_range.map(&:to_s)
       end
       ips.flatten.compact.uniq || []
+    end
+
+    def normalize_read_users
+      self.default_read_users = default_read_users.map(&:downcase)
     end
 end
