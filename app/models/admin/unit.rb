@@ -62,6 +62,7 @@ class Admin::Unit < ActiveFedora::Base
 
   has_subresource 'poster', class_name: 'IndexedFile'
 
+  before_save :normalize_read_users, if: proc { |u| u.default_read_users_changed? }
   around_save :reindex_members, if: proc { |u| u.name_changed? }
 
   def created_at
@@ -234,5 +235,9 @@ class Admin::Unit < ActiveFedora::Base
 
   def add_edit_user(name)
     self.default_permissions.build({ name: name, type: 'person', access: 'edit' })
+  end
+
+  def normalize_read_users
+    self.default_read_users = default_read_users.map(&:downcase)
   end
 end

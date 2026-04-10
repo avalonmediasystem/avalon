@@ -171,5 +171,19 @@ namespace :avalon do
         collection.save!(validate: false)
       end
     end
+    desc "Downcase existing special access user entries"
+    task special_access_users: :environment do
+      ids = ActiveFedora::SolrService.query('inheritable_read_access_person_ssim:/.*[A-Z].*/ OR read_access_person_ssim:/.*[A-Z].*/', fl: 'id', rows: 100_000)
+      ids.each do |i|
+        object = ActiveFedora::Base.find(i[:id])
+        case object.class
+        when Admin::Unit, Admin::Collection
+          object.default_read_users = object.default_read_users.map(&:downcase)
+        when MediaObject
+          object.read_users = object.read_users.map(&:downcase)
+        end
+        object.save!
+      end
+    end
   end
 end

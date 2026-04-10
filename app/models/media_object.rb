@@ -37,6 +37,7 @@ class MediaObject < ActiveFedora::Base
   before_save :update_dependent_properties!, prepend: true
   before_save :update_permalink, if: Proc.new { |mo| mo.persisted? && mo.published? }, prepend: true
   before_save :assign_id!, prepend: true
+  before_save :normalize_read_users
 
   after_find do
     # Force loading of section_ids from list_source
@@ -512,4 +513,7 @@ class MediaObject < ActiveFedora::Base
       tags.any? { |t| sections_with_files(tag: t).present? }
     end
 
+    def normalize_read_users
+      self.read_users = read_users.map(&:downcase)
+    end
 end

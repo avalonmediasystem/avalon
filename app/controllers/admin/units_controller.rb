@@ -289,7 +289,7 @@ class Admin::UnitsController < ApplicationController
         if params["add_#{title}"].present?
           val = params["add_#{title}"].strip
           if title == 'user'
-            unit.default_read_users += [val.downcase]
+            unit.default_read_users += [val]
           elsif title == 'ipaddress'
             if (IPAddr.new(val) rescue false)
               unit.default_read_groups += [val]

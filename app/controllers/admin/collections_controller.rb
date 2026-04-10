@@ -344,7 +344,7 @@ class Admin::CollectionsController < ApplicationController
         if params["add_#{title}"].present?
           val = params["add_#{title}"].strip
           if title=='user'
-            collection.default_read_users += [val.downcase]
+            collection.default_read_users += [val]
           elsif title=='ipaddress'
             if ( IPAddr.new(val) rescue false )
               collection.default_read_groups += [val]
