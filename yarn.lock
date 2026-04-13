@@ -1595,7 +1595,7 @@
 
 "@samvera/ramp@https://github.com/samvera-labs/ramp#ramp-build":
   version "5.0.0"
-  resolved "https://github.com/samvera-labs/ramp#4533aeed8156d1b9228da8d409fca243c3c4f592"
+  resolved "https://github.com/samvera-labs/ramp#9f2e8bc5565580121676724776d2731d7474ebde"
   dependencies:
     "@rollup/plugin-json" "^6.0.1"
     "@silvermine/videojs-quality-selector" "^1.3.1"
