@@ -64,7 +64,12 @@ class Admin::DashboardController < ApplicationController
   def index
     respond_to do |format|
       format.html
-      # TODO: Figure out a json response?
+      format.json do
+        render json: {
+          units: @units.map { |u| u.as_json(nil) },
+          collections: @collections.map { |c| c.as_json(nil) }
+        }
+      end
     end
   end
 end

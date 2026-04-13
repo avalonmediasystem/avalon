@@ -19,7 +19,7 @@ import useTableData from './hooks/useTableData';
 import useTableSortingAndFiltering from './hooks/useTableSortingAndFiltering';
 import useTablePagination from './hooks/useTablePagination';
 
-const GenericTable = ({ config, url, tags = [], httpMethod = 'POST' }) => {
+const GenericTable = ({ config, url, data, tags = [], httpMethod = 'POST' }) => {
   const {
     columns,
     containerClass,
@@ -32,6 +32,8 @@ const GenericTable = ({ config, url, tags = [], httpMethod = 'POST' }) => {
     parseDataRow,
     renderCell,
     searchableFields = ['title'],
+    searchPlaceholder = '',
+    tableStyle = { minWidth: '1024px' },
     tableType,
     testId,
   } = config;
@@ -40,9 +42,9 @@ const GenericTable = ({ config, url, tags = [], httpMethod = 'POST' }) => {
   const pagination = useTablePagination({ initPageSize });
   const sorting = useTableSortingAndFiltering({ columns, dataState: {}, initialSort, pagination, searchableFields });
 
-  // Read and parse data from the server response
+  // Read and parse data from the server response or data prop (in dashboard)
   let dataState = useTableData(
-    { url, parseDataRow, pagination: pagination.pagination, sortRows: sorting.sortRows, initialSort, httpMethod }
+    { url, data, parseDataRow, pagination: pagination.pagination, sortRows: sorting.sortRows, initialSort, httpMethod }
   );
   const { dataRows, rowsToShow, loading, totalRowCount, filteredRowCount, setRowsToShow, sortedRows } = dataState;
 
@@ -108,7 +110,7 @@ const GenericTable = ({ config, url, tags = [], httpMethod = 'POST' }) => {
     return (
       <>
         {displayReturnedItemsHTML}
-        <div className="d-flex justify-content-between align-items-center mb-3 flex-sm-wrap">
+        <div className="d-flex justify-content-between align-items-center flex-sm-wrap p-4">
           <div>
             {(rowsToShow?.length === 0 && !loading)
               ? 'Showing 0 to 0 of 0 entries'
@@ -125,6 +127,7 @@ const GenericTable = ({ config, url, tags = [], httpMethod = 'POST' }) => {
                 type="text"
                 value={searchFilter}
                 className="form-control"
+                placeholder={searchPlaceholder}
                 data-testid={`${testId}-search-field`}
                 onChange={handleSearch}
               />
@@ -163,7 +166,7 @@ const GenericTable = ({ config, url, tags = [], httpMethod = 'POST' }) => {
         (<>
           <div className="table-responsive">
             {/* min-width is set to an arbitrary value of 1024px to get the table to not shrink for smaller view-ports */}
-            <table className="table table-striped generic-table" style={{ minWidth: '1024px' }}>
+            <table className={`table generic-table${tableType == 'unit' || tableType == 'collection' ? '' : ' table-striped'}`} style={tableStyle}>
               <thead data-testid={`${testId}-head`}>
                 <tr>
                   {columns.map((column, index) => (
@@ -174,6 +177,7 @@ const GenericTable = ({ config, url, tags = [], httpMethod = 'POST' }) => {
                       onClick={() => handleSort(index)}
                       colSpan={1}
                       rowSpan={1}
+                      scope="col"
                     >
                       {column.label}
                       {getSortIcon(index)}
@@ -202,7 +206,7 @@ const GenericTable = ({ config, url, tags = [], httpMethod = 'POST' }) => {
               </tbody>
             </table>
           </div>
-          <div className="d-flex justify-content-between">
+          <div className="d-flex justify-content-between p-4">
             <div>
               <label className='d-flex align-items-center'>
                 Show

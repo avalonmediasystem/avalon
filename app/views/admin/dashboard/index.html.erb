@@ -14,10 +14,10 @@ Unless required by applicable law or agreed to in writing, software distributed
 ---  END LICENSE_HEADER BLOCK  ---
 %>
 
-<%= render "modules/admin_table",
-      object: 'unit',
-      items: @units %>
-
-<%= render "modules/admin_table",
-      object: 'collection',
-      items: @collections %>
+<%= react_component("Dashboard", { props: {
+  url: admin_dashboard_url(format: :json),
+  new_unit_path: new_admin_unit_path,
+  new_collection_path: new_admin_collection_path,
+  can_create_unit: (can?(:create, Admin::Unit) ? true : false),
+  can_create_collection: (can?(:create, Admin::Collection) ? true : false)
+}}) %>

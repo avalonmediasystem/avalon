@@ -27,13 +27,27 @@ import { useState, useEffect } from 'react';
  * @param {String} params.httpMethod HTTP method to use for requests (default: 'POST')
  * @returns {Object} data state and functions
  */
-const useTableData = ({ url, parseDataRow, pagination, sortRows, initialSort, httpMethod = 'POST' }) => {
+const useTableData = ({ url, data: staticData, parseDataRow, pagination, sortRows, initialSort, httpMethod = 'POST' }) => {
   const [dataRows, setDataRows] = useState([]);
   const [sortedRows, setSortedRows] = useState([]);
   const [rowsToShow, setRowsToShow] = useState([]);
   const [loading, setLoading] = useState(false);
   const [totalRowCount, setTotalRowCount] = useState(0);
   const [filteredRowCount, setFilteredRowCount] = useState(0);
+
+  // Seed from static data prop when provided and skip network fetching
+  useEffect(() => {
+    if (!staticData) return;
+    const parsedData = staticData.map(parseDataRow);
+    setTotalRowCount(parsedData.length);
+    setFilteredRowCount(parsedData.length);
+    setDataRows(parsedData);
+    const { columnKey, dataType, direction } = initialSort;
+    const sortedData = sortRows(parsedData, columnKey, direction, dataType);
+    setSortedRows(sortedData);
+    const { pageSize } = pagination;
+    setRowsToShow(sortedData.slice(0, Math.min(pageSize, sortedData.length)));
+  }, [staticData]);
 
   const fetchData = async () => {
     setLoading(true);
@@ -74,9 +88,9 @@ const useTableData = ({ url, parseDataRow, pagination, sortRows, initialSort, ht
   };
 
   /**
-   * Fetch data when the URL changes
+   * Fetch data when the URL changes when static data is not provided (i.e. dashboard tables)
    */
-  useEffect(() => { fetchData(); }, [url]);
+  useEffect(() => { if (!staticData) fetchData(); }, [url]);
 
   return {
     // State
