@@ -64,7 +64,7 @@ const EncodingJobsTable = ({ url, progressUrl }) => {
 
   const encodingTableConfig = {
     // Table metadata and configuration
-    tableType: 'encoding_jobs',
+    tableType: 'encoding_job',
     containerClass: 'encoding_jobs-table-container',
     testId: 'encoding_jobs-table',
     hasTagFilter: false,

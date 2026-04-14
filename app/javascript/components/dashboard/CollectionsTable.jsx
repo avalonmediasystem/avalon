@@ -20,19 +20,28 @@ import GenericTable from '../tables/GenericTable';
  * Render a table displaying all collection for the admin dashboard.
  * @param {Object} props
  * @param {Array}  props.data array of collection objects from the dashboard JSON endpoint
+ * @param {Object} props.helpers shared helpers for common utilities in dashboard tables
  */
-const CollectionsTable = ({ data }) => {
+const CollectionsTable = ({ data, helpers }) => {
+  const { truncateDescription, DashboardActionButtons } = helpers;
   const collectionConfig = {
+    // Table metadata
     tableType: 'collection',
     containerClass: 'dashboard-table-container',
     testId: 'collection-table',
     hasTagFilter: false,
+    isDashboardTable: true,
+
+    // Table column sorting and filtering config from parsed data
     initialSort: { columnKey: 'name', dataType: 'string', direction: 'asc' },
-    initPageSize: 5,
-    pageSizeOptions: [5, 10, 25, 50],
     searchableFields: ['name', 'unit', 'description'],
     searchPlaceholder: 'Search collections by name or unit...',
-    tableStyle: {},
+
+    // Table pagination customization
+    initPageSize: 5,
+    pageSizeOptions: [5, 10, 25, 50],
+
+    // Column definitions
     columns: [
       { key: 'name', label: 'Name', sortable: true, dataType: 'string', width: '22%' },
       { key: 'items', label: 'Items', sortable: true, dataType: 'number', width: '12%' },
@@ -41,6 +50,10 @@ const CollectionsTable = ({ data }) => {
       { key: 'actions', label: '', sortable: false, width: '8%' },
     ],
 
+    // View all link for collections
+    viewAllUrl: '/admin/collections',
+
+    // Parsing function to extract data from back-end
     parseDataRow: (row) => ({
       id: row.id,
       name: row.name || '',
@@ -50,16 +63,18 @@ const CollectionsTable = ({ data }) => {
       remove_url: `/admin/collections/${row.id}/remove`,
       search_url: `/catalog?f[collection_ssim][]=${encodeURIComponent(row.name || '')}`,
       unpublished_url: `/catalog?f[collection_ssim][]=${encodeURIComponent(row.name || '')}&f[workflow_published_sim][]=Unpublished`,
+      items: row.object_count?.total || 0,
       total_items: row.object_count?.total || 0,
       unpublished_items: row.object_count?.unpublished || 0,
       description: row.description || '',
     }),
 
+    // Cell rendering function for each column
     renderCell: (item, columnKey) => {
       switch (columnKey) {
         case 'name':
           return (
-            <a href={item.collection_url} className="fw-bold text-decoration-none text-dark">
+            <a href={item.collection_url} className="fw-bold text-decoration-none text-dark" data-testid="collection-name-table">
               {item.name}
             </a>
           );
@@ -67,7 +82,7 @@ const CollectionsTable = ({ data }) => {
           return (
             <div>
               <a href={item.search_url} className="fw-bold text-decoration-none text-dark">
-                {item.total_items} items
+                {item.total_items} {item.items === 1 ? 'item' : 'items'}
               </a>
               {item.unpublished_items > 0 && (
                 <div>
@@ -85,19 +100,18 @@ const CollectionsTable = ({ data }) => {
         case 'description':
           return (
             <span className="text-muted">
-              {item.description ? item.description.substring(0, 120) + (item.description.length > 120 ? '…' : '') : ''}
+              {truncateDescription(item.description)}
             </span>
           );
         case 'actions':
           return (
-            <div className="dashboard-action-icons">
-              <a href={item.edit_url} className="dashboard-action-edit btn btn-outline" title="Edit collection">
-                <i className="fa-regular fa-pen-to-square" />
-              </a>
-              <a href={item.remove_url} className="dashboard-action-delete btn btn-danger" title="Delete collection">
-                <i className="fa-regular fa-trash-can" />
-              </a>
-            </div>
+            <DashboardActionButtons
+              editUrl={item.edit_url}
+              removeUrl={item.remove_url}
+              editTitle="Edit collection"
+              deleteTitle="Delete collection"
+              deleteTestId="collection-delete-collection-btn"
+            />
           );
         default:
           return item[columnKey];

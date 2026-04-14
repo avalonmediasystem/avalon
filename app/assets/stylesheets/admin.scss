@@ -83,6 +83,10 @@ input[name="admin_group[resources][]"] {
 .devise-links span.devise-link:first-child {
   border-left: none;
 }
+.section-title,
+.section-create-button {
+  text-transform: capitalize;
+}
 
 /* ------------------------------ Admin Dashboard Tables ------------------------------ */
 
@@ -174,6 +178,7 @@ input[name="admin_group[resources][]"] {
   letter-spacing: 0.04em;
   color: $primary;
   text-decoration: none;
+  text-wrap: nowrap;
 
   &:hover {
     text-decoration: underline;
@@ -185,16 +190,16 @@ input[name="admin_group[resources][]"] {
   align-items: center;
   justify-content: space-around;
   gap: 14px;
+}
 
-  a {
-    font-size: 16px;
-    text-decoration: none;
-  }
+.dashboard-view-all-link {
+  font-size: 14px;
+  font-weight: 500;
+  color: $primary;
+  text-decoration: none;
+  text-wrap: nowrap;
 
-  .dashboard-action-edit {
-    color: #6b7280;
-    &:hover {
-      color: #111827;
-    }
+  &:hover {
+    text-decoration: underline;
   }
 }

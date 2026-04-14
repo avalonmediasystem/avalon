@@ -19,6 +19,88 @@ import UnitsTable from './UnitsTable';
 import CollectionsTable from './CollectionsTable';
 
 /**
+ * Truncate a description text to a maximum length and append an
+ * ellipsis at the end if truncated
+ * @param {String} text description text
+ * @param {Number} maxChars character limit (default 120)
+ * @returns {String}
+ */
+const truncateDescription = (text, maxChars = 120) =>
+  text ? text.substring(0, maxChars) + (text.length > maxChars ? '…' : '') : '';
+
+/**
+ * Shared edit/delete action button pair used by dashboard table rows
+ */
+const DashboardActionButtons = ({ editUrl, removeUrl, editTitle, deleteTitle, deleteTestId }) => (
+  <div className="dashboard-action-icons">
+    <a href={editUrl} className="dashboard-action-edit btn btn-outline" title={editTitle}>
+      <i className="fa-regular fa-pen-to-square" />
+    </a>
+    <a href={removeUrl} className="dashboard-action-delete btn btn-danger" title={deleteTitle} data-testid={deleteTestId}>
+      <i className="fa-regular fa-trash-can" />
+    </a>
+  </div>
+);
+
+/**
+ * Render dashboard section with either a table or a message for units or collections
+ * according to the provided data
+ * @param {Object} props
+ * @param {Array} props.data section data from the API
+ * @param {Boolean} props.canCreate whether the current user can create a unit/collection
+ * @param {String} props.createPath path for creating a new unit/collection
+ * @param {String} props.createLabel create button label
+ * @param {String} props.btnClass create button Bootstrap class name
+ * @param {String} props.sectionType section object type (unit/collection)
+ * @param {React.Component} props.TableComponent relevant React component for the data table
+ * @param {String} props.tableWrapperClass table wrapper Bootstrap class name
+ */
+const DashboardSection = ({ data, canCreate, createPath, btnClass, sectionType, TableComponent, tableWrapperClass }) => {
+  const helpers = { truncateDescription, DashboardActionButtons };
+
+  if (data.length > 0) {
+    return (
+      <>
+        <div className="d-flex justify-content-between page-title-wrapper mb-3">
+          <h1 className="page-title mb-0 section-title">{`My ${sectionType}s`}</h1>
+          {canCreate && (
+            <a href={createPath}>
+              <span className={`btn ${btnClass} btn-large section-create-button`} data-testid={`${sectionType}-create-${sectionType}-button`}>
+                <i className="fa fa-plus" aria-hidden="true"></i> {`Create ${sectionType}`}
+              </span>
+            </a>
+          )}
+        </div>
+        <div className={tableWrapperClass}>
+          <TableComponent data={data} helpers={helpers} />
+        </div>
+      </>
+    );
+  }
+
+  return (
+    <div className="mb-4">
+      <h2>You don&apos;t have any {sectionType}s yet</h2>
+      {canCreate
+        ? (
+          <div className="d-flex justify-content-between mt-4">
+            <p>Would you like to create one?</p>
+            <p>
+              <a href={createPath}>
+                <span className={`btn ${btnClass} btn-large section-create-button`} data-testid={`${sectionType}-create-${sectionType}-button`}>
+                  <i className="fa fa-plus" aria-hidden="true"></i> {`Create ${sectionType}`}
+                </span>
+              </a>
+            </p>
+          </div>
+        )
+        : <p>You&apos;ll need to be assigned to one</p>
+      }
+    </div>
+  );
+};
+
+/**
  * Admin dashboard component — fetches units, collections, and summary stats
  * from the dashboard JSON endpoint and composes the page layout.
  *
@@ -68,65 +150,24 @@ const Dashboard = ({ url, new_unit_path, new_collection_path, can_create_unit, c
 
   return (
     <div>
-      <div className="d-flex justify-content-between page-title-wrapper mb-3">
-        <h1 className="page-title mb-0">My Units</h1>
-        {can_create_unit && (
-          <div className="collection-btn">
-            <a href={new_unit_path}>
-              <span className="btn btn-primary btn-large" data-testid="unit-create-unit-button">
-                <i className="fa fa-plus" aria-hidden="true"></i> Create Unit
-              </span>
-            </a>
-          </div>
-        )}
-      </div>
-
-      {units.length === 0 ? (
-        <div className="hero-unit mb-4">
-          <h2>You don&apos;t have any units yet</h2>
-          {can_create_unit && (
-            <p>
-              <a href={new_unit_path}>
-                <span className="btn btn-primary btn-large"><i class="fa fa-plus" aria-hidden="true"></i> Create Unit</span>
-              </a>
-            </p>
-          )}
-        </div>
-      ) : (
-        <div className="mb-5">
-          <UnitsTable data={units} />
-        </div>
-      )}
-
-      <div className="d-flex justify-content-between page-title-wrapper mb-3">
-        <h1 className="page-title mb-0">My Collections</h1>
-        {can_create_collection && (
-          <div className="collection-btn">
-            <a href={new_collection_path}>
-              <span className="btn btn-outline btn-large" data-testid="collection-create-collection-button">
-                <i className="fa fa-plus" aria-hidden="true"></i> Create Collection
-              </span>
-            </a>
-          </div>
-        )}
-      </div>
-
-      {collections.length === 0 ? (
-        <div className="hero-unit">
-          <h2>You don&apos;t have any collections yet</h2>
-          {can_create_collection && (
-            <p>
-              <a href={new_collection_path}>
-                <span className="btn btn-outline btn-large">
-                  <i class="fa fa-plus" aria-hidden="true"></i> Create Collection
-                </span>
-              </a>
-            </p>
-          )}
-        </div>
-      ) : (
-        <CollectionsTable data={collections} />
-      )}
+      <DashboardSection
+        data={units}
+        canCreate={can_create_unit}
+        createPath={new_unit_path}
+        btnClass="btn-primary"
+        sectionType="unit"
+        TableComponent={UnitsTable}
+        tableWrapperClass="mb-5"
+      />
+      <DashboardSection
+        data={collections}
+        canCreate={can_create_collection}
+        createPath={new_collection_path}
+        btnClass="btn-outline"
+        sectionType="collection"
+        TableComponent={CollectionsTable}
+        tableWrapperClass=""
+      />
     </div>
   );
 };
