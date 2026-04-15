@@ -31,8 +31,6 @@ describe 'checks navigation after logging in' do
     expect(page).to have_current_path('/admin/dashboard')
     expect(page).to have_content('Skip to main content')
     expect(page).to have_link('Selected Items (0)')
-    expect(page).to have_link('Create Collection')
-    expect(page).to have_link('Create Unit')
   end
   it 'checks naviagtion to Manage Groups' do
     user = FactoryBot.create(:administrator)

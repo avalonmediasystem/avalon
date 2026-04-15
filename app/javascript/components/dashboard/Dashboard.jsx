@@ -33,12 +33,15 @@ const truncateDescription = (text, maxChars = 120) =>
  */
 const DashboardActionButtons = ({ editUrl, removeUrl, editTitle, deleteTitle, deleteTestId }) => (
   <div className="dashboard-action-icons">
-    <a href={editUrl} className="dashboard-action-edit btn btn-outline" title={editTitle}>
-      <i className="fa-regular fa-pen-to-square" />
+    <a href={editUrl} className="dashboard-action-edit btn btn-outline btn-sm text-nowrap" title={editTitle}>
+      <i className="fa-regular fa-pen-to-square me-1" />Edit
     </a>
-    <a href={removeUrl} className="dashboard-action-delete btn btn-danger" title={deleteTitle} data-testid={deleteTestId}>
-      <i className="fa-regular fa-trash-can" />
-    </a>
+    {/* Render the delete button only when the current user has permissions to destroy item */}
+    {removeUrl != '' && (
+      <a href={removeUrl} className="dashboard-action-delete btn btn-danger btn-sm text-nowrap" title={deleteTitle} data-testid={deleteTestId}>
+        <i className="fa-regular fa-trash-can me-1" />Delete
+      </a>
+    )}
   </div>
 );
 

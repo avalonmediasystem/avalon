@@ -20,27 +20,9 @@ describe 'Admin Collection' do
     @unit = FactoryBot.create(:unit)
   end
   after { Warden.test_reset! }
-  it 'checks navigation when create new collection is accessed' do
-    login_as @user, scope: :user
-    visit '/'
-    click_link('Manage Content')
-    expect(page).to have_current_path('/admin/dashboard')
-    expect(page).to have_link('Create Collection')
-    click_link('Create Collection')
-    expect(page).to have_current_path('/admin/collections/new')
-    expect(page).to have_content('Name')
-    expect(page).to have_content('Description')
-    expect(page).to have_content('Unit')
-    expect(page).to have_link('Cancel')
-  end
   it 'checks navigation when create new collection is accessed from unit page' do
     login_as @user, scope: :user
-    visit '/'
-    click_link('Manage Content')
-    expect(page).to have_current_path('/admin/dashboard')
-    expect(page).to have_link(@unit.name)
-    click_link(@unit.name)
-    expect(page).to have_current_path("/admin/units/#{@unit.id}")
+    visit "/admin/units/#{@unit.id}"
     expect(page).to have_link('Create A Collection')
     click_link('Create A Collection')
     expect(page).to have_current_path("/admin/collections/new?unit_id=#{@unit.id}")

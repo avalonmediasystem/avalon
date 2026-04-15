@@ -60,11 +60,11 @@ const CollectionsTable = ({ data, helpers }) => {
       unit: row.unit || '',
       collection_url: `/collections/${row.id}`,
       edit_url: `/admin/collections/${row.id}`,
-      remove_url: `/admin/collections/${row.id}/remove`,
+      // Collection remove_url = '' if the user doesn't have permission to destroy it
+      remove_url: row.remove_url || '',
       search_url: `/catalog?f[collection_ssim][]=${encodeURIComponent(row.name || '')}`,
       unpublished_url: `/catalog?f[collection_ssim][]=${encodeURIComponent(row.name || '')}&f[workflow_published_sim][]=Unpublished`,
       items: row.object_count?.total || 0,
-      total_items: row.object_count?.total || 0,
       unpublished_items: row.object_count?.unpublished || 0,
       description: row.description || '',
     }),
@@ -82,7 +82,7 @@ const CollectionsTable = ({ data, helpers }) => {
           return (
             <div>
               <a href={item.search_url} className="fw-bold text-decoration-none text-dark">
-                {item.total_items} {item.items === 1 ? 'item' : 'items'}
+                {item.items} {item.items === 1 ? 'item' : 'items'}
               </a>
               {item.unpublished_items > 0 && (
                 <div>

@@ -50,7 +50,7 @@ const UnitsTable = ({ data, helpers }) => {
       { key: 'actions', label: '', sortable: false, width: '10%' },
     ],
 
-    // View all link for collections
+    // View all link for units
     viewAllUrl: '/admin/units',
 
     // Parsing function to extract data from back-end
@@ -60,7 +60,8 @@ const UnitsTable = ({ data, helpers }) => {
       search_url: `/catalog?f[unit_ssim][]=${encodeURIComponent(row.name || '')}`,
       unit_url: `/units/${row.id}`,
       edit_url: `/admin/units/${row.id}`,
-      remove_url: `/admin/units/${row.id}/remove`,
+      // Unit remove_url = '' if the user doesn't have permission to destroy it
+      remove_url: row.remove_url || '',
       items: row.object_count?.total || 0,
       administrators: row.roles?.unit_admins?.length || 0,
       description: row.description || '',

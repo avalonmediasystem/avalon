@@ -188,7 +188,7 @@ input[name="admin_group[resources][]"] {
 .dashboard-action-icons {
   display: flex;
   align-items: center;
-  justify-content: space-around;
+  justify-content: flex-end;
   gap: 14px;
 }
 
