@@ -19,9 +19,9 @@ import useTableData from './hooks/useTableData';
 import useTableSortingAndFiltering from './hooks/useTableSortingAndFiltering';
 import useTablePagination from './hooks/useTablePagination';
 
-const GenericTable = ({ config, url, tags = [], httpMethod = 'POST' }) => {
+const GenericTable = ({ config, url, data, tags = [], httpMethod = 'POST' }) => {
   const {
-    columns,
+    columns: rawColumns,
     containerClass,
     displayReturnedItemsHTML = null,
     hasTagFilter,
@@ -32,21 +32,32 @@ const GenericTable = ({ config, url, tags = [], httpMethod = 'POST' }) => {
     parseDataRow,
     renderCell,
     searchableFields = ['title'],
+    searchPlaceholder = '',
+    tableStyle = { minWidth: '1024px' },
     tableType,
     testId,
+    viewAllUrl = null,
+    isDashboardTable = false,
   } = config;
 
-  // Initial setup of pagination and sorting
+  // Filter out any false/undefined entries from conditional column definitions
+  const columns = rawColumns.filter(Boolean);
+
+  /**
+   * Two-phase hook initialization: React requires hooks to be called unconditionally and in the
+   * same order on every render, so both hook pairs must be called before 'useTableData' returns data.
+   * Phase 1: empty-state instances to provide required function references to 'useTableData' hook
+   */
   const pagination = useTablePagination({ initPageSize });
   const sorting = useTableSortingAndFiltering({ columns, dataState: {}, initialSort, pagination, searchableFields });
 
-  // Read and parse data from the server response
+  // Read and parse data from the server response or data prop (in dashboard)
   let dataState = useTableData(
-    { url, parseDataRow, pagination: pagination.pagination, sortRows: sorting.sortRows, initialSort, httpMethod }
+    { url, data, parseDataRow, pagination: pagination.pagination, sortRows: sorting.sortRows, initialSort, httpMethod }
   );
   const { dataRows, rowsToShow, loading, totalRowCount, filteredRowCount, setRowsToShow, sortedRows } = dataState;
 
-  // Update pagination, sorting and filtering from parsed data
+  /* Phase 2: data-aware instances to retrieve actual data and drive all UI interactions */
   const paginationWithData = useTablePagination({ initPageSize, sortedRows, setRowsToShow, filteredRowCount });
   const sortingWithData = useTableSortingAndFiltering({ columns, dataState, initialSort, pagination: paginationWithData, searchableFields });
 
@@ -101,6 +112,11 @@ const GenericTable = ({ config, url, tags = [], httpMethod = 'POST' }) => {
     }
   }, [loading, rowsToShow, tableType, url]);
 
+  const objectTypeString = useMemo(() => {
+    const cleanedTableType = tableType.replaceAll('_', ' ');
+    return filteredRowCount === 1 ? `${cleanedTableType}` : `${cleanedTableType}s`;
+  }, [filteredRowCount, tableType]);
+
   /**
    * Build search and filter for the header of the table
    */
@@ -108,14 +124,17 @@ const GenericTable = ({ config, url, tags = [], httpMethod = 'POST' }) => {
     return (
       <>
         {displayReturnedItemsHTML}
-        <div className="d-flex justify-content-between align-items-center mb-3 flex-sm-wrap">
-          <div>
+        <div className={`d-flex justify-content-between align-items-center flex-sm-wrap${isDashboardTable ? ' p-4' : ''}`}>
+          <div className="text-muted">
             {(rowsToShow?.length === 0 && !loading)
-              ? 'Showing 0 to 0 of 0 entries'
-              : `Showing ${paginationState.pageIndex * paginationState.pageSize + 1} to${' '}
-          ${Math.min((paginationState.pageIndex + 1) * paginationState.pageSize, filteredRowCount)} of${' '}
-          ${filteredRowCount} entries`}
-            {filteredRowCount < totalRowCount && ` (filtered from ${totalRowCount} total entries)`}
+              ? <span>Showing<b >0</b> to <b>0</b> of <b>0</b> {objectTypeString}</span>
+              : <span>Showing
+                <b> {paginationState.pageIndex * paginationState.pageSize + 1} </b> to
+                <b> {Math.min((paginationState.pageIndex + 1) * paginationState.pageSize, filteredRowCount)}</b> of
+                <b> {filteredRowCount}</b>  {objectTypeString}
+              </span>
+            }
+            {filteredRowCount < totalRowCount && <span> (filtered from <b>{totalRowCount}</b> total {objectTypeString})</span>}
           </div>
           <div className='d-flex justify-content-end gap-2 flex-sm-wrap'>
             <div className="d-flex align-items-center">
@@ -125,6 +144,7 @@ const GenericTable = ({ config, url, tags = [], httpMethod = 'POST' }) => {
                 type="text"
                 value={searchFilter}
                 className="form-control"
+                placeholder={searchPlaceholder}
                 data-testid={`${testId}-search-field`}
                 onChange={handleSearch}
               />
@@ -151,7 +171,7 @@ const GenericTable = ({ config, url, tags = [], httpMethod = 'POST' }) => {
     tagFilter, handleSearch, handleTagFilter, rowsToShow, loading]);
 
   return (
-    <div className={containerClass}>
+    <div key={`${tableType}-table`} className={containerClass}>
       {searchAndFilter}
       {loading ?
         (<div className="text-center py-3">
@@ -163,21 +183,24 @@ const GenericTable = ({ config, url, tags = [], httpMethod = 'POST' }) => {
         (<>
           <div className="table-responsive">
             {/* min-width is set to an arbitrary value of 1024px to get the table to not shrink for smaller view-ports */}
-            <table className="table table-striped generic-table" style={{ minWidth: '1024px' }}>
+            <table className={`table generic-table${isDashboardTable ? '' : ' table-striped'}`} style={tableStyle}>
               <thead data-testid={`${testId}-head`}>
                 <tr>
                   {columns.map((column, index) => (
-                    <th
-                      key={column.key}
-                      className={`${column.sortable ? 'user-select-none' : ''} ${column.key === 'actions' ? 'text-end' : ''}`}
-                      style={{ cursor: column.sortable ? 'pointer' : 'default', width: column.width ? column.width : 'auto' }}
-                      onClick={() => handleSort(index)}
-                      colSpan={1}
-                      rowSpan={1}
-                    >
-                      {column.label}
-                      {getSortIcon(index)}
-                    </th>
+                    column.key != 'actions'
+                      ? (<th
+                        key={column.key}
+                        className={`${column.sortable ? 'user-select-none' : ''}`}
+                        style={{ cursor: column.sortable ? 'pointer' : 'default', width: column.width ? column.width : 'auto' }}
+                        onClick={() => handleSort(index)}
+                        colSpan={1}
+                        rowSpan={1}
+                        scope="col"
+                      >
+                        {column.label}
+                        {getSortIcon(index)}
+                      </th>)
+                      : <td key={column.key} className="invisible-actions-header"></td>
                   ))}
                 </tr>
               </thead>
@@ -202,12 +225,12 @@ const GenericTable = ({ config, url, tags = [], httpMethod = 'POST' }) => {
               </tbody>
             </table>
           </div>
-          <div className="d-flex justify-content-between">
+          <div className={`d-flex justify-content-between${isDashboardTable ? ' p-4' : ''}`}>
             <div>
-              <label className='d-flex align-items-center'>
+              <label className='d-flex align-items-center text-sm text-muted'>
                 Show
                 <select
-                  className="form-select mx-2"
+                  className="form-select mx-2 fw-bold"
                   value={paginationState.pageSize}
                   onChange={e => handlePageSizeChange(Number(e.target.value))}
                 >
@@ -218,40 +241,45 @@ const GenericTable = ({ config, url, tags = [], httpMethod = 'POST' }) => {
                 entries
               </label>
             </div>
-            <nav>
-              <ul className="pagination flex-nowrap mb-0">
-                <li className={`page-item ${paginationState.pageIndex === 0 ? 'disabled' : ''}`}>
-                  <button
-                    className="page-link"
-                    onClick={() => handlePageChange(paginationState.pageIndex - 1)}
-                    disabled={paginationState.pageIndex === 0}
-                  >
-                    Previous
-                  </button>
-                </li>
-                {getPaginationPages().map((page, idx) =>
-                  page === '...' ? (
-                    <li key={`ellipsis-${idx}`} className="page-item disabled">
-                      <span className="page-link">...</span>
-                    </li>
-                  ) : (
-                    <li key={page} className={`page-item ${currentPage === page ? 'active' : ''}`}
+            <div className="d-flex align-items-center gap-3">
+              <nav>
+                <ul className="pagination flex-nowrap mb-0">
+                  <li className={`page-item ${paginationState.pageIndex === 0 ? 'disabled' : ''}`}>
+                    <button
+                      className="page-link"
+                      onClick={() => handlePageChange(paginationState.pageIndex - 1)}
+                      disabled={paginationState.pageIndex === 0}
                     >
-                      <button
-                        className="page-link"
-                        onClick={() => handlePageChange(page - 1)}
-                        disabled={currentPage === page}>{page}</button>
-                    </li>
-                  )
-                )}
-                <li className={`page-item ${paginationState.pageIndex >= totalPages - 1 ? 'disabled' : ''}`}>
-                  <button
-                    className="page-link"
-                    onClick={() => handlePageChange(paginationState.pageIndex + 1)}
-                    disabled={paginationState.pageIndex >= totalPages - 1}>Next</button>
-                </li>
-              </ul>
-            </nav>
+                      Previous
+                    </button>
+                  </li>
+                  {getPaginationPages().map((page, idx) =>
+                    page === '...' ? (
+                      <li key={`ellipsis-${idx}`} className="page-item disabled">
+                        <span className="page-link">...</span>
+                      </li>
+                    ) : (
+                      <li key={page} className={`page-item ${currentPage === page ? 'active' : ''}`}
+                      >
+                        <button
+                          className="page-link"
+                          onClick={() => handlePageChange(page - 1)}
+                          disabled={currentPage === page}>{page}</button>
+                      </li>
+                    )
+                  )}
+                  <li className={`page-item ${paginationState.pageIndex >= totalPages - 1 ? 'disabled' : ''}`}>
+                    <button
+                      className="page-link"
+                      onClick={() => handlePageChange(paginationState.pageIndex + 1)}
+                      disabled={paginationState.pageIndex >= totalPages - 1}>Next</button>
+                  </li>
+                </ul>
+              </nav>
+              {viewAllUrl && (
+                <a href={viewAllUrl} className="dashboard-view-all-link fw-bold">View All  <i className="fa fa-chevron-right" /></a>
+              )}
+            </div>
           </div>
         </>)
       }

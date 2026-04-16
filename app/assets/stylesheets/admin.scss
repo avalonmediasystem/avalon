@@ -24,19 +24,25 @@
  * A little quick and dirty but it can be cleaned up later. Use 18px or the defined
  * line height to keep things flowing nicely in the grid instead of arbitrary gaps
  */
-.admin .badge, .admin .label {
+.admin .badge,
+.admin .label {
   font-size: $font-size-base;
   font-weight: normal;
   margin-right: 4px;
 }
 
-.admin .icon-remove-sign, .admin .icon-ok-sign, .admin .icon-plus-sign {
+.admin .icon-remove-sign,
+.admin .icon-ok-sign,
+.admin .icon-plus-sign {
   font-size: $font-size-base*1.5;
   vertical-align: middle;
   cursor: pointer;
 }
 
-.admin .icon-remove-sign, .admin .icon-ok-sign, input[name="admin_group[users][]"], input[name="admin_group[resources][]"] {
+.admin .icon-remove-sign,
+.admin .icon-ok-sign,
+input[name="admin_group[users][]"],
+input[name="admin_group[resources][]"] {
   display: none;
 }
 
@@ -76,4 +82,124 @@
 }
 .devise-links span.devise-link:first-child {
   border-left: none;
+}
+.section-title,
+.section-create-button {
+  text-transform: capitalize;
+}
+
+/* ------------------------------ Admin Dashboard Tables ------------------------------ */
+
+.dashboard-table-container {
+  border: 1px solid $lightgray;
+  border-radius: 0.625em;
+  box-shadow: rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0.1) 0px 1px 3px 0px, rgba(0, 0, 0, 0.1) 0px 1px 2px -1px;
+
+  // Hide "Search:" label in the search form
+  label[for^="search-"] {
+    display: none;
+  }
+
+  // Make the search span 50% width of the container
+  .d-flex.justify-content-between>.d-flex:has(input[id^="search-"]) {
+    width: 50%;
+  }
+  .d-flex.justify-content-between>.d-flex:has(input[id^="search-"])>.d-flex {
+    width: 100%;
+  }
+
+  input[id^="search-"] {
+    width: 100%;
+    border-radius: 0.75rem;
+    border: 1px solid #d1d5db;
+    padding: 0.5rem 1rem 0.5rem 2.5rem;
+    font-size: 14px;
+    background-color: #fafafa;
+    // Set search icon in the placeholder using an SVG as a background image
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%239ca3af' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cline x1='21' y1='21' x2='16.65' y2='16.65'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: 12px center;
+
+    &::placeholder {
+      color: #9ca3af;
+    }
+  }
+
+  td.invisible-actions-header {
+    background-color: #f9fafb !important;
+    border: none;
+  }
+
+  table.generic-table {
+    min-width: unset !important;
+    border: none;
+    margin-bottom: 1rem;
+
+    // Table header styles
+    thead tr th {
+      background-color: #f9fafb !important;
+      color: #6b7280 !important;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      border-bottom: 1px solid #e5e7eb !important;
+      border-top: none !important;
+      padding: 1rem 1.5rem;
+    }
+
+    tbody>tr>td {
+      border-top: 1px solid #e5e7eb !important;
+      border-bottom: none !important;
+      padding: 16px 14px;
+      vertical-align: middle;
+      font-size: 14px;
+    }
+  }
+}
+
+.dashboard-unit-badge {
+  display: inline-block;
+  padding: 3px 10px;
+  border: 1px solid $dark;
+  border-radius: 0.625rem;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: $primary;
+  background-color: $greenBG;
+  white-space: nowrap;
+}
+
+.dashboard-unpublished-link {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: $primary;
+  text-decoration: none;
+  text-wrap: nowrap;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+.dashboard-action-icons {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 14px;
+}
+
+.dashboard-view-all-link {
+  font-size: 14px;
+  font-weight: 500;
+  color: $primary;
+  text-decoration: none;
+  text-wrap: nowrap;
+
+  &:hover {
+    text-decoration: underline;
+  }
 }

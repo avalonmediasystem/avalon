@@ -64,7 +64,18 @@ class Admin::DashboardController < ApplicationController
   def index
     respond_to do |format|
       format.html
-      # TODO: Figure out a json response?
+      format.json do
+        render json: {
+          units: @units.map do |u|
+            hash = u.as_json(nil)
+            can?(:destroy, u) ? hash.merge(remove_url: remove_admin_unit_path(u.id)) : hash
+          end,
+          collections: @collections.map do |c|
+            hash = c.as_json(nil)
+            can?(:destroy, c) ? hash.merge(remove_url: remove_admin_collection_path(c.id)) : hash
+          end
+        }
+      end
     end
   end
 end

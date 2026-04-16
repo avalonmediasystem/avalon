@@ -44,7 +44,7 @@ const CheckoutsTable = ({ url, isAdmin, returnAll }) => {
   const checkoutsConfig = useMemo(() => {
     return {
       // Table metadata
-      tableType: 'checkouts',
+      tableType: 'checkout',
       containerClass: 'checkouts-table-container',
       testId: 'checkouts-table',
       hasTagFilter: false,

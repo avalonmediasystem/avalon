@@ -29,6 +29,7 @@ import TimelinesTable from './components/tables/TimelinesTable';
 import EncodingJobsTable from './components/tables/EncodingJobsTable';
 import CheckoutsTable from './components/tables/CheckoutsTable';
 import UsersTable from './components/tables/UsersTable';
+import Dashboard from './components/dashboard/Dashboard';
 import './auto-complete-open.js';
 import '@github/auto-complete-element';
 
@@ -45,4 +46,5 @@ ReactOnRails.register({
   EncodingJobsTable,
   CheckoutsTable,
   UsersTable,
+  Dashboard
 });

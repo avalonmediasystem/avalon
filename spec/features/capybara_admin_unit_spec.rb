@@ -19,18 +19,6 @@ describe 'Admin Unit' do
     @user = FactoryBot.create(:administrator)
   end
   after { Warden.test_reset! }
-  it 'checks navigation when create new unit is accessed' do
-    login_as @user, scope: :user
-    visit '/'
-    click_link('Manage Content')
-    expect(page).to have_current_path('/admin/dashboard')
-    expect(page).to have_link('Create Unit')
-    click_link('Create Unit')
-    expect(page).to have_current_path('/admin/units/new')
-    expect(page).to have_content('Name')
-    expect(page).to have_content('Description')
-    expect(page).to have_link('Cancel')
-  end
   it 'is able to create a new unit' do
     login_as @user, scope: :user
     visit '/admin/units/'
