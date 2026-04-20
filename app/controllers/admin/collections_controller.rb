@@ -57,8 +57,8 @@ class Admin::CollectionsController < ApplicationController
   # GET /collections
   def index
     respond_to do |format|
-      format.html
       format.json { paginate json: @collections }
+      format.html { redirect_to admin_dashboard_path }
     end
   end
 
@@ -254,7 +254,7 @@ class Admin::CollectionsController < ApplicationController
   # DELETE /collections/1
   def destroy
     @source_collection = @collection
-    target_path = admin_collections_path
+    target_path = admin_dashboard_path
     if @source_collection.media_objects.count > 0
       if @source_collection.media_objects.all?(&:valid?)
         @target_collection = Admin::Collection.find(params[:target_collection_id])

@@ -22,7 +22,7 @@ describe 'Admin Collection' do
   after { Warden.test_reset! }
   it 'checks navigation when create new collection is accessed from unit page' do
     login_as @user, scope: :user
-    visit "/admin/units/#{@unit.id}"
+    visit admin_unit_path(@unit)
     expect(page).to have_link('Create A Collection')
     click_link('Create A Collection')
     expect(page).to have_current_path("/admin/collections/new?unit_id=#{@unit.id}")
@@ -34,28 +34,18 @@ describe 'Admin Collection' do
   end
   it 'is able to create a new collection' do
     login_as @user, scope: :user
-    visit '/admin/collections/'
-    click_link('Create Collection')
+    visit new_admin_collection_path
     fill_in('admin_collection_name', with: 'Test Collection')
     select(@unit.name, from: 'admin_collection[unit_id]')
     click_on('Create Collection')
-    visit '/admin/collections'
+    expect(page).to have_content('Collection was successfully created.')
+    expect(page.current_path).to match /\/admin\/collections\/.+/
     expect(page).to have_content('Test Collection')
-    expect(page).to have_content('Title')
-    expect(page).to have_content('Items')
-    expect(page).to have_content('Managers')
-    expect(page).to have_content('Description')
-    expect(page).to have_link('Delete')
   end
   it 'is able to view collection by clicking on collection name' do
+    @collection = FactoryBot.create(:collection, unit: @unit, name: 'Test Collection')
     login_as @user, scope: :user
-    visit '/admin/collections'
-    click_link('Create Collection')
-    fill_in('admin_collection_name', with: 'Test Collection')
-    select(@unit.name, from: 'admin_collection[unit_id]')
-    click_on('Create Collection')
-    visit '/admin/collections'
-    click_on('Test Collection')
+    visit admin_collection_path(@collection)
     expect(page).to have_content('Test Collection')
     expect(page).to have_link('Create An Item')
     expect(page).to have_link('List All Items')
@@ -63,14 +53,9 @@ describe 'Admin Collection' do
     expect(page).to have_content(@unit.name)
   end
   it 'is able to delete a collection' do
+    @collection = FactoryBot.create(:collection, unit: @unit, name: 'Test Collection')
     login_as @user, scope: :user
-    visit '/admin/collections'
-    click_link('Create Collection')
-    fill_in('admin_collection_name', with: 'Test Collection')
-    select(@unit.name, from: 'admin_collection[unit_id]')
-    click_on('Create Collection')
-    visit '/admin/collections'
-    click_link('Delete')
+    visit remove_admin_collection_path(@collection)
     expect(page).to have_content('Are you certain you want to remove the collection Test Collection?')
     expect(page).to have_button('Yes, I am sure')
     expect(page).to have_link('No, go back')

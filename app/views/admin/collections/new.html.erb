@@ -33,6 +33,6 @@ Unless required by applicable law or agreed to in writing, software distributed
   <%= f.text_field :contact_email, 'data-testid':'collection-contact-email' %>
   <%= f.text_field :website_url, 'data-testid': 'collection-website-url' %>
   <%= f.text_field :website_label, 'data-testid':'collection-website-label' %>
-  <a href="/admin/collections" aria-hidden="true" class="btn btn-outline">Cancel</a>
+  <%= link_to 'Cancel', :back, class: 'btn btn-outline', aria: { hidden: true } %>
   <%= f.submit class: 'btn btn-primary', 'data-testid': 'collection-new-collection-btn' %>
 <% end %>

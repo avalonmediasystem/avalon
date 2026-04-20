@@ -21,39 +21,26 @@ describe 'Admin Unit' do
   after { Warden.test_reset! }
   it 'is able to create a new unit' do
     login_as @user, scope: :user
-    visit '/admin/units/'
-    click_link('Create Unit')
+    visit new_admin_unit_path
     fill_in('admin_unit_name', with: 'Test Unit')
     click_on('Create Unit')
-    visit '/admin/units'
+    expect(page).to have_content('Unit was successfully created.')
+    expect(page.current_path).to match /\/admin\/units\/.+/
     expect(page).to have_content('Test Unit')
-    expect(page).to have_content('Title')
-    expect(page).to have_content('Items')
-    expect(page).to have_content('Unit Administrators')
-    expect(page).to have_content('Description')
-    expect(page).to have_link('Delete')
   end
   it 'is able to view unit by clicking on unit name' do
+    @unit = FactoryBot.create(:unit, name: 'Test Unit')
     login_as @user, scope: :user
-    visit '/admin/units'
-    click_link('Create Unit')
-    fill_in('admin_unit_name', with: 'Test Unit')
-    click_on('Create Unit')
-    visit '/admin/units'
-    click_on('Test Unit')
+    visit admin_unit_path(@unit)
     expect(page).to have_content('Test Unit')
     expect(page).to have_link('Create A Collection')
     expect(page).to have_link('List All Collections')
     expect(page).to have_button('Edit Unit Info')
   end
   it 'is able to delete a unit' do
+    @unit = FactoryBot.create(:unit, name: 'Test Unit')
     login_as @user, scope: :user
-    visit '/admin/units'
-    click_link('Create Unit')
-    fill_in('admin_unit_name', with: 'Test Unit')
-    click_on('Create Unit')
-    visit '/admin/units'
-    click_link('Delete')
+    visit remove_admin_unit_path(@unit)
     expect(page).to have_content('Are you certain you want to remove the unit Test Unit?')
     expect(page).to have_button('Yes, I am sure')
     expect(page).to have_link('No, go back')

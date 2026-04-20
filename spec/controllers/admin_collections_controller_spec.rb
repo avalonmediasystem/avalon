@@ -177,6 +177,13 @@ describe Admin::CollectionsController, type: :controller do
       get 'index', params: { user: 'foobar', format:'json' }
       expect(json.count).to eq(0)
     end
+
+    context "html" do
+      it "should redirect to admin dashboard" do
+        get 'index'
+        expect(response).to redirect_to admin_dashboard_path
+      end
+    end
   end
 
   describe 'pagination' do
