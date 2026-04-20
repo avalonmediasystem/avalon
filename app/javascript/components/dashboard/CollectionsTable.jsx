@@ -58,8 +58,8 @@ const CollectionsTable = ({ data, helpers }) => {
       id: row.id,
       name: row.name || '',
       unit: row.unit || '',
-      collection_url: `/collections/${row.id}`,
-      edit_url: `/admin/collections/${row.id}`,
+      collection_url: `/admin/collections/${row.id}`,
+      edit_url: ``,
       // Collection remove_url = '' if the user doesn't have permission to destroy it
       remove_url: row.remove_url || '',
       search_url: `/catalog?f[collection_ssim][]=${encodeURIComponent(row.name || '')}`,
