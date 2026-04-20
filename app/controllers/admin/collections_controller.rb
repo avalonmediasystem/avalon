@@ -92,6 +92,8 @@ class Admin::CollectionsController < ApplicationController
       @collection.unit = unit
     else
       @candidate_units = get_user_units
+      # Setting unit_id instead of unit because @candidate_units are SpeedyAF proxies
+      @collection.unit_id = @candidate_units.first.id
     end
 
     respond_to do |format|

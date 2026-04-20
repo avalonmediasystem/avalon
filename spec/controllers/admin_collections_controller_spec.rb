@@ -326,6 +326,65 @@ describe Admin::CollectionsController, type: :controller do
     end
   end
 
+  describe "#new" do
+    let!(:unit1) { FactoryBot.create(:unit, name: 'AAA', unit_admins: [unit_admin.user_key]) }
+    let!(:unit2) { FactoryBot.create(:unit, unit_admins: [unit_admin.user_key]) }
+    let(:administrator) { FactoryBot.create(:administrator) }
+    let(:unit_admin) { FactoryBot.create(:user) }
+
+    context 'as administrator' do
+      before do
+        login_user(administrator.user_key)
+      end
+
+      it "should render new form" do
+        get 'new'
+        expect(response.status).to eq 200
+        expect(assigns(:collection).unit_id).to eq unit1.id
+      end
+
+      it "should render new form with specified unit" do
+        get 'new', params: { unit_id: unit2.id }
+        expect(response.status).to eq 200
+        expect(assigns(:collection).unit_id).to eq unit2.id
+      end
+    end
+
+    context 'as unit administrator' do
+      before do
+        login_user(unit_admin.user_key)
+      end
+
+      it "should render new form" do
+        get 'new'
+        expect(response.status).to eq 200
+        expect(assigns(:collection).unit_id).to eq unit1.id
+      end
+
+      it "should render new form with specified unit" do
+        get 'new', params: { unit_id: unit2.id }
+        expect(response.status).to eq 200
+        expect(assigns(:collection).unit_id).to eq unit2.id
+      end
+    end
+
+    context 'as a user' do
+      before do
+        login_as(:user)
+      end
+
+      it "should render new form" do
+        get 'new'
+        expect(response.status).to eq 401
+      end
+
+      it "should render new form with specified unit" do
+        get 'new', params: { unit_id: unit2.id }
+        expect(response.status).to eq 401
+      end
+    end
+  end
+
   describe "#create" do
     let(:unit) { FactoryBot.create(:unit) }
     let(:collection) { FactoryBot.build(:collection, unit: unit) }
