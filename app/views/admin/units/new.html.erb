@@ -22,6 +22,6 @@ Unless required by applicable law or agreed to in writing, software distributed
   <%= f.text_field :contact_email, 'data-testid':'unit-contact-email' %>
   <%= f.text_field :website_url, 'data-testid': 'unit-website-url' %>
   <%= f.text_field :website_label, 'data-testid':'unit-website-label' %>
-  <a href="/admin/units" aria-hidden="true" class="btn btn-outline">Cancel</a>
+  <%= link_to 'Cancel', :back, class: 'btn btn-outline', aria: { hidden: true } %>
   <%= f.submit class: 'btn btn-primary', 'data-testid': 'unit-new-unit-btn' %>
 <% end %>

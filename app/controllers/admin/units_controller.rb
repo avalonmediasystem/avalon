@@ -50,8 +50,8 @@ class Admin::UnitsController < ApplicationController
   # GET /units
   def index
     respond_to do |format|
-      format.html
       format.json { paginate json: @units }
+      format.html { redirect_to admin_dashboard_path }
     end
   end
 
@@ -206,7 +206,7 @@ class Admin::UnitsController < ApplicationController
   # DELETE /units/1
   def destroy
     @source_unit = @unit
-    target_path = admin_units_path
+    target_path = admin_dashboard_path
     if @source_unit.collections.count > 0
       if @source_unit.collections.all?(&:valid?)
         @target_unit = Admin::Unit.find(params[:target_unit_id])

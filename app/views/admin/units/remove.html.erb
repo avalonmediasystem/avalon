@@ -42,7 +42,7 @@ Unless required by applicable law or agreed to in writing, software distributed
 
     <div class="mb-3">
       <%= f.submit 'Yes, I am sure', class: 'btn btn-danger', 'data-testid': "unit-delete-confirm-btn" %>
-      <%= link_to 'No, go back', admin_units_path, class: 'btn btn-outline' %>
+      <%= link_to 'No, go back', :back, class: 'btn btn-outline' %>
     </div>
     <% end %>
     <% else %>
