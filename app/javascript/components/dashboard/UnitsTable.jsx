@@ -43,10 +43,9 @@ const UnitsTable = ({ data, helpers }) => {
 
     // Column definitions
     columns: [
-      { key: 'name', label: 'Name', sortable: true, dataType: 'string', width: '20%' },
+      { key: 'name', label: 'Name', sortable: true, dataType: 'string', width: '33%' },
       { key: 'items', label: 'Items', sortable: true, dataType: 'number', width: '12%' },
-      { key: 'administrators', label: 'Unit Administrators', sortable: false, width: '23%' },
-      { key: 'description', label: 'Description', sortable: false, width: '35%' },
+      { key: 'description', label: 'Description', sortable: false, width: '45%' },
       { key: 'actions', label: '', sortable: false, width: '10%' },
     ],
 
@@ -58,8 +57,8 @@ const UnitsTable = ({ data, helpers }) => {
       id: row.id,
       name: row.name || '',
       search_url: `/catalog?f[unit_ssim][]=${encodeURIComponent(row.name || '')}`,
-      unit_url: `/units/${row.id}`,
-      edit_url: `/admin/units/${row.id}`,
+      unit_url: `/admin/units/${row.id}`,
+      edit_url: ``,
       // Unit remove_url = '' if the user doesn't have permission to destroy it
       remove_url: row.remove_url || '',
       items: row.object_count?.total || 0,

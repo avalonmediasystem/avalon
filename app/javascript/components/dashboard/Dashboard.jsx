@@ -33,9 +33,11 @@ const truncateDescription = (text, maxChars = 120) =>
  */
 const DashboardActionButtons = ({ editUrl, removeUrl, editTitle, deleteTitle, deleteTestId }) => (
   <div className="dashboard-action-icons">
-    <a href={editUrl} className="dashboard-action-edit btn btn-outline btn-sm text-nowrap" title={editTitle}>
-      <i className="fa-regular fa-pen-to-square me-1" />Edit
-    </a>
+    {editUrl != '' && (
+      <a href={editUrl} className="dashboard-action-edit btn btn-outline btn-sm text-nowrap" title={editTitle}>
+        <i className="fa-regular fa-pen-to-square me-1" />Edit
+      </a>
+    )}
     {/* Render the delete button only when the current user has permissions to destroy item */}
     {removeUrl != '' && (
       <a href={removeUrl} className="dashboard-action-delete btn btn-danger btn-sm text-nowrap" title={deleteTitle} data-testid={deleteTestId}>
@@ -157,7 +159,7 @@ const Dashboard = ({ url, new_unit_path, new_collection_path, can_create_unit, c
         data={units}
         canCreate={can_create_unit}
         createPath={new_unit_path}
-        btnClass="btn-primary"
+        btnClass="btn-outline"
         sectionType="unit"
         TableComponent={UnitsTable}
         tableWrapperClass="mb-5"
