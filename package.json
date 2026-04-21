@@ -50,7 +50,7 @@
   "devDependencies": {
     "@babel/plugin-transform-runtime": "7",
     "@babel/preset-env": "7",
-    "@bahmutov/cy-grep": "^2.0.27",
+    "@bahmutov/cy-grep": "^3.0.4",
     "babel-loader": "^10.0.0",
     "cypress": "^13.7",
     "cypress-file-upload": "^5.0",
@@ -60,7 +60,10 @@
   },
   "resolutions": {
     "glob-parent": "^6.0.2",
-    "path-to-regexp": "^0.1.12"
+    "immutable": "^5.1.5",
+    "lodash": "^4.18.0",
+    "path-to-regexp": "^0.1.12",
+    "underscore": "^1.13.8"
   },
   "scripts": {
     "cypress:open": "cypress open -C spec/cypress/cypress.config.js",
