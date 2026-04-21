@@ -177,12 +177,7 @@ input[name="admin_group[resources][]"] {
   font-weight: 600;
   letter-spacing: 0.04em;
   color: $primary;
-  text-decoration: none;
   text-wrap: nowrap;
-
-  &:hover {
-    text-decoration: underline;
-  }
 }
 
 .dashboard-action-icons {

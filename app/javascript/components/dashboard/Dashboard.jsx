@@ -65,21 +65,9 @@ const DashboardSection = ({ data, canCreate, createPath, btnClass, sectionType, 
 
   if (data.length > 0) {
     return (
-      <>
-        <div className="d-flex justify-content-between page-title-wrapper mb-3">
-          <h1 className="page-title mb-0 section-title">{`My ${sectionType}s`}</h1>
-          {canCreate && (
-            <a href={createPath}>
-              <span className={`btn ${btnClass} btn-large section-create-button`} data-testid={`${sectionType}-create-${sectionType}-button`}>
-                <i className="fa fa-plus" aria-hidden="true"></i> {`Create ${sectionType}`}
-              </span>
-            </a>
-          )}
-        </div>
-        <div className={tableWrapperClass}>
-          <TableComponent data={data} helpers={helpers} />
-        </div>
-      </>
+      <div className={tableWrapperClass}>
+        <TableComponent data={data} createPath={createPath} helpers={helpers} />
+      </div>
     );
   }
 
@@ -162,7 +150,7 @@ const Dashboard = ({ url, new_unit_path, new_collection_path, can_create_unit, c
         btnClass="btn-outline"
         sectionType="unit"
         TableComponent={UnitsTable}
-        tableWrapperClass="mb-5"
+        tableWrapperClass="mb-4"
       />
       <DashboardSection
         data={collections}

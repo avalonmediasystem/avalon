@@ -48,7 +48,7 @@ const useTablePagination = ({ initPageSize, sortedRows, setRowsToShow, filteredR
     setRowsToShow(sortedRows.slice(start, end));
   };
 
-  const handlePageSizeChange = (newPageSize) => {
+  const updatePageSize = (newPageSize) => {
     setRowsToShow(sortedRows.slice(0, newPageSize));
     setPagination({ pageIndex: 0, pageSize: newPageSize });
   };
@@ -86,7 +86,7 @@ const useTablePagination = ({ initPageSize, sortedRows, setRowsToShow, filteredR
 
     // Functions
     handlePageChange,
-    handlePageSizeChange,
+    updatePageSize,
     getPaginationPages
   };
 };

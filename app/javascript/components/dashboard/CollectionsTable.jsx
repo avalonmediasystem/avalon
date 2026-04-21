@@ -20,12 +20,14 @@ import GenericTable from '../tables/GenericTable';
  * Render a table displaying all collection for the admin dashboard.
  * @param {Object} props
  * @param {Array}  props.data array of collection objects from the dashboard JSON endpoint
+ * @param {String} props.createPath create new collection end-point
  * @param {Object} props.helpers shared helpers for common utilities in dashboard tables
  */
-const CollectionsTable = ({ data, helpers }) => {
+const CollectionsTable = ({ data, createPath, helpers }) => {
   const { truncateDescription, DashboardActionButtons } = helpers;
   const collectionConfig = {
     // Table metadata
+    tableTitle: 'My Collections',
     tableType: 'collection',
     containerClass: 'dashboard-table-container',
     testId: 'collection-table',
@@ -38,8 +40,12 @@ const CollectionsTable = ({ data, helpers }) => {
     searchPlaceholder: 'Search collections by name or unit...',
 
     // Table pagination customization
-    initPageSize: 5,
-    pageSizeOptions: [5, 10, 25, 50],
+    initPageSize: 10,
+    pageSizeOptions: [10, 25, 50, 100],
+    storageKey: 'collectionTablePageSize',
+
+    // Table create button
+    createButton: { btnClass: 'btn-outline', createPath },
 
     // Column definitions
     columns: [
@@ -49,9 +55,6 @@ const CollectionsTable = ({ data, helpers }) => {
       { key: 'description', label: 'Description', sortable: false, width: '40%' },
       { key: 'actions', label: '', sortable: false, width: '8%' },
     ],
-
-    // View all link for collections
-    viewAllUrl: '/admin/collections',
 
     // Parsing function to extract data from back-end
     parseDataRow: (row) => ({
@@ -74,14 +77,14 @@ const CollectionsTable = ({ data, helpers }) => {
       switch (columnKey) {
         case 'name':
           return (
-            <a href={item.collection_url} className="fw-bold text-decoration-none text-dark" data-testid="collection-name-table">
+            <a href={item.collection_url} className="fw-bold text-dark" data-testid="collection-name-table">
               {item.name}
             </a>
           );
         case 'items':
           return (
             <div>
-              <a href={item.search_url} className="fw-bold text-decoration-none text-dark">
+              <a href={item.search_url} className="fw-bold text-dark">
                 {item.items} {item.items === 1 ? 'item' : 'items'}
               </a>
               {item.unpublished_items > 0 && (
