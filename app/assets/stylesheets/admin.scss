@@ -83,12 +83,12 @@ input[name="admin_group[resources][]"] {
 .devise-links span.devise-link:first-child {
   border-left: none;
 }
-.section-title,
+
+/* ------------------------------ Admin Dashboard Tables ------------------------------ */
+
 .section-create-button {
   text-transform: capitalize;
 }
-
-/* ------------------------------ Admin Dashboard Tables ------------------------------ */
 
 .dashboard-table-container {
   border: 1px solid $lightgray;

@@ -138,9 +138,7 @@ const GenericTable = ({ config, url, data, tags = [], httpMethod = 'POST' }) => 
       <>
         {displayReturnedItemsHTML}
         <div className={`d-flex justify-content-between align-items-center flex-sm-wrap${isDashboardTable ? ' p-4' : ''}`}>
-          <div className="d-flex justify-content-between page-title-wrapper mb-3">
-            <h1 className="page-title mb-0 section-title">{tableTitle}</h1>
-          </div>
+          <h1 className="page-title mb-0">{tableTitle}</h1>
           <div className='d-flex justify-content-end gap-2 flex-sm-wrap'>
             <div className="d-flex align-items-center">
               <label htmlFor={`search-${tableType}`} className="me-2 mb-0">Search:</label>
