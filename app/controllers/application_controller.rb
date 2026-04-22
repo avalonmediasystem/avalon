@@ -12,6 +12,8 @@
 #   specific language governing permissions and limitations under the License.
 # ---  END LICENSE_HEADER BLOCK  ---
 
+require 'speedy_af/errors'
+
 class ApplicationController < ActionController::Base
   before_action :store_location, unless: :devise_controller?
   before_action :configure_permitted_parameters, if: :devise_controller?
@@ -207,7 +209,7 @@ class ApplicationController < ActionController::Base
     end
   end
 
-  rescue_from ActiveFedora::ModelMismatch do |exception|
+  rescue_from ActiveFedora::ModelMismatch, SpeedyAF::ModelMismatch do |exception|
     if request.format == :json
       render json: { errors: ["Requested resource type does not match type of #{params[:id]}"] }, status: 422
     else

@@ -58,7 +58,7 @@ gem 'rack-cors', require: 'rack/cors'
 gem 'rails_same_site_cookie'
 gem 'recaptcha', require: 'recaptcha/rails'
 gem 'samvera-persona', '~> 0.6'
-gem 'speedy-af', '~> 0.5.0'
+gem 'speedy-af', '~> 0.6.0'
 
 # Authentication & Authorization
 gem 'devise', '~> 4.8'
