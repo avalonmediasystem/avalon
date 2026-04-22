@@ -117,7 +117,7 @@ GEM
       json-ld
       rails (>= 5.2)
       rdf-vocab (>= 2.1.0)
-    active_encode (2.0.0)
+    active_encode (2.0.1)
       addressable (~> 2.8)
       rails
       retriable
