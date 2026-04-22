@@ -20,12 +20,14 @@ import GenericTable from '../tables/GenericTable';
  * Render a table displaying all units for the admin dashboard.
  * @param {Object} props
  * @param {Array}  props.data array of unit objects from the dashboard JSON endpoint
+ * @param {String} props.createPath create new unit end-point
  * @param {Object} props.helpers shared helpers for common utilities in dashboard tables
  */
-const UnitsTable = ({ data, helpers }) => {
+const UnitsTable = ({ data, createPath, helpers }) => {
   const { truncateDescription, DashboardActionButtons } = helpers;
   const unitConfig = {
     // Table metadata
+    tableTitle: 'My Units',
     tableType: 'unit',
     isDashboardTable: true,
     containerClass: 'dashboard-table-container',
@@ -40,6 +42,10 @@ const UnitsTable = ({ data, helpers }) => {
     // Table pagination customization
     initPageSize: 5,
     pageSizeOptions: [5, 10, 25, 50],
+    storageKey: 'unitTablePageSize',
+
+    // Table create button
+    createButton: { btnClass: 'btn-outline', createPath },
 
     // Column definitions
     columns: [
@@ -48,9 +54,6 @@ const UnitsTable = ({ data, helpers }) => {
       { key: 'description', label: 'Description', sortable: false, width: '45%' },
       { key: 'actions', label: '', sortable: false, width: '10%' },
     ],
-
-    // View all link for units
-    viewAllUrl: '/admin/units',
 
     // Parsing function to extract data from back-end
     parseDataRow: (row) => ({
@@ -71,13 +74,13 @@ const UnitsTable = ({ data, helpers }) => {
       switch (columnKey) {
         case 'name':
           return (
-            <a href={item.unit_url} className="fw-bold text-decoration-none text-dark" data-testid="unit-name-table">
+            <a href={item.unit_url} className="fw-bold text-dark" data-testid="unit-name-table">
               {item.name}
             </a>
           );
         case 'items':
           return (
-            <a href={item.search_url} className="text-decoration-none" data-testid="unit-collections-count">
+            <a href={item.search_url} data-testid="unit-collections-count">
               {item.items} {item.items === 1 ? 'collection' : 'collections'}
             </a>
           );

@@ -36,19 +36,26 @@ const GenericTable = ({ config, url, data, tags = [], httpMethod = 'POST' }) => 
     tableStyle = { minWidth: '1024px' },
     tableType,
     testId,
-    viewAllUrl = null,
+    storageKey = null,
     isDashboardTable = false,
+    tableTitle = '',
+    createButton = { btnClass: '', createPath: '' },
   } = config;
 
   // Filter out any false/undefined entries from conditional column definitions
   const columns = rawColumns.filter(Boolean);
+
+  // Read persisted page size from localStorage or default to initPageSize from config
+  const currentPageSize = storageKey
+    ? (Number(localStorage.getItem(storageKey)) || initPageSize)
+    : initPageSize;
 
   /**
    * Two-phase hook initialization: React requires hooks to be called unconditionally and in the
    * same order on every render, so both hook pairs must be called before 'useTableData' returns data.
    * Phase 1: empty-state instances to provide required function references to 'useTableData' hook
    */
-  const pagination = useTablePagination({ initPageSize });
+  const pagination = useTablePagination({ initPageSize: currentPageSize });
   const sorting = useTableSortingAndFiltering({ columns, dataState: {}, initialSort, pagination, searchableFields });
 
   // Read and parse data from the server response or data prop (in dashboard)
@@ -58,7 +65,7 @@ const GenericTable = ({ config, url, data, tags = [], httpMethod = 'POST' }) => 
   const { dataRows, rowsToShow, loading, totalRowCount, filteredRowCount, setRowsToShow, sortedRows } = dataState;
 
   /* Phase 2: data-aware instances to retrieve actual data and drive all UI interactions */
-  const paginationWithData = useTablePagination({ initPageSize, sortedRows, setRowsToShow, filteredRowCount });
+  const paginationWithData = useTablePagination({ initPageSize: currentPageSize, sortedRows, setRowsToShow, filteredRowCount });
   const sortingWithData = useTableSortingAndFiltering({ columns, dataState, initialSort, pagination: paginationWithData, searchableFields });
 
   const {
@@ -66,9 +73,15 @@ const GenericTable = ({ config, url, data, tags = [], httpMethod = 'POST' }) => 
     totalPages,
     currentPage,
     handlePageChange,
-    handlePageSizeChange,
+    updatePageSize,
     getPaginationPages,
   } = paginationWithData;
+
+  const handlePageSizeChange = (newSize) => {
+    // Persist selected page size for dashboard tables in localStorage
+    if (storageKey) localStorage.setItem(storageKey, newSize);
+    updatePageSize(newSize);
+  };
 
   const { handleSort, getSortIcon, searchFilter, tagFilter, handleSearch, handleTagFilter } = sortingWithData;
 
@@ -125,17 +138,7 @@ const GenericTable = ({ config, url, data, tags = [], httpMethod = 'POST' }) => 
       <>
         {displayReturnedItemsHTML}
         <div className={`d-flex justify-content-between align-items-center flex-sm-wrap${isDashboardTable ? ' p-4' : ''}`}>
-          <div className="text-muted">
-            {(rowsToShow?.length === 0 && !loading)
-              ? <span>Showing<b >0</b> to <b>0</b> of <b>0</b> {objectTypeString}</span>
-              : <span>Showing
-                <b> {paginationState.pageIndex * paginationState.pageSize + 1} </b> to
-                <b> {Math.min((paginationState.pageIndex + 1) * paginationState.pageSize, filteredRowCount)}</b> of
-                <b> {filteredRowCount}</b>  {objectTypeString}
-              </span>
-            }
-            {filteredRowCount < totalRowCount && <span> (filtered from <b>{totalRowCount}</b> total {objectTypeString})</span>}
-          </div>
+          <h1 className="page-title mb-0">{tableTitle}</h1>
           <div className='d-flex justify-content-end gap-2 flex-sm-wrap'>
             <div className="d-flex align-items-center">
               <label htmlFor={`search-${tableType}`} className="me-2 mb-0">Search:</label>
@@ -164,6 +167,13 @@ const GenericTable = ({ config, url, data, tags = [], httpMethod = 'POST' }) => 
               </select>
             </div>)}
           </div>
+          {createButton.createPath != '' && (
+            <a href={createButton.createPath}>
+              <span className={`btn ${createButton.btnClass} btn-large section-create-button`} data-testid={`${tableType}-create-${tableType}-button`}>
+                <i className="fa fa-plus" aria-hidden="true"></i> {`Create ${tableType}`}
+              </span>
+            </a>
+          )}
         </div>
       </>
     );
@@ -241,44 +251,54 @@ const GenericTable = ({ config, url, data, tags = [], httpMethod = 'POST' }) => 
                 entries
               </label>
             </div>
-            <div className="d-flex align-items-center gap-3">
-              <nav>
-                <ul className="pagination flex-nowrap mb-0">
-                  <li className={`page-item ${paginationState.pageIndex === 0 ? 'disabled' : ''}`}>
-                    <button
-                      className="page-link"
-                      onClick={() => handlePageChange(paginationState.pageIndex - 1)}
-                      disabled={paginationState.pageIndex === 0}
-                    >
-                      Previous
-                    </button>
-                  </li>
-                  {getPaginationPages().map((page, idx) =>
-                    page === '...' ? (
-                      <li key={`ellipsis-${idx}`} className="page-item disabled">
-                        <span className="page-link">...</span>
-                      </li>
-                    ) : (
-                      <li key={page} className={`page-item ${currentPage === page ? 'active' : ''}`}
+            <div className="d-flex justify-content-between align-items-center gap-3">
+              <div className="text-muted">
+                {(rowsToShow?.length === 0 && !loading)
+                  ? <span>Showing<b >0</b> - <b>0</b> of <b>0</b> {objectTypeString}</span>
+                  : <span>Showing
+                    <b> {paginationState.pageIndex * paginationState.pageSize + 1} </b> -
+                    <b> {Math.min((paginationState.pageIndex + 1) * paginationState.pageSize, filteredRowCount)}</b> of
+                    <b> {filteredRowCount}</b>  {objectTypeString}
+                  </span>
+                }
+                {filteredRowCount < totalRowCount && <span> (filtered from <b>{totalRowCount}</b> total {objectTypeString})</span>}
+              </div>
+              <div className="d-flex align-items-center gap-3">
+                <nav>
+                  <ul className="pagination flex-nowrap mb-0">
+                    <li className={`page-item ${paginationState.pageIndex === 0 ? 'disabled' : ''}`}>
+                      <button
+                        className="page-link"
+                        onClick={() => handlePageChange(paginationState.pageIndex - 1)}
+                        disabled={paginationState.pageIndex === 0}
                       >
-                        <button
-                          className="page-link"
-                          onClick={() => handlePageChange(page - 1)}
-                          disabled={currentPage === page}>{page}</button>
-                      </li>
-                    )
-                  )}
-                  <li className={`page-item ${paginationState.pageIndex >= totalPages - 1 ? 'disabled' : ''}`}>
-                    <button
-                      className="page-link"
-                      onClick={() => handlePageChange(paginationState.pageIndex + 1)}
-                      disabled={paginationState.pageIndex >= totalPages - 1}>Next</button>
-                  </li>
-                </ul>
-              </nav>
-              {viewAllUrl && (
-                <a href={viewAllUrl} className="dashboard-view-all-link fw-bold">View All  <i className="fa fa-chevron-right" /></a>
-              )}
+                        Previous
+                      </button>
+                    </li>
+                    {getPaginationPages().map((page, idx) =>
+                      page === '...' ? (
+                        <li key={`ellipsis-${idx}`} className="page-item disabled">
+                          <span className="page-link">...</span>
+                        </li>
+                      ) : (
+                        <li key={page} className={`page-item ${currentPage === page ? 'active' : ''}`}
+                        >
+                          <button
+                            className="page-link"
+                            onClick={() => handlePageChange(page - 1)}
+                            disabled={currentPage === page}>{page}</button>
+                        </li>
+                      )
+                    )}
+                    <li className={`page-item ${paginationState.pageIndex >= totalPages - 1 ? 'disabled' : ''}`}>
+                      <button
+                        className="page-link"
+                        onClick={() => handlePageChange(paginationState.pageIndex + 1)}
+                        disabled={paginationState.pageIndex >= totalPages - 1}>Next</button>
+                    </li>
+                  </ul>
+                </nav>
+              </div>
             </div>
           </div>
         </>)
