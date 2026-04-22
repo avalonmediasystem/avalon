@@ -63,6 +63,8 @@ class AvalonAnnotation < ActiveAnnotations::Annotation
   # Sets the class variable @master_file by finding the master referenced in the source uri
   def master_file
     @master_file ||= SpeedyAF::Proxy::MasterFile.find(master_file_id) if master_file_id
+  rescue SpeedyAF::RecordNotFound
+    nil
   end
 
   def master_file=(value)

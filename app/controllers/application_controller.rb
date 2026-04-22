@@ -201,7 +201,7 @@ class ApplicationController < ActionController::Base
     end
   end
 
-  rescue_from ActiveFedora::ObjectNotFoundError do |exception|
+  rescue_from ActiveFedora::ObjectNotFoundError, SpeedyAF::RecordNotFound do |exception|
     if request.format == :json
       render json: {errors: ["#{params[:id]} not found"]}, status: 404
     else

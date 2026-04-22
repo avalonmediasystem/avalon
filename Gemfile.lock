@@ -882,7 +882,7 @@ GEM
       nokogiri
       stomp
       xml-simple
-    speedy-af (0.6.0)
+    speedy-af (0.6.1)
       active-fedora (>= 11.0.0)
       activesupport (> 5.2)
     sprockets (4.2.2)
@@ -1091,7 +1091,7 @@ DEPENDENCIES
   sidekiq-cron (~> 1.9)
   simplecov
   solr_wrapper (>= 0.16)
-  speedy-af (~> 0.6.0)
+  speedy-af (~> 0.6)
   sprockets (>= 4)
   sprockets-es6
   sqlite3
