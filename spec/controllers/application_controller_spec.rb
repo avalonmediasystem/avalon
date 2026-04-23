@@ -120,8 +120,15 @@ describe ApplicationController do
 
     context 'model mismatch' do
       it 'renders redirects to homepage' do
-        allow(controller).to receive(:show).and_raise(ActiveFedora::ModelMismatch)
+        allow(controller).to receive(:show).and_raise(SpeedyAF::ModelMismatch)
         expect { get :show, params: { id: 'abc1234' } }.to_not raise_error
+        expect(response.status).to be 302
+        expect(response).to redirect_to(root_path)
+        expect(flash[:error]).to eq("Requested resource type does not match type of abc1234.")
+      end
+      it 'renders redirects to homepage' do
+        allow(controller).to receive(:create).and_raise(ActiveFedora::ModelMismatch)
+        expect { post :create, params: { id: 'abc1234' } }.to_not raise_error
         expect(response.status).to be 302
         expect(response).to redirect_to(root_path)
         expect(flash[:error]).to eq("Requested resource type does not match type of abc1234.")

@@ -376,6 +376,9 @@ protected
     @master_file = SpeedyAF::Proxy::MasterFile.find(params[:id], load_reflections: true)
     set_masterfile if @master_file.nil?
     @master_file
+  rescue SpeedyAF::RecordNotFound
+    set_masterfile
+    @master_file
   end
 
   # return deflated waveform content. deflate only if necessary

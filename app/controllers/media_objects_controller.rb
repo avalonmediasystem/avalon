@@ -23,9 +23,9 @@ class MediaObjectsController < ApplicationController
   include SecurityHelper
 
   before_action :authenticate_user!, except: [:show, :set_session_quality, :show_stream_details, :manifest]
-  before_action :load_resource, except: [:create, :destroy, :update_status, :set_session_quality, :tree, :deliver_content, :confirm_remove, :show_stream_details, :add_to_playlist, :intercom_collections, :manifest, :move_preview, :update, :json_update]
-  load_and_authorize_resource except: [:create, :destroy, :update_status, :set_session_quality, :tree, :deliver_content, :confirm_remove, :show_stream_details, :add_to_playlist, :intercom_collections, :manifest, :move_preview, :show_progress, :edit]
-  authorize_resource only: [:create, :edit]
+  before_action :load_resource, except: [:create, :new, :destroy, :update_status, :set_session_quality, :tree, :deliver_content, :confirm_remove, :show_stream_details, :add_to_playlist, :intercom_collections, :manifest, :move_preview, :update, :json_update, :index]
+  load_and_authorize_resource except: [:create, :new, :destroy, :update_status, :set_session_quality, :tree, :deliver_content, :confirm_remove, :show_stream_details, :add_to_playlist, :intercom_collections, :manifest, :move_preview, :show_progress, :edit, :index]
+  authorize_resource only: [:create, :new, :edit]
 
   before_action :inject_workflow_steps, only: [:edit, :update], unless: proc { request.format.json? }
   before_action :load_player_context, only: [:show]
@@ -603,7 +603,11 @@ class MediaObjectsController < ApplicationController
   # block
   def set_active_file
     if params[:content]
-      @currentStream ||= SpeedyAF::Proxy::MasterFile.find(params[:content])
+      begin
+        @currentStream ||= SpeedyAF::Proxy::MasterFile.find(params[:content])
+      rescue SpeedyAF::RecordNotFound
+        @currentStream = nil
+      end
       if @currentStream.nil?
         flash[:notice] = "That stream was not recognized. Defaulting to the first available stream for the resource"
         redirect_to media_object_path(params[:id])
