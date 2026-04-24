@@ -2543,7 +2543,7 @@ describe MediaObjectsController, type: :controller do
       before do
         login_user(media_object.collection.managers.first)
       end
-      
+
       it 'can enable override' do
         patch 'update', params: { id: media_object.id, override_accessibility: '1', step: 'file-upload' }
         expect(media_object.reload.accessibility_exempt?).to eq true
@@ -2579,6 +2579,65 @@ describe MediaObjectsController, type: :controller do
           patch 'update', params: { id: media_object.id, override_accessibility: '0', step: 'file-upload' }
           expect(media_object.reload.accessibility_exempt?).to eq true
         end
+      end
+    end
+  end
+
+  describe '#toggle_accessibility_exempt' do
+    let(:media_object) { FactoryBot.create(:media_object) }
+
+    context 'as manager' do
+      before do
+        login_user(media_object.collection.managers.first)
+      end
+
+      it 'can enable override' do
+        put :toggle_accessibility_exempt, params: { id: media_object.id, exempt: '1' }, format: :json
+        expect(response).to have_http_status(:ok)
+        expect(JSON.parse(response.body)['exempt']).to eq true
+        expect(media_object.reload.accessibility_exempt?).to eq true
+      end
+
+      it 'can disable override' do
+        media_object.override_accessibility = true
+        media_object.save
+        put :toggle_accessibility_exempt, params: { id: media_object.id, exempt: '0' }, format: :json
+        expect(response).to have_http_status(:ok)
+        expect(JSON.parse(response.body)['exempt']).to eq false
+        expect(media_object.reload.accessibility_exempt?).to eq false
+      end
+    end
+
+    context 'as editor' do
+      let(:user) { FactoryBot.create(:user) }
+      before do
+        collection = media_object.collection
+        collection.editors += [user.user_key]
+        collection.save
+        login_user(user.username)
+      end
+
+      context 'with override disabled' do
+        it 'does not enable override' do
+          put :toggle_accessibility_exempt, params: { id: media_object.id, exempt: '1' }, format: :json
+          expect(media_object.reload.accessibility_exempt?).to eq false
+        end
+      end
+
+      context 'with override enabled' do
+        let(:media_object) { FactoryBot.create(:media_object, override_accessibility: true) }
+
+        it 'does not disable override' do
+          put :toggle_accessibility_exempt, params: { id: media_object.id, exempt: '0' }, format: :json
+          expect(media_object.reload.accessibility_exempt?).to eq true
+        end
+      end
+    end
+
+    context 'as unauthenticated user' do
+      it 'redirects to sign in' do
+        put :toggle_accessibility_exempt, params: { id: media_object.id, exempt: '1' }, format: :json
+        expect(response).to have_http_status(:unauthorized).or redirect_to(new_user_session_path)
       end
     end
   end

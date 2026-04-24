@@ -23,8 +23,8 @@ class MediaObjectsController < ApplicationController
   include SecurityHelper
 
   before_action :authenticate_user!, except: [:show, :set_session_quality, :show_stream_details, :manifest]
-  before_action :load_resource, except: [:create, :new, :destroy, :update_status, :set_session_quality, :tree, :deliver_content, :confirm_remove, :show_stream_details, :add_to_playlist, :intercom_collections, :manifest, :move_preview, :update, :json_update, :index]
-  load_and_authorize_resource except: [:create, :new, :destroy, :update_status, :set_session_quality, :tree, :deliver_content, :confirm_remove, :show_stream_details, :add_to_playlist, :intercom_collections, :manifest, :move_preview, :show_progress, :edit, :index]
+  before_action :load_resource, except: [:create, :new, :destroy, :update_status, :toggle_accessibility_exempt, :set_session_quality, :tree, :deliver_content, :confirm_remove, :show_stream_details, :add_to_playlist, :intercom_collections, :manifest, :move_preview, :update, :json_update, :index]
+  load_and_authorize_resource except: [:create, :new, :destroy, :update_status, :toggle_accessibility_exempt, :set_session_quality, :tree, :deliver_content, :confirm_remove, :show_stream_details, :add_to_playlist, :intercom_collections, :manifest, :move_preview, :show_progress, :edit, :index]
   authorize_resource only: [:create, :new, :edit]
 
   before_action :inject_workflow_steps, only: [:edit, :update], unless: proc { request.format.json? }
@@ -413,6 +413,16 @@ class MediaObjectsController < ApplicationController
     message += "These objects were not deleted:</br> #{ errors.join('<br/> ') }" if errors.count > 0
     BulkActionJobs::Delete.perform_later success_ids, nil
     redirect_to params[:previous_view] == '/bookmarks' ? '/bookmarks' : root_path, flash: { notice: message }
+  end
+
+  def toggle_accessibility_exempt
+    media_object = MediaObject.find(params[:id])
+    authorize! :override_accessibility, media_object
+    media_object.override_accessibility = params[:exempt] == '1'
+    media_object.save(validate: false)
+    render json: { exempt: media_object.accessibility_exempt? }, status: :ok
+  rescue CanCan::AccessDenied
+    render json: { error: 'Not authorized' }, status: :forbidden
   end
 
   def update_status
