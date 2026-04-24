@@ -15,24 +15,6 @@ Unless required by applicable law or agreed to in writing, software distributed
 %>
 <%= hidden_field_tag :donot_advance, true %>
 <%= hidden_field_tag :step, 'file-upload' %>
-<%# Collection manager and higher roles should be only ones able to exempt items %>
-<% if can? :override_accessibility, @media_object %>
-  <div class="card accessibility_override" data-test-id="media-object-accessibility-override">
-    <div class="card-header">
-      <h3 class="card-title">Accessibility Compliance</h3>
-    </div>
-    <div class="card-body">
-      <div class="mb-3">
-        <div class="form-check">
-          <%= label_tag :override_toggle do %>
-          <%= check_box_tag :override_toggle, '1', (@media_object.accessibility_exempt?) %>
-          Exempt this item from requiring accessibility files for publication
-          <% end %>
-        </div>
-      </div>
-    </div>
-  </div>
-<% end %>
 <div id="associated_files">
   <div class="card">
     <div class="card-header">
@@ -330,7 +312,6 @@ Unless required by applicable law or agreed to in writing, software distributed
 </div>
 
 <%= form_for @media_object, html: { id: "empty-form"} do %>
-  <%= hidden_field_tag :override_accessibility, @media_object.accessibility_exempt? ? '1' : '0' %>
   <%= render "workflow_buttons" %>
 <% end %>
 
@@ -352,10 +333,5 @@ Unless required by applicable law or agreed to in writing, software distributed
       });
     });
 
-    const checkbox = document.getElementById('override_toggle');
-    checkbox.addEventListener('change', function(e) {
-      document.getElementById('override_accessibility').value = checkbox.checked ? '1' : '0';
-      document.getElementById('empty-form').submit();
-    });
   </script>
 <% end %>
