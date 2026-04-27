@@ -26,14 +26,15 @@ context('Navigations', () => {
     cy.login('administrator');
     cy.contains('Manage Content'); //.click()
     cy.contains('Manage').click();
-    cy.visit('/admin/collections');
+    cy.visit('/admin/dashboard');
     cy.contains('Skip to main content');
-    cy.contains('Create Collection');
+    cy.contains('Create unit');
+    cy.contains('Create collection');
     // What if there are no collections yet?
-    cy.contains('Title');
+    cy.contains('Name');
     cy.contains('Items');
-    cy.contains('Managers');
     cy.contains('Description');
+    cy.contains('My Units');
     cy.contains('My Collections');
   });
 

@@ -20,9 +20,10 @@ module.exports = defineConfig({
   videosFolder: path.resolve(__dirname, projectRoot, 'videos'),
   browser: 'chrome',
   chromeWebSecurity: false,
+  numTestsKeptInMemory: 5,
   e2e: {
-    defaultCommandTimeout: 100000, //timeout
-    pageLoadTimeout: 100000,
+    defaultCommandTimeout: 10000, //timeout
+    pageLoadTimeout: 10000,
     viewportWidth: 1366,
     viewportHeight: 768,
 

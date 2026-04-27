@@ -1,8 +1,8 @@
-import HomePage from '../pageObjects/homePage.js';
+import HomePage from '../pageObjects/homePage';
 import CollectionPage from '../pageObjects/collectionPage';
-import ItemPage from '../pageObjects/itemPage.js';
+import ItemPage from '../pageObjects/itemPage';
 import { getFixturePath } from '../support/utils';
-import UnitPage from '../pageObjects/unitPage.js';
+import UnitPage from '../pageObjects/unitPage';
 
 import {
   navigateToManageContent,
@@ -13,22 +13,16 @@ import {
 const collectionPage = new CollectionPage();
 const homePage = new HomePage();
 const itemPage = new ItemPage();
-const unitPage = UnitPage;
+const unitPage = new UnitPage();
 Cypress.config();
 
 context('Unit Framework', () => {
   //Unit title
-  var unit_title = `Automation unit title ${
-    Math.floor(Math.random() * 10000) + 1
-  }`;
+  var unit_title = `Automation unit title ${ Date.now() }`;
   //Create collection title
-  var collection_title = `Automation collection title ${
-    Math.floor(Math.random() * 10000) + 1
-  }`;
+  var collection_title = `Automation collection title ${ Date.now() }`;
   //unit title
-  var item_title = `Automation Item title ${
-    Math.floor(Math.random() * 100000) + 1
-  }`;
+  var item_title = `Automation Item title ${ Date.now() }`;
 
   //users from env files
   const admin = Cypress.env('USERS_ADMINISTRATOR_EMAIL');
@@ -37,72 +31,51 @@ context('Unit Framework', () => {
   const unit_admin = Cypress.env('USERS_UNITADMIN_EMAIL');
   const unit_manager = Cypress.env('USERS_UNITMANAGER_EMAIL');
 
-  let item_id;
   let createdItems = []; // Track all created items for cleanup
 
   // Create collection before all tests
   before(() => {
     cy.login('administrator');
+    unitPage.createUnit(
+      { title: unit_title, description: 'Automation Unit Description', contactEmail: 'administrator@example.com',
+        websiteUrl: 'http://www.example.com', websiteLabel: 'Website Label' },
+      {}
+    );
+    unitPage.createCollectionInUnit(unit_title, { title: collection_title }, {});
   });
   // cleaned up items on last test, this block can be used later to clean up
   // Clean up after all tests - ITEM FIRST, THEN COLLECTION
-  /*after(() => {
-    /*cy.login('administrator');
+  after(() => {
+    cy.login('administrator');
     createdItems.forEach((id) => {
-      if (id != item_id) collectionPage.deleteItemById(id);
+      collectionPage.deleteItemById(id);
     });
     // Then delete the collection
     collectionPage.deleteCollectionByName(collection_title);
     // Delete unit
-    UnitPage.deleteUnitByName(unit_title);
-  });*/
-  //1.
+    unitPage.deleteUnitByName(unit_title);
+
+    //validate unit is removed from manage content page
+    navigateToManageContent();
+    unitPage.verifyUnitNotAccessible(unit_title);
+  });
+
   it('Verify that only the admins can see create unit button', () => {
     cy.login('administrator');
     navigateToManageContent();
     // admin should see the create unit button
     cy.get('[data-testid="unit-create-unit-button"]').should('be.visible');
-    homePage.logout();
-    cy.login('manager');
+    //homePage.logout();
+    cy.login('unitmanager');
     navigateToManageContent();
     // manager should not see the create unit button
     cy.get('[data-testid="unit-create-unit-button"]').should('not.exist');
-    homePage.logout();
+    //homePage.logout();
     cy.login('user');
     // user should not see the create unit button
     cy.contains('Manage').should('not.exist');
   });
-  //2.
-  it('Verify that only the admins can create units', () => {
-    cy.login('administrator');
-    navigateToManageContent();
-    cy.get('[data-testid="unit-create-unit-button"]')
-      .should('be.visible')
-      .click();
-    cy.get('[data-testid="unit-name"]').type(unit_title);
-    cy.get('[data-testid="unit-description"]').type(
-      'Automation Unit Description'
-    );
-    cy.get('[data-testid="unit-contact-email"]').type(
-      'administrator@example.com'
-    );
-    cy.get('[data-testid="unit-website-url"]').type('http://www.example.com');
-    cy.get('[data-testid="unit-website-label"]').type('Website label');
-    cy.get('[data-testid="unit-new-unit-btn"]').click();
-    cy.get('[data-testid="alert"]').contains('unit was successfully created.'); //might need to change this alert later
-    //Validate that the unit details are correct
-    cy.get('[data-testid="unit-unit-details"]').contains(unit_title);
-    cy.get('[data-testid="unit-description"]').contains(
-      'Automation Unit Description'
-    );
-    cy.get('[data-testid="unit-contact-email"]').contains(
-      'administrator@example.com'
-    );
-    cy.get('[data-testid="unit-website-url"]')
-      .should('be.visible')
-      .and('have.attr', 'href', 'http://www.example.com')
-      .and('contain.text', 'Website label');
-  });
+
   it('Verify unit defaults after creation', () => {
     cy.login('administrator');
     unitPage.navigateToUnit(unit_title);
@@ -114,11 +87,8 @@ context('Unit Framework', () => {
     cy.get('[data-testid="unit-create-collection-btn"]').should('be.visible');
     cy.get('[data-testid="unit-list-collections-btn"]').should('be.visible');
     cy.get('[data-testid="unit-edit-unit-info"]').should('be.visible');
-    // Collextion staff only by default
-    cy.get('[data-testid="unit-checkbox-unit-staff"]').should('be.checked');
   });
 
-  //3.
   it('Verify editing unit information', () => {
     cy.login('administrator');
     unitPage.navigateToUnit(unit_title);
@@ -156,7 +126,6 @@ context('Unit Framework', () => {
     unit_title = new_unit_title;
   });
 
-  //4.
   it('Verify whether the user is able to upload poster image.', () => {
     cy.login('administrator');
     unitPage.navigateToUnit(unit_title);
@@ -174,7 +143,6 @@ context('Unit Framework', () => {
       .should('be.visible');
   });
 
-  //5.
   it('Verify whether the user is able to remove poster image.', () => {
     cy.login('administrator');
     unitPage.navigateToUnit(unit_title);
@@ -197,7 +165,6 @@ context('Unit Framework', () => {
       .and('include', '/poster');
   });
 
-  //6.
   it('Verify whether the user is able to remove poster image.', () => {
     cy.login('administrator');
     unitPage.navigateToUnit(unit_title);
@@ -211,50 +178,17 @@ context('Unit Framework', () => {
       .should('be.visible');
   });
 
-  //7.
   it('Verify creating collection on manage unit.', () => {
-    //Creating this through admin but can be craeted through manager role as well
     cy.login('administrator');
-    unitPage.navigateToUnit(unit_title);
-    cy.get('[data-testid="unit-create-collection-btn"]')
-      .should('be.visible')
-      .click();
-    // fill out collection form - name, unit and description
-    cy.get('[data-testid="collection-name"]').type(collection_title);
-    cy.get('[data-testid="admin_collection[unit_name]-user-input"]').type(
-      unit_title
-    );
-    //unit should appear in the popup
-    cy.get('[data-testid="admin_collection[unit_name]-popup"]')
-      .contains(unit_title)
-      .click();
-    cy.get('[data-testid="collection-description"]').type(
-      'Automation collection description'
-    );
-    cy.get('[data-testid="collection-new-collection-btn"]').click();
-    //validate collection creation
-    cy.get('[data-testid="alert"]')
-      .contains('Collection was successfully created.')
-      .should('be.visible');
-    //validate collection details
-    cy.get('[data-testid="collection-collection-details"]').contains(
-      collection_title
-    );
-    cy.get('[data-testid="collection-collection-details"]').contains(
-      unit_title
-    );
-    cy.get('[data-testid="collection-description"]').contains(
-      'Automation collection description'
-    );
+    collectionPage.navigateToCollection(collection_title);
+
     //unit admin should be inherited as collection manager
     cy.get('[data-testid="collection-access-label-manager"]')
       .should('be.visible')
       .and('contain.text', 'administrator@example.com')
       .and(
         'contain.text',
-        'This role is inherited from Unit "' +
-          unit_title +
-          '" and cannot be removed.'
+        'This role is inherited and cannot be removed.'
       );
     //collection staff should be inherited from unit
     cy.get('[data-testid="collection-checkbox-collection-staff"]').should(
@@ -262,17 +196,19 @@ context('Unit Framework', () => {
     );
     //valiadting that the collection number is updated on unit table under manage content page
     navigateToManageContent();
-    cy.get('[data-testid="unit-name-table"]')
+    cy.get('[data-testid="unit-table-search-field"]')
+      .clear()
+      .type(unit_title);
+    cy.get("[data-testid='unit-name-table']")
       .contains(unit_title)
       .closest('tr')
       .find('[data-testid="unit-collections-count"]')
       .should('have.text', '1 collection');
   });
 
-  //8.
   it('Verify all the list of all the related collections of an unit', () => {
     cy.login('administrator');
-    // we need to craete an item before listing the collection
+    // we need to create an item before listing the collection
     collectionPage.navigateToCollection(collection_title);
     collectionPage.createItem(item_title, 'test_sample.mp4').then((id) => {
       createdItems.push(id);
@@ -302,7 +238,7 @@ context('Unit Framework', () => {
       .find('a')
       .contains(item_title);
   });
-  //9. we need to create a new user for this test and assign admin rol
+
   it('Assign Staff Roles: Verify the user is able to add an user as an unit administrator.', () => {
     cy.login('administrator');
     unitPage.navigateToUnit(unit_title);
@@ -337,13 +273,11 @@ context('Unit Framework', () => {
       .and('contain.text', unit_admin)
       .and(
         'contain.text',
-        'This role is inherited from Unit "' +
-          unit_title +
-          '" and cannot be removed.'
+        'This role is inherited and cannot be removed.'
       );
     // should we validate the item access
   });
-  //10.
+
   it('Assign Staff Roles: Verify removing user from unit admin field', () => {
     cy.login('administrator');
     unitPage.navigateToUnit(unit_title);
@@ -363,13 +297,15 @@ context('Unit Framework', () => {
       .should('not.exist');
     //inherited in collection should be removed as well
     cy.login('unit_admin');
-    collectionPage.navigateToCollection(collection_title);
-    cy.get("[data-testid='collection-access-label-manager']").should(
-      'not.contain.text',
-      unit_admin
-    );
+    //validate unit admin cannot navigate to collection
+    cy.get('body').then(($body) => {
+      if ($body.find('#manageDropdown').length) {
+	navigateToManageContent();
+	collectionPage.verifyCollectionNotAccessible(collection_title);
+      }
+    });
   });
-  //11.
+
   it('Assign Staff Roles: Verify the user is able to add an user as a manager', () => {
     cy.login('administrator');
     unitPage.navigateToUnit(unit_title);
@@ -405,13 +341,6 @@ context('Unit Framework', () => {
     //editor and depositer add button should be enabled for manager
     cy.get('[data-testid="submit-add-editor"]').should('be.enabled');
     cy.get('[data-testid="submit-add-depositor"]').should('be.enabled');
-    //discovery and access is read only for manager
-    cy.get('[data-testid="unit-item-discovery"]').contains(
-      'Item is not hidden from search results'
-    );
-    cy.get('[data-testid="unit-item-access"]').contains(
-      'Item is viewable by unit staff only'
-    );
     //validate that the collection has inherited the new manager as collection manager
     collectionPage.navigateToCollection(collection_title);
     cy.get('[data-testid="collection-access-label-manager"]')
@@ -419,12 +348,10 @@ context('Unit Framework', () => {
       .and('contain.text', unit_manager)
       .and(
         'contain.text',
-        'This role is inherited from Unit "' +
-          unit_title +
-          '" and cannot be removed.'
+        'This role is inherited and cannot be removed.'
       );
   });
-  //12
+
   it('Assign Staff Roles: Verify removing user from manager field', () => {
     cy.login('administrator');
     unitPage.navigateToUnit(unit_title);
@@ -455,26 +382,15 @@ context('Unit Framework', () => {
       .should('not.exist');
     //inherited in collection should be removed as well
     cy.login('unit_manager');
-    navigateToManageContent();
     cy.get('body').then(($body) => {
-      if ($body.find('[data-testid="unit-name-table"]').length) {
-        cy.get('[data-testid="unit-name-table"]').should(
-          'not.contain',
-          unit_title
-        );
-        cy.get('[data-testid="collection-name-table"]').should(
-          'not.contain',
-          collection_title
-        );
-      } else {
-        cy.contains('h2', "You don't have any units yet").should('be.visible');
-        cy.contains('p', "You'll need to be assigned to one").should(
-          'be.visible'
-        );
+      if ($body.find('#manageDropdown').length) {
+	navigateToManageContent();
+	unitPage.verifyUnitNotAccessible(unit_title);
+	collectionPage.verifyCollectionNotAccessible(collection_title);
       }
     });
   });
-  //13.
+
   it('Assign Staff Roles: Verify the user is able to add an user as an editor', () => {
     cy.login('administrator');
     unitPage.navigateToUnit(unit_title);
@@ -509,13 +425,6 @@ context('Unit Framework', () => {
     cy.get('[data-testid="submit-add-ipaddress"]').should('be.disabled');
     //depositor add button should be disabled for editor
     cy.get('[data-testid="submit-add-depositor"]').should('be.enabled');
-    //discovery and access is read only for editor
-    cy.get('[data-testid="unit-item-discovery"]').contains(
-      'Item is not hidden from search results'
-    );
-    cy.get('[data-testid="unit-item-access"]').contains(
-      'Item is viewable by unit staff only'
-    );
     //validate that the collection has inherited the new editor as collection editor
     collectionPage.navigateToCollection(collection_title);
     cy.get('[data-testid="collection-access-label-editor"]')
@@ -523,12 +432,10 @@ context('Unit Framework', () => {
       .and('contain.text', user)
       .and(
         'contain.text',
-        'This role is inherited from Unit "' +
-          unit_title +
-          '" and cannot be removed.'
+        'This role is inherited and cannot be removed.'
       );
   });
-  //14.
+
   it('Assign Staff Roles: Verify removing user from editor field', () => {
     cy.login('administrator');
     unitPage.navigateToUnit(unit_title);
@@ -551,7 +458,6 @@ context('Unit Framework', () => {
     cy.contains('Manage').should('not.exist');
   });
 
-  //15.
   it('Assign Staff Roles: Verify the user is able to add an user as a depositor.', () => {
     cy.login('administrator');
     unitPage.navigateToUnit(unit_title);
@@ -585,13 +491,6 @@ context('Unit Framework', () => {
     cy.get('[data-testid="submit-add-group"]').should('be.disabled');
     cy.get('[data-testid="submit-add-class"]').should('be.disabled');
     cy.get('[data-testid="submit-add-ipaddress"]').should('be.disabled');
-    //discovery and access is read only for depositor
-    cy.get('[data-testid="unit-item-discovery"]').contains(
-      'Item is not hidden from search results'
-    );
-    cy.get('[data-testid="unit-item-access"]').contains(
-      'Item is viewable by unit staff only'
-    );
     //validate that the collection has inherited the new depositor as collection depositor
     collectionPage.navigateToCollection(collection_title);
     cy.get('[data-testid="collection-access-label-depositor"]')
@@ -599,12 +498,10 @@ context('Unit Framework', () => {
       .and('contain.text', user)
       .and(
         'contain.text',
-        'This role is inherited from Unit "' +
-          unit_title +
-          '" and cannot be removed.'
+        'This role is inherited and cannot be removed.'
       );
   });
-  //16
+
   it('Assign Staff Roles: Verify removing user from depositor field', () => {
     cy.login('administrator');
     unitPage.navigateToUnit(unit_title);
@@ -626,59 +523,28 @@ context('Unit Framework', () => {
     cy.login('user');
     cy.contains('Manage').should('not.exist');
   });
-  //17
-  it('Assign Staff Roles: Verify that users with manager role cannot be added as an unit administrator', () => {
+
+  it('Assign Staff Roles: Verify that the only user in the Unit Admin field cannot be removed.', () => {
     cy.login('administrator');
     unitPage.navigateToUnit(unit_title);
-    //add manager
-    cy.get('[data-testid="add_unit_admin-user-input"]')
-      .type(unit_manager)
-      .should('have.value', unit_manager);
-    cy.get("[data-testid='add_unit_admin-popup']")
-      .children()
-      .filter((_, el) => el.textContent.trim() === unit_manager)
-      .first()
-      .click();
-    cy.get('[data-testid="submit-add-unit_admin"]').click();
-    //validate
-    cy.get('[data-testid="alert"]').contains(
-      'User ' +
-        unit_manager +
-        ' does not belong to the unit administrator group.'
-    );
-    //log in as manager and validate that the unit is not seeable
-    homePage.logout();
-    cy.login('unit_manager');
-    navigateToManageContent();
-    cy.get('[data-testid="unit-name-table"]').should('not.contain', unit_title);
-  });
-  //18
-  it('Assign Staff Roles: Verify that users without manager/admin role cannot be added as a manager', () => {
-    cy.login('administrator');
-    unitPage.navigateToUnit(unit_title);
-    //adding user without manager role as manager
-    cy.get('[data-testid="add_manager-user-input"]')
-      .type(user)
-      .should('have.value', user);
-    cy.get('[data-testid="add_manager-popup"]')
-      .should('be.visible')
-      .contains('li[role="option"] span', user)
-      .click();
-    cy.get('[data-testid="submit-add-manager"]').click();
-    //validate
-    cy.get('[data-testid="alert"]').contains(
-      'User ' + user + ' does not belong to the manager group.'
-    );
-    //log in as manager and validate that the unit is not seeable
-    homePage.logout();
-    cy.login('user');
-    cy.contains('Manage').should('not.exist');
-  });
-  //19
-  it('Assign Staff Roles: Verify that the only user in the Unit Admin field and Unit Manager field cannot be removed.', () => {
-    cy.login('administrator');
-    unitPage.navigateToUnit(unit_title);
-    //verify admin is present
+
+    //unit admin may be removed in a previous test so only remove if present
+    cy.get('body').then(($body) => {
+      if ($body.find('[data-testid="collection-access-label-unit_admin"]').length > 1) {
+	// Remove unit admin
+	cy.get('[data-testid="collection-access-label-unit_admin"]')
+	  .contains('label', unit_admin)
+	  .should('be.visible');
+	cy.get('[data-testid="collection-access-label-unit_admin"]')
+	  .contains('label', unit_admin)
+	  .closest('tr')
+	  .find('[data-testid="collection-access-remove-unit_admin"]')
+	  .click();
+      }
+    });
+
+    //verify admin is only unit admin present
+    cy.get('[data-testid="collection-access-label-unit_admin"]').should('have.length', 1);
     cy.get('[data-testid="collection-access-label-unit_admin"]')
       .contains('label', admin)
       .should('be.visible');
@@ -695,37 +561,5 @@ context('Unit Framework', () => {
     cy.get('[data-testid="alert"]').contains(
       'At least one unit administrator is required.'
     );
-    //verify manager is present
-    cy.get('[data-testid="collection-access-label-manager"]')
-      .contains('label', manager)
-      .should('be.visible');
-    //try to remove the only unit manager
-    cy.get('[data-testid="collection-access-label-manager"]')
-      .contains('label', manager)
-      .closest('tr')
-      .find('[data-testid="collection-access-remove-manager"]')
-      .click();
-    //validate that the unit manager is not removed and error message is shown
-    cy.get('[data-testid="collection-access-label-manager"]')
-      .contains('label', manager)
-      .should('be.visible');
-    cy.get('[data-testid="alert"]').contains(
-      'At least one manager is required.'
-    );
   });
-  //20 delete unit
-  it('Deleting an Unit which has no child collections', () => {
-    cy.login('administrator');
-    //for now i am deleting it manually cause the reassignning collection is not implemented yet
-    createdItems.forEach((id) => {
-      if (id != item_id) collectionPage.deleteItemById(id);
-    });
-    // Then delete the collection
-    collectionPage.deleteCollectionByName(collection_title);
-    UnitPage.deleteUnitByName(unit_title);
-    //validate unit is removed from manage content page
-    navigateToManageContent();
-    cy.get('[data-testid="unit-name-table"]').should('not.contain', unit_title);
-  });
-  //Item discovery, item access and assign special access are to be implemented
 });

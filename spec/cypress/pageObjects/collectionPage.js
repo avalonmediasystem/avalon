@@ -6,6 +6,9 @@ import { getFixturePath } from '../support/utils';
 class CollectionPage {
   navigateToCollection(collection_title) {
     navigateToManageContent();
+    cy.get('[data-testid="collection-table-search-field"]')
+      .clear()
+      .type(collection_title);
     cy.get("[data-testid='collection-name-table']")
       .contains(collection_title)
       .click();
@@ -29,7 +32,7 @@ class CollectionPage {
 
     // Navigate and start creation
     cy.get("[data-testid='collection-create-collection-button']")
-      .contains('Create Collection')
+      .contains('Create collection')
       .click();
 
     cy.intercept('POST', '/admin/collections').as('createCollection');
@@ -93,13 +96,50 @@ class CollectionPage {
     return cy.wrap(config.title);
   }
 
+  setHidden(hidden) {
+    if (hidden) {
+      cy.get('[data-testid="collection-hide-checkbox"]')
+	.check()
+	.should('be.checked');
+    } else {
+      cy.get('[data-testid="collection-hide-checkbox"]')
+	.uncheck()
+	.should('not.be.checked');
+    }
+
+    cy.get('[data-testid="collection-item-discovery"]')
+      .find('[data-testid="collection-save-setting-btn"]')
+      .contains('Save Setting');
+  }
+
   // Set public access - used by item specs
   setPublicAccess() {
+    this.setAccess('public');
+  }
+
+  setAccess(access_level) {
+    let access_level_label = null;
+    let access_level_id = null;
+    switch (access_level) {
+      case 'public':
+        access_level_label = 'Available to the general public';
+	access_level_id = 'general-public';
+	break;
+      case 'logged-in':
+        access_level_label = 'Logged in users only';
+	access_level_id = 'logged-in-user';
+	break;
+      case 'private':
+        access_level_label = 'Collection staff only';
+	access_level_id = 'collection-staff';
+	break;
+    }
+
     cy.intercept('POST', '/admin/collections/*').as('updateAccessControl');
 
     cy.get("[data-testid='collection-item-access']").within(() => {
-      cy.contains('label', 'Available to the general public')
-        .find("[data-testid='collection-checkbox-general-public']")
+      cy.contains('label', access_level_label)
+        .find(`[data-testid='collection-checkbox-${access_level_id}']`)
         .click()
         .should('be.checked');
       cy.get("[data-testid='collection-save-setting-btn']").click();
@@ -112,8 +152,8 @@ class CollectionPage {
       );
     });
 
-    cy.contains('label', 'Available to the general public')
-      .find("[data-testid='collection-checkbox-general-public']")
+    cy.contains('label', access_level_label)
+      .find(`[data-testid='collection-checkbox-${access_level_id}']`)
       .should('be.checked');
   }
 
@@ -147,66 +187,83 @@ class CollectionPage {
       .should('be.visible');
   }
 
-  // Cleanup method for collection created
+  // Add special access user - used by collection specs
+  addSpecialAccessUser(username) {
+    cy.intercept('POST', '/admin/collections/*').as('updateCollection');
 
-  deleteCollectionByName(collectionName) {
-    navigateToManageContent();
-    cy.get('body').then(($body) => {
-      if (
-        $body.find(
-          `[data-testid='collection-name-table']:contains("${collectionName}")`
-        ).length > 0
-      ) {
-        // Ensure the collection is empty before attempting deletion
-        cy.wait(2000); // Wait for the item to be deleted because it still shows up in collection list
-        cy.get("[data-testid='collection-name-table']")
-          .contains(collectionName)
-          .click();
-        cy.get('[data-testid="collection-list-all-item-btn"]').click();
-        cy.contains('No results found for your search', { timeout: 20000 });
-        navigateToManageContent();
+    cy.get("[data-testid='add_user-user-input']")
+      .type(username)
+      .should('have.value', username);
 
-        // Suppress known jQuery null-reference error thrown by the app on this page transition
-        cy.on('uncaught:exception', (err) => {
-          if (
-            err.message.includes(
-              "Cannot read properties of null (reading 'jquery')"
-            )
-          ) {
-            return false;
-          }
-        });
+    cy.get("[data-testid='add_user-popup']")
+      .children()
+      .filter((_, el) => el.textContent.trim() === username)
+      .first()
+      .click();
 
-        cy.get("[data-testid='collection-name-table']")
-          .contains(collectionName)
-          .closest('tr')
-          .find("[data-testid='collection-delete-collection-btn']")
-          .click();
+    cy.get("[data-testid='submit-add-user']").click();
 
-        cy.intercept('POST', `/admin/collections/*`).as('deleteCollection');
-        cy.get("[data-testid='collection-delete-confirm-btn']").click();
-
-        cy.wait('@deleteCollection').then((interception) => {
-          expect(interception.response.statusCode).to.eq(302);
-          expect(interception.response.headers.location).to.include(
-            '/admin/collections'
-          );
-        });
-
-        // Refresh and verify deletion
-        navigateToManageContent();
-        cy.get("[data-testid='collection-name-table']")
-          .contains(collectionName)
-          .should('not.exist');
-      }
+    cy.wait('@updateCollection').then((interception) => {
+      expect(interception.response.statusCode).to.eq(302);
+      expect(interception.response.headers.location).to.include(
+        '/admin/collections/'
+      );
     });
+
+    cy.get("[data-testid='collection-access-label-user']")
+      .should('exist')
+      .find('label')
+      .filter((_, el) => el.textContent.trim() === username)
+      .should('be.visible');
+  }
+
+  // Cleanup method for collection created
+  deleteCollectionByName(collectionName) {
+    this.navigateToCollection(collectionName);
+
+    // Ensure the collection is empty before attempting deletion
+    cy.get('[data-testid="collection-list-all-item-btn"]').click();
+    cy.contains('No results found for your search', { timeout: 20000 });
+
+    // Delete collection
+    navigateToManageContent();
+    cy.get('[data-testid="collection-table-search-field"]')
+      .clear()
+      .type(collectionName);
+    cy.get("[data-testid='collection-name-table']")
+      .contains(collectionName)
+      .closest('tr')
+      .find("[data-testid='collection-delete-collection-btn']")
+      .click();
+
+    cy.intercept('POST', `/admin/collections/*`).as('deleteCollection');
+    cy.get("[data-testid='collection-delete-confirm-btn']").click();
+
+    cy.wait('@deleteCollection').then((interception) => {
+      expect(interception.response.statusCode).to.eq(302);
+      expect(interception.response.headers.location).to.include(
+	'/admin/dashboard'
+      );
+    });
+
+    // Refresh and verify deletion
+    navigateToManageContent();
+    cy.get('[data-testid="collection-table-search-field"]')
+      .clear()
+      .type(collectionName);
+    cy.get("[data-testid='collection-table-body']").within(() => {
+       cy.contains(
+        'td',
+        'No matching records found',
+       ).should('be.visible');
+      });
   }
 
   // Cleanup method for item created
 
   deleteItemById(itemId) {
     cy.visit('/media_objects/' + itemId);
-    cy.waitForVideoReady();
+    //cy.waitForVideoReady();
     cy.get('[data-testid="media-object-edit-btn"]').contains('Edit').click();
 
     cy.intercept('POST', '/media_objects/**').as('removeMediaObject');
@@ -224,7 +281,13 @@ class CollectionPage {
     cy.get('[data-testid="alert"]').contains('1 media object deleted.');
   }
 
-  createItem(item_title, videoName) {
+  createItem(item_title, videoName, options = {}) {
+    const defaults = {
+      publish: false
+    };
+
+    const config = { ...defaults, ...options };
+
     // Create Item button
     cy.intercept('GET', '/media_objects/new?collection_id=*').as(
       'getManageFile'
@@ -289,8 +352,26 @@ class CollectionPage {
         .should('have.text', publicationYear);
     });
 
+    if (config.publish) {
+      // Publish the newly created item
+      cy.intercept('POST', '**/update_status?status=publish').as(
+	'publishmedia',
+      );
+      cy.get('[data-testid="media-object-publish-btn"]')
+	.contains('Publish')
+	.click();
+      cy.wait('@publishmedia').its('response.statusCode').should('eq', 302);
+    }
+
     // Return item_id
-    return cy.url().then((url) => url.split('/').pop());
+    cy.url().then((url) => {
+      const itemId = url.split('/').pop();
+      // Store the ID in a global variable instead of returning
+      cy.wrap(itemId).as('mediaObjectId');
+    });
+
+    // Return the alias so it can be used
+    return cy.get('@mediaObjectId');
   }
 
   //creates an item with 3 sections (2 videos and 1 audio) adds caption to one video and adds a transcript
@@ -473,6 +554,21 @@ class CollectionPage {
 
     // Return the alias so it can be used
     return cy.get('@mediaObjectId');
+  }
+
+  verifyCollectionNotAccessible(collection_title) {
+    cy.get('body').then(($body) => {
+      if ($body.find('[data-testid="collection-table-search-field"]').length) {
+        cy.get('[data-testid="collection-table-search-field"]')
+          .clear()
+          .type(collection_title);
+        cy.wait(1000);
+        cy.get('[data-testid="collection-table-body"] tr td').should('contain', "No matching records found");
+      } else {
+        cy.contains('h2', "You don't have any collections yet").should('be.visible');
+        cy.contains('p', "You'll need to be assigned to one").should('be.visible');
+      }
+    });
   }
 }
 
