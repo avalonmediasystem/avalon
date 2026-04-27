@@ -22,27 +22,20 @@ import {
   selectLoggedInUsersOnlyAccess,
   performSearch,
 } from '../support/navigation';
-import UnitPage from '../pageObjects/unitPage.js';
-const unitPage = UnitPage;
+import UnitPage from '../pageObjects/unitPage';
+const unitPage = new UnitPage();
 
 const collectionPage = new CollectionPage();
 
 // Run CDL-off test only when CDL_ENABLED is explicitly false in the env config.
 // Run all other CDL tests only when CDL is enabled (the default).
-const itIfCDLEnabled = Cypress.env('CDL_ENABLED') !== false ? it : it.skip;
-const itIfCDLDisabled = Cypress.env('CDL_ENABLED') === false ? it : it.skip;
+const itIfCDLEnabled = Cypress.expose('CDL_ENABLED') !== false ? it : it.skip;
+const itIfCDLDisabled = Cypress.expose('CDL_ENABLED') === false ? it : it.skip;
 
-context('Selected Items', () => {
-  var unit_title = `Automation unit title ${
-    Math.floor(Math.random() * 10000) + 1
-  }`;
-
-  var collection_title = `Automation collection title ${
-    Math.floor(Math.random() * 10000) + 1
-  }`;
-  var media_object_title = `Automation Item title ${
-    Math.floor(Math.random() * 100000) + 1
-  }`;
+context('Controlled Digital Lending', () => {
+  var unit_title = `Automation unit title ${ Date.now() }`;
+  var collection_title = `Automation collection title ${ Date.now() }`;
+  var media_object_title = `Automation Item title ${ Date.now() }`;
   var media_object_id;
 
   Cypress.on('uncaught:exception', (err, runnable) => {
@@ -60,7 +53,7 @@ context('Selected Items', () => {
 
   // Create unit, collection and media object before all tests
   before(() => {
-    if (Cypress.env('CDL_ENABLED') === false) return;
+    if (Cypress.expose('CDL_ENABLED') === false) return;
     cy.login('administrator');
     unitPage.createUnit({ title: unit_title });
     navigateToManageContent();
@@ -90,13 +83,13 @@ context('Selected Items', () => {
 
   // Clean up after all tests - ITEM FIRST, THEN COLLECTION, THEN UNIT
   after(() => {
-    if (Cypress.env('CDL_ENABLED') === false) return;
+    if (Cypress.expose('CDL_ENABLED') === false) return;
     cy.login('administrator');
     if (media_object_id) {
       collectionPage.deleteItemById(media_object_id);
     }
     collectionPage.deleteCollectionByName(collection_title);
-    UnitPage.deleteUnitByName(unit_title);
+    unitPage.deleteUnitByName(unit_title);
   });
 
   itIfCDLDisabled(
@@ -117,7 +110,7 @@ context('Selected Items', () => {
         'not.exist',
       );
       collectionPage.deleteCollectionByName(collection_title);
-      UnitPage.deleteUnitByName(unit_title);
+      unitPage.deleteUnitByName(unit_title);
     },
   );
 
@@ -131,8 +124,7 @@ context('Selected Items', () => {
       .should('exist')
       .and('be.visible');
     cy.get('[data-testid="collection-item-lending-period-card"]')
-      .should('exist')
-      .and('be.visible');
+      .should('not.exist');
   });
 
   itIfCDLEnabled(
@@ -237,13 +229,13 @@ context('Selected Items', () => {
   );
 
   itIfCDLEnabled(
-    'Verify changing the default lending period for a CDL collection - apply to all existing items - @T8a59578a',
+    'Verify changing the default lending period for a CDL collection - inherits to all existing items - @T8a59578a',
     () => {
       cy.login('administrator');
       collectionPage.navigateToCollection(collection_title);
       cy.get('[data-testid="add-lending-period-days"]').clear().type('3');
       cy.on('window:confirm', () => true);
-      cy.get('[data-testid="lending-period-apply-to-all"]').click();
+      cy.get('[data-testid="lending-period-save-setting"]').click();
       cy.get('[data-testid="add-lending-period-days"]').should(
         'have.value',
         '3',
@@ -257,10 +249,12 @@ context('Selected Items', () => {
       cy.visit(
         '/media_objects/' + media_object_id + '/edit?step=access-control',
       );
-      cy.get('[data-testid="media-object-lending-period-days"]').should(
-        'have.value',
-        '3',
-      );
+      cy.get('.item-lending-period').within(() => {
+	cy.contains(
+        'div',
+        'The lending period is 3 days and 0 hours.',
+	).should('be.visible');
+      });
     },
   );
 

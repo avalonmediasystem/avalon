@@ -15,15 +15,13 @@
  */
 
 import ItemPage from '../pageObjects/itemPage';
-import HomePage from '../pageObjects/homePage.js';
+import HomePage from '../pageObjects/homePage';
 import CollectionPage from '../pageObjects/collectionPage';
 import { getFixturePath, getDownloadPath } from '../support/utils';
-import UnitPage from '../pageObjects/unitPage.js';
-const unitPage = UnitPage;
+import UnitPage from '../pageObjects/unitPage';
+const unitPage = new UnitPage();
 
-var unit_title = `Automation unit title ${
-  Math.floor(Math.random() * 10000) + 1
-}`;
+var unit_title = `Automation unit title ${ Date.now() }`;
 const itemPage = new ItemPage();
 import {
   navigateToManageContent,
@@ -36,13 +34,9 @@ const homePage = new HomePage();
 const heading = 'Heading Example';
 const timespan = 'Introduction';
 context('Item', () => {
-  //Create dynamic ite
-  var collection_title = `Automation collection title ${
-    Math.floor(Math.random() * 10000) + 1
-  }`;
-  var item_title = `Automation Item title ${
-    Math.floor(Math.random() * 100000) + 1
-  }`;
+  //Create dynamic item
+  var collection_title = `Automation collection title ${ Date.now() }`;
+  var item_title = `Automation Item title ${ Date.now() }`;
 
   let item_id;
   let createdItems = []; // Track all created items for cleanup
@@ -70,45 +64,43 @@ context('Item', () => {
       { title: collection_title, unitName: unit_title },
       { setPublicAccess: true, addManager: true },
     );
+
+    collectionPage.createItem(item_title, 'test_sample.mp4').then((id) => {
+      item_id = id;
+      createdItems.push(item_id);
+
+      // Verify item was created
+      cy.get('[data-testid="media-object-title"]').should(
+	'contain.text',
+	item_title,
+      );
+
+      cy.intercept('GET', '**/edit?step=access-control').as('accesspage');
+      cy.visit('/media_objects/' + item_id + '/edit?step=access-control');
+      cy.wait('@accesspage').then((interception) => {
+        expect(interception.response.statusCode).to.eq(200);
+      });
+
+      // Disable inheritance on item
+      cy.get('input#disable_inheritance').click();
+      cy.get('[data-testid="media-object-save-btn"').click();
+    });
   });
 
   // Clean up after all tests - ITEM FIRST, THEN COLLECTION
   after(() => {
     cy.login('administrator');
     createdItems.forEach((id) => {
-      if (id != item_id) collectionPage.deleteItemById(id);
+      collectionPage.deleteItemById(id);
     });
     // Then delete the collection
     collectionPage.deleteCollectionByName(collection_title);
     // Delete unit
-    UnitPage.deleteUnitByName(unit_title);
+    unitPage.deleteUnitByName(unit_title);
   });
 
-  it(
-    'Verify creating an item under a collection - Manager - @T139381a0 ',
-    { tags: '@critical' },
-    () => {
-      cy.login('administrator');
-
-      collectionPage.navigateToCollection(collection_title);
-
-      collectionPage.createItem(item_title, 'test_sample.mp4').then((id) => {
-        item_id = id;
-        createdItems.push(item_id);
-
-        // Verify item was created
-        cy.get('[data-testid="media-object-title"]').should(
-          'contain.text',
-          item_title,
-        );
-      });
-    },
-  );
-
   it('Verify creating an item under a collection - Editor - @T67dcdcce', () => {
-    var item_title_editor = `Automation Item title ${
-      Math.floor(Math.random() * 100000) + 1
-    }`;
+    var item_title_editor = `Automation Item title ${ Date.now() }`;
 
     let item_id_editor;
     cy.login('manager');
@@ -145,9 +137,7 @@ context('Item', () => {
   });
 
   it('Verify that multiple media objects (section files) can be added during item creation - @T582e19fc', () => {
-    var item_title_multiple_section = `Automation Item title ${
-      Math.floor(Math.random() * 100000) + 1
-    }`;
+    var item_title_multiple_section = `Automation Item title ${ Date.now() }`;
 
     let item_id_multiple_section;
     cy.login('manager');
@@ -173,6 +163,7 @@ context('Item', () => {
       cy.login('administrator');
       // The below code is hard-coded for a media object url. This needs to be changed with a valid object URL later for each website.
 
+      itemPage.ensurePublishStatus(item_id, false);
       cy.visit('/media_objects/' + item_id);
       cy.intercept('POST', '**/update_status?status=publish').as(
         'publishmedia',
@@ -318,6 +309,7 @@ context('Item', () => {
     { tags: '@critical' },
     () => {
       cy.login('administrator');
+      itemPage.ensurePublishStatus(item_id, true);
       cy.intercept('GET', '**/edit?step=access-control').as('accesspage');
       cy.visit('/media_objects/' + item_id + '/edit?step=access-control');
       cy.wait('@accesspage').then((interception) => {
@@ -350,6 +342,7 @@ context('Item', () => {
     { tags: '@critical' },
     () => {
       cy.login('administrator');
+      itemPage.ensurePublishStatus(item_id, true);
       cy.intercept('GET', '**/edit?step=access-control').as('accesspage');
       cy.visit('/media_objects/' + item_id + '/edit?step=access-control');
       cy.wait('@accesspage').then((interception) => {
@@ -381,6 +374,7 @@ context('Item', () => {
     { tags: '@critical' },
     () => {
       cy.login('administrator');
+      itemPage.ensurePublishStatus(item_id, true);
       cy.visit('/');
       cy.intercept('GET', '**/edit?step=access-control').as('accesspage');
       cy.visit('/media_objects/' + item_id + '/edit?step=access-control');
@@ -1199,7 +1193,7 @@ context('Item', () => {
         // optionally visit or request to confirm it's downloadable
         cy.request(href).then((response) => {
           expect(response.status).to.eq(200);
-          expect(response.headers['content-type']).to.include('text/srt');
+          expect(response.headers['content-type']).to.include('application/x-subrip');
           expect(response.body).to.contain('1');
         });
       });
@@ -1491,9 +1485,9 @@ context('Item', () => {
 
       // Wait for and confirm presence of timeline info like item title
       cy.contains('Timeline information').should('exist');
-      //Changing the default timeline title to a custom title for later search and validation.
-      //iiif‑timeliner bundlle so cannot add data-testid, using ids for now
-      cy.contains('h3', 'Documentary.mp4').should('be.visible').click();
+      //iiif‑timeliner bundle so cannot add data-testid, using ids for now
+      //This may fail due to changes to the item's title in previous tests
+      cy.contains('h3', item_title).should('be.visible').click();
       cy.get('#manifestLabel')
         .clear()
         .type(item_title)
@@ -1591,5 +1585,6 @@ context('Item', () => {
       expect(interception.response.statusCode).to.eq(302);
     });
     cy.get('[data-testid="alert"]').contains('1 media object deleted.');
+    createdItems.splice(createdItems.indexOf(item_id), 1);
   });
 });

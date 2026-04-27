@@ -28,6 +28,7 @@
 // -- This is a parent command --
 import 'cypress-file-upload';
 Cypress.Commands.add('login', (role) => {
+  cy.wait(1000);
   cy.clearCookies();
   cy.clearLocalStorage();
   const normalizedRole = role.replace(/_/g, '').toUpperCase();

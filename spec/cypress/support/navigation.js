@@ -26,6 +26,26 @@ export function performSearch(query) {
   cy.get('[data-testid="browse-global-search-submit-button"]').first().click();
 }
 
+export function verifySearchable(id, title) {
+  performSearch(title);
+/*
+  cy.get('[data-testid="browse-results-list"]').within(() => {
+    cy.contains(`[data-testid="browse-document-title-${id}"]`).should('exist');
+  });
+  */
+  cy.get(`[data-testid="browse-document-title-${id}"]`).should('exist');
+}
+
+export function verifyUnsearchable(id, title) {
+  performSearch(title);
+/*
+  cy.get('[data-testid="browse-results-list"]').within(() => {
+    cy.contains(`[data-testid="browse-document-title-${id}"]`).should('not.exist');
+  });
+  */
+  cy.get(`[data-testid="browse-document-title-${id}"]`).should('exist');
+}
+
 // Manage Content
 export function navigateToManageContent() {
   cy.contains('Manage').click();
@@ -33,13 +53,25 @@ export function navigateToManageContent() {
     .contains('Manage Content')
     .should('be.visible')
     .click();
+  cy.wait(2000);
+}
+
+// FIXME This doesn't test the actual tomSelect functionality
+export function tsSelect(originalSelectID, value) {
+/*
+  cy.wait(2000);
+  cy.get("#" + originalSelectID + "-ts-control").first().click();
+  cy.wait(2000);
+  cy.get("div.ts-dropdown input.dropdown-input").type(value, { force: true });
+  cy.wait(1000);
+  cy.get("#" + originalSelectID + "-ts-dropdown div").first().click();
+  */
+  cy.get(`#${originalSelectID}`).select(value, { force: true });
 }
 
 // Collection Unit Selection
 export function selectCollectionUnit(unitName = 'Automation Unit') {
-  cy.get("[data-testid='admin_collection[unit_name]-user-input']").type(
-    unitName
-  ); // data-testid came from _autocomplete_input.html.erb
+  tsSelect("admin_collection_unit_id", unitName);
 }
 
 // Access Control

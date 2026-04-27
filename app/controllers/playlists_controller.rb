@@ -65,7 +65,7 @@ class PlaylistsController < ApplicationController
           "<i class='fa fa-times' aria-hidden='true'></i> Delete".html_safe
         end
         [
-          view_context.link_to(playlist.title, playlist_path(playlist), title: playlist.comment),
+          view_context.link_to(playlist.title, playlist_path(playlist), title: playlist.comment, data: { testid: "playlist-name-table" }),
           "#{playlist.items.size} items",
           view_context.human_friendly_visibility(playlist.visibility),
           "<span title='#{playlist.created_at.utc.iso8601}'>#{view_context.time_ago_in_words(playlist.created_at)} ago</span>",
