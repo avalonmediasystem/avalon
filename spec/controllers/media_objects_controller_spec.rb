@@ -796,6 +796,32 @@ describe MediaObjectsController, type: :controller do
         end
       end
 
+      context 'inherited edit permissions' do
+        let!(:unpublished_media_object) { FactoryBot.create(:media_object, visibility: 'private', collection: collection) }
+        let!(:disabled_media_object) { FactoryBot.create(:published_media_object, visibility: 'private', collection: collection, disable_inheritance: true) }
+        let!(:inherited_media_object) { FactoryBot.create(:published_media_object, visibility: 'private', collection: collection) }
+        let(:collection) { FactoryBot.create(:collection, managers: [user.username]) }
+
+        context 'for user' do
+          context 'from collection level' do
+            it "should return list of media_objects that the user is authorized to view" do
+              get 'index', format: 'json'
+              expect(json.count).to eq(4)
+            end
+          end
+
+          context 'from unit level' do
+            let(:collection) { FactoryBot.create(:collection, unit: unit) }
+            let(:unit) { FactoryBot.create(:unit, managers: [user.username]) }
+
+            it "should return list of media_objects that the user is authorized to view" do
+              get 'index', format: 'json'
+              expect(json.count).to eq(4)
+            end
+          end
+        end
+      end
+
       context 'inherited read permissions' do
         let!(:unpublished_media_object) { FactoryBot.create(:media_object, visibility: 'private', collection: collection) }
         let!(:disabled_media_object) { FactoryBot.create(:published_media_object, visibility: 'private', collection: collection, disable_inheritance: true) }
@@ -1025,10 +1051,79 @@ describe MediaObjectsController, type: :controller do
 
       context "inherited access" do
         context "for user" do
+          context 'inherited edit permissions' do
+            context "from collection" do
+              let(:user) { FactoryBot.create(:user) }
+              let(:media_object) { FactoryBot.create(:published_media_object, collection: collection) }
+              let(:collection) { FactoryBot.create(:collection, managers: [user.username]) }
+
+              it "should be available to an edit user granted access at collection level" do
+                login_user user.username
+                get 'show', params: { id: media_object.id }
+                expect(response.response_code).to eq(200)
+              end
+
+              context "when inheritance disabled" do
+                let(:media_object) { FactoryBot.create(:published_media_object, collection: collection, disable_inheritance: true) }
+
+                it "should be available to an edit user granted access at collection level" do
+                  login_user user.username
+                  get 'show', params: { id: media_object.id }
+                  expect(response.response_code).to eq(200)
+                end
+
+                context "and overridden visibility restricts from non-private to private" do
+                  let(:collection) { FactoryBot.create(:collection, default_visibility: 'public', managers: [user.username]) }
+                  let(:media_object) { FactoryBot.create(:published_media_object, visibility: 'private', collection: collection, disable_inheritance: true) }
+
+                  it "should be available to an edit user granted access at collection level" do
+                    login_user user.username
+                    get 'show', params: { id: media_object.id }
+                    expect(response.response_code).to eq(200)
+                  end
+                end
+              end
+            end
+
+            context "from unit" do
+              let(:user) { FactoryBot.create(:user) }
+              let(:media_object) { FactoryBot.create(:published_media_object, collection: collection) }
+              let(:collection) { FactoryBot.create(:collection, unit: unit) }
+              let(:unit) { FactoryBot.create(:unit, managers: [user.username]) }
+
+              it "should be available to an edit user granted access at unit level" do
+                login_user user.username
+                get 'show', params: { id: media_object.id }
+                expect(response.response_code).to eq(200)
+              end
+
+              context "when inheritance disabled" do
+                let(:media_object) { FactoryBot.create(:published_media_object, :with_master_file, collection: collection, disable_inheritance: true) }
+
+                it "should be available to an edit user granted access at unit level" do
+                  login_user user.username
+                  get 'show', params: { id: media_object.id }
+                  expect(response.response_code).to eq(200)
+                end
+
+                context "and overridden visibility restricts from non-private to private" do
+                  let(:collection) { FactoryBot.create(:collection, default_visibility: 'public', unit: unit) }
+                  let(:media_object) { FactoryBot.create(:published_media_object, visibility: 'private', collection: collection, disable_inheritance: true) }
+
+                  it "should be available to an edit user granted access at collection level" do
+                    login_user user.username
+                    get 'show', params: { id: media_object.id }
+                    expect(response.response_code).to eq(200)
+                  end
+                end
+              end
+            end
+          end
+
           context "from collection" do
             let(:user) { FactoryBot.create(:user) }
             let(:mo_member) { FactoryBot.create(:user) }
-            let(:media_object) { FactoryBot.create(:published_media_object, visibility: 'private', collection: collection, read_users: [mo_member.username]) }
+            let(:media_object) { FactoryBot.create(:published_media_object, collection: collection, read_users: [mo_member.username]) }
             let(:collection) { FactoryBot.create(:collection, default_read_users: [user.username]) }
 
             it "should be available to a user granted access at collection level" do
@@ -1039,7 +1134,7 @@ describe MediaObjectsController, type: :controller do
 
             context "when inheritance disabled" do
               let(:multi_user) { FactoryBot.create(:user) }
-              let(:media_object) { FactoryBot.create(:published_media_object, visibility: 'private', collection: collection, read_users: [mo_member.username, multi_user.username], disable_inheritance: true) }
+              let(:media_object) { FactoryBot.create(:published_media_object, collection: collection, read_users: [mo_member.username, multi_user.username], disable_inheritance: true) }
               let(:collection) { FactoryBot.create(:collection, default_read_users: [user.username, multi_user.username]) }
 
               it "should block access to inherited user" do
@@ -1059,13 +1154,24 @@ describe MediaObjectsController, type: :controller do
                 get 'show', params: { id: media_object.id }
                 expect(response.response_code).to eq(200)
               end
-            end
+
+              context "and overridden visibility restricts from non-private to private" do
+                let(:collection) { FactoryBot.create(:collection, default_visibility: 'public') }
+                let(:media_object) { FactoryBot.create(:published_media_object, visibility: 'private', collection: collection, read_users: [mo_member.username], disable_inheritance: true) }
+
+                it "should not block access to non-inherited user" do
+                  login_user mo_member.username
+                  get 'show', params: { id: media_object.id }
+                  expect(response.response_code).to eq(200)
+                end
+              end
+          end
           end
 
           context "from unit" do
             let(:user) { FactoryBot.create(:user) }
             let(:mo_member) { FactoryBot.create(:user) }
-            let(:media_object) { FactoryBot.create(:published_media_object, visibility: 'private', collection: collection, read_users: [mo_member.username]) }
+            let(:media_object) { FactoryBot.create(:published_media_object, collection: collection, read_users: [mo_member.username]) }
             let(:collection) { FactoryBot.create(:collection, unit: unit) }
             let(:unit) { FactoryBot.create(:unit, default_read_users: [user.username]) }
 
@@ -1077,7 +1183,7 @@ describe MediaObjectsController, type: :controller do
 
             context "when inheritance disabled" do
               let(:multi_user) { FactoryBot.create(:user) }
-              let(:media_object) { FactoryBot.create(:published_media_object, visibility: 'private', collection: collection, read_users: [mo_member.username, multi_user.username], disable_inheritance: true) }
+              let(:media_object) { FactoryBot.create(:published_media_object, collection: collection, read_users: [mo_member.username, multi_user.username], disable_inheritance: true) }
               let(:collection) { FactoryBot.create(:collection, unit: unit) }
               let(:unit) { FactoryBot.create(:unit, default_read_users: [user.username, multi_user.username]) }
 
@@ -1097,6 +1203,17 @@ describe MediaObjectsController, type: :controller do
                 login_user multi_user.username
                 get 'show', params: { id: media_object.id }
                 expect(response.response_code).to eq(200)
+              end
+
+              context "and overridden visibility restricts from non-private to private" do
+                let(:collection) { FactoryBot.create(:collection, default_visibility: 'public', unit: unit) }
+                let(:media_object) { FactoryBot.create(:published_media_object, visibility: 'private', collection: collection, read_users: [mo_member.username], disable_inheritance: true) }
+
+                it "should not block access to non-inherited user" do
+                  login_user mo_member.username
+                  get 'show', params: { id: media_object.id }
+                  expect(response.response_code).to eq(200)
+                end
               end
             end
           end
@@ -1150,6 +1267,19 @@ describe MediaObjectsController, type: :controller do
                 get 'show', params: { id: media_object.id }
                 expect(response.response_code).to eq(200)
               end
+
+              context "and overridden visibility restricts from non-private to private" do
+                let(:collection) { FactoryBot.create(:collection, default_visibility: 'public') }
+                let(:media_object) { FactoryBot.create(:published_media_object, visibility: 'private', collection: collection, read_groups: [group.name], disable_inheritance: true) }
+
+                it "should not block access to non-inherited group" do
+                  allow(controller).to receive(:current_user).and_return(group_member)
+                  allow(group_member).to receive(:groups).and_return([group.name])
+                  login_user group_member.username
+                  get 'show', params: { id: media_object.id }
+                  expect(response.response_code).to eq(200)
+                end
+              end
             end
           end
 
@@ -1195,6 +1325,19 @@ describe MediaObjectsController, type: :controller do
                 login_user multi_user.username
                 get 'show', params: { id: media_object.id }
                 expect(response.response_code).to eq(200)
+              end
+
+              context "and overridden visibility restricts from non-private to private" do
+                let(:collection) { FactoryBot.create(:collection, default_visibility: 'public', unit: unit) }
+                let(:media_object) { FactoryBot.create(:published_media_object, visibility: 'private', collection: collection, read_groups: [group.name], disable_inheritance: true) }
+
+                it "should not block access to non-inherited group" do
+                  allow(controller).to receive(:current_user).and_return(group_member)
+                  allow(group_member).to receive(:groups).and_return([group.name])
+                  login_user group_member.username
+                  get 'show', params: { id: media_object.id }
+                  expect(response.response_code).to eq(200)
+                end
               end
             end
           end

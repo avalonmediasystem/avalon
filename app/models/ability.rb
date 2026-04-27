@@ -211,7 +211,7 @@ class Ability
       # end
 
       cannot :read, [MediaObject, SpeedyAF::Proxy::MediaObject] do |media_object|
-        media_object.disable_inheritance? && is_exclusively_inherited_from_parent?(media_object)
+        media_object.disable_inheritance? && is_exclusively_inherited_from_parent?(media_object) && !is_member_of?(media_object.collection)
       end
 
       cannot :update, [MediaObject, SpeedyAF::Proxy::MediaObject] do |media_object|
@@ -381,8 +381,13 @@ class Ability
   end
 
   def is_exclusively_inherited_from_parent?(media_object)
-    (!@user.in?(media_object.read_users) && @user.in?(media_object.inherited_read_users)) ||
-      ((@user_groups & media_object.read_groups).empty? && !(@user_groups & media_object.inherited_read_groups).empty?)
+    # User isn't in item's read users or item's read groups (not explicitly granted access to item) AND
+    # User isn't in item's read users and is inherited from parent (exclusively inherited user) OR
+    # User isn't in item's read groups and is in a read group inherited from parent (exclusively inherited group)
+    # Short form: NOT explicitly granted access to item AND (explicitly inherited user OR explicitly inherited group)
+    !(@user.in?(media_object.read_users) || !(@user_groups & media_object.read_groups).empty?) &&
+    ((!@user.in?(media_object.read_users) && @user.in?(media_object.inherited_read_users)) ||
+      ((@user_groups & media_object.read_groups).empty? && !(@user_groups & media_object.inherited_read_groups).empty?))
   end
 
   def is_member_of_any_collection?
