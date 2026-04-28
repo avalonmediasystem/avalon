@@ -263,6 +263,12 @@ class ApplicationController < ActionController::Base
     obj || GlobalID::Locator.locate(id)
   end
 
+  def fetch_proxy(id)
+    SpeedyAF::Base.find(id)
+  rescue SpeedyAF::RecordNotFound
+    fetch_object(id)
+  end
+
   private
 
     def application_name

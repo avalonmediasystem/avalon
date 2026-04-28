@@ -16,7 +16,8 @@
 class SupplementalFilesController < ApplicationController
   include Rails::Pagination
 
-  before_action :set_object
+  before_action :set_object, only: [:create, :update, :destroy]
+  before_action :set_proxy, except: [:create, :update, :destroy]
   before_action :authorize_object
 
   rescue_from Avalon::SaveError do |exception|
@@ -161,6 +162,10 @@ class SupplementalFilesController < ApplicationController
 
     def set_object
       @object = fetch_object params[:master_file_id] || params[:media_object_id]
+    end
+
+    def set_proxy
+      @object = fetch_proxy params[:master_file_id] || params[:media_object_id]
     end
 
     def validate_params
