@@ -16,7 +16,7 @@ class ObjectsController < ApplicationController
   layout false, only: [:autocomplete]
 
   def show
-    obj = fetch_object params[:id]
+    obj = fetch_proxy params[:id]
     if obj.blank?
       redirect_to root_path
     else
