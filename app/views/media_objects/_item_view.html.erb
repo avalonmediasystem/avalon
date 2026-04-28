@@ -43,7 +43,7 @@ Unless required by applicable law or agreed to in writing, software distributed
       <div class="form-check d-inline-block ms-2 align-middle">
         <input class="form-check-input" type="checkbox" id="accessibility_exempt_toggle"
             <%= @media_object.accessibility_exempt? ? 'checked' : '' %>
-              data-url="<%= toggle_accessibility_exempt_media_object_path(@media_object) %>">
+              data-url="<%= update_status_media_object_path(@media_object) %>">
         <label class="form-check-label" for="accessibility_exempt_toggle"><%= I18n.t('media_object.accessibility_exempt.message') %> </label>
       </div>
     <% end %>

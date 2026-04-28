@@ -23,8 +23,8 @@ class MediaObjectsController < ApplicationController
   include SecurityHelper
 
   before_action :authenticate_user!, except: [:show, :set_session_quality, :show_stream_details, :manifest]
-  before_action :load_resource, except: [:create, :new, :destroy, :update_status, :toggle_accessibility_exempt, :set_session_quality, :tree, :deliver_content, :confirm_remove, :show_stream_details, :add_to_playlist, :intercom_collections, :manifest, :move_preview, :update, :json_update, :index]
-  load_and_authorize_resource except: [:create, :new, :destroy, :update_status, :toggle_accessibility_exempt, :set_session_quality, :tree, :deliver_content, :confirm_remove, :show_stream_details, :add_to_playlist, :intercom_collections, :manifest, :move_preview, :show_progress, :edit, :index]
+  before_action :load_resource, except: [:create, :new, :destroy, :update_status, :set_session_quality, :tree, :deliver_content, :confirm_remove, :show_stream_details, :add_to_playlist, :intercom_collections, :manifest, :move_preview, :update, :json_update, :index]
+  load_and_authorize_resource except: [:create, :new, :destroy, :update_status, :set_session_quality, :tree, :deliver_content, :confirm_remove, :show_stream_details, :add_to_playlist, :intercom_collections, :manifest, :move_preview, :show_progress, :edit, :index]
   authorize_resource only: [:create, :new, :edit]
 
   before_action :inject_workflow_steps, only: [:edit, :update], unless: proc { request.format.json? }
@@ -415,18 +415,21 @@ class MediaObjectsController < ApplicationController
     redirect_to params[:previous_view] == '/bookmarks' ? '/bookmarks' : root_path, flash: { notice: message }
   end
 
-  def toggle_accessibility_exempt
-    media_object = MediaObject.find(params[:id])
-    authorize! :override_accessibility, media_object
-    media_object.override_accessibility = params[:exempt] == '1'
-    media_object.save(validate: false)
-    render json: { exempt: media_object.accessibility_exempt? }, status: :ok
-  rescue CanCan::AccessDenied
-    render json: { error: 'Not authorized' }, status: :forbidden
-  end
-
   def update_status
     status = params[:status]
+
+    # AJAX request to toggle override_accessibility
+    if status.blank?
+      media_object = MediaObject.find(params[:id])
+      if cannot?(:update, media_object)
+        render json: { error: 'Not authorized' }, status: :forbidden
+        return
+      end
+      apply_accessibility_override(media_object)
+      render json: { exempt: media_object.accessibility_exempt? }, status: :ok
+      return
+    end
+
     errors = []
     success_count = 0
     media_objects = MediaObject.find(Array(params[:id]))
@@ -436,6 +439,7 @@ class MediaObjectsController < ApplicationController
         errors += ["#{media_object&.title} (#{id}) (permission denied)."]
       else
         begin
+          apply_accessibility_override(media_object)
           case status
           when 'publish'
             if media_object.title.blank?
@@ -712,5 +716,11 @@ class MediaObjectsController < ApplicationController
 
   def api_params
     params.permit(:collection_id, :publish, :import_bib_record, :replace_masterfiles)
+  end
+
+  def apply_accessibility_override(media_object)
+    return unless params[:override_accessibility].present? && can?(:override_accessibility, media_object)
+    media_object.override_accessibility = params[:override_accessibility] == '1'
+    media_object.save(validate: false)
   end
 end

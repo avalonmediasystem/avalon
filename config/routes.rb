@@ -133,7 +133,6 @@ Rails.application.routes.draw do
       put :update, action: :json_update, constraints: { format: 'json' }
       patch :update, action: :update, defaults: { format: 'html' }, constraints: { format: 'html' }
       put :update_status
-      put :toggle_accessibility_exempt
       get :progress, :action => :show_progress
       get 'content/:file', :action => :deliver_content, :as => :inspect
       get 'track/:part', :action => :show, :as => :indexed_section

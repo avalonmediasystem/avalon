@@ -30,13 +30,13 @@ function initAccessibilityToggle() {
 
   checkbox.addEventListener('change', function () {
     const prevChecked = !this.checked;
-    const exempt = this.checked ? '1' : '0';
+    const override_accessibility = this.checked ? '1' : '0';
 
-    // AJAX request to update exempt status for publication
+    // AJAX request to update_status to toggle override_accessibility
     fetch(this.dataset.url, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': csrfToken() },
-      body: JSON.stringify({ exempt })
+      body: JSON.stringify({ override_accessibility })
     })
       .then(response => response.json())
       .then(res => {
@@ -60,7 +60,7 @@ function initPublishPopover() {
   if (!btn) return;
 
   btn.addEventListener('click', function (e) {
-    if (this.dataset.needsExemption !== 'true' || !this.dataset.exemptUrl) {
+    if (this.dataset.needsExemption !== 'true') {
       submitPublish(this.dataset.publishUrl);
     } else {
       e.preventDefault();
@@ -88,22 +88,8 @@ document.addEventListener('click', function (e) {
   if (e.target.id === 'exempt-and-publish-btn') {
     e.preventDefault();
     const btn = document.getElementById('publish-btn');
-    const exemptUrl = btn.dataset.exemptUrl;
-    const publishUrl = btn.dataset.publishUrl;
-    const token = document.querySelector('meta[name="csrf-token"]').content;
-
-    fetch(exemptUrl, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': token },
-      body: JSON.stringify({ exempt: '1' })
-    })
-      .then(response => response.json())
-      .then(() => submitPublish(publishUrl))
-      .catch(() => {
-        const popoverInstance = bootstrap.Popover.getInstance(btn);
-        if (popoverInstance) popoverInstance.hide();
-        btn.focus();
-      });
+    // Publish item with a11y exemption
+    submitPublish(btn.dataset.publishUrl, true);
   }
 
   /** Cancel action from popover */
@@ -116,24 +102,28 @@ document.addEventListener('click', function (e) {
   }
 });
 
-/** Submit publish action */
-function submitPublish(url) {
+/**
+ * Submit publish action with/without exemption. Pass `withExemption=true` to set
+ * override_accessibility to true.
+ * @param {String} url publish URL for item
+ * @param {Boolean} withExemption flag to set override_accessibility, defaults to 'false'
+ */
+function submitPublish(url, withExemption = false) {
   const form = document.createElement('form');
   form.method = 'POST';
   form.action = url;
+  form.appendChild(Object.assign(document.createElement('input'), {
+    hidden: true, name: '_method', value: 'put'
+  }));
+  form.appendChild(Object.assign(document.createElement('input'), {
+    hidden: true, name: 'authenticity_token', value: csrfToken()
+  }));
+  if (withExemption) {
+    form.appendChild(Object.assign(document.createElement('input'), {
+      hidden: true, name: 'override_accessibility', value: '1'
+    }));
+  }
 
-  const method = document.createElement('input');
-  method.type = 'hidden';
-  method.name = '_method';
-  method.value = 'put';
-
-  const token = document.createElement('input');
-  token.type = 'hidden';
-  token.name = 'authenticity_token';
-  token.value = csrfToken();
-
-  form.appendChild(method);
-  form.appendChild(token);
   document.body.appendChild(form);
   form.submit();
 }

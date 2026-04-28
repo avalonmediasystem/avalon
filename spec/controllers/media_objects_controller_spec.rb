@@ -2007,10 +2007,14 @@ describe MediaObjectsController, type: :controller do
     context 'publishing' do
       before(:all) do
         Permalink.on_generate { |obj| "http://example.edu/permalink" }
+        # Turn off accessibility_compliance for publishing tests
+        Settings.accessibility_compliance.enforce = false
       end
 
       after(:all) do
         Permalink.on_generate { nil }
+        # Cleanup settings after tests
+        Settings.accessibility_compliance.enforce = true
       end
 
       it 'publishes media object' do
@@ -2536,7 +2540,7 @@ describe MediaObjectsController, type: :controller do
     end
   end
 
-  describe '#toggle_accessibility_exempt' do
+  describe '#update_status - accessibility_override' do
     let(:media_object) { FactoryBot.create(:media_object) }
 
     context 'as manager' do
@@ -2545,7 +2549,7 @@ describe MediaObjectsController, type: :controller do
       end
 
       it 'can enable override' do
-        put :toggle_accessibility_exempt, params: { id: media_object.id, exempt: '1' }, format: :json
+        put :update_status, params: { id: media_object.id, override_accessibility: '1' }, format: :json
         expect(response).to have_http_status(:ok)
         expect(JSON.parse(response.body)['exempt']).to eq true
         expect(media_object.reload.accessibility_exempt?).to eq true
@@ -2554,10 +2558,16 @@ describe MediaObjectsController, type: :controller do
       it 'can disable override' do
         media_object.override_accessibility = true
         media_object.save
-        put :toggle_accessibility_exempt, params: { id: media_object.id, exempt: '0' }, format: :json
+        put :update_status, params: { id: media_object.id, override_accessibility: '0' }, format: :json
         expect(response).to have_http_status(:ok)
         expect(JSON.parse(response.body)['exempt']).to eq false
         expect(media_object.reload.accessibility_exempt?).to eq false
+      end
+
+      it 'can exempt and publish in a single request' do
+        put :update_status, params: { id: media_object.id, status: 'publish', override_accessibility: '1' }
+        expect(media_object.reload.accessibility_exempt?).to eq true
+        expect(media_object.reload).to be_published
       end
     end
 
@@ -2572,7 +2582,7 @@ describe MediaObjectsController, type: :controller do
 
       context 'with override disabled' do
         it 'does not enable override' do
-          put :toggle_accessibility_exempt, params: { id: media_object.id, exempt: '1' }, format: :json
+          put :update_status, params: { id: media_object.id, override_accessibility: '1' }, format: :json
           expect(media_object.reload.accessibility_exempt?).to eq false
         end
       end
@@ -2581,7 +2591,7 @@ describe MediaObjectsController, type: :controller do
         let(:media_object) { FactoryBot.create(:media_object, override_accessibility: true) }
 
         it 'does not disable override' do
-          put :toggle_accessibility_exempt, params: { id: media_object.id, exempt: '0' }, format: :json
+          put :update_status, params: { id: media_object.id, override_accessibility: '0' }, format: :json
           expect(media_object.reload.accessibility_exempt?).to eq true
         end
       end
@@ -2589,7 +2599,7 @@ describe MediaObjectsController, type: :controller do
 
     context 'as unauthenticated user' do
       it 'redirects to sign in' do
-        put :toggle_accessibility_exempt, params: { id: media_object.id, exempt: '1' }, format: :json
+        put :update_status, params: { id: media_object.id, override_accessibility: '1' }, format: :json
         expect(response).to have_http_status(:unauthorized).or redirect_to(new_user_session_path)
       end
     end
