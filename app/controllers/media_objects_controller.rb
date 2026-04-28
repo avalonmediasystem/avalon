@@ -647,6 +647,8 @@ class MediaObjectsController < ApplicationController
     note = mo_parameters.delete(:note) || []
     note_type = mo_parameters.delete(:note_type) || []
     mo_parameters[:note] = note.zip(note_type).map{|a|{note: a[0],type: a[1]}}
+    # Publisher should not be a valid field during object creation
+    mo_parameters.delete(:avalon_publisher) if params[:action] == "create"
 
     mo_parameters
   end

@@ -327,6 +327,31 @@ describe MediaObjectsController, type: :controller do
           expect(new_media_object.sections.first.derivatives.first.location_url).to eq(absolute_location)
           expect(new_media_object.workflow.last_completed_step).to eq([HYDRANT_STEPS.last.step])
         end
+        context "without files" do
+          it "should create a new media_object" do
+            media_object = FactoryBot.create(:media_object)
+            fields = {other_identifier_type: []}
+            descMetadata_fields.each {|f| fields[f] = media_object.send(f) }
+            post 'create', params: { format: 'json', fields: fields, collection_id: collection.id }
+            expect(response.status).to eq(200)
+            new_media_object = MediaObject.find(JSON.parse(response.body)['id'])
+            expect(new_media_object.title).to eq media_object.title
+            expect(new_media_object.creator).to eq media_object.creator
+            expect(new_media_object.date_issued).to eq media_object.date_issued
+            expect(new_media_object.section_ids.size).to eq 0
+            expect(new_media_object.workflow.last_completed_step).to eq([HYDRANT_STEPS.last.step])
+          end
+          it 'should not publish new media object' do
+            media_object = FactoryBot.create(:media_object)
+            fields = {}
+            descMetadata_fields.each {|f| fields[f] = media_object.send(f) }
+            fields.merge!({ avalon_publisher: administrator.user_key })
+            post 'create', params: { format: 'json', fields: fields, collection_id: collection.id, publish: true }
+            expect(response.status).to eq(200)
+            new_media_object = MediaObject.find(JSON.parse(response.body)['id'])
+            expect(new_media_object.published?).to be_falsey
+          end
+        end
         context "accessibility enforcement disabled" do
           before { allow(Settings.accessibility_compliance).to receive(:enforce).and_return(false) }
           it "should create a new published media_object" do
