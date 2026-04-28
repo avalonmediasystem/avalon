@@ -66,7 +66,7 @@ const DashboardSection = ({ data, canCreate, createPath, btnClass, sectionType, 
   if (data.length > 0) {
     return (
       <div className={tableWrapperClass}>
-        <TableComponent data={data} createPath={createPath} helpers={helpers} />
+        <TableComponent data={data} createPath={canCreate ? createPath : ''} helpers={helpers} />
       </div>
     );
   }
