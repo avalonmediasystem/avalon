@@ -422,7 +422,10 @@ class MediaObjectsController < ApplicationController
     if status.blank?
       media_object = MediaObject.find(params[:id])
       if cannot?(:update, media_object)
-        render json: { error: 'Not authorized' }, status: :forbidden
+        respond_to do |format|
+          format.json { render json: { error: 'Not authorized' }, status: :forbidden }
+          format.html { redirect_to root_path }
+        end
         return
       end
       apply_accessibility_override(media_object)
