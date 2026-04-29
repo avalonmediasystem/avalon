@@ -24,7 +24,7 @@ class UniquenessValidator < ActiveModel::EachValidator
     klass = record.class
     solr_value = record.to_solr[@solr_field]
     query = "has_model_ssim:\"#{klass.name}\""
-    query += " AND #{@solr_field}:#{solr_value}" if solr_value.present? 
+    query += " AND #{@solr_field}:#{RSolr.solr_escape(solr_value)}" if solr_value.present?
     existing_doc_id = ActiveFedora::SolrService.query(query, fl: [:id], rows: 1).first&.dig('id')
     if existing_doc_id.present? && existing_doc_id != record.id
       record.errors.add(attribute, :taken, value: value)
