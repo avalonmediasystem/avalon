@@ -43,6 +43,17 @@ window.initializeDatepickers = function (container) {
             };
             break;
           case false:
+            // When opening the end-date picker, set the minimum date to the selected begin date if it exists
+            pickerOptions.onShow = function (instance) {
+              if (pairedInput.value) {
+                const parts = pairedInput.value.split('-');
+                const beginDate = new Date(+parts[0], +parts[1] - 1, +parts[2]);
+                if (!isNaN(beginDate)) {
+                  instance.minDate = beginDate;
+                  instance.navigate(instance.dateSelected || beginDate);
+                }
+              }
+            };
             pickerOptions.onSelect = function (instance, date) {
               pairedInput.datepicker?.setMax(date);
             };
