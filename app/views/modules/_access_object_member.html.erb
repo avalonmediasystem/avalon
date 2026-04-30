@@ -18,28 +18,30 @@ Unless required by applicable law or agreed to in writing, software distributed
 
 <% if inherited && is_media_object && object.disable_inheritance? %>
 <% else %>
-<tr>
-  <td class='access_list_label' data-testid="<%= 'collection-access-label-' + access_object %>">
-    <%= label_tag do %>
-    <% if defined?(display_helper) && display_helper.present? %>
-    <%= self.send(display_helper, member_object) %>
-    <% else %>
-    <%= member_object %>
+  <tr>
+    <td class='access_list_label' data-testid="<%= 'collection-access-label-' + access_object %>" colspan="<%= inherited ? 3 : 1 %>">
+      <%= label_tag do %>
+        <% if defined?(display_helper) && display_helper.present? %>
+          <%= self.send(display_helper, member_object) %>
+        <% else %>
+          <%= member_object %>
+        <% end %>
+      <% end %>
+      <% if inherited %>
+        <span class="float-end"><%= t('access_control.inherited_role') %></span>
+      <% end %>
+    </td>
+    <% unless inherited %>
+      <td class='access_list_dates'></td>
     <% end %>
+    <% if !input_disabled && !inherited %>
+      <td class='access_list_remove'>
+        <%= link_to "",
+            polymorphic_path(object, "remove_#{access_object}".to_sym => member_object, step: @active_step, donot_advance: true),
+            method: "put",
+            class: "btn btn-sm btn-close remove" ,
+            data: { testid: "collection-access-remove-#{access_object}" } %>
+      </td>
     <% end %>
-    <% if inherited %>
-      <div style="float: right;"><%= t('access_control.inherited_role') %></div>
-    <% end %>
-  </td>
-  <td class='access_list_dates'></td>
-  <% if !input_disabled && !inherited %>
-  <td class='access_list_remove'>
-    <%= link_to "",
-        polymorphic_path(object, "remove_#{access_object}".to_sym => member_object, step: @active_step, donot_advance: true),
-        method: "put",
-        class: "btn btn-sm btn-close remove" ,
-        data: { testid: "collection-access-remove-#{access_object}" } %>
-  </td>
-  <% end %>
-</tr>
+  </tr>
 <% end %>

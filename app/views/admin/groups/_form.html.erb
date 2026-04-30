@@ -57,9 +57,7 @@ Unless required by applicable law or agreed to in writing, software distributed
             <%= render partial: 'modules/autocomplete_input', locals: { field_name: :new_user,
                                                                         model: 'user',
                                                                         placeholder: 'Enter a username' } %>
-            <span class="input-group-append">
-              <%= button_tag "Add user", type: "submit", class: "btn btn-primary" %>
-            </span>
+            <%= button_tag "Add user", type: "submit", class: "btn btn-primary" %>
           </div>
         </div>
         <% end %>
