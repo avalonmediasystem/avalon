@@ -41,7 +41,7 @@ Unless required by applicable law or agreed to in writing, software distributed
       <div class="mb-3">
         <% if @media_object.disable_inheritance? %>
         <%=  render partial: "modules/tooltip", locals: { form: vid, field: :lending_period, tooltip: t("access_control.#{:lending_period}"), options: {display_label: (t("access_control.#{:lending_period}label")+'*').html_safe} } %><br />
-        <% d, h = (@media_object.lending_period/3600).divmod(24) %>
+        <% d, h = ((@media_object.lending_period || 0)/3600).divmod(24) %>
         <div class='row'>
           <div class="col-1">
             <label class="col-form-label" for="add_lending_period_days">

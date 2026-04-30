@@ -1001,7 +1001,6 @@ h5.card-title {
       height: 25px;
     }
 
-    
     div.supplemental-file-data.is-editing:last-child {
       margin-bottom: 2rem;
     }
@@ -1279,18 +1278,18 @@ h5.card-title {
     margin: 0 auto;
   }
 
-  .centered {
-    margin: auto;
-    position: absolute;
-    width: 50%;
-    left: 25%;
-  }
-
   .centered.video {
     top: 50%;
+    left: 25%;
     position: absolute;
     margin: 0;
     transform: translateY(-50%);
+  }
+
+  .centered {
+    width: 50%;
+    margin: 0 auto;
+    text-align: center;
   }
 }
 
