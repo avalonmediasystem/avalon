@@ -124,7 +124,8 @@ module Avalon
         first.upto(last) do |index|
           opts = {
             :publish => false,
-            :hidden  => false
+            :hidden  => false,
+            :override_accessibility => false
           }
 
           values = @spreadsheet.row(index).collect do |val|
@@ -145,6 +146,7 @@ module Avalon
                 end
                 content.last[f] = f == :skip_transcoding ? Avalon::Batch.true_field?(values[i]) : values[i]
               else
+                f == :override_accessibility ? Avalon::Batch.true_field?(values[i]) : values[i]
                 fields[f] << values[i]
               end
             end
