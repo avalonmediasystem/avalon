@@ -44,7 +44,7 @@ class WatchedEncode < ActiveEncode::Base
               new_file.language = nil
             end
           end
-          new_file.attach_file(FileLocator.new(output.url).location, io: true)
+          new_file.attach_file(FileLocator.new(output.url, filename: File.basename(output.url)), io: true)
           new_file.save
           output.url = if Settings.active_storage.bucket.present?
                       "s3://#{Settings.active_storage.bucket}/#{new_file.file.blob.key}"

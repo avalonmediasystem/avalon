@@ -94,8 +94,8 @@ describe SupplementalFile do
     end
 
     context 'via io attachment' do
-      let(:io_file) { Rails.root.join('spec', 'fixtures', 'meow.wav') }
-      before { subject.attach_file(io_file, io: true) }
+      let(:io_file) { Rails.root.join('spec', 'fixtures', 'meow.wav').to_s }
+      before { subject.attach_file(FileLocator.new(io_file, filename: 'meow.wav'), io: true) }
 
       it 'attaches the file and assigns metadata' do
         expect(subject.file).to be_attached

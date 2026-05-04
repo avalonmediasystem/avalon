@@ -34,10 +34,11 @@ class SupplementalFile < ApplicationRecord
   after_destroy_commit :remove_from_index
   before_save :default_label
 
+  # If using io: true, new_file MUST be a FileLocator instance initialized with the filename opt
   def attach_file(new_file, io: false)
     if io
-      file.attach(io: File.open(new_file), filename: File.basename(new_file))
-      extension = File.extname(new_file)
+      file.attach(io: new_file.reader, filename: new_file.filename)
+      extension = File.extname(new_file.filename)
     else
       file.attach(new_file)
       extension = File.extname(new_file.original_filename)
