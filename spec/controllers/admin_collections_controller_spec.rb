@@ -509,6 +509,9 @@ describe Admin::CollectionsController, type: :controller do
           expect(JSON.parse(response.body)["errors"].class).to eq Array
           expect(JSON.parse(response.body)["errors"].first.class).to eq String
         end
+        it "should not raise error when special characters in name" do
+          expect { put 'update', params: { id: collection.id, admin_collection: { name: "#{collection.name}: new!?", description: collection.description } } }.to_not raise_error
+        end
       end
 
       context 'when user does not have permissions for unit' do

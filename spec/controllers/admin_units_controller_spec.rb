@@ -382,6 +382,9 @@ describe Admin::UnitsController, type: :controller do
         expect(JSON.parse(response.body)["errors"].class).to eq Array
         expect(JSON.parse(response.body)["errors"].first.class).to eq String
       end
+      it "should not raise error when special characters in name" do
+        expect { put 'update', params: { id: unit.id, admin_unit: { name: "#{unit.name}: new!?", description: unit.description } } }.to_not raise_error
+      end
     end
   end
 
