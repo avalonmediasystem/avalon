@@ -132,6 +132,18 @@ RSpec.shared_examples 'a nested controller for' do |object_class|
       expect(subject.count).to eq 1
       expect(subject.first.symbolize_keys).to eq supplemental_file.as_json
     end
+
+    context 'read from solr' do
+      before do
+        object
+      end
+
+      it 'should not read from fedora' do
+        WebMock.reset_executed_requests!
+        get :index, params: { class_id => object.id, format: 'json' }, session: valid_session
+        expect(a_request(:any, /#{ActiveFedora.fedora.base_uri}/)).not_to have_been_made
+      end
+    end
   end
 
   describe "GET #show" do
@@ -149,6 +161,19 @@ RSpec.shared_examples 'a nested controller for' do |object_class|
       it 'returns the supplemental file metadata' do
         get :show, params: { class_id => object.id, id: supplemental_file.id, format: 'json' }, session: valid_session
         expect(JSON.parse(response.body).symbolize_keys).to eq supplemental_file.as_json
+      end
+    end
+
+    context 'read from solr' do
+      before do
+        object
+        supplemental_file
+      end
+
+      it 'should not read from fedora' do
+        WebMock.reset_executed_requests!
+        get :show, params: { class_id => object.id, id: supplemental_file.id }, session: valid_session
+        expect(a_request(:any, /#{ActiveFedora.fedora.base_uri}/)).not_to have_been_made
       end
     end
   end
