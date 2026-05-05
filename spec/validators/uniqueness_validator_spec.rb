@@ -50,6 +50,11 @@ describe "UniquenessValidator" do
     validator.validate_each(record, field, record.attributes[field])
   end
 
+  it "should not return errors for special characters" do
+    record = Foo.new(title: 'title: new!@#')
+    expect { validator.validate_each(record, field, record.attributes[field]) }.to_not raise_error
+  end
+
   it "should return errors when field is not unique" do
     Foo.create(id: 'different-id', title: 'new_title')
     validator.validate_each(record, field, record.attributes[field])
