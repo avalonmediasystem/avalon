@@ -66,6 +66,19 @@ RSpec.describe SupplementalFilesController, type: :controller do
           expect(response.body).to eq SupplementalFile.convert_from_srt(File.read(file))
         end
       end
+
+      context 'read from solr' do
+        before do
+          master_file
+          supplemental_file
+        end
+
+        it 'should not read from fedora' do
+          WebMock.reset_executed_requests!
+          get :captions, params: { master_file_id: master_file.id, id: supplemental_file.id }, session: valid_session
+          expect(a_request(:any, /#{ActiveFedora.fedora.base_uri}/)).not_to have_been_made
+        end
+      end
     end
   end
 end

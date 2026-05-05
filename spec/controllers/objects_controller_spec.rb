@@ -50,6 +50,20 @@ describe ObjectsController do
       get :show, params: { id: obj.id, urlappend: 'http://google.com' }
       expect(response).to redirect_to(media_object_path(obj))
     end
+
+    context 'read from solr' do
+      let(:obj) { FactoryBot.create(:media_object) }
+
+      before do
+        obj
+      end
+
+      it 'should not read from fedora' do
+        WebMock.reset_executed_requests!
+        get :show, params: { id: obj.id }
+        expect(a_request(:any, /#{ActiveFedora.fedora.base_uri}/)).not_to have_been_made
+      end
+    end
   end
 
   describe "#autocomplete" do
