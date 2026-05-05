@@ -146,7 +146,6 @@ module Avalon
                 end
                 content.last[f] = f == :skip_transcoding ? Avalon::Batch.true_field?(values[i]) : values[i]
               else
-                f == :override_accessibility ? Avalon::Batch.true_field?(values[i]) : values[i]
                 fields[f] << values[i]
               end
             end
