@@ -12,7 +12,6 @@
 #   specific language governing permissions and limitations under the License.
 # ---  END LICENSE_HEADER BLOCK  ---
 
-
 require 'active_model'
 
 module Avalon
@@ -54,6 +53,7 @@ module Avalon
         end
         # Not quite sure why this doesn't work within the tap and had to move it here
         @media_object.hidden = hidden
+        @media_object.override_accessibility = override_accessibility
         @media_object
       end
 
@@ -242,8 +242,12 @@ module Avalon
         media_object.workflow.last_completed_step = 'access-control'
 
         if opts[:publish]
-          media_object.publish!(user_key)
-          media_object.workflow.publish
+          begin
+            media_object.publish!(user_key)
+            media_object.workflow.publish
+          rescue Avalon::PublishingError => e
+            @errors.add(:publish, e.message)
+          end
         end
 
         unless media_object.save
@@ -306,6 +310,10 @@ module Avalon
 
         def hidden
           !!opts[:hidden]
+        end
+
+        def override_accessibility
+          !!opts[:override_accessibility]
         end
 
         def gather_datastreams(file)

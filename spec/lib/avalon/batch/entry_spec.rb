@@ -165,11 +165,10 @@ describe Avalon::Batch::Entry do
   describe '#process!' do
     let(:entry_files) { [{ file: File.join(testdir, filename), offset: '00:00:00.500', label: 'Quis quo', date_digitized: '2015-10-30', skip_transcoding: false }] }
     let(:master_file) { entry.media_object.sections.first }
-    before do
-      entry.process!
-    end
+    subject { entry.process! }
 
     it 'sets MasterFile details' do
+      subject
       expect(master_file.title).to eq('Quis quo')
       expect(master_file.poster_offset.to_i).to eq(500)
       expect(master_file.workflow_name).to eq('avalon')
@@ -184,6 +183,7 @@ describe Avalon::Batch::Entry do
       let(:entry_files) { [{ file: File.join(testdir, filename), offset: '00:00:00.500', label: 'Quis quo', date_digitized: '2015-10-30', skip_transcoding: false, caption_1: caption, transcript_1: transcript }] }
 
       it 'adds captions and transcripts to masterfile' do
+        subject
         expect(master_file.supplemental_file_captions).to be_present
         expect(master_file.supplemental_file_transcripts).to be_present
         expect(master_file.supplemental_files.all? { |sf| sf.parent_id == master_file.id }).to be true
@@ -196,7 +196,39 @@ describe Avalon::Batch::Entry do
       let(:entry_files) { [{ file: File.join(testdir, filename), offset: '00:00:00.500', label: 'Quis quo', date_digitized: '2015-10-30', skip_transcoding: false, caption_1: caption }] }
 
       it 'logs an error' do
+        subject
         expect(entry.errors).not_to be_empty
+      end
+    end
+
+    context 'publish' do
+      context 'accessibility override' do
+        let(:entry_files) { [{ file: File.join(testdir, filename), offset: '00:00:00.500', label: 'Quis quo', skip_transcoding: false }] }
+
+        before do
+          allow(Settings.accessibility_compliance).to receive(:enforce).and_return(true)
+          allow(Settings.accessibility_compliance).to receive(:compliance_date).and_return((DateTime.now - 1.week).strftime('%F'))
+        end
+
+        context 'enabled' do
+          let(:entry_opts) { { user_key: 'archivist1@example.org', collection: collection, publish: true, override_accessibility: true } }
+
+          it 'publishes the item' do
+            subject
+            expect(entry.media_object.avalon_publisher).not_to be_empty
+            expect(entry.errors).to be_empty
+          end
+        end
+
+        context 'disabled' do
+          let(:entry_opts) { { user_key: 'archivist1@example.org', collection: collection, publish: true } }
+
+          it 'logs an error' do
+            subject
+            expect(entry.media_object.avalon_publisher).to be_nil
+            expect(entry.errors).not_to be_empty
+          end
+        end
       end
     end
   end

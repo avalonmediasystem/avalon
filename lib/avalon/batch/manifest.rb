@@ -124,7 +124,8 @@ module Avalon
         first.upto(last) do |index|
           opts = {
             :publish => false,
-            :hidden  => false
+            :hidden  => false,
+            :override_accessibility => false
           }
 
           values = @spreadsheet.row(index).collect do |val|
