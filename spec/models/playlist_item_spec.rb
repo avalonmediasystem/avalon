@@ -112,5 +112,18 @@ RSpec.describe PlaylistItem, type: :model do
       expect(new_item.clip_id).not_to eq playlist_item.clip_id
       expect(new_item.persisted?).to eq true
     end
+
+    context 'copying to a new playlist' do
+      let(:new_playlist) { FactoryBot.create(:playlist, visibility: Playlist::PUBLIC) }
+
+      it 'assigns the duplicated item to the proper playlist' do
+        new_item = playlist_item.duplicate!(to_playlist: new_playlist)
+        expect(new_item.id).not_to eq playlist_item.id
+        expect(new_item.playlist_id).not_to eq playlist_item.playlist_id
+        expect(new_item.playlist_id).to eq new_playlist.id
+        expect(new_item.clip_id).not_to eq playlist_item.clip_id
+        expect(new_item.persisted?).to eq true
+      end
+    end
   end
 end

@@ -133,10 +133,7 @@ class PlaylistsController < ApplicationController
       # copy items
       old_playlist.items.each do |item|
         next if item.clip.master_file.nil?
-        copy_item = item.duplicate!
-        copy_item.playlist_id  = @playlist.id
-        copy_item.save!
-        copy_item.move_to_bottom
+        item.duplicate!(to_playlist: @playlist)
       end
 
       respond_to do |format|
@@ -187,12 +184,12 @@ class PlaylistsController < ApplicationController
       playlist_items = PlaylistItem.where(id: params[:clip_ids])
       playlist_items.each do |item|
         next if item.clip.master_file.nil?
-        if (params[:action_type] == 'copy_to_playlist')
-          item = item.duplicate!
+        if params[:action_type] == 'copy_to_playlist'
+          item.duplicate!(to_playlist: @new_playlist)
+        else
+          item.playlist_id = @new_playlist.id
+          item.save!
         end
-        item.playlist_id = @new_playlist.id
-        item.save!
-        item.move_to_bottom
       end
       @playlist.save!
       @new_playlist.save!
