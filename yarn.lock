@@ -1593,7 +1593,7 @@
     uncontrollable "^8.0.4"
     warning "^4.0.3"
 
-"@rollup/plugin-json@^6.0.1":
+"@rollup/plugin-json@^6.1.0":
   version "6.1.0"
   resolved "https://registry.yarnpkg.com/@rollup/plugin-json/-/plugin-json-6.1.0.tgz#fbe784e29682e9bb6dee28ea75a1a83702e7b805"
   integrity sha512-EGI2te5ENk1coGeADSIwZ7G2Q8CJS2sF120T7jLw4xFw9n7wIOXHo+kIYRAoVpJAN+kmqZSoO3Fp4JtoNF4ReA==
@@ -1609,19 +1609,20 @@
     estree-walker "^2.0.2"
     picomatch "^4.0.2"
 
-"@samvera/ramp@https://github.com/samvera-labs/ramp#ramp-build":
-  version "5.0.0"
-  resolved "https://github.com/samvera-labs/ramp#61c5fdd10848c0d20bbc3953394752583b2390b8"
+"@samvera/ramp@^5.1.0":
+  version "5.1.0"
+  resolved "https://registry.yarnpkg.com/@samvera/ramp/-/ramp-5.1.0.tgz#9036ccb6ff8d5b0787a926bb6f2f3670af288a81"
+  integrity sha512-4v4fi/TsKOI6da2TbwjyVeMleF3SN35R/2YVcRu6e4HwRxaLvqWqclcD23VurO4II1jHwiyq3JO6rLHev1O9ow==
   dependencies:
-    "@rollup/plugin-json" "^6.0.1"
+    "@rollup/plugin-json" "^6.1.0"
     "@silvermine/videojs-quality-selector" "^1.3.1"
     classnames "^2.5.1"
-    dompurify "^3.3.3"
-    mammoth "^1.11.0"
-    manifesto.js "^4.1.0"
+    dompurify "^3.4.1"
+    mammoth "^1.12.0"
+    manifesto.js "^4.3.4"
     mime-types "^3.0.2"
     react-error-boundary "^4.0.11"
-    video.js "^8.23.4"
+    video.js "^8.23.7"
     videojs-markers-plugin "^1.0.2"
 
 "@silvermine/videojs-quality-selector@^1.3.1":
@@ -3242,10 +3243,10 @@ domhandler@^5.0.2, domhandler@^5.0.3:
   dependencies:
     domelementtype "^2.3.0"
 
-dompurify@^3.3.3:
-  version "3.4.1"
-  resolved "https://registry.yarnpkg.com/dompurify/-/dompurify-3.4.1.tgz#521d04483ac12631b2aedf434a5f5390933b8789"
-  integrity sha512-JahakDAIg1gyOm7dlgWSDjV4n7Ip2PKR55NIT6jrMfIgLFgWo81vdr1/QGqWtFNRqXP9UV71oVePtjqS2ebnPw==
+dompurify@^3.4.1:
+  version "3.4.2"
+  resolved "https://registry.yarnpkg.com/dompurify/-/dompurify-3.4.2.tgz#f0ff81be682c485505097ba8195a058d8f575218"
+  integrity sha512-lHeS9SA/IKeIFFyYciHBr2n0v1VMPlSj843HdLOwjb2OxNwdq9Xykxqhk+FE42MzAdHvInbAolSE4mhahPpjXA==
   optionalDependencies:
     "@types/trusted-types" "^2.0.7"
 
@@ -4682,7 +4683,7 @@ make-dir@^2.1.0:
     pify "^4.0.1"
     semver "^5.6.0"
 
-mammoth@^1.11.0:
+mammoth@^1.12.0:
   version "1.12.0"
   resolved "https://registry.yarnpkg.com/mammoth/-/mammoth-1.12.0.tgz#102ed719a933ac08ed65b37e9856622f1051effb"
   integrity sha512-cwnK1RIcRdDMi2HRx2EXGYlxqIEh0Oo3bLhorgnsVJi2UkbX1+jKxuBNR9PC5+JaX7EkmJxFPmo6mjLpqShI2w==
@@ -4698,20 +4699,20 @@ mammoth@^1.11.0:
     underscore "^1.13.1"
     xmlbuilder "^10.0.0"
 
-manifesto.js@^4.1.0:
-  version "4.3.4"
-  resolved "https://registry.yarnpkg.com/manifesto.js/-/manifesto.js-4.3.4.tgz#d1d121a80e4699afa8b0b35a605c4760979da8ce"
-  integrity sha512-lrh9Y9mOLpYLuRPys/+rdonHqCJRMZA417vIioqKlkNNWc9cyl+CpkXImvVnqmE3ga5DLP+wzPVdAUKQpQr5FQ==
+manifesto.js@^4.2.14:
+  version "4.3.0"
+  resolved "https://registry.yarnpkg.com/manifesto.js/-/manifesto.js-4.3.0.tgz#98384ceffabf7343173b526f68ccb079ac808286"
+  integrity sha512-UhnJ/m4KrbVUrqjlJvURakAR68y3twBXecocRiWU8MIvDJdwA1clYTtHz+in0LeYIgb6yuLZ7vStQ7ixtkkEAw==
   dependencies:
     "@edsilv/http-status-codes" "^1.0.3"
     "@iiif/vocabulary" "^1.0.28"
     isomorphic-unfetch "^3.0.0"
     lodash "^4.17.21"
 
-manifesto.js@^4.2.14:
-  version "4.3.0"
-  resolved "https://registry.yarnpkg.com/manifesto.js/-/manifesto.js-4.3.0.tgz#98384ceffabf7343173b526f68ccb079ac808286"
-  integrity sha512-UhnJ/m4KrbVUrqjlJvURakAR68y3twBXecocRiWU8MIvDJdwA1clYTtHz+in0LeYIgb6yuLZ7vStQ7ixtkkEAw==
+manifesto.js@^4.3.4:
+  version "4.3.4"
+  resolved "https://registry.yarnpkg.com/manifesto.js/-/manifesto.js-4.3.4.tgz#d1d121a80e4699afa8b0b35a605c4760979da8ce"
+  integrity sha512-lrh9Y9mOLpYLuRPys/+rdonHqCJRMZA417vIioqKlkNNWc9cyl+CpkXImvVnqmE3ga5DLP+wzPVdAUKQpQr5FQ==
   dependencies:
     "@edsilv/http-status-codes" "^1.0.3"
     "@iiif/vocabulary" "^1.0.28"
@@ -6645,7 +6646,7 @@ verror@1.10.0:
     videojs-font "4.2.0"
     videojs-vtt.js "0.15.5"
 
-video.js@^8.23.4:
+video.js@^8.23.7:
   version "8.23.7"
   resolved "https://registry.yarnpkg.com/video.js/-/video.js-8.23.7.tgz#f32be0689b0184e4d8b8b03fd150bac21e6db2ab"
   integrity sha512-cG4HOygYt+Z8j6Sf5DuK6OgEOoM+g9oGP6vpqoZRaD13aHE4PMITbyjJUXZcIQbgB0wJEadBRaVm5lJIzo2jAA==
@@ -6894,7 +6895,7 @@ yallist@^3.0.2:
   resolved "https://registry.yarnpkg.com/yallist/-/yallist-3.1.1.tgz#dbb7daf9bfd8bac9ab45ebf602b8cbad0d5d08fd"
   integrity sha512-a4UGQaWPH59mOXUYnAG2ewncQS4i4F43Tv3JoAM+s2VDAmS9NsK8GpDMLrCHPksFT7h3K6TOoUNn2pb7RoXx4g==
 
-yaml@^1.10.0, yaml@^1.10.3:
+yaml@^1.10.0:
   version "1.10.3"
   resolved "https://registry.yarnpkg.com/yaml/-/yaml-1.10.3.tgz#76e407ed95c42684fb8e14641e5de62fe65bbcb3"
   integrity sha512-vIYeF1u3CjlhAFekPPAk2h/Kv4T3mAkMox5OymRiJQB0spDP10LHvt+K7G9Ny6NuuMAb25/6n1qyUjAcGNf/AA==
