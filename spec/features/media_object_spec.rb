@@ -215,9 +215,12 @@ describe 'MediaObject' do
   end
 
   describe 'accessibility exemption' do
+    before { allow(Settings.accessibility_compliance).to receive(:enforce).and_return(true) }
+
     context 'as a collection manager' do
       context 'when item is unpublished' do
         it 'can see the exempt checkbox' do
+          media_object.save
           visit media_object_path(media_object)
           expect(page).to have_css('#accessibility_exempt_toggle')
           expect(page).to have_content(I18n.t('media_object.accessibility_exempt.message'))
