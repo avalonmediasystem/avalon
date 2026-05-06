@@ -268,253 +268,307 @@ RSpec.describe PlaylistsController, type: :controller do
     end
 
     context 'non-blank playlist' do
-
       let(:media_object) { FactoryBot.create(:media_object, visibility: 'public') }
       let!(:video_master_file) { FactoryBot.create(:master_file, media_object: media_object, duration: "200000") }
-      let!(:clip) { AvalonClip.create(master_file: video_master_file, title: Faker::Lorem.word,
-        comment: Faker::Lorem.sentence, start_time: 1000, end_time: 2000) }
+      let!(:clip) { AvalonClip.create(master_file: video_master_file, title: Faker::Lorem.word, comment: Faker::Lorem.sentence, start_time: 1000, end_time: 2000) }
       let!(:playlist_item) { PlaylistItem.create!(playlist: playlist, clip: clip) }
-      let!(:bookmark) { AvalonMarker.create(playlist_item: playlist_item, master_file: video_master_file, start_time: "200000")}
+      let!(:bookmark) { AvalonMarker.create(playlist_item: playlist_item, master_file: video_master_file, start_time: "200000") }
 
-        it 'duplicate playlist with items' do
-          post :duplicate, params: { format: 'json', old_playlist_id: playlist.id, playlist: { 'title' => playlist.title, 'comment' => playlist.comment, 'visibility' => playlist.visibility } }
-          expect(response.body).not_to be_empty
-          parsed_response = JSON.parse(response.body)
+      it 'duplicate playlist with items' do
+        post :duplicate, params: { format: 'json', old_playlist_id: playlist.id, playlist: { 'title' => playlist.title, 'comment' => playlist.comment, 'visibility' => playlist.visibility } }
+        expect(response.body).not_to be_empty
+        parsed_response = JSON.parse(response.body)
 
-          new_playlist = Playlist.find(parsed_response['playlist']['id'])
-          expect(new_playlist.items.count).to eq 1
-          expect(new_playlist.clips.first.start_time).to eq clip.start_time
-          expect(new_playlist.clips.first.id).not_to eq clip.id
-          expect(new_playlist.items.first.id).not_to eq playlist_item.id
-          expect(new_playlist.items.first.marker.count).to eq 1
-
-        end
+        new_playlist = Playlist.find(parsed_response['playlist']['id'])
+        expect(new_playlist.items.count).to eq 1
+        expect(new_playlist.clips.first.start_time).to eq clip.start_time
+        expect(new_playlist.clips.first.id).not_to eq clip.id
+        expect(new_playlist.items.first.id).not_to eq playlist_item.id
+        expect(new_playlist.items.first.marker.count).to eq 1
       end
     end
+  end
 
-    describe 'PUT #update' do
-      context 'with valid params' do
-        let(:new_attributes) do
-          { title: Faker::Lorem.word, visibility: Playlist::PUBLIC, comment: Faker::Lorem.sentence }
-        end
-
-        it 'updates the requested playlist' do
-          playlist = Playlist.create! valid_attributes
-          put :update, params: { id: playlist.to_param, playlist: new_attributes }, session: valid_session
-          playlist.reload
-          expect(playlist.title).to eq new_attributes[:title]
-          expect(playlist.visibility).to eq new_attributes[:visibility]
-          expect(playlist.comment).to eq new_attributes[:comment]
-        end
-
-        it 'assigns the requested playlist as @playlist' do
-          playlist = Playlist.create! valid_attributes
-          put :update, params: { id: playlist.to_param, playlist: new_attributes }, session: valid_session
-          expect(assigns(:playlist)).to eq(playlist)
-        end
-
-        it 'redirects to edit playlist' do
-          playlist = Playlist.create! valid_attributes
-          put :update, params: { id: playlist.to_param, playlist: new_attributes }, session: valid_session
-          expect(response).to redirect_to(edit_playlist_path(playlist))
-        end
-
-        it 'generates a token if visibility is private-with-token' do
-          playlist = Playlist.create! valid_attributes
-          put :update, params: { id: playlist.to_param, playlist: { visibility: Playlist::PRIVATE_WITH_TOKEN } }, session: valid_session
-          playlist.reload
-          expect(playlist.access_token).not_to be_blank
-        end
+  describe 'PUT #update' do
+    context 'with valid params' do
+      let(:new_attributes) do
+        { title: Faker::Lorem.word, visibility: Playlist::PUBLIC, comment: Faker::Lorem.sentence }
       end
 
-      context 'with invalid params' do
-        it 'assigns the playlist as @playlist' do
-          playlist = Playlist.create! valid_attributes
-          put :update, params: { id: playlist.to_param, playlist: invalid_attributes }, session: valid_session
-          expect(assigns(:playlist)).to eq(playlist)
-        end
-
-        it "re-renders the 'edit' template" do
-          playlist = Playlist.create! valid_attributes
-          put :update, params: { id: playlist.to_param, playlist: invalid_attributes }, session: valid_session
-          expect(response).to render_template('edit')
-        end
-      end
-    end
-
-    describe 'PUT #update_multiple' do
-      before do
-        login_as :user
-      end
-
-      let!(:playlist) { FactoryBot.create(:playlist, valid_attributes) }
-      let!(:new_playlist) { FactoryBot.create(:playlist, valid_attributes) }
-
-      let(:media_object) { FactoryBot.create(:media_object, visibility: 'public') }
-      let!(:video_master_file) { FactoryBot.create(:master_file, media_object: media_object, duration: "200000") }
-      let!(:clip) { AvalonClip.create(master_file: video_master_file, title: Faker::Lorem.word,
-        comment: Faker::Lorem.sentence, start_time: 1000, end_time: 2000) }
-      let!(:playlist_item) { PlaylistItem.create!(playlist: playlist, clip: clip) }
-      let!(:bookmark) { AvalonMarker.create(playlist_item: playlist_item, master_file: video_master_file, start_time: "200000")}
-
-      context 'delete' do
-
-        it 'redirects to edit playlist' do
-          put :update_multiple, params: { id: playlist.to_param, clip_ids: ["1"] }, session: valid_session
-          expect(response).to redirect_to(edit_playlist_path(playlist))
-        end
-
-        it 'deletes a playlist item' do
-          playlist.items << playlist_item
-          expect(playlist.items.count).to eq(1)
-          expect do
-            # maybe request headers, run delete to see what gets pushed through.
-            delete :update_multiple, params: { id: playlist.to_param, clip_ids:[ playlist_item.to_param ] }, session: valid_session
-          end.to change(playlist.items, :count).by(-1)
-        end
-      end
-
-      context 'copy_to' do
-        it 'copys an item from one playlist to another' do
-          playlist.items << playlist_item
-          expect(playlist.items.count).to eq(1)
-          expect do
-            put :update_multiple, params: { id: playlist.id, clip_ids:[ playlist_item.to_param ], new_playlist_id: new_playlist.id, action_type: 'copy_to_playlist' }, session: valid_session
-          end.to change(new_playlist.items, :count).by(+1)
-          expect(playlist.items.count).to eq(1)
-        end
-      end
-
-      context 'move_to' do
-        it 'moves an item from one playlist to another' do
-          playlist.items << playlist_item
-          expect(playlist.items.count).to eq(1)
-          expect do
-            put :update_multiple, params: { id: playlist.id, clip_ids:[ playlist_item.to_param ], new_playlist_id: new_playlist.id, action_type: 'move_to_playlist' }, session: valid_session
-          end.to change(new_playlist.items, :count).by(+1)
-          expect(playlist.items.count).to eq(0)
-        end
-      end
-    end
-
-    describe 'DELETE #destroy' do
-      it 'destroys the requested playlist' do
+      it 'updates the requested playlist' do
         playlist = Playlist.create! valid_attributes
-        expect do
-          delete :destroy, params: { id: playlist.to_param }, session: valid_session
-        end.to change(Playlist, :count).by(-1)
+        put :update, params: { id: playlist.to_param, playlist: new_attributes }, session: valid_session
+        playlist.reload
+        expect(playlist.title).to eq new_attributes[:title]
+        expect(playlist.visibility).to eq new_attributes[:visibility]
+        expect(playlist.comment).to eq new_attributes[:comment]
       end
 
-      it 'redirects to the playlists list' do
-        playlist = Playlist.create! valid_attributes
-        delete :destroy, params: { id: playlist.to_param }, session: valid_session
-        expect(response).to redirect_to(playlists_url)
-      end
-    end
-
-    describe 'GET #edit' do
       it 'assigns the requested playlist as @playlist' do
         playlist = Playlist.create! valid_attributes
-        get :edit, params: { id: playlist.to_param }, session: valid_session
+        put :update, params: { id: playlist.to_param, playlist: new_attributes }, session: valid_session
         expect(assigns(:playlist)).to eq(playlist)
       end
-    end
 
-    context "Conditional Share partials should be rendered" do
-      render_views
-      let(:playlist) { FactoryBot.create(:playlist, visibility: Playlist::PUBLIC) }
-      context "Normal login" do
-        it "administrators: should include lti and share" do
-          login_as(:administrator)
-          get :show, params: { id: playlist.id }
-          expect(response).to render_template(:_share_resource)
-          expect(response).to render_template(:_lti_url)
-        end
-        it "Playlist owner: should include lti and share" do
-          login_user playlist.user.user_key
-          get :show, params: { id: playlist.id }
-          expect(response).to render_template(:_share_resource)
-          expect(response).to render_template(:_lti_url)
-        end
-        it "others: should include share and NOT lti" do
-          login_as(:user)
-          get :show, params: { id: playlist.id }
-          expect(response).to render_template(:_share_resource)
-          expect(response).to_not render_template(:_lti_url)
-        end
+      it 'redirects to edit playlist' do
+        playlist = Playlist.create! valid_attributes
+        put :update, params: { id: playlist.to_param, playlist: new_attributes }, session: valid_session
+        expect(response).to redirect_to(edit_playlist_path(playlist))
       end
-      context "LTI login" do
-        it "administrators/managers/editors: should include lti and share" do
-          login_lti 'administrator'
-          lti_group = @controller.user_session[:virtual_groups].first
-          get :show, params: { id: playlist.id }
-          expect(response).to render_template(:_share_resource)
-          expect(response).to render_template(:_lti_url)
-        end
-        it "others: should include only lti" do
-          login_lti 'user'
-          lti_group = @controller.user_session[:virtual_groups].first
-          get :show, params: { id: playlist.id }
-          expect(response).to_not render_template(:_share_resource)
-          expect(response).to render_template(:_lti_url)
-        end
-      end
-      context "No share tabs rendered" do
-        before do
-          @original_conditional_partials = controller.class.conditional_partials.deep_dup
-          controller.class.conditional_partials[:share].each {|partial_name, conditions| conditions[:if] = false }
-        end
-        after do
-          controller.class.conditional_partials = @original_conditional_partials
-        end
-        it "should not render Share button" do
-          # allow(@controller).to receive(:evaluate_if_unless_configuration).and_return false
-          # allow(@controller).to receive(:is_editor_or_not_lti).and_return false
-          expect(response).to_not render_template(:_share)
-        end
-      end
-      context "No LTI configuration" do
-        around do |example|
-          providers = Avalon::Authentication::Providers
-          Avalon::Authentication::Providers = Avalon::Authentication::Providers.reject{|p| p[:provider] == :lti}
-          example.run
-          Avalon::Authentication::Providers = providers
-        end
-        it "should not include lti" do
-          login_as(:administrator)
-          get :show, params: { id: playlist.id }
-          expect(response).to render_template(:_share_resource)
-          expect(response).to_not render_template(:_lti_url)
-        end
+
+      it 'generates a token if visibility is private-with-token' do
+        playlist = Playlist.create! valid_attributes
+        put :update, params: { id: playlist.to_param, playlist: { visibility: Playlist::PRIVATE_WITH_TOKEN } }, session: valid_session
+        playlist.reload
+        expect(playlist.access_token).not_to be_blank
       end
     end
 
-    describe "POST #paged_index" do
+    context 'with invalid params' do
+      it 'assigns the playlist as @playlist' do
+        playlist = Playlist.create! valid_attributes
+        put :update, params: { id: playlist.to_param, playlist: invalid_attributes }, session: valid_session
+        expect(assigns(:playlist)).to eq(playlist)
+      end
+
+      it "re-renders the 'edit' template" do
+        playlist = Playlist.create! valid_attributes
+        put :update, params: { id: playlist.to_param, playlist: invalid_attributes }, session: valid_session
+        expect(response).to render_template('edit')
+      end
+    end
+  end
+
+  describe 'PUT #update_multiple' do
+    before do
+      login_as :user
+    end
+
+    let!(:playlist) { FactoryBot.create(:playlist, valid_attributes) }
+    let!(:new_playlist) { FactoryBot.create(:playlist, valid_attributes) }
+
+    let(:media_object) { FactoryBot.create(:media_object, visibility: 'public') }
+    let!(:video_master_file) { FactoryBot.create(:master_file, media_object: media_object, duration: "200000") }
+    let!(:clip) { AvalonClip.create(master_file: video_master_file, title: Faker::Lorem.word,
+      comment: Faker::Lorem.sentence, start_time: 1000, end_time: 2000) }
+    let!(:playlist_item) { PlaylistItem.create!(playlist: playlist, clip: clip) }
+    let!(:bookmark) { AvalonMarker.create(playlist_item: playlist_item, master_file: video_master_file, start_time: "200000")}
+
+    context 'delete' do
+      it 'redirects to edit playlist' do
+        put :update_multiple, params: { id: playlist.to_param, clip_ids: ["1"] }, session: valid_session
+        expect(response).to redirect_to(edit_playlist_path(playlist))
+      end
+
+      it 'deletes a playlist item' do
+        playlist.items << playlist_item
+        expect(playlist.items.count).to eq(1)
+        expect do
+          # maybe request headers, run delete to see what gets pushed through.
+          delete :update_multiple, params: { id: playlist.to_param, clip_ids:[ playlist_item.to_param ] }, session: valid_session
+        end.to change(playlist.items, :count).by(-1)
+      end
+    end
+
+    context 'copy_to' do
+      it 'copys an item from one playlist to another' do
+        playlist.items << playlist_item
+        expect(playlist.items.count).to eq(1)
+        expect do
+          put :update_multiple, params: { id: playlist.id, clip_ids: [playlist_item.to_param], new_playlist_id: new_playlist.id, action_type: 'copy_to_playlist' }, session: valid_session
+        end.to change(new_playlist.items, :count).by(+1)
+        expect(playlist.items.count).to eq(1)
+      end
+    end
+
+    context 'move_to' do
+      it 'moves an item from one playlist to another' do
+        playlist.items << playlist_item
+        expect(playlist.items.count).to eq(1)
+        expect do
+          put :update_multiple, params: { id: playlist.id, clip_ids: [playlist_item.to_param], new_playlist_id: new_playlist.id, action_type: 'move_to_playlist' }, session: valid_session
+        end.to change(new_playlist.items, :count).by(+1)
+        expect(playlist.items.count).to eq(0)
+      end
+    end
+  end
+
+  describe 'DELETE #destroy' do
+    it 'destroys the requested playlist' do
+      playlist = Playlist.create! valid_attributes
+      expect do
+        delete :destroy, params: { id: playlist.to_param }, session: valid_session
+      end.to change(Playlist, :count).by(-1)
+    end
+
+    it 'redirects to the playlists list' do
+      playlist = Playlist.create! valid_attributes
+      delete :destroy, params: { id: playlist.to_param }, session: valid_session
+      expect(response).to redirect_to(playlists_url)
+    end
+  end
+
+  describe 'GET #edit' do
+    it 'assigns the requested playlist as @playlist' do
+      playlist = Playlist.create! valid_attributes
+      get :edit, params: { id: playlist.to_param }, session: valid_session
+      expect(assigns(:playlist)).to eq(playlist)
+    end
+  end
+
+  describe "Conditional Share partials should be rendered" do
+    render_views
+    let(:playlist) { FactoryBot.create(:playlist, visibility: Playlist::PUBLIC) }
+    context "Normal login" do
+      it "administrators: should include lti and share" do
+        login_as(:administrator)
+        get :show, params: { id: playlist.id }
+        expect(response).to render_template(:_share_resource)
+        expect(response).to render_template(:_lti_url)
+      end
+      it "Playlist owner: should include lti and share" do
+        login_user playlist.user.user_key
+        get :show, params: { id: playlist.id }
+        expect(response).to render_template(:_share_resource)
+        expect(response).to render_template(:_lti_url)
+      end
+      it "others: should include share and NOT lti" do
+        login_as(:user)
+        get :show, params: { id: playlist.id }
+        expect(response).to render_template(:_share_resource)
+        expect(response).to_not render_template(:_lti_url)
+      end
+    end
+    context "LTI login" do
+      it "administrators/managers/editors: should include lti and share" do
+        login_lti 'administrator'
+        lti_group = @controller.user_session[:virtual_groups].first
+        get :show, params: { id: playlist.id }
+        expect(response).to render_template(:_share_resource)
+        expect(response).to render_template(:_lti_url)
+      end
+      it "others: should include only lti" do
+        login_lti 'user'
+        lti_group = @controller.user_session[:virtual_groups].first
+        get :show, params: { id: playlist.id }
+        expect(response).to_not render_template(:_share_resource)
+        expect(response).to render_template(:_lti_url)
+      end
+    end
+    context "No share tabs rendered" do
       before do
-        login_as :user
+        @original_conditional_partials = controller.class.conditional_partials.deep_dup
+        controller.class.conditional_partials[:share].each {|partial_name, conditions| conditions[:if] = false }
       end
-      before :each do
-        FactoryBot.reload
-        FactoryBot.create(:playlist, title: "aardvark", user: user)
-        FactoryBot.create_list(:playlist, 9, title: 'bbbbb', user: user)
-        FactoryBot.create(:playlist, title: "zzzebra", user: user)
+      after do
+        controller.class.conditional_partials = @original_conditional_partials
+      end
+      it "should not render Share button" do
+        # allow(@controller).to receive(:evaluate_if_unless_configuration).and_return false
+        # allow(@controller).to receive(:is_editor_or_not_lti).and_return false
+        expect(response).to_not render_template(:_share)
+      end
+    end
+    context "No LTI configuration" do
+      around do |example|
+        providers = Avalon::Authentication::Providers
+        Avalon::Authentication::Providers = Avalon::Authentication::Providers.reject{|p| p[:provider] == :lti}
+        example.run
+        Avalon::Authentication::Providers = providers
+      end
+      it "should not include lti" do
+        login_as(:administrator)
+        get :show, params: { id: playlist.id }
+        expect(response).to render_template(:_share_resource)
+        expect(response).to_not render_template(:_lti_url)
+      end
+    end
+  end
+
+  describe "POST #paged_index" do
+    before do
+      login_as :user
+    end
+    before :each do
+      FactoryBot.reload
+      FactoryBot.create(:playlist, title: "aardvark", user: user)
+      FactoryBot.create_list(:playlist, 9, title: 'bbbbb', user: user)
+      FactoryBot.create(:playlist, title: "zzzebra", user: user)
+    end
+
+    it 'returns all results' do
+      post :paged_index, format: 'json', session: valid_session
+      parsed_response = JSON.parse(response.body)
+      expect(parsed_response['recordsTotal']).to eq(11)
+      expect(parsed_response['data'].count).to eq(11)
+    end
+  end
+
+  describe "GET #manifest" do
+    let(:playlist) { FactoryBot.create(:playlist, items: [playlist_item, playlist_item_2], visibility: Playlist::PUBLIC) }
+    let(:playlist_item) { FactoryBot.create(:playlist_item, clip: clip) }
+    let(:playlist_item_2) { FactoryBot.create(:playlist_item, clip: clip) }
+    let(:clip) { FactoryBot.create(:avalon_clip, master_file: master_file) }
+    let(:master_file) { FactoryBot.create(:master_file, :with_derivative, media_object: media_object) }
+    let(:media_object) { FactoryBot.create(:published_media_object, visibility: 'public') }
+
+    it "returns a IIIF manifest" do
+      get :manifest, format: 'json', params: { id: playlist.id }, session: valid_session
+      expect(response).to have_http_status(200)
+      parsed_response = JSON.parse(response.body)
+      expect(parsed_response['@context']).to include "http://iiif.io/api/presentation/3/context.json"
+      expect(parsed_response['type']).to eq 'Manifest'
+      expect(parsed_response['items']).not_to be_empty
+    end
+
+    context "playlist item" do
+      it "contains metadata about the playlist item's parent media obejct" do
+        get :manifest, format: 'json', params: { id: playlist.id }, session: valid_session
+        parsed_response = JSON.parse(response.body)
+        expect(parsed_response['items'][0]['metadata']).to be_present
       end
 
-      it 'returns all results' do
-        post :paged_index, format: 'json', session: valid_session
+      it "contains a homepage with the playlist item's positional URL" do
+        get :manifest, format: 'json', params:{ id: playlist.id }, session: valid_session
         parsed_response = JSON.parse(response.body)
-        expect(parsed_response['recordsTotal']).to eq(11)
-        expect(parsed_response['data'].count).to eq(11)
+        expect(parsed_response['items'][0]['homepage']).to be_present
+        expect(parsed_response['items'][0]['homepage'][0]['id']).to eq "#{Rails.application.routes.url_helpers.playlist_url(playlist.id)}?position=1"
+        expect(parsed_response['items'][1]['homepage']).to be_present
+        expect(parsed_response['items'][1]['homepage'][0]['id']).to eq "#{Rails.application.routes.url_helpers.playlist_url(playlist.id)}?position=2"
+      end
+
+      context "with deleted source" do
+        before do
+          master_file.delete
+        end
+
+        it "returns a blank canvas" do
+          get :manifest, format: 'json', params: { id: playlist.id }, session: valid_session
+          parsed_response = JSON.parse(response.body)
+          expect(parsed_response['items'][0]['items'][0].keys).to include 'items'
+          expect(parsed_response['items'][0]['items'][0]['items']).to be_empty
+        end
       end
     end
 
-    describe "GET #manifest" do
-      let(:playlist) { FactoryBot.create(:playlist, items: [playlist_item, playlist_item_2], visibility: Playlist::PUBLIC) }
-      let(:playlist_item) { FactoryBot.create(:playlist_item, clip: clip) }
-      let(:playlist_item_2) { FactoryBot.create(:playlist_item, clip: clip) }
-      let(:clip) { FactoryBot.create(:avalon_clip, master_file: master_file) }
-      let(:master_file) { FactoryBot.create(:master_file, :with_derivative, media_object: media_object) }
-      let(:media_object) { FactoryBot.create(:published_media_object, visibility: 'public') }
+    context "playlist item auth" do
+      let(:playlist_item_2) { FactoryBot.create(:playlist_item, clip: clip_2) }
+      let(:clip_2) { FactoryBot.create(:avalon_clip, master_file: master_file_2) }
+      let(:master_file_2) { FactoryBot.create(:master_file, :with_derivative, media_object: media_object_2) }
+      let(:media_object_2) { FactoryBot.create(:published_media_object, visibility: 'restricted') }
+
+      it "returns populated canvas for public item and blank canvas for restricted item" do
+        get :manifest, format: 'json', params: { id: playlist.id }, session: valid_session
+        parsed_response = JSON.parse(response.body)
+        expect(parsed_response['items'].length).to eq 2
+        expect(parsed_response['items'][0]['items'][0].keys).to include 'items'
+        expect(parsed_response['items'][1]['items'][0].keys).to include 'items'
+        expect(parsed_response['items'][1]['items'][0]['items']).to be_empty
+      end
+    end
+
+    context "when playlist is empty" do
+      let(:playlist) { FactoryBot.create(:playlist, items: [], visibility: Playlist::PUBLIC) }
 
       it "returns a IIIF manifest" do
         get :manifest, format: 'json', params: { id: playlist.id }, session: valid_session
@@ -522,86 +576,28 @@ RSpec.describe PlaylistsController, type: :controller do
         parsed_response = JSON.parse(response.body)
         expect(parsed_response['@context']).to include "http://iiif.io/api/presentation/3/context.json"
         expect(parsed_response['type']).to eq 'Manifest'
-        expect(parsed_response['items']).not_to be_empty
+        expect(parsed_response['items']).to be_empty
+      end
+    end
+
+    context "when playlist owner" do
+      before do
+        login_user playlist.user.user_key
       end
 
-      context "playlist item" do
-        it "contains metadata about the playlist item's parent media obejct" do
-          get :manifest, format: 'json', params: { id: playlist.id }, session: valid_session
-          parsed_response = JSON.parse(response.body)
-          expect(parsed_response['items'][0]['metadata']).to be_present
-        end
-
-        it "contains a homepage with the playlist item's positional URL" do
-          get :manifest, format: 'json', params:{ id: playlist.id }, session: valid_session
-          parsed_response = JSON.parse(response.body)
-          expect(parsed_response['items'][0]['homepage']).to be_present
-          expect(parsed_response['items'][0]['homepage'][0]['id']).to eq "#{Rails.application.routes.url_helpers.playlist_url(playlist.id)}?position=1"
-          expect(parsed_response['items'][1]['homepage']).to be_present
-          expect(parsed_response['items'][1]['homepage'][0]['id']).to eq "#{Rails.application.routes.url_helpers.playlist_url(playlist.id)}?position=2"
-        end
-
-        context "with deleted source" do
-          before do
-            master_file.delete
-          end
-
-          it "returns a blank canvas" do
-            get :manifest, format: 'json', params: { id: playlist.id }, session: valid_session
-            parsed_response = JSON.parse(response.body)
-            expect(parsed_response['items'][0]['items'][0].keys).to include 'items'
-            expect(parsed_response['items'][0]['items'][0]['items']).to be_empty
-          end
-        end
+      it "includes the marker annotation service definition" do
+        get :manifest, format: 'json', params: { id: playlist.id }, session: valid_session
+        parsed_response = JSON.parse(response.body)
+        expect(parsed_response["service"]).to be_present
       end
+    end
 
-      context "playlist item auth" do
-        let(:playlist_item_2) { FactoryBot.create(:playlist_item, clip: clip_2) }
-        let(:clip_2) { FactoryBot.create(:avalon_clip, master_file: master_file_2) }
-        let(:master_file_2) { FactoryBot.create(:master_file, :with_derivative, media_object: media_object_2) }
-        let(:media_object_2) { FactoryBot.create(:published_media_object, visibility: 'restricted') }
-
-        it "returns populated canvas for public item and blank canvas for restricted item" do
-          get :manifest, format: 'json', params: { id: playlist.id }, session: valid_session
-          parsed_response = JSON.parse(response.body)
-          expect(parsed_response['items'].length).to eq 2
-          expect(parsed_response['items'][0]['items'][0].keys).to include 'items'
-          expect(parsed_response['items'][1]['items'][0].keys).to include 'items'
-          expect(parsed_response['items'][1]['items'][0]['items']).to be_empty
-        end
-      end
-
-      context "when playlist is empty" do
-        let(:playlist) { FactoryBot.create(:playlist, items: [], visibility: Playlist::PUBLIC) }
-
-        it "returns a IIIF manifest" do
-          get :manifest, format: 'json', params: { id: playlist.id }, session: valid_session
-          expect(response).to have_http_status(200)
-          parsed_response = JSON.parse(response.body)
-          expect(parsed_response['@context']).to include "http://iiif.io/api/presentation/3/context.json"
-          expect(parsed_response['type']).to eq 'Manifest'
-          expect(parsed_response['items']).to be_empty
-        end
-      end
-
-      context "when playlist owner" do
-        before do
-          login_user playlist.user.user_key
-        end
-
-        it "includes the marker annotation service definition" do
-          get :manifest, format: 'json', params: { id: playlist.id }, session: valid_session
-          parsed_response = JSON.parse(response.body)
-          expect(parsed_response["service"]).to be_present
-        end
-      end
-
-      context "when not playlist owner" do
-        it "does not include the marker annotation service definition" do
-          get :manifest, format: 'json', params: { id: playlist.id }, session: valid_session
-          parsed_response = JSON.parse(response.body)
-          expect(parsed_response["service"]).not_to be_present
-        end
+    context "when not playlist owner" do
+      it "does not include the marker annotation service definition" do
+        get :manifest, format: 'json', params: { id: playlist.id }, session: valid_session
+        parsed_response = JSON.parse(response.body)
+        expect(parsed_response["service"]).not_to be_present
       end
     end
   end
+end
