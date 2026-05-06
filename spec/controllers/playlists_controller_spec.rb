@@ -287,6 +287,30 @@ RSpec.describe PlaylistsController, type: :controller do
         expect(new_playlist.items.first.marker.count).to eq 1
       end
     end
+
+    context 'playlist with multiple items' do
+      let(:media_object) { FactoryBot.create(:media_object, visibility: 'public') }
+      let!(:video_master_file) { FactoryBot.create(:master_file, media_object: media_object, duration: "200000") }
+      let!(:clip) { AvalonClip.create(master_file: video_master_file, title: Faker::Lorem.word, comment: Faker::Lorem.sentence, start_time: 1000, end_time: 2000) }
+      let!(:playlist_item) { PlaylistItem.create!(playlist: playlist, clip: clip) }
+      let!(:bookmark) { AvalonMarker.create(playlist_item: playlist_item, master_file: video_master_file, start_time: "200000") }
+      let!(:clip_2) { AvalonClip.create(master_file: video_master_file, title: Faker::Lorem.word, comment: Faker::Lorem.sentence, start_time: 1500, end_time: 1750) }
+      let!(:playlist_item_2) { PlaylistItem.create!(playlist: playlist, clip: clip_2) }
+      let!(:bookmark_2) { AvalonMarker.create(playlist_item: playlist_item_2, master_file: video_master_file, start_time: "200000") }
+
+      it 'duplicates playlist with items in order' do
+        expect(playlist.clips.first.start_time).to eq clip.start_time
+        expect(playlist.clips.second.start_time).to eq clip_2.start_time
+        post :duplicate, params: { format: 'json', old_playlist_id: playlist.id, playlist: { 'title' => playlist.title, 'comment' => playlist.comment, 'visibility' => playlist.visibility } }
+        expect(response.body).not_to be_empty
+        parsed_response = JSON.parse(response.body)
+
+        new_playlist = Playlist.find(parsed_response['playlist']['id'])
+        expect(new_playlist.items.count).to eq 2
+        expect(new_playlist.clips.first.start_time).to eq clip.start_time
+        expect(new_playlist.clips.second.start_time).to eq clip_2.start_time
+      end
+    end
   end
 
   describe 'PUT #update' do
