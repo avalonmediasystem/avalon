@@ -31,28 +31,50 @@ function initAccessibilityToggle() {
   checkbox.addEventListener('change', function () {
     const prevChecked = !this.checked;
     const override_accessibility = this.checked ? '1' : '0';
+    const errorMessage = this.dataset.errorMessage;
 
-    // AJAX request to update_status to toggle override_accessibility
     fetch(this.dataset.url, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': csrfToken() },
       body: JSON.stringify({ override_accessibility })
     })
-      .then(response => response.json())
-      .then(res => {
-        // Update exempt status for publish button to show/hide popover on click
-        checkbox.checked = res.exempt;
+      .then(response => response.json().then(data => ({ ok: response.ok, data })))
+      .then(({ ok, data }) => {
+        // Show an error and revert toggle if request fails
+        if (!ok) {
+          checkbox.checked = prevChecked;
+          handleError(data.error || errorMessage);
+          return;
+        }
+        checkbox.checked = data.exempt;
         const publishButton = document.getElementById('publish-btn');
         if (publishButton) {
-          publishButton.dataset.needsExemption = res.exempt ? 'false' : 'true';
+          publishButton.dataset.needsExemption = data.exempt ? 'false' : 'true';
         }
       })
       .catch(() => {
-        console.error('Exempt check request failed!');
         // Re-instate previous status
         checkbox.checked = prevChecked;
+        handleError(errorMessage);
       });
   });
+}
+
+function handleError(message) {
+  const errorAlert = document.getElementById('accessibility-override-error');
+  if (errorAlert) errorAlert.remove();
+
+  const alert = Object.assign(document.createElement('div'), {
+    id: 'accessibility-override-error',
+    className: 'alert alert-danger',
+    data: { testid: 'alert' },
+    innerHTML: `<button type="button" class="btn-close" data-bs-dismiss="alert" 
+    aria-label="Close"></button><p>${message}</p>`
+  });
+
+  const alertsContainer = document.getElementById('alerts');
+  if (alertsContainer) alertsContainer.prepend(alert);
+  setTimeout(() => alert.remove(), 2000);
 }
 
 function initPublishPopover() {

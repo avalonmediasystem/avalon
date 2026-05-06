@@ -25,7 +25,7 @@ Unless required by applicable law or agreed to in writing, software distributed
     <button class="btn btn-primary" id="publish-btn"
       data-publish-url="<%= update_status_media_object_path(@media_object, status: 'publish') %>"
       data-testid="media-object-publish-btn"
-      <% if can?(:override_accessibility, @media_object) %>
+      <% if Settings.accessibility_compliance.enforce && can?(:override_accessibility, @media_object) %>
         data-needs-exemption="<%= !@media_object.is_accessible? %>"
         data-confirmation-message="<%= I18n.t('media_object.accessibility_exempt.confirmation') %>"
       <% end %>>

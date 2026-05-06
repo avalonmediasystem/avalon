@@ -45,6 +45,7 @@ en:
     accessibility_exempt:
       message: 'Exempt this item from requiring accessibility files for publication'
       confirmation: 'This item does not meet accessibility requirements for publishing.'
+      save_error: 'Unable to update accessibility exemption. Please try again later.'
   metadata_tip:
     abstract: |
       Summary provides a space for describing the contents of the item. Examples

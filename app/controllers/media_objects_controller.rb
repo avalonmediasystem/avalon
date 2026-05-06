@@ -201,6 +201,9 @@ class MediaObjectsController < ApplicationController
       @media_object.update_attributes(media_object_parameters) if params.has_key?(:fields) and params[:fields].respond_to?(:has_key?)
     end
 
+    # Toggle accessibility exemption if requested
+    apply_accessibility_override(@media_object)
+
     error_messages = []
     unless @media_object.valid?
       invalid_fields = @media_object.errors.attribute_names
@@ -429,7 +432,11 @@ class MediaObjectsController < ApplicationController
         return
       end
       apply_accessibility_override(media_object)
-      render json: { exempt: media_object.accessibility_exempt? }, status: :ok
+      if media_object.save(validate: false)
+        render json: { exempt: media_object.accessibility_exempt? }, status: :ok
+      else
+        render json: { error: I18n.t('media_object.accessibility_exempt.save_error') }, status: :unprocessable_entity
+      end
       return
     end
 
@@ -724,6 +731,5 @@ class MediaObjectsController < ApplicationController
   def apply_accessibility_override(media_object)
     return unless params[:override_accessibility].present? && can?(:override_accessibility, media_object)
     media_object.override_accessibility = params[:override_accessibility] == '1'
-    media_object.save(validate: false)
   end
 end
