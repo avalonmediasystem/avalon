@@ -1552,7 +1552,8 @@ describe MediaObject do
       expect(subject[:lending_status]).to eq media_object.lending_status
       expect(subject[:collection]).to eq media_object.collection.name
       expect(subject[:collection_id]).to eq media_object.collection.id
-      expect(subject[:unit]).to eq media_object.collection.unit
+      expect(subject[:unit]).to eq media_object.collection.unit.name
+      expect(subject[:unit_id]).to eq media_object.collection.unit.id
     end
   end
 end
