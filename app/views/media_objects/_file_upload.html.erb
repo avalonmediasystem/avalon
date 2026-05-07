@@ -124,7 +124,7 @@ Unless required by applicable law or agreed to in writing, software distributed
                 </div>
               </div>
               <div class="collapse" id="<%="collapseExample#{section.id}"%>">
-                <%= form_with model: section, class: "master-file-form" do |form| %>
+                <%= form_with model: section, class: "master-file-form", local: false do |form| %>
                   <div class="row">
                     <div class="col-sm-4">
                       <div class="mb-3">
