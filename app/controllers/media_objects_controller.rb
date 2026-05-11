@@ -201,6 +201,9 @@ class MediaObjectsController < ApplicationController
       @media_object.update_attributes(media_object_parameters) if params.has_key?(:fields) and params[:fields].respond_to?(:has_key?)
     end
 
+    # Toggle accessibility exemption if requested
+    apply_accessibility_override(@media_object)
+
     error_messages = []
     unless @media_object.valid?
       invalid_fields = @media_object.errors.attribute_names
@@ -417,6 +420,26 @@ class MediaObjectsController < ApplicationController
 
   def update_status
     status = params[:status]
+
+    # AJAX request to toggle override_accessibility
+    if status.blank?
+      media_object = MediaObject.find(params[:id])
+      if cannot?(:update, media_object)
+        respond_to do |format|
+          format.json { render json: { error: 'Not authorized' }, status: :forbidden }
+          format.html { redirect_to root_path }
+        end
+        return
+      end
+      apply_accessibility_override(media_object)
+      if media_object.save(validate: false)
+        render json: { exempt: media_object.accessibility_exempt? }, status: :ok
+      else
+        render json: { error: I18n.t('media_object.accessibility_exempt.save_error') }, status: :unprocessable_entity
+      end
+      return
+    end
+
     errors = []
     success_count = 0
     media_objects = MediaObject.find(Array(params[:id]))
@@ -426,6 +449,7 @@ class MediaObjectsController < ApplicationController
         errors += ["#{media_object&.title} (#{id}) (permission denied)."]
       else
         begin
+          apply_accessibility_override(media_object)
           case status
           when 'publish'
             if media_object.title.blank?
@@ -702,5 +726,10 @@ class MediaObjectsController < ApplicationController
 
   def api_params
     params.permit(:collection_id, :publish, :import_bib_record, :replace_masterfiles)
+  end
+
+  def apply_accessibility_override(media_object)
+    return unless params[:override_accessibility].present? && can?(:override_accessibility, media_object)
+    media_object.override_accessibility = params[:override_accessibility] == '1'
   end
 end

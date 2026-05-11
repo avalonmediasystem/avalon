@@ -213,4 +213,48 @@ describe 'MediaObject' do
       end
     end
   end
+
+  describe 'accessibility exemption' do
+    before { allow(Settings.accessibility_compliance).to receive(:enforce).and_return(true) }
+
+    context 'as a collection manager' do
+      context 'when item is unpublished' do
+        it 'can see the exempt checkbox' do
+          media_object.save
+          visit media_object_path(media_object)
+          expect(page).to have_css('#accessibility_exempt_toggle')
+          expect(page).to have_content(I18n.t('media_object.accessibility_exempt.message'))
+          expect(page).to have_content('Publish')
+        end
+      end
+
+      context 'when item is published with exemption' do
+        let(:media_object) { FactoryBot.create(:published_media_object, override_accessibility: true) }
+
+        it 'can see the checkbox as checked' do
+          visit media_object_path(media_object)
+          expect(page).to have_css('#accessibility_exempt_toggle[checked]')
+          expect(page).to have_content('Unpublish')
+        end
+      end
+    end
+
+    context 'as a non-manager editor' do
+      let(:editor) { FactoryBot.create(:user) }
+
+      it 'cannot see the exempt checkbox' do
+        login_as editor, scope: :user
+        visit media_object_path(media_object)
+        expect(page).not_to have_css('#accessibility_exempt_toggle')
+      end
+    end
+
+    context 'as a unauthenticated user' do
+      it 'cannot see the exempt checkbox' do
+        logout
+        visit media_object_path(media_object)
+        expect(page).not_to have_css('#accessibility_exempt_toggle')
+      end
+    end
+  end
 end
