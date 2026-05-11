@@ -102,7 +102,17 @@ this.add_new_playlist_option = function () {
             // Set "Add new playlist" order 0 to make it appear on top of playlists
             option.$order = (option.text === addnew) ? 0 : 1;
           });
-        },
+          // Set ARIA attributes for tom-select controls flagged by SiteImprove
+          const dropdownList = query('#post_playlist_id-ts-dropdown');
+          if (dropdownList) {
+            dropdownList.setAttribute('aria-label', 'list of playlists');
+          }
+          const playlistsCombobox = query('#post_playlist_id-ts-control');
+          if (playlistsCombobox) playlistsCombobox.setAttribute('aria-labelledby', 'post_playlist_id');
+          // Add data-testid attributes for testing
+          if (this.control_input) this.control_input.setAttribute('data-testid', 'media-object-playlist-search-input');
+          if (this.control) this.control.setAttribute('data-testid', 'media-object-playlist-dropdown-control');
+	},
         allowEmptyOption: false,
         hideSelected: false,
         closeAfterSelect: true,
@@ -150,18 +160,6 @@ this.add_new_playlist_option = function () {
               dropdownContainer.scrollTop = selectedOptionEl.offsetTop - (containerHeight / 2) + (selectedOptionEl.offsetHeight / 2);
             }
           }
-        },
-        onInitialize: function () {
-          // Set ARIA attributes for tom-select controls flagged by SiteImprove
-          const dropdownList = query('#post_playlist_id-ts-dropdown');
-          if (dropdownList) {
-            dropdownList.setAttribute('aria-label', 'list of playlists');
-          }
-          const playlistsCombobox = query('#post_playlist_id-ts-control');
-          if (playlistsCombobox) playlistsCombobox.setAttribute('aria-labelledby', 'post_playlist_id');
-          // Add data-testid attributes for testing
-          if (this.control_input) this.control_input.setAttribute('data-testid', 'media-object-playlist-search-input');
-          if (this.control) this.control.setAttribute('data-testid', 'media-object-playlist-dropdown-control');
         },
         render: {
           item: function (data, escape) {
