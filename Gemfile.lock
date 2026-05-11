@@ -584,7 +584,7 @@ GEM
     noid-rails (3.3.0)
       actionpack (>= 5.0.0, < 9)
       noid (~> 0.9)
-    nokogiri (1.19.2)
+    nokogiri (1.19.3)
       mini_portile2 (~> 2.8.2)
       racc (~> 1.4)
     nom-xml (1.2.0)
