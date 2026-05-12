@@ -15,6 +15,11 @@ Unless required by applicable law or agreed to in writing, software distributed
 %>
 <% @page_title = t('collections.show.title', :collection_name => @collection.name, :application_name => application_name) %>
 
+<ol class="breadcrumb">
+  <li style="padding-bottom: 0px" class="breadcrumb-item"><%= link_to 'Manage Content', admin_dashboard_path %></li>
+  <li style="padding-bottom: 0px" class="breadcrumb-item"><%= link_to @collection.unit.name, admin_unit_path(@collection.unit) %></li>
+  <li style="padding-bottom: 0px" class="breadcrumb-item active"><%= @collection.name %></li>
+</ol>
 <div class="page-title-wrapper">
   <h1 class="page-title">Manage Collection</h1>
 </div>
