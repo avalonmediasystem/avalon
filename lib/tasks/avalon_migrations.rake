@@ -127,7 +127,7 @@ namespace :avalon do
 
       puts("Backfill complete. #{count} records updated.")
     end
-    # TODO: Test
+
     desc "Migrate existing units to new Admin::Unit model and associate them with the appropriate Admin::Collections"
     task admin_units: :environment do
       if ENV['unit_admin_username'].nil?
