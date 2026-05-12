@@ -15,7 +15,7 @@
 # Force test rails environment
 ENV['RAILS_ENV'] = 'test'
 
-if ENV['COVERAGE'] || ENV['CI']
+if ENV['COVERAGE']
   require 'simplecov'
 
   SimpleCov.start('rails') do
