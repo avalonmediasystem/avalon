@@ -1,4 +1,4 @@
-# Copyright 2011-2025, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2026, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 #
@@ -204,27 +204,33 @@ RSpec.describe "/checkouts", type: :request do
     end
 
     context "html request" do
-      it "creates a new checkout" do
+      it "creates a new checkout and redirects to the media_object_page" do
         expect {
           post checkouts_url, params: { checkout: valid_attributes }
         }.to change(Checkout, :count).by(1)
-      end
-      it "redirects to the media_object page" do
-        post checkouts_url, params: { checkout: valid_attributes }
         expect(response).to redirect_to(media_object_url(checkout.media_object))
       end
 
-      context "non-default lending period" do
+      context "with inherited lending period" do
         let(:media_object) { FactoryBot.create(:published_media_object, lending_period: 86400, visibility: 'public') }
         before { freeze_time }
         after { travel_back }
-        it "creates a new checkout" do
+        it "sets the return time based on the inherited lending period of the parent" do
           expect{
             post checkouts_url, params: { checkout: valid_attributes }
           }.to change(Checkout, :count).by(1)
+          expect(Checkout.find_by(media_object_id: media_object.id).return_time).to eq DateTime.current + 14.days
         end
-        it "sets the return time based on the given lending period" do
-          post checkouts_url, params: { checkout: valid_attributes }
+      end
+
+      context "with inheritance disabled" do
+        let(:media_object) { FactoryBot.create(:published_media_object, lending_period: 86400, visibility: 'public', disable_inheritance: true) }
+        before { freeze_time }
+        after { travel_back }
+        it "sets the return time based on the lending period of the object" do
+          expect{
+            post checkouts_url, params: { checkout: valid_attributes }
+          }.to change(Checkout, :count).by(1)
           expect(Checkout.find_by(media_object_id: media_object.id).return_time).to eq DateTime.current + 1.day
         end
       end

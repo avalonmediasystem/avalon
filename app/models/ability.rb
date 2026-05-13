@@ -1,4 +1,4 @@
-# Copyright 2011-2025, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2026, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 #
@@ -64,18 +64,16 @@ class Ability
         can :manage, :all
       end
 
-      if @user_groups.include? "group_manager"
-        can :manage, Admin::Group do |group|
-           group.nil? or !['administrator','group_manager'].include?(group.name)
-        end
-      end
-
-      if is_member_of_any_collection?
+      if is_member_of_any_collection? || is_member_of_any_unit?
         can :create, MediaObject
       end
 
-      if is_manager?
+      if is_unit_admin_of_any_unit?
         can :create, Admin::Collection
+      end
+
+      if is_administrator?
+        can :create, Admin::Unit
       end
     end
   end
@@ -97,42 +95,57 @@ class Ability
 
       cannot :read, [Admin::Collection, SpeedyAF::Proxy::Admin::Collection] unless (full_login? || is_api_request?)
 
+      cannot :read, [Admin::Unit, SpeedyAF::Proxy::Admin::Unit] unless (full_login? || is_api_request?)
+
       if full_login? || is_api_request?
         can [:read, :items], [Admin::Collection, SpeedyAF::Proxy::Admin::Collection] do |collection|
           is_member_of?(collection)
         end
 
+        can [:read, :items], [Admin::Unit, SpeedyAF::Proxy::Admin::Unit] do |unit|
+          is_admin_of?(unit)
+        end
+
         unless has_administrative_access?
           cannot :read, [Admin::Collection, SpeedyAF::Proxy::Admin::Collection]
+          cannot :read, [Admin::Unit, SpeedyAF::Proxy::Admin::Unit]
         end
 
         can :update_access_control, [MediaObject, SpeedyAF::Proxy::MediaObject] do |media_object|
-          @user.in?(media_object.collection.managers) ||
+          is_manager_of?(media_object.collection) ||
             (is_editor_of?(media_object.collection) && !media_object.published?)
         end
 
         can :unpublish, [MediaObject, SpeedyAF::Proxy::MediaObject] do |media_object|
-          @user.in?(media_object.collection.managers)
+          is_manager_of?(media_object.collection)
+        end
+
+        can :move, [MediaObject, SpeedyAF::Proxy::MediaObject] do |media_object|
+          is_manager_of?(media_object.collection)
+        end
+
+        can :override_accessibility, [MediaObject, SpeedyAF::Proxy::MediaObject] do |media_object|
+          is_manager_of?(media_object.collection)
         end
 
         can :update, [Admin::Collection, SpeedyAF::Proxy::Admin::Collection] do |collection|
-          is_editor_of?(collection)
+          is_manager_of?(collection)
         end
 
         can :update_unit, [Admin::Collection, SpeedyAF::Proxy::Admin::Collection] do |collection|
-          @user.in?(collection.managers)
+          is_manager_of?(collection)
         end
 
         can :update_access_control, [Admin::Collection, SpeedyAF::Proxy::Admin::Collection] do |collection|
-          @user.in?(collection.managers)
+          is_manager_of?(collection)
         end
 
         can :update_managers, [Admin::Collection, SpeedyAF::Proxy::Admin::Collection] do |collection|
-          @user.in?(collection.managers)
+          is_manager_of?(collection)
         end
 
         can :update_editors, [Admin::Collection, SpeedyAF::Proxy::Admin::Collection] do |collection|
-          @user.in?(collection.managers)
+          is_manager_of?(collection)
         end
 
         can :update_depositors, [Admin::Collection, SpeedyAF::Proxy::Admin::Collection] do |collection|
@@ -140,7 +153,35 @@ class Ability
         end
 
         can :destroy, ::Admin::CollectionPresenter do |collection|
-          @user.in?(collection.managers)
+          is_manager_of?(collection)
+        end
+
+        can :update, [Admin::Unit, SpeedyAF::Proxy::Admin::Unit] do |unit|
+          is_admin_of?(unit)
+        end
+
+        can :update_access_control, [Admin::Unit, SpeedyAF::Proxy::Admin::Unit] do |unit|
+          is_admin_of?(unit)
+        end
+
+        can :update_unit_admins, [Admin::Unit, SpeedyAF::Proxy::Admin::Unit] do |unit|
+          is_admin_of?(unit)
+        end
+
+        can :update_managers, [Admin::Unit, SpeedyAF::Proxy::Admin::Unit] do |unit|
+          is_admin_of?(unit)
+        end
+
+        can :update_editors, [Admin::Unit, SpeedyAF::Proxy::Admin::Unit] do |unit|
+          is_manager_of_unit?(unit)
+        end
+
+        can :update_depositors, [Admin::Unit, SpeedyAF::Proxy::Admin::Unit] do |unit|
+          is_editor_of_unit?(unit)
+        end
+
+        can :destroy, ::Admin::UnitPresenter do |unit|
+          is_admin_of?(unit)
         end
 
         can :inspect, [MediaObject, SpeedyAF::Proxy::MediaObject] do |media_object|
@@ -156,7 +197,7 @@ class Ability
         end
 
         can :download, [MasterFile, SpeedyAF::Proxy::MasterFile] do |master_file|
-          @user.in?(master_file.media_object.collection.managers)
+          is_manager_of?(master_file.media_object.collection)
         end
 
         # Users logged in through LTI cannot share
@@ -169,19 +210,40 @@ class Ability
       #   can :manage, Avalon::ControlledVocabulary
       # end
 
+      cannot :read, [MediaObject, SpeedyAF::Proxy::MediaObject] do |media_object|
+        media_object.disable_inheritance? && is_exclusively_inherited_from_parent?(media_object) && !is_member_of?(media_object.collection)
+      end
+
       cannot :update, [MediaObject, SpeedyAF::Proxy::MediaObject] do |media_object|
         (not (full_login? || is_api_request?)) || (!is_member_of?(media_object.collection)) ||
-          ( media_object.published? && !@user.in?(media_object.collection.managers) )
+          ( media_object.published? && !is_manager_of?(media_object.collection) )
       end
 
       cannot :destroy, [MediaObject, SpeedyAF::Proxy::MediaObject] do |media_object|
         # non-managers can only destroy media_object if it's unpublished
         (not (full_login? || is_api_request?)) || (!is_member_of?(media_object.collection)) ||
-          ( media_object.published? && !@user.in?(media_object.collection.managers) )
+          ( media_object.published? && !is_manager_of?(media_object.collection) )
+      end
+
+      cannot :move, [MediaObject, SpeedyAF::Proxy::MediaObject] do |media_object|
+        (not (full_login? || is_api_request?)) || !is_manager_of?(media_object.collection)
+      end
+
+      cannot :update, [Admin::Collection, SpeedyAF::Proxy::Admin::Collection] do |collection|
+        # Editors and Depositors should not be able to edit collection level information
+        (not (full_login? || is_api_request?)) || !is_manager_of?(collection)
       end
 
       cannot :destroy, [Admin::Collection, SpeedyAF::Proxy::Admin::Collection] do |collection, other_user_collections=[]|
-        (not (full_login? || is_api_request?)) || !@user.in?(collection.managers)
+        (not (full_login? || is_api_request?)) || !is_manager_of?(collection)
+      end
+
+      cannot :update, [Admin::Unit, SpeedyAF::Proxy::Admin::Unit] do |unit|
+        (not (full_login? || is_api_request?)) || !is_admin_of?(unit)
+      end
+
+      cannot :destroy, [Admin::Unit, SpeedyAF::Proxy::Admin::Unit] do |unit|
+        (not (full_login? || is_api_request?)) || !is_admin_of?(unit)
       end
 
       can :intercom_push, [MediaObject, SpeedyAF::Proxy::MediaObject] do |media_object|
@@ -276,6 +338,7 @@ class Ability
       cannot [:create, :edit, :update, :destroy], [Derivative, SpeedyAF::Proxy::Derivative]
       cannot [:create, :edit, :update, :destroy, :update_unit, :update_access_control, :update_managers, :update_editors, :update_depositors], [Admin::Collection, SpeedyAF::Proxy::Admin::Collection, Admin::CollectionPresenter]
       cannot [:create, :edit, :update, :destroy], SpeedyAF::Base
+      cannot [:create, :edit, :update, :destroy, :update_access_control, :update_unit_admins, :update_managers, :update_editors, :update_depositors], [Admin::Unit, SpeedyAF::Proxy::Admin::Unit, Admin::UnitPresenter]
     end
   end
 
@@ -283,22 +346,64 @@ class Ability
     @user_groups.include?("administrator")
   end
 
-  def is_manager?
-    @user_groups.include?("manager")
+  def is_admin_of?(unit)
+    is_administrator? ||
+      @user.in?(unit.unit_admins)
   end
 
   def is_member_of?(collection)
      is_administrator? ||
-       @user.in?(collection.managers, collection.editors, collection.depositors)
+       @user.in?(collection.managers, collection.editors, collection.depositors) ||
+       @user.in?(collection.inherited_managers, collection.inherited_editors, collection.inherited_depositors)
+  end
+
+  def is_manager_of?(collection)
+    is_administrator? ||
+      @user.in?(collection.managers) ||
+      @user.in?(collection.inherited_managers)
   end
 
   def is_editor_of?(collection)
      is_administrator? ||
-       @user.in?(collection.editors_and_managers)
+       @user.in?(collection.editors_and_managers) ||
+       @user.in?(collection.unit.editors_managers_and_unit_admins)
+  end
+
+  def is_manager_of_unit?(unit)
+    is_administrator? ||
+      @user.in?(unit.unit_admins) ||
+      @user.in?(unit.managers)
+  end
+
+  def is_editor_of_unit?(unit)
+    is_administrator? ||
+      @user.in?(unit.editors_managers_and_unit_admins)
+  end
+
+  def is_exclusively_inherited_from_parent?(media_object)
+    # User isn't in item's read users or item's read groups (not explicitly granted access to item) AND
+    # User isn't in item's read users and is inherited from parent (exclusively inherited user) OR
+    # User isn't in item's read groups and is in a read group inherited from parent (exclusively inherited group)
+    # Short form: NOT explicitly granted access to item AND (explicitly inherited user OR explicitly inherited group)
+    !(@user.in?(media_object.read_users) || !(@user_groups & media_object.read_groups).empty?) &&
+    ((!@user.in?(media_object.read_users) && @user.in?(media_object.inherited_read_users)) ||
+      ((@user_groups & media_object.read_groups).empty? && !(@user_groups & media_object.inherited_read_groups).empty?))
   end
 
   def is_member_of_any_collection?
     @user.id.present? && Admin::Collection.exists?("inheritable_edit_access_person_ssim" => @user.user_key)
+  end
+
+  def is_manager_of_any_collection?
+    @user.id.present? && (Admin::Collection.exists?("collection_managers_ssim" => @user.user_key) || Admin::Unit.exists?("collection_managers_ssim" => @user.user_key))
+  end
+
+  def is_member_of_any_unit?
+    @user.id.present? && Admin::Unit.exists?("inheritable_edit_access_person_ssim" => @user.user_key)
+  end
+
+  def is_unit_admin_of_any_unit?
+    @user.id.present? && Admin::Unit.exists?("unit_administrators_ssim" => @user.user_key)
   end
 
   def full_login?
@@ -314,6 +419,6 @@ class Ability
   end
 
   def has_administrative_access?
-    is_administrator? || is_manager? || is_member_of_any_collection?
+    is_administrator? || is_unit_admin_of_any_unit? || is_manager_of_any_collection? || is_member_of_any_unit? || is_member_of_any_collection?
   end
 end

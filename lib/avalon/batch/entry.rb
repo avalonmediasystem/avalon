@@ -1,4 +1,4 @@
-# Copyright 2011-2025, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2026, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 #
@@ -11,7 +11,6 @@
 #   CONDITIONS OF ANY KIND, either express or implied. See the License for the
 #   specific language governing permissions and limitations under the License.
 # ---  END LICENSE_HEADER BLOCK  ---
-
 
 require 'active_model'
 
@@ -54,6 +53,7 @@ module Avalon
         end
         # Not quite sure why this doesn't work within the tap and had to move it here
         @media_object.hidden = hidden
+        @media_object.override_accessibility = override_accessibility
         @media_object
       end
 
@@ -242,8 +242,12 @@ module Avalon
         media_object.workflow.last_completed_step = 'access-control'
 
         if opts[:publish]
-          media_object.publish!(user_key)
-          media_object.workflow.publish
+          begin
+            media_object.publish!(user_key)
+            media_object.workflow.publish
+          rescue Avalon::PublishingError => e
+            @errors.add(:publish, e.message)
+          end
         end
 
         unless media_object.save
@@ -297,7 +301,7 @@ module Avalon
         machine_generated = Avalon::Batch.true_field?(datastream[:machine_generated]) ? 'machine_generated' : nil
         # Create SupplementalFile
         supplemental_file = SupplementalFile.new(label: label, tags: [type, treat_as_transcript, machine_generated].uniq.compact, language: language, parent_id: parent_id)
-        supplemental_file.attach_file(FileLocator.new(datastream[file_key]).reader, io: true)
+        supplemental_file.attach_file(FileLocator.new(datastream[file_key], filename: File.basename(datastream[file_key])), io: true)
         supplemental_file.save ? supplemental_file : nil
       end
       private_class_method :process_datastream
@@ -306,6 +310,10 @@ module Avalon
 
         def hidden
           !!opts[:hidden]
+        end
+
+        def override_accessibility
+          !!opts[:override_accessibility]
         end
 
         def gather_datastreams(file)

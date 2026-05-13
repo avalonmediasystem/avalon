@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2025, The Trustees of Indiana University and Northwestern
+ * Copyright 2011-2026, The Trustees of Indiana University and Northwestern
  *   University.  Licensed under the Apache License, Version 2.0 (the "License");
  *   you may not use this file except in compliance with the License.
  *
@@ -28,10 +28,12 @@
 // -- This is a parent command --
 import 'cypress-file-upload';
 Cypress.Commands.add('login', (role) => {
+  cy.wait(1000);
   cy.clearCookies();
   cy.clearLocalStorage();
-  const email = Cypress.env('USERS_' + role.toUpperCase() + '_EMAIL');
-  const password = Cypress.env('USERS_' + role.toUpperCase() + '_PASSWORD');
+  const normalizedRole = role.replace(/_/g, '').toUpperCase();
+  const email = Cypress.env('USERS_' + normalizedRole + '_EMAIL');
+  const password = Cypress.env('USERS_' + normalizedRole + '_PASSWORD');
 
   cy.request('/users/sign_in')
     .its('body')
@@ -43,6 +45,7 @@ Cypress.Commands.add('login', (role) => {
       cy.request({
         method: 'POST',
         url: '/users/sign_in',
+        form: true,
         body: {
           user: {
             login: email,
@@ -59,8 +62,31 @@ Cypress.Commands.add('login', (role) => {
 
 //waits for the media player to be loaded completely
 Cypress.Commands.add('waitForVideoReady', () => {
-  cy.get('video').should(($video) => {
-    const videoEl = $video[0];
-    expect(videoEl.readyState).to.be.greaterThan(1);
+  cy.get('[data-testid="media-player"]', { timeout: 30000 }).should(
+    'be.visible'
+  );
+  cy.wait(5000);
+  cy.get('[data-testid="media-player"]')
+    .find('video, audio')
+    .first()
+    .should(($el) => {
+      const media = $el[0];
+      expect(media.readyState, 'readyState').to.be.greaterThan(1);
+    });
+});
+
+Cypress.Commands.add('stubFullscreenAPI', () => {
+  cy.window().then((win) => {
+    win.HTMLElement.prototype.requestFullscreen = () => Promise.resolve();
+    win.HTMLElement.prototype.webkitRequestFullscreen = () => Promise.resolve();
+    win.document.exitFullscreen = () => Promise.resolve();
+    win.document.webkitExitFullscreen = () => Promise.resolve();
+    Object.defineProperty(win.document, 'fullscreenElement', {
+      get: function () {
+        return win._fakeFullscreenElement || null;
+      },
+      configurable: true,
+    });
+    win._fakeFullscreenElement = null;
   });
 });

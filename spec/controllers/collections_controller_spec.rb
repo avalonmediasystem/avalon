@@ -1,4 +1,4 @@
-# Copyright 2011-2025, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2026, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 #
@@ -113,6 +113,27 @@ describe CollectionsController, type: :controller do
         expect(response).to be_ok
         expect(assigns(:doc_presenters).count).to eql(1)
         expect([collection.id, collection2.id]).to include(*assigns(:doc_presenters).map(&:id))
+      end
+    end
+
+    context 'with unit filter' do
+      let(:unit) { FactoryBot.create(:unit) }
+      let!(:collection2) { FactoryBot.create(:collection, unit: unit, items: 1) }
+      let!(:collection3) { FactoryBot.create(:collection, items: 1) }
+
+      it 'filters collections by unit name' do
+        login_as :administrator
+        get 'index', params: { unit: unit.name, format: :json }
+        expect(response).to be_ok
+        expect(assigns(:doc_presenters).count).to eql(1)
+        expect(assigns(:doc_presenters).map(&:id)).to match_array([collection2.id])
+      end
+
+      it 'returns all collections when unit param is absent' do
+        login_as :administrator
+        get 'index', params: { format: :json }
+        expect(response).to be_ok
+        expect(assigns(:doc_presenters).count).to eql(3)
       end
     end
   end

@@ -1,5 +1,5 @@
 /* 
- * Copyright 2011-2025, The Trustees of Indiana University and Northwestern
+ * Copyright 2011-2026, The Trustees of Indiana University and Northwestern
  *   University.  Licensed under the Apache License, Version 2.0 (the "License");
  *   you may not use this file except in compliance with the License.
  *
@@ -14,7 +14,7 @@
  * ---  END LICENSE_HEADER BLOCK  ---
 */
 
-import React from 'react';
+import { Fragment }from 'react';
 import PropTypes from 'prop-types';
 import CollectionCardShell from '../CollectionCardShell';
 import CollectionCardThumbnail from '../CollectionCardThumbnail';
@@ -31,10 +31,10 @@ const CardMetaData = ({ doc, fieldLabel, fieldName }) => {
 
   if (doc.attributes[fieldName]) {
     return (
-      <React.Fragment>
+      <Fragment>
         <dt>{fieldLabel}</dt>
         <dd dangerouslySetInnerHTML={{ __html: metaData }}></dd>
-      </React.Fragment>
+      </Fragment>
     );
   }
   return null;

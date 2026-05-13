@@ -1,4 +1,4 @@
-# Copyright 2011-2025, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2026, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 #
@@ -16,7 +16,7 @@ class Course < ActiveRecord::Base
 #  attr_accessible :context_id, :label, :title
 
   def self.autocomplete(query, _id = nil)
-    self.where("label LIKE :q OR title LIKE :q", q: "%#{query}%").collect { |course|
+    self.where("label LIKE :q OR title LIKE :q", q: "%#{query}%").limit(10).collect { |course|
       { id: course.context_id, display: course.title }
     }
   end

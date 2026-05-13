@@ -1,4 +1,4 @@
-# Copyright 2011-2025, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2026, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 #
@@ -20,10 +20,10 @@ class SupplementalFile < ApplicationRecord
   scope :with_tag, ->(tag_filter) { where("tags LIKE ?", "%\n- #{tag_filter}\n%") }
 
   # TODO: the empty tag should represent a generic supplemental file
-  validates :tags, array_inclusion: ['transcript', 'caption', 'machine_generated', '', nil]
+  validates :tags, array_inclusion: ['transcript', 'caption', 'description', 'machine_generated', 'private', 'forced', '', nil]
   validates :language, inclusion: { in: LanguageTerm::Iso6392.map.keys }
   validates :parent_id, presence: true
-  validate  :validate_file_type, if: :caption?
+  validate  :validate_file_type, if: proc { |file| file.caption? || file.description? }
 
   serialize :tags, type: Array
 
@@ -32,11 +32,13 @@ class SupplementalFile < ApplicationRecord
   after_create_commit :index_file, prepend: true
   after_update_commit :update_index, prepend: true
   after_destroy_commit :remove_from_index
+  before_save :default_label
 
+  # If using io: true, new_file MUST be a FileLocator instance initialized with the filename opt
   def attach_file(new_file, io: false)
     if io
-      file.attach(io: File.open(new_file), filename: File.basename(new_file))
-      extension = File.extname(new_file)
+      file.attach(io: new_file.reader, filename: new_file.filename)
+      extension = File.extname(new_file.filename)
     else
       file.attach(new_file)
       extension = File.extname(new_file.original_filename)
@@ -58,6 +60,10 @@ class SupplementalFile < ApplicationRecord
     tags.include?('transcript')
   end
 
+  def description?
+    tags.include?('description')
+  end
+
   def machine_generated?
     tags.include?('machine_generated')
   end
@@ -66,11 +72,21 @@ class SupplementalFile < ApplicationRecord
     tags.include?('caption') && tags.include?('transcript')
   end
 
-  def as_json(options={})
+  def private?
+    tags.include?('private')
+  end
+
+  def forced?
+    tags.include?('forced')
+  end
+
+  def as_json(_options = {})
     type = if tags.include?('caption')
              'caption'
            elsif tags.include?('transcript')
              'transcript'
+           elsif tags.include?('description')
+             'audio_description'
            else
              'generic'
            end
@@ -80,8 +96,10 @@ class SupplementalFile < ApplicationRecord
       type: type,
       label: label,
       language: LanguageTerm.find(language).text,
-      treat_as_transcript: caption_transcript? ? true : false,
-      machine_generated: machine_generated? ? true : false
+      treat_as_transcript: caption_transcript?,
+      machine_generated: machine_generated?,
+      private: private?,
+      forced: forced?
     }.compact
   end
 
@@ -89,7 +107,7 @@ class SupplementalFile < ApplicationRecord
   def self.convert_from_srt(srt)
     # normalize timestamps in srt
     # This Regex looks for malformed time stamp pieces such as '00:1:00,000', '0:01:00,000', etc.
-    # When it finds a match it prepends a 0 to the capture group so both of the above examples 
+    # When it finds a match it prepends a 0 to the capture group so both of the above examples
     # would return '00:01:00,000'
     conversion = srt.gsub(/(:|^)(\d)(,|:)/, '\10\2\3')
     # convert timestamps and save the file
@@ -100,8 +118,8 @@ class SupplementalFile < ApplicationRecord
 
     "WEBVTT\n\n#{conversion}".strip
   end
-  
-  # We need to use both after_create_commit and after_update_commit to update the index properly in both cases. 
+
+  # We need to use both after_create_commit and after_update_commit to update the index properly in both cases
   # However, they cannot call the same method name or only the last defined callback will take effect.
   # https://guides.rubyonrails.org/active_record_callbacks.html#aliases-for-after-commit
   def update_index
@@ -124,11 +142,11 @@ class SupplementalFile < ApplicationRecord
     solr_doc["mime_type_ssi"] = mime_type
     solr_doc["label_ssi"] = label
     solr_doc["language_ssi"] = language
-    solr_doc["transcript_tsim"] = segment_transcript(file) if transcript?
+    solr_doc["transcript_tsim"] = segment_transcript(file) if transcript? && !private?
     solr_doc["isPartOf_ssim"] = [parent_id]
     solr_doc
   end
-  
+
   def segment_transcript transcript
     normalized_transcript = Avalon::TranscriptParser.new(transcript).normalized_text
     return unless normalized_transcript.present?
@@ -139,16 +157,18 @@ class SupplementalFile < ApplicationRecord
   end
 
   def download_filename
-    filename = file.filename.to_s
+    filename = label
+    extension = File.extname(file.filename.to_s)
+    basename = File.basename(filename, extension)
 
-    machine_generated? ? "#{File.basename(filename, File.extname(filename))} (machine generated)#{File.extname(filename)}" : filename
+    machine_generated? ? "#{basename} (machine generated)#{extension}" : "#{basename}#{extension}"
   end
 
   private
 
   def validate_file_type
     return unless file.present?
-    errors.add(:file_type, "Uploaded file is not a recognized captions file") unless ['text/vtt', 'text/srt'].include?(file.content_type)
+    errors.add(:file_type, "Uploaded file is not a recognized captions file") unless ['text/vtt', 'text/srt', 'application/x-subrip'].include?(file.content_type)
   end
 
   def c_time
@@ -157,5 +177,9 @@ class SupplementalFile < ApplicationRecord
 
   def m_time
     updated_at&.to_datetime || DateTime.now
+  end
+
+  def default_label
+    self.label = file.filename.to_s if self.label.blank?
   end
 end

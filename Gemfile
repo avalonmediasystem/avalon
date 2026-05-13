@@ -5,33 +5,32 @@ gem 'bootsnap', require: false
 gem 'listen'
 gem 'net-smtp', require: false
 gem 'psych', '< 4'
-gem 'rails', '~>8.0'
-gem 'sprockets', '~>3.7.2'
-# gem 'sprockets-rails', require: 'sprockets/railtie'
+gem 'rails', '~>8.0', '>= 8.0.4.1'
+gem 'sprockets', '>= 4'
+# gem 'sprockets-rails'
 gem 'sqlite3'
 # Force newer version of mail for compatibility with rails 6.0.6.1
 gem 'mail', '> 2.8.0.1'
 gem 'puma', '>= 6.4.2'
 gem 'puma-status'
-gem 'resolv-replace'
+gem 'resolv-replace', '>= 0.2.0'
 gem 'csv'
+gem 'net-imap', '>= 0.6.2'
 
 # Assets
 gem 'bootstrap', '~> 5.0'
-gem 'coffee-rails', '~> 5.0'
-gem "font-awesome-rails"
-gem 'jquery-datatables'
+gem "cssbundling-rails", "~> 1.4"
 gem 'jquery-rails'
 gem 'jquery-ui-rails'
+gem 'jsbundling-rails', '~> 1.3'
 gem 'react_on_rails'
+# sassc is required by Sprockets, but theoretically nothing should be
+# getting processed by it. Should be removed as soon as we are able to.
 gem 'sassc-rails'
 gem 'sprockets-es6'
-gem 'terser'
-gem 'shakapacker'
 
 # Core Samvera
-# gem 'active-fedora', '~> 15.0'
-gem 'active-fedora', git: 'https://github.com/samvera/active_fedora.git', ref: '7f91e09e630f7e3c1eb3d355e5a016ae8af44778'
+gem 'active-fedora', '~> 16.0'
 gem 'active_fedora-datastreams', '~> 0.5'
 gem 'hydra-head', '~> 13.0'
 gem 'ldp', '~> 1.1.0'
@@ -46,21 +45,20 @@ gem 'rdf', '~> 3.1'
 gem 'rsolr', '~> 2.0'
 
 # Rails & Samvera Plugins
-gem 'about_page', git: 'https://github.com/avalonmediasystem/about_page.git', tag: 'avalon-r6.5'
+gem 'about_page', git: 'https://github.com/avalonmediasystem/about_page.git', branch: 'main'
 gem 'active_annotations', '~> 0.6'
 gem 'activerecord-session_store', '>= 2.0.0'
 gem 'acts_as_list'
 gem 'api-pagination'
-gem 'avalon-about', git: 'https://github.com/avalonmediasystem/avalon-about.git', tag: 'avalon-r8.0'
-# gem 'bootstrap-sass', '< 3.4.1' # Pin to less than 3.4.1 due to change in behavior with popovers
-gem 'bootstrap-toggle-rails'
+gem 'avalon-about', git: 'https://github.com/avalonmediasystem/avalon-about.git', branch: 'main'
 gem 'bootstrap_form'
+gem 'faraday-retry'
 gem 'iiif_manifest', '~> 1.6'
 gem 'rack-cors', require: 'rack/cors'
 gem 'rails_same_site_cookie'
 gem 'recaptcha', require: 'recaptcha/rails'
 gem 'samvera-persona', '~> 0.6'
-gem 'speedy-af', '~> 0.5.0'
+gem 'speedy-af', '~> 0.6'
 
 # Authentication & Authorization
 gem 'devise', '~> 4.8'
@@ -73,7 +71,7 @@ gem 'omniauth-lti', git: "https://github.com/avalonmediasystem/omniauth-lti.git"
 gem "omniauth-saml", "~> 2.0", ">= 2.2.3"
 
 # Media Access & Transcoding
-gem 'active_encode', '~> 1.3.0'
+gem 'active_encode', '~> 2.0'
 gem 'audio_waveform-ruby', '~> 1.0.7', require: 'audio_waveform'
 gem 'browse-everything', git: "https://github.com/avalonmediasystem/browse-everything.git", tag: 'v1.5-Avalon'
 gem 'fastimage'
@@ -162,13 +160,15 @@ end
 
 # Install the bundle --with aws when running on Amazon Elastic Beanstalk
 group :aws, optional: true do
+  gem 'aws-actionmailer-ses'
   gem 'aws-activejob-sqs'
   gem 'aws-partitions'
   gem 'aws-sdk-rails'
   gem 'aws-sdk-cloudfront'
-  gem 'aws-sdk-elastictranscoder'
+  gem 'aws-sdk-cloudwatchevents'
+  gem 'aws-sdk-cloudwatchlogs'
+  gem 'aws-sdk-mediaconvert', ">= 1.157.0"
   gem 'aws-sdk-s3'
-  gem 'aws-sdk-ses'
   gem 'aws-sdk-sqs'
   gem 'aws-sigv4'
   gem 'cloudfront-signer'

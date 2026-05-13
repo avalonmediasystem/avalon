@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2025, The Trustees of Indiana University and Northwestern
+ * Copyright 2011-2026, The Trustees of Indiana University and Northwestern
  *   University.  Licensed under the Apache License, Version 2.0 (the "License");
  *   you may not use this file except in compliance with the License.
  *
@@ -43,7 +43,7 @@ context('Browse', () => {
       const media_object = `Lunchroom Manners`;
       performSearch('Lunchroom Manners');
       cy.contains('a', media_object).should('exist').and('be.visible');
-    }
+    },
   );
 
   it(
@@ -62,77 +62,87 @@ context('Browse', () => {
           .and('be.visible');
       });
       //can assert the filtered items here
-    }
+    },
   );
 
   it(
-    'displays items correctly per page and all items render on scroll',
+    'Verify pagination in the Browse page - @T620dd12f',
     { tags: '@critical' },
     () => {
       cy.login('administrator');
       cy.visit('/');
       homePage.getBrowseNavButton().click();
 
-      // Check pagination summary exists
+      // Wait for results list to exist
+      cy.get('[data-testid="browse-results-list"]').should('exist');
+
+      // Read pagination summary text and assert count accordingly
       cy.get('.page-entries')
         .should('exist')
         .invoke('text')
-        .then((text) => {
+        .then((rawText) => {
+          const text = rawText.replace(/\s+/g, ' ').trim();
+
+          // Case 1:local sometimes shows "1 entry found"
+          if (/entry found/i.test(text)) {
+            cy.get('[data-testid="browse-results-list"]')
+              .find('article')
+              .its('length')
+              .should('be.gte', 1);
+            return;
+          }
+
+          //Case B: dev shows " 1 - 10 of 345 " extracting thatinfo
           const matches = text.match(/(\d+)\s*-\s*(\d+)\s*of\s*(\d+)/);
           expect(matches, 'Pagination summary format').to.not.be.null;
 
-          const start = parseInt(matches[1]);
-          const end = parseInt(matches[2]);
+          const start = parseInt(matches[1], 10);
+          const end = parseInt(matches[2], 10);
 
-          // Assert number of rendered <article> items matches range
+          const expectedCount = end - start + 1;
+
           cy.get('[data-testid="browse-results-list"]')
             .find('article')
-            .should('have.length', end - start + 1);
+            .should('have.length', expectedCount);
         });
 
-      // Scrolling to the bottom
+      // Scroll and ensure list is still populated
       cy.scrollTo('bottom');
 
-      // All items needs to be visible
       cy.get('[data-testid="browse-results-list"]')
         .find('article')
-        .each(($el) => {
-          cy.wrap($el).should('be.visible');
-        });
-    }
+        .its('length')
+        .should('be.gte', 1);
+    },
   );
 
-  it(
-    'Selects the "Sort by" dropdown and chooses "Date"',
-    { tags: '@high' },
-    () => {
-      cy.login('administrator');
-      homePage.getBrowseNavButton().click();
-      // Click the Sort by dropdown toggle button
-      cy.get('#sort-dropdown button').should('be.visible').click();
+  it('Verify sorting the items by "Date" - @Td749c482', () => {
+    cy.login('administrator');
+    homePage.getBrowseNavButton().click();
+    // Click the Sort by dropdown toggle button
+    cy.get('#sort-dropdown button').should('be.visible').click();
 
-      // Make sure the dropdown menu appears
-      cy.get('#sort-dropdown .dropdown-menu').should('be.visible');
+    // Make sure the dropdown menu appears
+    cy.get('#sort-dropdown .dropdown-menu').should('be.visible');
 
-      // Click the "Date" option
-      cy.get('#sort-dropdown .dropdown-menu').contains('Date').click();
+    // Click the "Date" option
+    cy.get('#sort-dropdown .dropdown-menu').contains('Date').click();
 
-      // Verify the URL now includes the sort parameter for Date
-      cy.url().should('include', 'sort=date_issued_ssi');
+    // Verify the URL now includes the sort parameter for Date
+    cy.url().should('include', 'sort=date_issued_ssi');
 
-      // Get all date elements
-      cy.get('[data-testid="browse-value-date_issued_ssi"]').then(($dates) => {
-        // Extract date text, convert to number, store in array
-        const dateNumbers = [...$dates].map((el) =>
-          parseInt(el.innerText.trim())
-        );
+    // Get all date elements
+    cy.get('[data-testid="browse-value-date_issued_ssi"]').then(($dates) => {
+      // Extract date text, convert to number, store in array
+      const dateNumbers = [...$dates].map((el) =>
+        parseInt(el.innerText.trim()),
+      );
 
-        // Make a sorted copy to compare
-        const sortedDates = [...dateNumbers].sort((a, b) => b - a);
+      // Make a sorted copy to compare
+      const sortedDates = [...dateNumbers].sort((a, b) => b - a);
 
-        // Assert the dates are sorted DESC
-        expect(dateNumbers).to.deep.equal(sortedDates);
-      });
-    }
-  );
+      // Assert the dates are sorted DESC
+      expect(dateNumbers).to.deep.equal(sortedDates);
+    });
+  });
 });

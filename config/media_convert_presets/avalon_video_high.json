@@ -1,0 +1,34 @@
+{
+  "Name": "avalon_video_high",
+  "Category": "avalon",
+  "Settings": {
+    "VideoDescription": {
+      "Width": 1920,
+      "ScalingBehavior": "FIT_NO_UPSCALE",
+      "Height": 1080,
+      "CodecSettings": {
+        "Codec": "H_264",
+        "H264Settings": {
+          "Bitrate": 2048000,
+          "CodecProfile": "HIGH",
+          "CodecLevel": "AUTO"
+        }
+      }
+    },
+    "AudioDescriptions": [
+      {
+        "CodecSettings": {
+          "Codec": "AAC",
+          "AacSettings": {
+            "Bitrate": 192000,
+            "CodingMode": "CODING_MODE_2_0",
+            "SampleRate": 44100
+          }
+        }
+      }
+    ],
+    "ContainerSettings": {
+      "Container": "MP4"
+    }
+  }
+}

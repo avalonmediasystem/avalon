@@ -1,4 +1,4 @@
-# Copyright 2011-2025, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2026, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 #
@@ -15,20 +15,35 @@
 class NotificationsMailer < ActionMailer::Base
   default from: Settings.email.notification
 
-  def new_collection( args = {} )
+  def new_collection(args = {})
     @collection = Admin::Collection.find(args.delete(:collection_id))
     @creator    = User.find(args.delete(:creator_id))
-    @to         = User.find(args.delete(:user_id)) 
-    args.each{|name, value| self.instance_variable_set("@#{name}", value)}
+    @to         = User.find(args.delete(:user_id))
+    args.each { |name, value| self.instance_variable_set("@#{name}", value) }
     mail(to: @to.email, subject: @subject)
   end
 
-  def update_collection( args = {})
+  def update_collection(args = {})
     @collection = Admin::Collection.find(args.delete(:collection_id))
     @updater    = User.find(args.delete(:updater_id))
-    @to         = User.find(args.delete(:user_id)) 
-    args.each{|name, value| self.instance_variable_set("@#{name}", value)}
+    @to         = User.find(args.delete(:user_id))
+    args.each { |name, value| self.instance_variable_set("@#{name}", value) }
     mail(to: @to.email, subject: @subject)
   end
 
+  def new_unit(args = {})
+    @unit = Admin::Unit.find(args.delete(:unit_id))
+    @creator = User.find(args.delete(:creator_id))
+    @to = User.find(args.delete(:user_id))
+    args.each { |name, value| self.instance_variable_set("@#{name}", value) }
+    mail(to: @to.email, subject: @subject)
+  end
+
+  def update_unit(args = {})
+    @unit = Admin::Unit.find(args.delete(:unit_id))
+    @updater = User.find(args.delete(:updater_id))
+    @to = User.find(args.delete(:user_id))
+    args.each { |name, value| self.instance_variable_set("@#{name}", value) }
+    mail(to: @to.email, subject: @subject)
+  end
 end

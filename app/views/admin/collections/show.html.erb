@@ -16,7 +16,7 @@ Unless required by applicable law or agreed to in writing, software distributed
 <% @page_title = t('collections.show.title', :collection_name => @collection.name, :application_name => application_name) %>
 
 <div class="page-title-wrapper">
-  <h1 class="page-title">Manage Content</h1>
+  <h1 class="page-title">Manage Collection</h1>
 </div>
 <div class="modal fade" id="modal" data-bs-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="modalLabel"
   aria-hidden="true">
@@ -42,16 +42,16 @@ Unless required by applicable law or agreed to in writing, software distributed
   <div class="row">
     <div class="col-md-9">
       <p><strong>Unit:</strong></p>
-      <p><%= @collection.unit %></p>
+      <p data-testid="collection-unit"><%= @collection.unit.name %></p>
       <p><strong>Description:</strong></p>
-      <p id="collectionDescription", class="collection-description", data-testid="collection-description"><%= @collection.description %></p>
+      <p id="collectionDescription" class="collection-description" data-testid="collection-description"><%= @collection.description %></p>
       <% if @collection.contact_email.present? %>
         <p><strong>Contact email:</strong></p>
         <p data-testid="collection-contact-email"><%= mail_to(@collection.contact_email) %></p>
       <% end %>
       <% if @collection.website_url.present? %>
         <p><strong>Website:</strong></p>
-        <p><%= link_to(@collection.website_label.presence || @collection.website_url, @collection.website_url)%></p>
+        <p><%= link_to(@collection.website_label.presence || @collection.website_url, @collection.website_url, 'data-testid': 'collection-website-url')%></p>
       <% end %>
     </div>
     <div class="col-md-3">
@@ -66,8 +66,8 @@ Unless required by applicable law or agreed to in writing, software distributed
       </div>
       <div class="row">
         <%= form_for @collection, url: attach_poster_admin_collection_path(@collection.id), html: {method: "post"} do |form| %>
-          <%= form.file_field :poster, id: 'poster_input', class: "filedata", style: "height:0px;width:0px;", 'data-testid': "collection-poster-input" %>
-          <input type="button" class="btn btn-primary btn-sm me-2" onclick="$('.filedata').click();" value="<% if @collection.poster.present? %>Change Poster<%else%>Upload Poster<%end%>"
+          <%= form.file_field :poster, id: 'poster_input', class: "filedata", style: "display:none;", 'data-testid': "collection-poster-input" %>
+          <input type="button" class="btn btn-primary btn-sm me-2" onclick="query('.filedata').click();" value="<% if @collection.poster.present? %>Change Poster<%else%>Upload Poster<%end%>"
             <% if cannot?(:edit, @collection) %>disabled<%end%> />
         <% end %>
         <%= form_for @collection, url: remove_poster_admin_collection_path(@collection.id), html: {method: "delete"} do |form| %>
@@ -78,14 +78,14 @@ Unless required by applicable law or agreed to in writing, software distributed
         <div id='cropper-alert' class="alert" role="alert" style="display: none; padding: 5px; margin-top: 5px"></div>
         <div id="cropper-progress" class="progress" style="display: none; margin-top: 7px;">
           <div id="cropper-progress-bar" class="progress-bar progress-bar-striped progress-bar-animated"
-            role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">0%</div>
+            role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">Uploading...</div>
         </div>
       </div>
     </div>
   </div>
   <div class="well-vertical-spacer">
     <%= link_to('Create An Item', new_media_object_path(collection_id: @collection.id), class: 'btn btn-primary', data: { testid: 'collection-create-item-btn' }) if can? :create, MediaObject %>
-    <%= link_to('List All Items', search_catalog_path('f[collection_ssim][]' => @collection.name), class: 'btn btn-outline') %>
+    <%= link_to('List All Items', search_catalog_path('f[collection_ssim][]' => @collection.name), class: 'btn btn-outline', data: { testid: 'collection-list-all-item-btn' }) %>
     <%= button_tag('Edit Collection Info', class: 'btn btn-outline', data: {"bs-toggle": "modal", "bs-target": "#new_collection", testid:"collection-edit-collection-info"}) if can? :update, @collection %>
   </div>
   <div>
@@ -104,18 +104,21 @@ Unless required by applicable law or agreed to in writing, software distributed
       <%= render "modules/access_object",
             access_object: "manager",
             members: @collection.managers,
+            inherited_roles: @collection.inherited_managers,
             autocomplete_model: 'user',
             object: @collection,
             input_disabled: cannot?( :update_managers, @collection ) %>
       <%= render "modules/access_object",
             access_object: "editor",
             members: @collection.editors,
+            inherited_roles: @collection.inherited_editors,
             autocomplete_model: 'user',
             object: @collection,
             input_disabled: cannot?( :update_editors, @collection ) %>
       <%= render "modules/access_object",
             access_object: "depositor",
             members: @collection.depositors,
+            inherited_roles: @collection.inherited_depositors,
             autocomplete_model: 'user',
             object: @collection,
             input_disabled: cannot?( :update_depositors, @collection ) %>
@@ -128,14 +131,12 @@ Unless required by applicable law or agreed to in writing, software distributed
                            lending_period: @collection.default_lending_period,
                            cdl: @collection.cdl_enabled } %>
 
-  <h3 style="padding-top: 3rem;">Set Default Access Control for New Items</h3>
+  <h3 style="padding-top: 3rem;">Set Default Access Control for Collection Items</h3>
   <%= render "discovery_visibility_form", { object: @collection,
                                             visibility: @collection.default_visibility,
                                             hidden: @collection.default_hidden } %>
 
-  <%= render "modules/special_access", { object: @collection,
-                                         modal: { partial: "apply_special_access",
-                                                  title: "Apply current Special Access settings to all existing Items" } } %>
+  <%= render "modules/special_access", { object: @collection } %>
 
 </div>
 

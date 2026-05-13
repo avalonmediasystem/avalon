@@ -1,4 +1,4 @@
-# Copyright 2011-2025, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2026, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 #
@@ -25,21 +25,22 @@ module Hydra::MultiplePolicyAwareAccessControlsEnforcement
   end
 
   # returns solr query for finding all objects whose policies grant discover access to current_user
-  def policy_clauses
-    policy_ids = policies_with_access
+  def policy_clauses(permission_types: discovery_permissions)
+    policy_ids = policies_with_access(permission_types: permission_types)
     return nil if policy_ids.empty?
-    '(' + policy_ids.map {|id| ActiveFedora::SolrQueryBuilder.construct_query_for_rel(isGovernedBy: id)}.join(' OR '.freeze) + ')'
+    # find objects with policies connected to the object or once removed (Units -> Collections -> MediaObjects)
+    '(' + policy_ids.map {|id| [ActiveFedora::SolrQueryBuilder.construct_query_for_rel(isGovernedBy: id), "_query_:\"{!join from=id to=isGovernedBy_ssim}{!raw f=isGovernedBy_ssim}#{id}\""].join(' OR '.freeze) }.join(' OR '.freeze) + ')'
   end
 
   # find all the policies that grant discover/read/edit permissions to this user or any of its groups
-  def policies_with_access
+  def policies_with_access(permission_types: discovery_permissions)
     policy_classes.collect do |policy_class|
       #### TODO -- Memoize this and put it in the session?
       user_access_filters = []
       # Grant access based on user id & group
       policy_class_clause = policy_class_clause(policy_class)
-      user_access_filters += apply_policy_group_permissions(discovery_permissions, policy_class_clause)
-      user_access_filters += apply_policy_user_permissions(discovery_permissions, policy_class_clause)
+      user_access_filters += apply_policy_group_permissions(permission_types, policy_class_clause)
+      user_access_filters += apply_policy_user_permissions(permission_types, policy_class_clause)
       result = policy_class.search_with_conditions( user_access_filters.join(" OR "), :fl => "id", :rows => policy_class.count )
       Rails.logger.debug "get policies: #{result}\n\n"
       result.map {|h| h['id']}
@@ -91,5 +92,4 @@ module Hydra::MultiplePolicyAwareAccessControlsEnforcement
     end
     filters
   end
-
 end

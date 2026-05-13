@@ -1,4 +1,4 @@
-# Copyright 2011-2025, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2026, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 #
@@ -31,7 +31,15 @@ FactoryBot.define do
     end
 
     trait :with_caption_srt_file do
-      file { fixture_file_upload(Rails.root.join('spec', 'fixtures', 'captions.srt'), 'text/srt')}
+      file { fixture_file_upload(Rails.root.join('spec', 'fixtures', 'captions.srt'), 'text/srt') }
+    end
+
+    trait :with_description_file do
+      file { fixture_file_upload(Rails.root.join('spec', 'fixtures', 'captions.vtt'), 'text/vtt') }
+    end
+
+    trait :with_description_srt_file do
+      file { fixture_file_upload(Rails.root.join('spec', 'fixtures', 'captions.srt'), 'text/srt') }
     end
 
     trait :with_transcript_tag do
@@ -40,6 +48,10 @@ FactoryBot.define do
 
     trait :with_caption_tag do
       tags { ['caption'] }
+    end
+
+    trait :with_description_tag do
+      tags { ['description'] }
     end
   end
 end

@@ -1,4 +1,4 @@
-# Copyright 2011-2025, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2026, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 #
@@ -44,7 +44,7 @@ class WatchedEncode < ActiveEncode::Base
               new_file.language = nil
             end
           end
-          new_file.attach_file(FileLocator.new(output.url).location, io: true)
+          new_file.attach_file(FileLocator.new(output.url, filename: File.basename(output.url)), io: true)
           new_file.save
           output.url = if Settings.active_storage.bucket.present?
                       "s3://#{Settings.active_storage.bucket}/#{new_file.file.blob.key}"

@@ -74,13 +74,12 @@ Unless required by applicable law or agreed to in writing, software distributed
               <%= label_tag "user" do %>
                 <%= render partial: "modules/tooltip", locals: { form: form, field: 'user', tooltip: t("access_control.user"), options: {display_label: t("access_control.userlabel").html_safe} } %>
                 <div class="d-flex flex-column flex-sm-row mb-1">
-                  <%= render partial: 'modules/autocomplete_input', locals: { field_name: 'user',
-                                                                              model: 'user' } %>
+                  <%= render partial: 'modules/autocomplete_input', locals: { field_name: 'user', model: 'user' } %>
                   <%= text_field_tag "add_user_begin", nil, placeholder: 'Begin Date (yyyy-mm-dd)', class: 'form-control date-input access_date', autocomplete: 'off' %>
                   <%= text_field_tag "add_user_end", nil, placeholder: 'End Date (yyyy-mm-dd)', class: 'form-control date-input access_date', autocomplete: 'off' %>
                 </div>
                 <div class="d-flex justify-content-start">
-                  <%= button_tag "Add", name: 'submit_add_user', class:'btn btn-outline', value: 'Add' %>
+                  <%= button_tag "Add", name: 'submit_add_user', class:'btn btn-outline', value: 'Add', data: { testid: 'bookmark-add-user' } %>
                   <%= button_tag "Remove", name: 'submit_remove_user', class:'btn btn-outline remove_access', value: 'Remove' %>
                 </div>
               <% end %>

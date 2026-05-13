@@ -1,4 +1,4 @@
-# Copyright 2011-2025, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2026, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 #
@@ -41,33 +41,12 @@ class TimelinesController < ApplicationController
 
   # POST /timelines/paged_index
   def paged_index
-    # Timelines for index page are loaded dynamically by jquery datatables javascript which
-    # requests the html for only a limited set of rows at a time.
+    # Timelines for index page are loaded via /javascript/componenets/tables/TimelinesTable.jsx
+    # which requests the json for all records on initial page load.
     records_total = @timelines.count
-    columns = ['title', 'description', 'visibility', 'updated_at', 'tags', 'actions']
-
-    # Filter title and description
-    filter = params['search']['value']
-    @timelines = @timelines.title_like(filter).or(@timelines.desc_like(filter)) if filter.present?
-
-    # Apply tag filter if requested
-    tag_filter = params['columns']['4']['search']['value']
-    @timelines = @timelines.with_tag(tag_filter) if tag_filter.present?
-    timelines_filtered_total = @timelines.count
-    sort_column = params['order']['0']['column'].to_i rescue 0
-    sort_direction = params['order']['0']['dir'] rescue 'asc'
-
-    session[:timeline_sort] = [sort_column, sort_direction]
-    @timelines = if columns[sort_column] == 'updated_at'
-                   @timelines.order("#{columns[sort_column].downcase} #{sort_direction}")
-                 else
-                   @timelines.order("lower(#{columns[sort_column].downcase}) #{sort_direction}, #{columns[sort_column].downcase} #{sort_direction}")
-                 end
-    @timelines = @timelines.offset(params['start']).limit(params['length'])
+    
     response = {
-      "draw": params['draw'],
       "recordsTotal": records_total,
-      "recordsFiltered": timelines_filtered_total,
       "data": @timelines.collect do |timeline|
         copy_button = view_context.button_tag(type: 'button',
                                               data: { timeline: timeline },
@@ -380,5 +359,13 @@ class TimelinesController < ApplicationController
       new_params = params.fetch(:timeline, {}).permit(:title, :visibility, :description, :access_token, :tags, :source, :manifest, :include_structure)
       new_params[:tags] = JSON.parse(new_params[:tags]) if new_params[:tags].present?
       new_params
+    end
+
+    rescue_from ActiveRecord::RecordNotFound do |exception|
+      if request.format == :json
+        render json: { errors: ["#{params[:id]} could not be found"] }, status: :not_found
+      elsif request.format == :html
+        render '/errors/unknown_pid', status: :not_found
+      end
     end
 end

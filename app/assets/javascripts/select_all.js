@@ -1,5 +1,5 @@
-/* 
- * Copyright 2011-2025, The Trustees of Indiana University and Northwestern
+/*
+ * Copyright 2011-2026, The Trustees of Indiana University and Northwestern
  *   University.  Licensed under the Apache License, Version 2.0 (the "License");
  *   you may not use this file except in compliance with the License.
  *
@@ -21,15 +21,15 @@ let isSelectAllInProgress = false;
 function processCheckboxes(checkboxes, selectAllCheckbox) {
   // If there are no checkboxes to process, re-enable immediately
   if (checkboxes.length === 0) {
-    selectAllCheckbox.prop("disabled", false);
+    selectAllCheckbox.disabled = false;
     isSelectAllInProgress = false;
   }
 
   let completedCount = 0;
-  checkboxes.each(function (index, input) {
+  checkboxes.forEach((input, index) => {
     // Check if select all operation was aborted before starting each operation
     if (selectAllAbortController.signal.aborted) {
-      return false;
+      return;
     }
 
     // Use a timeout for better handling of async operations
@@ -39,7 +39,7 @@ function processCheckboxes(checkboxes, selectAllCheckbox) {
         completedCount++;
         // Re-enable select all when all operations complete
         if (completedCount === checkboxes.length) {
-          selectAllCheckbox.prop("disabled", false);
+          selectAllCheckbox.disabled = false;
           isSelectAllInProgress = false;
         }
       }
@@ -47,37 +47,53 @@ function processCheckboxes(checkboxes, selectAllCheckbox) {
   });
 }
 
-$("#bookmarks_selectall").on("click", function (e) {
-  // If a select all operation is already in progress, abort it and start a new one
-  if (isSelectAllInProgress && selectAllAbortController) {
-    selectAllAbortController.abort();
-  }
-  selectAllAbortController = new AbortController();
-  isSelectAllInProgress = true;
+// Only attach to 'Select All' checkbox on catalog page
+// The bookmarks page uses bookmark_selection.js for its own selection management
+const bookmarksSelectAll = getById('bookmarks_selectall');
+const isBookmarksPage = document.querySelector('.bookmark-selection') !== null;
 
-  // Disable 'Select All' to prevent collision between select
-  // and deselect POST requests while the page is getting updated
-  $(this).prop("disabled", true);
+if (bookmarksSelectAll && !isBookmarksPage) {
+  bookmarksSelectAll.addEventListener('click', function () {
+    // If a select all operation is already in progress, abort it and start a new one
+    if (isSelectAllInProgress && selectAllAbortController) {
+      selectAllAbortController.abort();
+    }
+    selectAllAbortController = new AbortController();
+    isSelectAllInProgress = true;
 
-  // Check if operation was aborted before starting
-  if (selectAllAbortController.signal.aborted) {
-    $(this).prop("disabled", false);
-    isSelectAllInProgress = false;
-    return;
-  }
+    // Disable 'Select All' to prevent collision between select
+    // and deselect POST requests while the page is getting updated
+    this.disabled = true;
 
-  if (!$(this).is(':checked')) {
-    const checkedCheckboxes = $("label.toggle-bookmark input.toggle-bookmark:checked");
-    processCheckboxes(checkedCheckboxes, $(this));
-  } else {
-    const uncheckedCheckboxes = $("label.toggle-bookmark input.toggle-bookmark:not(:checked)");
-    processCheckboxes(uncheckedCheckboxes, $(this));
-  }
-});
+    // Check if operation was aborted before starting
+    if (selectAllAbortController.signal.aborted) {
+      this.disabled = false;
+      isSelectAllInProgress = false;
+      return;
+    }
+
+    if (!this.checked) {
+      const checkedCheckboxes = queryAll('label.toggle-bookmark input.toggle-bookmark:checked');
+      processCheckboxes(Array.from(checkedCheckboxes), this);
+    } else {
+      const uncheckedCheckboxes = queryAll('label.toggle-bookmark input.toggle-bookmark:not(:checked)');
+      processCheckboxes(Array.from(uncheckedCheckboxes), this);
+    }
+  });
+}
 
 // Clean up abort controller when page unloads
-$(window).on('beforeunload', function () {
+window.addEventListener('beforeunload', function () {
   if (selectAllAbortController) {
     selectAllAbortController.abort();
   }
 });
+
+//adding data-testid to select toggles for testing
+$(function () {
+  $('label.toggle-bookmark input.toggle-bookmark[type=checkbox]').each(function () {
+    const m = this.id && this.id.match(/^toggle-bookmark_(.+)$/);
+    $(this).attr('data-testid', m ? `bookmark-toggle-${m[1]}` : 'bookmark-toggle');
+  });
+});
+

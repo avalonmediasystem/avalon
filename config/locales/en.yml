@@ -25,6 +25,9 @@ en:
       blank: "field is required."
       taken: "is taken."
       dateformat: "(%{date}) is in wrong format."
+    accessibility_enforcement_error: |
+      This item is unable to be published. Accessibility requirements such as a transcript or
+      caption file are missing.
   media_object:
     empty_share_link: ""
     empty_share_link_notice: "After processing has started the embedded link will be available."
@@ -39,6 +42,10 @@ en:
         heading: "Check Out Expired!"
         message: "Your lending period has been expired. Please return the item, and check for availability later."
     accessibility_request_text: 'Need an accessible version? <a href="%{a11y_link}">Contact us</a>'
+    accessibility_exempt:
+      message: 'Exempt this item from requiring accessibility files for publication'
+      confirmation: 'This item does not meet accessibility requirements for publishing.'
+      save_error: 'Unable to update accessibility exemption. Please try again later.'
   metadata_tip:
     abstract: |
       Summary provides a space for describing the contents of the item. Examples
@@ -158,6 +165,7 @@ en:
     depositorlabel: "Depositor"
     editorlabel: "Editor"
     managerlabel: "Manager"
+    unit_adminlabel: "Unit Administrator"
     userlabel: "Avalon User"
     grouplabel: "Avalon Group"
     classlabel: "External Group"
@@ -174,12 +182,16 @@ en:
       controls for individual items in the collection. Editors can also do
       anything a depositor can do.
     manager: |
-      Managers have overall accountability for the collection. Managers can
-      create collections and assign editor and depositor roles for those
-      collections. They set the default access controls for items added to
-      the collection, and they also step in when a published item needs
-      revising or deleting. Managers can also do anything an editor or
+      Managers have overall accountability for the collection. Managers assign 
+      editor and depositor roles for collections, set the default access controls
+      for items added to the collection, and they also step in when a published
+      item needs revising or deleting. Managers can also do anything an editor or
       depositor can do.
+    unit_admin: |
+      Unit administrators have overall accountability for the unit. They assign 
+      roles for those units, create collections in the unit, and set the default
+      access controls for collections added to the unit. Unit administrators can 
+      also do anything a manager, editor or depositor can do.
     user: |
       Enter a username to grant them access to an item or collection. Start and end dates are not required; if included, access for the specified user will start at the beginning of the start date and end at the beginning of the end date. Otherwise, access will be open ended for the specified user.
     group: |
@@ -193,6 +205,7 @@ en:
       Lending Period is the length of time that an item may be checked out for.
       Day and Hour values must be positive integers.
     apply_to_all_warning: "This action will affect %s items. Do you wish to proceed?"
+    inherited_role: 'This role is inherited and cannot be removed.'
 
   contact:
     title: 'Contact Us - %{application_name}'
@@ -270,6 +283,11 @@ en:
       action: "Save Changes"
     tags:
       label: "Tags"
+
+  units:
+    title: 'Units - %{application_name}'
+    show:
+      title: '%{unit_name} - Units - %{application_name}'
 
   activerecord:
     attributes:

@@ -1,4 +1,4 @@
-# Copyright 2011-2025, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2026, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 #
@@ -23,9 +23,9 @@ class MediaObjectsController < ApplicationController
   include SecurityHelper
 
   before_action :authenticate_user!, except: [:show, :set_session_quality, :show_stream_details, :manifest]
-  before_action :load_resource, except: [:create, :destroy, :update_status, :set_session_quality, :tree, :deliver_content, :confirm_remove, :show_stream_details, :add_to_playlist, :intercom_collections, :manifest, :move_preview, :update, :json_update]
-  load_and_authorize_resource except: [:create, :destroy, :update_status, :set_session_quality, :tree, :deliver_content, :confirm_remove, :show_stream_details, :add_to_playlist, :intercom_collections, :manifest, :move_preview, :show_progress, :edit]
-  authorize_resource only: [:create, :edit]
+  before_action :load_resource, except: [:create, :new, :destroy, :update_status, :set_session_quality, :tree, :deliver_content, :confirm_remove, :show_stream_details, :add_to_playlist, :intercom_collections, :manifest, :move_preview, :update, :json_update, :index]
+  load_and_authorize_resource except: [:create, :new, :destroy, :update_status, :set_session_quality, :tree, :deliver_content, :confirm_remove, :show_stream_details, :add_to_playlist, :intercom_collections, :manifest, :move_preview, :show_progress, :edit, :index]
+  authorize_resource only: [:create, :new, :edit]
 
   before_action :inject_workflow_steps, only: [:edit, :update], unless: proc { request.format.json? }
   before_action :load_player_context, only: [:show]
@@ -201,6 +201,9 @@ class MediaObjectsController < ApplicationController
       @media_object.update_attributes(media_object_parameters) if params.has_key?(:fields) and params[:fields].respond_to?(:has_key?)
     end
 
+    # Toggle accessibility exemption if requested
+    apply_accessibility_override(@media_object)
+
     error_messages = []
     unless @media_object.valid?
       invalid_fields = @media_object.errors.attribute_names
@@ -274,8 +277,12 @@ class MediaObjectsController < ApplicationController
           error_messages += ['Failed to create media object:']+@media_object.errors.full_messages
         else
           if !!api_params[:publish]
-            @media_object.publish!('REST API')
-            @media_object.workflow.publish
+            begin
+              @media_object.publish!('REST API')
+              @media_object.workflow.publish
+            rescue Avalon::PublishingError => e
+              error_messages += ["Unable to create media object: #{e.message}"]
+            end
           else
             @media_object.publish!('')
           end
@@ -301,14 +308,16 @@ class MediaObjectsController < ApplicationController
     end
 
     if 'access-control' == @active_step
-      @groups = @media_object.local_read_groups
+      @groups = { base: @media_object.local_read_groups, inherited: @media_object.inherited_local_read_groups }
       @group_leases = @media_object.leases('local')
-      @users = @media_object.read_users
+      @users = { base: @media_object.read_users, inherited: @media_object.inherited_read_users }
       @user_leases = @media_object.leases('user')
-      @virtual_groups = @media_object.virtual_read_groups
+      @virtual_groups = { base: @media_object.virtual_read_groups, inherited: @media_object.inherited_virtual_read_groups }
       @virtual_leases = @media_object.leases('external')
-      @ip_groups = @media_object.ip_read_groups
+      @ip_groups = { base: @media_object.ip_read_groups, inherited: @media_object.inherited_ip_read_groups }
       @ip_leases = @media_object.leases('ip')
+      @inherited_visibility = @media_object.inherited_visibility
+      @inherited_hidden = @media_object.inherited_hidden?
       @visibility = @media_object.visibility
 
       @addable_groups = Admin::Group.non_system_groups.reject { |g| @groups.include? g.name }
@@ -400,36 +409,59 @@ class MediaObjectsController < ApplicationController
         success_ids << id
         success_count += 1
       else
-        errors += [ "#{media_object.title} (#{params[:id]}) permission denied" ]
+        errors += ["#{media_object.title} (#{params[:id]}) permission denied"]
       end
     end
     message = "#{success_count} #{'media object'.pluralize(success_count)} deleted."
     message += "These objects were not deleted:</br> #{ errors.join('<br/> ') }" if errors.count > 0
     BulkActionJobs::Delete.perform_later success_ids, nil
-    redirect_to params[:previous_view]=='/bookmarks'? '/bookmarks' : root_path, flash: { notice: message }
+    redirect_to params[:previous_view] == '/bookmarks' ? '/bookmarks' : root_path, flash: { notice: message }
   end
 
-  # Sets the published status for the object. If no argument is given then
-  # it will just toggle the state.
   def update_status
     status = params[:status]
+
+    # AJAX request to toggle override_accessibility
+    if status.blank?
+      media_object = MediaObject.find(params[:id])
+      if cannot?(:update, media_object)
+        respond_to do |format|
+          format.json { render json: { error: 'Not authorized' }, status: :forbidden }
+          format.html { redirect_to root_path }
+        end
+        return
+      end
+      apply_accessibility_override(media_object)
+      if media_object.save(validate: false)
+        render json: { exempt: media_object.accessibility_exempt? }, status: :ok
+      else
+        render json: { error: I18n.t('media_object.accessibility_exempt.save_error') }, status: :unprocessable_entity
+      end
+      return
+    end
+
     errors = []
     success_count = 0
-    Array(params[:id]).each do |id|
-      media_object = MediaObject.find(id)
+    media_objects = MediaObject.find(Array(params[:id]))
+    media_objects.each do |media_object|
+      id = media_object.id
       if cannot? :update, media_object
         errors += ["#{media_object&.title} (#{id}) (permission denied)."]
       else
         begin
+          apply_accessibility_override(media_object)
           case status
           when 'publish'
-            unless media_object.title.present?
+            if media_object.title.blank?
               errors += ["#{media_object&.title} (#{id}) (missing required fields)"]
               next
             end
-            media_object.publish!(user_key)
-            # additional save to set permalink
-            media_object.save( validate: false )
+            begin
+              media_object.publish!(user_key)
+            rescue Avalon::PublishingError => e
+              errors += ["#{media_object&.title} (#{id}) (#{e.message})"]
+              next
+            end
             success_count += 1
           when 'unpublish'
             if can? :unpublish, media_object
@@ -444,8 +476,13 @@ class MediaObjectsController < ApplicationController
         end
       end
     end
-    message = "#{success_count} #{'media object'.pluralize(success_count)} successfully #{status}ed." if success_count.positive?
-    message = "Unable to #{status} #{'item'.pluralize(errors.count)}: #{ errors.join('<br/> ') }" if errors.count > 0
+    message = if errors.count.positive?
+                "Unable to #{status} #{'item'.pluralize(errors.count)}: #{errors.join('<br/> ')}"
+              elsif success_count == 1
+                "Media object successfully #{status}ed."
+              elsif success_count > 1
+                "#{success_count} media objects successfully #{status}ed."
+              end
     redirect_back(fallback_location: root_path, flash: {notice: message.html_safe})
   end
 
@@ -473,17 +510,22 @@ class MediaObjectsController < ApplicationController
     @media_object = SpeedyAF::Proxy::MediaObject.find(params[:id])
     authorize! :read, @media_object
 
-    stream_info_hash = secure_stream_infos(master_file_presenters, [@media_object])
-    canvas_presenters = master_file_presenters.collect { |mf| IiifCanvasPresenter.new(master_file: mf, stream_info: stream_info_hash[mf.id]) }
-    presenter = IiifManifestPresenter.new(media_object: @media_object, master_files: canvas_presenters, lending_enabled: lending_enabled?(@media_object))
+    # TODO: Add a rake task to clear expired items from the cache?
+    cached_manifest = Rails.cache.fetch([@media_object.cache_key_with_version, 'iiif_manifest'], expires_in: 1.week) do
+      stream_info_hash = secure_stream_infos(master_file_presenters, [@media_object])
+      canvas_presenters = master_file_presenters.collect { |mf| IiifCanvasPresenter.new(master_file: mf, stream_info: stream_info_hash[mf.id]) }
+      presenter = IiifManifestPresenter.new(media_object: @media_object, master_files: canvas_presenters, lending_enabled: lending_enabled?(@media_object))
 
-    manifest = IIIFManifest::V3::ManifestFactory.new(presenter).to_h
-    # TODO: implement thumbnail in iiif_manifest
-    manifest["thumbnail"] = [{ "id" => presenter.thumbnail, "type" => 'Image' }] if presenter.thumbnail
+      manifest = IIIFManifest::V3::ManifestFactory.new(presenter).to_h
+      # TODO: implement thumbnail in iiif_manifest
+      manifest["thumbnail"] = [{ "id" => presenter.thumbnail, "type" => 'Image' }] if presenter.thumbnail
+
+      manifest
+    end
 
     respond_to do |wants|
-      wants.json { render json: manifest.to_json }
-      wants.html { render json: manifest.to_json }
+      wants.json { render json: cached_manifest.to_json }
+      wants.html { render json: cached_manifest.to_json }
     end
   end
 
@@ -518,6 +560,8 @@ class MediaObjectsController < ApplicationController
     respond_to do |wants|
       wants.json { render json: preview }
     end
+  rescue URI::InvalidURIError
+    render json: { errors: 'Unknown ID' }, status: :not_found
   end
 
   rescue_from Avalon::VocabularyNotFound do |exception|
@@ -583,7 +627,11 @@ class MediaObjectsController < ApplicationController
   # block
   def set_active_file
     if params[:content]
-      @currentStream ||= SpeedyAF::Proxy::MasterFile.find(params[:content])
+      begin
+        @currentStream ||= SpeedyAF::Proxy::MasterFile.find(params[:content])
+      rescue SpeedyAF::RecordNotFound
+        @currentStream = nil
+      end
       if @currentStream.nil?
         flash[:notice] = "That stream was not recognized. Defaulting to the first available stream for the resource"
         redirect_to media_object_path(params[:id])
@@ -623,6 +671,8 @@ class MediaObjectsController < ApplicationController
     note = mo_parameters.delete(:note) || []
     note_type = mo_parameters.delete(:note_type) || []
     mo_parameters[:note] = note.zip(note_type).map{|a|{note: a[0],type: a[1]}}
+    # Publisher should not be a valid field during object creation
+    mo_parameters.delete(:avalon_publisher) if params[:action] == "create"
 
     mo_parameters
   end
@@ -676,5 +726,10 @@ class MediaObjectsController < ApplicationController
 
   def api_params
     params.permit(:collection_id, :publish, :import_bib_record, :replace_masterfiles)
+  end
+
+  def apply_accessibility_override(media_object)
+    return unless params[:override_accessibility].present? && can?(:override_accessibility, media_object)
+    media_object.override_accessibility = params[:override_accessibility] == '1'
   end
 end

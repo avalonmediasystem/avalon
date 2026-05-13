@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2025, The Trustees of Indiana University and Northwestern
+ * Copyright 2011-2026, The Trustees of Indiana University and Northwestern
  *   University.  Licensed under the Apache License, Version 2.0 (the "License");
  *   you may not use this file except in compliance with the License.
  *
@@ -16,6 +16,9 @@
 
 import CollectionPage from '../pageObjects/collectionPage';
 import { navigateToManageContent, performSearch } from '../support/navigation';
+import UnitPage from '../pageObjects/unitPage';
+import { getFixturePath } from '../support/utils';
+const unitPage = new UnitPage();
 
 const collectionPage = new CollectionPage();
 
@@ -23,24 +26,21 @@ context('Media objects', () => {
   //This will contain test cases for an item that is manually created in an env.
   //Must have captions
   //Available to all
-  //Multiple sections - lunchroom manner, audio file, 10 second clip, Lunchroom manner
-  var collection_title = `Automation collection title ${
-    Math.floor(Math.random() * 10000) + 1
-  }`;
-  var media_object_title = `Automation Item title ${
-    Math.floor(Math.random() * 100000) + 1
-  }`;
+  //Multiple sections
+  var collection_title = `Automation collection title ${ Date.now() }`;
+  var media_object_title = `Automation Item title ${ Date.now() }`;
+  var unit_title = `Automation unit title ${ Date.now() }`;
   var media_object_id;
   const caption = `captions-example.srt`;
   Cypress.on('uncaught:exception', (err, runnable) => {
     if (
       err.message.includes('Permissions check failed') ||
       err.message.includes(
-        "Cannot read properties of undefined (reading 'success')"
+        "Cannot read properties of undefined (reading 'success')",
       ) ||
       err.message.includes('scrollHeight') ||
       err.message.includes(
-        "Cannot read properties of undefined (reading 'end')"
+        "Cannot read properties of undefined (reading 'end')",
       ) ||
       err.message === 'Script error.'
     ) {
@@ -48,15 +48,15 @@ context('Media objects', () => {
     }
   });
   // Create collection and complex media object before all tests
-  // Create collection and complex media object before all tests
   before(() => {
     cy.login('administrator');
+    unitPage.createUnit({ title: unit_title });
     navigateToManageContent();
 
     // Create collection with public access
     collectionPage.createCollection(
-      { title: collection_title },
-      { setPublicAccess: true }
+      { title: collection_title, unitName: unit_title },
+      { setPublicAccess: true },
     );
 
     // Navigate to the collection and create complex media object
@@ -84,6 +84,8 @@ context('Media objects', () => {
 
     // Then delete the collection
     collectionPage.deleteCollectionByName(collection_title);
+    //delete the unit
+    unitPage.deleteUnitByName(unit_title);
   });
 
   context('With media object loaded', () => {
@@ -92,13 +94,14 @@ context('Media objects', () => {
       cy.visit('/media_objects/' + media_object_id);
       cy.waitForVideoReady();
     });
+
     // can visit a media object
 
     it('.visit_media_object() ', { tags: '@critical' }, () => {
       cy.contains('Unknown item').should('not.exist');
       cy.get('[data-testid="media-object-title"]').should(
         'contain',
-        media_object_title
+        media_object_title,
       );
       cy.contains('Publication date');
       // This below line is to play the video. If the video is not playable, this might return error. In that case, comment the below code.
@@ -109,7 +112,9 @@ context('Media objects', () => {
     });
 
     // Open multiple media objects in different tabs and play it.
-    it('.play_media_objects()', { tags: '@critical' }, () => {
+    // FIXME: This test assumes that the first and third search results are playable
+    // Skipping for now since it appears that simple playback functionality is tested in other tests
+    it.skip('.play_media_objects()', { tags: '@critical' }, () => {
       cy.get('a[href*="catalog"] ').first().click();
 
       cy.get('a[href*="media_objects"]').then((media_objects) => {
@@ -146,7 +151,7 @@ context('Media objects', () => {
           // Validate the fullscreen button
           cy.get('.vjs-fullscreen-control').should('exist');
         });
-      }
+      },
     );
 
     it(
@@ -182,7 +187,7 @@ context('Media objects', () => {
                 .should('eq', '50');
             });
         });
-      }
+      },
     );
 
     it(
@@ -207,11 +212,11 @@ context('Media objects', () => {
           // Checking on media player
           cy.get('.vjs-text-track-display').should('exist');
         });
-      }
+      },
     );
 
     it(
-      'Verify video playback for all roles - admin, manager, user ',
+      'Verify that all users can stream the video files in an item - @T5c27ef4b ',
       { tags: '@critical' },
       () => {
         const roles = ['administrator', 'manager', 'user'];
@@ -253,66 +258,101 @@ context('Media objects', () => {
           // Logout user
           cy.visit('/users/sign_out');
         });
-      }
+      },
     );
 
     it(
-      'Verify that all users can stream the audio files in an item',
+      'Verify that all users can stream the audio files in an item - @T4d194154',
       { tags: '@critical' },
       () => {
-        // Clicking on the first mp3 audio
-        cy.get('[data-testid="tree-item"]')
+        //Click the first mp3 audio in the tree and open it
+        cy.get('[data-testid="tree-item"]', { timeout: 15000 })
           .filter('[data-label*=".mp3"]')
           .first()
+          .should('be.visible')
           .within(() => {
-            cy.get('[data-testid="treeitem-section-button"]').click();
+            cy.get('[data-testid="treeitem-section-button"]', {
+              timeout: 15000,
+            })
+              .should('be.visible')
+              .click();
           });
 
-        // Waiting for the media player to be loaded
+        //Wait for player to load
         cy.waitForVideoReady();
 
-        // Click the play button
-        cy.get('[data-testid="media-player"]')
-          .find('button.vjs-play-control[title="Play"]')
+        //Player exists and controls are visible
+        cy.get('[data-testid="media-player"]', { timeout: 15000 })
           .should('exist')
-          .click();
+          .and('be.visible')
+          .as('player');
 
-        // Verifying the player is not paused
-        cy.get('[data-testid="videojs-audio-element"]')
+        // to do user acitivity to show controls if the player hides them
+        cy.get('@player')
+          .trigger('mousemove', { force: true })
+          .click('center', { force: true });
+
+        //Click Play - scoping to title to avoid conflicts
+        cy.get('@player')
+          .find(
+            'button.vjs-play-control[title="Play"], button.vjs-play-control[title="Pause"]',
+            { timeout: 15000 },
+          )
+          .first()
+          .should('exist')
+          .and('be.visible')
+          .click({ force: true });
+
+        //Player is playing
+        cy.get('[data-testid="videojs-video-element"]', {
+          timeout: 15000,
+        }).should('have.class', 'vjs-playing');
+
+        //Make sure the timer is progressing
+        cy.get('[data-testid="videojs-audio-element"]', { timeout: 15000 })
           .should('exist')
           .then(($el) => {
-            const audio = $el[0];
-            expect(audio.paused).to.equal(false); // Not paused after play
+            const media = $el[0];
+
+            // Wait until the media has actually started
+            cy.wrap(media, { log: false }).should(() => {
+              //either condition proves "playback is happening / started"
+              expect(
+                media.currentTime > 0 || media.paused === false,
+                `currentTime=${media.currentTime}, paused=${media.paused}`,
+              ).to.equal(true);
+            });
           });
 
-        // DOM property - HTMLMediaElement
+        //Current time should increase after some time
         cy.get('[data-testid="videojs-audio-element"]')
           .invoke('prop', 'currentTime')
-          .then((startTime) => {
-            cy.wait(1000);
+          .then((t1) => {
+            cy.wait(1250);
             cy.get('[data-testid="videojs-audio-element"]')
               .invoke('prop', 'currentTime')
-              .should((currentTime) => {
-                expect(currentTime).to.be.greaterThan(startTime);
+              .should((t2) => {
+                expect(t2, `t1=${t1}, t2=${t2}`).to.be.greaterThan(t1);
               });
           });
 
-        // Confirming the display timer is right
-        cy.get('.current-time-display')
+        //DIsplay timer should be updated
+        cy.get('.current-time-display', { timeout: 15000 })
+          .should('be.visible')
           .invoke('text')
           .then((time1) => {
-            cy.wait(1000);
+            cy.wait(1250);
             cy.get('.current-time-display')
               .invoke('text')
               .should((time2) => {
                 expect(time2).to.not.equal(time1);
               });
           });
-      }
+      },
     );
 
     it(
-      'Verify that the user can stream different sections of the video/audio from structured nav',
+      'Verify that the user can stream different sections of the video from the media player - @Tb5a0baf1 ',
       { tags: '@critical' },
       () => {
         //Verifying sections exists
@@ -342,7 +382,7 @@ context('Media objects', () => {
                   cy.get('[data-testid="media-player"] video').should(
                     ($vid) => {
                       expect($vid[0].paused).to.be.false;
-                    }
+                    },
                   );
 
                   //Checking if progress bar advances through the style: width
@@ -375,13 +415,11 @@ context('Media objects', () => {
               });
           });
         });
-      }
+      },
     );
 
-    //cy.get('[data-testid="media-object-share-btn"]').contains("Share").click();
-
     it(
-      'TC002 - Validate embedded video player functionality (with stream buffering wait)',
+      'Verify the functionality of embedded players - video files - @Tdd57d9f0',
       { tags: '@critical' },
       () => {
         cy.contains('Share').click();
@@ -433,7 +471,855 @@ context('Media objects', () => {
             // Fullscreen toggle
             cy.get('.vjs-fullscreen-control').click();
           });
-      }
+      },
     );
+
+    it('Verify the icons in a video player in fullscreen mode - @T503d2ee1', () => {
+      cy.get('[data-testid="media-player"]', { timeout: 15000 })
+        .should('exist')
+        .and('be.visible')
+        .as('player');
+
+      const showControls = () => {
+        cy.get('@player')
+          .should('have.length', 1)
+          .trigger('mousemove', { force: true })
+          .trigger('mouseover', { force: true })
+          .click('center', { force: true });
+      };
+
+      showControls();
+
+      cy.get('@player')
+        .find('.vjs-fullscreen-control', { timeout: 15000 })
+        .should('exist')
+        .scrollIntoView()
+        .should('be.visible')
+        .click({ force: true });
+
+      showControls();
+
+      cy.get('@player')
+        .find('button.vjs-big-play-button', { timeout: 15000 })
+        .should('exist')
+        .and('be.visible');
+
+      cy.get('@player')
+        .find(
+          'button.vjs-play-control[title="Play"], button.vjs-play-control[title="Pause"]',
+          { timeout: 15000 },
+        )
+        .first()
+        .should('exist')
+        .and('be.visible');
+
+      cy.get('@player')
+        .find('[data-testid="videojs-previous-button"]', { timeout: 15000 })
+        .should('exist')
+        .and('be.visible');
+
+      cy.get('@player')
+        .find('[data-testid="videojs-next-button"]', { timeout: 15000 })
+        .should('exist')
+        .and('be.visible');
+
+      cy.get('@player')
+        .find('[data-testid="videojs-track-scrubber-button"]', {
+          timeout: 15000,
+        })
+        .should('exist')
+        .and('be.visible');
+
+      cy.get('@player')
+        .find('button.vjs-subs-caps-button')
+        .then(($btn) => {
+          if ($btn.length) cy.wrap($btn).should('be.visible');
+        });
+
+      cy.get('@player')
+        .find('.vjs-mute-control', { timeout: 15000 })
+        .should('exist')
+        .and('be.visible');
+
+      cy.get('@player')
+        .find('.vjs-volume-bar', { timeout: 15000 })
+        .should('exist');
+
+      cy.get('@player')
+        .find('.vjs-quality-selector button')
+        .then(($btn) => {
+          if ($btn.length) cy.wrap($btn).should('be.visible');
+        });
+
+      cy.get('@player')
+        .find('.vjs-fullscreen-control', { timeout: 15000 })
+        .should('exist')
+        .and('be.visible');
+    });
+
+    it('Verify the player pause and play actions - Video - @T7be623ee', () => {
+      cy.get('[data-testid="media-player"]', { timeout: 15000 })
+        .should('exist')
+        .and('be.visible')
+        .as('player');
+
+      cy.get('@player')
+        .find('video[data-testid="videojs-video-element"]', { timeout: 15000 })
+        .should('exist')
+        .as('videoEl');
+
+      cy.get('#iiif-media-player', { timeout: 15000 })
+        .should('exist')
+        .as('vjsRoot');
+
+      const wakeControls = () => {
+        cy.get('@vjsRoot')
+          .trigger('mousemove', { force: true })
+          .trigger('mouseover', { force: true });
+      };
+
+      const clickPlayPause = () => {
+        wakeControls();
+        cy.get('@vjsRoot')
+          .find(
+            'button.vjs-play-control[title="Play"], button.vjs-play-control[title="Pause"]',
+            { timeout: 15000 },
+          )
+          .first()
+          .should('be.visible')
+          .click({ force: true });
+      };
+
+      const expectPlaying = () => {
+        cy.get('@videoEl').should(($v) => expect($v[0].paused).to.eq(false));
+        cy.get('@videoEl')
+          .invoke('prop', 'currentTime')
+          .then((t1) => {
+            cy.wait(800);
+            cy.get('@videoEl')
+              .invoke('prop', 'currentTime')
+              .should((t2) => expect(t2).to.be.greaterThan(t1));
+          });
+      };
+
+      const expectPaused = () => {
+        cy.get('@videoEl').should(($v) => expect($v[0].paused).to.eq(true));
+      };
+
+      // Start playback
+      cy.get('@player')
+        .find('.vjs-big-play-button', { timeout: 15000 })
+        .should('be.visible')
+        .click({ force: true });
+
+      expectPlaying();
+
+      clickPlayPause();
+      expectPaused();
+      clickPlayPause();
+      expectPlaying();
+
+      // Stub fullscreen API BEFORE clicking fullscreen
+      cy.stubFullscreenAPI();
+
+      // Click fullscreen, then assert the UI toggled fullscreen mode (without forcing class)
+      wakeControls();
+      cy.get('@vjsRoot')
+        .find('button.vjs-fullscreen-control[title="Fullscreen"]', {
+          timeout: 15000,
+        })
+        .should('be.visible')
+        .click({ force: true });
+
+      cy.get('@vjsRoot', { timeout: 15000 }).should(
+        'have.class',
+        'vjs-fullscreen',
+      );
+
+      // Play/Pause still works in fullscreen UI mode
+      clickPlayPause();
+      expectPaused();
+      clickPlayPause();
+      expectPlaying();
+    });
+
+    it('Verify the players hotkeys for pause and play actions - Video and Audio - @T633feb48', () => {
+      cy.get('[data-testid="media-player"]').as('player');
+
+      cy.get('@player')
+        .find('video[data-testid="videojs-video-element"]')
+        .as('video');
+
+      cy.get('@player').find('.vjs-big-play-button').as('centerPlay');
+
+      cy.get('@player')
+        .find(
+          'button.vjs-play-control[title="Play"], button.vjs-play-control[title="Pause"]',
+        )
+        .first()
+        .as('playPauseBtn');
+      cy.get('@player').find('.vjs-fullscreen-control').as('fullscreenBtn');
+      const expectPlaying = () =>
+        cy
+          .get('@video')
+          .should(($v) => expect($v[0].paused, 'paused flag').to.eq(false));
+      const expectPaused = () =>
+        cy
+          .get('@video')
+          .should(($v) => expect($v[0].paused, 'paused flag').to.eq(true));
+
+      // Start playback
+      cy.get('@centerPlay').click({ force: true });
+      expectPlaying();
+
+      //space toggles when player is focused
+      //cy.get('[data-testid="media-player"]').click();
+      cy.get('body').type(' '); //pause
+      expectPaused();
+      cy.get('body').type(' '); //play
+      expectPlaying();
+
+      // would be different for mco
+      cy.get('[data-testid="browse-global-search-input"]', { timeout: 15000 })
+        .should('exist')
+        .first()
+        .type('{selectAll}hello world')
+        .should('have.value', 'hello world');
+
+      expectPlaying();
+
+      // Clicking buttons should not pause video
+      cy.get('[data-testid="media-object-add-to-playlist-btn"]', {
+        timeout: 3000,
+      })
+        .should('exist')
+        .click({ force: true });
+      expectPlaying();
+
+      cy.get('[data-testid="media-object-create-timeline-btn"]', {
+        timeout: 3000,
+      })
+        .should('exist')
+        .click({ force: true });
+      expectPlaying();
+
+      //control bar play/pause button
+      cy.get('@playPauseBtn').click({ force: true });
+      expectPaused();
+      cy.get('@playPauseBtn').click({ force: true });
+      expectPlaying();
+
+      cy.visit('/media_objects/' + media_object_id);
+      cy.get('@playPauseBtn').click({ force: true });
+      //fullscreen and repeat spacebar check - stubbing fullscreen API to avoid test instability due to fullscreen behavior in Cypress
+      cy.stubFullscreenAPI();
+
+      cy.get('@fullscreenBtn').click({ force: true });
+
+      // Space still toggles
+      cy.get('body').type(' '); //pause
+      cy.get('body').type(' '); //play
+      expectPlaying();
+    });
+
+    it('Verify the players pause and play actions - Audio- @T190702b9', () => {
+      // Click on the audio file in the structure nav
+      cy.get('[data-testid="tree-item"][data-label="test_sample_audio.mp3"]')
+        .find('[data-testid="treeitem-section-button"]')
+        .click({ force: true });
+
+      // Aliases
+      cy.get('[data-testid="media-player"]').as('player');
+      cy.get('video[data-testid="videojs-audio-element"]').as('audioEl');
+      cy.get('@player')
+        .find(
+          'button.vjs-play-control[title="Play"], button.vjs-play-control[title="Pause"]',
+        )
+        .first()
+        .as('playPause');
+
+      // Play
+      cy.get('@playPause').click({ force: true });
+      cy.get('@audioEl').should(($a) => expect($a[0].paused).to.eq(false));
+
+      // Ensure time advances
+      cy.get('@audioEl')
+        .invoke('prop', 'currentTime')
+        .then((t0) => {
+          cy.wait(800);
+          cy.get('@audioEl').invoke('prop', 'currentTime').should('be.gt', t0);
+        });
+
+      // Pause
+      cy.get('@playPause').click({ force: true });
+      cy.get('@audioEl').should(($a) => expect($a[0].paused).to.eq(true));
+    });
+
+    it('Verify the players Play forward and backwards actions - Video - @Td8360414', () => {
+      cy.get('[data-testid="media-player"]', { timeout: 15000 })
+        .should('exist')
+        .and('be.visible')
+        .as('player');
+
+      cy.get('video[data-testid="videojs-video-element"]', { timeout: 15000 })
+        .should('exist')
+        .as('videoEl');
+
+      cy.get('@player')
+        .find(
+          'button.vjs-play-control[title="Play"], button.vjs-play-control[title="Pause"]',
+          { timeout: 15000 },
+        )
+        .first()
+        .should('be.visible')
+        .as('playPause');
+
+      cy.get('@player')
+        .find('[data-testid="videojs-custom-seekbar"]', { timeout: 15000 })
+        .should('exist')
+        .as('seekbar');
+
+      cy.get('@player')
+        .find('[data-testid="videojs-track-scrubber-button"]', {
+          timeout: 15000,
+        })
+        .should('exist')
+        .as('scrubberBtn');
+
+      // Start playback
+      cy.get('@playPause').click({ force: true });
+      cy.get('@videoEl').should(($v) => expect($v[0].paused).to.eq(false));
+
+      // Scrub forward using JS — more reliable than clicking seekbar positions
+      cy.get('@videoEl').then(($v) => {
+        $v[0].currentTime = 30;
+      });
+      cy.wait(200);
+      cy.get('@videoEl')
+        .invoke('prop', 'currentTime')
+        .should((t1) => {
+          expect(t1).to.be.within(28, 35);
+        });
+
+      // Scrub back using JS
+      cy.get('@videoEl').then(($v) => {
+        $v[0].currentTime = 5;
+      });
+      cy.wait(200);
+      cy.get('@videoEl')
+        .invoke('prop', 'currentTime')
+        .should((t2) => {
+          expect(t2).to.be.lessThan(10);
+        });
+
+      // Open mini scrubber and verify it exists
+      cy.get('@scrubberBtn').click({ force: true });
+      cy.get('#track_scrubber .vjs-track-scrubber', { timeout: 15000 })
+        .should('exist')
+        .as('miniScrubber');
+
+      // Scrub forward in mini scrubber using JS
+      cy.get('@videoEl').then(($v) => {
+        $v[0].currentTime = 8;
+      });
+      cy.wait(200);
+      cy.get('@videoEl')
+        .invoke('prop', 'currentTime')
+        .should((s1) => expect(s1).to.be.gt(5));
+
+      // Scrub back in mini scrubber using JS
+      cy.get('@videoEl').then(($v) => {
+        $v[0].currentTime = 2;
+      });
+      cy.wait(200);
+      cy.get('@videoEl')
+        .invoke('prop', 'currentTime')
+        .should((s2) => expect(s2).to.be.lt(5));
+
+      // Arrow key hotkeys: +5 and -5 seconds
+      cy.get('[data-testid="media-player"]').click('center', { force: true });
+
+      cy.get('@videoEl')
+        .invoke('prop', 'currentTime')
+        .then((k0) => {
+          cy.get('body').type('{rightArrow}');
+          cy.wait(300);
+          cy.get('@videoEl')
+            .invoke('prop', 'currentTime')
+            .should((k1) => expect(k1).to.be.closeTo(k0 + 5, 2));
+
+          cy.get('body').type('{leftArrow}');
+          cy.wait(300);
+          cy.get('@videoEl')
+            .invoke('prop', 'currentTime')
+            .should((k2) => expect(k2).to.be.closeTo(k0, 2));
+        });
+
+      // Fullscreen — use class toggle to avoid Permissions check failed
+      cy.stubFullscreenAPI();
+      cy.get('@player').find('.vjs-fullscreen-control').click({ force: true });
+
+      // Seek in fullscreen using JS
+      cy.get('@videoEl').then(($v) => {
+        $v[0].currentTime = 30;
+      });
+      cy.wait(500);
+      cy.get('@videoEl')
+        .invoke('prop', 'currentTime')
+        .should((f1) => expect(f1).to.be.within(28, 40));
+    });
+
+    it('Verify whether the user is able to adjust volume in the video player  - @Te7a1268e', () => {
+      cy.get('[data-testid="media-player"]').as('player');
+      cy.get('video[data-testid="videojs-video-element"]').as('videoEl');
+      cy.get('@player').find('.vjs-mute-control').as('muteBtn');
+      cy.get('@player').find('.vjs-volume-bar').as('volumeBar');
+      cy.get('@player').find('.vjs-fullscreen-control').as('fullscreenBtn');
+      // Start play
+      cy.get('@player')
+        .find(
+          'button.vjs-play-control[title="Play"], button.vjs-play-control[title="Pause"]',
+        )
+        .first()
+        .click({ force: true });
+
+      //Adjust audio via volume slider
+      cy.get('@volumeBar').click('right', { force: true });
+      cy.get('@volumeBar')
+        .invoke('attr', 'aria-valuenow')
+        .should('not.eq', '0');
+      //Mute and unmute with icon
+      cy.get('@muteBtn').click({ force: true });
+      cy.get('@muteBtn').should('have.class', 'vjs-vol-0');
+      cy.get('@muteBtn').click({ force: true });
+      cy.get('@muteBtn').should('not.have.class', 'vjs-vol-0');
+
+      //using keyboard m key to mute and unmute player
+      cy.get('@player').click('center', { force: true }); //focusing
+      cy.get('body').type('m'); //mute
+      cy.get('@muteBtn').should('have.class', 'vjs-vol-0');
+      cy.get('body').type('m'); //unmute
+      cy.get('@muteBtn').should('not.have.class', 'vjs-vol-0');
+      cy.get('body').type('{uparrow}'); // increase volume
+      cy.wait(300);
+      cy.get('body').type('{downarrow}'); // decrease volume
+      //Fullscreen for mute and unmute test
+      cy.stubFullscreenAPI();
+      cy.get('@fullscreenBtn').click({ force: true });
+      cy.get('body').type('m'); // mute
+      cy.get('@muteBtn').should('have.class', 'vjs-vol-0');
+      cy.get('body').type('m'); //unmute
+      cy.get('@muteBtn').should('not.have.class', 'vjs-vol-0');
+    });
+
+    it('Verify playing the video in full screen - @T384ebffc', () => {
+      cy.get('[data-testid="media-player"]').as('player');
+      cy.get('video[data-testid="videojs-video-element"]').as('videoEl');
+      cy.get('div[data-testid="videojs-video-element"]').as('vjsContainer');
+      cy.get('@player').find('.vjs-fullscreen-control').as('fullscreenBtn');
+
+      // Start play
+      cy.get('@player')
+        .find(
+          'button.vjs-play-control[title="Play"], button.vjs-play-control[title="Pause"]',
+        )
+        .first()
+        .click({ force: true });
+
+      //Stubing fullscreen API so Cypress doesn't throw error
+      cy.stubFullscreenAPI();
+
+      //Enter/exit fullscreen with button click
+      cy.get('@fullscreenBtn').click({ force: true });
+      cy.get('@vjsContainer', { timeout: 5000 }).should(
+        'have.class',
+        'vjs-fullscreen',
+      );
+
+      cy.get('@fullscreenBtn').click({ force: true });
+      cy.get('@vjsContainer').should('not.have.class', 'vjs-fullscreen');
+
+      // Focus player and press 'f'
+      cy.get('@vjsContainer').click({ force: true });
+      cy.wait(300);
+
+      cy.get('body').type('f');
+      cy.get('@vjsContainer', { timeout: 5000 }).should(
+        'have.class',
+        'vjs-fullscreen',
+      );
+
+      cy.wait(500);
+
+      cy.get('body').type('f');
+      cy.get('@vjsContainer').should('not.have.class', 'vjs-fullscreen');
+
+      // press 'f' to exit the fullscreen
+      cy.get('@vjsContainer').click({ force: true });
+      cy.wait(300);
+
+      cy.get('body').type('f');
+      cy.get('@vjsContainer', { timeout: 5000 }).should(
+        'have.class',
+        'vjs-fullscreen',
+      );
+
+      cy.get('@fullscreenBtn').click({ force: true });
+      cy.get('@vjsContainer').should('not.have.class', 'vjs-fullscreen');
+    });
+
+    it('Verify that the user can navigate through the video using the time markers in the transcript. - @T467587bd', () => {
+      //Adding the transcript to the first video section
+      cy.get('[data-testid="media-object-edit-btn"]').click();
+      cy.get(
+        '[data-testid="media-object-side-nav-link"][href*="file-upload"]',
+      ).click();
+
+      //Click Edit for the first section
+      cy.get('[data-testid="media-object-manage-files-edit-btn"]')
+        .first()
+        .click();
+
+      // Upload transcript
+      const transcriptFile = getFixturePath('transcript-example.vtt');
+      cy.get('[data-testid="media-object-edit-associated-files-block"]')
+        .first()
+        .find('[data-testid="media-object-upload-button-transcript"]')
+        .selectFile(transcriptFile, { force: true });
+
+      // Wait for upload to complete
+      cy.contains('transcript-example.vtt', { timeout: 15000 }).should(
+        'be.visible',
+      );
+
+      cy.get('[data-testid="media-object-continue-btn"]').click();
+      cy.visit('/media_objects/' + media_object_id);
+      cy.waitForVideoReady();
+
+      // Click the Transcripts tab
+      cy.get('button[id*="tab-transcripts"]', { timeout: 15000 })
+        .should('exist')
+        .click({ force: true });
+
+      // Verify the dropdown and transcripts
+      cy.get('[data-testid="transcript_nav"]', { timeout: 15000 }).should(
+        'exist',
+      );
+      cy.get('[data-testid="transcript-select-option"]').should('be.visible');
+      cy.get('[data-testid="transcript_item"]').should(
+        'have.length.greaterThan',
+        1,
+      );
+
+      //play
+      cy.get('[data-testid="media-player"]')
+        .find(
+          'button.vjs-play-control[title="Play"], button.vjs-play-control[title="Pause"]',
+        )
+        .first()
+        .click({ force: true });
+
+      cy.wait(1000);
+
+      // Click on 8 second timestamp
+      cy.contains('[data-testid="transcript_time"]', '00:00:08')
+        .should('be.visible')
+        .click({ force: true });
+
+      cy.wait(1000);
+
+      // Verify current time
+      cy.get('video[data-testid="videojs-video-element"]')
+        .invoke('prop', 'currentTime')
+        .should((currentTime) => {
+          expect(currentTime).to.be.within(6, 10);
+        });
+
+      cy.get('video[data-testid="videojs-video-element"]').should(($v) => {
+        expect($v[0].paused).to.eq(false);
+      });
+    });
+
+    // FIXME: depends on previous test adding a transcript to the media object
+    it('Verify the "auto scroll" feature inside the transcripts - @T586e8d8d', () => {
+      cy.get('button[id*="tab-transcripts"]').click({ force: true });
+
+      // verifying auto-scroll checked
+      cy.get(
+        '[data-testid="transcript-auto-scroll-check"] input[type="checkbox"]',
+      )
+        .as('autoScroll')
+        .check({ force: true })
+        .should('be.checked');
+
+      // play video
+      cy.get('[data-testid="media-player"]')
+        .find(
+          'button.vjs-play-control[title="Play"], button.vjs-play-control[title="Pause"]',
+        )
+        .first()
+        .click({ force: true });
+
+      // Scroll
+      cy.get('[data-testid="transcript_content_1"]')
+        .invoke('scrollTop')
+        .then((initialScroll) => {
+          // 4 secoonds wait
+          cy.wait(4000);
+          // Verify transcript scrolled
+          cy.get('[data-testid="transcript_content_1"]')
+            .invoke('scrollTop')
+            .should('be.greaterThan', initialScroll);
+        });
+    });
+
+    it('Verify searching for text inside the transcript - @Taaec6730', () => {
+      cy.get('button[id*="tab-transcripts"]').click({ force: true });
+      cy.get('[data-testid="transcript-search-input"]').should('exist');
+
+      // search keyword in transcript
+      cy.get('[data-testid="transcript-search-input"]').clear().type('file');
+
+      // verify search count
+      cy.get('[data-testid="transcript-search-count"]')
+        .should('be.visible')
+        .and('contain.text', '1 of 4 results');
+
+      // verify highlighted search results
+      cy.get('.ramp--transcript_highlight').should('exist');
+
+      // click next search result
+      cy.get('[data-testid="transcript-search-next"]').click({ force: true });
+
+      // click the timestamp of the focused transcript item
+      cy.get('.ramp--transcript_item.focused')
+        .find('[data-testid="transcript_time"]')
+        .click({ force: true });
+
+      // wait for seek
+      cy.wait(1000);
+
+      // Verify video currentTime advances
+      cy.get('video[data-testid="videojs-video-element"]')
+        .invoke('prop', 'currentTime')
+        .should('be.gt', 0);
+
+      // check that transcript stays focused on current hit
+      cy.get('.ramp--transcript_item.active').should('contain.text', 'file');
+    });
+
+    it('Verify turning off closed captions- @T37ee208e', () => {
+      // Ensure captions button exists
+      cy.get('[data-testid="media-player"]').within(() => {
+        cy.get('button.vjs-subs-caps-button').as('ccButton');
+        cy.get('@ccButton').should('exist');
+      });
+
+      // Turn captions ON
+      cy.get('@ccButton').click({ force: true });
+      cy.get('.vjs-menu-content')
+        .contains('captions-example.srt')
+        .click({ force: true });
+      // captions are enabled and CC icon is active
+      cy.get('@ccButton').should('have.class', 'captions-on');
+
+      // Turn captions OFF
+      cy.get('@ccButton').click({ force: true });
+      cy.get('.vjs-menu-content')
+        .contains('captions off', { matchCase: false })
+        .click({ force: true });
+      // verify CC icon not active and caption display is empty
+      cy.get('@ccButton').should('not.have.class', 'captions-on');
+      cy.get('.vjs-text-track-display').should('have.text', '');
+
+      // Fullscreen caption toggle and repeat test
+      cy.get('.vjs-fullscreen-control').click({ force: true });
+      cy.get('@ccButton').click({ force: true });
+      cy.get('.vjs-menu-content')
+        .contains('captions-example.srt')
+        .click({ force: true });
+      cy.get('@ccButton').should('have.class', 'captions-on');
+
+      cy.get('@ccButton').click({ force: true });
+      cy.get('.vjs-menu-content')
+        .contains('captions off', { matchCase: false })
+        .click({ force: true });
+      cy.get('@ccButton').should('not.have.class', 'captions-on');
+      cy.get('.vjs-text-track-display').should('have.text', '');
+
+      // Exit fullscreen
+      cy.get('.vjs-fullscreen-control').click({ force: true });
+    });
+    // fixed till here
+    it('Verify previous / next canvas buttons- @T75b6b6ef', () => {
+      cy.get('[data-testid="media-player"]').as('player');
+      cy.get('video[data-testid="videojs-video-element"]').as('videoEl');
+
+      // play video
+      cy.get('@player')
+        .find(
+          'button.vjs-play-control[title="Play"], button.vjs-play-control[title="Pause"]',
+        )
+        .first()
+        .click({ force: true });
+      cy.get('@videoEl').should(($v) => expect($v[0].paused).to.eq(false));
+
+      // click next button
+      cy.get('@player')
+        .find('[data-testid="videojs-next-button"]')
+        .should('exist')
+        .click({ force: true });
+
+      // wait for canvas switch and new media to load
+      cy.wait(2000);
+      cy.waitForVideoReady();
+
+      // verify the section has changed - check structured nav active section changed
+      cy.get('.ramp--structured-nav__section-title.active').should('exist');
+
+      // verify time resets
+      cy.get('video[data-testid="videojs-video-element"]')
+        .invoke('prop', 'currentTime')
+        .should('be.lt', 5);
+
+      // click on previous button
+      cy.get('[data-testid="media-player"]')
+        .find('[data-testid="videojs-previous-button"]')
+        .should('exist')
+        .click({ force: true });
+
+      // wait for canvas switch and new media to load
+      //cy.wait(2000);
+      //cy.waitForVideoReady();
+
+      // time resets again
+      cy.get('video[data-testid="videojs-video-element"]')
+        .invoke('prop', 'currentTime')
+        .should('be.lt', 5);
+    });
+    it('Verify that media player (audio/video) automatically advances to the next section once the current section is played - @@T4f0721a7', () => {
+      cy.get('[data-testid="media-player"]').as('player');
+      cy.get('[data-testid="structured-nav"]').as('nav');
+
+      // Detect audio or video
+      cy.get('@player').then(($el) => {
+        const hasVideo =
+          $el.find('video[data-testid="videojs-video-element"]').length > 0;
+
+        const mediaSelector = hasVideo
+          ? 'video[data-testid="videojs-video-element"]'
+          : 'audio[data-testid="videojs-audio-element"]';
+        const durationMs = hasVideo ? 60000 : 12000;
+
+        cy.get(mediaSelector).as('mediaEl');
+
+        // play first section
+        cy.get('@nav')
+          .find('[data-testid="treeitem-section-button"]')
+          .first()
+          .as('firstSection')
+          .click({ force: true });
+
+        // click play button
+        cy.get('@player')
+          .find(
+            'button.vjs-play-control[title="Play"], button.vjs-play-control[title="Pause"]',
+          )
+          .first()
+          .click({ force: true });
+
+        cy.get('@firstSection').should('have.class', 'active');
+        cy.wait(durationMs);
+
+        //next section highlighted
+        cy.get('@nav')
+          .find('[data-testid="treeitem-section-button"].active')
+          .should(($btns) => {
+            expect($btns.length).to.eq(1);
+          });
+
+        // verify it is still playing
+        cy.get('@mediaEl').should(($m) => expect($m[0].paused).to.eq(false));
+
+        cy.visit('/media_objects/' + media_object_id);
+        cy.waitForVideoReady();
+
+        // fullscreen test
+        if (hasVideo) {
+          // stub fullscreen API
+          cy.stubFullscreenAPI();
+
+          cy.get('.vjs-fullscreen-control').click({ force: true });
+
+          cy.wait(durationMs);
+          cy.get('[data-testid="structured-nav"]')
+            .find('[data-testid="treeitem-section-button"].active')
+            .should('exist');
+
+          cy.get('.vjs-fullscreen-control').click({ force: true });
+        }
+      });
+    });
+
+    it('Verify compatibility of the video player Across Different screens - @T24d89b38', () => {
+      const viewports = [
+        [1920, 1080], // Desktop
+        [1366, 768], // Laptop
+        [1280, 800], // Tablet
+        [414, 896], // Mobile
+      ];
+
+      viewports.forEach(([w, h]) => {
+        cy.viewport(w, h);
+
+        // Revisit the same media object page
+        cy.visit('/media_objects/' + media_object_id);
+        cy.waitForVideoReady();
+
+        cy.get('[data-testid="media-player"]').should('be.visible');
+        cy.get('video[data-testid="videojs-video-element"]').should(
+          'be.visible',
+        );
+
+        //play video
+        cy.get('[data-testid="media-player"]')
+          .find(
+            'button.vjs-play-control[title="Play"], button.vjs-play-control[title="Pause"]',
+          )
+          .first()
+          .click({ force: true });
+        cy.get('video[data-testid="videojs-video-element"]').should(($v) =>
+          expect($v[0].paused).to.eq(false),
+        );
+
+        //Verify key controls are visible and not cut off
+        cy.get('.vjs-control-bar').should('be.visible');
+        cy.get('.vjs-fullscreen-control').should('be.visible');
+        cy.get('.vjs-mute-control').should('be.visible');
+      });
+    });
+
+    it('Verify that users can stream the video on the media player in landscape mode -@T017627dd', () => {
+      cy.viewport(896, 414); // Landscape mobile size
+      cy.get('[data-testid="media-player"]').should('be.visible');
+      cy.get('video[data-testid="videojs-video-element"]').should('be.visible');
+
+      // play
+      cy.get('[data-testid="media-player"]')
+        .find(
+          'button.vjs-play-control[title="Play"], button.vjs-play-control[title="Pause"]',
+        )
+        .first()
+        .click({ force: true });
+      cy.get('video[data-testid="videojs-video-element"]').should(($v) =>
+        expect($v[0].paused).to.eq(false),
+      );
+
+      // playing continues in landscape
+      cy.wait(2000);
+      cy.get('video[data-testid="videojs-video-element"]').should(($v) =>
+        expect($v[0].currentTime).to.be.greaterThan(0),
+      );
+    });
   });
 });

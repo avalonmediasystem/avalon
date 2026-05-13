@@ -1,5 +1,5 @@
 # --- BEGIN LICENSE_HEADER BLOCK ---
-# Copyright 2011-2013, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2026, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 # 
@@ -32,6 +32,7 @@ module WorkflowControllerBehavior
 
   def edit
     context = perform_step_action :before_step
+    @model_object = context[:media_object]
 
     custom_edit #yield to custom_edit in the controller
 
@@ -47,15 +48,15 @@ module WorkflowControllerBehavior
 
   def update
     context = perform_step_action :execute
+    @model_object = context[:media_object]
 
     # yield to custom_update in the controller
     custom_update
 
-
     # if object has updated attributes and or the step has changed
     if model_object.save
       if params[:save_and_continue].present?
-        model_object.workflow.update_status(@active_step)        
+        model_object.workflow.update_status(@active_step)
         if HYDRANT_STEPS.has_next?(@active_step)
           @active_step = HYDRANT_STEPS.next(@active_step).step
         elsif model_object.workflow.published?

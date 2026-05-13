@@ -1,4 +1,4 @@
-# Copyright 2011-2025, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2026, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 #
@@ -80,34 +80,23 @@ class MasterFilesController < ApplicationController
   end
 
   def oembed
-    if params[:url].present?
-      id = params[:url].split('?')[0].split('/').last
-      mf = MasterFile.where(identifier_ssim: id.downcase).first
-      mf ||= MasterFile.find(id) rescue nil
-      if mf.present?
-        width = params[:maxwidth] || MasterFile::EMBED_SIZE[:medium]
-        height = mf.is_video? ? (width.to_f/mf.display_aspect_ratio.to_f).floor : MasterFile::AUDIO_HEIGHT
-        maxheight = params['maxheight'].to_f
-        if 0<maxheight && maxheight<height
-          width = (maxheight*mf.display_aspect_ratio.to_f).floor
-          height = maxheight.to_i
-        end
-        width = width.to_i
-        hash = {
-          "version" => "1.0",
-          "type" => mf.is_video? ? "video" : "rich",
-          "provider_name" => Settings.name || 'Avalon Media System',
-          "provider_url" => request.base_url,
-          "width" => width,
-          "height" => height,
-          "html" => mf.embed_code(width, {urlappend: '/embed'})
-        }
-        respond_to do |format|
-          format.xml  { render xml: hash.to_xml({root: 'oembed'}) }
-          format.json { render json: hash }
-        end
+    render json: { errors: ['Invalid request. Missing "url" parameter.'] }, status: :bad_request and return if params[:url].blank?
+    id = params[:url].split('?')[0].split('/').last
+    mf = SpeedyAF::Proxy::MasterFile.where("identifier_ssim: #{id.downcase}").first
+    mf ||= SpeedyAF::Proxy::MasterFile.find(id) rescue nil
+    if mf.present?
+      authorize! :read, mf
+      hash = oembed_hash(mf)
+      respond_to do |format|
+        format.html { render json: hash }
+        format.xml  { render xml: hash.to_xml({ root: 'oembed' }) }
+        format.json { render json: hash }
       end
+    else
+      render json: { errors: ["#{id} not found"] }, status: :not_found
     end
+  rescue CanCan::AccessDenied
+    render json: { errors: ['You do not have sufficient privileges'] }, status: :unauthorized
   end
 
   def attach_structure
@@ -229,22 +218,20 @@ class MasterFilesController < ApplicationController
   def get_frame
     mimeType = "image/jpeg"
     content = if params[:offset]
-      authorize! :edit, @master_file, message: "You do not have sufficient privileges to edit this file"
-      opts = { :type => params[:type], :size => params[:size], :offset => params[:offset].to_f*1000, :preview => true }
-      @master_file.extract_still(opts)
-    else
-      authorize! :read, @master_file, message: "You do not have sufficient privileges to view this file"
-      whitelist = ["thumbnail", "poster"]
-      if whitelist.include? params[:type]
-        ds = @master_file.send(params[:type].to_sym)
-        mimeType = ds.mime_type
-        ds.content
-      else
-        nil
-      end
-    end
+                authorize! :edit, @master_file, message: "You do not have sufficient privileges to edit this file"
+                opts = { type: params[:type], size: params[:size], offset: params[:offset].to_f * 1000, preview: true }
+                @master_file.extract_still(opts)
+              else
+                authorize! :read, @master_file, message: "You do not have sufficient privileges to view this file"
+                whitelist = ["thumbnail", "poster"]
+                if whitelist.include? params[:type]
+                  ds = @master_file.send(params[:type].to_sym)
+                  mimeType = ds.mime_type
+                  ds.content
+                end
+              end
     if content
-      send_data content, :filename => "#{params[:type]}-#{@master_file.id.split(':')[1]}", :disposition => :inline, :type => mimeType
+      send_data content, filename: "#{params[:type]}-#{@master_file.id.split(':')[1]}", disposition: :inline, type: mimeType
     elsif @master_file.is_video?
       redirect_to ActionController::Base.helpers.asset_path('video_icon.png')
     else
@@ -277,8 +264,7 @@ class MasterFilesController < ApplicationController
   end
 
   def set_structure
-    # Bypass authorization check for now
-    # authorize! :edit, @master_file, message: "You do not have sufficient privileges"
+    authorize! :edit, @master_file, message: "You do not have sufficient privileges"
     @master_file.structuralMetadata.content = StructuralMetadata.from_json(params[:json])
     @master_file.save
   end
@@ -310,7 +296,7 @@ class MasterFilesController < ApplicationController
   def move
     current_media_object = @master_file.media_object
     authorize! :update, current_media_object
-    target_media_object = MediaObject.find(params[:target])
+    target_media_object = MediaObject.find(params[:target].strip)
     authorize! :update, target_media_object
 
     @master_file.media_object = target_media_object
@@ -340,12 +326,27 @@ class MasterFilesController < ApplicationController
 
       case path
       when /^s3:/
+        locator = FileLocator::S3File.new(path)
         # Use an AWS presigned URL to facilitate direct download of the derivative to avoid
         # having to download the file to the server as a tmp file and then sending that to
         # the client. Doing this reduces latency and server load.
         # Rails 7.0 adds a config option to protect against "open redirects". We override
         # that here in case the s3 bucket is not local.
-        redirect_to FileLocator::S3File.new(path).download_url, allow_other_host: true
+        return redirect_to locator.download_url, allow_other_host: true if Settings.derivative.use_presigned_url
+        
+        # Directly stream file when S3 is locked behind a firewall or otherwise has limited
+        # access from outside clients
+        object = locator.object
+        self.status = 200
+        self.content_type = object.content_type
+        response.headers['Content-Disposition'] = "attachment; filename=#{object.key}"
+        response.headers['Content-Transfer-Encoding'] = 'binary'
+        response.headers['Content-Type'] = object.content_type
+        response.headers['Content-Length'] = object.content_length.to_s
+        response.headers['Last-Modified'] = object.last_modified
+        response.sending_file = true
+        object.get { |chunk| response.stream.write(chunk) }
+        response.stream.close
       else
         send_file path, filename: File.basename(path), disposition: 'attachment'
       end
@@ -357,22 +358,27 @@ class MasterFilesController < ApplicationController
   end
 
   def search
+    authorize! :read, @master_file, message: "You do not have sufficient privileges"
     render json: search_response_json
+  # Supercede the application level handling to avoid rendering restricted_pid template
+  rescue CanCan::AccessDenied
+    head :unauthorized
   end
 
 protected
   def set_masterfile
-    if params[:id].blank? || (not MasterFile.exists?(params[:id]))
-      flash[:notice] = "MasterFile #{params[:id]} does not exist"
-    end
     @master_file = MasterFile.find(params[:id])
+  rescue ArgumentError
+    flash[:notice] = "MasterFile #{params[:id]} does not exist"
   end
 
   def set_masterfile_proxy
     @master_file = SpeedyAF::Proxy::MasterFile.find(params[:id], load_reflections: true)
-    if params[:id].blank? || @master_file.nil?
-      flash[:notice] = "MasterFile #{params[:id]} does not exist"
-    end
+    set_masterfile if @master_file.nil?
+    @master_file
+  rescue SpeedyAF::RecordNotFound
+    set_masterfile
+    @master_file
   end
 
   # return deflated waveform content. deflate only if necessary
@@ -431,5 +437,31 @@ private
 
   def search_response_json
     Avalon::TranscriptSearch.new(query: params[:q], master_file: @master_file, request_url: request.url).iiif_content_search.to_json
+  end
+
+  def oembed_hash(master_file)
+    width, height = oembed_dimensions(master_file)
+    {
+      "version" => "1.0",
+      "type" => master_file.is_video? ? "video" : "rich",
+      "provider_name" => Settings.name || 'Avalon Media System',
+      "provider_url" => request.base_url,
+      "width" => width,
+      "height" => height,
+      "title" => master_file.display_title,
+      "html" => master_file.embed_code(width, { urlappend: '/embed' })
+    }
+  end
+
+  def oembed_dimensions(master_file)
+    width = params[:maxwidth] || MasterFile::EMBED_SIZE[:medium]
+    height = master_file.is_video? ? (width.to_f / master_file.display_aspect_ratio.to_f).floor : MasterFile::AUDIO_HEIGHT
+    maxheight = params['maxheight'].to_f
+    if maxheight.positive? && maxheight < height
+      width = (maxheight * master_file.display_aspect_ratio.to_f).floor
+      height = maxheight.to_i
+    end
+    width = width.to_i
+    [width, height]
   end
 end

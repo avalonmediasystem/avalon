@@ -1,0 +1,50 @@
+.bookmarks-document-list {
+  .document-row {
+    border-bottom: 1px solid var(--bs-border-color, #dee2e6);
+    padding: 0.5rem 0;
+
+    &:last-child {
+      border-bottom: none;
+    }
+  }
+
+  .bookmark-selection-container {
+    padding-top: 0.25rem;
+  }
+
+  .bookmark-selection,
+  .bookmark-selection-all {
+    cursor: pointer;
+    width: 1.25rem;
+    height: 1.25rem;
+  }
+
+  // Hide Blacklight's toggle-bookmark checkboxes on bookmarks page
+  .checkbox.toggle-bookmark {
+    display: none;
+  }
+
+  // Remove default margin from Blacklight document partials
+  article.document {
+    margin: 0;
+  }
+}
+
+.bulk-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+
+  .btn.disabled,
+  .btn[aria-disabled="true"] {
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+}
+
+// Selection count badge next to 'Select All' checkbox
+#selection-count {
+  font-size: 0.875rem;
+}

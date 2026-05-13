@@ -1,4 +1,4 @@
-# Copyright 2011-2025, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2026, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 #
@@ -29,7 +29,7 @@ class ExternalGroup
 
   def self.ldap_autocomplete(query)
     #Only wildcard the tail of the query to avoid long running queries
-    self.ldap_lookup("#{query}*", size: 10)
+    self.ldap_lookup("#{query}*").first(10)
   end
 
   def self.autocomplete(query, _id = nil)

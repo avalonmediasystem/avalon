@@ -1,5 +1,5 @@
 /* 
- * Copyright 2011-2025, The Trustees of Indiana University and Northwestern
+ * Copyright 2011-2026, The Trustees of Indiana University and Northwestern
  *   University.  Licensed under the Apache License, Version 2.0 (the "License");
  *   you may not use this file except in compliance with the License.
  *
@@ -26,14 +26,15 @@ context('Navigations', () => {
     cy.login('administrator');
     cy.contains('Manage Content'); //.click()
     cy.contains('Manage').click();
-    cy.visit('/admin/collections');
+    cy.visit('/admin/dashboard');
     cy.contains('Skip to main content');
-    cy.contains('Create Collection');
+    cy.contains('Create unit');
+    cy.contains('Create collection');
     // What if there are no collections yet?
-    cy.contains('Title');
+    cy.contains('Name');
     cy.contains('Items');
-    cy.contains('Managers');
     cy.contains('Description');
+    cy.contains('My Units');
     cy.contains('My Collections');
   });
 
@@ -46,9 +47,7 @@ context('Navigations', () => {
     cy.contains('System Groups');
     cy.contains('Additional Groups');
     cy.contains('Group Name');
-    cy.contains('group_manager');
     cy.contains('administrator');
-    cy.contains('manager');
   });
 
   // is able to sign out

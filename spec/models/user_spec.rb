@@ -1,4 +1,4 @@
-# Copyright 2011-2025, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2026, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 #
@@ -148,30 +148,30 @@ describe User do
 
   describe "#destroy" do
     it 'removes bookmarks for user' do
-      user = FactoryBot.create(:public)
+      user = FactoryBot.create(:user)
       bookmark = Bookmark.create(document_id: Faker::Number.digit, user: user)
       expect { user.destroy }.to change { Bookmark.exists? bookmark.id }.from( true ).to( false )
     end
     it 'removes checkouts for user' do
-      user = FactoryBot.create(:public)
+      user = FactoryBot.create(:user)
       active_checkout = FactoryBot.create(:checkout, user_id: user.id)
       returned_checkout = FactoryBot.create(:checkout, user_id: user.id, return_time: DateTime.current - 1.day)
       expect { user.destroy }.to change { Checkout.all.count }.from(2).to(0)
     end
     it 'removes playlists for user' do
-      user = FactoryBot.create(:public)
+      user = FactoryBot.create(:user)
       playlist = FactoryBot.create(:playlist, user_id: user.id)
       expect { user.destroy }.to change { Playlist.exists? playlist.id }.from( true ).to( false )
     end
     it 'removes timelines for user' do
-      user = FactoryBot.create(:public)
+      user = FactoryBot.create(:user)
       timeline = FactoryBot.create(:timeline, user_id: user.id)
       expect { user.destroy }.to change { Timeline.exists? timeline.id }.from( true ).to( false )
     end
   end
 
   describe '#timeline_tags' do
-    let(:user) { FactoryBot.create(:public) }
+    let(:user) { FactoryBot.create(:user) }
 
     it 'is empty when the user has no timeline tags' do
       expect(user.timeline_tags).to be_empty

@@ -65,10 +65,15 @@ services:
       - ./solr/conf:/opt/solr/avalon_conf
 
   hls:
-    image: avalonmediasystem/nginx:minio-jammy
+    image: avalonmediasystem/nginx:noble-s3authv4
     environment:
       - AVALON_DOMAIN=http://avalon:3000
       - AVALON_STREAMING_BUCKET_URL=http://minio:9000/derivatives/
+      - VOD_MODE=remote
+      - S3_BUCKET_NAME=derivatives
+      - AWS_ACCESS_KEY_ID=minio
+      - AWS_SECRET_ACCESS_KEY=minio123
+      - S3_SERVER=localhost:9000
     volumes:
       - ./log/nginx:/var/log/nginx
     ports:
@@ -89,7 +94,7 @@ services:
     build:
       context: .
       target: dev
-    command: bash -c "/docker_init.sh && bundle exec rails server -b 0.0.0.0"
+    command: bash -c "/docker_init.sh && bin/dev"
     depends_on:
       - db
       - fedora
@@ -129,6 +134,9 @@ services:
       - SETTINGS__STREAMING__HTTP_BASE=http://localhost:8880/avalon
       - SETTINGS__STREAMING__SERVER=nginx
       - SETTINGS__STREAMING__STREAM_TOKEN_TTL=20
+      - ACTIVE_RECORD_ENCRYPTION_PRIMARY_KEY=primarykey1234
+      - ACTIVE_RECORD_ENCRYPTION_DETERMINISTIC_KEY=deterministickey1234
+      - ACTIVE_RECORD_ENCRYPTION_KEY_DERIVATION_SALT=derivationsalt1234
       - SYSTEM_GROUPS=administrator,group_manager,manager
       - PIDFILE=tmp/pids/server.pid
       - PUMA_STATE_PATH=tmp/puma.state
@@ -160,6 +168,9 @@ services:
       - FEDORA_URL=http://fedoraAdmin:fedoraAdmin@fedora-test:8080/fcrepo/rest
       - FEDORA_BASE_PATH=/test
       - SOLR_URL=http://solr-test:8983/solr/avalon
+      - ACTIVE_RECORD_ENCRYPTION_PRIMARY_KEY=primarykey1234
+      - ACTIVE_RECORD_ENCRYPTION_DETERMINISTIC_KEY=deterministickey1234
+      - ACTIVE_RECORD_ENCRYPTION_KEY_DERIVATION_SALT=derivationsalt1234
       - RAILS_ENV=test
       - BUNDLE_FLAGS=--with aws test postgres --without production
       - DATABASE_CLEANER_ALLOW_REMOTE_DATABASE_URL=true
@@ -267,7 +278,6 @@ services:
       /bin/sh -c "
       /usr/bin/mc alias set myminio http://minio:9000 minio minio123;
       /usr/bin/mc mb -p myminio/fcrepo myminio/masterfiles myminio/derivatives myminio/supplementalfiles myminio/preserves;
-      /usr/bin/mc anonymous set download myminio/derivatives;
       /usr/bin/mc anonymous set download myminio/supplementalfiles;
       exit 0;
       "

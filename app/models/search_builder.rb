@@ -1,4 +1,4 @@
-# Copyright 2011-2025, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2026, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 #
@@ -18,8 +18,10 @@ class SearchBuilder < Blacklight::SearchBuilder
   include Hydra::AccessControlsEnforcement
   include Hydra::MultiplePolicyAwareAccessControlsEnforcement
 
+  PERMISSION_GROUPS = [Hydra::AccessControls::AccessRight::PERMISSION_TEXT_VALUE_PUBLIC, Hydra::AccessControls::AccessRight::PERMISSION_TEXT_VALUE_AUTHENTICATED]
+
   class_attribute :avalon_solr_access_filters_logic
-  self.avalon_solr_access_filters_logic = [:only_published_items, :limit_to_non_hidden_items]
+  self.avalon_solr_access_filters_logic = [:only_published_items, :limit_to_non_hidden_items, :limit_to_inheritance_enabled_items]
   self.default_processor_chain += [:only_wanted_models, :term_frequency_counts, :search_section_transcripts]
 
   def only_wanted_models(solr_parameters)
@@ -28,11 +30,24 @@ class SearchBuilder < Blacklight::SearchBuilder
   end
 
   def only_published_items(_permission_types = discovery_permissions, _ability = current_ability)
-    [policy_clauses, 'workflow_published_sim:"Published"'].compact.join(" OR ")
+    [policy_clauses(permission_types: [:edit]), 'workflow_published_sim:"Published"'].compact.join(" OR ")
   end
 
   def limit_to_non_hidden_items(_permission_types = discovery_permissions, _ability = current_ability)
-    [policy_clauses, "(*:* NOT hidden_bsi:true)"].compact.join(" OR ")
+    media_object_hidden_clause = "hidden_bsi:true"
+    collection_hidden_clause = "{!join from=id to=isGovernedBy_ssim}default_hidden_bsi:true"
+
+    [policy_clauses(permission_types: [:edit]), "(*:* AND NOT #{media_object_hidden_clause} AND (disable_inheritance_bsi:true OR (*:* AND NOT #{collection_hidden_clause})))"].compact.join(" OR ")
+  end
+
+  def limit_to_inheritance_enabled_items(_permission_types = discovery_permissions, ability = current_ability)
+    current_user = ability.current_user.username
+    user_groups = ability.user_groups - PERMISSION_GROUPS
+    user_visibility_groups = ability.user_groups & PERMISSION_GROUPS
+    read_access_clauses = []
+    read_access_clauses += ["read_access_person_ssim:#{RSolr.solr_escape(current_user)}"] if current_user.present?
+    read_access_clauses += ["_query_:\"{!terms f=read_access_group_ssim}#{RSolr.solr_escape(user_groups.join(','))}\""] if user_groups.present?
+    [policy_clauses(permission_types: [:edit]), "(*:* AND NOT disable_inheritance_bsi:true AND (#{(Array(policy_clauses(permission_types: [:read])) + read_access_clauses).join(" OR ")}))", "(disable_inheritance_bsi:true AND (#{(read_access_clauses + ["read_access_group_ssim:(#{user_visibility_groups.join(" OR ")})"]).join(" OR ")}))"].compact.join(" OR ")
   end
 
   # Overridden to skip for admin users
@@ -83,7 +98,7 @@ class SearchBuilder < Blacklight::SearchBuilder
     transcripts_fl = ['id'] if transcripts_present
 
     # Add fields for each term in the query, explictly escape closing parenthesis to prevent error
-    terms = solr_parameters[:q].gsub(/(\))/, "\\\\\1").split
+    terms = solr_parameters[:q].gsub(/(\))/, "\\\\\1").split(/[\s\u3000]/).compact_blank
     terms.each_with_index do |term, i|
       fl << "metadata_tf_#{i}:termfreq(mods_tesim,#{RSolr.solr_escape(term)})"
       fl << "structure_tf_#{i}:termfreq(section_label_tesim,#{RSolr.solr_escape(term)})"

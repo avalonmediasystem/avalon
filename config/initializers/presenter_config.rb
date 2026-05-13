@@ -64,7 +64,6 @@ Rails.application.config.to_prepare do
                         series: [],
                         format: []
                       }
-      include VirtualGroups
       include MediaObjectIntercom
       include MediaObjectBehavior
       include SupplementalFileReadBehavior
@@ -76,6 +75,10 @@ Rails.application.config.to_prepare do
                         cdl_enabled: nil
                       }
       include AdminCollectionBehavior
+    end
+
+    sp.config Admin::Unit do
+      include AdminUnitBehavior
     end
 
     sp.config Derivative do

@@ -1,4 +1,4 @@
-# Copyright 2011-2025, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2026, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 #
@@ -38,7 +38,7 @@ class Checkout < ApplicationRecord
     end
 
     def duration
-      duration = media_object.lending_period if media_object_id.present?
+      duration = media_object.active_lending_period if media_object_id.present?
       duration ||= ActiveSupport::Duration.parse(Settings.controlled_digital_lending.default_lending_period)
       duration
     end

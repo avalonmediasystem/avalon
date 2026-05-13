@@ -1,4 +1,4 @@
-# Copyright 2011-2025, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2026, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 #
@@ -21,7 +21,8 @@ module MediaObjectBehavior
       title: title,
       collection: collection.name,
       collection_id: collection.id,
-      unit: collection.unit,
+      unit: collection.unit.name,
+      unit_id: collection.unit.id,
       main_contributors: creator,
       publication_date: date_created,
       published_by: avalon_publisher,
@@ -31,6 +32,7 @@ module MediaObjectBehavior
       read_groups: read_groups,
       lending_period: lending_period,
       lending_status: lending_status,
+      discover_groups: discover_groups
     }.merge(to_ingest_api_hash(options.fetch(:include_structure, false)))
   end
 
@@ -66,6 +68,17 @@ module MediaObjectBehavior
     sections.any? { |mf| mf.has_transcripts? }
   end
 
+  def is_accessible?
+    return true unless Settings.accessibility_compliance.enforce
+    return true if DateTime.parse(Settings.accessibility_compliance.compliance_date) > create_date
+    return true if accessibility_exempt?
+    has_captions || has_transcripts
+  end
+
+  def accessibility_exempt?
+    !!override_accessibility
+  end
+
   # CDL methods
   def lending_status
     Checkout.active_for_media_object(id).any? ? "checked_out" : "available"
@@ -79,6 +92,16 @@ module MediaObjectBehavior
     collection&.cdl_enabled?
   end
 
+  def inherited_lending_period
+    collection&.default_lending_period
+  end
+
+  def active_lending_period
+    active_period = disable_inheritance? ? lending_period : inherited_lending_period
+    active_period ||= ActiveSupport::Duration.parse(Settings.controlled_digital_lending.default_lending_period).to_i
+    active_period
+  end
+
   def current_checkout(user_id)
     checkouts = Checkout.active_for_media_object(id)
     checkouts.select{ |ch| ch.user_id == user_id  }.first
@@ -86,5 +109,54 @@ module MediaObjectBehavior
 
   def section_share_infos
     @share_infos ||= sections.collect { |section| section.share_info }
+  end
+
+  def local_read_groups
+    read_groups.select {|g| Admin::Group.exists? g}
+  end
+
+  def ip_read_groups
+    read_groups.select {|g| IPAddr.new(g) rescue false }
+  end
+
+  def virtual_read_groups
+    read_groups - represented_visibility - local_read_groups - ip_read_groups
+  end
+
+  def inherited_local_read_groups
+    return [] unless collection
+    (collection.inherited_local_read_groups + collection.default_local_read_groups).select {|g| Admin::Group.exists? g}
+  end
+
+  def inherited_ip_read_groups
+    return [] unless collection
+    (collection.inherited_ip_read_groups + collection.default_ip_read_groups).select {|g| IPAddr.new(g) rescue false }
+  end
+
+  def inherited_virtual_read_groups
+    return [] unless collection
+    collection.inherited_virtual_read_groups + collection.default_virtual_read_groups
+  end
+
+  def inherited_read_users
+    return [] unless collection
+    users = collection.default_read_users.to_a + collection.inherited_read_users.to_a
+    users.uniq
+  end
+
+  def inherited_read_groups
+    return [] unless collection
+    groups = collection.default_read_groups.to_a + collection.inherited_read_groups.to_a
+    groups.uniq
+  end
+
+  def inherited_hidden?
+    return false unless collection
+    collection.default_hidden
+  end
+
+  def inherited_visibility
+    return false unless collection
+    collection.default_visibility
   end
 end

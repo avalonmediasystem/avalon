@@ -1,4 +1,4 @@
-# Copyright 2011-2025, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2026, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 #
@@ -16,7 +16,7 @@ class ObjectsController < ApplicationController
   layout false, only: [:autocomplete]
 
   def show
-    obj = fetch_object params[:id]
+    obj = fetch_proxy params[:id]
     if obj.blank?
       redirect_to root_path
     else

@@ -1,4 +1,4 @@
-# Copyright 2011-2025, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2026, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 #
@@ -42,11 +42,9 @@ describe DropboxController do
     expect(response.status).to be(200)
   end
 
-  [:group_manager, :student].each do |group|
-    it "should not allow #{group} to delete" do
-      login_as group
-      delete :bulk_delete, params: { :collection_id => @collection.id, :filenames => @temp_files.map{|f| f[:name]} }
-      expect(response).to render_template('errors/restricted_pid')
-    end
+  it "should not allow user to delete" do
+    login_as :user
+    delete :bulk_delete, params: { :collection_id => @collection.id, :filenames => @temp_files.map{|f| f[:name]} }
+    expect(response).to render_template('errors/restricted_pid')
   end
 end

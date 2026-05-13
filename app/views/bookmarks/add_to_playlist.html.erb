@@ -15,12 +15,6 @@ Unless required by applicable law or agreed to in writing, software distributed
 %>
 
 <div data-blacklight-modal="container">
-  <script type="text/javascript">
-    $('#target_playlist_id').select2({
-      dropdownParent: $('#blacklight-modal')
-    });
-  </script>
-
   <% @candidates = Playlist.where(user: current_user) %>
 
   <%= render partial: 'modal_header', locals: { label: "add_to_playlist"} %>

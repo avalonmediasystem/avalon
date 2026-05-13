@@ -1,4 +1,4 @@
-# Copyright 2011-2025, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2026, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 #
@@ -78,7 +78,8 @@ class Derivative < ActiveFedora::Base
     if managed
       path = Addressable::URI.parse(absolute_location).path
       self.location_url = Avalon::StreamMapper.stream_path(path)
-      self.hls_url = Avalon::StreamMapper.map(path, 'http', format)
+      is_mp3 = format == "audio" && audio_codec == "mp3"
+      self.hls_url = Avalon::StreamMapper.map(path, 'http', (is_mp3 ? "audio_mp3" : format))
     end
     self
   end
@@ -115,6 +116,10 @@ class Derivative < ActiveFedora::Base
     derivative.video_bitrate = output[:video_bitrate]
     derivative.video_codec = output[:video_codec]
     derivative.resolution = "#{output[:width]}x#{output[:height]}" if output[:width] && output[:height]
+
+    if derivative.format == "audio" && derivative.audio_codec == "mp3"
+      derivative.mime_type ||= "audio/mpeg"
+    end
 
     # FIXME: Transform to stream url here? How do we distribute to the streaming server?
     derivative.location_url = output[:url]

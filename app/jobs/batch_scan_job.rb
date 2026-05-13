@@ -1,4 +1,4 @@
-# Copyright 2011-2025, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2026, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 #
@@ -23,7 +23,7 @@ class BatchScanJob < ActiveJob::Base
   # @param [String] the path to the manifest in the form of S3://...
   def perform
     Rails.logger.info "<< Scanning for new batch packages in existing collections >>"
-    Admin::Collection.all.each do |collection|
+    SpeedyAF::Base.where('has_model_ssim:"Admin::Collection"').each do |collection|
       Avalon::Batch::Ingest.new(collection).scan_for_packages
     end
   end

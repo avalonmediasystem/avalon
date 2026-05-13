@@ -3,7 +3,7 @@ const path = require('path');
 const fs = require('fs');
 
 // Determine which env file to load
-const environmentName = process.env.CYPRESS_ENV || 'dev';
+const environmentName = process.env.CYPRESS_ENV || 'local';
 const envFilename = `cypress.env.${environmentName}.json`;
 const envPath = path.resolve(__dirname, envFilename);
 let envSettings = {};
@@ -11,24 +11,25 @@ if (fs.existsSync(envPath)) {
   envSettings = require(envPath);
 }
 // PROJECT_ROOT in each env file controls where specs, fixtures,etc
-const projectRoot = envSettings.PROJECT_ROOT || '';
+const projectRoot = envSettings.env?.PROJECT_ROOT || '';
 
 module.exports = defineConfig({
   downloadsFolder: path.resolve(__dirname, projectRoot, 'downloads'),
   fixturesFolder: path.resolve(__dirname, projectRoot, 'fixtures'),
   screenshotsFolder: path.resolve(__dirname, projectRoot, 'screenshots'),
   videosFolder: path.resolve(__dirname, projectRoot, 'videos'),
-  browser: process.env.BROWSER || 'electron',
-
+  browser: 'chrome',
+  chromeWebSecurity: false,
+  numTestsKeptInMemory: 5,
   e2e: {
-    defaultCommandTimeout: 100000, //timeout
-    pageLoadTimeout: 100000,
+    defaultCommandTimeout: 10000, //timeout
+    pageLoadTimeout: 10000,
     viewportWidth: 1366,
     viewportHeight: 768,
 
     setupNodeEvents(on, config) {
       //node env variables
-      const environmentName = process.env.CYPRESS_ENV || 'dev';
+      const environmentName = process.env.CYPRESS_ENV || 'local';
       const environmentFilename = `cypress.env.${environmentName}.json`;
       const environmentPath = path.resolve(__dirname, environmentFilename);
       console.log('Environment name: %s', environmentName);

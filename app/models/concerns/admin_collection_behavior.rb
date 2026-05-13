@@ -1,4 +1,4 @@
-# Copyright 2011-2025, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2026, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 #
@@ -18,8 +18,16 @@ module AdminCollectionBehavior
     edit_users & collection_managers.to_a
   end
 
+  def inherited_managers
+    unit.unit_admins_and_managers
+  end
+
   def editors
     edit_users - managers
+  end
+
+  def inherited_editors
+    unit.editors
   end
 
   def editors_and_managers
@@ -28,5 +36,29 @@ module AdminCollectionBehavior
 
   def depositors
     read_users
+  end
+
+  def inherited_depositors
+    unit.depositors
+  end
+
+  def inherited_read_users
+    unit.default_read_users
+  end
+
+  def inherited_read_groups
+    unit.default_read_groups
+  end
+
+  def inherited_local_read_groups
+    unit.default_local_read_groups
+  end
+
+  def inherited_ip_read_groups
+    unit.default_ip_read_groups
+  end
+
+  def inherited_virtual_read_groups
+    unit.default_virtual_read_groups
   end
 end

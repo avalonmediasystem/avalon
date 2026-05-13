@@ -15,6 +15,23 @@ Unless required by applicable law or agreed to in writing, software distributed
 %>
 <%= bootstrap_form_for @media_object, html: { id: 'access_control_form' }  do |vid| %>
 <%= hidden_field_tag :step, @active_step %>
+
+<div class="card special-access-inheritance" data-test-id="media-object-special-access-inheritance">
+  <div class="card-header">
+    <h3 class="card-title">Special access inheritance</h3>
+  </div>
+  <div class="card-body">
+    <div class="mb-3">
+      <div class="form-check">
+        <%= label_tag :disable_inheritance do %>
+        <%= check_box_tag :disable_inheritance, '1', (@media_object.disable_inheritance?) %>
+        Disable parent permissions
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>
+
 <% if lending_enabled?(@media_object) %>
   <div class="card item-lending-period">
     <div class="card-header">
@@ -22,14 +39,15 @@ Unless required by applicable law or agreed to in writing, software distributed
     </div>
     <div class="card-body">
       <div class="mb-3">
+        <% if @media_object.disable_inheritance? %>
         <%=  render partial: "modules/tooltip", locals: { form: vid, field: :lending_period, tooltip: t("access_control.#{:lending_period}"), options: {display_label: (t("access_control.#{:lending_period}label")+'*').html_safe} } %><br />
-        <% d, h = (@media_object.lending_period/3600).divmod(24) %>
+        <% d, h = ((@media_object.lending_period || 0)/3600).divmod(24) %>
         <div class='row'>
           <div class="col-1">
             <label class="col-form-label" for="add_lending_period_days">
               <span data-title="Days">Days</span>
             </label>
-            <%= text_field_tag "add_lending_period_days", d ? d : 0, class: 'form-control' %>
+            <%= text_field_tag "add_lending_period_days", d ? d : 0, class: 'form-control', data:{testid: 'media-object-lending-period-days'} %>
           </div>
           <div class="col-1">
             <label class="col-form-label" for="add_lending_period_hours">
@@ -38,6 +56,10 @@ Unless required by applicable law or agreed to in writing, software distributed
             <%= text_field_tag "add_lending_period_hours", h ? h : 0, class: 'form-control' %>
           </div>
         </div>
+        <% else %>
+          <% d, h = (@media_object.inherited_lending_period/3600).divmod(24) %>
+          The lending period is <%= d %> days and <%= h %> hours.
+        <% end %>
       </div>
     </div>
   </div>
@@ -49,12 +71,18 @@ Unless required by applicable law or agreed to in writing, software distributed
   </div>
   <div class="card-body">
     <div class="mb-3">
+      <% if @media_object.disable_inheritance? %>
       <div class="form-check">
         <%= label_tag :hidden do %>
-        <%= check_box_tag :hidden, '1', (@media_object.hidden?) %>
+        <%= check_box_tag :hidden, '1', @media_object.hidden? %>
         Hide this item from search results
         <% end %>
       </div>
+      <% elsif @media_object.inherited_hidden? %>
+        This item is hidden from search results.
+      <% else %>
+        This item is not hidden from search results.
+      <% end %>
     </div>
   </div>
 </div>
@@ -65,9 +93,10 @@ Unless required by applicable law or agreed to in writing, software distributed
   </div>
   <div class="card-body">
     <div class="mb-3">
+      <% if @media_object.disable_inheritance? %>
       <div class="form-check">
         <label>
-          <%= radio_button_tag :visibility, 'public', (@visibility == 'public'),data:{testid: 'media-object-general-public'} %>
+          <%= radio_button_tag :visibility, 'public', (@visibility == 'public'), data:{testid: 'media-object-general-public'} %>
           Available to the general public
         </label>
       </div>
@@ -83,6 +112,18 @@ Unless required by applicable law or agreed to in writing, software distributed
           Collection staff only
         </label>
       </div>
+      <% else %>
+      <% visibility_text = case @inherited_visibility
+                           when 'public'
+                             'the public'
+                           when 'restricted'
+                             'logged-in users'
+                           when 'private'
+                             'collection staff'
+                           end
+                         %>
+        This item is accessible by <%= visibility_text %>.
+      <% end %>
     </div>
   </div>
 </div>

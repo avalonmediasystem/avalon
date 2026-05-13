@@ -23,7 +23,6 @@
 }
 
 .modal-open .modal {
-  height: calc(100vh - 80px);
   overflow: scroll;
 }
 
@@ -34,11 +33,15 @@
 
   .modal-wrapper-body {
     width: 90%;
-    top: 50px;
   }
 
   .modal-title {
     display: inline-block;
+  }
+
+  .structure-section>.structure-lists {
+    height: fit-content;
+    max-height: 28vh;
   }
 }
 

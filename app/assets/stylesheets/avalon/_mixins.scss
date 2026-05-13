@@ -15,7 +15,7 @@
 */
 
 @mixin current-stream-indicator($margin, $left: -6px) {
-  @extend #{'.fa', '.fa-arrow-circle-right'};
+  @extend #{'.fa', '.fa-arrow-circle-right'} !optional;
   position: relative;
   left: $left;
   margin-left: $margin;

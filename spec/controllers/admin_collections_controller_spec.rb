@@ -1,4 +1,4 @@
-# Copyright 2011-2025, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2026, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 #
@@ -71,23 +71,14 @@ describe Admin::CollectionsController, type: :controller do
     end
 
     it "should add users to manager role" do
-      manager = FactoryBot.create(:manager)
+      manager = FactoryBot.create(:user)
       put 'update', params: { id: collection.id, submit_add_manager: 'Add', add_manager: manager.user_key }
       collection.reload
       expect(manager).to be_in(collection.managers)
     end
 
-    it "should not add users to manager role" do
-      user = FactoryBot.create(:user)
-      put 'update', params: { id: collection.id, submit_add_manager: 'Add', add_manager: user.user_key }
-      collection.reload
-      expect(user).not_to be_in(collection.managers)
-      expect(flash[:error]).not_to be_empty
-    end
-
     it "should remove users from manager role" do
-      #initial_manager = FactoryBot.create(:manager).user_key
-      collection.managers += [FactoryBot.create(:manager).user_key, FactoryBot.create(:manager).user_key]
+      collection.managers += [FactoryBot.create(:user).user_key, FactoryBot.create(:user).user_key]
       collection.save!
       manager = User.where(Devise.authentication_keys.first => collection.managers.first).first
       put 'update', params: { id: collection.id, remove_manager: manager.user_key }
@@ -96,7 +87,7 @@ describe Admin::CollectionsController, type: :controller do
     end
 
     context 'with zero-width characters' do
-      let(:manager) { FactoryBot.create(:manager) }
+      let(:manager) { FactoryBot.create(:user) }
       let(:manager_key) { "#{manager.user_key}\u200B" }
 
       it "should add users to manager role" do
@@ -169,7 +160,7 @@ describe Admin::CollectionsController, type: :controller do
       expect(json.count).to eq(2)
       expect(json.first['id']).to eq(collection.id)
       expect(json.first['name']).to eq(collection.name)
-      expect(json.first['unit']).to eq(collection.unit)
+      expect(json.first['unit']).to eq(collection.unit.name)
       expect(json.first['description']).to eq(collection.description)
       expect(json.first['object_count']['total']).to eq(collection.media_objects.count)
       expect(json.first['object_count']['published']).to eq(collection.media_objects.reject{|mo| !mo.published?}.count)
@@ -187,13 +178,10 @@ describe Admin::CollectionsController, type: :controller do
       expect(json.count).to eq(0)
     end
 
-    context 'information is missing from the controlled vocabulary file' do
-      it 'should redirect to the homepage' do
-        allow(Avalon::ControlledVocabulary).to receive(:vocabulary).and_return({})
-        login_as(:administrator)
+    context "html" do
+      it "should redirect to admin dashboard" do
         get 'index'
-        expect(response).to redirect_to(root_path)
-        expect(flash[:error]).to be_present
+        expect(response).to redirect_to admin_dashboard_path
       end
     end
   end
@@ -240,7 +228,7 @@ describe Admin::CollectionsController, type: :controller do
         get 'show', params: { id: collection.id, format:'json' }
         expect(json['id']).to eq(collection.id)
         expect(json['name']).to eq(collection.name)
-        expect(json['unit']).to eq(collection.unit)
+        expect(json['unit']).to eq(collection.unit.name)
         expect(json['description']).to eq(collection.description)
         expect(json['object_count']['total']).to eq(collection.media_objects.count)
         expect(json['object_count']['published']).to eq(collection.media_objects.reject{|mo| !mo.published?}.count)
@@ -291,10 +279,10 @@ describe Admin::CollectionsController, type: :controller do
       let!(:mf_1) { FactoryBot.create(:master_file, :with_structure, media_object: collection.media_objects[0]) }
       let!(:mf_2) { FactoryBot.create(:master_file, :with_structure, media_object: collection.media_objects[1]) }
 
-      it "should not return structure by default" do
+      it "should return structure URI by default" do
         get 'items', params: { id: collection.id, format: 'json' }
-        expect(JSON.parse(response.body)[collection.media_objects[0].id]["files"][0]["structure"]).to be_blank
-        expect(JSON.parse(response.body)[collection.media_objects[1].id]["files"][0]["structure"]).to be_blank
+        expect(JSON.parse(response.body)[collection.media_objects[0].id]["files"][0]["structure"]).to eq structure_master_file_url(mf_1.id)
+        expect(JSON.parse(response.body)[collection.media_objects[1].id]["files"][0]["structure"]).to eq structure_master_file_url(mf_2.id)
       end
       it "should return structure if requested" do
         get 'items', params: { id: collection.id, format: 'json', include_structure: true }
@@ -309,7 +297,7 @@ describe Admin::CollectionsController, type: :controller do
     end
 
     context 'user is a collection manager' do
-      let(:manager) { FactoryBot.create(:manager) }
+      let(:manager) { FactoryBot.create(:user) }
       before(:each) do
         ApiToken.create token: 'manager_token', username: manager.username, email: manager.email
         request.headers['Avalon-Api-Key'] = 'manager_token'
@@ -338,89 +326,212 @@ describe Admin::CollectionsController, type: :controller do
     end
   end
 
-  describe "#create" do
-    let!(:collection) { FactoryBot.build(:collection) }
+  describe "#new" do
+    let!(:unit1) { FactoryBot.create(:unit, name: 'AAA', unit_admins: [unit_admin.user_key]) }
+    let!(:unit2) { FactoryBot.create(:unit, unit_admins: [unit_admin.user_key]) }
     let(:administrator) { FactoryBot.create(:administrator) }
+    let(:unit_admin) { FactoryBot.create(:user) }
 
-    before(:each) do
-      ApiToken.create token: 'secret_token', username: administrator.username, email: administrator.email
-      request.headers['Avalon-Api-Key'] = 'secret_token'
-    end
+    context 'as administrator' do
+      before do
+        login_user(administrator.user_key)
+      end
 
-    it "should notify administrators" do
-      login_as(:administrator) #otherwise, there are no administrators to mail
-      # mock_email = double('email')
-      # allow(mock_email).to receive(:deliver_later)
-      # expect(NotificationsMailer).to receive(:new_collection).and_return(mock_email)
-      # FIXME: This delivers two instead of one for some reason
-      expect {post 'create', params: { format:'json', admin_collection: {name: collection.name, description: collection.description, unit: collection.unit, managers: collection.managers} }}.to have_enqueued_job(ActionMailer::MailDeliveryJob).twice
-      # post 'create', format:'json', admin_collection: {name: collection.name, description: collection.description, unit: collection.unit, managers: collection.managers}
-    end
-    it "should create a new collection" do
-      post 'create', params: { format:'json', admin_collection: {name: collection.name, description: collection.description, unit: collection.unit, contact_email: collection.contact_email, website_label: collection.website_label, website_url: collection.website_url, managers: collection.managers} }
-      expect(JSON.parse(response.body)['id'].class).to eq String
-      expect(JSON.parse(response.body)).not_to include('errors')
-      new_collection = Admin::Collection.find(JSON.parse(response.body)['id'])
-      expect(new_collection.contact_email).to eq collection.contact_email
-      expect(new_collection.website_label).to eq collection.website_label
-      expect(new_collection.website_url).to eq collection.website_url
-    end
-    it "should create a new collection with default manager list containing current API user" do
-      post 'create', params: { format:'json', admin_collection: { name: collection.name, description: collection.description, unit: collection.unit } }
-      expect(JSON.parse(response.body)['id'].class).to eq String
-      collection = Admin::Collection.find(JSON.parse(response.body)['id'])
-      expect(collection.managers).to eq([administrator.username])
-    end
-    it "should return 422 if collection creation failed" do
-      post 'create', params: { format:'json', admin_collection: { name: collection.name, description: collection.description } }
-      expect(response.status).to eq(422)
-      expect(JSON.parse(response.body)).to include('errors')
-      expect(JSON.parse(response.body)["errors"].class).to eq Array
-      expect(JSON.parse(response.body)["errors"].first.class).to eq String
+      it "should render new form" do
+        get 'new'
+        expect(response.status).to eq 200
+        expect(assigns(:collection).unit_id).to eq unit1.id
+      end
+
+      it "should render new form with specified unit" do
+        get 'new', params: { unit_id: unit2.id }
+        expect(response.status).to eq 200
+        expect(assigns(:collection).unit_id).to eq unit2.id
+      end
     end
 
+    context 'as unit administrator' do
+      before do
+        login_user(unit_admin.user_key)
+      end
+
+      it "should render new form" do
+        get 'new'
+        expect(response.status).to eq 200
+        expect(assigns(:collection).unit_id).to eq unit1.id
+      end
+
+      it "should render new form with specified unit" do
+        get 'new', params: { unit_id: unit2.id }
+        expect(response.status).to eq 200
+        expect(assigns(:collection).unit_id).to eq unit2.id
+      end
+    end
+
+    context 'as a user' do
+      before do
+        login_as(:user)
+      end
+
+      it "should render new form" do
+        get 'new'
+        expect(response.status).to eq 401
+      end
+
+      it "should render new form with specified unit" do
+        get 'new', params: { unit_id: unit2.id }
+        expect(response.status).to eq 401
+      end
+    end
   end
 
-  describe "#update" do
-    it "should notify administrators if name changed" do
-      login_as(:administrator) #otherwise, there are no administrators to mail
-      # mock_delay = double('mock_delay').as_null_object
-      # allow(NotificationsMailer).to receive(:deliver_later).and_return(mock_delay)
-      # expect(mock_delay).to receive(:update_collection)
-      @collection = FactoryBot.create(:collection)
-      # put 'update', id: @collection.id, admin_collection: {name: "#{@collection.name}-new", description: @collection.description, unit: @collection.unit}
-      expect {put 'update', params: { id: @collection.id, admin_collection: {name: "#{@collection.name}-new", description: @collection.description, unit: @collection.unit} }}.to have_enqueued_job(ActionMailer::MailDeliveryJob).once
-    end
+  describe "#create" do
+    let(:unit) { FactoryBot.create(:unit) }
+    let(:collection) { FactoryBot.build(:collection, unit: unit) }
+    let(:administrator) { FactoryBot.create(:administrator) }
 
-    context "update REST API" do
-      let!(:collection) { FactoryBot.create(:collection)}
-      let(:contact_email) { Faker::Internet.email }
-      let(:website_label) { Faker::Lorem.words.join(' ') }
-      let(:website_url) { Faker::Internet.url }
-
-      before do
-        ApiToken.create token: 'secret_token', username: 'archivist1@example.com', email: 'archivist1@example.com'
+    context 'as administrator' do
+      before(:each) do
+        ApiToken.create token: 'secret_token', username: administrator.username, email: administrator.email
         request.headers['Avalon-Api-Key'] = 'secret_token'
       end
 
-      it "should update a collection via API" do
-        old_description = collection.description
-        put 'update', params: { format: 'json', id: collection.id, admin_collection: { description: collection.description+'new', contact_email: contact_email, website_label: website_label, website_url: website_url }}
+      it "should notify administrators" do
+        login_as(:administrator)
+        expect { post 'create', params: { format: 'json', admin_collection: { name: collection.name, description: collection.description, unit_id: collection.unit.id, managers: collection.managers } } }.to have_enqueued_job(ActionMailer::MailDeliveryJob).twice
+      end
+      it "should create a new collection with unit id provided" do
+        post 'create', params: { format: 'json', admin_collection: { name: collection.name, description: collection.description, unit_id: collection.unit.id, contact_email: collection.contact_email, website_label: collection.website_label, website_url: collection.website_url, managers: collection.managers } }
         expect(JSON.parse(response.body)['id'].class).to eq String
         expect(JSON.parse(response.body)).not_to include('errors')
-        collection.reload
-        expect(collection.description).to eq old_description+'new'
-        expect(collection.contact_email).to eq contact_email
-        expect(collection.website_label).to eq website_label
-        expect(collection.website_url).to eq website_url
+        new_collection = Admin::Collection.find(JSON.parse(response.body)['id'])
+        expect(new_collection.contact_email).to eq collection.contact_email
+        expect(new_collection.website_label).to eq collection.website_label
+        expect(new_collection.website_url).to eq collection.website_url
+        expect(new_collection.unit_id).to eq collection.unit.id
+        expect(new_collection.governing_policy_id).to eq collection.unit.id
       end
-      it "should return 422 if collection update via API failed" do
-        allow_any_instance_of(Admin::Collection).to receive(:save).and_return false
-        put 'update', params: { format: 'json', id: collection.id, admin_collection: {description: collection.description+'new'} }
+      it "should create a new collection with manager list empty" do
+        post 'create', params: { format: 'json', admin_collection: { name: collection.name, description: collection.description, unit_id: collection.unit.id } }
+        expect(JSON.parse(response.body)['id'].class).to eq String
+        collection = Admin::Collection.find(JSON.parse(response.body)['id'])
+        expect(collection.managers).to eq([])
+      end
+      it "should return 422 if collection creation failed" do
+        post 'create', params: { format:'json', admin_collection: { name: collection.name, description: collection.description } }
         expect(response.status).to eq(422)
         expect(JSON.parse(response.body)).to include('errors')
         expect(JSON.parse(response.body)["errors"].class).to eq Array
         expect(JSON.parse(response.body)["errors"].first.class).to eq String
+      end
+    end
+
+    context 'when user does not have permissions for unit' do
+      let(:other_unit) { FactoryBot.create(:unit) }
+      let(:user) { User.find_by_username(other_unit.unit_admins.first) }
+
+      context 'json' do
+        before(:each) do
+          ApiToken.create token: 'secret_token', username: user.username, email: user.email
+          request.headers['Avalon-Api-Key'] = 'secret_token'
+        end
+
+        it "should return 422 if collection creation failed" do
+          post 'create', params: { format: 'json', admin_collection: { name: collection.name, description: collection.description, unit_id: collection.unit.id } }
+          expect(response.status).to eq(422)
+          expect(JSON.parse(response.body)).to include('errors')
+          expect(JSON.parse(response.body)["errors"].class).to eq Array
+          expect(JSON.parse(response.body)["errors"].first.class).to eq String
+        end
+      end
+
+      context 'html' do
+        it 'redirects to restricted content page' do
+          login_user user.username
+          expect { post 'create', params: { admin_collection: { name: collection.name, description: collection.description, unit_id: collection.unit.id } } }.not_to change { Admin::Collection.count }
+          expect(response).to have_rendered('new')
+          expect(flash[:error]).to be_present
+        end
+      end
+    end
+  end
+
+  describe "#update" do
+    let!(:collection) { FactoryBot.create(:collection, unit: unit)}
+    let(:unit) { FactoryBot.create(:unit)}
+    let(:contact_email) { Faker::Internet.email }
+    let(:website_label) { Faker::Lorem.words.join(' ') }
+    let(:website_url) { Faker::Internet.url }
+
+    it "should notify administrators if name changed" do
+      login_as(:administrator) #otherwise, there are no administrators to mail
+      expect {put 'update', params: { id: collection.id, admin_collection: {name: "#{collection.name}-new", description: collection.description } }}.to have_enqueued_job(ActionMailer::MailDeliveryJob).once
+    end
+
+    context 'when user does not have permissions for unit' do
+      let(:other_unit) { FactoryBot.create(:unit) }
+      let(:user) { User.find_by_username(unit.unit_admins.first) }
+
+      it 'redirects to restricted content page' do
+        login_user user.username
+        expect { post 'update', params: { id: collection.id, admin_collection: { unit_id: other_unit.id } } }.not_to change { Admin::Collection.count }
+        expect(response).to have_http_status(302)
+        expect(response.location).to eq admin_collection_url(collection)
+        expect(flash[:notice]).to be_present
+      end
+    end
+
+    context "update REST API" do
+      context 'as administrator' do
+        before do
+          ApiToken.create token: 'secret_token', username: 'archivist1@example.com', email: 'archivist1@example.com'
+          request.headers['Avalon-Api-Key'] = 'secret_token'
+        end
+
+        it "should update a collection via API" do
+          old_description = collection.description
+          put 'update', params: { format: 'json', id: collection.id, admin_collection: { description: collection.description+'new', contact_email: contact_email, website_label: website_label, website_url: website_url, unit_id: unit.id }}
+          expect(JSON.parse(response.body)['id'].class).to eq String
+          expect(JSON.parse(response.body)).not_to include('errors')
+          collection.reload
+          expect(collection.description).to eq old_description+'new'
+          expect(collection.contact_email).to eq contact_email
+          expect(collection.website_label).to eq website_label
+          expect(collection.website_url).to eq website_url
+          expect(collection.unit_id).to eq unit.id
+          expect(collection.governing_policy_id).to eq unit.id
+        end
+        it "should return 422 if collection update via API failed" do
+          allow_any_instance_of(Admin::Collection).to receive(:save).and_return false
+          put 'update', params: { format: 'json', id: collection.id, admin_collection: {description: collection.description+'new'} }
+          expect(response.status).to eq(422)
+          expect(JSON.parse(response.body)).to include('errors')
+          expect(JSON.parse(response.body)["errors"].class).to eq Array
+          expect(JSON.parse(response.body)["errors"].first.class).to eq String
+        end
+        it "should not raise error when special characters in name" do
+          expect { put 'update', params: { id: collection.id, admin_collection: { name: "#{collection.name}: new!?", description: collection.description } } }.to_not raise_error
+        end
+      end
+
+      context 'when user does not have permissions for unit' do
+        let(:other_unit) { FactoryBot.create(:unit) }
+        let(:user) { User.find_by_username(unit.unit_admins.first) }
+
+        context 'json' do
+          before(:each) do
+            ApiToken.create token: 'secret_token', username: user.username, email: user.email
+            request.headers['Avalon-Api-Key'] = 'secret_token'
+          end
+
+          it "should return 422 if collection update via API failed" do
+            post 'update', params: { format: 'json', id: collection.id, admin_collection: { unit_id: other_unit.id } }
+            expect(response.status).to eq(422)
+            expect(JSON.parse(response.body)).to include('errors')
+            expect(JSON.parse(response.body)["errors"].class).to eq Array
+            expect(JSON.parse(response.body)["errors"].first.class).to eq String
+          end
+        end
       end
     end
   end
@@ -563,30 +674,9 @@ describe Admin::CollectionsController, type: :controller do
     end
   end
 
-  describe "#apply_access" do
-    let(:collection) { FactoryBot.create(:collection) }
-
-    before do
-      login_user(collection.managers.first)
-    end
-
-    context "replacing existing Special Access" do
-      let(:overwrite) { true }
-      it "enqueues a BulkActionJobs::ApplyCollectionAccessControl job" do
-        expect { put 'update', params: { id: collection.id, apply_to_existing: "Apply to All Existing Items", overwrite: overwrite } }.to have_enqueued_job(BulkActionJobs::ApplyCollectionAccessControl).with(collection.id, overwrite, nil).once
-      end
-    end
-
-    context "adding to existing Special Access" do
-      let(:overwrite) { false }
-      it "enqueues a BulkActionJobs::ApplyCollectionAccessControl job" do
-        expect { put 'update', params: { id: collection.id, apply_to_existing: "Apply to All Existing Items", overwrite: overwrite } }.to have_enqueued_job(BulkActionJobs::ApplyCollectionAccessControl).with(collection.id, overwrite, nil).once
-      end
-    end
-  end
-
   describe "#remove" do
     let!(:collection) { FactoryBot.create(:collection) }
+    let!(:media_object) { FactoryBot.create(:media_object, collection: collection) }
 
     it "redirects to restricted content page when user does not have ability to delete collection" do
       login_as :user
@@ -597,6 +687,36 @@ describe Admin::CollectionsController, type: :controller do
       login_user collection.managers.first
       expect(controller.current_ability.can? :destroy, collection).to be_truthy
       expect(get :remove, params: { id: collection.id }).to render_template(:remove)
+      expect(response.body).to include "contains 1 item"
+    end
+  end
+
+  describe '#destroy' do
+    let!(:collection) { FactoryBot.create(:collection) }
+    let!(:target_collection) { FactoryBot.create(:collection, managers: [collection.managers.first]) }
+    let!(:media_object) { FactoryBot.create(:media_object, collection: collection) }
+
+    it "destroys collection and reassigns items to target collection" do
+      login_user collection.managers.first
+      expect(controller.current_ability.can? :destroy, collection).to eq true
+      expect(controller.current_ability.can? :update, target_collection).to eq true
+      expect { delete :destroy, params: { id: collection.id, target_collection_id: target_collection.id } }.to change { Admin::Collection.count }.by(-1)
+      expect(Admin::Collection.exists?(collection.id)).to eq false
+      expect(target_collection.reload.media_objects).to include media_object
+    end
+
+    context 'when not unit admin of target unit' do
+      let!(:target_collection) { FactoryBot.create(:collection) }
+
+      it "redirects to restricted content page" do
+        login_user collection.managers.first
+        expect(controller.current_ability.can? :destroy, collection).to eq true
+        expect(controller.current_ability.can? :update, target_collection).to eq false
+        expect { delete :destroy, params: { id: collection.id, target_collection_id: target_collection.id } }.not_to change { Admin::Collection.count }
+        expect(Admin::Collection.exists?(collection.id)).to eq true
+        expect(target_collection.reload.media_objects).not_to include media_object
+        expect(response).to have_rendered('errors/restricted_pid')
+      end
     end
   end
 

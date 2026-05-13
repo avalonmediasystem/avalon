@@ -34,6 +34,8 @@ class EnvironmentConfigurator < ActiveFedora::FileConfigurator
     else
       super
     end
+    # Enable retrying requests that get 503 responses from solr
+    @solr_config[:retry_503] = true
     Blacklight.connection_config.merge!(@solr_config)
     @solr_config
   end

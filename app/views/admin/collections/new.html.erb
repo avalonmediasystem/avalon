@@ -19,12 +19,20 @@ Unless required by applicable law or agreed to in writing, software distributed
 <%= bootstrap_form_for @collection, action: 'create' do |f| %>
   <%= f.text_field :name, 'data-testid': 'collection-name' %>
   <% if @collection.new_record? || can?(:update_unit, @collection)%>
-    <%= f.select(:unit, Admin::Collection.units, {}, { 'data-testid': 'collection-unit' }) %>
+    <div class="mb-3">
+       <label class='form-label' for='admin_unit_typeahead'>Unit</label>
+       <%= select_tag 'admin_collection[unit_id]',
+                      options_from_collection_for_select(@candidate_units, "id", "name", @collection.unit&.id),
+                      data: { testid: 'collection-unit' },
+                      class: "form-control p-0 tom-select",
+                      disabled: !can?(:update, @collection) %>
+    </div>
   <% end %>
+
   <%= f.text_area :description, rows: 3, 'data-testid':'collection-description'  %>
   <%= f.text_field :contact_email, 'data-testid':'collection-contact-email' %>
   <%= f.text_field :website_url, 'data-testid': 'collection-website-url' %>
   <%= f.text_field :website_label, 'data-testid':'collection-website-label' %>
-  <a href="/admin/collections" aria-hidden="true" class="btn btn-outline">Cancel</a>
+  <%= link_to 'Cancel', :back, class: 'btn btn-outline', aria: { hidden: true } %>
   <%= f.submit class: 'btn btn-primary', 'data-testid': 'collection-new-collection-btn' %>
 <% end %>

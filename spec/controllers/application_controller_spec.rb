@@ -1,4 +1,4 @@
-# Copyright 2011-2025, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2026, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 #
@@ -75,10 +75,64 @@ describe ApplicationController do
     end
   end
 
+  describe '#get_user_units' do
+    let!(:unit1) { FactoryBot.create(:unit, name: 'Zelda') }
+    let!(:unit2) { FactoryBot.create(:unit, name: 'Battletoads') }
+
+    it 'returns all units for an administrator (sorted by default)' do
+      login_as :administrator
+      units = controller.get_user_units
+      expect(units).to include(have_attributes(id: unit1.id), have_attributes(id: unit2.id))
+      expect(units[0].id).to eq unit2.id
+      expect(units[1].id).to eq unit1.id
+    end
+    it 'returns all units for an administrator (unsorted)' do
+      login_as :administrator
+      units = controller.get_user_units(sort: false)
+      expect(units).to include(have_attributes(id: unit1.id), have_attributes(id: unit2.id))
+      expect(units[0].id).to eq unit1.id
+      expect(units[1].id).to eq unit2.id
+    end
+    it 'returns only relevant units for a unit admin' do
+      login_user unit1.unit_admins.first
+      expect(controller.get_user_units).to include(have_attributes(id: unit1.id))
+      expect(controller.get_user_units).not_to include(have_attributes(id: unit2.id))
+    end
+    it 'returns no collections for other users' do
+      login_as :user
+      expect(controller.get_user_units).to be_empty
+    end
+
+    context 'with additional unit ids' do
+      it 'returns relevant units for a unit admin and passed in units' do
+        login_user unit1.unit_admins.first
+        expect(controller.get_user_units(with_ids: [unit2.id])).to include(have_attributes(id: unit1.id))
+        expect(controller.get_user_units(with_ids: [unit2.id])).to include(have_attributes(id: unit2.id))
+      end
+    end
+  end
+
   describe "exceptions handling" do
     it "renders deleted_pid template" do
       get :show, params: { id: 'deleted-id' }
       expect(response).to render_template("errors/deleted_pid")
+    end
+
+    context 'model mismatch' do
+      it 'renders redirects to homepage' do
+        allow(controller).to receive(:show).and_raise(SpeedyAF::ModelMismatch)
+        expect { get :show, params: { id: 'abc1234' } }.to_not raise_error
+        expect(response.status).to be 302
+        expect(response).to redirect_to(root_path)
+        expect(flash[:error]).to eq("Requested resource type does not match type of abc1234.")
+      end
+      it 'renders redirects to homepage' do
+        allow(controller).to receive(:create).and_raise(ActiveFedora::ModelMismatch)
+        expect { post :create, params: { id: 'abc1234' } }.to_not raise_error
+        expect(response.status).to be 302
+        expect(response).to redirect_to(root_path)
+        expect(flash[:error]).to eq("Requested resource type does not match type of abc1234.")
+      end
     end
 
     context 'raise_on_connection_error disabled' do
@@ -97,7 +151,7 @@ describe ApplicationController do
                            error_code.new(request_context, e)
                          else
                            error_code
-                         end      
+                         end
           allow(controller).to receive(:show).and_raise(raised_error)
           allow_any_instance_of(Exception).to receive(:backtrace).and_return(["Test trace"])
           allow_any_instance_of(Exception).to receive(:message).and_return('Connection reset by peer')
@@ -105,8 +159,7 @@ describe ApplicationController do
           expect { get :show, params: { id: 'abc1234' } }.to_not raise_error
         end
 
-        it "renders error template for #{error_code} errors" do
-          error_template = error_code == Faraday::ConnectionFailed ? 'errors/fedora_connection' : 'errors/solr_connection'
+        it "html request renders error template for #{error_code} errors" do
           raised_error = if error_code == RSolr::Error::ConnectionRefused
                            error_code.new(request_context)
                          elsif error_code == RSolr::Error::Timeout
@@ -114,9 +167,30 @@ describe ApplicationController do
                          else
                            error_code
                          end
+          error_template = error_code == Faraday::ConnectionFailed ? 'errors/fedora_connection' : 'errors/solr_connection'
           allow(controller).to receive(:show).and_raise(raised_error)
           get :show, params: { id: 'abc1234' }
           expect(response).to render_template(error_template)
+        end
+
+        it 'non-html request provides JSON response' do
+          [:json, :text, :m3u8].each do |type|
+            raised_error = if error_code == RSolr::Error::ConnectionRefused
+                             error_code.new(request_context)
+                           elsif error_code == RSolr::Error::Timeout
+                             error_code.new(request_context, e)
+                           else
+                             error_code
+                           end
+            allow_any_instance_of(Exception).to receive(:backtrace).and_return(["Test trace"])
+            allow_any_instance_of(Exception).to receive(:message).and_return('Connection reset by peer')
+            allow(controller).to receive(:show).and_raise(raised_error)
+            get :show, params: { id: 'abc1234' }, format: type
+            expect(response.status).to eq 503
+            expect(response.content_type).to eq("application/json; charset=utf-8")
+            parsed_body = JSON.parse(response.body)
+            expect(parsed_body).to eq({ "errors" => ["Connection reset by peer"] })
+          end
         end
       end
     end
@@ -133,7 +207,7 @@ describe ApplicationController do
                            error_code.new(request_context, e)
                          else
                            error_code
-                         end 
+                         end
           allow(Settings.app_controller.solr_and_fedora).to receive(:raise_on_connection_error).and_return(true)
           allow(controller).to receive(:show).and_raise(raised_error)
           allow_any_instance_of(Exception).to receive(:backtrace).and_return(["Test trace"])

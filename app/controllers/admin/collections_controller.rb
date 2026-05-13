@@ -1,4 +1,4 @@
-# Copyright 2011-2025, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2026, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 #
@@ -57,20 +57,23 @@ class Admin::CollectionsController < ApplicationController
   # GET /collections
   def index
     respond_to do |format|
-      format.html
       format.json { paginate json: @collections }
+      format.html { redirect_to admin_dashboard_path }
     end
   end
 
   # GET /collections/1
   def show
+    # Make sure to include current unit even if current user is not unit admin on that unit
+    @candidate_units = get_user_units(with_ids: [@collection.unit_id])
+
     respond_to do |format|
       format.json { render json: @collection.to_json }
       format.html {
-        @groups = @collection.default_local_read_groups
-        @users = @collection.default_read_users
-        @virtual_groups = @collection.default_virtual_read_groups
-        @ip_groups = @collection.default_ip_read_groups
+        @groups = { inherited: @collection.inherited_local_read_groups, default: @collection.default_local_read_groups }
+        @users = { inherited: @collection.inherited_read_users, default: @collection.default_read_users }
+        @virtual_groups = { inherited: @collection.inherited_virtual_read_groups, default: @collection.default_virtual_read_groups }
+        @ip_groups = { inherited: @collection.inherited_ip_read_groups, default: @collection.default_ip_read_groups }
         @visibility = @collection.default_visibility
         @default_lending_period = @collection.default_lending_period
 
@@ -82,6 +85,17 @@ class Admin::CollectionsController < ApplicationController
 
   # GET /collections/new
   def new
+    if params[:unit_id]
+      unit = Admin::Unit.find(params[:unit_id])
+      authorize! :update, unit
+      @candidate_units = [unit]
+      @collection.unit = unit
+    else
+      @candidate_units = get_user_units
+      # Setting unit_id instead of unit because @candidate_units are SpeedyAF proxies
+      @collection.unit_id = @candidate_units.first.id
+    end
+
     respond_to do |format|
       format.js   { render json: modal_form_response(@collection) }
       format.html { render 'new' }
@@ -90,6 +104,8 @@ class Admin::CollectionsController < ApplicationController
 
   # GET /collections/1/edit
   def edit
+    # Make sure to include current unit even if current user is not unit admin on that unit
+    @candidate_units = get_user_units(with_ids: [@collection.unit_id])
     respond_to do |format|
       format.js   { render json: modal_form_response(@collection) }
     end
@@ -103,8 +119,11 @@ class Admin::CollectionsController < ApplicationController
 
   # POST /collections
   def create
-    @collection = Admin::Collection.create(collection_params.merge(managers: [current_user.user_key]))
-    if @collection.persisted?
+    unit = Admin::Unit.find(collection_params["unit_id"]) rescue nil
+    @collection = Admin::Collection.new(collection_params.merge(unit_id: unit&.id, governing_policy_id: unit&.id))
+    @collection.errors.add(:unit, "Owning unit for collection not found") unless unit.present?
+    @collection.errors.add(:unit, "You do not have sufficient rights to create a collection in unit #{unit.id}") unless can? :update, unit
+    if @collection.errors.blank? && @collection.save
       User.where(Devise.authentication_keys.first => [Avalon::RoleControls.users('administrator')].flatten).each do |admin_user|
         NotificationsMailer.new_collection(
           creator_id: current_user.id,
@@ -126,6 +145,7 @@ class Admin::CollectionsController < ApplicationController
       respond_to do |format|
         format.html do
           flash.now[:error] = @collection.errors.full_messages.to_sentence
+          @candidate_units = get_user_units
           render action: 'new'
         end
         format.json do
@@ -172,8 +192,29 @@ class Admin::CollectionsController < ApplicationController
 
     update_access(@collection, params) if can?(:update_access_control, @collection)
 
-    @collection.update_attributes collection_params if collection_params.present?
-    saved = @collection.save
+    # Update governing_policy_id if unit_id changes
+    update_params = collection_params.to_h
+    if update_params['unit_id'].present? && @collection.unit_id != update_params['unit_id']
+      new_unit = Admin::Unit.find(update_params['unit_id']) rescue nil
+      if new_unit.present? && can?(:update, new_unit)
+        update_params = update_params.merge({ unit_id: new_unit.id})
+        update_params.merge!(governing_policy_id: new_unit.id)
+      elsif new_unit.present?
+        not_authed_msg = "You do not have sufficient privileges to move this collection to unit #{update_params['unit_id']}"
+        @collection.errors.add(:unit, not_authed_msg)
+        skip_save = true
+      else
+        not_found_msg = "Could not find unit #{update_params['unit_id']}"
+        @collection.errors.add(:unit, not_found_msg)
+        skip_save = true
+      end
+    end
+
+    unless skip_save
+      @collection.update_attributes update_params if update_params.present?
+      saved = @collection.save
+    end
+
     if saved
       if name_changed
         User.where(Devise.authentication_keys.first => [Avalon::RoleControls.users('administrator')].flatten).each do |admin_user|
@@ -186,13 +227,11 @@ class Admin::CollectionsController < ApplicationController
           ).deliver_later
         end
       end
-
-      apply_access(@collection, params) if can?(:update_access_control, @collection)
     end
 
     respond_to do |format|
       format.html do
-        flash[:notice] = Array(flash[:notice]) + @collection.errors.full_messages unless @collection.valid?
+        flash[:notice] = Array(flash[:notice]) + @collection.errors.full_messages if @collection.errors.present? || !@collection.valid?
         redirect_to @collection
       end
       format.json do
@@ -211,17 +250,18 @@ class Admin::CollectionsController < ApplicationController
     @collection = Admin::Collection.find(params['id'])
     authorize! :destroy, @collection
     @objects    = @collection.media_objects
-    @candidates = get_user_collections.reject { |c| c == @collection }
+    @candidates = get_user_collections.reject { |c| c.id == @collection.id }.sort_by { |c| c.name.downcase }
   end
 
   # DELETE /collections/1
   def destroy
     @source_collection = @collection
-    target_path = admin_collections_path
+    target_path = admin_dashboard_path
     if @source_collection.media_objects.count > 0
       if @source_collection.media_objects.all?(&:valid?)
         @target_collection = Admin::Collection.find(params[:target_collection_id])
-        Admin::Collection.reassign_media_objects( @source_collection.media_objects, @source_collection, @target_collection )
+        authorize! :update, @target_collection
+        Admin::Collection.reassign_media_objects( @source_collection.media_objects, @target_collection )
         target_path = admin_collection_path(@target_collection)
         @source_collection.reload
       else
@@ -375,12 +415,8 @@ class Admin::CollectionsController < ApplicationController
     0
   end
 
-  def apply_access(collection, params)
-    BulkActionJobs::ApplyCollectionAccessControl.perform_later(collection.id, params[:overwrite] == "true", params[:save_field]) if params["apply_to_existing"].present?
-  end
-
   def collection_params
-    params.permit(:admin_collection => [:name, :description, :unit, :contact_email, :website_label, :website_url, :managers => []])[:admin_collection]
+    params.permit(:admin_collection => [:name, :description, :unit_id, :unit_name, :contact_email, :website_label, :website_url, :managers => []])[:admin_collection]
   end
 
   def check_image_compliance(poster_path)

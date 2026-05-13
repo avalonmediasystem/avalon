@@ -1,4 +1,4 @@
-# Copyright 2011-2025, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2026, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 #
@@ -21,9 +21,9 @@ describe UploadFormHelper, type: :helper do
       allow(Settings.encoding).to receive(:engine_adapter).and_return(transcoder)
     end
 
-    context 'with elastic transcoder' do
-      let(:transcoder) { :elastic_transcoder }
-      it 'returns true if using Elastic Transcoder' do
+    context 'with media convert' do
+      let(:transcoder) { :media_convert }
+      it 'returns true if using MediaConvert' do
         expect(helper.direct_upload?).to be true
       end
     end
