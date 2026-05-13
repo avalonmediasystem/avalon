@@ -151,6 +151,9 @@ namespace :avalon do
         puts "Creation failed for #{unit}: #{e.message}"
       end
 
+      # Disable reindex_members callback because it would cause a reindexing of all items that isn't really necessary
+      # because the indexed value (unit name) is staying the same
+      Admin::Collection.skip_callback(:save, :around, :reindex_members)
       Admin::Collection.all.each do |collection|
         # Find unit name from RDF stored in Fedora
         unit_name = collection.ldp_source.graph.query([nil,RDF::URI("http://bibframe.org/vocab/heldBy"),nil]).first&.object&.to_s
@@ -165,7 +168,6 @@ namespace :avalon do
 
         collection.unit_id = units[unit_name]
         collection.save!(validate: false)
-        ReindexJob.perform_later(collection.media_object_ids)
       end
     end
   end
