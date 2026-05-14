@@ -17,7 +17,13 @@ Unless required by applicable law or agreed to in writing, software distributed
   <body>
     <script>
     window.parent.postMessage(
-      {"expiresIn": <%= expires %>, "accessToken": "<%= access_token %>", "messageId": "<%= message_id %>"},
+      {
+        "@context": "http://iiif.io/api/auth/2/context.json", 
+        "type": "AuthAccessToken2",
+        "accessToken": "<%= access_token %>",
+        "expiresIn": <%= expires %>,  
+        "messageId": "<%= message_id %>" 
+      },
       "<%= origin %>"
     );
     </script>
