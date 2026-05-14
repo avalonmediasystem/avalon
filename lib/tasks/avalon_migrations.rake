@@ -167,6 +167,7 @@ namespace :avalon do
         end
 
         collection.unit_id = units[unit_name]
+        collection.governing_policy_id = units[unit_name]
         collection.save!(validate: false)
       end
     end
