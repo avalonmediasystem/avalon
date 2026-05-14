@@ -56,9 +56,12 @@ module Avalon
     config.active_record.encryption.deterministic_key = ENV["ACTIVE_RECORD_ENCRYPTION_DETERMINISTIC_KEY"]
     config.active_record.encryption.key_derivation_salt = ENV["ACTIVE_RECORD_ENCRYPTION_KEY_DERIVATION_SALT"]
 
-    # Uncomment these if existing API tokens need to be persisted.
-    # config.active_record.encrpytion.support_unencrypted_data = true
-    # config.active_record.encryption.extend_queries = true
+    # Conditionally enable these for migration
+    # ```ApiToken.all.each { |t| t.encrypt }```
+    if ENV['ACTIVE_RECORD_ENCRYPTION_MIGRATION'] == 'true'
+      config.active_record.encryption.support_unencrypted_data = true
+      config.active_record.encryption.extend_queries = true
+    end
 
     # Rails recommends having this set to false, especially in zeitwerk mode. However, that
     # currently causes issues with the Samvera gems (hydra-head, Blacklight)
