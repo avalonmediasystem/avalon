@@ -274,4 +274,11 @@ Rails.application.routes.draw do
       end
     end
   end
+
+  # Routing errors are triggered in the middleware stack so can't be handled by
+  # a regular rescue_from block. Constraint is necessary to not break retrieval
+  # of things from active storage.
+  match '*unmatched', to: 'application#handle_routing_error', via: :all, constraints: lambda { |req|
+    req.path.exclude? 'rails/active_storage'
+  }
 end

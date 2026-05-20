@@ -332,7 +332,7 @@ describe Admin::UnitsController, type: :controller do
       unit = Admin::Unit.find(JSON.parse(response.body)['id'])
       expect(unit.unit_admins).to eq([administrator.username])
     end
-    it "should return 422 if unit creation failed" do
+    it "should return 422 if name not provided" do
       post 'create', params: { format: 'json', admin_unit: { description: unit.description } }
       expect(response.status).to eq(422)
       expect(JSON.parse(response.body)).to include('errors')
