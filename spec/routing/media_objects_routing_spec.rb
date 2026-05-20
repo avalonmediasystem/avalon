@@ -19,5 +19,8 @@ RSpec.describe MediaObjectsController, type: :routing do
     it "routes to #move_preview.json" do
       expect(:get => "/media_objects/abc1234/move_preview.json").to route_to("media_objects#move_preview", id: 'abc1234', format: 'json')
     end
+    it "handles routing errors" do
+      expect(post: "/media_objects/abc1234").to route_to("application#handle_routing_error", unmatched: "media_objects/abc1234")
+    end
   end
 end

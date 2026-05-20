@@ -302,6 +302,17 @@ describe MediaObjectsController, type: :controller do
           expect(JSON.parse(response.body)["errors"].class).to eq Array
           expect(JSON.parse(response.body)["errors"].first.class).to eq String
         end
+        it "should return 422 if required fields are missing" do
+          media_object = FactoryBot.create(:published_media_object)
+          fields = {}
+          descMetadata_fields.each { |f| fields[f] = media_object.send(f) }
+          fields[:title] = nil
+          post 'create', params: { format: 'json', fields: fields, files: [master_file], collection_id: collection.id, publish: true }
+          expect(response.status).to eq(422)
+          expect(JSON.parse(response.body)).to include('errors')
+          expect(JSON.parse(response.body)["errors"].class).to eq Array
+          expect(JSON.parse(response.body)["errors"].first.class).to eq String
+        end
         it "should create a new media_object" do
           # master_file_obj = FactoryBot.create(:master_file, master_file.slice(:files))
           media_object = FactoryBot.create(:media_object)#, sections: [master_file_obj])
@@ -564,6 +575,17 @@ describe MediaObjectsController, type: :controller do
           allow_any_instance_of(MediaObject).to receive(:save).and_return false
           allow_any_instance_of(MasterFile).to receive(:stop_processing!)
           put 'json_update', params: { format: 'json', id: media_object.id, fields: {}, collection_id: media_object.collection_id }
+          expect(response.status).to eq(422)
+          expect(JSON.parse(response.body)).to include('errors')
+          expect(JSON.parse(response.body)["errors"].class).to eq Array
+          expect(JSON.parse(response.body)["errors"].first.class).to eq String
+        end
+        it "should return 422 if required fields are missing" do
+          media_object = FactoryBot.create(:published_media_object)
+          fields = {}
+          descMetadata_fields.each { |f| fields[f] = media_object.send(f) }
+          fields[:title] = nil
+          put 'json_update', params: { format: 'json', id: media_object.id, fields: { title: nil }, files: [master_file], collection_id: collection.id }
           expect(response.status).to eq(422)
           expect(JSON.parse(response.body)).to include('errors')
           expect(JSON.parse(response.body)["errors"].class).to eq Array
