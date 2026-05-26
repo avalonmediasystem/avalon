@@ -698,7 +698,7 @@ describe MasterFilesController do
       login_as :administrator
       get(:iiif_auth_token, params: { id: master_file.id, messageId: 1, origin: "https://example.com" })
       expect(response).to have_http_status(:ok)
-      expect(response.body.gsub(/\s+/,'')).to match /window.parent.postMessage\({"expiresIn":\d+,"accessToken":".+","messageId":"1"},"https:\/\/example.com"\);/
+      expect(response.body.gsub(/\s+/, '')).to match /window.parent.postMessage\({"@context":"http:\/\/iiif.io\/api\/auth\/2\/context.json","type":"AuthAccessToken2","accessToken":".+","expiresIn":\d+,"messageId":"1"},"https:\/\/example.com"\);/
     end
   end
 
@@ -722,6 +722,33 @@ describe MasterFilesController do
 
       it 'returns ok (200) if public' do
         expect(head('hls_manifest', params: { id: public_master_file.id, quality: 'auto' })).to have_http_status(:ok)
+      end
+    end
+
+    context 'with auth token' do
+      it 'returns unauthorized probe response (401) with invalid auth token' do
+        request.headers['Authorization'] = "Bearer bad-token"
+        expect(get('hls_manifest', params: { id: master_file.id, quality: 'auto' })).to have_http_status(:unauthorized)
+        parsed_response = JSON.parse(response.body)
+        expect(parsed_response["@context"]).to eq "http://iiif.io/api/auth/2/context.json"
+        expect(parsed_response["type"]).to eq "AuthProbeResult2"
+        expect(parsed_response["status"]).to eq 401
+        expect(parsed_response["header"]).to eq({ "en" => [I18n.t('iiif.auth.failureHeader')] })
+        expect(parsed_response["note"]).to eq({ "en" => [I18n.t('iiif.auth.failureDescription')] })
+      end
+
+      it 'returns successful probe response (200) with valid auth token' do
+        token = StreamToken.find_or_create_session_token(session, master_file.id)
+        request.headers['Authorization'] = "Bearer #{token.to_s}"
+        expect(get('hls_manifest', params: { id: master_file.id, quality: 'auto' })).to have_http_status(:ok)
+        parsed_response = JSON.parse(response.body)
+        expect(parsed_response["@context"]).to eq "http://iiif.io/api/auth/2/context.json"
+        expect(parsed_response["type"]).to eq "AuthProbeResult2"
+        expect(parsed_response["status"]).to eq 200
+      end
+
+      it 'returns ok (200) if public' do
+        expect(get('hls_manifest', params: { id: public_master_file.id, quality: 'auto' })).to have_http_status(:ok)
       end
     end
 

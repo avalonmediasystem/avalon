@@ -22,27 +22,59 @@ describe IiifCanvasPresenter do
   let(:presenter) { described_class.new(master_file: master_file, stream_info: stream_info) }
 
   context 'auth_service' do
-    subject { presenter.display_content.first.auth_service }
+    context '1.0' do
+      subject { presenter.display_content.first.auth_service.first }
 
-    it 'provides a cookie auth service' do
-      expect(subject[:@id]).to eq Rails.application.routes.url_helpers.new_user_session_url(login_popup: 1)
+      it 'provides a cookie auth service' do
+        expect(subject[:@id]).to eq Rails.application.routes.url_helpers.new_user_session_url(login_popup: 1)
+      end
+
+      it 'provides a token service' do
+        token_service = subject[:service].find { |s| s[:@type] == "AuthTokenService1"}
+        expect(token_service[:@id]).to eq Rails.application.routes.url_helpers.iiif_auth_token_url(id: master_file.id)
+      end
+
+      it 'provides a logout service' do
+        logout_service = subject[:service].find { |s| s[:@type] == "AuthLogoutService1"}
+        expect(logout_service[:@id]).to eq Rails.application.routes.url_helpers.destroy_user_session_url
+      end
+
+      context 'when public media object' do
+        let(:media_object) { FactoryBot.build(:media_object, visibility: 'public') }
+
+        it "does not provide an auth service" do
+          expect(presenter.display_content.first.auth_service).to be_nil
+        end
+      end
     end
 
-    it 'provides a token service' do
-      token_service = subject[:service].find { |s| s[:@type] == "AuthTokenService1"}
-      expect(token_service[:@id]).to eq Rails.application.routes.url_helpers.iiif_auth_token_url(id: master_file.id)
-    end
+    context '2.0' do
+      subject { presenter.display_content.first.auth_service&.second }
 
-    it 'provides a logout service' do
-      logout_service = subject[:service].find { |s| s[:@type] == "AuthLogoutService1"}
-      expect(logout_service[:@id]).to eq Rails.application.routes.url_helpers.destroy_user_session_url
-    end
+      before do
+        @auth_service = subject[:service].find { |s| s[:type] == 'AuthAccessService2' } if subject.present?
+      end
 
-    context 'when public media object' do
-      let(:media_object) { FactoryBot.build(:media_object, visibility: 'public') }
+      it 'provides an auth service' do
+        expect(@auth_service[:id]).to eq Rails.application.routes.url_helpers.new_user_session_url(login_popup: 1)
+      end
 
-      it "does not provide an auth service" do
-        expect(presenter.display_content.first.auth_service).to be_nil
+      it 'provides a token service' do
+        token_service = @auth_service[:service].find { |s| s[:type] == "AuthAccessTokenService2" }
+        expect(token_service[:id]).to eq Rails.application.routes.url_helpers.iiif_auth_token_url(id: master_file.id)
+      end
+
+      it 'provides a logout service' do
+        logout_service = @auth_service[:service].find { |s| s[:type] == "AuthLogoutService2" }
+        expect(logout_service[:id]).to eq Rails.application.routes.url_helpers.destroy_user_session_url
+      end
+
+      context 'when public media object' do
+        let(:media_object) { FactoryBot.build(:media_object, visibility: 'public') }
+
+        it "does not provide an auth service" do
+          expect(presenter.display_content.first.auth_service).to be_nil
+        end
       end
     end
   end
