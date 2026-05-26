@@ -286,37 +286,69 @@ class IiifCanvasPresenter
   end
 
   def auth_service(quality)
-    {
-      "id": Rails.application.routes.url_helpers.hls_manifest_master_file_url(master_file.id, quality: quality),
-      "type": "AuthProbeService2",
-      "errorNote": { "en": [I18n.t('iiif.auth.failureDescription')] },
-      "errorHeading": { "en": [I18n.t('iiif.auth.failureHeader')] },
-      "service": [
-        {
-          "id": Rails.application.routes.url_helpers.new_user_session_url(login_popup: 1),
-          "type": "AuthAccessService2",
-          "confirmLabel": { "en": [I18n.t('iiif.auth.confirmLabel')] },
-          "note": { "en": [I18n.t('iiif.auth.description')] },
-          "heading": { "en": [I18n.t('iiif.auth.header')] },
-          "label": { "en": [I18n.t('iiif.auth.label')] },
-          "profile": "active",
-          "service": [
-            {
-              "id": Rails.application.routes.url_helpers.iiif_auth_token_url(id: master_file.id),
-              "type": "AuthAccessTokenService2",
-              "profile": "http://iiif.io/api/auth/1/token",
-              "errorNote": { "en": [I18n.t('iiif.auth.failureDescription')] },
-              "errorHeading": { "en": [I18n.t('iiif.auth.failureHeader')] }
-            },
-            {
-              "id": Rails.application.routes.url_helpers.destroy_user_session_url,
-              "type": "AuthLogoutService2",
-              "label": { "en": [I18n.t('iiif.auth.logoutLabel')] }
-            }
-          ]
-        }
-      ]
-    }
+    [
+      {
+        "@context": "http://iiif.io/api/auth/1/context.json",
+        "@id": Rails.application.routes.url_helpers.new_user_session_url(login_popup: 1),
+        "@type": "AuthCookieService1",
+        "confirmLabel": I18n.t('iiif.auth.confirmLabel'),
+        "description": I18n.t('iiif.auth.description'),
+        "failureDescription": I18n.t('iiif.auth.failureDescription'),
+        "failureHeader": I18n.t('iiif.auth.failureHeader'),
+        "header": I18n.t('iiif.auth.header'),
+        "label": I18n.t('iiif.auth.label'),
+        "profile": "http://iiif.io/api/auth/1/login",
+        "service": [
+          {
+            "@id": Rails.application.routes.url_helpers.hls_manifest_master_file_url(master_file.id, quality: quality),
+            "@type": "AuthProbeService1",
+            "profile": "http://iiif.io/api/auth/1/probe"
+          },
+          {
+            "@id": Rails.application.routes.url_helpers.iiif_auth_token_url(id: master_file.id),
+            "@type": "AuthTokenService1",
+            "profile": "http://iiif.io/api/auth/1/token"
+          },
+          {
+            "@id": Rails.application.routes.url_helpers.destroy_user_session_url,
+            "@type": "AuthLogoutService1",
+            "label": I18n.t('iiif.auth.logoutLabel'),
+            "profile": "http://iiif.io/api/auth/1/logout"
+          }
+        ]
+      },
+      {
+        "id": Rails.application.routes.url_helpers.hls_manifest_master_file_url(master_file.id, quality: quality),
+        "type": "AuthProbeService2",
+        "errorNote": { "en": [I18n.t('iiif.auth.failureDescription')] },
+        "errorHeading": { "en": [I18n.t('iiif.auth.failureHeader')] },
+        "service": [
+          {
+            "id": Rails.application.routes.url_helpers.new_user_session_url(login_popup: 1),
+            "type": "AuthAccessService2",
+            "confirmLabel": { "en": [I18n.t('iiif.auth.confirmLabel')] },
+            "note": { "en": [I18n.t('iiif.auth.description')] },
+            "heading": { "en": [I18n.t('iiif.auth.header')] },
+            "label": { "en": [I18n.t('iiif.auth.label')] },
+            "profile": "active",
+            "service": [
+              {
+                "id": Rails.application.routes.url_helpers.iiif_auth_token_url(id: master_file.id),
+                "type": "AuthAccessTokenService2",
+                "profile": "http://iiif.io/api/auth/1/token",
+                "errorNote": { "en": [I18n.t('iiif.auth.failureDescription')] },
+                "errorHeading": { "en": [I18n.t('iiif.auth.failureHeader')] }
+              },
+              {
+                "id": Rails.application.routes.url_helpers.destroy_user_session_url,
+                "type": "AuthLogoutService2",
+                "label": { "en": [I18n.t('iiif.auth.logoutLabel')] }
+              }
+            ]
+          }
+        ]
+      }
+    ]
   end
 
   def thumbnail_url
