@@ -599,6 +599,7 @@ RSpec.describe PlaylistsController, type: :controller do
         expect(response).to have_http_status(200)
         parsed_response = JSON.parse(response.body)
         expect(parsed_response['@context']).to include "http://iiif.io/api/presentation/3/context.json"
+        expect(parsed_response['@context']).to include "http://iiif.io/api/auth/2/context.json"
         expect(parsed_response['type']).to eq 'Manifest'
         expect(parsed_response['items']).to be_empty
       end

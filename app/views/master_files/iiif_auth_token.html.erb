@@ -18,6 +18,8 @@ Unless required by applicable law or agreed to in writing, software distributed
     <script>
     window.parent.postMessage(
       {
+        <%# TODO: Determine if context and type cause issue with the auth 1 flow or
+              if clients ignore the extra data %>
         "@context": "http://iiif.io/api/auth/2/context.json", 
         "type": "AuthAccessToken2",
         "accessToken": "<%= access_token %>",
