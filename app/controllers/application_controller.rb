@@ -229,6 +229,11 @@ class ApplicationController < ActionController::Base
     end
   end
 
+  rescue_from Blacklight::Exceptions::InvalidRequest do |exception|
+    flash[:error] = (I18n.t('errors.search_error') % [Settings.email.support, Settings.email.support]).html_safe
+    redirect_to(root_path)
+  end
+
   def configure_permitted_parameters
     devise_parameter_sanitizer.permit(:sign_up) do |user_params|
       user_params.permit(:username, :email, :password, :password_confirmation)
