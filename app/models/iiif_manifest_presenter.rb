@@ -1,4 +1,4 @@
-# Copyright 2011-2025, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2026, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 #
@@ -126,7 +126,10 @@ class IiifManifestPresenter
   end
 
   def gather_notes_of_type(media_object, type)
-    media_object.note.present? ? media_object.note.select { |n| n[:type] == type }.collect { |n| n[:note] } : []
+    return [] if media_object.note.blank?
+    notes = media_object.note.select { |n| n[:type] == type }.collect { |n| n[:note] }
+    notes = display_search_linked("donor_ssim", notes) if type == 'acquisition'
+    notes
   end
 
   def display_collection(media_object)
@@ -134,7 +137,12 @@ class IiifManifestPresenter
   end
 
   def display_unit(media_object)
-    "<a href='#{Rails.application.routes.url_helpers.collections_url(filter: media_object.collection.unit)}'>#{media_object.collection.unit}</a>"
+    # The proxy object returns the string of the unit name, the actual MediaObject
+    # returns the Unit itself so we have to specifically request the name in that case.
+    unit_name = media_object.is_a?(SpeedyAF::Proxy::MediaObject) ? media_object.unit.first : media_object.collection.unit.name
+    # Link unit show page to the unit name
+    unit_id = media_object.collection.unit.id
+    "<a href='#{Rails.application.routes.url_helpers.unit_url(unit_id)}'>#{unit_name}</a>"
   end
 
   def display_language(media_object)
@@ -176,7 +184,7 @@ class IiifManifestPresenter
 
   def display_lending_period(media_object)
     return nil unless lending_enabled
-    ActiveSupport::Duration.build(media_object.lending_period).to_day_hour_s
+    ActiveSupport::Duration.build(media_object.active_lending_period).to_day_hour_s
   end
 
   def display_date(date)

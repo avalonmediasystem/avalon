@@ -6,8 +6,10 @@ ActiveSupport.on_load(:action_mailer) do
   case Settings&.email&.mailer&.to_sym
   when :aws_sdk
     require 'aws-sdk-rails'
-    Aws::Rails.add_action_mailer_delivery_method(:aws_sdk)
-    ActionMailer::Base.delivery_method = :aws_sdk
+    require 'aws-actionmailer-ses'
+
+    ActionMailer::Base.delivery_method = :ses_v2
+    ActionMailer::Base.ses_v2_settings = Settings.email.config.to_h
   when :smtp
     ActionMailer::Base.delivery_method = :smtp
     ActionMailer::Base.smtp_settings = Settings.email.config.to_h

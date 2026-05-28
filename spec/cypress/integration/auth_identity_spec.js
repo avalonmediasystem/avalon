@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2025, The Trustees of Indiana University and Northwestern
+ * Copyright 2011-2026, The Trustees of Indiana University and Northwestern
  *   University.  Licensed under the Apache License, Version 2.0 (the "License");
  *   you may not use this file except in compliance with the License.
  *
@@ -58,7 +58,7 @@ context('Authentication', () => {
   it('Deleting the user created ', { tags: '@critical' }, () => {
     cy.login('administrator');
     cy.visit('/persona/users');
-    cy.get("[data-testid='users-search-field']").type('test1@example.com');
+    cy.get("[data-testid='user-table-search-field']").type('test1@example.com');
     cy.get('tr')
       .contains('td', 'test1@example.com')
       .should('exist')
@@ -68,7 +68,7 @@ context('Authentication', () => {
       .click();
     cy.contains('test1@example.com').should('not.exist');
     cy.get("[data-testid='alert']").contains(
-      'User "test1" has been successfully deleted.'
+      'User "test1" has been successfully deleted.',
     );
   });
 });

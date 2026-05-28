@@ -1,5 +1,5 @@
 /* 
- * Copyright 2011-2025, The Trustees of Indiana University and Northwestern
+ * Copyright 2011-2026, The Trustees of Indiana University and Northwestern
  *   University.  Licensed under the Apache License, Version 2.0 (the "License");
  *   you may not use this file except in compliance with the License.
  *
@@ -15,17 +15,20 @@
 */
 
 function add_cropper_handler(upload_path) {
-  let $image = $('#image');
-  let $input = $('#poster_input');
-  let $modal = $('#modal');
+  const model = upload_path.includes('unit') ? 'unit' : 'collection'
+  const image = getById('image');
+  const input = getById('poster_input');
+  const modal = getById('modal');
   let cropper;
   let width = 700;
   let aspectRatio = 5 / 4;
-  $input.on('change', function (e) {
+
+  input.addEventListener('change', function (e) {
     let files = e.target.files;
     let done = function (url) {
-      $image.prop("src", url);
-      $modal.modal('show');
+      image.src = url;
+      const modalInstance = new bootstrap.Modal(modal);
+      modalInstance.show();
     };
     let reader;
     let file;
@@ -42,20 +45,24 @@ function add_cropper_handler(upload_path) {
       }
     }
   });
-  $modal.on('shown.bs.modal', function () {
-    cropper = new Cropper($image[0], {
+
+  modal.addEventListener('shown.bs.modal', function () {
+    cropper = new Cropper(image, {
       aspectRatio: aspectRatio,
       viewMode: 2,
     });
-  }).on('hidden.bs.modal', function () {
-    $input.val("");
+  });
+
+  modal.addEventListener('hidden.bs.modal', function () {
+    input.value = "";
     cropper.destroy();
     cropper = null;
   });
-  $('#crop').on('click', function () {
+
+  getById('crop').addEventListener('click', function () {
     let canvas;
-    let inputfile = $input.val().split('\\').pop();
-    $modal.modal('hide');
+    let inputfile = input.value.split('\\').pop();
+    if (modal) toggleModal(modal, false);
     if (cropper) {
       canvas = cropper.getCroppedCanvas({
         width: width,
@@ -63,14 +70,19 @@ function add_cropper_handler(upload_path) {
       });
       canvas.toBlob(function (blob) {
         let formData = new FormData();
-        $input.val("")
-        formData.append('admin_collection[poster]', blob, inputfile);
-        formData.append('authenticity_token', $('input[name=authenticity_token]').val());
+        input.value = "";
+        formData.append(`admin_${model}[poster]`, blob, inputfile);
+        formData.append('authenticity_token', query('input[name=authenticity_token]').value);
 
+        // Display uploading in-progress
+        const cropperProgress = getById('cropper-progress');
+        cropperProgress.style.display = 'block';
         fetch(upload_path, {
           method: "POST",
           body: formData
         }).then(() => {
+          // Hide uploading in-progress
+          cropperProgress.style.display = 'none';
           // Page reload to show the flash message
           location.reload();
         });

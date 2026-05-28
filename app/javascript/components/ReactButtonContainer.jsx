@@ -1,5 +1,5 @@
 /* 
- * Copyright 2011-2023, The Trustees of Indiana University and Northwestern
+ * Copyright 2011-2026, The Trustees of Indiana University and Northwestern
  *   University.  Licensed under the Apache License, Version 2.0 (the "License");
  *   you may not use this file except in compliance with the License.
  * 
@@ -14,7 +14,7 @@
  * ---  END LICENSE_HEADER BLOCK  ---
 */
 
-import React, { Component } from 'react';
+import { Component } from 'react';
 import { Modal } from 'react-bootstrap';
 import ReactSME from 'react-structural-metadata-editor';
 import './ReactButtonContainer.scss';
@@ -89,7 +89,11 @@ class ReactButtonContainer extends Component {
             <Modal.Title>Edit Structure</Modal.Title>
           </Modal.Header>
           <Modal.Body>
-            <ReactSME {...this.state.smeProps} structureIsSaved={this.getStructureStatus} />
+            <ReactSME
+              {...this.state.smeProps}
+              structureIsSaved={this.getStructureStatus}
+              /* Enable text editor for JSON structure */
+              showTextEditor={true} />
           </Modal.Body>
         </Modal>
       </div>

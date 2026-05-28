@@ -19,9 +19,12 @@ Unless required by applicable law or agreed to in writing, software distributed
 
 <% content_for :page_scripts do %>
   <script>
-    $(document).ready(function () {
+    document.addEventListener('DOMContentLoaded', function() {
       // Push footer to the bottom of the page content
-      $('#footer').css('top', $(this).height() + 5);
+      const footer = getById('footer');
+      if (footer) {
+        footer.style.top = (document.documentElement.scrollHeight + 5) + 'px';
+      }
     });
   </script>
 <% end %>

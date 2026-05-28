@@ -1,4 +1,4 @@
-# Copyright 2011-2025, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2026, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 #
@@ -24,18 +24,16 @@ class Admin::Collection < ActiveFedora::Base
   include MigrationTarget
   include AdminCollectionBehavior
 
+  belongs_to :governing_policy, class_name: 'ActiveFedora::Base', predicate: ActiveFedora::RDF::ProjectHydra.isGovernedBy
+  belongs_to :unit, class_name: 'Admin::Unit', predicate: Avalon::RDFVocab::Bibframe.heldBy
   has_many :media_objects, class_name: 'MediaObject', predicate: ActiveFedora::RDF::Fcrepo::RelsExt.isMemberOfCollection
 
-  validates :name, :uniqueness => { :solr_name => 'name_uniq_si'}, presence: true
-  validates :unit, presence: true, inclusion: { in: Proc.new{ Admin::Collection.units } }
-  validates :managers, length: {minimum: 1, message: "list can't be empty."}
+  validates :name, uniqueness: { solr_name: 'name_uniq_si' }, presence: true
+  validates :unit, presence: true
   validates :contact_email, format: { with: URI::MailTo::EMAIL_REGEXP }, allow_blank: true
   validates :website_url, format: { with: URI.regexp }, allow_blank: true
 
   property :name, predicate: ::RDF::Vocab::DC.title, multiple: false do |index|
-    index.as :stored_sortable
-  end
-  property :unit, predicate: Avalon::RDFVocab::Bibframe.heldBy, multiple: false do |index|
     index.as :stored_sortable
   end
   property :description, predicate: ::RDF::Vocab::DC.description, multiple: false do |index|
@@ -77,14 +75,18 @@ class Admin::Collection < ActiveFedora::Base
 
   has_subresource 'poster', class_name: 'IndexedFile'
 
-  around_save :reindex_members, if: Proc.new{ |c| c.name_changed? or c.unit_changed? }
-  around_save :return_checkouts, if: Proc.new{ |c| c.cdl_enabled_changed? && c.cdl_enabled == false }
+  around_save :reindex_members, if: Proc.new { |c| c.name_changed? or c.unit_changed? }
+  around_save :return_checkouts, if: Proc.new { |c| c.cdl_enabled_changed? && c.cdl_enabled == false }
   before_create :create_dropbox_directory!
 
   before_destroy :destroy_dropbox_directory!
 
-  def self.units
-    Avalon::ControlledVocabulary.find_by_name(:units, sort: true) || []
+  attr_accessor :unit_name
+  
+  alias_method :'_unit=', :'unit='
+  def unit= u
+    self._unit = u
+    self.governing_policy = u
   end
 
   def created_at
@@ -98,7 +100,6 @@ class Admin::Collection < ActiveFedora::Base
   end
 
   def add_manager user
-    raise ArgumentError, "User #{user} does not belong to the manager group." unless (Avalon::RoleControls.users("manager") + (Avalon::RoleControls.users("administrator") || []) ).include?(user)
     self.collection_managers += [user]
     self.edit_users += [user]
     self.inherited_edit_users += [user]
@@ -106,7 +107,6 @@ class Admin::Collection < ActiveFedora::Base
 
   def remove_manager user
     return unless managers.include? user
-    raise ArgumentError, "At least one manager is required." if self.managers.size == 1
 
     self.collection_managers = self.collection_managers.to_a - [user]
     self.edit_users -= [user]
@@ -161,7 +161,7 @@ class Admin::Collection < ActiveFedora::Base
     (users - inherited_edit_users).each { |u| add_edit_user(u) }
   end
 
-  def self.reassign_media_objects( media_objects, source_collection, target_collection)
+  def self.reassign_media_objects( media_objects, target_collection)
     media_objects.each do |media_object|
       media_object.collection = target_collection
       media_object.save
@@ -180,8 +180,11 @@ class Admin::Collection < ActiveFedora::Base
 
   def to_solr
     super.tap do |solr_doc|
+      solr_doc["unit_ssi"] = self.unit.name if self.unit.present?
       solr_doc["name_uniq_si"] = self.name.downcase.gsub(/\s+/,'') if self.name.present?
       solr_doc["has_poster_bsi"] = !(poster.content.nil? || poster.content == '')
+      solr_doc["inheritable_read_access_person_ssim"] = default_read_users
+      solr_doc["inheritable_read_access_group_ssim"] = default_read_groups
     end
   end
 
@@ -193,7 +196,7 @@ class Admin::Collection < ActiveFedora::Base
     {
       id: id,
       name: name,
-      unit: unit,
+      unit: unit&.name,
       description: description,
       object_count: {
         total: total_count,

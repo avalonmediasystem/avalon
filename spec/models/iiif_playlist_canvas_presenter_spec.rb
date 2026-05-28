@@ -1,4 +1,4 @@
-# Copyright 2011-2025, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2026, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 #
@@ -91,6 +91,10 @@ describe IiifPlaylistCanvasPresenter do
         expect(subject.height).to eq 40
       end
 
+      it 'has thumbnail' do
+        expect(subject.thumbnail.first[:id]).to start_with "http://test.host/assets/audio_icon"
+      end
+
       context 'with mp3 file' do
         let(:mp3_url) { 'https://streaming.example.com/dir/file.mp3' }
         let(:derivative) { FactoryBot.build(:derivative, hls_url: mp3_url, mime_type: 'audio/mpeg' ) }
@@ -117,6 +121,10 @@ describe IiifPlaylistCanvasPresenter do
       it 'has height and width' do
         expect(subject.width).to eq 1024
         expect(subject.height).to eq 768
+      end
+
+      it 'has thumbnail' do
+        expect(subject.thumbnail.first[:id]).to eq "http://test.host/master_files/#{master_file.id}/thumbnail"
       end
 
       context 'with mp4 file' do

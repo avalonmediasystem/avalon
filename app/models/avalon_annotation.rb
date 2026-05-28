@@ -1,4 +1,4 @@
-# Copyright 2011-2025, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2026, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 #
@@ -63,6 +63,8 @@ class AvalonAnnotation < ActiveAnnotations::Annotation
   # Sets the class variable @master_file by finding the master referenced in the source uri
   def master_file
     @master_file ||= SpeedyAF::Proxy::MasterFile.find(master_file_id) if master_file_id
+  rescue SpeedyAF::RecordNotFound
+    nil
   end
 
   def master_file=(value)

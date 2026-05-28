@@ -1,4 +1,4 @@
-// Copyright 2011-2025, The Trustees of Indiana University and Northwestern
+// Copyright 2011-2026, The Trustees of Indiana University and Northwestern
 //   University.  Licensed under the Apache License, Version 2.0 (the "License");
 //   you may not use this file except in compliance with the License.
 
@@ -11,23 +11,43 @@
 //   CONDITIONS OF ANY KIND, either express or implied. See the License for the
 //   specific language governing permissions and limitations under the License.
 // ---  END LICENSE_HEADER BLOCK  ---
- 
+
 // Disable the default action for tooltips if the Javascript for the
 // inline tip is able to work. Since we know that these will have additional
 // data attributes there is no need for another class hook
 
-$('.equal-height').addClass('in').height(Math.max.apply(null, ($('.equal-height').map(function(i, elem) {
-  return $(elem).height();
-})).get())).removeClass('in');
+document.addEventListener('DOMContentLoaded', function () {
+  const equalHeightElements = queryAll('.equal-height');
+  if (equalHeightElements.length > 0) {
+    // Add 'in' class temporarily
+    equalHeightElements.forEach(elem => elem.classList.add('in'));
 
-$('.tooltip-label').click(function(event) {
-  var targetNode;
-  event.preventDefault();
-  targetNode = $(this).data('tooltip');
-  return $(targetNode).collapse('toggle');
-});
+    // Calculate max height
+    const heights = Array.from(equalHeightElements).map(elem => elem.offsetHeight);
+    const maxHeight = Math.max(...heights);
 
-$('.form-text .btn-close').click(function(event) {
-  event.preventDefault();
-  return $(this).parent().collapse('toggle');
+    // Set all elements to max height and remove 'in' class
+    equalHeightElements.forEach(elem => {
+      elem.style.height = maxHeight + 'px';
+      elem.classList.remove('in');
+    });
+  }
+
+  // Prevent tooltip 'click' event bubbling up into the form-label, which focuses the input
+  queryAll('.tooltip-label').forEach(function (element) {
+    element.addEventListener('click', function (event) {
+      event.preventDefault();
+    });
+  });
+
+  queryAll('.form-text .btn-close').forEach(function (element) {
+    element.addEventListener('click', function (event) {
+      event.preventDefault();
+      const parentElement = this.parentElement;
+      if (parentElement) {
+        const collapse = bootstrap.Collapse.getOrCreateInstance(parentElement);
+        collapse.toggle();
+      }
+    });
+  });
 });

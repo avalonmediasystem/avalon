@@ -1,4 +1,4 @@
-# Copyright 2011-2025, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2026, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 #
@@ -83,7 +83,8 @@ module MediaObjectsHelper
   end
 
   def display_unit(media_object)
-    link_to(media_object.collection.unit, collections_path(filter: media_object.collection.unit))
+    unit = media_object.collection.unit
+    link_to(unit.name, unit_path(unit.id))
   end
 
   def display_language media_object

@@ -1,4 +1,4 @@
-# Copyright 2011-2025, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2026, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 #
@@ -149,6 +149,21 @@ RSpec.describe PlaylistsController, type: :controller do
       expect(assigns(:playlist)).to eq(playlist)
     end
     # TODO: write tests for public/private playists
+
+    context 'deleted/missing playlist' do
+      it 'provides missing item error page' do
+        get :show, params: { id: 'missing' }, session: valid_session
+        expect(response.status).to eq 404
+        expect(response).to render_template("errors/unknown_pid")
+      end
+
+      it 'provides json error response' do
+        get :show, params: { id: 'missing' }, session: valid_session, format: :json
+        expect(response.status).to eq 404
+        result = JSON.parse(response.body)
+        expect(result).to eq({ "errors" => ["missing could not be found"] })
+      end
+    end
 
     context 'read from solr' do
       render_views
@@ -437,7 +452,7 @@ RSpec.describe PlaylistsController, type: :controller do
           expect(response).to render_template(:_lti_url)
         end
         it "others: should include only lti" do
-          login_lti 'student'
+          login_lti 'user'
           lti_group = @controller.user_session[:virtual_groups].first
           get :show, params: { id: playlist.id }
           expect(response).to_not render_template(:_share_resource)
@@ -485,75 +500,11 @@ RSpec.describe PlaylistsController, type: :controller do
         FactoryBot.create(:playlist, title: "zzzebra", user: user)
       end
 
-      context 'paging' do
-        let(:common_params) { { order: { '0': { column: 0, dir: 'asc' } }, search: { value: '' }, columns: { '5': { search: { value: '' } } } } }
-        it 'returns all results' do
-          post :paged_index, format: 'json', params: common_params.merge(start: 0, length: 20), session: valid_session
-          parsed_response = JSON.parse(response.body)
-          expect(parsed_response['recordsTotal']).to eq(11)
-          expect(parsed_response['data'].count).to eq(11)
-        end
-        it 'returns first page' do
-          post :paged_index, format: 'json', params: common_params.merge(start: 0, length: 10), session: valid_session
-          parsed_response = JSON.parse(response.body)
-          expect(parsed_response['data'].count).to eq(10)
-        end
-        it 'returns second page' do
-          post :paged_index, format: 'json', params: common_params.merge(start: 10, length: 10), session: valid_session
-          parsed_response = JSON.parse(response.body)
-          expect(parsed_response['data'].count).to eq(1)
-        end
-      end
-
-      context 'searching' do
-        let(:common_params) { { start: 0, length: 20, order: { '0': { column: 0, dir: 'asc' } } } }
-        it "returns results filtered by title" do
-          post :paged_index, format: 'json', params: common_params.merge(search: { value: "aardvark" }, columns: { '5': { search: { value: '' } } }), session: valid_session
-          parsed_response = JSON.parse(response.body)
-          expect(parsed_response['recordsFiltered']).to eq(1)
-          expect(parsed_response['data'].count).to eq(1)
-          expect(parsed_response['data'][0][0]).to eq("<a title=\"#{Playlist.all[0].comment}\" href=\"/playlists/1\">aardvark</a>")
-        end
-      end
-
-      context 'sorting' do
-        let(:common_params) { { start: 0, length: 20, search: { value: '' }, columns: { '5': { search: { value: '' } } } } }
-        it "returns results sorted by title ascending" do
-          post :paged_index, format: 'json', params: common_params.merge(order: { '0': { column: 0, dir: 'asc' } }), session: valid_session
-          parsed_response = JSON.parse(response.body)
-          expect(parsed_response['data'][0][0]).to eq("<a title=\"#{Playlist.all[0].comment}\" href=\"/playlists/1\">aardvark</a>")
-          expect(parsed_response['data'][10][0]).to eq("<a title=\"#{Playlist.all[10].comment}\" href=\"/playlists/11\">zzzebra</a>")
-        end
-        it "returns results sorted by title descending" do
-          post :paged_index, format: 'json', params: common_params.merge(order: { '0': { column: 0, dir: 'desc' } }), session: valid_session
-          parsed_response = JSON.parse(response.body)
-          expect(parsed_response['data'][0][0]).to eq("<a title=\"#{Playlist.all[10].comment}\" href=\"/playlists/11\">zzzebra</a>")
-          expect(parsed_response['data'][10][0]).to eq("<a title=\"#{Playlist.all[0].comment}\" href=\"/playlists/1\">aardvark</a>")
-        end
-        it "returns results sorted by Created ascending" do
-          post :paged_index, format: 'json', params: common_params.merge(order: { '0': { column: 3, dir: 'asc' } }), session: valid_session
-          parsed_response = JSON.parse(response.body)
-          expect(parsed_response['data'][0][0]).to eq("<a title=\"#{Playlist.all[0].comment}\" href=\"/playlists/1\">aardvark</a>")
-          expect(parsed_response['data'][10][0]).to eq("<a title=\"#{Playlist.all[10].comment}\" href=\"/playlists/11\">zzzebra</a>")
-        end
-        it "returns results sorted by Created descending" do
-          post :paged_index, format: 'json', params: common_params.merge(order: { '0': { column: 3, dir: 'desc' } }), session: valid_session
-          parsed_response = JSON.parse(response.body)
-          expect(parsed_response['data'][0][0]).to eq("<a title=\"#{Playlist.all[10].comment}\" href=\"/playlists/11\">zzzebra</a>")
-          expect(parsed_response['data'][10][0]).to eq("<a title=\"#{Playlist.all[0].comment}\" href=\"/playlists/1\">aardvark</a>")
-        end
-        it "returns results sorted by Updated ascending" do
-          post :paged_index, format: 'json', params: common_params.merge(order: { '0': { column: 4, dir: 'asc' } }), session: valid_session
-          parsed_response = JSON.parse(response.body)
-          expect(parsed_response['data'][0][0]).to eq("<a title=\"#{Playlist.all[0].comment}\" href=\"/playlists/1\">aardvark</a>")
-          expect(parsed_response['data'][10][0]).to eq("<a title=\"#{Playlist.all[10].comment}\" href=\"/playlists/11\">zzzebra</a>")
-        end
-        it "returns results sorted by Updated descending" do
-          post :paged_index, format: 'json', params: common_params.merge(order: { '0': { column: 4, dir: 'desc' } }), session: valid_session
-          parsed_response = JSON.parse(response.body)
-          expect(parsed_response['data'][0][0]).to eq("<a title=\"#{Playlist.all[10].comment}\" href=\"/playlists/11\">zzzebra</a>")
-          expect(parsed_response['data'][10][0]).to eq("<a title=\"#{Playlist.all[0].comment}\" href=\"/playlists/1\">aardvark</a>")
-        end
+      it 'returns all results' do
+        post :paged_index, format: 'json', session: valid_session
+        parsed_response = JSON.parse(response.body)
+        expect(parsed_response['recordsTotal']).to eq(11)
+        expect(parsed_response['data'].count).to eq(11)
       end
     end
 

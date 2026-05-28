@@ -1,4 +1,4 @@
-# Copyright 2011-2025, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2026, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 #
@@ -47,41 +47,12 @@ class PlaylistsController < ApplicationController
 
   # POST /playlists/paged_index
   def paged_index
-    # Playlists for index page are loaded dynamically by jquery datatables javascript which
-    # requests the html for only a limited set of rows at a time.
+    # Playlists for index page are loaded via /javascript/componenets/tables/PlaylistsTable.jsx
+    # which requests the json for all records on initial page load.
     recordsTotal = @playlists.count
-    columns = ['title','size','visibility','created_at','updated_at','tags','actions']
 
-    #Filter title
-    title_filter = params['search']['value']
-    @playlists = @playlists.title_like(title_filter) if title_filter.present?
-
-    # Apply tag filter if requested
-    tag_filter = params['columns']['5']['search']['value']
-    @playlists = @playlists.with_tag(tag_filter) if tag_filter.present?
-    playlistsFilteredTotal = @playlists.count
-
-    sort_column = params['order']['0']['column'].to_i rescue 0
-    sort_direction = params['order']['0']['dir'] rescue 'asc'
-    session[:playlist_sort] = [sort_column, sort_direction]
-    if columns[sort_column] == 'created_at' || columns[sort_column] == 'updated_at'
-      @playlists = @playlists.order("#{columns[sort_column].downcase} #{sort_direction}")
-      @playlists = @playlists.offset(params['start']).limit(params['length'])
-    elsif columns[sort_column] != 'size'
-      @playlists = @playlists.order("lower(#{columns[sort_column].downcase}) #{sort_direction}, #{columns[sort_column].downcase} #{sort_direction}")
-      @playlists = @playlists.offset(params['start']).limit(params['length'])
-    else
-      # sort by size (item count): decorate list with playlistitem count then sort and undecorate
-      decorated = @playlists.collect{|p| [ p.items.size, p ]}
-      decorated.sort!
-      @playlists = decorated.collect{|p| p[1]}
-      @playlists.reverse! if sort_direction=='desc'
-      @playlists = @playlists.slice(params['start'].to_i, params['length'].to_i)
-    end
     response = {
-      "draw": params['draw'],
       "recordsTotal": recordsTotal,
-      "recordsFiltered": playlistsFilteredTotal,
       "data": @playlists.collect do |playlist|
         copy_button = view_context.button_tag( type: 'button', data: { playlist: playlist },
           class: 'copy-playlist-button btn btn-outline btn-sm') do
@@ -94,7 +65,7 @@ class PlaylistsController < ApplicationController
           "<i class='fa fa-times' aria-hidden='true'></i> Delete".html_safe
         end
         [
-          view_context.link_to(playlist.title, playlist_path(playlist), title: playlist.comment),
+          view_context.link_to(playlist.title, playlist_path(playlist), title: playlist.comment, data: { testid: "playlist-name-table" }),
           "#{playlist.items.size} items",
           view_context.human_friendly_visibility(playlist.visibility),
           "<span title='#{playlist.created_at.utc.iso8601}'>#{view_context.time_ago_in_words(playlist.created_at)} ago</span>",
@@ -362,6 +333,14 @@ class PlaylistsController < ApplicationController
     # items that have moved to another playlist
     changed_playlist.select {|item| item.playlist_id_was != item.playlist_id}.each do |item|
       item.position = nil
+    end
+  end
+
+  rescue_from ActiveRecord::RecordNotFound do |exception|
+    if request.format == :json
+      render json: { errors: ["#{params[:id]} could not be found"] }, status: :not_found
+    elsif request.format == :html
+      render '/errors/unknown_pid', status: :not_found
     end
   end
 end

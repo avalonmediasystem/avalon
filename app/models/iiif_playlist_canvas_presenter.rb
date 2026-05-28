@@ -1,4 +1,4 @@
-# Copyright 2011-2025, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2026, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 #
@@ -201,7 +201,8 @@ class IiifPlaylistCanvasPresenter
         height: (master_file.height || MasterFile::AUDIO_HEIGHT).to_i,
         duration: stream_info[:duration],
         type: media_type,
-        format: mimetype
+        format: mimetype,
+        thumbnail: [{ id: thumbnail_url, type: 'Image' }]
       }.compact
 
       if master_file.media_object.visibility == 'public'
@@ -262,5 +263,13 @@ class IiifPlaylistCanvasPresenter
           }
         ]
       }
+    end
+
+    def thumbnail_url
+      if master_file.is_video?
+        Rails.application.routes.url_helpers.thumbnail_master_file_url(master_file.id)
+      else
+        ActionController::Base.helpers.asset_url('audio_icon.png')
+      end
     end
 end

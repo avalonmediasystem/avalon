@@ -1,4 +1,4 @@
-# Copyright 2011-2025, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2026, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 #
@@ -54,7 +54,7 @@ describe SpeedyAF::Proxy::MediaObject do
       expect(presenter.temporal_subject).to eq media_object.temporal_subject
       expect(presenter.geographic_subject).to eq media_object.geographic_subject
       expect(presenter.collection.id).to eq media_object.collection.id
-      expect(presenter.collection.unit).to eq media_object.collection.unit
+      expect(presenter.collection.unit.name).to eq media_object.collection.unit.name
       expect(presenter.language).to eq media_object.language
       expect(presenter.rights_statement).to eq media_object.rights_statement
       expect(presenter.terms_of_use).to eq media_object.terms_of_use

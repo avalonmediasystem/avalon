@@ -1,4 +1,4 @@
-# Copyright 2011-2025, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2026, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 #
@@ -16,7 +16,7 @@ require 'avalon/docx_file'
 
 module Avalon
   class TranscriptParser
-    TEXT_TYPE = ['text/vtt', 'text/srt', 'text/plain', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document']
+    TEXT_TYPE = ['text/vtt', 'text/srt', 'application/x-subrip', 'text/plain', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document']
 
     # Passed in transcript_file must be instance of ActiveStorage::Attached::One
     def initialize(transcript_file)
@@ -42,7 +42,7 @@ module Avalon
       return if plaintext.blank?
 
       normalized_plaintext = plaintext.gsub("\r\n", "\n")
-      normalized_transcript = normalize_timed_text(normalized_plaintext) if @mime_type == 'text/vtt' || @mime_type == 'text/srt'
+      normalized_transcript = normalize_timed_text(normalized_plaintext) if ['text/vtt', 'text/srt', 'application/x-subrip'].include?(@mime_type)
       normalized_transcript ||= normalized_plaintext
     end
 

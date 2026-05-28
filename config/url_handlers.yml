@@ -15,4 +15,5 @@ nginx:
   http:
     video: <%=http_base%>/<%=path%>/<%=filename%>.<%=extension%>/index.m3u8
     audio: <%=http_base%>/<%=path%>/<%=filename%>.<%=extension%>/index.m3u8
+    audio_mp3: <%=http_base%>/<%=path%>/<%=filename%>.<%=extension%>
     

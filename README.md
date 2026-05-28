@@ -36,9 +36,11 @@ To run tests, first bring up the test stack then run Rspec as usual:
 
 To run Cypress E2E tests, first bring up the development stack, manually create testing users, and then bring up the cypress container:
 * ```docker-compose up avalon```
-* Create the three testing users:
+* Create testing users:
   * ```docker-compose exec avalon bash -c "bundle exec rake avalon:user:create avalon_username=administrator@example.com avalon_password=password avalon_groups=administrator"```
   * ```docker-compose exec avalon bash -c "bundle exec rake avalon:user:create avalon_username=manager@example.com avalon_password=password avalon_groups=manager"```
+  * ```docker-compose exec avalon bash -c "bundle exec rake avalon:user:create avalon_username=unitadmin@example.com avalon_password=password avalon_groups=administrator"```
+  * ```docker-compose exec avalon bash -c "bundle exec rake avalon:user:create avalon_username=unitmanager@example.com avalon_password=password avalon_groups=manager"```
   * ```docker-compose exec avalon bash -c "bundle exec rake avalon:user:create avalon_username=user@example.com avalon_password=password"```
 * ```docker-compose up cypress```
 

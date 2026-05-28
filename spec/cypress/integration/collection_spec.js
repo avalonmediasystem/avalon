@@ -1,43 +1,55 @@
-import HomePage from '../pageObjects/homePage.js';
+import HomePage from '../pageObjects/homePage';
 import CollectionPage from '../pageObjects/collectionPage';
-import ItemPage from '../pageObjects/itemPage.js';
+import ItemPage from '../pageObjects/itemPage';
 import { getFixturePath } from '../support/utils';
+import UnitPage from '../pageObjects/unitPage';
 
 import {
   navigateToManageContent,
   selectCollectionUnit,
   performSearch,
+  verifySearchable,
+  verifyUnsearchable
 } from '../support/navigation.js';
 
 const collectionPage = new CollectionPage();
 const homePage = new HomePage();
 const itemPage = new ItemPage();
+const unitPage = new UnitPage();
 context('Collections Test', () => {
+  var unit_title = `Automation unit title ${ Date.now() }`;
   //Admin created collection
-  var collection_title = `Automation collection title ${
-    Math.floor(Math.random() * 10000) + 1
-  }`;
+  var collection_title = `Automation collection title ${ Date.now() }`;
+  var item_title_basic = `Automation item title ${ Date.now() }`;
+  let item_id_basic;
 
   //Collection name created by manager
-  const collectionNameManager = `Automation collection title - manager${
-    Math.floor(Math.random() * 10000) + 1
-  }`;
+  const collectionNameManager = `Automation collection title - manager${ Date.now() }`;
   let createdItemIds = [];
+  let createdCollections = [];
 
-  var item_title; //This is an item under collection created by admin
-  var item_id;
-  var item_title_discovery; // This is an item created to test out
-  var item_id_discovery;
 
   Cypress.on('uncaught:exception', (err, runnable) => {
     // Prevents Cypress from failing the test due to uncaught exceptions in the application code  - TypeError: Cannot read properties of undefined (reading 'scrollDown')
     if (
       err.message.includes(
-        "Cannot read properties of undefined (reading 'success')"
+        "Cannot read properties of undefined (reading 'success')",
       )
     ) {
       return false;
     }
+  });
+
+  before(() => {
+    // creating unit for collection
+    cy.login('administrator');
+    unitPage.createUnit({ title: unit_title });
+    navigateToManageContent();
+    collectionPage.createCollection({ title: collection_title, unitName: unit_title });
+    collectionPage.createItem(item_title_basic, 'test_sample.mp4', { publish: true }).then((id) => {
+      item_id_basic = id;
+      createdItemIds.push(item_id_basic);
+    });
   });
 
   // Cleanup after all tests
@@ -50,601 +62,203 @@ context('Collections Test', () => {
     });
 
     // Delete manager collection
-    collectionPage.deleteCollectionByName(collectionNameManager);
+    createdCollections.forEach((name) => {
+      collectionPage.deleteCollectionByName(name);
+    });
 
     // Delete main collection
     collectionPage.deleteCollectionByName(collection_title);
+
+    // Delete unit
+    unitPage.deleteUnitByName(unit_title);
   });
 
   it(
     'Verify whether an admin user is able to create a collection - @T553cda51 ',
     { tags: '@critical' },
     () => {
-      cy.login('administrator');
-      navigateToManageContent();
-      collectionPage.createCollection({ title: collection_title });
-    }
+      // no-op
+      // All of the parts of this test are handled in before()
+    },
   );
 
-  it(
-    'Verify that the regular users and public do not have access to manage content',
-    { tags: '@high' },
-    () => {
-      //Logging in as user and verifying user does not have access to manage
-      cy.login('user');
-      cy.visit('/');
-      cy.contains('Manage').should('not.exist');
-      homePage.logout();
-      // Verifying public does not have access to manage
-      cy.visit('/');
-      cy.contains('Manage').should('not.exist');
-    }
-  );
+  it('Verify that the regular users and public do not have access to manage content - @T6a305228', () => {
+    //Logging in as user and verifying user does not have access to manage
+    cy.login('user');
+    cy.visit('/');
+    cy.contains('Manage').should('not.exist');
+    homePage.logout();
+    // Verifying public does not have access to manage
+    cy.visit('/');
+    cy.contains('Manage').should('not.exist');
+  });
 
   it(
-    'Verify whether an admin/manager is able assign other users as managers to the collection - @T3c428871 ',
+    'Verify whether a user who is an admin or manager can assign other users as managers to the collection- @T3c428871 ',
     { tags: '@critical' },
     () => {
       cy.login('administrator');
       collectionPage.navigateToCollection(collection_title);
       collectionPage.addManager(Cypress.env('USERS_MANAGER_USERNAME'));
-    }
-  );
-
-  it(
-    'Verify removing users from assigned staff roles for the collection - @T04aa5c88',
-    { tags: '@high' },
-    () => {
-      var managerUsername = Cypress.env('USERS_MANAGER_USERNAME');
-      cy.login('administrator');
-      collectionPage.navigateToCollection(collection_title);
-      cy.intercept('POST', '/admin/collections/*').as(
-        'updateCollectionManager'
-      );
-
-      // Verifying collection manager exists
-      cy.get("[data-testid='collection-access-label-manager']")
-        .should('exist')
-        .contains('label', managerUsername)
-        .should('be.visible');
-
-      // Removing manager access for the collection
-      cy.get('[data-testid="collection-access-label-manager"]')
-        .contains('manager@example.com')
-        .parents('tr')
-        .find('[data-testid="collection-access-remove-manager"]')
-        .click();
-
-      cy.wait('@updateCollectionManager').then((interception) => {
-        expect(interception.response.statusCode).to.eq(302);
-        expect(interception.response.headers.location).to.include(
-          '/admin/collections/'
-        );
-      });
-      //Verifying manager is removed
-      cy.get("[data-testid='collection-access-label-manager']")
-        .contains('label', managerUsername)
-        .should('not.exist');
-
+      //verifying the manager has access to the collection
       cy.login('manager');
       navigateToManageContent();
-
-      //adding the manager back again for rest of the test cases
-      cy.contains(collection_title).should('not.exist');
-      cy.login('administrator');
-      collectionPage.navigateToCollection(collection_title);
-      collectionPage.addManager(Cypress.env('USERS_MANAGER_USERNAME'));
-    }
+      cy.contains(collection_title).should('exist');
+    },
   );
 
-  it(
-    'Manager can create collection, normal user cannot, then depositor user cannot create but can view Manage',
-    { tags: '@high' },
-    () => {
-      let collectionurl;
-      // Manager can create collection
-      cy.login('manager');
-      navigateToManageContent();
-      collectionPage.createCollection({
-        title: collectionNameManager,
-        contactEmail: 'manager@example.com',
-      });
-      cy.url().then((url) => {
-        collectionurl = url;
-      });
-      homePage.logout();
+  it('Verify removing users from assigned staff roles for the collection - @T04aa5c88', () => {
+    var managerUsername = Cypress.env('USERS_MANAGER_USERNAME');
+    var adminUsername = Cypress.env('USERS_ADMINISTRATOR_USERNAME');
+    cy.login('administrator');
+    collectionPage.navigateToCollection(collection_title);
+    cy.intercept('POST', '/admin/collections/*').as('updateCollectionManager');
 
-      //User cannot access the collection
-      cy.login('user');
-      cy.visit('/');
-      cy.contains('Manage').should('not.exist');
-      homePage.logout();
+    //TODO: Check the manager isn't already in collection before doing this
+    collectionPage.addManager(Cypress.env('USERS_MANAGER_USERNAME'));
 
-      //administrator adds user as depositor
-      cy.login('administrator');
-      navigateToManageContent();
-      collectionPage.navigateToCollection(collectionNameManager);
-      cy.intercept('POST', '/admin/collections/*').as(
-        'updateCollectionManager'
+    // Verifying collection manager exists
+    cy.get("[data-testid='collection-access-label-manager']")
+      .should('exist')
+      .find('label')
+      .filter((_, el) => el.textContent.trim() === managerUsername)
+      .should('have.length', 1)
+      .should('be.visible');
+
+    // Removing manager access for the collection
+    cy.get('[data-testid="collection-access-label-manager"]')
+      .find('label')
+      .filter((_, el) => el.textContent.trim() === managerUsername)
+      .parents('tr')
+      .find('[data-testid="collection-access-remove-manager"]')
+      .click();
+
+    cy.wait('@updateCollectionManager').then((interception) => {
+      expect(interception.response.statusCode).to.eq(302);
+      expect(interception.response.headers.location).to.include(
+        '/admin/collections/',
       );
-      cy.get('input[name="add_depositor_display"]')
-        .type(Cypress.env('USERS_USER_USERNAME'))
-        .should('have.value', Cypress.env('USERS_USER_USERNAME'));
-      cy.get('.tt-menu .tt-suggestion')
-        .should('be.visible')
-        .and('contain', Cypress.env('USERS_USER_USERNAME'))
-        .click();
-      cy.get("[data-testid='submit-add-depositor']").click();
-      cy.wait('@updateCollectionManager')
-        .its('response.statusCode')
-        .should('eq', 302);
-      homePage.logout();
+    });
+    //Verifying manager is removed
+    cy.get("[data-testid='collection-access-label-manager']")
+      .find('label')
+      .filter((_, el) => el.textContent.trim() === managerUsername)
+      .should('have.length', 0);
 
-      //user can now access the collection
-      cy.login('user');
-      cy.visit('/');
-      cy.contains('Manage').should('exist').click();
-      cy.then(() => {
-        cy.visit(collectionurl);
-      });
-    }
-  );
+    cy.login('manager');
+    //FIXME can fail if lingering units/collections grant this user privileges to manage content
+    cy.contains('Manage').should('not.exist');
 
-  it(
-    "Verify editing item discovery - Checking the Hide this item from search results for new items in the collection -'@Tf7cefb09 ",
-    { tags: '@high' },
-    () => {
-      // Variables for new created item
-      var item_title_hidden = `Automation Item title ${
-        Math.floor(Math.random() * 100000) + 1
-      }`;
-      var item_id_hidden;
+    //adding the manager back again for rest of the test cases
+    cy.login('administrator');
+    collectionPage.navigateToCollection(collection_title);
+    collectionPage.addManager(Cypress.env('USERS_MANAGER_USERNAME'));
+  });
 
-      cy.login('administrator');
-      collectionPage.navigateToCollection(collection_title);
-      item_title_discovery = `Automation Item title ${
-        Math.floor(Math.random() * 100000) + 1
-      }`;
-      // Creating an item as an existing item so we can check the precondition
-      collectionPage
-        .createItem(item_title_discovery, 'test_sample.mp4')
-        .then((id) => {
-          item_id_discovery = id;
-          createdItemIds.push(id);
-          cy.intercept('POST', '**/update_status?status=publish').as(
-            'publishmedia'
-          );
-          cy.get('[data-testid="media-object-publish-btn"]')
-            .contains('Publish')
-            .click();
-          cy.wait('@publishmedia').its('response.statusCode').should('eq', 302);
-          cy.get('[data-testid="alert"]').contains(
-            '1 media object successfully published.'
-          );
-          cy.wait(5000);
-          cy.get('[data-testid="media-object-unpublish-btn"]').contains(
-            'Unpublish'
-          );
+  it('Verify that only the admins and unit admins can create a collection - @T680b0e35', () => {
+    let collectionurl;
+    // Unit admin can create collection
+    cy.login('unit_admin');
+    navigateToManageContent();
 
-          cy.visit('/media_objects/' + item_id_discovery);
-        });
+    collectionPage.createCollection({
+      title: collectionNameManager,
+      contactEmail: 'manager@example.com',
+      unitName: unit_title,
+    });
+    createdCollections.push(collectionNameManager);
+    cy.url().then((url) => {
+      collectionurl = url;
+    });
+    homePage.logout();
 
-      //setting it to be available to general public
-      cy.get('[data-testid="media-object-edit-btn"]').click();
-      cy.get('[data-testid="media-object-general-public"]')
-        .check()
-        .should('be.checked');
-      cy.get('[data-testid="media-object-continue-btn"]').click();
+    //User cannot access the collection
+    cy.login('user');
+    cy.visit('/');
+    cy.contains('Manage').should('not.exist');
+    homePage.logout();
 
-      // Login as normal user and verify if the user can search the item
-      cy.visit('/users/sign_out');
-      cy.login('user');
-      homePage.getBrowseNavButton();
-      performSearch(item_title_discovery);
+    //administrator adds user as depositor
+    cy.login('administrator');
+    navigateToManageContent();
+    collectionPage.navigateToCollection(collectionNameManager);
+    cy.intercept('POST', '/admin/collections/*').as('updateCollectionManager');
+    cy.get('[data-testid="add_depositor-user-input"]')
+      .type(Cypress.env('USERS_USER_USERNAME'))
+      .should('have.value', Cypress.env('USERS_USER_USERNAME'));
+    cy.get('[data-testid="add_depositor-popup"]')
+      .contains(Cypress.env('USERS_USER_USERNAME'))
+      .click();
+    cy.get("[data-testid='submit-add-depositor']").click();
+    cy.wait('@updateCollectionManager')
+      .its('response.statusCode')
+      .should('eq', 302);
+    homePage.logout();
 
-      cy.get('[data-testid="browse-results-list"]').within(() => {
-        cy.contains(
-          '[data-testid^="browse-document-title-"]',
-          item_title_discovery
-        ).should('exist');
-      });
+    //user can now access the collection
+    cy.login('user');
+    cy.visit('/');
+    cy.contains('Manage').should('exist').click();
+    cy.then(() => {
+      cy.visit(collectionurl);
+    });
+  });
 
-      // Checking the "Hide this item from search result"
-      cy.login('administrator');
-      collectionPage.navigateToCollection(collection_title);
-      // Make sure the checkbox exists and is visible
-      cy.get('[data-testid="collection-hide-checkbox"]')
-        .should('exist')
-        .should('be.visible');
+  it('Verify editing item discovery - Checking the Hide this item from search results for items in the collection - @T7108664f @T126023f1 @T234440d9', () => {
+    cy.login('administrator');
+    collectionPage.navigateToCollection(collection_title);
+    collectionPage.setAccess('public');
+    collectionPage.setHidden(true);
+    verifySearchable(item_id_basic, item_title_basic);
 
-      // Check the checkbox
-      cy.get('[data-testid="collection-hide-checkbox"]')
-        .check()
-        .should('be.checked');
+    //user
+    cy.login('user');
+    homePage.getBrowseNavButton();
+    verifyUnsearchable(item_id_basic, item_title_basic);
 
-      // Verify the label text wraps the checkbox correctly
-      cy.get('[data-testid="collection-hide-checkbox"]')
-        .parent('label')
-        .should('contain.text', 'Hide this item from search results');
+    cy.login('administrator');
+    collectionPage.navigateToCollection(collection_title);
+    collectionPage.setHidden(false);
+    verifySearchable(item_id_basic, item_title_basic);
 
-      //Click on save setting button
-      cy.get('[data-testid="collection-item-discovery"]')
-        .find('[data-testid="collection-save-setting-btn"]')
-        .contains('Save Setting')
-        .click();
-
-      // Checking for an exitsing item
-      //admin
-      performSearch(item_title_discovery);
-
-      cy.get('[data-testid="browse-results-list"]').within(() => {
-        cy.contains(
-          '[data-testid^="browse-document-title-"]',
-          item_title_discovery
-        ).should('exist');
-      });
-
-      //user
-      cy.login('user');
-      homePage.getBrowseNavButton();
-      performSearch(item_title_discovery);
-
-      cy.get('[data-testid="browse-results-list"]').within(() => {
-        cy.contains(
-          '[data-testid^="browse-document-title-"]',
-          item_title_discovery
-        ).should('exist');
-      });
-      // Creating a new item
-      cy.login('administrator');
-      collectionPage.navigateToCollection(collection_title);
-      // Creating a new item - search on this should be hiddem
-      collectionPage
-        .createItem(item_title_hidden, 'test_sample.mp4')
-        .then((id) => {
-          item_id_hidden = id;
-          createdItemIds.push(id);
-          cy.intercept('POST', '**/update_status?status=publish').as(
-            'publishmedia'
-          );
-          cy.get('[data-testid="media-object-publish-btn"]')
-            .contains('Publish')
-            .click();
-          cy.wait('@publishmedia').its('response.statusCode').should('eq', 302);
-          cy.get('[data-testid="alert"]').contains(
-            '1 media object successfully published.'
-          );
-          cy.wait(5000);
-          cy.get('[data-testid="media-object-unpublish-btn"]').contains(
-            'Unpublish'
-          );
-
-          cy.visit('/media_objects/' + item_id_hidden);
-        });
-
-      //setting it to be available to general public
-      cy.get('[data-testid="media-object-edit-btn"]').click();
-      cy.get('[data-testid="media-object-general-public"]')
-        .check()
-        .should('be.checked');
-      cy.get('[data-testid="media-object-continue-btn"]').click();
-
-      // Checking for new item - normal user
-      cy.login('user');
-      homePage.getBrowseNavButton();
-      performSearch(item_title_hidden);
-
-      cy.get('body').then(($body) => {
-        if ($body.find('[data-testid="browse-results-list"]').length > 0) {
-          // If the container exists, check that the title is not found within it
-          cy.get('[data-testid="browse-results-list"]').within(() => {
-            cy.contains(item_title_hidden).should('not.exist');
-          });
-        } else {
-          cy.log(
-            'No items visible in browse results — skipping title assertion.'
-          );
-        }
-      });
-    }
-  );
+    //user
+    cy.login('user');
+    homePage.getBrowseNavButton();
+    verifySearchable(item_id_basic, item_title_basic);
+  });
 
   it(
-    "Verify editing item discovery - Checking the Hide this item from search results for existing items in the collection -'@Tf7cefb09 ",
-    { tags: '@high' },
-    () => {
-      // Variables for new created item
-      var item_title_hidden = `Automation Item title ${
-        Math.floor(Math.random() * 100000) + 1
-      }`;
-      var item_id_hidden;
-      // Login as admin and verify the user can search the existing item
-      cy.login('administrator');
-      collectionPage.navigateToCollection(collection_title);
-      homePage.getBrowseNavButton();
-      performSearch(item_title_discovery);
-
-      cy.get('[data-testid="browse-results-list"]').within(() => {
-        cy.contains(
-          '[data-testid^="browse-document-title-"]',
-          item_title_discovery
-        ).should('exist');
-      });
-
-      // Login as normal user and verify the user can search the existing item
-      cy.visit('/users/sign_out');
-      cy.login('user');
-      homePage.getBrowseNavButton();
-      performSearch(item_title_discovery);
-
-      cy.get('[data-testid="browse-results-list"]').within(() => {
-        cy.contains(
-          '[data-testid^="browse-document-title-"]',
-          item_title_discovery
-        ).should('exist');
-      });
-
-      // Checking the "Hide this item from search result" and applying to all existing items
-
-      // Verify the checkbox is checked from previous test case
-      cy.login('administrator');
-      collectionPage.navigateToCollection(collection_title);
-      cy.get('[data-testid="collection-hide-checkbox"]').should('be.checked');
-
-      // Click on save setting button
-      cy.get('[data-testid="collection-item-discovery"]')
-        .find('[data-testid="collection-apply-to-all-btn"]')
-        .contains('Apply to All Existing Items')
-        .click();
-
-      // Checking for an exitsing item
-      //admin
-      cy.login('administrator');
-      homePage.getBrowseNavButton();
-      performSearch(item_title_discovery);
-
-      cy.get('[data-testid="browse-results-list"]').within(() => {
-        cy.contains(
-          '[data-testid^="browse-document-title-"]',
-          item_title_discovery
-        ).should('exist');
-      });
-
-      //user
-      cy.login('user');
-      homePage.getBrowseNavButton();
-      performSearch(item_title_discovery);
-      cy.get('body').then(($body) => {
-        if ($body.find('[data-testid="browse-results-list"]').length > 0) {
-          // If the container exists, check that the title is not found within it
-          cy.get('[data-testid="browse-results-list"]').within(() => {
-            cy.contains(item_title_discovery).should('not.exist');
-          });
-        } else {
-          cy.log(
-            'No items visible in browse results — skipping title assertion.'
-          );
-        }
-      });
-      // Creating a new item
-      cy.login('administrator');
-      collectionPage.navigateToCollection(collection_title);
-      // Creating a new item - search on this should be hiddem
-      collectionPage
-        .createItem(item_title_hidden, 'test_sample.mp4')
-        .then((id) => {
-          item_id_hidden = id;
-          createdItemIds.push(id);
-          cy.intercept('POST', '**/update_status?status=publish').as(
-            'publishmedia'
-          );
-          cy.get('[data-testid="media-object-publish-btn"]')
-            .contains('Publish')
-            .click();
-          cy.wait('@publishmedia').its('response.statusCode').should('eq', 302);
-          cy.get('[data-testid="alert"]').contains(
-            '1 media object successfully published.'
-          );
-          cy.wait(5000);
-          cy.get('[data-testid="media-object-unpublish-btn"]').contains(
-            'Unpublish'
-          );
-
-          cy.visit('/media_objects/' + item_id_hidden);
-        });
-
-      //setting it to be available to general public
-      cy.get('[data-testid="media-object-edit-btn"]').click();
-      cy.get('[data-testid="media-object-general-public"]')
-        .check()
-        .should('be.checked');
-      cy.get('[data-testid="media-object-continue-btn"]').click();
-
-      // Checking for new item - normal user
-      cy.login('user');
-      homePage.getBrowseNavButton();
-      performSearch(item_title_hidden);
-
-      cy.get('body').then(($body) => {
-        if ($body.find('[data-testid="browse-results-list"]').length > 0) {
-          // If the container exists, check that the title is not found within it
-          cy.get('[data-testid="browse-results-list"]').within(() => {
-            cy.contains(item_title_discovery).should('not.exist');
-          });
-        } else {
-          cy.log(
-            'No items visible in browse results — skipping title assertion.'
-          );
-        }
-      });
-    }
-  );
-
-  it(
-    'Verify adding Avalon user in assign special access for a user/ Setting default access control for new item - Verify assigning special access to an avalon user',
+    'Verify adding Avalon user in assign special access for a user - @T553cda51 @T2a81c8fd',
     { tags: '@critical' },
     () => {
       cy.login('administrator');
       collectionPage.navigateToCollection(collection_title);
-      //adding normal user in assign access for a user
-      cy.get('[data-testid="media-object-user"]')
-        .eq(1)
-        .type(Cypress.env('USERS_USER_USERNAME'))
-        .should('have.value', Cypress.env('USERS_USER_USERNAME'));
-      cy.get('.tt-menu .tt-suggestion')
-        .should('be.visible')
-        .and('contain', Cypress.env('USERS_USER_USERNAME'))
-        .click();
-      cy.get('[data-testid="submit-add-user"]').click();
+      //pre condition - setting the collection item access to be collection staff only so that we can verify the special access functionality
+      collectionPage.setAccess('private');
+      collectionPage.addSpecialAccessUser(Cypress.env('USERS_USER_USERNAME'));
 
-      //creating a new item
-      item_title = `Automation Item title ${
-        Math.floor(Math.random() * 100000) + 1
-      }`;
-
-      collectionPage.createItem(item_title, 'test_sample.mp4').then((id) => {
-        item_id = id;
-        createdItemIds.push(id);
-        cy.intercept('POST', '**/update_status?status=publish').as(
-          'publishmedia'
-        );
-        cy.get('[data-testid="media-object-publish-btn"]')
-          .contains('Publish')
-          .click();
-        cy.wait('@publishmedia').its('response.statusCode').should('eq', 302);
-        cy.get('[data-testid="alert"]').contains(
-          '1 media object successfully published.'
-        );
-        cy.wait(5000);
-        cy.get('[data-testid="media-object-unpublish-btn"]').contains(
-          'Unpublish'
-        );
-        cy.visit('/users/sign_out');
-
-        //Checking if the user can now access the item
-        cy.login('user');
-        cy.visit('/media_objects/' + item_id);
-      });
-    }
-  );
-
-  it(
-    'Apply to all existing items - Verify assigning special access : Verify assigning special access to an avalon user',
-    { tags: '@high' },
-    () => {
-      cy.login('administrator');
-      collectionPage.navigateToCollection(collection_title);
-      //adding normal user in assign access for a user
-      cy.get('[data-testid="media-object-user"]')
-        .eq(1)
-        .type(Cypress.env('USERS_USER_USERNAME'))
-        .should('have.value', Cypress.env('USERS_USER_USERNAME'));
-      cy.get('.tt-menu .tt-suggestion')
-        .should('be.visible')
-        .and('contain', Cypress.env('USERS_USER_USERNAME'))
-        .click();
-      cy.get('[data-testid="submit-add-user"]').click();
-      //click on apply to all existing items
-      cy.get('[data-testid="collection-apply-to-all-btn-spl-access"]').click();
-
-      // Checking access with the user for all the existing items
-
+      // Verify user can access default item
       cy.login('user');
-      createdItemIds.forEach((itemId) => {
-        cy.wrap(createdItemIds).each((itemId) => {
-          cy.log(`Verifying public access for item: ${itemId}`);
-          cy.visit('/media_objects/' + itemId);
-        });
-      });
-    }
+      itemPage.verifyAccessible(item_id_basic);
+    },
   );
 
-  it(
-    'Verify removing a user/group/ip address assigned for special access in the collection',
-    { tags: '@high' },
-    () => {
-      cy.login('administrator');
-      // Removing the user from the special access
-      collectionPage.navigateToCollection(collection_title);
-      cy.get('[data-testid="collection-access-label-user"]').contains(
-        Cypress.env('USERS_USER_USERNAME')
-      );
-      cy.get('[data-testid="collection-access-remove-user"]').click();
-      //Checking for newly created items
-      //creating a new item
-      var item_title_no_spl_access = `Automation Item title ${
-        Math.floor(Math.random() * 100000) + 1
-      }`;
-      var item_id_no_spl_access;
-      collectionPage
-        .createItem(item_title_no_spl_access, 'test_sample.mp4')
-        .then((id) => {
-          item_id_no_spl_access = id;
-          createdItemIds.push(id);
-          cy.intercept('POST', '**/update_status?status=publish').as(
-            'publishmedia'
-          );
-          cy.get('[data-testid="media-object-publish-btn"]')
-            .contains('Publish')
-            .click();
-          cy.wait('@publishmedia').its('response.statusCode').should('eq', 302);
-          cy.get('[data-testid="alert"]').contains(
-            '1 media object successfully published.'
-          );
-          cy.wait(5000);
-          cy.get('[data-testid="media-object-unpublish-btn"]').contains(
-            'Unpublish'
-          );
-          cy.visit('/users/sign_out');
+  it('Verify removing a user/group/ip address assigned for special access in the collection - @T6b4b1eab', () => {
+    cy.login('administrator');
+    collectionPage.navigateToCollection(collection_title);
+    collectionPage.addSpecialAccessUser(Cypress.env('USERS_USER_USERNAME'));
 
-          //Checking if the user can now access the item
-          cy.login('user');
-          cy.intercept('GET', '/media_objects/*').as('getmediaobject');
-          cy.visit('/media_objects/' + item_id_no_spl_access, {
-            failOnStatusCode: false,
-          });
-          cy.wait('@getmediaobject').then((interception) => {
-            expect(interception.response.statusCode).to.eq(401);
-          });
-        });
+    // Remove user from special access
+    cy.intercept('POST', '/admin/collections/*').as('updateSpecialAccess');
+    cy.get('[data-testid="collection-access-remove-user"]').click();
+    cy.wait('@updateSpecialAccess')
+      .its('response.statusCode')
+      .should('eq', 302);
 
-      //checking access for the existing items - it should be there.
-
-      cy.wrap(createdItemIds).each((itemId) => {
-        if (itemId !== item_id_no_spl_access) {
-          cy.log(`Verifying public access for item: ${itemId}`);
-          cy.visit('/media_objects/' + itemId);
-        } else {
-          cy.log(`Skipping item: ${itemId} (matches item_title_discovery)`);
-        }
-      });
-
-      //clicking on apply to existing items
-      cy.login('administrator');
-      collectionPage.navigateToCollection(collection_title);
-      cy.get('[data-testid="collection-apply-to-all-btn-spl-access"]').click();
-      cy.get(
-        '[data-testid="collection-replace-exiting-special-access-chkbox"]'
-      ).click();
-      cy.get('[data-testid="collection-modal-footer"]').within(() => {
-        cy.get('[data-testid="collection-apply-to-existing-btn"]').click();
-      });
-
-      cy.wait(5000);
-      //checking for existing items - access should be revoked for the user
-      cy.login('user');
-
-      cy.wrap(createdItemIds).each((itemId) => {
-        cy.log(`Verifying public access for item: ${itemId}`);
-        cy.request({
-          url: '/media_objects/' + itemId,
-          failOnStatusCode: false,
-        }).then((resp) => {
-          expect(resp.status).to.eq(401);
-        });
-      });
-    }
-  );
+    // Verify existing items are no longer accessible to user after removal
+    cy.login('user');
+    itemPage.verifyInaccessible(item_id_basic);
+  });
 
   it(
     "Verify whether the user is able to search for Collections-'@Tf7cefb09 ",
@@ -661,135 +275,35 @@ context('Collections Test', () => {
         .should('have.value', collection_title);
       cy.get("[data-testid='collection-card-body']").contains(
         'a',
-        collection_title
+        collection_title,
       );
-    }
+    },
   );
 
   it(
-    'Verify changing item access - Collection staff only (New items) - @T9978b4f7 ',
+    'Setting default access control for new item - Verify changing item access - Collection staff only  - @T9978b4f7 ; Inherited - Verify changing item access - Collection staff only - @Tdcf756bd',
     { tags: '@critical' },
     () => {
       cy.login('administrator');
       collectionPage.navigateToCollection(collection_title);
-      cy.intercept('POST', '/admin/collections/*').as('updateAccessControl');
-      cy.get("[data-testid='collection-item-access']").within(() => {
-        cy.contains('label', 'Collection staff only')
-          .find("[data-testid='collection-checkbox-collection-staff']")
-          .click()
-          .should('be.checked');
-        cy.get("[data-testid='collection-save-setting-btn']").click();
-      });
-      cy.wait('@updateAccessControl')
-        .its('response.statusCode')
-        .should('eq', 302);
-      cy.contains('label', 'Collection staff only')
-        .find("[data-testid='collection-checkbox-collection-staff']")
-        .should('be.checked');
-    }
+      collectionPage.setAccess('private');
+      itemPage.verifyCollecttionStaffAccess(item_id_basic);
+    },
   );
 
-  it(
-    'Verify changing item access - Collection staff only (Existing items) - @Tdcf756bd',
-    { tags: '@critical' },
-    () => {
-      cy.login('administrator');
-      collectionPage.navigateToCollection(collection_title);
-      cy.intercept('POST', '/admin/collections/*').as('updateAccessControl');
-      cy.get("[data-testid='collection-item-access']").within(() => {
-        cy.contains('label', 'Collection staff only')
-          .find("[data-testid='collection-checkbox-collection-staff']")
-          .click()
-          .should('be.checked');
-        cy.get("[data-testid='collection-apply-to-existing-btn']").click();
-      });
-      cy.wait('@updateAccessControl')
-        .its('response.statusCode')
-        .should('eq', 302);
-      cy.contains('label', 'Collection staff only')
-        .find("[data-testid='collection-checkbox-collection-staff']")
-        .should('be.checked');
-      //need to add validation for exiting items and newly created items
-    }
-  );
+  it('Setting default access control for new item - Verify changing item access - Logged in users only ; Inherited - Verify changing item access - Logged in users only', () => {
+    cy.login('administrator');
+    collectionPage.navigateToCollection(collection_title);
+    collectionPage.setAccess('logged-in');
+    itemPage.verifyLoggedInUserAccess(item_id_basic);
+  });
 
-  it(
-    'Setting default access control for new item - Verify changing item access - Available to the general public',
-    { tags: '@high' },
-    () => {
-      var item_title_general_public = `Automation Item title ${
-        Math.floor(Math.random() * 100000) + 1
-      }`;
-      var item_id_general_public;
-      cy.login('administrator');
-      collectionPage.navigateToCollection(collection_title);
-      //set the access to avaialble to general public
-      collectionPage.setPublicAccess();
-      //create an item
-      cy.login('administrator');
-      collectionPage.navigateToCollection(collection_title);
-      // Creating a new item - search on this should be hiddem
-      collectionPage
-        .createItem(item_title_general_public, 'test_sample.mp4')
-        .then((id) => {
-          item_id_general_public = id;
-          createdItemIds.push(id);
-          cy.intercept('POST', '**/update_status?status=publish').as(
-            'publishmedia'
-          );
-          cy.get('[data-testid="media-object-publish-btn"]')
-            .contains('Publish')
-            .click();
-          cy.wait('@publishmedia').its('response.statusCode').should('eq', 302);
-          cy.get('[data-testid="alert"]').contains(
-            '1 media object successfully published.'
-          );
-          cy.wait(5000);
-          cy.get('[data-testid="media-object-unpublish-btn"]').contains(
-            'Unpublish'
-          );
-
-          cy.visit('/media_objects/' + item_id_general_public);
-          //check with normal user if they can access
-          itemPage.verifyGeneralPublicAccess(item_id_general_public);
-        });
-    }
-  );
-
-  it(
-    'Apply to all existing items - Verify changing item access - Available to the general public',
-    { tags: '@high' },
-    () => {
-      cy.login('administrator');
-      collectionPage.navigateToCollection(collection_title);
-      //set the access to avaialble to general public
-      cy.intercept('POST', '/admin/collections/*').as('updateAccessControl');
-      cy.get("[data-testid='collection-item-access']").within(() => {
-        cy.contains('label', 'Available to the general public')
-          .find("[data-testid='collection-checkbox-general-public']")
-          .click()
-          .should('be.checked');
-        cy.get("[data-testid='collection-apply-to-existing-btn']").click();
-      });
-
-      cy.wait('@updateAccessControl').then((interception) => {
-        expect(interception.response.statusCode).to.eq(302);
-        expect(interception.response.headers.location).to.include(
-          '/admin/collections/'
-        );
-      });
-
-      cy.contains('label', 'Available to the general public')
-        .find("[data-testid='collection-checkbox-general-public']")
-        .should('be.checked');
-
-      //check if all the existing items in that collection can be accessed by all the users and also without logging in
-      cy.wrap(createdItemIds).each((itemId) => {
-        cy.log(`Verifying public access for item: ${itemId}`);
-        itemPage.verifyGeneralPublicAccess(itemId);
-      });
-    }
-  );
+  it('Setting default access control for new item - Verify changing item access - Available to the general public - @Tcc0080ba ; Inherited - Verify changing item access - Available to the general public - @T906c672e', () => {
+    cy.login('administrator');
+    collectionPage.navigateToCollection(collection_title);
+    collectionPage.setAccess('public');
+    itemPage.verifyGeneralPublicAccess(item_id_basic);
+  });
 
   it(
     'Verify whether a user is able to update Collection information - @Ta1b2fef8 ',
@@ -805,16 +319,14 @@ context('Collections Test', () => {
       cy.location('pathname').then((path) => {
         const collectionId = path.split('/').pop();
         cy.intercept('POST', `/admin/collections/${collectionId}.json`).as(
-          'updateCollectionInfo'
+          'updateCollectionInfo',
         );
       });
 
       cy.get("[data-testid='collection-update-contact-email']")
         .clear()
         .type('test1@mail.com');
-      var new_title = `Updated automation title ${
-        Math.floor(Math.random() * 10000) + 1
-      }`;
+      var new_title = `Updated automation title ${ Date.now() }`;
       cy.get("[data-testid='collection-update-name']input")
         .clear()
         .type(new_title);
@@ -824,7 +336,7 @@ context('Collections Test', () => {
         .then((existingText) => {
           updatedDescription = existingText + updatedDescription;
           cy.get("[data-testid='collection-update-description']").type(
-            updatedDescription
+            updatedDescription,
           );
         });
       cy.get("[data-testid='collection-update-collection-btn']").click();
@@ -839,83 +351,71 @@ context('Collections Test', () => {
       cy.get("[data-testid='collection-collection-details']").within(() => {
         cy.get("[data-testid='collection-contact-email']").should(
           'have.text',
-          'test1@mail.com'
+          'test1@mail.com',
         );
         cy.get("[data-testid='collection-description']").should(
           'contain.text',
-          updatedDescription
+          updatedDescription,
         );
       });
-    }
+    },
   );
 
+  it('Verify whether a user is able to update poster image -  @T26526b2e ', () => {
+    cy.login('administrator');
+    collectionPage.navigateToCollection(collection_title);
+    cy.intercept('POST', '**/poster').as('updatePoster');
+    cy.get("[data-testid='collection-poster-input']").selectFile(
+      getFixturePath('image.png'),
+      { force: true },
+    );
+    cy.wait(5000);
+    cy.screenshot();
+    cy.get("[data-testid='collection-upload-poster']").click();
+    cy.wait('@updatePoster').its('response.statusCode').should('eq', 302);
+    cy.get("[data-testid='alert']")
+      .contains('Poster file successfully added.')
+      .should('be.visible');
+  });
+  it('Verify limiting the items by Published status - @Tfd6bc70f', () => {
+    cy.login('administrator');
+    homePage.getBrowseNavButton().click();
+
+    // Expand "Published" facet section
+    cy.contains('button', 'Published').should('be.visible').click();
+
+    // Get the count first
+    cy.contains('li', 'Published')
+      .should('be.visible')
+      .find('span.facet-count')
+      .invoke('text')
+      .then((facetCount) => {
+        const trimmedFacetCount = facetCount.trim();
+
+        // Click the link to apply the filter
+        cy.contains('li', 'Published').find('a.facet-select').click();
+
+        // Wait for the page to update
+        cy.url().should('include', '/catalog');
+        cy.wait(1000); // Let the results load
+
+        // Now get the total count from result page
+        cy.get('span.page-entries')
+          .find('strong')
+          .last()
+          .invoke('text')
+          .then((resultCount) => {
+            cy.log(
+              `Facet: ${trimmedFacetCount} | Result: ${resultCount.trim()}`,
+            );
+            expect(trimmedFacetCount).to.eq(resultCount.trim());
+          });
+      });
+  });
   it(
-    'Verify whether a user is able to update poster image -  @T26526b2e ',
+    'delete a collection in after block - critical test case - @T959a56df and @T0e0a5611',
     { tags: '@critical' },
     () => {
-      cy.login('administrator');
-      collectionPage.navigateToCollection(collection_title);
-      cy.intercept('POST', '**/poster').as('updatePoster');
-      cy.get("[data-testid='collection-poster-input']").selectFile(
-        getFixturePath('image.png'),
-        { force: true }
-      );
-      cy.wait(5000);
-      cy.screenshot();
-      cy.get("[data-testid='collection-upload-poster']").click();
-      cy.wait('@updatePoster').its('response.statusCode').should('eq', 302);
-      cy.get("[data-testid='alert']")
-        .contains('Poster file successfully added.')
-        .should('be.visible');
-    }
-  );
-  it(
-    'Verify limiting the items by Published status - @T26526b2e',
-    { tags: '@high' },
-    () => {
-      cy.login('administrator');
-      homePage.getBrowseNavButton().click();
-
-      // Expand "Published" facet section
-      cy.contains('button', 'Published').should('be.visible').click();
-
-      // Get the count first
-      cy.contains('li', 'Published')
-        .should('be.visible')
-        .find('span.facet-count')
-        .invoke('text')
-        .then((facetCount) => {
-          const trimmedFacetCount = facetCount.trim();
-
-          // Click the link to apply the filter
-          cy.contains('li', 'Published').find('a.facet-select').click();
-
-          // Wait for the page to update
-          cy.url().should('include', '/catalog');
-          cy.wait(1000); // Let the results load
-
-          // Now get the total count from result page
-          cy.get('span.page-entries')
-            .find('strong')
-            .last()
-            .invoke('text')
-            .then((resultCount) => {
-              cy.log(
-                `Facet: ${trimmedFacetCount} | Result: ${resultCount.trim()}`
-              );
-              expect(trimmedFacetCount).to.eq(resultCount.trim());
-            });
-
-          //  Click on the first result
-          cy.get('[data-testid^="browse-document-title-"]').first().click();
-
-          // Validate you're on the detail page and see the Unpublish button
-          cy.url().should('include', '/media_objects/');
-          cy.waitForVideoReady();
-          cy.get('[data-testid="media-object-unpublish-btn"]').should(
-            'be.visible'
-          );
-        });
-    }
-  );
+      // Handled in after()
+  });
 });

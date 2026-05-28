@@ -1,0 +1,21 @@
+{
+  "Name": "avalon_audio_medium",
+  "Category": "avalon",
+  "Settings": {
+    "AudioDescriptions": [
+      {
+        "CodecSettings": {
+          "AacSettings": {
+            "Bitrate": 128000,
+            "CodingMode": "CODING_MODE_2_0",
+            "SampleRate": 44100
+          },
+          "Codec": "AAC"
+        }
+      }
+    ],
+    "ContainerSettings": {
+      "Container": "MP4"
+    }
+  }
+}

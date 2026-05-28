@@ -127,5 +127,49 @@ namespace :avalon do
 
       puts("Backfill complete. #{count} records updated.")
     end
+
+    desc "Migrate existing units to new Admin::Unit model and associate them with the appropriate Admin::Collections"
+    task admin_units: :environment do
+      if ENV['unit_admin_username'].nil?
+        abort "You must specify a username. Example: rake avalon:migration:admin_units unit_admin_username=user@example.edu"
+      end
+
+      units = {}
+      units_cv = Avalon::ControlledVocabulary.find_by_name('units', sort: true)
+      units_cv.each do |unit|
+        existing_unit = Admin::Unit.where(name_ssi: unit).first
+        if existing_unit.present?
+          units[unit] = existing_unit.id
+          next
+        end
+
+        unit_model = Admin::Unit.new(name: unit, unit_admins: [ENV['unit_admin_username']])
+        unit_model.save!
+        units[unit] = unit_model.id
+        puts "Object successfully created for #{unit}: #{unit_model.id}"
+      rescue ActiveFedora::RecordInvalid => e
+        puts "Creation failed for #{unit}: #{e.message}"
+      end
+
+      # Disable reindex_members callback because it would cause a reindexing of all items that isn't really necessary
+      # because the indexed value (unit name) is staying the same
+      Admin::Collection.skip_callback(:save, :around, :reindex_members)
+      Admin::Collection.all.each do |collection|
+        # Find unit name from RDF stored in Fedora
+        unit_name = collection.ldp_source.graph.query([nil,RDF::URI("http://bibframe.org/vocab/heldBy"),nil]).first&.object&.to_s
+        if unit_name.start_with? ActiveFedora.fedora_config.credentials[:url]
+          puts "Collection (#{collection.id}) skipped because it has already been migrated."
+          next
+        end
+        unless unit_name.present? && units[unit_name].present?
+          puts "Collection (#{collection.id}) skipped because unit (#{unit_name}) not found."
+          next
+        end
+
+        collection.unit_id = units[unit_name]
+        collection.governing_policy_id = units[unit_name]
+        collection.save!(validate: false)
+      end
+    end
   end
 end

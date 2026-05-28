@@ -1,4 +1,4 @@
-# Copyright 2011-2025, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2026, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 #
@@ -15,7 +15,7 @@
 # Force test rails environment
 ENV['RAILS_ENV'] = 'test'
 
-if ENV['COVERAGE'] || ENV['CI']
+if ENV['COVERAGE']
   require 'simplecov'
 
   SimpleCov.start('rails') do
@@ -146,6 +146,8 @@ RSpec.configure do |config|
 
   config.before :each do
     DatabaseCleaner.strategy = :truncation
+    # Clear out faker unique generator between tests
+    Faker::UniqueGenerator.clear
     # Clear out the job queue to ensure tests run with clean environment
     ActiveJob::Base.queue_adapter.enqueued_jobs = []
     ActiveJob::Base.queue_adapter.performed_jobs = []

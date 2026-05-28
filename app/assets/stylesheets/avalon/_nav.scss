@@ -14,17 +14,20 @@
  * ---  END LICENSE_HEADER BLOCK  ---
 */
 
+@use "sass:color";
+@use "sass:math";
+
 // Copied from bootstrap-sass
-$line-height-computed:    floor(($font-size-base * $line-height-base)) !default; // ~20px
+$line-height-computed:    math.floor(($font-size-base * $line-height-base)) !default; // ~20px
 $gray-base:              #000 !default;
 $gray-lighter:           tint-color($gray-base, 93.5%) !default; // #eee
 $gray-darker:            tint-color($gray-base, 13.5%) !default; // #222
 $state-success-text:             #3c763d !default;
 $state-success-bg:               #dff0d8 !default;
-$state-success-border:           shade-color(adjust-hue($state-success-bg, -10), 5%) !default;
+$state-success-border:           shade-color(color.adjust($state-success-bg, $hue: -10deg), 5%) !default;
 $state-info-text:                #31708f !default;
 $state-info-bg:                  #d9edf7 !default;
-$state-info-border:              shade-color(adjust-hue($state-info-bg, -10), 7%) !default; 
+$state-info-border:              shade-color(color.adjust($state-info-bg, $hue: -10deg), 7%) !default; 
 
 /**
  *  Overridding Blacklight's brand logo
@@ -131,7 +134,7 @@ $state-info-border:              shade-color(adjust-hue($state-info-bg, -10), 7%
     padding-right: $line-height-base;
     padding-bottom: 1px;
     padding-left: $line-height-base;
-    margin-bottom: $line-height-computed/4;
+    margin-bottom: math.div($line-height-computed, 4);
     text-align: left;
     border-radius: $border-radius-base;
 
@@ -175,7 +178,7 @@ $state-info-border:              shade-color(adjust-hue($state-info-bg, -10), 7%
     width: 1em;
     float: left;
     margin-right: 0.5em;
-    margin-bottom: $line-height-base/2;
+    margin-bottom: math.div($line-height-base, 2);
   }
 }
 

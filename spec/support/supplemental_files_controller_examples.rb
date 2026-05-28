@@ -1,4 +1,4 @@
-# Copyright 2011-2025, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2026, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 #
@@ -12,7 +12,7 @@
 #   specific language governing permissions and limitations under the License.
 # ---  END LICENSE_HEADER BLOCK  ---
 
-# Copyright 2011-2022, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2026, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 #
@@ -132,6 +132,18 @@ RSpec.shared_examples 'a nested controller for' do |object_class|
       expect(subject.count).to eq 1
       expect(subject.first.symbolize_keys).to eq supplemental_file.as_json
     end
+
+    context 'read from solr' do
+      before do
+        object
+      end
+
+      it 'should not read from fedora' do
+        WebMock.reset_executed_requests!
+        get :index, params: { class_id => object.id, format: 'json' }, session: valid_session
+        expect(a_request(:any, /#{ActiveFedora.fedora.base_uri}/)).not_to have_been_made
+      end
+    end
   end
 
   describe "GET #show" do
@@ -149,6 +161,19 @@ RSpec.shared_examples 'a nested controller for' do |object_class|
       it 'returns the supplemental file metadata' do
         get :show, params: { class_id => object.id, id: supplemental_file.id, format: 'json' }, session: valid_session
         expect(JSON.parse(response.body).symbolize_keys).to eq supplemental_file.as_json
+      end
+    end
+
+    context 'read from solr' do
+      before do
+        object
+        supplemental_file
+      end
+
+      it 'should not read from fedora' do
+        WebMock.reset_executed_requests!
+        get :show, params: { class_id => object.id, id: supplemental_file.id }, session: valid_session
+        expect(a_request(:any, /#{ActiveFedora.fedora.base_uri}/)).not_to have_been_made
       end
     end
   end
@@ -466,6 +491,46 @@ RSpec.shared_examples 'a nested controller for' do |object_class|
         end
       end
 
+      context "forced caption file" do
+        let(:forced_param) { "forced_#{supplemental_file.id}".to_sym }
+        context "missing forced tag" do
+          let(:supplemental_file) { FactoryBot.create(:supplemental_file, :with_caption_file, :with_caption_tag, label: 'label') }
+          it "adds forced note to tags" do
+            expect {
+              put :update, params: { class_id => object.id, id: supplemental_file.id, forced_param => 1, supplemental_file: valid_update_attributes, format: :html }, session: valid_session
+            }.to change { master_file.reload.supplemental_files.first.tags }.from(['caption']).to(['caption', 'forced'])
+          end
+
+          context "when another supplemental file has forced designation" do
+            let(:forced_caption) { FactoryBot.create(:supplemental_file, :with_caption_file, tags: ['caption', 'forced'], label: 'label') }
+            let(:master_file) { FactoryBot.create(:master_file, media_object_id: media_object.id, supplemental_files: [supplemental_file, forced_caption]) }
+            let(:media_object) { FactoryBot.create(:media_object, supplemental_files: [supplemental_file, forced_caption]) }
+
+            it 'error message to display' do
+              put :update, params: { class_id => object.id, id: supplemental_file.id, forced_param => 1, supplemental_file: valid_update_attributes, format: :html }, session: valid_session
+              expect(flash[:error]).not_to be_empty
+              expect(flash[:error]).to include 'Forced attribute is already assigned to another caption. Ensure no other captions are forced before setting attribute.'
+            end
+          end
+        end
+        context "with forced tag" do
+          let(:supplemental_file) { FactoryBot.create(:supplemental_file, :with_caption_file, tags: ['caption', 'forced'], label: 'label') }
+          it "does not add more instances of forced note" do
+            expect {
+              put :update, params: { class_id => object.id, id: supplemental_file.id, forced_param => 1, supplemental_file: valid_update_attributes, format: :html }, session: valid_session
+            }.to not_change { master_file.reload.supplemental_files.first.tags }.from(['caption', 'forced'])
+          end
+        end
+        context "removing forced designation" do
+          let(:supplemental_file) { FactoryBot.create(:supplemental_file, :with_transcript_file, tags: ['caption', 'forced'], label: 'label') }
+          it "removes forced note from tags" do
+            expect {
+              put :update, params: { class_id => object.id, id: supplemental_file.id, supplemental_file: valid_update_attributes, format: :html }, session: valid_session
+            }.to change { master_file.reload.supplemental_files.first.tags }.from(['caption', 'forced']).to(['caption'])
+          end
+        end
+      end
+
       context "caption treated as transcript" do
         let(:transcript_param) { "treat_as_transcript_#{supplemental_file.id}".to_sym }
         context "missing transcript tag" do
@@ -511,6 +576,34 @@ RSpec.shared_examples 'a nested controller for' do |object_class|
                 put :update, params: { class_id => object.id, id: supplemental_file.id, supplemental_file: valid_update_attributes, format: :html}, session: valid_session
               }.to change { object.reload.media_object.to_solr(include_child_fields: true)['has_transcripts_bsi'] }.from(true).to(false)
             end
+          end
+        end
+      end
+
+      context 'private' do
+        let(:private_param) { "private_#{supplemental_file.id}".to_sym }
+        context "missing private tag" do
+          let(:supplemental_file) { FactoryBot.create(:supplemental_file, :with_transcript_file, :with_transcript_tag, label: 'label') }
+          it "adds private note to tags" do
+            expect {
+              put :update, params: { class_id => object.id, id: supplemental_file.id, private_param => 1, supplemental_file: valid_update_attributes, format: :html }, session: valid_session
+            }.to change { master_file.reload.supplemental_files(include_private: true).first.tags }.from(['transcript']).to(['transcript', 'private'])
+          end
+        end
+        context "with private tag" do
+          let(:supplemental_file) { FactoryBot.create(:supplemental_file, :with_transcript_file, tags: ['transcript', 'private'], label: 'label') }
+          it "does not add more instances of private note" do
+            expect {
+              put :update, params: { class_id => object.id, id: supplemental_file.id, private_param => 1, supplemental_file: valid_update_attributes, format: :html }, session: valid_session
+            }.to not_change { master_file.reload.supplemental_files(include_private: true).first.tags }.from(['transcript', 'private'])
+          end
+        end
+        context "removing private designation" do
+          let(:supplemental_file) { FactoryBot.create(:supplemental_file, :with_transcript_file, tags: ['transcript', 'private'], label: 'label') }
+          it "removes private note from tags" do
+            expect {
+              put :update, params: { class_id => object.id, id: supplemental_file.id, supplemental_file: valid_update_attributes, format: :html }, session: valid_session
+            }.to change { master_file.reload.supplemental_files(include_private: true).first.tags }.from(['transcript', 'private']).to(['transcript'])
           end
         end
       end

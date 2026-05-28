@@ -1,4 +1,4 @@
-# Copyright 2011-2025, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2026, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 #
@@ -11,6 +11,8 @@
 #   CONDITIONS OF ANY KIND, either express or implied. See the License for the
 #   specific language governing permissions and limitations under the License.
 # ---  END LICENSE_HEADER BLOCK  ---
+
+require 'speedy_af/errors'
 
 class ApplicationController < ActionController::Base
   before_action :store_location, unless: :devise_controller?
@@ -139,13 +141,30 @@ class ApplicationController < ActionController::Base
       if user.blank?
         SpeedyAF::Proxy::Admin::Collection.where("has_model_ssim:Admin\\:\\:Collection").to_a
       else
-        SpeedyAF::Proxy::Admin::Collection.where("has_model_ssim:Admin\\:\\:Collection AND inheritable_edit_access_person_ssim:#{user}").to_a
+        SpeedyAF::Proxy::Admin::Collection.where("has_model_ssim: Admin\\:\\:Collection AND (inheritable_edit_access_person_ssim: #{user} OR {!join from='id' to='heldBy_ssim'}inheritable_edit_access_person_ssim:#{user})")
       end
     else
-      SpeedyAF::Proxy::Admin::Collection.where("has_model_ssim:Admin\\:\\:Collection AND inheritable_edit_access_person_ssim:#{user_key}").to_a
+      SpeedyAF::Proxy::Admin::Collection.where("has_model_ssim: Admin\\:\\:Collection AND (inheritable_edit_access_person_ssim: #{user_key} OR {!join from='id' to='heldBy_ssim'}inheritable_edit_access_person_ssim:#{user_key})")
     end
   end
   helper_method :get_user_collections
+
+  # Returns units for current_user
+  # @param [Array <String>] with_ids list of unit ids to be included in final list
+  # @param [boolean] sort sort return list by unit name (default: true)
+  # @return [units] Units in which current_user is a unit admin
+  def get_user_units(with_ids: [], sort: true)
+    units = []
+    # return all units to admin
+    if can?(:manage, Admin::Unit)
+      units = SpeedyAF::Proxy::Admin::Unit.where("has_model_ssim: Admin\\:\\:Unit")
+    else
+      id_query = with_ids.collect { |id| "id:#{id}" }.join(" OR ")
+      units = SpeedyAF::Proxy::Admin::Unit.where("has_model_ssim: Admin\\:\\:Unit AND (#{["unit_administrators_ssim: #{user_key}", id_query].compact_blank.join(" OR ")})")
+    end
+    sort ? units.sort_by { |u| u.name.downcase } : units
+  end
+  helper_method :get_user_units
 
   # Returns milliseconds from a time string of format h:m:s.s or m:s.s or s.s
   # @param [String] The time string
@@ -182,11 +201,20 @@ class ApplicationController < ActionController::Base
     end
   end
 
-  rescue_from ActiveFedora::ObjectNotFoundError do |exception|
+  rescue_from ActiveFedora::ObjectNotFoundError, SpeedyAF::RecordNotFound do |exception|
     if request.format == :json
       render json: {errors: ["#{params[:id]} not found"]}, status: 404
     else
       render '/errors/unknown_pid', status: 404
+    end
+  end
+
+  rescue_from ActiveFedora::ModelMismatch, SpeedyAF::ModelMismatch do |exception|
+    if request.format == :json
+      render json: { errors: ["Requested resource type does not match type of #{params[:id]}"] }, status: 422
+    else
+      flash[:error] = "Requested resource type does not match type of #{params[:id]}."
+      redirect_to(root_path)
     end
   end
 
@@ -235,6 +263,12 @@ class ApplicationController < ActionController::Base
     obj || GlobalID::Locator.locate(id)
   end
 
+  def fetch_proxy(id)
+    SpeedyAF::Base.find(id)
+  rescue SpeedyAF::RecordNotFound
+    fetch_object(id)
+  end
+
   private
 
     def application_name
@@ -269,10 +303,10 @@ class ApplicationController < ActionController::Base
       raise if Settings.app_controller.solr_and_fedora.raise_on_connection_error
       Rails.logger.error(exception.class.to_s + ': ' + exception.message + '\n' + exception.backtrace.join('\n'))
 
-      if request.format == :json
-        render json: {errors: [exception.message]}, status: 503
+      if request.format == :html
+        render '/errors/solr_connection', layout: false, status: :service_unavailable
       else
-        render '/errors/solr_connection', layout: false, status: 503
+        render json: { errors: [exception.message] }, status: :service_unavailable
       end
     end
 
@@ -280,10 +314,10 @@ class ApplicationController < ActionController::Base
       raise if Settings.app_controller.solr_and_fedora.raise_on_connection_error
       Rails.logger.error(exception.class.to_s + ': ' + exception.message + '\n' + exception.backtrace.join('\n'))
 
-      if request.format == :json
-        render json: {errors: [exception.message]}, status: 503
+      if request.format == :html
+        render '/errors/fedora_connection', status: :service_unavailable
       else
-        render '/errors/fedora_connection', status: 503
+        render json: { errors: [exception.message] }, status: :service_unavailable
       end
     end
 end

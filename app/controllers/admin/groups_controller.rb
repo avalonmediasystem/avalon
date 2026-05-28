@@ -1,4 +1,4 @@
-# Copyright 2011-2025, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2026, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 #
@@ -117,15 +117,9 @@ class Admin::GroupsController < ApplicationController
 
   def update_users
     group_name = params[:id]
-    sole_managers = check_for_sole_managers if group_name == "manager"
-    if sole_managers.present?
-      flash[:error] = "Cannot remove users #{sole_managers.join(', ')} because they are sole managers of collections."
-    else
-      users = Avalon::RoleControls.users(group_name) - params[:user_ids]
-      Avalon::RoleControls.assign_users(users, group_name)
-      Avalon::RoleControls.save_changes
-      BulkActionJobs::RemoveManagers.perform_later(params[:user_ids])
-    end
+    users = Avalon::RoleControls.users(group_name) - params[:user_ids]
+    Avalon::RoleControls.assign_users(users, group_name)
+    Avalon::RoleControls.save_changes
     redirect_back(fallback_location: edit_admin_group_path(group_name))
   end
 

@@ -1,4 +1,4 @@
-# Copyright 2011-2025, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2026, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 #
@@ -49,6 +49,20 @@ describe ObjectsController do
       obj = FactoryBot.create(:media_object)
       get :show, params: { id: obj.id, urlappend: 'http://google.com' }
       expect(response).to redirect_to(media_object_path(obj))
+    end
+
+    context 'read from solr' do
+      let(:obj) { FactoryBot.create(:media_object) }
+
+      before do
+        obj
+      end
+
+      it 'should not read from fedora' do
+        WebMock.reset_executed_requests!
+        get :show, params: { id: obj.id }
+        expect(a_request(:any, /#{ActiveFedora.fedora.base_uri}/)).not_to have_been_made
+      end
     end
   end
 

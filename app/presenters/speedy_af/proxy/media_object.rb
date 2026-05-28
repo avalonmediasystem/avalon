@@ -1,4 +1,4 @@
-# Copyright 2011-2025, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2026, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 #
@@ -33,6 +33,7 @@ class SpeedyAF::Proxy::MediaObject < SpeedyAF::Base
     @attrs[:section_id] = solr_document["section_id_ssim"]
     @attrs[:section_ids] = solr_document["section_id_ssim"]
     @attrs[:hidden?] = solr_document["hidden_bsi"]
+    @attrs[:disable_inheritance?] = solr_document["disable_inheritance_bsi"]
     @attrs[:read_groups] = solr_document["read_access_group_ssim"] || []
     @attrs[:edit_groups] = solr_document["edit_access_group_ssim"] || []
     @attrs[:read_users] = solr_document["read_access_person_ssim"] || []
@@ -87,7 +88,7 @@ class SpeedyAF::Proxy::MediaObject < SpeedyAF::Base
   end
 
   def lending_period
-    attrs[:lending_period].presence || collection&.default_lending_period
+    attrs[:lending_period].presence
   end
 
   def format
@@ -152,6 +153,10 @@ class SpeedyAF::Proxy::MediaObject < SpeedyAF::Base
 
   def workflow
     WorkflowDatastream.find("#{id}/workflow")
+  end
+
+  def cache_key_with_version
+    "media_object/#{id}-#{@attrs[:_version_]}"
   end
 
   protected

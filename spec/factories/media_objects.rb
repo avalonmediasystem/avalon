@@ -1,4 +1,4 @@
-# Copyright 2011-2025, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2026, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 #
@@ -29,6 +29,7 @@ FactoryBot.define do
 
       factory :fully_searchable_media_object do
         # with_collection
+        disable_inheritance { true }
         visibility { 'public' }
         alternative_title { ['Alternative'] }
         abstract { Faker::Lorem.paragraph }

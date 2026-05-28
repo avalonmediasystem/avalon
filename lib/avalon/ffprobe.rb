@@ -1,4 +1,4 @@
-# Copyright 2011-2025, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2026, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 #
@@ -80,7 +80,7 @@ module Avalon
       # Remove S3 credentials or other params from extension output
       extension = File.extname(media_file.location)&.gsub(/[\?#].*/, '')
       # Fall back on file extension if magic bytes fail to identify file
-      Marcel::MimeType.for media_file.reader, extension: extension
+      @content_type ||= Marcel::MimeType.for media_file.magic_bytes, extension: extension
     end
 
     def valid_content_type? media_file

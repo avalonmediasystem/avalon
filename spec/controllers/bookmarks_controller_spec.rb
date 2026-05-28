@@ -1,4 +1,4 @@
-# Copyright 2011-2025, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2026, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 #
@@ -31,11 +31,12 @@ describe BookmarksController, type: :controller do
   end
 
   let!(:collection) { FactoryBot.create(:collection) }
+  let(:user) { collection.managers.first }
   let!(:media_objects) { [] }
 
   before(:each) do
     request.env["HTTP_REFERER"] = '/'
-    login_user collection.managers.first
+    login_user user
     3.times do
       media_objects << mo = FactoryBot.create(:media_object, collection: collection)
       post :create, params: { id: mo.id }
@@ -132,7 +133,7 @@ describe BookmarksController, type: :controller do
         expect(response.body).to have_css('#deleteLink')
       end
       it 'are not displayed for unauthorized user' do
-        collection.managers = [FactoryBot.create(:manager).user_key]
+        collection.managers = [FactoryBot.create(:user).user_key]
         collection.save
         get 'index'
         expect(response.body).not_to have_css('#moveLink')
@@ -156,11 +157,13 @@ describe BookmarksController, type: :controller do
 
     context 'user has no permission on target collection' do
       it 'responds with error message' do
+        # Logged in as manager of a different collection
         post 'move', params: { target_collection_id: collection2.id }
-      	expect(flash[:error]).to eq( I18n.t("blacklight.move.error", collection_name: collection2.name))
+        expect(flash[:error]).to eq(I18n.t("blacklight.move.error", collection_name: collection2.name))
       end
     end
-    context 'user has permission on target collection' do
+
+    context 'user is manager of target collection' do
       it 'moves items to selected collection' do
         collection2.managers = collection.managers
         collection2.save
@@ -170,6 +173,28 @@ describe BookmarksController, type: :controller do
           mo.reload
           expect(mo.collection).to eq(collection2)
         end
+      end
+    end
+
+    context 'user is editor of target collection' do
+      let(:user) { collection.editors.first }
+
+      it 'responds with error message' do
+        collection2.editors = collection.editors
+        collection2.save
+        post 'move', params: { target_collection_id: collection2.id }
+        expect(flash[:alert]).to include(I18n.t("blacklight.move.alert", count: 3))
+      end
+    end
+
+    context 'user is depositor of target collection' do
+      let(:user) { collection.depositors.first }
+
+      it 'responds with error message' do
+        collection2.depositors = collection.depositors
+        collection2.save
+        post 'move', params: { target_collection_id: collection2.id }
+        expect(flash[:alert]).to include(I18n.t("blacklight.move.alert", count: 3))
       end
     end
 
@@ -516,6 +541,42 @@ describe BookmarksController, type: :controller do
     it 'counts selected items' do
       get 'count', params: { format:'json' }
       expect(JSON.parse(response.body)["count"]).to eq(3)
+    end
+  end
+
+  describe "#destroy_selected" do
+    it "should remove only the selected items from bookmarks" do
+      selected_ids = media_objects.first(2).map(&:id)
+      delete :destroy_selected, params: { id: selected_ids }
+      expect(flash[:success]).to eq(I18n.t("blacklight.bookmarks.remove_selected.success", count: 2))
+
+      # First two items are removed from bookmarks
+      expect(Bookmark.exists?(user: controller.current_user, document_id: media_objects.first.id)).to be_falsey
+      expect(Bookmark.exists?(user: controller.current_user, document_id: media_objects.second.id)).to be_falsey
+      # Last item is still bookmarked
+      expect(Bookmark.exists?(user: controller.current_user, document_id: media_objects.last.id)).to be_truthy
+    end
+
+    it "should show error when no items are selected" do
+      delete :destroy_selected, params: { id: [] }
+      expect(flash[:error]).to eq(I18n.t("blacklight.bookmarks.remove_selected.no_selection"))
+      
+      # Existing bookmarks are unaffected
+      media_objects.each { |mo| expect(Bookmark.exists?(user: controller.current_user, document_id: mo.id)).to be_truthy }
+    end
+
+    it "should redirect to bookmarks path after removal" do
+      delete :destroy_selected, params: { id: media_objects.first.id }
+      expect(response).to redirect_to(bookmarks_path)
+    end
+
+    it "should not remove items that are not bookmarked" do
+      non_bookmarked_mo = FactoryBot.create(:media_object, collection: collection)
+      delete :destroy_selected, params: { id: [non_bookmarked_mo.id] }
+      expect(flash[:error]).to eq(I18n.t("blacklight.bookmarks.remove_selected.failure"))
+
+      # Existing bookmarks are unaffected
+      media_objects.each { |mo| expect(Bookmark.exists?(user: controller.current_user, document_id: mo.id)).to be_truthy }
     end
   end
 end

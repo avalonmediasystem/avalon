@@ -1,4 +1,4 @@
-# Copyright 2011-2025, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2026, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 #
@@ -22,13 +22,12 @@ class UniquenessValidator < ActiveModel::EachValidator
   end
   def validate_each(record, attribute, value)
     klass = record.class
-    # existing_doc = find_doc(klass, value)
-    existing_doc = find_doc(klass, record.to_solr[@solr_field])
-    if ! existing_doc.nil? && existing_doc.id != record.id
+    solr_value = record.to_solr[@solr_field]
+    query = "has_model_ssim:\"#{klass.name}\""
+    query += " AND #{@solr_field}:#{RSolr.solr_escape(solr_value)}" if solr_value.present?
+    existing_doc_id = ActiveFedora::SolrService.query(query, fl: [:id], rows: 1).first&.dig('id')
+    if existing_doc_id.present? && existing_doc_id != record.id
       record.errors.add(attribute, :taken, value: value)
     end
-  end
-  def find_doc(klass, value)
-    klass.where(@solr_field => value).first
   end
 end

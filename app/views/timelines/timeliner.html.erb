@@ -23,7 +23,6 @@ Unless required by applicable law or agreed to in writing, software distributed
 </head>
 <body class="">
    <div id="app"></div>
-   <%= javascript_pack_tag 'iiif-timeliner' %>
-   <%= stylesheet_pack_tag 'iiif-timeliner' %>
+   <%= javascript_include_tag "iiif-timeliner", "data-turbo-track": "reload", type: "module" %>
 </body>
 </html>

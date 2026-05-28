@@ -32,7 +32,7 @@ Rails.application.config.to_prepare do
     #
     # Specify the user model
     # config.user_model = 'User'
-    config.permissions.policy_class = {Admin::Collection => {}, Lease => {clause: " AND begin_time_dtsi:[* TO NOW] AND end_time_dtsi:[NOW TO *]"}}
+    config.permissions.policy_class = {Admin::Unit => {}, Admin::Collection => {}, Lease => {clause: " AND begin_time_dtsi:[* TO NOW] AND end_time_dtsi:[NOW TO *]"}}
     # config.permissions.policy_class = { Admin::Collection => {} }
   end
 end

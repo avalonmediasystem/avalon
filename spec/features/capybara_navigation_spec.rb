@@ -1,4 +1,4 @@
-# Copyright 2011-2025, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2026, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 #
@@ -28,10 +28,9 @@ describe 'checks navigation after logging in' do
     login_as user, scope: :user
     visit '/'
     click_link('Manage Content')
-    expect(page).to have_current_path('/admin/collections')
+    expect(page).to have_current_path('/admin/dashboard')
     expect(page).to have_content('Skip to main content')
     expect(page).to have_link('Selected Items (0)')
-    expect(page).to have_link('Create Collection')
   end
   it 'checks naviagtion to Manage Groups' do
     user = FactoryBot.create(:administrator)
@@ -42,9 +41,7 @@ describe 'checks navigation after logging in' do
     expect(page).to have_content('System Groups')
     expect(page).to have_content('Additional Groups')
     expect(page).to have_content('Group Name')
-    expect(page).to have_content('group_manager')
     expect(page).to have_content('administrator')
-    expect(page).to have_content('manager')
   end
   it 'checks naviagtion to Playlist' do
     user = FactoryBot.create(:administrator)

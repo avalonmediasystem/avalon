@@ -1,4 +1,4 @@
-# Copyright 2011-2025, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2026, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 #
@@ -64,6 +64,19 @@ RSpec.describe SupplementalFilesController, type: :controller do
           expect(response).to have_http_status(200)
           expect(response.header["Content-Type"]).to eq 'text/vtt'
           expect(response.body).to eq SupplementalFile.convert_from_srt(File.read(file))
+        end
+      end
+
+      context 'read from solr' do
+        before do
+          master_file
+          supplemental_file
+        end
+
+        it 'should not read from fedora' do
+          WebMock.reset_executed_requests!
+          get :captions, params: { master_file_id: master_file.id, id: supplemental_file.id }, session: valid_session
+          expect(a_request(:any, /#{ActiveFedora.fedora.base_uri}/)).not_to have_been_made
         end
       end
     end

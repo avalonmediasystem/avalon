@@ -1,4 +1,4 @@
-# Copyright 2011-2025, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2026, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 #
@@ -57,35 +57,27 @@ module ApplicationHelper
   def image_for(document)
     master_file_id = document["section_id_ssim"].try :first
 
-    video_count = document["avalon_resource_type_ssim"].count{|m| m.downcase.start_with?('moving image') } rescue 0
-    audio_count = document["avalon_resource_type_ssim"].count{|m| m.downcase.start_with?('sound recording') } rescue 0
+    video_count = document["avalon_resource_type_ssim"].count { |m| m.downcase.start_with?('moving image') } rescue 0
+    audio_count = document["avalon_resource_type_ssim"].count { |m| m.downcase.start_with?('sound recording') } rescue 0
 
     if master_file_id
-      if video_count > 0
+      if video_count.positive?
         thumbnail_master_file_path(master_file_id)
-      elsif audio_count > 0
+      elsif audio_count.positive?
         asset_path('audio_icon.png')
-      else
-        nil
       end
-    else
-      if video_count > 0 && audio_count > 0
-        asset_path('hybrid_icon.png')
-      elsif video_count > audio_count
-        asset_path('video_icon.png')
-      elsif audio_count > video_count
-        asset_path('audio_icon.png')
-      else
-        nil
-      end
+    elsif video_count.positive? && audio_count.positive?
+      asset_path('hybrid_icon.png')
+    elsif video_count > audio_count
+      asset_path('video_icon.png')
+    elsif audio_count > video_count
+      asset_path('audio_icon.png')
     end
   end
 
-  def avalon_image_tag(document, image_options)
+  def avalon_image_tag(document, _image_options)
     image_url = image_for(document)
-    link_to(media_object_path(document[:id]), {class: 'result-thumbnail'}) do
-      image_url.present? ? image_tag(image_url) : image_tag('no_icon.png')
-    end
+    image_url.present? ? image_tag(image_url) : image_tag('no_icon.png')
   end
 
   def display_metadata(label, value, default=nil)

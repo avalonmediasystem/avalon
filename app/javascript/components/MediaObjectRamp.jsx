@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2024, The Trustees of Indiana University and Northwestern
+ * Copyright 2011-2026, The Trustees of Indiana University and Northwestern
  *   University.  Licensed under the Apache License, Version 2.0 (the "License");
  *   you may not use this file except in compliance with the License.
  *
@@ -14,7 +14,12 @@
  * ---  END LICENSE_HEADER BLOCK  ---
 */
 
-import React from 'react';
+import {
+  Fragment,
+  useEffect,
+  useMemo,
+  useState
+} from 'react';
 import {
   Transcript,
   IIIFPlayer,
@@ -41,11 +46,11 @@ const MediaObjectRamp = ({
   accessibility_text = '',
   transcript_tab_title = 'Transcripts',
 }) => {
-  const [manifestUrl, setManifestUrl] = React.useState('');
-  const [startCanvasId, setStartCanvasId] = React.useState();
-  const [startCanvasTime, setStartCanvasTime] = React.useState();
+  const [manifestUrl, setManifestUrl] = useState('');
+  const [startCanvasId, setStartCanvasId] = useState();
+  const [startCanvasTime, setStartCanvasTime] = useState();
 
-  React.useEffect(() => {
+  useEffect(() => {
     const { base_url, fullpath_url } = urls;
     // Split the current path from the time fragment in the format .../:id?t=time
     let [fullpath, start_time] = fullpath_url.split('?t=');
@@ -68,7 +73,7 @@ const MediaObjectRamp = ({
     setManifestUrl(url);
   }, []);
 
-  const a11yWithOnlyShare = React.useMemo(() => {
+  const a11yWithOnlyShare = useMemo(() => {
     return accessibility_text && !(timeline.canCreate && playlist.canCreate);
   }, [accessibility_text, timeline.canCreate, playlist.canCreate]);
 
@@ -80,17 +85,17 @@ const MediaObjectRamp = ({
       <Row className="ramp--all-components ramp--itemview">
         <Col sm={12} md={12} xl={8}>
           {(cdl.enabled && !cdl.can_stream)
-            ? (<React.Fragment>
+            ? (<Fragment>
               <div dangerouslySetInnerHTML={{ __html: cdl.embed }} />
               <div className="ramp--rails-title">
                 {<div className="object-title" dangerouslySetInnerHTML={{ __html: title.content }} />}
               </div>
-            </React.Fragment>
+            </Fragment>
             )
-            : (<React.Fragment>
+            : (<Fragment>
               {has_sections &&
-                <React.Fragment>
-                  <MediaPlayer enableFileDownload={false} enablePlaybackRate={true} />
+                <Fragment>
+                  <MediaPlayer enableFileDownload={false} enablePlaybackRate={true} resumeCache={{ enable: true }} />
                   <div className="ramp--rails-title">
                     {<div className="object-title" dangerouslySetInnerHTML={{ __html: title.content }} />}
                   </div>
@@ -168,20 +173,20 @@ const MediaObjectRamp = ({
                     </Col>
                   </Row>
                   <StructuredNavigation showAllSectionsButton={true} />
-                </React.Fragment>
+                </Fragment>
               }
-            </React.Fragment>
+            </Fragment>
             )
           }
         </Col>
         <Col sm={12} md={12} xl={4} className="ramp--tabs-panel">
           {cdl.enabled && <div dangerouslySetInnerHTML={{ __html: cdl.destroy }} />}
           <Tabs>
-            <Tab eventKey="details" title="Details" >
+            <Tab eventKey="details" title="Details" tabAttrs={{ 'data-testid': 'media-object-tab-details' }}>
               <MetadataDisplay showHeading={false} displayTitle={false} />
             </Tab>
             {(cdl.can_stream && has_sections && has_transcripts) &&
-              <Tab eventKey="transcripts" title={transcript_tab_title} className="ramp--transcripts_tab">
+              <Tab eventKey="transcripts" title={transcript_tab_title} className="ramp--transcripts_tab" tabAttrs={{ 'data-testid': 'media-object-tab-transcripts' }}>
                 <Transcript
                   playerID="iiif-media-player"
                   manifestUrl={manifestUrl}
@@ -189,7 +194,7 @@ const MediaObjectRamp = ({
               </Tab>
             }
             {(has_files) &&
-              <Tab eventKey="files" title="Files">
+              <Tab eventKey="files" title="Files" tabAttrs={{ 'data-testid': 'media-object-tab-files' }}>
                 <SupplementalFiles showHeading={false} />
               </Tab>
             }

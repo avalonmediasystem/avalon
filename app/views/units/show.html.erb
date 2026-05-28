@@ -1,0 +1,46 @@
+<%#
+Copyright 2011-2025, The Trustees of Indiana University and Northwestern
+  University.  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+
+You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+  under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+  CONDITIONS OF ANY KIND, either express or implied. See the License for the
+  specific language governing permissions and limitations under the License.
+---  END LICENSE_HEADER BLOCK  ---
+%>
+
+<% @page_title = "#{@doc_presenter.name} - #{application_name}" %>
+<% @poster_url = @doc_presenter.poster_url %>
+
+<div class="units-landing-wrapper">
+  <ol class="breadcrumb">
+    <li style="padding-bottom: 0px" class="breadcrumb-item"><%= link_to 'All Collections', collections_path %></li>
+    <li class="breadcrumb-item active" style="padding-bottom: 0px"><%= @doc_presenter.name %></li>
+  </ol>
+
+  <div class="unit-details-wrapper row">
+    <div class="document-thumbnail col-sm-4 order-8">
+      <%= image_tag @doc_presenter.poster_url, alt: '' %>
+    </div>
+    <div class="col-sm-7 order-4">
+      <h1 class="page-title"><%= @doc_presenter.name %></h1>
+      <div>
+        <p class="lead document-description"></p>
+        <%= react_component("CollectionDetails",
+          {
+            props: {
+              content: @doc_presenter.description,
+              email: @doc_presenter.contact_email,
+              website: @doc_presenter.website_link,
+            }
+          }) %>
+      </div>
+    </div>
+  </div>
+  <%= react_component("CollectionList", { props: { baseUrl: collections_url(format: :json, unit: @doc_presenter.name), showUnitTitle: false }}) %>
+</div>

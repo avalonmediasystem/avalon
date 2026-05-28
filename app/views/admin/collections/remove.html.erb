@@ -13,14 +13,6 @@ Unless required by applicable law or agreed to in writing, software distributed
   specific language governing permissions and limitations under the License.
 ---  END LICENSE_HEADER BLOCK  ---
 %>
-<% content_for :page_scripts do %>
-<%= javascript_include_tag 'select2.min' %>
-<%= stylesheet_link_tag 'select2.min' %>
-<script type="text/javascript">
-  $('#target_collection_id').select2();
-</script>
-<% end %>
-
 <div class="row" style="padding-top: 3rem;">
   <div class="col-md-8 offset-2">
     <%
@@ -51,13 +43,13 @@ Unless required by applicable law or agreed to in writing, software distributed
         into.
       </p>
       <div class="mb-3">
-        <%= select_tag :target_collection_id, options_from_collection_for_select(@candidates, "id", "name"), class: "form-control" %>
+        <%= select_tag :target_collection_id, options_from_collection_for_select(@candidates, "id", "name"), class: "form-control p-0 tom-select" %>
       </div>
     <% end %>
 
     <div class="mb-3">
       <%= f.submit 'Yes, I am sure', class: 'btn btn-danger', 'data-testid': "collection-delete-confirm-btn" %>
-      <%= link_to 'No, go back', admin_collections_path, class: 'btn btn-outline' %>
+      <%= link_to 'No, go back', :back, class: 'btn btn-outline' %>
     </div>
     <% end %>
     <% else %>

@@ -48,7 +48,24 @@ Unless required by applicable law or agreed to in writing, software distributed
     </div>
   </div>
   <div class="mb-3">
-    <button class="btn btn-primary" form="intercom_push_form" data-loading-text="<i class='fa fa-spinner fa-spin '></i> Pushing" id="intercom_push_submit_button" onclick="$(this).button('loading')">Push</button>
+    <button class="btn btn-primary" form="intercom_push_form" data-loading-text="<i class='fa fa-spinner fa-spin '></i> Pushing" id="intercom_push_submit_button">Push</button>
     <button data-bs-dismiss="modal" aria-hidden="true" class="btn btn-danger">Cancel</button>
   </div>
 </div>
+
+<% content_for :page_scripts do %>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const pushButton = getById('intercom_push_submit_button');
+    if (pushButton) {
+      pushButton.addEventListener('click', function() {
+        const loadingText = this.dataset.loadingText;
+        if (loadingText) {
+          this.disabled = true;
+          this.innerHTML = loadingText;
+        }
+      });
+    }
+  });
+</script>
+<% end %>

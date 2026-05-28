@@ -1,4 +1,4 @@
-# Copyright 2011-2025, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2026, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 #
@@ -15,11 +15,11 @@
 require 'securerandom'
 
 class ApiToken < ActiveRecord::Base
-  
+  encrypts :token, deterministic: true
+
   after_initialize :ensure_token
-  
+
   def ensure_token
     self.token ||= SecureRandom.hex(64)
   end
-  
 end

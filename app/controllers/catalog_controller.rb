@@ -1,4 +1,4 @@
-# Copyright 2011-2025, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2026, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 #
@@ -70,6 +70,9 @@ class CatalogController < ApplicationController
     config.index.display_type_field = 'has_model_ssim'
     config.index.thumbnail_method = :avalon_image_tag
 
+    # pagination configuration for search results/index views
+    config.index.pagination_options = Settings.search_pagination.to_h || Blacklight::Engine.config.blacklight.default_pagination_options.dup
+
     # solr field configuration for document/show views
     config.show.title_field = 'title_tesi'
     config.show.display_type_field = 'has_model_ssim'
@@ -118,6 +121,7 @@ class CatalogController < ApplicationController
     config.add_facet_field 'has_transcripts_bsi', label: 'Has Transcripts', if: Proc.new {|context, config, opts| context.current_ability.can?(:read, :administrative_facets)}, group: "workflow", helper_method: :display_has_caption_or_transcript
 
     config.add_facet_field 'subject_ssim', label: 'Subject', if: false
+    config.add_facet_field 'donor_ssim', label: 'Donors', if: false
 
     # Have BL send all facet field names to Solr, which has been the default
     # previously. Simply remove these lines if you'd rather use Solr request
@@ -221,6 +225,12 @@ class CatalogController < ApplicationController
     config.spell_max = 5
 
     config.fetch_many_document_params = { fl: "*" }
+  end
+
+
+  # Override: Do not store searches for anyone since Avalon doesn't display them anyway
+  def find_search_session
+    return nil
   end
 
   private

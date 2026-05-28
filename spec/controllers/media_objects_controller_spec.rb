@@ -1,4 +1,4 @@
-# Copyright 2011-2025, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2026, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 #
@@ -327,16 +327,63 @@ describe MediaObjectsController, type: :controller do
           expect(new_media_object.sections.first.derivatives.first.location_url).to eq(absolute_location)
           expect(new_media_object.workflow.last_completed_step).to eq([HYDRANT_STEPS.last.step])
         end
-        it "should create a new published media_object" do
-          media_object = FactoryBot.create(:published_media_object)
-          fields = {}
-          descMetadata_fields.each {|f| fields[f] = media_object.send(f) }
-          # fields = media_object.attributes.select {|k,v| descMetadata_fields.include? k.to_sym }
-          post 'create', params: { format: 'json', fields: fields, files: [master_file], collection_id: collection.id, publish: true }
-          expect(response.status).to eq(200)
-          new_media_object = MediaObject.find(JSON.parse(response.body)['id'])
-          expect(new_media_object.published?).to be_truthy
-          expect(new_media_object.workflow.last_completed_step).to eq([HYDRANT_STEPS.last.step])
+        context "without files" do
+          it "should create a new media_object" do
+            media_object = FactoryBot.create(:media_object)
+            fields = {other_identifier_type: []}
+            descMetadata_fields.each {|f| fields[f] = media_object.send(f) }
+            post 'create', params: { format: 'json', fields: fields, collection_id: collection.id }
+            expect(response.status).to eq(200)
+            new_media_object = MediaObject.find(JSON.parse(response.body)['id'])
+            expect(new_media_object.title).to eq media_object.title
+            expect(new_media_object.creator).to eq media_object.creator
+            expect(new_media_object.date_issued).to eq media_object.date_issued
+            expect(new_media_object.section_ids.size).to eq 0
+            expect(new_media_object.workflow.last_completed_step).to eq([HYDRANT_STEPS.last.step])
+          end
+          it 'should not publish new media object' do
+            media_object = FactoryBot.create(:media_object)
+            fields = {}
+            descMetadata_fields.each {|f| fields[f] = media_object.send(f) }
+            fields.merge!({ avalon_publisher: administrator.user_key })
+            post 'create', params: { format: 'json', fields: fields, collection_id: collection.id, publish: true }
+            expect(response.status).to eq(200)
+            new_media_object = MediaObject.find(JSON.parse(response.body)['id'])
+            expect(new_media_object.published?).to be_falsey
+          end
+        end
+        context "accessibility enforcement disabled" do
+          before { allow(Settings.accessibility_compliance).to receive(:enforce).and_return(false) }
+          it "should create a new published media_object" do
+            media_object = FactoryBot.create(:published_media_object)
+            fields = {}
+            descMetadata_fields.each {|f| fields[f] = media_object.send(f) }
+            # fields = media_object.attributes.select {|k,v| descMetadata_fields.include? k.to_sym }
+            post 'create', params: { format: 'json', fields: fields, files: [master_file], collection_id: collection.id, publish: true }
+            expect(response.status).to eq(200)
+            new_media_object = MediaObject.find(JSON.parse(response.body)['id'])
+            expect(new_media_object.published?).to be_truthy
+            expect(new_media_object.workflow.last_completed_step).to eq([HYDRANT_STEPS.last.step])
+          end
+        end
+        context "accessibility enforcement enabled" do
+          before do
+            allow(Settings.accessibility_compliance).to receive(:enforce).and_return(true)
+            allow(Settings.accessibility_compliance).to receive(:compliance_date).and_return((DateTime.now - 1.week).strftime('%F'))
+            # media_object has an attached masterfile with a caption, so force a negative caption check
+            allow_any_instance_of(MediaObject).to receive(:has_captions).and_return(false)
+          end
+          it "should respond with 422" do
+            media_object = FactoryBot.create(:published_media_object)
+            fields = {}
+            descMetadata_fields.each {|f| fields[f] = media_object.send(f) }
+            # fields = media_object.attributes.select {|k,v| descMetadata_fields.include? k.to_sym }
+            post 'create', params: { format: 'json', fields: fields, files: [master_file], collection_id: collection.id, publish: true }
+            expect(response.status).to eq(422)
+            expect(JSON.parse(response.body)).to include('errors')
+            expect(JSON.parse(response.body)["errors"].class).to eq Array
+            expect(JSON.parse(response.body)["errors"].first.class).to eq String
+          end
         end
         it "should create a new media_object with successful bib import" do
           stub_request(:get, sru_url).to_return(body: sru_response)
@@ -524,7 +571,7 @@ describe MediaObjectsController, type: :controller do
         end
 
         context "as an authorized non-admin user" do
-          let(:user) { FactoryBot.create(:manager) }
+          let(:user) { FactoryBot.create(:user) }
           let(:collection) { FactoryBot.create(:collection, managers: [user.username]) }
           let(:media_object) { FactoryBot.create(:media_object, collection: collection) }
 
@@ -671,10 +718,21 @@ describe MediaObjectsController, type: :controller do
           .not_to change { MediaObject.find(mo.id).hidden? }
       end
     end
+
+    context "Disable Inheritance" do
+      subject(:mo) { FactoryBot.create(:media_object, :with_completed_workflow, hidden: true) }
+      let!(:user) { Faker::Internet.email }
+      before(:each) { login_user mo.collection.managers.first }
+
+      it "should retain the inheritance status of an object when other access control settings change" do
+        expect { put 'update', params: { id: mo.id, step: 'access-control', donot_advance: 'true', add_user: user, add_user_display: user, submit_add_user: 'Add' } }
+          .not_to change { MediaObject.find(mo.id).disable_inheritance? }
+      end
+    end
   end
 
   describe "#index" do
-    let!(:media_object) { FactoryBot.create(:published_media_object, visibility: 'public') }
+    let!(:media_object) { FactoryBot.create(:published_media_object, visibility: 'public', disable_inheritance: true) }
     let!(:private_media_object) { FactoryBot.create(:published_media_object, visibility: 'private') }
     subject(:json) { JSON.parse(response.body) }
 
@@ -709,9 +767,9 @@ describe MediaObjectsController, type: :controller do
 
       context "with structure" do
         let!(:master_file) { FactoryBot.create(:master_file, :with_structure, media_object: media_object) }
-        it "should not return structure by default" do
+        it "should return structure URI by default" do
           get 'index', params: {  format: 'json' }
-          expect(json.first["files"][0]["structure"]).to be_blank
+          expect(json.first["files"][0]["structure"]).to eq structure_master_file_url(master_file.id)
         end
         it "should return structure if requested" do
           get 'index', params: { format: 'json', include_structure: true }
@@ -720,6 +778,15 @@ describe MediaObjectsController, type: :controller do
         it "should not return structure if requested" do
           get 'index', params: { format: 'json', include_structure: false}
           expect(json.first["files"][0]["structure"]).not_to eq master_file.structuralMetadata.content
+        end
+      end
+
+      context 'read from solr' do
+        it 'should not read from fedora' do
+          WebMock.reset_executed_requests!
+          get 'index', params: { format:'json', per_page: '2' }
+          expect(a_request(:post, /#{ActiveFedora.solr.conn.uri.to_s}/)).to have_been_made.at_least_once
+          expect(a_request(:post, /#{ActiveFedora.solr.conn.uri.to_s}.*\?fl=id&q=/)).not_to have_been_made
         end
       end
     end
@@ -744,24 +811,235 @@ describe MediaObjectsController, type: :controller do
         expect(json.first['published']).to eq(media_object.published?)
         expect(json.first['summary']).to eq(media_object.abstract)
       end
+
+      context 'read from solr' do
+        it 'should not read from fedora' do
+          WebMock.reset_executed_requests!
+          get 'index', params: { format:'json', per_page: '2' }
+          expect(a_request(:post, /#{ActiveFedora.solr.conn.uri.to_s}/)).to have_been_made.at_least_once
+          expect(a_request(:post, /#{ActiveFedora.solr.conn.uri.to_s}.*\?fl=id&q=/)).not_to have_been_made
+        end
+      end
+
+      context 'inherited edit permissions' do
+        let!(:unpublished_media_object) { FactoryBot.create(:media_object, visibility: 'private', collection: collection) }
+        let!(:disabled_media_object) { FactoryBot.create(:published_media_object, visibility: 'private', collection: collection, disable_inheritance: true) }
+        let!(:inherited_media_object) { FactoryBot.create(:published_media_object, visibility: 'private', collection: collection) }
+        let(:collection) { FactoryBot.create(:collection, managers: [user.username]) }
+
+        context 'for user' do
+          context 'from collection level' do
+            it "should return list of media_objects that the user is authorized to view" do
+              get 'index', format: 'json'
+              expect(json.count).to eq(4)
+            end
+          end
+
+          context 'from unit level' do
+            let(:collection) { FactoryBot.create(:collection, unit: unit) }
+            let(:unit) { FactoryBot.create(:unit, managers: [user.username]) }
+
+            it "should return list of media_objects that the user is authorized to view" do
+              get 'index', format: 'json'
+              expect(json.count).to eq(4)
+            end
+          end
+        end
+      end
+
+      context 'inherited read permissions' do
+        let!(:unpublished_media_object) { FactoryBot.create(:media_object, visibility: 'private', collection: collection) }
+        let!(:disabled_media_object) { FactoryBot.create(:published_media_object, visibility: 'private', collection: collection, disable_inheritance: true) }
+        let!(:inherited_media_object) { FactoryBot.create(:published_media_object, visibility: 'private', collection: collection) }
+        let(:collection) { FactoryBot.create(:collection, default_read_users: [user.username]) }
+
+        context 'for user' do
+          context 'from collection level' do
+            it "should return list of media_objects that the user is authorized to view" do
+              get 'index', format: 'json'
+              expect(json.count).to eq(2)
+              expect(json.first['id']).to eq(media_object.id)
+              expect(json.first['title']).to eq(media_object.title)
+              expect(json.first['collection']).to eq(media_object.collection.name)
+              expect(json.first['main_contributors']).to eq(media_object.creator)
+              expect(json.first['publication_date']).to eq(media_object.date_created)
+              expect(json.first['published_by']).to eq(media_object.avalon_publisher)
+              expect(json.first['published']).to eq(media_object.published?)
+              expect(json.first['summary']).to eq(media_object.abstract)
+              expect(json.second['id']).to eq(inherited_media_object.id)
+              expect(json.second['title']).to eq(inherited_media_object.title)
+              expect(json.second['collection']).to eq(inherited_media_object.collection.name)
+              expect(json.second['main_contributors']).to eq(inherited_media_object.creator)
+              expect(json.second['publication_date']).to eq(inherited_media_object.date_created)
+              expect(json.second['published_by']).to eq(inherited_media_object.avalon_publisher)
+              expect(json.second['published']).to eq(inherited_media_object.published?)
+              expect(json.second['summary']).to eq(inherited_media_object.abstract)
+            end
+
+            context 'with inheritance disabled and user granted access on media obejct' do
+              let!(:disabled_media_object) { FactoryBot.create(:published_media_object, visibility: 'private', collection: collection, disable_inheritance: true, read_users: [user.username]) }
+
+              it "should return list of media_objects that the user is authorized to view" do
+                get 'index', format: 'json'
+                expect(json.count).to eq(3)
+                expect(json.first['id']).to eq(media_object.id)
+                expect(json.second['id']).to eq(disabled_media_object.id)
+                expect(json.third['id']).to eq(inherited_media_object.id)
+              end
+            end
+          end
+
+          context 'from unit level' do
+            let(:collection) { FactoryBot.create(:collection, unit: unit) }
+            let(:unit) { FactoryBot.create(:unit, default_read_users: [user.username]) }
+
+            it "should return list of media_objects that the user is authorized to view" do
+              get 'index', format: 'json'
+              expect(json.count).to eq(2)
+              expect(json.first['id']).to eq(media_object.id)
+              expect(json.first['title']).to eq(media_object.title)
+              expect(json.first['collection']).to eq(media_object.collection.name)
+              expect(json.first['main_contributors']).to eq(media_object.creator)
+              expect(json.first['publication_date']).to eq(media_object.date_created)
+              expect(json.first['published_by']).to eq(media_object.avalon_publisher)
+              expect(json.first['published']).to eq(media_object.published?)
+              expect(json.first['summary']).to eq(media_object.abstract)
+              expect(json.second['id']).to eq(inherited_media_object.id)
+              expect(json.second['title']).to eq(inherited_media_object.title)
+              expect(json.second['collection']).to eq(inherited_media_object.collection.name)
+              expect(json.second['main_contributors']).to eq(inherited_media_object.creator)
+              expect(json.second['publication_date']).to eq(inherited_media_object.date_created)
+              expect(json.second['published_by']).to eq(inherited_media_object.avalon_publisher)
+              expect(json.second['published']).to eq(inherited_media_object.published?)
+              expect(json.second['summary']).to eq(inherited_media_object.abstract)
+            end
+
+            context 'with inheritance disabled and user granted access on media obejct' do
+              let!(:disabled_media_object) { FactoryBot.create(:published_media_object, visibility: 'private', collection: collection, disable_inheritance: true, read_users: [user.username]) }
+
+              it "should return list of media_objects that the user is authorized to view" do
+                get 'index', format: 'json'
+                expect(json.count).to eq(3)
+                expect(json.first['id']).to eq(media_object.id)
+                expect(json.second['id']).to eq(disabled_media_object.id)
+                expect(json.third['id']).to eq(inherited_media_object.id)
+              end
+            end
+          end
+        end
+
+        context 'for group' do
+          let!(:group) { FactoryBot.create(:group, users: [user.username]) }
+
+          before do
+            # Stub responses to make sure user.groups is being properly set
+            allow(controller).to receive(:current_user).and_return(user)
+            allow(user).to receive(:groups).and_return([group.name])
+          end
+
+          context 'from collection level' do
+            let(:collection) { FactoryBot.create(:collection, default_read_groups: [group.name]) }
+
+            it "should return list of media_objects that the user is authorized to view" do
+              get 'index', format: 'json'
+              expect(json.count).to eq(2)
+              expect(json.first['id']).to eq(media_object.id)
+              expect(json.first['title']).to eq(media_object.title)
+              expect(json.first['collection']).to eq(media_object.collection.name)
+              expect(json.first['main_contributors']).to eq(media_object.creator)
+              expect(json.first['publication_date']).to eq(media_object.date_created)
+              expect(json.first['published_by']).to eq(media_object.avalon_publisher)
+              expect(json.first['published']).to eq(media_object.published?)
+              expect(json.first['summary']).to eq(media_object.abstract)
+              expect(json.second['id']).to eq(inherited_media_object.id)
+              expect(json.second['title']).to eq(inherited_media_object.title)
+              expect(json.second['collection']).to eq(inherited_media_object.collection.name)
+              expect(json.second['main_contributors']).to eq(inherited_media_object.creator)
+              expect(json.second['publication_date']).to eq(inherited_media_object.date_created)
+              expect(json.second['published_by']).to eq(inherited_media_object.avalon_publisher)
+              expect(json.second['published']).to eq(inherited_media_object.published?)
+              expect(json.second['summary']).to eq(inherited_media_object.abstract)
+            end
+
+            context 'with inheritance disabled and user granted access on media obejct' do
+              let!(:disabled_media_object) { FactoryBot.create(:published_media_object, visibility: 'private', collection: collection, disable_inheritance: true, read_groups: [group.name]) }
+
+              it "should return list of media_objects that the user is authorized to view" do
+                get 'index', format: 'json'
+                expect(json.count).to eq(3)
+                expect(json.first['id']).to eq(media_object.id)
+                expect(json.second['id']).to eq(disabled_media_object.id)
+                expect(json.third['id']).to eq(inherited_media_object.id)
+              end
+            end
+          end
+
+          context 'from unit level' do
+            let(:collection) { FactoryBot.create(:collection, unit: unit) }
+            let(:unit) { FactoryBot.create(:unit, default_read_groups: [group.name]) }
+
+            it "should return list of media_objects that the user is authorized to view" do
+              get 'index', format: 'json'
+              expect(json.count).to eq(2)
+              expect(json.first['id']).to eq(media_object.id)
+              expect(json.first['title']).to eq(media_object.title)
+              expect(json.first['collection']).to eq(media_object.collection.name)
+              expect(json.first['main_contributors']).to eq(media_object.creator)
+              expect(json.first['publication_date']).to eq(media_object.date_created)
+              expect(json.first['published_by']).to eq(media_object.avalon_publisher)
+              expect(json.first['published']).to eq(media_object.published?)
+              expect(json.first['summary']).to eq(media_object.abstract)
+              expect(json.second['id']).to eq(inherited_media_object.id)
+              expect(json.second['title']).to eq(inherited_media_object.title)
+              expect(json.second['collection']).to eq(inherited_media_object.collection.name)
+              expect(json.second['main_contributors']).to eq(inherited_media_object.creator)
+              expect(json.second['publication_date']).to eq(inherited_media_object.date_created)
+              expect(json.second['published_by']).to eq(inherited_media_object.avalon_publisher)
+              expect(json.second['published']).to eq(inherited_media_object.published?)
+              expect(json.second['summary']).to eq(inherited_media_object.abstract)
+            end
+
+            context 'with inheritance disabled and user granted access on media obejct' do
+              let!(:disabled_media_object) { FactoryBot.create(:published_media_object, visibility: 'private', collection: collection, disable_inheritance: true, read_groups: [group.name]) }
+
+              it "should return list of media_objects that the user is authorized to view" do
+                get 'index', format: 'json'
+                expect(json.count).to eq(3)
+                expect(json.first['id']).to eq(media_object.id)
+                expect(json.second['id']).to eq(disabled_media_object.id)
+                expect(json.third['id']).to eq(inherited_media_object.id)
+              end
+            end
+          end
+        end
+      end
     end
   end
 
   describe 'pagination' do
-      let(:collection) { FactoryBot.create(:collection) }
-      let(:administrator) { FactoryBot.create(:administrator) }
-      subject(:json) { JSON.parse(response.body) }
-      before do
-        5.times { FactoryBot.create(:published_media_object, visibility: 'public', collection: collection) }
-        ApiToken.create token: 'secret_token', username: administrator.username, email: administrator.email
-        request.headers['Avalon-Api-Key'] = 'secret_token'
+    let(:collection) { FactoryBot.create(:collection) }
+    let(:administrator) { FactoryBot.create(:administrator) }
+    subject(:json) { JSON.parse(response.body) }
+    before do
+      5.times { FactoryBot.create(:published_media_object, visibility: 'public', collection: collection) }
+      ApiToken.create token: 'secret_token', username: administrator.username, email: administrator.email
+      request.headers['Avalon-Api-Key'] = 'secret_token'
+      get 'index', params: { format:'json', per_page: '2' }
+    end
+    it 'should paginate' do
+      expect(json.count).to eq(2)
+      expect(response.headers['Per-Page']).to eq('2')
+      expect(response.headers['Total']).to eq('5')
+    end
+
+    context 'read from solr' do
+      it 'should not read from fedora' do
+        WebMock.reset_executed_requests!
         get 'index', params: { format:'json', per_page: '2' }
+        expect(a_request(:post, /#{ActiveFedora.solr.conn.uri.to_s}/)).to have_been_made.at_least_once
+        expect(a_request(:post, /#{ActiveFedora.solr.conn.uri.to_s}.*\?fl=id&q=/)).not_to have_been_made
       end
-      it 'should paginate' do
-        expect(json.count).to eq(2)
-        expect(response.headers['Per-Page']).to eq('2')
-        expect(response.headers['Total']).to eq('5')
-      end
+    end
   end
 
   describe "#show" do
@@ -794,6 +1072,301 @@ describe MediaObjectsController, type: :controller do
         FactoryBot.create(:master_file, media_object: media_object)
         get 'show', params: { id: media_object.id }
         expect(response).not_to redirect_to new_user_session_path
+      end
+
+      context "inherited access" do
+        context "for user" do
+          context 'inherited edit permissions' do
+            context "from collection" do
+              let(:user) { FactoryBot.create(:user) }
+              let(:media_object) { FactoryBot.create(:published_media_object, collection: collection) }
+              let(:collection) { FactoryBot.create(:collection, managers: [user.username]) }
+
+              it "should be available to an edit user granted access at collection level" do
+                login_user user.username
+                get 'show', params: { id: media_object.id }
+                expect(response.response_code).to eq(200)
+              end
+
+              context "when inheritance disabled" do
+                let(:media_object) { FactoryBot.create(:published_media_object, collection: collection, disable_inheritance: true) }
+
+                it "should be available to an edit user granted access at collection level" do
+                  login_user user.username
+                  get 'show', params: { id: media_object.id }
+                  expect(response.response_code).to eq(200)
+                end
+
+                context "and overridden visibility restricts from non-private to private" do
+                  let(:collection) { FactoryBot.create(:collection, default_visibility: 'public', managers: [user.username]) }
+                  let(:media_object) { FactoryBot.create(:published_media_object, visibility: 'private', collection: collection, disable_inheritance: true) }
+
+                  it "should be available to an edit user granted access at collection level" do
+                    login_user user.username
+                    get 'show', params: { id: media_object.id }
+                    expect(response.response_code).to eq(200)
+                  end
+                end
+              end
+            end
+
+            context "from unit" do
+              let(:user) { FactoryBot.create(:user) }
+              let(:media_object) { FactoryBot.create(:published_media_object, collection: collection) }
+              let(:collection) { FactoryBot.create(:collection, unit: unit) }
+              let(:unit) { FactoryBot.create(:unit, managers: [user.username]) }
+
+              it "should be available to an edit user granted access at unit level" do
+                login_user user.username
+                get 'show', params: { id: media_object.id }
+                expect(response.response_code).to eq(200)
+              end
+
+              context "when inheritance disabled" do
+                let(:media_object) { FactoryBot.create(:published_media_object, :with_master_file, collection: collection, disable_inheritance: true) }
+
+                it "should be available to an edit user granted access at unit level" do
+                  login_user user.username
+                  get 'show', params: { id: media_object.id }
+                  expect(response.response_code).to eq(200)
+                end
+
+                context "and overridden visibility restricts from non-private to private" do
+                  let(:collection) { FactoryBot.create(:collection, default_visibility: 'public', unit: unit) }
+                  let(:media_object) { FactoryBot.create(:published_media_object, visibility: 'private', collection: collection, disable_inheritance: true) }
+
+                  it "should be available to an edit user granted access at collection level" do
+                    login_user user.username
+                    get 'show', params: { id: media_object.id }
+                    expect(response.response_code).to eq(200)
+                  end
+                end
+              end
+            end
+          end
+
+          context "from collection" do
+            let(:user) { FactoryBot.create(:user) }
+            let(:mo_member) { FactoryBot.create(:user) }
+            let(:media_object) { FactoryBot.create(:published_media_object, collection: collection, read_users: [mo_member.username]) }
+            let(:collection) { FactoryBot.create(:collection, default_read_users: [user.username]) }
+
+            it "should be available to a user granted access at collection level" do
+              login_user user.username
+              get 'show', params: { id: media_object.id }
+              expect(response.response_code).to eq(200)
+            end
+
+            context "when inheritance disabled" do
+              let(:multi_user) { FactoryBot.create(:user) }
+              let(:media_object) { FactoryBot.create(:published_media_object, collection: collection, read_users: [mo_member.username, multi_user.username], disable_inheritance: true) }
+              let(:collection) { FactoryBot.create(:collection, default_read_users: [user.username, multi_user.username]) }
+
+              it "should block access to inherited user" do
+                login_user user.username
+                get 'show', params: { id: media_object.id }
+                expect(response.response_code).to eq(401)
+              end
+
+              it "should not block access to non-inherited user" do
+                login_user mo_member.username
+                get 'show', params: { id: media_object.id }
+                expect(response.response_code).to eq(200)
+              end
+
+              it "should not block access to user assigned to media object and parent" do
+                login_user multi_user.username
+                get 'show', params: { id: media_object.id }
+                expect(response.response_code).to eq(200)
+              end
+
+              context "and overridden visibility restricts from non-private to private" do
+                let(:collection) { FactoryBot.create(:collection, default_visibility: 'public') }
+                let(:media_object) { FactoryBot.create(:published_media_object, visibility: 'private', collection: collection, read_users: [mo_member.username], disable_inheritance: true) }
+
+                it "should not block access to non-inherited user" do
+                  login_user mo_member.username
+                  get 'show', params: { id: media_object.id }
+                  expect(response.response_code).to eq(200)
+                end
+              end
+          end
+          end
+
+          context "from unit" do
+            let(:user) { FactoryBot.create(:user) }
+            let(:mo_member) { FactoryBot.create(:user) }
+            let(:media_object) { FactoryBot.create(:published_media_object, collection: collection, read_users: [mo_member.username]) }
+            let(:collection) { FactoryBot.create(:collection, unit: unit) }
+            let(:unit) { FactoryBot.create(:unit, default_read_users: [user.username]) }
+
+            it "should be available to a user granted access at unit level" do
+              login_user user.username
+              get 'show', params: { id: media_object.id }
+              expect(response.response_code).to eq(200)
+            end
+
+            context "when inheritance disabled" do
+              let(:multi_user) { FactoryBot.create(:user) }
+              let(:media_object) { FactoryBot.create(:published_media_object, collection: collection, read_users: [mo_member.username, multi_user.username], disable_inheritance: true) }
+              let(:collection) { FactoryBot.create(:collection, unit: unit) }
+              let(:unit) { FactoryBot.create(:unit, default_read_users: [user.username, multi_user.username]) }
+
+              it "should block access to inherited user" do
+                login_user user.username
+                get 'show', params: { id: media_object.id }
+                expect(response.response_code).to eq(401)
+              end
+
+              it "should not block access to non-inherited user" do
+                login_user mo_member.username
+                get 'show', params: { id: media_object.id }
+                expect(response.response_code).to eq(200)
+              end
+
+              it "should not block access to user assigned to media object and parent" do
+                login_user multi_user.username
+                get 'show', params: { id: media_object.id }
+                expect(response.response_code).to eq(200)
+              end
+
+              context "and overridden visibility restricts from non-private to private" do
+                let(:collection) { FactoryBot.create(:collection, default_visibility: 'public', unit: unit) }
+                let(:media_object) { FactoryBot.create(:published_media_object, visibility: 'private', collection: collection, read_users: [mo_member.username], disable_inheritance: true) }
+
+                it "should not block access to non-inherited user" do
+                  login_user mo_member.username
+                  get 'show', params: { id: media_object.id }
+                  expect(response.response_code).to eq(200)
+                end
+              end
+            end
+          end
+        end
+
+        context 'for group' do
+          before do
+            # Stub responses to make sure user.groups is being properly set
+            allow(controller).to receive(:current_user).and_return(inherited_group_member)
+            allow(inherited_group_member).to receive(:groups).and_return([inherited_group.name])
+          end
+
+          context "from collection" do
+            let(:inherited_group_member) { FactoryBot.create(:user) }
+            let(:inherited_group) { FactoryBot.create(:group, users: [inherited_group_member]) }
+            let(:media_object) { FactoryBot.create(:published_media_object, visibility: 'private', collection: collection) }
+            let(:collection) { FactoryBot.create(:collection, default_read_groups: [inherited_group.name]) }
+
+            it "should be available to a group member granted access at collection level" do
+              login_user inherited_group_member.username
+              get 'show', params: { id: media_object.id }
+              expect(response.response_code).to eq(200)
+            end
+
+            context "when inheritance disabled" do
+              let(:group_member) { FactoryBot.create(:user) }
+              let(:group) { FactoryBot.create(:group, users: [group_member.username]) }
+              let(:multi_user) { FactoryBot.create(:user) }
+              let(:multi_group) { FactoryBot.create(:group, users: [multi_user.username]) }
+              let(:media_object) { FactoryBot.create(:published_media_object, visibility: 'private', collection: collection, read_groups: [multi_group.name, group.name], disable_inheritance: true) }
+              let(:collection) { FactoryBot.create(:collection, default_read_groups: [inherited_group.name, multi_group.name]) }
+
+              it "should block access to inherited group" do
+                login_user inherited_group_member.username
+                get 'show', params: { id: media_object.id }
+                expect(response.response_code).to eq(401)
+              end
+
+              it "should not block access to non-inherited group" do
+                allow(controller).to receive(:current_user).and_return(group_member)
+                allow(group_member).to receive(:groups).and_return([group.name])
+                login_user group_member.username
+                get 'show', params: { id: media_object.id }
+                expect(response.response_code).to eq(200)
+              end
+
+              it "should not block access to user assigned to media object and parent" do
+                allow(controller).to receive(:current_user).and_return(multi_user)
+                allow(multi_user).to receive(:groups).and_return([multi_group.name])
+                login_user multi_user.username
+                get 'show', params: { id: media_object.id }
+                expect(response.response_code).to eq(200)
+              end
+
+              context "and overridden visibility restricts from non-private to private" do
+                let(:collection) { FactoryBot.create(:collection, default_visibility: 'public') }
+                let(:media_object) { FactoryBot.create(:published_media_object, visibility: 'private', collection: collection, read_groups: [group.name], disable_inheritance: true) }
+
+                it "should not block access to non-inherited group" do
+                  allow(controller).to receive(:current_user).and_return(group_member)
+                  allow(group_member).to receive(:groups).and_return([group.name])
+                  login_user group_member.username
+                  get 'show', params: { id: media_object.id }
+                  expect(response.response_code).to eq(200)
+                end
+              end
+            end
+          end
+
+          context "from unit" do
+            let(:inherited_group_member) { FactoryBot.create(:user) }
+            let(:inherited_group) { FactoryBot.create(:group, users: [inherited_group_member]) }
+            let(:media_object) { FactoryBot.create(:published_media_object, visibility: 'private', collection: collection) }
+            let(:collection) { FactoryBot.create(:collection, unit: unit) }
+            let(:unit) { FactoryBot.create(:unit, default_read_groups: [inherited_group.name]) }
+
+            it "should be available to a group member granted access at unit level" do
+              login_user inherited_group_member.username
+              get 'show', params: { id: media_object.id }
+              expect(response.response_code).to eq(200)
+            end
+
+            context "when inheritance disabled" do
+              let(:group_member) { FactoryBot.create(:user) }
+              let(:group) { FactoryBot.create(:group, users: [group_member.username]) }
+              let(:multi_user) { FactoryBot.create(:user) }
+              let(:multi_group) { FactoryBot.create(:group, users: [multi_user.username]) }
+              let(:media_object) { FactoryBot.create(:published_media_object, visibility: 'private', collection: collection, read_groups: [multi_group.name, group.name], disable_inheritance: true) }
+              let(:collection) { FactoryBot.create(:collection, unit: unit) }
+              let(:unit) { FactoryBot.create(:unit, default_read_groups: [inherited_group.name, multi_group.name]) }
+
+              it "should block access to inherited group" do
+                login_user inherited_group_member.username
+                get 'show', params: { id: media_object.id }
+                expect(response.response_code).to eq(401)
+              end
+
+              it "should not block access to non-inherited group" do
+                allow(controller).to receive(:current_user).and_return(group_member)
+                allow(group_member).to receive(:groups).and_return([group.name])
+                login_user group_member.username
+                get 'show', params: { id: media_object.id }
+                expect(response.response_code).to eq(200)
+              end
+
+              it "should not block access to user assigned to media object and parent" do
+                allow(controller).to receive(:current_user).and_return(multi_user)
+                allow(multi_user).to receive(:groups).and_return([multi_group.name])
+                login_user multi_user.username
+                get 'show', params: { id: media_object.id }
+                expect(response.response_code).to eq(200)
+              end
+
+              context "and overridden visibility restricts from non-private to private" do
+                let(:collection) { FactoryBot.create(:collection, default_visibility: 'public', unit: unit) }
+                let(:media_object) { FactoryBot.create(:published_media_object, visibility: 'private', collection: collection, read_groups: [group.name], disable_inheritance: true) }
+
+                it "should not block access to non-inherited group" do
+                  allow(controller).to receive(:current_user).and_return(group_member)
+                  allow(group_member).to receive(:groups).and_return([group.name])
+                  login_user group_member.username
+                  get 'show', params: { id: media_object.id }
+                  expect(response.response_code).to eq(200)
+                end
+              end
+            end
+          end
+        end
       end
 
       it "should provide a JSON stream description to the client" do
@@ -912,7 +1485,7 @@ describe MediaObjectsController, type: :controller do
               expect(response).to render_template(:_lti_url)
             end
             it "others: should include only lti" do
-              login_lti 'student'
+              login_lti 'user'
               lti_group = @controller.user_session[:virtual_groups].first
               FactoryBot.create(:published_media_object, visibility: 'private', read_groups: [lti_group])
               FactoryBot.create(:checkout, media_object_id: media_object.id, user_id: controller.current_user.id)
@@ -990,7 +1563,7 @@ describe MediaObjectsController, type: :controller do
               expect(response).to render_template(:_embed_checkout)
             end
             it "others: should render checkout button in player, NOT share" do
-              login_lti 'student'
+              login_lti 'user'
               lti_group = @controller.user_session[:virtual_groups].first
               FactoryBot.create(:published_media_object, visibility: 'private', read_groups: [lti_group])
               get :show, params: { id: media_object.id }
@@ -1071,7 +1644,7 @@ describe MediaObjectsController, type: :controller do
             expect(response).to render_template(:_lti_url)
           end
           it "others: should include only lti" do
-            login_lti 'student'
+            login_lti 'user'
             lti_group = @controller.user_session[:virtual_groups].first
             FactoryBot.create(:published_media_object, visibility: 'private', read_groups: [lti_group])
             get :show, params: { id: media_object.id }
@@ -1196,6 +1769,8 @@ describe MediaObjectsController, type: :controller do
         expect(json['title']).to eq(media_object.title)
         expect(json['collection']).to eq(media_object.collection.name)
         expect(json['collection_id']).to eq(media_object.collection.id)
+        expect(json['unit']).to eq(media_object.collection.unit.name)
+        expect(json['unit_id']).to eq(media_object.collection.unit.id)
         expect(json['main_contributors']).to eq(media_object.creator)
         expect(json['publication_date']).to eq(media_object.date_created)
         expect(json['published_by']).to eq(media_object.avalon_publisher)
@@ -1237,9 +1812,9 @@ describe MediaObjectsController, type: :controller do
           login_as(:administrator)
         end
 
-        it "should not return structure by default" do
+        it "should return structure URI by default" do
           get 'show', params: { id: media_object.id, format:'json' }
-          expect(json['files'].first['structure']).to be_blank
+          expect(json['files'].first['structure']).to eq structure_master_file_url(master_file.id)
         end
 
         it "should return structure inline if requested" do
@@ -1434,10 +2009,14 @@ describe MediaObjectsController, type: :controller do
     context 'publishing' do
       before(:all) do
         Permalink.on_generate { |obj| "http://example.edu/permalink" }
+        # Turn off accessibility_compliance for publishing tests
+        Settings.accessibility_compliance.enforce = false
       end
 
       after(:all) do
         Permalink.on_generate { nil }
+        # Cleanup settings after tests
+        Settings.accessibility_compliance.enforce = true
       end
 
       it 'publishes media object' do
@@ -1540,7 +2119,7 @@ describe MediaObjectsController, type: :controller do
   describe "#save" do
     it 'removes bookmarks that are no longer viewable' do
       media_object = FactoryBot.create(:published_media_object)
-      user = FactoryBot.create(:public)
+      user = FactoryBot.create(:user)
       bookmark = Bookmark.create(document_id: media_object.id, user: user)
       login_user media_object.collection.managers.first
       request.env["HTTP_REFERER"] = '/'
@@ -1833,6 +2412,13 @@ describe MediaObjectsController, type: :controller do
       expect(json_preview.keys).to eq ['id', 'title', 'collection', 'main_contributors', 'publication_date', 'published_by', 'published']
     end
 
+    context 'extra whitespace in id' do
+      it 'returns a 404' do
+        get :move_preview, params: { id: 'invalid-id ', format: 'json' }
+        expect(response.status).to eq 404
+      end
+    end
+
     context 'as manager' do
       before do
         login_user media_object.collection.managers.first
@@ -1851,7 +2437,7 @@ describe MediaObjectsController, type: :controller do
 
     context 'as end user' do
       before do
-        login_as :student
+        login_as :user
       end
 
       let(:media_object) { FactoryBot.create(:published_media_object) }
@@ -1903,6 +2489,44 @@ describe MediaObjectsController, type: :controller do
         expect(a_request(:any, /#{ActiveFedora.fedora.base_uri}/)).not_to have_been_made
       end
     end
+
+    context 'caching' do
+      let!(:media_object) { FactoryBot.create(:published_media_object, visibility: 'public') }
+      let(:memory_store) { ActiveSupport::Cache.lookup_store(:memory_store) }
+      subject { Rails.cache.read("#{SpeedyAF::Proxy::MediaObject.find(media_object.id).cache_key_with_version}/iiif_manifest") }
+
+      before do
+        allow(Rails).to receive(:cache).and_return(memory_store)
+        # Range ids are randomly generated. Force the id to a known value so we can equality match.
+        allow_any_instance_of(IIIFManifest::V3::ManifestBuilder::RangeBuilder).to receive(:path).and_return('range')
+        presenter = IiifManifestPresenter.new(media_object: media_object, master_files: [])
+        @manifest = IIIFManifest::V3::ManifestFactory.new(presenter).to_h
+      end
+
+      after do
+        Rails.cache.clear
+      end
+
+      it 'should cache the iiif manifest' do
+        get 'manifest', params: { id: media_object.id, format: 'json' }
+        expect(subject).to be_a(IIIFManifest::V3::ManifestBuilder::IIIFManifest)
+        expect(subject.to_json).to eq(@manifest.to_json)
+      end
+
+      it 'should update the cache when the media object is updated' do
+        get 'manifest', params: { id: media_object.id, format: 'json' }
+        old_manifest = subject.to_json
+        media_object.title = 'Test'
+        media_object.save!
+        new_presenter = IiifManifestPresenter.new(media_object: media_object, master_files: [])
+        new_manifest = IIIFManifest::V3::ManifestFactory.new(new_presenter).to_h.to_json
+        get 'manifest', params: { id: media_object.id, format: 'json' }
+        new_cache = Rails.cache.read("#{SpeedyAF::Proxy::MediaObject.find(media_object.id).cache_key_with_version}/iiif_manifest")
+        expect(new_cache).to be_a(IIIFManifest::V3::ManifestBuilder::IIIFManifest)
+        expect(new_cache.to_json).to_not eq(old_manifest)
+        expect(new_cache.to_json).to eq(new_manifest)
+      end
+    end
   end
 
   describe '#tree' do
@@ -1914,6 +2538,71 @@ describe MediaObjectsController, type: :controller do
         WebMock.reset_executed_requests!
         get 'tree', params: { id: media_object.id }
         expect(a_request(:any, /#{ActiveFedora.fedora.base_uri}/)).not_to have_been_made
+      end
+    end
+  end
+
+  describe '#update_status - accessibility_override' do
+    let(:media_object) { FactoryBot.create(:media_object) }
+
+    context 'as manager' do
+      before do
+        login_user(media_object.collection.managers.first)
+      end
+
+      it 'can enable override' do
+        put :update_status, params: { id: media_object.id, override_accessibility: '1' }, format: :json
+        expect(response).to have_http_status(:ok)
+        expect(JSON.parse(response.body)['exempt']).to eq true
+        expect(media_object.reload.accessibility_exempt?).to eq true
+      end
+
+      it 'can disable override' do
+        media_object.override_accessibility = true
+        media_object.save
+        put :update_status, params: { id: media_object.id, override_accessibility: '0' }, format: :json
+        expect(response).to have_http_status(:ok)
+        expect(JSON.parse(response.body)['exempt']).to eq false
+        expect(media_object.reload.accessibility_exempt?).to eq false
+      end
+
+      it 'can exempt and publish in a single request' do
+        put :update_status, params: { id: media_object.id, status: 'publish', override_accessibility: '1' }
+        expect(media_object.reload.accessibility_exempt?).to eq true
+        expect(media_object.reload).to be_published
+      end
+    end
+
+    context 'as editor' do
+      let(:user) { FactoryBot.create(:user) }
+      before do
+        collection = media_object.collection
+        collection.editors += [user.user_key]
+        collection.save
+        login_user(user.username)
+      end
+
+      context 'with override disabled' do
+        it 'does not enable override' do
+          put :update_status, params: { id: media_object.id, override_accessibility: '1' }, format: :json
+          expect(media_object.reload.accessibility_exempt?).to eq false
+        end
+      end
+
+      context 'with override enabled' do
+        let(:media_object) { FactoryBot.create(:media_object, override_accessibility: true) }
+
+        it 'does not disable override' do
+          put :update_status, params: { id: media_object.id, override_accessibility: '0' }, format: :json
+          expect(media_object.reload.accessibility_exempt?).to eq true
+        end
+      end
+    end
+
+    context 'as unauthenticated user' do
+      it 'redirects to sign in' do
+        put :update_status, params: { id: media_object.id, override_accessibility: '1' }, format: :json
+        expect(response).to have_http_status(:unauthorized).or redirect_to(new_user_session_path)
       end
     end
   end

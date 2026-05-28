@@ -1,4 +1,4 @@
-# Copyright 2011-2025, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2026, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 #
@@ -63,7 +63,7 @@ describe 'item catalog' do
   end
 
   context 'user with collection manager permissions' do
-    let(:manager) { FactoryBot.create(:manager) }
+    let(:manager) { FactoryBot.create(:user) }
     let!(:collection) { FactoryBot.create(:collection, managers: [manager.user_key]) }
     let!(:media_object) { FactoryBot.create(:fully_searchable_media_object, :with_master_file, avalon_uploader: 'admin@example.edu', collection: collection) }
 

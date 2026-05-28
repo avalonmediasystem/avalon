@@ -1,4 +1,4 @@
-# Copyright 2011-2025, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2026, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 #
@@ -14,8 +14,8 @@
 
 class MediaObject < ActiveFedora::Base
   include Hydra::AccessControls::Permissions
+  include DisableInheritance
   include Hidden
-  include VirtualGroups
   include ActiveFedora::Associations
   include MediaObjectMods
   include WorkflowModelMixin
@@ -143,6 +143,9 @@ class MediaObject < ActiveFedora::Base
   property :lending_period, predicate: ::RDF::Vocab::SCHEMA.eligibleDuration, multiple: false do |index|
     index.as :stored_sortable
   end
+  property :override_accessibility, predicate: ::RDF::Vocab::EBUCore.RightsClearance, multiple: false do |index|
+    index.as ActiveFedora::Indexing::Descriptor.new(:boolean, :stored, :indexed)
+  end
 
   #TODO: get rid of all ordered_* and indexed_* references, after everything is migrated then convert from `ordered_aggregation` to `has_many`
   # OR possibly remove the master_files relationship entirely?
@@ -212,22 +215,19 @@ class MediaObject < ActiveFedora::Base
   def collection= co
     old_collection = self.collection
     self._collection= co
-    self.governing_policies.delete(old_collection) if old_collection
+    self.governing_policies -= [old_collection] if old_collection
     self.governing_policies += [co]
-    if self.new_record?
-      self.hidden = co.default_hidden
-      self.visibility = co.default_visibility
-      self.read_users = co.default_read_users.to_a
-      self.read_groups = co.default_read_groups.to_a + self.read_groups #Make sure to include any groups added by visibility
-      self.lending_period = co.default_lending_period
-    end
   end
 
   # Sets the publication status. To unpublish an object set it to nil or
   # omit the status which will default to unpublished. This makes the act
   # of publishing _explicit_ instead of an accidental side effect.
   def publish!(user_key, validate: true)
-    self.avalon_publisher = user_key.blank? ? nil : user_key
+    if user_key.present? && !is_accessible?
+      raise Avalon::PublishingError.new(I18n.t('errors.accessibility_enforcement_error'))
+    end
+
+    self.avalon_publisher = user_key.presence
     if validate
       save!
     else
@@ -333,7 +333,7 @@ class MediaObject < ActiveFedora::Base
     descMetadata.to_solr(super).tap do |solr_doc|
       solr_doc[ActiveFedora.index_field_mapper.solr_name("workflow_published", :facetable, type: :string)] = published? ? 'Published' : 'Unpublished'
       solr_doc[ActiveFedora.index_field_mapper.solr_name("collection", :symbol, type: :string)] = collection.name if collection.present?
-      solr_doc[ActiveFedora.index_field_mapper.solr_name("unit", :symbol, type: :string)] = collection.unit if collection.present?
+      solr_doc[ActiveFedora.index_field_mapper.solr_name("unit", :symbol, type: :string)] = collection.unit.name if collection.present?
       solr_doc["title_ssort"] = self.title
       solr_doc["creator_ssort"] = Array(self.creator).join(', ')
       solr_doc["date_ingested_ssim"] = self.create_date.strftime "%F" if self.create_date.present?
@@ -341,8 +341,10 @@ class MediaObject < ActiveFedora::Base
       # Downcasing identifier allows for case-insensitive searching but has the side effect of causing all identiiers to be lower case in JSON responses
       solr_doc['identifier_ssim'] = self.identifier.map(&:downcase)
       solr_doc['note_ssm'] = self.note.collect { |n| n.to_json }
+      solr_doc['donor_ssim'] = self.note.collect { |n| n[:note] if n[:type] == 'acquisition' }
       solr_doc['other_identifier_ssm'] = self.other_identifier.collect { |oi| oi.to_json }
       solr_doc['related_item_url_ssm'] = self.related_item_url.collect { |r| r.to_json }
+      solr_doc['is_accessible_bsi'] = self.is_accessible?
       solr_doc['section_id_ssim'] = section_ids
       if include_child_fields
         fill_in_solr_fields_that_need_sections(solr_doc)
@@ -443,11 +445,6 @@ class MediaObject < ActiveFedora::Base
     [mergeds, faileds]
   end
 
-  alias_method :'_lending_period', :'lending_period'
-  def lending_period
-    self._lending_period || collection&.default_lending_period
-  end
-
   # Override to reset memoized fields
   def reload
     @section_docs = nil
@@ -462,7 +459,7 @@ class MediaObject < ActiveFedora::Base
     # To take advantage of solr automagically escaping characters the query has to be in single quotes.
     # This runs counter to ruby's string interpolation which requires the string to be in double quotes.
     # We can get around this by using the format_string construction.
-    solr_query = { q: 'unit_ssim:"%{collection_unit}"' % { collection_unit: collection_unit } }
+    solr_query = { q: 'unit_ssim:"%{collection_unit}"' % { collection_unit: collection_unit.name } }
     query_params = {
       fl: ["series_ssim"],
       facet: "on",

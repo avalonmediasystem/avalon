@@ -1,4 +1,4 @@
-# Copyright 2011-2025, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2026, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 #
@@ -16,16 +16,16 @@ module IiifSupplementalFileBehavior
   private
 
   def supplemental_files_rendering(object)
-    tags = ['caption', nil]
+    tags = ['caption', 'description', nil]
     supplemental_files = []
     tags.each do |tag|
       supplemental_files += object.supplemental_files(tag: tag).collect do |sf|
-                              {
-                                "@id" => object_supplemental_file_url(object, sf),
-                                "type" => determine_rendering_type(sf.file.content_type),
-                                "label" => { "en" => [sf.label] },
-                                "format" => sf.file.content_type
-                              }
+        {
+          "@id" => object_supplemental_file_url(object, sf),
+          "type" => determine_rendering_type(sf.file.content_type),
+          "label" => { "en" => [sf.label] },
+          "format" => sf.file.content_type
+        }
       end
     end
 

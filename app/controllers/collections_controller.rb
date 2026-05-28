@@ -1,4 +1,4 @@
-# Copyright 2011-2025, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2026, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 #
@@ -24,6 +24,8 @@ class CollectionsController < CatalogController
     if params[:limit].present?
       collections = collections.sample(params[:limit].to_i)
     end
+    # If a unit filter is provided, only show collections that belong to that unit
+    collections = collections.select { |doc| doc["unit_ssi"] == params[:unit] } if params[:unit].present?
     @doc_presenters = collections.collect { |doc| CollectionPresenter.new(doc, view_context) }
 
     respond_to do |format|

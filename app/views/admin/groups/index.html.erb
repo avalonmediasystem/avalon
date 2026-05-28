@@ -95,32 +95,40 @@ Unless required by applicable law or agreed to in writing, software distributed
 
 <% content_for :page_scripts do %>
 <script>
-  $('.close').click(function () {
-    $(this).parent().remove();
-  })
+  queryAll('.close').forEach(function(closeBtn) {
+    closeBtn.addEventListener('click', function() {
+      this.parentElement.remove();
+    });
+  });
 
-  $('.select-groups').change(function () {
-    $('input[id^=group_ids_]').prop('checked', $(this).is(':checked')).trigger('change');
-  })
+  query('.select-groups').addEventListener('change', function () {
+    const isChecked = this.checked;
+    queryAll('input[id^=group_ids_]').forEach(function(checkbox) {
+      checkbox.checked = isChecked;
+      checkbox.dispatchEvent(new Event('change'));
+    });
+  });
 
-  $('input[id^=group_ids_]').change(function () {
-    if ($(this).is(':checked')) {
-      enableButtons();
-    } else if ($(':checked').length == 0) {
-      disableButtons();
-    }
-  })
+  queryAll('input[id^=group_ids_]').forEach(function(checkbox) {
+    checkbox.addEventListener('change', function () {
+      if (this.checked) {
+        enableButtons();
+      } else if (queryAll('input[id^=group_ids_]:checked').length === 0) {
+        disableButtons();
+      }
+    });
+  });
 
   function enableButtons() {
-    $('#add-ability').removeClass('disabled');
-    $('#remove-ability').removeClass('disabled');
-    $('.delete').removeAttr('disabled');
+    getById('add-ability').classList.remove('disabled');
+    getById('remove-ability').classList.remove('disabled');
+    query('.delete').removeAttribute('disabled');
   }
 
   function disableButtons() {
-    $('#add-ability').addClass('disabled');
-    $('#remove-ability').addClass('disabled');
-    $('.delete').attr('disabled', 'disabled');
+    getById('add-ability').classList.add('disabled');
+    getById('remove-ability').classList.add('disabled');
+    query('.delete').setAttribute('disabled', 'disabled');
   }
 </script>
 <% end %>

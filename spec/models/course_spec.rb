@@ -1,4 +1,4 @@
-# Copyright 2011-2025, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2026, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 #
@@ -38,5 +38,15 @@ describe Course do
     first_media_object.reload
     expect(first_media_object.read_groups).to include('sociology_101')
     expect(first_media_object.read_groups).to include('underwater_basketweaving_302')
+  end
+
+  describe 'autocomplete' do
+    before do
+      11.times { Course.create(title: 'Test') }
+    end
+
+    it 'limits to 10 results' do
+      expect(Course.autocomplete('Test').size).to eq 10
+    end
   end
 end

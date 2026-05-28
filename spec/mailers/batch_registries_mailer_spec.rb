@@ -1,4 +1,4 @@
-# Copyright 2011-2025, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2026, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 #
@@ -16,7 +16,7 @@ require "rails_helper"
 
 RSpec.describe BatchRegistriesMailer, type: :mailer do
   describe 'batch_ingest_validation_error' do
-    let(:manager) { FactoryBot.create(:manager, username: 'frances.dickens@reichel.com', email: 'frances.dickens@reichel.com') }
+    let(:manager) { FactoryBot.create(:user, username: 'frances.dickens@reichel.com', email: 'frances.dickens@reichel.com') }
     let(:collection) { FactoryBot.create(:collection, managers: [manager.user_key]) }
     let(:manifest_file) { File.new('spec/fixtures/dropbox/example_batch_ingest/batch_manifest.xlsx') }
     let(:package) { Avalon::Batch::Package.new(manifest_file, collection) }
@@ -42,7 +42,7 @@ RSpec.describe BatchRegistriesMailer, type: :mailer do
   end
 
   describe 'batch_ingest_validation_success' do
-    let(:manager) { FactoryBot.create(:manager, username: 'frances.dickens@reichel.com', email: 'frances.dickens@reichel.com') }
+    let(:manager) { FactoryBot.create(:user, username: 'frances.dickens@reichel.com', email: 'frances.dickens@reichel.com') }
     let(:collection) { FactoryBot.build(:collection, managers: [manager.user_key]) }
     let(:manifest_file) { File.new('spec/fixtures/dropbox/example_batch_ingest/batch_manifest.xlsx') }
     let(:package) { Avalon::Batch::Package.new(manifest_file, collection) }
@@ -59,7 +59,7 @@ RSpec.describe BatchRegistriesMailer, type: :mailer do
 
   describe 'batch_registration_finished_mailer' do
     let(:batch_registries) { FactoryBot.create(:batch_registries, user_id: manager.id, collection: collection.id) }
-    let(:manager) { FactoryBot.create(:manager, username: 'frances.dickens@reichel.com', email: 'frances.dickens@reichel.com') }
+    let(:manager) { FactoryBot.create(:user, username: 'frances.dickens@reichel.com', email: 'frances.dickens@reichel.com') }
     let(:collection) { FactoryBot.create(:collection) }
     let!(:batch_entries) { FactoryBot.create(:batch_entries, batch_registries: batch_registries, media_object_pid: media_object.id, complete: true) }
     let(:media_object) { FactoryBot.create(:media_object, collection: collection, permalink: "http://localhost:3000/media_objects/kfd39dnw") }
@@ -112,7 +112,7 @@ RSpec.describe BatchRegistriesMailer, type: :mailer do
 
   describe 'batch_encoding_finished' do
     let(:batch_registries) { FactoryBot.create(:batch_registries, user_id: manager.id, collection: collection.id) }
-    let(:manager) { FactoryBot.create(:manager, username: 'frances.dickens@reichel.com', email: 'frances.dickens@reichel.com') }
+    let(:manager) { FactoryBot.create(:user, username: 'frances.dickens@reichel.com', email: 'frances.dickens@reichel.com') }
     let(:collection) { FactoryBot.create(:collection) }
     let!(:batch_entries) { FactoryBot.create(:batch_entries, batch_registries: batch_registries, media_object_pid: media_object.id, complete: true) }
     let(:media_object) { FactoryBot.create(:media_object, collection: collection, permalink: "http://localhost:3000/media_objects/kfd39dnw") }

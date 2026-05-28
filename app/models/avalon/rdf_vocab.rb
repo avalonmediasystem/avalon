@@ -1,4 +1,4 @@
-# Copyright 2011-2025, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2026, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 #
@@ -67,7 +67,17 @@ module Avalon
       property :default_visibility,       "rdfs:isDefinedBy" => %(avr-collection:).freeze, type: "rdfs:Class".freeze
       property :default_hidden,           "rdfs:isDefinedBy" => %(avr-collection:).freeze, type: "rdfs:Class".freeze
       property :cdl_enabled,              "rdfs:isDefinedBy" => %(avr-collection:).freeze, type: "rdfs:Class".freeze
-      property :collection_managers,       "rdfs:isDefinedBy" => %(avr-collection:).freeze, type: "rdfs:Class".freeze
+      property :collection_managers,      "rdfs:isDefinedBy" => %(avr-collection:).freeze, type: "rdfs:Class".freeze
+    end
+
+    class Unit < RDF::StrictVocabulary("http://avalonmediasystem.org/rsf/vocab/unit#")
+      property :website_label,            "rdfs:isDefinedBy" => %(avr-unit:).freeze, type: "rdfs:Class".freeze
+      property :default_read_users,       "rdfs:isDefinedBy" => %(avr-unit:).freeze, type: "rdfs:Class".freeze
+      property :default_read_groups,      "rdfs:isDefinedBy" => %(avr-unit:).freeze, type: "rdfs:Class".freeze
+      property :default_visibility,       "rdfs:isDefinedBy" => %(avr-unit:).freeze, type: "rdfs:Class".freeze
+      property :default_hidden,           "rdfs:isDefinedBy" => %(avr-unit:).freeze, type: "rdfs:Class".freeze
+      property :collection_managers,      "rdfs:isDefinedBy" => %(avr-unit:).freeze, type: "rdfs:Class.freeze"
+      property :unit_administrators,      "rdfs:isDefinedBy" => %(avr-unit:).freeze, type: "rdfs:Class".freeze
     end
 
     class EBUCore < RDF::StrictVocabulary("http://www.ebu.ch/metadata/ontologies/ebucore/ebucore#")
