@@ -485,9 +485,10 @@ describe CatalogController do
           end
         end
 
-        it 'should raise error on other non-quote related invalid request' do
+        it 'should not raise error on other non-quote related invalid request' do
           allow_any_instance_of(Blacklight::SearchService).to receive(:search_results).and_raise(Blacklight::Exceptions::InvalidRequest)
-          expect { get 'index', params: { q: 'Test' } }.to raise_error(Blacklight::Exceptions::InvalidRequest)
+          expect(get 'index', params: { q: 'Test' }).to redirect_to(root_path)
+          expect(flash[:error]).to be_present
         end
       end
     end
