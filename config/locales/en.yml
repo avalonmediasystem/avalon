@@ -28,6 +28,10 @@ en:
     accessibility_enforcement_error: |
       This item is unable to be published. Accessibility requirements such as a transcript or
       caption file are missing.
+    search_error: |
+      <p>There was an error with this search. This is usually caused by abnormal combinations of
+      special characters, e.x. "query,. term". Check your query and try again.</p><p>If the problem
+      persists please contact support to report this error: <a href="mailto:%s">%s</a><p>
   media_object:
     empty_share_link: ""
     empty_share_link_notice: "After processing has started the embedded link will be available."
