@@ -335,7 +335,7 @@ describe CatalogController do
 
     describe "search fields" do
       let(:media_object) { FactoryBot.create(:fully_searchable_media_object) }
-      ["title_tesi", "alternative_title_ssim", "creator_ssim", "contributor_ssim", "unit_ssim", "collection_ssim", "abstract_ssi", "publisher_ssim", "topical_subject_ssim", "geographic_subject_ssim", "temporal_subject_ssim", "genre_ssim", "physical_description_ssim", "language_ssim", "date_sim", "notes_sim", "table_of_contents_ssim", "other_identifier_sim", "series_ssim", "bibliographic_id_ssi"].each do |field|
+      ["title_tesi", "alternative_title_ssim", "creator_ssim", "contributor_ssim", "unit_ssim", "collection_ssim", "abstract_ssi", "publisher_ssim", "topical_subject_ssim", "geographic_subject_ssim", "temporal_subject_ssim", "genre_ssim", "physical_description_ssim", "physical_format_ssim", "language_ssim", "date_sim", "notes_sim", "table_of_contents_ssim", "other_identifier_sim", "series_ssim", "bibliographic_id_ssi"].each do |field|
         it "should find results based upon #{field}" do
           query = Array(media_object.to_solr[field]).first
           # split on ' ' and only search on the first word of a multiword field value
@@ -519,8 +519,8 @@ describe CatalogController do
         MediaObjectIndexingJob.perform_now(media_object.id)
       end
       ["avalon_resource_type_ssim", "creator_ssim", "date_sim", "genre_ssim", "series_ssim", "collection_ssim", "unit_ssim", "language_ssim", "has_captions_bsi", "has_transcripts_bsi",
-       "workflow_published_sim", "avalon_uploader_ssi", "read_access_group_ssim", "read_access_virtual_group_ssim", "date_digitized_ssim", "date_ingested_ssim", "subject_ssim", 
-       "donor_ssim", "rights_statement_ssi"].each do |field|
+       "workflow_published_sim", "avalon_uploader_ssi", "read_access_group_ssim", "read_access_virtual_group_ssim", "date_digitized_ssim", "date_ingested_ssim", "subject_ssim",
+       "donor_ssim", "rights_statement_ssi", "physical_format_ssim"].each do |field|
         it "should facet results on #{field}" do
           query = Array(media_object.to_solr(include_child_fields: true)[field]).first
           # The following line is to check that the test is using a valid solr field name

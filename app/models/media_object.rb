@@ -371,6 +371,7 @@ class MediaObject < ActiveFedora::Base
       all_text_values << solr_doc["genre_ssim"]
       all_text_values << solr_doc["language_ssim"]
       all_text_values << solr_doc["physical_description_ssim"]
+      all_text_values << solr_doc["physical_format_ssim"]
       all_text_values << solr_doc["series_ssim"]
       all_text_values << solr_doc["date_sim"]
       all_text_values << solr_doc["notes_sim"]

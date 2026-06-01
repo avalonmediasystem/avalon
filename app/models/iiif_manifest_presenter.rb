@@ -166,6 +166,16 @@ class IiifManifestPresenter
     "<a href='#{media_object.rights_statement}'>#{label}</a>"
   end
 
+  def display_physical_format(media_object)
+    return nil unless media_object.physical_format.present?
+
+    media_object.physical_format.collect do |desc|
+      label = ModsDocument::PHYSICAL_FORMATS[desc]
+      next if label.blank?
+      "<a href='#{desc}'>#{label}</a>"
+    end
+  end
+
   def display_summary(media_object)
     return nil unless media_object.abstract.present?
     media_object.abstract
@@ -210,7 +220,7 @@ class IiifManifestPresenter
       metadata_field('Language', display_language(media_object)),
       metadata_field('Rights Statement', display_rights_statement(media_object)),
       metadata_field('Terms of Use', media_object.terms_of_use),
-      metadata_field('Physical Description', media_object.physical_description),
+      metadata_field('Physical Format', display_physical_format(media_object)),
       metadata_field('Series', display_series(media_object)),
       metadata_field('Related Item', display_related_item(media_object)),
       metadata_field('Access Restrictions', media_object.access_text),

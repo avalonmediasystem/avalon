@@ -17,6 +17,10 @@ module Blacklight::LocalBlacklightHelper
     ModsDocument::RIGHTS_STATEMENTS[arg]
   end
 
+  def physical_format_facet_display arg
+    ModsDocument::PHYSICAL_FORMATS[arg]
+  end
+
   def alternative_title_index_display args
     field = args[:document][args[:field]]
     field.first(3).map { |f| truncate(f, length: 32) }.join("; ")

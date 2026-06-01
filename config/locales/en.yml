@@ -139,6 +139,8 @@ en:
       Terms of Use describes the conditions under which content may be used. This is an optional field.
     physical_description: |
       Physical Description is an optional field that will display information about the original resource being described.
+    physical_format: |
+      Physical Format is an optional field that will display information about the physical form of the original resource being described.
     rights_statement: |
       Rights Statement is used to communicate the copyright and re-use status of digital objects using a set of standardized rights statements provided by <a href="https://rightsstatements.org" target="_blank">RightsStatements.org</a>
     related_item_url: |

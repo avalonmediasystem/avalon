@@ -119,6 +119,7 @@ class CatalogController < ApplicationController
     config.add_facet_field 'date_ingested_ssim', label: 'Date Ingested', limit: 5, suggest: true, if: Proc.new {|context, config, opts| context.current_ability.can?(:read, :administrative_facets)}, group: "workflow"
     config.add_facet_field 'has_captions_bsi', label: 'Has Captions', if: Proc.new {|context, config, opts| context.current_ability.can?(:read, :administrative_facets)}, group: "workflow", helper_method: :display_has_caption_or_transcript
     config.add_facet_field 'has_transcripts_bsi', label: 'Has Transcripts', if: Proc.new {|context, config, opts| context.current_ability.can?(:read, :administrative_facets)}, group: "workflow", helper_method: :display_has_caption_or_transcript
+    config.add_facet_field 'physical_format_ssim', label: 'Physical Format', limit: 5, if: proc { |context, config, opts| context.current_ability.can?(:read, :administrative_facets) }, group:"workflow", helper_method: :physical_format_facet_display
 
     config.add_facet_field 'subject_ssim', label: 'Subject', if: false
     config.add_facet_field 'donor_ssim', label: 'Donors', if: false
