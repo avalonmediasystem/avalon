@@ -41,7 +41,7 @@ FactoryBot.define do
         temporal_subject { [Faker::Lorem.word] }
         geographic_subject { [Faker::Address.country] }
         physical_description { [Faker::Lorem.word] }
-        physical_format { [Faker::Lorem.word] }
+        physical_format { ['https://pbcore.org/pbcore-controlled-vocabularies/instantiationphysical-film-vocabulary/#Super8mmFilm'] }
         table_of_contents { [Faker::Lorem.paragraph] }
         note { [{ note: Faker::Lorem.paragraph, type: 'general' }, { note: Faker::Lorem.paragraph, type: 'local' }] }
         other_identifier { [{ id: Faker::Lorem.unique.word, source: 'local' }] }
