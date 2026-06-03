@@ -121,10 +121,9 @@ Blacklight::AccessControls::Ability.class_eval do
     return [] if doc.nil?
     groups = Array(doc[self.class.read_group_field]).uniq
     groups = groups.map do |g|
-      ip = IPAddr.new(g)
-      next if ip.blank?
-      ip.to_range.map(&:to_s)
-    end.flatten
+      ip = IPAddr.new(g) rescue nil
+      ip.present? ? ip.to_range.map(&:to_s) : g
+    end.flatten.compact.uniq
     rg = download_groups(id) | groups
     Rails.logger.debug("[CANCAN] read_groups: #{rg.inspect}")
     rg
