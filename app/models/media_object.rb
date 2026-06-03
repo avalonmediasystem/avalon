@@ -319,7 +319,7 @@ class MediaObject < ActiveFedora::Base
 
   def fill_in_solr_fields_needing_leases(solr_doc)
     solr_doc['read_access_virtual_group_ssim'] = virtual_read_groups + leases('external').map(&:inherited_read_groups).flatten
-    solr_doc['read_access_ip_group_ssim'] = collect_ips_for_index(ip_read_groups + leases('ip').map(&:inherited_read_groups).flatten)
+    solr_doc['read_access_ip_group_ssim'] = (ip_read_groups + leases('ip').map(&:inherited_read_groups).flatten).uniq
     solr_doc[Hydra.config.permissions.read.group] ||= []
     solr_doc[Hydra.config.permissions.read.group] += solr_doc['read_access_ip_group_ssim']
   end
@@ -493,14 +493,6 @@ class MediaObject < ActiveFedora::Base
 
     def calculate_duration
       section_solr_docs.collect { |h| h['duration_ssi'].to_i }.compact.sum
-    end
-
-    def collect_ips_for_index ip_strings
-      ips = ip_strings.collect do |ip|
-        addr = IPAddr.new(ip) rescue next
-        addr.to_range.map(&:to_s)
-      end
-      ips.flatten.compact.uniq || []
     end
 
     def sections_with_files(tag: '*')

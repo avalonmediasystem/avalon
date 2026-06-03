@@ -113,3 +113,20 @@ ActiveFedora::SolrService.instance_eval do
     result['response']['numFound'].to_i
   end
 end
+
+# Override to expand IP address ranges
+Blacklight::AccessControls::Ability.class_eval do
+  def read_groups(id)
+    doc = permissions_doc(id)
+    return [] if doc.nil?
+    groups = Array(doc[self.class.read_group_field]).uniq
+    groups = groups.map do |g|
+      ip = IPAddr.new(g)
+      next if ip.blank?
+      ip.to_range.map(&:to_s)
+    end.flatten
+    rg = download_groups(id) | groups
+    Rails.logger.debug("[CANCAN] read_groups: #{rg.inspect}")
+    rg
+  end
+end
