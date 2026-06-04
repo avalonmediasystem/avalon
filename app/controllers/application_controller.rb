@@ -42,6 +42,7 @@ class ApplicationController < ActionController::Base
   rescue_from RSolr::Error::Timeout, :with => :handle_solr_connection_error
   rescue_from Blacklight::Exceptions::ECONNREFUSED, :with => :handle_solr_connection_error
   rescue_from Faraday::ConnectionFailed, :with => :handle_fedora_connection_error
+  rescue_from Blacklight::Exceptions::InvalidRequest, with: :handle_search_error
 
   # Enable profiling
   if ActiveModel::Type::Boolean.new.cast(ENV['AVALON_PROFILING'])
@@ -318,6 +319,15 @@ class ApplicationController < ActionController::Base
         render '/errors/fedora_connection', status: :service_unavailable
       else
         render json: { errors: [exception.message] }, status: :service_unavailable
+      end
+    end
+
+    def handle_search_error(exception)
+      if request.path == '/'
+        raise exception
+      else
+        flash[:error] = (I18n.t('errors.search_error') % [Settings.email.support, Settings.email.support]).html_safe
+        redirect_to(root_path)
       end
     end
 end

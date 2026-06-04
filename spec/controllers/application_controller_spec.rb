@@ -135,6 +135,16 @@ describe ApplicationController do
       end
     end
 
+    context 'search error' do
+      it 'redirects to homepage' do
+        allow(controller).to receive(:create).and_raise(Blacklight::Exceptions::InvalidRequest)
+        expect { get :create, params: { id: 'abc1234' } }.to_not raise_error
+        expect(response.status).to be 302
+        expect(response).to redirect_to(root_path)
+        expect(flash[:error]).to eq(I18n.t('errors.search_error') % [Settings.email.support, Settings.email.support])
+      end
+    end
+
     context 'raise_on_connection_error disabled' do
       let(:request_context) { { uri: Addressable::URI.parse("http://example.com"), body: "request_context" } }
       let(:e) { { body: "error_response" } }

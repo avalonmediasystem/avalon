@@ -65,6 +65,7 @@ module Avalon
         target = Rails.application.routes.url_helpers.transcripts_master_file_supplemental_file_url(master_file.id, transcript_id)
 
         text_matches = matches["transcript_tsim"]
+        next if text_matches.blank?
 
         formatted_response += process_items(text_matches, mime_type, canvas, target)
       end
