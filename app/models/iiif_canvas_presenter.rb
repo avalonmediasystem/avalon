@@ -124,7 +124,9 @@ class IiifCanvasPresenter
   end
 
   def supplementing_content_data(file)
-    tags = file.tags.reject { |t| t == 'machine_generated' }.compact
+    # Private items should not be getting returned here in the first place, but reject the
+    # tag anyways to make sure every file is being filtered correctly.
+    tags = file.tags.reject { |t| ['machine_generated', 'forced', 'private'].include?(t) }.compact
     case tags
     when ['caption']
       url = Rails.application.routes.url_helpers.captions_master_file_supplemental_file_url(master_file.id, file.id)

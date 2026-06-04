@@ -443,6 +443,10 @@ describe IiifCanvasPresenter do
         it "adds '[forced]' to the label" do
           expect(subject.any? { |content| content.label['eng'][0] =~ /#{caption_file.label} \[forced\]/ }).to eq true
         end
+
+        it "serializes the caption as a caption" do
+          expect(subject.any? { |content| content.body_id =~ /supplemental_files\/#{caption_file.id}\/captions/ }).to eq true
+        end
       end
 
       context 'caption being treated as a transcript' do
