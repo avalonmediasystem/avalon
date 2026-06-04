@@ -17,7 +17,7 @@ Unless required by applicable law or agreed to in writing, software distributed
 
 <ol class="breadcrumb">
   <li style="padding-bottom: 0px" class="breadcrumb-item"><%= link_to 'Manage Content', admin_dashboard_path %></li>
-  <li style="padding-bottom: 0px" class="breadcrumb-item"><%= link_to @collection.unit.name, admin_unit_path(@collection.unit) %></li>
+  <li style="padding-bottom: 0px" class="breadcrumb-item"><%= can?(:read, @collection.unit) ? link_to( @collection.unit.name, admin_unit_path(@collection.unit)) : @collection.unit.name %></li>
   <li style="padding-bottom: 0px" class="breadcrumb-item active"><%= @collection.name %></li>
 </ol>
 <div class="page-title-wrapper">
