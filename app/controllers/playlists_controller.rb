@@ -125,18 +125,15 @@ class PlaylistsController < ApplicationController
   def duplicate
     old_playlist = Playlist.find(params['old_playlist_id'])
     unless can? :duplicate, old_playlist
-      render json: {errors: 'You do not have sufficient privileges to copy this item'}, status: 401 and return
+      render json: { errors: 'You do not have sufficient privileges to copy this item' }, status: 401 and return
     end
     @playlist = Playlist.new(playlist_params.merge(user: current_user))
     if @playlist.save
 
-      #copy items
+      # copy items
       old_playlist.items.each do |item|
         next if item.clip.master_file.nil?
-        copy_item = item.duplicate!
-        copy_item.playlist_id  = @playlist.id
-        copy_item.save!
-        copy_item.move_to_bottom
+        item.duplicate!(to_playlist: @playlist)
       end
 
       respond_to do |format|
@@ -147,7 +144,7 @@ class PlaylistsController < ApplicationController
     else
       respond_to do |format|
         format.json do
-          render json: {errors: @playlist.errors}
+          render json: { errors: @playlist.errors }
         end
       end
     end
@@ -187,12 +184,12 @@ class PlaylistsController < ApplicationController
       playlist_items = PlaylistItem.where(id: params[:clip_ids])
       playlist_items.each do |item|
         next if item.clip.master_file.nil?
-        if (params[:action_type] == 'copy_to_playlist')
-          item = item.duplicate!
+        if params[:action_type] == 'copy_to_playlist'
+          item.duplicate!(to_playlist: @new_playlist)
+        else
+          item.playlist_id = @new_playlist.id
+          item.save!
         end
-        item.playlist_id = @new_playlist.id
-        item.save!
-        item.move_to_bottom
       end
       @playlist.save!
       @new_playlist.save!
@@ -307,31 +304,31 @@ class PlaylistsController < ApplicationController
     changed_playlist, new, changed_position, unchanged = playlist.items.
       sort_by(&:position).
       group_by do |item|
-	if item.playlist_id_was != item.playlist_id
-	  :changed_playlist
-	elsif item.position_was.nil?
-	  :new
-	elsif item.position_was != item.position
-	  :changed_position
-	else
-	  :unchanged
-	end
+      if item.playlist_id_was != item.playlist_id
+        :changed_playlist
+      elsif item.position_was.nil?
+        :new
+      elsif item.position_was != item.position
+        :changed_position
+      else
+        :unchanged
+      end
     end.values_at(:changed_playlist, :new, :changed_position, :unchanged).map(&:to_a)
     # items that will be in this playlist
     unmoved_items = unchanged
     # place items whose positions were specified
-    changed_position.map {|item| unmoved_items.insert(item.position - 1, item)}
+    changed_position.map { |item| unmoved_items.insert(item.position - 1, item) }
     # add new items at the end
-    unmoved_items = unmoved_items + new
+    unmoved_items += new
     # calculate positions
     unmoved_items.compact.
-      select {|item| item.playlist_id_was == item.playlist_id}.
+      select { |item| item.playlist_id_was == item.playlist_id }.
       each_with_index do |item, position|
-	item.position = position + 1
-      end
+      item.position = position + 1
+    end
 
     # items that have moved to another playlist
-    changed_playlist.select {|item| item.playlist_id_was != item.playlist_id}.each do |item|
+    changed_playlist.select { |item| item.playlist_id_was != item.playlist_id }.each do |item|
       item.position = nil
     end
   end
