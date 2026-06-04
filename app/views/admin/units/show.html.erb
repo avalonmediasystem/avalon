@@ -15,6 +15,10 @@ Unless required by applicable law or agreed to in writing, software distributed
 %>
 <% @page_title = t('units.show.title', :unit_name => @unit.name, :application_name => application_name) %>
 
+<ol class="breadcrumb">
+  <li class="breadcrumb-item"><%= link_to 'Manage Content', admin_dashboard_path %></li>
+  <li class="breadcrumb-item active"><%= @unit.name %></li>
+</ol>
 <div class="page-title-wrapper">
   <h1 class="page-title">Manage Unit</h1>
 </div>
