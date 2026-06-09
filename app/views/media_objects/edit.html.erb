@@ -26,6 +26,10 @@ Unless required by applicable law or agreed to in writing, software distributed
     <h1 class="visually-hidden">Edit Media Object</h1>
 
     <ol class="breadcrumb">
+      <li class="breadcrumb-item"><%= link_to 'Manage Content', admin_dashboard_path %></li>
+      <li class="breadcrumb-item">
+        <%= can?(:read, @media_object.collection.unit) ? link_to(@media_object.collection.unit.name, admin_unit_path(@media_object.collection.unit)) : @media_object.collection.unit.name %>
+      </li>
       <li class="breadcrumb-item">
         <%= link_to @media_object.collection.name.present? ? @media_object.collection.name : 'Untitled collection', admin_collection_path(@media_object.collection.id) %>
       </li>
