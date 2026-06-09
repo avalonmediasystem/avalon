@@ -19,10 +19,10 @@ Unless required by applicable law or agreed to in writing, software distributed
 
 <div class="collections-landing-wrapper">
   <ol class="breadcrumb">
-    <li style="padding-bottom: 0px" class="breadcrumb-item"><%= link_to 'All Collections', collections_path %></li>
-    <li style="padding-bottom: 0px" class="breadcrumb-item"><%= link_to @doc_presenter.unit, unit_path(@doc_presenter.unit_id) %>
+    <li class="breadcrumb-item"><%= link_to 'All Collections', collections_path %></li>
+    <li class="breadcrumb-item"><%= link_to @doc_presenter.unit, unit_path(@doc_presenter.unit_id) %>
     </li>
-    <li class="breadcrumb-item active" style="padding-bottom: 0px"><%= @doc_presenter.name %></li>
+    <li class="breadcrumb-item active"><%= @doc_presenter.name %></li>
   </ol>
 
   <div class="collection-details-wrapper row">
