@@ -133,12 +133,4 @@ class Admin::GroupsController < ApplicationController
     flash[:notice] = "Successfully deleted groups: #{params[:group_ids].join(', ')}"
     redirect_to admin_groups_path
   end
-
-  def check_for_sole_managers
-    sole_managers = []
-    params["user_ids"].each do |manager|
-      sole_managers << manager if Admin::Collection.all.any? {|c| c.managers == [manager]}
-    end
-    sole_managers
-  end
 end
