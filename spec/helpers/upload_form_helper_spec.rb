@@ -44,8 +44,8 @@ describe UploadFormHelper, type: :helper do
     end
 
     context 'with another transcoder' do
-      let(:transcoder) { :matterhorn }
-      it 'returns true if using Elastic Transcoder' do
+      let(:transcoder) { :ffmpeg }
+      it 'returns false if using a different transcoder without minio' do
         expect(helper.direct_upload?).to be false
       end
     end
