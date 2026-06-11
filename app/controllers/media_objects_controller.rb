@@ -519,6 +519,9 @@ class MediaObjectsController < ApplicationController
       manifest = IIIFManifest::V3::ManifestFactory.new(presenter).to_h
       # TODO: implement thumbnail in iiif_manifest
       manifest["thumbnail"] = [{ "id" => presenter.thumbnail, "type" => 'Image' }] if presenter.thumbnail
+      # Auth 2.0 requires the auth context to be in the top level manifest context, before the
+      # presentation context
+      manifest["@context"] = manifest["@context"].insert(1, "http://iiif.io/api/auth/2/context.json")
 
       manifest
     end

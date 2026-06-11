@@ -18,15 +18,12 @@ Unless required by applicable law or agreed to in writing, software distributed
     <script>
     window.parent.postMessage(
       {
-        <%# TODO: Determine if context and type cause issue with the auth 1 flow or
-              if clients ignore the extra data %>
         "@context": "http://iiif.io/api/auth/2/context.json", 
-        "type": "AuthAccessToken2",
-        "accessToken": "<%= access_token %>",
-        "expiresIn": <%= expires %>,  
-        "messageId": "<%= message_id %>" 
-      },
-      "<%= origin %>"
+        "type": "AuthAccessTokenError2",
+        "profile": "missingAspect",
+        "heading": { "en": ["<%= I18n.t('iiif.auth.failureHeader') %>"]},  
+        "messageId": "<%= message_id %>"
+      }
     );
     </script>
   </body>

@@ -241,13 +241,16 @@ class MasterFilesController < ApplicationController
 
   def hls_manifest
     quality = params[:quality]
+    auth_token = request.headers['Authorization']&.sub('Bearer ', '')
     if request.head?
-      auth_token = request.headers['Authorization']&.sub('Bearer ', '')
       if StreamToken.valid_token?(auth_token, @master_file.id) || can?(:read, @master_file)
         return head :ok
       else
         return head :unauthorized
       end
+    elsif auth_token.present?
+      return render json: iiif_auth_probe_resp(success: false), status: :unauthorized unless StreamToken.valid_token?(auth_token, @master_file.id) || can?(:read, @master_file)
+      render json: iiif_auth_probe_resp(success: true), status: :ok
     else
       return head :unauthorized if cannot?(:read, @master_file)
       @hls_streams = if quality == "auto"
@@ -282,15 +285,26 @@ class MasterFilesController < ApplicationController
   end
 
   def iiif_auth_token
+    message_id = params[:messageId]
+    origin = params[:origin]
+
     if cannot? :read, @master_file
-      head :unauthorized
+      render 'iiif_auth_token_error', layout: false, locals: { message_id: message_id }, status: :unauthorized
     else
-      message_id = params[:messageId]
-      origin = params[:origin]
       access_token = StreamToken.find_or_create_session_token(session, @master_file.id)
       expires = (StreamToken.find_by(token: access_token).expires - Time.now.utc).to_i
       render 'iiif_auth_token', layout: false, locals: { message_id: message_id, origin: origin, access_token: access_token, expires: expires }
     end
+  end
+
+  def iiif_auth_probe_resp(success: false)
+    {
+      "@context": "http://iiif.io/api/auth/2/context.json",
+      "type": "AuthProbeResult2",
+      "status": success ? 200 : 401,
+      "header": success ? nil : { "en": [I18n.t('iiif.auth.failureHeader')] },
+      "note": success ? nil : { "en": [I18n.t('iiif.auth.failureDescription')] }
+    }.compact
   end
 
   def move
