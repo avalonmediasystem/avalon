@@ -235,7 +235,7 @@ class IiifPlaylistCanvasPresenter
     def auth_service(quality)
       [
         {
-          "context": "http://iiif.io/api/auth/1/context.json",
+          "@context": "http://iiif.io/api/auth/1/context.json",
           "@id": Rails.application.routes.url_helpers.new_user_session_url(login_popup: 1),
           "@type": "AuthCookieService1",
           "confirmLabel": I18n.t('iiif.auth.confirmLabel'),
