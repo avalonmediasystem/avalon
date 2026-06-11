@@ -173,17 +173,34 @@ namespace :avalon do
     end
     desc "Downcase existing special access user entries"
     task special_access_users: :environment do
-      ids = ActiveFedora::SolrService.query('inheritable_read_access_person_ssim:/.*[A-Z].*/ OR read_access_person_ssim:/.*[A-Z].*/', fl: 'id', rows: 100_000)
-      ids.each do |i|
-        object = ActiveFedora::Base.find(i[:id])
-        case object.class
-        when Admin::Unit, Admin::Collection
-          object.default_read_users = object.default_read_users.map(&:downcase)
-        when MediaObject
-          object.read_users = object.read_users.map(&:downcase)
+      query = 'inheritable_read_access_person_ssim:/.*[A-Z].*/ OR read_access_person_ssim:/.*[A-Z].*/'
+      
+      num_found = ActiveFedora::SolrService.count(query)
+      puts("#{num_found} matching records found.")
+
+      start = 0
+      error_count = 0
+      while start < num_found
+        ids = ActiveFedora::SolrService.query(query, fl: 'id', rows: 1000, start: start)
+        ids.each do |i|
+          object = ActiveFedora::Base.find(i[:id])
+          case object.class
+          when Admin::Unit, Admin::Collection
+            object.default_read_users = object.default_read_users.map(&:downcase)
+          when MediaObject
+            object.read_users = object.read_users.map(&:downcase)
+          end
+          object.save
+        rescue StandardError => e
+          # Use `i[:id]` for logging in case the error occurs when trying to find the object
+          puts("A problem was encountered with record #{i[:id]}: #{e.message}")
+          error_count += 1
+          next
         end
-        object.save!
+        start += 1000
       end
+
+      puts("#{num_found - error_count} records successfully migrated")
     end
   end
 end
