@@ -280,5 +280,6 @@ Rails.application.routes.draw do
   # of things from active storage.
   match '*unmatched', to: 'application#handle_routing_error', via: :all, constraints: lambda { |req|
     req.path.exclude? 'rails/active_storage'
+    req.path.exclude? 'persona/users'
   }
 end
