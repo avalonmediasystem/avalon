@@ -417,8 +417,15 @@ describe Admin::CollectionsController, type: :controller do
         collection = Admin::Collection.find(JSON.parse(response.body)['id'])
         expect(collection.managers).to eq([])
       end
-      it "should return 422 if collection creation failed" do
+      it "should return 422 if unit not provided" do
         post 'create', params: { format:'json', admin_collection: { name: collection.name, description: collection.description } }
+        expect(response.status).to eq(422)
+        expect(JSON.parse(response.body)).to include('errors')
+        expect(JSON.parse(response.body)["errors"].class).to eq Array
+        expect(JSON.parse(response.body)["errors"].first.class).to eq String
+      end
+      it "should return 422 if name not provided" do
+        post 'create', params: { format:'json', admin_collection: { description: collection.description, unit_id: collection.unit.id } }
         expect(response.status).to eq(422)
         expect(JSON.parse(response.body)).to include('errors')
         expect(JSON.parse(response.body)["errors"].class).to eq Array

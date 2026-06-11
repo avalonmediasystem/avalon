@@ -230,6 +230,16 @@ class ApplicationController < ActionController::Base
     end
   end
 
+  def handle_routing_error
+    if request.format == :json
+      render json: { errors: ["API action does not exist. Check that your URL and HTTP request method are correct."] }, status: :not_found
+    elsif request.format == :html
+      render file: Rails.root.join('public', '404.html').to_s, status: :not_found, layout: false
+    else
+      head :not_found
+    end
+  end
+
   def configure_permitted_parameters
     devise_parameter_sanitizer.permit(:sign_up) do |user_params|
       user_params.permit(:username, :email, :password, :password_confirmation)
