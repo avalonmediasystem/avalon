@@ -41,12 +41,13 @@ gem 'rdf-rdfxml'
 # Samvera version pins
 gem 'blacklight', '~> 8.10'
 gem 'blacklight-access_controls', '~> 6.1'
+gem "json-ld"
 gem 'rdf', '~> 3.1'
+gem "rdf-vocab", ">= 2.1.0"
 gem 'rsolr', '~> 2.0'
 
 # Rails & Samvera Plugins
 gem 'about_page', git: 'https://github.com/avalonmediasystem/about_page.git', branch: 'main'
-gem 'active_annotations', '~> 0.6'
 gem 'activerecord-session_store', '>= 2.0.0'
 gem 'acts_as_list'
 gem 'api-pagination'

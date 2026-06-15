@@ -12,9 +12,9 @@
 #   specific language governing permissions and limitations under the License.
 # ---  END LICENSE_HEADER BLOCK  ---
 
-# An AvalonAnnotation that represents a 'marker', an annotated time-point on a masterfile
+# An Annotation that represents a 'marker', an annotated time-point on a masterfile
 # @since 5.0.1
-class AvalonMarker < AvalonAnnotation
+class AvalonMarker < Annotation
   belongs_to :playlist_item, class_name: 'PlaylistItem'
 
   validates :playlist_item, :master_file, presence: true
