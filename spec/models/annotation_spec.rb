@@ -106,6 +106,7 @@ describe Annotation do
       subject.annotated_at = annotated_at
       subject.source = source_obj
       subject.label = label
+      subject.master_file = FactoryBot.create(:master_file)
       subject.save
     end
 
