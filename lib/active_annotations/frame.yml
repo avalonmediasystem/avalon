@@ -1,0 +1,9 @@
+---
+"@context": http://www.w3.org/ns/oa.jsonld
+"@type": oa:Annotation
+label: 
+hasBody: {}
+hasTarget:
+  "@type": oa:SpecificResource
+  hasSelector: {}
+  hasSource: {}
