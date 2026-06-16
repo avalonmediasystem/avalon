@@ -12,9 +12,9 @@
 #   specific language governing permissions and limitations under the License.
 # ---  END LICENSE_HEADER BLOCK  ---
 
-# An AvalonAnnotation that represents a 'clip', an annotated time-span on a masterfile
+# An Annotation that represents a 'clip', an annotated time-span on a masterfile
 # @since 5.0.1
-class AvalonClip < AvalonAnnotation
+class AvalonClip < Annotation
 
   alias_method :comment, :content
   alias_method :comment=, :content=

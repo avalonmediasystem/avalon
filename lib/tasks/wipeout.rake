@@ -26,7 +26,7 @@ def wipeout_redis
 end
 
 def wipeout_db
-  [MigrationStatus, ActiveAnnotations::Annotation, Bookmark, Search, ApiToken, Course,
+  [MigrationStatus, Annotation, Bookmark, Search, ApiToken, Course,
    IngestBatch, PlaylistItem, Playlist, RoleMap, StreamToken, User].each(&:delete_all)
 end
 
