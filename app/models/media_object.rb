@@ -351,7 +351,7 @@ class MediaObject < ActiveFedora::Base
         fill_in_solr_fields_needing_leases(solr_doc)
       elsif id.present? # avoid error in test suite
         # Fill in other identifier so these values aren't stripped from the solr doc while waiting for the background job
-        mf_docs = ActiveFedora::SolrService.query("isPartOf_ssim:#{id}", rows: 100_000)
+        mf_docs = ActiveFedora::SolrService.query("isPartOf_ssim:#{id}", fl: 'identifier_ssim', rows: 100_000)
         solr_doc["other_identifier_sim"] +=  mf_docs.collect { |h| h['identifier_ssim'] }.flatten
       end
 
