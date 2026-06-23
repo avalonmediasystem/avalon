@@ -34,20 +34,19 @@ module Hydra::MultiplePolicyAwareAccessControlsEnforcement
 
   # find all the policies that grant discover/read/edit permissions to this user or any of its groups
   def policies_with_access(permission_types: discovery_permissions)
-    clauses = policy_classes.collect do |policy_class|
-      user_access_filters = []
-      # Grant access based on user id & group
-      policy_class_clause = policy_class_clause(policy_class)
-      user_access_filters += apply_policy_group_permissions(permission_types, policy_class_clause)
-      user_access_filters += apply_policy_user_permissions(permission_types, policy_class_clause)
-      "(has_model_ssim:\"#{policy_class.name}\" AND (#{user_access_filters.join(" OR ")}))"
-    end
-    Rails.logger.debug "get policies query: #{clauses.join(" OR ")}\n\n"
-    result = ActiveFedora::Base.search_with_conditions( clauses.join(" OR "), :fl => "id", :rows => 100_000 )
+    user_access_filters = []
+    # Grant access based on user id & group
+    user_access_filters += apply_policy_group_permissions(permission_types)
+    user_access_filters += apply_policy_user_permissions(permission_types)
+    klasses_fq = policy_classes.collect { |klass| "(has_model_ssim:\"#{klass.name}\" #{policy_class_clause(klass)})" }.join(" OR ")
+    Rails.logger.debug "get policies query: #{user_access_filters.join(" OR ")}, fq: [#{klasses_fq}], fl: 'id', rows: 100_000\n\n"
+    result = ActiveFedora::Base.search_with_conditions( user_access_filters.join(" OR "), fq: [klasses_fq], fl: "id", rows: 100_000 )
     Rails.logger.debug "get policies: #{result}\n\n"
     ids = result.map {|h| h['id']}
     # Find collections governed by units returned in first query along with objects found in first query
-    result = ActiveFedora::Base.search_with_conditions("_query_:\"{!terms f=id}#{ids.join(',')}\" OR _query_:\"{!terms f=isGovernedBy_ssim}#{ids.join(',')}\"", :fl => "id", :rows => 100_000 );
+    expanded_query = "_query_:\"{!terms f=id}#{ids.join(',')}\" OR _query_:\"{!terms f=isGovernedBy_ssim}#{ids.join(',')}\""
+    Rails.logger.debug "get policies query: #{expanded_query}, fq: [#{klasses_fq}], fl: 'id', rows: 100_000\n\n"
+    result = ActiveFedora::Base.search_with_conditions(expanded_query, fq: [klasses_fq], fl: "id", rows: 100_000 );
     Rails.logger.debug "get policies: #{result}\n\n"
     result.map {|h| h['id']}
   end
