@@ -60,6 +60,36 @@ describe Admin::CollectionsController, type: :controller do
           expect(get :poster, params: { id: collection.id }).to render_template('errors/restricted_pid')
         end
       end
+      context "with user with separate administrative access who has special access applied at unit" do
+        let(:user) { FactoryBot.create(:user) }
+        let!(:other_unit) { FactoryBot.create(:unit, unit_admins: [user.user_key]) }
+
+        before do
+          collection.unit.default_read_users += [user.user_key]
+          collection.unit.save
+          login_user user.user_key
+        end
+        # New is isolated here due to issues caused by the controller instance not being regenerated
+        it "should show new collection form" do
+          expect(get :new).to render_template('admin/collections/new')
+        end
+        it "some routes redirect to restricted content page" do
+          expect(get :index).not_to render_template('errors/restricted_pid')
+          expect(get :show, params: { id: collection.id }).to render_template('errors/restricted_pid')
+          expect(get :edit, params: { id: collection.id }).to render_template('errors/restricted_pid')
+          expect(get :remove, params: { id: collection.id }).to render_template('errors/restricted_pid')
+          # Failed create collection will redirect to new form with flash message
+          post :create, params: { admin_collection: { name: "Collection in different unit", unit_id: collection.unit.id }}
+          expect(flash[:error]).to include("You do not have sufficient rights to create a collection in unit")
+          expect(response).to render_template('admin/collections/new')
+          expect(put :update, params: { id: collection.id }).to render_template('errors/restricted_pid')
+          expect(patch :update, params: { id: collection.id }).to render_template('errors/restricted_pid')
+          expect(delete :destroy, params: { id: collection.id }).to render_template('errors/restricted_pid')
+          expect(post :attach_poster, params: { id: collection.id }).to render_template('errors/restricted_pid')
+          expect(delete :remove_poster, params: { id: collection.id }).to render_template('errors/restricted_pid')
+          expect(get :poster, params: { id: collection.id }).to render_template('errors/restricted_pid')
+        end
+      end
     end
   end
 
