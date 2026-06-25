@@ -624,5 +624,46 @@ RSpec.describe PlaylistsController, type: :controller do
         expect(parsed_response["service"]).not_to be_present
       end
     end
+
+    context 'caching' do
+      # iiif_manifest gem randomly generates most ID values. Use an empty playlist to ease testing.
+      let(:playlist) { FactoryBot.create(:playlist, visibility: Playlist::PUBLIC) }
+      let(:memory_store) { ActiveSupport::Cache.lookup_store(:memory_store) }
+      subject { Rails.cache.read("#{playlist.cache_key_with_version}/iiif_playlist_manifest") }
+
+      before do
+        allow(Rails).to receive(:cache).and_return(memory_store)
+        # Range ids are randomly generated. Force the id to a known value so we can equality match.
+        allow_any_instance_of(IIIFManifest::V3::ManifestBuilder::RangeBuilder).to receive(:path).and_return('range')
+      end
+
+      after do
+        Rails.cache.clear
+      end
+
+      it 'should cache the iiif manifest' do
+        presenter = IiifPlaylistManifestPresenter.new(playlist: playlist, items: [])
+        manifest = IIIFManifest::V3::ManifestFactory.new(presenter).to_h
+        manifest["@context"] = manifest["@context"].insert(1, "http://iiif.io/api/auth/2/context.json")
+        get :manifest, format: 'json', params: { id: playlist.id }, session: valid_session
+        expect(subject).to be_a(IIIFManifest::V3::ManifestBuilder::IIIFManifest)
+        expect(subject.to_json).to eq(manifest.to_json)
+      end
+
+      it 'should update the cache when the playlist is updated' do
+        get :manifest, format: 'json', params: { id: playlist.id }, session: valid_session
+        old_manifest = subject.to_json
+        playlist.title = 'Caching Test'
+        playlist.save!
+        new_presenter = IiifPlaylistManifestPresenter.new(playlist: playlist, items: [])
+        new_manifest = IIIFManifest::V3::ManifestFactory.new(new_presenter).to_h
+        new_manifest["@context"] = new_manifest["@context"].insert(1, "http://iiif.io/api/auth/2/context.json")
+        get :manifest, format: 'json', params: { id: playlist.id }, session: valid_session
+        new_cache = Rails.cache.read("#{playlist.cache_key_with_version}/iiif_playlist_manifest")
+        expect(new_cache).to be_a(IIIFManifest::V3::ManifestBuilder::IIIFManifest)
+        expect(new_cache.to_json).to_not eq(old_manifest)
+        expect(new_cache.to_json).to eq(new_manifest.to_json)
+      end
+    end
   end
 end
