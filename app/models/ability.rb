@@ -229,6 +229,10 @@ class Ability
         (not (full_login? || is_api_request?)) || !is_manager_of?(media_object.collection)
       end
 
+      cannot :read, [Admin::Collection, SpeedyAF::Proxy::Admin::Collection] do |collection|
+        !is_member_of?(collection)
+      end
+
       cannot :update, [Admin::Collection, SpeedyAF::Proxy::Admin::Collection] do |collection|
         # Editors and Depositors should not be able to edit collection level information
         (not (full_login? || is_api_request?)) || !is_manager_of?(collection)
