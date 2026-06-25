@@ -214,37 +214,41 @@ class PlaylistsController < ApplicationController
   def manifest
     authorize! :read, @playlist
 
-    # Fetch all master files related to the playlist items in a single SpeedyAF::Base.where
-    master_file_ids = @playlist.clips.collect(&:master_file_id)
-    master_files = []
-    master_files = SpeedyAF::Proxy::MasterFile.where("id:#{master_file_ids.join(' id:')}", load_reflections: true) if master_file_ids.present?
-    media_objects = master_files.collect(&:media_object).uniq(&:id)
+    cached_manifest = Rails.cache.fetch([@playlist.cache_key_with_version, 'iiif_playlist_manifest'], expires_in: 1.week) do
+      # Fetch all master files related to the playlist items in a single SpeedyAF::Base.where
+      master_file_ids = @playlist.clips.collect(&:master_file_id)
+      master_files = []
+      master_files = SpeedyAF::Proxy::MasterFile.where("id:#{master_file_ids.join(' id:')}", load_reflections: true) if master_file_ids.present?
+      media_objects = master_files.collect(&:media_object).uniq(&:id)
 
-    # This small optimization relies on the assumption that can? :read, master_file is the same as can? :read, master_file.media_object
-    # This only optimizes the case where multiple playlist items come from the same media object
-    cannot_read_hash = {}
-    media_objects.each { |mo| cannot_read_hash[mo.id] = cannot?(:read, mo) }
+      # This small optimization relies on the assumption that can? :read, master_file is the same as can? :read, master_file.media_object
+      # This only optimizes the case where multiple playlist items come from the same media object
+      cannot_read_hash = {}
+      media_objects.each { |mo| cannot_read_hash[mo.id] = cannot?(:read, mo) }
 
-    # Condense secure_streams into single call using master_files
-    stream_info_hash = secure_stream_infos(master_files, media_objects)
+      # Condense secure_streams into single call using master_files
+      stream_info_hash = secure_stream_infos(master_files, media_objects)
 
-    canvas_presenters = @playlist.items.collect.with_index do |item, i|
-      master_file = master_files.find { |mf| mf.id == item.clip.master_file_id }
-      cannot_read_item = master_file.nil? || cannot_read_hash[master_file.media_object_id]
-      position = i + 1
-      IiifPlaylistCanvasPresenter.new(playlist_item: item, stream_info: stream_info_hash[master_file&.id], cannot_read_item: cannot_read_item, position: position, master_file: master_file)
+      canvas_presenters = @playlist.items.collect.with_index do |item, i|
+        master_file = master_files.find { |mf| mf.id == item.clip.master_file_id }
+        cannot_read_item = master_file.nil? || cannot_read_hash[master_file.media_object_id]
+        position = i + 1
+        IiifPlaylistCanvasPresenter.new(playlist_item: item, stream_info: stream_info_hash[master_file&.id], cannot_read_item: cannot_read_item, position: position, master_file: master_file)
+      end
+
+      can_edit_playlist = can? :edit, @playlist
+      presenter = IiifPlaylistManifestPresenter.new(playlist: @playlist, items: canvas_presenters, can_edit_playlist: can_edit_playlist)
+      manifest = IIIFManifest::V3::ManifestFactory.new(presenter).to_h
+      # Auth 2.0 requires the auth context to be in the top level manifest context, before the
+      # presentation context
+      manifest["@context"] = manifest["@context"].insert(1, "http://iiif.io/api/auth/2/context.json")
+
+      manifest
     end
 
-    can_edit_playlist = can? :edit, @playlist
-    presenter = IiifPlaylistManifestPresenter.new(playlist: @playlist, items: canvas_presenters, can_edit_playlist: can_edit_playlist)
-    manifest = IIIFManifest::V3::ManifestFactory.new(presenter).to_h
-    # Auth 2.0 requires the auth context to be in the top level manifest context, before the
-    # presentation context
-    manifest["@context"] = manifest["@context"].insert(1, "http://iiif.io/api/auth/2/context.json")
-
     respond_to do |wants|
-      wants.json { render json: manifest.to_json }
-      wants.html { render json: manifest.to_json }
+      wants.json { render json: cached_manifest.to_json }
+      wants.html { render json: cached_manifest.to_json }
     end
   end
 
