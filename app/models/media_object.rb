@@ -27,6 +27,7 @@ class MediaObject < ActiveFedora::Base
   include SupplementalFileReadBehavior
   include SupplementalFileWriteBehavior
   include MediaObjectBehavior
+  include UserNormalization
   require 'avalon/controlled_vocabulary'
 
   include Kaminari::ActiveFedoraModelExtension
@@ -512,10 +513,6 @@ class MediaObject < ActiveFedora::Base
 
     def sections_with_rendering_files?(tags)
       tags.any? { |t| sections_with_files(tag: t).present? }
-    end
-
-    def normalize_read_users
-      self.read_users = read_users.map(&:downcase)
     end
     
     def update_playlists
