@@ -134,7 +134,10 @@ module Admin
 
     def users=(value)
       attribute_will_change!('users') if users != value and !@ignoring_changes
-      @users = value
+      # Group is set up differently from our other models where it isn't a subclass
+      # of ActiveFedora::Base or ActiveModel::Base. So we downcase here instead of
+      # in a callback.
+      @users = value.map(&:downcase)
     end
 
     def users_changed?
