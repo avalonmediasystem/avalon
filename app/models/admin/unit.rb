@@ -21,6 +21,7 @@ class Admin::Unit < ActiveFedora::Base
   include Identifier
   include MigrationTarget
   include AdminUnitBehavior
+  include UserNormalization
 
   has_many :collections, class_name: 'Admin::Collection', predicate: Avalon::RDFVocab::Bibframe.heldBy
 
@@ -62,7 +63,7 @@ class Admin::Unit < ActiveFedora::Base
 
   has_subresource 'poster', class_name: 'IndexedFile'
 
-  before_save :normalize_read_users, if: proc { |u| u.default_read_users_changed? }
+  before_save :normalize_user_values
   around_save :reindex_members, if: proc { |u| u.name_changed? }
 
   def created_at
@@ -243,9 +244,5 @@ class Admin::Unit < ActiveFedora::Base
       addr.to_range.map(&:to_s)
     end
     ips.flatten.compact.uniq || []
-  end
-
-  def normalize_read_users
-    self.default_read_users = default_read_users.map(&:downcase)
   end
 end
