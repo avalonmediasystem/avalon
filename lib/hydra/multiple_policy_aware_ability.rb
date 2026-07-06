@@ -17,29 +17,17 @@ module Hydra::MultiplePolicyAwareAbility
   extend ActiveSupport::Concern
   include Hydra::PolicyAwareAbility
 
-  # Returns the id of policy object (is_governed_by) for the specified object
-  # Assumes that the policy object is associated by an is_governed_by relationship
-  # (which is stored as "is_governed_by_ssim" in object's solr document)
-  # Returns nil if no policy associated with the object
-  def policy_ids_for(object_id)
-    policy_ids = policy_id_cache[object_id]
-    return policy_ids if policy_ids
-    solr_results = ActiveFedora::SolrService.query("id:#{object_id} OR _query_:\"{!join to=id from=isGovernedBy_ssim}id:#{object_id}\"", fl: [governed_by_solr_field], rows: 1000)
-    return unless solr_results.any?(&:present?)
-    policy_id_cache[object_id] = policy_ids = solr_results.collect {|solr_result| solr_result[governed_by_solr_field] }.flatten.compact
-  end
-
+  # Returns the ids of policy objects (is_governed_by) for the specified object
+  # Assumes that the policy objects are associated by an is_governed_by relationship
+  # (which is stored as "is_governed_by_ssim" in object's solr document) or one level
+  # removed through an is_governed_by relationship.
+  # Returns nil if no policies are associated with the object
   def active_policy_ids_for(object_id)
-    policy_ids = policy_ids_for(object_id)
-    return nil if policy_ids.nil?
-
-    ids = policy_classes.collect do |policy_class|
-      id_clause = "(#{policy_ids.collect {|id| escape_filter("id", id)}.join(" OR ")})"
-      policy_class_clause = policy_class_clause(policy_class)
-      active_policy_ids = policy_class.search_with_conditions(id_clause + policy_class_clause, fl: "id", rows: policy_class.count )
-      active_policy_ids.collect {|h| h.values }.flatten
-    end
-    ids.flatten
+    id_clause = "_query_:\"{!join to=id from=isGovernedBy_ssim}id:#{object_id}\" OR _query_:\"{!join to=id from=isGovernedBy_ssim}{!join to=id from=isGovernedBy_ssim}id:#{object_id}\""
+    klasses_fq = policy_classes.collect { |klass| "(has_model_ssim:\"#{klass.name}\" #{policy_class_clause(klass)})" }.join(" OR ")
+    result = ActiveFedora::Base.search_with_conditions(id_clause, fq: [klasses_fq], fl: [:id], rows: 100_000 )
+    ids = result.collect {|h| h.values }.flatten
+    ids.blank? ? nil : ids
   end
 
   # Tests whether the object's governing policy object grants edit access for the current user
@@ -112,5 +100,4 @@ module Hydra::MultiplePolicyAwareAbility
   def escape_filter(key, value)
     [key, value.gsub(/[ :\/]/, ' ' => '\ ', '/' => '\/', ':' => '\:')].join(':')
   end
-
 end
