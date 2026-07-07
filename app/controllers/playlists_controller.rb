@@ -214,12 +214,11 @@ class PlaylistsController < ApplicationController
   def manifest
     authorize! :read, @playlist
 
+    @playlist.touch if @playlist.parent_updated?
+
     cached_manifest = Rails.cache.fetch([@playlist.cache_key_with_version, 'iiif_playlist_manifest'], expires_in: 1.week) do
-      # Fetch all master files related to the playlist items in a single SpeedyAF::Base.where
-      master_file_ids = @playlist.clips.collect(&:master_file_id)
-      master_files = []
-      master_files = SpeedyAF::Proxy::MasterFile.where("id:#{master_file_ids.join(' id:')}", load_reflections: true) if master_file_ids.present?
-      media_objects = master_files.collect(&:media_object).uniq(&:id)
+      master_files = @playlist.master_files
+      media_objects = @playlist.media_objects
 
       # This small optimization relies on the assumption that can? :read, master_file is the same as can? :read, master_file.media_object
       # This only optimizes the case where multiple playlist items come from the same media object
