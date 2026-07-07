@@ -1275,7 +1275,7 @@ describe MediaObjectsController, type: :controller do
 
           context "from collection" do
             let(:inherited_group_member) { FactoryBot.create(:user) }
-            let(:inherited_group) { FactoryBot.create(:group, users: [inherited_group_member]) }
+            let(:inherited_group) { FactoryBot.create(:group, users: [inherited_group_member.username]) }
             let(:media_object) { FactoryBot.create(:published_media_object, visibility: 'private', collection: collection) }
             let(:collection) { FactoryBot.create(:collection, default_read_groups: [inherited_group.name]) }
 
@@ -1332,7 +1332,7 @@ describe MediaObjectsController, type: :controller do
 
           context "from unit" do
             let(:inherited_group_member) { FactoryBot.create(:user) }
-            let(:inherited_group) { FactoryBot.create(:group, users: [inherited_group_member]) }
+            let(:inherited_group) { FactoryBot.create(:group, users: [inherited_group_member.username]) }
             let(:media_object) { FactoryBot.create(:published_media_object, visibility: 'private', collection: collection) }
             let(:collection) { FactoryBot.create(:collection, unit: unit) }
             let(:unit) { FactoryBot.create(:unit, default_read_groups: [inherited_group.name]) }
