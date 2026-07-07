@@ -16,9 +16,7 @@ module UserNormalization
   # Method to normalize just read user fields.
   def normalize_read_users
     field = self.class == MediaObject ? :read_users : :default_read_users
-    user_array = send(field)
-    setter = "#{field}=".to_sym
-    send(setter, user_array.map(&:downcase))
+    set_user_values(field)
   end
 
   # Method to normalize all fields containing usernames/emails
@@ -27,13 +25,19 @@ module UserNormalization
     user_methods = methods.grep(/users$/).reject { |m| m.to_s.include?('set') }
     user_methods += [:unit_administrators, :collection_managers]
     user_methods.each do |field|
-      user_array = send(field)
-      setter = "#{field}=".to_sym
-      send(setter, user_array.map(&:downcase))
+      set_user_values(field)
     rescue
       # Skip any methods that do not exist in the including class e.g. :unit_administrators
       # when loaded into Admin::Collections
       next
     end
+  end
+
+  private
+
+  def set_user_values(field)
+    user_array = send(field)
+    setter = "#{field}=".to_sym
+    send(setter, user_array.map(&:downcase))
   end
 end
