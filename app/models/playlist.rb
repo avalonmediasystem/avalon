@@ -107,6 +107,21 @@ class Playlist < ActiveRecord::Base
     cached_clips
   end
 
+  def parent_updated?
+    media_objects.any? { |mo| mo.timestamp.to_time > self.updated_at.to_time } ||
+      master_files.any? { |mf| mf.timestamp.to_time > self.updated_at.to_time }
+  end
+
+  def master_files
+    # Fetch all master files related to the playlist items in a single SpeedyAF::Base.where
+    master_file_ids = clips.collect(&:master_file_id)
+    @master_files ||= master_file_ids.present? ? SpeedyAF::Proxy::MasterFile.where("id:#{master_file_ids.join(' id:')}", load_reflections: true) : []
+  end
+
+  def media_objects
+    @media_objects ||= master_files.collect(&:media_object).uniq(&:id)
+  end
+
   class << self
     # Find the i18n default playlist name
     def default_folder_name
