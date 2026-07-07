@@ -266,4 +266,28 @@ RSpec.describe Playlist, type: :model do
       expect(playlist.valid_token?('bad-token')).to be false
     end
   end
+
+  describe "#parent_updated?" do
+    let!(:playlist) { FactoryBot.create(:playlist, items: [playlist_item]) }
+    let(:playlist_item) { FactoryBot.create(:playlist_item, clip: clip) }
+    let(:clip) { FactoryBot.create(:avalon_clip, master_file: master_file) }
+    let(:master_file) { FactoryBot.create(:master_file, media_object: media_object) }
+    let(:media_object) { FactoryBot.create(:published_media_object, visibility: 'public') }
+
+    it 'returns false by default' do
+      expect(playlist.parent_updated?).to be_falsey
+    end
+
+    it 'returns true when media object is updated' do
+      media_object.title = "Update"
+      media_object.save!
+      expect(playlist.parent_updated?).to be_truthy
+    end
+
+    it 'returns true when master file is updated' do
+      master_file.title = "Update"
+      master_file.save!
+      expect(playlist.parent_updated?).to be_truthy
+    end
+  end
 end
