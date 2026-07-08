@@ -22,12 +22,7 @@ class FileUploadStep < BasicStep
     super
   end
 
-  # For file uploads the process of setting the context is easy. We
-  # just need to ask the dropbox if there are any files. If so load
-  # them into a variable that can be referred to later
   def before_step context
-    dropbox_files = context[:media_object].collection.dropbox.all
-    context[:dropbox_files] = dropbox_files
     context
   end
 
