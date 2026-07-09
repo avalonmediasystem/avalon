@@ -677,13 +677,12 @@ RSpec.describe PlaylistsController, type: :controller do
         manifest = IIIFManifest::V3::ManifestFactory.new(presenter).to_h
         manifest["@context"] = manifest["@context"].insert(1, "http://iiif.io/api/auth/2/context.json")
         get :manifest, format: 'json', params: { id: playlist.id }, session: valid_session
-        expect(subject).to be_a(IIIFManifest::V3::ManifestBuilder::IIIFManifest)
-        expect(subject.to_json).to eq(manifest.to_json)
+        expect(subject).to eq(manifest.to_json)
       end
 
       it 'should update the cache when the playlist is updated' do
         get :manifest, format: 'json', params: { id: playlist.id }, session: valid_session
-        old_manifest = subject.to_json
+        old_manifest = subject
         playlist.title = 'Caching Test'
         playlist.save!
         stream_info = controller.secure_stream_infos([master_file], [media_object])
@@ -693,15 +692,14 @@ RSpec.describe PlaylistsController, type: :controller do
         new_manifest["@context"] = new_manifest["@context"].insert(1, "http://iiif.io/api/auth/2/context.json")
         get :manifest, format: 'json', params: { id: playlist.id }, session: valid_session
         new_cache = Rails.cache.read("#{playlist.cache_key_with_version}/iiif_playlist_manifest")
-        expect(new_cache).to be_a(IIIFManifest::V3::ManifestBuilder::IIIFManifest)
-        expect(new_cache.to_json).to_not eq(old_manifest)
-        expect(new_cache.to_json).to eq(new_manifest.to_json)
-        expect(new_cache.to_json).to include('Caching Test')
+        expect(new_cache).to_not eq(old_manifest)
+        expect(new_cache).to eq(new_manifest.to_json)
+        expect(new_cache).to include('Caching Test')
       end
 
       it 'should update the cache when the media object is updated' do
         get :manifest, format: 'json', params: { id: playlist.id }, session: valid_session
-        old_manifest = subject.to_json
+        old_manifest = subject
         media_object.title = 'Caching Test'
         media_object.save!
         stream_info = controller.secure_stream_infos([master_file], [media_object])
@@ -712,10 +710,9 @@ RSpec.describe PlaylistsController, type: :controller do
         get :manifest, format: 'json', params: { id: playlist.id }, session: valid_session
         playlist.reload
         new_cache = Rails.cache.read("#{playlist.cache_key_with_version}/iiif_playlist_manifest")
-        expect(new_cache).to be_a(IIIFManifest::V3::ManifestBuilder::IIIFManifest)
-        expect(new_cache.to_json).to_not eq(old_manifest)
-        expect(new_cache.to_json).to eq(new_manifest.to_json)
-        expect(new_cache.to_json).to include('Caching Test')
+        expect(new_cache).to_not eq(old_manifest)
+        expect(new_cache).to eq(new_manifest.to_json)
+        expect(new_cache).to include('Caching Test')
       end
     end
   end
