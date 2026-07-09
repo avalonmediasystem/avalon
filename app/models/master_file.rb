@@ -167,6 +167,7 @@ class MasterFile < ActiveFedora::Base
   # validates :file_format, presence: true, exclusion: { in: ['Unknown'], message: "The file was not recognized as audio or video." }
 
   after_save :update_stills_from_offset!, if: Proc.new { |mf| mf.previous_changes.include?("poster_offset") || mf.previous_changes.include?("thumbnail_offset") }
+  after_save :update_playlists
   before_destroy :stop_processing!
   before_destroy :update_parent!
   define_hooks :after_transcoding, :after_processing
@@ -836,5 +837,9 @@ class MasterFile < ActiveFedora::Base
     else
       # Do nothing
     end
+  end
+
+  def update_playlists
+    Playlist.contains_master_file(id).each(&:touch)
   end
 end

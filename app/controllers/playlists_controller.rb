@@ -214,8 +214,6 @@ class PlaylistsController < ApplicationController
   def manifest
     authorize! :read, @playlist
 
-    @playlist.touch if @playlist.parent_updated?
-
     cached_manifest = Rails.cache.fetch([@playlist.cache_key_with_version, 'iiif_playlist_manifest'], expires_in: 1.week) do
       master_files = @playlist.master_files
       media_objects = @playlist.media_objects
@@ -242,12 +240,12 @@ class PlaylistsController < ApplicationController
       # presentation context
       manifest["@context"] = manifest["@context"].insert(1, "http://iiif.io/api/auth/2/context.json")
 
-      manifest
+      manifest.to_json
     end
 
     respond_to do |wants|
-      wants.json { render json: cached_manifest.to_json }
-      wants.html { render json: cached_manifest.to_json }
+      wants.json { render json: cached_manifest }
+      wants.html { render json: cached_manifest }
     end
   end
 
