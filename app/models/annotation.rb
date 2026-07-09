@@ -1,4 +1,6 @@
 class Annotation < ActiveRecord::Base
+  scope :from_master_file, ->(master_file_id) { where("source_uri LIKE ?", "%#{master_file_id}%") }
+
   delegate :start_time, :end_time,
            :content, :annotated_by,
            :annotated_at, :source, :label,
