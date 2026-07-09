@@ -190,6 +190,36 @@ RSpec.describe Playlist, type: :model do
         expect(Playlist.with_tag(tag_filter)).not_to include(playlist4)
       end
     end
+
+    describe 'contains_master_file' do
+      let!(:playlist) { FactoryBot.create(:playlist, items: [playlist_item]) }
+      let!(:playlist2) { FactoryBot.create(:playlist) }
+      let!(:playlist3) { FactoryBot.create(:playlist, items: [playlist_item2]) }
+      let(:playlist_item) { FactoryBot.create(:playlist_item, clip: clip) }
+      let(:playlist_item2) { FactoryBot.create(:playlist_item, clip: clip) }
+      let(:clip) { FactoryBot.create(:avalon_clip, master_file: master_file) }
+      let(:master_file) { FactoryBot.create(:master_file, media_object: media_object) }
+      let(:media_object) { FactoryBot.create(:published_media_object, visibility: 'public') }
+
+      it 'returns all playlists containing specified master file' do
+        expect(Playlist.contains_master_file(master_file.id)).to eq [playlist, playlist3]
+      end
+    end
+
+    describe '.contains_media_object' do
+      let!(:playlist) { FactoryBot.create(:playlist, items: [playlist_item]) }
+      let!(:playlist2) { FactoryBot.create(:playlist) }
+      let!(:playlist3) { FactoryBot.create(:playlist, items: [playlist_item2]) }
+      let(:playlist_item) { FactoryBot.create(:playlist_item, clip: clip) }
+      let(:playlist_item2) { FactoryBot.create(:playlist_item, clip: clip) }
+      let(:clip) { FactoryBot.create(:avalon_clip, master_file: master_file) }
+      let(:master_file) { FactoryBot.create(:master_file, media_object: media_object) }
+      let(:media_object) { FactoryBot.create(:published_media_object, visibility: 'public') }
+
+      it 'returns all playlists containing specified media object' do
+        expect(Playlist.contains_media_object(media_object.id)).to eq [playlist, playlist3]
+      end
+    end
   end
 
   describe 'related items' do
@@ -264,30 +294,6 @@ RSpec.describe Playlist, type: :model do
     it 'returns false for a playlist that is not private with token' do
       playlist.visibility = Playlist::PRIVATE
       expect(playlist.valid_token?('bad-token')).to be false
-    end
-  end
-
-  describe "#parent_updated?" do
-    let!(:playlist) { FactoryBot.create(:playlist, items: [playlist_item]) }
-    let(:playlist_item) { FactoryBot.create(:playlist_item, clip: clip) }
-    let(:clip) { FactoryBot.create(:avalon_clip, master_file: master_file) }
-    let(:master_file) { FactoryBot.create(:master_file, media_object: media_object) }
-    let(:media_object) { FactoryBot.create(:published_media_object, visibility: 'public') }
-
-    it 'returns false by default' do
-      expect(playlist.parent_updated?).to be_falsey
-    end
-
-    it 'returns true when media object is updated' do
-      media_object.title = "Update"
-      media_object.save!
-      expect(playlist.parent_updated?).to be_truthy
-    end
-
-    it 'returns true when master file is updated' do
-      master_file.title = "Update"
-      master_file.save!
-      expect(playlist.parent_updated?).to be_truthy
     end
   end
 end
