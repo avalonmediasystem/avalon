@@ -117,7 +117,7 @@ class Playlist < ActiveRecord::Base
   end
 
   def media_objects
-    @media_objects ||= master_files.collect(&:media_object).uniq(&:id)
+    @media_objects ||= master_files.collect(&:media_object).uniq(&:id).compact
   end
 
   class << self
