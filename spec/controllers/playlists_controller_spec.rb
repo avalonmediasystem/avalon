@@ -624,5 +624,96 @@ RSpec.describe PlaylistsController, type: :controller do
         expect(parsed_response["service"]).not_to be_present
       end
     end
+
+    context 'caching' do
+      let(:playlist) { FactoryBot.create(:playlist, items: [playlist_item], visibility: Playlist::PUBLIC) }
+      let(:memory_store) { ActiveSupport::Cache.lookup_store(:memory_store) }
+
+      before do
+        # IIIF Manifest IDs are randomly generated. Force ids to a known value so we can equality match.
+        allow_any_instance_of(IIIFManifest::V3::ManifestBuilder::RangeBuilder).to receive(:path).and_return('range')
+        allow_any_instance_of(IIIFManifest::V3::ManifestBuilder::CanvasBuilder).to receive(:path).and_return('canvas')
+        # Doubles and Mocks of AnnotationPage causes issues because RSpec doubles use Singleton 
+        # class, which cannot be cached because Ruby's cache method does not serialize Singletons.
+        # Directly override the methods to get around this.
+        IIIFManifest::V3::ManifestBuilder::IIIFManifest::AnnotationPage.class_eval do
+          def index
+            @index ||= 'page'
+          end
+        end
+
+        IIIFManifest::V3::ManifestBuilder::IIIFManifest::Annotation.class_eval do
+          def index
+            @index ||= 'body'
+          end
+        end
+
+        allow(Rails).to receive(:cache).and_return(memory_store)
+      end
+
+      after do
+        Rails.cache.clear
+
+        # Explicitly reset index methods to original behavior, just in case.
+        IIIFManifest::V3::ManifestBuilder::IIIFManifest::AnnotationPage.class_eval do
+          def index
+            @index ||= SecureRandom.uuid
+          end
+        end
+
+        IIIFManifest::V3::ManifestBuilder::IIIFManifest::Annotation.class_eval do
+          def index
+            @index ||= SecureRandom.uuid
+          end
+        end
+      end
+
+      subject { Rails.cache.read("#{playlist.cache_key_with_version}/iiif_playlist_manifest") }
+
+      it 'should cache the iiif manifest' do
+        stream_info = controller.secure_stream_infos([master_file], [media_object])
+        @test_item = IiifPlaylistCanvasPresenter.new(playlist_item: playlist.items.first, stream_info: stream_info[master_file.id], position: 1, master_file: master_file)
+        presenter = IiifPlaylistManifestPresenter.new(playlist: playlist, items: [@test_item])
+        manifest = IIIFManifest::V3::ManifestFactory.new(presenter).to_h
+        manifest["@context"] = manifest["@context"].insert(1, "http://iiif.io/api/auth/2/context.json")
+        get :manifest, format: 'json', params: { id: playlist.id }, session: valid_session
+        expect(subject).to eq(manifest.to_json)
+      end
+
+      it 'should update the cache when the playlist is updated' do
+        get :manifest, format: 'json', params: { id: playlist.id }, session: valid_session
+        old_manifest = subject
+        playlist.title = 'Caching Test'
+        playlist.save!
+        stream_info = controller.secure_stream_infos([master_file], [media_object])
+        @test_item = IiifPlaylistCanvasPresenter.new(playlist_item: playlist.items.first, stream_info: stream_info[master_file.id], position: 1, master_file: master_file)
+        new_presenter = IiifPlaylistManifestPresenter.new(playlist: playlist, items: [@test_item])
+        new_manifest = IIIFManifest::V3::ManifestFactory.new(new_presenter).to_h
+        new_manifest["@context"] = new_manifest["@context"].insert(1, "http://iiif.io/api/auth/2/context.json")
+        get :manifest, format: 'json', params: { id: playlist.id }, session: valid_session
+        new_cache = Rails.cache.read("#{playlist.cache_key_with_version}/iiif_playlist_manifest")
+        expect(new_cache).to_not eq(old_manifest)
+        expect(new_cache).to eq(new_manifest.to_json)
+        expect(new_cache).to include('Caching Test')
+      end
+
+      it 'should update the cache when the media object is updated' do
+        get :manifest, format: 'json', params: { id: playlist.id }, session: valid_session
+        old_manifest = subject
+        media_object.title = 'Caching Test'
+        media_object.save!
+        stream_info = controller.secure_stream_infos([master_file], [media_object])
+        @test_item = IiifPlaylistCanvasPresenter.new(playlist_item: playlist.items.first, stream_info: stream_info[master_file.id], position: 1, master_file: master_file)
+        new_presenter = IiifPlaylistManifestPresenter.new(playlist: playlist, items: [@test_item])
+        new_manifest = IIIFManifest::V3::ManifestFactory.new(new_presenter).to_h
+        new_manifest["@context"] = new_manifest["@context"].insert(1, "http://iiif.io/api/auth/2/context.json")
+        get :manifest, format: 'json', params: { id: playlist.id }, session: valid_session
+        playlist.reload
+        new_cache = Rails.cache.read("#{playlist.cache_key_with_version}/iiif_playlist_manifest")
+        expect(new_cache).to_not eq(old_manifest)
+        expect(new_cache).to eq(new_manifest.to_json)
+        expect(new_cache).to include('Caching Test')
+      end
+    end
   end
 end

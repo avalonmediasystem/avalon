@@ -2543,13 +2543,12 @@ describe MediaObjectsController, type: :controller do
 
       it 'should cache the iiif manifest' do
         get 'manifest', params: { id: media_object.id, format: 'json' }
-        expect(subject).to be_a(IIIFManifest::V3::ManifestBuilder::IIIFManifest)
-        expect(subject.to_json).to eq(@manifest.to_json)
+        expect(subject).to eq(@manifest.to_json)
       end
 
       it 'should update the cache when the media object is updated' do
         get 'manifest', params: { id: media_object.id, format: 'json' }
-        old_manifest = subject.to_json
+        old_manifest = subject
         media_object.title = 'Test'
         media_object.save!
         new_presenter = IiifManifestPresenter.new(media_object: media_object, master_files: [])
@@ -2557,9 +2556,8 @@ describe MediaObjectsController, type: :controller do
         new_manifest["@context"] = new_manifest["@context"].insert(1, "http://iiif.io/api/auth/2/context.json")
         get 'manifest', params: { id: media_object.id, format: 'json' }
         new_cache = Rails.cache.read("#{SpeedyAF::Proxy::MediaObject.find(media_object.id).cache_key_with_version}/iiif_manifest")
-        expect(new_cache).to be_a(IIIFManifest::V3::ManifestBuilder::IIIFManifest)
-        expect(new_cache.to_json).to_not eq(old_manifest)
-        expect(new_cache.to_json).to eq(new_manifest.to_json)
+        expect(new_cache).to_not eq(old_manifest)
+        expect(new_cache).to eq(new_manifest.to_json)
       end
     end
   end
