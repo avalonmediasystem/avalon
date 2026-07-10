@@ -17,6 +17,7 @@ require 'avalon/transcript_parser'
 class SupplementalFile < ApplicationRecord
   has_one_attached :file
 
+  scope :from_object, ->(id) { where(parent_id: id) }
   scope :with_tag, ->(tag_filter) { where("tags LIKE ?", "%\n- #{tag_filter}\n%") }
 
   # TODO: the empty tag should represent a generic supplemental file
@@ -33,6 +34,7 @@ class SupplementalFile < ApplicationRecord
   after_update_commit :update_index, prepend: true
   after_destroy_commit :remove_from_index
   before_save :default_label
+  before_save :validate_forced, if: -> { tags.include?('forced') }
 
   # If using io: true, new_file MUST be a FileLocator instance initialized with the filename opt
   def attach_file(new_file, io: false)
@@ -181,5 +183,11 @@ class SupplementalFile < ApplicationRecord
 
   def default_label
     self.label = file.filename.to_s if self.label.blank?
+  end
+
+  def validate_forced
+    related_files = SupplementalFile.from_object(self.parent_id).with_tag('forced').reject { |sf| self.id == sf.id }
+    return if related_files.empty?
+    raise Avalon::BadRequest, "Forced attribute is already assigned to another caption. Ensure no other captions are forced before setting attribute."
   end
 end
