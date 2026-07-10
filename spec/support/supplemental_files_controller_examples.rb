@@ -507,7 +507,9 @@ RSpec.shared_examples 'a nested controller for' do |object_class|
             let(:media_object) { FactoryBot.create(:media_object, supplemental_files: [supplemental_file, forced_caption]) }
 
             it 'error message to display' do
-              put :update, params: { class_id => object.id, id: supplemental_file.id, forced_param => 1, supplemental_file: valid_update_attributes, format: :html }, session: valid_session
+              expect {
+                put :update, params: { class_id => object.id, id: supplemental_file.id, forced_param => 1, supplemental_file: valid_update_attributes, format: :html }, session: valid_session
+              }.to_not change { supplemental_file.tags }
               expect(flash[:error]).not_to be_empty
               expect(flash[:error]).to include 'Forced attribute is already assigned to another caption. Ensure no other captions are forced before setting attribute.'
             end
@@ -519,6 +521,13 @@ RSpec.shared_examples 'a nested controller for' do |object_class|
             expect {
               put :update, params: { class_id => object.id, id: supplemental_file.id, forced_param => 1, supplemental_file: valid_update_attributes, format: :html }, session: valid_session
             }.to not_change { master_file.reload.supplemental_files.first.tags }.from(['caption', 'forced'])
+          end
+
+          it "does not trigger error from forced validation" do
+            expect {
+              put :update, params: { class_id => object.id, id: supplemental_file.id, forced_param => 1, supplemental_file: valid_update_attributes, format: :html }, session: valid_session
+            }.to change { master_file.reload.supplemental_files.first.label }.from(supplemental_file.label).to('new label')
+            expect(flash[:error]).to be_nil
           end
         end
         context "removing forced designation" do
