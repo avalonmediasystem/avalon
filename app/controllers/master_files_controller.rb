@@ -250,7 +250,15 @@ class MasterFilesController < ApplicationController
       end
     elsif auth_token.present?
       return render json: iiif_auth_probe_resp(success: false), status: :unauthorized unless StreamToken.valid_token?(auth_token, @master_file.id) || can?(:read, @master_file)
-      render json: iiif_auth_probe_resp(success: true), status: :ok
+      if request.headers['Accept']&.include?('application/json')
+        render json: iiif_auth_probe_resp(success: true), status: :ok
+      else
+        @hls_streams = if quality == "auto"
+                       gather_hls_streams(@master_file)
+                     else
+                       hls_stream(@master_file, quality)
+                     end
+      end
     else
       return head :unauthorized if cannot?(:read, @master_file)
       @hls_streams = if quality == "auto"
