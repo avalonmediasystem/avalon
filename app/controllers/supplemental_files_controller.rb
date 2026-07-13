@@ -209,12 +209,10 @@ class SupplementalFilesController < ApplicationController
 
 
     def handle_error(message:, status:)
-      if request.format == :html
-        flash[:error] = message
-        redirect_to edit_structure_path
-      else
-        render json: { errors: message}, status: status
-      end
+      return render json: { errors: message}, status: status unless request.format == :html && request.headers['Avalon-Api-Key'].blank?
+      
+      flash[:error] = message
+      redirect_to edit_structure_path
     end
 
     def edit_structure_path
