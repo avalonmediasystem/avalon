@@ -840,6 +840,6 @@ class MasterFile < ActiveFedora::Base
   end
 
   def update_playlists
-    Playlist.contains_master_file(id).each(&:touch)
+    Playlist.contains_master_file(id).touch_all
   end
 end
