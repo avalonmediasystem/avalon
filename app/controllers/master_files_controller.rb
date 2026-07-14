@@ -220,12 +220,16 @@ class MasterFilesController < ApplicationController
     content = if params[:offset]
                 authorize! :edit, @master_file, message: "You do not have sufficient privileges to edit this file"
                 opts = { type: params[:type], size: params[:size], offset: params[:offset].to_f * 1000, preview: true }
-                @master_file.extract_still(opts)
+                Rails.cache_key_with_version([@master_file.cache_key_with_version, params[:type], params[:offset]]) do
+                  @master_file.extract_still(opts)
+                end
               else
                 authorize! :read, @master_file, message: "You do not have sufficient privileges to view this file"
                 whitelist = ["thumbnail", "poster"]
                 if whitelist.include? params[:type]
-                  ds = @master_file.send(params[:type].to_sym)
+                  ds = Rails.cache.fetch([@master_file.cache_key_with_version, params[:type]]) do
+                    @master_file.send(params[:type].to_sym)
+                  end
                   mimeType = ds.mime_type
                   ds.content
                 end
