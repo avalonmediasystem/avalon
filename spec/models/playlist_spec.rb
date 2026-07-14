@@ -217,7 +217,7 @@ RSpec.describe Playlist, type: :model do
       let(:media_object) { FactoryBot.create(:published_media_object, visibility: 'public') }
 
       it 'returns all playlists containing specified media object' do
-        expect(Playlist.contains_media_object(media_object.id)).to eq [playlist, playlist3]
+        expect(Playlist.contains_media_object(media_object)).to eq [playlist, playlist3]
       end
     end
   end
