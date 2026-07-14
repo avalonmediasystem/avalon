@@ -66,7 +66,7 @@ class MediaObject < ActiveFedora::Base
 
   after_save :update_dependent_permalinks_job, if: Proc.new { |mo| mo.persisted? && mo.published? }
   after_save :remove_bookmarks
-  after_save :update_playlists
+  after_update :update_playlists
   after_update_index :enqueue_long_indexing
 
   # Call custom validation methods to ensure that required fields are present and
@@ -514,6 +514,6 @@ class MediaObject < ActiveFedora::Base
     end
 
     def update_playlists
-      Playlist.contains_media_object(id).each(&:touch)
+      Playlist.contains_media_object(self).touch_all
     end
 end
