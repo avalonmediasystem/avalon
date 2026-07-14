@@ -22,6 +22,11 @@ class Playlist < ActiveRecord::Base
   end
   scope :with_tag, ->(tag_filter) { where("tags LIKE ?", "%\n- #{tag_filter}\n%") }
   scope :contains_master_file, ->(master_file_id) { joins(:clips).merge(AvalonClip.from_master_file(master_file_id)).distinct }
+  scope :contains_media_object, lambda { |media_object|
+    sections = media_object.section_ids || []
+    # Initialize from blank ActiveRecord relation to avoid unnecessary loading into memory
+    sections.reduce(Playlist.none) { |r, s| r.or(Playlist.contains_master_file(s)) }
+  }
 
   validates :user, presence: true
   validates :title, presence: true
@@ -124,12 +129,6 @@ class Playlist < ActiveRecord::Base
     # Find the i18n default playlist name
     def default_folder_name
       I18n.translate(:'playlists.default_playlist_name')
-    end
-
-    # MediaObject is not directly associated with playlist/clips.
-    # Use class method for scoping instead of ActiveRecord scope.
-    def contains_media_object(id)
-      all.select { |playlist| playlist.media_objects.map(&:id).include?(id) }
     end
   end # class << self
 end
