@@ -155,10 +155,6 @@ class SpeedyAF::Proxy::MediaObject < SpeedyAF::Base
     WorkflowDatastream.find("#{id}/workflow")
   end
 
-  def cache_key_with_version
-    "media_object/#{id}-#{@attrs[:_version_]}"
-  end
-
   protected
 
   # Overrides from SpeedyAF::Base
