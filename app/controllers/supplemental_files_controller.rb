@@ -43,7 +43,6 @@ class SupplementalFilesController < ApplicationController
       raise Avalon::BadRequest, "Missing required Content-type headers" unless request.headers["Content-Type"] == 'application/json'
     end
     raise Avalon::BadRequest, "Missing required parameters" unless validate_params
-    raise Avalon::BadRequest, "Forced attribute is already assigned to another caption. Ensure no other captions are forced before setting attribute." unless validate_forced
 
     @supplemental_file = SupplementalFile.new(**metadata_from_params)
 
@@ -107,7 +106,6 @@ class SupplementalFilesController < ApplicationController
       raise Avalon::BadRequest, "Missing required Accept headers" unless request.headers["Accept"] == 'application/json'
     end
     raise Avalon::BadRequest, "Missing required parameters" unless validate_params
-    raise Avalon::BadRequest, "Forced attribute is already assigned to another caption. Ensure no other captions are forced before setting attribute." unless validate_forced
 
     find_supplemental_file
 
@@ -211,12 +209,10 @@ class SupplementalFilesController < ApplicationController
 
 
     def handle_error(message:, status:)
-      if request.format == :json || request.headers['Avalon-Api-Key'].present?
-        render json: { errors: message }, status: status
-      else
-        flash[:error] = message
-        redirect_to edit_structure_path
-      end
+      return render json: { errors: message}, status: status unless request.format == :html && request.headers['Avalon-Api-Key'].blank?
+      
+      flash[:error] = message
+      redirect_to edit_structure_path
     end
 
     def edit_structure_path
@@ -262,14 +258,6 @@ class SupplementalFilesController < ApplicationController
           @supplemental_file.tags -= [tag]
         end
       end
-    end
-
-    def validate_forced
-      return true unless params["forced_#{params[:id]}".to_sym]
-      forced_files = @object.supplemental_files(tag: 'forced')
-      return false if forced_files.length.positive?
-
-      true
     end
 
     def metadata_from_params
