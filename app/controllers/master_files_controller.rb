@@ -217,25 +217,24 @@ class MasterFilesController < ApplicationController
 
   def get_frame
     mimeType = "image/jpeg"
-    content = if params[:offset]
-                authorize! :edit, @master_file, message: "You do not have sufficient privileges to edit this file"
-                opts = { type: params[:type], size: params[:size], offset: params[:offset].to_f * 1000, preview: true }
-                Rails.cache_key_with_version([@master_file.cache_key_with_version, params[:type], params[:offset]]) do
-                  @master_file.extract_still(opts)
-                end
-              else
-                authorize! :read, @master_file, message: "You do not have sufficient privileges to view this file"
-                whitelist = ["thumbnail", "poster"]
-                if whitelist.include? params[:type]
-                  ds = Rails.cache.fetch([@master_file.cache_key_with_version, params[:type]]) do
-                    @master_file.send(params[:type].to_sym)
-                  end
-                  mimeType = ds.mime_type
-                  ds.content
-                end
-              end
-    if content
-      send_data content, filename: "#{params[:type]}-#{@master_file.id.split(':')[1]}", disposition: :inline, type: mimeType
+    file = if params[:offset]
+             authorize! :edit, @master_file, message: "You do not have sufficient privileges to edit this file"
+             opts = { type: params[:type], size: params[:size], offset: params[:offset].to_f * 1000, preview: true }
+             Rails.cache.fetch([@master_file.cache_key_with_version, params[:type], params[:offset]]) do
+               { content: @master_file.extract_still(opts), mimetype: mimeType }
+             end
+           else
+             authorize! :read, @master_file, message: "You do not have sufficient privileges to view this file"
+             whitelist = ["thumbnail", "poster"]
+             if whitelist.include? params[:type]
+               Rails.cache.fetch([@master_file.cache_key_with_version, params[:type]]) do
+                 image = @master_file.send(params[:type].to_sym)
+                 { content: image.content, mimetype: image.mime_type || mimeType }
+               end
+             end
+           end
+    if file[:content]
+      send_data file[:content], filename: "#{params[:type]}-#{@master_file.id.split(':')[1]}", disposition: :inline, type: file[:mimetype]
     elsif @master_file.is_video?
       redirect_to ActionController::Base.helpers.asset_path('video_icon.png')
     else
