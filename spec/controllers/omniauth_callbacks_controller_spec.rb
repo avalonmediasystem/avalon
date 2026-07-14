@@ -98,7 +98,7 @@ describe Users::OmniauthCallbacksController, type: :controller do
           expect(response).to redirect_to(objects_path(target_id, additional_params))
         end
 
-        context 'including non-whitelisted params' do
+        context 'including non-allowlisted params' do
           let(:unknown_param) {{ unknown_params: 'SCARY' }}
           let(:params) { { target_id: target_id }.merge(additional_params).merge(unknown_param) }
 

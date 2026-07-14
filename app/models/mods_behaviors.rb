@@ -53,7 +53,7 @@ module ModsBehaviors
     solr_doc['usage_ssim'] = gather_terms(self.find_by_terms(:usage))
 #    solr_doc['collection_sim'] = gather_terms(self.find_by_terms(:archival_collection))
     solr_doc['series_ssim'] = gather_terms(self.find_by_terms(:series))
-    #filter formats based upon whitelist
+    #filter formats based upon allowlist
     solr_doc['resource_type_ssim'] = (gather_terms(self.find_by_terms(:resource_type)) & ['moving image', 'sound recording' ])
     # solr_doc['location_ssim'] = gather_terms(self.find_by_terms(:geographic_subject))
 

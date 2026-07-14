@@ -1935,7 +1935,7 @@ describe MediaObjectsController, type: :controller do
     end
 
     around(:example) do |example|
-      # In Rails 5.1+ this can be restricted to whitelist jobs allowed to be performed
+      # In Rails 5.1+ this can be restricted to allowlist jobs to be performed
       perform_enqueued_jobs { example.run }
     end
 
