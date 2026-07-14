@@ -96,7 +96,7 @@ class ApplicationController < ActionController::Base
   def find_redirect_url(auth_type, lti_group: nil)
     previous_url = session.delete(:previous_url) || session.delete(:user_return_to)
     if params['target_id']
-      # Whitelist params that are allowed to be passed through via LTI
+      # Allowlist params that are allowed to be passed through via LTI
       objects_path(params['target_id'], params.permit('t', 'position', 'token'))
     elsif params[:url]
       # Limit redirects to current host only (Fixes bug https://bugs.dlib.indiana.edu/browse/VOV-5662)

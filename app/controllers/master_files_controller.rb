@@ -225,8 +225,8 @@ class MasterFilesController < ApplicationController
              end
            else
              authorize! :read, @master_file, message: "You do not have sufficient privileges to view this file"
-             whitelist = ["thumbnail", "poster"]
-             if whitelist.include? params[:type]
+             allowlist = ["thumbnail", "poster"]
+             if allowlist.include? params[:type]
                Rails.cache.fetch([@master_file.cache_key_with_version, params[:type]]) do
                  image = @master_file.send(params[:type].to_sym)
                  { content: image.content, mimetype: image.mime_type || mimeType }
