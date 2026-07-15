@@ -171,10 +171,14 @@ namespace :avalon do
         collection.save!(validate: false)
       end
     end
-    desc "Downcase existing special access user entries"
-    task special_access_users: :environment do
-      query = 'inheritable_read_access_person_ssim:/.*[A-Z].*/ OR read_access_person_ssim:/.*[A-Z].*/'
-      
+    desc "Downcase existing special access and staff role user entries"
+    task user_downcase: :environment do
+      USER_FIELDS = ['unit_administrators_ssim', 'collection_managers_ssim', 'edit_access_person_ssim',
+                     'inheritable_edit_access_person_ssim', 'read_access_person_ssim', 'inheritable_read_access_person_ssim',
+                     'default_read_users_ssim'].freeze
+
+      query = USER_FIELDS.dup.map { |field| "#{field}:/.*[A-Z].*/" }.join(' OR ')
+
       num_found = ActiveFedora::SolrService.count(query)
       puts("#{num_found} matching records found.")
 
@@ -184,13 +188,8 @@ namespace :avalon do
         ids = ActiveFedora::SolrService.query(query, fl: 'id', rows: 1000, start: start)
         ids.each do |i|
           object = ActiveFedora::Base.find(i[:id])
-          case object.class
-          when Admin::Unit, Admin::Collection
-            object.default_read_users = object.default_read_users.map(&:downcase)
-          when MediaObject
-            object.read_users = object.read_users.map(&:downcase)
-          end
-          object.save
+          object.normalize_user_values
+          object.save(validate: false)
         rescue StandardError => e
           # Use `i[:id]` for logging in case the error occurs when trying to find the object
           puts("A problem was encountered with record #{i[:id]}: #{e.message}")
