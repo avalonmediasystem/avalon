@@ -13,6 +13,9 @@
 # ---  END LICENSE_HEADER BLOCK  ---
 
 module UserNormalization
+  FIELDS = ['unit_administrators', 'collection_managers', 'default_read_users', 'inherited_read_users',
+            'inherited_edit_users', 'read_users', 'edit_users'].freeze
+
   # Method to normalize just read user fields.
   def normalize_read_users
     field = self.class == MediaObject ? :read_users : :default_read_users
@@ -22,9 +25,7 @@ module UserNormalization
   # Method to normalize all fields containing usernames/emails
   # TODO: Find consistent way to skip unchanged fields
   def normalize_user_values
-    user_methods = methods.grep(/users$/).reject { |m| m.to_s.include?('set') }
-    user_methods += [:unit_administrators, :collection_managers]
-    user_methods.each do |field|
+    FIELDS.each do |field|
       set_user_values(field)
     rescue
       # Skip any methods that do not exist in the including class e.g. :unit_administrators

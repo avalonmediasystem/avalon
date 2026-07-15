@@ -61,7 +61,7 @@ class Admin::UnitsController < ApplicationController
       format.json { render json: @unit.to_json }
       format.html {
         @groups = @unit.default_local_read_groups
-        @users = @unit.default_read_users.map(&:downcase)
+        @users = @unit.default_read_users
         @virtual_groups = @unit.default_virtual_read_groups
         @ip_groups = @unit.default_ip_read_groups
 
