@@ -13,8 +13,8 @@
 # ---  END LICENSE_HEADER BLOCK  ---
 
 module UserNormalization
-  FIELDS = ['unit_administrators', 'collection_managers', 'default_read_users', 'inherited_read_users',
-            'inherited_edit_users', 'read_users', 'edit_users'].freeze
+  FIELDS = [:unit_administrators, :collection_managers, :default_read_users, :inherited_read_users,
+            :inherited_edit_users, :read_users, :edit_users].freeze
 
   # Method to normalize just read user fields.
   def normalize_read_users
@@ -26,11 +26,7 @@ module UserNormalization
   # TODO: Find consistent way to skip unchanged fields
   def normalize_user_values
     FIELDS.each do |field|
-      set_user_values(field)
-    rescue
-      # Skip any methods that do not exist in the including class e.g. :unit_administrators
-      # when loaded into Admin::Collections
-      next
+      set_user_values(field) if respond_to?("#{field}=".to_sym)
     end
   end
 
