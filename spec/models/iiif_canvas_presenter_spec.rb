@@ -24,7 +24,7 @@ describe IiifCanvasPresenter do
 
   context 'auth_service' do
     context '1.0' do
-      subject { presenter.display_content.first.auth_service.first }
+      subject { presenter.display_content.first.auth_service }
 
       it 'provides a cookie auth service' do
         expect(subject[:@id]).to eq Rails.application.routes.url_helpers.new_user_session_url(login_popup: 1)
@@ -75,7 +75,7 @@ describe IiifCanvasPresenter do
     end
 
     context '2.0' do
-      subject { presenter.display_content.first.auth_service&.second }
+      subject { presenter.display_content.first.auth2_service }
 
       before do
         @auth_service = subject[:service].find { |s| s[:type] == 'AuthAccessService2' } if subject.present?

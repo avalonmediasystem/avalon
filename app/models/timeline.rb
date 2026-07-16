@@ -13,6 +13,8 @@
 # ---  END LICENSE_HEADER BLOCK  ---
 
 class Timeline < ActiveRecord::Base
+  include IiifAuthService
+
   belongs_to :user
   scope :by_user, ->(user) { where(user_id: user.id) }
   # Explicitly cast everything to lowercase for DB agnostic case-insentive search.
@@ -157,6 +159,7 @@ class Timeline < ActiveRecord::Base
         "@context": [
           "http://digirati.com/ns/timeliner",
           "http://www.w3.org/ns/anno.jsonld",
+          "http://iiif.io/api/auth/2/context.json",
           "http://iiif.io/api/presentation/3/context.json"
         ],
         "id": manifest_url,
@@ -201,7 +204,7 @@ class Timeline < ActiveRecord::Base
                       "id": source_stream,
                       "type": master_file.is_video? ? "Video" : "Audio",
                       "duration": duration,
-                      "service": [auth_service]
+                      "service": [auth_service, auth2_service]
                     },
                     "target": "#{manifest_url}/canvas"
                   }
@@ -211,34 +214,6 @@ class Timeline < ActiveRecord::Base
           }
         ],
         "structures": []
-      }
-    end
-
-    def auth_service
-      {
-        "context": "http://iiif.io/api/auth/1/context.json",
-        "@id": Rails.application.routes.url_helpers.new_user_session_url(login_popup: 1),
-        "@type": "AuthCookieService1",
-        "confirmLabel": I18n.t('iiif.auth.confirmLabel'),
-        "description": I18n.t('iiif.auth.description'),
-        "failureDescription": I18n.t('iiif.auth.failureDescription'),
-        "failureHeader": I18n.t('iiif.auth.failureHeader'),
-        "header": I18n.t('iiif.auth.header'),
-        "label": I18n.t('iiif.auth.label'),
-        "profile": "http://iiif.io/api/auth/1/login",
-        "service": [
-          {
-            "@id": Rails.application.routes.url_helpers.iiif_auth_token_url(id: master_file_id),
-            "@type": "AuthTokenService1",
-            "profile": "http://iiif.io/api/auth/1/token"
-          },
-          {
-            "@id": Rails.application.routes.url_helpers.destroy_user_session_url,
-            "@type": "AuthLogoutService1",
-            "label": I18n.t('iiif.auth.logoutLabel'),
-            "profile": "http://iiif.io/api/auth/1/logout"
-          }
-        ]
       }
     end
 end
