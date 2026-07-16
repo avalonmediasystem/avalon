@@ -236,9 +236,6 @@ class PlaylistsController < ApplicationController
       can_edit_playlist = can? :edit, @playlist
       presenter = IiifPlaylistManifestPresenter.new(playlist: @playlist, items: canvas_presenters, can_edit_playlist: can_edit_playlist)
       manifest = IIIFManifest::V3::ManifestFactory.new(presenter).to_h
-      # Auth 2.0 requires the auth context to be in the top level manifest context, before the
-      # presentation context
-      manifest["@context"] = manifest["@context"].insert(1, "http://iiif.io/api/auth/2/context.json")
 
       manifest.to_json
     end

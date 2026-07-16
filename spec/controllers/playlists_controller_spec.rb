@@ -599,7 +599,6 @@ RSpec.describe PlaylistsController, type: :controller do
         expect(response).to have_http_status(200)
         parsed_response = JSON.parse(response.body)
         expect(parsed_response['@context']).to include "http://iiif.io/api/presentation/3/context.json"
-        expect(parsed_response['@context']).to include "http://iiif.io/api/auth/2/context.json"
         expect(parsed_response['type']).to eq 'Manifest'
         expect(parsed_response['items']).to be_empty
       end
@@ -675,7 +674,6 @@ RSpec.describe PlaylistsController, type: :controller do
         @test_item = IiifPlaylistCanvasPresenter.new(playlist_item: playlist.items.first, stream_info: stream_info[master_file.id], position: 1, master_file: master_file)
         presenter = IiifPlaylistManifestPresenter.new(playlist: playlist, items: [@test_item])
         manifest = IIIFManifest::V3::ManifestFactory.new(presenter).to_h
-        manifest["@context"] = manifest["@context"].insert(1, "http://iiif.io/api/auth/2/context.json")
         get :manifest, format: 'json', params: { id: playlist.id }, session: valid_session
         expect(subject).to eq(manifest.to_json)
       end
@@ -689,7 +687,6 @@ RSpec.describe PlaylistsController, type: :controller do
         @test_item = IiifPlaylistCanvasPresenter.new(playlist_item: playlist.items.first, stream_info: stream_info[master_file.id], position: 1, master_file: master_file)
         new_presenter = IiifPlaylistManifestPresenter.new(playlist: playlist, items: [@test_item])
         new_manifest = IIIFManifest::V3::ManifestFactory.new(new_presenter).to_h
-        new_manifest["@context"] = new_manifest["@context"].insert(1, "http://iiif.io/api/auth/2/context.json")
         get :manifest, format: 'json', params: { id: playlist.id }, session: valid_session
         new_cache = Rails.cache.read("#{playlist.cache_key_with_version}/iiif_playlist_manifest")
         expect(new_cache).to_not eq(old_manifest)
@@ -706,7 +703,6 @@ RSpec.describe PlaylistsController, type: :controller do
         @test_item = IiifPlaylistCanvasPresenter.new(playlist_item: playlist.items.first, stream_info: stream_info[master_file.id], position: 1, master_file: master_file)
         new_presenter = IiifPlaylistManifestPresenter.new(playlist: playlist, items: [@test_item])
         new_manifest = IIIFManifest::V3::ManifestFactory.new(new_presenter).to_h
-        new_manifest["@context"] = new_manifest["@context"].insert(1, "http://iiif.io/api/auth/2/context.json")
         get :manifest, format: 'json', params: { id: playlist.id }, session: valid_session
         playlist.reload
         new_cache = Rails.cache.read("#{playlist.cache_key_with_version}/iiif_playlist_manifest")
