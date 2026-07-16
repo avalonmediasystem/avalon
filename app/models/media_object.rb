@@ -27,6 +27,7 @@ class MediaObject < ActiveFedora::Base
   include SupplementalFileReadBehavior
   include SupplementalFileWriteBehavior
   include MediaObjectBehavior
+  include UserNormalization
   require 'avalon/controlled_vocabulary'
 
   include Kaminari::ActiveFedoraModelExtension
@@ -37,6 +38,7 @@ class MediaObject < ActiveFedora::Base
   before_save :update_dependent_properties!, prepend: true
   before_save :update_permalink, if: Proc.new { |mo| mo.persisted? && mo.published? }, prepend: true
   before_save :assign_id!, prepend: true
+  before_save :normalize_read_users
 
   after_find do
     # Force loading of section_ids from list_source
@@ -512,7 +514,7 @@ class MediaObject < ActiveFedora::Base
     def sections_with_rendering_files?(tags)
       tags.any? { |t| sections_with_files(tag: t).present? }
     end
-
+    
     def update_playlists
       Playlist.contains_media_object(self).touch_all
     end

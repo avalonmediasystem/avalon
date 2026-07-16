@@ -171,5 +171,35 @@ namespace :avalon do
         collection.save!(validate: false)
       end
     end
+    desc "Downcase existing special access and staff role user entries"
+    task user_downcase: :environment do
+      USER_FIELDS = ['unit_administrators_ssim', 'collection_managers_ssim', 'edit_access_person_ssim',
+                     'inheritable_edit_access_person_ssim', 'read_access_person_ssim', 'inheritable_read_access_person_ssim',
+                     'default_read_users_ssim'].freeze
+
+      query = USER_FIELDS.dup.map { |field| "#{field}:/.*[A-Z].*/" }.join(' OR ')
+
+      num_found = ActiveFedora::SolrService.count(query)
+      puts("#{num_found} matching records found.")
+
+      start = 0
+      error_count = 0
+      while start < num_found
+        ids = ActiveFedora::SolrService.query(query, fl: 'id', rows: 1000, start: start)
+        ids.each do |i|
+          object = ActiveFedora::Base.find(i[:id])
+          object.normalize_user_values
+          object.save(validate: false)
+        rescue StandardError => e
+          # Use `i[:id]` for logging in case the error occurs when trying to find the object
+          puts("A problem was encountered with record #{i[:id]}: #{e.message}")
+          error_count += 1
+          next
+        end
+        start += 1000
+      end
+
+      puts("#{num_found - error_count} records successfully migrated")
+    end
   end
 end

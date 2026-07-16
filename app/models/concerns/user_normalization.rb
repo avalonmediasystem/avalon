@@ -1,0 +1,40 @@
+# Copyright 2011-2026, The Trustees of Indiana University and Northwestern
+#   University.  Licensed under the Apache License, Version 2.0 (the "License");
+#   you may not use this file except in compliance with the License.
+#
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software distributed
+#   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+#   CONDITIONS OF ANY KIND, either express or implied. See the License for the
+#   specific language governing permissions and limitations under the License.
+# ---  END LICENSE_HEADER BLOCK  ---
+
+module UserNormalization
+  FIELDS = [:unit_administrators, :collection_managers, :default_read_users, :inherited_read_users,
+            :inherited_edit_users, :read_users, :edit_users].freeze
+
+  # Method to normalize just read user fields.
+  def normalize_read_users
+    field = self.class == MediaObject ? :read_users : :default_read_users
+    set_user_values(field)
+  end
+
+  # Method to normalize all fields containing usernames/emails
+  # TODO: Find consistent way to skip unchanged fields
+  def normalize_user_values
+    FIELDS.each do |field|
+      set_user_values(field) if respond_to?("#{field}=".to_sym)
+    end
+  end
+
+  private
+
+  def set_user_values(field)
+    user_array = send(field)
+    setter = "#{field}=".to_sym
+    send(setter, user_array.map(&:downcase))
+  end
+end

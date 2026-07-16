@@ -1275,7 +1275,7 @@ describe MediaObjectsController, type: :controller do
 
           context "from collection" do
             let(:inherited_group_member) { FactoryBot.create(:user) }
-            let(:inherited_group) { FactoryBot.create(:group, users: [inherited_group_member]) }
+            let(:inherited_group) { FactoryBot.create(:group, users: [inherited_group_member.username]) }
             let(:media_object) { FactoryBot.create(:published_media_object, visibility: 'private', collection: collection) }
             let(:collection) { FactoryBot.create(:collection, default_read_groups: [inherited_group.name]) }
 
@@ -1332,7 +1332,7 @@ describe MediaObjectsController, type: :controller do
 
           context "from unit" do
             let(:inherited_group_member) { FactoryBot.create(:user) }
-            let(:inherited_group) { FactoryBot.create(:group, users: [inherited_group_member]) }
+            let(:inherited_group) { FactoryBot.create(:group, users: [inherited_group_member.username]) }
             let(:media_object) { FactoryBot.create(:published_media_object, visibility: 'private', collection: collection) }
             let(:collection) { FactoryBot.create(:collection, unit: unit) }
             let(:unit) { FactoryBot.create(:unit, default_read_groups: [inherited_group.name]) }
@@ -2214,9 +2214,15 @@ describe MediaObjectsController, type: :controller do
       before(:each) { login_user media_object.collection.managers.first }
 
       context "grant and revoke special read access" do
-        it "grants and revokes special read access to users" do
-          expect { put :update, params: { id: media_object.id, step: 'access-control', donot_advance: 'true', add_user: user, submit_add_user: 'Add' } }.to change { media_object.reload.read_users }.from([]).to([user])
-          expect {put :update, params: { id: media_object.id, step: 'access-control', donot_advance: 'true', remove_user: user, submit_remove_user: 'Remove' } }.to change { media_object.reload.read_users }.from([user]).to([])
+        context "users" do
+          it "grants and revokes special read access to users" do
+            expect { put :update, params: { id: media_object.id, step: 'access-control', donot_advance: 'true', add_user: user, submit_add_user: 'Add' } }.to change { media_object.reload.read_users }.from([]).to([user])
+            expect {put :update, params: { id: media_object.id, step: 'access-control', donot_advance: 'true', remove_user: user, submit_remove_user: 'Remove' } }.to change { media_object.reload.read_users }.from([user]).to([])
+          end
+          it "is case insensitive" do
+            put :update, params: { id: media_object.id, step: 'access-control', donot_advance: 'true', add_user: "Test1@example.com", submit_add_user: 'Add' }
+            expect(media_object.reload.read_users).to include("test1@example.com")
+          end
         end
         it "grants and revokes special read access to groups" do
           expect { put :update, params: { id: media_object.id, step: 'access-control', donot_advance: 'true', add_group: group, submit_add_group: 'Add' } }.to change { media_object.reload.read_groups }.from([]).to([group])
