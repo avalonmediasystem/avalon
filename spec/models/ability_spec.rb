@@ -244,4 +244,80 @@ describe Ability, type: :model do
       end
     end
   end
+
+  describe 'disable_inheritance?' do
+    let(:media_object_proxy) { SpeedyAF::Base.find(media_object.id) }
+    let(:collection) { FactoryBot.create(:collection) }
+    let(:session) { {} }
+    let(:user) { nil }
+    subject(:admin_ability) { Ability.new(user, session) }
+
+    context 'with inheritance' do
+      context 'and media object with public visibility' do
+        let!(:media_object) { FactoryBot.create(:published_media_object, collection: collection, read_users: [user&.user_key], visibility: 'public', disable_inheritance: false) }
+
+        it 'does not allow read' do
+          expect(subject.can?(:read, media_object)).to eq false
+          expect(subject.can?(:read, media_object_proxy)).to eq false
+        end
+
+        context 'and user with access' do
+          let(:user) { FactoryBot.create(:user) }
+
+          it 'allows read' do
+            expect(subject.can?(:read, media_object)).to eq true
+            expect(subject.can?(:read, media_object_proxy)).to eq true
+          end
+        end
+      end
+    end
+
+    context 'with inheritance disabled' do
+      context 'and media object with public visibility' do
+        let!(:media_object) { FactoryBot.create(:published_media_object, collection: collection, read_users: [user&.user_key], visibility: 'public', disable_inheritance: true) }
+
+        it 'allows read' do
+          expect(subject.can?(:read, media_object)).to eq true
+          expect(subject.can?(:read, media_object_proxy)).to eq true
+        end
+
+        context 'and user with access' do
+          let(:user) { FactoryBot.create(:user) }
+
+          it 'allows read' do
+            expect(subject.can?(:read, media_object)).to eq true
+            expect(subject.can?(:read, media_object_proxy)).to eq true
+          end
+        end
+      end
+
+      context 'and media object with private visibility' do
+        let(:collection) { FactoryBot.create(:collection, default_visibility: 'public') }
+        let!(:media_object) { FactoryBot.create(:published_media_object, collection: collection, read_users: [user&.user_key], visibility: 'private', disable_inheritance: true) }
+
+        it 'does not allows read' do
+          expect(subject.can?(:read, media_object)).to eq false
+          expect(subject.can?(:read, media_object_proxy)).to eq false
+        end
+
+        context 'and collection member' do
+          let(:user) { User.find_by(username: collection.depositors.first) }
+
+          it 'allows read' do
+            expect(subject.can?(:read, media_object)).to eq true
+            expect(subject.can?(:read, media_object_proxy)).to eq true
+          end
+        end
+
+        context 'and user with access' do
+          let(:user) { FactoryBot.create(:user) }
+
+          it 'allows read' do
+            expect(subject.can?(:read, media_object)).to eq true
+            expect(subject.can?(:read, media_object_proxy)).to eq true
+          end
+        end
+      end
+    end
+  end
 end
