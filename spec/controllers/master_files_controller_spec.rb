@@ -705,7 +705,7 @@ describe MasterFilesController do
   describe '#hls_manifest' do
     let(:media_object) { FactoryBot.create(:published_media_object) }
     let(:master_file) { FactoryBot.create(:master_file, media_object: media_object) }
-    let(:public_media_object) { FactoryBot.create(:published_media_object, visibility: 'public') }
+    let(:public_media_object) { FactoryBot.create(:published_media_object, visibility: 'public', disable_inheritance: true) }
     let(:public_master_file) { FactoryBot.create(:master_file, media_object: public_media_object) }
 
     context 'with head request' do

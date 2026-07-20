@@ -25,7 +25,7 @@ describe MediaObjectsController, type: :controller do
 
   describe 'security' do
     let(:media_object) { FactoryBot.create(:media_object) }
-    let(:published_media_object) { FactoryBot.create(:published_media_object, visibility: 'public') }
+    let(:published_media_object) { FactoryBot.create(:published_media_object, visibility: 'public', disable_inheritance: true) }
     let(:private_media_object) { FactoryBot.create(:published_media_object, visibility: 'private') }
     describe 'ingest api' do
       before do
@@ -1043,7 +1043,7 @@ describe MediaObjectsController, type: :controller do
   end
 
   describe "#show" do
-    let!(:media_object) { FactoryBot.create(:published_media_object, visibility: 'public') }
+    let!(:media_object) { FactoryBot.create(:published_media_object, visibility: 'public', disable_inheritance: true) }
 
     context "Known items should be retrievable" do
       context 'with fedora 3 pid' do
@@ -1417,7 +1417,7 @@ describe MediaObjectsController, type: :controller do
     end
 
     context "Conditional Share partials should be rendered" do
-      let!(:media_object) { FactoryBot.create(:published_media_object, :with_master_file, visibility: 'public') }
+      let!(:media_object) { FactoryBot.create(:published_media_object, :with_master_file, visibility: 'public', disable_inheritance: true) }
       let(:memory_store) { ActiveSupport::Cache.lookup_store(:memory_store) }
       let(:cache) { Rails.cache }
 

@@ -211,7 +211,10 @@ class Ability
       # end
 
       cannot :read, [MediaObject, SpeedyAF::Proxy::MediaObject] do |media_object|
-        media_object.disable_inheritance? && is_exclusively_inherited_from_parent?(media_object) && !is_member_of?(media_object.collection)
+        # Block read when inheriting and only granted access from media object visibility and not a member of the parent
+        # OR when disabling inheritance and only granted access from parent and not a member of the parent
+        (!media_object.disable_inheritance? && !test_non_disabled_read_media_object(media_object) && !is_member_of?(media_object.collection)) ||
+        (media_object.disable_inheritance? && is_exclusively_inherited_from_parent?(media_object) && !is_member_of?(media_object.collection))
       end
 
       cannot :update, [MediaObject, SpeedyAF::Proxy::MediaObject] do |media_object|
@@ -424,5 +427,11 @@ class Ability
 
   def has_administrative_access?
     is_administrator? || is_unit_admin_of_any_unit? || is_manager_of_any_collection? || is_member_of_any_unit? || is_member_of_any_collection?
+  end
+
+  def test_non_disabled_read_media_object(media_object)
+    media_object_read_groups_without_visibility = read_groups(media_object.id) - media_object.send(:represented_visibility)
+    group_intersection = user_groups & media_object_read_groups_without_visibility
+    !group_intersection.empty? || read_users(media_object.id).include?(current_user.user_key) || test_read_from_policy(media_object.id)
   end
 end

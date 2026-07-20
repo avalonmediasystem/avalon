@@ -39,7 +39,7 @@ RSpec.describe PlaylistItemsController, type: :controller do
   let(:playlist) { FactoryBot.create(:playlist, user: playlist_owner) }
   let(:playlist_item) { FactoryBot.create(:playlist_item, playlist: playlist, clip: clip) }
   let(:master_file) { FactoryBot.create(:master_file, media_object: media_object) }
-  let(:media_object) { FactoryBot.create(:published_media_object, visibility: 'public') }
+  let(:media_object) { FactoryBot.create(:published_media_object, visibility: 'public', disable_inheritance: true) }
   let(:clip) { AvalonClip.create(master_file: master_file) }
 
   describe 'security' do
