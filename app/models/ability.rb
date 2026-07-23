@@ -388,13 +388,13 @@ class Ability
   end
 
   def is_exclusively_inherited_from_parent?(media_object)
-    # User isn't in item's read users or item's read groups (not explicitly granted access to item) AND
-    # User isn't in item's read users and is inherited from parent (exclusively inherited user) OR
-    # User isn't in item's read groups and is in a read group inherited from parent (exclusively inherited group)
-    # Short form: NOT explicitly granted access to item AND (explicitly inherited user OR explicitly inherited group)
-    !(@user.in?(media_object.read_users) || !(@user_groups & media_object.read_groups).empty?) &&
-    ((!@user.in?(media_object.read_users) && @user.in?(media_object.inherited_read_users)) ||
-      ((@user_groups & media_object.read_groups).empty? && !(@user_groups & media_object.inherited_read_groups).empty?))
+    # NOT granted access from item and its leases AND granted access from policies
+    lease_read_users = media_object.leases.collect { |l| read_users_from_policy(l.id) }.flatten
+    lease_read_groups = media_object.leases.collect { |l| read_groups_from_policy(l.id) }.flatten
+    media_object_read_users = read_users(media_object.id) + lease_read_users
+    media_object_read_groups = read_groups(media_object.id) + lease_read_groups
+    access_from_media_object = !(user_groups & media_object_read_groups).empty? || media_object_read_users.include?(current_user.user_key)
+    !access_from_media_object && test_read_from_policy(media_object.id)
   end
 
   def is_member_of_any_collection?
@@ -430,6 +430,9 @@ class Ability
   end
 
   def test_non_disabled_read_media_object(media_object)
+    # Use #read_groups and #read_users from blacklight-access_controls because they pull the permission document from solr which
+    # includes more than media_object.read_groups like cidr IP range expansion
+    # Also include #test_read_from_policy to make sure that collection, unit, and leases apply as well
     media_object_read_groups_without_visibility = read_groups(media_object.id) - media_object.send(:represented_visibility)
     group_intersection = user_groups & media_object_read_groups_without_visibility
     !group_intersection.empty? || read_users(media_object.id).include?(current_user.user_key) || test_read_from_policy(media_object.id)

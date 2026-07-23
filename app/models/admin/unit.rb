@@ -184,7 +184,7 @@ class Admin::Unit < ActiveFedora::Base
       solr_doc["name_uniq_si"] = self.name.downcase.gsub(/\s+/, '') if self.name.present?
       solr_doc["has_poster_bsi"] = !(poster.content.nil? || poster.content == '')
       solr_doc["inheritable_read_access_person_ssim"] = default_read_users
-      solr_doc["inheritable_read_access_group_ssim"] = default_read_groups
+      solr_doc["inheritable_read_access_group_ssim"] = default_read_groups + collect_ips_for_index(default_ip_read_groups)
     end
   end
 
@@ -234,5 +234,13 @@ class Admin::Unit < ActiveFedora::Base
 
   def add_edit_user(name)
     self.default_permissions.build({ name: name, type: 'person', access: 'edit' })
+  end
+
+  def collect_ips_for_index ip_strings
+    ips = ip_strings.collect do |ip|
+      addr = IPAddr.new(ip) rescue next
+      addr.to_range.map(&:to_s)
+    end
+    ips.flatten.compact.uniq || []
   end
 end
