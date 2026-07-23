@@ -15,6 +15,8 @@
 require 'rails_helper'
 
 describe Ability, type: :model do
+  include ActiveJob::TestHelper
+
   describe 'non-logged in users' do
     it 'only belongs to the public group' do
       expect(Ability.new(nil).user_groups).to eq ["public"]
@@ -250,11 +252,11 @@ describe Ability, type: :model do
     let(:collection) { FactoryBot.create(:collection) }
     let(:session) { {} }
     let(:user) { nil }
-    subject(:admin_ability) { Ability.new(user, session) }
+    subject(:ability) { Ability.new(user, session) }
 
     context 'with inheritance' do
       context 'and media object with public visibility' do
-        let!(:media_object) { FactoryBot.create(:published_media_object, collection: collection, read_users: [user&.user_key], visibility: 'public', disable_inheritance: false) }
+        let(:media_object) { FactoryBot.create(:published_media_object, collection: collection, visibility: 'public', disable_inheritance: false) }
 
         it 'does not allow read' do
           expect(subject.can?(:read, media_object)).to eq false
@@ -262,6 +264,7 @@ describe Ability, type: :model do
         end
 
         context 'and user with access' do
+          let(:media_object) { FactoryBot.create(:published_media_object, collection: collection, read_users: [user&.user_key], visibility: 'public', disable_inheritance: false) }
           let(:user) { FactoryBot.create(:user) }
 
           it 'allows read' do
@@ -269,12 +272,179 @@ describe Ability, type: :model do
             expect(subject.can?(:read, media_object_proxy)).to eq true
           end
         end
+
+        context 'and group granting user access' do
+          let(:media_object) { FactoryBot.create(:published_media_object, collection: collection, read_groups: [group.name], visibility: 'public', disable_inheritance: false) }
+          # Need to make sure the after_create callback of the group happens before the ability subject
+          let!(:group) { FactoryBot.create(:group, users: [user.user_key]) }
+          let(:user) { FactoryBot.create(:user) }
+
+          it 'allows read' do
+            expect(subject.can?(:read, media_object)).to eq true
+            expect(subject.can?(:read, media_object_proxy)).to eq true
+          end
+        end
+
+        context 'and ip range granting user access' do
+          # Need to make sure that media_object is created before perform_enqueued_jobs to ensure ip expansion happens in solr
+          let!(:media_object) { FactoryBot.create(:published_media_object, collection: collection, read_groups: ['172.16.0.0/30'], visibility: 'public', disable_inheritance: false) }
+          let(:user) { FactoryBot.create(:user) }
+          let(:session) { { remote_ip: '172.16.0.3' } }
+
+          it 'allows read' do
+            perform_enqueued_jobs(only: MediaObjectIndexingJob)
+            expect(subject.can?(:read, media_object)).to eq true
+            expect(subject.can?(:read, media_object_proxy)).to eq true
+          end
+        end
+
+        context 'and lease granting user access' do
+          let(:lease) { FactoryBot.create(:lease, inherited_read_users: [user.user_key]) }
+          let(:user) { FactoryBot.create(:user) }
+
+          before do
+            media_object.governing_policies += [lease]
+            media_object.save!
+            media_object.reload
+          end
+
+          it 'allows read' do
+            expect(subject.can?(:read, media_object)).to eq true
+            expect(subject.can?(:read, media_object_proxy)).to eq true
+          end
+        end
+
+        context 'and lease with group granting user access' do
+          let(:lease) { FactoryBot.create(:lease, inherited_read_groups: [group.name]) }
+          let!(:group) { FactoryBot.create(:group, users: [user.user_key]) }
+          let(:user) { FactoryBot.create(:user) }
+
+          before do
+            media_object.governing_policies += [lease]
+            media_object.save!
+            media_object.reload
+          end
+
+          it 'allows read' do
+            expect(subject.can?(:read, media_object)).to eq true
+            expect(subject.can?(:read, media_object_proxy)).to eq true
+          end
+        end
+
+        context 'and lease with ip range granting user access' do
+          let(:lease) { FactoryBot.create(:lease, inherited_read_groups: ['172.16.0.0/30']) }
+          let(:user) { FactoryBot.create(:user) }
+          let(:session) { { remote_ip: '172.16.0.3' } }
+
+          before do
+            media_object.governing_policies += [lease]
+            media_object.save!
+            media_object.reload
+          end
+
+          it 'allows read' do
+            perform_enqueued_jobs(only: MediaObjectIndexingJob)
+            expect(subject.can?(:read, media_object)).to eq true
+            expect(subject.can?(:read, media_object_proxy)).to eq true
+          end
+        end
+
+        context 'from collection' do
+          context 'with user access' do
+            let(:collection) { FactoryBot.create(:collection, default_read_users: [user.user_key]) }
+            let(:user) { FactoryBot.create(:user) }
+
+            it 'allows read' do
+              expect(subject.can?(:read, media_object)).to eq true
+              expect(subject.can?(:read, media_object_proxy)).to eq true
+            end
+          end
+
+          context 'with group access' do
+            let(:collection) { FactoryBot.create(:collection, default_read_groups: [group.name]) }
+            # Need to make sure the after_create callback of the group happens before the ability subject
+            let!(:group) { FactoryBot.create(:group, users: [user.user_key]) }
+            let(:user) { FactoryBot.create(:user) }
+
+            it 'allows read' do
+              expect(subject.can?(:read, media_object)).to eq true
+              expect(subject.can?(:read, media_object_proxy)).to eq true
+            end
+          end
+
+          context 'and ip range granting user access' do
+            let(:collection) { FactoryBot.create(:collection, default_read_groups: ['172.16.0.0/30']) }
+            let(:user) { FactoryBot.create(:user) }
+            let(:session) { { remote_ip: '172.16.0.3' } }
+
+            it 'allows read' do
+              expect(subject.can?(:read, media_object)).to eq true
+              expect(subject.can?(:read, media_object_proxy)).to eq true
+            end
+          end
+
+          context 'with collection member' do
+            let(:user) { User.find_by(username: collection.depositors.first) }
+
+            it 'allows read' do
+              expect(subject.can?(:read, media_object)).to eq true
+              expect(subject.can?(:read, media_object_proxy)).to eq true
+            end
+          end
+        end
+
+        context 'from unit' do
+          context 'with user access' do
+            let(:unit) { FactoryBot.create(:unit, default_read_users: [user.user_key]) }
+            let(:collection) { FactoryBot.create(:collection, unit: unit) }
+            let(:user) { FactoryBot.create(:user) }
+
+            it 'allows read' do
+              expect(subject.can?(:read, media_object)).to eq true
+              expect(subject.can?(:read, media_object_proxy)).to eq true
+            end
+          end
+
+          context 'with group access' do
+            let(:unit) { FactoryBot.create(:unit, default_read_groups: [group.name]) }
+            let(:collection) { FactoryBot.create(:collection, unit: unit) }
+            # Need to make sure the after_create callback of the group happens before the ability subject
+            let!(:group) { FactoryBot.create(:group, users: [user.user_key]) }
+            let(:user) { FactoryBot.create(:user) }
+
+            it 'allows read' do
+              expect(subject.can?(:read, media_object)).to eq true
+              expect(subject.can?(:read, media_object_proxy)).to eq true
+            end
+          end
+
+          context 'and ip range granting user access' do
+            let(:unit) { FactoryBot.create(:unit, default_read_groups: ['172.16.0.0/30']) }
+            let(:collection) { FactoryBot.create(:collection, unit: unit) }
+            let(:user) { FactoryBot.create(:user) }
+            let(:session) { { remote_ip: '172.16.0.3' } }
+
+            it 'allows read' do
+              expect(subject.can?(:read, media_object)).to eq true
+              expect(subject.can?(:read, media_object_proxy)).to eq true
+            end
+          end
+
+          context 'with unit member' do
+            let(:user) { User.find_by(username: collection.unit.depositors.first) }
+
+            it 'allows read' do
+              expect(subject.can?(:read, media_object)).to eq true
+              expect(subject.can?(:read, media_object_proxy)).to eq true
+            end
+          end
+        end
       end
     end
 
     context 'with inheritance disabled' do
       context 'and media object with public visibility' do
-        let!(:media_object) { FactoryBot.create(:published_media_object, collection: collection, read_users: [user&.user_key], visibility: 'public', disable_inheritance: true) }
+        let(:media_object) { FactoryBot.create(:published_media_object, collection: collection, read_users: [user&.user_key], visibility: 'public', disable_inheritance: true) }
 
         it 'allows read' do
           expect(subject.can?(:read, media_object)).to eq true
@@ -293,15 +463,16 @@ describe Ability, type: :model do
 
       context 'and media object with private visibility' do
         let(:collection) { FactoryBot.create(:collection, default_visibility: 'public') }
-        let!(:media_object) { FactoryBot.create(:published_media_object, collection: collection, read_users: [user&.user_key], visibility: 'private', disable_inheritance: true) }
+        let(:media_object) { FactoryBot.create(:published_media_object, collection: collection, visibility: 'private', disable_inheritance: true) }
 
-        it 'does not allows read' do
+        it 'does not allow read' do
           expect(subject.can?(:read, media_object)).to eq false
           expect(subject.can?(:read, media_object_proxy)).to eq false
         end
 
-        context 'and collection member' do
-          let(:user) { User.find_by(username: collection.depositors.first) }
+        context 'and user with access' do
+          let(:media_object) { FactoryBot.create(:published_media_object, collection: collection, read_users: [user&.user_key], visibility: 'private', disable_inheritance: true) }
+          let(:user) { FactoryBot.create(:user) }
 
           it 'allows read' do
             expect(subject.can?(:read, media_object)).to eq true
@@ -309,12 +480,157 @@ describe Ability, type: :model do
           end
         end
 
-        context 'and user with access' do
+        context 'and group granting user access' do
+          let(:media_object) { FactoryBot.create(:published_media_object, collection: collection, read_groups: [group.name], visibility: 'private', disable_inheritance: true) }
+          # Need to make sure the after_create callback of the group happens before the ability subject
+          let!(:group) { FactoryBot.create(:group, users: [user.user_key]) }
           let(:user) { FactoryBot.create(:user) }
 
           it 'allows read' do
             expect(subject.can?(:read, media_object)).to eq true
             expect(subject.can?(:read, media_object_proxy)).to eq true
+          end
+        end
+
+        context 'and lease granting user access' do
+          let(:lease) { FactoryBot.create(:lease, inherited_read_users: [user.user_key]) }
+          let(:user) { FactoryBot.create(:user) }
+
+          before do
+            media_object.governing_policies += [lease]
+            media_object.save!
+            media_object.reload
+          end
+
+          it 'allows read' do
+            expect(subject.can?(:read, media_object)).to eq true
+            expect(subject.can?(:read, media_object_proxy)).to eq true
+          end
+        end
+
+        context 'and lease with group granting user access' do
+          let(:lease) { FactoryBot.create(:lease, inherited_read_groups: [group.name]) }
+          let!(:group) { FactoryBot.create(:group, users: [user.user_key]) }
+          let(:user) { FactoryBot.create(:user) }
+
+          before do
+            media_object.governing_policies += [lease]
+            media_object.save!
+            media_object.reload
+          end
+
+          it 'allows read' do
+            expect(subject.can?(:read, media_object)).to eq true
+            expect(subject.can?(:read, media_object_proxy)).to eq true
+          end
+        end
+
+        context 'and lease with ip range granting user access' do
+          let(:lease) { FactoryBot.create(:lease, inherited_read_groups: ['172.16.0.0/30']) }
+          let(:user) { FactoryBot.create(:user) }
+          let(:session) { { remote_ip: '172.16.0.3' } }
+
+          before do
+            media_object.governing_policies += [lease]
+            media_object.save!
+            media_object.reload
+          end
+
+          it 'allows read' do
+            perform_enqueued_jobs(only: MediaObjectIndexingJob)
+            expect(subject.can?(:read, media_object)).to eq true
+            expect(subject.can?(:read, media_object_proxy)).to eq true
+          end
+        end
+
+        context 'from collection' do
+          context 'with user access' do
+            let(:collection) { FactoryBot.create(:collection, default_read_users: [user.user_key]) }
+            let(:user) { FactoryBot.create(:user) }
+
+            it 'does not allow read' do
+              expect(subject.can?(:read, media_object)).to eq false
+              expect(subject.can?(:read, media_object_proxy)).to eq false
+            end
+          end
+
+          context 'with group access' do
+            let(:collection) { FactoryBot.create(:collection, default_read_groups: [group.name]) }
+            # Need to make sure the after_create callback of the group happens before the ability subject
+            let!(:group) { FactoryBot.create(:group, users: [user.user_key]) }
+            let(:user) { FactoryBot.create(:user) }
+
+            it 'does not allow read' do
+              expect(subject.can?(:read, media_object)).to eq false
+              expect(subject.can?(:read, media_object_proxy)).to eq false
+            end
+          end
+
+          context 'and ip range' do
+            let(:collection) { FactoryBot.create(:collection, default_read_groups: ['172.16.0.0/30']) }
+            let(:user) { FactoryBot.create(:user) }
+            let(:session) { { remote_ip: '172.16.0.3' } }
+
+            it 'does not allow read' do
+              expect(subject.can?(:read, media_object)).to eq false
+              expect(subject.can?(:read, media_object_proxy)).to eq false
+            end
+          end
+
+          context 'with collection member' do
+            let(:user) { User.find_by(username: collection.depositors.first) }
+
+            it 'allows read' do
+              expect(subject.can?(:read, media_object)).to eq true
+              expect(subject.can?(:read, media_object_proxy)).to eq true
+            end
+          end
+        end
+
+        context 'from unit' do
+          context 'with user access' do
+            let(:unit) { FactoryBot.create(:unit, default_read_users: [user.user_key]) }
+            let(:collection) { FactoryBot.create(:collection, unit: unit) }
+            let(:user) { FactoryBot.create(:user) }
+
+            it 'does not allow read' do
+              expect(subject.can?(:read, media_object)).to eq false
+              expect(subject.can?(:read, media_object_proxy)).to eq false
+            end
+          end
+
+          context 'with group access' do
+            let(:unit) { FactoryBot.create(:unit, default_read_groups: [group.name]) }
+            let(:collection) { FactoryBot.create(:collection, unit: unit) }
+            # Need to make sure the after_create callback of the group happens before the ability subject
+            let!(:group) { FactoryBot.create(:group, users: [user.user_key]) }
+            let(:user) { FactoryBot.create(:user) }
+
+            it 'does not allow read' do
+              expect(subject.can?(:read, media_object)).to eq false
+              expect(subject.can?(:read, media_object_proxy)).to eq false
+            end
+          end
+
+          context 'and ip range' do
+            let(:unit) { FactoryBot.create(:unit, default_read_groups: ['172.16.0.0/30']) }
+            let(:collection) { FactoryBot.create(:collection, unit: unit) }
+            let(:user) { FactoryBot.create(:user) }
+            let(:session) { { remote_ip: '172.16.0.3' } }
+
+            it 'does not allow read' do
+              expect(subject.can?(:read, media_object)).to eq false
+              expect(subject.can?(:read, media_object_proxy)).to eq false
+            end
+          end
+
+          context 'with unit member' do
+            let(:user) { User.find_by(username: collection.unit.depositors.first) }
+
+            it 'allows read' do
+              expect(subject.can?(:read, media_object)).to eq true
+              expect(subject.can?(:read, media_object_proxy)).to eq true
+            end
           end
         end
       end
