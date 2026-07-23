@@ -22,6 +22,7 @@ describe Derivative do
         id: 'track-1',
         label: 'quality-high',
         url: 'http://www.test.com/test.mp4.m3u8',
+        hls_url: 'http://www.test.com/test.mp4.m3u8',
         duration: "6315",
         mime_type:  "video/mp4",
         audio_bitrate: "127716.0",
@@ -33,9 +34,10 @@ describe Derivative do
       }
     end
     let(:derivative) { described_class.from_output(api_output, false) }
-                  
+
     it "Call from ingest API should populate :url and :hls_url" do
-      expect(derivative.location_url).to eq('http://www.test.com/test.mp4.m3u8')
+      expect(derivative.absolute_location).to eq('http://www.test.com/test.mp4.m3u8')
+      expect(derivative.hls_url).to eq('http://www.test.com/test.mp4.m3u8')
     end
   end
 
@@ -78,11 +80,11 @@ describe Derivative do
       end
 
       it "HTTP video" do
-        expect(video_derivative.streaming_url(true)).to eq("#{http_base}/c5e0f8b8-3f69-40de-9524-604f03b5f867/8c871d4b-a9a6-4841-8e2a-dd98cf2ee625/content.mp4.m3u8")
+        expect(video_derivative.hls_url).to eq("#{http_base}/c5e0f8b8-3f69-40de-9524-604f03b5f867/8c871d4b-a9a6-4841-8e2a-dd98cf2ee625/content.mp4.m3u8")
       end
 
       it "HTTP audio" do
-        expect(audio_derivative.streaming_url(true)).to eq("#{http_base}/c5e0f8b8-3f69-40de-9524-604f03b5f867/8c871d4b-a9a6-4841-8e2a-dd98cf2ee625/content.mp4.m3u8")
+        expect(audio_derivative.hls_url).to eq("#{http_base}/c5e0f8b8-3f69-40de-9524-604f03b5f867/8c871d4b-a9a6-4841-8e2a-dd98cf2ee625/content.mp4.m3u8")
       end
     end
 
@@ -92,11 +94,11 @@ describe Derivative do
       end
 
       it "HTTP video" do
-        expect(video_derivative.streaming_url(true)).to eq("#{http_base}/c5e0f8b8-3f69-40de-9524-604f03b5f867/8c871d4b-a9a6-4841-8e2a-dd98cf2ee625/content.mp4.m3u8")
+        expect(video_derivative.hls_url).to eq("#{http_base}/c5e0f8b8-3f69-40de-9524-604f03b5f867/8c871d4b-a9a6-4841-8e2a-dd98cf2ee625/content.mp4.m3u8")
       end
 
       it "HTTP audio" do
-        expect(audio_derivative.streaming_url(true)).to eq("#{http_base}/audio-only/c5e0f8b8-3f69-40de-9524-604f03b5f867/8c871d4b-a9a6-4841-8e2a-dd98cf2ee625/content.mp4.m3u8")
+        expect(audio_derivative.hls_url).to eq("#{http_base}/audio-only/c5e0f8b8-3f69-40de-9524-604f03b5f867/8c871d4b-a9a6-4841-8e2a-dd98cf2ee625/content.mp4.m3u8")
       end
     end
 
@@ -106,11 +108,11 @@ describe Derivative do
       end
 
       it "HTTP video" do
-        expect(video_derivative.streaming_url(true)).to eq("#{http_base}/mp4:c5e0f8b8-3f69-40de-9524-604f03b5f867/8c871d4b-a9a6-4841-8e2a-dd98cf2ee625/content.mp4/playlist.m3u8")
+        expect(video_derivative.hls_url).to eq("#{http_base}/mp4:c5e0f8b8-3f69-40de-9524-604f03b5f867/8c871d4b-a9a6-4841-8e2a-dd98cf2ee625/content.mp4/playlist.m3u8")
       end
 
       it "HTTP audio" do
-        expect(audio_derivative.streaming_url(true)).to eq("#{http_base}/mp4:c5e0f8b8-3f69-40de-9524-604f03b5f867/8c871d4b-a9a6-4841-8e2a-dd98cf2ee625/content.mp4/playlist.m3u8")
+        expect(audio_derivative.hls_url).to eq("#{http_base}/mp4:c5e0f8b8-3f69-40de-9524-604f03b5f867/8c871d4b-a9a6-4841-8e2a-dd98cf2ee625/content.mp4/playlist.m3u8")
       end
     end
 
@@ -120,24 +122,24 @@ describe Derivative do
       let(:hls_url) { 'http://streaming.server/hls.m3u8' }
 
       it "does not map stored hls_url" do
-        expect(video_derivative.streaming_url(true)).to eq hls_url
-        expect(audio_derivative.streaming_url(true)).to eq hls_url
+        expect(video_derivative.hls_url).to eq hls_url
+        expect(audio_derivative.hls_url).to eq hls_url
       end
     end
 
     describe "dynamic based on config" do
       it "HTTP video" do
         Avalon::StreamMapper.streaming_server = :wowza
-        expect(video_derivative.streaming_url(true)).to eq("#{http_base}/mp4:c5e0f8b8-3f69-40de-9524-604f03b5f867/8c871d4b-a9a6-4841-8e2a-dd98cf2ee625/content.mp4/playlist.m3u8")
+        expect(video_derivative.hls_url).to eq("#{http_base}/mp4:c5e0f8b8-3f69-40de-9524-604f03b5f867/8c871d4b-a9a6-4841-8e2a-dd98cf2ee625/content.mp4/playlist.m3u8")
         Avalon::StreamMapper.streaming_server = :generic
-        expect(video_derivative.streaming_url(true)).to eq("#{http_base}/c5e0f8b8-3f69-40de-9524-604f03b5f867/8c871d4b-a9a6-4841-8e2a-dd98cf2ee625/content.mp4.m3u8")
+        expect(video_derivative.hls_url).to eq("#{http_base}/c5e0f8b8-3f69-40de-9524-604f03b5f867/8c871d4b-a9a6-4841-8e2a-dd98cf2ee625/content.mp4.m3u8")
       end
 
       it "HTTP audio" do
         Avalon::StreamMapper.streaming_server = :wowza
-        expect(audio_derivative.streaming_url(true)).to eq("#{http_base}/mp4:c5e0f8b8-3f69-40de-9524-604f03b5f867/8c871d4b-a9a6-4841-8e2a-dd98cf2ee625/content.mp4/playlist.m3u8")
+        expect(audio_derivative.hls_url).to eq("#{http_base}/mp4:c5e0f8b8-3f69-40de-9524-604f03b5f867/8c871d4b-a9a6-4841-8e2a-dd98cf2ee625/content.mp4/playlist.m3u8")
         Avalon::StreamMapper.streaming_server = :generic
-        expect(audio_derivative.streaming_url(true)).to eq("#{http_base}/c5e0f8b8-3f69-40de-9524-604f03b5f867/8c871d4b-a9a6-4841-8e2a-dd98cf2ee625/content.mp4.m3u8")
+        expect(audio_derivative.hls_url).to eq("#{http_base}/c5e0f8b8-3f69-40de-9524-604f03b5f867/8c871d4b-a9a6-4841-8e2a-dd98cf2ee625/content.mp4.m3u8")
       end
     end
   end

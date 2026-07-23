@@ -32,7 +32,7 @@ module MasterFileBehavior
   end
 
   def stream_details
-    flash, hls = [], []
+    hls = []
 
     common, caption_paths = nil, nil
 
@@ -41,13 +41,12 @@ module MasterFileBehavior
                  bitrate: d.bitrate,
                  mimetype: d.mime_type,
                  format: d.format }
-      flash << common.merge(url: d.streaming_url(false))
 
-      hls_url = d.streaming_url(true)
+      hls_url = d.hls_url
       # Quick fix for old items with mimetypes to deal with issue due to mp3 progressive download code in IIIFCanvasPresenter
       common[:mimetype] = 'application/x-mpegURL' if File.extname(hls_url) == ".m3u8"
 
-      hls << common.merge(url: d.streaming_url(true))
+      hls << common.merge(url: d.hls_url)
     end
     if hls.length > 1
       hls << { quality: 'auto',
@@ -57,7 +56,6 @@ module MasterFileBehavior
     end
 
     # Sorts the streams in order of quality, note: Hash order only works in Ruby 1.9 or later
-    flash = sort_streams flash
     hls = sort_streams hls
 
     poster_path = Rails.application.routes.url_helpers.poster_master_file_path(self)
@@ -77,7 +75,6 @@ module MasterFileBehavior
       is_video: is_video?,
       poster_image: poster_path,
       embed_code: embed_code(EMBED_SIZE[:medium], {urlappend: '/embed'}),
-      stream_flash: flash,
       stream_hls: hls,
       cookie_auth: cookie_auth?,
       caption_paths: caption_paths,
@@ -96,11 +93,11 @@ module MasterFileBehavior
                  mimetype: d.mime_type,
                  format: d.format }
 
-      hls_url = d.streaming_url(true)
+      hls_url = d.hls_url
       # Quick fix for old items with mimetypes to deal with issue due to mp3 progressive download code in IIIFCanvasPresenter
       common[:mimetype] = 'application/x-mpegURL' if File.extname(hls_url) == ".m3u8"
 
-      hls << common.merge(url: d.streaming_url(true))
+      hls << common.merge(url: d.hls_url)
     end
     if hls.length > 1
       hls << { quality: 'auto',

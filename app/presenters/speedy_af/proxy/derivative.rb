@@ -30,15 +30,4 @@ class SpeedyAF::Proxy::Derivative < SpeedyAF::Base
   rescue
     nil
   end
-
-  def location_url
-    if managed
-      path = Addressable::URI.parse(absolute_location).path
-      Avalon::StreamMapper.stream_path(path)
-    else
-      @attrs[:location_url]
-    end
-  rescue
-    nil
-  end
 end

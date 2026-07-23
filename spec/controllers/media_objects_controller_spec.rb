@@ -335,7 +335,6 @@ describe MediaObjectsController, type: :controller do
           expect(new_media_object.sections.first.captions.has_content?).to be_truthy
           expect(new_media_object.sections.first.captions.mime_type).to eq('text/vtt')
           expect(new_media_object.sections.first.derivatives.count).to eq(2)
-          expect(new_media_object.sections.first.derivatives.first.location_url).to eq(absolute_location)
           expect(new_media_object.workflow.last_completed_step).to eq([HYDRANT_STEPS.last.step])
         end
         context "without files" do
@@ -492,7 +491,7 @@ describe MediaObjectsController, type: :controller do
           expect(new_media_object.sections.first.captions.has_content?).to be_truthy
           expect(new_media_object.sections.first.captions.mime_type).to eq(media_object.sections.first.captions.mime_type)
           expect(new_media_object.sections.first.derivatives.count).to eq(media_object.sections.first.derivatives.count)
-          expect(new_media_object.sections.first.derivatives.first.location_url).to eq(media_object.sections.first.derivatives.first.location_url)
+          expect(new_media_object.sections.first.derivatives.first.hls_url).to eq(media_object.sections.first.derivatives.first.hls_url)
           expect(new_media_object.workflow.last_completed_step).to eq(media_object.workflow.last_completed_step)
         end
         it "should return 422 if master_file update failed" do
