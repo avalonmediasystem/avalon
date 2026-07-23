@@ -30,7 +30,7 @@ RSpec.describe "/checkouts", type: :request do
   include ActiveSupport::Testing::TimeHelpers
 
   let(:user) { FactoryBot.create(:user) }
-  let(:media_object) { FactoryBot.create(:published_media_object, visibility: 'public') }
+  let(:media_object) { FactoryBot.create(:published_media_object, visibility: 'public', disable_inheritance: true) }
   let(:checkout) { FactoryBot.create(:checkout, user: user, media_object_id: media_object.id) }
 
   # This should return the minimal set of attributes required to create a valid
@@ -212,7 +212,8 @@ RSpec.describe "/checkouts", type: :request do
       end
 
       context "with inherited lending period" do
-        let(:media_object) { FactoryBot.create(:published_media_object, lending_period: 86400, visibility: 'public') }
+        let(:collection) { FactoryBot.create(:collection, default_visibility: 'public') }
+        let(:media_object) { FactoryBot.create(:published_media_object, collection: collection, lending_period: 86400) }
         before { freeze_time }
         after { travel_back }
         it "sets the return time based on the inherited lending period of the parent" do
