@@ -90,8 +90,8 @@ class Derivative < ActiveFedora::Base
   end
 
   def to_solr
-    path = Addressable::URI.parse(absolute_location).path
-    stream = Avalon::StreamMapper.stream_path(path)
+    path = Addressable::URI.parse(absolute_location)&.path
+    stream = Avalon::StreamMapper.stream_path(path) rescue nil
     super.tap do |solr_doc|
       solr_doc['stream_path_ssi'] = if stream&.start_with?("rtmp")
                                       stream.split(/:/).last
