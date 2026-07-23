@@ -22,9 +22,6 @@ class Derivative < ActiveFedora::Base
 
   belongs_to :master_file, class_name: 'MasterFile', predicate: ActiveFedora::RDF::Fcrepo::RelsExt.isDerivationOf
 
-  property :location_url, predicate: Avalon::RDFVocab::EBUCore.locator, multiple: false do |index|
-    index.as :stored_sortable
-  end
   property :hls_url, predicate: Avalon::RDFVocab::Derivative.hlsURL, multiple: false do |index|
     index.as :stored_sortable
   end
@@ -87,29 +84,19 @@ class Derivative < ActiveFedora::Base
     nil
   end
 
-  alias_method :'_location_url', :'location_url'
-  def location_url
-    if managed
-      path = Addressable::URI.parse(absolute_location).path
-      Avalon::StreamMapper.stream_path(path)
-    else
-      _location_url
-    end
-  rescue
-    nil
-  end
-
   def absolute_location=(value)
     self.derivativeFile = value
     derivativeFile
   end
 
   def to_solr
+    path = Addressable::URI.parse(absolute_location).path
+    stream = Avalon::StreamMapper.stream_path(path)
     super.tap do |solr_doc|
-      solr_doc['stream_path_ssi'] = if location_url&.start_with?("rtmp")
-                                      location_url.split(/:/).last
+      solr_doc['stream_path_ssi'] = if stream&.start_with?("rtmp")
+                                      stream.split(/:/).last
                                     else
-                                      location_url
+                                      stream
                                     end
       solr_doc['format_sim'] = self.format
     end
@@ -135,8 +122,6 @@ class Derivative < ActiveFedora::Base
       derivative.mime_type ||= "audio/mpeg"
     end
 
-    # FIXME: Transform to stream url here? How do we distribute to the streaming server?
-    derivative.location_url = output[:url]
     # For Intercom push
     derivative.hls_url = output[:hls_url] if output[:hls_url].present?
 
