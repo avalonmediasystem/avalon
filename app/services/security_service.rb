@@ -22,7 +22,8 @@ class SecurityService
       uri = Addressable::URI.parse(url)
       case context[:protocol]
       when :stream_hls
-        Addressable::URI.join(Settings.streaming.http_base,uri.path).to_s
+        # Only encode spaces; all the built-in encoding methods will encode the slashes, which will break the URL.
+        Addressable::URI.join(Settings.streaming.http_base,uri.path).to_s.gsub(' ', '%20')
       else
         url
       end
