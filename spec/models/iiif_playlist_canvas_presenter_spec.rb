@@ -81,6 +81,10 @@ describe IiifPlaylistCanvasPresenter do
           @auth_service = subject[:service].find { |s| s[:type] == 'AuthAccessService2' } if subject.present?
         end
 
+        it 'provides a probe service' do
+          expect(subject[:id]).to eq Rails.application.routes.url_helpers.iiif_auth_probe_url(id: master_file.id)
+        end
+
         it 'provides an auth service' do
           expect(@auth_service[:id]).to eq Rails.application.routes.url_helpers.new_user_session_url(login_popup: 1)
         end

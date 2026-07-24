@@ -198,6 +198,7 @@ Rails.application.routes.draw do
     end
   end
 
+  match "iiif_auth_probe/:id", to: 'master_files#iiif_auth_probe', via: [:get], as: :iiif_auth_probe
   match "iiif_auth_token/:id", to: 'master_files#iiif_auth_token', via: [:get], as: :iiif_auth_token
 
   resources :derivatives, only: [:create]

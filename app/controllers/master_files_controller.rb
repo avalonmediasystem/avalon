@@ -244,16 +244,13 @@ class MasterFilesController < ApplicationController
 
   def hls_manifest
     quality = params[:quality]
-    auth_token = request.headers['Authorization']&.sub('Bearer ', '')
     if request.head?
+      auth_token = request.headers['Authorization']&.sub('Bearer ', '')
       if StreamToken.valid_token?(auth_token, @master_file.id) || can?(:read, @master_file)
         return head :ok
       else
         return head :unauthorized
       end
-    elsif auth_token.present?
-      return render json: iiif_auth_probe_resp(success: false), status: :unauthorized unless StreamToken.valid_token?(auth_token, @master_file.id) || can?(:read, @master_file)
-      render json: iiif_auth_probe_resp(success: true), status: :ok
     else
       return head :unauthorized if cannot?(:read, @master_file)
       @hls_streams = if quality == "auto"
@@ -287,6 +284,13 @@ class MasterFilesController < ApplicationController
     redirect_to edit_media_object_path(@master_file.media_object_id, step: 'structure')
   end
 
+  def iiif_auth_probe
+    auth_token = request.headers['Authorization']&.sub('Bearer ', '')
+    return render json: iiif_auth_probe_resp(success: false), status: :unauthorized unless StreamToken.valid_token?(auth_token, @master_file.id) || can?(:read, @master_file)
+
+    render json: iiif_auth_probe_resp(success: true), status: :ok
+  end
+
   def iiif_auth_token
     message_id = params[:messageId]
     origin = params[:origin]
@@ -298,16 +302,6 @@ class MasterFilesController < ApplicationController
       expires = (StreamToken.find_by(token: access_token).expires - Time.now.utc).to_i
       render 'iiif_auth_token', layout: false, locals: { message_id: message_id, origin: origin, access_token: access_token, expires: expires }
     end
-  end
-
-  def iiif_auth_probe_resp(success: false)
-    {
-      "@context": "http://iiif.io/api/auth/2/context.json",
-      "type": "AuthProbeResult2",
-      "status": success ? 200 : 401,
-      "header": success ? nil : { "en": [I18n.t('iiif.auth.failureHeader')] },
-      "note": success ? nil : { "en": [I18n.t('iiif.auth.failureDescription')] }
-    }.compact
   end
 
   def move
@@ -480,5 +474,15 @@ private
     end
     width = width.to_i
     [width, height]
+  end
+
+  def iiif_auth_probe_resp(success: false)
+    {
+      "@context": "http://iiif.io/api/auth/2/context.json",
+      "type": "AuthProbeResult2",
+      "status": success ? 200 : 401,
+      "header": success ? nil : { "en": [I18n.t('iiif.auth.failureHeader')] },
+      "note": success ? nil : { "en": [I18n.t('iiif.auth.failureDescription')] }
+    }.compact
   end
 end

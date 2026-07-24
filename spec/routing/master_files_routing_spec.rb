@@ -17,7 +17,15 @@ require "rails_helper"
 RSpec.describe MasterFilesController, type: :routing do
   describe "routing" do
     it "routes to #move" do
-      expect(:post => "/master_files/abc1234/move").to route_to("master_files#move", id: 'abc1234')
+      expect(post: "/master_files/abc1234/move").to route_to("master_files#move", id: 'abc1234')
+    end
+
+    it "routes to #iiif_auth_probe" do
+      expect(get: "/iiif_auth_probe/abc1234").to route_to("master_files#iiif_auth_probe", id: 'abc1234')
+    end
+
+    it "routes to #iiif_auth_token" do
+      expect(get: "/iiif_auth_token/abc1234").to route_to("master_files#iiif_auth_token", id: 'abc1234')
     end
   end
 end

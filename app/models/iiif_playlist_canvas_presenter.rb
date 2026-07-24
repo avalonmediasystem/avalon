@@ -265,7 +265,7 @@ class IiifPlaylistCanvasPresenter
           ]
         },
         {
-          "id": Rails.application.routes.url_helpers.hls_manifest_master_file_url(master_file.id, quality: quality),
+          "id": Rails.application.routes.url_helpers.iiif_auth_probe_url(master_file.id),
           "type": "AuthProbeService2",
           "errorNote": { "en": [I18n.t('iiif.auth.failureDescription')] },
           "errorHeading": { "en": [I18n.t('iiif.auth.failureHeader')] },
