@@ -39,6 +39,7 @@ Lw03eHTNQghS0A==
 
   describe '.rewrite_url' do
     let(:url) { "http://example.com/streaming/id" }
+    let(:url_with_spaces) { "http://example.com/streaming/file with spaces" }
     let(:context) {{ session: {}, target: 'abcd1234', protocol: :stream_hls }}
 
     context 'when AWS streaming server' do
@@ -53,6 +54,10 @@ Lw03eHTNQghS0A==
       context 'when hls' do
         it 'changes it into an hls url' do
           expect(subject.rewrite_url(url, context)).to eq "http://localhost:3000/streaming/id"
+        end
+
+        it 'encodes spaces in the URL' do
+          expect(subject.rewrite_url(url_with_spaces, context)).to eq "http://localhost:3000/streaming/file%20with%20spaces"
         end
       end
       context 'when not hls' do
