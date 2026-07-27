@@ -2547,16 +2547,24 @@ describe MediaObjectsController, type: :controller do
     end
 
     context 'caching' do
-      let!(:media_object) { FactoryBot.create(:published_media_object, visibility: 'public') }
+      let(:collection) { FactoryBot.create(:collection, default_visibility: 'public') }
+      let!(:media_object) { FactoryBot.create(:published_media_object, collection: collection) }
+      let!(:master_file) { FactoryBot.create(:master_file, :with_derivative, media_object: media_object) }
       let(:memory_store) { ActiveSupport::Cache.lookup_store(:memory_store) }
-      subject { Rails.cache.read("#{SpeedyAF::Proxy::MediaObject.find(media_object.id).cache_key_with_version}/iiif_manifest") }
+      subject { Rails.cache.read("#{SpeedyAF::Proxy::MediaObject.find(media_object.id).cache_key_with_version}/#{media_object.active_visibility}/iiif_manifest") }
 
       before do
         allow(Rails).to receive(:cache).and_return(memory_store)
         # Range ids are randomly generated. Force the id to a known value so we can equality match.
         allow_any_instance_of(IIIFManifest::V3::ManifestBuilder::RangeBuilder).to receive(:path).and_return('range')
-        presenter = IiifManifestPresenter.new(media_object: media_object, master_files: [])
+        stream_info_hash = { media_object.section_ids.first => {stream_hls: [{quality: master_file.derivatives.first.quality, mimetype: master_file.derivatives.first.mime_type, url: master_file.derivatives.first.hls_url}]} }
+        allow_any_instance_of(MediaObjectsController).to receive(:secure_stream_infos).and_return(stream_info_hash)
+        allow_any_instance_of(IIIFManifest::V3::ManifestBuilder::IIIFManifest::AnnotationPage).to receive(:index).and_return(1)
+        allow_any_instance_of(IIIFManifest::V3::ManifestBuilder::IIIFManifest::Annotation).to receive(:index).and_return(1)
+        @canvas_presenters = media_object.sections.collect { |mf| IiifCanvasPresenter.new(master_file: mf, stream_info: stream_info_hash[mf.id]) }
+        presenter = IiifManifestPresenter.new(media_object: media_object, master_files: @canvas_presenters)
         @manifest = IIIFManifest::V3::ManifestFactory.new(presenter).to_h
+        @manifest["thumbnail"] = [{ "id" => presenter.thumbnail, "type" => 'Image' }] if presenter.thumbnail
         @manifest["@context"] = @manifest["@context"].insert(1, "http://iiif.io/api/auth/2/context.json")
       end
 
@@ -2574,11 +2582,29 @@ describe MediaObjectsController, type: :controller do
         old_manifest = subject
         media_object.title = 'Test'
         media_object.save!
-        new_presenter = IiifManifestPresenter.new(media_object: media_object, master_files: [])
+        @canvas_presenters.first.master_file.reload
+        new_presenter = IiifManifestPresenter.new(media_object: media_object, master_files: @canvas_presenters)
         new_manifest = IIIFManifest::V3::ManifestFactory.new(new_presenter).to_h
+        new_manifest["thumbnail"] = [{ "id" => new_presenter.thumbnail, "type" => 'Image' }] if new_presenter.thumbnail
         new_manifest["@context"] = new_manifest["@context"].insert(1, "http://iiif.io/api/auth/2/context.json")
         get 'manifest', params: { id: media_object.id, format: 'json' }
-        new_cache = Rails.cache.read("#{SpeedyAF::Proxy::MediaObject.find(media_object.id).cache_key_with_version}/iiif_manifest")
+        new_cache = Rails.cache.read("#{SpeedyAF::Proxy::MediaObject.find(media_object.id).cache_key_with_version}/#{media_object.active_visibility}/iiif_manifest")
+        expect(new_cache).to_not eq(old_manifest)
+        expect(new_cache).to eq(new_manifest.to_json)
+      end
+
+      it 'should update the cache when the collection default_visibility is updated' do
+        get 'manifest', params: { id: media_object.id, format: 'json' }
+        old_manifest = subject
+        media_object.collection.default_visibility = 'private'
+        media_object.collection.save!
+        @canvas_presenters.first.master_file.reload
+        new_presenter = IiifManifestPresenter.new(media_object: media_object, master_files: @canvas_presenters)
+        new_manifest = IIIFManifest::V3::ManifestFactory.new(new_presenter).to_h
+        new_manifest["thumbnail"] = [{ "id" => new_presenter.thumbnail, "type" => 'Image' }] if new_presenter.thumbnail
+        new_manifest["@context"] = new_manifest["@context"].insert(1, "http://iiif.io/api/auth/2/context.json")
+        get 'manifest', params: { id: media_object.id, format: 'json' }
+        new_cache = Rails.cache.read("#{SpeedyAF::Proxy::MediaObject.find(media_object.id).cache_key_with_version}/#{media_object.active_visibility}/iiif_manifest")
         expect(new_cache).to_not eq(old_manifest)
         expect(new_cache).to eq(new_manifest.to_json)
       end
