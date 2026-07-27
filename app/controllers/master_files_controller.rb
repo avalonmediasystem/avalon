@@ -266,9 +266,13 @@ class MasterFilesController < ApplicationController
 
   def stream
     return head :unauthorized if cannot?(:read, @master_file)
+    stream = file_stream(@master_file, params[:quality])
 
-    stream = mp3_stream(@master_file)
-    redirect_to(stream)
+    if stream[:mimetype] == 'application/x-mpegURL'
+      redirect_to hls_manifest_master_file_url
+    else
+      redirect_to(stream[:url], allow_other_host: true)
+    end
   end
 
   def structure
@@ -442,11 +446,10 @@ protected
     hls_stream
   end
 
-  def mp3_stream(master_file)
+  def file_stream(master_file, quality)
     stream_info = secure_streams(master_file.stream_details, master_file.media_object_id)
-    mp3_stream = stream_info[:stream_hls].first[:url]
-    unnest_wowza_stream(mp3_stream) if Settings.streaming.server.to_sym == :wowza
-    mp3_stream
+    file_stream = stream_info[:stream_hls].find { |stream| stream[:quality] == quality }
+    file_stream
   end
 
   def unnest_wowza_stream(stream)

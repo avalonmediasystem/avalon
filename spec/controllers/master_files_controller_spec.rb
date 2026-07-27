@@ -794,6 +794,59 @@ describe MasterFilesController do
     end
   end
 
+  describe '#stream' do
+    let!(:media_object) { FactoryBot.create(:published_media_object, visibility: 'public', disable_inheritance: true) }
+    let(:master_file) { FactoryBot.create(:master_file, media_object: media_object, derivatives: [derivative]) }
+    let(:derivative) { FactoryBot.create(:derivative) }
+    let(:token) { "abcdef123456" }
+
+    before do
+      allow_any_instance_of(StreamToken).to receive(:token).and_return(token)
+    end
+
+    context 'without access' do
+      let!(:media_object) { FactoryBot.create(:published_media_object, visibility: 'private', disable_inheritance: true) }
+
+      it 'responds with unauthorized' do
+        expect(get('stream', params: { id: master_file.id, quality: 'high' })).to have_http_status(:unauthorized)
+      end
+    end
+
+    context 'with managed content' do
+      let(:derivative) { FactoryBot.create(:derivative) }
+      it 'redirects to auto.m3u8' do
+        expect(get(:stream, params: { id: master_file.id, quality: 'high' })).to redirect_to(hls_manifest_master_file_url(id: master_file.id, quality: :high))
+      end
+
+      context 'with mp3 skip transcoded content' do
+        let(:mp3_path) { 'file:///srv/avalon/content/path/to/file.mp3' }
+        let(:derivative) { FactoryBot.build(:derivative, audio_codec: 'mp3', mime_type: 'audio/mpeg', video_codec: nil, absolute_location: mp3_path ) }
+
+        it 'redirects to stream' do
+          expect(get(:stream, params: { id: master_file.id, quality: 'high' })).to redirect_to(derivative.hls_url + "?token=#{token}")
+        end
+      end
+    end
+
+    context 'with unmanaged content' do
+      let(:hls_url) { 'http://example.com/stream-url' }
+      let(:derivative) { FactoryBot.build(:derivative, managed: false, hls_url: hls_url) }
+
+      it 'redirects to stream' do
+        expect(get(:stream, params: { id: master_file.id, quality: 'high' })).to redirect_to(derivative.hls_url + "?token=#{token}")
+      end
+
+      context 'with mp3 content' do
+        let(:hls_url) { 'http://example.com/file.mp3' }
+        let(:derivative) { FactoryBot.build(:derivative, managed: false, audio_codec: 'mp3', mime_type: 'audio/mpeg', hls_url: hls_url ) }
+
+        it 'redirects to stream' do
+          expect(get(:stream, params: { id: master_file.id, quality: 'high' })).to redirect_to(derivative.hls_url + "?token=#{token}")
+        end
+      end
+    end
+  end
+
   describe '#move' do
     let(:master_file) { FactoryBot.create(:master_file, :with_media_object) }
     let(:target_media_object) { FactoryBot.create(:media_object) }

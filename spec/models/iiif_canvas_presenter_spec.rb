@@ -133,8 +133,9 @@ describe IiifCanvasPresenter do
           expect(subject.format).to eq 'audio/mpeg'
         end
 
-        it 'has progressive download url' do
-          expect(subject.url).to eq mp3_url
+        it 'has stream url without stream token' do
+          expect(subject.url).to eq Rails.application.routes.url_helpers.stream_master_file_url(derivative.master_file.id, quality: derivative.quality)
+          expect(subject.url).not_to include "token="
         end
       end
     end
@@ -161,8 +162,9 @@ describe IiifCanvasPresenter do
           expect(subject.format).to eq 'video/mp4'
         end
 
-        it 'has progressive download url' do
-          expect(subject.url).to eq mp4_url
+        it 'has stream url without stream token' do
+          expect(subject.url).to eq Rails.application.routes.url_helpers.stream_master_file_url(derivative.master_file.id, quality: derivative.quality)
+          expect(subject.url).not_to include "token="
         end
       end
     end
