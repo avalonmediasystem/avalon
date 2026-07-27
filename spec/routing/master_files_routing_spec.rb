@@ -19,5 +19,9 @@ RSpec.describe MasterFilesController, type: :routing do
     it "routes to #move" do
       expect(:post => "/master_files/abc1234/move").to route_to("master_files#move", id: 'abc1234')
     end
+
+    it "routes to stream" do
+      expect(get: "/master_files/abc1234/high.mp3").to route_to("master_files#stream", id: 'abc1234', quality: 'high')
+    end
   end
 end

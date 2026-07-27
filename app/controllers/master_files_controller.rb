@@ -264,6 +264,13 @@ class MasterFilesController < ApplicationController
     end
   end
 
+  def stream
+    return head :unauthorized if cannot?(:read, @master_file)
+
+    stream = mp3_stream(@master_file)
+    redirect_to(stream)
+  end
+
   def structure
     authorize! :read, @master_file, message: "You do not have sufficient privileges"
     render json: @master_file.structuralMetadata.as_json
@@ -433,6 +440,13 @@ protected
     hls_stream = stream_info[:stream_hls].select { |stream| stream[:quality] == quality }
     unnest_wowza_stream(hls_stream&.first) if Settings.streaming.server.to_sym == :wowza
     hls_stream
+  end
+
+  def mp3_stream(master_file)
+    stream_info = secure_streams(master_file.stream_details, master_file.media_object_id)
+    mp3_stream = stream_info[:stream_hls].first[:url]
+    unnest_wowza_stream(mp3_stream) if Settings.streaming.server.to_sym == :wowza
+    mp3_stream
   end
 
   def unnest_wowza_stream(stream)
