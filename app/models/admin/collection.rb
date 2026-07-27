@@ -262,16 +262,6 @@ class Admin::Collection < ActiveFedora::Base
     end
   end
 
-  def default_visibility
-    if default_read_groups.include? Hydra::AccessControls::AccessRight::PERMISSION_TEXT_VALUE_PUBLIC
-      Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_PUBLIC
-    elsif default_read_groups.include? Hydra::AccessControls::AccessRight::PERMISSION_TEXT_VALUE_AUTHENTICATED
-      Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_AUTHENTICATED
-    else
-      Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_PRIVATE
-    end
-  end
-
   def default_visibility_changed?
     !!@default_visibility_will_change
   end

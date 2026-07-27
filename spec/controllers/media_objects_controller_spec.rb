@@ -2520,12 +2520,29 @@ describe MediaObjectsController, type: :controller do
 
     context 'read from solr' do
       let!(:master_file) { FactoryBot.create(:master_file, :with_derivative, media_object: media_object) }
-      let!(:media_object) { FactoryBot.create(:published_media_object, visibility: 'public') }
-      it 'should not read from fedora' do
-        perform_enqueued_jobs(only: MediaObjectIndexingJob)
-        WebMock.reset_executed_requests!
-        get 'manifest', params: { id: media_object.id, format: 'json' }
-        expect(a_request(:any, /#{ActiveFedora.fedora.base_uri}/)).not_to have_been_made
+
+      context 'with disable inheritance' do
+        let(:collection) { FactoryBot.create(:collection, default_visibility: 'private') }
+        let(:media_object) { FactoryBot.create(:published_media_object, collection: collection, visibility: 'public', disable_inheritance: true) }
+
+        it 'should not read from fedora' do
+          perform_enqueued_jobs(only: MediaObjectIndexingJob)
+          WebMock.reset_executed_requests!
+          get 'manifest', params: { id: media_object.id, format: 'json' }
+          expect(a_request(:any, /#{ActiveFedora.fedora.base_uri}/)).not_to have_been_made
+        end
+      end
+
+      context 'with inheritance' do
+        let(:collection) { FactoryBot.create(:collection, default_visibility: 'public') }
+        let(:media_object) { FactoryBot.create(:published_media_object, collection: collection, visibility: 'private', disable_inheritance: false) }
+
+        it 'should not read from fedora' do
+          perform_enqueued_jobs(only: MediaObjectIndexingJob)
+          WebMock.reset_executed_requests!
+          get 'manifest', params: { id: media_object.id, format: 'json' }
+          expect(a_request(:any, /#{ActiveFedora.fedora.base_uri}/)).not_to have_been_made
+        end
       end
     end
 
