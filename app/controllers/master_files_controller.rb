@@ -272,6 +272,9 @@ class MasterFilesController < ApplicationController
       return head :not_found
     elsif stream[:mimetype] == 'application/x-mpegURL'
       redirect_to hls_manifest_master_file_url
+    elsif stream[:url]&.split('?')&.first.blank?
+      # an empty master file hls_url will result in a stream url with only the query fragment including the token
+      return head :not_found
     else
       redirect_to(stream[:url], allow_other_host: true)
     end
