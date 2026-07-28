@@ -826,6 +826,14 @@ describe MasterFilesController do
           end
         end
 
+        context 'with derivative missing stream url' do
+          let(:hls_url) { "" } # nil leads to errors so using empty string
+
+          it 'returns 404 not found' do
+            expect(get(:stream, params: { id: master_file.id, quality: 'high' })).to have_http_status(:not_found)
+          end
+        end
+
         context 'with no derivatives' do
           let(:master_file) { FactoryBot.create(:master_file, media_object: media_object, derivatives: []) }
 
