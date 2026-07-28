@@ -268,7 +268,9 @@ class MasterFilesController < ApplicationController
     return head :unauthorized if cannot?(:read, @master_file)
     stream = file_stream(@master_file, params[:quality])
 
-    if stream[:mimetype] == 'application/x-mpegURL'
+    if stream.nil?
+      return head :not_found
+    elsif stream[:mimetype] == 'application/x-mpegURL'
       redirect_to hls_manifest_master_file_url
     else
       redirect_to(stream[:url], allow_other_host: true)
@@ -449,6 +451,7 @@ protected
   def file_stream(master_file, quality)
     stream_info = secure_streams(master_file.stream_details, master_file.media_object_id)
     file_stream = stream_info[:stream_hls].find { |stream| stream[:quality] == quality }
+    file_stream ||= stream_info[:stream_hls].first
     file_stream
   end
 
