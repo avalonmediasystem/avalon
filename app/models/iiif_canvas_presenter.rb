@@ -103,7 +103,8 @@ class IiifCanvasPresenter
 
   def video_display_content(quality, url, mimetype)
     if mimetype.present? && mimetype != 'application/x-mpegURL'
-      IIIFManifest::V3::DisplayContent.new(url, **manifest_attributes(quality, 'Video', mimetype: mimetype))
+      IIIFManifest::V3::DisplayContent.new(Rails.application.routes.url_helpers.stream_master_file_url(master_file.id, quality: quality),
+                                           **manifest_attributes(quality, 'Video', mimetype: mimetype))
     else
       IIIFManifest::V3::DisplayContent.new(Rails.application.routes.url_helpers.hls_manifest_master_file_url(master_file.id, quality: quality),
                                            **manifest_attributes(quality, 'Video'))
@@ -116,7 +117,8 @@ class IiifCanvasPresenter
 
   def audio_display_content(quality, url, mimetype)
     if mimetype.present? && mimetype != 'application/x-mpegURL'
-      IIIFManifest::V3::DisplayContent.new(url, **manifest_attributes(quality, 'Sound', mimetype: mimetype))
+      IIIFManifest::V3::DisplayContent.new(Rails.application.routes.url_helpers.stream_master_file_url(master_file.id, quality: quality),
+                                           **manifest_attributes(quality, 'Sound', mimetype: mimetype))
     else
       IIIFManifest::V3::DisplayContent.new(Rails.application.routes.url_helpers.hls_manifest_master_file_url(master_file.id, quality: quality),
                                            **manifest_attributes(quality, 'Sound'))

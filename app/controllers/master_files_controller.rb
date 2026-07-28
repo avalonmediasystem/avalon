@@ -264,6 +264,22 @@ class MasterFilesController < ApplicationController
     end
   end
 
+  def stream
+    return head :unauthorized if cannot?(:read, @master_file)
+    stream = file_stream(@master_file, params[:quality])
+
+    if stream.nil?
+      return head :not_found
+    elsif stream[:mimetype] == 'application/x-mpegURL'
+      redirect_to hls_manifest_master_file_url
+    elsif stream[:url]&.split('?')&.first.blank?
+      # an empty master file hls_url will result in a stream url with only the query fragment including the token
+      return head :not_found
+    else
+      redirect_to(stream[:url], allow_other_host: true)
+    end
+  end
+
   def structure
     authorize! :read, @master_file, message: "You do not have sufficient privileges"
     render json: @master_file.structuralMetadata.as_json
@@ -433,6 +449,13 @@ protected
     hls_stream = stream_info[:stream_hls].select { |stream| stream[:quality] == quality }
     unnest_wowza_stream(hls_stream&.first) if Settings.streaming.server.to_sym == :wowza
     hls_stream
+  end
+
+  def file_stream(master_file, quality)
+    stream_info = secure_streams(master_file.stream_details, master_file.media_object_id)
+    file_stream = stream_info[:stream_hls].find { |stream| stream[:quality] == quality }
+    file_stream ||= stream_info[:stream_hls].first
+    file_stream
   end
 
   def unnest_wowza_stream(stream)

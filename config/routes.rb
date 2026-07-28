@@ -175,6 +175,7 @@ Rails.application.routes.draw do
       get :captions
       get :waveform
       match ':quality.m3u8', to: 'master_files#hls_manifest', via: [:get], as: :hls_manifest
+      match ':quality', to: 'master_files#stream', via: [:get], as: :stream
       get 'structure', to: 'master_files#structure', constraints: { format: 'json' }
       post 'structure', to: 'master_files#set_structure', constraints: { format: 'json' }
       delete 'structure', to: 'master_files#delete_structure', constraints: { format: 'json' }
