@@ -2526,7 +2526,6 @@ describe MediaObjectsController, type: :controller do
         presenter = IiifManifestPresenter.new(media_object: media_object, master_files: @canvas_presenters)
         @manifest = IIIFManifest::V3::ManifestFactory.new(presenter).to_h
         @manifest["thumbnail"] = [{ "id" => presenter.thumbnail, "type" => 'Image' }] if presenter.thumbnail
-        @manifest["@context"] = @manifest["@context"].insert(1, "http://iiif.io/api/auth/2/context.json")
       end
 
       after do
@@ -2535,20 +2534,18 @@ describe MediaObjectsController, type: :controller do
 
       it 'should cache the iiif manifest' do
         get 'manifest', params: { id: media_object.id, format: 'json' }
-        expect(subject).to be_a(IIIFManifest::V3::ManifestBuilder::IIIFManifest)
-        expect(subject.to_json).to eq(@manifest.to_json)
+        expect(subject).to eq(@manifest.to_json)
       end
 
       it 'should update the cache when the media object is updated' do
         get 'manifest', params: { id: media_object.id, format: 'json' }
-        old_manifest = subject.to_json
+        old_manifest = subject
         media_object.title = 'Test'
         media_object.save!
         @canvas_presenters.first.master_file.reload
         new_presenter = IiifManifestPresenter.new(media_object: media_object, master_files: @canvas_presenters)
         new_manifest = IIIFManifest::V3::ManifestFactory.new(new_presenter).to_h
         new_manifest["thumbnail"] = [{ "id" => new_presenter.thumbnail, "type" => 'Image' }] if new_presenter.thumbnail
-        new_manifest["@context"] = new_manifest["@context"].insert(1, "http://iiif.io/api/auth/2/context.json")
         get 'manifest', params: { id: media_object.id, format: 'json' }
         new_cache = Rails.cache.read("#{SpeedyAF::Proxy::MediaObject.find(media_object.id).cache_key_with_version}/#{media_object.active_visibility}/iiif_manifest")
         expect(new_cache).to_not eq(old_manifest)
@@ -2564,7 +2561,6 @@ describe MediaObjectsController, type: :controller do
         new_presenter = IiifManifestPresenter.new(media_object: media_object, master_files: @canvas_presenters)
         new_manifest = IIIFManifest::V3::ManifestFactory.new(new_presenter).to_h
         new_manifest["thumbnail"] = [{ "id" => new_presenter.thumbnail, "type" => 'Image' }] if new_presenter.thumbnail
-        new_manifest["@context"] = new_manifest["@context"].insert(1, "http://iiif.io/api/auth/2/context.json")
         get 'manifest', params: { id: media_object.id, format: 'json' }
         new_cache = Rails.cache.read("#{SpeedyAF::Proxy::MediaObject.find(media_object.id).cache_key_with_version}/#{media_object.active_visibility}/iiif_manifest")
         expect(new_cache).to_not eq(old_manifest)

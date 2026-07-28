@@ -520,12 +520,12 @@ class MediaObjectsController < ApplicationController
       # TODO: implement thumbnail in iiif_manifest
       manifest["thumbnail"] = [{ "id" => presenter.thumbnail, "type" => 'Image' }] if presenter.thumbnail
 
-      manifest
+      manifest.to_json
     end
 
     respond_to do |wants|
-      wants.json { render json: cached_manifest.to_json }
-      wants.html { render json: cached_manifest.to_json }
+      wants.json { render json: cached_manifest }
+      wants.html { render json: cached_manifest }
     end
   end
 
