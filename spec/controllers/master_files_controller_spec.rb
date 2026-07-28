@@ -817,6 +817,23 @@ describe MasterFilesController do
           expect(get(:stream, params: { id: master_file.id, quality: 'high' })).to redirect_to(derivative.hls_url + "?token=#{token}")
         end
       end
+
+      context 'missing quality' do
+        context 'with other derivative' do
+          it 'redirects to first derivative' do
+            expect(derivative.quality).not_to eq 'low'
+            expect(get(:stream, params: { id: master_file.id, quality: 'low' })).to redirect_to(derivative.hls_url + "?token=#{token}")
+          end
+        end
+
+        context 'with no derivatives' do
+          let(:master_file) { FactoryBot.create(:master_file, media_object: media_object, derivatives: []) }
+
+          it 'returns 404 not found' do
+            expect(get('stream', params: { id: master_file.id, quality: 'high' })).to have_http_status(:not_found)
+          end
+        end
+      end
     end
   end
 
