@@ -24,6 +24,7 @@ class CatalogController < ApplicationController
   # These before_actions apply the hydra access controls
   before_action :enforce_show_permissions, only: :show
   before_action :load_home_page_collections, only: :index, if: proc { helpers.current_page? root_path }
+  before_action :limit_per_page, only: :index
 
   helper_method :main_content_classes
   helper_method :sidebar_classes
@@ -35,7 +36,7 @@ class CatalogController < ApplicationController
     # Default component configuration
     config.add_results_document_tool(:bookmark, partial: 'bookmark_control', if: :render_bookmarks_control?)
     config.add_results_collection_tool(:sort_widget)
-    config.add_results_collection_tool(:per_page_widget)
+    config.add_results_collection_tool(:per_page_widget, if: :current_user)
     config.add_results_collection_tool(:view_type_group)
     config.add_show_tools_partial(:bookmark, partial: 'bookmark_control', if: :render_bookmarks_control?)
     config.add_nav_action(:bookmark, partial: 'blacklight/nav/bookmark', if: :render_bookmarks_control?)
@@ -243,6 +244,10 @@ class CatalogController < ApplicationController
         collection = response.documents.select { |doc| featured_collections.include? doc.id }.sample
         @featured_collection = ::Admin::CollectionPresenter.new(collection) if collection
       end
+    end
+
+    def limit_per_page
+      blacklight_config.max_per_page = 10 unless current_user.present?
     end
 
     # Override of blacklight helper to add row class
