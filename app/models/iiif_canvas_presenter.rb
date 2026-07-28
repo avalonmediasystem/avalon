@@ -241,11 +241,10 @@ class IiifCanvasPresenter
       thumbnail: [{ id: thumbnail_url, type: 'Image' }]
     }.compact
 
-    if master_file.media_object.visibility == 'public'
-      media_hash
-    else
+    if master_file.media_object.active_visibility != 'public'
       media_hash.merge!(auth_service: auth_service(quality))
     end
+    media_hash
   end
 
   def supplemental_attributes(file, type: nil)

@@ -15,7 +15,8 @@
 require 'rails_helper'
 
 describe IiifCanvasPresenter do
-  let(:media_object) { FactoryBot.build(:media_object, visibility: 'private') }
+  let (:collection) { FactoryBot.build(:collection, default_visibility: 'private') }
+  let(:media_object) { FactoryBot.build(:media_object, collection: collection) }
   let(:derivative) { FactoryBot.build(:derivative) }
   let(:master_file) { FactoryBot.build(:master_file, media_object: media_object, derivatives: [derivative]) }
   let(:stream_info) { master_file.stream_details }
@@ -40,10 +41,35 @@ describe IiifCanvasPresenter do
       end
 
       context 'when public media object' do
-        let(:media_object) { FactoryBot.build(:media_object, visibility: 'public') }
+        context 'via disable inheritance' do
+          let(:media_object) { FactoryBot.build(:media_object, collection: collection, visibility: 'public', disable_inheritance: true) }
 
-        it "does not provide an auth service" do
-          expect(presenter.display_content.first.auth_service).to be_nil
+          it "does not provide an auth service" do
+            expect(presenter.display_content.first.auth_service).to be_nil
+          end
+        end
+        context 'via inheritance' do
+          let (:collection) { FactoryBot.build(:collection, default_visibility: 'public') }
+
+          it "does not provide an auth service" do
+            expect(presenter.display_content.first.auth_service).to be_nil
+          end
+        end
+      end
+      context 'when private media object' do
+        context 'via disable inheritance' do
+          let (:collection) { FactoryBot.build(:collection, default_visibility: 'public') }
+          let(:media_object) { FactoryBot.build(:media_object, collection: collection, visibility: 'private', disable_inheritance: true) }
+
+          it "does not provide an auth service" do
+            expect(presenter.display_content.first.auth_service).to be_present
+          end
+        end
+        context 'via inheritance' do
+          let (:collection) { FactoryBot.build(:collection, default_visibility: 'private') }
+          it "does not provide an auth service" do
+            expect(presenter.display_content.first.auth_service).to be_present
+          end
         end
       end
     end
@@ -70,10 +96,35 @@ describe IiifCanvasPresenter do
       end
 
       context 'when public media object' do
-        let(:media_object) { FactoryBot.build(:media_object, visibility: 'public') }
+        context 'via disable inheritance' do
+          let(:media_object) { FactoryBot.build(:media_object, collection: collection, visibility: 'public', disable_inheritance: true) }
 
-        it "does not provide an auth service" do
-          expect(presenter.display_content.first.auth_service).to be_nil
+          it "does not provide an auth service" do
+            expect(presenter.display_content.first.auth_service).to be_nil
+          end
+        end
+        context 'via inheritance' do
+          let (:collection) { FactoryBot.build(:collection, default_visibility: 'public') }
+
+          it "does not provide an auth service" do
+            expect(presenter.display_content.first.auth_service).to be_nil
+          end
+        end
+      end
+      context 'when private media object' do
+        context 'via disable inheritance' do
+          let (:collection) { FactoryBot.build(:collection, default_visibility: 'public') }
+          let(:media_object) { FactoryBot.build(:media_object, collection: collection, visibility: 'private', disable_inheritance: true) }
+
+          it "does not provide an auth service" do
+            expect(presenter.display_content.first.auth_service).to be_present
+          end
+        end
+        context 'via inheritance' do
+          let (:collection) { FactoryBot.build(:collection, default_visibility: 'private') }
+          it "does not provide an auth service" do
+            expect(presenter.display_content.first.auth_service).to be_present
+          end
         end
       end
     end
