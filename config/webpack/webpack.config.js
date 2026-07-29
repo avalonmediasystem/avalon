@@ -3,6 +3,16 @@ const TerserPlugin = require('terser-webpack-plugin');
 const webpack = require("webpack")
 
 module.exports = (env, argv) => {
+  // webpack's --mode flag never propagates to process.env.NODE_ENV in the
+  // build process itself (it only affects DefinePlugin substitution in the
+  // bundled output), but babel.config.js picks its JSX runtime (dev vs prod)
+  // from BABEL_ENV/NODE_ENV. Without this, babel always falls back to its
+  // 'development' default, so production bundles ship JSX compiled for the
+  // dev runtime (jsxDEV) while React resolves its production runtime at
+  // runtime — causing "jsxDEV is not a function".
+  process.env.BABEL_ENV = process.env.BABEL_ENV || argv.mode;
+  process.env.NODE_ENV = process.env.NODE_ENV || argv.mode;
+
   const isProd = argv.mode === 'production';
 
   const config = {
