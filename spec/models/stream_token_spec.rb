@@ -167,4 +167,23 @@ describe StreamToken do
       expect(StreamToken.find_by_token(valid_token)).not_to be_nil
     end
   end
+
+  describe 'renew!' do
+    let(:session) { { session_id: '00112233445566778899aabbccddeeff' } }
+    let(:token) { StreamToken.find_by_token(StreamToken.find_or_create_session_token(session, target)) }
+
+    it 'updates expires attribute' do
+      expect { token.renew! }.to change { token.expires }
+    end
+
+    context 'with string stream_token_ttl config' do
+      before do
+        allow(Settings.streaming).to receive(:stream_token_ttl).and_return("200")
+      end
+
+      it 'updates expires attribute' do
+        expect { token.renew! }.to change { token.expires }
+      end
+    end
+  end
 end
