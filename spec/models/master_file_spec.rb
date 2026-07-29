@@ -814,6 +814,48 @@ describe MasterFile do
     end
   end
 
+  describe 'stream_details' do
+    let(:master_file) { FactoryBot.create(:master_file, :with_media_object) }
+    let(:streams) do
+      [{:format=>"video",
+        :mimetype=>"application/x-mpegURL",
+        :quality=>"auto",
+        :url=>"http://test.host/master_files/#{master_file.id}/auto.m3u8"},
+      {:bitrate=>4163842,
+        :format=>"video",
+        :mimetype=>"application/x-mpegURL",
+        :quality=>"high",
+        :url=>
+         "http://localhost:3000/streams/6f69c008-06a4-4bad-bb60-26297f0b4c06/35bddaa0-fbb4-404f-ab76-58f22921529c/warning.mp4.m3u8"},
+      {:bitrate=>4163842,
+        :format=>"video",
+        :mimetype=>"application/x-mpegURL",
+        :quality=>"medium",
+        :url=>
+         "http://localhost:3000/streams/6f69c008-06a4-4bad-bb60-26297f0b4c06/35bddaa0-fbb4-404f-ab76-58f22921529c/warning.mp4.m3u8"}]
+    end
+    before do
+      master_file.derivatives += [FactoryBot.create(:derivative, quality: 'high'), FactoryBot.create(:derivative, quality: 'medium')]
+      master_file.save
+    end
+
+    it 'returns a sorted hash of hls streams' do
+      expect(master_file.stream_details[:stream_hls]).to include(hash_including(quality: 'auto'), hash_including(quality: 'high'), hash_including(quality: 'medium'))
+    end
+
+    context 'with an existing auto stream' do
+      before do
+        master_file.derivatives += [FactoryBot.create(:derivative, quality: 'auto', derivativeFile: 'file:///srv/avalon/content/path/to/auto.m3u8')]
+        master_file.save
+      end
+
+      it 'does not add auto stream if one already exists' do
+        expect(master_file.stream_details[:stream_hls].count {|s| s[:quality] == "auto" }).to eq 1
+        expect(master_file.stream_details[:stream_hls].find {|s| s[:quality] == "auto" }[:url]).to eq 'http://localhost:3000/streams/path/to/auto.m3u8.m3u8'
+      end
+    end
+  end
+
   describe 'hls_streams' do
     let(:master_file) { FactoryBot.create(:master_file) }
     let(:streams) do
@@ -841,6 +883,18 @@ describe MasterFile do
 
     it 'returns a sorted hash of hls streams' do
       expect(master_file.hls_streams).to eq streams
+    end
+
+    context 'with an existing auto stream' do
+      before do
+        master_file.derivatives += [FactoryBot.create(:derivative, quality: 'auto', derivativeFile: 'file:///srv/avalon/content/path/to/auto.m3u8')]
+        master_file.save
+      end
+
+      it 'does not add auto stream if one already exists' do
+        expect(master_file.hls_streams.count {|s| s[:quality] == "auto" }).to eq 1
+        expect(master_file.hls_streams.find {|s| s[:quality] == "auto" }[:url]).to eq 'http://localhost:3000/streams/path/to/auto.m3u8.m3u8'
+      end
     end
   end
 
