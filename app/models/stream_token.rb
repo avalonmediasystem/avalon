@@ -104,6 +104,6 @@ class StreamToken < ActiveRecord::Base
   end
 
   def renew!
-    update_attribute :expires, (Time.now.utc + Settings.streaming.stream_token_ttl.minutes)
+    update_attribute :expires, (Time.now.utc + Settings.streaming.stream_token_ttl.to_f.minutes)
   end
 end
