@@ -256,11 +256,14 @@ class MasterFilesController < ApplicationController
       render json: iiif_auth_probe_resp(success: true), status: :ok
     else
       return head :unauthorized if cannot?(:read, @master_file)
-      @hls_streams = if quality == "auto"
-                       gather_hls_streams(@master_file)
-                     else
-                       hls_stream(@master_file, quality)
-                     end
+      stream = hls_stream(@master_file, quality).first
+      case stream
+      when nil
+        render plain: 'Not Found', status: :not_found unless quality == 'auto'
+        @hls_streams = gather_hls_streams(@master_file)
+      else
+        redirect_to(stream[:url], allow_other_host: true)
+      end
     end
   end
 
