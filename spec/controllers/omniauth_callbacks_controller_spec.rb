@@ -71,9 +71,10 @@ describe Users::OmniauthCallbacksController, type: :controller do
 
     context 'when login_popup param is present' do
       let(:params) {{ login_popup: 1 }}
-      let(:self_closing_html) { '<html><head><script>window.close();</script></head><body></body><html>' }
+      let(:self_closing_html) { "<html><head><script nonce='nonce'>window.close();</script></head><body></body><html>" }
 
       it 'returns self-closing page' do
+        allow(controller).to receive(:content_security_policy_nonce).and_return("nonce")
         post :identity, params: params
         expect(response.content_type).to eq 'text/html; charset=utf-8'
         expect(response.body).to eq self_closing_html
