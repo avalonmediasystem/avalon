@@ -29,7 +29,7 @@ Unless required by applicable law or agreed to in writing, software distributed
   </div>
 
 <% content_for :page_scripts do %>
-  <script>
+  <script nonce="<%= content_security_policy_nonce %>">
     function setPopoverContent(target, new_content) {
       target._config.content = new_content;
       target.setContent();
