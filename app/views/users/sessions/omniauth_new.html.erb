@@ -20,7 +20,7 @@ Unless required by applicable law or agreed to in writing, software distributed
 <body onLoad="doSave()">
 <%= button_to 'Login', user_omniauth_authorize_path(Avalon::Authentication::VisibleProviders.first[:provider], params.slice(:provider).permit!), form: { name: 'form1' } %>
 </body>
-<script>
+<script nonce="<%= content_security_policy_nonce %>">
   function doSave() { document.form1.submit() }
 </script>
 </html>

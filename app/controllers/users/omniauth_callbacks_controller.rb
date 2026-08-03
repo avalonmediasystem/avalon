@@ -68,7 +68,7 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
 
     if login_popup?
       flash[:success] = nil
-      render inline: '<html><head><script>window.close();</script></head><body></body><html>'.html_safe
+      render inline: "<html><head><script nonce='#{content_security_policy_nonce}'>window.close();</script></head><body></body><html>".html_safe
     else
       redirect_to find_redirect_url(auth_type, lti_group: user_session&.dig(:lti_group))
     end

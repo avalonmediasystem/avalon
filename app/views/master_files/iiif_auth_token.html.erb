@@ -15,7 +15,7 @@ Unless required by applicable law or agreed to in writing, software distributed
 %>
 <html>
   <body>
-    <script>
+    <script nonce="<%= content_security_policy_nonce %>">
     window.parent.postMessage(
       {
         <%# TODO: Determine if context and type cause issue with the auth 1 flow or

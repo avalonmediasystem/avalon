@@ -111,7 +111,7 @@ Unless required by applicable law or agreed to in writing, software distributed
 <% end %>
 
 <% content_for :page_scripts do %>
-<script>
+<script nonce="<%= content_security_policy_nonce %>">
   document.addEventListener('DOMContentLoaded', function() {
     const filedataElements = queryAll('.filedata');
     filedataElements.forEach(function(filedata) {
