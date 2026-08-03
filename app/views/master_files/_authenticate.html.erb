@@ -45,7 +45,7 @@ Unless required by applicable law or agreed to in writing, software distributed
     }
   </style>
 
-  <script>
+  <script nonce="<%= content_security_policy_nonce %>">
 
     window.onload = function(){
       window["authterval"] = window.setInterval(function(){

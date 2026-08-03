@@ -59,7 +59,7 @@ Unless required by applicable law or agreed to in writing, software distributed
 </div>
 
 <% content_for :page_scripts do %>
-<script>
+<script nonce="<%= content_security_policy_nonce %>">
   document.cookie = 'test_cookie=true'
   if(!document.cookie.match(/^(.*;)?\s*test_cookie\s*=\s*[^;]+(.*)?$/)){
     const cookielessAlert = getById('cookieless');

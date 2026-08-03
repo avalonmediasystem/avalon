@@ -14,8 +14,8 @@ Unless required by applicable law or agreed to in writing, software distributed
 ---  END LICENSE_HEADER BLOCK  ---
 %>
 <% if Settings.google_analytics_tracking_id.present? %>
-  <script async src="https://www.googletagmanager.com/gtag/js?id=<%= Settings.google_analytics_tracking_id %>"></script>
-  <script>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=<%= Settings.google_analytics_tracking_id %>" nonce="<%= content_security_policy_nonce %>"></script>
+  <script nonce="<%= content_security_policy_nonce %>">
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
     gtag('js', new Date());

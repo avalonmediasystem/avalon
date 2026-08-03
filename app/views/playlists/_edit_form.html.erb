@@ -176,7 +176,7 @@ Unless required by applicable law or agreed to in writing, software distributed
 </div>
 
 <% content_for :page_scripts do %>
-  <script>
+  <script nonce="<%= content_security_policy_nonce %>">
 
     function toggleState(ele, text, state) {
       ele.innerHTML = text;

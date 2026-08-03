@@ -25,7 +25,7 @@ Unless required by applicable law or agreed to in writing, software distributed
 
 <% content_for :page_scripts do %>
 
-<script>
+<script nonce="<%= content_security_policy_nonce %>">
   document.addEventListener('DOMContentLoaded', function() {
     setInterval(shareResourceListener, 500);
 
