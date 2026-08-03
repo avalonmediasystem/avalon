@@ -15,7 +15,7 @@ Unless required by applicable law or agreed to in writing, software distributed
 %>
 <html>
   <body>
-    <script>
+    <script nonce="<%= content_security_policy_nonce %>">
     window.parent.postMessage(
       {
         "@context": "http://iiif.io/api/auth/2/context.json", 

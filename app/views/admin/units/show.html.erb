@@ -135,7 +135,7 @@ Unless required by applicable law or agreed to in writing, software distributed
 <%= render "form", modal_title: "Edit Unit Information" %>
 
 <% content_for :page_scripts do %>
-<script>
+<script nonce="<%= content_security_policy_nonce %>">
   window.addEventListener('DOMContentLoaded', function () {
     add_cropper_handler('<%= attach_poster_admin_unit_path(@unit.id) %>');
   });
