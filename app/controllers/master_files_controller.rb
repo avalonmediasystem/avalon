@@ -409,7 +409,7 @@ protected
   end
 
   def set_masterfile_proxy
-    @master_file = SpeedyAF::Proxy::MasterFile.find(params[:id], load_reflections: true)
+    @master_file = SpeedyAF::Proxy::MasterFile.find(params[:id], load_reflections: [:media_object, :derivatives])
     set_masterfile if @master_file.nil?
     @master_file
   rescue SpeedyAF::RecordNotFound
