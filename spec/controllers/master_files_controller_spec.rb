@@ -766,16 +766,29 @@ describe MasterFilesController do
       expect(get('hls_manifest', params: { id: master_file.id, quality: 'auto' })).to have_http_status(:unauthorized)
     end
 
-    it 'returns the dynamic bitrate HLS manifest' do
+    it 'returns an auto-generated variable bitrate HLS manifest' do
       login_as :administrator
       expect(get('hls_manifest', params: { id: master_file.id, quality: 'auto' })).to have_http_status(:ok)
       expect(response.content_type).to eq 'application/x-mpegURL; charset=utf-8'
     end
 
-    it 'returns a single quality HLS manifest' do
+    it 'returns not found (404) if the requested quality does not exist' do
       login_as :administrator
-      expect(get('hls_manifest', params: { id: master_file.id, quality: 'high' })).to have_http_status(:ok)
-      expect(response.content_type).to eq 'application/x-mpegURL; charset=utf-8'
+      expect(get('hls_manifest', params: { id: master_file.id, quality: 'high' })).to have_http_status(:not_found)
+    end
+
+    it 'redirects to a static variable bitrate HLS manifest if available' do
+      derivative = FactoryBot.create(:derivative, master_file: master_file, quality: 'auto')
+      login_as :administrator
+      expect(get('hls_manifest', params: { id: master_file.id, quality: 'auto' })).to have_http_status(:found)
+      expect(response.location).to start_with(derivative.hls_url)
+    end
+
+    it 'redirects to a single quality HLS manifest' do
+      derivative = FactoryBot.create(:derivative, master_file: master_file, quality: 'high')
+      login_as :administrator
+      expect(get('hls_manifest', params: { id: master_file.id, quality: 'high' })).to have_http_status(:found)
+      expect(response.location).to start_with(derivative.hls_url)
     end
 
     it 'returns a manifest if public' do
