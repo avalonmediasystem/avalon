@@ -25,7 +25,7 @@ RSpec.describe MasterFilesController, type: :routing do
     end
 
     it "routes to stream" do
-      expect(get: "/master_files/abc1234/high").to route_to("master_files#stream", id: 'abc1234', quality: 'high')
+      expect(get: "/master_files/abc1234/stream/high").to route_to("master_files#stream", id: 'abc1234', quality: 'high')
     end
   end
 end
