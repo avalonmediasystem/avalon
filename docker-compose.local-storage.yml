@@ -1,0 +1,140 @@
+volumes:
+  streaming:
+  database:
+  solr:
+  npms:
+  data:
+
+
+networks:
+  internal:
+  external:
+
+services:
+  db: &db-avalon
+    image: postgres:14-alpine
+    volumes:
+      - ./db/init-db:/docker-entrypoint-initdb.d
+      - ./db_data:/data
+    environment:
+      - PGDATA=/data
+      - POSTGRES_DB=avalon
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_HOST_AUTH_METHOD=trust
+    networks:
+      internal:
+
+  fedora: &fedora
+    image: fcrepo/fcrepo:6.5.1-tomcat9
+    environment:
+      - CATALINA_OPTS=-Dfcrepo.autoversioning.enabled=false -Dfcrepo.db.password=password -Dfcrepo.db.user=postgres -Dfcrepo.db.url=jdbc:postgresql://db:5432/fcrepo_cache -Dfcrepo.home=/data
+    depends_on:
+      - db
+    volumes:
+      - ./fedora_data:/data
+    networks:
+      internal:
+    ulimits:
+      nofile:
+        soft: '65536'
+        hard: '65536'
+
+  solr: &solr
+    image: solr:9
+    volumes:
+      - ./solr/conf:/opt/solr/avalon_conf
+      - solr:/var/solr
+    command:
+      - solr-precreate
+      - avalon
+      - /opt/solr/avalon_conf
+    environment:
+      - SOLR_MODULES=analysis-extras,extraction
+    networks:
+      internal:
+    ulimits:
+      nofile:
+        soft: '65536'
+        hard: '65536'
+
+  hls:
+    image: avalonmediasystem/nginx:avalon-8.2
+    build:
+      context: ./nginx
+    environment:
+      - AVALON_DOMAIN=http://avalon:3000
+      - VOD_MODE=local
+    volumes:
+      - streaming:/data
+      - ./log/nginx:/var/log/nginx
+      - ./nginx/nginx.conf.template:/etc/nginx/nginx.conf.template
+    ports:
+      - '8880:80'
+    networks:
+      internal:
+      external:
+
+  redis: &redis
+    image: redis:alpine
+    networks:
+      internal:
+
+  avalon: &avalon
+    image: avalonmediasystem/avalon:develop
+    build:
+      context: .
+      target: dev
+    command: bash -c "/docker_init.sh && bin/dev"
+    depends_on:
+      - db
+      - fedora
+      - solr
+      - redis
+      - hls
+    environment:
+      - APP_NAME=avalon
+      - BUNDLE_FLAGS=--with development postgres --without production test
+      - ENCODE_WORK_DIR=/streamfiles
+      - CONTROLLED_VOCABULARY=config/controlled_vocabulary.yml
+      - DATABASE_URL=postgres://postgres:password@db/avalon
+      - DATABASE_CLEANER_ALLOW_REMOTE_DATABASE_URL=true
+      - FEDORA_URL=http://fedoraAdmin:fedoraAdmin@fedora:8080/fcrepo/rest
+      - FEDORA_BASE_PATH=/dev
+      - RAILS_ENV=development
+      - RAILS_ADDITIONAL_HOSTS=avalon
+      - SETTINGS__REDIS__URL=redis://redis:6379/0
+      - SECRET_KEY_BASE=abcd
+      - SOLR_URL=http://solr:8983/solr/avalon
+      - SETTINGS__DROPBOX__PATH=./masterfiles/dropbox
+      - SETTINGS__DROPBOX__UPLOAD_URI=./masterfiles/dropbox
+      - SETTINGS__ENCODING__WORKING_FILE_PATH=/masterfiles
+      - SETTINGS__MASTER_FILE_MANAGEMENT__STRATEGY=delete
+      - SETTINGS__STREAMING__STREAM_DEFAULT_QUALITY=medium
+      - SETTINGS__STREAMING__CONTENT_PATH=/streamfiles
+      - SETTINGS__STREAMING__HTTP_BASE=http://localhost:8880/avalon
+      - SETTINGS__STREAMING__SERVER=nginx
+      - SETTINGS__STREAMING__STREAM_TOKEN_TTL=20
+      - ACTIVE_RECORD_ENCRYPTION_PRIMARY_KEY=primarykey1234
+      - ACTIVE_RECORD_ENCRYPTION_DETERMINISTIC_KEY=deterministickey1234
+      - ACTIVE_RECORD_ENCRYPTION_KEY_DERIVATION_SALT=derivationsalt1234
+      - SYSTEM_GROUPS=administrator,group_manager,manager
+      - PIDFILE=tmp/pids/server.pid
+      - PUMA_STATE_PATH=tmp/puma.state
+      - AVALON_PROFILING=true
+    volumes:
+      - .:/home/app/avalon
+      - npms:/home/app/avalon/node_modules
+      - streaming:/streamfiles
+    ports:
+      - '3000:3000'
+    networks:
+      internal:
+      external:
+    stdin_open: true
+    tty: true
+
+  worker:
+    <<: *avalon
+    command: dumb-init -- bash -c "bundle install && bundle exec sidekiq -C config/sidekiq.yml"
+    ports: []
