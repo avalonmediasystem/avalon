@@ -3,6 +3,7 @@ generic:
   http:
     video: <%=http_base%>/<%=path%>/<%=filename%>.<%=extension%>.m3u8
     audio: <%=http_base%>/<%=path%>/<%=filename%>.<%=extension%>.m3u8
+    audio_mp3: <%=http_base%>/<%=path%>/<%=filename%>.<%=extension%>
 adobe:
   http:
     video: <%=http_base%>/<%=path%>/<%=filename%>.<%=extension%>.m3u8

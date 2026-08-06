@@ -35,6 +35,7 @@ class Admin::CollectionsController < ApplicationController
       end
       builder.user = user
     end
+    builder.with_discovery_permissions([:edit])
     response = repository.search(builder)
 
     # Query solr for facet values for collection media object counts and pass into presenter to avoid making 2 solr queries per collection

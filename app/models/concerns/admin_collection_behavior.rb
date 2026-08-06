@@ -61,4 +61,14 @@ module AdminCollectionBehavior
   def inherited_virtual_read_groups
     unit.default_virtual_read_groups
   end
+
+  def default_visibility
+    if default_read_groups.include? Hydra::AccessControls::AccessRight::PERMISSION_TEXT_VALUE_PUBLIC
+      Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_PUBLIC
+    elsif default_read_groups.include? Hydra::AccessControls::AccessRight::PERMISSION_TEXT_VALUE_AUTHENTICATED
+      Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_AUTHENTICATED
+    else
+      Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_PRIVATE
+    end
+  end
 end

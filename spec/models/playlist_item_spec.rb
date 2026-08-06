@@ -52,7 +52,7 @@ RSpec.describe PlaylistItem, type: :model do
       end
 
       context 'when master file is readable by user' do
-        let(:media_object) { FactoryBot.create(:published_media_object, visibility: 'public') }
+        let(:media_object) { FactoryBot.create(:published_media_object, visibility: 'public', disable_inheritance: true) }
         let(:master_file) { FactoryBot.create(:master_file, media_object: media_object) }
 
         it{ is_expected.to be_able_to(:read, playlist_item) }
@@ -71,7 +71,7 @@ RSpec.describe PlaylistItem, type: :model do
       end
 
       context 'when master file is readable by user' do
-        let(:media_object) { FactoryBot.create(:published_media_object, visibility: 'public') }
+        let(:media_object) { FactoryBot.create(:published_media_object, visibility: 'public', disable_inheritance: true) }
         let(:master_file) { FactoryBot.create(:master_file, media_object: media_object) }
 
         it{ is_expected.to be_able_to(:read, playlist_item) }
@@ -91,7 +91,7 @@ RSpec.describe PlaylistItem, type: :model do
       end
 
       context 'when master file is readable by public' do
-        let(:media_object) { FactoryBot.create(:published_media_object, visibility: 'public') }
+        let(:media_object) { FactoryBot.create(:published_media_object, visibility: 'public', disable_inheritance: true) }
         let(:master_file) { FactoryBot.create(:master_file, media_object: media_object) }
 
         it{ is_expected.to be_able_to(:read, playlist_item) }

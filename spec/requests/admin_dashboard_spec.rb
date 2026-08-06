@@ -43,6 +43,43 @@ RSpec.describe "/admin/dashboard", type: :request do
         end
       end
 
+      context 'collection member' do
+        let(:user) { User.where(username: collection.editors.first).first }
+
+        it "returns collection data and no unit data" do
+          get admin_dashboard_url
+          expect(response).to be_successful
+          expect(response).to render_template(:index)
+
+          get admin_dashboard_url(format: :json)
+          json = JSON.parse(response.body)
+          expect(json['collections'].map { |c| c['name'] }).to include('Test Collection')
+          expect(json['units']).to be_empty
+        end
+
+        context "with separate administrative access who has special access applied at unit" do
+          let(:user) { FactoryBot.create(:user) }
+          let!(:other_collection) { FactoryBot.create(:collection, name: 'Other Collection', editors: [user.user_key]) }
+
+          before do
+            collection.unit.default_read_users += [user.user_key]
+            collection.unit.save
+          end
+
+          it "returns correct collection data" do
+            get admin_dashboard_url
+            expect(response).to be_successful
+            expect(response).to render_template(:index)
+
+            get admin_dashboard_url(format: :json)
+            json = JSON.parse(response.body)
+            expect(json['collections'].map { |c| c['name'] }).to include('Other Collection')
+            expect(json['collections'].map { |c| c['name'] }).not_to include('Test Collection')
+            expect(json['units']).to be_empty
+          end
+        end
+      end
+
       context 'collection manager' do
         let(:user) { User.where(username: collection.managers.first).first }
 

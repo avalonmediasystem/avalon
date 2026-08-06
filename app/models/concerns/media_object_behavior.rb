@@ -159,4 +159,8 @@ module MediaObjectBehavior
     return false unless collection
     collection.default_visibility
   end
+
+  def active_visibility
+    disable_inheritance? ? visibility : inherited_visibility
+  end
 end

@@ -15,7 +15,7 @@
 require 'rails_helper'
 
 describe 'oembed', type: :request do
-  let(:media_object) { FactoryBot.create(:published_media_object, visibility: 'public') }
+  let(:media_object) { FactoryBot.create(:published_media_object, visibility: 'public', disable_inheritance: true) }
   let(:master_file) { FactoryBot.create(:master_file, media_object: media_object, title: 'Test Video') }
 
   before do
