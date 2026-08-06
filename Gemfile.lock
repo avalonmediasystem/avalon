@@ -50,6 +50,14 @@ GIT
       ims-lti
       omniauth
 
+GIT
+  remote: https://github.com/samvera/iiif_manifest.git
+  revision: f8d8d904fc14731f8adc53045296b5606dfa81a8
+  branch: main
+  specs:
+    iiif_manifest (1.6.0)
+      activesupport (>= 4)
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -453,8 +461,6 @@ GEM
     i18n (1.14.8)
       concurrent-ruby (~> 1.0)
     iconv (1.0.8)
-    iiif_manifest (1.6.0)
-      activesupport (>= 4)
     ims-lti (1.1.13)
       builder
       oauth (>= 0.4.5, < 0.6)
@@ -1031,7 +1037,7 @@ DEPENDENCIES
   httpx
   hydra-head (~> 13.0)
   iconv (~> 1.0.6)
-  iiif_manifest (~> 1.6)
+  iiif_manifest!
   ims-lti (~> 1.1.13)
   jbuilder (~> 2.0)
   jquery-rails
