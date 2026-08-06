@@ -24,7 +24,7 @@ Unless required by applicable law or agreed to in writing, software distributed
 <input id="taglist" name="playlist[tags]" type="hidden" />
 
 <% content_for :page_scripts do %>
-  <script>
+  <script nonce="<%= content_security_policy_nonce %>">
     document.addEventListener('DOMContentLoaded', function() {
       const tagSelect = new TomSelect(getById('tag-select'), {
         plugins: ['remove_button'],

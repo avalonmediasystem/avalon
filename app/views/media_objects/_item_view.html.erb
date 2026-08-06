@@ -70,7 +70,7 @@ Unless required by applicable law or agreed to in writing, software distributed
 </div>
 
 <% content_for :page_scripts do %>
-  <script>
+  <script nonce="<%= content_security_policy_nonce %>">
     // When viewing video on smaller devices scroll to page content to fully
     // display the video player
     document.addEventListener('DOMContentLoaded', function () {
