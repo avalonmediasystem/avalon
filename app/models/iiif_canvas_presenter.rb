@@ -245,7 +245,7 @@ class IiifCanvasPresenter
     }.compact
 
     if master_file.media_object.active_visibility != 'public'
-      media_hash.merge!(auth_service: auth_service(quality), auth2_service: auth2_service(quality))
+      media_hash.merge!(auth_service: auth_service(quality), auth2_service: auth2_service)
     end
     media_hash
   end

@@ -15,7 +15,7 @@ module IiifAuthService
       "profile": "http://iiif.io/api/auth/1/login",
       "service": [
         {
-          "@id": probe_url(quality),
+          "@id": hls_manifest_url(quality),
           "@type": "AuthProbeService1",
           "profile": "http://iiif.io/api/auth/1/probe"
         },
@@ -34,9 +34,9 @@ module IiifAuthService
     }
   end
 
-  def auth2_service(quality = 'auto')
+  def auth2_service
     {
-      "id": probe_url(quality),
+      "id": probe_url,
       "type": "AuthProbeService2",
       "errorNote": { "en": [I18n.t('iiif.auth.failureDescription')] },
       "errorHeading": { "en": [I18n.t('iiif.auth.failureHeader')] },
@@ -80,7 +80,11 @@ module IiifAuthService
     Rails.application.routes.url_helpers.iiif_auth_token_url(id: master_file.id)
   end
 
-  def probe_url(quality)
+  def probe_url
+    Rails.application.routes.url_helpers.iiif_auth_probe_url(master_file.id)
+  end
+
+  def hls_manifest_url(quality)
     Rails.application.routes.url_helpers.hls_manifest_master_file_url(master_file.id, quality: quality)
   end
 end
