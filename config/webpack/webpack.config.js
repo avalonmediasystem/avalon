@@ -38,7 +38,7 @@ module.exports = (env, argv) => {
         },
         {
           test: /\.(js|jsx)$/,
-          exclude: /node_modules/,
+          exclude: /node_modules\/(?!(peaks\.js|waveform-data)\/).*/,
           use: {
             loader: 'babel-loader',
           }
