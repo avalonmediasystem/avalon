@@ -63,7 +63,7 @@ Unless required by applicable law or agreed to in writing, software distributed
                   <span class="mediaobject-filename" id= <%= "truncated_#{section.id}" %> title="<%= filename %>">
                     <%= truncate_center(filename, 30, 10) %>
                   </span>
-                  <span class="mediaobject-filename" id= <%= "full_#{section.id}" %> style="display: none;" title="<%= filename %>">
+                  <span class="mediaobject-filename full" id= <%= "full_#{section.id}" %> title="<%= filename %>">
                     <%= filename %>
                   </span>
                   <span><%= number_to_human_size(section.file_size) %></span>
@@ -196,18 +196,17 @@ Unless required by applicable law or agreed to in writing, software distributed
 
             <%- field_tag_options = defined?(uploader_options) ? uploader_options : {multiple: true} %>
 
-            <span class="fileinput"
-              style="background-color: white; padding-top: 8px; padding-bottom: 2px; border: none;">
+            <span class="fileinput skip-transcoding">
               <%= check_box_tag(:workflow, 'skip_transcoding', false, id: 'skip_transcoding')%>
               <%= label_tag(:skip_transcoding) do %>
-                <div style="font-size: inherit;" class="tooltip-help" data-title="Skip Transcoding"
+                <div class="tooltip-help skip-transcoding-tooltip" data-title="Skip Transcoding"
                   data-tooltip="#skip-transcoding-tooltip">
                   Skip transcoding
                 </div>
               <% end %>
             </span>
 
-            <div class="fileinput input-group mb-3" id="file-upload" data-provides="fileinput"  style="height: 33px">
+            <div class="fileinput input-group mb-3" id="file-upload" data-provides="fileinput">
               <input type="file" class="form-control" id="file-input" name="Filedata[]" data-testid="media-object-edit-select-file-btn">
               <button href="#" class="fileinput-submit btn btn-outline btn-file file-upload-buttons"
                 data-trigger="submit" data-testid="media-object-edit-upload-btn" disabled='true'>Upload</button>
