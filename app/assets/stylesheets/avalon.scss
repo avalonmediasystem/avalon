@@ -1327,6 +1327,17 @@ h5.card-title {
   margin-bottom: 3rem;
 }
 
+/* De-inlining styles */
+// Styling for variations import option
+.varitions_import_form {
+  display: inline;
+  // Variations import
+  .filedata {
+    visibility: hidden;
+    display: inline;
+    width: 0;
+  }
+}
 .row.admin {
   padding-top: 3rem;
 }
@@ -1416,4 +1427,94 @@ h5.card-title {
 
 .failed-login {
   display: none;
+}
+
+#title_error {
+  display:none;
+}
+
+.move_to_playlist, .copy_to_playlist {
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+#items.dd-list {
+  list-style: none;
+
+  .title, .edit-btn {
+    margin-top: 5px;
+  }
+
+  .title_original,
+  .start_time_original,
+  .end_time_original,
+  .comment_original {
+    display: none;
+  }
+
+  .clip_start, .clip-end {
+    text-align: right;
+    margin-top: 2pt;
+  }
+}
+
+.alert.playlist-item-edit {
+  padding:0 10px;
+  margin-bottom: 0;
+}
+
+.playlist-details-headline-wrapper.headline {
+  display: inline-block;
+}
+
+.playlist-share {
+  margin-top: 9px;
+}
+
+.playlist-new-link, .timeline-new-link {
+  margin-right: 5px;
+}
+
+.new-link-template {
+  width: 15em;
+}
+
+.playlist-tags {
+  width: 100%;
+}
+
+.timelines-tags {
+  width: 100%;
+  display: none;
+}
+
+.card.playlist-import {
+  background-color: #F9F9F9;
+}
+
+#clip-success, #clip-error {
+  font-weight: bold;
+}
+
+#timeline_token_row {
+  margin-top: 9px;
+}
+
+#timeline_lti_share {
+  .container {
+    margin-top: 9px;
+  }
+}
+
+#timeline_source {
+  padding: 7px 0 7px 0;
+}
+
+#timeline_details {
+  display: inline-block;
+}
+
+#helpTags.timeline {
+  padding-top: 5px;
+  font-style: italic;
 }
