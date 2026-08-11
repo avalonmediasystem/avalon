@@ -45,7 +45,7 @@ Unless required by applicable law or agreed to in writing, software distributed
             <ul class="dropdown-menu dropdown-menu-right">
               <% @playlists.each do |p| %>
               <li class="dropdown-item">
-                <a data-id="<%= p.id %>" style="text-decoration:underline; cursor:pointer"
+                <a data-id="<%= p.id %>"
                   class="move_to_playlist" form="edit_playlist_<%= @playlist.id %>"><%= p.title %></a>
               </li>
               <% end # @playlist.each%>
@@ -60,7 +60,7 @@ Unless required by applicable law or agreed to in writing, software distributed
             <ul class="dropdown-menu dropdown-menu-right">
               <% @playlists.each do |p| %>
               <li class="dropdown-item">
-                <a data-id="<%= p.id %>" style="text-decoration:underline; cursor:pointer"
+                <a data-id="<%= p.id %>"
                   class="copy_to_playlist" form="edit_playlist_<%= @playlist.id %>"><%= p.title %></a>
               </li>
               <% end # @playlist.each%>
@@ -76,7 +76,7 @@ Unless required by applicable law or agreed to in writing, software distributed
 
     <%= form_for(@playlist, html: { id: 'playlist_sort_form', class: 'playlist_actions' }) do |fs| %>
     <div class="dd" data-playlist_id="<%= @playlist.id %>">
-      <ol id="items" class="dd-list" style="list-style: none">
+      <ol id="items" class="dd-list">
         <% clips = @playlist.clips_with_section_proxies %>
         <% @playlist.items.each_with_index do |i, index| %>
           <% clip = clips[index] %>
@@ -88,10 +88,10 @@ Unless required by applicable law or agreed to in writing, software distributed
               <%= hidden_field_tag "playlist[items_attributes[#{index}[id]]]", i.id, form: 'playlist_sort_form' %>
             </div>
             <% if can? :read, clip.master_file %>
-              <div class="col-sm-8 title" style="margin-top:5px">
+              <div class="col-sm-8 title">
                 <%= link_to clip.title, clip.mediafragment_uri, id: "playlist_item_title_label_#{i.id}" %>
               </div>
-              <div class="col-sm-2 text-right" style="margin-top:5px">
+              <div class="col-sm-2 text-right edit-btn">
                 <button id="playlist_item_edit_button" class="btn btn-sm edit-details-icon-btn" <%= clip.master_file.nil? ? 'disabled' : '' %>
                   data-bs-toggle="collapse" href="#playlist_item_edit_<%= i.id %>" aria-expanded="false" type="button" aria-label="Edit playlist item <%= index + 1 %>">
                   <i class="fa fa-edit"></i>
@@ -102,7 +102,7 @@ Unless required by applicable law or agreed to in writing, software distributed
                 </label>
               </div>
             <% else %>
-              <div class="col-sm-9 title" style="margin-top:5px">
+              <div class="col-sm-9 title">
                 <% if clip.master_file.nil? %>
                   <i class="fa fa-times-circle" title="The source for this item has been deleted"></i>
                   <span class="playlist_item_denied">[deleted item]</span>
@@ -127,28 +127,28 @@ Unless required by applicable law or agreed to in writing, software distributed
                   <%= pif.label :title, class: 'col-sm-2 col-form-label' %>
                   <div class="col-sm-10">
                     <%= text_field_tag :title, i.title, class: 'form-control', id: "avalon_clip_title_#{i.id}", form:"playlist_item_form_#{i.id}", aria: { label: 'Playlist item title' } %>
-                    <span style='display:none' class='title_original' data-value="<%= i.title %>"></span>
+                    <span class='title_original' data-value="<%= i.title %>"></span>
                   </div>
                 </div>
                 <div class="mb-3 row">
-                  <div class="col-sm-2" style="text-align:right;margin-top:2pt"><%= pif.label :start_time, class: 'col-form-label' %></div>
+                  <div class="col-sm-2 clip-start"><%= pif.label :start_time, class: 'col-form-label' %></div>
                   <div class="col-sm-4">
                     <%= text_field_tag :start_time, pretty_time(i.start_time), class: 'form-control', id: "avalon_clip_start_time_#{i.id}", form:"playlist_item_form_#{i.id}", aria: { label: 'Playlist item start time' } %>
-                    <span style='display:none' class='start_time_original' data-value="<%= pretty_time(i.start_time) %>"></span>
+                    <span class='start_time_original' data-value="<%= pretty_time(i.start_time) %>"></span>
                   </div>
-                  <div class="col-sm-2" style="text-align:right;margin-top:2pt">
+                  <div class="col-sm-2 clip-end">
                     <%= pif.label :end_time, class: 'col-form-label' %>
                   </div>
                   <div class="col-sm-4">
                     <%= text_field_tag :end_time, pretty_time(i.end_time), class: 'form-control', id: "avalon_clip_end_time_#{i.id}", form:"playlist_item_form_#{i.id}", aria: { label: 'Playlist item end time' } %>
-                    <span style='display:none' class='end_time_original' data-value="<%= pretty_time(i.end_time) %>"></span>
+                    <span class='end_time_original' data-value="<%= pretty_time(i.end_time) %>"></span>
                   </div>
                 </div>
                 <div class="mb-3 row">
                   <%= pif.label :comment, class: 'col-sm-2 col-form-label' %>
                   <div class="col-sm-10">
                     <%= text_area_tag :comment, i.comment, class: 'form-control', id: "avalon_clip_comment_#{i.id}", form:"playlist_item_form_#{i.id}", aria: { label: 'Playlist item comment' } %>
-                    <span style='display:none' class='comment_original' data-value="<%= i.comment %>"></span>
+                    <span class='comment_original' data-value="<%= i.comment %>"></span>
                   </div>
                 </div>
                 <div class="mb-3 row">
@@ -287,7 +287,7 @@ Unless required by applicable law or agreed to in writing, software distributed
           .then(response => response.json())
           .then(function(response) {
             // alert success
-            let alert = "<div class='alert alert-success' style='padding:0 10px; margin-bottom: 0;'>";
+            let alert = "<div class='alert alert-success playlist-item-edit'>";
             alert += "<button type='button' class='btn-close' data-bs-dismiss='alert'></button>";
             alert += "<span>" + response.message + "</span></div>";
             getById('playlist_item_edit_alert_' + id).innerHTML = alert;
@@ -311,7 +311,7 @@ Unless required by applicable law or agreed to in writing, software distributed
           })
           .catch(function(error) {
             // alert failure
-            let alert = "<div class='alert alert-danger' style='padding:0 10px; margin-bottom: 0;'>";
+            let alert = "<div class='alert alert-danger playlist-item-edit'>";
             alert += "<button type='button' class='btn-close' data-bs-dismiss='alert'></button>";
             alert += "<span>" + (error.message || 'An error occurred') + "</span></div>";
             getById('playlist_item_edit_alert_' + id).innerHTML = alert;
