@@ -13,7 +13,7 @@ Unless required by applicable law or agreed to in writing, software distributed
   specific language governing permissions and limitations under the License.
 ---  END LICENSE_HEADER BLOCK  ---
 %>
-<div class="modal fade" id="timelineModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" style="display: none;" data-title="<%= @media_object.title %>">
+<div class="modal fade" id="timelineModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" data-title="<%= @media_object.title %>">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
@@ -22,7 +22,7 @@ Unless required by applicable law or agreed to in writing, software distributed
       <div class="modal-body">
         <div id="new-timeline-inputs">
         </div>
-        <div style="border-top: 1px dotted #e5e5e5;margin-top: 11px; padding-top: 11px;">
+        <div id="new-timeline-structure">
           <%= form_tag(timelines_path, id: 'new-timeline-form') do %>
             <input type='hidden' name='timeline[title]' id='new-timeline-title'/>
             <input type='hidden' name='timeline[source]' id='new-timeline-source'/>
