@@ -34,7 +34,7 @@ Unless required by applicable law or agreed to in writing, software distributed
           <% elsif defined?(autocomplete_model) && autocomplete_model.present? %>
             <%# This div is necessary for proper rendering of the typeahead dropdown 
               without screwing up styling in the rest of the form %>
-            <div style='display: flex;'>
+            <div class='access-typeahead'>
               <%= render partial: 'modules/autocomplete_input', locals: { field_name: "add_#{access_object}",
                                                                           model: autocomplete_model,
                                                                           id: object.id,
