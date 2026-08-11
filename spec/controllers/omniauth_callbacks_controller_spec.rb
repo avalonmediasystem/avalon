@@ -183,4 +183,55 @@ describe Users::OmniauthCallbacksController, type: :controller do
       end
     end
   end
+
+  describe '#after_omniauth_failure_path_for' do
+    let(:app) { ->(_env) { [200, {}, ['ok']] } }
+
+    before do
+      @request.env['omniauth.error.type'] = :invalid_credentials
+      @request.env['omniauth.error.strategy'] = strategy
+    end
+
+    context 'lti 1.1' do
+      let(:strategy) { OmniAuth::Strategies::Lti.new(app, Avalon::Lti::Configuration) }
+
+      context 'when launch_presentation_return_url is present' do
+        it 'redirects to it with an lti_errormsg param' do
+          @request.params['launch_presentation_return_url'] = 'https://lms.example.edu/return'
+          path = controller.send(:after_omniauth_failure_path_for, :user)
+          uri = Addressable::URI.parse(path)
+          expect(uri.host).to eq('lms.example.edu')
+          expect(uri.query_values).to have_key('lti_errormsg')
+        end
+      end
+
+      context 'when launch_presentation_return_url is absent' do
+        it 'falls back to the sign-in page' do
+          path = controller.send(:after_omniauth_failure_path_for, :user)
+          expect(path).to eq(new_user_session_path(:user))
+        end
+      end
+    end
+
+    context 'lti 1.3' do
+      let(:strategy) { OmniAuth::Strategies::Lti13.new(app) }
+
+      context 'when target_link_uri is present' do
+        it 'redirects to it with an lti_errormsg param' do
+          @request.params['target_link_uri'] = 'https://lms.example.edu/course/launch'
+          path = controller.send(:after_omniauth_failure_path_for, :user)
+          uri = Addressable::URI.parse(path)
+          expect(uri.host).to eq('lms.example.edu')
+          expect(uri.query_values).to have_key('lti_errormsg')
+        end
+      end
+
+      context 'when target_link_uri is absent (e.g. a callback-phase failure)' do
+        it 'falls back to the sign-in page' do
+          path = controller.send(:after_omniauth_failure_path_for, :user)
+          expect(path).to eq(new_user_session_path(:user))
+        end
+      end
+    end
+  end
 end

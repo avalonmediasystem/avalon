@@ -30,7 +30,16 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
     when 'lti'
       default_msg = I18n.t 'devise.omniauth_callbacks.failure', reason: failure_message
       msg = I18n.t 'devise.omniauth_callbacks.lti.failure', default: default_msg
-      uri = Addressable::URI.parse request['launch_presentation_return_url']
+      # 1.1 sends launch_presentation_return_url as a flat launch param. 1.3
+      # has no equivalent at this stage: the comparable value lives inside
+      # the launch_presentation claim of the id_token, which a failed launch
+      # may never have gotten far enough to decode. target_link_uri is the
+      # one return-ish value 1.3 guarantees as a flat param up front (Step 1,
+      # the third-party-initiated login), so it's the best available fallback.
+      return_url = failed_strategy.is_a?(OmniAuth::Strategies::Lti13) ? request['target_link_uri'] : request['launch_presentation_return_url']
+      return new_user_session_path(scope) if return_url.blank?
+
+      uri = Addressable::URI.parse(return_url)
       uri.query = {lti_errormsg: msg}.to_query
       uri.to_s
     else
