@@ -1017,6 +1017,10 @@ h5.card-title {
 
 .mediaobject-filename {
   word-break: break-all;
+
+  &.full {
+    display: none;
+  }
 }
 
 // Fixes the input displaying over the dropdown datepicker calendar
@@ -1170,6 +1174,7 @@ h5.card-title {
 #file-upload {
   margin-top: 1rem;
   display: flex;
+  height: 33px;
 }
 
 // Action column of each table
@@ -1303,12 +1308,12 @@ h5.card-title {
 
 .checkout.audio {
   padding: 1rem;
-  height: 25%;
+  height: 120px;
 }
 
 .checkout.video {
   padding: 3rem;
-  height: 50%;
+  height: 400px;
   position: relative;
 }
 /* End of CDL controls on view page styles */
@@ -1343,4 +1348,58 @@ h5.card-title {
 
 .alert.bookmark {
   display: none;
+}
+
+.embed-layout {
+  margin: 0; 
+  padding: 0;
+}
+
+.dropbox-location {
+  overflow-wrap: break-word;
+}
+
+.skip-transcoding {
+  background-color: white;
+  padding-top: 8px;
+  padding-bottom: 2px;
+  border: none;
+}
+
+.skip-transcoding-tooltip {
+  font-size: inherit;
+}
+
+.input-group.intercom {
+  flex-flow: nowrap;
+}
+
+.sup-file-label-btns {
+  margin-left: 15px;
+}
+
+.sup-file-lang {
+  display: flex;
+}
+
+.hidden-desc-dropdown {
+  display: none;
+}
+
+#thumbnailModal, #timelineModal {
+  display: none;
+}
+
+#new-timeline-structure {
+  border-top: 1px dotted #e5e5e5;
+  margin-top: 11px;
+  padding-top: 11px;
+}
+
+#progress {
+  #overall {
+    .progress-bar {
+      width: 0%;
+    }
+  }
 }
