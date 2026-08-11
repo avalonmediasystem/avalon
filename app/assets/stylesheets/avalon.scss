@@ -170,6 +170,14 @@ div.alert-danger {
   .card {
     margin-bottom: 1.5rem;
   }
+
+  &.admin {
+    padding-top: 2rem;
+
+    h3 {
+      padding-top: 3rem;
+    }
+  }
 }
 
 // Dotted line separator from branding guide
@@ -1312,4 +1320,23 @@ h5.card-title {
 
 .document-metadata {
   margin-bottom: 3rem;
+}
+
+.row.admin {
+  padding-top: 3rem;
+}
+
+#cropper-alert {
+  display: none;
+  padding: 5px;
+  margin-top: 5px
+}
+
+#cropper-progress {
+  display: none;
+  margin-top: 7px;
+}
+
+#image {
+  max-width: 100%;
 }
