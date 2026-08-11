@@ -180,6 +180,8 @@ GEM
       public_suffix (>= 2.0.2, < 8.0)
     airbrussh (1.5.3)
       sshkit (>= 1.6.1, != 1.7.0)
+    alexandria-zoom (0.6.2)
+      pkg-config (~> 1.6.0)
     api-pagination (6.0.0)
     ast (2.4.3)
     audio_waveform-ruby (1.0.7)
@@ -622,6 +624,7 @@ GEM
       ast (~> 2.4.1)
       racc
     pg (1.5.9)
+    pkg-config (1.6.5)
     popper_js (2.11.8)
     pp (0.6.3)
       prettyprint
@@ -969,7 +972,6 @@ GEM
     zk (1.10.0)
       zookeeper (~> 1.5.0)
     zookeeper (1.5.5)
-    zoom (0.5.0)
 
 PLATFORMS
   ruby
@@ -983,6 +985,7 @@ DEPENDENCIES
   activejob-uniqueness
   activerecord-session_store (>= 2.0.0)
   acts_as_list
+  alexandria-zoom
   api-pagination
   audio_waveform-ruby (~> 1.0.7)
   avalon-about!
@@ -1107,7 +1110,6 @@ DEPENDENCIES
   webmock (~> 3.5)
   with_locking
   zk
-  zoom
 
 BUNDLED WITH
    2.6.7
