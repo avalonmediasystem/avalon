@@ -298,7 +298,9 @@ Devise.setup do |config|
   # config.omniauth :github, 'APP_ID', 'APP_SECRET', scope: 'user,public_repo'
   Avalon::Authentication::Providers.each do |provider|
     if provider[:provider] == :lti
-      provider[:params].merge!({consumers: Avalon::Lti::Configuration})
+      lti_protocol = provider[:protocol] || '1.1'
+      provider[:params][:strategy_class] = lti_protocol == '1.3' ? OmniAuth::Strategies::Lti13 : OmniAuth::Strategies::Lti
+      provider[:params][:consumers] = Avalon::Lti::Configuration if lti_protocol == '1.1'
     end
     if provider[:provider] == :identity
       provider[:params].merge!({
