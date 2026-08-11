@@ -170,6 +170,65 @@ describe User do
     end
   end
 
+  describe '#find_for_lti' do
+    # Shape produced by the LTI 1.3 strategy (omniauth-lti13): context_name
+    # maps from the context claim's label (falling back to title), and
+    # consumer.context_label also comes from label -- see that gem's README
+    # for the full claim-to-auth_hash mapping. find_for_lti itself is
+    # protocol-agnostic; it only cares that these five fields are present,
+    # however the strategy that ran (1.1 or 1.3) populated them.
+    def lti13_auth_hash(uid: 'user123', email: 'student@example.edu', context_id: 'course-1', context_name: nil, context_label: nil)
+      OmniAuth::AuthHash.new(
+        uid: uid,
+        info: { email: email },
+        extra: {
+          context_id: context_id,
+          context_name: context_name,
+          consumer: { context_label: context_label }
+        }
+      )
+    end
+
+    it 'raises Avalon::MissingUserId when uid is blank' do
+      auth_hash = lti13_auth_hash(uid: '')
+      expect { User.find_for_lti(auth_hash) }.to raise_error(Avalon::MissingUserId)
+    end
+
+    context 'when the context claim carries a label' do
+      let(:auth_hash) { lti13_auth_hash(context_id: 'course-42', context_name: 'INFO-101', context_label: 'INFO-101') }
+
+      it 'creates a Course with that label as both title and label' do
+        User.find_for_lti(auth_hash)
+        course = Course.find_by(context_id: 'course-42')
+        expect(course.title).to eq('INFO-101')
+        expect(course.label).to eq('INFO-101')
+      end
+
+      it 'creates a user with a non-nil email' do
+        user = User.find_for_lti(auth_hash)
+        expect(user.email).to eq('student@example.edu')
+      end
+    end
+
+    context 'when the context claim carries neither label nor title' do
+      let(:auth_hash) { lti13_auth_hash(context_id: 'course-99', context_name: nil, context_label: nil) }
+
+      it 'does not create a Course' do
+        User.find_for_lti(auth_hash)
+        expect(Course.find_by(context_id: 'course-99')).to be_nil
+      end
+    end
+
+    context 'when a Course for that context_id already exists' do
+      let(:auth_hash) { lti13_auth_hash(context_id: 'course-7', context_name: 'New Label', context_label: 'New Label') }
+
+      it 'does not create a second Course' do
+        Course.create!(context_id: 'course-7', label: 'Existing', title: 'Existing')
+        expect { User.find_for_lti(auth_hash) }.not_to change { Course.where(context_id: 'course-7').count }
+      end
+    end
+  end
+
   describe '#timeline_tags' do
     let(:user) { FactoryBot.create(:user) }
 
