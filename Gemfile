@@ -178,7 +178,7 @@ end
 
 # Install the bundle --with zoom to use the Z39.50 bib retriever
 group :zoom, optional: true do
-  gem 'zoom'
+  gem 'alexandria-zoom'
 end
 
 # Install the bundle --with postgres if using postgresql as the database backend
