@@ -31,7 +31,7 @@ Unless required by applicable law or agreed to in writing, software distributed
       </div>
       <div class="modal-body">
         <div class="img-container">
-          <img id="image" src="" style="max-width: 100%;">
+          <img id="image" src="">
         </div>
       </div>
       <div class="modal-footer">
@@ -77,8 +77,8 @@ Unless required by applicable law or agreed to in writing, software distributed
         <% end %>
       </div>
       <div class="well-vertical-spacer">
-        <div id='cropper-alert' class="alert" role="alert" style="display: none; padding: 5px; margin-top: 5px"></div>
-        <div id="cropper-progress" class="progress" style="display: none; margin-top: 7px;">
+        <div id='cropper-alert' class="alert" role="alert"></div>
+        <div id="cropper-progress" class="progress">
           <div id="cropper-progress-bar" class="progress-bar progress-bar-striped progress-bar-animated"
             role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">0%</div>
         </div>
@@ -126,8 +126,8 @@ Unless required by applicable law or agreed to in writing, software distributed
   </div>
 </div>
 
-<div class="content-block" style="padding-top: 2rem;">
-  <h3 style="padding-top: 3rem;">Set Default Access Control for Unit Items</h3>
+<div class="content-block admin">
+  <h3>Set Default Access Control for Unit Items</h3>
 
   <%= render "modules/special_access", { object: @unit } %>
 </div>

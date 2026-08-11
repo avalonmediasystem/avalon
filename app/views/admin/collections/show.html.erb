@@ -32,7 +32,7 @@ Unless required by applicable law or agreed to in writing, software distributed
       </div>
       <div class="modal-body">
         <div class="img-container">
-          <img id="image" src="" style="max-width: 100%;">
+          <img id="image" src="">
         </div>
       </div>
       <div class="modal-footer">
@@ -80,8 +80,8 @@ Unless required by applicable law or agreed to in writing, software distributed
         <% end %>
       </div>
       <div class="well-vertical-spacer">
-        <div id='cropper-alert' class="alert" role="alert" style="display: none; padding: 5px; margin-top: 5px"></div>
-        <div id="cropper-progress" class="progress" style="display: none; margin-top: 7px;">
+        <div id='cropper-alert' class="alert" role="alert"></div>
+        <div id="cropper-progress" class="progress">
           <div id="cropper-progress-bar" class="progress-bar progress-bar-striped progress-bar-animated"
             role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">Uploading...</div>
         </div>
@@ -131,12 +131,12 @@ Unless required by applicable law or agreed to in writing, software distributed
   </div>
 </div>
 
-<div class="content-block" style="padding-top: 2rem;">
+<div class="content-block admin">
   <%= render "cdl_form", { object: @collection,
                            lending_period: @collection.default_lending_period,
                            cdl: @collection.cdl_enabled } %>
 
-  <h3 style="padding-top: 3rem;">Set Default Access Control for Collection Items</h3>
+  <h3>Set Default Access Control for Collection Items</h3>
   <%= render "discovery_visibility_form", { object: @collection,
                                             visibility: @collection.default_visibility,
                                             hidden: @collection.default_hidden } %>
