@@ -15,7 +15,7 @@ Unless required by applicable law or agreed to in writing, software distributed
 %>
 <% form_id = SecureRandom.base36 %>
 <form accept-charset="UTF-8" action="/catalog" class="avalon-search-query-form avalon-form-search" method="get">
-  <div style="margin:0;padding:0;display:inline">
+  <div id='hidden-search-field'>
     <input name="utf8" type="hidden" value="✓">
   </div>
   <input name="search_field" type="hidden" value="all_fields">
