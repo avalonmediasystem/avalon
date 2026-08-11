@@ -1403,3 +1403,17 @@ h5.card-title {
     }
   }
 }
+
+.access-typeahead {
+  display: flex;
+}
+
+#hidden-search-field {
+  margin: 0;
+  padding: 0;
+  display: inline;
+}
+
+.failed-login {
+  display: none;
+}
