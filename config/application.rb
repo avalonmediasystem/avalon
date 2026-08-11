@@ -21,6 +21,14 @@ module Avalon
     # Initialize configuration defaults for originally generated Rails version.
     config.load_defaults 8.0
 
+    # Rails 8 defaults this to :lax, which stamps a SameSite attribute on every
+    # cookie and stops rails_same_site_cookie's middleware from ever touching
+    # it (it only fills in SameSite when one isn't already present). LTI 1.3
+    # launches arrive as a cross-site POST from the LMS, which Lax blocks, so
+    # this must be nil to let rails_same_site_cookie apply its UA-aware
+    # SameSite=None handling instead.
+    config.action_dispatch.cookies_same_site_protection = nil
+
     # Settings in config/environments/* take precedence over those specified here.
     # Application configuration should go into files in config/initializers
     # -- all .rb files in that directory are automatically loaded.
