@@ -102,8 +102,9 @@ auth:
 #     # LTI 1.3 (default for new installs). No :protocol key means 1.1, so this
 #     # must be set explicitly. Platform registration replaces config/lti.yml
 #     # entirely for 1.3 -- nothing there is consulted when :protocol is '1.3'.
-#     # NOTE: this :params shape is provisional -- pending the omniauth-lti13
-#     # gem's published config schema (see its README once available).
+#     # Shape matches omniauth-lti13's OmniAuth::Lti13::Platform: a single
+#     # instance may serve multiple LMS deployments under one issuer, hence
+#     # deployment_ids (plural, a list) rather than a single deployment_id.
 #     - :name: Avalon Lti OAuth
 #       :provider: :lti
 #       :protocol: '1.3'
@@ -112,7 +113,7 @@ auth:
 #         :platforms:
 #           - :issuer: https://canvas.example.edu
 #             :client_id: someclientid
-#             :deployment_id: somedeploymentid
+#             :deployment_ids: [somedeploymentid]
 #             :jwks_uri: https://canvas.example.edu/api/lti/security/jwks
 #             :authorization_endpoint: https://canvas.example.edu/api/lti/authorize
 #             :redirect_uri: https://avalon.example.edu/users/auth/lti/callback
