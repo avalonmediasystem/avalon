@@ -22,7 +22,7 @@ Unless required by applicable law or agreed to in writing, software distributed
   </div>
 
   <div class="playlist-details-headline-wrapper">
-    <h2 class="headline" style="display:inline-block"><%= t("playlist.details") %></h2>
+    <h2 class="headline"><%= t("playlist.details") %></h2>
     <button id="playlist_edit_button" class="ms-2 btn btn-lg edit-details-icon-btn" data-bs-toggle="collapse" data-bs-target="#playlist_edit_div, #playlist_view_div" aria-expanded="false" 
       aria-label="Edit playlist details" data-testid="playlist-edit-icon-btn">
       <i class="fa fa-edit"></i>
@@ -46,7 +46,7 @@ Unless required by applicable law or agreed to in writing, software distributed
         <%= human_friendly_visibility @playlist.visibility %> -
         <i><%= visibility_description @playlist.visibility %></i>
         <% if @playlist.visibility == Playlist::PRIVATE_WITH_TOKEN %>
-        <div class="row" style="margin-top:9px;">
+        <div class="row playlist-share">
           <div class="col-sm-9">
             <div class="input-group">
               <input type="text" class="form-control" id="playlist-share-link"
@@ -114,10 +114,10 @@ Unless required by applicable law or agreed to in writing, software distributed
 
     const popover_content = '<p>If you get a new link, the previous link will stop working.<p>' +
       '<div>' +
-      '<button type="submit" onclick="new_link_confirm()" class="btn btn-danger btn-confirm" style="margin-right:5px;">Yes</button>' +
+      '<button type="submit" onclick="new_link_confirm()" class="btn btn-danger btn-confirm playlist-new-link">Yes</button>' +
       '<button type="submit" onclick="new_link_cancel()" class="btn btn-primary btn-confirm">Cancel</button>' +
       '</div>'
-    const popover_template = '<div class="popover" role="tooltip" style="width: 15em;">' +
+    const popover_template = '<div class="popover new-link-template" role="tooltip">' +
       '<div class="arrow"></div>' +
       '<h3 class="popover-header"></h3>' +
       '<div class="popover-body"></div>' +

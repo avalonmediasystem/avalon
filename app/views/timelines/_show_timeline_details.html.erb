@@ -24,7 +24,7 @@ Unless required by applicable law or agreed to in writing, software distributed
   </div>
   <div class="row">
     <div class="col-sm-12">
-      <h3 style="display:inline-block" class="my-3"><%= t("timeline.details") %></h3>
+      <h3 id="timeline_details" class="my-3"><%= t("timeline.details") %></h3>
     </div>
   </div>
 
@@ -93,10 +93,10 @@ Unless required by applicable law or agreed to in writing, software distributed
 
     const popover_content = '<p>If you get a new link, the previous link will stop working.<p>' +
       '<div>' +
-      '<button type="submit" onclick="new_link_confirm()" class="btn btn-danger btn-confirm" style="margin-right:5px;">Yes</button>' +
+      '<button type="submit" onclick="new_link_confirm()" class="btn btn-danger btn-confirm timeline-new-link">Yes</button>' +
       '<button type="submit" onclick="new_link_cancel()" class="btn btn-primary btn-confirm">Cancel</button>' +
       '</div>'
-    const popover_template = '<div class="popover" role="tooltip" style="width: 15em;">' +
+    const popover_template = '<div class="popover new-link-template" role="tooltip">' +
       '<div class="arrow"></div>' +
       '<h3 class="popover-header"></h3>' +
       '<div class="popover-body"></div>' +
