@@ -94,6 +94,9 @@ describe ApplicationHelper do
     it "shouldn't truncate if not needed" do
       expect(helper.truncate_center("This string is short", 20)).to eq "This string is short"
     end
+    it "shouldn't percent encode" do
+      expect(helper.truncate_center("It doesn't have percent encoding", 20)).to eq "It doesn't...ncoding"
+    end
   end
 
   describe "#git_commit_info" do
