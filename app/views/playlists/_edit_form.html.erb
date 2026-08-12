@@ -176,7 +176,7 @@ Unless required by applicable law or agreed to in writing, software distributed
 </div>
 
 <% content_for :page_scripts do %>
-  <script nonce="<%= content_security_policy_nonce %>">
+  <%= javascript_tag nonce: true do %>
 
     function toggleState(ele, text, state) {
       ele.innerHTML = text;
@@ -349,6 +349,6 @@ Unless required by applicable law or agreed to in writing, software distributed
         });
       });
     });
-  </script>
+  <% end %>
 
 <% end %>

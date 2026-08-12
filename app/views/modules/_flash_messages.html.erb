@@ -59,7 +59,7 @@ Unless required by applicable law or agreed to in writing, software distributed
 </div>
 
 <% content_for :page_scripts do %>
-<script nonce="<%= content_security_policy_nonce %>">
+<%= javascript_tag nonce: true do %>
   document.cookie = 'test_cookie=true'
   if(!document.cookie.match(/^(.*;)?\s*test_cookie\s*=\s*[^;]+(.*)?$/)){
     const cookielessAlert = getById('cookieless');
@@ -69,5 +69,5 @@ Unless required by applicable law or agreed to in writing, software distributed
   } else{
     document.cookie = 'test_cookie=;expires=Thu, 01 Jan 1970 00:00:01 GMT;';
   }
-</script>
+<% end %>
 <% end %>
