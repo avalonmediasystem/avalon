@@ -346,6 +346,26 @@ Devise.setup do |config|
   OmniAuth.config.request_validation_phase = OmniAuth::AuthenticityTokenProtection.new(key: :_csrf_token)
 end
 
+# OmniAuth::Strategy#request_path / #callback_path memoize themselves (once
+# per middleware instance, i.e. once per process) from OmniAuth.config.path_prefix
+# on the first request that reaches them. That value is otherwise only set
+# correctly as a side effect of devise_for drawing the auth/callback routes
+# (see Devise::Mapping), and routes are lazy-loaded on first access -- with
+# the OmniAuth strategy sitting *before* the router in the middleware stack,
+# "first access" ends up being the very first real request's own trip through
+# that strategy, which reads path_prefix before the router further down the
+# stack has ever run and drawn routes. That request's memoized path is then
+# stuck wrong for the rest of the process's life, even though routes are
+# correctly drawn moments later and every subsequent request works fine.
+#
+# We tried forcing early route drawing here to sidestep this, but routes.rb's
+# devise_for needs Devise.secret_key, which Devise's own "devise.secret_key"
+# initializer (unordered relative to this file) may not have set yet -- too
+# fragile. Setting path_prefix directly, matching what routes.rb already
+# hardcodes for these same paths (see the `/users/auth/...` routes below
+# devise_for), sidesteps the whole route-drawing dependency instead.
+OmniAuth.config.path_prefix = '/users/auth'
+
 # Override script_name to always return empty string and avoid looking in @env
 # This override is needed due to our direct rendering of the identity login form in AuthFormsController
 # which doesn't initialize @env leading to a NoMethodError when trying read a hash value from it.
