@@ -96,7 +96,7 @@ Unless required by applicable law or agreed to in writing, software distributed
 
 
 <% content_for :page_scripts do %>
-<script nonce="<%= content_security_policy_nonce %>">
+<%= javascript_tag nonce: true do %>
   query('.select-groups').addEventListener('change', function () {
     const isChecked = this.checked;
     queryAll('input[id^=user_ids_]').forEach(function(checkbox) {
@@ -126,5 +126,5 @@ Unless required by applicable law or agreed to in writing, software distributed
       button.setAttribute('disabled', 'disabled');
     });
   }
-</script>
+<% end %>
 <% end %>
