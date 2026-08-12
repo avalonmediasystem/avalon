@@ -19,7 +19,7 @@ module Blacklight::LocalBlacklightHelper
 
   def alternative_title_index_display args
     field = args[:document][args[:field]]
-    field.first(3).map { |f| truncate(f, length: 32) }.join("; ")
+    field.first(3).map { |f| truncate(f, length: 32, escape: false) }.join("; ")
   end
 
   def contributor_index_display args
@@ -33,7 +33,7 @@ module Blacklight::LocalBlacklightHelper
 
   def description_index_display args
     field = args[:document][args[:field]]
-    truncate(field, length: 200) unless field.blank?
+    truncate(field, length: 200, escape: false) unless field.blank?
   end
 
   def section_id_json_index_display args

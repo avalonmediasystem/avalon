@@ -158,7 +158,7 @@ module ApplicationHelper
   def truncate_center label, output_label_length, end_length = 0
     end_length = output_label_length / 2 - 3 if end_length == 0
     end_length = 0 if end_length.negative?
-    truncate(label, length: output_label_length,
+    truncate(label, length: output_label_length, escape: false,
       omission: "...#{label.last(end_length)}")
   end
 
