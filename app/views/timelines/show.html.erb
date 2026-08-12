@@ -18,7 +18,7 @@ Unless required by applicable law or agreed to in writing, software distributed
 </div>
 
 <% content_for :page_scripts do %>
-  <script nonce="<%= content_security_policy_nonce %>">
+  <%= javascript_tag nonce: true do %>
     document.addEventListener('DOMContentLoaded', function() {
       // Push footer to the bottom of the page content
       const footer = getById('footer');
@@ -26,5 +26,5 @@ Unless required by applicable law or agreed to in writing, software distributed
         footer.style.top = (document.documentElement.scrollHeight + 5) + 'px';
       }
     });
-  </script>
+  <% end %>
 <% end %>

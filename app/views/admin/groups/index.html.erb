@@ -94,7 +94,7 @@ Unless required by applicable law or agreed to in writing, software distributed
 
 
 <% content_for :page_scripts do %>
-<script nonce="<%= content_security_policy_nonce %>">
+<%= javascript_tag nonce: true do %>
   queryAll('.close').forEach(function(closeBtn) {
     closeBtn.addEventListener('click', function() {
       this.parentElement.remove();
@@ -130,5 +130,5 @@ Unless required by applicable law or agreed to in writing, software distributed
     getById('remove-ability').classList.add('disabled');
     query('.delete').setAttribute('disabled', 'disabled');
   }
-</script>
+<% end %>
 <% end %>

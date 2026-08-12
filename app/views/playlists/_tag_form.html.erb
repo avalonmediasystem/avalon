@@ -24,7 +24,7 @@ Unless required by applicable law or agreed to in writing, software distributed
 <input id="taglist" name="playlist[tags]" type="hidden" />
 
 <% content_for :page_scripts do %>
-  <script nonce="<%= content_security_policy_nonce %>">
+  <%= javascript_tag nonce: true do %>
     document.addEventListener('DOMContentLoaded', function() {
       const tagSelect = new TomSelect(getById('tag-select'), {
         plugins: ['remove_button'],
@@ -66,5 +66,5 @@ Unless required by applicable law or agreed to in writing, software distributed
       const tagsArray = Array.isArray(initialTags) ? initialTags : [initialTags];
       document.getElementById('taglist').value = JSON.stringify(tagsArray);
     });
-  </script>
+  <% end %>
 <% end %>

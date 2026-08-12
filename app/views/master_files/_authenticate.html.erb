@@ -45,7 +45,7 @@ Unless required by applicable law or agreed to in writing, software distributed
     }
   </style>
 
-  <script nonce="<%= content_security_policy_nonce %>">
+  <%= javascript_tag nonce: true do %>
 
     window.onload = function(){
       window["authterval"] = window.setInterval(function(){
@@ -84,5 +84,5 @@ Unless required by applicable law or agreed to in writing, software distributed
       }), 1000);
     }
 
-  </script>
+  <% end %>
 <% end %>
