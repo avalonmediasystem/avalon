@@ -48,7 +48,7 @@ Unless required by applicable law or agreed to in writing, software distributed
 
 
 <% content_for :page_scripts do %>
-  <script nonce="<%= content_security_policy_nonce %>">
+  <%= javascript_tag nonce: true do %>
     document.addEventListener('DOMContentLoaded', function () {
       let interval = null;
       /* Calculate remaining days and time for the lending perriod */
@@ -101,5 +101,5 @@ Unless required by applicable law or agreed to in writing, software distributed
         }
       }
     });
-  </script>
+  <% end %>
 <% end %>

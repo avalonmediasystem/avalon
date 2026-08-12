@@ -54,7 +54,7 @@ Unless required by applicable law or agreed to in writing, software distributed
 </div>
 
 <% content_for :page_scripts do %>
-<script nonce="<%= content_security_policy_nonce %>">
+<%= javascript_tag nonce: true do %>
   document.addEventListener('DOMContentLoaded', function() {
     const pushButton = getById('intercom_push_submit_button');
     if (pushButton) {
@@ -67,5 +67,5 @@ Unless required by applicable law or agreed to in writing, software distributed
       });
     }
   });
-</script>
+<% end %>
 <% end %>

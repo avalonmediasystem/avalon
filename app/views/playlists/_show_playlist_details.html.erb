@@ -78,7 +78,7 @@ Unless required by applicable law or agreed to in writing, software distributed
   </div>
 
   <% content_for :page_scripts do %>
-  <script nonce="<%= content_security_policy_nonce %>">
+  <%= javascript_tag nonce: true do %>
     function setPopoverContent(target, new_content) {
       target._config.content = new_content;
       target.setContent();
@@ -157,5 +157,5 @@ Unless required by applicable law or agreed to in writing, software distributed
         getNewLink.hide();
       });
     }
-  </script>
+  <% end %>
   <% end %>

@@ -38,9 +38,9 @@ Unless required by applicable law or agreed to in writing, software distributed
 <% end %>
 
 <% content_for :page_scripts do %>
-<script nonce="<%= content_security_policy_nonce %>">
+<%= javascript_tag nonce: true do %>
   document.addEventListener('DOMContentLoaded', function() {
     window.add_copy_playlist_button_event()
   });
-</script>
+<% end %>
 <% end %>
