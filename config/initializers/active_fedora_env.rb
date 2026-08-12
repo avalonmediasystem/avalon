@@ -26,10 +26,12 @@ class EnvironmentConfigurator < ActiveFedora::FileConfigurator
   def load_solr_config
     return @solr_config unless @solr_config.empty?
 
-    solr_setting = Settings.solr_url || ENV['SOLR_URL']
+    solr_setting = Settings.solr&.url || Settings.solr_url || ENV['SOLR_URL']
+    solr_timeout = Settings.solr&.timeout || ENV['SOLR_TIMEOUT']
     if solr_setting.present?
       ActiveFedora::Base.logger.info("ActiveFedora: loading solr config from SOLR_URL") if ActiveFedora::Base.logger
       @solr_config = { url: solr_setting }
+      @solr_config[:timeout] = @solr_config[:open_timeout] = Float(solr_timeout) unless solr_timeout.blank?
       ENV['SOLR_URL'] ||= solr_setting
     else
       super
