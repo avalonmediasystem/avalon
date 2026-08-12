@@ -28,30 +28,6 @@ Unless required by applicable law or agreed to in writing, software distributed
 
   <%= csrf_meta_tags %>
   <%= csp_meta_tag %>
-  <%# Monkey patch to add nonce to dynamically created styles.
-      This is necessary because videojs does not have a mechanism
-      for directly injecting a nonce value. %>
-  <%= javascript_tag nonce: true do %>
-    (function() {
-      const meta = document.querySelector('meta[name="csp-nonce"]');
-      const nonce = meta ? meta.getAttribute('content') : '';
-
-      if (!nonce) return;
-
-      const originalCreateElement = Document.prototype.createElement;
-
-      Document.prototype.createElement = function(tagName, options) {
-        const element = originalCreateElement.call(this, tagName, options);
-        const normalizedTag = (tagName || '').toLowerCase();
-         
-        if (normalizedTag === 'style') {
-          element.setAttribute('nonce', nonce);
-        }
-         
-        return element;
-      };
-    })();
-  <% end %>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <%= favicon_link_tag %>
   <%= stylesheet_link_tag "application", "data-turbo-track": "reload", nonce: true %>
