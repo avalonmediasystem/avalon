@@ -20,13 +20,18 @@ class SearchBuilder < Blacklight::SearchBuilder
 
   PERMISSION_GROUPS = [Hydra::AccessControls::AccessRight::PERMISSION_TEXT_VALUE_PUBLIC, Hydra::AccessControls::AccessRight::PERMISSION_TEXT_VALUE_AUTHENTICATED]
 
-  class_attribute :avalon_solr_access_filters_logic
-  self.avalon_solr_access_filters_logic = [:only_published_items, :limit_to_non_hidden_items, :limit_to_inheritance_enabled_items]
+  class_attribute :default_avalon_solr_access_filters_logic
+  self.default_avalon_solr_access_filters_logic = [:only_published_items, :limit_to_non_hidden_items, :limit_to_inheritance_enabled_items]
   self.default_processor_chain += [:only_wanted_models, :term_frequency_counts, :search_section_transcripts]
+
+  class_attribute :model
+  self.model = MediaObject
+
+  attr_writer :avalon_solr_access_filters_logic
 
   def only_wanted_models(solr_parameters)
     solr_parameters[:fq] ||= []
-    solr_parameters[:fq] << 'has_model_ssim:"MediaObject"'
+    solr_parameters[:fq] << "has_model_ssim:\"#{model.to_s}\""
   end
 
   def only_published_items(_permission_types = discovery_permissions, _ability = current_ability)
@@ -52,7 +57,7 @@ class SearchBuilder < Blacklight::SearchBuilder
 
   # Overridden to skip for admin users
   def add_access_controls_to_solr_params(solr_parameters)
-    return unless current_ability.cannot? :discover_everything, MediaObject
+    return unless current_ability.cannot? :discover_everything, model
 
     solr_parameters[:fq] ||= []
     solr_parameters[:fq] << gated_discovery_filters.reject(&:blank?).join(' OR ')
@@ -115,6 +120,10 @@ class SearchBuilder < Blacklight::SearchBuilder
     solr_parameters["sections.transcripts.defType"] = "lucene"
     solr_parameters["sections.transcripts.rows"] = 1_000_000
     solr_parameters["sections.transcripts.q"] = "{!terms f=isPartOf_ssim v=$row.id}{!join to=id from=isPartOf_ssim}"
+  end
+
+  def avalon_solr_access_filters_logic
+    @avalon_solr_access_filters_logic ||= self.default_avalon_solr_access_filters_logic
   end
 
   private
