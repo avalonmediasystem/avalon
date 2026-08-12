@@ -192,12 +192,10 @@ describe Users::OmniauthCallbacksController, type: :controller do
       @request.env['omniauth.error.strategy'] = strategy
     end
 
-    context 'lti 1.1' do
-      let(:strategy) { OmniAuth::Strategies::Lti.new(app, Avalon::Lti::Configuration) }
-
-      context 'when launch_presentation_return_url is present' do
+    shared_examples 'an lti failure redirect' do |return_url_param|
+      context "when #{return_url_param} is present" do
         it 'redirects to it with an lti_errormsg param' do
-          @request.params['launch_presentation_return_url'] = 'https://lms.example.edu/return'
+          @request.params[return_url_param] = 'https://lms.example.edu/return'
           path = controller.send(:after_omniauth_failure_path_for, :user)
           uri = Addressable::URI.parse(path)
           expect(uri.host).to eq('lms.example.edu')
@@ -205,7 +203,7 @@ describe Users::OmniauthCallbacksController, type: :controller do
         end
       end
 
-      context 'when launch_presentation_return_url is absent' do
+      context "when #{return_url_param} is absent" do
         it 'falls back to the sign-in page' do
           path = controller.send(:after_omniauth_failure_path_for, :user)
           expect(path).to eq(new_user_session_path(:user))
@@ -213,25 +211,16 @@ describe Users::OmniauthCallbacksController, type: :controller do
       end
     end
 
+    context 'lti 1.1' do
+      let(:strategy) { OmniAuth::Strategies::Lti.new(app, Avalon::Lti::Configuration) }
+
+      include_examples 'an lti failure redirect', 'launch_presentation_return_url'
+    end
+
     context 'lti 1.3' do
       let(:strategy) { OmniAuth::Strategies::Lti13.new(app) }
 
-      context 'when target_link_uri is present' do
-        it 'redirects to it with an lti_errormsg param' do
-          @request.params['target_link_uri'] = 'https://lms.example.edu/course/launch'
-          path = controller.send(:after_omniauth_failure_path_for, :user)
-          uri = Addressable::URI.parse(path)
-          expect(uri.host).to eq('lms.example.edu')
-          expect(uri.query_values).to have_key('lti_errormsg')
-        end
-      end
-
-      context 'when target_link_uri is absent (e.g. a callback-phase failure)' do
-        it 'falls back to the sign-in page' do
-          path = controller.send(:after_omniauth_failure_path_for, :user)
-          expect(path).to eq(new_user_session_path(:user))
-        end
-      end
+      include_examples 'an lti failure redirect', 'target_link_uri'
     end
   end
 end
