@@ -86,7 +86,7 @@ module Hydra::MultiplePolicyAwareAccessControlsEnforcement
 
   protected
 
-  def gated_discovery_filters
+  def gated_discovery_filters(permission_types = discovery_permissions, ability = current_ability)
     filters = super
     additional_clauses = policy_clauses
     unless additional_clauses.blank?
