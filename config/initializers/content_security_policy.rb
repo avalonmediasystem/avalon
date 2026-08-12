@@ -10,7 +10,6 @@ Rails.application.configure do
     policy.default_src :self, :https
     policy.font_src    :self, :https, :data
     policy.object_src  :none
-    policy.style_src   :self, :https
     # Specify URI for violation reports
     # policy.report_uri "/csp-violation-report-endpoint"
 
@@ -18,6 +17,13 @@ Rails.application.configure do
     # JQuery requires this for compatibility with Firefox
     # TODO: Test removal after JQuery fully excised
     policy.script_src_attr :unsafe_inline
+    # Video.js generates a few style elements dynamically. To handle this we have to
+    # either keep :unsafe_inline, monkey patch document.prototype.createElement,
+    # or use hashes here. Hashes seem to be the overall most secure option, but does
+    # have the downside of needing to be kept up to date when Video.js changes.
+    policy.style_src   :self, :https, :unsafe_hashes, 'sha256-47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU=',
+      'sha256-wPXhisdsFu1DtHYH1D9W5isSGqS5vIPn6QJWSNLqfCM=', 'sha256-p/Gj9EBmerW5NLyLxdY9KdArmeYHT4hQCPXlruAJ/WA=',
+      'sha256-nTLBTH8WUTkIIoYPCoe0Ml8nMCdu5XXfFeZihPe/kp8='
     # Blob required for media streaming. worker_src from firefox, media_src from chrome
     policy.media_src   :self, :https, :blob
     policy.worker_src  :self, :https, :blob
