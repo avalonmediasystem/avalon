@@ -29,9 +29,8 @@ describe 'OmniAuth CSRF exemption' do
   # Minimal Rack env sufficient for Rack::Protection::AuthenticityToken#accepts?
   # to actually evaluate a POST with no token, rather than short-circuiting.
   def env_for(strategy_name)
-    strategy = Struct.new(:name).new(strategy_name)
     Rack::MockRequest.env_for('/', method: 'POST').merge(
-      'omniauth.strategy' => strategy,
+      'omniauth.strategy' => double('strategy', name: strategy_name),
       'rack.session' => {}
     )
   end
