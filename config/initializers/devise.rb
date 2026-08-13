@@ -366,6 +366,26 @@ end
 # devise_for), sidesteps the whole route-drawing dependency instead.
 OmniAuth.config.path_prefix = '/users/auth'
 
+# LTI's third-party-initiated login (both 1.1's form_post launch and 1.3's
+# OIDC init) arrives as a cross-site POST from the LMS, which carries no
+# Avalon CSRF token to check. OmniAuth's authenticity check is a single
+# global callable (OmniAuth.config.request_validation_phase), not something
+# scopeable per-strategy via options, so we scope it here instead: run the
+# default check for every provider except :lti, matching what
+# Users::OmniauthCallbacksController#skip_before_action :verify_authenticity_token
+# already does for the same reason. Safe to set at initializer load time
+# (not deferred behind to_prepare, unlike the provider registration above):
+# this only stores a lambda that's evaluated per-request, and the lambda
+# itself references only the OmniAuth::AuthenticityTokenProtection gem
+# constant, nothing that needs Devise/routes to be ready yet.
+default_validation = OmniAuth::AuthenticityTokenProtection
+OmniAuth.config.request_validation_phase = lambda do |env|
+  strategy = env['omniauth.strategy']
+  next if strategy && strategy.name == 'lti'
+
+  default_validation.call(env)
+end
+
 # Override script_name to always return empty string and avoid looking in @env
 # This override is needed due to our direct rendering of the identity login form in AuthFormsController
 # which doesn't initialize @env leading to a NoMethodError when trying read a hash value from it.
