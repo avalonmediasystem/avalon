@@ -55,20 +55,60 @@ describe CollectionsController, type: :controller do
         expect(assigns(:doc_presenters).map(&:id)).to match_array([collection.id, collection2.id, collection3.id, collection4.id, collection5.id])
       end
 
-      it "managers should see their collections and collections with public items" do
+      it "managers should see their collections and collections with published public items" do
         login_user(collection.managers.first)
         get 'index'
         expect(response).to be_ok
-        expect(assigns(:doc_presenters).count).to eql(3)
-        expect(assigns(:doc_presenters).map(&:id)).to match_array([collection.id, collection3.id, collection4.id])
+        expect(assigns(:doc_presenters).count).to eql(2)
+        expect(assigns(:doc_presenters).map(&:id)).to match_array([collection.id, collection3.id])
       end
 
-      it "end users should see collections with published, non-hidden, public items" do
-        login_as :user
-        get 'index'
-        expect(response).to be_ok
-        expect(assigns(:doc_presenters).count).to eql(1)
-        expect(assigns(:doc_presenters).map(&:id)).to match_array([collection3.id])
+      context 'as end user' do
+        before do
+          login_as :user
+        end
+
+        it "end users should see collections with published, non-hidden, public items" do
+          get 'index'
+          expect(response).to be_ok
+          expect(assigns(:doc_presenters).count).to eql(1)
+          expect(assigns(:doc_presenters).map(&:id)).to match_array([collection3.id])
+        end
+
+        context 'with inheritance' do
+          let!(:collection3) { FactoryBot.create(:collection, default_visibility: 'private') }
+
+          context 'with private item' do
+            let!(:public_media_object) { FactoryBot.create(:fully_searchable_media_object, collection: collection3, disable_inheritance: false, visibility: 'private') }
+
+            it "end users should not see collections with only private items" do
+              get 'index'
+              expect(response).to be_ok
+              expect(assigns(:doc_presenters).count).to eql(0)
+            end
+          end
+
+          context 'with saved non-active visibility' do
+            let!(:public_media_object) { FactoryBot.create(:fully_searchable_media_object, collection: collection3, disable_inheritance: false, visibility: 'public') }
+
+            it "end users should not see collections with non-active public visibility items" do
+              get 'index'
+              expect(response).to be_ok
+              expect(assigns(:doc_presenters).count).to eql(0)
+            end
+          end
+
+          context 'with inheritance disabled' do
+            let!(:public_media_object) { FactoryBot.create(:fully_searchable_media_object, collection: collection3, disable_inheritance: true, visibility: 'public') }
+
+            it "end users should see collections with public disable inheritance items" do
+              get 'index'
+              expect(response).to be_ok
+              expect(assigns(:doc_presenters).count).to eql(1)
+              expect(assigns(:doc_presenters).map(&:id)).to match_array([collection3.id])
+            end
+          end
+        end
       end
     end
 
@@ -154,7 +194,43 @@ describe CollectionsController, type: :controller do
         expect(response).to be_ok
         expect(response.content_type).to eq "application/json; charset=utf-8"
         expect(assigns(:doc_presenter).id).to eq collection.id
+      end
+    end
+
+    context 'as end user' do
+      let!(:collection) { FactoryBot.create(:collection, default_visibility: 'private') }
+
+      before do
+        login_as :user
+      end
+
+      context 'with inheritance' do
+        context 'with private item' do
+          let!(:private_media_object) { FactoryBot.create(:fully_searchable_media_object, collection: collection, disable_inheritance: false, visibility: 'private') }
+
+          it "end users should not see collection with only private items" do
+            expect(get 'show', params: { id: collection.id }).to render_template('errors/restricted_pid')
+          end
         end
+
+        context 'with saved non-active visibility' do
+          let!(:public_media_object) { FactoryBot.create(:fully_searchable_media_object, collection: collection, disable_inheritance: false, visibility: 'public') }
+
+          it "end users should not see collection with non-active public visibility items" do
+            expect(get 'show', params: { id: collection.id }).to render_template('errors/restricted_pid')
+          end
+        end
+      end
+
+      context 'with inheritance disabled' do
+        let!(:public_media_object) { FactoryBot.create(:fully_searchable_media_object, collection: collection, disable_inheritance: true, visibility: 'public') }
+
+        it "end users should see collection with public disable inheritance items" do
+          get 'show', params: { id: collection.id }
+          expect(response).to be_ok
+          expect(assigns(:doc_presenter).id).to eq collection.id
+        end
+      end
     end
   end
 
