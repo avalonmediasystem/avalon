@@ -40,7 +40,7 @@ Unless required by applicable law or agreed to in writing, software distributed
 
 
 <% content_for :page_scripts do %>
-<script nonce="<%= content_security_policy_nonce %>">
+<%= javascript_tag nonce: true do %>
   function inject_alert(message) {
     let alertElement = $('#alerts');
     // Remove alert with previous errors
@@ -82,5 +82,5 @@ Unless required by applicable law or agreed to in writing, software distributed
     }
     resetButton('.btn-stateful-loading');
   });
-</script>
+<% end %>
 <% end %>

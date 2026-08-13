@@ -15,7 +15,7 @@ Unless required by applicable law or agreed to in writing, software distributed
 %>
 <html>
   <body>
-    <script nonce="<%= content_security_policy_nonce %>">
+    <%= javascript_tag nonce: true do %>
     window.parent.postMessage(
       {
         "@context": "http://iiif.io/api/auth/2/context.json", 
@@ -25,6 +25,6 @@ Unless required by applicable law or agreed to in writing, software distributed
         "messageId": "<%= message_id %>"
       }
     );
-    </script>
+    <% end %>
   </body>
 </html>

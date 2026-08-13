@@ -14,11 +14,11 @@ Unless required by applicable law or agreed to in writing, software distributed
 ---  END LICENSE_HEADER BLOCK  ---
 %>
 <% if Settings.google_analytics_tracking_id.present? %>
-  <script async src="https://www.googletagmanager.com/gtag/js?id=<%= Settings.google_analytics_tracking_id %>" nonce="<%= content_security_policy_nonce %>"></script>
-  <script nonce="<%= content_security_policy_nonce %>">
+  <%= javascript_include_tag "https://www.googletagmanager.com/gtag/js?id=#{Settings.google_analytics_tracking_id}", async: true, nonce: true %>
+  <%= javascript_tag nonce: true do %>
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
     gtag('js', new Date());
     gtag('config', '<%= Settings.google_analytics_tracking_id %>');
-  </script>
+  <% end %>
 <% end %>
