@@ -61,6 +61,7 @@ PATH
   remote: ../omniauth-lti13
   specs:
     omniauth-lti13 (0.1.0)
+      activesupport
       omniauth_openid_connect (~> 0.8)
 
 GEM
