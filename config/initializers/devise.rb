@@ -373,11 +373,10 @@ OmniAuth.config.path_prefix = '/users/auth'
 # scopeable per-strategy via options, so we scope it here instead: run the
 # default check for every provider except :lti, matching what
 # Users::OmniauthCallbacksController#skip_before_action :verify_authenticity_token
-# already does for the same reason. Safe to set at initializer load time
-# (not deferred behind to_prepare, unlike the provider registration above):
-# this only stores a lambda that's evaluated per-request, and the lambda
-# itself references only the OmniAuth::AuthenticityTokenProtection gem
-# constant, nothing that needs Devise/routes to be ready yet.
+# already does for the same reason. This only stores a lambda that's
+# evaluated per-request, and the lambda itself references only the
+# OmniAuth::AuthenticityTokenProtection gem constant, so nothing here
+# needs Devise/routes to be ready yet -- safe at initializer load time.
 default_validation = OmniAuth::AuthenticityTokenProtection
 OmniAuth.config.request_validation_phase = lambda do |env|
   strategy = env['omniauth.strategy']

@@ -67,6 +67,15 @@ describe Users::OmniauthCallbacksController, type: :controller do
           expect(response).to redirect_to(root_path)
         end
       end
+
+      context "and is malformed" do
+        let(:url) { "http://exa mple.com/a/sub/page" }
+
+        it 'redirects to homepage rather than raising' do
+          expect { post :identity, params: params }.not_to raise_error
+          expect(response).to redirect_to(root_path)
+        end
+      end
     end
 
     context 'when login_popup param is present' do
@@ -225,6 +234,14 @@ describe Users::OmniauthCallbacksController, type: :controller do
       context "when #{return_url_param} is present but off-host" do
         it 'falls back to the sign-in page rather than following it' do
           @request.params[return_url_param] = 'https://evil.example.com/phish'
+          path = controller.send(:after_omniauth_failure_path_for, :user)
+          expect(path).to eq(new_user_session_path(:user))
+        end
+      end
+
+      context "when #{return_url_param} is present but malformed" do
+        it 'falls back to the sign-in page rather than raising' do
+          @request.params[return_url_param] = 'https://exa mple.com/return'
           path = controller.send(:after_omniauth_failure_path_for, :user)
           expect(path).to eq(new_user_session_path(:user))
         end
