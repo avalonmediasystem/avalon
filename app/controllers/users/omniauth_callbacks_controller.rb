@@ -28,33 +28,50 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
   def after_omniauth_failure_path_for(scope)
     case failed_strategy.name
     when 'lti'
+      uri = lti_failure_return_uri
+      return new_user_session_path(scope) unless uri
+
       default_msg = I18n.t 'devise.omniauth_callbacks.failure', reason: failure_message
       msg = I18n.t 'devise.omniauth_callbacks.lti.failure', default: default_msg
-      # 1.1 sends launch_presentation_return_url as a flat launch param. 1.3
-      # has no equivalent at this stage: the comparable value lives inside
-      # the launch_presentation claim of the id_token, which a failed launch
-      # may never have gotten far enough to decode. target_link_uri is the
-      # one return-ish value 1.3 guarantees as a flat param up front (Step 1,
-      # the third-party-initiated login), so it's the best available fallback.
-      return_url = failed_strategy.is_a?(OmniAuth::Strategies::Lti13) ? request['target_link_uri'] : request['launch_presentation_return_url']
-      return new_user_session_path(scope) if return_url.blank?
-
-      # return_url is an unauthenticated, attacker-controlled request param at
-      # this point -- verification failed, so nothing here has been vouched
-      # for yet. Without a same-host check this is an open redirect (POST a
-      # registered iss with return_url=https://evil.com and a launch that's
-      # guaranteed to fail, e.g. no login_hint) that also leaks failure_message
-      # (which can include the registered client_id/issuer) via lti_errormsg
-      # to that off-host destination. Same guard as
-      # ApplicationController#find_redirect_url (VOV-5662).
-      uri = Addressable::URI.parse(return_url)
-      return new_user_session_path(scope) unless request.host == uri.host
-
       uri.query = {lti_errormsg: msg}.to_query
       uri.to_s
     else
       new_user_session_path(scope)
     end
+  end
+
+  # Picks the best available "return to the LMS" URL for a failed LTI launch
+  # and validates it's safe to redirect to, returning nil if it isn't (the
+  # caller falls back to the sign-in page).
+  #
+  # 1.1 sends launch_presentation_return_url as a flat launch param. 1.3 has
+  # no equivalent at this stage: the comparable value lives inside the
+  # launch_presentation claim of the id_token, which a failed launch may
+  # never have gotten far enough to decode. target_link_uri is the one
+  # return-ish value 1.3 guarantees as a flat param up front (Step 1, the
+  # third-party-initiated login), so it's the best available fallback.
+  #
+  # The param is an unauthenticated, attacker-controlled request value at
+  # this point -- verification failed, so nothing here has been vouched for
+  # yet. Without a same-host check this is an open redirect (POST a
+  # registered iss with return_url=https://evil.com and a launch that's
+  # guaranteed to fail, e.g. no login_hint) that would also leak
+  # failure_message (which can include the registered client_id/issuer) via
+  # lti_errormsg to that off-host destination. Same guard as
+  # ApplicationController#find_redirect_url (VOV-5662). A malformed value
+  # (e.g. an unescaped space in the host) makes Addressable raise rather
+  # than just fail the host check, so that's treated the same way: not usable.
+  private def lti_failure_return_uri
+    param_name = failed_strategy.is_a?(OmniAuth::Strategies::Lti13) ? 'target_link_uri' : 'launch_presentation_return_url'
+    return_url = request[param_name]
+    return nil if return_url.blank?
+
+    uri = Addressable::URI.parse(return_url)
+    return nil unless request.host == uri.host
+
+    uri
+  rescue Addressable::URI::InvalidURIError
+    nil
   end
 
   def action_missing(sym, *args, &block)
@@ -82,8 +99,9 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
         # The context claim (and so context_id) is optional in the LTI spec --
         # a launch from outside a course context omits it -- so don't add a
         # nil to virtual_groups.
-        user_session[:lti_group] = request.env["omniauth.auth"].extra.context_id
-        user_session[:virtual_groups] += [user_session[:lti_group]] if user_session[:lti_group].present?
+        context_id = request.env["omniauth.auth"].extra.context_id
+        user_session[:lti_group] = context_id
+        user_session[:virtual_groups] += [context_id] if context_id.present?
         user_session[:full_login] = false
       end
     end
