@@ -14,6 +14,11 @@ en:
       If you are an instructor, you cannot view these items in student mode.
       Please switch back to instructor mode to view. If you are a student and
       receiving this message, please contact us at <a href="mailto:%s">%s</a>.
+    lti_missing_email_error: |
+      Your account could not be created because the LMS did not provide an
+      email address for this launch. This is often a course or platform
+      privacy setting on the LMS side. Please contact us at
+      <a href="mailto:%s">%s</a> for help.
     general_auth_error: You are not authorized to access this content.
     general_500_error: There was an error with this request.
     missing_derivatives_error: |

@@ -39,7 +39,17 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
       return_url = failed_strategy.is_a?(OmniAuth::Strategies::Lti13) ? request['target_link_uri'] : request['launch_presentation_return_url']
       return new_user_session_path(scope) if return_url.blank?
 
+      # return_url is an unauthenticated, attacker-controlled request param at
+      # this point -- verification failed, so nothing here has been vouched
+      # for yet. Without a same-host check this is an open redirect (POST a
+      # registered iss with return_url=https://evil.com and a launch that's
+      # guaranteed to fail, e.g. no login_hint) that also leaks failure_message
+      # (which can include the registered client_id/issuer) via lti_errormsg
+      # to that off-host destination. Same guard as
+      # ApplicationController#find_redirect_url (VOV-5662).
       uri = Addressable::URI.parse(return_url)
+      return new_user_session_path(scope) unless request.host == uri.host
+
       uri.query = {lti_errormsg: msg}.to_query
       uri.to_s
     else
@@ -69,8 +79,11 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
       user_session[:full_login] = true
 
       if auth_type == 'lti'
+        # The context claim (and so context_id) is optional in the LTI spec --
+        # a launch from outside a course context omits it -- so don't add a
+        # nil to virtual_groups.
         user_session[:lti_group] = request.env["omniauth.auth"].extra.context_id
-        user_session[:virtual_groups] += [user_session[:lti_group]]
+        user_session[:virtual_groups] += [user_session[:lti_group]] if user_session[:lti_group].present?
         user_session[:full_login] = false
       end
     end
@@ -88,6 +101,12 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
   rescue_from Avalon::MissingUserId do |exception|
     support_email = Settings.email.support
     notice_text = I18n.t('errors.lti_auth_error') % [support_email, support_email]
+    redirect_to root_path, flash: { error: notice_text.html_safe }
+  end
+
+  rescue_from Avalon::MissingUserEmail do |exception|
+    support_email = Settings.email.support
+    notice_text = I18n.t('errors.lti_missing_email_error') % [support_email, support_email]
     redirect_to root_path, flash: { error: notice_text.html_safe }
   end
 
