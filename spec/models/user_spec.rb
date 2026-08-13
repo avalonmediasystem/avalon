@@ -194,6 +194,16 @@ describe User do
       expect { User.find_for_lti(auth_hash) }.to raise_error(Avalon::MissingUserId)
     end
 
+    it 'raises Avalon::MissingUserEmail when the email claim is absent' do
+      # Both Moodle and Canvas can be configured to withhold the email claim
+      # for privacy; without this check, find_or_create_by_username_or_email
+      # returns an unpersisted (validation-failed) User, @user.persisted? is
+      # false, and the launch silently bounces to the redirect path with no
+      # sign_in, no flash, and no error -- nothing to tell the user why.
+      auth_hash = lti13_auth_hash(email: nil)
+      expect { User.find_for_lti(auth_hash) }.to raise_error(Avalon::MissingUserEmail)
+    end
+
     context 'when the context claim carries a label' do
       let(:auth_hash) { lti13_auth_hash(context_id: 'course-42', context_name: 'INFO-101', context_label: 'INFO-101') }
 

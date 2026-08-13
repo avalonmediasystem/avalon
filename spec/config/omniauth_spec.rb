@@ -14,17 +14,11 @@
 
 require 'rails_helper'
 
-# config/initializers/omniauth.rb overrides OmniAuth.config.request_validation_phase
+# config/initializers/devise.rb overrides OmniAuth.config.request_validation_phase
 # (a single global callable OmniAuth runs on every provider's request/callback
 # phase) to skip the default CSRF/authenticity check for :lti specifically,
 # since a third-party-initiated login arrives as a token-less cross-site POST
-# from the LMS. Exercised directly against the configured lambda rather than
-# through a full request to /users/auth/:provider: in this test environment
-# (config.eager_load only true under CI) Devise's omniauth-middleware
-# initializer runs before Avalon's to_prepare block registers the :lti
-# provider, so the OmniAuth strategy middleware that would normally run this
-# check on a live request is never actually inserted into the stack here --
-# a full request spec would silently pass without exercising anything.
+# from the LMS.
 describe 'OmniAuth CSRF exemption' do
   # Minimal Rack env sufficient for Rack::Protection::AuthenticityToken#accepts?
   # to actually evaluate a POST with no token, rather than short-circuiting.
@@ -42,5 +36,26 @@ describe 'OmniAuth CSRF exemption' do
   it 'still runs the default authenticity check for other strategies' do
     expect { OmniAuth.config.request_validation_phase.call(env_for('identity')) }
       .to raise_error(OmniAuth::AuthenticityError)
+  end
+end
+
+# The exemption above is also exercised through the real, live middleware
+# stack -- unlike when this spec was first written, the :lti strategy is
+# genuinely mounted in Rails.application.middleware in this test environment
+# (see spec/config/omniauth_middleware_spec.rb), so a request spec here
+# actually exercises OmniAuth's enforcement path rather than calling the
+# configured lambda directly.
+describe 'CSRF handling on the live LTI request phase', type: :request do
+  it 'does not fail with an authenticity error when POSTed without a CSRF token' do
+    post '/users/auth/lti'
+    # Checking the exception object itself, not just that the request
+    # "succeeded": omniauth.error.type is a symbolized exception *message*,
+    # not a fixed error code, and here it's nil regardless of the CSRF
+    # exemption -- the 1.1 strategy doesn't implement request_phase, and
+    # that NotImplementedError is a ScriptError, not a StandardError, so it
+    # isn't caught by OmniAuth's fail! and never touches omniauth.error at
+    # all. AuthenticityError is a StandardError and would be caught and
+    # recorded here, so this still fails correctly if the exemption breaks.
+    expect(request.env['omniauth.error']).not_to be_a(OmniAuth::AuthenticityError)
   end
 end
