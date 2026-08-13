@@ -533,6 +533,47 @@ describe CatalogController do
           expect(assigns(:response).documents.map(&:id)).to contain_exactly(media_object.id)
         end
       end
+
+      context 'item access facet' do
+        let(:collection) { FactoryBot.create(:collection, default_visibility: 'private') }
+        let(:media_object) { FactoryBot.create(:fully_searchable_media_object, avalon_uploader: 'archivist1', collection: collection, disable_inheritance: disable_inheritance, visibility: visibility) }
+        let(:disable_inheritance) { false }
+        let(:visibility) { 'private' }
+
+        before do
+          login_as :administrator
+        end
+
+        context 'inheritance' do
+          it 'should show the object as private' do
+            get :index, params: { 'f' => { 'read_access_group_ssim' => ['private'] } }
+            expect(assigns(:response).documents.count).to eq 1
+            expect(assigns(:response).documents.map(&:id)).to contain_exactly(media_object.id)
+          end
+
+          context 'with a saved non-active visibility' do
+            let(:visibility) { 'public' }
+
+            it 'should show the object as private' do
+              get :index, params: { 'f' => { 'read_access_group_ssim' => ['public'] } }
+              expect(assigns(:response).documents.count).to eq 0
+              get :index, params: { 'f' => { 'read_access_group_ssim' => ['private'] } }
+              expect(assigns(:response).documents.count).to eq 1
+              expect(assigns(:response).documents.map(&:id)).to contain_exactly(media_object.id)
+            end
+          end
+        end
+        context 'disable inheritance' do
+          let(:disable_inheritance) { true }
+          let(:visibility) { 'public' }
+
+          it 'should show the object as public' do
+            get :index, params: { 'f' => { 'read_access_group_ssim' => ['public'] } }
+            expect(assigns(:response).documents.count).to eq 1
+            expect(assigns(:response).documents.map(&:id)).to contain_exactly(media_object.id)
+          end
+        end
+      end
     end
 
     describe "gated discovery" do
