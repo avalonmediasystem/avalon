@@ -48,6 +48,7 @@ solr:
     rule:
     shards:
     snitch:
+  timeout: 120
 app_controller:
   solr_and_fedora:
     raise_on_connection_error: false
