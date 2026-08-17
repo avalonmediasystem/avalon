@@ -58,7 +58,9 @@ GIT
     iiif_manifest (1.6.0)
       activesupport (>= 4)
 PATH
-  remote: ../omniauth-lti13
+  remote: https://github.com/mohideen/omniauth-lti13.git
+  revision: a95e147e1c829ae4461283fb329c0432bf567e73
+  branch: main
   specs:
     omniauth-lti13 (0.1.0)
       activesupport
