@@ -69,7 +69,7 @@ gem 'net-ldap'
 gem 'omniauth', '~> 2.0'
 gem 'omniauth-identity', '>= 2.0.0'
 gem 'omniauth-lti', git: "https://github.com/avalonmediasystem/omniauth-lti.git", tag: 'avalon-r4'
-gem 'omniauth-lti13', path: '../omniauth-lti13'
+gem 'omniauth-lti13', git: 'https://github.com/mohideen/omniauth-lti13.git', branch: 'main'
 gem "omniauth-saml", "~> 2.0", ">= 2.2.3"
 
 # Media Access & Transcoding
