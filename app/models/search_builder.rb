@@ -22,7 +22,7 @@ class SearchBuilder < Blacklight::SearchBuilder
 
   class_attribute :default_avalon_solr_access_filters_logic
   self.default_avalon_solr_access_filters_logic = [:only_published_items, :limit_to_non_hidden_items, :limit_to_inheritance_enabled_items]
-  self.default_processor_chain += [:only_wanted_models, :term_frequency_counts, :search_section_transcripts]
+  self.default_processor_chain += [:only_wanted_models, :term_frequency_counts, :search_section_transcripts, :apply_facet_field_param]
 
   class_attribute :model
   self.model = MediaObject
@@ -126,6 +126,10 @@ class SearchBuilder < Blacklight::SearchBuilder
     @avalon_solr_access_filters_logic ||= self.default_avalon_solr_access_filters_logic
   end
 
+  def apply_facet_field_param(solr_parameters)
+    solr_parameters['facet.field'] = facet_fields_to_include_in_request.keys
+  end
+
   private
 
   def edit_policy_clauses
@@ -134,5 +138,19 @@ class SearchBuilder < Blacklight::SearchBuilder
 
   def read_policy_clauses
     @read_policy_clauses ||= policy_clauses(permission_types: [:read])
+  end
+
+  def blacklight_configuration_context
+    @blacklight_configuration_context ||= Blacklight::Configuration::Context.new(search_state.controller)
+  end
+
+  # Override from Blacklight::Solr::SearchBuilderBehavior
+  def facet_fields_to_include_in_request
+    @facet_fields_to_include_in_request ||= blacklight_config.facet_fields.select do |_field_name, facet|
+      include_facet = facet.include_in_request || (facet.include_in_request.nil? && blacklight_config.add_facet_fields_to_solr_request)
+      # exclude facets that don't pass the if/unless tests
+      include_facet &= blacklight_configuration_context.evaluate_if_unless_configuration(facet)
+      include_facet
+    end
   end
 end
