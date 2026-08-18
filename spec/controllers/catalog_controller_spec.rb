@@ -558,6 +558,8 @@ describe CatalogController do
             it 'should show the object as private' do
               get :index, params: { 'f' => { 'read_access_group_ssim' => ['public'] } }
               expect(assigns(:response).documents.count).to eq 0
+              expect(assigns(:response)["responseHeader"]["params"]["facet.query"]).not_to be_blank
+              expect(assigns(:response)["facet_counts"]["facet_queries"]).not_to be_blank
               get :index, params: { 'f' => { 'read_access_group_ssim' => ['private'] } }
               expect(assigns(:response).documents.count).to eq 1
               expect(assigns(:response).documents.map(&:id)).to contain_exactly(media_object.id)
@@ -572,6 +574,21 @@ describe CatalogController do
             get :index, params: { 'f' => { 'read_access_group_ssim' => ['public'] } }
             expect(assigns(:response).documents.count).to eq 1
             expect(assigns(:response).documents.map(&:id)).to contain_exactly(media_object.id)
+          end
+        end
+
+        context 'as end-user' do
+          before do
+            login_as :user
+          end
+
+          it 'should not query facet' do
+            get :index, params: { 'f' => { 'read_access_group_ssim' => ['public'] } }
+            expect(assigns(:response).documents.count).to eq 0
+            expect(assigns(:response)["responseHeader"]["params"]["facet.query"]).to be_blank
+            expect(assigns(:response)["facet_counts"]["facet_queries"]).to be_blank
+            expect(assigns(:response)["responseHeader"]["params"]["facet.field"]).not_to include "read_access_group_ssim"
+            expect(assigns(:response)["facet_counts"]["facet_fields"].keys).not_to include "read_access_group_ssim"
           end
         end
       end
