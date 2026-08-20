@@ -30,9 +30,32 @@ module Avalon
       end
     end
 
+    # Legacy single-consumer LTI 1.1 config via env vars, predating
+    # settings.yml's richer auth.configuration. Kept for backward compatibility,
+    # but combining it with a settings.yml :lti entry is virtually always a
+    # mistake -- usually a stale env var left over from before settings.yml was
+    # set up for LTI. Devise only ever binds one strategy per provider key, so
+    # whichever entry registers last (array order, not anything explicit)
+    # silently wins, with no error, just the wrong protocol at actual launch
+    # time -- e.g. NotImplementedError deep inside OmniAuth's request phase when
+    # a 1.3 config's requests get handled by the 1.1 strategy. Fail loudly at
+    # boot instead.
+    def self.env_lti_config(existing_configs)
+      return nil unless ENV['LTI_AUTH_KEY']
+
+      if existing_configs.any? { |provider| provider[:provider] == :lti }
+        raise "LTI_AUTH_KEY/LTI_AUTH_SECRET are set, but settings.yml (auth.configuration) " \
+              "already configures an :lti provider. Only one :lti configuration is supported " \
+              "at a time -- remove the stale LTI_AUTH_KEY/LTI_AUTH_SECRET env vars, or remove " \
+              "the :lti entry from settings.yml."
+      end
+
+      { name: 'LTI', provider: :lti, hidden: true, params: { oauth_credentials: { ENV['LTI_AUTH_KEY'] => ENV['LTI_AUTH_SECRET'] } } }
+    end
+
     Config = load_configs
-    if ENV['LTI_AUTH_KEY']
-      Config << { name: 'LTI', provider: :lti, hidden: true, params: { oauth_credentials: { ENV['LTI_AUTH_KEY'] => ENV['LTI_AUTH_SECRET'] } } }
+    if (env_config = env_lti_config(Config))
+      Config << env_config
     end
 
     Providers = Config.reject {|provider| provider[:provider].blank? }
