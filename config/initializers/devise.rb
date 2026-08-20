@@ -342,8 +342,6 @@ Devise.setup do |config|
   # so you need to do it manually. For the users scope, it would be:
   # config.omniauth_path_prefix = '/my_engine/users/auth'
   OmniAuth.config.logger = Rails.logger
-  # Next line is needed to avoid errors like "Authentication failure! authenticity_error: OmniAuth::AuthenticityError, Forbidden"
-  OmniAuth.config.request_validation_phase = OmniAuth::AuthenticityTokenProtection.new(key: :_csrf_token)
 end
 
 # OmniAuth::Strategy#request_path / #callback_path memoize themselves (once
@@ -374,10 +372,21 @@ OmniAuth.config.path_prefix = '/users/auth'
 # default check for every provider except :lti, matching what
 # Users::OmniauthCallbacksController#skip_before_action :verify_authenticity_token
 # already does for the same reason. This only stores a lambda that's
-# evaluated per-request, and the lambda itself references only the
-# OmniAuth::AuthenticityTokenProtection gem constant, so nothing here
-# needs Devise/routes to be ready yet -- safe at initializer load time.
-default_validation = OmniAuth::AuthenticityTokenProtection
+# evaluated per-request, and the lambda itself references only gem
+# constants, so nothing here needs Devise/routes to be ready yet -- safe
+# at initializer load time.
+#
+# key: :_csrf_token (rather than plain OmniAuth::AuthenticityTokenProtection)
+# is load-bearing, not decoration: it's what 6a509976de ("Add omniauth
+# solution for csrf protection") added to fix "Authentication failure!
+# authenticity_error: OmniAuth::AuthenticityError, Forbidden" on ordinary
+# (non-LTI) omniauth requests, by pointing the check at the session key
+# Rails' own CSRF token actually lives under instead of Rack::Protection's
+# unrelated default. That fix originally lived inside Devise.setup above,
+# where this same lambda silently overwrote it for every non-:lti
+# provider -- moved the option here instead of leaving two competing
+# assignments to hunt through.
+default_validation = OmniAuth::AuthenticityTokenProtection.new(key: :_csrf_token)
 OmniAuth.config.request_validation_phase = lambda do |env|
   strategy = env['omniauth.strategy']
   next if strategy && strategy.name == 'lti'
