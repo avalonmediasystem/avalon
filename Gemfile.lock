@@ -51,13 +51,6 @@ GIT
       omniauth
 
 GIT
-  remote: https://github.com/samvera/iiif_manifest.git
-  revision: f8d8d904fc14731f8adc53045296b5606dfa81a8
-  branch: main
-  specs:
-    iiif_manifest (1.6.0)
-      activesupport (>= 4)
-PATH
   remote: https://github.com/mohideen/omniauth-lti13.git
   revision: a95e147e1c829ae4461283fb329c0432bf567e73
   branch: main
@@ -65,6 +58,14 @@ PATH
     omniauth-lti13 (0.1.0)
       activesupport
       omniauth_openid_connect (~> 0.8)
+
+GIT
+  remote: https://github.com/samvera/iiif_manifest.git
+  revision: f8d8d904fc14731f8adc53045296b5606dfa81a8
+  branch: main
+  specs:
+    iiif_manifest (1.6.0)
+      activesupport (>= 4)
 
 GEM
   remote: https://rubygems.org/
