@@ -274,4 +274,19 @@ describe ApplicationController do
       expect(controller.params[:key][:subkey]).to eq "value"
     end
   end
+
+  describe 'rstrip_id_param' do
+    it 'removes trailing whitespace' do
+      get :show, params: { id: 'abc1234' }
+      expect(controller.params[:id]).to eq 'abc1234'
+      get :show, params: { id: "abc1234 " }
+      expect(controller.params[:id]).to eq 'abc1234'
+      get :show, params: { id: "abc1234\t" }
+      expect(controller.params[:id]).to eq 'abc1234'
+      get :show, params: { id: "abc1234\n" }
+      expect(controller.params[:id]).to eq 'abc1234'
+      get :show, params: { id: ["abc1234 ", "def5678 "] }
+      expect(controller.params[:id]).to eq ['abc1234', 'def5678']
+    end
+  end
 end
