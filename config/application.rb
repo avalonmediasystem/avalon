@@ -84,6 +84,7 @@ module Avalon
         resource '/master_files/*/search', headers: :any, methods: [:get]
         resource '/rails/active_storage/blobs/*/*/*', headers: :any, methods: [:get]
         resource '/rails/active_storage/disk/*/*', headers: :any, methods: [:get]
+        resource '/iiif_auth_probe/*', headers: :any, credentials: true, methods: [:get]
       end
     end
 
