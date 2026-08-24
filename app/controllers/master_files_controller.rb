@@ -244,15 +244,18 @@ class MasterFilesController < ApplicationController
 
   def hls_manifest
     quality = params[:quality]
+    
+    auth_token = request.headers['Authorization']&.sub('Bearer ', '')
+    authorized = StreamToken.valid_token?(auth_token, @master_file.id) || can?(:read, @master_file)
+
     if request.head?
-      auth_token = request.headers['Authorization']&.sub('Bearer ', '')
-      if StreamToken.valid_token?(auth_token, @master_file.id) || can?(:read, @master_file)
+      if authorized
         return head :ok
       else
         return head :unauthorized
       end
     else
-      return head :unauthorized if cannot?(:read, @master_file)
+      return head :unauthorized unless authorized
       stream = hls_stream(@master_file, quality).first
       case stream
       when nil
