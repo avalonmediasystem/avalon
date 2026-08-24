@@ -767,8 +767,21 @@ describe MasterFilesController do
       end
     end
 
-    it 'returns unauthorized (401) if cannot read the master file' do
-      expect(get('hls_manifest', params: { id: master_file.id, quality: 'auto' })).to have_http_status(:unauthorized)
+    context 'with get request' do
+      it 'returns unauthorized (401) if cannot read the master file' do
+        expect(get('hls_manifest', params: { id: master_file.id, quality: 'auto' })).to have_http_status(:unauthorized)
+      end
+    
+      it 'returns unauthorized (401) with invalid auth token for GET' do
+        request.headers['Authorization'] = "Bearer bad-token"
+        expect(get('hls_manifest', params: { id: master_file.id, quality: 'auto' })).to have_http_status(:unauthorized)
+      end
+
+      it 'returns ok (200) with valid auth token' do
+        token = StreamToken.find_or_create_session_token(session, master_file.id)
+        request.headers['Authorization'] = "Bearer #{token.to_s}"
+        expect(get('hls_manifest', params: { id: master_file.id, quality: 'auto' })).to have_http_status(:ok)
+      end
     end
 
     it 'returns an auto-generated variable bitrate HLS manifest' do
