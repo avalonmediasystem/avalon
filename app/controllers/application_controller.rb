@@ -36,6 +36,7 @@ class ApplicationController < ActionController::Base
   around_action :handle_api_request, if: proc{|c| request.format.json? || request.format.atom? || request.headers['Avalon-Api-Key'].present? }
   before_action :rewrite_v4_ids, if: proc{|c| request.method_symbol == :get && [params[:id], params[:content]].flatten.compact.any? { |i| i =~ /^[a-z]+:[0-9]+$/}}
   before_action :set_no_cache_headers, if: proc{|c| request.xhr? }
+  prepend_before_action :rstrip_id_param
   prepend_before_action :remove_zero_width_chars
 
   rescue_from RSolr::Error::ConnectionRefused, :with => :handle_solr_connection_error
@@ -284,6 +285,10 @@ class ApplicationController < ActionController::Base
 
     def application_name
       Settings.name || 'Avalon Media System'
+    end
+
+    def rstrip_id_param
+      Array(params[:id]).map(&:rstrip!)
     end
 
     def remove_zero_width_chars
