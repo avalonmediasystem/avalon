@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_11_18_195618) do
+ActiveRecord::Schema[8.0].define(version: 2026_08_26_142235) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -58,6 +58,32 @@ ActiveRecord::Schema[8.0].define(version: 2025_11_18_195618) do
     t.bigint "blob_id", null: false
     t.string "variation_digest", null: false
     t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
+  end
+
+  create_table "admin_application_settings", force: :cascade do |t|
+    t.text "name"
+    t.json "master_file_management"
+    t.json "bib_retrieve"
+    t.json "dropbox"
+    t.json "email"
+    t.text "accessibility_request_link"
+    t.json "flash_message"
+    t.json "auth"
+    t.json "recaptcha"
+    t.text "google_analytics_tracking_id"
+    t.json "supplemental_files"
+    t.json "waveform"
+    t.json "controller_digital_lending"
+    t.json "caption_default"
+    t.json "home_page"
+    t.boolean "repository_read_only_mode"
+    t.text "repository_read_only_mode_message"
+    t.json "accessibility_compliance"
+    t.json "intercom"
+    t.integer "singleton_guard", default: 0, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["singleton_guard"], name: "index_admin_application_settings_on_singleton_guard", unique: true
   end
 
   create_table "annotations", force: :cascade do |t|
