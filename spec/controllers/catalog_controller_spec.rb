@@ -535,9 +535,9 @@ describe CatalogController do
         end
       end
 
-      context 'item access facet' do
+      context 'item access (inherited) facet' do
         let(:collection) { FactoryBot.create(:collection, default_visibility: 'private') }
-        let(:media_object) { FactoryBot.create(:fully_searchable_media_object, avalon_uploader: 'archivist1', collection: collection, disable_inheritance: disable_inheritance, visibility: visibility) }
+        let!(:media_object) { FactoryBot.create(:fully_searchable_media_object, avalon_uploader: 'archivist1', collection: collection, disable_inheritance: disable_inheritance, visibility: visibility) }
         let(:disable_inheritance) { false }
         let(:visibility) { 'private' }
 
@@ -545,33 +545,21 @@ describe CatalogController do
           login_as :administrator
         end
 
-        context 'inheritance' do
-          it 'should show the object as private' do
-            get :index, params: { 'f' => { 'read_access_group_ssim' => ['private'] } }
-            expect(assigns(:response).documents.count).to eq 1
-            expect(assigns(:response).documents.map(&:id)).to contain_exactly(media_object.id)
-          end
-
-          context 'with a saved non-active visibility' do
-            let(:visibility) { 'public' }
-
-            it 'should show the object as private' do
-              get :index, params: { 'f' => { 'read_access_group_ssim' => ['public'] } }
-              expect(assigns(:response).documents.count).to eq 0
-              expect(assigns(:response)["responseHeader"]["params"]["facet.query"]).not_to be_blank
-              expect(assigns(:response)["facet_counts"]["facet_queries"]).not_to be_blank
-              get :index, params: { 'f' => { 'read_access_group_ssim' => ['private'] } }
-              expect(assigns(:response).documents.count).to eq 1
-              expect(assigns(:response).documents.map(&:id)).to contain_exactly(media_object.id)
-            end
-          end
+        it 'should show the object as private' do
+          get :index, params: { 'f' => { 'read_access_group_ssim' => ['inherited'], 'inheritable_read_access_group_ssim' => ['private'] } }
+          expect(assigns(:response).documents.count).to eq 1
+          expect(assigns(:response).documents.map(&:id)).to contain_exactly(media_object.id)
         end
-        context 'disable inheritance' do
-          let(:disable_inheritance) { true }
+
+        context 'with a saved non-active visibility' do
           let(:visibility) { 'public' }
 
-          it 'should show the object as public' do
-            get :index, params: { 'f' => { 'read_access_group_ssim' => ['public'] } }
+          it 'should show the object as private' do
+            get :index, params: { 'f' => { 'read_access_group_ssim' => ['inherited'], 'inheritable_read_access_group_ssim' => ['public'] } }
+            expect(assigns(:response).documents.count).to eq 0
+            expect(assigns(:response)["responseHeader"]["params"]["facet.query"]).not_to be_blank
+            expect(assigns(:response)["facet_counts"]["facet_queries"]).not_to be_blank
+            get :index, params: { 'f' => { 'read_access_group_ssim' => ['inherited'], 'inheritable_read_access_group_ssim' => ['private'] } }
             expect(assigns(:response).documents.count).to eq 1
             expect(assigns(:response).documents.map(&:id)).to contain_exactly(media_object.id)
           end
@@ -583,8 +571,40 @@ describe CatalogController do
           end
 
           it 'should not query facet' do
-            get :index, params: { 'f' => { 'read_access_group_ssim' => ['public'] } }
+            get :index, params: { 'f' => { 'inheritable_read_access_group_ssim' => ['public (inherited)'] } }
             expect(assigns(:response).documents.count).to eq 0
+            expect(assigns(:response)["responseHeader"]["params"]["facet.query"]).to be_blank
+            expect(assigns(:response)["facet_counts"]["facet_queries"]).to be_blank
+            expect(assigns(:response)["responseHeader"]["params"]["facet.field"]).not_to include "inheritable_read_access_group_ssim"
+            expect(assigns(:response)["facet_counts"]["facet_fields"].keys).not_to include "inheritable_read_access_group_ssim"
+          end
+        end
+      end
+
+      context 'item access facet' do
+        let(:collection) { FactoryBot.create(:collection, default_visibility: 'private') }
+        let!(:media_object) { FactoryBot.create(:fully_searchable_media_object, avalon_uploader: 'archivist1', collection: collection, disable_inheritance: disable_inheritance, visibility: visibility) }
+        let(:disable_inheritance) { true }
+        let(:visibility) { 'public' }
+
+        before do
+          login_as :administrator
+        end
+
+        it 'should show the object as public' do
+          get :index, params: { 'f' => { 'read_access_group_ssim' => ['public'] } }
+          expect(assigns(:response).documents.count).to eq 1
+          expect(assigns(:response).documents.map(&:id)).to contain_exactly(media_object.id)
+        end
+
+        context 'as end-user' do
+          before do
+            login_as :user
+          end
+
+          it 'should not query facet' do
+            get :index, params: { 'f' => { 'read_access_group_ssim' => ['public'] } }
+            expect(assigns(:response).documents.count).to eq 1
             expect(assigns(:response)["responseHeader"]["params"]["facet.query"]).to be_blank
             expect(assigns(:response)["facet_counts"]["facet_queries"]).to be_blank
             expect(assigns(:response)["responseHeader"]["params"]["facet.field"]).not_to include "read_access_group_ssim"
