@@ -39,7 +39,6 @@ describe MasterFilesController do
           expect(get :captions, params: { id: master_file.id }).to render_template('errors/restricted_pid')
           expect(get :waveform, params: { id: master_file.id }).to render_template('errors/restricted_pid')
           expect(post :attach_structure, params: { id: master_file.id }).to render_template('errors/restricted_pid')
-          expect(get :transcript, params: { id: master_file.id, t_id: '1' }).to render_template('errors/restricted_pid')
           expect(post :move, params: { id: master_file.id }).to render_template('errors/restricted_pid')
         end
         it "json routes should return 401" do
@@ -69,7 +68,6 @@ describe MasterFilesController do
           expect(get :captions, params: { id: master_file.id }).to render_template('errors/restricted_pid')
           expect(get :waveform, params: { id: master_file.id }).to render_template('errors/restricted_pid')
           expect(post :attach_structure, params: { id: master_file.id }).to render_template('errors/restricted_pid')
-          expect(get :transcript, params: { id: master_file.id, t_id: '1' }).to render_template('errors/restricted_pid')
           expect(post :move, params: { id: master_file.id }).to render_template('errors/restricted_pid')
         end
         it "json routes should return 401" do
@@ -932,32 +930,6 @@ describe MasterFilesController do
       expect(master_file.poster_offset).to eq 3000
       expect(master_file.date_digitized).to eq "2020-08-27T00:00:00Z"
       expect(master_file.permalink).to eq "https://perma.link"
-    end
-  end
-
-  describe "#transcript" do
-    let(:supplemental_file) { FactoryBot.create(:supplemental_file) }
-    let(:master_file) { FactoryBot.create(:master_file, supplemental_files: [supplemental_file]) }
-    let(:supplemental_file) { FactoryBot.create(:supplemental_file, :with_transcript_file, :with_transcript_tag, label: 'transcript') }
-
-    it 'serves transcript file content' do
-      login_as :administrator
-      expect(master_file.supplemental_files.first['tags']).to eq (["transcript"])
-      get('transcript', params: { use_route: 'master_files/:id/transcript', id: master_file.id, t_id: supplemental_file.id })
-      expect(response.headers['Content-Type']).to eq('text/vtt')
-      expect(response).to have_http_status(:ok)
-      expect(response.body.include? "Example captions").to be_truthy
-    end
-
-    context 'read from solr' do
-      it 'should not read from fedora' do
-        master_file
-        perform_enqueued_jobs(only: MediaObjectIndexingJob)
-        WebMock.reset_executed_requests!
-        login_as :administrator
-        get('transcript', params: { use_route: 'master_files/:id/transcript', id: master_file.id, t_id: supplemental_file.id })
-        expect(a_request(:any, /#{ActiveFedora.fedora.base_uri}/)).not_to have_been_made
-      end
     end
   end
 
