@@ -25,15 +25,15 @@ module Hydra::MultiplePolicyAwareAccessControlsEnforcement
   end
 
   # returns solr query for finding all objects whose policies grant discover access to current_user
-  def policy_clauses(permission_types: discovery_permissions)
-    policy_ids = policies_with_access(permission_types: permission_types)
+  def policy_clauses(permission_types: discovery_permissions, additional_clause: nil)
+    policy_ids = policies_with_access(permission_types: permission_types, additional_clause: additional_clause)
     return nil if policy_ids.empty?
     # find objects with policies connected to the object
     "_query_:\"{!terms f=isGovernedBy_ssim}#{policy_ids.join(',')}\""
   end
 
   # find all the policies that grant discover/read/edit permissions to this user or any of its groups
-  def policies_with_access(permission_types: discovery_permissions)
+  def policies_with_access(permission_types: discovery_permissions, additional_clause: nil)
     user_access_filters = []
     # Grant access based on user id & group
     user_access_filters += apply_policy_group_permissions(permission_types)
@@ -45,6 +45,7 @@ module Hydra::MultiplePolicyAwareAccessControlsEnforcement
     ids = result.map {|h| h['id']}
     # Find collections governed by units returned in first query along with objects found in first query
     expanded_query = "_query_:\"{!terms f=id}#{ids.join(',')}\" OR _query_:\"{!terms f=isGovernedBy_ssim}#{ids.join(',')}\""
+    expanded_query = "(#{expanded_query}) AND #{additional_clause}" if additional_clause.present?
     Rails.logger.debug "get policies query: #{expanded_query}, fq: [#{klasses_fq}], fl: 'id', rows: 100_000\n\n"
     result = ActiveFedora::Base.search_with_conditions(expanded_query, fq: [klasses_fq], fl: "id", rows: 100_000 );
     Rails.logger.debug "get policies: #{result}\n\n"
