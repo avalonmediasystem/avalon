@@ -14,7 +14,7 @@ Unless required by applicable law or agreed to in writing, software distributed
 ---  END LICENSE_HEADER BLOCK  ---
 %>
 <% user_tags = current_user.playlist_tags %>
-<select multiple name="tagcollection[]" id="tag-select" class="form-control form-model p-0" style="width: 100%;" aria-label="playlist tag selection" aria-describedby="helpTags">
+<select multiple name="tagcollection[]" id="tag-select" class="form-control form-model p-0 playlist-tags" aria-label="playlist tag selection" aria-describedby="helpTags">
   <% user_tags.each do |tag| %>
     <% selected = @playlist.tags.include?(tag) ? ' selected="selected"' : '' %>
     <option value="<%= tag %>" <%= selected %>><%= tag %></option>

@@ -29,8 +29,8 @@ Unless required by applicable law or agreed to in writing, software distributed
             <div class="create-buttons">
               <%= link_to('<span class="btn btn-primary headline-button" data-testid="playlist-create-new-btn">Create New Playlist</span>'.html_safe, new_playlist_path) %>
               <% if Settings['variations'].present? %>
-                <%= form_tag(import_variations_playlist_playlists_path, method:"post", enctype:"multipart/form-data", style:"display:inline") do %>
-                  <input type="file" name="Filedata" class="filedata" style="visibility:hidden; display:inline; width:0;" />
+                <%= form_tag(import_variations_playlist_playlists_path, method:"post", enctype:"multipart/form-data", class: "variations_import_form") do %>
+                  <input type="file" name="Filedata" class="filedata"/>
                   <input type="button" class="btn btn-primary" id="variations_import"
                     onclick="this.closest('form').querySelector('.filedata').click();" value="Import Variations Playlist" />
                 <% end %>
