@@ -17,7 +17,7 @@ module DerivativeIntercom
     {
       label: "quality-#{quality}", # quality-low, quality-medium, quality-high
       id: id,
-      url: location_url,
+      url: absolute_location,
       hls_url: hls_url,
       duration: duration,
       mime_type: mime_type,
@@ -27,7 +27,7 @@ module DerivativeIntercom
       video_codec: video_codec,
       width: (resolution.present? ? resolution.split('x')[0] || nil : nil),
       height: (resolution.present? ? resolution.split('x')[1] || nil : nil),
-      location: location_url,
+      location: absolute_location,
       track_id: track_id,
       hls_track_id: hls_track_id,
       managed: false,

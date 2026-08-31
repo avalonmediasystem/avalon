@@ -17,10 +17,6 @@ module DerivativeBehavior
     derivativeFile
   end
 
-  def streaming_url(is_mobile = false)
-    is_mobile ? hls_url : location_url
-  end
-
   def download_path
     Avalon::Configuration.construct_download_path.call(self)
   end
