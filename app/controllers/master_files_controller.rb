@@ -321,12 +321,6 @@ class MasterFilesController < ApplicationController
     redirect_to edit_media_object_path(current_media_object)
   end
 
-  def transcript
-    authorize! :read, @master_file, message: "You do not have sufficient privileges"
-    @supplemental_file = SupplementalFile.find(params[:t_id])
-    send_data @supplemental_file.file.download, filename: @supplemental_file.file.filename.to_s, type: @supplemental_file.file.content_type, disposition: 'inline'
-  end
-
   def download_derivative
     authorize! :download, @master_file
 
