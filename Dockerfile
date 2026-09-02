@@ -77,6 +77,8 @@ RUN         apt-get update && \
             libxml2-dev \
             libxslt-dev \
             libpq-dev \
+            default-libmysqlclient-dev \
+            libyaz-dev \
             openssh-client \
             zip \
             dumb-init \
@@ -117,7 +119,7 @@ FROM        bundle AS bundle-prod
 LABEL       stage=build
 LABEL       project=avalon
 RUN         bundle config set --local without 'development test' \
-         && bundle config set --local with 'aws production postgres' \
+         && bundle config set --local with 'aws production postgres mysql zoom' \
          && bundle install
 
 
