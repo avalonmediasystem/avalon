@@ -21,7 +21,7 @@ Unless required by applicable law or agreed to in writing, software distributed
       <% val = value == 'off' ? nil : value %>
       <% orig_val = defined?(parent) && parent.present? ? parent.send(field) : @app_settings.send(field) %>
       <label>
-        <%= radio_button_tag "#{form.object_name}_#{field}", val, (orig_val == val), name: "#{form.object_name}[#{field}][]" %>
+        <%= radio_button_tag "#{form.object_name}_#{field}", value, (orig_val == val), name: "#{form.object_name}[#{field}]" %>
         <%= value %>
       </label>
     </div>
