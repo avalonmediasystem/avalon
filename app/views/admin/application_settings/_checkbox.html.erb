@@ -18,6 +18,6 @@ Unless required by applicable law or agreed to in writing, software distributed
   <%= render partial: "modules/tooltip", locals: { form: form, field: field, tooltip: t("metadata_tip.#{field.to_s}"), options: options.merge({ display_label: field.to_s.humanize }) } %>
   <div class='form-check'>
     <% value = defined?(parent) && parent.present? ? parent.send(field) : @app_settings.send(field) %>
-    <%= check_box_tag "#{form.object_name}_#{field}", '1', (value), name: "#{form.object_name}[#{field}][]", data: { testid: 'cdl-enable-checkbox' }%> Enable
+    <%= check_box_tag "#{form.object_name}_#{field}", '1', (value), name: "#{form.object_name}[#{field}]", data: { testid: 'cdl-enable-checkbox' }%> Enable
   </div>
 </div>
