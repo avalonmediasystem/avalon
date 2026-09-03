@@ -13,7 +13,9 @@ Rails.application.config.to_prepare do
     media_convert_client = Aws::MediaConvert::Client.new
     existing_presets = media_convert_client.list_presets(category: "avalon", list_by: "NAME").presets.map(&:name)
     Dir[Settings.encoding.presets_path + "/*.json"].each do |file|
-      json = JSON.parse(File.read(file)).deep_transform_keys! {|k| k.underscore.to_sym }
+      json = JSON.parse(File.read(file)).deep_transform_keys! do |k|
+        k.gsub(/([a-z])(\d)/, '\1_\2').underscore.to_sym
+      end
       next if existing_presets.include?(json[:name])
 
       media_convert_client.create_preset(json)
