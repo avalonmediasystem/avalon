@@ -16,7 +16,7 @@ Unless required by applicable law or agreed to in writing, software distributed
 
 <div class='application-settings-edit'>
   <p class="text-muted">Fields followed by an asterisk (*) are required.</p>
-  <%= form_for @app_settings, html: { class: 'form-vertical', id: 'application-settings' } do |form| %>
+  <%= form_for @app_settings, url: admin_application_settings_path, html: { class: 'form-vertical', id: 'application-settings' } do |form| %>
 
     <%= render partial: 'text_field',
                locals: { form: form, field: :name, options: {} } %>
