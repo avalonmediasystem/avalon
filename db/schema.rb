@@ -61,25 +61,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_08_26_142235) do
   end
 
   create_table "admin_application_settings", force: :cascade do |t|
-    t.text "name"
-    t.json "master_file_management"
-    t.json "bib_retrieve"
-    t.json "dropbox"
-    t.json "email"
-    t.text "accessibility_request_link"
-    t.json "flash_message"
-    t.json "auth"
-    t.json "recaptcha"
-    t.text "google_analytics_tracking_id"
-    t.json "supplemental_files"
-    t.json "waveform"
-    t.json "controller_digital_lending"
-    t.json "caption_default"
-    t.json "home_page"
-    t.boolean "repository_read_only_mode"
-    t.text "repository_read_only_mode_message"
-    t.json "accessibility_compliance"
-    t.json "intercom"
+    t.jsonb "options", default: {}
     t.integer "singleton_guard", default: 0, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
