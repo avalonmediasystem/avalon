@@ -132,7 +132,7 @@ module NestedAppSetting
   class Recaptcha < JsonModel
     attr_json :site_key, :string
     attr_json :secret_key, :string
-    attr_json :type, :string
+    attr_json :type, :string, default: 'v2_checkbox'
     attr_json :v3, Recaptcha3.to_type, default: -> { Recaptcha3.new }
 
     validates :type, inclusion: { in: ['v2_checkbox', 'v3'] }

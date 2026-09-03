@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe "Admin::ApplicationSettings", type: :request do
-  describe "GET /index" do
+  describe "GET /show" do
     context "unauthenticated user" do
       it "renders the restricted content page" do
         get admin_application_settings_url
@@ -16,7 +16,7 @@ RSpec.describe "Admin::ApplicationSettings", type: :request do
         let(:user) { FactoryBot.create(:user) }
 
         it "renders the restricted content page" do
-          get admin_dashboard_url
+          get admin_application_settings_url
           expect(response).to render_template(:restricted_pid)
         end
       end
@@ -24,9 +24,9 @@ RSpec.describe "Admin::ApplicationSettings", type: :request do
       context 'administrator' do
         let(:user) { FactoryBot.create(:administrator) }
 
-        it "renders the index page" do
-          get admin_dashboard_url
-          expect(response).to render_template(:index)
+        it "renders the show page" do
+          get admin_application_settings_url
+          expect(response).to render_template(:show)
         end
       end
     end
