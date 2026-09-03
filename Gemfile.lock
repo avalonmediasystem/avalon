@@ -51,6 +51,15 @@ GIT
       omniauth
 
 GIT
+  remote: https://github.com/mohideen/omniauth-lti13.git
+  revision: a95e147e1c829ae4461283fb329c0432bf567e73
+  branch: main
+  specs:
+    omniauth-lti13 (0.1.0)
+      activesupport
+      omniauth_openid_connect (~> 0.8)
+
+GIT
   remote: https://github.com/samvera/iiif_manifest.git
   revision: f8d8d904fc14731f8adc53045296b5606dfa81a8
   branch: main
@@ -178,10 +187,12 @@ GEM
       activesupport (>= 6.1)
     addressable (2.9.0)
       public_suffix (>= 2.0.2, < 8.0)
+    aes_key_wrap (1.1.0)
     airbrussh (1.5.3)
       sshkit (>= 1.6.1, != 1.7.0)
     api-pagination (6.0.0)
     ast (2.4.3)
+    attr_required (1.0.2)
     audio_waveform-ruby (1.0.7)
       json (~> 2.3)
     aws-actionmailer-ses (1.0.0)
@@ -244,6 +255,7 @@ GEM
     bcrypt (3.1.22)
     benchmark (0.5.0)
     bigdecimal (3.3.1)
+    bindata (3.0.0)
     bindex (0.8.1)
     bixby (5.0.2)
       rubocop (= 1.28.2)
@@ -484,6 +496,13 @@ GEM
       railties (>= 6.0.0)
     json (2.21.2)
     json-canonicalization (1.0.0)
+    json-jwt (1.17.2)
+      activesupport (>= 4.2)
+      aes_key_wrap
+      base64
+      bindata
+      faraday (~> 2.0)
+      faraday-follow_redirects
     json-ld (3.3.2)
       htmlentities (~> 4.3)
       json-canonicalization (~> 1.0)
@@ -612,6 +631,21 @@ GEM
     omniauth-saml (2.2.4)
       omniauth (~> 2.1)
       ruby-saml (~> 1.18)
+    omniauth_openid_connect (0.8.0)
+      omniauth (>= 1.9, < 3)
+      openid_connect (~> 2.2)
+    openid_connect (2.5.0)
+      activemodel
+      attr_required (>= 1.0.0)
+      faraday (~> 2.0)
+      faraday-follow_redirects
+      json-jwt (>= 1.16)
+      mail
+      rack-oauth2 (~> 2.2)
+      swd (~> 2.0)
+      tzinfo
+      validate_url
+      webfinger (~> 2.0)
     orm_adapter (0.5.0)
     os (1.1.4)
     ostruct (0.6.3)
@@ -651,6 +685,13 @@ GEM
       rack (>= 2.0.0)
     rack-mini-profiler (3.3.1)
       rack (>= 1.2.0)
+    rack-oauth2 (2.3.0)
+      activesupport
+      attr_required
+      faraday (~> 2.0)
+      faraday-follow_redirects
+      json-jwt (>= 1.11.0)
+      rack (>= 2.1.0)
     rack-protection (3.2.0)
       base64 (>= 0.1.0)
       rack (~> 2.2, >= 2.2.4)
@@ -916,6 +957,11 @@ GEM
       dalli
       msgpack
       redis
+    swd (2.0.3)
+      activesupport (>= 3)
+      attr_required (>= 0.0.5)
+      faraday (~> 2.0)
+      faraday-follow_redirects
     sxp (2.0.0)
       matrix (~> 0.4)
       rdf (~> 3.3)
@@ -934,6 +980,9 @@ GEM
     uri (1.1.1)
     user_agent_parser (2.18.0)
     useragent (0.16.11)
+    validate_url (1.0.15)
+      activemodel (>= 3.0.0)
+      public_suffix
     version_gem (1.1.8)
     view_component (3.23.2)
       activesupport (>= 5.2.0, < 8.1)
@@ -951,6 +1000,10 @@ GEM
       nokogiri (~> 1.6)
       rubyzip (~> 1.0)
       selenium-webdriver (~> 3.0)
+    webfinger (2.1.3)
+      activesupport
+      faraday (~> 2.0)
+      faraday-follow_redirects
     webmock (3.25.1)
       addressable (>= 2.8.0)
       crack (>= 0.3.2)
@@ -1060,6 +1113,7 @@ DEPENDENCIES
   omniauth (~> 2.0)
   omniauth-identity (>= 2.0.0)
   omniauth-lti!
+  omniauth-lti13!
   omniauth-saml (~> 2.0, >= 2.2.3)
   parallel
   pg
