@@ -1,0 +1,141 @@
+<%#
+Copyright 2011-2025, The Trustees of Indiana University and Northwestern
+  University.  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+
+You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+  under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+  CONDITIONS OF ANY KIND, either express or implied. See the License for the
+  specific language governing permissions and limitations under the License.
+---  END LICENSE_HEADER BLOCK  ---
+%>
+
+<div class='application-settings-edit'>
+  <p class="text-muted">Fields followed by an asterisk (*) are required.</p>
+  <%= form_for @app_settings, html: { class: 'form-vertical', id: 'application-settings' } do |form| %>
+
+    <%= render partial: 'text_field',
+               locals: { form: form, field: :name, options: {} } %>
+
+    <%= render partial: 'text_field',
+               locals: { form: form, field: :accessibility_request_link, options: {} } %>
+
+    <%= render partial: 'text_field',
+               locals: { form: form, field: :google_analytics_tracking_id, options: {} } %>
+
+    <%= render partial: 'checkbox',
+               locals: { form: form, field: :repository_read_only_mode, options: {} } %>
+
+    <%= render partial: 'text_field',
+               locals: { form: form, field: :repository_read_only_mode_message, options: {} } %>
+
+    <%= render partial: 'nested_form',
+               locals: { form: form, field: :accessibility_compliance,
+                         subfields: [{ name: :enforce, type: 'checkbox' },
+                                     { name: :compliance_date, type: 'text_field' }], options: {} } %>
+
+    <%= render partial: 'nested_form',
+               locals: { form: form, field: :auth,
+                         subfields: [{ name: :registerable, type: 'checkbox' },
+                                     { name: :configuration, type: 'text_area' }], options: {} } %>
+
+    <%= render partial: 'nested_form',
+               locals: { form: form, field: :bib_retriever,
+                         subfields: [{ name: :default, type: 'nested_form' ,
+                                       subfields: [{ name: :protocol, type: 'text_field' },
+                                                   { name: :url, type: 'text_field' },
+                                                   { name: :query, type: 'text_field' },
+                                                   { name: :retriever_class, type: 'text_field' },
+                                                   { name: :retriever_class_require, type: 'text_field' }] }], options: {} } %>
+
+    <%= render partial: 'nested_form',
+               locals: { form: form, field: :caption_default,
+                         subfields: [{ name: :language, type: 'text_field' },
+                                     { name: :name, type: 'text_field' }], options: {} } %>
+
+    <%= render partial: 'nested_form',
+               locals: { form: form, field: :controlled_digital_lending,
+                         subfields: [{ name: :enable, type: 'checkbox' },
+                                     { name: :collections_enabled, type: 'checkbox' },
+                                     { name: :default_lending_period, type: 'text_field' } ], options: {} } %>
+
+    <%= render partial: 'nested_form',
+               locals: { form: form, field: :dropbox,
+                         subfields: [{ name: :path, type: 'text_field' },
+                                     { name: :upload_uri, type: 'text_field' },
+                                     { name: :google_drive, type: 'nested_form',
+                                       subfields: [{ name: :client_id, type: 'text_field' },
+                                                   { name: :client_secret, type: 'text_field' },
+                                                   { name: :redis_token_store_url, type: 'text_field' }] },
+                                     { name: :sharepoint, type: 'nested_form',
+                                       subfields: [{ name: :client_id, type: 'text_field' },
+                                                   { name: :client_secret, type: 'text_field' },
+                                                   { name: :tenant_id, type: 'text_field' },
+                                                   { name: :scope, type: 'text_field' },
+                                                   { name: :redirect_uri, type: 'text_field' }] }], options: {} } %>
+
+    <%= render partial: 'nested_form',
+               locals: { form: form, field: :email,
+                         subfields: [{ name: :comments, type: 'text_field' },
+                                     { name: :notification, type: 'text_field' },
+                                     { name: :support, type: 'text_field'},
+                                     { name: :mailer, type: 'text_field'},
+                                     { name: :config, type: 'nested_form',
+                                       subfields: [{ name: :address, type: 'text_field' },
+                                                   { name: :port, type: 'text_field'},
+                                                   { name: :enable_starttls_auto, type: 'checkbox'}] }], options: {} } %>
+
+    <%= render partial: 'nested_form',
+               locals: { form: form, field: :flash_message,
+                         subfields: [{ name: :type, type: 'radio_buttons', values: ['off', 'success', 'notice', 'error', 'alert'] },
+                                     { name: :message, type: 'text_field' }], options: {} } %>
+
+    <%= render partial: 'nested_form',
+               locals: { form: form, field: :home_page,
+                         subfields: [{ name: :featured_collections, type: 'text_field',
+                                       multivalued: true },
+                                     { name: :carousel_collections, type: 'text_field',
+                                       multivalued: true }], options: {} } %>
+
+    <%= render partial: 'nested_form',
+               locals: { form: form, field: :intercom,
+                         subfields: [{ name: :default, type: 'nested_form',
+                                       subfields: [{ name: :url, type: 'text_field' },
+                                                   { name: :api_token, type: 'text_field' },
+                                                   { name: :import_bib_record, type: 'checkbox' },
+                                                   { name: :publish, type: 'checkbox' },
+                                                   { name: :push_label, type: 'text_field' }] }],options: {} } %>
+
+    <%= render partial: 'nested_form',
+               locals: { form: form, field: :master_file_management,
+                         subfields: [{ name: :strategy, type: 'text_field' },
+                                     { name: :path, type: 'text_field' }], options: {} } %>
+
+    <%= render partial: 'nested_form',
+               locals: { form: form, field: :recaptcha,
+                         subfields: [{ name: :site_key, type: 'text_field' },
+                                     { name: :secret_key, type: 'text_field' },
+                                     { name: :type, type: 'radio_buttons', values: ['v2_checkbox', 'v3'] },
+                                     { name: :v3, type: 'nested_form',
+                                       subfields: [{ name: :action, type: 'text_field' },
+                                                   { name: :minimum_score, type: 'text_field'}] }], options: {} } %>
+
+    <%= render partial: 'nested_form',
+               locals: { form: form, field: :supplemental_files,
+                         subfields: [{ name: :proxy, type: 'checkbox' }], options: {} } %>
+
+    <%= render partial: 'nested_form',
+               locals: { form: form, field: :waveform,
+                         subfields: [{ name: :player_width, type: 'text_field' },
+                                     { name: :finest_zoom, type: 'text_field' },
+                                     { name: :sample_rate, type: 'text_field'}], options: {} } %>
+
+    <div class="btn-group">
+      <%= form.submit 'Save', name: 'save', class: "btn btn-outline", data:{ testid:'application-settings-save-btn'} %>
+    </div>
+  <% end %>
+</div>
