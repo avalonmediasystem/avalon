@@ -201,5 +201,43 @@ namespace :avalon do
 
       puts("#{num_found - error_count} records successfully migrated")
     end
+
+    desc "Migrate existing application settings from settings.yml and env variables to database"
+    task :application_settings, [:list_fields] => :environment do |_task, args|
+      SETTINGS_KEYS = [:name, :accessibility_request_link, :google_analytics_tracking_id,
+                       :repository_read_only_mode, :repository_read_only_mode_message,
+                       :accessibility_compliance, :auth, :bib_retriever, :caption_default,
+                       :controlled_digital_lending, :dropbox, :email, :flash_message,
+                       :home_page, :intercom, :master_file_management, :recaptcha,
+                       :supplemental_files, :waveform].freeze
+
+      if args[:list_fields].present?
+        puts("Settings fields to be migrated:\n #{SETTINGS_KEYS}")
+        next
+      end
+
+      puts("\nThis action will overwrite existing application settings in the database.\n
+            Are you sure you wish to continue? [y/n]")
+      ans = STDIN.gets.chomp
+
+      if ans != 'y'
+        puts("Migration Aborted")
+        next
+      end
+
+      db_settings = Admin::ApplicationSetting.where(singleton_guard: 0).first_or_initialize
+      SETTINGS_KEYS.each do |key|
+        next unless Settings.respond_to?(key)
+        value = Settings.send(key)
+        value = value.class == Config::Options ? value.to_h : value
+        db_settings.send("#{key}=".to_sym, value)
+        puts("'#{key}' set to #{value}.")
+      end
+
+      db_settings.save!
+      puts("Settings successfully saved to database.")
+    rescue StandardError => e
+      puts(e.message)
+    end
   end
 end
