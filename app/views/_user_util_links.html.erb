@@ -83,6 +83,11 @@ Unless required by applicable law or agreed to in writing, software distributed
           </li>
           <% end %>
           <% end %>
+          <% if can? :manage, :all %>
+          <li class='nav-item'>
+            <%= link_to 'Application Settings', main_app.admin_application_settings_path, class: 'nav-link' %>
+          </li>
+          <% end %>
         </ul>
       </div>
     </li>
