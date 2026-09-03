@@ -23,7 +23,7 @@ Unless required by applicable law or agreed to in writing, software distributed
   <% count.times do |i| %>
     <% value = values[i] %>
     <div class="input-group">
-      <%= text_area_tag "#{form.object_name}_#{field}", value || '', rows: 10, class: 'form-control', name: "#{form.object_name}[#{field}][]", data: { testid: "application-settings-#{field.to_s.dasherize}" } %>
+      <%= text_area_tag "#{form.object_name}_#{field}", value || '', rows: 10, class: 'form-control', name: "#{form.object_name}[#{field}]", data: { testid: "application-settings-#{field.to_s.dasherize}" } %>
     </div>
   <% end %>
 </div>
