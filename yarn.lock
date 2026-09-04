@@ -1740,21 +1740,23 @@
     estree-walker "^2.0.2"
     picomatch "^4.0.2"
 
-"@samvera/ramp@^5.1.1":
-  version "5.1.1"
-  resolved "https://registry.yarnpkg.com/@samvera/ramp/-/ramp-5.1.1.tgz#36ab304dbf7933fdc1b52b744039f493951380d4"
-  integrity sha512-yPnG5TMN0o04F5mK9z330P19BCH8QjflRNUF0mGzfS73N6DR1Rh/+pRr95fSG2IEvsLXGMiJlkvCmCWmuZrjUg==
+"@samvera/ramp@https://github.com/samvera-labs/ramp#ramp-build":
+  version "5.1.0"
+  resolved "https://github.com/samvera-labs/ramp#af735e07ac4df7254eb3e0a6d48f89b8982606c7"
   dependencies:
     "@rollup/plugin-json" "^6.1.0"
     "@silvermine/videojs-quality-selector" "^1.3.1"
     classnames "^2.5.1"
     dompurify "^3.4.1"
+    html-entities "^2.5.2"
+    lodash "^4.17.21"
     mammoth "^1.12.0"
     manifesto.js "^4.3.4"
     mime-types "^3.0.2"
     react-error-boundary "^4.0.11"
     video.js "^8.23.7"
     videojs-markers-plugin "^1.0.2"
+    waveform-data "^4.5.2"
 
 "@silvermine/videojs-quality-selector@^1.3.1":
   version "1.3.1"
@@ -2220,10 +2222,15 @@
   resolved "https://registry.yarnpkg.com/@webpack-cli/serve/-/serve-3.0.1.tgz#bd8b1f824d57e30faa19eb78e4c0951056f72f00"
   integrity sha512-sbgw03xQaCLiT6gcY/6u3qBDn01CWw/nbaXl3gTdTFuJJ75Gffv3E3DBpgvY2fkkrdS1fpjaXNOmJlnbtKauKg==
 
-"@xmldom/xmldom@^0.8.3", "@xmldom/xmldom@^0.8.6":
+"@xmldom/xmldom@^0.8.3":
   version "0.8.13"
   resolved "https://registry.yarnpkg.com/@xmldom/xmldom/-/xmldom-0.8.13.tgz#00d1dd940b218dff2e49309d410d8bb212159225"
   integrity sha512-KRYzxepc14G/CEpEGc3Yn+JKaAeT63smlDr+vjB8jRfgTBBI9wRj/nkQEO+ucV8p8I9bfKLWp37uHgFrbntPvw==
+
+"@xmldom/xmldom@^0.8.6":
+  version "0.8.15"
+  resolved "https://registry.yarnpkg.com/@xmldom/xmldom/-/xmldom-0.8.15.tgz#71ebf80729e4e95221d519ac9b1e1eaea7784907"
+  integrity sha512-/5NV/vDALVFDXgLmfsy9TRCBlKwO2LNBFzpzvb9iIj+jR+eSc6DLYYvVOdivT/jm7MtU6TebYuRmzEOI7w40UA==
 
 "@xtuc/ieee754@^1.2.0":
   version "1.2.0"
@@ -3392,9 +3399,9 @@ domhandler@^5.0.2, domhandler@^5.0.3:
     domelementtype "^2.3.0"
 
 dompurify@^3.4.1:
-  version "3.4.13"
-  resolved "https://registry.yarnpkg.com/dompurify/-/dompurify-3.4.13.tgz#fc28949d59f92d62e28a3a764bcbeee35897a1be"
-  integrity sha512-2vmYIoqjze2d+kakP8S/nS5shfsl587kzwEjcGlTdiksUVgFHnFCsLYDVj/JNqJVOQZGSYBTmuycv0PodwmnMQ==
+  version "3.4.14"
+  resolved "https://registry.yarnpkg.com/dompurify/-/dompurify-3.4.14.tgz#a789edb2c7bcdb69a93713a34edb7e0a5245d8c9"
+  integrity sha512-dVoH9z+MY+C9IilgGCk3YfFqjLi3fChm2OiKJMzh6axrJ5qwxqWaZamgmHrpv22CN/KdbZJuGEGgfQoL00LTdg==
   optionalDependencies:
     "@types/trusted-types" "^2.0.7"
 
@@ -4156,6 +4163,11 @@ hoist-non-react-statics@^3.3.2:
   dependencies:
     react-is "^16.7.0"
 
+html-entities@^2.5.2:
+  version "2.6.0"
+  resolved "https://registry.yarnpkg.com/html-entities/-/html-entities-2.6.0.tgz#7c64f1ea3b36818ccae3d3fb48b6974208e984f8"
+  integrity sha512-kig+rMn/QOVRvr7c86gQ8lWXq+Hkv6CbAH1hLu+RG338StTpE8Z0b44SDVaqVu7HGKf27frdmUYEs9hTUX/cLQ==
+
 html-minifier-terser@^6.0.2:
   version "6.1.0"
   resolved "https://registry.yarnpkg.com/html-minifier-terser/-/html-minifier-terser-6.1.0.tgz#bfc818934cc07918f6b3669f5774ecdfd48f32ab"
@@ -4825,9 +4837,9 @@ make-dir@^2.1.0:
     semver "^5.6.0"
 
 mammoth@^1.12.0:
-  version "1.12.0"
-  resolved "https://registry.yarnpkg.com/mammoth/-/mammoth-1.12.0.tgz#102ed719a933ac08ed65b37e9856622f1051effb"
-  integrity sha512-cwnK1RIcRdDMi2HRx2EXGYlxqIEh0Oo3bLhorgnsVJi2UkbX1+jKxuBNR9PC5+JaX7EkmJxFPmo6mjLpqShI2w==
+  version "1.12.2"
+  resolved "https://registry.yarnpkg.com/mammoth/-/mammoth-1.12.2.tgz#3bcf9a0e204e87bddab870f7f2814cd2c93ba7bf"
+  integrity sha512-MH2vkgafD/2MYUaEOtoXLKrHQZ7yLYTHGQgyLNtYZHiUxU1K1QQ+8qMFquDAfhBm06wSGSws3J+Q9QTsKtR44g==
   dependencies:
     "@xmldom/xmldom" "^0.8.6"
     argparse "~1.0.3"
@@ -5276,9 +5288,9 @@ picomatch@^2.0.4, picomatch@^2.2.1, picomatch@^2.3.1:
   integrity sha512-V7+vQEJ06Z+c5tSye8S+nHUfI51xoXIXjHQ99cQtKUkQqqO1kO/KCJUfZXuB47h/YBlDhah2H3hdUGXn8ie0oA==
 
 picomatch@^4.0.2:
-  version "4.0.5"
-  resolved "https://registry.yarnpkg.com/picomatch/-/picomatch-4.0.5.tgz#51ea57a17d86f605f81039595fbc40ed06a55fab"
-  integrity sha512-RvwwcruNjI1ncT5xRakeyS9Lf8lcItv34KD+aif+VH9kduAyfYBipGh12274xtenIPZ119/R9BdTBa8gAwSh0A==
+  version "4.0.7"
+  resolved "https://registry.yarnpkg.com/picomatch/-/picomatch-4.0.7.tgz#6313360034ccb36b3dc61ecbdff78121f90fe21f"
+  integrity sha512-qcJu88Q2IWqJsDD529JKMdwGm/dvInW4HvQnRwiH9JtihJvzGOscDtHE3x1pBKeUOTysQ8kVmLnJ2kJu7yhcGA==
 
 picomatch@^4.0.3, picomatch@^4.0.4:
   version "4.0.4"
@@ -6797,9 +6809,9 @@ verror@1.10.0:
     videojs-vtt.js "0.15.5"
 
 video.js@^8.23.7:
-  version "8.23.9"
-  resolved "https://registry.yarnpkg.com/video.js/-/video.js-8.23.9.tgz#116954b11339b7d24c5422cf294a4da8c81afc33"
-  integrity sha512-3UCqyFW4wIusQu4TuhgRUxqtbzbj0WPT9hps0XIEXST43QBD11zb+bG7tBPrinrZztwVYdXCiOBo2pcGj9L05w==
+  version "8.24.0"
+  resolved "https://registry.yarnpkg.com/video.js/-/video.js-8.24.0.tgz#525dbe813299c4eb856866b45456f06c58977385"
+  integrity sha512-ZUuxTlDRkEWhpp2mvGCSFzI0Tc3zcC6IUZbIhBcZ3QW0Ms+IRp/tzYkhqexcMYwrcukRFiWWJmRANsLKvv8Vsg==
   dependencies:
     "@babel/runtime" "^7.28.4"
     "@videojs/http-streaming" "^3.17.5"
@@ -6858,7 +6870,7 @@ watchpack@^2.5.1:
     glob-to-regexp "^0.4.1"
     graceful-fs "^4.1.2"
 
-waveform-data@^4.5.1:
+waveform-data@^4.5.1, waveform-data@^4.5.2:
   version "4.5.2"
   resolved "https://registry.yarnpkg.com/waveform-data/-/waveform-data-4.5.2.tgz#6818620df01e5aeebab06f477250b30b77454f39"
   integrity sha512-1wDQ2LmaCM76xXXkOamWui1dp7uS2UHVeNccuHDS/qnoOrczrXR6g7Q9m/UjlibHfukxBrceoRIVTKKY1tDLdA==
