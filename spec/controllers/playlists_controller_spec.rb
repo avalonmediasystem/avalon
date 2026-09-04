@@ -514,7 +514,7 @@ RSpec.describe PlaylistsController, type: :controller do
       let(:playlist_item_2) { FactoryBot.create(:playlist_item, clip: clip) }
       let(:clip) { FactoryBot.create(:avalon_clip, master_file: master_file) }
       let(:master_file) { FactoryBot.create(:master_file, :with_derivative, media_object: media_object) }
-      let(:media_object) { FactoryBot.create(:published_media_object, visibility: 'public') }
+      let(:media_object) { FactoryBot.create(:published_media_object, visibility: 'public', disable_inheritance: true) }
 
       it "returns a IIIF manifest" do
         get :manifest, format: 'json', params: { id: playlist.id }, session: valid_session

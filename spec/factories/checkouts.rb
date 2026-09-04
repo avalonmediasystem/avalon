@@ -15,7 +15,7 @@
 FactoryBot.define do
   factory :checkout do
     user { FactoryBot.create(:user) }
-    media_object_id { FactoryBot.create(:published_media_object, visibility: 'public').id }
+    media_object_id { FactoryBot.create(:published_media_object, visibility: 'public', disable_inheritance: true).id }
     checkout_time { DateTime.now }
     return_time { DateTime.now + 2.weeks }
   end

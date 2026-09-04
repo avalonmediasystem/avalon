@@ -25,35 +25,38 @@ module Hydra::MultiplePolicyAwareAccessControlsEnforcement
   end
 
   # returns solr query for finding all objects whose policies grant discover access to current_user
-  def policy_clauses(permission_types: discovery_permissions)
-    policy_ids = policies_with_access(permission_types: permission_types)
+  def policy_clauses(permission_types: discovery_permissions, additional_clause: nil)
+    policy_ids = policies_with_access(permission_types: permission_types, additional_clause: additional_clause)
     return nil if policy_ids.empty?
-    # find objects with policies connected to the object or once removed (Units -> Collections -> MediaObjects)
-    '(' + policy_ids.map {|id| [ActiveFedora::SolrQueryBuilder.construct_query_for_rel(isGovernedBy: id), "_query_:\"{!join from=id to=isGovernedBy_ssim}{!raw f=isGovernedBy_ssim}#{id}\""].join(' OR '.freeze) }.join(' OR '.freeze) + ')'
+    # find objects with policies connected to the object
+    "_query_:\"{!terms f=isGovernedBy_ssim}#{policy_ids.join(',')}\""
   end
 
   # find all the policies that grant discover/read/edit permissions to this user or any of its groups
-  def policies_with_access(permission_types: discovery_permissions)
-    policy_classes.collect do |policy_class|
-      #### TODO -- Memoize this and put it in the session?
-      user_access_filters = []
-      # Grant access based on user id & group
-      policy_class_clause = policy_class_clause(policy_class)
-      user_access_filters += apply_policy_group_permissions(permission_types, policy_class_clause)
-      user_access_filters += apply_policy_user_permissions(permission_types, policy_class_clause)
-      result = policy_class.search_with_conditions( user_access_filters.join(" OR "), :fl => "id", :rows => policy_class.count )
-      Rails.logger.debug "get policies: #{result}\n\n"
-      result.map {|h| h['id']}
-    end.flatten.uniq
+  def policies_with_access(permission_types: discovery_permissions, additional_clause: nil)
+    user_access_filters = []
+    # Grant access based on user id & group
+    user_access_filters += apply_policy_group_permissions(permission_types)
+    user_access_filters += apply_policy_user_permissions(permission_types)
+    klasses_fq = policy_classes.collect { |klass| "(has_model_ssim:\"#{klass.name}\" #{policy_class_clause(klass)})" }.join(" OR ")
+    Rails.logger.debug "get policies query: #{user_access_filters.join(" OR ")}, fq: [#{klasses_fq}], fl: 'id', rows: 100_000\n\n"
+    result = ActiveFedora::Base.search_with_conditions( user_access_filters.join(" OR "), fq: [klasses_fq], fl: "id", rows: 100_000 )
+    Rails.logger.debug "get policies: #{result}\n\n"
+    ids = result.map {|h| h['id']}
+    # Find collections governed by units returned in first query along with objects found in first query
+    expanded_query = "_query_:\"{!terms f=id}#{ids.join(',')}\" OR _query_:\"{!terms f=isGovernedBy_ssim}#{ids.join(',')}\""
+    expanded_query = "(#{expanded_query}) AND #{additional_clause}" if additional_clause.present?
+    Rails.logger.debug "get policies query: #{expanded_query}, fq: [#{klasses_fq}], fl: 'id', rows: 100_000\n\n"
+    result = ActiveFedora::Base.search_with_conditions(expanded_query, fq: [klasses_fq], fl: "id", rows: 100_000 );
+    Rails.logger.debug "get policies: #{result}\n\n"
+    result.map {|h| h['id']}
   end
 
   def apply_policy_group_permissions(permission_types = discovery_permissions, policy_class_clause = "")
       # for groups
       user_access_filters = []
-      current_ability.user_groups.each_with_index do |group, i|
-        permission_types.each do |type|
-          user_access_filters << "(" + escape_filter(Hydra.config.permissions.inheritable[type.to_sym].group, group) + policy_class_clause + ")"
-        end
+      permission_types.each do |type|
+        user_access_filters << "(_query_:\"{!terms f=#{Hydra.config.permissions.inheritable[type.to_sym].group}}#{RSolr.solr_escape(current_ability.user_groups.join(','))}\"" + policy_class_clause + ")"
       end
       user_access_filters
   end
@@ -84,7 +87,7 @@ module Hydra::MultiplePolicyAwareAccessControlsEnforcement
 
   protected
 
-  def gated_discovery_filters
+  def gated_discovery_filters(permission_types = discovery_permissions, ability = current_ability)
     filters = super
     additional_clauses = policy_clauses
     unless additional_clauses.blank?

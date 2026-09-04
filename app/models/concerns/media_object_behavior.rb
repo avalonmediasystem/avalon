@@ -42,13 +42,13 @@ module MediaObjectBehavior
 
   def access_text
     actors = []
-    if visibility == "public"
+    if active_visibility == "public"
       actors << "the public"
     else
-      actors << "collection staff" if visibility == "private"
+      actors << "collection staff" if active_visibility == "private"
       actors << "specific users" if read_users.any? || leases('user').any?
 
-      if visibility == "restricted"
+      if active_visibility == "restricted"
         actors << "logged-in users"
       elsif virtual_read_groups.any? || local_read_groups.any? || leases('external').any? || leases('local').any?
         actors << "users in specific groups"
@@ -158,5 +158,9 @@ module MediaObjectBehavior
   def inherited_visibility
     return false unless collection
     collection.default_visibility
+  end
+
+  def active_visibility
+    disable_inheritance? ? visibility : inherited_visibility
   end
 end

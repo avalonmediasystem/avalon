@@ -1120,12 +1120,13 @@ describe MediaObject do
   end
 
   describe '#access_text' do
-    let(:media_object) { FactoryBot.create(:media_object) }
+    let(:collection) { FactoryBot.create(:collection, default_visibility: 'private') }
+    let(:media_object) { FactoryBot.create(:media_object, collection: collection, disable_inheritance: disable_inheritance, visibility: visibility) }
+    let(:visibility) { "private" }
+    let(:disable_inheritance) { true }
 
     context "public item" do
-      before do
-        media_object.visibility = "public"
-      end
+      let(:visibility) { "public" }
 
       it 'returns public text' do
         expect(media_object.access_text).to eq("This item is accessible by: the public.")
@@ -1133,9 +1134,7 @@ describe MediaObject do
     end
 
     context "restricted item" do
-      before do
-        media_object.visibility = "restricted"
-      end
+      let(:visibility) { "restricted" }
 
       it 'returns restricted text' do
         expect(media_object.access_text).to eq("This item is accessible by: logged-in users.")
@@ -1143,10 +1142,6 @@ describe MediaObject do
     end
 
     context "private item" do
-      before do
-        media_object.visibility = "private"
-      end
-
       it 'returns private text' do
         expect(media_object.access_text).to eq("This item is accessible by: collection staff.")
       end
@@ -1154,13 +1149,29 @@ describe MediaObject do
 
     context "private item with leases" do
       before do
-        media_object.visibility = "private"
         media_object.governing_policies += [FactoryBot.create(:lease, inherited_read_groups: ['TestGroup'])]
         media_object.governing_policies += [FactoryBot.create(:lease, inherited_read_groups: [Faker::Internet.ip_v4_address])]
       end
 
       it 'returns compound text' do
         expect(media_object.access_text).to eq("This item is accessible by: collection staff, users in specific groups, users in specific IP Ranges.")
+      end
+    end
+
+    context "inheritance" do
+      let(:disable_inheritance) { false }
+      let(:visibility) { 'private' }
+
+      it 'returns private text' do
+        expect(media_object.access_text).to eq("This item is accessible by: collection staff.")
+      end
+
+      context 'with stored non-active public visibility' do
+        let(:visibility) { "public" }
+
+        it 'returns private text' do
+          expect(media_object.access_text).to eq("This item is accessible by: collection staff.")
+        end
       end
     end
   end
