@@ -45,6 +45,7 @@ module MediaObjectIntercom
           terms_of_use: terms_of_use,
           table_of_contents: table_of_contents,
           physical_description: physical_description,
+          physical_format: physical_format,
           series: series,
           record_identifier: record_identifier,
           comment: comment.to_a,
