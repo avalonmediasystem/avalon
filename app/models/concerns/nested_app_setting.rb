@@ -64,12 +64,7 @@ module NestedAppSetting
     attr_json :type, :string, default: 'off'
     attr_json :message, :string
 
-    validates :_type, inclusion: { in: ['success', 'notice', 'error', 'alert', 'off'] }
-
-    alias _type type
-    def type
-      _type unless _type == 'off'
-    end
+    validates :type, inclusion: { in: ['success', 'notice', 'error', 'alert', 'off'] }
   end
 
   class Auth < JsonModel
