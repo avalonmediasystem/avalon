@@ -17,7 +17,7 @@ require "rails_helper"
 RSpec.describe CheckoutsController, type: :routing do
   describe "routing" do
     context "controlled digital lending is enabled" do
-      before { allow(Settings.controlled_digital_lending).to receive(:enable).and_return(true) }
+      before { allow(Admin::ApplicationSetting.instance.controlled_digital_lending).to receive(:enable).and_return(true) }
       it "routes to #index" do
         expect(get: "/checkouts").to route_to("checkouts#index")
       end
@@ -51,7 +51,7 @@ RSpec.describe CheckoutsController, type: :routing do
       end
     end
     context "controlled digital lending is disabled" do
-      before { allow(Settings.controlled_digital_lending).to receive(:enable).and_return(false) }
+      before { allow(Admin::ApplicationSetting.instance.controlled_digital_lending).to receive(:enable).and_return(false) }
       it "does not route to #index" do
         expect(get: "/checkouts").not_to route_to("checkouts#index")
       end

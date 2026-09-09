@@ -70,7 +70,7 @@ class BookmarksController < CatalogController
   def verify_permissions
     @response = action_documents
     @valid_user_actions = [:delete, :unpublish, :publish, :merge, :move, :update_access_control, :add_to_playlist]
-    @valid_user_actions += [:intercom_push] if Settings.intercom.present?
+    @valid_user_actions += [:intercom_push] if Admin::ApplicationSetting.instance.intercom.present?
     Array(@response).each do |doc|
       mo = SpeedyAF::Proxy::MediaObject.find(doc.id)
       @valid_user_actions.delete :delete if @valid_user_actions.include? :delete and cannot? :destroy, mo

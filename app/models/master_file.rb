@@ -826,11 +826,11 @@ class MasterFile < ActiveFedora::Base
   end
 
   def manage_master_file
-    case Settings.master_file_management.strategy
+    case Admin::ApplicationSetting.instance.master_file_management.strategy
     when 'delete'
       MasterFileManagementJobs::Delete.perform_later self.id
     when 'move'
-      move_path = Settings.master_file_management.path
+      move_path = Admin::ApplicationSetting.instance.master_file_management.path
       raise '"path" configuration missing for master_file_management strategy "move"' if move_path.blank?
       newpath = File.join(move_path, MasterFile.post_processing_move_filename(file_location, id: id))
       MasterFileManagementJobs::Move.perform_later self.id, newpath

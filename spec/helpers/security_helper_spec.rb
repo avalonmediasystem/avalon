@@ -48,7 +48,7 @@ describe SecurityHelper, type: :helper do
 
     describe '#secure_streams' do
       context 'controlled digital lending is disabled' do
-        before { allow(Settings.controlled_digital_lending).to receive(:enable).and_return(false) }
+        before { allow(Admin::ApplicationSetting.instance.controlled_digital_lending).to receive(:enable).and_return(false) }
         it 'sets secure cookies' do
         	expect { helper.secure_streams(stream_info, media_object.id) }.to change { controller.cookies.sum {|k,v| 1} }.by(1)
         	expect(controller.cookies[secure_cookies.first[0]]).to eq secure_cookies.first[1][:value]
@@ -64,8 +64,8 @@ describe SecurityHelper, type: :helper do
         end
       end
       context 'controlled digital lending is enabled' do
-        before { allow(Settings.controlled_digital_lending).to receive(:enable).and_return(true) }
-        before { allow(Settings.controlled_digital_lending).to receive(:collections_enabled).and_return(true) }
+        before { allow(Admin::ApplicationSetting.instance.controlled_digital_lending).to receive(:enable).and_return(true) }
+        before { allow(Admin::ApplicationSetting.instance.controlled_digital_lending).to receive(:collections_enabled).and_return(true) }
         context 'the user has the item checked out' do
           before { FactoryBot.create(:checkout, media_object_id: media_object.id, user_id: user.id)}
           it 'sets secure cookies' do
@@ -110,7 +110,7 @@ describe SecurityHelper, type: :helper do
 
     describe '#secure_streams' do
       context 'controlled digital lending is disabled' do
-        before { allow(Settings.controlled_digital_lending).to receive(:enable).and_return(false) }
+        before { allow(Admin::ApplicationSetting.instance.controlled_digital_lending).to receive(:enable).and_return(false) }
         it 'sets secure cookies' do
           expect { helper.secure_streams(stream_info, media_object.id) }.not_to change { controller.cookies.sum {|k,v| 1} }
         end
@@ -125,8 +125,8 @@ describe SecurityHelper, type: :helper do
         end
       end
       context 'controlled digital lending is enabled' do
-        before { allow(Settings.controlled_digital_lending).to receive(:enable).and_return(true) }
-        before { allow(Settings.controlled_digital_lending).to receive(:collections_enabled).and_return(true) }
+        before { allow(Admin::ApplicationSetting.instance.controlled_digital_lending).to receive(:enable).and_return(true) }
+        before { allow(Admin::ApplicationSetting.instance.controlled_digital_lending).to receive(:collections_enabled).and_return(true) }
         context 'the user has the item checked out' do
           before { FactoryBot.create(:checkout, media_object_id: media_object.id, user_id: user.id)}
           it 'sets secure cookies' do
@@ -169,7 +169,7 @@ describe SecurityHelper, type: :helper do
       end
 
       context 'controlled digital lending is disabled' do
-        before { allow(Settings.controlled_digital_lending).to receive(:enable).and_return(false) }
+        before { allow(Admin::ApplicationSetting.instance.controlled_digital_lending).to receive(:enable).and_return(false) }
 
         it 'rewrites urls in the stream_infos' do
           stream_info_hash = helper.secure_stream_infos([master_file], [media_object])
@@ -183,8 +183,8 @@ describe SecurityHelper, type: :helper do
       end
 
       context 'controlled digital lending is enabled' do
-        before { allow(Settings.controlled_digital_lending).to receive(:enable).and_return(true) }
-        before { allow(Settings.controlled_digital_lending).to receive(:collections_enabled).and_return(true) }
+        before { allow(Admin::ApplicationSetting.instance.controlled_digital_lending).to receive(:enable).and_return(true) }
+        before { allow(Admin::ApplicationSetting.instance.controlled_digital_lending).to receive(:collections_enabled).and_return(true) }
 
         context 'the user has the item checked out' do
           before { FactoryBot.create(:checkout, media_object_id: media_object.id, user_id: user.id)}

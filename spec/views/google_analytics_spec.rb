@@ -17,7 +17,7 @@ require 'rails_helper'
 describe "modules/_google_analytics.html.erb", type: :view do
   context "Google Analytics is configured" do
     before do
-      Settings.google_analytics_tracking_id = "arandomid"
+      Admin::ApplicationSetting.instance.google_analytics_tracking_id = "arandomid"
     end
 
     it 'includes GA code' do
@@ -28,7 +28,7 @@ describe "modules/_google_analytics.html.erb", type: :view do
 
   context "Google Analytics is not configured" do
     before do
-      Settings.google_analytics_tracking_id = nil
+      Admin::ApplicationSetting.instance.google_analytics_tracking_id = nil
     end
 
     it 'does not include GA code' do

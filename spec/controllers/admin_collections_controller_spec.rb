@@ -664,7 +664,7 @@ describe Admin::CollectionsController, type: :controller do
 
       context "cdl functionality" do
         context "cdl disabled for application" do
-          before { allow(Settings.controlled_digital_lending).to receive(:enable).and_return(false) }
+          before { allow(Admin::ApplicationSetting.instance.controlled_digital_lending).to receive(:enable).and_return(false) }
           it "enable cdl for collection" do
             put 'update', params: { id: collection.id, save_field: "cdl", cdl: 1 }
             collection.reload
@@ -673,7 +673,7 @@ describe Admin::CollectionsController, type: :controller do
           end
         end
         context "cdl enable for application" do
-          before { allow(Settings.controlled_digital_lending).to receive(:enable).and_return(true) }
+          before { allow(Admin::ApplicationSetting.instance.controlled_digital_lending).to receive(:enable).and_return(true) }
           it "disable cdl for collection" do
             put 'update', params: { id: collection.id, save_field: "cdl" }
             collection.reload
@@ -685,7 +685,7 @@ describe Admin::CollectionsController, type: :controller do
 
     context "changing lending period" do
       before do
-        allow(Settings.controlled_digital_lending).to receive(:enable).and_return(true)
+        allow(Admin::ApplicationSetting.instance.controlled_digital_lending).to receive(:enable).and_return(true)
         collection.cdl_enabled = true
         collection.save!
       end

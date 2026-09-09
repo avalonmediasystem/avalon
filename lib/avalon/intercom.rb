@@ -18,7 +18,7 @@ module Avalon
 
     def initialize(user, avalon = 'default')
       @user = user
-      @avalon = Settings.intercom[avalon]
+      @avalon = Admin::ApplicationSetting.instance.intercom[avalon]
       @collections = nil
     end
 

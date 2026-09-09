@@ -76,7 +76,7 @@ describe CommentsController do
       it 'returns a flash message asking the user to report the problem' do
         allow_any_instance_of(ActionMailer::MessageDelivery).to receive(:deliver_later).and_raise(Errno::ECONNRESET)
         post comments_url, params:attributes
-        expect(flash[:notice]).to eq("The message could not be sent in a timely fashion. Contact us at #{Settings.email.support} to report the problem.")
+        expect(flash[:notice]).to eq("The message could not be sent in a timely fashion. Contact us at #{Admin::ApplicationSetting.instance.email.support} to report the problem.")
       end
       it 'does not enqueue an email for delivery' do
         allow_any_instance_of(ActionMailer::MessageDelivery).to receive(:deliver_later).and_raise(Errno::ECONNRESET)

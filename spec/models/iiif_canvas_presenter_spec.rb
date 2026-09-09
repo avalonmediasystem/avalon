@@ -379,7 +379,7 @@ describe IiifCanvasPresenter do
       end
 
       it 'has label' do
-        expect(subject.label).to eq I18n.t('errors.missing_derivatives_error') % [Settings.email.support, Settings.email.support]
+        expect(subject.label).to eq I18n.t('errors.missing_derivatives_error') % [Admin::ApplicationSetting.instance.email.support, Admin::ApplicationSetting.instance.email.support]
       end
 
       it 'has height and width' do

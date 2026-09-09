@@ -400,7 +400,7 @@ describe IiifPlaylistCanvasPresenter do
         expect(subject).to be_present
         expect(subject.format).to eq "text/plain"
         expect(subject.type).to eq "Text"
-        expect(subject.label).to eq I18n.t('errors.missing_derivatives_error') % [Settings.email.support, Settings.email.support]
+        expect(subject.label).to eq I18n.t('errors.missing_derivatives_error') % [Admin::ApplicationSetting.instance.email.support, Admin::ApplicationSetting.instance.email.support]
       end
     end
   end

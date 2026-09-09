@@ -21,7 +21,7 @@ FROM
 <%= @comment.name %> (<<%= @comment.email %>>)
 
 SITE
-<%= Settings.name %>
+<%= Admin::ApplicationSetting.instance.name %>
 
 SUBJECT
 <%= @comment.subject %>

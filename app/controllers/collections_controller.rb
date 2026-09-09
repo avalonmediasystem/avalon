@@ -19,7 +19,7 @@ class CollectionsController < CatalogController
     response = blacklight_config.repository.search(CollectionSearchBuilder.new(self))
     collections = response.documents
     if (params[:only] == 'carousel')
-      collections = collections.select { |doc| Settings.home_page&.carousel_collections&.include? doc.id }
+      collections = collections.select { |doc| Admin::ApplicationSetting.instance.home_page&.carousel_collections&.include? doc.id }
     end
     if params[:limit].present?
       collections = collections.sample(params[:limit].to_i)

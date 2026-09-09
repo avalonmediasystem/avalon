@@ -44,7 +44,7 @@ RSpec.describe "/checkouts", type: :request do
     { media_object_id: 'fake-id' }
   }
 
-  before { allow(Settings.controlled_digital_lending).to receive(:enable).and_return(true) }
+  before { allow(Admin::ApplicationSetting.instance.controlled_digital_lending).to receive(:enable).and_return(true) }
 
   describe "GET /index" do
     before { checkout }
