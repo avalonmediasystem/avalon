@@ -21,7 +21,7 @@ Unless required by applicable law or agreed to in writing, software distributed
     </div>
   <% end %>
 
-  <% if Admin::ApplicationSetting.instance&.flash_message&.message %>
+  <% if Admin::ApplicationSetting.instance&.flash_message&.type != "off" && Admin::ApplicationSetting.instance&.flash_message&.message %>
     <% flash[Admin::ApplicationSetting.instance.flash_message.type || :error] = Admin::ApplicationSetting.instance.flash_message.message.html_safe %>
   <% end %>
 
