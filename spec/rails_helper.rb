@@ -127,17 +127,17 @@ RSpec.configure do |config|
 
     # Stub the entire dropbox
     Settings.spec = {
-      'real_dropbox' => Settings.dropbox.path,
+      'real_dropbox' => Admin::ApplicationSetting.instance.dropbox.path,
       'fake_dropbox' => Dir.mktmpdir
     }
-    Settings.dropbox.path = Settings.spec['fake_dropbox']
+    Admin::ApplicationSetting.instance.dropbox.path = Settings.spec['fake_dropbox']
     MasterFile.skip_callback(:save, :after, :update_stills_from_offset!)
   end
 
   config.after :suite do
     if Settings.spec && Settings.spec['fake_dropbox']
       FileUtils.remove_dir Settings.spec['fake_dropbox'], true
-      Settings.dropbox.path = Settings.spec['real_dropbox']
+      Admin::ApplicationSetting.instance.dropbox.path = Settings.spec['real_dropbox']
       Settings.spec = nil
     end
     enable_production_minter!
@@ -151,7 +151,7 @@ RSpec.configure do |config|
     # Clear out the job queue to ensure tests run with clean environment
     ActiveJob::Base.queue_adapter.enqueued_jobs = []
     ActiveJob::Base.queue_adapter.performed_jobs = []
-    Settings.bib_retriever = { 'default' => { 'protocol' => 'sru', 'url' => 'http://zgate.example.edu:9000/db', 'retriever_class' => 'Avalon::BibRetriever::SRU', 'retriever_class_require' => 'avalon/bib_retriever/sru' } }
+    Admin::ApplicationSetting.instance.bib_retriever = { 'default' => { 'protocol' => 'sru', 'url' => 'http://zgate.example.edu:9000/db', 'retriever_class' => 'Avalon::BibRetriever::SRU', 'retriever_class_require' => 'avalon/bib_retriever/sru' } }
   end
 
   config.after :each do

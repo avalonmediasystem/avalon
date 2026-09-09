@@ -206,8 +206,8 @@ describe Avalon::Batch::Entry do
         let(:entry_files) { [{ file: File.join(testdir, filename), offset: '00:00:00.500', label: 'Quis quo', skip_transcoding: false }] }
 
         before do
-          allow(Settings.accessibility_compliance).to receive(:enforce).and_return(true)
-          allow(Settings.accessibility_compliance).to receive(:compliance_date).and_return((DateTime.now - 1.week).strftime('%F'))
+          allow(Admin::ApplicationSetting.instance.accessibility_compliance).to receive(:enforce).and_return(true)
+          allow(Admin::ApplicationSetting.instance.accessibility_compliance).to receive(:compliance_date).and_return((DateTime.now - 1.week).strftime('%F'))
         end
 
         context 'enabled' do

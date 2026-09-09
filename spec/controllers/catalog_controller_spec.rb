@@ -742,7 +742,7 @@ describe CatalogController do
           get 'index'
           expect(assigns(:featured_collection)).to be_present
           expect(assigns(:featured_collection)).to be_a Admin::CollectionPresenter
-          expect(Settings.home_page.featured_collections).to include assigns(:featured_collection).id
+          expect(Admin::ApplicationSetting.instance.home_page.featured_collections).to include assigns(:featured_collection).id
         end
       end
 

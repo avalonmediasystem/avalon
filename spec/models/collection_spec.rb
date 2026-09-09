@@ -668,7 +668,7 @@ describe Admin::Collection do
 
     it 'removes bad characters from collection name' do
       collection.name = '../../secret.rb'
-      expect(Dir).to receive(:mkdir).with( File.join(Settings.dropbox.path, '______secret_rb') )
+      expect(Dir).to receive(:mkdir).with( File.join(Admin::ApplicationSetting.instance.dropbox.path, '______secret_rb') )
       allow(Dir).to receive(:mkdir) # stubbing this out in a before(:each) block will effect where mkdir is used elsewhere (i.e. factories)
       collection.send(:create_dropbox_directory!)
     end
@@ -681,9 +681,9 @@ describe Admin::Collection do
     it 'uses a different directory name if the directory exists' do
       collection.name = 'african art'
       FakeFS.activate!
-      FileUtils.mkdir_p(File.join(Settings.dropbox.path, 'african_art'))
-      FileUtils.mkdir_p(File.join(Settings.dropbox.path, 'african_art_2'))
-      expect(FileUtils).to receive(:mkdir_p).with(File.join(Settings.dropbox.path, 'african_art_3'))
+      FileUtils.mkdir_p(File.join(Admin::ApplicationSetting.instance.dropbox.path, 'african_art'))
+      FileUtils.mkdir_p(File.join(Admin::ApplicationSetting.instance.dropbox.path, 'african_art_2'))
+      expect(FileUtils).to receive(:mkdir_p).with(File.join(Admin::ApplicationSetting.instance.dropbox.path, 'african_art_3'))
       collection.send(:create_dropbox_directory!)
       FakeFS.deactivate!
     end
@@ -709,7 +709,7 @@ describe Admin::Collection do
 
     it 'handles Unicode collection names correctly' do
       collection.name = collection_name
-      expect(Dir).to receive(:mkdir).with( File.join(Settings.dropbox.path, collection_dir) )
+      expect(Dir).to receive(:mkdir).with( File.join(Admin::ApplicationSetting.instance.dropbox.path, collection_dir) )
       allow(Dir).to receive(:mkdir)
       collection.send(:create_dropbox_directory!)
     end
@@ -721,10 +721,10 @@ describe Admin::Collection do
     let(:corrected_collection_name) { "Collection__@_$___*()____123/" }
     let(:collection) { FactoryBot.build(:collection) }
     let(:my_client) { Aws::S3::Client.new }
-    let!(:old_path) { Settings.dropbox.path }
+    let!(:old_path) { Admin::ApplicationSetting.instance.dropbox.path }
 
     before do
-      Settings.dropbox.path = "s3://#{bucket}/dropbox"
+      Admin::ApplicationSetting.instance.dropbox.path = "s3://#{bucket}/dropbox"
     end
 
     it "should be able to handle special S3 avoidable characters and create object" do
@@ -738,14 +738,14 @@ describe Admin::Collection do
     end
 
     after do
-      Settings.dropbox.path = old_path
+      Admin::ApplicationSetting.instance.dropbox.path = old_path
     end
   end
 
   describe 'default_lending_period' do
     context 'a custom lending period has not been set' do
       it 'sets the lending period equal to the system default' do
-        expect(collection.default_lending_period).to eq ActiveSupport::Duration.parse(Settings.controlled_digital_lending.default_lending_period).to_i
+        expect(collection.default_lending_period).to eq ActiveSupport::Duration.parse(Admin::ApplicationSetting.instance.controlled_digital_lending.default_lending_period).to_i
       end
     end
     context 'a custom lending period has been set' do
@@ -758,7 +758,7 @@ describe Admin::Collection do
 
   describe 'cdl_enabled' do
     context 'collections disabled at the application level' do
-      before { allow(Settings.controlled_digital_lending).to receive(:collections_enabled).and_return(false) }
+      before { allow(Admin::ApplicationSetting.instance.controlled_digital_lending).to receive(:collections_enabled).and_return(false) }
       it 'sets collection cdl to be disabled by default' do
         expect(collection.cdl_enabled?).to be false
       end
@@ -772,7 +772,7 @@ describe Admin::Collection do
       end
     end
     context 'collections enabled at the application level' do
-      before { allow(Settings.controlled_digital_lending).to receive(:collections_enabled).and_return(true) }
+      before { allow(Admin::ApplicationSetting.instance.controlled_digital_lending).to receive(:collections_enabled).and_return(true) }
       it 'sets collection cdl to be enabled by default' do
         expect(collection.cdl_enabled?).to be true
       end

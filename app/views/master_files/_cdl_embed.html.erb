@@ -40,6 +40,6 @@ Unless required by applicable law or agreed to in writing, software distributed
     <div class="centered">
       <p>This item is no longer able to be embedded.<br/>
          You may be able to view this item on
-         <%= link_to Settings.name, media_object_path(@master_file.media_object_id), target: :_blank %></p>
+         <%= link_to Admin::ApplicationSetting.instance.name, media_object_path(@master_file.media_object_id), target: :_blank %></p>
     </div>
   </div>
