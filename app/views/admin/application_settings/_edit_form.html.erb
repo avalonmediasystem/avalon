@@ -22,9 +22,6 @@ Unless required by applicable law or agreed to in writing, software distributed
                locals: { form: form, field: :name, options: {} } %>
 
     <%= render partial: 'text_field',
-               locals: { form: form, field: :accessibility_request_link, options: {} } %>
-
-    <%= render partial: 'text_field',
                locals: { form: form, field: :google_analytics_tracking_id, options: {} } %>
 
     <%= render partial: 'checkbox',
@@ -40,8 +37,7 @@ Unless required by applicable law or agreed to in writing, software distributed
 
     <%= render partial: 'nested_form',
                locals: { form: form, field: :auth,
-                         subfields: [{ name: :registerable, type: 'checkbox' },
-                                     { name: :configuration, type: 'text_area' }], options: {} } %>
+                         subfields: [{ name: :registerable, type: 'checkbox' }], options: {} } %>
 
     <%= render partial: 'nested_form',
                locals: { form: form, field: :bib_retriever,
