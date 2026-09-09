@@ -29,17 +29,13 @@ class WaveformService
       bits: @bit_res
     )
 
-    peaks = if uri.scheme == 's3'
-              begin
-                local_file = FileLocator::S3File.new(uri).local_file
-                get_normalized_peaks(local_file.path)
-              ensure
-                local_file.close!
-              end
-            else
-              get_normalized_peaks(uri)
-            end
+    uri = Addressable::URI.parse(uri)
+    if uri.scheme == 's3'
+      s3_file = FileLocator::S3File.new(uri)
+      uri = Addressable::URI.parse(s3_file.object.presigned_url(:get))
+    end
 
+    peaks = get_normalized_peaks(uri)
     peaks.each { |peak| waveform.append(peak[0], peak[1]) }
     return nil if waveform.size.zero?
     waveform.to_json
