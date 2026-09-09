@@ -284,7 +284,7 @@ module Avalon
         begin
           LanguageTerm.find(language.capitalize).code
         rescue LanguageTerm::LookupError
-          Settings.caption_default.language
+          Admin::ApplicationSetting.instance.caption_default.language
         end
       end
       private_class_method :content_language
@@ -296,7 +296,7 @@ module Avalon
         # Build out file metadata
         filename = datastream[file_key].split('/').last
         label = datastream[label_key].presence || filename
-        language = datastream[language_key].present? ? content_language(datastream[language_key]) : Settings.caption_default.language
+        language = datastream[language_key].present? ? content_language(datastream[language_key]) : Admin::ApplicationSetting.instance.caption_default.language
         treat_as_transcript = Avalon::Batch.true_field?(datastream[:treat_as_transcript]) ? 'transcript' : nil
         machine_generated = Avalon::Batch.true_field?(datastream[:machine_generated]) ? 'machine_generated' : nil
         # Create SupplementalFile

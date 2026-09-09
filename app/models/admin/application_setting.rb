@@ -10,7 +10,6 @@ class Admin::ApplicationSetting < ApplicationRecord
 
   # First level settings, disable accepts_nested_attributes for each one
   attr_json :name, :string, default: "Avalon Media System", accepts_nested_attributes: false
-  attr_json :accessibility_request_link, :string, accepts_nested_attributes: false
   attr_json :google_analytics_tracking_id, :string, accepts_nested_attributes: false
   attr_json :repository_read_only_mode, :boolean, default: false, accepts_nested_attributes: false
   attr_json :repository_read_only_mode_message, :string, default: "🚧 Read-only mode: all content editing has been disabled 🚧", accepts_nested_attributes: false
@@ -30,6 +29,8 @@ class Admin::ApplicationSetting < ApplicationRecord
   attr_json :recaptcha, Recaptcha.to_type, default: -> { Recaptcha.new }
   attr_json :supplemental_files, SupplementalFilesProxy.to_type, default: -> { SupplementalFilesProxy.new }
   attr_json :waveform, Waveform.to_type, default: -> { Waveform.new }
+
+  encrypts :options
 
   def self.instance
     where(singleton_guard: 0).first_or_create!

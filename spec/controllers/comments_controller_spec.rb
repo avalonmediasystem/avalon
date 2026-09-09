@@ -35,9 +35,9 @@ describe CommentsController do
 
     context 'recaptcha enabled' do
       before do
-        allow(Settings.recaptcha).to receive(:site_key).and_return("site_key")
-        allow(Settings.recaptcha).to receive(:secret_key).and_return("secret_key")
-        allow(Settings.recaptcha).to receive(:type).and_return(recaptcha_type)
+        allow(Admin::ApplicationSetting.instance.recaptcha).to receive(:site_key).and_return("site_key")
+        allow(Admin::ApplicationSetting.instance.recaptcha).to receive(:secret_key).and_return("secret_key")
+        allow(Admin::ApplicationSetting.instance.recaptcha).to receive(:type).and_return(recaptcha_type)
         allow(Recaptcha.configuration).to receive(:site_key!).and_return("site_key")
         allow(Recaptcha.configuration).to receive(:secret_key!).and_return("secret_key")
       end
@@ -59,8 +59,8 @@ describe CommentsController do
         let(:minimum_score) { 0.7 }
 
         before do
-          allow(Settings.recaptcha.v3).to receive(:action).and_return(action)
-          allow(Settings.recaptcha.v3).to receive(:minimum_score).and_return(minimum_score)
+          allow(Admin::ApplicationSetting.instance.recaptcha.v3).to receive(:action).and_return(action)
+          allow(Admin::ApplicationSetting.instance.recaptcha.v3).to receive(:minimum_score).and_return(minimum_score)
         end
 
 	it 'sends a comment email' do

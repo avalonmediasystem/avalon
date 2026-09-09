@@ -47,7 +47,7 @@ module MediaObjectsHelper
   def dropbox_url collection
      ic = Iconv.new('UTF-8//IGNORE', 'UTF-8')
      path = Addressable::URI.escape_component(collection.dropbox_directory_name || "", %r{[/\\%& #]})
-     url = File.join(Settings.dropbox.upload_uri, path)
+     url = File.join(Admin::ApplicationSetting.instance.dropbox.upload_uri, path)
      ic.iconv(url)
   end
 
@@ -196,6 +196,6 @@ module MediaObjectsHelper
 
   def display_supplemental_file_language(language)
     return LanguageTerm.find(language).text if language.present?
-    Settings.caption_default.name
+    Admin::ApplicationSetting.instance.caption_default.name
   end
 end

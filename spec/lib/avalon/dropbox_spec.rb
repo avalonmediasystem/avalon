@@ -24,7 +24,7 @@ describe Avalon::Dropbox do
     end
 
     let(:collection) { FactoryBot.create(:collection, name: 'Ut minus ut accusantium odio autem odit.', managers: ['frances.dickens@reichel.com']) }
-    subject { Avalon::Dropbox.new(Settings.dropbox.path,collection) }
+    subject { Avalon::Dropbox.new(Admin::ApplicationSetting.instance.dropbox.path,collection) }
     it 'returns true if the file is found' do
       allow(File).to receive(:delete).and_return true
       subject.delete('some_file.mov')

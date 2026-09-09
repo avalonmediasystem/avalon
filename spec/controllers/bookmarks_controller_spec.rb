@@ -210,7 +210,7 @@ describe BookmarksController, type: :controller do
 
   describe "#intercom_push" do
     before :each do
-      Settings.intercom = {
+      Admin::ApplicationSetting.instance.intercom = {
         'default' => {
           'url' => 'https://target.avalon.com/',
           'api_token' => 'a_valid_token',
@@ -221,7 +221,7 @@ describe BookmarksController, type: :controller do
       }
     end
     after :each do
-      Settings.intercom = nil
+      Admin::ApplicationSetting.instance.intercom = nil
     end
     let!(:current_user) {  controller.current_user.user_key }
     let!(:user_collections) {

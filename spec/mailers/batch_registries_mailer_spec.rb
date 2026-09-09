@@ -21,7 +21,7 @@ RSpec.describe BatchRegistriesMailer, type: :mailer do
     let(:manifest_file) { File.new('spec/fixtures/dropbox/example_batch_ingest/batch_manifest.xlsx') }
     let(:package) { Avalon::Batch::Package.new(manifest_file, collection) }
     let(:errors) {['Michigan','Indiana','Illinios']}
-    let(:notification_email_address) { Settings.email.notification }
+    let(:notification_email_address) { Admin::ApplicationSetting.instance.email.notification }
 
     it "sends to the user when package has a registered user's email" do
        email = BatchRegistriesMailer.batch_ingest_validation_error(package, errors)
@@ -47,7 +47,7 @@ RSpec.describe BatchRegistriesMailer, type: :mailer do
     let(:manifest_file) { File.new('spec/fixtures/dropbox/example_batch_ingest/batch_manifest.xlsx') }
     let(:package) { Avalon::Batch::Package.new(manifest_file, collection) }
     let(:errors) {['Michigan','Indiana','Illinios']}
-    let(:notification_email_address) { Settings.email.notification }
+    let(:notification_email_address) { Admin::ApplicationSetting.instance.email.notification }
 
     it "sends an email when a batch is successfully registered" do
        email = BatchRegistriesMailer.batch_ingest_validation_success(package)
@@ -150,7 +150,7 @@ RSpec.describe BatchRegistriesMailer, type: :mailer do
 
   describe 'batch_registration_stalled_mailer' do
     let(:batch_registries) { FactoryBot.create(:batch_registries, collection: collection.id) }
-    let(:notification_email_address) { Settings.email.notification }
+    let(:notification_email_address) { Admin::ApplicationSetting.instance.email.notification }
     let(:collection) { FactoryBot.create(:collection) }
 
     it "sends an email when a batch has stalled" do

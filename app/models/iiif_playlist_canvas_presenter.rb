@@ -82,7 +82,7 @@ class IiifPlaylistCanvasPresenter
     elsif master_file.nil?
       IIIFManifest::V3::DisplayContent.new(nil, **placeholder_attributes(I18n.t('playlist.deletedText')))
     elsif master_file.derivative_ids.empty?
-      support_email = Settings.email.support
+      support_email = Admin::ApplicationSetting.instance.email.support
       IIIFManifest::V3::DisplayContent.new(nil, **placeholder_attributes(I18n.t('errors.missing_derivatives_error') % [support_email, support_email]))
     end
   end

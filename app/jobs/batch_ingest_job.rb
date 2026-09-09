@@ -35,7 +35,7 @@ class BatchIngestJob < ActiveJob::Base
     return unless Avalon::Batch::Manifest.is_spreadsheet?(filename) && Avalon::Batch::S3Manifest.status(filename).blank?
 
     uri = Addressable::URI.parse(filename)
-    dropbox_directory = uri.route_from(Addressable::URI.parse(Settings.dropbox.path)).to_s.split(/\//).first
+    dropbox_directory = uri.route_from(Addressable::URI.parse(Admin::ApplicationSetting.instance.dropbox.path)).to_s.split(/\//).first
     collection = Admin::Collection.where(dropbox_directory_name_ssi: dropbox_directory).first
     return if collection.nil?
 
