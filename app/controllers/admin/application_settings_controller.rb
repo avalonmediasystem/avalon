@@ -25,7 +25,6 @@ class Admin::ApplicationSettingsController < ApplicationController
   end
 
   def app_settings_params
-    params[:admin_application_setting][:flash_message_attributes][:type] = nil if params[:admin_application_setting][:flash_message_attributes][:type] == 'off'
     params.require(:admin_application_setting).permit!
   end
 end

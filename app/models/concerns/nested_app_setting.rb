@@ -61,10 +61,15 @@ module NestedAppSetting
   end
 
   class ApplicationFlashMessage < JsonModel
-    attr_json :type, :string
+    attr_json :type, :string, default: 'off'
     attr_json :message, :string
 
-    validates :type, inclusion: { in: ['success', 'notice', 'error', 'alert', nil] }
+    validates :_type, inclusion: { in: ['success', 'notice', 'error', 'alert', 'off'] }
+
+    alias _type type
+    def type
+      _type unless _type == 'off'
+    end
   end
 
   class Auth < JsonModel
@@ -110,6 +115,7 @@ module NestedAppSetting
     attr_json :notification, :string
     attr_json :support, :string
     attr_json :mailer, :string, default: 'smtp'
+    attr_json :accessibility_request_link, :string
     attr_json :config, EmailConfig.to_type, default: -> { EmailConfig.new }
   end
 
