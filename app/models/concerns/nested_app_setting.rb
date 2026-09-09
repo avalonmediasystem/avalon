@@ -51,7 +51,7 @@ module NestedAppSetting
     attr_json :client_secret, :string
     attr_json :tenant_id, :string
     attr_json :scope, :string, default: 'offline_access https://graph.microsoft.com/.default'
-    attr_json :redirect_uri, :string, default: "#{Rails.application.routes.url_helpers.root_url}browse/connect"
+    attr_json :redirect_uri, :string
   end
 
   # Top level of nesting
@@ -74,8 +74,6 @@ module NestedAppSetting
 
   class Auth < JsonModel
     attr_json :registerable, :boolean, default: true
-    # Arbitrary hash
-    attr_json :configuration, ActiveModel::Type::Value.new
   end
 
   class BibRetriever < JsonModel
