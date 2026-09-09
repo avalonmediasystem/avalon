@@ -12,7 +12,15 @@ Devise.setup do |config|
   # Configure the e-mail address which will be shown in Devise::Mailer,
   # note that it will be overwritten if you use your own mailer class
   # with default "from" parameter.
-  config.mailer_sender = Admin::ApplicationSetting.instance.email.notification
+  config.mailer_sender = lambda { |_resource|
+    begin
+      Admin::ApplicationSetting.instance.email.notification
+    rescue ActiveRecord::StatementInvalid, ActiveRecord::ConnectionNotEstablished
+      # Default value so things don't crash if the database is down
+      # TODO: Find a better way to handle this
+      "user@example.com"
+    end
+  }
 
   # Configure the class responsible to send e-mails.
   # config.mailer = 'Devise::Mailer'
