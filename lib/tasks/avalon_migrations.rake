@@ -204,10 +204,10 @@ namespace :avalon do
 
     desc "Migrate existing application settings from settings.yml and env variables to database"
     task :application_settings, [:list_fields] => :environment do |_task, args|
-      SETTINGS_KEYS = [:name, :accessibility_request_link, :google_analytics_tracking_id,
+      SETTINGS_KEYS = [:name, :google_analytics_tracking_id,
                        :repository_read_only_mode, :repository_read_only_mode_message,
                        :accessibility_compliance, :auth, :bib_retriever, :caption_default,
-                       :controlled_digital_lending, :dropbox, :email, :flash_message,
+                       :controlled_digital_lending, :dropbox, :email,
                        :home_page, :intercom, :master_file_management, :recaptcha,
                        :supplemental_files, :waveform].freeze
 
