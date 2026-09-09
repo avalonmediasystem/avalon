@@ -648,7 +648,7 @@ describe MediaObject do
 
   describe '#publish!' do
     describe 'facet' do
-      before { allow(Settings.accessibility_compliance).to receive(:enforce).and_return(false) }
+      before { allow(Admin::ApplicationSetting.instance.accessibility_compliance).to receive(:enforce).and_return(false) }
       it 'publishes' do
         media_object.publish!('adam@adam.com')
         expect(media_object.to_solr["workflow_published_sim"]).to eq('Published')
@@ -1380,14 +1380,14 @@ describe MediaObject do
   describe "#is_accessible?" do
     context 'accessibility enforcement disabled' do
       it 'returns true' do
-        allow(Settings.accessibility_compliance).to receive(:enforce).and_return(false)
+        allow(Admin::ApplicationSetting.instance.accessibility_compliance).to receive(:enforce).and_return(false)
         expect(media_object.is_accessible?).to be true
       end
     end
     context 'accessibility enforcement enabled' do
-      let(:compliance_date) { DateTime.parse(Settings.accessibility_compliance.compliance_date) }
+      let(:compliance_date) { DateTime.parse(Admin::ApplicationSetting.instance.accessibility_compliance.compliance_date) }
       before do
-        allow(Settings.accessibility_compliance).to receive(:enforce).and_return(true)
+        allow(Admin::ApplicationSetting.instance.accessibility_compliance).to receive(:enforce).and_return(true)
       end
 
       context 'item older than compliance date' do

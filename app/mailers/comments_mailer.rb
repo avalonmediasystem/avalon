@@ -13,10 +13,10 @@
 # ---  END LICENSE_HEADER BLOCK  ---
 
 class CommentsMailer < ActionMailer::Base
-  default to: Settings.email.comments
+  default to: Admin::ApplicationSetting.instance.email.comments
 
   def contact_email(comment)
     @comment = OpenStruct.new(comment)
-    mail(from: Settings.email.comments, reply_to: @comment.email, subject: "#{Settings.name}: #{@comment.subject}")
+    mail(from: Admin::ApplicationSetting.instance.email.comments, reply_to: @comment.email, subject: "#{Admin::ApplicationSetting.instance.name}: #{@comment.subject}")
   end
 end

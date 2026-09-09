@@ -141,7 +141,7 @@ describe ApplicationController do
         expect { get :create, params: { id: 'abc1234' } }.to_not raise_error
         expect(response.status).to be 302
         expect(response).to redirect_to(root_path)
-        expect(flash[:error]).to eq(I18n.t('errors.search_error') % [Settings.email.support, Settings.email.support])
+        expect(flash[:error]).to eq(I18n.t('errors.search_error') % [Admin::ApplicationSetting.instance.email.support, Admin::ApplicationSetting.instance.email.support])
       end
     end
 

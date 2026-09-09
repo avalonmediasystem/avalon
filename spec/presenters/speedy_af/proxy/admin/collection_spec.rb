@@ -43,7 +43,7 @@ describe SpeedyAF::Proxy::Admin::Collection do
 
   describe 'cdl_enabled' do
     context 'collections disabled at the application level' do
-      before { allow(Settings.controlled_digital_lending).to receive(:collections_enabled).and_return(false) }
+      before { allow(Admin::ApplicationSetting.instance.controlled_digital_lending).to receive(:collections_enabled).and_return(false) }
       it 'sets collection cdl to be disabled by default' do
         expect(presenter.cdl_enabled?).to be false
       end
@@ -57,7 +57,7 @@ describe SpeedyAF::Proxy::Admin::Collection do
       end
     end
     context 'collections enabled at the application level' do
-      before { allow(Settings.controlled_digital_lending).to receive(:collections_enabled).and_return(true) }
+      before { allow(Admin::ApplicationSetting.instance.controlled_digital_lending).to receive(:collections_enabled).and_return(true) }
       it 'sets collection cdl to be enabled by default' do
         expect(presenter.cdl_enabled?).to be true
       end 

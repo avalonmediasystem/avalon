@@ -21,7 +21,7 @@ Unless required by applicable law or agreed to in writing, software distributed
   <dd><%= @comment.name %> (&lt<%= @comment.email %>&gt)</dd>
 
   <dt>Site</dt>
-  <dd><%= Settings.name %></dd>
+  <dd><%= Admin::ApplicationSetting.instance.name %></dd>
 
   <dt>Subject</dt>
   <dd><%= @comment.subject %></dd>

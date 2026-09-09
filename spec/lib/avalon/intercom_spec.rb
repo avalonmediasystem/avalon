@@ -17,7 +17,7 @@ require 'avalon/intercom'
 
 describe Avalon::Intercom do
   before :each do
-    Settings.intercom = {
+    Admin::ApplicationSetting.instance.intercom = {
       'default' => {
         'url' => 'https://target.avalon.com/',
         'api_token' => 'a_valid_token',
@@ -28,7 +28,7 @@ describe Avalon::Intercom do
     }
   end
   after :each do
-    Settings.intercom = nil
+    Admin::ApplicationSetting.instance.intercom = nil
   end
 
   let!(:username) { 'test_username' }
@@ -75,7 +75,7 @@ describe Avalon::Intercom do
       expect(response[:message]).to eq('You are not authorized to push to this collection.')
     end
     it "should respond to unconfigured intercom with error" do
-      Settings.intercom = {}
+      Admin::ApplicationSetting.instance.intercom = {}
       response = Avalon::Intercom.new(username).push_media_object(media_object, 'cupcake_collection', false)
       expect(response[:message]).to eq('Avalon intercom target is not configured.')
     end
