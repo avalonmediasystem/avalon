@@ -22,11 +22,11 @@ Rails.application.config.to_prepare do
       next
     end
 
-    if Settings.dropbox.path.nil?
-      ENV['SETTINGS__DROPBOX__PATH'] = Settings.dropbox.path = "s3://#{Settings.encoding.masterfile_bucket}/dropbox/"
+    if Admin::ApplicationSetting.instance.dropbox.path.nil?
+      ENV['SETTINGS__DROPBOX__PATH'] = Admin::ApplicationSetting.instance.dropbox.path = "s3://#{Settings.encoding.masterfile_bucket}/dropbox/"
     end
-    if Settings.dropbox.upload_uri.nil?
-      ENV['SETTINGS__DROPBOX__UPLOAD_URI'] = Settings.dropbox.upload_uri = "s3://#{Settings.encoding.masterfile_bucket}/dropbox/"
+    if Admin::ApplicationSetting.instance.dropbox.upload_uri.nil?
+      ENV['SETTINGS__DROPBOX__UPLOAD_URI'] = Admin::ApplicationSetting.instance.dropbox.upload_uri = "s3://#{Settings.encoding.masterfile_bucket}/dropbox/"
     end
   end
 end

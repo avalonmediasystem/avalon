@@ -20,7 +20,7 @@ module Avalon
     end
 
     def self.load_configs
-      configs = Settings&.auth&.configuration
+      configs = Admin::ApplicationSetting.instance&.auth&.configuration
       if configs.blank?
         []
       elsif configs.is_a?(Array)

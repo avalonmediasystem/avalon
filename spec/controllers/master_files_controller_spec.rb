@@ -378,16 +378,16 @@ describe MasterFilesController do
     end
 
     context 'with cdl enabled' do
-      before { allow(Settings.controlled_digital_lending).to receive(:enable).and_return(true) }
-      before { allow(Settings.controlled_digital_lending).to receive(:collections_enabled).and_return(true) }
+      before { allow(Admin::ApplicationSetting.instance.controlled_digital_lending).to receive(:enable).and_return(true) }
+      before { allow(Admin::ApplicationSetting.instance.controlled_digital_lending).to receive(:collections_enabled).and_return(true) }
       it "renders the cdl_embed partial" do
         expect(get(:embed, params: { id: master_file.id })).to render_template('master_files/_cdl_embed')
       end
     end
 
     context 'with cdl disabled' do
-      before { allow(Settings.controlled_digital_lending).to receive(:enable).and_return(true) }
-      before { allow(Settings.controlled_digital_lending).to receive(:collections_enabled).and_return(false) }
+      before { allow(Admin::ApplicationSetting.instance.controlled_digital_lending).to receive(:enable).and_return(true) }
+      before { allow(Admin::ApplicationSetting.instance.controlled_digital_lending).to receive(:collections_enabled).and_return(false) }
       it "renders the player" do
         expect(get(:embed, params: { id: master_file.id })).to render_template('master_files/_player')
       end

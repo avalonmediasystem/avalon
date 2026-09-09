@@ -31,7 +31,7 @@ class User < ActiveRecord::Base
   # Registration is controlled via settings.yml
   devise_list = [ :database_authenticatable, :invitable, :omniauthable,
                   :recoverable, :rememberable, :trackable, :validatable ]
-  devise_list << :registerable if Settings.auth.registerable
+  devise_list << :registerable if Admin::ApplicationSetting.instance.auth.registerable
   devise_list << { authentication_keys: [:login] }
 
   devise(*devise_list)

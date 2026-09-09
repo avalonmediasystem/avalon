@@ -341,7 +341,7 @@ class ApplicationController < ActionController::Base
       if request.path == '/'
         raise exception
       else
-        flash[:error] = (I18n.t('errors.search_error') % [Settings.email.support, Settings.email.support]).html_safe
+        flash[:error] = (I18n.t('errors.search_error') % [Admin::ApplicationSetting.instance.email.support, Admin::ApplicationSetting.instance.email.support]).html_safe
         redirect_to(root_path)
       end
     end
