@@ -15,10 +15,8 @@ Rails.application.config.to_prepare do
     settings['sharepoint'] = { client_id: Admin::ApplicationSetting.instance.dropbox.sharepoint.client_id,
                                client_secret: Admin::ApplicationSetting.instance.dropbox.sharepoint.client_secret,
                                tenant_id: Admin::ApplicationSetting.instance.dropbox.sharepoint.tenant_id,
-                               grant_type: Admin::ApplicationSetting.instance.dropbox.sharepoint.grant_type,
                                scope: Admin::ApplicationSetting.instance.dropbox.sharepoint.scope,
-                               redirect_uri: Admin::ApplicationSetting.instance.dropbox.sharepoint.redirect_uri,
-                               filter_terms: Admin::ApplicationSetting.instance.dropbox.sharepoint.filter_terms
+                               redirect_uri: Admin::ApplicationSetting.instance.dropbox.sharepoint.redirect_uri
                              }
   end
   BrowseEverything.configure(settings)
