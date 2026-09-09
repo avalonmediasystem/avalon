@@ -41,8 +41,8 @@ module Avalon
       protected :new, :allocate
 
       def configurations
-        raise ArgumentError, "Missing/invalid bib retriever configuration" unless Settings.bib_retriever.present?
-        Settings.bib_retriever
+        raise ArgumentError, "Missing/invalid bib retriever configuration" unless Admin::ApplicationSetting.instance.bib_retriever.present?
+        Admin::ApplicationSetting.instance.bib_retriever
       end
 
       def configuration_for(bib_id_type)

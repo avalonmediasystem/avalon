@@ -66,8 +66,8 @@ describe 'MediaObject' do
       expect(page.has_content?(contributor)).to be_truthy
     end
     skip context 'cdl is enabled' do
-      before { allow(Settings.controlled_digital_lending).to receive(:enable).and_return(true) }
-      before { allow(Settings.controlled_digital_lending).to receive(:collections_enabled).and_return(true) }
+      before { allow(Admin::ApplicationSetting.instance.controlled_digital_lending).to receive(:enable).and_return(true) }
+      before { allow(Admin::ApplicationSetting.instance.controlled_digital_lending).to receive(:collections_enabled).and_return(true) }
       it 'displays the lending period properly' do
         lending_period = 90000
         media_object.lending_period = lending_period
@@ -77,7 +77,7 @@ describe 'MediaObject' do
       end
     end
     context 'cdl is disabled' do
-      before { allow(Settings.controlled_digital_lending).to receive(:enable).and_return(false) }
+      before { allow(Admin::ApplicationSetting.instance.controlled_digital_lending).to receive(:enable).and_return(false) }
       it 'does not display the lending period' do
         lending_period = 90000
         media_object.lending_period = lending_period
@@ -91,8 +91,8 @@ describe 'MediaObject' do
     before { FactoryBot.create(:checkout, media_object_id: media_object.id, user_id: @user.id).save }
     # NOTE: Skipped tests, need JS to render with Ramp integration
     skip context 'enabled at application level' do
-      before { allow(Settings.controlled_digital_lending).to receive(:enable).and_return(true) }
-      before { allow(Settings.controlled_digital_lending).to receive(:collections_enabled).and_return(true) }
+      before { allow(Admin::ApplicationSetting.instance.controlled_digital_lending).to receive(:enable).and_return(true) }
+      before { allow(Admin::ApplicationSetting.instance.controlled_digital_lending).to receive(:collections_enabled).and_return(true) }
       let(:available_media_object) { FactoryBot.build(:media_object) }
       let!(:mf) { FactoryBot.create(:master_file, media_object: available_media_object) }
 
@@ -132,8 +132,8 @@ describe 'MediaObject' do
 
     # NOTE: Skipped tests, need JS to render with Ramp integration
     skip context 'disabled for application, enabled for collection' do
-      before { allow(Settings.controlled_digital_lending).to receive(:enable).and_return(true) }
-      before { allow(Settings.controlled_digital_lending).to receive(:collections_enabled).and_return(false) }
+      before { allow(Admin::ApplicationSetting.instance.controlled_digital_lending).to receive(:enable).and_return(true) }
+      before { allow(Admin::ApplicationSetting.instance.controlled_digital_lending).to receive(:collections_enabled).and_return(false) }
       let(:collection) { FactoryBot.create(:collection, cdl_enabled: true) }
       let(:available_media_object) { FactoryBot.create(:media_object, collection_id: collection.id) }
       let!(:mf) { FactoryBot.create(:master_file, media_object: available_media_object) }
@@ -170,7 +170,7 @@ describe 'MediaObject' do
     let(:supplemental_file) { FactoryBot.create(:supplemental_file, :with_transcript_file, :with_transcript_tag, label: 'transcript') }
 
     context 'when CDL is disabled at application level' do
-      before { allow(Settings.controlled_digital_lending).to receive(:enable).and_return(false) }
+      before { allow(Admin::ApplicationSetting.instance.controlled_digital_lending).to receive(:enable).and_return(false) }
 
       it 'renders the transcript viewer' do
         media_object.save
@@ -180,8 +180,8 @@ describe 'MediaObject' do
     end
 
     context 'when CDL is disabled at collection level' do
-      before { allow(Settings.controlled_digital_lending).to receive(:enable).and_return(true) }
-      before { allow(Settings.controlled_digital_lending).to receive(:collections_enabled).and_return(false) }
+      before { allow(Admin::ApplicationSetting.instance.controlled_digital_lending).to receive(:enable).and_return(true) }
+      before { allow(Admin::ApplicationSetting.instance.controlled_digital_lending).to receive(:collections_enabled).and_return(false) }
 
       it 'renders the transcript viewer' do
         media_object.save
@@ -191,8 +191,8 @@ describe 'MediaObject' do
     end
 
     context 'when CDL is enabled' do
-      before { allow(Settings.controlled_digital_lending).to receive(:enable).and_return(true) }
-      before { allow(Settings.controlled_digital_lending).to receive(:collections_enabled).and_return(true) }
+      before { allow(Admin::ApplicationSetting.instance.controlled_digital_lending).to receive(:enable).and_return(true) }
+      before { allow(Admin::ApplicationSetting.instance.controlled_digital_lending).to receive(:collections_enabled).and_return(true) }
 
       # NOTE: Skipped test, needs JS to render with Ramp integration
       skip context 'unchecked out item' do
@@ -215,7 +215,7 @@ describe 'MediaObject' do
   end
 
   describe 'accessibility exemption' do
-    before { allow(Settings.accessibility_compliance).to receive(:enforce).and_return(true) }
+    before { allow(Admin::ApplicationSetting.instance.accessibility_compliance).to receive(:enforce).and_return(true) }
 
     context 'as a collection manager' do
       context 'when item is unpublished' do

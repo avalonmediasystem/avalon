@@ -181,7 +181,7 @@ class FileLocator
   end
 
   def self.remove_dir(path)
-    if Settings.dropbox.path.match? %r{^s3://}
+    if Admin::ApplicationSetting.instance.dropbox.path.match? %r{^s3://}
       remove_s3_dir(path)
     else
       remove_fs_dir(path)

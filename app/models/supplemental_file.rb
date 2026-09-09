@@ -47,7 +47,7 @@ class SupplementalFile < ApplicationRecord
     end
     self.file.content_type = Mime::Type.lookup_by_extension(extension.slice(1..-1)).to_s if extension == '.srt'
     self.label = file.filename.to_s if label.blank?
-    self.language ||= Settings.caption_default.language
+    self.language ||= Admin::ApplicationSetting.instance.caption_default.language
   end
 
   def mime_type
