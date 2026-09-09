@@ -20,24 +20,31 @@ class SearchBuilder < Blacklight::SearchBuilder
 
   PERMISSION_GROUPS = [Hydra::AccessControls::AccessRight::PERMISSION_TEXT_VALUE_PUBLIC, Hydra::AccessControls::AccessRight::PERMISSION_TEXT_VALUE_AUTHENTICATED]
 
-  class_attribute :avalon_solr_access_filters_logic
-  self.avalon_solr_access_filters_logic = [:only_published_items, :limit_to_non_hidden_items, :limit_to_inheritance_enabled_items]
-  self.default_processor_chain += [:only_wanted_models, :term_frequency_counts, :search_section_transcripts]
+  class_attribute :default_avalon_solr_access_filters_logic
+  self.default_avalon_solr_access_filters_logic = [:only_published_items, :limit_to_non_hidden_items, :limit_to_inheritance_enabled_items]
+  self.default_processor_chain += [:only_wanted_models, :term_frequency_counts, :search_section_transcripts, :apply_facet_field_param]
+
+  class_attribute :model
+  self.model = MediaObject
+
+  attr_writer :avalon_solr_access_filters_logic
 
   def only_wanted_models(solr_parameters)
     solr_parameters[:fq] ||= []
-    solr_parameters[:fq] << 'has_model_ssim:"MediaObject"'
+    solr_parameters[:fq] << "has_model_ssim:\"#{model.to_s}\""
   end
 
   def only_published_items(_permission_types = discovery_permissions, _ability = current_ability)
-    [policy_clauses(permission_types: [:edit]), 'workflow_published_sim:"Published"'].compact.join(" OR ")
+    [edit_policy_clauses, 'workflow_published_sim:"Published"'].compact.join(" OR ")
   end
 
   def limit_to_non_hidden_items(_permission_types = discovery_permissions, _ability = current_ability)
-    media_object_hidden_clause = "hidden_bsi:true"
-    collection_hidden_clause = "{!join from=id to=isGovernedBy_ssim}default_hidden_bsi:true"
+    media_object_hidden_clause = "(disable_inheritance_bsi:true AND NOT hidden_bsi:true)"
+    inherited_hidden_clause = "*:* AND NOT disable_inheritance_bsi:true"
+    inherited_hidden_clause += " AND NOT #{hidden_policy_clauses}" if hidden_policy_clauses.present?
+    inherited_hidden_clause = "(#{inherited_hidden_clause})"
 
-    [policy_clauses(permission_types: [:edit]), "(*:* AND NOT #{media_object_hidden_clause} AND (disable_inheritance_bsi:true OR (*:* AND NOT #{collection_hidden_clause})))"].compact.join(" OR ")
+    [edit_policy_clauses, media_object_hidden_clause, inherited_hidden_clause].compact.join(" OR ")
   end
 
   def limit_to_inheritance_enabled_items(_permission_types = discovery_permissions, ability = current_ability)
@@ -47,12 +54,12 @@ class SearchBuilder < Blacklight::SearchBuilder
     read_access_clauses = []
     read_access_clauses += ["read_access_person_ssim:#{RSolr.solr_escape(current_user)}"] if current_user.present?
     read_access_clauses += ["_query_:\"{!terms f=read_access_group_ssim}#{RSolr.solr_escape(user_groups.join(','))}\""] if user_groups.present?
-    [policy_clauses(permission_types: [:edit]), "(*:* AND NOT disable_inheritance_bsi:true AND (#{(Array(policy_clauses(permission_types: [:read])) + read_access_clauses).join(" OR ")}))", "(disable_inheritance_bsi:true AND (#{(read_access_clauses + ["read_access_group_ssim:(#{user_visibility_groups.join(" OR ")})"]).join(" OR ")}))"].compact.join(" OR ")
+    [edit_policy_clauses, "(*:* AND NOT disable_inheritance_bsi:true AND (#{(Array(read_policy_clauses) + read_access_clauses).join(" OR ")}))", "(disable_inheritance_bsi:true AND (#{(read_access_clauses + ["read_access_group_ssim:(#{user_visibility_groups.join(" OR ")})"]).join(" OR ")}))"].compact.join(" OR ")
   end
 
   # Overridden to skip for admin users
   def add_access_controls_to_solr_params(solr_parameters)
-    return unless current_ability.cannot? :discover_everything, MediaObject
+    return unless current_ability.cannot? :discover_everything, model
 
     solr_parameters[:fq] ||= []
     solr_parameters[:fq] << gated_discovery_filters.reject(&:blank?).join(' OR ')
@@ -115,5 +122,41 @@ class SearchBuilder < Blacklight::SearchBuilder
     solr_parameters["sections.transcripts.defType"] = "lucene"
     solr_parameters["sections.transcripts.rows"] = 1_000_000
     solr_parameters["sections.transcripts.q"] = "{!terms f=isPartOf_ssim v=$row.id}{!join to=id from=isPartOf_ssim}"
+  end
+
+  def avalon_solr_access_filters_logic
+    @avalon_solr_access_filters_logic ||= self.default_avalon_solr_access_filters_logic
+  end
+
+  def apply_facet_field_param(solr_parameters)
+    solr_parameters['facet.field'] = facet_fields_to_include_in_request.keys
+  end
+
+  private
+
+  def edit_policy_clauses
+    @edit_policy_clauses ||= policy_clauses(permission_types: [:edit])
+  end
+
+  def read_policy_clauses
+    @read_policy_clauses ||= policy_clauses(permission_types: [:read])
+  end
+
+  def hidden_policy_clauses
+    @hidden_policy_clauses ||= policy_clauses(permission_types: [:read], additional_clause: "default_hidden_bsi:true")
+  end
+
+  def blacklight_configuration_context
+    @blacklight_configuration_context ||= Blacklight::Configuration::Context.new(search_state.controller)
+  end
+
+  # Override from Blacklight::Solr::SearchBuilderBehavior
+  def facet_fields_to_include_in_request
+    @facet_fields_to_include_in_request ||= blacklight_config.facet_fields.select do |_field_name, facet|
+      include_facet = facet.include_in_request || (facet.include_in_request.nil? && blacklight_config.add_facet_fields_to_solr_request)
+      # exclude facets that don't pass the if/unless tests
+      include_facet &= blacklight_configuration_context.evaluate_if_unless_configuration(facet)
+      include_facet
+    end
   end
 end

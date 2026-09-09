@@ -39,7 +39,6 @@ describe MasterFilesController do
           expect(get :captions, params: { id: master_file.id }).to render_template('errors/restricted_pid')
           expect(get :waveform, params: { id: master_file.id }).to render_template('errors/restricted_pid')
           expect(post :attach_structure, params: { id: master_file.id }).to render_template('errors/restricted_pid')
-          expect(get :transcript, params: { id: master_file.id, t_id: '1' }).to render_template('errors/restricted_pid')
           expect(post :move, params: { id: master_file.id }).to render_template('errors/restricted_pid')
         end
         it "json routes should return 401" do
@@ -69,7 +68,6 @@ describe MasterFilesController do
           expect(get :captions, params: { id: master_file.id }).to render_template('errors/restricted_pid')
           expect(get :waveform, params: { id: master_file.id }).to render_template('errors/restricted_pid')
           expect(post :attach_structure, params: { id: master_file.id }).to render_template('errors/restricted_pid')
-          expect(get :transcript, params: { id: master_file.id, t_id: '1' }).to render_template('errors/restricted_pid')
           expect(post :move, params: { id: master_file.id }).to render_template('errors/restricted_pid')
         end
         it "json routes should return 401" do
@@ -705,7 +703,7 @@ describe MasterFilesController do
   describe '#hls_manifest' do
     let(:media_object) { FactoryBot.create(:published_media_object) }
     let(:master_file) { FactoryBot.create(:master_file, media_object: media_object) }
-    let(:public_media_object) { FactoryBot.create(:published_media_object, visibility: 'public') }
+    let(:public_media_object) { FactoryBot.create(:published_media_object, visibility: 'public', disable_inheritance: true) }
     let(:public_master_file) { FactoryBot.create(:master_file, media_object: public_media_object) }
 
     context 'with head request' do
@@ -763,6 +761,84 @@ describe MasterFilesController do
         login_as :administrator
         get('hls_manifest', params: { id: master_file.id, quality: 'high' })
         expect(a_request(:any, /#{ActiveFedora.fedora.base_uri}/)).not_to have_been_made
+      end
+    end
+  end
+
+  describe '#stream' do
+    let!(:media_object) { FactoryBot.create(:published_media_object, visibility: 'public', disable_inheritance: true) }
+    let(:master_file) { FactoryBot.create(:master_file, media_object: media_object, derivatives: [derivative]) }
+    let(:derivative) { FactoryBot.create(:derivative) }
+    let(:token) { "abcdef123456" }
+
+    before do
+      allow_any_instance_of(StreamToken).to receive(:token).and_return(token)
+    end
+
+    context 'without access' do
+      let!(:media_object) { FactoryBot.create(:published_media_object, visibility: 'private', disable_inheritance: true) }
+
+      it 'responds with unauthorized' do
+        expect(get('stream', params: { id: master_file.id, quality: 'high' })).to have_http_status(:unauthorized)
+      end
+    end
+
+    context 'with managed content' do
+      let(:derivative) { FactoryBot.create(:derivative) }
+      it 'redirects to auto.m3u8' do
+        expect(get(:stream, params: { id: master_file.id, quality: 'high' })).to redirect_to(hls_manifest_master_file_url(id: master_file.id, quality: :high))
+      end
+
+      context 'with mp3 skip transcoded content' do
+        let(:mp3_path) { 'file:///srv/avalon/content/path/to/file.mp3' }
+        let(:derivative) { FactoryBot.build(:derivative, audio_codec: 'mp3', mime_type: 'audio/mpeg', video_codec: nil, absolute_location: mp3_path ) }
+
+        it 'redirects to stream' do
+          expect(get(:stream, params: { id: master_file.id, quality: 'high' })).to redirect_to(derivative.hls_url + "?token=#{token}")
+        end
+      end
+    end
+
+    context 'with unmanaged content' do
+      let(:hls_url) { 'http://example.com/stream-url' }
+      let(:derivative) { FactoryBot.build(:derivative, managed: false, hls_url: hls_url) }
+
+      it 'redirects to stream' do
+        expect(get(:stream, params: { id: master_file.id, quality: 'high' })).to redirect_to(derivative.hls_url + "?token=#{token}")
+      end
+
+      context 'with mp3 content' do
+        let(:hls_url) { 'http://example.com/file.mp3' }
+        let(:derivative) { FactoryBot.build(:derivative, managed: false, audio_codec: 'mp3', mime_type: 'audio/mpeg', hls_url: hls_url ) }
+
+        it 'redirects to stream' do
+          expect(get(:stream, params: { id: master_file.id, quality: 'high' })).to redirect_to(derivative.hls_url + "?token=#{token}")
+        end
+      end
+
+      context 'missing quality' do
+        context 'with other derivative' do
+          it 'redirects to first derivative' do
+            expect(derivative.quality).not_to eq 'low'
+            expect(get(:stream, params: { id: master_file.id, quality: 'low' })).to redirect_to(derivative.hls_url + "?token=#{token}")
+          end
+        end
+
+        context 'with derivative missing stream url' do
+          let(:hls_url) { "" } # nil leads to errors so using empty string
+
+          it 'returns 404 not found' do
+            expect(get(:stream, params: { id: master_file.id, quality: 'high' })).to have_http_status(:not_found)
+          end
+        end
+
+        context 'with no derivatives' do
+          let(:master_file) { FactoryBot.create(:master_file, media_object: media_object, derivatives: []) }
+
+          it 'returns 404 not found' do
+            expect(get('stream', params: { id: master_file.id, quality: 'high' })).to have_http_status(:not_found)
+          end
+        end
       end
     end
   end
@@ -854,32 +930,6 @@ describe MasterFilesController do
       expect(master_file.poster_offset).to eq 3000
       expect(master_file.date_digitized).to eq "2020-08-27T00:00:00Z"
       expect(master_file.permalink).to eq "https://perma.link"
-    end
-  end
-
-  describe "#transcript" do
-    let(:supplemental_file) { FactoryBot.create(:supplemental_file) }
-    let(:master_file) { FactoryBot.create(:master_file, supplemental_files: [supplemental_file]) }
-    let(:supplemental_file) { FactoryBot.create(:supplemental_file, :with_transcript_file, :with_transcript_tag, label: 'transcript') }
-
-    it 'serves transcript file content' do
-      login_as :administrator
-      expect(master_file.supplemental_files.first['tags']).to eq (["transcript"])
-      get('transcript', params: { use_route: 'master_files/:id/transcript', id: master_file.id, t_id: supplemental_file.id })
-      expect(response.headers['Content-Type']).to eq('text/vtt')
-      expect(response).to have_http_status(:ok)
-      expect(response.body.include? "Example captions").to be_truthy
-    end
-
-    context 'read from solr' do
-      it 'should not read from fedora' do
-        master_file
-        perform_enqueued_jobs(only: MediaObjectIndexingJob)
-        WebMock.reset_executed_requests!
-        login_as :administrator
-        get('transcript', params: { use_route: 'master_files/:id/transcript', id: master_file.id, t_id: supplemental_file.id })
-        expect(a_request(:any, /#{ActiveFedora.fedora.base_uri}/)).not_to have_been_made
-      end
     end
   end
 

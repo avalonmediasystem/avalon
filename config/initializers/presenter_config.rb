@@ -72,12 +72,16 @@ Rails.application.config.to_prepare do
 
     sp.config Admin::Collection do
       self.defaults = {
-                        cdl_enabled: nil
+                        cdl_enabled: nil,
+                        collection_managers: []
                       }
       include AdminCollectionBehavior
     end
 
     sp.config Admin::Unit do
+      self.defaults = {
+                        collection_managers: []
+                      }
       include AdminUnitBehavior
     end
 

@@ -15,10 +15,11 @@
 FactoryBot.define do
   factory :group, class: Admin::Group do
     name { Faker::Lorem.unique.word }
-    after(:create) do |g|
-      group = Admin::Group.find(g.name)
-      group.users = [FactoryBot.build(:user).user_key]
-      group.save
+    users { [FactoryBot.create(:user).user_key] }
+    after(:create) do |group|
+      # For some reason factory bot's create doesn't go through the normal save
+      # so the users don't get fully set
+      Avalon::RoleControls.assign_users(group.users, group.name)
     end
   end
 end

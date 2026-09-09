@@ -39,9 +39,9 @@ class UnitSearchBuilder < Blacklight::SearchBuilder
     add_access_controls_to_solr_params_if_not_admin(temp_solr_parameters)
 
     # For the CollectionSearchBuilder, a user can see a collection if they can see any media objects inside it.  Do we need to do the same here?
-    query =  "{!join from=heldBy_ssim to=id}"
+    query =  "{!graph to=heldBy_ssim from=id}"
     subquery = temp_solr_parameters[:fq].present? ? "(#{temp_solr_parameters[:fq].join(') AND (')})" : "*:*"
-    solr_parameters[:q] = query + subquery
+    solr_parameters[:q] = "#{query}(#{subquery})"
     solr_parameters[:defType] = "lucene"
     solr_parameters[:rows] = 1_000_000
     Rails.logger.debug("Solr parameters: #{solr_parameters.inspect}")

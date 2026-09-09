@@ -175,11 +175,12 @@ Rails.application.routes.draw do
       get :captions
       get :waveform
       match ':quality.m3u8', to: 'master_files#hls_manifest', via: [:get], as: :hls_manifest
+      match '/stream/:quality', to: 'master_files#stream', via: [:get], as: :stream
       get 'structure', to: 'master_files#structure', constraints: { format: 'json' }
       post 'structure', to: 'master_files#set_structure', constraints: { format: 'json' }
       delete 'structure', to: 'master_files#delete_structure', constraints: { format: 'json' }
       post 'move'
-      get 'transcript/:t_id', to: 'master_files#transcript'
+      get 'transcript/:t_id', :to => redirect('/master_files/%{id}/supplemental_files/%{t_id}')
       get :search
       
       if Settings.derivative.allow_download
@@ -192,7 +193,7 @@ Rails.application.routes.draw do
       member do
         get 'captions'
         get 'transcripts', :to => redirect('/master_files/%{master_file_id}/supplemental_files/%{id}')
-        get 'descriptions', :to => redirect('master_files/%{master_file_id}/supplemental_files/%{id}')
+        get 'descriptions', :to => redirect('/master_files/%{master_file_id}/supplemental_files/%{id}')
       end
       get :index, constraints: { format: 'json' }, on: :collection
     end

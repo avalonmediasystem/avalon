@@ -21,8 +21,9 @@ class Admin::DashboardController < ApplicationController
     repository = CatalogController.new.blacklight_config.repository
     # Allow the number of collections to be greater than 100
     blacklight_config.max_per_page = 100_000
-    builder = ::CollectionSearchBuilder.new([:add_access_controls_to_solr_params_if_not_admin, :only_wanted_models, :add_paging_to_solr], self).rows(100_000)
-    
+    builder = ::CollectionSearchBuilder.new([:add_access_controls_to_solr_params, :only_wanted_models, :add_paging_to_solr], self).rows(100_000)
+    builder.avalon_solr_access_filters_logic = []
+    builder.with_discovery_permissions([:edit])
     response = repository.search(builder)
 
     # Query solr for facet values for collection media object counts and pass into presenter to avoid making 2 solr queries per collection
@@ -48,7 +49,7 @@ class Admin::DashboardController < ApplicationController
     # Allow the number of units to be greater than 100
     blacklight_config.max_per_page = 100_000
     builder = ::UnitSearchBuilder.new([:add_access_controls_to_solr_params_if_not_admin, :only_wanted_models, :add_paging_to_solr], self).rows(100_000)
-    
+    builder.with_discovery_permissions([:edit])
     response = repository.search(builder)
 
     # Query solr for facet values for unit media object counts and pass into presenter to avoid making 2 solr queries per unit
