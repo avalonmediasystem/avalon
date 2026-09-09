@@ -230,6 +230,9 @@ namespace :avalon do
         next unless Settings.respond_to?(key)
         value = Settings.send(key)
         value = value.class == Config::Options ? value.to_h : value
+        # Auth configuration needs to stay in the settings.yml. Authentication initialization
+        # is too complex and fragile to reside in the database. Skip it.
+        value = value.reject { |k, _v| k == "configuration" } if key == :auth
         db_settings.send("#{key}=".to_sym, value)
         puts("'#{key}' set to #{value}.")
       end
