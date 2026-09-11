@@ -36,6 +36,7 @@ class ApplicationController < ActionController::Base
   around_action :handle_api_request, if: proc{|c| request.format.json? || request.format.atom? || request.headers['Avalon-Api-Key'].present? }
   before_action :rewrite_v4_ids, if: proc{|c| request.method_symbol == :get && [params[:id], params[:content]].flatten.compact.any? { |i| i =~ /^[a-z]+:[0-9]+$/}}
   before_action :set_no_cache_headers, if: proc{|c| request.xhr? }
+  prepend_before_action :rstrip_id_param
   prepend_before_action :remove_zero_width_chars
 
   rescue_from RSolr::Error::ConnectionRefused, :with => :handle_solr_connection_error
@@ -140,12 +141,12 @@ class ApplicationController < ActionController::Base
     # return all collections to admin, unless specific user is passed in
     if can?(:manage, Admin::Collection)
       if user.blank?
-        SpeedyAF::Proxy::Admin::Collection.where("has_model_ssim:Admin\\:\\:Collection").to_a
+        SpeedyAF::Proxy::Admin::Collection.where("has_model_ssim:\"Admin::Collection\"").to_a
       else
-        SpeedyAF::Proxy::Admin::Collection.where("has_model_ssim: Admin\\:\\:Collection AND (inheritable_edit_access_person_ssim: #{user} OR {!join from='id' to='heldBy_ssim'}inheritable_edit_access_person_ssim:#{user})")
+        SpeedyAF::Proxy::Admin::Collection.where("has_model_ssim:\"Admin::Collection\" AND (inheritable_edit_access_person_ssim:#{user} OR {!graph to='id' from='heldBy_ssim'}inheritable_edit_access_person_ssim:#{user})")
       end
     else
-      SpeedyAF::Proxy::Admin::Collection.where("has_model_ssim: Admin\\:\\:Collection AND (inheritable_edit_access_person_ssim: #{user_key} OR {!join from='id' to='heldBy_ssim'}inheritable_edit_access_person_ssim:#{user_key})")
+      SpeedyAF::Proxy::Admin::Collection.where("has_model_ssim:\"Admin::Collection\" AND (inheritable_edit_access_person_ssim:#{user_key} OR {!graph to='id' from='heldBy_ssim'}inheritable_edit_access_person_ssim:#{user_key})")
     end
   end
   helper_method :get_user_collections
@@ -158,10 +159,10 @@ class ApplicationController < ActionController::Base
     units = []
     # return all units to admin
     if can?(:manage, Admin::Unit)
-      units = SpeedyAF::Proxy::Admin::Unit.where("has_model_ssim: Admin\\:\\:Unit")
+      units = SpeedyAF::Proxy::Admin::Unit.where("has_model_ssim:\"Admin::Unit\"")
     else
       id_query = with_ids.collect { |id| "id:#{id}" }.join(" OR ")
-      units = SpeedyAF::Proxy::Admin::Unit.where("has_model_ssim: Admin\\:\\:Unit AND (#{["unit_administrators_ssim: #{user_key}", id_query].compact_blank.join(" OR ")})")
+      units = SpeedyAF::Proxy::Admin::Unit.where("has_model_ssim:\"Admin::Unit\" AND (#{["unit_administrators_ssim:#{user_key}", id_query].compact_blank.join(" OR ")})")
     end
     sort ? units.sort_by { |u| u.name.downcase } : units
   end
@@ -284,6 +285,10 @@ class ApplicationController < ActionController::Base
 
     def application_name
       Settings.name || 'Avalon Media System'
+    end
+
+    def rstrip_id_param
+      Array(params[:id]).map(&:rstrip!)
     end
 
     def remove_zero_width_chars

@@ -10,4 +10,8 @@ Rails.application.config.to_prepare do
       end
     end
   end
+
+  BrowseEverythingController.prepend_before_action do
+    authorize! :create, MediaObject
+  end
 end

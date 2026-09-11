@@ -23,7 +23,7 @@ module Hydra::MultiplePolicyAwareAbility
   # removed through an is_governed_by relationship.
   # Returns nil if no policies are associated with the object
   def active_policy_ids_for(object_id)
-    id_clause = "_query_:\"{!join to=id from=isGovernedBy_ssim}id:#{object_id}\" OR _query_:\"{!join to=id from=isGovernedBy_ssim}{!join to=id from=isGovernedBy_ssim}id:#{object_id}\""
+    id_clause = "{!graph from=id to=isGovernedBy_ssim returnRoot=false}id:#{object_id}"
     klasses_fq = policy_classes.collect { |klass| "(has_model_ssim:\"#{klass.name}\" #{policy_class_clause(klass)})" }.join(" OR ")
     result = ActiveFedora::Base.search_with_conditions(id_clause, fq: [klasses_fq], fl: [:id], rows: 100_000 )
     ids = result.collect {|h| h.values }.flatten
