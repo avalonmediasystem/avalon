@@ -18,7 +18,7 @@ describe CommentsController do
   render_views
 
   let(:comment) { FactoryBot.build(:comment) }
-  let(:comment_parameters) { comment.to_h.merge({ email_confirmation: comment.email }) } 
+  let(:comment_parameters) { comment.to_h.merge({ email_confirmation: comment.email }) }
 
   describe '#create' do
     it 'sends a comment email' do
@@ -34,23 +34,23 @@ describe CommentsController do
     end
 
     context 'recaptcha enabled' do
+      let(:comment_parameters) { comment.to_h.merge({ email_confirmation: comment.email, site_key: "site_key" }) }
+
       before do
         allow(Admin::ApplicationSetting.instance.recaptcha).to receive(:site_key).and_return("site_key")
         allow(Admin::ApplicationSetting.instance.recaptcha).to receive(:secret_key).and_return("secret_key")
         allow(Admin::ApplicationSetting.instance.recaptcha).to receive(:type).and_return(recaptcha_type)
-        allow(Recaptcha.configuration).to receive(:site_key!).and_return("site_key")
-        allow(Recaptcha.configuration).to receive(:secret_key!).and_return("secret_key")
       end
 
       context 'recaptcha v2' do
         let(:recaptcha_type) { "v2_checkbox" }
 
-	it 'sends a comment email' do
+        it 'sends a comment email' do
           allow(controller).to receive(:verify_recaptcha)
-	  post :create, params: { comment: comment_parameters }
-	  expect(response.status).to be 200
-          expect(controller).to have_received(:verify_recaptcha).with({ model: assigns(:comment) })
-	end
+          post :create, params: { comment: comment_parameters }
+          expect(response.status).to be 200
+          expect(controller).to have_received(:verify_recaptcha).with({ model: assigns(:comment), secret_key: 'secret_key' })
+        end
       end
 
       context 'recaptcha v3' do
@@ -63,12 +63,12 @@ describe CommentsController do
           allow(Admin::ApplicationSetting.instance.recaptcha.v3).to receive(:minimum_score).and_return(minimum_score)
         end
 
-	it 'sends a comment email' do
+        it 'sends a comment email' do
           allow(controller).to receive(:verify_recaptcha)
-	  post :create, params: { comment: comment_parameters }
-	  expect(response.status).to be 200
-          expect(controller).to have_received(:verify_recaptcha).with({ action: action, minimum_score: minimum_score })
-	end
+          post :create, params: { comment: comment_parameters }
+          expect(response.status).to be 200
+          expect(controller).to have_received(:verify_recaptcha).with({ action: action, minimum_score: minimum_score, secret_key: "secret_key" })
+        end
       end
     end
   end
