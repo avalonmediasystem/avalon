@@ -206,7 +206,7 @@ namespace :avalon do
     task :application_settings, [:list_fields] => :environment do |_task, args|
       SETTINGS_KEYS = [:name, :google_analytics_tracking_id,
                        :repository_read_only_mode, :repository_read_only_mode_message,
-                       :accessibility_compliance, :auth, :bib_retriever, :caption_default,
+                       :accessibility_compliance, :bib_retriever, :caption_default,
                        :controlled_digital_lending, :dropbox, :email,
                        :home_page, :intercom, :master_file_management, :recaptcha,
                        :supplemental_files, :waveform].freeze
@@ -230,9 +230,6 @@ namespace :avalon do
         next unless Settings.respond_to?(key)
         value = Settings.send(key)
         value = value.class == Config::Options ? value.to_h : value
-        # Auth configuration needs to stay in the settings.yml. Authentication initialization
-        # is too complex and fragile to reside in the database. Skip it.
-        value = value.reject { |k, _v| k == "configuration" } if key == :auth
         db_settings.send("#{key}=".to_sym, value)
         puts("'#{key}' set to #{value}.")
       end
