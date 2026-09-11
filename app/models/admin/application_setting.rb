@@ -16,7 +16,6 @@ class Admin::ApplicationSetting < ApplicationRecord
 
   # Nested settings
   attr_json :accessibility_compliance, AccessibilityCompliance.to_type, default: -> { AccessibilityCompliance.new }
-  attr_json :auth, Auth.to_type, default: -> { Auth.new }
   attr_json :bib_retriever, BibRetriever.to_type, default: -> { BibRetriever.new }
   attr_json :caption_default, CaptionDefault.to_type, default: -> { CaptionDefault.new }
   attr_json :controlled_digital_lending, ControlledDigitalLending.to_type, default: -> { ControlledDigitalLending.new }
