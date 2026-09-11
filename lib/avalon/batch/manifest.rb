@@ -30,11 +30,14 @@ module Avalon
 
       class << self
         def concrete_class=(value)
+          # Allow concrete_class to be a lambda function
+          return @concrete_class = value if value.respond_to?(:call)
           raise ArgumentError, "#{value} is not a #{self.name}" unless self.descendants.include?(value)
           @concrete_class = value
         end
 
         def concrete_class
+          return @concrete_class.call if @concrete_class.respond_to?(:call)
           @concrete_class ||= FileManifest
         end
 

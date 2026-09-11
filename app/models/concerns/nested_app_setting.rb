@@ -67,10 +67,6 @@ module NestedAppSetting
     validates :type, inclusion: { in: ['success', 'notice', 'error', 'alert', 'off'] }
   end
 
-  class Auth < JsonModel
-    attr_json :registerable, :boolean, default: true
-  end
-
   class BibRetriever < JsonModel
     attr_json :default, BibRetrieverDefault.to_type, default: -> { BibRetrieverDefault.new }
   end
