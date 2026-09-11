@@ -52,9 +52,9 @@ class CommentsController < ApplicationController
     return true unless Admin::ApplicationSetting.instance.recaptcha.site_key.present?
     options = case Admin::ApplicationSetting.instance.recaptcha.type
               when "v2_checkbox"
-                { model: @comment }
+                { model: @comment, secret_key: Admin::ApplicationSetting.instance.recaptcha.secret_key }
               when "v3"
-                { action: Admin::ApplicationSetting.instance.recaptcha.v3.action, minimum_score: Admin::ApplicationSetting.instance.recaptcha.v3.minimum_score }
+                { action: Admin::ApplicationSetting.instance.recaptcha.v3.action, minimum_score: Admin::ApplicationSetting.instance.recaptcha.v3.minimum_score, secret_key: Admin::ApplicationSetting.instance.recaptcha.secret_key }
               end
     verify_recaptcha(options)
   end
