@@ -32,11 +32,11 @@ Unless required by applicable law or agreed to in writing, software distributed
       <% if Admin::ApplicationSetting.instance.recaptcha.site_key.present?%>
         <% if Admin::ApplicationSetting.instance.recaptcha.type == "v2_checkbox" %>
 	  <div class="mb-3">
-	    <%= recaptcha_tags %>
+	    <%= recaptcha_tags site_key: Admin::ApplicationSetting.instance.recaptcha.site_key %>
 	  </div>
         <% elsif Admin::ApplicationSetting.instance.recaptcha.type == "v3" %>
 	  <div class="mb-3">
-	    <%= recaptcha_v3(action: Admin::ApplicationSetting.instance.recaptcha.v3.action) %>
+	    <%= recaptcha_v3(action: Admin::ApplicationSetting.instance.recaptcha.v3.action, site_key: Admin::ApplicationSetting.instance.recaptcha.site_key) %>
 	  </div>
         <% end %>
       <% end %>

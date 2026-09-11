@@ -36,10 +36,6 @@ Unless required by applicable law or agreed to in writing, software distributed
                                      { name: :compliance_date, type: 'text_field' }], options: {} } %>
 
     <%= render partial: 'nested_form',
-               locals: { form: form, field: :auth,
-                         subfields: [{ name: :registerable, type: 'checkbox' }], options: {} } %>
-
-    <%= render partial: 'nested_form',
                locals: { form: form, field: :bib_retriever,
                          subfields: [{ name: :default, type: 'nested_form' ,
                                        subfields: [{ name: :protocol, type: 'text_field' },
@@ -108,7 +104,7 @@ Unless required by applicable law or agreed to in writing, software distributed
 
     <%= render partial: 'nested_form',
                locals: { form: form, field: :master_file_management,
-                         subfields: [{ name: :strategy, type: 'text_field' },
+                         subfields: [{ name: :strategy, type: 'radio_buttons', values: ['move', 'delete', 'none'] },
                                      { name: :path, type: 'text_field' }], options: {} } %>
 
     <%= render partial: 'nested_form',
