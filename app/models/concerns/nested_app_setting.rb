@@ -12,6 +12,7 @@ module NestedAppSetting
     attr_json :protocol, :string, default: 'sru'
     attr_json :url, :string, default: 'http://zgate.library.example.edu:9000/catdb'
     attr_json :query, :string, default: 'rec.id=%{bib_id}'
+    attr_json :namespace, :string, default: nil
     attr_json :retriever_class, :string, default: 'Avalon::BibRetriever::SRU'
     attr_json :retriever_class_require, :string, default: 'avalon/bib_retriever/sru'
   end
@@ -36,6 +37,7 @@ module NestedAppSetting
     attr_json :api_token, :string
     attr_json :import_bib_record, :boolean, default: true
     attr_json :publish, :boolean, default: false
+    attr_json :remove_identifiers, :boolean, default: false
     attr_json :push_label, :string
   end
 
