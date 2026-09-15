@@ -70,7 +70,7 @@ module MediaObjectBehavior
 
   def is_accessible?
     return true unless Admin::ApplicationSetting.instance.accessibility_compliance.enforce
-    return true if DateTime.parse(Admin::ApplicationSetting.instance.accessibility_compliance.compliance_date) > create_date
+    return true if Admin::ApplicationSetting.instance.accessibility_compliance.compliance_date > create_date
     return true if accessibility_exempt?
     has_captions || has_transcripts
   end

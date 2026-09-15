@@ -21,7 +21,7 @@ describe '/master_files/' do
     let(:supplemental_file) { FactoryBot.create(:supplemental_file, :with_transcript_file, :with_transcript_tag, label: 'transcript') }
 
     before do
-      allow(Settings.supplemental_files).to receive(:proxy).and_return(true)
+      allow(Admin::ApplicationSetting.instance.supplemental_files).to receive(:proxy).and_return(true)
     end
 
     it 'serves transcript file content' do

@@ -723,22 +723,15 @@ describe Admin::Collection do
     let(:my_client) { Aws::S3::Client.new }
     let!(:old_path) { Admin::ApplicationSetting.instance.dropbox.path }
 
-    before do
-      Admin::ApplicationSetting.instance.dropbox.path = "s3://#{bucket}/dropbox"
-    end
-
     it "should be able to handle special S3 avoidable characters and create object" do
       remote_object = double(key: corrected_collection_name, bucket_name: bucket, exists?: false)
       allow(Aws::S3::Client).to receive(:new).and_return(my_client)
       allow(Aws::S3::Object).to receive(:new).and_return(remote_object)
+      allow(Admin::ApplicationSetting.instance.dropbox).to receive(:path).and_return("s3://#{bucket}/dropbox")
 
       collection.name = collection_name
       expect(my_client).to receive(:put_object).with(bucket: bucket, key: corrected_collection_name)
       collection.send(:create_s3_dropbox_directory!)
-    end
-
-    after do
-      Admin::ApplicationSetting.instance.dropbox.path = old_path
     end
   end
 

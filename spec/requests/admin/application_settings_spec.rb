@@ -1,6 +1,8 @@
 require 'rails_helper'
 
-RSpec.describe "/admin/application_settings", type: :request do
+RSpec.describe "/admin/application_settings", type: :request, skip_stubbing: true do
+  let(:admin) { FactoryBot.create(:administrator) }
+
   describe 'security' do
     context 'unauthenticated user' do
       it 'renders the restricted content page for all routes' do
@@ -15,6 +17,7 @@ RSpec.describe "/admin/application_settings", type: :request do
 
     context 'authenticated' do
       before { sign_in(user) }
+
       context 'regular user' do
         let(:user) { FactoryBot.create(:user) }
 
@@ -29,36 +32,29 @@ RSpec.describe "/admin/application_settings", type: :request do
       end
 
       context 'admin user' do
-        let(:user) { FactoryBot.create(:administrator) }
-        let(:settings) { Admin::ApplicationSetting.instance }
-
-        before do
-          settings.name = "Test"
-          @settings = JSON.parse(settings.options_before_type_cast).transform_keys do |key|
-            settings[key].is_a?(Hash) ? "#{key}_attributes" : key
-          end.deep_symbolize_keys
-        end
+        let(:user) { admin }
+        let(:payload) { { name: 'Test' } }
 
         it 'renders the show page for all routes' do
           get admin_application_settings_url
           expect(response).to render_template(:show)
-          patch admin_application_settings_url, params: { admin_application_setting: @settings }
+          patch admin_application_settings_url, params: { admin_application_setting: payload }
           expect(response).to redirect_to("/admin/application_settings")
           expect(response).to have_http_status(302)
-          # follow_redirect!
-          # expect(response).to render_template(:show)
-          # put admin_application_settings_url, params: { admin_application_setting: @settings }
-          # expect(response).to redirect_to("/admin/application_settings")
-          # expect(response).to have_http_status(302)
-          # follow_redirect!
-          # expect(response).to render_template(:show)
+          follow_redirect!
+          expect(response).to render_template(:show)
+          put admin_application_settings_url, params: { admin_application_setting: payload }
+          expect(response).to redirect_to("/admin/application_settings")
+          expect(response).to have_http_status(302)
+          follow_redirect!
+          expect(response).to render_template(:show)
         end
       end
     end
   end
 
   describe "GET /show" do
-    before { sign_in(FactoryBot.create(:administrator)) }
+    before { sign_in(admin) }
 
     it "renders the show page" do
       get admin_application_settings_url
@@ -66,7 +62,31 @@ RSpec.describe "/admin/application_settings", type: :request do
     end
   end
 
-  describe 'PATCH /update' do
-    before { sign_in(FactoryBot.create(:administrator)) }
+  describe "PATCH /update" do
+    let(:settings) { Admin::ApplicationSetting.instance }
+    before { sign_in(admin) }
+
+    context 'top level settings' do
+      let(:payload) { { name: 'Test', repository_read_only_mode: true } }
+
+      it "successfully updates" do
+        expect {
+          patch admin_application_settings_url, params: { admin_application_setting: payload }
+          settings.reload
+        }.to change { settings.name }.from('Avalon Media System').to('Test')
+         .and change { settings.repository_read_only_mode }.from(false).to(true)
+      end
+    end
+
+    context 'nested settings' do
+      let(:payload) { { email_attributes: { mailer: 'aws', config: { address: 'http://local.test' } } } }
+      it "successfully updates" do
+        expect do
+          patch admin_application_settings_url, params: { admin_application_setting: payload }
+          settings.reload
+        end.to change { settings.email.mailer }.from('smtp').to('aws')
+           .and change { settings.email.config.address }.from('mail-relay.iu.edu').to('http://local.test')
+      end
+    end
   end
 end
