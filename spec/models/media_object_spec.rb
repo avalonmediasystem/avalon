@@ -1385,7 +1385,7 @@ describe MediaObject do
       end
     end
     context 'accessibility enforcement enabled' do
-      let(:compliance_date) { DateTime.parse(Admin::ApplicationSetting.instance.accessibility_compliance.compliance_date) }
+      let(:compliance_date) { Admin::ApplicationSetting.instance.accessibility_compliance.compliance_date }
       before do
         allow(Admin::ApplicationSetting.instance.accessibility_compliance).to receive(:enforce).and_return(true)
       end
