@@ -7,7 +7,7 @@ class Admin::ApplicationSettingsController < ApplicationController
   end
 
   def update
-    authorize! :edit, @app_settings
+    authorize! :update, @app_settings
 
     respond_to do |format|
       if @app_settings.update(app_settings_params)

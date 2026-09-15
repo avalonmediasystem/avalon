@@ -125,14 +125,11 @@ describe CollectionsController, type: :controller do
 
     context 'only carousel' do
       let!(:collection2) { FactoryBot.create(:collection, items: 1) }
-      let(:home_page_config) { { home_page: { carousel_collections: [collection2.id] } } }
+      let(:home_page_config) { { carousel_collections: [collection2.id] } }
 
-      around(:example) do |example|
-        Settings.add_source!(home_page_config)
-        Settings.reload!
-        example.run
-        Settings.instance_variable_get(:@config_sources).pop
-        Settings.reload!
+      before do
+        home_page_double = double('NestedAppSetting::HomePage', home_page_config)
+        allow(Admin::ApplicationSetting.instance).to receive(:home_page).and_return(home_page_double)
       end
 
       it 'filters results by id' do
