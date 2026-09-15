@@ -18,7 +18,7 @@ module Avalon
 
     def initialize(user, avalon = 'default')
       @user = user
-      @avalon = Admin::ApplicationSetting.instance.intercom[avalon]
+      @avalon = Admin::ApplicationSetting.instance.intercom.send(avalon)
       @collections = nil
     end
 
@@ -39,13 +39,13 @@ module Avalon
       begin
         resp = RestClient::Request.execute(
           method: :post,
-          url: Addressable::URI.join(@avalon['url'], 'media_objects.json').to_s,
+          url: Addressable::URI.join(@avalon.url, 'media_objects.json').to_s,
           payload: build_payload(media_object, collection_id, include_structure),
-          headers: { content_type: :json, accept: :json, :'Avalon-Api-Key' => @avalon['api_token'] },
+          headers: { content_type: :json, accept: :json, :'Avalon-Api-Key' => @avalon.api_token },
           verify_ssl: false,
           timeout: 3600
         )
-        { link: Addressable::URI.join(@avalon['url'], 'media_objects/', JSON.parse(resp.body)['id']).to_s }
+        { link: Addressable::URI.join(@avalon.url, 'media_objects/', JSON.parse(resp.body)['id']).to_s }
       rescue StandardError => e
         { message: e.message, status: e.respond_to?(:response) && e.response.present? ? e.response.code : 500 }
       end
@@ -54,23 +54,23 @@ module Avalon
     private
 
       def build_payload(media_object, collection_id, include_structure)
-        payload = media_object.to_ingest_api_hash(include_structure, remove_identifiers: @avalon['remove_identifiers'], publish: @avalon['publish'])
+        payload = media_object.to_ingest_api_hash(include_structure, remove_identifiers: @avalon.remove_identifiers, publish: @avalon.publish)
         payload[:collection_id] = collection_id
-        payload[:import_bib_record] = @avalon['import_bib_record']
-        payload[:publish] = @avalon['publish']
+        payload[:import_bib_record] = @avalon.import_bib_record
+        payload[:publish] = @avalon.publish
         payload.to_json
       end
 
       def fetch_user_collections
-        return [] unless @avalon.present?
-        uri = Addressable::URI.join(@avalon['url'], 'admin/collections.json')
+        return [] unless @avalon.url.present? && @avalon.api_token.present?
+        uri = Addressable::URI.join(@avalon.url, 'admin/collections.json')
         uri.query = "user=#{@user}&per_page=#{Integer::EXABYTE}"
         resp = RestClient::Request.execute(
           method: :get,
           url: uri.to_s,
           timeout: nil,
           open_timeout: nil,
-          headers: { content_type: :json, accept: :json, :'Avalon-Api-Key' => @avalon['api_token'] },
+          headers: { content_type: :json, accept: :json, :'Avalon-Api-Key' => @avalon.api_token },
           verify_ssl: false
         )
         JSON.parse(resp.body).map { |c| c.slice('id', 'name') }.sort_by { |c| c["name"] }

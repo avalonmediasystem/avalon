@@ -35,7 +35,7 @@ describe Ability, type: :model do
     let(:session) { {} }
     subject(:admin_ability) { Ability.new(admin, session) }
 
-    before { allow(Settings).to receive(:repository_read_only_mode).and_return(read_only) }
+    before { allow(Admin::ApplicationSetting.instance).to receive(:repository_read_only_mode).and_return(read_only) }
 
     context 'with read-only enabled' do
       let(:read_only) { true }
