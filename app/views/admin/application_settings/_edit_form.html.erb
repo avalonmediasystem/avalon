@@ -41,6 +41,7 @@ Unless required by applicable law or agreed to in writing, software distributed
                                        subfields: [{ name: :protocol, type: 'text_field' },
                                                    { name: :url, type: 'text_field' },
                                                    { name: :query, type: 'text_field' },
+                                                   { name: :namespace, type: 'text_field' },
                                                    { name: :retriever_class, type: 'text_field' },
                                                    { name: :retriever_class_require, type: 'text_field' }] }], options: {} } %>
 
@@ -100,6 +101,7 @@ Unless required by applicable law or agreed to in writing, software distributed
                                                    { name: :api_token, type: 'text_field' },
                                                    { name: :import_bib_record, type: 'checkbox' },
                                                    { name: :publish, type: 'checkbox' },
+                                                   { name: :remove_identifiers, type: 'checkbox' },
                                                    { name: :push_label, type: 'text_field' }] }],options: {} } %>
 
     <%= render partial: 'nested_form',
