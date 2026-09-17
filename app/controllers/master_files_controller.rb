@@ -259,6 +259,7 @@ class MasterFilesController < ApplicationController
         render plain: 'Not Found', status: :not_found unless quality == 'auto'
         @hls_streams = gather_hls_streams(@master_file)
       else
+        return @hls_streams = gather_hls_streams(@master_file) if quality == 'auto' && !auto_derivative_present?
         redirect_to(stream[:url], allow_other_host: true)
       end
     end
@@ -504,5 +505,9 @@ private
       "header": success ? nil : { "en": [I18n.t('iiif.auth.failureHeader')] },
       "note": success ? nil : { "en": [I18n.t('iiif.auth.failureDescription')] }
     }.compact
+  end
+
+  def auto_derivative_present?
+    @master_file.derivatives.any? { |deriv| deriv.quality == 'auto' }
   end
 end
