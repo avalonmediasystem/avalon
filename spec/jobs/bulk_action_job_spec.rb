@@ -104,8 +104,8 @@ describe BulkActionJobs::ApplyCollectionAccessControl do
     end
 
     context "with cdl enabled" do
-      before { allow(Settings.controlled_digital_lending).to receive(:enable).and_return(true) }
-      before { allow(Settings.controlled_digital_lending).to receive(:collections_enabled).and_return(true) }
+      before { allow(Admin::ApplicationSetting.instance.controlled_digital_lending).to receive(:enable).and_return(true) }
+      before { allow(Admin::ApplicationSetting.instance.controlled_digital_lending).to receive(:collections_enabled).and_return(true) }
       it "changes only item lending period" do
         BulkActionJobs::ApplyCollectionAccessControl.perform_now co.id, true, 'lending_period'
         mo.reload
@@ -116,7 +116,7 @@ describe BulkActionJobs::ApplyCollectionAccessControl do
     end
 
     context "with cdl disabled" do
-      before { allow(Settings.controlled_digital_lending).to receive(:enable).and_return(false) }
+      before { allow(Admin::ApplicationSetting.instance.controlled_digital_lending).to receive(:enable).and_return(false) }
       it "does not change item lending period or other fields" do
         BulkActionJobs::ApplyCollectionAccessControl.perform_now co.id, true, 'lending_period'
         mo.reload

@@ -17,12 +17,12 @@ Unless required by applicable law or agreed to in writing, software distributed
 <div class="container-fluid px-0" id="alerts">
   <% if Settings&.repository_read_only_mode && current_ability.can?(:read, Admin::Collection) %>
     <div class="alert alert-info" data-testid="alert">
-      <p><%= Settings.repository_read_only_mode_message %></p>
+      <p><%= Admin::ApplicationSetting.instance.repository_read_only_mode_message %></p>
     </div>
   <% end %>
 
-  <% if Settings&.flash_message&.message %>
-    <% flash[Settings.flash_message.type || :error] = Settings.flash_message.message.html_safe %>
+  <% if Admin::ApplicationSetting.instance&.flash_message&.type != "off" && Admin::ApplicationSetting.instance&.flash_message&.message %>
+    <% flash[Admin::ApplicationSetting.instance.flash_message.type || :error] = Admin::ApplicationSetting.instance.flash_message.message.html_safe %>
   <% end %>
 
   <% if defined? flash and !flash.empty? %>

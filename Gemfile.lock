@@ -182,6 +182,8 @@ GEM
       sshkit (>= 1.6.1, != 1.7.0)
     api-pagination (6.0.0)
     ast (2.4.3)
+    attr_json (2.6.0)
+      activerecord (>= 6.0.0, < 8.2)
     audio_waveform-ruby (1.0.7)
       json (~> 2.3)
     aws-actionmailer-ses (1.0.0)
@@ -985,6 +987,7 @@ DEPENDENCIES
   activerecord-session_store (>= 2.0.0)
   acts_as_list
   api-pagination
+  attr_json
   audio_waveform-ruby (~> 1.0.7)
   avalon-about!
   aws-actionmailer-ses
