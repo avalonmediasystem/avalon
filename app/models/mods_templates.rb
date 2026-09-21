@@ -176,6 +176,18 @@ module ModsTemplates
         add_child_node(get_original_related_item, :_original_physical_description, value)
       end
 
+      define_template :_original_physical_format do |xml, text|
+        xml.physicalDescription {
+          xml.form {
+            xml.text(text)
+          }
+        }
+      end
+
+      def add_physical_format(value, opts = {})
+        add_child_node(get_original_related_item, :_original_physical_format, value)
+      end
+
       define_template :_other_identifier do |xml,text,type|
         type = ModsDocument::IDENTIFIER_TYPES.keys.first if type.empty?
         xml.identifier(:type => type) {

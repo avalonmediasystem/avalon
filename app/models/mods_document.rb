@@ -22,6 +22,7 @@ class ModsDocument < ActiveFedora::OmDatastream
   IDENTIFIER_TYPES = Avalon::ControlledVocabulary.find_by_name(:identifier_types) || {"other" => "Local"}
   NOTE_TYPES = Avalon::ControlledVocabulary.find_by_name(:note_types) || {"local" => "Local Note"}
   RIGHTS_STATEMENTS = Avalon::ControlledVocabulary.find_by_name(:rights_statements)
+  PHYSICAL_FORMATS = Avalon::ControlledVocabulary.find_by_name(:physical_formats)
 
   set_terminology do |t|
     t.root(:path=>'mods',
@@ -95,7 +96,7 @@ class ModsDocument < ActiveFedora::OmDatastream
     t.language_code(:proxy => [:language, :code])
     t.language_text(:proxy => [:language, :text])
 
-    # Physical Description
+    # Physical Description & Physical Format
     t.mime_physical_description(:path => 'mods/oxns:physicalDescription') do
       t.internet_media_type(:path => 'internetMediaType')
     end
@@ -103,9 +104,11 @@ class ModsDocument < ActiveFedora::OmDatastream
 
     t.original_related_item(:path => 'relatedItem', :attributes => { :type => 'original'}) do
       t.physical_description(:path => 'physicalDescription') { t.extent }
+      t.physical_format(:path => 'physicalDescription') { t.form }
       t.other_identifier(:path => 'identifier') { t.type_(:path => '@type', :namespace_prefix => nil) }
     end
     t.physical_description(:proxy => [:original_related_item, :physical_description, :extent])
+    t.physical_format(:proxy => [:original_related_item, :physical_format, :form])
     t.other_identifier(:proxy => [:original_related_item, :other_identifier])
 
     # Summary and Notes
