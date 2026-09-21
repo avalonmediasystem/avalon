@@ -170,6 +170,14 @@ div.alert-danger {
   .card {
     margin-bottom: 1.5rem;
   }
+
+  &.admin {
+    padding-top: 2rem;
+
+    h3 {
+      padding-top: 3rem;
+    }
+  }
 }
 
 // Dotted line separator from branding guide
@@ -1009,6 +1017,10 @@ h5.card-title {
 
 .mediaobject-filename {
   word-break: break-all;
+
+  &.full {
+    display: none;
+  }
 }
 
 // Fixes the input displaying over the dropdown datepicker calendar
@@ -1162,6 +1174,7 @@ h5.card-title {
 #file-upload {
   margin-top: 1rem;
   display: flex;
+  height: 33px;
 }
 
 // Action column of each table
@@ -1295,12 +1308,12 @@ h5.card-title {
 
 .checkout.audio {
   padding: 1rem;
-  height: 25%;
+  height: 120px;
 }
 
 .checkout.video {
   padding: 3rem;
-  height: 50%;
+  height: 400px;
   position: relative;
 }
 /* End of CDL controls on view page styles */
@@ -1313,3 +1326,207 @@ h5.card-title {
 .document-metadata {
   margin-bottom: 3rem;
 }
+
+/* De-inlining styles */
+// Styling for variations import option
+.variations_import_form {
+  display: inline;
+  // Variations import
+  .filedata {
+    visibility: hidden;
+    display: inline;
+    width: 0;
+  }
+}
+
+/* Admin Pages */
+.row.admin {
+  padding-top: 3rem;
+}
+
+// Poster upload styles
+#cropper-alert {
+  display: none;
+  padding: 5px;
+  margin-top: 5px
+}
+
+#cropper-progress {
+  display: none;
+  margin-top: 7px;
+}
+
+#image {
+  max-width: 100%;
+}
+/* end Admin Pages */
+
+// 
+.alert.bookmark {
+  display: none;
+}
+
+.embed-layout {
+  margin: 0; 
+  padding: 0;
+}
+
+/* Media Object pages */
+.dropbox-location {
+  overflow-wrap: break-word;
+}
+
+.skip-transcoding {
+  background-color: white;
+  padding-top: 8px;
+  padding-bottom: 2px;
+  border: none;
+}
+
+.skip-transcoding-tooltip {
+  font-size: inherit;
+}
+
+.input-group.intercom {
+  flex-flow: nowrap;
+}
+
+.sup-file-label-btns {
+  margin-left: 15px;
+}
+
+.sup-file-lang {
+  display: flex;
+}
+
+.hidden-desc-dropdown {
+  display: none;
+}
+
+#thumbnailModal, #timelineModal {
+  display: none;
+}
+
+
+#new-timeline-structure {
+  border-top: 1px dotted #e5e5e5;
+  margin-top: 11px;
+  padding-top: 11px;
+}
+
+#progress {
+  #overall {
+    .progress-bar {
+      width: 0%;
+    }
+  }
+}
+/* end Media Object pages */
+
+/* View modules */
+.access-typeahead {
+  display: flex;
+}
+
+#hidden-search-field {
+  margin: 0;
+  padding: 0;
+  display: inline;
+}
+
+.failed-login {
+  display: none;
+}
+/* end View modules */
+
+/* Playlists and timelines */
+#title_error {
+  display:none;
+}
+
+.move_to_playlist, .copy_to_playlist {
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+#items.dd-list {
+  list-style: none;
+
+  .title, .edit-btn {
+    margin-top: 5px;
+  }
+
+  .title_original,
+  .start_time_original,
+  .end_time_original,
+  .comment_original {
+    display: none;
+  }
+
+  .clip-start, .clip-end {
+    text-align: right;
+    margin-top: 2pt;
+  }
+}
+
+.alert.playlist-item-edit {
+  padding:0 10px;
+  margin-bottom: 0;
+}
+
+.playlist-details-headline-wrapper.headline {
+  display: inline-block;
+}
+
+.playlist-share {
+  margin-top: 9px;
+}
+
+.playlist-new-link, .timeline-new-link {
+  margin-right: 5px;
+}
+
+.new-link-template {
+  width: 15em;
+}
+
+.playlist-tags {
+  width: 100%;
+}
+
+.timeline-tags {
+  width: 100%;
+  display: none;
+}
+
+.card.playlist-import {
+  background-color: #F9F9F9;
+}
+
+#clip-success, #clip-error {
+  font-weight: bold;
+}
+
+#timeline_token_row {
+  margin-top: 9px;
+}
+
+#timeline_lti_share {
+  .container {
+    margin-top: 9px;
+  }
+}
+
+#timeline_source {
+  padding: 7px 0 7px 0;
+}
+
+#timeline_details {
+  display: inline-block;
+}
+
+#helpTags.timeline {
+  padding-top: 5px;
+  font-style: italic;
+}
+/* end Playlist and Timelines */

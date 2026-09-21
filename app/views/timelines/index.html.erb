@@ -28,8 +28,8 @@ Unless required by applicable law or agreed to in writing, software distributed
           <div class="<% if !timelines.empty? %>col-sm-6 text-end<% end %>">
             <div class="create-buttons">
               <% if Settings['variations'].present? %>
-                <%= form_tag(import_variations_timeline_timelines_path, method:"post", enctype:"multipart/form-data", style:"display:inline") do %>
-                  <input type="file" name="Filedata" class="filedata" style="visibility:hidden; display:inline; width:0;" />
+                <%= form_tag(import_variations_timeline_timelines_path, method:"post", enctype:"multipart/form-data", class: "variations_import_form") do %>
+                  <input type="file" name="Filedata" class="filedata"/>
                   <input type="button" class="btn btn-primary" id="variations_import" onclick="this.closest('form').querySelector('.filedata').click();" value="Import Variations Timeline" />
                 <% end %>
               <% end %>

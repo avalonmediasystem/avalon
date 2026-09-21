@@ -31,6 +31,7 @@ Unless required by applicable law or agreed to in writing, software distributed
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <%= favicon_link_tag %>
   <%= stylesheet_link_tag "application", "data-turbo-track": "reload", nonce: true %>
+  <%= stylesheet_link_tag "application_webpack", "data-turbo-track": "reload", nonce: true %>
   <%= javascript_include_tag "application_bundle", "data-turbo-track": "reload", type: "module", defer: false, nonce: true %>
   <%= yield :page_styles %>
   <%= yield :additional_head_content %>
