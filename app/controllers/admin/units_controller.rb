@@ -17,7 +17,7 @@ class Admin::UnitsController < ApplicationController
   include Rails::Pagination
 
   before_action :authenticate_user!
-  load_and_authorize_resource except: [:index, :remove, :attach_poster, :remove_poster, :poster]
+  load_and_authorize_resource except: [:index, :remove, :attach_poster, :remove_poster, :poster, :items]
   before_action :load_and_authorize_units, only: [:index]
   respond_to :html
 
@@ -88,8 +88,10 @@ class Admin::UnitsController < ApplicationController
 
   # GET /units/1/items
   def items
+    @unit = SpeedyAF::Proxy::Admin::Unit.find(params[:id])
+    authorize! :read, @unit
     collections = paginate @unit.collections
-    render json: collections.to_a.collect { |c| [c.id, c.as_json] }.to_h
+    render json: collections.collect { |c| [c.id, c.as_json] }.to_h
   end
 
   # POST /units
