@@ -92,12 +92,35 @@ encode_throttling:
 auth:
   registerable: true # Set to false to disable new user registrations
 #   configuration:
+#     # LTI 1.1 (legacy). Key/secret mappings live in config/lti.yml.
 #     - :name: Avalon Lti OAuth
 #       :provider: :lti
 #       :hidden: true
 #       :params:
 #         :oauth_credentials:
 #           somekey: somesecret
+#     # LTI 1.3 (default for new installs). No :protocol key means 1.1, so this
+#     # must be set explicitly. Platform registration replaces config/lti.yml
+#     # entirely for 1.3 -- nothing there is consulted when :protocol is '1.3'.
+#     # Shape matches omniauth-lti13's OmniAuth::Lti13::Platform: a single
+#     # instance may serve multiple LMS deployments under one issuer, hence
+#     # deployment_ids (plural, a list) rather than a single deployment_id.
+#     # Values below must be quoted strings: the gem compares deployment ids
+#     # as strings against the id_token's deployment_id claim, and unquoted
+#     # YAML digits parse as Integer, which never matches -- every launch
+#     # gets rejected with a near-invisible "1" vs 1 error.
+#     - :name: Avalon Lti OAuth
+#       :provider: :lti
+#       :protocol: '1.3'
+#       :hidden: true
+#       :params:
+#         :platforms:
+#           - :issuer: https://canvas.example.edu
+#             :client_id: someclientid
+#             :deployment_ids: ["somedeploymentid"]
+#             :jwks_uri: https://canvas.example.edu/api/lti/security/jwks
+#             :authorization_endpoint: https://canvas.example.edu/api/lti/authorize
+#             :redirect_uri: https://avalon.example.edu/users/auth/lti/callback
 # google_analytics_tracking_id: "someid"
 supplemental_files:
   proxy: false

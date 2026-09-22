@@ -298,7 +298,9 @@ Devise.setup do |config|
   # config.omniauth :github, 'APP_ID', 'APP_SECRET', scope: 'user,public_repo'
   Avalon::Authentication::Providers.each do |provider|
     if provider[:provider] == :lti
-      provider[:params].merge!({consumers: Avalon::Lti::Configuration})
+      lti_protocol = provider[:protocol] || '1.1'
+      provider[:params][:strategy_class] = lti_protocol == '1.3' ? OmniAuth::Strategies::Lti13 : OmniAuth::Strategies::Lti
+      provider[:params][:consumers] = Avalon::Lti::Configuration if lti_protocol == '1.1'
     end
     if provider[:provider] == :identity
       provider[:params].merge!({
@@ -340,8 +342,56 @@ Devise.setup do |config|
   # so you need to do it manually. For the users scope, it would be:
   # config.omniauth_path_prefix = '/my_engine/users/auth'
   OmniAuth.config.logger = Rails.logger
-  # Next line is needed to avoid errors like "Authentication failure! authenticity_error: OmniAuth::AuthenticityError, Forbidden"
-  OmniAuth.config.request_validation_phase = OmniAuth::AuthenticityTokenProtection.new(key: :_csrf_token)
+end
+
+# OmniAuth::Strategy#request_path / #callback_path memoize themselves (once
+# per middleware instance, i.e. once per process) from OmniAuth.config.path_prefix
+# on the first request that reaches them. That value is otherwise only set
+# correctly as a side effect of devise_for drawing the auth/callback routes
+# (see Devise::Mapping), and routes are lazy-loaded on first access -- with
+# the OmniAuth strategy sitting *before* the router in the middleware stack,
+# "first access" ends up being the very first real request's own trip through
+# that strategy, which reads path_prefix before the router further down the
+# stack has ever run and drawn routes. That request's memoized path is then
+# stuck wrong for the rest of the process's life, even though routes are
+# correctly drawn moments later and every subsequent request works fine.
+#
+# We tried forcing early route drawing here to sidestep this, but routes.rb's
+# devise_for needs Devise.secret_key, which Devise's own "devise.secret_key"
+# initializer (unordered relative to this file) may not have set yet -- too
+# fragile. Setting path_prefix directly, matching what routes.rb already
+# hardcodes for these same paths (see the `/users/auth/...` routes below
+# devise_for), sidesteps the whole route-drawing dependency instead.
+OmniAuth.config.path_prefix = '/users/auth'
+
+# LTI's third-party-initiated login (both 1.1's form_post launch and 1.3's
+# OIDC init) arrives as a cross-site POST from the LMS, which carries no
+# Avalon CSRF token to check. OmniAuth's authenticity check is a single
+# global callable (OmniAuth.config.request_validation_phase), not something
+# scopeable per-strategy via options, so we scope it here instead: run the
+# default check for every provider except :lti, matching what
+# Users::OmniauthCallbacksController#skip_before_action :verify_authenticity_token
+# already does for the same reason. This only stores a lambda that's
+# evaluated per-request, and the lambda itself references only gem
+# constants, so nothing here needs Devise/routes to be ready yet -- safe
+# at initializer load time.
+#
+# key: :_csrf_token (rather than plain OmniAuth::AuthenticityTokenProtection)
+# is load-bearing, not decoration: it's what 6a509976de ("Add omniauth
+# solution for csrf protection") added to fix "Authentication failure!
+# authenticity_error: OmniAuth::AuthenticityError, Forbidden" on ordinary
+# (non-LTI) omniauth requests, by pointing the check at the session key
+# Rails' own CSRF token actually lives under instead of Rack::Protection's
+# unrelated default. That fix originally lived inside Devise.setup above,
+# where this same lambda silently overwrote it for every non-:lti
+# provider -- moved the option here instead of leaving two competing
+# assignments to hunt through.
+default_validation = OmniAuth::AuthenticityTokenProtection.new(key: :_csrf_token)
+OmniAuth.config.request_validation_phase = lambda do |env|
+  strategy = env['omniauth.strategy']
+  next if strategy && strategy.name == 'lti'
+
+  default_validation.call(env)
 end
 
 # Override script_name to always return empty string and avoid looking in @env

@@ -67,6 +67,15 @@ describe Users::OmniauthCallbacksController, type: :controller do
           expect(response).to redirect_to(root_path)
         end
       end
+
+      context "and is malformed" do
+        let(:url) { "http://exa mple.com/a/sub/page" }
+
+        it 'redirects to homepage rather than raising' do
+          expect { post :identity, params: params }.not_to raise_error
+          expect(response).to redirect_to(root_path)
+        end
+      end
     end
 
     context 'when login_popup param is present' do
@@ -147,6 +156,25 @@ describe Users::OmniauthCallbacksController, type: :controller do
       end
     end
 
+    context 'when lti login without a course context' do
+      let(:lti_auth_double) { double() }
+      let(:lti_extra_info) { double() }
+
+      before do
+        allow(User).to receive(:find_for_lti).and_return(user)
+        @request.env["omniauth.auth"] = lti_auth_double
+        allow(lti_auth_double).to receive(:extra).and_return (lti_extra_info)
+        # The context claim is optional in the LTI spec -- a launch outside
+        # a course context (e.g. a platform-level tool link) omits it.
+        allow(lti_extra_info).to receive(:context_id).and_return (nil)
+      end
+
+      it 'does not add a nil group to virtual_groups' do
+        post :lti
+        expect(controller.user_session[:virtual_groups]).not_to include(nil)
+      end
+    end
+
     context 'when lti with deleted user' do
       let(:course_group) { 'M101-Fall2019' }
       let(:lti_auth_double) { double() }
@@ -181,6 +209,62 @@ describe Users::OmniauthCallbacksController, type: :controller do
         expect(response).to redirect_to(root_path)
         expect(flash[:error]).to be_present
       end
+    end
+  end
+
+  describe '#after_omniauth_failure_path_for' do
+    let(:app) { ->(_env) { [200, {}, ['ok']] } }
+
+    before do
+      @request.env['omniauth.error.type'] = :invalid_credentials
+      @request.env['omniauth.error.strategy'] = strategy
+    end
+
+    shared_examples 'an lti failure redirect' do |return_url_param|
+      context "when #{return_url_param} is present and on our own host" do
+        it 'redirects to it with an lti_errormsg param' do
+          @request.params[return_url_param] = 'https://test.host/return'
+          path = controller.send(:after_omniauth_failure_path_for, :user)
+          uri = Addressable::URI.parse(path)
+          expect(uri.host).to eq('test.host')
+          expect(uri.query_values).to have_key('lti_errormsg')
+        end
+      end
+
+      context "when #{return_url_param} is present but off-host" do
+        it 'falls back to the sign-in page rather than following it' do
+          @request.params[return_url_param] = 'https://evil.example.com/phish'
+          path = controller.send(:after_omniauth_failure_path_for, :user)
+          expect(path).to eq(new_user_session_path(:user))
+        end
+      end
+
+      context "when #{return_url_param} is present but malformed" do
+        it 'falls back to the sign-in page rather than raising' do
+          @request.params[return_url_param] = 'https://exa mple.com/return'
+          path = controller.send(:after_omniauth_failure_path_for, :user)
+          expect(path).to eq(new_user_session_path(:user))
+        end
+      end
+
+      context "when #{return_url_param} is absent" do
+        it 'falls back to the sign-in page' do
+          path = controller.send(:after_omniauth_failure_path_for, :user)
+          expect(path).to eq(new_user_session_path(:user))
+        end
+      end
+    end
+
+    context 'lti 1.1' do
+      let(:strategy) { OmniAuth::Strategies::Lti.new(app, Avalon::Lti::Configuration) }
+
+      include_examples 'an lti failure redirect', 'launch_presentation_return_url'
+    end
+
+    context 'lti 1.3' do
+      let(:strategy) { OmniAuth::Strategies::Lti13.new(app) }
+
+      include_examples 'an lti failure redirect', 'target_link_uri'
     end
   end
 end
