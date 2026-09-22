@@ -206,6 +206,14 @@ describe Admin::UnitsController, type: :controller do
       expect(response.headers['Per-Page']).to eq('2')
       expect(response.headers['Total']).to eq('5')
     end
+
+    it 'should not read from fedora' do
+      unit = FactoryBot.create(:unit, items: 5)
+      WebMock.reset_executed_requests!
+      get :index
+      get :items, params: { id: unit.id, format: 'json', per_page: '2' }
+      expect(a_request(:any, /#{ActiveFedora.fedora.base_uri}/)).not_to have_been_made
+    end
   end
 
   describe "#show" do
