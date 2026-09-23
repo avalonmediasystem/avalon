@@ -17,7 +17,7 @@ class Admin::CollectionsController < ApplicationController
   include Rails::Pagination
 
   before_action :authenticate_user!
-  load_and_authorize_resource except: [:index, :remove, :attach_poster, :remove_poster, :poster]
+  load_and_authorize_resource except: [:index, :remove, :attach_poster, :remove_poster, :poster, :items]
   before_action :load_and_authorize_collections, only: [:index]
   respond_to :html
 
@@ -115,8 +115,10 @@ class Admin::CollectionsController < ApplicationController
 
   # GET /collections/1/items
   def items
+    @collection = SpeedyAF::Proxy::Admin::Collection.find(params[:id])
+    authorize! :read, @collection
     mos = paginate @collection.media_objects
-    render json: mos.to_a.collect { |mo| [mo.id, mo.as_json(include_structure: params[:include_structure] == "true")] }.to_h
+    render json: mos.collect { |mo| [mo.id, mo.as_json(include_structure: params[:include_structure] == "true")] }.to_h
   end
 
   # POST /collections
