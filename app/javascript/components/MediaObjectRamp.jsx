@@ -95,7 +95,7 @@ const MediaObjectRamp = ({
             : (<Fragment>
               {has_sections &&
                 <Fragment>
-                  <MediaPlayer enableFileDownload={false} enablePlaybackRate={true} resumeCache={{ enable: true }} />
+                  <MediaPlayer enableFileDownload={false} enablePlaybackRate={true} resumeCache={{ enable: true }} withCredentials={true} />
                   <div className="ramp--rails-title">
                     {<div className="object-title" dangerouslySetInnerHTML={{ __html: title.content }} />}
                   </div>
