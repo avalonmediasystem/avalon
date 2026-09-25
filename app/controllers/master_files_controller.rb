@@ -462,7 +462,7 @@ protected
   end
 
   def samples_per_frame
-    Settings.waveform.sample_rate * Settings.waveform.finest_zoom / Settings.waveform.player_width
+    Admin::ApplicationSetting.instance.waveform.sample_rate * Admin::ApplicationSetting.instance.waveform.finest_zoom / Admin::ApplicationSetting.instance.waveform.player_width
   end
 
 private
@@ -476,7 +476,7 @@ private
     {
       "version" => "1.0",
       "type" => master_file.is_video? ? "video" : "rich",
-      "provider_name" => Settings.name || 'Avalon Media System',
+      "provider_name" => Admin::ApplicationSetting.instance.name || 'Avalon Media System',
       "provider_url" => request.base_url,
       "width" => width,
       "height" => height,

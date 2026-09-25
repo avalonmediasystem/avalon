@@ -19,7 +19,7 @@ describe 'oembed', type: :request do
   let(:master_file) { FactoryBot.create(:master_file, media_object: media_object, title: 'Test Video') }
 
   before do
-    allow(Settings).to receive(:name).and_return('Test')
+    allow(Admin::ApplicationSetting.instance).to receive(:name).and_return('Test')
 
     @hash = {
       "version" => "1.0",

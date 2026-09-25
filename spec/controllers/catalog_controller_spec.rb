@@ -710,14 +710,11 @@ describe CatalogController do
 
     describe "home page" do
       let!(:collection) { FactoryBot.create(:collection, items: 1) }
-      let(:home_page_config) { { home_page: { featured_collections: [collection.id] } } }
+      let(:home_page_config) { { featured_collections: [collection.id] } }
 
-      around(:example) do |example|
-        Settings.add_source!(home_page_config)
-        Settings.reload!
-        example.run
-        Settings.instance_variable_get(:@config_sources).pop
-        Settings.reload!
+      before :each do
+        home_page_double = double('NestedAppSetting::HomePage', home_page_config)
+        allow(Admin::ApplicationSetting.instance).to receive(:home_page).and_return(home_page_double)
       end
 
       before do
@@ -735,19 +732,19 @@ describe CatalogController do
 
       context 'when there are multiple featured collections' do
         let!(:collections) { [FactoryBot.create(:collection, items: 1), FactoryBot.create(:collection, items: 1)] }
-        let(:home_page_config) { { home_page: { featured_collections: collections.map(&:id) } } }
+        let(:home_page_config) { { featured_collections: collections.map(&:id) } }
 
         it 'loads featured collection' do
           expect(controller).to receive(:load_home_page_collections).and_call_original
           get 'index'
           expect(assigns(:featured_collection)).to be_present
           expect(assigns(:featured_collection)).to be_a Admin::CollectionPresenter
-          expect(Settings.home_page.featured_collections).to include assigns(:featured_collection).id
+          expect(Admin::ApplicationSetting.instance.home_page.featured_collections).to include assigns(:featured_collection).id
         end
       end
 
       context 'when featured collections is not configured' do
-        let(:home_page_config) { { home_page: nil } }
+        let(:home_page_config) { { featured_collections: nil } }
 
         it 'loads featured collection' do
           expect(controller).to receive(:load_home_page_collections).and_call_original

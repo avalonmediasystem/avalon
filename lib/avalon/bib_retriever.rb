@@ -34,27 +34,27 @@ module Avalon
 
       def for(bib_id_type)
         config = configuration_for(bib_id_type)
-        require config['retriever_class_require'] if config['retriever_class_require']
-        config['retriever_class'].constantize.new config
+        require config.retriever_class_require if config.retriever_class_require.present?
+        config.retriever_class.constantize.new config
       end
 
       protected :new, :allocate
 
       def configurations
-        raise ArgumentError, "Missing/invalid bib retriever configuration" unless Settings.bib_retriever.present?
-        Settings.bib_retriever
+        raise ArgumentError, "Missing/invalid bib retriever configuration" unless Admin::ApplicationSetting.instance.bib_retriever.present?
+        Admin::ApplicationSetting.instance.bib_retriever
       end
 
       def configuration_for(bib_id_type)
-        config = configurations[bib_id_type]
-        config ||= configurations['default']
+        config = configurations.send(bib_id_type.to_sym) if bib_id_type.present? && configurations.respond_to?(bib_id_type.to_sym)
+        config ||= configurations.default
         raise ArgumentError, "Missing bib retriever configuration" unless config
         raise ArgumentError, "Invalid bib retriever configuration" unless valid_configuration?(config)
         config
       end
 
       def valid_configuration?(config)
-        config.present? && config.respond_to?(:[]) && config['protocol'].present? && config['retriever_class'].present?
+        config.present? && config.protocol.present? && config.retriever_class.present?
       end
     end
 

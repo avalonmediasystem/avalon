@@ -180,7 +180,7 @@ describe FileLocator, type: :service do
 
     describe '#remove_s3_dir' do
       let(:old_bucket) { Settings.encoding.masterfile_bucket }
-      let(:old_path) { Settings.dropbox.path }
+      let(:old_path) { Admin::ApplicationSetting.instance.dropbox.path }
 
       let(:dropbox_path) { "s3://#{test_bucket}/dropbox/test_collection" }
       let(:test_bucket) { "test_bucket" }
