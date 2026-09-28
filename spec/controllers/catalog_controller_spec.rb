@@ -510,6 +510,10 @@ describe CatalogController do
         get :index, params: { sort: 'creator_ssort asc, title_ssort asc' }
         expect(assigns(:response).documents.map(&:id)).to eq [m2.id, m1.id, m3.id]
       end
+      it "should strip invalid sort params" do
+        expect(get :index, params: { sort: 'creator_ssort desc, title_ssort desc' }).to have_http_status(:ok)
+        expect(assigns("search_state").params["sort"]).to be_nil
+      end
     end
 
     describe "facet fields" do
