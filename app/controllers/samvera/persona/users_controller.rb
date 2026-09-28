@@ -49,30 +49,40 @@ module Samvera
       @presenter = Samvera::Persona::UsersPresenter.new
       records_total = @presenter.user_count
       @presenter = @presenter.users
+      # Eager load groups/roles before looping to prevent N+1 query
+      roles = RoleMapper.byname
+
+      # Pre-create link template to avoid reaching out to the routes helpers for every single user
+      edit_template = main_app.edit_persona_user_path('ID')
+      become_template = main_app.impersonate_persona_user_path('ID')
+      delete_template = main_app.persona_user_path('ID')
 
       # Build json response
       response = {
         "recordsTotal": records_total,
         "data": @presenter.collect do |presenter|
-          edit_button =
-            if presenter.has_attribute?(:provider) && !presenter.provider.nil?
-              view_context.tag.span("Edit", class: 'text-muted', title: 'Edit user is unavailable because this user is single sign on', data: { toggle: 'tooltip' })
-            else
-              view_context.link_to('Edit', main_app.edit_persona_user_path(presenter))
-            end
-          become_button = view_context.link_to('Become', main_app.impersonate_persona_user_path(presenter), method: :post)
-          delete_button = view_context.link_to('Delete', main_app.persona_user_path(presenter), method: :delete, class: 'btn btn-danger btn-sm action-delete', data: { confirm: "Are you sure you wish to delete the user '#{presenter.email}'? This action will also delete all playlists and timelines belonging to '#{presenter.email}'. This action is irreversible." })
-          formatted_roles = format_roles(presenter.groups)
+          is_sso = presenter.has_attribute?(:provider) && !presenter.provider.nil?
+          user_id = presenter.id.to_s
           sign_in = last_sign_in(presenter)
-          [
-            view_context.link_to(presenter.username, main_app.edit_persona_user_path(presenter)),
-            view_context.link_to(presenter.email, main_app.edit_persona_user_path(presenter)),
-            view_context.tag.ul(formatted_roles.join, escape: false),
-            view_context.tag.relative_time(sign_in.to_formatted_s(:long_ordinal), datetime: sign_in.getutc.iso8601, title: sign_in.to_formatted_s(:standard)),
-            user_status(presenter),
-            presenter.provider,
-            "#{edit_button}&nbsp;|&nbsp;#{become_button}&nbsp;|&nbsp;#{delete_button}"
-          ]
+
+          {
+            id: presenter.id,
+            username: presenter.username,
+            email: presenter.email,
+            roles: roles[presenter.username],
+            status: user_status(presenter),
+            provider: is_sso ? presenter.provider : nil,
+            last_sign_in: {
+              label: sign_in.to_formatted_s(:long_ordinal),
+              datetime: sign_in.getutc.iso8601,
+              title: sign_in.to_formatted_s(:standard)
+            },
+            paths: {
+              edit: edit_template.gsub('ID', user_id),
+              impersonate: become_template.gsub('ID', user_id),
+              delete: delete_template.gsub('ID', user_id)
+            }
+          }
         end
       }
 
