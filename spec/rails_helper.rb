@@ -44,7 +44,6 @@ require 'webmock/rspec'
 require 'noid/rails/rspec'
 require "email_spec"
 require "email_spec/rspec"
-require 'webdrivers'
 require "view_component/test_helpers"
 require "view_component/system_test_helpers"
 # require 'equivalent-xml/rspec_matchers'
