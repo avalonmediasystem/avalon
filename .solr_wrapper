@@ -1,8 +1,0 @@
-# Place any default configuration for solr_wrapper here
-version: 8.11.1
-port: 8983
-instance_dir: tmp/solr-development
-collection:
-  persist: true
-  dir: solr/conf/
-  name: hydra-development
