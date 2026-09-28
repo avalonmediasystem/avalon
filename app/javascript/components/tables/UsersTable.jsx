@@ -41,30 +41,16 @@ const UsersTable = ({ url, hasProvider = false }) => {
 
     // Data parsing function to extract data from Rails API response
     parseDataRow: (row, index) => {
-      const parser = new DOMParser();
-      const userDoc = parser.parseFromString(row[0], 'text/html');
-      const userIdRegex = /\/users\/(\d+)\//;
-      const userIdMatch = row[0].match(userIdRegex);
-
-      const emailDoc = parser.parseFromString(row[1], 'text/html');
-
-      const rolesDoc = parser.parseFromString(row[2], 'text/html');
-      const rolesLi = rolesDoc.querySelectorAll('li');
-
-      const lastAccessDateDoc = parser.parseFromString(row[3], 'text/html');
-      const lastAccessDateAttr = lastAccessDateDoc.querySelector('relative-time').getAttribute('datetime');
-
       let userData = {
-        id: userIdMatch ? userIdMatch[1] : index,
-        user_html: row[0], user: userDoc ? userDoc.querySelector('a').textContent : '',
-        email_html: row[1], email: emailDoc ? emailDoc.querySelector('a').textContent : '',
-        roles_html: row[2], roles: rolesLi?.length > 0 ? rolesLi.forEach((r) => { return r.textContent; }) : [],
-        lastaccess_html: row[3], last_access: lastAccessDateAttr ? new Date(lastAccessDateAttr) : new Date.now(),
-        status: row[4], actions_html: row[hasProvider ? 6 : 5]
+        id: row.id,
+        user: row.username || '',
+        email: row.email || '',
+        roles: row.roles || [],
+        last_access: row.last_sign_in,
+        provider: row.provider,
+        status: row.status,
+        paths: row.paths
       };
-
-      // Add provider column data if present
-      if (hasProvider) { userData.provider = row[5]; }
 
       return userData;
     },
@@ -73,23 +59,41 @@ const UsersTable = ({ url, hasProvider = false }) => {
     renderCell: (item, columnKey) => {
       switch (columnKey) {
         case 'user':
-          return <div dangerouslySetInnerHTML={{ __html: item.user_html }} />;
+          return <a href={item.paths.edit}>{item.user}</a>;
         case 'email':
-          return <div dangerouslySetInnerHTML={{ __html: item.email_html }} />;
+          return <a href={item.paths.edit}>{item.email}</a>;
         case 'roles':
-          return <div dangerouslySetInnerHTML={{ __html: item.roles_html }} />;
+          return(
+            <ul>
+              {item.roles.map((role, idx) => <li key={idx}>{role}</li>)}
+            </ul>
+          )
         case 'last_access':
-          return <div dangerouslySetInnerHTML={{ __html: item.lastaccess_html }} />;
+          return(
+            <relative-time datetime={item.last_access.datetime} title={item.last_access.title}>{item.last_access.label}</relative-time>
+          )
         case 'status':
           return item.status;
         case 'provider':
           return item.provider;
         case 'actions':
           return (
-            <div
-              className="text-end"
-              dangerouslySetInnerHTML={{ __html: item.actions_html }}
-            />
+            <div className="text-end">
+              {item.provider ? (
+                <span className="text-muted" title="Edit user is unavailable because this user is single sign on" data-toggle="tooltip">Edit</span>
+              ) : (
+                <a href={item.paths.edit}>Edit</a>
+              )}
+              {` | `}
+              <a data-method="post" href={item.paths.impersonate}>Become</a>
+              {` | `}
+              <a className="btn btn-danger btn-sm action-delete" 
+                 data-confirm={`Are you sure you wish to delete the user '${item.email}'? This action will also delete all playlists and timelines belonging to '${item.email}'. This action is irreversible.`}
+                 data-method="delete" 
+                 href={item.paths.delete}>
+                Delete
+              </a>
+            </div>
           );
         default:
           return item[columnKey];
