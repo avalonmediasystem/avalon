@@ -244,9 +244,9 @@ class CatalogController < ApplicationController
 
     def block_invalid_sort_params
       sort_val = params[:sort]
-      return unless sort_val      
+      return unless sort_val
       if !blacklight_config.sort_fields.has_key?(URI.decode_www_form_component(sort_val))
-        render plain: "Requested illegal sort val: #{sort_val}", status: :bad_request
+        params[:sort] = nil
       end
     end
 
