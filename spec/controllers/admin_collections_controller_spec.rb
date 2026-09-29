@@ -245,8 +245,7 @@ describe Admin::CollectionsController, type: :controller do
         WebMock.reset_executed_requests!
         get :index
         get :items, params: { id: collection.id, format: 'json', per_page: '2' }
-        expect(a_request(:post, /#{ActiveFedora.solr.conn.uri.to_s}/)).to have_been_made.at_least_once
-        expect(a_request(:post, /#{ActiveFedora.solr.conn.uri.to_s}.*\?fl=id&q=/)).not_to have_been_made
+        expect(a_request(:any, /#{ActiveFedora.fedora.base_uri}/)).not_to have_been_made
       end
     end
   end
