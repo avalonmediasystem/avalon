@@ -78,9 +78,9 @@ module Samvera
               title: sign_in.to_formatted_s(:standard)
             },
             paths: {
-              edit: edit_template.gsub('ID', user_id),
-              impersonate: become_template.gsub('ID', user_id),
-              delete: delete_template.gsub('ID', user_id)
+              edit: edit_template.sub('ID', user_id),
+              impersonate: become_template.sub('ID', user_id),
+              delete: delete_template.sub('ID', user_id)
             }
           }
         end
