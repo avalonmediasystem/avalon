@@ -62,7 +62,8 @@ Rails.application.config.to_prepare do
                         resource_type: [],
                         record_identifier: [],
                         series: [],
-                        format: []
+                        format: [],
+                        avalon_resource_type: []
                       }
       include MediaObjectIntercom
       include MediaObjectBehavior

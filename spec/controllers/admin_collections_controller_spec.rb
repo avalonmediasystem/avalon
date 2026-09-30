@@ -238,6 +238,16 @@ describe Admin::CollectionsController, type: :controller do
       expect(response.headers['Per-Page']).to eq('2')
       expect(response.headers['Total']).to eq('5')
     end
+
+    context 'read from solr' do
+      it 'should not read from fedora' do
+        collection = FactoryBot.create(:collection, items: 5)
+        WebMock.reset_executed_requests!
+        get :index
+        get :items, params: { id: collection.id, format: 'json', per_page: '2' }
+        expect(a_request(:any, /#{ActiveFedora.fedora.base_uri}/)).not_to have_been_made
+      end
+    end
   end
 
   describe "#show" do
