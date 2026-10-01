@@ -14,13 +14,13 @@ Unless required by applicable law or agreed to in writing, software distributed
 ---  END LICENSE_HEADER BLOCK  ---
 %>
 <% user_tags = current_user.timeline_tags %>
-<select multiple name="tagcollection[]" id="tag-select" class="form-control form-model p-0" style="width: 100%; display: none;" aria-label="timeline tag selection" aria-describedby="helpTags">
+<select multiple name="tagcollection[]" id="tag-select" class="form-control form-model p-0 timeline-tags" aria-label="timeline tag selection" aria-describedby="helpTags">
   <% user_tags.each do |tag| %>
     <% selected = @timeline.tags.include?(tag) ? ' selected="selected"' : '' %>
     <option value="<%= tag %>" <%= selected %>><%= tag %></option>
   <% end %>
 </select>
-<p id="helpTags" class="text-info" style="padding-top:5px;font-style:italic;">Separate multiple tags with commas.</p>
+<p id="helpTags" class="text-info timeline">Separate multiple tags with commas.</p>
 <input id="taglist" name="timeline[tags]" type="hidden" aria-label="timeline tags" />
 
 <% content_for :page_scripts do %>

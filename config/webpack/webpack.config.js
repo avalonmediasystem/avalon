@@ -1,4 +1,5 @@
-const path    = require("path")
+const path    = require("path");
+const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const TerserPlugin = require('terser-webpack-plugin');
 const webpack = require("webpack")
 
@@ -17,7 +18,7 @@ module.exports = (env, argv) => {
 
   const config = {
     mode: argv.mode,
-    devtool: isProd ? false : 'eval-source-map',
+    devtool: isProd ? false : 'source-map',
     entry: {
       application: path.resolve(__dirname, '..', '..', 'app/javascript/application.js'),
       embed: path.resolve(__dirname, '..', '..', 'app/javascript/embed.js'),
@@ -29,14 +30,14 @@ module.exports = (env, argv) => {
         {
           test: /\.css$/,
           use: [
-            'style-loader',
+            MiniCssExtractPlugin.loader,
             'css-loader',
           ]
         },
         {
           test: /\.scss$/,
           use: [
-            'style-loader',
+            MiniCssExtractPlugin.loader,
             'css-loader',
             {
               loader: 'sass-loader',
@@ -103,6 +104,9 @@ module.exports = (env, argv) => {
     plugins: [
       new webpack.optimize.LimitChunkCountPlugin({
         maxChunks: 1
+      }),
+      new MiniCssExtractPlugin({
+        filename: '[name]_webpack.css',
       }),
     ],
     resolve: {

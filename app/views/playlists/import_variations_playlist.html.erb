@@ -16,14 +16,14 @@ Unless required by applicable law or agreed to in writing, software distributed
 <div class="col-md-9 col-sm-8">
   <h1>Import Results</h1>
   <p>The following errors were encountered in the playlist file.</p>
-  <div class="card" style="background-color:#F9F9F9;">
+  <div class="card playlist-import">
     <div class="card-body">
       <% playlist.items.each do |item| %>
         <% if item.clip.valid? && item.valid? %>
-          <div><p style="font-weight: bold"><i class='fa fa-plus-circle success-color'></i> <%= item.title %></p></div>
+          <div><p id= "clip-success"><i class='fa fa-plus-circle success-color'></i> <%= item.title %></p></div>
         <% else %>
           <div>
-            <p style="font-weight: bold"><i class='fa fa-times-circle danger-color'></i> <%= item.title %></p>
+            <p id="clip-error"><i class='fa fa-times-circle danger-color'></i> <%= item.title %></p>
             <% if item.clip.errors.full_messages.include? "Master file field is required." %>
               <ul><li>No matching item found</li></ul>
             <% else %>
