@@ -51,8 +51,8 @@ GIT
       omniauth
 
 GIT
-  remote: https://github.com/mohideen/omniauth-lti13.git
-  revision: a95e147e1c829ae4461283fb329c0432bf567e73
+  remote: https://github.com/avalonmediasystem/omniauth-lti13.git
+  revision: 17f0d65b8d7437cb8661de64aba6d2090c551f0f
   branch: main
   specs:
     omniauth-lti13 (0.1.0)
