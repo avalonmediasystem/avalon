@@ -17,7 +17,7 @@ require 'rails_helper'
 describe DerivativesController, type: :controller do
   describe 'authorize' do
     let(:derivative) { FactoryBot.create(:derivative, :with_master_file) }
-    let(:auth_path) { derivative.location_url.split(/:/).last }
+    let(:auth_path) { Avalon::StreamMapper.stream_path(Addressable::URI.parse(derivative.absolute_location).path).split(/:/).last }
     let(:target) { derivative.master_file.id }
     let(:session) { { } }
     let(:token) { StreamToken.find_or_create_session_token(session, target) }

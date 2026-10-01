@@ -15,7 +15,6 @@
 FactoryBot.define do
   factory :derivative do
     duration { "21575" }
-    location_url { nil }
     track_id { "track-6" }
     hls_url { nil }
     hls_track_id { "track-8" }
