@@ -19,7 +19,7 @@ class UnitsController < CatalogController
     response = blacklight_config.repository.search(UnitSearchBuilder.new(self))
     units = response.documents
 
-    units = units.select { |doc| Settings.home_page&.carousel_collections&.include? doc.id } if params[:only] == 'carousel'
+    units = units.select { |doc| Admin::ApplicationSetting.instance.home_page&.carousel_collections&.include? doc.id } if params[:only] == 'carousel'
     units = units.sample(params[:limit].to_i) if params[:limit].present?
 
     @doc_presenters = units.collect { |doc| UnitPresenter.new(doc, view_context) }

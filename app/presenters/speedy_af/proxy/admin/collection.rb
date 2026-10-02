@@ -42,7 +42,7 @@ class SpeedyAF::Proxy::Admin::Collection < SpeedyAF::Base
   end
 
   def dropbox_absolute_path( name = nil )
-    File.join(Settings.dropbox.path, name || dropbox_directory_name)
+    File.join(Admin::ApplicationSetting.instance.dropbox.path, name || dropbox_directory_name)
   end
 
   def persisted?
@@ -59,11 +59,11 @@ class SpeedyAF::Proxy::Admin::Collection < SpeedyAF::Base
 
   def cdl_enabled?
     if cdl_enabled.nil?
-      Settings.controlled_digital_lending.collections_enabled
-    elsif cdl_enabled != Settings.controlled_digital_lending.collections_enabled
+      Admin::ApplicationSetting.instance.controlled_digital_lending.collections_enabled
+    elsif cdl_enabled != Admin::ApplicationSetting.instance.controlled_digital_lending.collections_enabled
       cdl_enabled
     else
-      Settings.controlled_digital_lending.collections_enabled
+      Admin::ApplicationSetting.instance.controlled_digital_lending.collections_enabled
     end
   end
 end

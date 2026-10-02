@@ -51,6 +51,7 @@ gem 'about_page', git: 'https://github.com/avalonmediasystem/about_page.git', br
 gem 'activerecord-session_store', '>= 2.0.0'
 gem 'acts_as_list'
 gem 'api-pagination'
+gem 'attr_json'
 gem 'avalon-about', git: 'https://github.com/avalonmediasystem/avalon-about.git', branch: 'main'
 gem 'bootstrap_form'
 gem 'faraday-retry'

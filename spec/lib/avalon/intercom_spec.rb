@@ -17,18 +17,12 @@ require 'avalon/intercom'
 
 describe Avalon::Intercom do
   before :each do
-    Settings.intercom = {
-      'default' => {
-        'url' => 'https://target.avalon.com/',
-        'api_token' => 'a_valid_token',
-        'import_bib_record' => true,
-        'publish' => false,
-        'push_label' => 'Push to Target'
-      }
-    }
-  end
-  after :each do
-    Settings.intercom = nil
+    intercom_default_double = double('NestedAppSetting::IntercomDefault',
+                                     url: 'https://target.avalon.com/',
+                                     api_token: 'a_valid_token', import_bib_record: true,
+                                     publish: false, push_label: 'Push to Target',
+                                     remove_identifiers: false)
+    allow(Admin::ApplicationSetting.instance.intercom).to receive(:default).and_return(intercom_default_double)
   end
 
   let!(:username) { 'test_username' }
@@ -75,7 +69,7 @@ describe Avalon::Intercom do
       expect(response[:message]).to eq('You are not authorized to push to this collection.')
     end
     it "should respond to unconfigured intercom with error" do
-      Settings.intercom = {}
+      allow(Admin::ApplicationSetting.instance).to receive(:intercom).and_return({})
       response = Avalon::Intercom.new(username).push_media_object(media_object, 'cupcake_collection', false)
       expect(response[:message]).to eq('Avalon intercom target is not configured.')
     end

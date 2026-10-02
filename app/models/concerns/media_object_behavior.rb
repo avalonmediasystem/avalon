@@ -69,8 +69,8 @@ module MediaObjectBehavior
   end
 
   def is_accessible?
-    return true unless Settings.accessibility_compliance.enforce
-    return true if DateTime.parse(Settings.accessibility_compliance.compliance_date) > create_date
+    return true unless Admin::ApplicationSetting.instance.accessibility_compliance.enforce
+    return true if Admin::ApplicationSetting.instance.accessibility_compliance.compliance_date > create_date
     return true if accessibility_exempt?
     has_captions || has_transcripts
   end
@@ -98,7 +98,7 @@ module MediaObjectBehavior
 
   def active_lending_period
     active_period = disable_inheritance? ? lending_period : inherited_lending_period
-    active_period ||= ActiveSupport::Duration.parse(Settings.controlled_digital_lending.default_lending_period).to_i
+    active_period ||= ActiveSupport::Duration.parse(Admin::ApplicationSetting.instance.controlled_digital_lending.default_lending_period).to_i
     active_period
   end
 
