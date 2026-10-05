@@ -25,8 +25,8 @@ describe Avalon::BibRetriever do
     end
 
     it 'invalid' do
-      allow(Admin::ApplicationSetting.instance.bib_retriever).to receive(:default).and_return(
-        double('NestedAppSetting::BibRetrieverDefault', protocol: 'unknown', url: 'http://zgate.example.edu:9000/db', retriever_class: nil)
+      allow(Admin::ApplicationSetting.instance).to receive(:bib_retriever).and_return(
+        { 'default' => { 'protocol' => 'unknown', 'url' => 'http://zgate.example.edu:9000/db', 'retriever_class' => nil } }
       )
       expect(Avalon::BibRetriever).not_to be_configured
     end
@@ -56,8 +56,8 @@ describe Avalon::BibRetriever do
       let!(:request) { stub_request(:get, sru_url).to_return(body: sru_response) }
 
       it 'retrieves proper MODS' do
-        allow(Admin::ApplicationSetting.instance.bib_retriever).to receive(:default).and_return(
-          double('NestedAppSetting::BibRetrieverDefault', protocol: 'sru', url: 'http://zgate.example.edu:9000/db', namespace: 'http://example.edu/fake/sru/namespace/', retriever_class: 'Avalon::BibRetriever::SRU', retriever_class_require: 'avalon/bib_retriever/sru', query: nil)
+        allow(Admin::ApplicationSetting.instance).to receive(:bib_retriever).and_return(
+          { 'default' => { 'protocol' => 'sru', 'url' => 'http://zgate.example.edu:9000/db', 'namespace' => 'http://example.edu/fake/sru/namespace/', 'retriever_class' => 'Avalon::BibRetriever::SRU', 'retriever_class_require' => 'avalon/bib_retriever/sru', 'query' => nil } }
         )
         response = Avalon::BibRetriever.instance.get_record("^%#{bib_id}")
         expect(request).to have_been_requested
@@ -73,8 +73,8 @@ describe Avalon::BibRetriever do
       let!(:request_2) { stub_request(:get, sru_url_2).to_return(body: sru_response) }
 
       it 'retrieves proper MODS' do
-        allow(Admin::ApplicationSetting.instance.bib_retriever).to receive(:default).and_return(
-          double('NestedAppSetting::BibRetrieverDefault', protocol: 'sru', url: 'http://zgate.example.edu:9000/db', query: ["rec.id='not_a_real_id'","cql.serverChoice='^C%{bib_id}'"], retriever_class: 'Avalon::BibRetriever::SRU', retriever_class_require: 'avalon/bib_retriever/sru', namespace: nil)
+        allow(Admin::ApplicationSetting.instance).to receive(:bib_retriever).and_return(
+          { 'default' => { 'protocol' => 'sru', 'url' => 'http://zgate.example.edu:9000/db', 'query' => ["rec.id='not_a_real_id'","cql.serverChoice='^C%{bib_id}'"], 'retriever_class' => 'Avalon::BibRetriever::SRU', 'retriever_class_require' => 'avalon/bib_retriever/sru', 'namespace' => nil } }
         )
         response = Avalon::BibRetriever.instance.get_record("^%#{bib_id}")
         expect(Nokogiri::XML(response)).to be_equivalent_to(mods)
