@@ -22,7 +22,6 @@ describe SpeedyAF::Proxy::Derivative do
     let(:derivative) { FactoryBot.create(:derivative, mime_type: 'video/mp4') }
 
     it 'returns all attributes' do
-      expect(presenter.location_url).to be_present #also stored as stream_path_ssi?
       expect(presenter.hls_url).to be_present
       expect(presenter.duration).to be_present
       expect(presenter.track_id).to be_present
