@@ -5,7 +5,7 @@ gem 'bootsnap', require: false
 gem 'listen'
 gem 'net-smtp', require: false
 gem 'psych', '< 4'
-gem 'rails', '~>8.0', '>= 8.0.5.1'
+gem 'rails', '~>8.1', '>= 8.1.4'
 gem 'sprockets', '>= 4'
 # gem 'sprockets-rails'
 gem 'sqlite3'
@@ -58,7 +58,7 @@ gem 'iiif_manifest', git: 'https://github.com/samvera/iiif_manifest.git', branch
 gem 'rack-cors', require: 'rack/cors'
 gem 'rails_same_site_cookie'
 gem 'recaptcha', require: 'recaptcha/rails'
-gem 'samvera-persona', '~> 0.6'
+gem 'samvera-persona', git: 'https://github.com/samvera-labs/samvera-persona.git', branch: 'rails_8.1'
 gem 'speedy-af', '~> 0.6'
 
 # Authentication & Authorization
@@ -75,7 +75,7 @@ gem "omniauth-saml", "~> 2.0", ">= 2.2.3"
 # Media Access & Transcoding
 gem 'active_encode', '~> 2.0'
 gem 'audio_waveform-ruby', '~> 1.0.7', require: 'audio_waveform'
-gem 'browse-everything', git: "https://github.com/avalonmediasystem/browse-everything.git", tag: 'v1.5-Avalon'
+gem 'browse-everything', git: "https://github.com/avalonmediasystem/browse-everything.git", branch: 'v2-alpha-avalon'
 gem 'fastimage'
 gem 'rest-client', '~> 2.0'
 gem 'roo'
@@ -89,7 +89,7 @@ gem 'marc'
 
 # Jobs
 gem 'activejob-traffic_control'
-gem 'activejob-uniqueness'
+gem 'activejob-unique'
 gem 'sidekiq', '~> 6.2'
 gem 'sidekiq-cron', '~> 1.9'
 
