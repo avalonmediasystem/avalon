@@ -210,15 +210,16 @@ describe BookmarksController, type: :controller do
 
   describe "#intercom_push" do
     before :each do
-      allow(Admin::ApplicationSetting.instance.intercom).to receive(:default).and_return(double(
-        'NestedAppSetting::IntercomDefault',
-        url: 'https://target.avalon.com/',
-        api_token: 'a_valid_token',
-        import_bib_record: true,
-        publish: false,
-        remove_identifiers: nil,
-        push_label: 'Push to Target'
-      ))
+      allow(Admin::ApplicationSetting.instance).to receive(:intercom).and_return({
+        'default' => {
+          'url' => 'https://target.avalon.com/',
+          'api_token' => 'a_valid_token',
+          'import_bib_record' => true,
+          'publish' => false,
+          'remove_identifiers' => nil,
+          'push_label' => 'Push to Target'
+        }
+      })
     end
 
     let!(:current_user) { controller.current_user.user_key }
