@@ -207,7 +207,7 @@ namespace :avalon do
       SETTINGS_KEYS = [:name, :google_analytics_tracking_id,
                        :repository_read_only_mode, :repository_read_only_mode_message,
                        :accessibility_compliance, :bib_retriever, :caption_default,
-                       :controlled_digital_lending, :dropbox, :email,
+                       :controlled_digital_lending, :email,
                        :home_page, :intercom, :master_file_management, :recaptcha,
                        :supplemental_files, :waveform].freeze
 
@@ -227,7 +227,13 @@ namespace :avalon do
 
       db_settings = Admin::ApplicationSetting.where(singleton_guard: 0).first_or_initialize
       SETTINGS_KEYS.each do |key|
-        next unless Settings.respond_to?(key)
+        unless Settings.respond_to?(key)
+          value = db_settings.send(key)
+          next if value.nil?
+          default = value.class.module_parents.include?(NestedAppSetting) ? value.to_h : value
+          puts("'#{key}' not found. Setting to default value: #{default}")
+          next
+        end
         value = Settings.send(key)
         value = value.class == Config::Options ? value.to_h : value
         db_settings.send("#{key}=".to_sym, value)
