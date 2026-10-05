@@ -124,6 +124,12 @@ RSpec.configure do |config|
     ActiveFedora::Cleaner.clean!
     disable_production_minter!
 
+    # Stub the entire dropbox
+    Settings.spec = {
+      'real_dropbox' => Settings.dropbox.path,
+      'fake_dropbox' => Dir.mktmpdir
+    }
+    Settings.dropbox.path = Settings.spec['fake_dropbox']
     MasterFile.skip_callback(:save, :after, :update_stills_from_offset!)
   end
 
@@ -145,21 +151,15 @@ RSpec.configure do |config|
     # throughout test suite
     settings_instance = Admin::ApplicationSetting.instance
     allow(Admin::ApplicationSetting).to receive(:instance).and_return(settings_instance)
-    # Stub dropbox, email, bib retriever
-    dropbox_double = double('NestedAppSetting::Dropbox', path: Dir.mktmpdir, upload_uri: 'http://example.com')
-    allow(dropbox_double).to receive(:path=)
+    # Stub email, bib retriever, intercom
     email_double = double('NestedAppSetting::Email', comments: 'comment@example.com', notification: 'notification@example.com', support: 'support@example.com', accessibility_request_link: nil )
     allow(email_double).to receive(:notification=)
-    bib_default_double = double('NestedAppSetting::BibRetrieverDefault', protocol: 'sru', url: 'http://zgate.example.edu:9000/db', query: 'rec.id=%{bib_id}', namespace: nil, retriever_class: 'Avalon::BibRetriever::SRU', retriever_class_require: 'avalon/bib_retriever/sru')
-    allow(bib_default_double).to receive(:namespace=)
-    bib_double = double('NestedAppSetting::BibRetriever', default: bib_default_double)
-    intercom_default_double = double('NestedAppSetting::IntercomDefault', url: nil, api_token: nil, import_bib_record: true, publish: false, remove_identifiers: false, push_label: 'Push to Other Avalon')
-    intercom_double = double('NestedAppSetting::Intercom', default: intercom_default_double)
+    bib_stub = { 'default' => { 'protocol' => 'sru', 'url' => 'http://zgate.example.edu:9000/db', 'query' => 'rec.id=%{bib_id}', 'namespace' => nil, 'retriever_class' => 'Avalon::BibRetriever::SRU', 'retriever_class_require' => 'avalon/bib_retriever/sru' } }
+    intercom_stub = { 'default' => { 'url' => nil, 'api_token' => nil, 'import_bib_record' => true, 'publish' => false, 'remove_identifiers' => false, 'push_label' => 'Push to Other Avalon' } }
 
-    allow(Admin::ApplicationSetting.instance).to receive(:dropbox).and_return(dropbox_double)
     allow(Admin::ApplicationSetting.instance).to receive(:email).and_return(email_double)
-    allow(Admin::ApplicationSetting.instance).to receive(:bib_retriever).and_return(bib_double)
-    allow(Admin::ApplicationSetting.instance).to receive(:intercom).and_return(intercom_double)
+    allow(Admin::ApplicationSetting.instance).to receive(:bib_retriever).and_return(bib_stub)
+    allow(Admin::ApplicationSetting.instance).to receive(:intercom).and_return(intercom_stub)
   end
 
   config.after :each do

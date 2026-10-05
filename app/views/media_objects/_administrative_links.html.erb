@@ -34,7 +34,7 @@ Unless required by applicable law or agreed to in writing, software distributed
     <% end %>
 
     <% if Admin::ApplicationSetting.instance.intercom&.default&.url.present? and can? :intercom_push, @media_object %>
-    <%= button_tag(Admin::ApplicationSetting.instance.intercom.default.push_label, class: 'btn btn-outline text-nowrap', data: {"bs-toggle":"modal", "bs-target":"#intercom_push"}) %>
+    <%= button_tag(Admin::ApplicationSetting.instance.intercom['default']['push_label'], class: 'btn btn-outline text-nowrap', data: {"bs-toggle":"modal", "bs-target":"#intercom_push"}) %>
     <%= render "intercom_push_modal" %>
     <% end %>
   </div>

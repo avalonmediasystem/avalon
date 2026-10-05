@@ -17,12 +17,17 @@ require 'avalon/intercom'
 
 describe Avalon::Intercom do
   before :each do
-    intercom_default_double = double('NestedAppSetting::IntercomDefault',
-                                     url: 'https://target.avalon.com/',
-                                     api_token: 'a_valid_token', import_bib_record: true,
-                                     publish: false, push_label: 'Push to Target',
-                                     remove_identifiers: false)
-    allow(Admin::ApplicationSetting.instance.intercom).to receive(:default).and_return(intercom_default_double)
+    intercom_default_double = {
+      'default' => {
+        'url' => 'https://target.avalon.com/',
+        'api_token' => 'a_valid_token',
+        'import_bib_record' => true,
+        'publish' => false,
+        'push_label' => 'Push to Target',
+        'remove_identifiers' => false
+      }
+    }
+    allow(Admin::ApplicationSetting.instance).to receive(:intercom).and_return(intercom_default_double)
   end
 
   let!(:username) { 'test_username' }

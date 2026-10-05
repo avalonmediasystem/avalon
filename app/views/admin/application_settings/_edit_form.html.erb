@@ -30,20 +30,16 @@ Unless required by applicable law or agreed to in writing, software distributed
     <%= render partial: 'text_field',
                locals: { form: form, field: :repository_read_only_mode_message, options: {} } %>
 
+    <%= render partial: 'text_area',
+               locals: { form: form, field: :bib_retriever, options: {} } %>
+
+    <%= render partial: 'text_area',
+               locals: { form: form, field: :intercom, options: {} } %>
+
     <%= render partial: 'nested_form',
                locals: { form: form, field: :accessibility_compliance,
                          subfields: [{ name: :enforce, type: 'checkbox' },
                                      { name: :compliance_date, type: 'text_field' }], options: {} } %>
-
-    <%= render partial: 'nested_form',
-               locals: { form: form, field: :bib_retriever,
-                         subfields: [{ name: :default, type: 'nested_form' ,
-                                       subfields: [{ name: :protocol, type: 'text_field' },
-                                                   { name: :url, type: 'text_field' },
-                                                   { name: :query, type: 'text_field' },
-                                                   { name: :namespace, type: 'text_field' },
-                                                   { name: :retriever_class, type: 'text_field' },
-                                                   { name: :retriever_class_require, type: 'text_field' }] }], options: {} } %>
 
     <%= render partial: 'nested_form',
                locals: { form: form, field: :caption_default,
@@ -55,21 +51,6 @@ Unless required by applicable law or agreed to in writing, software distributed
                          subfields: [{ name: :enable, type: 'checkbox' },
                                      { name: :collections_enabled, type: 'checkbox' },
                                      { name: :default_lending_period, type: 'text_field' } ], options: {} } %>
-
-    <%= render partial: 'nested_form',
-               locals: { form: form, field: :dropbox,
-                         subfields: [{ name: :path, type: 'text_field' },
-                                     { name: :upload_uri, type: 'text_field' },
-                                     { name: :google_drive, type: 'nested_form',
-                                       subfields: [{ name: :client_id, type: 'text_field' },
-                                                   { name: :client_secret, type: 'text_field' },
-                                                   { name: :redis_token_store_url, type: 'text_field' }] },
-                                     { name: :sharepoint, type: 'nested_form',
-                                       subfields: [{ name: :client_id, type: 'text_field' },
-                                                   { name: :client_secret, type: 'text_field' },
-                                                   { name: :tenant_id, type: 'text_field' },
-                                                   { name: :scope, type: 'text_field' },
-                                                   { name: :redirect_uri, type: 'text_field' }] }], options: {} } %>
 
     <%= render partial: 'nested_form',
                locals: { form: form, field: :email,
@@ -93,16 +74,6 @@ Unless required by applicable law or agreed to in writing, software distributed
                                        multivalued: true },
                                      { name: :carousel_collections, type: 'text_field',
                                        multivalued: true }], options: {} } %>
-
-    <%= render partial: 'nested_form',
-               locals: { form: form, field: :intercom,
-                         subfields: [{ name: :default, type: 'nested_form',
-                                       subfields: [{ name: :url, type: 'text_field' },
-                                                   { name: :api_token, type: 'text_field' },
-                                                   { name: :import_bib_record, type: 'checkbox' },
-                                                   { name: :publish, type: 'checkbox' },
-                                                   { name: :remove_identifiers, type: 'checkbox' },
-                                                   { name: :push_label, type: 'text_field' }] }],options: {} } %>
 
     <%= render partial: 'nested_form',
                locals: { form: form, field: :master_file_management,
