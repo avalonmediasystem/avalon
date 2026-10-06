@@ -40,8 +40,7 @@ class Comment
   # The nickname should be empty since it is a captcha designed to prevent spam
   # Thus there is no error message because there is no way for a person to submit
   # the form with a value
-  validates :nickname,
-    length: {is: 0, message: nil}
+  validates :nickname, inclusion: { in: [nil, ""], message: nil }
 
   def comment
     @comment

@@ -18,7 +18,7 @@ describe 'Routing Error Handling', type: :request do
   it 'responds with 404 page for html request' do
     get '/fake/route', params: { format: :html }
     expect(response.status).to eq(404)
-    expect(response.body).to include('The page you were looking for doesn’t exist (404 Not found)')
+    expect(response.body).to include("The page you were looking for doesn't exist (404 Not found)")
   end
 
   it 'responds with json error for json request' do
