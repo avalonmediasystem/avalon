@@ -28,10 +28,8 @@ class SupplementalFile < ApplicationRecord
 
   serialize :tags, type: Array
 
-  # Need to prepend so this runs before the callback added by `has_one_attached` above
-  # See https://github.com/rails/rails/issues/37304
-  after_create_commit :index_file, prepend: true
-  after_update_commit :update_index, prepend: true
+  after_create_commit :index_file
+  after_update_commit :update_index
   after_destroy_commit :remove_from_index
   before_save :default_label
   before_save :validate_forced, if: -> { tags.include?('forced') }
