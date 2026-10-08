@@ -490,6 +490,12 @@ describe CatalogController do
           expect(get 'index', params: { q: 'Test' }).to redirect_to(root_path)
           expect(flash[:error]).to be_present
         end
+
+        it 'should not raise error for unexpected params' do
+          get 'index', params: { f: 'test' }
+          expect(response).to be_ok
+          expect(flash[:error]).not_to be_present
+        end
       end
     end
 
