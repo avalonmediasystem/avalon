@@ -6,6 +6,22 @@ RSpec.describe Admin::ApplicationSetting, type: :model, skip_stubbing: true do
       expect(described_class.new(singleton_guard: 1).save).to be_falsey
       expect(described_class.new(singleton_guard: 0).save).to be_truthy
     end
+
+    context 'configuration hashes' do
+      it 'enforces bib_retriever' do
+        expect(described_class.new(bib_retriever: 'test').save).to be_falsey
+        expect(described_class.new(bib_retriever: { test: 'test' }).save).to be_truthy
+      end
+
+      it 'enforces intercom' do
+        expect(described_class.new(intercom: 'test').save).to be_falsey
+        expect(described_class.new(intercom: { test: 'test' }).save).to be_truthy
+      end
+
+      it 'allows nil' do
+        expect(described_class.new(bib_retriever: nil, intercom: nil).save).to be_truthy
+      end
+    end
   end
 
   describe '.instance' do

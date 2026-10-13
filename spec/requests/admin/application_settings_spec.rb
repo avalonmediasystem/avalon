@@ -70,11 +70,33 @@ RSpec.describe "/admin/application_settings", type: :request, skip_stubbing: tru
       let(:payload) { { name: 'Test', repository_read_only_mode: true } }
 
       it "successfully updates" do
-        expect {
+        expect do
           patch admin_application_settings_url, params: { admin_application_setting: payload }
           settings.reload
-        }.to change { settings.name }.from('Avalon Media System').to('Test')
-         .and change { settings.repository_read_only_mode }.from(false).to(true)
+        end.to change { settings.name }.from('Avalon Media System').to('Test')
+           .and change { settings.repository_read_only_mode }.from(false).to(true)
+        expect(response).to redirect_to("/admin/application_settings")
+        expect(flash[:notice]).to eq("Settings successfully updated")
+      end
+
+      context "arbitrary hashes" do
+        it "successfully updates with a properly formatted hash" do
+          payload = { bib_retriever: '{ "default": { "protocol": "test" } }' }
+          expect do
+            patch admin_application_settings_url, params: { admin_application_setting: payload }
+            settings.reload
+          end.to change { settings.bib_retriever }.to({ "default" => { "protocol" => 'test' } })
+        end
+
+        it "provides a flash message for improperly formatted hash" do
+          payload = { bib_retriever: '{ test }' }
+          expect do
+            patch admin_application_settings_url, params: { admin_application_setting: payload }
+            settings.reload
+          end.to_not change { settings.bib_retriever }
+          expect(response).to redirect_to("/admin/application_settings")
+          expect(flash[:error]).to eq("Settings update failed: Bib retriever config must be a JSON hash")
+        end
       end
     end
 
