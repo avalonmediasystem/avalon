@@ -52,7 +52,7 @@ class SearchBuilder < Blacklight::SearchBuilder
     user_groups = ability.user_groups - PERMISSION_GROUPS
     user_visibility_groups = ability.user_groups & PERMISSION_GROUPS
     read_access_clauses = []
-    read_access_clauses += ["read_access_person_ssim:#{RSolr.solr_escape(current_user)}"] if current_user.present?
+    read_access_clauses += ["read_access_person_ssim:\"#{RSolr.solr_escape(current_user)}\""] if current_user.present?
     read_access_clauses += ["_query_:\"{!terms f=read_access_group_ssim}#{RSolr.solr_escape(user_groups.join(','))}\""] if user_groups.present?
     [edit_policy_clauses, "(*:* AND NOT disable_inheritance_bsi:true AND (#{(Array(read_policy_clauses) + read_access_clauses).join(" OR ")}))", "(disable_inheritance_bsi:true AND (#{(read_access_clauses + ["read_access_group_ssim:(#{user_visibility_groups.join(" OR ")})"]).join(" OR ")}))"].compact.join(" OR ")
   end
