@@ -218,11 +218,11 @@ class Admin::Collection < ActiveFedora::Base
   end
 
   def dropbox_absolute_path( name = nil )
-    File.join(Settings.dropbox.path, name || dropbox_directory_name)
+    File.join(Admin::ApplicationSetting.instance.dropbox.path, name || dropbox_directory_name)
   end
 
   def dropbox_object_count
-    if Settings.dropbox.path =~ %r(^s3://)
+    if Admin::ApplicationSetting.instance.dropbox.path =~ %r(^s3://)
       dropbox_path = Addressable::URI.parse(dropbox_absolute_path)
       response = Aws::S3::Client.new.list_objects(bucket: Settings.encoding.masterfile_bucket, max_keys: 10, prefix: "#{dropbox_path.path}/")
       response.contents.size
@@ -268,16 +268,16 @@ class Admin::Collection < ActiveFedora::Base
 
   alias_method :'_default_lending_period', :'default_lending_period'
   def default_lending_period
-    self._default_lending_period || ActiveSupport::Duration.parse(Settings.controlled_digital_lending.default_lending_period).to_i
+    self._default_lending_period || ActiveSupport::Duration.parse(Admin::ApplicationSetting.instance.controlled_digital_lending.default_lending_period).to_i
   end
 
   def cdl_enabled?
     if cdl_enabled.nil?
-      Settings.controlled_digital_lending.collections_enabled
-    elsif cdl_enabled != Settings.controlled_digital_lending.collections_enabled
+      Admin::ApplicationSetting.instance.controlled_digital_lending.collections_enabled
+    elsif cdl_enabled != Admin::ApplicationSetting.instance.controlled_digital_lending.collections_enabled
       cdl_enabled
     else
-      Settings.controlled_digital_lending.collections_enabled
+      Admin::ApplicationSetting.instance.controlled_digital_lending.collections_enabled
     end
   end
 
@@ -292,7 +292,7 @@ class Admin::Collection < ActiveFedora::Base
     end
 
     def create_dropbox_directory!
-      if Settings.dropbox.path =~ %r(^s3://)
+      if Admin::ApplicationSetting.instance.dropbox.path =~ %r(^s3://)
         create_s3_dropbox_directory!
       else
         create_fs_dropbox_directory!
@@ -319,7 +319,7 @@ class Admin::Collection < ActiveFedora::Base
     end
 
     def create_s3_dropbox_directory!
-      base_uri = Addressable::URI.parse(Settings.dropbox.path)
+      base_uri = Addressable::URI.parse(Admin::ApplicationSetting.instance.dropbox.path)
       name = calculate_dropbox_directory_name do |n|
         obj = FileLocator::S3File.new(base_uri.join(n).to_s + '/').object
         obj.exists?

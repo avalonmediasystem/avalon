@@ -76,7 +76,7 @@ class IiifCanvasPresenter
                                            type: 'Text',
                                            format: 'text/plain')
     else
-      support_email = Settings.email.support
+      support_email = Admin::ApplicationSetting.instance.email.support
       IIIFManifest::V3::DisplayContent.new(nil,
                                            label: I18n.t('errors.missing_derivatives_error') % [support_email, support_email],
                                            width: 1280,

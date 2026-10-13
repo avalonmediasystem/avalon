@@ -339,7 +339,7 @@ class Ability
   end
 
   def repository_read_only_permissions
-    if Settings.repository_read_only_mode
+    if Admin::ApplicationSetting.instance.repository_read_only_mode
       cannot [:create, :edit, :update, :destroy, :update_access_control, :unpublish, :intercom_push], [MediaObject, SpeedyAF::Proxy::MediaObject]
       cannot [:create, :edit, :update, :destroy], [MasterFile, SpeedyAF::Proxy::MasterFile]
       cannot [:create, :edit, :update, :destroy], [Derivative, SpeedyAF::Proxy::Derivative]
