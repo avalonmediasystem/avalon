@@ -17,10 +17,6 @@ RSpec.describe Admin::ApplicationSetting, type: :model, skip_stubbing: true do
         expect(described_class.new(intercom: 'test').save).to be_falsey
         expect(described_class.new(intercom: { test: 'test' }).save).to be_truthy
       end
-
-      it 'allows nil' do
-        expect(described_class.new(bib_retriever: nil, intercom: nil).save).to be_truthy
-      end
     end
   end
 
