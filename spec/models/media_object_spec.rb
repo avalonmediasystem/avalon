@@ -434,6 +434,7 @@ describe MediaObject do
         'language' => [''],
         'table_of_contents' => [''],
         'physical_description' => [''],
+        'physical_format' => [''],
         'record_identifier' => [''],
         'note' => [{type:'',note:''}],
         'other_identifier' => [{id:'',source:''}]
@@ -455,6 +456,7 @@ describe MediaObject do
       expect(media_object.language).to eq([])
       expect(media_object.table_of_contents).to eq([])
       expect(media_object.physical_description).to eq([])
+      expect(media_object.physical_format).to eq([])
       expect(media_object.record_identifier).to eq([])
       expect(media_object.note).to eq([])
       expect(media_object.other_identifier).to eq([])

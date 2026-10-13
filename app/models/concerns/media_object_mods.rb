@@ -353,6 +353,15 @@ module MediaObjectMods
     Array(value).each { |val| descMetadata.add_physical_description(val) if val.present? }
   end
 
+  # has_attributes :physical_format, datastream: :descMetadata, at: [:physical_format], multiple: true
+  def physical_format
+    descMetadata.physical_format
+  end
+  def physical_format=(value)
+    delete_all_values(:physical_format)
+    Array(value).each { |val| descMetadata.add_physical_format(val) if val.present? }
+  end
+
   # has_attributes :related_item_url, datastream: :descMetadata, at: [:related_item_url], multiple: true
   def related_item_url
     descMetadata.related_item_url.zip(descMetadata.related_item_label).map{|a|{url: a[0].strip, label: a[1]}}
