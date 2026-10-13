@@ -7,17 +7,19 @@ class Admin::ApplicationSetting < ApplicationRecord
   # We have many more nested attributes than single layer, so have the default be accept nested
   attr_json_config(default_accepts_nested_attributes: { reject_if: :all_blank })
   validates :singleton_guard, inclusion: [0]
+  validate :validate_bib_retriever
+  validate :validate_intercom
 
   # First level settings, disable accepts_nested_attributes for each one
   attr_json :name, :string, default: "Avalon Media System", accepts_nested_attributes: false
   attr_json :google_analytics_tracking_id, :string, accepts_nested_attributes: false
   attr_json :repository_read_only_mode, :boolean, default: false, accepts_nested_attributes: false
   attr_json :repository_read_only_mode_message, :string, default: "🚧 Read-only mode: all content editing has been disabled 🚧", accepts_nested_attributes: false
-  attr_json :bib_retriever, ActiveModel::Type::Value.new, default: -> { bib_retriever_default }
-  attr_json :intercom, ActiveModel::Type::Value.new, default: -> { intercom_default }
+  attr_json :bib_retriever, ActiveModel::Type::Value.new, default: -> { bib_retriever_default }, accepts_nested_attributes: false
+  attr_json :intercom, ActiveModel::Type::Value.new, default: -> { intercom_default }, accepts_nested_attributes: false
 
   # Nested settings
-  attr_json :accessibility_compliance, AccessibilityCompliance.to_type, default: -> { AccessibilityCompliance.new } 
+  attr_json :accessibility_compliance, AccessibilityCompliance.to_type, default: -> { AccessibilityCompliance.new }
   attr_json :caption_default, CaptionDefault.to_type, default: -> { CaptionDefault.new }
   attr_json :controlled_digital_lending, ControlledDigitalLending.to_type, default: -> { ControlledDigitalLending.new }
   attr_json :email, Email.to_type, default: -> { Email.new }
@@ -77,5 +79,13 @@ class Admin::ApplicationSetting < ApplicationRecord
 
   def respond_to_missing?(name, include_private = false)
     Settings.respond_to?(name) || super
+  end
+
+  def validate_bib_retriever
+    errors.add(:bib_retriever, "config must be a JSON hash") unless bib_retriever.is_a?(Hash)
+  end
+
+  def validate_intercom
+    errors.add(:intercom, "config must be a JSON hash") unless intercom.is_a?(Hash)
   end
 end
