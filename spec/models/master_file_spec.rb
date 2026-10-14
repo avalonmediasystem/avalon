@@ -85,7 +85,7 @@ describe MasterFile do
   end
 
   describe "derivatives=" do
-    let(:derivative) {Derivative.create}
+    let(:derivative) { Derivative.create }
     let(:master_file) {FactoryBot.create(:master_file)}
     it "should set hasDerivation relationships on self" do
       master_file.derivatives += [derivative]
