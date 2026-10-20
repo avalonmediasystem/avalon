@@ -43,7 +43,7 @@ class Admin::ApplicationSetting < ApplicationRecord
       {
         default: {
           protocol: 'sru',
-          url: 'http://zgate.library.example.edu:9000/catdb',
+          url: 'http://zgate.example.edu:9000/db',
           query: 'rec.id=%{bib_id}',
           namespace: nil,
           retriever_class: 'Avalon::BibRetriever::SRU',
@@ -60,7 +60,7 @@ class Admin::ApplicationSetting < ApplicationRecord
           import_bib_record: true,
           publish: false,
           remove_identifiers: false,
-          push_label: nil
+          push_label: 'Push to Other Avalon'
         }
       }
     end
