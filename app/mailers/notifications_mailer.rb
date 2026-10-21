@@ -13,7 +13,7 @@
 # ---  END LICENSE_HEADER BLOCK  ---
 
 class NotificationsMailer < ActionMailer::Base
-  default from: Settings.email.notification
+  default from: -> { Admin::ApplicationSetting.instance.email.notification }
 
   def new_collection(args = {})
     @collection = Admin::Collection.find(args.delete(:collection_id))

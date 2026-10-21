@@ -47,7 +47,7 @@ RSpec.describe SupplementalFilesController, type: :controller do
     describe "GET #captions" do
       let(:public_media_object) { FactoryBot.create(:fully_searchable_media_object) }
       let(:master_file) { FactoryBot.create(:master_file, media_object: public_media_object, supplemental_files: [supplemental_file]) }
-      before { allow(Settings.supplemental_files).to receive(:proxy).and_return(true) }
+      before { allow(Admin::ApplicationSetting.instance.supplemental_files).to receive(:proxy).and_return(true) }
 
       it "returns the caption file content" do
         get :captions, params: {  master_file_id: master_file.id, id: supplemental_file.id }, session: valid_session

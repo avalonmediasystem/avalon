@@ -19,9 +19,9 @@ require 'fileutils'
 
 describe Avalon::Batch::Ingest do
   before :each do
-    @saved_dropbox_path = Settings.dropbox.path
-    Settings.dropbox.path = File.join(Rails.root, 'spec/fixtures/dropbox')
-    Settings.email.notification = 'frances.dickens@reichel.com'
+    @saved_dropbox_path = Admin::ApplicationSetting.instance.dropbox.path
+    Admin::ApplicationSetting.instance.dropbox.path = File.join(Rails.root, 'spec/fixtures/dropbox')
+    Admin::ApplicationSetting.instance.email.notification = 'frances.dickens@reichel.com'
     # Dirty hack is to remove the .processed files both before and after the
     # test. Need to look closer into the ideal timing for where this should take
     # place
@@ -35,7 +35,7 @@ describe Avalon::Batch::Ingest do
   end
 
   after :each do
-    Settings.dropbox.path = @saved_dropbox_path
+    Admin::ApplicationSetting.instance.dropbox.path = @saved_dropbox_path
     Dir['spec/fixtures/**/*.xlsx.process*','spec/fixtures/**/*.xlsx.error'].each { |file| File.delete(file) }
 
     # this is a test environment, we don't want to kick off
