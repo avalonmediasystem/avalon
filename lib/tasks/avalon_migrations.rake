@@ -148,7 +148,7 @@ namespace :avalon do
         col = SpeedyAF::Proxy::Admin::Collection.find(mo.collection_id)
         mo.disable_inheritance = true if mo.visibility != col.default_visibility
         mo.save!(validate: false)
-        logger.info "#{mo.id},#{mo.title},#{mo.visibility},#{col.id},#{col.name},#{col.default_visibility}"
+        logger.info "#{mo.id},\"#{mo.title&.gsub('"','""')}\",#{mo.visibility},#{col.id},\"#{col.name&.gsub('"','""')}\",#{col.default_visibility}"
       rescue StandardError => error
         logger.error "Unable to disable inheritance for #{id}: #{error.message}"
       end
