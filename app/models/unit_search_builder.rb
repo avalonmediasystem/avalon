@@ -12,50 +12,14 @@
 #   specific language governing permissions and limitations under the License.
 # ---  END LICENSE_HEADER BLOCK  ---
 
-class UnitSearchBuilder < Blacklight::SearchBuilder
-  include Blacklight::Solr::SearchBuilderBehavior
-  include Hydra::AccessControlsEnforcement
-  include Hydra::MultiplePolicyAwareAccessControlsEnforcement
-
-  PERMISSION_GROUPS = [Hydra::AccessControls::AccessRight::PERMISSION_TEXT_VALUE_PUBLIC, Hydra::AccessControls::AccessRight::PERMISSION_TEXT_VALUE_AUTHENTICATED]
-
-  class_attribute :default_avalon_solr_access_filters_logic
-  self.default_avalon_solr_access_filters_logic = [:only_published_items, :limit_to_non_hidden_items, :limit_to_inheritance_enabled_items]
-
-  self.default_processor_chain -= [:add_access_controls_to_solr_params]
+class UnitSearchBuilder < SearchBuilder
+  self.default_processor_chain -= [:add_access_controls_to_solr_params, :term_frequency_counts, :search_section_transcripts]
   # self.default_processor_chain += [:add_access_controls_to_solr_params_if_not_admin, :only_wanted_models, :gated_discovery_join]
-  self.default_processor_chain += [:gated_discovery_join, :only_wanted_models]
+  self.default_processor_chain += [:gated_discovery_join]
+  # self.avalon_solr_access_filters_logic = [:only_published_items, :limit_to_non_hidden_items, :limit_to_inheritance_enabled_items]
+  self.model = Admin::Unit
 
   attr_accessor :user
-  attr_writer :avalon_solr_access_filters_logic
-
-  def only_wanted_models(solr_parameters)
-    solr_parameters[:fq] ||= []
-    solr_parameters[:fq] << 'has_model_ssim:"Admin::Unit"'
-  end
-
-  def only_published_items(_permission_types = discovery_permissions, _ability = current_ability)
-    [edit_policy_clauses, 'workflow_published_sim:"Published"'].compact.join(" OR ")
-  end
-
-  def limit_to_non_hidden_items(_permission_types = discovery_permissions, _ability = current_ability)
-    media_object_hidden_clause = "(disable_inheritance_bsi:true AND NOT hidden_bsi:true)"
-    inherited_hidden_clause = "*:* AND NOT disable_inheritance_bsi:true"
-    inherited_hidden_clause += " AND NOT #{hidden_policy_clauses}" if hidden_policy_clauses.present?
-    inherited_hidden_clause = "(#{inherited_hidden_clause})"
-
-    [edit_policy_clauses, media_object_hidden_clause, inherited_hidden_clause].compact.join(" OR ")
-  end
-
-  def limit_to_inheritance_enabled_items(_permission_types = discovery_permissions, ability = current_ability)
-    current_user = ability.current_user.username
-    user_groups = ability.user_groups - PERMISSION_GROUPS
-    user_visibility_groups = ability.user_groups & PERMISSION_GROUPS
-    read_access_clauses = []
-    read_access_clauses += ["read_access_person_ssim:\"#{RSolr.solr_escape(current_user)}\""] if current_user.present?
-    read_access_clauses += ["_query_:\"{!terms f=read_access_group_ssim}#{RSolr.solr_escape(user_groups.join(','))}\""] if user_groups.present?
-    [edit_policy_clauses, "(*:* AND NOT disable_inheritance_bsi:true AND (#{(Array(read_policy_clauses) + read_access_clauses).join(" OR ")}))", "(disable_inheritance_bsi:true AND (#{(read_access_clauses + ["read_access_group_ssim:(#{user_visibility_groups.join(" OR ")})"]).join(" OR ")}))"].compact.join(" OR ")
-  end
 
   def add_access_controls_to_solr_params_if_not_admin(solr_parameters)
     ability = Ability.new(user) if user.present?
@@ -75,23 +39,7 @@ class UnitSearchBuilder < Blacklight::SearchBuilder
     Rails.logger.debug("Solr parameters: #{solr_parameters.inspect}")
   end
 
-  def avalon_solr_access_filters_logic
-    @avalon_solr_access_filters_logic ||= self.default_avalon_solr_access_filters_logic
-  end
-
   private
-
-  def edit_policy_clauses
-    @edit_policy_clauses ||= policy_clauses(permission_types: [:edit])
-  end
-
-  def read_policy_clauses
-    @read_policy_clauses ||= policy_clauses(permission_types: [:read])
-  end
-
-  def hidden_policy_clauses
-    @hidden_policy_clauses ||= policy_clauses(permission_types: [:read], additional_clause: "default_hidden_bsi:true")
-  end
 
   # Grant access based on user id & group
   # @return [Array{Array{String}}]
