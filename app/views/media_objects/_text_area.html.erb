@@ -33,7 +33,7 @@ Unless required by applicable law or agreed to in writing, software distributed
       <% if options[:dropdown_field] %>
         <div class="input-group typed-textarea <%=options[:extra_classes]%>" data-textarea='<%= "typed_textarea_#{field}_#{i}" %>'>
           <%= render partial: "multipart_dropdown_field", locals: {selected_value: value.present? ? value[options[:secondary_hash_key]] : nil, options: options} %>
-          <input type="text" class="form-control" style="display: none;"><%# to maintain spacing %>
+          <input type="text" class="form-control hidden-desc-dropdown"><%# to maintain spacing %>
           <% value = value.present? ? value[options[:primary_hash_key]] : "" %>
         </div>
         <%= text_area_tag fieldname, value || '', rows: 10, class: 'form-control typed-textarea', id: "typed_textarea_#{field}_#{i}",  data: { testid: "resource-description-#{field.to_s.dasherize}" } %>
