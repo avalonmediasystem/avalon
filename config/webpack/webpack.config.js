@@ -18,7 +18,7 @@ module.exports = (env, argv) => {
 
   const config = {
     mode: argv.mode,
-    devtool: isProd ? false : 'source-map',
+    devtool: 'source-map',
     entry: {
       application: path.resolve(__dirname, '..', '..', 'app/javascript/application.js'),
       embed: path.resolve(__dirname, '..', '..', 'app/javascript/embed.js'),
@@ -31,18 +31,29 @@ module.exports = (env, argv) => {
           test: /\.css$/,
           use: [
             MiniCssExtractPlugin.loader,
-            'css-loader',
+            {
+              loader: 'css-loader',
+              options: {
+                sourceMap: true
+              }
+            }
           ]
         },
         {
           test: /\.scss$/,
           use: [
             MiniCssExtractPlugin.loader,
-            'css-loader',
+            {
+              loader: 'css-loader',
+              options: {
+                sourceMap: true
+              }
+            },
             {
               loader: 'sass-loader',
               options: {
                 api: 'modern',
+                sourceMap: true
               },
             }
           ]
@@ -50,9 +61,12 @@ module.exports = (env, argv) => {
         {
           test: /\.(js|jsx)$/,
           exclude: /node_modules\/(?!(peaks\.js|waveform-data)\/).*/,
-          use: {
-            loader: 'babel-loader',
-          }
+          use: [
+            {
+              loader: 'babel-loader',
+              options: { sourceMap: true }
+            }
+          ]
         }
       ]
     },
@@ -96,7 +110,6 @@ module.exports = (env, argv) => {
         return pathData.chunk.name === 'application' ? '[name]_bundle.js' : '[name].js';
       },
       chunkFilename: "[name]-[contenthash].digested.js",
-      sourceMapFilename: "[file]-[fullhash].map",
       path: path.resolve(__dirname, '..', '..', 'app/assets/builds'),
       hashFunction: "sha256",
       hashDigestLength: 64,
