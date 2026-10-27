@@ -172,7 +172,7 @@ describe UnitsController, type: :controller do
         context 'with private item' do
           let!(:private_media_object) { FactoryBot.create(:fully_searchable_media_object, collection: collection, disable_inheritance: false, visibility: 'private') }
 
-          it "end users should not see collection with only private items" do
+          it "end users should not see unit with only private items" do
             expect(get 'show', params: { id: unit.id }).to render_template('errors/restricted_pid')
           end
         end
@@ -180,7 +180,7 @@ describe UnitsController, type: :controller do
         context 'with saved non-active visibility' do
           let!(:public_media_object) { FactoryBot.create(:fully_searchable_media_object, collection: collection, disable_inheritance: false, visibility: 'public') }
 
-          it "end users should not see collection with non-active public visibility items" do
+          it "end users should not see unit with non-active public visibility items" do
             expect(get 'show', params: { id: unit.id }).to render_template('errors/restricted_pid')
           end
         end
