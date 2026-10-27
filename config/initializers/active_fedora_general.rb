@@ -212,7 +212,7 @@ end
 
 ActiveFedora::Common.module_eval do
   def readonly?
-    @readonly || Settings.repository_read_only_mode
+    @readonly || Admin::ApplicationSetting.instance.repository_read_only_mode
   end
 end
 

@@ -37,9 +37,9 @@ module Avalon
         @media_object ||= MediaObject.new(avalon_uploader: user_key, collection: collection).tap do |mo|
           mo.workflow.origin = 'batch'
           mo.workflow.last_completed_step = HYDRANT_STEPS.last.step
-          if Avalon::BibRetriever.configured?(fields[:bibliographic_id_label]) && fields[:bibliographic_id].present?
+          if Avalon::BibRetriever.configured?(Array(fields[:bibliographic_id_label]).first) && Array(fields[:bibliographic_id]).first.present?
             begin
-              mo.descMetadata.populate_from_catalog!(fields[:bibliographic_id].first, Array(fields[:bibliographic_id_label]).first)
+              mo.descMetadata.populate_from_catalog!(Array(fields[:bibliographic_id]).first, Array(fields[:bibliographic_id_label]).first)
             rescue Exception => e
               @errors.add(:bibliographic_id, e.message)
             end
@@ -284,7 +284,7 @@ module Avalon
         begin
           LanguageTerm.find(language.capitalize).code
         rescue LanguageTerm::LookupError
-          Settings.caption_default.language
+          Admin::ApplicationSetting.instance.caption_default.language
         end
       end
       private_class_method :content_language
@@ -296,7 +296,7 @@ module Avalon
         # Build out file metadata
         filename = datastream[file_key].split('/').last
         label = datastream[label_key].presence || filename
-        language = datastream[language_key].present? ? content_language(datastream[language_key]) : Settings.caption_default.language
+        language = datastream[language_key].present? ? content_language(datastream[language_key]) : Admin::ApplicationSetting.instance.caption_default.language
         treat_as_transcript = Avalon::Batch.true_field?(datastream[:treat_as_transcript]) ? 'transcript' : nil
         machine_generated = Avalon::Batch.true_field?(datastream[:machine_generated]) ? 'machine_generated' : nil
         # Create SupplementalFile
