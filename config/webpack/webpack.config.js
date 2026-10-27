@@ -34,7 +34,7 @@ module.exports = (env, argv) => {
             {
               loader: 'css-loader',
               options: {
-                sourceMap: true
+                sourceMap: true,
               }
             }
           ]
@@ -46,14 +46,18 @@ module.exports = (env, argv) => {
             {
               loader: 'css-loader',
               options: {
-                sourceMap: true
+                sourceMap: true,
+                importLoaders: 1,
               }
             },
             {
               loader: 'sass-loader',
               options: {
                 api: 'modern',
-                sourceMap: true
+                sourceMap: true,
+                sassOptions: {
+                  sourceMapIncludeSources: true
+                },
               },
             }
           ]
@@ -64,7 +68,7 @@ module.exports = (env, argv) => {
           use: [
             {
               loader: 'babel-loader',
-              options: { sourceMap: true }
+              options: { sourceMaps: true }
             }
           ]
         }
