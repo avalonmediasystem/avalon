@@ -93,7 +93,9 @@ class ReactButtonContainer extends Component {
               {...this.state.smeProps}
               structureIsSaved={this.getStructureStatus}
               /* Enable text editor for JSON structure */
-              showTextEditor={true} />
+              showTextEditor={true}
+              /* Include cookies in streaming requests */
+              withCredentials={true} />
           </Modal.Body>
         </Modal>
       </div>
