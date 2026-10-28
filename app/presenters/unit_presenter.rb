@@ -58,7 +58,7 @@ class UnitPresenter
       name: name,
       description: description,
       poster_url: poster_url,
-      url: collection_url
+      url: unit_url
     }
   end
 end
