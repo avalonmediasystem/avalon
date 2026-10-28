@@ -24,8 +24,8 @@ Unless required by applicable law or agreed to in writing, software distributed
    <%= csp_meta_tag %>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <%= favicon_link_tag %>
-    <%= javascript_include_tag "embed", "data-turbo-track": "reload", type: "module", nonce: true %>
-    <%= stylesheet_link_tag "embed_webpack", "data-turbo-track": "reload", nonce: true %>
+    <%= javascript_include_tag "embed", "data-turbo-track": "reload", type: "module", nonce: true, debug: false %>
+    <%= stylesheet_link_tag "embed_webpack", "data-turbo-track": "reload", nonce: true, debug: false %>
     <%= yield :page_styles %>
     <%= yield :additional_head_content %>
     <%= render "modules/google_analytics" %>
