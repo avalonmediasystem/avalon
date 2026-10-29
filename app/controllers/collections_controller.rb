@@ -38,7 +38,11 @@ class CollectionsController < CatalogController
     response = blacklight_config.repository.search(CollectionSearchBuilder.new(self))
     document = response.documents.find { |doc| doc.id == params[:id] }
     # Only go on if params[:id] is in @response.documents
-    raise CanCan::AccessDenied unless document
+    if current_ability.is_administrator? && document.blank?
+      raise ActiveFedora::ObjectNotFoundError
+    elsif document.blank?
+      raise CanCan::AccessDenied
+    end
     @doc_presenter = CollectionPresenter.new(document, view_context)
 
     respond_to do |format|
@@ -51,7 +55,11 @@ class CollectionsController < CatalogController
     response = blacklight_config.repository.search(CollectionSearchBuilder.new(self))
     document = response.documents.find { |doc| doc.id == params[:id] }
     # Only go on if params[:id] is in @response.documents
-    raise CanCan::AccessDenied unless document
+    if current_ability.is_administrator? && document.blank?
+      raise ActiveFedora::ObjectNotFoundError
+    elsif document.blank?
+      raise CanCan::AccessDenied
+    end
 
     @collection = SpeedyAF::Proxy::Admin::Collection.find(params['id'])
 

@@ -33,7 +33,11 @@ class UnitsController < CatalogController
     response = blacklight_config.repository.search(UnitSearchBuilder.new(self))
     document = response.documents.find { |doc| doc.id == params[:id] }
     # Only go on if params[:id] is in @response.documents
-    raise CanCan::AccessDenied unless document
+    if current_ability.is_administrator? && document.blank?
+      raise ActiveFedora::ObjectNotFoundError
+    elsif document.blank?
+      raise CanCan::AccessDenied
+    end
     @doc_presenter = UnitPresenter.new(document, view_context)
 
     respond_to do |format|
@@ -46,7 +50,11 @@ class UnitsController < CatalogController
     response = blacklight_config.repository.search(UnitSearchBuilder.new(self))
     document = response.documents.find { |doc| doc.id == params[:id] }
     # Only go on if params[:id] is in @response.documents
-    raise CanCan::AccessDenied unless document
+    if current_ability.is_administrator? && document.blank?
+      raise ActiveFedora::ObjectNotFoundError
+    elsif document.blank?
+      raise CanCan::AccessDenied
+    end
 
     @unit = SpeedyAF::Proxy::Admin::Unit.find(params['id'])
 
