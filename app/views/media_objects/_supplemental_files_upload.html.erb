@@ -37,5 +37,5 @@ Unless required by applicable law or agreed to in writing, software distributed
       </div>
     <% end %>
   <% end %>
-  <%= render partial: "supplemental_files_list", locals: { section: section, tag: tag, supplemental_files: section.supplemental_files } %>
+  <%= render partial: "supplemental_files_list", locals: { section: section, tag: tag, supplemental_files: section.supplemental_files(include_private: true) } %>
 </div>
