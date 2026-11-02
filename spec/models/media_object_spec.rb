@@ -875,7 +875,7 @@ describe MediaObject do
         expect(request).to have_been_requested
       end
     end
-    describe 'nil date_issued fromm bib_import' do
+    describe 'nil date_issued from bib_import' do
       let(:sru_url) { "http://zgate.example.edu:9000/db?version=1.1&operation=searchRetrieve&maximumRecords=1&recordSchema=marcxml&query=rec.id=#{bib_id}" }
       let(:sru_response) { File.read(File.expand_path("../../fixtures/#{bib_id}-unknown.xml",__FILE__)) }
       let!(:request) { stub_request(:get, sru_url).to_return(body: sru_response) }
@@ -889,7 +889,16 @@ describe MediaObject do
         expect(request).to have_been_requested
       end
     end
-
+    describe 'with multiple terms of use' do
+      let(:sru_url) { "http://zgate.example.edu:9000/db?version=1.1&operation=searchRetrieve&maximumRecords=1&recordSchema=marcxml&query=rec.id=#{bib_id}" }
+      let(:sru_response) { File.read(File.expand_path("../../fixtures/#{bib_id}-multiple_terms_of_use.xml",__FILE__)) }
+      let!(:request) { stub_request(:get, sru_url).to_return(body: sru_response) }
+      it 'should join multiple values' do
+        media_object.descMetadata.populate_from_catalog!(" #{bib_id} ", 'local')
+        expect(media_object.terms_of_use).to eq '540 540a'
+        expect(request).to have_been_requested
+      end
+    end
   end
 
   describe '#section_labels' do
@@ -1051,6 +1060,15 @@ describe MediaObject do
       media_object.terms_of_use = terms_of_use_value
       media_object.save!
       expect(media_object.reload.terms_of_use).to eq terms_of_use_value
+    end
+
+    context 'with multiple values' do
+      let(:terms_of_use_value_array) { [terms_of_use_value, 'Additional use'] }
+
+      it 'only keeps the first value' do
+        expect { media_object.terms_of_use = terms_of_use_value }.to change { media_object.terms_of_use }.from(nil).to(terms_of_use_value)
+        expect(media_object.to_solr["terms_of_use_ssi"]).to eq terms_of_use_value
+      end
     end
   end
 

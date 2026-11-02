@@ -138,7 +138,7 @@ module ModsTemplates
 
       define_template :_terms_of_use do |xml, text|
         xml.accessCondition(:type => 'use and reproduction'){
-          xml.text(text)
+          xml.text(Array(text).join('; '))
         }
       end
 
