@@ -27,6 +27,7 @@ class Admin::UnitsController < ApplicationController
     # Allow the number of units to be greater than 100
     blacklight_config.max_per_page = 100_000
     builder = ::UnitSearchBuilder.new([:add_access_controls_to_solr_params_if_not_admin, :only_wanted_models, :add_paging_to_solr], self).rows(100_000)
+    builder.avalon_solr_access_filters_logic = []
     if params[:user].present? && can?(:manage, Admin::Unit)
       user = User.find_by_username_or_email(params[:user])
       if user.blank?

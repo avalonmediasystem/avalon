@@ -128,6 +128,33 @@ namespace :avalon do
       puts("Backfill complete. #{count} records updated.")
     end
 
+    desc "Mark items with custom visibility as disable_inheritance"
+    task disable_inheritance: :environment do
+      MediaObject.skip_callback(:save, :before, :update_dependent_properties!)
+      MediaObject.skip_callback(:save, :before, :update_permalink)
+      MediaObject.skip_callback(:save, :after, :update_dependent_permalinks_job)
+      MediaObject.skip_callback(:save, :after, :remove_bookmarks)
+
+      restricted_group = Hydra::AccessControls::AccessRight::PERMISSION_TEXT_VALUE_AUTHENTICATED
+      # Gather ids of all MediaObjects that do have not disable_inheritance set and do not match their parent collection's default visibility
+      query = "has_model_ssim:MediaObject AND NOT disable_inheritance_bsi:[* TO *] AND ((read_access_group_ssim:public AND NOT (has_model_ssim:MediaObject AND {!graph to=id from=isGovernedBy_ssim}default_read_groups_ssim:public)) OR (read_access_group_ssim:#{restricted_group} AND NOT (has_model_ssim:MediaObject AND {!graph to=id from=isGovernedBy_ssim}default_read_groups_ssim:#{restricted_group})) OR (has_model_ssim:MediaObject AND NOT read_access_group_ssim:public AND NOT read_access_group_ssim:#{restricted_group} AND NOT (has_model_ssim:MediaObject AND NOT {!graph to=id from=isGovernedBy_ssim}{!terms f=default_read_groups_ssim}public,#{restricted_group})))"
+      ids = ActiveFedora::SolrService.instance.conn.get('select', params: { q: query, rows: 100_000, fl: [:id], defType: 'lucene' })["response"]["docs"].pluck("id")
+
+      logger = Logger.new(File.join(Rails.root, 'log/disable_inheritance.log'))
+      logger.info "Disabling inheritance for #{ids.size} items with different visibility than parent collection's default visibility"
+      logger.info "MediaObject_ID,MediaObject_Title,MediaObject_Visibility,Collection_ID,Collection_Name,Collection_DefaultVisibility"
+      ids.each do |id|
+        mo = MediaObject.find(id)
+        col = SpeedyAF::Proxy::Admin::Collection.find(mo.collection_id)
+        mo.disable_inheritance = true if mo.visibility != col.default_visibility
+        mo.save!(validate: false)
+        logger.info "#{mo.id},\"#{mo.title&.gsub('"','""')}\",#{mo.visibility},#{col.id},\"#{col.name&.gsub('"','""')}\",#{col.default_visibility}"
+      rescue StandardError => error
+        logger.error "Unable to disable inheritance for #{id}: #{error.message}"
+      end
+      logger.info "Completed"
+    end
+
     desc "Migrate existing units to new Admin::Unit model and associate them with the appropriate Admin::Collections"
     task admin_units: :environment do
       if ENV['unit_admin_username'].nil?

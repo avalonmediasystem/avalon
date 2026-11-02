@@ -12,21 +12,14 @@
 #   specific language governing permissions and limitations under the License.
 # ---  END LICENSE_HEADER BLOCK  ---
 
-class UnitSearchBuilder < Blacklight::SearchBuilder
-  include Blacklight::Solr::SearchBuilderBehavior
-  include Hydra::AccessControlsEnforcement
-  include Hydra::MultiplePolicyAwareAccessControlsEnforcement
-
-  self.default_processor_chain -= [:add_access_controls_to_solr_params]
+class UnitSearchBuilder < SearchBuilder
+  self.default_processor_chain -= [:add_access_controls_to_solr_params, :term_frequency_counts, :search_section_transcripts]
   # self.default_processor_chain += [:add_access_controls_to_solr_params_if_not_admin, :only_wanted_models, :gated_discovery_join]
-  self.default_processor_chain += [:gated_discovery_join, :only_wanted_models]
+  self.default_processor_chain += [:gated_discovery_join]
+  # self.avalon_solr_access_filters_logic = [:only_published_items, :limit_to_non_hidden_items, :limit_to_inheritance_enabled_items]
+  self.model = Admin::Unit
 
   attr_accessor :user
-
-  def only_wanted_models(solr_parameters)
-    solr_parameters[:fq] ||= []
-    solr_parameters[:fq] << 'has_model_ssim:"Admin::Unit"'
-  end
 
   def add_access_controls_to_solr_params_if_not_admin(solr_parameters)
     ability = Ability.new(user) if user.present?
@@ -38,8 +31,7 @@ class UnitSearchBuilder < Blacklight::SearchBuilder
     temp_solr_parameters = {}
     add_access_controls_to_solr_params_if_not_admin(temp_solr_parameters)
 
-    # For the CollectionSearchBuilder, a user can see a collection if they can see any media objects inside it.  Do we need to do the same here?
-    query =  "{!graph to=heldBy_ssim from=id}"
+    query =  "{!graph to=unit_ssim from=name_ssi}"
     subquery = temp_solr_parameters[:fq].present? ? "(#{temp_solr_parameters[:fq].join(') AND (')})" : "*:*"
     solr_parameters[:q] = "#{query}(#{subquery})"
     solr_parameters[:defType] = "lucene"
@@ -59,5 +51,8 @@ class UnitSearchBuilder < Blacklight::SearchBuilder
   def apply_gated_discovery(solr_parameters, permission_types = discovery_permissions, ability = current_ability)
     solr_parameters[:fq] ||= []
     solr_parameters[:fq] << gated_discovery_filters(permission_types, ability).reject(&:blank?).join(' OR ')
+    avalon_solr_access_filters_logic.each do |filter|
+      solr_parameters[:fq] << send(filter, discovery_permissions, current_ability)
+    end
   end
 end

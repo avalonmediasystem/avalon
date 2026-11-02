@@ -43,7 +43,7 @@ services:
       - CATALINA_OPTS=-Dfcrepo.autoversioning.enabled=false
 
   solr: &solr
-    image: solr:9
+    image: solr:9.10
     volumes:
       - ./solr/conf:/opt/solr/avalon_conf
       - solr:/var/solr
