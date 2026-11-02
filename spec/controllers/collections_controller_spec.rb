@@ -232,6 +232,26 @@ describe CollectionsController, type: :controller do
         end
       end
     end
+
+    context 'missing' do
+      context 'as admin' do
+        it 'returns the unknown item page' do
+          login_as :administrator
+          get 'show', params: { id: 'm1ss1ng' }
+          expect(response).to be_not_found
+          expect(response).to render_template("errors/unknown_pid")
+        end
+      end
+
+      context 'as regular user' do
+        it 'returns the restricted content page' do
+          login_as :user
+          get 'show', params: { id: 'm1ss1ng' }
+          expect(response).to be_unauthorized
+          expect(response).to render_template("errors/restricted_pid")
+        end
+      end
+    end
   end
 
   describe '#poster' do
@@ -253,6 +273,26 @@ describe CollectionsController, type: :controller do
       it 'returns 404' do
         get 'poster', params: { id: collection.id }
         expect(response).to be_not_found
+      end
+    end
+
+    context 'missing collection' do
+      context 'as admin' do
+        it 'returns the unknown item page' do
+          login_as :administrator
+          get 'show', params: { id: 'm1ss1ng' }
+          expect(response).to be_not_found
+          expect(response).to render_template("errors/unknown_pid")
+        end
+      end
+
+      context 'as regular user' do
+        it 'returns the restricted content page' do
+          login_as :user
+          get 'show', params: { id: 'm1ss1ng' }
+          expect(response).to be_unauthorized
+          expect(response).to render_template("errors/restricted_pid")
+        end
       end
     end
 
