@@ -21,7 +21,7 @@ describe Avalon::Batch do
     # TODO: mock filesystem with open file
     subject { Avalon::Batch.find_open_files([]) }
     xit 'returns open files' do
-      expect(subject).to include()
+      expect(subject).to be_present
     end
 
     context "too many arguments" do
@@ -29,9 +29,27 @@ describe Avalon::Batch do
       let(:files) { Array.new(5000, file) }
       subject { Avalon::Batch.find_open_files(files) }
 
-      xit 'logs an error and moves on' do
+      it 'logs an error and moves on' do
         expect(Rails.logger).to receive(:warn).with(match("too many files"))
-        expect(subject).to include()
+        subject
+      end
+    end
+
+    context "no files passed" do
+      it "doesn't run lsof" do
+        expect(described_class).not_to receive(:`)
+        subject
+      end
+    end
+
+    context "with filenames with invalid encoding" do
+      let(:good_file) { File.absolute_path("spec/fixtures/meow.wav") }
+      let(:bad_file) { File.absolute_path("spec/fixtures/Se\xF1orita.wav").force_encoding('UTF-8') }
+      let(:files) { [good_file, bad_file] }
+      subject { Avalon::Batch.find_open_files(files) }
+      it "skips bad files" do
+        expect(described_class).to receive(:`).with(match(good_file))
+        subject
       end
     end
   end
