@@ -27,13 +27,15 @@ module Avalon
     # rubocop:disable Metrics/MethodLength
     def self.find_open_files(files, base_directory = '.')
       found_files = []
+      return found_files unless files.present?
+
       lsof = find_lsof
       unless lsof
         Rails.logger.warn('lsof missing; continuing without open file checking')
         return found_files
       end
 
-      args = files.collect(&:to_json).join(' ')
+      args = files.collect {|f| f.to_json rescue '' }.join(' ')
       Dir.chdir(base_directory) do
         begin
           Timeout.timeout(5) do
@@ -59,6 +61,7 @@ module Avalon
 
     def self.extract_files_from_lsof_output(output)
       found_files = []
+      return found_files unless output.present?
       statuses = output.split(/[\u0000\n]+/)
       statuses.in_groups_of(4) do |group|
         file_status = Hash[group.compact.collect { |s| [s[0].to_sym, s[1..-1]] }]
