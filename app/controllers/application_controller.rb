@@ -323,7 +323,7 @@ class ApplicationController < ActionController::Base
       origin = request.env['omniauth.origin'].to_s
       # Validate origin is local
       # Regex taken from omniauth readme: https://github.com/omniauth/omniauth#origin-param
-      return nil unless origin.match?(%r{\A/(?![/\\])}) || origin.begin_with?(request.base_url)
+      return nil unless origin.match?(%r{\A/(?![/\\])}) || origin.start_with?(request.base_url)
       return nil if origin.end_with?('thumbnail', 'poster') || origin.include?('/users/')
       origin
     end
