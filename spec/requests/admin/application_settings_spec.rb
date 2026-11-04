@@ -81,11 +81,19 @@ RSpec.describe "/admin/application_settings", type: :request, skip_stubbing: tru
 
       context "arbitrary hashes" do
         it "successfully updates with a properly formatted hash" do
-          payload = { bib_retriever: '{ "default": { "protocol": "test" } }' }
+          payload = { bib_retriever: '{ "default": { "url": "test.local", "protocol": "test", "retriever_class": "SRU" } }' }
           expect do
             patch admin_application_settings_url, params: { admin_application_setting: payload }
             settings.reload
-          end.to change { settings.bib_retriever }.to({ "default" => { "protocol" => 'test' } })
+          end.to change { settings.bib_retriever }.to({ "default" => { "protocol" => 'test', "retriever_class" => "SRU", "url" => "test.local" } })
+        end
+
+        it "allows setting a blank hash" do
+          payload = { bib_retriever: '{}' }
+          expect do
+            patch admin_application_settings_url, params: { admin_application_setting: payload }
+            settings.reload
+          end.to change { settings.bib_retriever }.to({})
         end
 
         it "provides a flash message for improperly formatted hash" do
@@ -96,6 +104,16 @@ RSpec.describe "/admin/application_settings", type: :request, skip_stubbing: tru
           end.to_not change { settings.bib_retriever }
           expect(response).to redirect_to("/admin/application_settings")
           expect(flash[:error]).to eq("Settings update failed: Bib retriever config must be a JSON hash")
+        end
+
+        it "provides a flash message for hash missing required keys" do
+          payload = { intercom: '{ "default": { "url": "http://test.com" } }' }
+          expect do
+            patch admin_application_settings_url, params: { admin_application_setting: payload }
+            settings.reload
+          end.to_not change { settings.intercom }
+          expect(response).to redirect_to("/admin/application_settings")
+          expect(flash[:error]).to eq("Settings update failed: Intercom config 'default' missing required param: 'api_token'")
         end
       end
     end
