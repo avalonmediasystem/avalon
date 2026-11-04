@@ -7,8 +7,7 @@ class Admin::ApplicationSetting < ApplicationRecord
   # We have many more nested attributes than single layer, so have the default be accept nested
   attr_json_config(default_accepts_nested_attributes: { reject_if: :all_blank })
   validates :singleton_guard, inclusion: [0]
-  validate :validate_bib_retriever
-  validate :validate_intercom
+  validates :bib_retriever, :intercom, settings_hash: true
 
   # First level settings, disable accepts_nested_attributes for each one
   attr_json :name, :string, default: "Avalon Media System", accepts_nested_attributes: false
@@ -79,13 +78,5 @@ class Admin::ApplicationSetting < ApplicationRecord
 
   def respond_to_missing?(name, include_private = false)
     Settings.respond_to?(name) || super
-  end
-
-  def validate_bib_retriever
-    errors.add(:bib_retriever, "config must be a JSON hash") unless bib_retriever.is_a?(Hash)
-  end
-
-  def validate_intercom
-    errors.add(:intercom, "config must be a JSON hash") unless intercom.is_a?(Hash)
   end
 end
