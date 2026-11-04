@@ -13,6 +13,6 @@
 # ---  END LICENSE_HEADER BLOCK  ---
 
 class ApplicationMailer < ActionMailer::Base
-  default from: Settings.email.notification
+  default from: -> { Admin::ApplicationSetting.instance.email.notification }
   layout 'mailer'
 end

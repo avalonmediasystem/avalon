@@ -89,7 +89,7 @@ describe SupplementalFile do
         expect(subject.file).to be_attached
         expect(subject.file.content_type).to eq 'audio/x-wav'
         expect(subject.label).to eq 'meow.wav'
-        expect(subject.language).to eq Settings.caption_default.language
+        expect(subject.language).to eq Admin::ApplicationSetting.instance.caption_default.language
       end
     end
 
@@ -101,7 +101,7 @@ describe SupplementalFile do
         expect(subject.file).to be_attached
         expect(subject.file.content_type).to eq 'audio/x-wav'
         expect(subject.label).to eq 'meow.wav'
-        expect(subject.language).to eq Settings.caption_default.language
+        expect(subject.language).to eq Admin::ApplicationSetting.instance.caption_default.language
       end
     end
   end

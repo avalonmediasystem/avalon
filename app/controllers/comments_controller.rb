@@ -34,7 +34,7 @@ class CommentsController < ApplicationController
         CommentsMailer.contact_email(@comment.to_h).deliver_later
       rescue Errno::ECONNRESET => e
         logger.warn "The mail server does not appear to be responding \n #{e}"
-        flash[:notice] = "The message could not be sent in a timely fashion. Contact us at #{Settings.email.support} to report the problem."
+        flash[:notice] = "The message could not be sent in a timely fashion. Contact us at #{Admin::ApplicationSetting.instance.email.support} to report the problem."
         render action: "index"
       end
     else
@@ -49,12 +49,12 @@ class CommentsController < ApplicationController
   end
 
   def recaptcha_valid?
-    return true unless Settings.recaptcha.site_key.present?
-    options = case Settings.recaptcha.type
+    return true unless Admin::ApplicationSetting.instance.recaptcha.site_key.present?
+    options = case Admin::ApplicationSetting.instance.recaptcha.type
               when "v2_checkbox"
-                { model: @comment }
+                { model: @comment, secret_key: Admin::ApplicationSetting.instance.recaptcha.secret_key }
               when "v3"
-                { action: Settings.recaptcha.v3.action, minimum_score: Settings.recaptcha.v3.minimum_score }
+                { action: Admin::ApplicationSetting.instance.recaptcha.v3.action, minimum_score: Admin::ApplicationSetting.instance.recaptcha.v3.minimum_score, secret_key: Admin::ApplicationSetting.instance.recaptcha.secret_key }
               end
     verify_recaptcha(options)
   end

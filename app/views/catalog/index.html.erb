@@ -43,7 +43,7 @@ Unless required by applicable law or agreed to in writing, software distributed
     </section>
     <% end %>
 
-    <% if Settings.home_page&.carousel_collections&.present? %>
+    <% if Admin::ApplicationSetting.instance.home_page&.carousel_collections&.present? %>
     <section class="homepage-splash-collections">
       <div class="container">
         <h3 class="homepage-splash-collections-title serif-font"><a href="<%= collections_url %>">view all collections</a>

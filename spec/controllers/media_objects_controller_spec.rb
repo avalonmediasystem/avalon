@@ -116,7 +116,7 @@ describe MediaObjectsController, type: :controller do
   context 'Avalon Intercom methods' do
     let!(:target_collections) { [{'id' => 'abc123', 'name' => 'Test Collection'}] }
     before :all do
-      Settings.intercom = {
+      Admin::ApplicationSetting.instance.intercom = {
         'default' => {
           'url' => 'https://target.avalon.com/',
           'api_token' => 'a_valid_token',
@@ -127,7 +127,7 @@ describe MediaObjectsController, type: :controller do
       }
     end
     after :all do
-      Settings.intercom = nil
+      Admin::ApplicationSetting.instance.intercom = nil
     end
 
     describe '#intercom_collections' do
@@ -364,7 +364,7 @@ describe MediaObjectsController, type: :controller do
           end
         end
         context "accessibility enforcement disabled" do
-          before { allow(Settings.accessibility_compliance).to receive(:enforce).and_return(false) }
+          before { allow(Admin::ApplicationSetting.instance.accessibility_compliance).to receive(:enforce).and_return(false) }
           it "should create a new published media_object" do
             media_object = FactoryBot.create(:published_media_object)
             fields = {}
@@ -379,8 +379,8 @@ describe MediaObjectsController, type: :controller do
         end
         context "accessibility enforcement enabled" do
           before do
-            allow(Settings.accessibility_compliance).to receive(:enforce).and_return(true)
-            allow(Settings.accessibility_compliance).to receive(:compliance_date).and_return((DateTime.now - 1.week).strftime('%F'))
+            allow(Admin::ApplicationSetting.instance.accessibility_compliance).to receive(:enforce).and_return(true)
+            allow(Admin::ApplicationSetting.instance.accessibility_compliance).to receive(:compliance_date).and_return((DateTime.now - 1.week).strftime('%F'))
             # media_object has an attached masterfile with a caption, so force a negative caption check
             allow_any_instance_of(MediaObject).to receive(:has_captions).and_return(false)
           end
@@ -1450,7 +1450,7 @@ describe MediaObjectsController, type: :controller do
 
       it 'should cache .is_editor' do
         # Method will not cache if CDL is enabled and item is not checked out. Ensure CDL is disabled for testing.
-        allow(Settings.controlled_digital_lending).to receive(:enable).and_return(false)
+        allow(Admin::ApplicationSetting.instance.controlled_digital_lending).to receive(:enable).and_return(false)
 
         login_user media_object.collection.editors.first
         get :show, params: { id: media_object.id }
@@ -1458,8 +1458,8 @@ describe MediaObjectsController, type: :controller do
       end
 
       context 'With cdl enabled' do
-        before { allow(Settings.controlled_digital_lending).to receive(:enable).and_return(true) }
-        before { allow(Settings.controlled_digital_lending).to receive(:collections_enabled).and_return(true) }
+        before { allow(Admin::ApplicationSetting.instance.controlled_digital_lending).to receive(:enable).and_return(true) }
+        before { allow(Admin::ApplicationSetting.instance.controlled_digital_lending).to receive(:collections_enabled).and_return(true) }
         context "With check out" do
           context "Normal login" do
             it "administrators: should include lti, embed, and share" do
@@ -1624,7 +1624,7 @@ describe MediaObjectsController, type: :controller do
         end
       end
       context "With cdl disabled" do
-        before { allow(Settings.controlled_digital_lending).to receive(:enable).and_return(false) }
+        before { allow(Admin::ApplicationSetting.instance.controlled_digital_lending).to receive(:enable).and_return(false) }
         context "Normal login" do
           it "administrators: should include lti, embed, and share" do
             login_as(:administrator)
@@ -2032,13 +2032,13 @@ describe MediaObjectsController, type: :controller do
       before(:all) do
         Permalink.on_generate { |obj| "http://example.edu/permalink" }
         # Turn off accessibility_compliance for publishing tests
-        Settings.accessibility_compliance.enforce = false
+        Admin::ApplicationSetting.instance.accessibility_compliance.enforce = false
       end
 
       after(:all) do
         Permalink.on_generate { nil }
         # Cleanup settings after tests
-        Settings.accessibility_compliance.enforce = true
+        Admin::ApplicationSetting.instance.accessibility_compliance.enforce = true
       end
 
       it 'publishes media object' do
@@ -2282,8 +2282,8 @@ describe MediaObjectsController, type: :controller do
       end
 
       context "lending period" do
-        before { allow(Settings.controlled_digital_lending).to receive(:enable).and_return(true) }
-        before { allow(Settings.controlled_digital_lending).to receive(:collections_enabled).and_return(true) }
+        before { allow(Admin::ApplicationSetting.instance.controlled_digital_lending).to receive(:enable).and_return(true) }
+        before { allow(Admin::ApplicationSetting.instance.controlled_digital_lending).to receive(:collections_enabled).and_return(true) }
         it "sets a custom lending period" do
           expect { put :update, params: { id: media_object.id, step: 'access-control', donot_advance: 'true', add_lending_period_days: 7, add_lending_period_hours: 8 } }.to change { media_object.reload.lending_period }.to(633600)
         end

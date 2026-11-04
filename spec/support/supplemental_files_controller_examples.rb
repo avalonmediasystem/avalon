@@ -340,7 +340,7 @@ RSpec.shared_examples 'a nested controller for' do |object_class|
 
           expect(object.supplemental_files.first.id).to eq 1
           expect(object.supplemental_files.first.label).to eq 'captions.srt'
-          expect(object.supplemental_files.first.language).to eq Settings.caption_default.language
+          expect(object.supplemental_files.first.language).to eq Admin::ApplicationSetting.instance.caption_default.language
           expect(object.supplemental_files.first.tags).to be_empty
           expect(object.supplemental_files.first.file).to be_attached
         end
