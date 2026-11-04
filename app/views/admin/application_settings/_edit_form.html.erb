@@ -30,10 +30,10 @@ Unless required by applicable law or agreed to in writing, software distributed
     <%= render partial: 'text_field',
                locals: { form: form, field: :repository_read_only_mode_message, options: {} } %>
 
-    <%= render partial: 'text_area',
+    <%= render partial: 'json_text_area',
                locals: { form: form, field: :bib_retriever, options: {} } %>
 
-    <%= render partial: 'text_area',
+    <%= render partial: 'json_text_area',
                locals: { form: form, field: :intercom, options: {} } %>
 
     <%= render partial: 'nested_form',
