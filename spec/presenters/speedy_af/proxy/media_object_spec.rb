@@ -59,6 +59,7 @@ describe SpeedyAF::Proxy::MediaObject do
       expect(presenter.rights_statement).to eq media_object.rights_statement
       expect(presenter.terms_of_use).to eq media_object.terms_of_use
       expect(presenter.physical_description).to eq media_object.physical_description
+      expect(presenter.physical_format).to eq media_object.physical_format
       expect(presenter.related_item_url).to eq media_object.related_item_url
       expect(presenter.table_of_contents).to eq media_object.table_of_contents
       expect(presenter.note).to eq media_object.note

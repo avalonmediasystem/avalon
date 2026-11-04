@@ -34,3 +34,83 @@ rights_statements:
   http://rightsstatements.org/vocab/CNE/1.0/: Copyright Not Evaluated
   http://rightsstatements.org/vocab/UND/1.0/: Copyright Undetermined
   http://rightsstatements.org/vocab/NKC/1.0/: No Known Copyright
+physical_formats:
+  https://pbcore.org/pbcore-controlled-vocabularies/instantiationphysical-audio-vocabulary/#1InchAudioTape: 1 inch audio tape
+  https://pbcore.org/pbcore-controlled-vocabularies/instantiationphysical-video-vocabulary/#1InchVideotape: 1 inch videotape
+  https://pbcore.org/pbcore-controlled-vocabularies/instantiationphysical-audio-vocabulary/#HalfInchAudioTape: 1/2 inch audio tape
+  https://pbcore.org/pbcore-controlled-vocabularies/instantiationphysical-video-vocabulary/#HalfInchVideotape: 1/2 inch videotape
+  https://pbcore.org/pbcore-controlled-vocabularies/instantiationphysical-audio-vocabulary/#QuarterInchAudioCassette: 1/4 inch audio cassette
+  https://pbcore.org/pbcore-controlled-vocabularies/instantiationphysical-audio-vocabulary/#QuarterInchAudioTape: 1/4 inch audio tape
+  https://pbcore.org/pbcore-controlled-vocabularies/instantiationphysical-video-vocabulary/#QuarterInchVideotape: 1/4 inch videotape
+  https://pbcore.org/pbcore-controlled-vocabularies/instantiationphysical-film-vocabulary/#16mmFilm: 16mm film
+  https://pbcore.org/pbcore-controlled-vocabularies/instantiationphysical-audio-vocabulary/#2InchAudioTape: 2 inch audio tape
+  https://pbcore.org/pbcore-controlled-vocabularies/instantiationphysical-video-vocabulary/#2InchVideotape: 2 inch videotape
+  https://pbcore.org/pbcore-controlled-vocabularies/instantiationphysical-film-vocabulary/#22mmFilm: 22mm film
+  https://pbcore.org/pbcore-controlled-vocabularies/instantiationphysical-film-vocabulary/#28mmFilm: 28mm film
+  https://pbcore.org/pbcore-controlled-vocabularies/instantiationphysical-film-vocabulary/#35mmFilm: 35mm film
+  https://pbcore.org/pbcore-controlled-vocabularies/instantiationphysical-film-vocabulary/#70mmFilm: 70mm film
+  https://pbcore.org/pbcore-controlled-vocabularies/instantiationphysical-audio-vocabulary/#8Track: 8-track
+  https://pbcore.org/pbcore-controlled-vocabularies/instantiationphysical-film-vocabulary/#8mmFilm: 8mm film
+  https://pbcore.org/pbcore-controlled-vocabularies/instantiationphysical-film-vocabulary/#9andaHalfmmFilm: 9.5mm film
+  https://pbcore.org/pbcore-controlled-vocabularies/instantiationphysical-audio-vocabulary/#AluminumDisc: Aluminum disc
+  https://pbcore.org/pbcore-controlled-vocabularies/instantiationphysical-audio-vocabulary/#AudioCD: Audio CD
+  https://pbcore.org/pbcore-controlled-vocabularies/instantiationphysical-audio-vocabulary/#AudioCassette: Audio cassette
+  https://pbcore.org/pbcore-controlled-vocabularies/instantiationphysical-video-vocabulary/#Betacam: Betacam
+  https://pbcore.org/pbcore-controlled-vocabularies/instantiationphysical-video-vocabulary/#BetacamSX: Betacam SX
+  https://pbcore.org/pbcore-controlled-vocabularies/instantiationphysical-video-vocabulary/#Betamax: Betamax
+  https://pbcore.org/pbcore-controlled-vocabularies/instantiationphysical-video-vocabulary/#BluRayDisc: Blu-ray disc
+  https://pbcore.org/pbcore-controlled-vocabularies/instantiationphysical-video-vocabulary/#Catrivision: Catrivision
+  https://pbcore.org/pbcore-controlled-vocabularies/instantiationphysical-video-vocabulary/#D1: D1
+  https://pbcore.org/pbcore-controlled-vocabularies/instantiationphysical-video-vocabulary/#D2: D2
+  https://pbcore.org/pbcore-controlled-vocabularies/instantiationphysical-video-vocabulary/#D3: D3
+  https://pbcore.org/pbcore-controlled-vocabularies/instantiationphysical-video-vocabulary/#D5: D5
+  https://pbcore.org/pbcore-controlled-vocabularies/instantiationphysical-video-vocabulary/#D6: D6
+  https://pbcore.org/pbcore-controlled-vocabularies/instantiationphysical-video-vocabulary/#D9: D9
+  https://pbcore.org/pbcore-controlled-vocabularies/instantiationphysical-audio-vocabulary/#DAT: DAT
+  https://pbcore.org/pbcore-controlled-vocabularies/instantiationphysical-video-vocabulary/#DCT: DCT
+  https://pbcore.org/pbcore-controlled-vocabularies/instantiationphysical-audio-vocabulary/#DDS: DDS
+  https://pbcore.org/pbcore-controlled-vocabularies/instantiationphysical-audio-vocabulary/#DTRS: DTRS
+  https://pbcore.org/pbcore-controlled-vocabularies/instantiationphysical-video-vocabulary/#DV: DV
+  https://pbcore.org/pbcore-controlled-vocabularies/instantiationphysical-video-vocabulary/#DVCAM: DVCAM
+  https://pbcore.org/pbcore-controlled-vocabularies/instantiationphysical-video-vocabulary/#DVCPRO: DVCPRO
+  https://pbcore.org/pbcore-controlled-vocabularies/instantiationphysical-video-vocabulary/#DVD: DVD
+  https://pbcore.org/pbcore-controlled-vocabularies/instantiationphysical-video-vocabulary/#DigitalBetacam: Digital Betacam
+  https://pbcore.org/pbcore-controlled-vocabularies/instantiationphysical-video-vocabulary/#Digital8: Digital8
+  https://pbcore.org/pbcore-controlled-vocabularies/instantiationphysical-video-vocabulary/#EIAJ: EIAJ
+  https://pbcore.org/pbcore-controlled-vocabularies/instantiationphysical-video-vocabulary/#EVD: EVD
+  https://pbcore.org/pbcore-controlled-vocabularies/instantiationphysical-film-vocabulary/#Film: Film
+  https://pbcore.org/pbcore-controlled-vocabularies/instantiationphysical-audio-vocabulary/#FlexiDisc: Flexi Disc
+  https://pbcore.org/pbcore-controlled-vocabularies/instantiationphysical-audio-vocabulary/#GroovedDictabelt: Grooved Dictabelt
+  https://pbcore.org/pbcore-controlled-vocabularies/instantiationphysical-audio-vocabulary/#GroovedAnalogDisc: Grooved analog disc
+  https://pbcore.org/pbcore-controlled-vocabularies/instantiationphysical-video-vocabulary/#HDCAM: HDCAM
+  https://pbcore.org/pbcore-controlled-vocabularies/instantiationphysical-video-vocabulary/#HDV: HDV
+  https://pbcore.org/pbcore-controlled-vocabularies/instantiationphysical-video-vocabulary/#Hi8: Hi8
+  https://pbcore.org/pbcore-controlled-vocabularies/instantiationphysical-audio-vocabulary/#LacquerDisc: Lacquer disc
+  https://pbcore.org/pbcore-controlled-vocabularies/instantiationphysical-video-vocabulary/#LaserDisc: LaserDisc
+  https://pbcore.org/pbcore-controlled-vocabularies/instantiationphysical-video-vocabulary/#MII: MII
+  https://pbcore.org/pbcore-controlled-vocabularies/instantiationphysical-audio-vocabulary/#MagneticDictabelt: Magnetic Dictabelt
+  https://pbcore.org/pbcore-controlled-vocabularies/instantiationphysical-audio-vocabulary/#MiniCassette: Mini-cassette
+  https://pbcore.org/pbcore-controlled-vocabularies/instantiationphysical-video-vocabulary/#MiniDV: MiniDV
+  https://pbcore.org/pbcore-controlled-vocabularies/instantiationphysical-audio-vocabulary/#OpenReelAudiotape: Open reel audiotape
+  https://pbcore.org/pbcore-controlled-vocabularies/instantiationphysical-video-vocabulary/#OpenReelVideoTape: Open reel videotape
+  https://pbcore.org/pbcore-controlled-vocabularies/instantiationphysical-video-vocabulary/#OpticalVideoDisc: Optical video disc
+  https://pbcore.org/pbcore-controlled-vocabularies/instantiationphysical-audio-vocabulary/#PCMBetamax: PCM Betamax
+  https://pbcore.org/pbcore-controlled-vocabularies/instantiationphysical-audio-vocabulary/#PCMUmatic: PCM U-matic
+  https://pbcore.org/pbcore-controlled-vocabularies/instantiationphysical-audio-vocabulary/#PCMVHS: PCM VHS
+  https://pbcore.org/pbcore-controlled-vocabularies/instantiationphysical-audio-vocabulary/#PianoRoll: Piano roll
+  https://pbcore.org/pbcore-controlled-vocabularies/instantiationphysical-audio-vocabulary/#PlasticCylinder: Plastic cylinder
+  https://pbcore.org/pbcore-controlled-vocabularies/instantiationphysical-audio-vocabulary/#ShellacDisc: Shellac disc
+  https://pbcore.org/pbcore-controlled-vocabularies/instantiationphysical-film-vocabulary/#Super16mmFilm: Super 16mm film
+  https://pbcore.org/pbcore-controlled-vocabularies/instantiationphysical-film-vocabulary/#Super8mmFilm: Super 8mm film
+  https://pbcore.org/pbcore-controlled-vocabularies/instantiationphysical-audio-vocabulary/#SuperAudioCD: Super Audio CD
+  https://pbcore.org/pbcore-controlled-vocabularies/instantiationphysical-video-vocabulary/#SuperVideoCD: Super Video CD
+  https://pbcore.org/pbcore-controlled-vocabularies/instantiationphysical-video-vocabulary/#Umatic: U-matic
+  https://pbcore.org/pbcore-controlled-vocabularies/instantiationphysical-video-vocabulary/#UniversalMediaDisc: Universal Media Disc
+  https://pbcore.org/pbcore-controlled-vocabularies/instantiationphysical-video-vocabulary/#Vcord: V-Cord
+  https://pbcore.org/pbcore-controlled-vocabularies/instantiationphysical-video-vocabulary/#VHS: VHS
+  https://pbcore.org/pbcore-controlled-vocabularies/instantiationphysical-video-vocabulary/#VX: VX
+  https://pbcore.org/pbcore-controlled-vocabularies/instantiationphysical-video-vocabulary/#Video8: Video8
+  https://pbcore.org/pbcore-controlled-vocabularies/instantiationphysical-video-vocabulary/#Videocassette: Videocassette
+  https://pbcore.org/pbcore-controlled-vocabularies/instantiationphysical-audio-vocabulary/#VinylRecording: Vinyl recording
+  https://pbcore.org/pbcore-controlled-vocabularies/instantiationphysical-audio-vocabulary/#WaxCylinder: Wax cylinder
+  https://pbcore.org/pbcore-controlled-vocabularies/instantiationphysical-audio-vocabulary/#WireRecording: Wire recording

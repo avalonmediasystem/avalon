@@ -274,6 +274,7 @@ describe MediaObjectsController, type: :controller do
       :terms_of_use,
       :table_of_contents,
       :physical_description,
+      :physical_format,
       :other_identifier,
       :rights_statement,
       :series
