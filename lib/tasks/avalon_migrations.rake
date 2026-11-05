@@ -234,7 +234,7 @@ namespace :avalon do
       SETTINGS_KEYS = [:name, :google_analytics_tracking_id,
                        :repository_read_only_mode, :repository_read_only_mode_message,
                        :accessibility_compliance, :bib_retriever, :caption_default,
-                       :controlled_digital_lending, :dropbox, :email,
+                       :controlled_digital_lending, :email,
                        :home_page, :intercom, :master_file_management, :recaptcha,
                        :supplemental_files, :waveform].freeze
 
@@ -254,7 +254,24 @@ namespace :avalon do
 
       db_settings = Admin::ApplicationSetting.where(singleton_guard: 0).first_or_initialize
       SETTINGS_KEYS.each do |key|
-        next unless Settings.respond_to?(key)
+        # Handle disabled settings
+        unless Settings.respond_to?(key)
+          # Check for existing database entries
+          value = db_settings.send(key)
+          # If value is nil the setting stays disabled and we are safe to move on
+          next if value.nil?
+          # If value is a nested setting we need to expand the setting via
+          # conversion to hash, otherwise entry will just return
+          # something like <NestedAppSetting ID>
+          value = value.class.module_parents.include?(NestedAppSetting) ? value.to_h : value
+          # We need to explicitly list what each setting is falling back to.
+          # The primary concern here is that certain settings have default
+          # values which could silently enable features (Intercom) that had
+          # been disabled by the implementer. Providing this feedback will allow
+          # easier review and remediation post migration.
+          puts("'#{key}' not found in Settings. Falling back to: #{value}")
+          next
+        end
         value = Settings.send(key)
         value = value.class == Config::Options ? value.to_h : value
         db_settings.send("#{key}=".to_sym, value)

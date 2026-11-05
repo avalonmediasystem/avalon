@@ -7,23 +7,6 @@ module NestedAppSetting
   # Second level of nesting. These have to come first because the
   # class has to exist to be referenced in the higher nesting level.
 
-  # Bibretriever
-  class BibRetrieverDefault < JsonModel
-    attr_json :protocol, :string, default: 'sru'
-    attr_json :url, :string, default: 'http://zgate.library.example.edu:9000/catdb'
-    attr_json :query, :string, default: 'rec.id=%{bib_id}'
-    attr_json :namespace, :string, default: nil
-    attr_json :retriever_class, :string, default: 'Avalon::BibRetriever::SRU'
-    attr_json :retriever_class_require, :string, default: 'avalon/bib_retriever/sru'
-  end
-
-  # Dropbox
-  class GoogleDriveSettings < JsonModel
-    attr_json :client_id, :string
-    attr_json :client_secret, :string
-    attr_json :redis_token_store_url, :string
-  end
-
   # Email
   class EmailConfig < JsonModel
     attr_json :address, :string, default: "mail-relay.iu.edu"
@@ -31,29 +14,10 @@ module NestedAppSetting
     attr_json :enable_starttls_auto, :boolean, default: false
   end
 
-  # Intercom
-  class IntercomDefault < JsonModel
-    attr_json :url, :string
-    attr_json :api_token, :string
-    attr_json :import_bib_record, :boolean, default: true
-    attr_json :publish, :boolean, default: false
-    attr_json :remove_identifiers, :boolean, default: false
-    attr_json :push_label, :string
-  end
-
   # Recaptcha
   class Recaptcha3 < JsonModel
     attr_json :action, :string, default: 'comment'
     attr_json :minimum_score, :float, default: 0.5
-  end
-
-  # Dropbox
-  class SharepointSettings < JsonModel
-    attr_json :client_id, :string
-    attr_json :client_secret, :string
-    attr_json :tenant_id, :string
-    attr_json :scope, :string, default: 'offline_access https://graph.microsoft.com/.default'
-    attr_json :redirect_uri, :string
   end
 
   # Top level of nesting
@@ -67,10 +31,6 @@ module NestedAppSetting
     attr_json :message, :string
 
     validates :type, inclusion: { in: ['success', 'notice', 'error', 'alert', 'off'] }
-  end
-
-  class BibRetriever < JsonModel
-    attr_json :default, BibRetrieverDefault.to_type, default: -> { BibRetrieverDefault.new }
   end
 
   class CaptionDefault < JsonModel
@@ -94,13 +54,6 @@ module NestedAppSetting
     attr_json :default_lending_period, :string, default: 'P14D'
   end
 
-  class Dropbox < JsonModel
-    attr_json :path, :string, default: 's3://masterfiles/dropbox/'
-    attr_json :upload_uri, :string, default: 's3://masterfiles/dropbox/'
-    attr_json :google_drive, GoogleDriveSettings.to_type, default: -> { GoogleDriveSettings.new }
-    attr_json :sharepoint, SharepointSettings.to_type, default: -> { SharepointSettings.new }
-  end
-
   class Email < JsonModel
     attr_json :comments, :string
     attr_json :notification, :string
@@ -113,10 +66,6 @@ module NestedAppSetting
   class HomePage < JsonModel
     attr_json :featured_collections, :string, array: true
     attr_json :carousel_collections, :string, array: true
-  end
-
-  class Intercom < JsonModel
-    attr_json :default, IntercomDefault.to_type, default: -> { IntercomDefault.new }
   end
 
   class MasterFileManagement < JsonModel
