@@ -35,7 +35,7 @@ describe 'CommentsMailer' do
     let(:mail) { CommentsMailer.contact_email(comment.to_h) }
 
     it 'has correct e-mail address' do
-      expect(mail).to deliver_to(Admin::ApplicationSetting.instance.email.comments)
+      expect(mail).to deliver_to(Settings.email.comments)
     end
 
     it 'has correct subject' do
