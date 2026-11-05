@@ -151,15 +151,11 @@ RSpec.configure do |config|
     # throughout test suite
     settings_instance = Admin::ApplicationSetting.instance
     allow(Admin::ApplicationSetting).to receive(:instance).and_return(settings_instance)
-    # Stub email, bib retriever, intercom
+    # Stub email
     email_double = double('NestedAppSetting::Email', comments: 'comment@example.com', notification: 'notification@example.com', support: 'support@example.com', accessibility_request_link: nil )
     allow(email_double).to receive(:notification=)
-    bib_stub = { 'default' => { 'protocol' => 'sru', 'url' => 'http://zgate.example.edu:9000/db', 'query' => 'rec.id=%{bib_id}', 'namespace' => nil, 'retriever_class' => 'Avalon::BibRetriever::SRU', 'retriever_class_require' => 'avalon/bib_retriever/sru' } }
-    intercom_stub = { 'default' => { 'url' => nil, 'api_token' => nil, 'import_bib_record' => true, 'publish' => false, 'remove_identifiers' => false, 'push_label' => 'Push to Other Avalon' } }
 
     allow(Admin::ApplicationSetting.instance).to receive(:email).and_return(email_double)
-    allow(Admin::ApplicationSetting.instance).to receive(:bib_retriever).and_return(bib_stub)
-    allow(Admin::ApplicationSetting.instance).to receive(:intercom).and_return(intercom_stub)
   end
 
   config.after :each do
