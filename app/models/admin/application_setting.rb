@@ -21,7 +21,6 @@ class Admin::ApplicationSetting < ApplicationRecord
   attr_json :accessibility_compliance, AccessibilityCompliance.to_type, default: -> { AccessibilityCompliance.new }
   attr_json :caption_default, CaptionDefault.to_type, default: -> { CaptionDefault.new }
   attr_json :controlled_digital_lending, ControlledDigitalLending.to_type, default: -> { ControlledDigitalLending.new }
-  attr_json :email, Email.to_type, default: -> { Email.new }
   attr_json :flash_message, ApplicationFlashMessage.to_type, default: -> { ApplicationFlashMessage.new }
   attr_json :home_page, HomePage.to_type, default: -> { HomePage.new }
   attr_json :master_file_management, MasterFileManagement.to_type, default: -> { MasterFileManagement.new }

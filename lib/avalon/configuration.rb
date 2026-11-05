@@ -115,7 +115,7 @@ module Avalon
 
     # To be called as Avalon::Configuration.accessibility_request_link
     def accessibility_request_link
-      Admin::ApplicationSetting.instance.email&.accessibility_request_link || ''
+      Settings.email&.accessibility_request_link || ''
     end
 
     private

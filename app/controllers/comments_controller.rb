@@ -34,7 +34,7 @@ class CommentsController < ApplicationController
         CommentsMailer.contact_email(@comment.to_h).deliver_later
       rescue Errno::ECONNRESET => e
         logger.warn "The mail server does not appear to be responding \n #{e}"
-        flash[:notice] = "The message could not be sent in a timely fashion. Contact us at #{Admin::ApplicationSetting.instance.email.support} to report the problem."
+        flash[:notice] = "The message could not be sent in a timely fashion. Contact us at #{Settings.email.support} to report the problem."
         render action: "index"
       end
     else
