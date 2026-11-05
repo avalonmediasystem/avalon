@@ -134,6 +134,11 @@ RSpec.configure do |config|
   end
 
   config.after :suite do
+    if Settings.spec && Settings.spec['fake_dropbox']
+      FileUtils.remove_dir Settings.spec['fake_dropbox'], true
+      Settings.dropbox.path = Settings.spec['real_dropbox']
+      Settings.spec = nil
+    end
     enable_production_minter!
     WebMock.allow_net_connect!
   end

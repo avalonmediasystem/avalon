@@ -668,7 +668,7 @@ describe Admin::Collection do
 
     it 'removes bad characters from collection name' do
       collection.name = '../../secret.rb'
-      expect(Dir).to receive(:mkdir).with( File.join(Admin::ApplicationSetting.instance.dropbox.path, '______secret_rb') )
+      expect(Dir).to receive(:mkdir).with( File.join(Settings.dropbox.path, '______secret_rb') )
       allow(Dir).to receive(:mkdir) # stubbing this out in a before(:each) block will effect where mkdir is used elsewhere (i.e. factories)
       collection.send(:create_dropbox_directory!)
     end
@@ -681,9 +681,9 @@ describe Admin::Collection do
     it 'uses a different directory name if the directory exists' do
       collection.name = 'african art'
       FakeFS.activate!
-      FileUtils.mkdir_p(File.join(Admin::ApplicationSetting.instance.dropbox.path, 'african_art'))
-      FileUtils.mkdir_p(File.join(Admin::ApplicationSetting.instance.dropbox.path, 'african_art_2'))
-      expect(FileUtils).to receive(:mkdir_p).with(File.join(Admin::ApplicationSetting.instance.dropbox.path, 'african_art_3'))
+      FileUtils.mkdir_p(File.join(Settings.dropbox.path, 'african_art'))
+      FileUtils.mkdir_p(File.join(Settings.dropbox.path, 'african_art_2'))
+      expect(FileUtils).to receive(:mkdir_p).with(File.join(Settings.dropbox.path, 'african_art_3'))
       collection.send(:create_dropbox_directory!)
       FakeFS.deactivate!
     end
@@ -709,7 +709,7 @@ describe Admin::Collection do
 
     it 'handles Unicode collection names correctly' do
       collection.name = collection_name
-      expect(Dir).to receive(:mkdir).with( File.join(Admin::ApplicationSetting.instance.dropbox.path, collection_dir) )
+      expect(Dir).to receive(:mkdir).with( File.join(Settings.dropbox.path, collection_dir) )
       allow(Dir).to receive(:mkdir)
       collection.send(:create_dropbox_directory!)
     end
@@ -721,17 +721,24 @@ describe Admin::Collection do
     let(:corrected_collection_name) { "Collection__@_$___*()____123/" }
     let(:collection) { FactoryBot.build(:collection) }
     let(:my_client) { Aws::S3::Client.new }
-    let!(:old_path) { Admin::ApplicationSetting.instance.dropbox.path }
+    let!(:old_path) { Settings.dropbox.path }
+
+    before do
+      Settings.dropbox.path = "s3://#{bucket}/dropbox"
+    end
 
     it "should be able to handle special S3 avoidable characters and create object" do
       remote_object = double(key: corrected_collection_name, bucket_name: bucket, exists?: false)
       allow(Aws::S3::Client).to receive(:new).and_return(my_client)
       allow(Aws::S3::Object).to receive(:new).and_return(remote_object)
-      allow(Admin::ApplicationSetting.instance.dropbox).to receive(:path).and_return("s3://#{bucket}/dropbox")
 
       collection.name = collection_name
       expect(my_client).to receive(:put_object).with(bucket: bucket, key: corrected_collection_name)
       collection.send(:create_s3_dropbox_directory!)
+    end
+
+    after do
+      Settings.dropbox.path = old_path
     end
   end
 
