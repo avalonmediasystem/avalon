@@ -42,7 +42,7 @@ class SpeedyAF::Proxy::Admin::Collection < SpeedyAF::Base
   end
 
   def dropbox_absolute_path( name = nil )
-    File.join(Admin::ApplicationSetting.instance.dropbox.path, name || dropbox_directory_name)
+    File.join(Settings.dropbox.path, name || dropbox_directory_name)
   end
 
   def persisted?

@@ -47,7 +47,7 @@ module MediaObjectsHelper
   def dropbox_url collection
      ic = Iconv.new('UTF-8//IGNORE', 'UTF-8')
      path = Addressable::URI.escape_component(collection.dropbox_directory_name || "", %r{[/\\%& #]})
-     url = File.join(Admin::ApplicationSetting.instance.dropbox.upload_uri, path)
+     url = File.join(Settings.dropbox.upload_uri, path)
      ic.iconv(url)
   end
 
