@@ -17,7 +17,7 @@ class BatchRegistriesMailer < ApplicationMailer
     @package = package
     @errors = errors
     email = package.user.email if package.user
-    email ||= Admin::ApplicationSetting.instance.email.notification
+    email ||= Settings.email.notification
     mail(
       to: email,
       subject: "Failed batch ingest registration for: #{package.title}"
@@ -29,7 +29,7 @@ class BatchRegistriesMailer < ApplicationMailer
     email = package.user.email
     mail(
       to: email,
-      from: Admin::ApplicationSetting.instance.email.notification,
+      from: Settings.email.notification,
       subject: "Successfully registered batch ingest: #{package.title}"
     )
   end
@@ -39,7 +39,7 @@ class BatchRegistriesMailer < ApplicationMailer
     @batch_registry = batch_registry
     @user = User.find(@batch_registry.user_id)
     email = @user.email unless @user.nil?
-    email ||= Admin::ApplicationSetting.instance.email.notification
+    email ||= Settings.email.notification
     @processed_items = BatchEntries.where(batch_registries_id: @batch_registry.id, complete: true).order(position: :asc)
     @supplemental_file_errors = @processed_items.select { |be| be.error == true }.compact
     @error_items = BatchEntries.where(batch_registries_id: @batch_registry.id, error: true).order(position: :asc)
@@ -52,7 +52,7 @@ class BatchRegistriesMailer < ApplicationMailer
 
     mail(
       to: email,
-      from: Admin::ApplicationSetting.instance.email.notification,
+      from: Settings.email.notification,
       subject: "#{prefix} Batch Registry #{@batch_registry.file_name} for #{collection_text} has completed"
     )
   end
@@ -60,13 +60,13 @@ class BatchRegistriesMailer < ApplicationMailer
   # Used to send an email when a batch appears to be stalled
   def batch_registration_stalled_mailer(batch_registry)
     @batch_registry = batch_registry
-    email = Admin::ApplicationSetting.instance.email.notification
+    email = Settings.email.notification
     collection_text = Admin::Collection.find(@batch_registry.collection).name if Admin::Collection.exists?(@batch_registry.collection)
     collection_text ||= "Collection"
 
     mail(
       to: email,
-      from: Admin::ApplicationSetting.instance.email.notification,
+      from: Settings.email.notification,
       subject: "Batch Registry #{@batch_registry.file_name} for #{collection_text} has stalled"
     )
   end
@@ -76,7 +76,7 @@ class BatchRegistriesMailer < ApplicationMailer
     @batch_registry = batch_registry
     @user = User.find(@batch_registry.user_id)
     @email = @user.email unless @user.nil?
-    @email ||= Admin::ApplicationSetting.instance.email.notification
+    @email ||= Settings.email.notification
     @collection_text = Admin::Collection.find(@batch_registry.collection).name if Admin::Collection.exists?(@batch_registry.collection)
     @collection_text ||= "Collection"
 
@@ -84,7 +84,7 @@ class BatchRegistriesMailer < ApplicationMailer
 
     mail(
       to: @email,
-      from: Admin::ApplicationSetting.instance.email.notification,
+      from: Settings.email.notification,
       subject: "#{@status}: Batch Registry #{@batch_registry.file_name} for #{@collection_text} has finished encoding"
     )
   end

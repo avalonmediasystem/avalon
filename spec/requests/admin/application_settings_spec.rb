@@ -119,13 +119,13 @@ RSpec.describe "/admin/application_settings", type: :request, skip_stubbing: tru
     end
 
     context 'nested settings' do
-      let(:payload) { { email_attributes: { mailer: 'aws', config: { address: 'http://local.test' } } } }
+      let(:payload) { { recaptcha_attributes: { v3: { action: 'test', minimum_score: 0.2 } } } }
       it "successfully updates" do
         expect do
           patch admin_application_settings_url, params: { admin_application_setting: payload }
           settings.reload
-        end.to change { settings.email.mailer }.from('smtp').to('aws')
-           .and change { settings.email.config.address }.from('mail-relay.iu.edu').to('http://local.test')
+        end.to change { settings.recaptcha.v3.action }.from('comment').to('test')
+           .and change { settings.recaptcha.v3.minimum_score }.from(0.5).to(0.2)
       end
     end
   end

@@ -22,6 +22,7 @@ Unless required by applicable law or agreed to in writing, software distributed
     <h4 class='app-setting-label'><%= field.to_s.humanize %></h4>
   <% end %>
   <% subfields.each do |s| %>
+    <% options = options.merge({ multivalued: true }) if s[:multivalued] %>
     <%= render partial: s[:type],
                locals: { form: f, field: s[:name], parent: f.object, options: options, subfields: s[:subfields], values: s[:values] }.compact %>
   <% end %>

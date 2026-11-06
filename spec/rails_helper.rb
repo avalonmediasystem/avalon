@@ -134,6 +134,11 @@ RSpec.configure do |config|
   end
 
   config.after :suite do
+    if Settings.spec && Settings.spec['fake_dropbox']
+      FileUtils.remove_dir Settings.spec['fake_dropbox'], true
+      Settings.dropbox.path = Settings.spec['real_dropbox']
+      Settings.spec = nil
+    end
     enable_production_minter!
     WebMock.allow_net_connect!
   end
@@ -151,11 +156,6 @@ RSpec.configure do |config|
     # throughout test suite
     settings_instance = Admin::ApplicationSetting.instance
     allow(Admin::ApplicationSetting).to receive(:instance).and_return(settings_instance)
-    # Stub email
-    email_double = double('NestedAppSetting::Email', comments: 'comment@example.com', notification: 'notification@example.com', support: 'support@example.com', accessibility_request_link: nil )
-    allow(email_double).to receive(:notification=)
-
-    allow(Admin::ApplicationSetting.instance).to receive(:email).and_return(email_double)
   end
 
   config.after :each do

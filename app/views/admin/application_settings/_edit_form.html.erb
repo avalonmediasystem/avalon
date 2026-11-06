@@ -53,17 +53,6 @@ Unless required by applicable law or agreed to in writing, software distributed
                                      { name: :default_lending_period, type: 'text_field' } ], options: {} } %>
 
     <%= render partial: 'nested_form',
-               locals: { form: form, field: :email,
-                         subfields: [{ name: :comments, type: 'text_field' },
-                                     { name: :notification, type: 'text_field' },
-                                     { name: :support, type: 'text_field'},
-                                     { name: :mailer, type: 'text_field'},
-                                     { name: :config, type: 'nested_form',
-                                       subfields: [{ name: :address, type: 'text_field' },
-                                                   { name: :port, type: 'text_field'},
-                                                   { name: :enable_starttls_auto, type: 'checkbox'}] }], options: {} } %>
-
-    <%= render partial: 'nested_form',
                locals: { form: form, field: :flash_message,
                          subfields: [{ name: :type, type: 'radio_buttons', values: ['off', 'success', 'notice', 'error', 'alert'] },
                                      { name: :message, type: 'text_field' }], options: {} } %>

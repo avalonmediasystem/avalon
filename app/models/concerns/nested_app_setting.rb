@@ -6,14 +6,6 @@ module NestedAppSetting
 
   # Second level of nesting. These have to come first because the
   # class has to exist to be referenced in the higher nesting level.
-
-  # Email
-  class EmailConfig < JsonModel
-    attr_json :address, :string, default: "mail-relay.iu.edu"
-    attr_json :port, :integer, default: 587
-    attr_json :enable_starttls_auto, :boolean, default: false
-  end
-
   # Recaptcha
   class Recaptcha3 < JsonModel
     attr_json :action, :string, default: 'comment'
@@ -52,15 +44,6 @@ module NestedAppSetting
     attr_json :enable, :boolean, default: false
     attr_json :collections_enabled, :boolean, default: false
     attr_json :default_lending_period, :string, default: 'P14D'
-  end
-
-  class Email < JsonModel
-    attr_json :comments, :string
-    attr_json :notification, :string
-    attr_json :support, :string
-    attr_json :mailer, :string, default: 'smtp'
-    attr_json :accessibility_request_link, :string
-    attr_json :config, EmailConfig.to_type, default: -> { EmailConfig.new }
   end
 
   class HomePage < JsonModel
