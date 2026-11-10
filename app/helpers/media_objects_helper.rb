@@ -196,6 +196,6 @@ module MediaObjectsHelper
 
   def display_supplemental_file_language(language)
     return LanguageTerm.find(language).text if language.present?
-    Settings.caption_default.name
+    Admin::ApplicationSetting.instance.caption_default.name
   end
 end

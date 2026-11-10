@@ -38,7 +38,7 @@ namespace :avalon do
         filename = caption_file.original_name
         content_type = caption_file.mime_type
         # Create and populate new SupplementalFile record using original metadata
-        supplemental_file = SupplementalFile.new(label: filename, tags: ['caption'], language: Settings.caption_default.language, parent_id: master_file.id)
+        supplemental_file = SupplementalFile.new(label: filename, tags: ['caption'], language: Admin::ApplicationSetting.instance.caption_default.language, parent_id: master_file.id)
         supplemental_file.file.attach(io: ActiveFedora::FileIO.new(caption_file), filename: filename, content_type: content_type, identify: false)
         # Skip validation so that incorrect mimetypes do not bomb the entire task
         supplemental_file.save(validate: false)
@@ -227,6 +227,56 @@ namespace :avalon do
       end
 
       puts("#{num_found - error_count} records successfully migrated")
+    end
+
+    desc "Migrate existing application settings from settings.yml and env variables to database"
+    task :application_settings, [:list_fields] => :environment do |_task, args|
+      SETTINGS_KEYS = Admin::ApplicationSetting.attr_json_registry.attribute_names.map(&:to_s).freeze
+
+      if args[:list_fields].present?
+        puts("Settings fields to be migrated:\n #{SETTINGS_KEYS}")
+        next
+      end
+
+      puts("\nThis action will overwrite existing application settings in the database.\n
+            Are you sure you wish to continue? [y/n]")
+      ans = STDIN.gets.chomp
+
+      if ans != 'y'
+        puts("Migration Aborted")
+        next
+      end
+
+      db_settings = Admin::ApplicationSetting.where(singleton_guard: 0).first_or_initialize
+      SETTINGS_KEYS.each do |key|
+        # Handle disabled settings
+        unless Settings.respond_to?(key)
+          # Check for existing database entries
+          value = db_settings.send(key)
+          # If value is nil the setting stays disabled and we are safe to move on
+          next if value.nil?
+          # If value is a nested setting we need to expand the setting via
+          # conversion to hash, otherwise entry will just return
+          # something like <NestedAppSetting ID>
+          value = value.class.module_parents.include?(NestedAppSetting) ? value.to_h : value
+          # We need to explicitly list what each setting is falling back to.
+          # The primary concern here is that certain settings have default
+          # values which could silently enable features (Intercom) that had
+          # been disabled by the implementer. Providing this feedback will allow
+          # easier review and remediation post migration.
+          puts("'#{key}' not found in Settings. Falling back to: #{value}")
+          next
+        end
+        value = Settings.send(key)
+        value = value.class == Config::Options ? value.to_h : value
+        db_settings.send("#{key}=".to_sym, value)
+        puts("'#{key}' set to #{value}.")
+      end
+
+      db_settings.save!
+      puts("Settings successfully saved to database.")
+    rescue StandardError => e
+      puts(e.message)
     end
   end
 end

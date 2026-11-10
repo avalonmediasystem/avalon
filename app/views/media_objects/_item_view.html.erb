@@ -39,7 +39,7 @@ Unless required by applicable law or agreed to in writing, software distributed
         <% end %>
       <% end %>
     </div>
-    <% if Settings.accessibility_compliance.enforce && can?(:override_accessibility, @media_object) %>
+    <% if Admin::ApplicationSetting.instance.accessibility_compliance.enforce && can?(:override_accessibility, @media_object) %>
       <div class="form-check d-inline-block ms-2 align-middle">
         <input class="form-check-input" type="checkbox" id="accessibility_exempt_toggle"
             <%= @media_object.accessibility_exempt? ? 'checked' : '' %>

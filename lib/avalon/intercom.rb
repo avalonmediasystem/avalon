@@ -18,7 +18,7 @@ module Avalon
 
     def initialize(user, avalon = 'default')
       @user = user
-      @avalon = Settings.intercom[avalon]
+      @avalon = Admin::ApplicationSetting.instance.intercom[avalon]
       @collections = nil
     end
 
@@ -62,7 +62,7 @@ module Avalon
       end
 
       def fetch_user_collections
-        return [] unless @avalon.present?
+        return [] unless @avalon['url'].present? && @avalon['api_token'].present?
         uri = Addressable::URI.join(@avalon['url'], 'admin/collections.json')
         uri.query = "user=#{@user}&per_page=#{Integer::EXABYTE}"
         resp = RestClient::Request.execute(

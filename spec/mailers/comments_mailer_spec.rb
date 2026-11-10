@@ -39,7 +39,7 @@ describe 'CommentsMailer' do
     end
 
     it 'has correct subject' do
-      expect(mail).to have_subject("#{Settings.name}: #{comment[:subject]}")
+      expect(mail).to have_subject("#{Admin::ApplicationSetting.instance.name}: #{comment[:subject]}")
     end
 
     context 'body' do
@@ -48,7 +48,7 @@ describe 'CommentsMailer' do
         expect(mail).to have_body_text(comment[:email])
       end
       it 'has instance information' do
-        expect(mail).to have_body_text(Settings.name)
+        expect(mail).to have_body_text(Admin::ApplicationSetting.instance.name)
       end
       it 'has the subject' do
         expect(mail).to have_body_text(comment[:subject])

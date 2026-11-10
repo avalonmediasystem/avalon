@@ -85,7 +85,7 @@ class SupplementalFilesController < ApplicationController
     respond_to do |format|
       format.html { 
         # Redirect or proxy the content
-        if Settings.supplemental_files.proxy
+        if Admin::ApplicationSetting.instance.supplemental_files.proxy
           send_data @supplemental_file.file.download, filename: @supplemental_file.download_filename, type: @supplemental_file.file.content_type, disposition: "inline; filename=#{@supplemental_file.download_filename}"
         else
           # Rails 7.0 adds a config option to protect against "open redirects". We override
@@ -264,7 +264,7 @@ class SupplementalFilesController < ApplicationController
       {
         label: supplemental_file_params[:label],
         tags: supplemental_file_params[:tags],
-        language: supplemental_file_params[:language].present? ? LanguageTerm.find(supplemental_file_params[:language]).code : Settings.caption_default.language,
+        language: supplemental_file_params[:language].present? ? LanguageTerm.find(supplemental_file_params[:language]).code : Admin::ApplicationSetting.instance.caption_default.language,
         parent_id: @object.id
       }.compact
     end

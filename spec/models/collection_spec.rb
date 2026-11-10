@@ -745,7 +745,7 @@ describe Admin::Collection do
   describe 'default_lending_period' do
     context 'a custom lending period has not been set' do
       it 'sets the lending period equal to the system default' do
-        expect(collection.default_lending_period).to eq ActiveSupport::Duration.parse(Settings.controlled_digital_lending.default_lending_period).to_i
+        expect(collection.default_lending_period).to eq ActiveSupport::Duration.parse(Admin::ApplicationSetting.instance.controlled_digital_lending.default_lending_period).to_i
       end
     end
     context 'a custom lending period has been set' do
@@ -758,7 +758,7 @@ describe Admin::Collection do
 
   describe 'cdl_enabled' do
     context 'collections disabled at the application level' do
-      before { allow(Settings.controlled_digital_lending).to receive(:collections_enabled).and_return(false) }
+      before { allow(Admin::ApplicationSetting.instance.controlled_digital_lending).to receive(:collections_enabled).and_return(false) }
       it 'sets collection cdl to be disabled by default' do
         expect(collection.cdl_enabled?).to be false
       end
@@ -772,7 +772,7 @@ describe Admin::Collection do
       end
     end
     context 'collections enabled at the application level' do
-      before { allow(Settings.controlled_digital_lending).to receive(:collections_enabled).and_return(true) }
+      before { allow(Admin::ApplicationSetting.instance.controlled_digital_lending).to receive(:collections_enabled).and_return(true) }
       it 'sets collection cdl to be enabled by default' do
         expect(collection.cdl_enabled?).to be true
       end

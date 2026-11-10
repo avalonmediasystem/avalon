@@ -19,15 +19,15 @@ module Avalon
     class SRU < ::Avalon::BibRetriever
       def initialize config
         super
-        @config['query'] ||= 'rec.id=%{bib_id}'
-        @config['namespace'] ||= "http://www.loc.gov/zing/srw/"
+        @query = config['query'] || 'rec.id=%{bib_id}'
+        @namespace = config['namespace'] || "http://www.loc.gov/zing/srw/"
       end
 
       def get_record(bib_id)
         # multiple queries specified as an Array in the config will run each in sequence until a record is found
-        Array(config['query']).each do |query|
+        Array(@query).each do |query|
           doc = Nokogiri::XML RestClient.get(url_for(query, bib_id))
-          record = doc.xpath('//zs:recordData/*', "zs"=>@config['namespace']).first
+          record = doc.xpath('//zs:recordData/*', "zs"=>@namespace).first
           return marcxml2mods(record.to_s) if record.present?
         end
         nil

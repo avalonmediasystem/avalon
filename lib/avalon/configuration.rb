@@ -110,7 +110,7 @@ module Avalon
 
     # To be called as Avalon::Configuration.controlled_digital_lending_enabled?
     def controlled_digital_lending_enabled?
-      !!Settings.controlled_digital_lending&.enable
+      !!Admin::ApplicationSetting.instance.controlled_digital_lending&.enable
     end
 
     # To be called as Avalon::Configuration.accessibility_request_link

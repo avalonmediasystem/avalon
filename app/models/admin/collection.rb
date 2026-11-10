@@ -268,16 +268,16 @@ class Admin::Collection < ActiveFedora::Base
 
   alias_method :'_default_lending_period', :'default_lending_period'
   def default_lending_period
-    self._default_lending_period || ActiveSupport::Duration.parse(Settings.controlled_digital_lending.default_lending_period).to_i
+    self._default_lending_period || ActiveSupport::Duration.parse(Admin::ApplicationSetting.instance.controlled_digital_lending.default_lending_period).to_i
   end
 
   def cdl_enabled?
     if cdl_enabled.nil?
-      Settings.controlled_digital_lending.collections_enabled
-    elsif cdl_enabled != Settings.controlled_digital_lending.collections_enabled
+      Admin::ApplicationSetting.instance.controlled_digital_lending.collections_enabled
+    elsif cdl_enabled != Admin::ApplicationSetting.instance.controlled_digital_lending.collections_enabled
       cdl_enabled
     else
-      Settings.controlled_digital_lending.collections_enabled
+      Admin::ApplicationSetting.instance.controlled_digital_lending.collections_enabled
     end
   end
 

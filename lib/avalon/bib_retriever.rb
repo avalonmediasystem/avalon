@@ -34,15 +34,15 @@ module Avalon
 
       def for(bib_id_type)
         config = configuration_for(bib_id_type)
-        require config['retriever_class_require'] if config['retriever_class_require']
+        require config['retriever_class_require'] if config['retriever_class_require'].present?
         config['retriever_class'].constantize.new config
       end
 
       protected :new, :allocate
 
       def configurations
-        raise ArgumentError, "Missing/invalid bib retriever configuration" unless Settings.bib_retriever.present?
-        Settings.bib_retriever
+        raise ArgumentError, "Missing/invalid bib retriever configuration" unless Admin::ApplicationSetting.instance.bib_retriever.present?
+        Admin::ApplicationSetting.instance.bib_retriever.deep_stringify_keys
       end
 
       def configuration_for(bib_id_type)

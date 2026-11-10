@@ -252,7 +252,7 @@ class CatalogController < ApplicationController
     end
 
     def load_home_page_collections
-      featured_collections = Settings.home_page&.featured_collections
+      featured_collections = Admin::ApplicationSetting.instance.home_page&.featured_collections
       if featured_collections.present?
         builder = ::CollectionSearchBuilder.new(self).rows(100_000)
         response = blacklight_config.repository.search(builder)

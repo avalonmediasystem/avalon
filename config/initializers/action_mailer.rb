@@ -1,3 +1,4 @@
+# TODO: Make sure that this works for regular application boot with a fresh database
 ActiveSupport.on_load(:action_mailer) do
   ActionMailer::MailDeliveryJob.rescue_from(StandardError) do |exception|
     Rails.logger.error "Error delivering mail: #{exception}"

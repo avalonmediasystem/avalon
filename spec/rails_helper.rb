@@ -105,7 +105,7 @@ RSpec.configure do |config|
   # Ensure that if we are running js tests, we are using latest webpack assets
   # This will use the defaults of :js and :server_rendering meta tags
   ReactOnRails::TestHelper.configure_rspec_to_compile_assets(config)
-  
+
   include Noid::Rails::RSpec
 
   # Remove this line if you're not using ActiveRecord or ActiveRecord fixtures
@@ -143,14 +143,19 @@ RSpec.configure do |config|
     WebMock.allow_net_connect!
   end
 
-  config.before :each do
+  config.before :each do |example|
     DatabaseCleaner.strategy = :truncation
     # Clear out faker unique generator between tests
     Faker::UniqueGenerator.clear
     # Clear out the job queue to ensure tests run with clean environment
     ActiveJob::Base.queue_adapter.enqueued_jobs = []
     ActiveJob::Base.queue_adapter.performed_jobs = []
-    Settings.bib_retriever = { 'default' => { 'protocol' => 'sru', 'url' => 'http://zgate.example.edu:9000/db', 'retriever_class' => 'Avalon::BibRetriever::SRU', 'retriever_class_require' => 'avalon/bib_retriever/sru' } }
+
+    next if example.metadata[:skip_stubbing]
+    # Create and then stub specific instance so that stubbing child values works consisitently
+    # throughout test suite
+    settings_instance = Admin::ApplicationSetting.instance
+    allow(Admin::ApplicationSetting).to receive(:instance).and_return(settings_instance)
   end
 
   config.after :each do
@@ -164,7 +169,7 @@ RSpec.configure do |config|
 
   # Remove this check to test on smaller window sizes?
   config.before(:each, js: true) do
-    Capybara.page.driver.browser.manage.window.resize_to(1920,1080) # desktop size
+    Capybara.page.driver.browser.manage.window.resize_to(1920, 1080) # desktop size
   end
 
   # RSpec Rails can automatically mix in different behaviours to your tests
