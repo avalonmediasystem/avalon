@@ -39,12 +39,12 @@ class MediaObjectsController < ApplicationController
     ctx.user_session.present? && ctx.user_session[:lti_group].present?
   end
 
-  is_editor_or_not_lti = proc { |ctx| self.is_editor(ctx) || !self.is_lti_session(ctx) }
-  is_editor_or_lti = proc { |ctx| (Avalon::Authentication::Providers.any? {|p| p[:provider] == :lti } && self.is_editor(ctx)) || self.is_lti_session(ctx) }
+  IS_EDITOR_OR_NOT_LTI = proc { |ctx| self.is_editor(ctx) || !self.is_lti_session(ctx) }
+  IS_EDITOR_OR_LTI = proc { |ctx| (Avalon::Authentication::Providers.any? {|p| p[:provider] == :lti } && self.is_editor(ctx)) || self.is_lti_session(ctx) }
 
-  add_conditional_partial :share, :share, partial: 'share_resource', if: is_editor_or_not_lti
-  add_conditional_partial :share, :embed, partial: 'embed_resource', if: is_editor_or_not_lti
-  add_conditional_partial :share, :lti_url, partial: 'lti_url',  if: is_editor_or_lti
+  add_conditional_partial :share, :share, partial: 'share_resource', if: IS_EDITOR_OR_NOT_LTI
+  add_conditional_partial :share, :embed, partial: 'embed_resource', if: IS_EDITOR_OR_NOT_LTI
+  add_conditional_partial :share, :lti_url, partial: 'lti_url',  if: IS_EDITOR_OR_LTI
 
   def can_embed?
     params[:action] == 'show'
@@ -513,8 +513,8 @@ class MediaObjectsController < ApplicationController
     # TODO: Add a rake task to clear expired items from the cache?
     cached_manifest = Rails.cache.fetch([@media_object.cache_key_with_version, @media_object.active_visibility, 'iiif_manifest'], expires_in: 1.week) do
       stream_info_hash = secure_stream_infos(master_file_presenters, [@media_object])
-      canvas_presenters = master_file_presenters.collect { |mf| IiifCanvasPresenter.new(master_file: mf, stream_info: stream_info_hash[mf.id], lti: is_editor_or_lti) }
-      presenter = IiifManifestPresenter.new(media_object: @media_object, master_files: canvas_presenters, lending_enabled: lending_enabled?(@media_object), lti: is_editor_or_lti)
+      canvas_presenters = master_file_presenters.collect { |mf| IiifCanvasPresenter.new(master_file: mf, stream_info: stream_info_hash[mf.id], lti: IS_EDITOR_OR_LTI.call(self)) }
+      presenter = IiifManifestPresenter.new(media_object: @media_object, master_files: canvas_presenters, lending_enabled: lending_enabled?(@media_object), lti: IS_EDITOR_OR_LTI.call(self))
 
       manifest = IIIFManifest::V3::ManifestFactory.new(presenter).to_h
       # TODO: implement thumbnail in iiif_manifest

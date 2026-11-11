@@ -2560,8 +2560,9 @@ describe MediaObjectsController, type: :controller do
         allow_any_instance_of(MediaObjectsController).to receive(:secure_stream_infos).and_return(stream_info_hash)
         allow_any_instance_of(IIIFManifest::V3::ManifestBuilder::IIIFManifest::AnnotationPage).to receive(:index).and_return(1)
         allow_any_instance_of(IIIFManifest::V3::ManifestBuilder::IIIFManifest::Annotation).to receive(:index).and_return(1)
-        @canvas_presenters = media_object.sections.collect { |mf| IiifCanvasPresenter.new(master_file: mf, stream_info: stream_info_hash[mf.id]) }
-        presenter = IiifManifestPresenter.new(media_object: media_object, master_files: @canvas_presenters)
+        # LTI is enabled in the test controller, so generate manifest with lti
+        @canvas_presenters = media_object.sections.collect { |mf| IiifCanvasPresenter.new(master_file: mf, stream_info: stream_info_hash[mf.id], lti: true) }
+        presenter = IiifManifestPresenter.new(media_object: media_object, master_files: @canvas_presenters, lti: true)
         @manifest = IIIFManifest::V3::ManifestFactory.new(presenter).to_h
         @manifest["thumbnail"] = [{ "id" => presenter.thumbnail, "type" => 'Image' }] if presenter.thumbnail
       end
@@ -2581,7 +2582,7 @@ describe MediaObjectsController, type: :controller do
         media_object.title = 'Test'
         media_object.save!
         @canvas_presenters.first.master_file.reload
-        new_presenter = IiifManifestPresenter.new(media_object: media_object, master_files: @canvas_presenters)
+        new_presenter = IiifManifestPresenter.new(media_object: media_object, master_files: @canvas_presenters, lti: true)
         new_manifest = IIIFManifest::V3::ManifestFactory.new(new_presenter).to_h
         new_manifest["thumbnail"] = [{ "id" => new_presenter.thumbnail, "type" => 'Image' }] if new_presenter.thumbnail
         get 'manifest', params: { id: media_object.id, format: 'json' }
@@ -2596,7 +2597,7 @@ describe MediaObjectsController, type: :controller do
         media_object.collection.default_visibility = 'private'
         media_object.collection.save!
         @canvas_presenters.first.master_file.reload
-        new_presenter = IiifManifestPresenter.new(media_object: media_object, master_files: @canvas_presenters)
+        new_presenter = IiifManifestPresenter.new(media_object: media_object, master_files: @canvas_presenters, lti: true)
         new_manifest = IIIFManifest::V3::ManifestFactory.new(new_presenter).to_h
         new_manifest["thumbnail"] = [{ "id" => new_presenter.thumbnail, "type" => 'Image' }] if new_presenter.thumbnail
         get 'manifest', params: { id: media_object.id, format: 'json' }
