@@ -43,7 +43,7 @@ services:
       - CATALINA_OPTS=-Dfcrepo.autoversioning.enabled=false
 
   solr: &solr
-    image: solr:9.10
+    image: solr:9.11
     volumes:
       - ./solr/conf:/opt/solr/avalon_conf
       - solr:/var/solr
@@ -52,7 +52,7 @@ services:
       - avalon
       - /opt/solr/avalon_conf
     environment:
-      - SOLR_MODULES=analysis-extras,extraction
+      - SOLR_MODULES=analysis-extras
     networks:
       internal:
     ulimits:
