@@ -16,13 +16,14 @@ class IiifCanvasPresenter
   include IiifAuthService
   include IiifSupplementalFileBehavior
 
-  attr_reader :master_file, :stream_info
+  attr_reader :master_file, :stream_info, :lti
   attr_accessor :media_fragment
 
-  def initialize(master_file:, stream_info:, media_fragment: nil)
+  def initialize(master_file:, stream_info:, media_fragment: nil, lti: false)
     @master_file = master_file
     @stream_info = stream_info
     @media_fragment = media_fragment
+    @lti = lti
   end
 
   delegate :derivative_ids, :id, to: :master_file
@@ -33,6 +34,12 @@ class IiifCanvasPresenter
 
   def range
     structure_ng_xml.root.blank? ? simple_iiif_range : structure_to_iiif_range
+  end
+
+  def homepage
+    homepage = [section_share]
+    homepage += [lti_share] if lti
+    homepage
   end
 
   # @return [IIIFManifest::V3::DisplayContent] the display content required by the manifest builder.
@@ -52,7 +59,7 @@ class IiifCanvasPresenter
   def see_also
     [
       {
-        "@id" => "#{@master_file.waveform_master_file_url(@master_file.id)}.json",
+        "@id" => "#{master_file.waveform_master_file_url(master_file.id)}.json",
         "type" => "Dataset",
         "label" => { "en" => ["waveform.json"] },
         "format" => "application/json"
@@ -61,14 +68,14 @@ class IiifCanvasPresenter
   end
 
   def placeholder_content
-    if @master_file.derivative_ids.size > 0
+    if master_file.derivative_ids.size > 0
       # height and width from /models/master_file/extract_still method
-      IIIFManifest::V3::DisplayContent.new( @master_file.poster_master_file_url(@master_file.id),
+      IIIFManifest::V3::DisplayContent.new( master_file.poster_master_file_url(master_file.id),
                                             width: 1280,
                                             height: 720,
                                             type: 'Image',
                                             format: 'image/jpeg')
-    elsif section_processing?(@master_file)
+    elsif section_processing?(master_file)
       IIIFManifest::V3::DisplayContent.new(nil,
                                            label: I18n.t('media_object.conversion_msg'),
                                            width: 1280,
@@ -295,5 +302,23 @@ class IiifCanvasPresenter
     else
       ActionController::Base.helpers.asset_url('audio_icon.png')
     end
+  end
+
+  def section_share
+    {
+      "@id" => Rails.application.routes.url_helpers.id_section_media_object_url(master_file.media_object_id, master_file.id),
+      "type" => "Text",
+      "label" => { "none" => [I18n.t('iiif.manifest.homepageLabel')] },
+      "format" => "text/html"
+    }
+  end
+
+  def lti_share
+    {
+      "@id" => Rails.application.routes.url_helpers.user_omniauth_callback_lti_url(target_id: master_file.id),
+      "type" => "Text",
+      "label" => { "none" => [I18n.t('iiif.manifest.homepageLabel')] },
+      "format" => "text/html"
+    }
   end
 end
