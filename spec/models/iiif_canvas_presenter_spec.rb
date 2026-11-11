@@ -587,4 +587,27 @@ describe IiifCanvasPresenter do
       expect(subject.first["type"]).to eq 'SearchService2'
     end
   end
+
+  describe '#homepage' do
+    subject { presenter.homepage }
+
+    it 'includes homepage info for the section' do
+      expect(subject.first["@id"]).to eq Rails.application.routes.url_helpers.id_section_media_object_url(media_object.id, master_file.id)
+      expect(subject.first["type"]).to eq "Text"
+      expect(subject.first["format"]).to eq "text/html"
+      expect(subject.first["label"]).to eq({ "none" => [I18n.t('iiif.manifest.homepageLabel')] })
+    end
+
+    context 'with lti' do
+      let(:presenter) { described_class.new(master_file: master_file, stream_info: stream_info, lti: true) }
+
+      it 'includes lti homepage info for the section' do
+        expect(subject.count).to eq 2
+        expect(subject.second["@id"]).to eq Rails.application.routes.url_helpers.user_omniauth_callback_lti_url(target_id: master_file.id)
+        expect(subject.second["type"]).to eq "Text"
+        expect(subject.second["format"]).to eq "text/html"
+        expect(subject.second["label"]).to eq({ "none" => [I18n.t('iiif.manifest.homepageLabel')] })
+      end
+    end
+  end
 end

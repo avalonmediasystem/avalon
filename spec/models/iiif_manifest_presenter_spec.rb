@@ -33,20 +33,32 @@ describe IiifManifestPresenter do
   end
 
   context 'homepage' do
-    subject { presenter.homepage.first }
+    subject { presenter.homepage }
 
     it 'provides a homepage' do
-      expect(subject[:id]).to eq Rails.application.routes.url_helpers.media_object_url(media_object)
-      expect(subject[:type]).to eq "Text"
-      expect(subject[:format]).to eq "text/html"
-      expect(subject[:label]).to include("none" => ["View in Repository"])
+      expect(subject.first[:id]).to eq Rails.application.routes.url_helpers.media_object_url(media_object)
+      expect(subject.first[:type]).to eq "Text"
+      expect(subject.first[:format]).to eq "text/html"
+      expect(subject.first[:label]).to include("none" => ["View in Repository"])
     end
 
     context 'with permalink' do
       let(:media_object) { FactoryBot.build(:media_object, permalink: "https://purl.example.edu/permalink") }
 
       it 'uses the permalink' do
-        expect(subject[:id]).to eq media_object.permalink
+        expect(subject.first[:id]).to eq media_object.permalink
+      end
+    end
+
+    context 'with lti' do
+      let(:presenter) { described_class.new(media_object: media_object, master_files: [master_file], lti: true) }
+
+      it 'includes lti homepage info for the section' do
+        expect(subject.count).to eq 2
+        expect(subject.second[:id]).to eq Rails.application.routes.url_helpers.user_omniauth_callback_lti_url(target_id: media_object.id)
+        expect(subject.second[:type]).to eq "Text"
+        expect(subject.second[:format]).to eq "text/html"
+        expect(subject.second[:label]).to eq({ "none" => [I18n.t('iiif.manifest.homepageLabel')] })
       end
     end
   end
