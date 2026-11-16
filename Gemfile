@@ -23,7 +23,7 @@ gem "cssbundling-rails", "~> 1.4"
 gem 'jquery-rails'
 gem 'jquery-ui-rails'
 gem 'jsbundling-rails', '~> 1.3'
-gem 'react_on_rails'
+gem 'react_on_rails', '14.2.1'
 # sassc is required by Sprockets, but theoretically nothing should be
 # getting processed by it. Should be removed as soon as we are able to.
 gem 'sassc-rails'
@@ -33,7 +33,7 @@ gem 'sprockets-es6'
 gem 'active-fedora', '~> 16.0'
 gem 'active_fedora-datastreams', '~> 0.5'
 gem 'hydra-head', '~> 13.0'
-gem 'ldp', '~> 1.1.0'
+gem 'ldp', '~> 1.1'
 gem 'noid-rails', '~> 3.2'
 gem 'om', git: 'https://github.com/avalonmediasystem/om.git', tag: 'v3.2.0-ruby3'
 gem 'rdf-rdfxml'
