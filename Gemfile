@@ -23,7 +23,7 @@ gem "cssbundling-rails", "~> 1.4"
 gem 'jquery-rails'
 gem 'jquery-ui-rails'
 gem 'jsbundling-rails', '~> 1.3'
-gem 'react_on_rails'
+gem 'react_on_rails', '14.2.1'
 # sassc is required by Sprockets, but theoretically nothing should be
 # getting processed by it. Should be removed as soon as we are able to.
 gem 'sassc-rails'
