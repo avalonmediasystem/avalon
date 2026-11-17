@@ -22,8 +22,6 @@ class EncodePresenter
 
   def initialize(encode_record)
     @encode_record = encode_record
-    @raw_object = @encode_record.raw_object.present? ? JSON.parse(@encode_record.raw_object) : {}
-    @create_options = @encode_record.create_options.present? ? JSON.parse(@encode_record.create_options) : {}
   end
 
   delegate :id, :adapter, :display_title, :master_file_id, :media_object_id, :created_at, :progress, to: :encode_record
@@ -49,22 +47,34 @@ class EncodePresenter
   end
 
   def started
-    DateTime.parse(@raw_object["created_at"]).utc.strftime('%D %r')
+    DateTime.parse(raw_object_parsed["created_at"]).utc.strftime('%D %r')
   end
 
   def ended
-    DateTime.parse(@raw_object["updated_at"]).utc.strftime('%D %r')
+    DateTime.parse(raw_object_parsed["updated_at"]).utc.strftime('%D %r')
   end
 
   def raw_object
-    JSON.pretty_generate(@raw_object)
+    JSON.pretty_generate(raw_object_parsed)
+  end
+
+  def raw_object_parsed
+    @raw_object_parsed ||= @encode_record&.raw_object.present? ? JSON.parse(@encode_record.raw_object) : {}
+  rescue
+    {}
   end
 
   def create_options
-    JSON.pretty_generate(@create_options)
+    JSON.pretty_generate(create_options_parsed)
+  end
+
+  def create_options_parsed
+    @create_options_parsed = @encode_record&.create_options.present? ? JSON.parse(@encode_record.create_options) : {}
+  rescue
+    {}
   end
 
   def errors
-    @raw_object["errors"]
+    raw_object_parsed["errors"]
   end
 end

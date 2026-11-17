@@ -35,7 +35,7 @@ class EncodeRecordsController < ApplicationController
 
     # EncodeJobs for index page are loaded via /javascript/componenets/tables/EncodeJobsTable.jsx
     # which requests the json for all records on initial page load.
-    @encode_records = ::ActiveEncode::EncodeRecord.all
+    @encode_records = ::ActiveEncode::EncodeRecord.all.select(:id, :state, :progress, :master_file_id, :media_object_id, :display_title, :created_at)
     records_total = ::ActiveEncode::EncodeRecord.count
 
     response = {
