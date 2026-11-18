@@ -19,6 +19,15 @@ import { Modal } from 'react-bootstrap';
 import ReactSME from 'react-structural-metadata-editor';
 import './ReactButtonContainer.scss';
 
+/* Font Awesome's SVG library normally adds the CSS that sizes its icons;
+.svg-inline--fa { height: 1em; } as an inline <style> at runtime.
+And Avalon's CSP blocks inline styles that have no nonce, so SME's play/pause/zoom
+icons in the Waveform toolbar render with zero height. This code solves this issue.
+Reference: https://docs.fontawesome.com/web/dig-deeper/security */
+import { config } from '@fortawesome/fontawesome-svg-core';
+import '@fortawesome/fontawesome-svg-core/styles.css';
+config.autoAddCss = false;
+
 class ReactButtonContainer extends Component {
   constructor(props) {
     super(props);
