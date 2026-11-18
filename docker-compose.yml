@@ -29,7 +29,7 @@ services:
     depends_on:
       - createbuckets
     environment:
-      - CATALINA_OPTS=-Dfcrepo.autoversioning.enabled=false -Dfcrepo.aws.access-key=minio -Dfcrepo.aws.secret-key=minio123 -Dfcrepo.storage=ocfl-s3 -Dfcrepo.ocfl.s3.bucket=fcrepo -Dfcrepo.s3.endpoint=http://minio:9000 -Dfcrepo.aws.region=us-east-1 -Dfcrepo.s3.path.style.access=true
+      - CATALINA_OPTS=-Dfcrepo.autoversioning.enabled=false -Dfcrepo.aws.access-key=minio -Dfcrepo.aws.secret-key=minio123 -Dfcrepo.storage=ocfl-s3 -Dfcrepo.ocfl.s3.bucket=fcrepo -Dfcrepo.s3.endpoint=http://minio:9000 -Dfcrepo.aws.region=us-east-1 -Dfcrepo.s3.path.style.access=true -XX:-UseBASE64Intrinsics
     networks:
       internal:
     ulimits:
@@ -53,6 +53,7 @@ services:
       - /opt/solr/avalon_conf
     environment:
       - SOLR_MODULES=analysis-extras,extraction
+      - SOLR_OPTS=-XX:-UseBASE64Intrinsics
     networks:
       internal:
     ulimits:
