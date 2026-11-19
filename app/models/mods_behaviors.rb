@@ -75,6 +75,7 @@ module ModsBehaviors
     solr_doc['language_ssim'] = gather_terms(self.find_by_terms(:language_text))
     solr_doc['language_code_ssim'] = gather_terms(self.find_by_terms(:language_code))
     solr_doc['physical_description_ssim'] = gather_terms(self.find_by_terms(:physical_description))
+    solr_doc['physical_format_ssim'] = gather_terms(self.find_by_terms(:physical_format))
     solr_doc['related_item_url_sim'] = gather_terms(self.find_by_terms(:related_item_url))
     solr_doc['related_item_label_sim'] = gather_terms(self.find_by_terms(:related_item_label))
     solr_doc['terms_of_use_ssi'] = (self.find_by_terms(:terms_of_use) - self.find_by_terms(:rights_statement)).text

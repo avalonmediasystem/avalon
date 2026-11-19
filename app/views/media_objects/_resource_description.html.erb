@@ -13,8 +13,8 @@ Unless required by applicable law or agreed to in writing, software distributed
   specific language governing permissions and limitations under the License.
 ---  END LICENSE_HEADER BLOCK  ---
 %>
-<% unless ModsDocument::IDENTIFIER_TYPES && ModsDocument::NOTE_TYPES && ModsDocument::RIGHTS_STATEMENTS %>
-  <% raise Avalon::VocabularyNotFound.new "Rights statements, Identifier types, or Note types vocabulary not found." %>
+<% unless ModsDocument::IDENTIFIER_TYPES && ModsDocument::NOTE_TYPES && ModsDocument::RIGHTS_STATEMENTS && ModsDocument::PHYSICAL_FORMATS %>
+  <% raise Avalon::VocabularyNotFound.new "Physical Format, Rights statements, Identifier types, or Note types vocabulary not found." %>
 <% end %>
 
 <div id="resource_description_content">
@@ -76,6 +76,13 @@ Unless required by applicable law or agreed to in writing, software distributed
              locals: {form: form, field: :physical_description,
                       options: {display_label: "Physical Description",
                                 multivalued: true}} %>
+
+  <%= render partial: 'dropdown_field',
+             locals: {form: form, field: :physical_format,
+                      options: {display_label: 'Physical Format',
+                                dropdown_options: ModsDocument::PHYSICAL_FORMATS,
+                                multivalued: true,
+                                include_blank: true }} %>
 
   <%= render partial: 'text_field',
              locals: {form: form, field: :series,
