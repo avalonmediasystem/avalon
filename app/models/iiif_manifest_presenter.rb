@@ -20,12 +20,13 @@ class IiifManifestPresenter
   IIIF_ALLOWED_TAGS = ['a', 'b', 'br', 'i', 'img', 'p', 'small', 'span', 'sub', 'sup'].freeze
   IIIF_ALLOWED_ATTRIBUTES = ['href', 'src', 'alt'].freeze
 
-  attr_reader :media_object, :sections, :lending_enabled
+  attr_reader :media_object, :sections, :lending_enabled, :lti
 
-  def initialize(media_object:, master_files:, lending_enabled: false)
+  def initialize(media_object:, master_files:, lending_enabled: false, lti: false)
     @media_object = media_object
     @sections = master_files
     @lending_enabled = lending_enabled
+    @lti = lti
   end
 
   def file_set_presenters
@@ -66,14 +67,9 @@ class IiifManifestPresenter
   end
 
   def homepage
-    [
-      {
-        id: media_object.permalink.presence || Rails.application.routes.url_helpers.media_object_url(media_object),
-        type: "Text",
-        label: { "none" => [I18n.t('iiif.manifest.homepageLabel')] },
-        format: "text/html"
-      }
-    ]
+    homepage = [media_object_share]
+    homepage += [lti_share] if lti
+    homepage
   end
 
   def viewing_hint
@@ -241,5 +237,23 @@ class IiifManifestPresenter
     elsif audio_count > video_count
       ActionController::Base.helpers.asset_url('audio_icon.png')
     end
+  end
+
+  def media_object_share
+    {
+      id: media_object.permalink.presence || Rails.application.routes.url_helpers.media_object_url(media_object),
+      type: "Text",
+      label: { "none" => [I18n.t('iiif.manifest.homepageLabel')] },
+      format: "text/html"
+    }
+  end
+
+  def lti_share
+    {
+      id: Rails.application.routes.url_helpers.user_omniauth_callback_lti_url(target_id: media_object.id),
+      type: "Text",
+      label: { "none" => [I18n.t('iiif.manifest.homepageLabel')] },
+      format: "text/html"
+    }
   end
 end
