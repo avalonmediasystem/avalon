@@ -89,7 +89,7 @@ class ApplicationController < ActionController::Base
     if request.env['QUERY_STRING']['login_popup'].present?
       root_path + "self_closing.html"
     else
-      request.env['omniauth.origin'] || find_redirect_url(nil)
+      oauth_origin || find_redirect_url(nil)
     end
   end
 
@@ -317,6 +317,15 @@ class ApplicationController < ActionController::Base
 
     def should_store_return_url?
       !(request.xhr? || request.format != "html" || request.path.start_with?("/users/") || request.path.end_with?("poster") || request.path.end_with?("thumbnail"))
+    end
+
+    def oauth_origin
+      origin = request.env['omniauth.origin'].to_s
+      # Validate origin is local
+      # Regex taken from omniauth readme: https://github.com/omniauth/omniauth#origin-param
+      return nil unless origin.match?(%r{\A/(?![/\\])}) || origin.start_with?(request.base_url)
+      return nil if origin.end_with?('thumbnail', 'poster') || origin.include?('/users/')
+      origin
     end
 
     def handle_solr_connection_error(exception)
