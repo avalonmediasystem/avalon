@@ -4,6 +4,7 @@ name: Podman Image CI
 on:
   push:
     branches: [ "main", "staging", "develop", "sandbox" ]
+  workflow_dispatch:
 
 env:
   GHCR_USER: ${{ github.actor }}
